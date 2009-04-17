@@ -33,7 +33,7 @@ namespace MonoDevelop.Core.Gui.Codons
 	[ExtensionNodeChild (typeof(OptionsDialogSection))]
 	[ExtensionNodeChild (typeof(OptionsPanelNode))]
 	[ExtensionNode ("Section")]
-	public class OptionsDialogSection: OptionsPanelNode
+	public class OptionsDialogSection: OptionsPanelNode, ICloneable
 	{
 		[NodeAttribute ()]
 		string icon;
@@ -45,6 +45,11 @@ namespace MonoDevelop.Core.Gui.Codons
 			set {
 				icon = value;
 			}
+		}
+		
+		public object Clone ()
+		{
+			return MemberwiseClone ();
 		}
 	}
 }

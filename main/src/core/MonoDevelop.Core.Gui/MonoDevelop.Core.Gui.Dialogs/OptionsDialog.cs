@@ -35,13 +35,14 @@ namespace MonoDevelop.Core.Gui.Dialogs
 {
 	public partial class OptionsDialog : Gtk.Dialog
 	{
-		TreeStore store;
+		protected TreeStore store;
 		Dictionary<OptionsDialogSection, SectionPage> pages = new Dictionary<OptionsDialogSection, SectionPage> ();
 		Dictionary<OptionsPanelNode, PanelInstance> panels = new Dictionary<OptionsPanelNode,PanelInstance> ();
 		object mainDataObject;
 		string extensionPath;
 		ExtensionContext extensionContext;
 		HashSet<object> modifiedObjects = new HashSet<object> ();
+		bool removeEmptySections;
 		
 		public object DataObject {
 			get {
@@ -63,10 +64,13 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		{
 		}
 		
-		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath)
+		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath) : this (parentWindow, dataObject, extensionPath, true)
+		{}
+		
+		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath, bool removeEmptySections)
 		{
 			this.Build();
-			
+			this.removeEmptySections = removeEmptySections;
 			extensionContext = AddinManager.CreateExtensionContext ();
 			
 			this.mainDataObject = dataObject;
@@ -95,7 +99,12 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			InitializeContext (extensionContext);
 			
 			FillTree ();
-			
+			ExpandCategories ();
+			this.DefaultResponse = Gtk.ResponseType.Ok;
+		}
+		
+		protected void ExpandCategories ()
+		{
 			TreeIter it;
 			if (store.GetIterFirst (out it)) {
 				tree.Selection.SelectIter (it);
@@ -103,8 +112,6 @@ namespace MonoDevelop.Core.Gui.Dialogs
 					tree.ExpandRow (store.GetPath (it), false);
 				} while (store.IterNext (ref it));
 			}
-			
-			this.DefaultResponse = Gtk.ResponseType.Ok;
 		}
 		
 		public void FillTree ()
@@ -139,12 +146,12 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			}
 		}
 		
-		protected void AddSection (OptionsDialogSection section, object dataObject)
+		protected TreeIter AddSection (OptionsDialogSection section, object dataObject)
 		{
-			AddSection (TreeIter.Zero, section, dataObject);
+			return AddSection (TreeIter.Zero, section, dataObject);
 		}
 		
-		protected void AddSection (TreeIter parentIter, OptionsDialogSection section, object dataObject)
+		protected TreeIter AddSection (TreeIter parentIter, OptionsDialogSection section, object dataObject)
 		{
 			TreeIter it;
 			if (parentIter.Equals (TreeIter.Zero)) {
@@ -158,11 +165,11 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			AddChildSections (it, section, dataObject);
 			
 			// Remove the section if it doesn't have children nor panels
-			
 			SectionPage page = CreatePage (section, dataObject);
 			TreeIter cit;
-			if (page.Panels.Count == 0 && !store.IterChildren (out cit, it))
+			if (removeEmptySections && page.Panels.Count == 0 && !store.IterChildren (out cit, it))
 				store.Remove (ref it);
+			return it;
 		}
 		
 		protected virtual void AddChildSections (TreeIter parentIter, OptionsDialogSection section, object dataObject)
@@ -193,7 +200,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		protected override void OnResponse (ResponseType resp)
 		{
 			if (resp == ResponseType.Ok) {
-				
+				Console.WriteLine (ValidateChanges ());
 				// Validate changes before saving
 				if (!ValidateChanges ())
 					return;

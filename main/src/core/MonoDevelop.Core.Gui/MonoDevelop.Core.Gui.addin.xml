@@ -14,14 +14,8 @@
 		<Addin id="Core" version="2.1.0"/>
 		<Addin id="Components" version="2.1.0"/>
 	</Dependencies>
-
+	
 	<!-- Extension points -->
-
-	<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel">
-		<ExtensionNode name="DialogPanel" type="MonoDevelop.Core.Gui.Codons.DialogPanelCodon">
-			<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
-		</ExtensionNode>
-	</ExtensionNodeSet>
 	
 	<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection">
 		<ExtensionNode name="Section" type="MonoDevelop.Core.Gui.Codons.OptionsDialogSection" />

@@ -446,16 +446,11 @@
     <Compile Include="MonoDevelop.Core.Gui\SyncContextAttribute.cs" />
     <Compile Include="MonoDevelop.Core.Gui\SyncObject.cs" />
     <Compile Include="MonoDevelop.Core.Gui\RecentOpen.cs" />
-    <Compile Include="MonoDevelop.Core.Gui.Dialogs\DefaultDialogPanelDescriptor.cs" />
-    <Compile Include="MonoDevelop.Core.Gui.Codons\DialogPanelCodon.cs" />
-    <Compile Include="MonoDevelop.Core.Gui.Dialogs\IDialogPanel.cs" />
     <Compile Include="MonoDevelop.Core.Gui.ProgressMonitoring\BaseProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.Gui\GuiService.cs" />
     <Compile Include="MonoDevelop.Core.Gui\IMementoCapable.cs" />
     <Compile Include="MonoDevelop.Core.Gui\PixbufList.cs" />
-    <Compile Include="MonoDevelop.Core.Gui.Dialogs\AbstractOptionPanel.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\ErrorDialog.cs" />
-    <Compile Include="MonoDevelop.Core.Gui.Dialogs\TreeViewOptions.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\ProgressDialog.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Components\MenuButtonEntry.cs" />
     <Compile Include="MonoDevelop.Core.Gui.ProgressMonitoring\MessageDialogProgressMonitor.cs" />
