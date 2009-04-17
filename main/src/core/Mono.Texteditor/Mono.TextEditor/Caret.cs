@@ -180,10 +180,14 @@ namespace Mono.TextEditor
 			this.location.Column = curLine.GetLogicalColumn (editor, this.document, this.desiredColumn);
 			if (curLine.GetVisualColumn (editor, document, this.location.Column) < this.desiredColumn) {
 				this.location.Column = editor.GetNextVirtualColumn (Line, this.location.Column);
+			} else {
+				if (this.Column > curLine.EditableLength) {
+					this.location.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
+					if (AllowCaretBehindLineEnd)
+						this.location.Column = editor.GetNextVirtualColumn (Line, this.location.Column);
+				}
 			}
 			
-			if (!AllowCaretBehindLineEnd)
-				this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
 		}
 		
 		public override string ToString ()

@@ -1,3 +1,7 @@
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Caret.cs: Fixed bug in caret movement.
+
 2009-04-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Caret.cs: Respect caret behind eol setting
