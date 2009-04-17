@@ -39,6 +39,8 @@ using MonoDevelop.Components.Commands;
 using System.Net;
 using System.Xml;
 using System.IO;
+using System.Collections.Generic;
+
 
 namespace MonoDevelop.WelcomePage
 {	
@@ -285,9 +287,15 @@ namespace MonoDevelop.WelcomePage
 			get { return datadir; }
 		}
 		
-		public RecentItem[] RecentProjects {
+		public IEnumerable<RecentItem> RecentProjects {
 			get {
-				return IdeApp.Workbench.RecentOpen.RecentProject;
+				return IdeApp.Workbench.RecentOpen.RecentProjects;
+			}
+		}
+		
+		public int RecentProjectsCount {
+			get {
+				return IdeApp.Workbench.RecentOpen.RecentProjectsCount;
 			}
 		}
 	}

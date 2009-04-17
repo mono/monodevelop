@@ -29,6 +29,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.IO;
 using System.Xml;
@@ -285,12 +286,11 @@ namespace MonoDevelop.WelcomePage
 					recentFilesTable.Remove (w);
 			}
 			
-			RecentItem[] items = parentView.RecentProjects;
-			if (items == null || items.Length < 1)
+			if (parentView.RecentProjectsCount <= 0)
 				return;
 			
 			uint i = 2;
-			foreach (RecentItem ri in items) {
+			foreach (RecentItem ri in parentView.RecentProjects) {
 				//getting the icon requires probing the file, so handle IO errors
 				string icon;
 				try {
