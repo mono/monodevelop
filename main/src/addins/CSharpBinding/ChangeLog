@@ -1,5 +1,14 @@
 2009-04-17  Mike Krüger  <mkrueger@novell.com>
 
+	* CSharpLanguageBinding.cs:
+	* Gui/CodeGenerationPanel.cs:
+	* CSharpBindingCompilerManager.cs:
+	* Gui/CompilerOptionsPanelWidget.cs:
+	* Project/CSharpCompilerParameters.cs: Worked on C# backend
+	  binding.
+
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* CSharpBinding.csproj:
 	* CSharpBinding.addin.xml:

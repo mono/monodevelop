@@ -1,182 +1,177 @@
-//  CSharpBindingCompilerManager.cs
-//
-//  This file was derived from a file from #Develop. 
-//
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
 // 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
+// CSharpBindingCompilerManager.cs
 //  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Author:
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
-using System.Globalization;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.CodeDom.Compiler;
-using System.Threading;
+using System.Text;
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+
 
 namespace CSharpBinding
 {
-	/// <summary>
-	/// This class controls the compilation of C Sharp files and C Sharp projects
-	/// </summary>
-	public class CSharpBindingCompilerManager
+	static class CSharpBindingCompilerManager
 	{	
-		public bool CanCompile(string fileName)
+		static void AppendQuoted (StringBuilder sb, string option, string val)
 		{
-			return Path.GetExtension(fileName).ToUpper() == ".CS";
+			sb.Append ('"');
+			sb.Append (option);
+			sb.Append (val);
+			sb.Append ('"');
+			sb.AppendLine ();
 		}
 
-		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
-			CSharpCompilerParameters compilerparameters = (CSharpCompilerParameters) configuration.CompilationParameters;
-			if (compilerparameters == null) compilerparameters = new CSharpCompilerParameters ();
+			CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters)configuration.CompilationParameters ?? new CSharpCompilerParameters ();
+			CSharpProjectParameters projectParameters = (CSharpProjectParameters)configuration.ProjectParameters ?? new CSharpProjectParameters ();
 			
-			CSharpProjectParameters projectParameters = (CSharpProjectParameters) configuration.ProjectParameters;
-			if (projectParameters == null) projectParameters = new CSharpProjectParameters ();
-			
-			string exe = configuration.CompiledOutputName;
+			string outputName       = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
-			StringWriter writer = new StringWriter ();
-			bool hasWin32Res = false;
-			ArrayList gacRoots = new ArrayList ();
-
-			writer.WriteLine("\"/out:" + exe + '"');
 			
-			ArrayList pkg_references = new ArrayList ();
+			StringBuilder sb = new StringBuilder ();
+			
+			List<string> gacRoots = new List<string> ();
+			sb.AppendFormat ("\"/out:{0}\"", outputName);
+			sb.AppendLine ();
+			
+			List<string> pkg_references = new List<string> ();
 			
 			foreach (ProjectReference lib in projectItems.GetAll <ProjectReference> ()) {
-				if ((lib.ReferenceType == ReferenceType.Project) &&
-				    (!(lib.OwnerProject.ParentSolution.FindProjectByName (lib.Reference) is DotNetProject)))
+				if (lib.ReferenceType == ReferenceType.Project && !(lib.OwnerProject.ParentSolution.FindProjectByName (lib.Reference) is DotNetProject))
 					continue;
 				foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
 					switch (lib.ReferenceType) {
 					case ReferenceType.Gac:
 						SystemPackage pkg = lib.Package;
 						if (pkg == null) {
-							string msg = String.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
+							string msg = string.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
 							monitor.ReportWarning (msg);
 							continue;
 						}
 						if (pkg.IsCorePackage) {
-							writer.WriteLine ("\"/r:" + Path.GetFileName (fileName) + "\"");
+							AppendQuoted (sb, "/r:", Path.GetFileName (fileName));
 						} else if (pkg.IsInternalPackage) {
-							writer.WriteLine ("\"/r:" + fileName + "\"");
+							AppendQuoted (sb, "/r:", fileName);
 						} else if (!pkg_references.Contains (pkg.Name)) {
 							pkg_references.Add (pkg.Name);
-							writer.WriteLine ("\"-pkg:" + pkg.Name + "\"");
+							AppendQuoted (sb, "-pkg:", pkg.Name);
 						}
 						if (pkg.GacRoot != null && !gacRoots.Contains (pkg.GacRoot))
 							gacRoots.Add (pkg.GacRoot);
 						break;
 					default:
-						writer.WriteLine ("\"/r:" + fileName + "\"");
+						AppendQuoted (sb, "/r:", fileName);
 						break;
 					}
 				}
 			}
 			
-			writer.WriteLine("/noconfig");
-			writer.WriteLine("/nologo");
-//			writer.WriteLine("/utf8output");
-			writer.WriteLine("/warn:" + compilerparameters.WarningLevel);
-				
+			sb.AppendLine ("/noconfig");
+			sb.AppendLine ("/nologo");
+			sb.Append ("/warn:");sb.Append (compilerParameters.WarningLevel.ToString ());
+			sb.AppendLine ();
+			
 			if (configuration.SignAssembly) {
 				if (File.Exists (configuration.AssemblyKeyFile))
-					writer.WriteLine("\"/keyfile:" + configuration.AssemblyKeyFile + '"');
+					AppendQuoted (sb, "/keyfile:", configuration.AssemblyKeyFile);
 			}
 			
 			if (configuration.DebugMode) {
-				writer.WriteLine("/debug:+");
-				writer.WriteLine("/debug:full");
+				sb.AppendLine ("/debug:+");
+				sb.AppendLine ("/debug:full");
 			}
 			
-			switch (compilerparameters.LangVersion) {
+			switch (compilerParameters.LangVersion) {
 			case LangVersion.Default:
 				break;
 			case LangVersion.ISO_1:
-				writer.WriteLine ("/langversion:ISO-1");
+				sb.AppendLine ("/langversion:ISO-1");
 				break;
 			case LangVersion.ISO_2:
-				writer.WriteLine ("/langversion:ISO-2");
+				sb.AppendLine ("/langversion:ISO-2");
 				break;
 			default:
-				string message = "Invalid LangVersion enum value '" + compilerparameters.LangVersion.ToString () + "'";
+				string message = "Invalid LangVersion enum value '" + compilerParameters.LangVersion.ToString () + "'";
 				monitor.ReportError (message, null);
 				LoggingService.LogError (message);
 				return null;
 			}
 			
 			// mcs default is + but others might not be
-			if (compilerparameters.Optimize)
-				writer.WriteLine("/optimize+");
+			if (compilerParameters.Optimize)
+				sb.AppendLine ("/optimize+");
 			else
-				writer.WriteLine("/optimize-");
-
-			if (projectParameters.Win32Resource != null && projectParameters.Win32Resource.Length > 0 && File.Exists (projectParameters.Win32Resource)) {
-				writer.WriteLine("\"/win32res:" + projectParameters.Win32Resource + "\"");
-				hasWin32Res = true;
-			}
-		
-			if (projectParameters.Win32Icon != null && projectParameters.Win32Icon.Length > 0 && File.Exists (projectParameters.Win32Icon)) {
-				if (hasWin32Res)
+				sb.AppendLine ("/optimize-");
+			
+			bool hasWin32Res = !string.IsNullOrEmpty (projectParameters.Win32Resource) && File.Exists (projectParameters.Win32Resource);
+			if (hasWin32Res) 
+				AppendQuoted (sb, "/win32res:", projectParameters.Win32Resource);
+			
+			if (!string.IsNullOrEmpty (projectParameters.Win32Icon) && File.Exists (projectParameters.Win32Icon)) {
+				if (hasWin32Res) {
 					monitor.ReportWarning ("Both Win32 icon and Win32 resource cannot be specified. Ignoring the icon.");
-				else
-					writer.WriteLine("\"/win32icon:" + projectParameters.Win32Icon + "\"");
+				} else {
+					AppendQuoted (sb, "/win32icon:", projectParameters.Win32Icon);
+				}
 			}
 			
 			if (projectParameters.CodePage != 0)
-				writer.WriteLine ("/codepage:" + projectParameters.CodePage);
+				sb.AppendLine ("/codepage:" + projectParameters.CodePage);
 			else
-				writer.WriteLine("/codepage:utf8");
+				sb.AppendLine ("/codepage:utf8");
 			
-			if (compilerparameters.UnsafeCode) {
-				writer.WriteLine("-unsafe");
+			if (compilerParameters.UnsafeCode) 
+				sb.AppendLine ("-unsafe");
+			if (compilerParameters.NoStdLib) 
+				sb.AppendLine ("-nostdlib");
+			
+			if (compilerParameters.TreatWarningsAsErrors) {
+				sb.AppendLine ("-warnaserror");
+				if (!string.IsNullOrEmpty (compilerParameters.WarningsNotAsErrors))
+					sb.AppendLine ("-warnaserror-:" + compilerParameters.WarningsNotAsErrors);
 			}
 			
-			if (compilerparameters.NoStdLib) {
-				writer.WriteLine("-nostdlib");
-			}
-			
-			if (compilerparameters.TreatWarningsAsErrors) {
-				writer.WriteLine("-warnaserror");
-				if (!string.IsNullOrEmpty (compilerparameters.WarningsNotAsErrors))
-					writer.WriteLine("-warnaserror-:" + compilerparameters.WarningsNotAsErrors);
-			}
-			
-			if (compilerparameters.DefineSymbols.Length > 0) {
-				string define_str = String.Join (";",
-							compilerparameters.DefineSymbols.Split (
-								new char [] {',', ' ', ';'},
-								StringSplitOptions.RemoveEmptyEntries));
-
-				if (define_str.Length > 0)
-					writer.WriteLine("/define:\"" + define_str + '"');
+			if (compilerParameters.DefineSymbols.Length > 0) {
+				string define_str = string.Join (";", compilerParameters.DefineSymbols.Split (new char [] {',', ' ', ';'}, StringSplitOptions.RemoveEmptyEntries));
+				if (define_str.Length > 0) {
+					AppendQuoted (sb, "/define:", define_str);
+					sb.AppendLine ();
+				}
 			}
 
 			CompileTarget ctarget = configuration.CompileTarget;
 			
-			if (projectParameters.MainClass != null && projectParameters.MainClass.Length > 0) {
-				writer.WriteLine("/main:" + projectParameters.MainClass);
+			if (!string.IsNullOrEmpty (projectParameters.MainClass)) {
+				sb.AppendLine ("/main:" + projectParameters.MainClass);
 				// mcs does not allow providing a Main class when compiling a dll
 				// As a workaround, we compile as WinExe (although the output will still
 				// have a .dll extension).
@@ -186,13 +181,13 @@ namespace CSharpBinding
 			
 			switch (ctarget) {
 				case CompileTarget.Exe:
-					writer.WriteLine("/t:exe");
+					sb.AppendLine ("/t:exe");
 					break;
 				case CompileTarget.WinExe:
-					writer.WriteLine("/t:winexe");
+					sb.AppendLine ("/t:winexe");
 					break;
 				case CompileTarget.Library:
-					writer.WriteLine("/t:library");
+					sb.AppendLine ("/t:library");
 					break;
 			}
 			
@@ -202,37 +197,33 @@ namespace CSharpBinding
 
 				switch (finfo.BuildAction) {
 					case "Compile":
-						writer.WriteLine('"' + finfo.Name + '"');
+						AppendQuoted (sb, "", finfo.Name);
 						break;
 					case "EmbeddedResource":
 						string fname = finfo.Name;
-						if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
+						if (string.Compare (Path.GetExtension (fname), ".resx", true) == 0)
 							fname = Path.ChangeExtension (fname, ".resources");
-
-						writer.WriteLine(@"""/res:{0},{1}""", fname, finfo.ResourceId);
+						sb.Append ('"');sb.Append ("/res:");
+						sb.Append (fname);sb.Append (',');sb.Append (finfo.ResourceId);
+						sb.Append ('"');sb.AppendLine ();
 						break;
 					default:
 						continue;
 				}
 			}
-			if (compilerparameters.GenerateXmlDocumentation) {
-				writer.WriteLine("\"/doc:" + Path.ChangeExtension(exe, ".xml") + '"');
-			}
+			if (compilerParameters.GenerateXmlDocumentation) 
+				AppendQuoted (sb, "/doc:", Path.ChangeExtension (outputName, ".xml"));
 			
-			if (!string.IsNullOrEmpty (compilerparameters.AdditionalArguments)) {
-				writer.WriteLine (compilerparameters.AdditionalArguments);
-			}
+			if (!string.IsNullOrEmpty (compilerParameters.AdditionalArguments)) 
+				sb.AppendLine (compilerParameters.AdditionalArguments);
 			
-			if (!string.IsNullOrEmpty (compilerparameters.NoWarnings)) {
-				writer.WriteLine ("/nowarn:\"{0}\"", compilerparameters.NoWarnings);
-			}
+			if (!string.IsNullOrEmpty (compilerParameters.NoWarnings)) 
+				AppendQuoted (sb, "/nowarn:", compilerParameters.NoWarnings);
 
-			writer.Close();
-
-			string output = String.Empty;
-			string error  = String.Empty;
-
-			File.WriteAllText (responseFileName, writer.ToString ());
+			string output = "";
+			string error  = "";
+			
+			File.WriteAllText (responseFileName, sb.ToString ());
 			
 			string compilerName;
 			try {
@@ -243,11 +234,10 @@ namespace CSharpBinding
 				return null;
 			}
 			
-			monitor.Log.WriteLine (compilerName + " " + writer.ToString ().Replace ('\n',' '));
+			monitor.Log.WriteLine (compilerName + " " + sb.ToString ().Replace ('\n',' '));
 			
 			string outstr = compilerName + " @" + responseFileName;
-			TempFileCollection tf = new TempFileCollection();
-
+			
 			string workingDir = ".";
 			if (configuration.ParentItem != null) {
 				workingDir = configuration.ParentItem.BaseDirectory;
@@ -259,11 +249,11 @@ namespace CSharpBinding
 					workingDir = ".";
 			}
 
-			LoggingService.LogInfo (compilerName + " " + writer.ToString ());
+			LoggingService.LogInfo (compilerName + " " + sb.ToString ());
 			
-			int exitCode = DoCompilation (outstr, tf, workingDir, gacRoots, ref output, ref error);
+			int exitCode = DoCompilation (outstr, workingDir, gacRoots, ref output, ref error);
 			
-			BuildResult result = ParseOutput(tf, output, error);
+			BuildResult result = ParseOutput (output, error);
 			if (result.CompilerOutput.Trim ().Length != 0)
 				monitor.Log.WriteLine (result.CompilerOutput);
 			
@@ -280,10 +270,10 @@ namespace CSharpBinding
 			FileService.DeleteFile (error);
 			return result;
 		}
-
-		string GetCompilerName (ClrVersion version)
+		
+		static string GetCompilerName (ClrVersion version)
 		{
-			string runtimeDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
+			string runtimeDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory ();
 			// The following regex foo gets the index of the
 			// last match of lib/lib32/lib64 and uses
 			// the text before that as the 'prefix' in order
@@ -306,25 +296,16 @@ namespace CSharpBinding
 				string message = "Cannot handle unknown runtime version ClrVersion.'" + version.ToString () + "'.";
 				LoggingService.LogError (message);
 				throw new Exception (message);
-				
 			}
-			
-			string compilerName = Path.Combine (runtimeDir.Substring(0, match.Index), Path.Combine("bin", mcs));
-			return compilerName;
+			return Path.Combine (runtimeDir.Substring (0, match.Index), Path.Combine ("bin", mcs));
 		}
 		
-		BuildResult ParseOutput(TempFileCollection tf, string stdout, string stderr)
+		static BuildResult ParseOutput (string stdout, string stderr)
 		{
-			StringBuilder compilerOutput = new StringBuilder();
+			BuildResult result = new BuildResult ();
 			
-			CompilerResults cr = new CompilerResults(tf);
-			
-			// we have 2 formats for the error output the csc gives :
-			//Regex normalError  = new Regex(@"(?<file>.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
-			//Regex generalError = new Regex(@"(?<error>.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
-			
+			StringBuilder compilerOutput = new StringBuilder ();
 			bool typeLoadException = false;
-			
 			foreach (string s in new string[] { stdout, stderr }) {
 				StreamReader sr = File.OpenText (s);
 				while (true) {
@@ -333,56 +314,56 @@ namespace CSharpBinding
 						break;
 					}
 					string curLine = sr.ReadLine();
-					compilerOutput.Append(curLine);
-					compilerOutput.Append('\n');
-					if (curLine == null) {
+					compilerOutput.AppendLine (curLine);
+					
+					if (curLine == null) 
 						break;
-					}
+					
 					curLine = curLine.Trim();
-					if (curLine.Length == 0) {
+					if (curLine.Length == 0) 
 						continue;
-					}
-
+					
 					if (curLine.StartsWith ("Unhandled Exception: System.TypeLoadException") || 
 					    curLine.StartsWith ("Unhandled Exception: System.IO.FileNotFoundException")) {
-						cr.Errors.Clear ();
+						result.ClearErrors ();
 						typeLoadException = true;
 					}
 					
-					CompilerError error = CreateErrorFromString (curLine);
+					BuildError error = CreateErrorFromString (curLine);
 					
 					if (error != null)
-						cr.Errors.Add (error);
+						result.Append (error);
 				}
 				sr.Close();
 			}
 			if (typeLoadException) {
-				Regex reg  = new Regex(@".*WARNING.*used in (mscorlib|System),.*", RegexOptions.Multiline);
+				Regex reg  = new Regex (@".*WARNING.*used in (mscorlib|System),.*", RegexOptions.Multiline);
 				if (reg.Match (compilerOutput.ToString ()).Success)
-					cr.Errors.Add (new CompilerError (String.Empty, 0, 0, String.Empty, "Error: A referenced assembly may be built with an incompatible CLR version. See the compilation output for more details."));
+					result.AddError ("", 0, 0, "", "Error: A referenced assembly may be built with an incompatible CLR version. See the compilation output for more details.");
 				else
-					cr.Errors.Add (new CompilerError (String.Empty, 0, 0, String.Empty, "Error: A dependency of a referenced assembly may be missing, or you may be referencing an assembly created with a newer CLR version. See the compilation output for more details."));
+					result.AddError ("", 0, 0, "", "Error: A dependency of a referenced assembly may be missing, or you may be referencing an assembly created with a newer CLR version. See the compilation output for more details.");
 			}
-			
-			return new BuildResult(cr, compilerOutput.ToString());
+			result.CompilerOutput = compilerOutput.ToString ();
+			return result;
 		}
 		
-		private int DoCompilation (string outstr, TempFileCollection tf, string working_dir, ArrayList gacRoots, ref string output, ref string error) {
+		static int DoCompilation (string outstr, string working_dir, List<string> gacRoots, ref string output, ref string error) 
+		{
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
 			
-			StreamWriter outwr = new StreamWriter(output);
-			StreamWriter errwr = new StreamWriter(error);
-			string[] tokens = outstr.Split(' ');
+			StreamWriter outwr = new StreamWriter (output);
+			StreamWriter errwr = new StreamWriter (error);
+			string[] tokens = outstr.Split (' ');
 			
-			outstr = outstr.Substring(tokens[0].Length+1);
+			outstr = outstr.Substring (tokens[0].Length+1);
 
 			ProcessStartInfo pinfo = new ProcessStartInfo (tokens[0], "\"" + outstr + "\"");
 			pinfo.WorkingDirectory = working_dir;
 			
 			if (gacRoots.Count > 0) {
 				// Create the gac prefix string
-				string gacPrefix = string.Join ("" + Path.PathSeparator, (string[])gacRoots.ToArray (typeof(string)));
+				string gacPrefix = string.Join ("" + Path.PathSeparator, gacRoots.ToArray ());
 				string oldGacVar = Environment.GetEnvironmentVariable ("MONO_GAC_PREFIX");
 				if (!string.IsNullOrEmpty (oldGacVar))
 					gacPrefix += Path.PathSeparator + oldGacVar;
@@ -392,7 +373,7 @@ namespace CSharpBinding
 			pinfo.RedirectStandardOutput = true;
 			pinfo.RedirectStandardError = true;
 			
-			ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
+			MonoDevelop.Core.Execution.ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
 			pw.WaitForOutput();
 			int exitCode = pw.ExitCode;
 			outwr.Close();
@@ -400,13 +381,10 @@ namespace CSharpBinding
 			pw.Dispose ();
 			return exitCode;
 		}
-
-
+		
 		// Snatched from our codedom code :-).
-		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*\d):\s*(?<message>.*)",
-			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-		private static CompilerError CreateErrorFromString(string error_string)
+		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*\d):\s*(?<message>.*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		static BuildError CreateErrorFromString (string error_string)
 		{
 			// When IncludeDebugInformation is true, prevents the debug symbols stats from braeking this.
 			if (error_string.StartsWith ("WROTE SYMFILE") ||
@@ -414,27 +392,25 @@ namespace CSharpBinding
 			    error_string.StartsWith ("Compilation succeeded") ||
 			    error_string.StartsWith ("Compilation failed"))
 				return null;
-
-			CompilerError error = new CompilerError();
-
-			Match match=regexError.Match(error_string);
-			if (!match.Success) return null;
-			if (String.Empty != match.Result("${file}"))
-				error.FileName=match.Result("${file}");
-			if (String.Empty != match.Result("${line}"))
-				error.Line=Int32.Parse(match.Result("${line}"));
-			if (String.Empty != match.Result("${column}")) {
-				if (match.Result("${column}") == "255+")
-					error.Column = -1;
-				else
-					error.Column=Int32.Parse(match.Result("${column}"));
-			}
-			if (match.Result("${level}")=="warning")
-				error.IsWarning=true;
-			error.ErrorNumber=match.Result("${number}");
-			error.ErrorText=match.Result("${message}");
+			
+			Match match = regexError.Match(error_string);
+			if (!match.Success) 
+				return null;
+			
+			BuildError error = new BuildError ();
+			error.FileName = match.Result ("${file}") ?? "";
+			
+			string line = match.Result ("${line}");
+			error.Line = !string.IsNullOrEmpty (line) ? Int32.Parse (line) : 0;
+			
+			string col = match.Result ("${column}");
+			if (!string.IsNullOrEmpty (col)) 
+				error.Column = col == "255+" ? -1 : Int32.Parse (col);
+			
+			error.IsWarning   = match.Result ("${level}") == "warning";
+			error.ErrorNumber = match.Result ("${number}");
+			error.ErrorText   = match.Result ("${message}");
 			return error;
 		}
-
 	}
 }
