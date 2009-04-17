@@ -66,6 +66,7 @@ namespace MonoDevelop.Core.Assemblies
 					runtime.StartInitialization ();
 					if (runtime.IsRunning)
 						DefaultRuntime = CurrentRuntime = runtime;
+					runtimes.Add (runtime);
 				}
 			}
 		}
