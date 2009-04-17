@@ -251,7 +251,9 @@ namespace CSharpBinding
 
 			LoggingService.LogInfo (compilerName + " " + sb.ToString ());
 			
-			int exitCode = DoCompilation (outstr, workingDir, gacRoots, ref output, ref error);
+			//FIXME: is Current the real target framework?
+			Dictionary<string,string> envVars = MonoDevelop.Core.Runtime.SystemAssemblyService.CurrentRuntime.GetToolsEnvironmentVariables ();
+			int exitCode = DoCompilation (outstr, workingDir, envVars, gacRoots, ref output, ref error);
 			
 			BuildResult result = ParseOutput (output, error);
 			if (result.CompilerOutput.Trim ().Length != 0)
@@ -347,7 +349,7 @@ namespace CSharpBinding
 			return result;
 		}
 		
-		static int DoCompilation (string outstr, string working_dir, List<string> gacRoots, ref string output, ref string error) 
+		static int DoCompilation (string outstr, string working_dir, Dictionary<string, string> envVars, List<string> gacRoots, ref string output, ref string error) 
 		{
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
@@ -369,6 +371,14 @@ namespace CSharpBinding
 					gacPrefix += Path.PathSeparator + oldGacVar;
 				pinfo.EnvironmentVariables ["MONO_GAC_PREFIX"] = gacPrefix;
 			}
+			
+			foreach (KeyValuePair<string,string> ev in envVars) {
+				if (ev.Value == null)
+					pinfo.EnvironmentVariables.Remove (ev.Key);
+				else
+					pinfo.EnvironmentVariables [ev.Key] = ev.Value;
+			}
+			
 			pinfo.UseShellExecute = false;
 			pinfo.RedirectStandardOutput = true;
 			pinfo.RedirectStandardError = true;

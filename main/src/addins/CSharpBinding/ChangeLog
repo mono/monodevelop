@@ -1,3 +1,8 @@
+2009-04-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CSharpBindingCompilerManager.cs: Use
+	  ToolsEnvironmentVariables from the current runtime.
+
 2009-04-17  Mike Krüger  <mkrueger@novell.com>
 
 	* CSharpLanguageBinding.cs:
