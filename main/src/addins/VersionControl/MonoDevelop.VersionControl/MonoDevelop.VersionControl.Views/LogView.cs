@@ -174,7 +174,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			// Changed paths list setup
 			
-			changedpathstore = new ListStore (typeof(string), typeof (string), typeof(string), typeof (string));
+			changedpathstore = new ListStore (typeof(Gdk.Pixbuf), typeof (string), typeof(Gdk.Pixbuf), typeof (string));
 			changedPaths.Model = changedpathstore;
 			
 			TreeViewColumn colOperation = new TreeViewColumn ();
@@ -183,7 +183,7 @@ namespace MonoDevelop.VersionControl.Views
 			colOperation.Title = GettextCatalog.GetString ("Operation");
 			colOperation.PackStart (crp, false);
 			colOperation.PackStart (crt, true);
-			colOperation.AddAttribute (crp, "stock-id", 0);
+			colOperation.AddAttribute (crp, "pixbuf", 0);
 			colOperation.AddAttribute (crt, "text", 1);
 			changedPaths.AppendColumn (colOperation);
 			
@@ -193,7 +193,7 @@ namespace MonoDevelop.VersionControl.Views
 			colChangedPath.Title = GettextCatalog.GetString ("File Path");
 			colChangedPath.PackStart (crp, false);
 			colChangedPath.PackStart (crt, true);
-			colChangedPath.AddAttribute (crp, "stock-id", 2);
+			colChangedPath.AddAttribute (crp, "pixbuf", 2);
 			colChangedPath.AddAttribute (crt, "text", 3);
 			changedPaths.AppendColumn (colChangedPath);
 			
@@ -232,34 +232,29 @@ namespace MonoDevelop.VersionControl.Views
 			changedpathstore.Clear ();
 			foreach (RevisionPath rp in d.ChangedFiles) 
 			{
-				string actionIcon;
+				Gdk.Pixbuf actionIcon;
 				string action = null;
 				if (rp.Action == RevisionAction.Add) {
 					action = GettextCatalog.GetString ("Add");
-					actionIcon = Gtk.Stock.Add;
+					actionIcon = IdeApp.Services.Resources.GetBitmap (Gtk.Stock.Add, Gtk.IconSize.Menu);
 				}
 				else if (rp.Action == RevisionAction.Delete) {
 					action = GettextCatalog.GetString ("Delete");
-					actionIcon = Gtk.Stock.Remove;
+					actionIcon = IdeApp.Services.Resources.GetBitmap (Gtk.Stock.Remove, Gtk.IconSize.Menu);
 				}
 				else if (rp.Action == RevisionAction.Modify) {
 					action = GettextCatalog.GetString ("Modify");
-					actionIcon = "gtk-edit";
+					actionIcon = IdeApp.Services.Resources.GetBitmap ("gtk-edit", Gtk.IconSize.Menu);
 				}
 				else if (rp.Action == RevisionAction.Replace) {
 					action = GettextCatalog.GetString ("Replace");
-					actionIcon = "gtk-edit";
+					actionIcon = IdeApp.Services.Resources.GetBitmap ("gtk-edit", Gtk.IconSize.Menu);
 				} else {
 					action = rp.ActionDescription;
-					actionIcon = MonoDevelop.Core.Gui.Stock.Empty;
+					actionIcon = IdeApp.Services.Resources.GetBitmap (MonoDevelop.Core.Gui.Stock.Empty, Gtk.IconSize.Menu);
 				}
 				
-				string fileIcon;
-/*				if (n.IsDirectory)
-					fileIcon = MonoDevelop.Core.Gui.Stock.ClosedFolder;
-				else
-*/					fileIcon = IdeApp.Services.Icons.GetImageForFile (rp.Path);
-				
+				Gdk.Pixbuf fileIcon = IdeApp.Services.PlatformService.GetPixbufForFile (rp.Path, Gtk.IconSize.Menu);
 				changedpathstore.AppendValues (actionIcon, action, fileIcon, rp.Path);
 			}
 		}

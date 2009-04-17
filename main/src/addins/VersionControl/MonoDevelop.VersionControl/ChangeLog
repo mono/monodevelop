@@ -1,3 +1,9 @@
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/LogView.cs:
+	* MonoDevelop.VersionControl.Views/StatusView.cs: Removed icon
+	  service.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

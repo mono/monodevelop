@@ -201,7 +201,7 @@ namespace MonoDevelop.VersionControl.Views
 			diffRenderer = new CellRendererDiff ();
 			colFile.PackStart (crp, false);
 			colFile.PackStart (diffRenderer, true);
-			colFile.AddAttribute (crp, "stock-id", ColIconFile);
+			colFile.AddAttribute (crp, "pixbuf", ColIconFile);
 			colFile.AddAttribute (crp, "visible", ColShowStatus);
 			colFile.SetCellDataFunc (diffRenderer, new TreeCellDataFunc (SetDiffCellData));
 			
@@ -222,7 +222,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			colRemote.Visible = false;
 
-			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(string), typeof(bool), typeof (Gdk.Pixbuf), typeof(string), typeof(bool));
+			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(Gdk.Pixbuf), typeof(bool), typeof (Gdk.Pixbuf), typeof(string), typeof(bool));
 			filelist.Model = filestore;
 			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			
@@ -432,12 +432,14 @@ namespace MonoDevelop.VersionControl.Views
 			bool hasComment = GetCommitMessage (n.LocalPath).Length > 0;
 			bool commit = changeSet.ContainsFile (n.LocalPath);
 			
-			string fileIcon;
+			Gdk.Pixbuf fileIcon;
 			if (n.IsDirectory)
-				fileIcon = MonoDevelop.Core.Gui.Stock.ClosedFolder;
+				fileIcon = IdeApp.Services.Resources.GetBitmap (MonoDevelop.Core.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
 			else
-				fileIcon = IdeApp.Services.Icons.GetImageForFile (n.LocalPath);
+				fileIcon = IdeApp.Services.PlatformService.GetPixbufForFile (n.LocalPath, Gtk.IconSize.Menu);
 
+			
+			
 			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, commit, false, n.LocalPath, true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
 			if (!n.IsDirectory)
 				filestore.AppendValues (it, statusicon, "", "", "", false, true, n.LocalPath, false, false, fileIcon, false, null, null, false);
