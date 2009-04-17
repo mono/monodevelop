@@ -1,5 +1,12 @@
 2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/Ide.cs: Add an OpenFiles method.
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Avoid unnecessary
+	  SplashScreen creation.
+
+2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Don't show the splash
 	  screen on Mac, so that we get the dock "bounce" while it
 	  starts up. Force platform services to initialise ASAP, right

@@ -176,7 +176,8 @@ namespace MonoDevelop.Ide.Gui
 				IconService s = MonoDevelop.Projects.Gui.Services.Icons;
 				
 				if (errorsList.Count > 0) {
-					SplashScreenForm.SplashScreen.Hide ();
+					if (monitor is SplashScreenForm)
+						SplashScreenForm.SplashScreen.Hide ();
 					AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false);
 					if (!dlg.Run ())
 						return 1;

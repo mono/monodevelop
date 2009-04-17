@@ -232,23 +232,7 @@ namespace MonoDevelop.Ide.Gui
 				initializedEvent (null, EventArgs.Empty);
 			
 			// Load requested files
-			foreach (string file in StartupInfo.GetRequestedFileList()) {
-				//FIXME: use mimetypes
-				if (Services.ProjectService.IsWorkspaceItemFile (file)) {
-					try {
-						IdeApp.Workspace.OpenWorkspaceItem (file).WaitForCompleted ();
-					} catch (Exception e) {
-						MessageService.ShowException (e, "Could not load solution: " + file);
-					}
-				} else {
-					try {
-						IdeApp.Workbench.OpenDocument (file);
-					
-					} catch (Exception e) {
-						LoggingService.LogInfo ("unable to open file {0} exception was :\n{1}", file, e.ToString());
-					}
-				}
-			}
+			OpenFiles (StartupInfo.GetRequestedFileList ());
 			
 			// load previous combine
 			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
@@ -261,6 +245,54 @@ namespace MonoDevelop.Ide.Gui
 			
 			commandService.CommandSelected += OnCommandSelected;
 			commandService.CommandDeselected += OnCommandDeselected;
+		}
+		
+		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
+		public static void OpenFiles (System.Collections.Generic.IList<string> files)
+		{
+			if (files.Count == 0)
+				return;
+			
+			if (!IsInitialized) {
+				EventHandler onInit;
+				onInit = delegate {
+					Initialized -= onInit;
+					OpenFiles (files);
+				};
+				Initialized += onInit;
+				return;
+			}
+			
+			//open the firsts sln/workspace file, and remove the others from the list
+		 	//FIXME: can we handle multiple slns?
+			bool foundSln = false;
+			for (int i = 0; i < files.Count;) {
+				string file = files[i];
+				if (Services.ProjectService.IsWorkspaceItemFile (file)) {
+					if (!foundSln) {
+						try {
+							Workspace.OpenWorkspaceItem (file);
+						} catch (Exception ex) {
+							LoggingService.LogError ("Unhandled error opening solution/workspace \"" + file + "\"", ex);
+							MessageService.ShowException (ex, "Could not load solution: " + file);
+						}
+					}
+					files.RemoveAt (i);
+				} else {
+					i++;
+				}
+			}
+			
+			foreach (string file in files) {
+				try {
+					Workbench.OpenDocument (file);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Unhandled error opening file \"" + file + "\"", ex);
+					MessageService.ShowException (ex, "Could not open file: " + file);
+				}
+			}
+			
+			Workbench.RootWindow.Present ();
 		}
 		
 		static bool FileServiceErrorHandler (string message, Exception ex)
