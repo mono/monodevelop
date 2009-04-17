@@ -1,138 +1,140 @@
-//  RecentOpen.cs
 //
-//  This file was derived from a file from #Develop. 
+// RecentOpen.cs
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
+// Author:
+//   Mike Krüger <mkrueger@novell.com>
+//
+// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
 // 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
 // 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
 using System.Xml;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Core.Gui
 {
-	/// <summary>
-	/// This class handles the recent open files and the recent open project files of MonoDevelop
-	/// </summary>
 	public class RecentOpen
 	{
-		/// <summary>
-		/// This variable is the maximal length of lastfile/lastopen entries
-		/// must be > 0
-		/// </summary>
-		const int MAX_LENGTH = 10;
-		
 		static RecentFileStorage recentFiles = new RecentFileStorage ();
 		
+		const int ItemLimit = 10;
+		
+		#region Recent files
+		const string fileGroup = "MonoDevelop Files";
+		
+		public IEnumerable<RecentItem> RecentFiles {
+			get {
+				return recentFiles.GetItemsInGroup (fileGroup);
+			}
+		}
+		public int RecentFilesCount {
+			get {
+				return recentFiles.GetItemsInGroup (fileGroup).Length;
+			}
+		}
 		public event EventHandler RecentFileChanged;
-		public event EventHandler RecentProjectChanged;
-		
-		public RecentItem[] RecentFile {
-			get {
-				return recentFiles.GetItemsInGroup ("MonoDevelop Files");
-			}
-		}
-
-		public RecentItem[] RecentProject {
-			get {
-				return recentFiles.GetItemsInGroup ("MonoDevelop Projects");
-			}
-		}
-		
-		void OnRecentFileChange()
+		protected virtual void OnRecentFileChange ()
 		{
-			if (RecentFileChanged != null) {
-				RecentFileChanged(this, null);
-			}
+			if (RecentFileChanged != null) 
+				RecentFileChanged (this, null);
 		}
 		
-		void OnRecentProjectChange()
+		public void ClearRecentFiles()
+		{
+			recentFiles.ClearGroup (fileGroup);
+			OnRecentFileChange();
+		}
+		
+		public void AddLastFile (string name, string project)
+		{
+			RecentItem recentItem = new RecentItem (RecentFileStorage.ToUri (name), Services.PlatformService.GetMimeTypeForUri (name), fileGroup);
+			recentItem.Private = project != null ? string.Format ("{0} [{1}]", Path.GetFileName (name), project) : Path.GetFileName (name);
+			recentFiles.AddWithLimit (recentItem, fileGroup, ItemLimit);
+			OnRecentFileChange();
+		}
+		#endregion
+		
+		#region Recent projects
+		const string projectGroup = "MonoDevelop Projects";
+		
+		public IEnumerable<RecentItem> RecentProjects {
+			get {
+				return recentFiles.GetItemsInGroup (projectGroup);
+			}
+		}
+		public int RecentProjectsCount {
+			get {
+				return recentFiles.GetItemsInGroup (projectGroup).Length;
+			}
+		}
+		public event EventHandler RecentProjectChanged;
+		protected virtual void OnRecentProjectChange ()
 		{
 			if (RecentProjectChanged != null) {
 				RecentProjectChanged(this, null);
 			}
 		}
-
-		public RecentOpen()
-		{
-			recentFiles.RemoveMissingFiles ("MonoDevelop Files");
-			recentFiles.RemoveMissingFiles ("MonoDevelop Projects");
-			OnRecentFileChange();
-			OnRecentProjectChange();
-		}
-
-		string ToUri (string fileName)
-		{
-			return "file://" + fileName;
-		}
-		
-		public void AddLastFile (string name, string project)
-		{
-			RecentItem ri = new RecentItem (ToUri (name), Services.PlatformService.GetMimeTypeForUri (name), "MonoDevelop Files");
-			if (project == null)
-				ri.Private = Path.GetFileName (name);
-			else
-				ri.Private = String.Format ("{0} [{1}]", Path.GetFileName (name), project);
-
-			recentFiles.AddWithLimit (ri, "MonoDevelop Files", MAX_LENGTH);
-			OnRecentFileChange();
-		}
-		
-		public void ClearRecentFiles()
-		{
-			recentFiles.ClearGroup ("MonoDevelop Files");
-			OnRecentFileChange();
-		}
-		
 		public void ClearRecentProjects()
 		{
-			recentFiles.ClearGroup ("MonoDevelop Projects");
+			recentFiles.ClearGroup (projectGroup);
 			OnRecentProjectChange();
 		}
-		
 		public void AddLastProject (string name, string projectName)
 		{
-			RecentItem ri = new RecentItem (ToUri (name), Services.PlatformService.GetMimeTypeForUri (name), "MonoDevelop Projects");
-			ri.Private = projectName;
-			recentFiles.AddWithLimit (ri, "MonoDevelop Projects", MAX_LENGTH);
+			RecentItem recentItem = new RecentItem (RecentFileStorage.ToUri (name), Services.PlatformService.GetMimeTypeForUri (name), projectGroup);
+			recentItem.Private = projectName;
+			recentFiles.AddWithLimit (recentItem, projectGroup, ItemLimit);
 			OnRecentProjectChange();
 		}
+		#endregion
 		
-		public void FileRemoved(object sender, FileEventArgs e)
+		public RecentOpen ()
 		{
-			if (e.IsDirectory)
-				return;
+			recentFiles.RemoveMissingFiles (projectGroup);
+			OnRecentProjectChange ();
 			
-			recentFiles.RemoveItem (ToUri (e.FileName));
-			OnRecentFileChange();
+			recentFiles.RemoveMissingFiles (fileGroup);
+			OnRecentFileChange ();
 		}
 		
-		public void FileRenamed (object sender, FileCopyEventArgs e)
+		public void InformFileRemoved (object sender, FileEventArgs e)
 		{
-			if (e.IsDirectory)
-				return;
-			recentFiles.RenameItem (ToUri (e.SourceFile), ToUri (e.TargetFile));
-			OnRecentFileChange();
+			if (!e.IsDirectory) {
+				recentFiles.RemoveItem (RecentFileStorage.ToUri (e.FileName));
+				OnRecentFileChange();
+			}
 		}
-
-
+		
+		public void InformFileRenamed (object sender, FileCopyEventArgs e)
+		{
+			if (!e.IsDirectory) {
+				recentFiles.RenameItem (RecentFileStorage.ToUri (e.SourceFile), RecentFileStorage.ToUri (e.TargetFile));
+				OnRecentFileChange();
+			}
+		}
 	}
 }
 

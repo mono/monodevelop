@@ -287,6 +287,11 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 		
+		public static string ToUri (string fileName)
+		{
+			return fileName.StartsWith ("file://") ? fileName : "file://" + fileName;
+		}
+		
 		void OnRecentFilesChanged (EventArgs e)
 		{
 			if (this.RecentFilesChanged != null)

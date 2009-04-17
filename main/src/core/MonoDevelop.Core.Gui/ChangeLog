@@ -1,5 +1,11 @@
 2009-04-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Core.Gui/RecentOpen.cs:
+	* MonoDevelop.Core.Gui/RecentFileStorage.cs: Worked on recent
+	  open.
+
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.Gui.csproj:
 	* MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs:
