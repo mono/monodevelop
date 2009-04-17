@@ -1,5 +1,10 @@
 2009-04-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Core.Gui/ResourceService.cs: Removed icon
+	  service.
+
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Core.Gui.csproj:
 	* MonoDevelop.Core.Gui.addin.xml:
 	* MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs:
