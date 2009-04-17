@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run()
 		{			
 			try {
-				if (IdeApp.Workbench.RecentOpen.RecentFile != null && IdeApp.Workbench.RecentOpen.RecentFile.Length > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent files"), GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), AlertButton.Clear)) {
+				if (IdeApp.Workbench.RecentOpen.RecentFilesCount > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent files"), GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), AlertButton.Clear)) {
 					IdeApp.Workbench.RecentOpen.ClearRecentFiles();
 				}
 			} catch {}
@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
-			info.Enabled = (recentOpen.RecentFile != null && recentOpen.RecentFile.Length > 0);
+			info.Enabled = recentOpen.RecentFilesCount > 0;
 		}
 	}
 	
@@ -237,7 +237,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run()
 		{			
 			try {
-				if (IdeApp.Workbench.RecentOpen.RecentProject != null && IdeApp.Workbench.RecentOpen.RecentProject.Length > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent projects"), GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), AlertButton.Clear))
+				if (IdeApp.Workbench.RecentOpen.RecentProjectsCount > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent projects"), GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), AlertButton.Clear))
 				{
 					IdeApp.Workbench.RecentOpen.ClearRecentProjects();
 				}
@@ -247,7 +247,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
-			info.Enabled = (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0);
+			info.Enabled = recentOpen.RecentProjectsCount > 0;
 		}
 	}
 
@@ -256,14 +256,15 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo info)
 		{
 			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
-			if (recentOpen.RecentFile != null && recentOpen.RecentFile.Length > 0) {
-				for (int i = 0; i < recentOpen.RecentFile.Length; ++i) {
+			if (recentOpen.RecentFilesCount > 0) {
+				int i = 0;
+				foreach (RecentItem ri in recentOpen.RecentFiles) {
 					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
-					RecentItem ri = recentOpen.RecentFile[i];
 					string label = ((ri.Private == null || ri.Private.Length < 1) ? Path.GetFileName (ri.ToString ()) : ri.Private);
 					CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
 					cmd.Description = GettextCatalog.GetString ("Open {0}", ri.ToString ());
 					info.Add (cmd, ri);
+					i++;
 				}
 			}
 		}
@@ -280,12 +281,11 @@ namespace MonoDevelop.Ide.Commands
 		{
 			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
 			
-			if (recentOpen.RecentProject == null || recentOpen.RecentProject.Length <= 0)
+			if (recentOpen.RecentProjectsCount <= 0)
 				return;
 				
-			for (int i = 0; i < recentOpen.RecentProject.Length; ++i) {
-				RecentItem ri = recentOpen.RecentProject[i];
-				
+			int i = 0;
+			foreach (RecentItem ri in recentOpen.RecentProjects) {
 				//getting the icon requires probing the file, so handle IO errors
 				string icon;
 				try {
@@ -314,6 +314,7 @@ namespace MonoDevelop.Ide.Commands
 					str += " - " + GettextCatalog.GetString ("Hold Control to open in current workspace.");
 				cmd.Description = str;
 				info.Add (cmd, ri);
+				i++;
 			}
 		}
 		

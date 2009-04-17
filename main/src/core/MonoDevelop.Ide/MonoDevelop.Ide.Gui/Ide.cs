@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Linq;
 using System.Collections;
 
 using System.Net;
@@ -238,8 +239,8 @@ namespace MonoDevelop.Ide.Gui
 			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
 				RecentOpen recentOpen = Workbench.RecentOpen;
 
-				if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0) { 
-					IdeApp.Workspace.OpenWorkspaceItem(recentOpen.RecentProject[0].ToString()).WaitForCompleted ();
+				if (recentOpen.RecentProjectsCount > 0) { 
+					IdeApp.Workspace.OpenWorkspaceItem(recentOpen.RecentProjects.First ().ToString()).WaitForCompleted ();
 				}
 			}
 			

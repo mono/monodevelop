@@ -1,3 +1,11 @@
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	  Worked on recent open.
+
 2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs: Use new
