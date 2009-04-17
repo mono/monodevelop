@@ -74,10 +74,6 @@
 		</Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-		<Icon language = "VBNet" icon = "res:VB.ProjectIcon"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-vb-file" resource = "VB.FileIcon" />
 	</Extension>

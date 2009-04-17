@@ -48,6 +48,12 @@ namespace MonoDevelop.VBNetBinding
 			}
 		}
 		
+		public string ProjectStockIcon {
+			get { 
+				return "md-project";
+			}
+		}
+		
 		public bool IsSourceCodeFile (string fileName)
 		{
 			return Path.GetExtension(fileName) == ".vb";
