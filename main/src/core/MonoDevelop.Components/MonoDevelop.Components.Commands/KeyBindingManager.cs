@@ -113,6 +113,7 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		#region Platform-dependent selection modifiers
+		//FIXME: these should be named for what they do, not what they are
 		
 		public static Gdk.ModifierType SelectionModifierAlt {
 			get; private set;
@@ -415,7 +416,7 @@ namespace MonoDevelop.Components.Commands
 			string label = String.Empty;
 			
 			if ((mod & Gdk.ModifierType.ControlMask) != 0)
-				label += "Control+";
+				label += concise? "Ctrl+" : "Control+";
 			if ((mod & Gdk.ModifierType.Mod1Mask) != 0)
 				label += "Alt+";
 			if ((mod & Gdk.ModifierType.ShiftMask) != 0)
