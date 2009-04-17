@@ -79,12 +79,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (!File.Exists (file.FilePath)) {
 				label = "<span foreground='red'>" + label + "</span>";
 			}
-
-			string ic = Services.Icons.GetImageForFile (file.FilePath);
-			if (ic != Stock.MiscFiles || !File.Exists (file.FilePath))
-				icon = Context.GetIcon (ic);
-			else
-				icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu);
+			
+			icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu);
 		}
 		
 		public override object GetParentObject (object dataObject)

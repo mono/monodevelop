@@ -1,5 +1,27 @@
 2009-04-17  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide/Services.cs:
+	* MonoDevelop.Ide.Gui/IdeStartup.cs:
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs:
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:
+	* MonoDevelop.Ide.Gui.Components/TreeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	  Removed icon service.
+
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj: 
 

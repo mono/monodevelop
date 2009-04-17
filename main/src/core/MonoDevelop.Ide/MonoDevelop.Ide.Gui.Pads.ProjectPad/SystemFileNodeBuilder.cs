@@ -66,16 +66,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SystemFile file = (SystemFile) dataObject;
 			label = file.Name;
 			
-			string ic = Services.Icons.GetImageForFile (file.Path);
-			if (ic != Stock.MiscFiles || !File.Exists (file.Path))
-				icon = Context.GetIcon (ic);
-			else
-				icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.Path, Gtk.IconSize.Menu);
+			icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.Path, Gtk.IconSize.Menu);
 			
 			if (file.ShowTransparent) {
 				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
 				if (gicon == null) {
-					gicon = Services.Icons.MakeTransparent (icon, 0.5);
+					gicon = Services.Resources.MakeTransparent (icon, 0.5);
 					Context.CacheComposedIcon (icon, "fade", gicon);
 				}
 				icon = gicon;

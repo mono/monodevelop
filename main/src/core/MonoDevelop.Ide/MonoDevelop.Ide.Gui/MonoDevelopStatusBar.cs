@@ -271,7 +271,7 @@ namespace MonoDevelop.Ide
 				
 				images = new Gtk.Image [10];
 				for (int n=0; n<10; n++) {
-					images [n] = new Image (Services.Icons.MakeTransparent (icon, ((double)(9-n))/10.0));
+					images [n] = new Image (Services.Resources.MakeTransparent (icon, ((double)(9-n))/10.0));
 					images [n].Show ();
 				}
 			}

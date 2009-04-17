@@ -437,8 +437,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return;
 			}
 			
-			Gdk.Pixbuf stock;
-			stock = sw.RenderIcon (Services.Icons.GetImageForFile (file), Gtk.IconSize.Menu, "");
+			Gdk.Pixbuf stock = IdeApp.Services.PlatformService.GetPixbufForFile (file, Gtk.IconSize.Menu);
 
 			string tmpPath = file;
 			if (basePath != null)

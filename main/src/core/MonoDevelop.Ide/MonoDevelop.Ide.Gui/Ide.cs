@@ -369,16 +369,8 @@ namespace MonoDevelop.Ide.Gui
 	
 	public class IdeServices
 	{
-//		IconService icons;
-		
 		public ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }
-		}
-	
-		public IconService Icons {
-			get {
-				return MonoDevelop.Projects.Gui.Services.Icons;
-			}
 		}
 	
 		public TaskService TaskService {

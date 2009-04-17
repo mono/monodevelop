@@ -151,9 +151,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				    if (!configureProject.TargetFramework.IsCompatibleWithFramework (netProject.TargetFramework.Id))
 						continue;
 				}
-
-				string iconName = Services.Icons.GetImageForProjectType (projectEntry.ProjectType);
-				Gdk.Pixbuf icon = treeView.RenderIcon (iconName, Gtk.IconSize.Menu, "");
+				
+				Gdk.Pixbuf icon = Services.Resources.GetBitmap (projectEntry.StockIcon, IconSize.Menu);
 				store.AppendValues (projectEntry.Name, projectEntry.BaseDirectory, projectEntry, false, icon, true);
 			}
 			

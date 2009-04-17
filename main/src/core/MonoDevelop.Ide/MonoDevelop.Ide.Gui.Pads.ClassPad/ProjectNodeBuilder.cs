@@ -90,8 +90,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			Project p = dataObject as Project;
 			label = p.Name;
-			string iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
-			icon = Context.GetIcon (iconName);
+			icon = Context.GetIcon (p.StockIcon);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				iconName = Gtk.Stock.DialogError;
 				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>", p.Name, ((DotNetProject)p).LanguageName);
 			} else {
-				iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
+				iconName = p.StockIcon;
 				if (p.ParentSolution != null && p.ParentSolution.SingleStartup && p.ParentSolution.StartupItem == p)
 					label = "<b>" + p.Name + "</b>";
 				else

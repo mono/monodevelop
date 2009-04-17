@@ -72,9 +72,7 @@ namespace MonoDevelop.Ide
 				return IdeApp.Services.Resources.GetBitmap (document.Window.ViewContent.StockIconId, iconSize);
 			if (string.IsNullOrEmpty (document.FileName)) 
 				return IdeApp.Services.Resources.GetBitmap (MonoDevelop.Core.Gui.Stock.MiscFiles, iconSize);
-			string icName = MonoDevelop.Projects.Gui.Services.Icons.GetImageForFile (document.FileName);
-			if (icName != MonoDevelop.Core.Gui.Stock.MiscFiles || !System.IO.File.Exists (document.FileName))
-				return IdeApp.Services.Resources.GetIcon (icName, Gtk.IconSize.Menu);
+			
 			return IdeApp.Services.PlatformService.GetPixbufForFile (document.FileName, iconSize);
 		}
 		

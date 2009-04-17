@@ -116,13 +116,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (pf.Project == null || !ProjectFolderCommandHandler.PathExistsInProject (pf.Project, thisPath)) {
 					Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
 					if (gicon == null) {
-						gicon = Services.Icons.MakeTransparent (icon, 0.5);
+						gicon = Services.Resources.MakeTransparent (icon, 0.5);
 						Context.CacheComposedIcon (icon, "fade", gicon);
 					}
 					icon = gicon;
 					gicon = Context.GetComposedIcon (closedIcon, "fade");
 					if (gicon == null) {
-						gicon = Services.Icons.MakeTransparent (closedIcon, 0.5);
+						gicon = Services.Resources.MakeTransparent (closedIcon, 0.5);
 						Context.CacheComposedIcon (closedIcon, "fade", gicon);
 					}
 					closedIcon = gicon;

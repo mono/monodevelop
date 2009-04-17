@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Project p = c.FindProjectByName (refInfo.Reference);
 			if (p == null) return TreeIter.Zero;
 			
-			string iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
+			string iconName = p.StockIcon;
 			projectRefPanel.SignalRefChange (refInfo.Reference, true);
 			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), p.BaseDirectory, refInfo, iconName);
 		}

@@ -39,17 +39,12 @@ namespace MonoDevelop.Ide
 {
 	internal class Services
 	{
-//		static IconService icons;
 		static TaskService taskService;
 		
 		public static ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }
 		}
-	
-		public static IconService Icons {
-			get { return MonoDevelop.Projects.Gui.Services.Icons; }
-		}
-
+		
 		public static TaskService TaskService {
 			get {
 				if (taskService == null)
