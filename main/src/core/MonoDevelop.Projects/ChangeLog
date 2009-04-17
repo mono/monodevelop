@@ -1,5 +1,9 @@
 2009-04-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects/BuildResult.cs: Added clear method.
+
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects/Project.cs:
 	* MonoDevelop.Projects/DotNetProject.cs:
 	* MonoDevelop.Projects/IDotNetLanguageBinding.cs: Removed icon

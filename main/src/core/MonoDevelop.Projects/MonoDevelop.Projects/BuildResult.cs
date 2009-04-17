@@ -70,6 +70,16 @@ namespace MonoDevelop.Projects
 			get { return errors.AsReadOnly (); }
 		}
 		
+		public void ClearErrors ()
+		{
+			errors.Clear ();
+			warningCount = errorCount = 0;
+			buildCount = 1;
+			failedBuildCount = 0;
+			compilerOutput = "";
+			sourceTarget = null;
+		}
+		
 		public void AddError (string file, int line, int col, string errorNum, string text)
 		{
 			Append (new BuildError (file, line, col, errorNum, text));
