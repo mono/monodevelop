@@ -1,3 +1,8 @@
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetFileSelector.cs: Removed icon
+	  service.
+
 2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet/WebTypeManager.cs:

@@ -60,7 +60,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			this.Build();
 			
-			projBuf = IdeApp.Services.Resources.GetIcon (IdeApp.Services.Icons.GetImageForProjectType (project.ProjectType), IconSize.Menu);
+			projBuf = IdeApp.Services.Resources.GetIcon (project.StockIcon, IconSize.Menu);
 			dirClosedBuf = IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
 			dirOpenBuf = IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.OpenFolder, IconSize.Menu);
 			
@@ -149,11 +149,7 @@ namespace MonoDevelop.AspNet.Gui
 			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
 			ProjectFile pf = (ProjectFile)tree_model.GetValue (iter, 0);
 			Gdk.Pixbuf oldBuf = pixRenderer.Pixbuf;
-			string icName = MonoDevelop.Projects.Gui.Services.Icons.GetImageForFile (pf.FilePath);
-			if (icName != MonoDevelop.Core.Gui.Stock.MiscFiles || !System.IO.File.Exists (pf.FilePath))
-				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon (icName, Gtk.IconSize.Menu);
-			else
-				pixRenderer.Pixbuf = IdeApp.Services.PlatformService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu);
+			pixRenderer.Pixbuf = IdeApp.Services.PlatformService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu);
 			if (oldBuf != null)
 				oldBuf.Dispose ();
 		}
