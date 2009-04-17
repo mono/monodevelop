@@ -36,7 +36,6 @@ FILES =  \
 	MonoDevelop.Core.Gui.Dialogs/DefaultDialogPanelDescriptor.cs \
 	MonoDevelop.Core.Gui.Dialogs/ErrorDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs \
-	MonoDevelop.Core.Gui.Dialogs/IDialogPanelDescriptor.cs \
 	MonoDevelop.Core.Gui.Dialogs/IOptionsPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/MultiMessageDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs \

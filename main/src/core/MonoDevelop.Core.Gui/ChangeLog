@@ -1,3 +1,13 @@
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs:
+	* MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs:
+	* MonoDevelop.Core.Gui.Dialogs/IDialogPanelDescriptor.cs:
+	* MonoDevelop.Core.Gui.Dialogs/DefaultDialogPanelDescriptor.cs:
+	  Overworked dialog panels.
+
 2009-04-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core.Gui/ResourceService.cs: Fixed "Bug 495375 -

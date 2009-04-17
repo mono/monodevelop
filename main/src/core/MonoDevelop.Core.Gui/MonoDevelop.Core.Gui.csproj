@@ -449,7 +449,6 @@
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\DefaultDialogPanelDescriptor.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Codons\DialogPanelCodon.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\IDialogPanel.cs" />
-    <Compile Include="MonoDevelop.Core.Gui.Dialogs\IDialogPanelDescriptor.cs" />
     <Compile Include="MonoDevelop.Core.Gui.ProgressMonitoring\BaseProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.Gui\GuiService.cs" />
     <Compile Include="MonoDevelop.Core.Gui\IMementoCapable.cs" />
