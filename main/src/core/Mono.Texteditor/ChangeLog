@@ -1,5 +1,9 @@
 2009-04-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/objects.xml: Unused, remove.
+
+2009-04-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.csproj: Revert the (presumably accidental)
 	  2008->2005 format change, since it broke MSBuild
 	  compatibility.
