@@ -1,5 +1,10 @@
 2009-04-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Core.Gui/IMementoCapable.cs: Changed
+	  IMementoCapable interface.
+
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Core.Gui/RecentOpen.cs:
 	* MonoDevelop.Core.Gui/RecentFileStorage.cs: Worked on recent
 	  open.
