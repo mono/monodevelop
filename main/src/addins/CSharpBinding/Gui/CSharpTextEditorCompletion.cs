@@ -791,10 +791,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return null;
 			case "new":
 				IType callingType = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (Editor.CursorLine, Editor.CursorColumn));
-				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName, callingType);
-				if (exactContext is ExpressionContext.TypeExpressionContext)
-					return CreateTypeCompletionData (location, callingType, exactContext, ((ExpressionContext.TypeExpressionContext)exactContext).Type, ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType);
-				if (exactContext == null) {
+				ExpressionContext newExactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName, callingType);
+				if (newExactContext is ExpressionContext.TypeExpressionContext)
+					return CreateTypeCompletionData (location, callingType, newExactContext, ((ExpressionContext.TypeExpressionContext)newExactContext).Type, ((ExpressionContext.TypeExpressionContext)newExactContext).UnresolvedType);
+				if (newExactContext == null) {
 					int j = completionContext.TriggerOffset - 4;
 					string token = GetPreviousToken (ref j, true);
 					string yieldToken = GetPreviousToken (ref j, true);
@@ -805,7 +805,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (yieldToken == "yield" && returnType.GenericArguments.Count > 0)
 							returnType = returnType.GenericArguments[0];
 						if (resolver.CallingMember != null)
-							return CreateTypeCompletionData (location, callingType, exactContext, null, returnType);
+							return CreateTypeCompletionData (location, callingType, newExactContext, null, returnType);
 					}
 				}
 				

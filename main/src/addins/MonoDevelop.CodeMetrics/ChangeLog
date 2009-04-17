@@ -1,3 +1,8 @@
+2009-04-17  Mike Kestner  <mkestner@novell.com>
+
+	* MonoDevelop.CodeMetrics.csproj: don't require specific
+	gtk-sharp version.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
