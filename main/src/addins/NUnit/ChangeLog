@@ -1,3 +1,11 @@
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NUnitOptionsPanel.cs:
+	* Services/NUnitService.cs:
+	* MonoDevelopNUnit.addin.xml:
+	* Gui/UnitTestOptionsDialog.cs: translated the option panels
+	  to the new option structure.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

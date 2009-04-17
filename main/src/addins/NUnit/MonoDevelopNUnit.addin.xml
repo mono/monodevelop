@@ -57,11 +57,11 @@
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
 	</ExtensionPoint>
 
 
@@ -166,13 +166,13 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions">
-		<DialogPanel id = "Configurations"
+		<Section id = "Configurations"
 					 _label = "Configurations" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions">
-		<DialogPanel id = "NUnitOptionsPanel"
-					 _label = "NUnit Categories"
+		<Section id = "NUnitOptionsPanel"
+					 _label = "${Configuration}"
 					 class = "MonoDevelop.NUnit.NUnitOptionsPanel"/>
 	</Extension>
 

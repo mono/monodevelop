@@ -238,7 +238,9 @@ namespace MonoDevelop.NUnit
 		
 		public static void ShowOptionsDialog (UnitTest test)
 		{
-			UnitTestOptionsDialog optionsDialog = new UnitTestOptionsDialog (IdeApp.Workbench.RootWindow, test);
+			Properties properties = new Properties ();
+			properties.Set ("UnitTest", test);
+			UnitTestOptionsDialog optionsDialog = new UnitTestOptionsDialog (IdeApp.Workbench.RootWindow, properties);
 			optionsDialog.Run ();
 		}
 		

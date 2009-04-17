@@ -33,52 +33,56 @@ using System.Collections;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core.Gui.Codons;
+using Gtk;
 
 namespace MonoDevelop.NUnit {
 
-	public class UnitTestOptionsDialog : TreeViewOptions
+	public class UnitTestOptionsDialog : OptionsDialog
 	{
+		ExtensionNode configurationNode;
 		UnitTest test;
 		
-		ExtensionNode configurationNode;
-	
-		public UnitTestOptionsDialog (Gtk.Window parent, UnitTest test) : base (parent, null, null)
+		public UnitTestOptionsDialog (Gtk.Window parent, Properties properties) : base (parent, properties, "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions", false)
 		{
-			ExtensionNode node = AddinManager.GetExtensionNode ("/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions");
-			configurationNode = AddinManager.GetExtensionNode("/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions");
-				
-			this.test = test;
 			this.Title = GettextCatalog.GetString ("Unit Test Options");
-			
-			properties = new Properties();
-			properties.Set ("UnitTest", test);
-			AddNodes (properties, Gtk.TreeIter.Zero, node.GetChildObjects ());			
-			SelectFirstNode ();	
-		}
 		
+			test = properties.Get<UnitTest>("UnitTest");
+			configurationNode = AddinManager.GetExtensionNode("/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions");
+			
+			TreeIter iter;
+			if (store.GetIterFirst (out iter)) {
+				OptionsDialogSection section = store.GetValue (iter, 0) as OptionsDialogSection;
+				
+				if (section != null && section.Id == "Configurations") {
+					FillConfigurations (iter);
+				}
+			}
+			ExpandCategories ();
+			if (firstSection != null)
+				ShowPage (firstSection);
+		}
+		protected override void OnResponse (Gtk.ResponseType response_id)
+		{
+			base.OnResponse (response_id);
+			Destroy ();
+		}
+
+		OptionsDialogSection firstSection = null;
 		void FillConfigurations (Gtk.TreeIter configIter)
 		{
 			foreach (string name in test.GetConfigurations ()) {
 				Properties configNodeProperties = new Properties();
 				configNodeProperties.Set ("UnitTest", test);
 				configNodeProperties.Set ("Config", name);
-				
-				object[] list = configurationNode.GetChildObjects ();
-				if (list.Length > 1) {
-					Gtk.TreeIter newNode = AddPath (name, configIter);
-					AddNodes (configNodeProperties, newNode, list);
-				} else {
-					AddNode (name, configNodeProperties, configIter, (IDialogPanelDescriptor) list [0]);
+				Console.WriteLine ("contig: " + name);
+				foreach (OptionsDialogSection section in configurationNode.ChildNodes) {
+					OptionsDialogSection s = (OptionsDialogSection)section.Clone ();
+					if (firstSection == null)
+						firstSection = s;
+					s.Label = StringParserService.Parse (section.Label, new string[,] { { "Configuration", name } });
+					AddSection (configIter, s, configNodeProperties);
 				}
-			}
-		}
-		
-		protected override void AddChildNodes (object customizer, Gtk.TreeIter iter, IDialogPanelDescriptor descriptor)
-		{
-			if (descriptor.ID != "Configurations") {
-				base.AddChildNodes (customizer, iter, descriptor);
-			} else {
-				FillConfigurations (iter);
 			}
 		}
 	}

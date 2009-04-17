@@ -39,8 +39,9 @@ using Gtk;
 
 namespace MonoDevelop.NUnit
 {
-	public class NUnitOptionsPanel : AbstractOptionPanel
+	public class NUnitOptionsPanel : OptionsPanel
 	{
+		
 		sealed class NUnitOptionsWidget : GladeWidgetExtract
 		{
 			// Gtk Controls
@@ -188,16 +189,16 @@ namespace MonoDevelop.NUnit
 		}
 		
 		NUnitOptionsWidget widget;
-
-		public override void LoadPanelContents()
+		
+		public override Widget CreatePanelWidget ()
 		{
-			Add (widget = new NUnitOptionsWidget ((Properties) CustomizationObject));
+			return widget = new NUnitOptionsWidget ((Properties) DataObject);
 		}
 		
-		public override bool StorePanelContents()
+		public override void ApplyChanges ()
 		{
-			widget.Store ((Properties) CustomizationObject);
- 			return true;
+			Console.WriteLine ("STORE !!!!");
+			widget.Store ((Properties) DataObject);
 		}
 	}
 }
