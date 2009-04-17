@@ -47,17 +47,16 @@ namespace MonoDevelop.Debugger
 		
 		#region IMementoCapable implementation 
 		
-		public ICustomXmlSerializer CreateMemento ()
-		{
-			return this;
-		}
-		
-		public void SetMemento (ICustomXmlSerializer memento)
-		{
-			if (tree != null) {
-				tree.ClearExpressions ();
-				if (storedVars != null)
-					tree.AddExpressions (storedVars);
+		public ICustomXmlSerializer Memento {
+			get {
+				return this;
+			}
+			set {
+				if (tree != null) {
+					tree.ClearExpressions ();
+					if (storedVars != null)
+						tree.AddExpressions (storedVars);
+				}
 			}
 		}
 		
