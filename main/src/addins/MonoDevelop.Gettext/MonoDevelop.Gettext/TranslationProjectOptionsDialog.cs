@@ -113,7 +113,7 @@ namespace MonoDevelop.Gettext
 				return MonoDevelop.Core.Gui.Stock.Solution;
 			
 			if (entry is Project)
-				return IdeApp.Services.Icons.GetImageForProjectType (((Project)entry).ProjectType);
+				return ((Project)entry).StockIcon;
 			
 			return MonoDevelop.Core.Gui.Stock.Project;
 		}

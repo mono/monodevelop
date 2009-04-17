@@ -90,10 +90,6 @@
 		</MimeType>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-		<Icon extensions = ".po" icon = "md-po-file"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "PoFiles" _label = "PO Files" extensions = "*.po"/>
 	</Extension>
