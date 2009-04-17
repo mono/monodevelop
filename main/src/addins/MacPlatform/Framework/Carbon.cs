@@ -174,6 +174,7 @@ namespace OSXIntegration.Framework
 		
 		public static string FSRefToPath (ref FSRef fsRef)
 		{
+			//FIXME: is this big enough?
 			const int MAX_LENGTH = 4096;
 			IntPtr buf = IntPtr.Zero;
 			string ret;
