@@ -1,5 +1,13 @@
 2009-04-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui/IconCodon.cs:
+	* MonoDevelop.Projects.Gui/IconService.cs: Removed icon codon
+	  & icon service.
+
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.addin.xml:
 	* MonoDevelop.Projects.Gui/IconCodon.cs:
 	* MonoDevelop.Projects.Gui/IconService.cs:

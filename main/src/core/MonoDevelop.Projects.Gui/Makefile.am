@@ -79,8 +79,6 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs \
-	MonoDevelop.Projects.Gui/IconCodon.cs \
-	MonoDevelop.Projects.Gui/IconService.cs \
 	MonoDevelop.Projects.Gui/ProjectsGuiServices.cs
 
 RES =  \

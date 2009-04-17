@@ -72,7 +72,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MonoDevelop.Projects.Gui\IconService.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\ProjectOptionsDialog.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\CombineBuildOptions.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\CombineConfigurationPanel.cs" />
@@ -100,7 +99,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\CommonAssemblySigningPreferences.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs" />
-    <Compile Include="MonoDevelop.Projects.Gui\IconCodon.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\DeleteConfigDialog.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\NewConfigurationDialog.cs" />
