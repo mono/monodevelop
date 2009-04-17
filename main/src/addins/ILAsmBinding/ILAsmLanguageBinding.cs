@@ -49,6 +49,12 @@ namespace ILAsmBinding
 			}
 		}
 		
+		public string ProjectStockIcon {
+			get { 
+				return "md-project";
+			}
+		}
+		
 		public bool IsSourceCodeFile (string fileName)
 		{
 			Debug.Assert(compilerManager != null);
