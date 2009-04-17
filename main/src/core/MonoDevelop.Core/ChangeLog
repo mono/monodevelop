@@ -1,3 +1,13 @@
+2009-04-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Set the
+	  pkgconfig environment more accurately for child processes
+	  and tools.
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Add a
+	  GetToolsEnvironmentVariables method for setting up the
+	  environment for tools with this runtime.
+
 2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies: 

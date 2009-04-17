@@ -50,8 +50,6 @@ namespace MonoDevelop.Core.Assemblies
 		Dictionary<string,string> environmentVariables;
 		bool isRunning;
 		
-		string[] pkgConfigPaths;
-		string[] pkgConfigLibdirs;
 		string[] envPaths;
 		
 		internal MonoTargetRuntime ()
@@ -62,17 +60,9 @@ namespace MonoDevelop.Core.Assemblies
 			int i = monoVersion.IndexOf (' ');
 			monoVersion = monoVersion.Substring (i+1);
 			
-			string envVar = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
-			if (envVar != null)
-				pkgConfigPaths = envVar.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
-			
-			envVar = Environment.GetEnvironmentVariable ("PATH");
-			if (envVar != null)
+			string envVar;
+			if ((envVar = Environment.GetEnvironmentVariable ("PATH")) != null)
 				envPaths = envVar.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
-			
-			envVar = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBDIR");
-			if (envVar != null)
-				pkgConfigLibdirs = envVar.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
 			
 			string versionDir;
 			
@@ -128,14 +118,20 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			if (environmentVariables == null) {
 				environmentVariables = new Dictionary<string, string> ();
-				if (pkgConfigPaths != null)
-					environmentVariables ["PKG_CONFIG_PATH"] = string.Join (Path.PathSeparator.ToString (), pkgConfigPaths);
 				if (envPaths != null)
 					environmentVariables ["PATH"] = string.Join (Path.PathSeparator.ToString (), envPaths);
-				if (pkgConfigLibdirs != null)
-					environmentVariables ["PKG_CONFIG_LIBDIR"] = string.Join (Path.PathSeparator.ToString (), pkgConfigLibdirs);
+				
+				//make sure it has EXACTLY the pkgconfig paths we have
+				environmentVariables ["PKG_CONFIG_PATH"] = null;
+				environmentVariables ["PKG_CONFIG_LIBDIR"] = PkgConfigPath;
 			}
 			return environmentVariables;
+		}
+		
+		//NOTE: mcs, etc need to use the env vars too
+		public override Dictionary<string, string> GetToolsEnvironmentVariables ()
+		{
+			return GetEnvironmentVariables ();
 		}
 		
 		protected override string GetGacDirectory ()
@@ -201,9 +197,13 @@ namespace MonoDevelop.Core.Assemblies
 		
 		IEnumerable<string> GetUnfilteredPkgConfigDirs ()
 		{
-			if (pkgConfigPaths != null) {
-				foreach (string dir in pkgConfigPaths)
-					yield return dir;
+			string envVar;
+			if ((envVar = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH")) != null) {
+				string[] pkgConfigPaths = envVar.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
+				if (pkgConfigPaths != null) {
+					foreach (string dir in pkgConfigPaths)
+						yield return dir;
+				}
 			}
 			
 			string[] suffixes = new string [] {
@@ -211,6 +211,10 @@ namespace MonoDevelop.Core.Assemblies
 				Path.Combine ("lib64", "pkgconfig"),
 				Path.Combine ("share", "pkgconfig"),
 			};
+			
+			string[] pkgConfigLibdirs = null;
+			if ((envVar = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBDIR")) != null)
+				pkgConfigLibdirs = envVar.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
 			
 			if (pkgConfigLibdirs != null)
 				foreach (string dir in pkgConfigLibdirs)
@@ -238,17 +242,23 @@ namespace MonoDevelop.Core.Assemblies
 		IEnumerable<string> GetPkgConfigDirs ()
 		{
 			HashSet<string> set = new HashSet<string> ();
-			foreach (string s in GetUnfilteredPkgConfigDirs ()) {
-				if (set.Contains (s))
+			foreach (string it in GetUnfilteredPkgConfigDirs ()) {
+				//normalise
+				string dir = it;
+				if (!Path.IsPathRooted (dir))
+					dir = Path.Combine (Environment.CurrentDirectory, dir);
+				dir = Path.GetFullPath (dir);
+				
+				if (set.Contains (dir))
 					continue;
-				set.Add (s);
+				set.Add (dir);
 				try {
-					if (!Directory.Exists (s))
+					if (!Directory.Exists (dir))
 						continue;
 				} catch (IOException ex) {
-					LoggingService.LogError ("Error checking for directory '" + s + "'.", ex);
+					LoggingService.LogError ("Error checking for directory '" + dir + "'.", ex);
 				}
-				yield return s;
+				yield return dir;
 			}
 		}
 		
@@ -264,7 +274,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public string PkgConfigPath {
 			get {
-				return string.Join (new string (Path.PathSeparator, 1), (string[])PkgConfigDirs);
+				return string.Join (Path.PathSeparator.ToString (), (string[])PkgConfigDirs);
 			}
 		}
 		

@@ -101,6 +101,12 @@ namespace MonoDevelop.Core.Assemblies
 			return assemblyFullNameToAsm.Keys;
 		}
 		
+		//environment variables that should be set when running tools in this environment
+		public virtual Dictionary<string,string> GetToolsEnvironmentVariables ()
+		{
+			return new Dictionary<string,string> ();
+		}
+		
 		public SystemPackage RegisterPackage (SystemPackageInfo pinfo, params string[] assemblyFiles)
 		{
 			return RegisterPackage (pinfo, true, assemblyFiles);
