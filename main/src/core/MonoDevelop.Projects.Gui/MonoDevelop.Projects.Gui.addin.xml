@@ -31,10 +31,6 @@
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/Icons" name="Project service icons">
-		<ExtensionNode name="Icon" type="MonoDevelop.Projects.Gui.IconCodon"/>
-	</ExtensionPoint>
-
 	<!-- Extensions points -->
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">

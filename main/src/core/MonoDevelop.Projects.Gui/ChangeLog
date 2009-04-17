@@ -1,3 +1,12 @@
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml:
+	* MonoDevelop.Projects.Gui/IconCodon.cs:
+	* MonoDevelop.Projects.Gui/IconService.cs:
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	  Removed icon service.
+
 2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:

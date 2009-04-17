@@ -35,8 +35,6 @@ namespace MonoDevelop.Projects.Gui
 {
 	public class Services
 	{
-		static IconService icons;
-
 		internal static LanguageBindingService Languages {
 			get { return MonoDevelop.Projects.Services.Languages; }
 		}
@@ -47,14 +45,6 @@ namespace MonoDevelop.Projects.Gui
 	
 		internal static ResourceService Resources {
 			get { return MonoDevelop.Core.Gui.Services.Resources; }
-		}
-	
-		public static IconService Icons {
-			get {
-				if (icons == null)
-					icons = new IconService ();
-				return icons;
-			}
 		}
 	}
 }
