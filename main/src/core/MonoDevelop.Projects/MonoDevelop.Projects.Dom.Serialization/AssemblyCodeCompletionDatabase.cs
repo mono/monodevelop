@@ -289,7 +289,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	
 	internal class DatabaseGenerator: RemoteProcessObject
 	{
-		public string GenerateDatabase (string baseDir, string assemblyFile, string runtimeId)
+		public string GenerateDatabase (string runtimeId, string baseDir, string assemblyFile)
 		{
 			try {
 				Runtime.Initialize (false);
