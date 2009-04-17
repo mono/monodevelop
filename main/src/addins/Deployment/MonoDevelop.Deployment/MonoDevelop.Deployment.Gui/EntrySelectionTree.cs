@@ -81,7 +81,7 @@ namespace MonoDevelop.Deployment.Gui
 			else if (entry is SolutionFolder)
 				icon = MonoDevelop.Core.Gui.Stock.SolutionFolderClosed;
 			else if (entry is Project)
-				icon = IdeApp.Services.Icons.GetImageForProjectType (((Project)entry).ProjectType);
+				icon = ((Project)entry).StockIcon;
 			else
 				icon = MonoDevelop.Core.Gui.Stock.Project;
 			
