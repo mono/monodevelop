@@ -1,3 +1,11 @@
+2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Framework/Carbon.cs: Added P/Invokes and structure/enum
+	  definitions for AEDesc and FSRef manipulation.
+
+	* MacPlatform.cs: Register for file open events, and extract
+	  the filenames. Staticify some global stuff.
+
 2009-04-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Menus/OSXMenu.cs: Add some notes. Don't show accelerators

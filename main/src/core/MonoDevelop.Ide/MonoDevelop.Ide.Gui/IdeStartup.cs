@@ -96,9 +96,16 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
-			IProgressMonitor monitor = SplashScreenForm.SplashScreen;
+			//don't show the splash screen on the Mac, so instead we get the expected "Dock bounce" effect
+			//this also enables the Mac platform service to subscribe to open document events before the GUI loop starts.
+			if (MonoDevelop.Components.Commands.KeyBindingManager.IsMac)
+				options.nologo = true;
 			
-			if (!options.nologo) {
+			IProgressMonitor monitor;
+			if (options.nologo) {
+				monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
+			} else {
+				monitor = SplashScreenForm.SplashScreen;
 				SplashScreenForm.SplashScreen.ShowAll ();
 			}
 			
@@ -107,6 +114,8 @@ namespace MonoDevelop.Ide.Gui
 			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
 			monitor.Step (1);
 			Runtime.Initialize (true);
+			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
+			MonoDevelop.Core.Gui.Services.PlatformService.ToString ();
 			monitor.Step (1);
 			monitor.EndTask ();
 			

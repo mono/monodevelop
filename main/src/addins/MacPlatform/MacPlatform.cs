@@ -41,11 +41,13 @@ namespace MonoDevelop.Platform
 {
 	public class MacPlatform : PlatformService
 	{
-		bool menuFail, initedAppMenu, initedDock;
+		static bool setupFail, initedApp, initedGlobal;
 		
 		static Dictionary<string, string> mimemap;
 
-		static MacPlatform () {
+		static MacPlatform ()
+		{
+			GlobalSetup ();
 			mimemap = new Dictionary<string, string> ();
 			LoadMimeMap ();
 		}
@@ -81,7 +83,8 @@ namespace MonoDevelop.Platform
 			get { return "OSX"; }
 		}
 		
-		private static void LoadMimeMap () {
+		private static void LoadMimeMap ()
+		{
 			// All recent Macs should have this file; if not we'll just die silently
 			try {
 				StreamReader reader = new StreamReader (File.OpenRead ("/etc/apache2/mime.types"));
@@ -106,13 +109,11 @@ namespace MonoDevelop.Platform
 		
 		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath)
 		{
-			GlobalSetup ();
-			
-			if (menuFail)
+			if (setupFail)
 				return false;
 			
 			try {
-				InitAppMenu (commandManager);
+				InitApp (commandManager);
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
 				OSXIntegration.OSXMenu.Recreate (commandManager, ces, ignoreCommands);
 			} catch (Exception ex) {
@@ -120,16 +121,16 @@ namespace MonoDevelop.Platform
 					OSXIntegration.OSXMenu.Destroy (true);
 				} catch {}
 				MonoDevelop.Core.LoggingService.LogError ("Could not install global menu", ex);
-				menuFail = true;
+				setupFail = true;
 				return false;
 			}
 			
 			return true;
 		}
 		
-		void InitAppMenu (CommandManager commandManager)
+		static void InitApp (CommandManager commandManager)
 		{
-			if (initedAppMenu)
+			if (initedApp)
 				return;
 			
 			OSXIntegration.OSXMenu.AddCommandIDMappings (new Dictionary<object, CarbonCommandID> ()
@@ -152,32 +153,36 @@ namespace MonoDevelop.Platform
 				{ HelpCommands.Help, CarbonCommandID.AppHelp },
 			});
 			
-			initedAppMenu = true;
+			initedApp = true;
 			OSXIntegration.OSXMenu.SetAppQuitCommand (FileCommands.Exit);
 			OSXIntegration.OSXMenu.AddAppMenuItems (commandManager, HelpCommands.About, Command.Separator,
 			                                        EditCommands.DefaultPolicies, EditCommands.MonodevelopPreferences);
+			
+			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
 		}
 		
-		void GlobalSetup ()
+		static void GlobalSetup ()
 		{
-			if (initedDock)
+			if (initedGlobal || setupFail)
 				return;
-			initedDock = true;
+			initedGlobal = true;
 			
 			try {
 				//FIXME: remove these when finalizing
 				Carbon.InstallApplicationEventHandler (HandleAppReopen, CarbonEventApple.ReopenApplication);
 				Carbon.InstallApplicationEventHandler (HandleAppQuit, CarbonEventApple.QuitApplication);
-				//Carbon.InstallApplicationEventHandler (HandleAppDocOpen, CarbonEventApple.OpenDocuments); //kAEOpenDocuments
-				IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+				Carbon.InstallApplicationEventHandler (HandleAppDocOpen, CarbonEventApple.OpenDocuments); //kAEOpenDocuments
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Could not install app event handlers", ex);
-				menuFail = true;
+				setupFail = true;
 			}
 		}
 		
 		static CarbonEventHandlerStatus HandleAppReopen (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
+			if (IdeApp.Workbench == null || IdeApp.Workbench.RootWindow == null)
+				return CarbonEventHandlerStatus.NotHandled;
+			
 			IdeApp.Workbench.RootWindow.Deiconify ();
 			IdeApp.Workbench.RootWindow.Visible = true;
 			return CarbonEventHandlerStatus.Handled;
@@ -191,13 +196,22 @@ namespace MonoDevelop.Platform
 		
 		static CarbonEventHandlerStatus HandleAppDocOpen (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
-			IntPtr list = Carbon.GetEventParameter (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
-			System.Console.WriteLine("Items: {0}", Carbon.AECountItems (list));
+			try {
+				AEDesc list = Carbon.GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
+				long count = Carbon.AECountItems (ref list);
+				for (int i = 1; i <= count; i++) {
+					FSRef fsRef = Carbon.AEGetNthPtr<FSRef> (ref list, i, CarbonEventParameterType.FSRef);
+					System.Console.WriteLine ("Items: {0}", Carbon.FSRefToPath (ref fsRef));
+				}
+				Carbon.CheckReturn (Carbon.AEDisposeDesc (ref list));
+			} catch (Exception ex) {
+				System.Console.WriteLine (ex);
+			}
 			return CarbonEventHandlerStatus.Handled;
 		}
 		
 		[GLib.ConnectBefore]
-		void HandleDeleteEvent(object o, Gtk.DeleteEventArgs args)
+		static void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
 			args.RetVal = true;
 			IdeApp.Workbench.RootWindow.Visible = false;

@@ -31,6 +31,7 @@ using System.Runtime.InteropServices;
 namespace OSXIntegration.Framework
 {
 	internal delegate CarbonEventHandlerStatus EventDelegate (IntPtr callRef, IntPtr eventRef, IntPtr userData);
+	internal delegate CarbonEventHandlerStatus AEHandlerDelegate (IntPtr inEvnt, IntPtr outEvt, uint refConst);
 	
 	internal static class Carbon
 	{
@@ -105,13 +106,15 @@ namespace OSXIntegration.Framework
 		static extern EventStatus GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType,	
 		                                             out CarbonEventParameterType actualType, uint size, ref uint outSize, IntPtr dataBuffer);
 		  
+		[DllImport (CarbonLib)]
+		static extern EventStatus GetEventParameter (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType,	
+		                                             uint zero, uint size, uint zero2, IntPtr dataBuffer);
+		
 		public static T GetEventParameter<T> (IntPtr eventRef, CarbonEventParameterName name, CarbonEventParameterType desiredType) where T : struct
 		{
-			CarbonEventParameterType actualType;
-			uint outSize = 0;
 			int len = Marshal.SizeOf (typeof (T));
 			IntPtr bufferPtr = Marshal.AllocHGlobal (len);
-			CheckReturn (GetEventParameter (eventRef, name, desiredType, out actualType, (uint)len, ref outSize, bufferPtr));
+			CheckReturn (GetEventParameter (eventRef, name, desiredType, 0, (uint)len, 0, bufferPtr));
 			T val = (T)Marshal.PtrToStructure (bufferPtr, typeof (T));
 			Marshal.FreeHGlobal (bufferPtr);
 			return val;
@@ -120,16 +123,73 @@ namespace OSXIntegration.Framework
 		#region AEList manipulation
 		
 		[DllImport (CarbonLib)]
-		static extern int AECountItems (IntPtr descList, out long count); //return an OSErr
+		static extern int AECountItems (ref AEDesc descList, out int count); //return an OSErr
 		
-		public static long AECountItems (IntPtr descList)
+		public static int AECountItems (ref AEDesc descList)
 		{
-			long count;
-			CheckReturn (AECountItems (descList, out count));
+			int count;
+			CheckReturn (AECountItems (ref descList, out count));
 			return count;
 		}
 		
+		[DllImport (CarbonLib)]
+		static extern AEDescStatus AEGetNthPtr (ref AEDesc descList, int index, CarbonEventParameterType desiredType, uint keyword,
+		                                        out CarbonEventParameterType actualType, IntPtr buffer, int bufferSize, out int actualSize);
+		
+		[DllImport (CarbonLib)]
+		static extern AEDescStatus AEGetNthPtr (ref AEDesc descList, int index, CarbonEventParameterType desiredType, uint keyword,
+		                                        uint zero, IntPtr buffer, int bufferSize, int zero2);
+		
+		public static T AEGetNthPtr<T> (ref AEDesc descList, int index, CarbonEventParameterType desiredType) where T : struct
+		{
+			int len = Marshal.SizeOf (typeof (T));
+			IntPtr bufferPtr = Marshal.AllocHGlobal (len);
+			CheckReturn ((int)AEGetNthPtr (ref descList, index, desiredType, 0, 0, bufferPtr, len, 0));
+			T val = (T)Marshal.PtrToStructure (bufferPtr, typeof (T));
+			Marshal.FreeHGlobal (bufferPtr);
+			return val;
+		}
+		
+		[DllImport (CarbonLib)]
+		static extern AEDescStatus AEGetNthPtr (ref AEDesc descList, int index, CarbonEventParameterType desiredType, uint keyword,
+		                                        uint zero, out IntPtr outPtr, int bufferSize, int zero2);
+		
+		public static IntPtr AEGetNthPtr (ref AEDesc descList, int index, CarbonEventParameterType desiredType)
+		{
+			IntPtr ret;
+			CheckReturn ((int)AEGetNthPtr (ref descList, index, desiredType, 0, 0, out ret, 4, 0));
+			return ret;
+		}
+		
+		[DllImport (CarbonLib)]
+		public static extern int AEDisposeDesc (ref AEDesc desc);
+		
+		[DllImport (CarbonLib)]
+		public static extern AEDescStatus AESizeOfNthItem  (ref AEDesc descList, int index, ref CarbonEventParameterType type, out int size);
+		
 		#endregion
+		
+		[DllImport (CarbonLib)]
+		static extern int FSRefMakePath (ref FSRef fsRef, IntPtr buffer, uint bufferSize);
+		
+		public static string FSRefToPath (ref FSRef fsRef)
+		{
+			const int MAX_LENGTH = 4096;
+			IntPtr buf = IntPtr.Zero;
+			string ret;
+			try {
+				buf = Marshal.AllocHGlobal (MAX_LENGTH);
+				CheckReturn (FSRefMakePath (ref fsRef, buf, (uint)MAX_LENGTH));
+				//FIXME: on Mono, auto is UTF-8, which is correct but I'd prefer to be more explicit
+				ret = Marshal.PtrToStringAuto (buf, MAX_LENGTH);
+			} finally {
+				if (buf != IntPtr.Zero)
+					Marshal.FreeHGlobal (buf);
+			}
+			return ret;
+		}
+		
+		#region Error checking
 		
 		public static void CheckReturn (EventStatus status)
 		{
@@ -143,6 +203,8 @@ namespace OSXIntegration.Framework
 			if (osErr != 0)
 				throw new SystemException ("Unexpected OS error code " + osErr + "");
 		}
+		
+		#endregion
 		
 		internal static int ConvertCharCode (string code)
 		{
@@ -167,6 +229,13 @@ namespace OSXIntegration.Framework
 		IntPtr dataHandle;
 	}
 	
+	[StructLayout(LayoutKind.Sequential, Pack = 2, Size = 80)]
+	struct FSRef
+	{
+		//this is an 80-char opaque byte array
+		private byte hidden;
+	}
+	
 	internal enum CarbonEventHandlerStatus //this is an OSStatus
 	{
 		Handled = 0,
@@ -187,6 +256,8 @@ namespace OSXIntegration.Framework
 		UInt32 = 1835100014, // 'magn'
 		UnicodeText = 1970567284, // 'utxt'
 		AEList = 1818850164, // 'list'
+		WildCard = 707406378, // '****'
+		FSRef = 1718841958, // 'fsrf' 
 	}
 	
 	internal enum CarbonEventClass : uint
@@ -195,7 +266,7 @@ namespace OSXIntegration.Framework
 		Keyboard = 1801812322, // 'keyb'
 		TextInput = 1952807028, // 'text'
 		Application = 1634758764, // 'appl'
-		AppleEvent = 1701867619,  //'eppc'
+		RemoteAppleEvent = 1701867619,  //'eppc' //remote apple event?
 		Menu = 1835363957, // 'menu'
 		Window = 2003398244, // 'wind'
 		Control = 1668183148, // 'cntl'
@@ -208,7 +279,7 @@ namespace OSXIntegration.Framework
 		ToolbarItem = 1952606580, // 'tbit'
 		Accessibility = 1633903461, // 'acce'
 		HIObject = 1751740258, // 'hiob'
-		Apple = 1634039412, // 'aevt'
+		AppleEvent = 1634039412, // 'aevt'
 	}
 	
 	public enum CarbonCommandID : uint
@@ -230,7 +301,7 @@ namespace OSXIntegration.Framework
 		Close = 1668050803, // 'clos'
 		Save = 1935767141, // 'save',
 		SaveAs = 1937138035, // 'svas'
-		Revert = 1920365172, //
+		Revert = 1920365172, // 'rvrt'
 		Print = 1886547572, // 'prnt'
 		PageSetup = 1885431653, // 'page',
 		AppHelp = 1634233456, //'ahlp'
@@ -284,6 +355,7 @@ namespace OSXIntegration.Framework
 		QuitApplication =  1903520116, // 'quit'
 		ShowPreferences = 1886545254, // 'pref'
 		ApplicationDied = 1868720500, // 'obit'
+		GetUrl = 1196773964, // 'GURL'
 	}
 	
 	[StructLayout(LayoutKind.Sequential, Pack = 2)]
@@ -306,7 +378,8 @@ namespace OSXIntegration.Framework
 		{
 		}
 		
-		public CarbonEventTypeSpec (CarbonEventApple kind) : this (CarbonEventClass.Apple, (uint) kind)
+		
+		public CarbonEventTypeSpec (CarbonEventApple kind) : this (CarbonEventClass.AppleEvent, (uint) kind)
 		{
 		}
 		
@@ -357,6 +430,17 @@ namespace OSXIntegration.Framework
 		EventNotInQueueErr = -9877,
 		EventHotKeyExistsErr = -9878,
 		EventHotKeyInvalidErr = -9879,
+	}
+	
+	enum AEDescStatus
+	{
+		Ok = 0,
+		MemoryFull = -108,
+		CoercionFail = -1700,
+		DescRecordNotFound = -1701,
+		WrongDataType = -1703,
+		NotAEDesc = -1704,
+		ReplyNotArrived = -1718,
 	}
 	
 	[StructLayout(LayoutKind.Explicit)]

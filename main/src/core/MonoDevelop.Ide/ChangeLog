@@ -1,5 +1,14 @@
 2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Don't show the splash
+	  screen on Mac, so that we get the dock "bounce" while it
+	  starts up. Force platform services to initialise ASAP, right
+	  after the runtime, so that the Mac platform can subscribe to
+	  file-open events. When splash screen isn't shown, use a
+	  console progress monitor instead.
+
+2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Present the parent
 	  window is after switching, since some windows managers
 	  (Mac!) may not restore focus automatically.
