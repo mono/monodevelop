@@ -67,6 +67,7 @@ RES =  \
 	gtk-gui/objects.xml \
 	icons/C\#.FileIcon \
 	icons/csharp-icon-32.png \
+	icons/csharp-project-16.png \
 	md1format.xml \
 	templates/AssemblyInfo.xft.xml \
 	templates/ConsoleProject.xpt.xml \

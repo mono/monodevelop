@@ -85,15 +85,11 @@
 		<Section _label = "C#" class = "CSharpBinding.FormattingPanel"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-		<Icon language = "C#" icon = "res:C#.ProjectIcon"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding id    = "CSharp"
 		                 supportedextensions = ".cs"
 		                 class = "CSharpBinding.CSharpLanguageBinding" />
-    </Extension>
+	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "CSharpBinding.CSharpCompilerParameters" />
@@ -120,6 +116,7 @@
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-csharp-file" resource = "C#.FileIcon" />
+		<StockIcon stockid = "md-csharp-project" resource = "csharp-project-16.png" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">

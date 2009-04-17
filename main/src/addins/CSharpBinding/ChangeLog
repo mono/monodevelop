@@ -1,3 +1,11 @@
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* CSharpLanguageBinding.cs:
+	* icons/csharp-project-16.png: Removed icon service.
+
 2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBindingCompilerManager.cs: Moved SystemAssemblyService

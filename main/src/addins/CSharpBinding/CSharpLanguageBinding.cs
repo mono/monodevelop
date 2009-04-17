@@ -52,6 +52,12 @@ namespace CSharpBinding
 			}
 		}
 		
+		public string ProjectStockIcon {
+			get { 
+				return "md-csharp-project";
+			}
+		}
+		
 		public bool IsSourceCodeFile (string fileName)
 		{
 			Debug.Assert(compilerManager != null);
