@@ -1,3 +1,8 @@
+2009-04-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure.in: Reference SourceEditor correctly from makefile
+	  builds.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Bump MD version.

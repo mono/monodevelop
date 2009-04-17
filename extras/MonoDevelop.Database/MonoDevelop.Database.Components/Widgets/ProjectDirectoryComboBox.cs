@@ -93,10 +93,7 @@ namespace MonoDevelop.Database.Components
 					if (proj is DotNetProject && (proj as DotNetProject).LanguageBinding == null) {
 						pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Stock.DialogError);
 					} else {
-						string icon = MonoDevelop.Projects.Gui.Services.Icons
-							.GetImageForProjectType (proj.ProjectType);
-
-						pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (icon, IconSize.Menu);
+						pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (proj.StockIcon, IconSize.Menu);
 					}
 					
 					TreeIter iter = store.AppendValues (pixbuf, "<b>" + proj.Name + "</b>", proj, proj.BaseDirectory);

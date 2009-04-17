@@ -3,9 +3,9 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Sql.SqlServer.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
 	$(MONODEVELOP_LIBS) \
-	-r:../build/MonoDevelop.Database.Components.dll \
-	-r:../build/MonoDevelop.Database.Designer.dll \
-	-r:../build/MonoDevelop.Database.Sql.dll \
+	-r:$(top_builddir)/build/MonoDevelop.Database.Components.dll \
+	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \
+	-r:$(top_builddir)/build/MonoDevelop.Database.Sql.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data

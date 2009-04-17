@@ -1,7 +1,7 @@
 
 PACKAGE = monodevelop-database
 MDTOOL = $(LOCAL_PKGCONFIG) mono `$(LOCAL_PKGCONFIG) pkg-config --variable=libdir monodevelop`/bin/mdrun.exe
-BUILD_DIR = ../build/locale
+BUILD_DIR = $(top_builddir)/build/locale
 INSTALL_DIR = $(DESTDIR)$(MD_ADDIN_DIR)/MonoDevelop.Database/locale
 
 FILES = \

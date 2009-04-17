@@ -77,7 +77,7 @@
     <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="MonoDevelop.SourceEditor2, Version=1.9.2.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="MonoDevelop.SourceEditor2, Version=2.1.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.SourceEditor2.dll</HintPath>
     </Reference>
