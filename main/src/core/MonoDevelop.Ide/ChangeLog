@@ -1,3 +1,8 @@
+2009-04-17  Mike Kestner  <mkestner@novell.com>
+
+	* MonoDevelop.Ide.csproj: don't require gtk-sharp specific version.
+	* MonoDevelop.Ide.Gui/Ide.cs: fix a csc unitialized var error.
+
 2009-04-17  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:

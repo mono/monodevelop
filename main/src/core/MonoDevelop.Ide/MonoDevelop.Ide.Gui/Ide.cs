@@ -255,7 +255,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			
 			if (!IsInitialized) {
-				EventHandler onInit;
+				EventHandler onInit = null;
 				onInit = delegate {
 					Initialized -= onInit;
 					OpenFiles (files);
