@@ -80,7 +80,7 @@ namespace MonoDevelop.AspNet.Mvc
 			get  { return "AspNetMvc"; }
 		}
 		
-		public override bool SupportsFramework (MonoDevelop.Core.TargetFramework framework)
+		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
 			return framework.IsCompatibleWithFramework ("3.5");
 		}
@@ -123,7 +123,7 @@ namespace MonoDevelop.AspNet.Mvc
 			foreach (ProjectReference projectReference in References) {
 				if (projectReference.Package.Name == "system.web.mvc") {
 					if (projectReference.LocalCopy && projectReference.ReferenceType == ReferenceType.Gac)
-						foreach (MonoDevelop.Core.SystemAssembly assem in projectReference.Package.Assemblies)
+						foreach (MonoDevelop.Core.Assemblies.SystemAssembly assem in projectReference.Package.Assemblies)
 							list.Add (assem.Location);
 					break;
 				}
