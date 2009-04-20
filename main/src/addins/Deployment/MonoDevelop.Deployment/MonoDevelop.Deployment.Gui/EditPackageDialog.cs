@@ -19,7 +19,7 @@ namespace MonoDevelop.Deployment.Gui
 			target = package.PackageBuilder.Clone ();
 			this.Title = target.Description;
 			
-			this.Icon = MonoDevelop.Core.Gui.PixbufService.GetPixbuf (target.Icon, Gtk.IconSize.Menu);
+			this.Icon = MonoDevelop.Core.Gui.ImageService.GetPixbuf (target.Icon, Gtk.IconSize.Menu);
 			entryName.Text = package.Name;
 			
 			targetBox.PackStart (new PackageBuilderEditor (target), true, true, 0);
