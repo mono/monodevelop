@@ -249,4 +249,8 @@
 	<Extension path = "/MonoDevelop/Deployment/DeployServiceExtensions">
 		<Class id="AspNetDeploy" insertbefore="PrepareDeploy" class = "MonoDevelop.AspNet.Deployment.AspNetDeployServiceExtension" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
+		<ExecutionHandler id="AspNet" class = "MonoDevelop.AspNet.AspNetExecutionHandler"/>
+	</Extension>
 </Addin>

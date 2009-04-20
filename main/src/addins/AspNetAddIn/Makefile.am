@@ -105,6 +105,8 @@ FILES =  \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \
 	MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs \
 	MonoDevelop.AspNet/AspNetCommands.cs \
+	MonoDevelop.AspNet/AspNetExecutionCommand.cs \
+	MonoDevelop.AspNet/AspNetExecutionHandler.cs \
 	MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs \
 	MonoDevelop.AspNet/AspNetParserService.cs \
 	MonoDevelop.AspNet/AspNetToolboxLoader.cs \

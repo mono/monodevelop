@@ -217,11 +217,21 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
+		ExecutionCommand CreateExecutionCommand (AspNetAppProjectConfiguration configuration)
+		{
+			AspNetExecutionCommand cmd = new AspNetExecutionCommand ();
+			cmd.ClrVersion = configuration.ClrVersion;
+			cmd.DebugMode = configuration.DebugMode;
+			cmd.XspParameters = XspParameters;
+			cmd.BaseDirectory = BaseDirectory;
+			return cmd;
+		}
+		
 		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string config)
 		{
 			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetConfiguration (config);
-			string xspVersion = (configuration.ClrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
-			return context.ExecutionHandler.CanExecute (xspVersion);
+			ExecutionCommand cmd = CreateExecutionCommand (configuration);
+			return context.ExecutionHandler.CanExecute (cmd);
 		}
 		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string config)
@@ -229,6 +239,7 @@ namespace MonoDevelop.AspNet
 			//check XSP is available
 			
 			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetConfiguration (config);
+			ExecutionCommand cmd = CreateExecutionCommand (configuration);
 			
 			ClrVersion clrVersion = configuration.ClrVersion;
 			string xspVersion = (clrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
@@ -248,12 +259,7 @@ namespace MonoDevelop.AspNet
 			
 				monitor.Log.WriteLine ("Running web server...");
 				
-				//set mono debug mode if project's in debug mode
-				Dictionary<string, string> envVars = new Dictionary<string,string> (); 
-				if (configuration.DebugMode)
-					envVars ["MONO_OPTIONS"] = "--debug";
-				
-				IProcessAsyncOperation op = context.ExecutionHandler.Execute (xspVersion, XspParameters.GetXspParameters (), BaseDirectory, envVars, console);
+				IProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, console);
 				operationMonitor.AddOperation (op); //handles cancellation
 				
 				//launch a separate thread to detect the running server and launch a web browser

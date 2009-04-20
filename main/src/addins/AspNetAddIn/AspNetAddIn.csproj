@@ -292,6 +292,8 @@
     <Compile Include="MonoDevelop.AspNet\MasterContentFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.AspNet.Gui\AspNetFileSelector.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Gui.AspNetFileSelector.cs" />
+    <Compile Include="MonoDevelop.AspNet\AspNetExecutionCommand.cs" />
+    <Compile Include="MonoDevelop.AspNet\AspNetExecutionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

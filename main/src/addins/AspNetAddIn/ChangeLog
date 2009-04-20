@@ -1,3 +1,15 @@
+2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* AspNetAddIn.csproj:
+	* MonoDevelop.AspNet.addin.xml:
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet/AspNetExecutionHandler.cs:
+	* MonoDevelop.AspNet/AspNetExecutionCommand.cs: Use an
+	  IExecutionHandler and an ExecutionCommand to handle the
+	  execution of asp.net projects. This will allow supporting
+	  special execution modes such as debug or profile.
+
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AspNet.Gui/AspNetFileSelector.cs: Renamed
