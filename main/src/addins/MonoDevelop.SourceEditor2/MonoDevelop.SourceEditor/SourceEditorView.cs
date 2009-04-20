@@ -1619,5 +1619,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			TextEditor.InsertTemplate (template, doc);
 		}
+		
+		
+		[CommandHandler (TextEditorCommands.GotoMatchingBrace)]
+		protected void OnGotoMatchingBrace ()
+		{
+			TextEditor.RunAction (MiscActions.GotoMatchingBracket);
+		}
+		
 	}
 } 
