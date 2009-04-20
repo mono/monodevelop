@@ -49,18 +49,24 @@ namespace MonoDevelop.Profiling
 			this.process = process;
 		}
 
-		public override IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
+		public override IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			DummyProcessAsyncOperation dpao = new DummyProcessAsyncOperation (process);
 			string profilerIdentifier, tempFile, snapshotFile;
 			ProfilingService.GetProfilerInformation (process.Id, out profilerIdentifier, out tempFile);
-			snapshotFile = profiler.GetSnapshotFileName (workingDirectory, tempFile);
+			DotNetExecutionCommand dotcmd = (DotNetExecutionCommand) command;
+			snapshotFile = profiler.GetSnapshotFileName (dotcmd.WorkingDirectory, tempFile);
 			
 			ProfilingService.ActiveProfiler = profiler;
 			ProfilingContext profContext = new ProfilingContext (dpao, snapshotFile);
 			profiler.Start (profContext);
 
 			return dpao;
+		}
+		
+		public override bool CanExecute (ExecutionCommand command)
+		{
+			return command is DotNetExecutionCommand;
 		}
 	}
 }

@@ -225,16 +225,15 @@ namespace MonoDevelop.Profiling
 				this.profiler = profiler;
 			}
 			
-			public bool CanExecute (string command)
+			public bool CanExecute (ExecutionCommand command)
 			{
-				string ext = System.IO.Path.GetExtension (command).ToLower ();
-				return ext == ".exe" || ext == ".dll";
+				return command is DotNetExecutionCommand;
 			}
 			
-			public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
+			public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 			{
 				MonoProfilerExecutionHandler h = new MonoProfilerExecutionHandler (profiler);
-				return h.Execute (command, arguments, workingDirectory, environmentVariables, console);
+				return h.Execute (command, console);
 			}
 		}
 		
@@ -249,15 +248,15 @@ namespace MonoDevelop.Profiling
 				this.process = process;
 			}
 
-			public bool CanExecute (string command)
+			public bool CanExecute (ExecutionCommand command)
 			{
 				return true;
 			}
 			
-			public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
+			public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 			{
 				ProcessProfilerExecutionHandler h = new ProcessProfilerExecutionHandler (profiler, process);
-				return h.Execute (command, arguments, workingDirectory, environmentVariables, console);
+				return h.Execute (command, console);
 			}
 		}
 	}

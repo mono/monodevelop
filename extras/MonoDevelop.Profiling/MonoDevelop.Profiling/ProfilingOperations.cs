@@ -91,7 +91,9 @@ namespace MonoDevelop.Profiling
 
 			string workingDir = ProfilingService.GetProcessDirectory (process.Id);
 			IExecutionHandler handler = profiler.GetProcessExecutionHandlerFactory (process);
-			return handler.Execute (null, null, workingDir, null, null /*context.ConsoleFactory.CreateConsole (true)*/);
+			DotNetExecutionCommand cmd = new DotNetExecutionCommand ();
+			cmd.WorkingDirectory = workingDir;
+			return handler.Execute (cmd, null /*context.ConsoleFactory.CreateConsole (true)*/);
 		}
 		
 		public static void RestoreWorkbenchContext ()

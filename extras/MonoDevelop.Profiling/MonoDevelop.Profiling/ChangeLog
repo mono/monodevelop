@@ -1,3 +1,11 @@
+2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AbstractProfiler.cs:
+	* ProfilingOperations.cs:
+	* MonoProfilerExecutionHandler.cs:
+	* ProcessProfilerExecutionHandler.cs: Track api changes done
+	  in IExecutionHandler.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Profiling.addin.xml: Bump MD version.
