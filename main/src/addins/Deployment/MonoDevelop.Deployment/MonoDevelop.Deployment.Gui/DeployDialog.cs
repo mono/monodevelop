@@ -91,7 +91,7 @@ namespace MonoDevelop.Deployment.Gui
 			
 			store.Clear ();
 			foreach (PackageBuilder builder in builders) {
-				Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (builder.Icon, Gtk.IconSize.LargeToolbar);
+				Gdk.Pixbuf pix = MonoDevelop.Core.Gui.PixbufService.GetPixbuf (builder.Icon, Gtk.IconSize.LargeToolbar);
 				store.AppendValues (pix, builder.Description, builder);
 			}
 			
