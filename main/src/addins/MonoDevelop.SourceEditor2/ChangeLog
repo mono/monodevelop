@@ -1,5 +1,10 @@
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor.Extension/TemplateCodon.cs: (Revert
+	  revision 132136)
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor.Extension/TemplateCodon.cs: Fixed
 	  possible bug in template codons.
 
