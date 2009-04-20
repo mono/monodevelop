@@ -92,7 +92,7 @@ namespace MonoDevelop.Database.Components
 					Gdk.Pixbuf pixbuf = null;
 					
 					if (proj is DotNetProject && (proj as DotNetProject).LanguageBinding == null) {
-						pixbuf = MonoDevelop.Core.Gui.PixbufService.GetPixbuf (Stock.DialogError);
+						pixbuf = MonoDevelop.Core.Gui.PixbufService.GetPixbuf (Gtk.Stock.DialogError);
 					} else {
 						pixbuf = MonoDevelop.Core.Gui.PixbufService.GetPixbuf (proj.StockIcon, IconSize.Menu);
 					}
@@ -122,7 +122,7 @@ namespace MonoDevelop.Database.Components
 				if (name == "gtk-gui" || name == "bin")
 					continue;
 				
-				Gdk.Pixbuf pixbuf = MonoDevelop.Core.Gui.PixbufService.GetPixbuf (Stock.Directory);
+				Gdk.Pixbuf pixbuf = MonoDevelop.Core.Gui.PixbufService.GetPixbuf (Gtk.Stock.Directory);
 				TreeIter iter = store.AppendValues (parent, pixbuf, name, project, dir);
 						
 				PopulateCombo (iter, dir, project);

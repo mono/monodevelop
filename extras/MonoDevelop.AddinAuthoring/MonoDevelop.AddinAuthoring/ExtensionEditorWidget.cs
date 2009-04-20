@@ -139,7 +139,7 @@ namespace MonoDevelop.AddinAuthoring
 			PopulateNodeTypes (menu, it);
 			
 			menu.Insert (new Gtk.SeparatorMenuItem (), -1);
-			mi = new Gtk.ImageMenuItem (Stock.Remove, null);
+			mi = new Gtk.ImageMenuItem (Gtk.Stock.Remove, null);
 			menu.Insert (mi, -1);
 			mi.Activated += delegate { DeleteSelection (); };
 			
