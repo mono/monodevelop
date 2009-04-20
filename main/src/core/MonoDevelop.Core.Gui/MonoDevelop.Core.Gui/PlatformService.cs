@@ -102,7 +102,7 @@ namespace MonoDevelop.Core.Gui
 			string icon = GetIconForFile (filename);
 			if (icon != null)
 				pic = PixbufService.GetPixbuf (icon, size);
-			Console.WriteLine (filename + "/" + icon + "/bf:/" + pic);
+			
 			if (pic == null)
 				pic = OnGetPixbufForFile (filename, size);
 			
