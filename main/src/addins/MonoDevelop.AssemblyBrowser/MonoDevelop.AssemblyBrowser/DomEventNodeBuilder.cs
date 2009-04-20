@@ -59,7 +59,7 @@ namespace MonoDevelop.AssemblyBrowser
 			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (evt, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
 			if (evt.IsPrivate || evt.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = PixbufService.GetPixbuf (evt.StockIcon, Gtk.IconSize.Menu);
+			icon = ImageService.GetPixbuf (evt.StockIcon, Gtk.IconSize.Menu);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

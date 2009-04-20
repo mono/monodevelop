@@ -5,6 +5,16 @@
 	* MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs:
 	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs:
+	  Renamed PixbufService to ImageService.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
 	* MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs: Track
 	  API changes.
 
