@@ -132,9 +132,9 @@ namespace MonoDevelop.DesignerSupport
 			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
 			object o = model.GetValue (iter, 0);
 			if (o is IMember) {
-				pixRenderer.Pixbuf = PixbufService.GetPixbuf (((IMember)o).StockIcon, IconSize.Menu);
+				pixRenderer.Pixbuf = ImageService.GetPixbuf (((IMember)o).StockIcon, IconSize.Menu);
 			} else if (o is FoldingRegion) {
-				pixRenderer.Pixbuf = PixbufService.GetPixbuf ("gtk-add", IconSize.Menu);
+				pixRenderer.Pixbuf = ImageService.GetPixbuf ("gtk-add", IconSize.Menu);
 			}
 		}
 		
