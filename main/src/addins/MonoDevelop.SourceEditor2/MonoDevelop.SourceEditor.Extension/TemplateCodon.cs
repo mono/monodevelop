@@ -59,9 +59,7 @@ namespace MonoDevelop.SourceEditor.Extension
 				throw new InvalidOperationException ("Template file or resource not provided");
 			}
 			
-			XmlReaderSettings settings = new XmlReaderSettings ();
-			settings.CloseInput = true;
-			return XmlTextReader.Create (stream, settings);
+			return XmlTextReader.Create (stream, new XmlReaderSettings ());
 		}
 	}
 }
