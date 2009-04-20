@@ -236,22 +236,22 @@ namespace MonoDevelop.VersionControl.Views
 				string action = null;
 				if (rp.Action == RevisionAction.Add) {
 					action = GettextCatalog.GetString ("Add");
-					actionIcon = PixbufService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
 				}
 				else if (rp.Action == RevisionAction.Delete) {
 					action = GettextCatalog.GetString ("Delete");
-					actionIcon = PixbufService.GetPixbuf (Gtk.Stock.Remove, Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf (Gtk.Stock.Remove, Gtk.IconSize.Menu);
 				}
 				else if (rp.Action == RevisionAction.Modify) {
 					action = GettextCatalog.GetString ("Modify");
-					actionIcon = PixbufService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
 				}
 				else if (rp.Action == RevisionAction.Replace) {
 					action = GettextCatalog.GetString ("Replace");
-					actionIcon = PixbufService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
 				} else {
 					action = rp.ActionDescription;
-					actionIcon = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Empty, Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Empty, Gtk.IconSize.Menu);
 				}
 				
 				Gdk.Pixbuf fileIcon = IdeApp.Services.PlatformService.GetPixbufForFile (rp.Path, Gtk.IconSize.Menu);

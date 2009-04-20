@@ -2,6 +2,13 @@
 
 	* MonoDevelop.VersionControl.Views/LogView.cs:
 	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	* MonoDevelop.VersionControl/VersionControlService.cs: Renamed
+	  PixbufService to ImageService.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/LogView.cs:
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
 	* MonoDevelop.VersionControl/VersionControlService.cs: Track
 	  API changes.
 

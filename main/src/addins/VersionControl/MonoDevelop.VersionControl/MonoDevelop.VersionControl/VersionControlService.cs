@@ -62,10 +62,10 @@ namespace MonoDevelop.VersionControl
 			overlay_locked = Gdk.Pixbuf.LoadFromResource("overlay_locked.png");
 //			overlay_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
 			
-			icon_modified = PixbufService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
-			icon_removed = PixbufService.GetPixbuf (Gtk.Stock.Remove, Gtk.IconSize.Menu);
-			icon_conflicted = PixbufService.GetPixbuf (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
-			icon_added = PixbufService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
+			icon_modified = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
+			icon_removed = ImageService.GetPixbuf (Gtk.Stock.Remove, Gtk.IconSize.Menu);
+			icon_conflicted = ImageService.GetPixbuf (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
+			icon_added = ImageService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
 			icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 			
 			IdeApp.Workspace.FileAddedToProject += OnFileAdded;
