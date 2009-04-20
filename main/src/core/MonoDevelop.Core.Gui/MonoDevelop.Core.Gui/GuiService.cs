@@ -36,7 +36,6 @@ namespace MonoDevelop.Core.Gui
 {
 	public class Services
 	{
-		static ResourceService resourceService;
 		static PlatformService platformService;
 		
 		static Services ()
@@ -49,15 +48,7 @@ namespace MonoDevelop.Core.Gui
 				LoggingService.LogFatalError ("A platform service implementation has not been found.");
 			}
 		}
-
-		public static ResourceService Resources {
-			get {
-				if (resourceService == null)
-					resourceService = new ResourceService ();
-				return resourceService;
-			}
-		}
-	
+		
 		public static PlatformService PlatformService {
 			get {
 				return platformService;

@@ -1,3 +1,16 @@
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui/GuiService.cs:
+	* MonoDevelop.Core.Gui/PixbufList.cs:
+	* MonoDevelop.Core.Gui/AlertDialog.cs:
+	* MonoDevelop.Core.Gui/PixbufService.cs:
+	* MonoDevelop.Core.Gui/ResourceService.cs:
+	* MonoDevelop.Core.Gui/PlatformService.cs: Replaced the
+	  ResourceService with PixbufService. Got rid of some old
+	  windows.forms inherited models.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Core.Gui.csproj: don't require specific

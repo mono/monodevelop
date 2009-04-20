@@ -62,11 +62,11 @@ FILES =  \
 	MonoDevelop.Core.Gui/IMementoCapable.cs \
 	MonoDevelop.Core.Gui/MessageService.cs \
 	MonoDevelop.Core.Gui/PixbufList.cs \
+	MonoDevelop.Core.Gui/PixbufService.cs \
 	MonoDevelop.Core.Gui/PlatformService.cs \
 	MonoDevelop.Core.Gui/RecentFileStorage.cs \
 	MonoDevelop.Core.Gui/RecentItem.cs \
 	MonoDevelop.Core.Gui/RecentOpen.cs \
-	MonoDevelop.Core.Gui/ResourceService.cs \
 	MonoDevelop.Core.Gui/StockIcons.cs \
 	MonoDevelop.Core.Gui/SyncContext.cs \
 	MonoDevelop.Core.Gui/SyncContextAttribute.cs \

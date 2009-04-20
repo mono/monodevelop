@@ -468,7 +468,7 @@
     <Compile Include="MonoDevelop.Core.Gui.ProgressMonitoring\MessageDialogProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Codons\StockIconCodon.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\SetupApp.cs" />
-    <Compile Include="MonoDevelop.Core.Gui\ResourceService.cs" />
+    <Compile Include="MonoDevelop.Core.Gui\PixbufService.cs" />
     <Compile Include="MonoDevelop.Core.Gui.ProgressMonitoring\MultiTaskDialogProgressMonitor.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\MultiTaskProgressDialog.cs" />
