@@ -1,4 +1,4 @@
-// PixbufService.cs
+// ImageService.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -33,7 +33,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.Gui
 {
-	public static class PixbufService
+	public static class ImageService
 	{
 		static Gtk.IconFactory iconFactory = new Gtk.IconFactory ();
 		static Dictionary<string, string> stockMappings = new Dictionary<string, string> ();
@@ -41,7 +41,7 @@ namespace MonoDevelop.Core.Gui
 		static List<RuntimeAddin> addins = new List<RuntimeAddin> ();
 		static Dictionary<string,string> composedIcons = new Dictionary<string,string> ();
 		
-		static PixbufService ()
+		static ImageService ()
 		{
 			iconFactory.AddDefault ();
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/StockIcons", delegate(object sender, ExtensionNodeEventArgs args) {
@@ -172,7 +172,7 @@ namespace MonoDevelop.Core.Gui
 			catch (GLib.GException) {
 				// just discard the exception, the icon simply can't be
 				// loaded
-				LoggingService.LogWarning (typeof(PixbufService).ToString() + " can't load " + filename + " icon file");
+				LoggingService.LogWarning (typeof(ImageService).ToString() + " can't load " + filename + " icon file");
 			}
 		}
 		
