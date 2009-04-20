@@ -65,7 +65,46 @@ namespace MonoDevelop.CSharpBinding
 			this.Icon          = delegateType.Methods.First ().StockIcon;
 			this.initialOffset = editor.CursorPosition;
 		}
-
+		static int SearchMatchingBracket (TextEditor editor, int offset, char openBracket, char closingBracket, int direction)
+		{
+			bool isInString       = false;
+			bool isInChar         = false;	
+			bool isInBlockComment = false;
+			int depth = -1;
+			while (offset >= 0 && offset < editor.TextLength) {
+				char ch = editor.GetCharAt (offset);
+				switch (ch) {
+					case '/':
+						if (isInBlockComment) 
+							isInBlockComment = editor.GetCharAt (offset + direction) != '*';
+						if (!isInString && !isInChar && offset - direction < editor.TextLength) 
+							isInBlockComment = offset > 0 && editor.GetCharAt (offset - direction) == '*';
+						break;
+					case '"':
+						if (!isInChar && !isInBlockComment) 
+							isInString = !isInString;
+						break;
+					case '\'':
+						if (!isInString && !isInBlockComment) 
+							isInChar = !isInChar;
+						break;
+					default :
+						if (ch == closingBracket) {
+							if (!(isInString || isInChar || isInBlockComment)) 
+								--depth;
+						} else if (ch == openBracket) {
+							if (!(isInString || isInChar || isInBlockComment)) {
+								++depth;
+								if (depth == 0) 
+									return offset;
+							}
+						}
+						break;
+				}
+				offset += direction;
+			}
+			return -1;
+		}
 		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
 		{
 			// insert add/remove event handler code after +=/-=
@@ -77,7 +116,7 @@ namespace MonoDevelop.CSharpBinding
 			pos = Math.Max (pos, editor.SearchChar (pos, '{'));
 			
 			// Search closing bracket of member
-			pos = editor.SearchBracketForward (pos + 1, '{', '}') + 1;
+			pos = SearchMatchingBracket (editor, pos + 1, '{', '}', 1) + 1;
 //			int lastPos = editor.GetPositionFromLineColumn (callingMember.DeclaringType.BodyRegion.End.Line, callingMember.DeclaringType.BodyRegion.End.Column);
 			pos = Math.Min (pos /*Math.Min (pos, lastPos)*/, editor.TextLength - 1);
 			
