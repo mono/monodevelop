@@ -547,12 +547,14 @@ namespace MonoDevelop.Projects
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
 			
 			try {
-				if (!context.ExecutionHandler.CanExecute (configuration.CompiledOutputName)) {
+				ExecutionCommand cmd = CreateExecutionCommand (configuration);
+				
+				if (!context.ExecutionHandler.CanExecute (cmd)) {
 					monitor.ReportError ("Can not execute \"" + configuration.CompiledOutputName + "\". The selected execution mode is not supported for .NET projects.", null);
 					return;
 				}
 			
-				IProcessAsyncOperation op = context.ExecutionHandler.Execute (configuration.CompiledOutputName, configuration.CommandLineParameters, Path.GetDirectoryName (configuration.CompiledOutputName), configuration.EnvironmentVariables, console);
+				IProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, console);
 				
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();
@@ -565,11 +567,23 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		protected virtual ExecutionCommand CreateExecutionCommand (DotNetProjectConfiguration configuration)
+		{
+			DotNetExecutionCommand cmd = new DotNetExecutionCommand (configuration.CompiledOutputName);
+			cmd.Arguments = configuration.CommandLineParameters;
+			cmd.WorkingDirectory = Path.GetDirectoryName (configuration.CompiledOutputName);
+			cmd.EnvironmentVariables = configuration.EnvironmentVariables;
+			cmd.TargetRuntime = TargetRuntime;
+			return cmd;
+		}
+		
 		protected internal override bool OnGetCanExecute (ExecutionContext context, string configuration)
 		{
 			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetConfiguration (configuration);
+			ExecutionCommand cmd = CreateExecutionCommand (config);
+			
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) &&
-				context.ExecutionHandler.CanExecute (config.CompiledOutputName);
+				context.ExecutionHandler.CanExecute (cmd);
 		}
 		
 		protected internal override List<string> OnGetItemFiles (bool includeReferencedFiles)

@@ -1,3 +1,9 @@
+2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/CustomCommand.cs: Track
+	  IExecutionHandler api changes.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Projects.csproj: remove TreatWarningsAsErrors as

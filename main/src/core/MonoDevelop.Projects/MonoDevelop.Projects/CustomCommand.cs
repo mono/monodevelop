@@ -103,7 +103,8 @@ namespace MonoDevelop.Projects
 		
 		public bool CanExecute (ExecutionContext context, string configuration)
 		{
-			return context == null || context.ExecutionHandler.CanExecute (command);
+			ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (command);
+			return context == null || context.ExecutionHandler.CanExecute (cmd);
 		}
 		
 		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context, string configuration)
@@ -177,7 +178,13 @@ namespace MonoDevelop.Projects
 				else
 					console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
 
-				oper = context.ExecutionHandler.Execute (exe, args, dir, null, console);
+				ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
+				ProcessExecutionCommand pcmd = cmd as ProcessExecutionCommand;
+				if (pcmd != null) {
+					pcmd.Arguments = args;
+					pcmd.WorkingDirectory = dir;
+				}
+				oper = context.ExecutionHandler.Execute (cmd, console);
 			}
 			else {
 				if (externalConsole) {
