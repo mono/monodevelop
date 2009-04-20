@@ -23,7 +23,7 @@
 				LinkerArgs = ""/>
 			
 			<Files>
-				<File name = "main.h"><![CDATA[// project created on ${Date} at ${Time}
+				<File name = "main.h" AddStandardHeader="True"><![CDATA[
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
@@ -31,7 +31,7 @@
 
 #endif
 ]]></File>
-				<File name = "main.cpp"><![CDATA[#include "main.h"
+				<File name = "main.cpp" AddStandardHeader="True"><![CDATA[#include "main.h"
 
 // Add function definitions here
 ]]></File>

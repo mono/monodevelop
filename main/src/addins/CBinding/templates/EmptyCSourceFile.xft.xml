@@ -14,7 +14,7 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".c" DefaultName="EmptyCSourceFile"/>
+		<File DefaultExtension=".c" DefaultName="EmptyCSourceFile" AddStandardHeader="True"/>
 	</TemplateFiles>
 	
 	<FileOptions/>

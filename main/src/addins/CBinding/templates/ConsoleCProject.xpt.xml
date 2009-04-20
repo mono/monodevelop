@@ -23,8 +23,7 @@
 				LinkerArgs = ""/>
 			
 			<Files>
-				<File name = "main.c"><![CDATA[// project created on ${Date} at ${Time}
-#include <stdio.h>
+				<File name = "main.c" AddStandardHeader="True"><![CDATA[#include <stdio.h>
 
 int main (int argc, char *argv[])
 {

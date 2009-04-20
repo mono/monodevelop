@@ -14,7 +14,7 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".cpp" DefaultName="EmptyCfile"/>
+		<File DefaultExtension=".cpp" DefaultName="EmptyCfile" AddStandardHeader="True"/>
 	</TemplateFiles>
 	
 	<FileOptions/>

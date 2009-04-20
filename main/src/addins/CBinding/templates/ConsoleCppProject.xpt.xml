@@ -23,8 +23,7 @@
 				LinkerArgs = ""/>
 			
 			<Files>
-				<File name = "main.cpp"><![CDATA[// project created on ${Date} at ${Time}
-#include <iostream>
+				<File name = "main.cpp" AddStandardHeader="True"><![CDATA[#include <iostream>
 using namespace std;
 
 int main (int argc, char *argv[])

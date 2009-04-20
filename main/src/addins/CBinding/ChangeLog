@@ -1,5 +1,19 @@
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* templates/ConsoleCProject.xpt.xml:
+	* templates/EmptyCSourceFile.xft.xml:
+	* templates/EmptyCHeaderFile.xft.xml:
+	* templates/ConsoleCppProject.xpt.xml:
+	* templates/EmptyCppHeaderFile.xft.xml:
+	* templates/EmptyCppSourceFile.xft.xml:
+	* templates/StaticLibraryCProject.xpt.xml:
+	* templates/SharedLibraryCProject.xpt.xml:
+	* templates/SharedLibraryCppProject.xpt.xml:
+	* templates/StaticLibraryCppProject.xpt.xml: Fixed "Bug 491090
+	  - Standard Header doesn't work".
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* Gui/CTextEditorExtension.cs:
 	* gtk-gui/CBinding.AddPathDialog.cs:

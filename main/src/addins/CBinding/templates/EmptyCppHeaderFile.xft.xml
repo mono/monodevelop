@@ -14,7 +14,7 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".h" DefaultName="EmptyCppHeaderFile"/>
+		<File DefaultExtension=".h" DefaultName="EmptyCppHeaderFile" AddStandardHeader="True"/>
 	</TemplateFiles>
 	
 	<FileOptions/>
