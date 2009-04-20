@@ -1,2 +1,74 @@
 <objects attr-sync="on">
+  <object type="MonoDevelop.Database.Designer.UniqueConstraintEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="UniqueConstraintEditorWidget Signals">
+        <signal name="ContentChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Database.Designer.CommentEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="CommentEditorWidget Properties">
+        <property name="Comment" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="MonoDevelop.Database.Designer.CheckConstraintEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="CheckConstraintEditorWidget Signals">
+        <signal name="ContentChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Database.Designer.IndicesEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="IndicesEditorWidget Signals">
+        <signal name="ContentChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Database.Designer.PrimaryKeyConstraintEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="PrimaryKeyConstraintEditorWidget Signals">
+        <signal name="ContentChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Database.Designer.ConstraintsEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="ConstraintsEditorWidget Signals">
+        <signal name="ContentChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Database.Designer.ColumnsEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="ColumnsEditorWidget Signals">
+        <signal name="ContentChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="ForeignKeyConstraintEditorWidget Signals">
+        <signal name="ContentChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Database.Designer.TriggersEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="TriggersEditorWidget Signals">
+        <signal name="ContentChanged" />
+      </itemgroup>
+    </signals>
+  </object>
 </objects>

@@ -5,6 +5,7 @@ using Mono.Addins;
 using Mono.Addins.Description;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
@@ -40,10 +41,10 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			this.Build();
 			
-			pixAddin = IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.Addin, IconSize.Menu);
-			pixLocalAddin = IdeApp.Services.Resources.GetIcon ("md-addinauthoring-current-addin", IconSize.Menu);
-			pixExtensionPoint = IdeApp.Services.Resources.GetIcon ("md-extension-point", IconSize.Menu);
-			pixExtensionNode = IdeApp.Services.Resources.GetIcon ("md-extension-node", IconSize.Menu);
+			pixAddin = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Addin, IconSize.Menu);
+			pixLocalAddin = PixbufService.GetPixbuf ("md-addinauthoring-current-addin", IconSize.Menu);
+			pixExtensionPoint = PixbufService.GetPixbuf ("md-extension-point", IconSize.Menu);
+			pixExtensionNode = PixbufService.GetPixbuf ("md-extension-node", IconSize.Menu);
 			
 			store = new TreeStore (typeof(string), typeof(string), typeof(Extension), typeof(ExtensionNodeDescription), typeof(Gdk.Pixbuf), typeof(bool), typeof(ExtensionPoint));
 			state = new TreeViewState (tree, 0);

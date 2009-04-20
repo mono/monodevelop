@@ -27,6 +27,7 @@ using Gtk;
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Database.Sql;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Database.Components
 {
@@ -168,7 +169,7 @@ namespace MonoDevelop.Database.Components
 			}
 
 			if (iconString != null)
-				pixbufRenderer.Pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (iconString);
+				pixbufRenderer.Pixbuf = MonoDevelop.Core.Gui.PixbufService.GetPixbuf (iconString);
 		}
 		
 		private void ItemToggled (object sender, ToggledArgs args)

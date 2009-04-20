@@ -74,4 +74,15 @@
       </itemgroup>
     </signals>
   </object>
+  <object type="MonoDevelop.Database.Components.DataGrid" palette-category="MonoDevelop.Database.Components" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="DataGrid Properties">
+        <property name="ShowNavigator" />
+        <property name="EnableNavigator" />
+        <property name="PageSize" />
+        <property name="LimitPageSize" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
 </objects>

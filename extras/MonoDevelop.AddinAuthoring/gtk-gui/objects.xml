@@ -42,10 +42,6 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.AddinAuthoring.AutoSizeEntry" palette-category="MonoDevelop.AddinAuthoring" allow-children="false" base-type="Gtk.Entry" internal="true">
-    <itemgroups />
-    <signals />
-  </object>
   <object type="MonoDevelop.AddinAuthoring.TypeSelector" palette-category="MonoDevelop.AddinAuthoring" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="TypeSelector Properties">

@@ -5,6 +5,7 @@ using Gtk;
 using Mono.Addins;
 using Mono.Addins.Description;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AddinAuthoring
@@ -47,10 +48,10 @@ namespace MonoDevelop.AddinAuthoring
 			this.adesc = adesc;
 			this.isRoot = isRoot;
 			
-			pixCategory = IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
-			pixNamespace = IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.NameSpace, IconSize.Menu);
-			pixAddin = IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.Addin, IconSize.Menu);
-			pixLocalAddin = IdeApp.Services.Resources.GetIcon ("md-addinauthoring-current-addin", IconSize.Menu);
+			pixCategory = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
+			pixNamespace = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.NameSpace, IconSize.Menu);
+			pixAddin = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Addin, IconSize.Menu);
+			pixLocalAddin = PixbufService.GetPixbuf ("md-addinauthoring-current-addin", IconSize.Menu);
 			
 			store = new TreeStore (typeof(string), typeof(object), typeof(ExtensionPoint), typeof(bool), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool), typeof(bool));
 			
