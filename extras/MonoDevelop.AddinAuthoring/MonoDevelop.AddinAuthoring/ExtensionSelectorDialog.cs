@@ -48,10 +48,10 @@ namespace MonoDevelop.AddinAuthoring
 			this.adesc = adesc;
 			this.isRoot = isRoot;
 			
-			pixCategory = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
-			pixNamespace = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.NameSpace, IconSize.Menu);
-			pixAddin = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Addin, IconSize.Menu);
-			pixLocalAddin = PixbufService.GetPixbuf ("md-addinauthoring-current-addin", IconSize.Menu);
+			pixCategory = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
+			pixNamespace = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.NameSpace, IconSize.Menu);
+			pixAddin = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Addin, IconSize.Menu);
+			pixLocalAddin = ImageService.GetPixbuf ("md-addinauthoring-current-addin", IconSize.Menu);
 			
 			store = new TreeStore (typeof(string), typeof(object), typeof(ExtensionPoint), typeof(bool), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool), typeof(bool));
 			

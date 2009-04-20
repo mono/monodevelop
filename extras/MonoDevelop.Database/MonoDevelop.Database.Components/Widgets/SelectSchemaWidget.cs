@@ -169,7 +169,7 @@ namespace MonoDevelop.Database.Components
 			}
 
 			if (iconString != null)
-				pixbufRenderer.Pixbuf = MonoDevelop.Core.Gui.PixbufService.GetPixbuf (iconString);
+				pixbufRenderer.Pixbuf = MonoDevelop.Core.GuiImageService.GetPixbuf (iconString);
 		}
 		
 		private void ItemToggled (object sender, ToggledArgs args)

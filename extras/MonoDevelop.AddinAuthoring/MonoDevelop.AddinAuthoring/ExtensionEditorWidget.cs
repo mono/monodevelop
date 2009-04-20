@@ -41,10 +41,10 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			this.Build();
 			
-			pixAddin = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Addin, IconSize.Menu);
-			pixLocalAddin = PixbufService.GetPixbuf ("md-addinauthoring-current-addin", IconSize.Menu);
-			pixExtensionPoint = PixbufService.GetPixbuf ("md-extension-point", IconSize.Menu);
-			pixExtensionNode = PixbufService.GetPixbuf ("md-extension-node", IconSize.Menu);
+			pixAddin = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Addin, IconSize.Menu);
+			pixLocalAddin = ImageService.GetPixbuf ("md-addinauthoring-current-addin", IconSize.Menu);
+			pixExtensionPoint = ImageService.GetPixbuf ("md-extension-point", IconSize.Menu);
+			pixExtensionNode = ImageService.GetPixbuf ("md-extension-node", IconSize.Menu);
 			
 			store = new TreeStore (typeof(string), typeof(string), typeof(Extension), typeof(ExtensionNodeDescription), typeof(Gdk.Pixbuf), typeof(bool), typeof(ExtensionPoint));
 			state = new TreeViewState (tree, 0);

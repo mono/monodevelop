@@ -541,7 +541,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		void Add (IClass c, string prefix)
 		{
 			MonoDevelop.Projects.Ambience.Ambience am = se.View.GetAmbience ();
-			Gdk.Pixbuf pix = PixbufService.GetPixbuf (IdeApp.Services.Icons.GetIcon (c), IconSize.Menu);
+			Gdk.Pixbuf pix = ImageService.GetPixbuf (IdeApp.Services.Icons.GetIcon (c), IconSize.Menu);
 			string name = prefix + am.Convert (c, MonoDevelop.Projects.Ambience.ConversionFlags.ShowGenericParameters);
 			classStore.AppendValues (pix, name, c);
 
@@ -644,7 +644,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			foreach (IMember mem in members)
 			{
-				pix = PixbufService.GetPixbuf(IdeApp.Services.Icons.GetIcon (mem), IconSize.Menu); 
+				pix = ImageService.GetPixbuf(IdeApp.Services.Icons.GetIcon (mem), IconSize.Menu); 
 				
 				// Add the member to the list
 				MonoDevelop.Projects.Ambience.Ambience am = se.View.GetAmbience ();

@@ -31,8 +31,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		static SourceEditor ()
 		{
 			dragIconPixbuf = Gdk.Pixbuf.LoadFromResource ("bookmark.png");
-			executionMarkerPixbuf = PixbufService.GetPixbuf (Stock.ExecutionMarker);
-			breakPointPixbuf = PixbufService.GetPixbuf (Stock.BreakPoint);
+			executionMarkerPixbuf = ImageService.GetPixbuf (Stock.ExecutionMarker);
+			breakPointPixbuf = ImageService.GetPixbuf (Stock.BreakPoint);
 		}
 		
 		protected SourceEditor (IntPtr ptr): base (ptr)
