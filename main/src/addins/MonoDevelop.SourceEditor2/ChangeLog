@@ -1,5 +1,11 @@
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Renamed
+	  PixbufService to ImageService.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug
 	  489963 - Files loose execution bit when saved".
 
