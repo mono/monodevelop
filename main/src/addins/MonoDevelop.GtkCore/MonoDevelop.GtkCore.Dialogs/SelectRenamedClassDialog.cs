@@ -33,6 +33,7 @@ using Gdk;
 using Glade;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {
@@ -63,7 +64,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			treeClasses.AppendColumn (column);
 			
 			foreach (IType cls in classes) {
-				Pixbuf pic = IdeApp.Services.Resources.GetIcon (cls.StockIcon);
+				Pixbuf pic = PixbufService.GetPixbuf (cls.StockIcon);
 				store.AppendValues (pic, cls.FullName);
 			}
 		}
