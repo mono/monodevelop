@@ -1,3 +1,7 @@
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* WelcomePageFallbackWidget.cs: Track API changes.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* WelcomePage.csproj: don't require specific gtk-sharp version.
