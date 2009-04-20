@@ -402,7 +402,7 @@ namespace MonoDevelop.WelcomePage
 		void UpdateLabel ()
 		{
 			if (icon != null) {
-				image.Pixbuf = PixbufService.GetPixbuf (icon, Gtk.IconSize.Menu);
+				image.Pixbuf = ImageService.GetPixbuf (icon, Gtk.IconSize.Menu);
 				image.Visible = true;
 			} else {
 				image.Visible = false;
