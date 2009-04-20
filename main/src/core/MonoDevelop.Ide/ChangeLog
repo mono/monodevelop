@@ -1,5 +1,14 @@
 2009-04-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs: Track comment tag
+	  API.
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs: Add
+	  support for multi-line comments when the langauge doesn't
+	  support single-line comments.
+
+2009-04-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:
 	  Revert change that broke equality checking.
 

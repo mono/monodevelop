@@ -1114,7 +1114,7 @@ namespace MonoDevelop.SourceEditor
 		protected void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
 		{
 			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (view.ContentName);
-			info.Visible = binding != null && binding.CommentTag != null;
+			info.Visible = binding != null && !String.IsNullOrEmpty (binding.SingleLineCommentTag);
 		}
 		
 		[CommandHandler (EditCommands.ToggleCodeComment)]
@@ -1122,9 +1122,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool comment = false;
 			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (view.ContentName);
-			if (binding == null || binding.CommentTag == null)
+			if (binding == null || String.IsNullOrEmpty (binding.SingleLineCommentTag))
 				return;
-			string commentTag = binding.CommentTag;
+			string commentTag = binding.SingleLineCommentTag;
 			foreach (LineSegment line in this.textEditor.SelectedLines) {
 				string text = Document.GetTextAt (line);
 				string trimmedText = text.TrimStart ();

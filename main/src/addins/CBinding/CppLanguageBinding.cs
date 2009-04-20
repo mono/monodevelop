@@ -45,13 +45,13 @@ namespace CBinding
 			get { return "CPP"; }
 		}
 		
-		public string CommentTag {
-			get { return "//"; }
-		}
+		public string SingleLineCommentTag { get { return "//"; } }
+		public string BlockCommentStartTag { get { return "/*"; } }
+		public string BlockCommentEndTag { get { return "*/"; } }
 		
 		public bool IsSourceCodeFile (string fileName)
 		{
-			return Path.GetExtension (fileName.ToUpper ()) == ".CPP";
+			return fileName.EndsWith (".cpp", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public IParser Parser {

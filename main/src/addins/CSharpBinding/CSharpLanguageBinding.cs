@@ -87,11 +87,9 @@ namespace CSharpBinding
 			return new CSharpProjectParameters ();
 		}
 		
-		public string CommentTag {
-			get { 
-				return "//"; 
-			}
-		}
+		public string SingleLineCommentTag { get { return "//"; } }
+		public string BlockCommentStartTag { get { return "/*"; } }
+		public string BlockCommentEndTag { get { return "*/"; } }
 		
 		public CodeDomProvider GetCodeDomProvider ()
 		{

@@ -1,3 +1,7 @@
+2009-04-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* VBLanguageBinding.cs: Track comment tag API.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* VBNetBinding.csproj: don't require specific gtk-sharp version.

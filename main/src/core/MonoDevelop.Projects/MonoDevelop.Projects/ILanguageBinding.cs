@@ -37,11 +37,10 @@ namespace MonoDevelop.Projects
 		/// The language for this language binding.
 		/// </returns>
 		string Language { get; }
-		
-		/// <summary>
-		/// Used by Comment and Uncomment operations and by Centaurus Addin.
-		/// </summary>		
-		string CommentTag { get; }
+			
+		string SingleLineCommentTag { get; }
+		string BlockCommentStartTag { get; }
+		string BlockCommentEndTag { get; }
 		
 		/// <returns>
 		/// True, if this language binding can compile >fileName<

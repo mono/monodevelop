@@ -48,9 +48,9 @@ namespace MonoDevelop.ValaBinding
 			get { return "Vala"; }
 		}
 		
-		public string CommentTag {
-			get { return "//"; }
-		}
+		public string SingleLineCommentTag { get { return "//"; } }
+		public string BlockCommentStartTag { get { return "/*"; } }
+		public string BlockCommentEndTag { get { return "*/"; } }
 		
 		public bool IsSourceCodeFile (string fileName)
 		{

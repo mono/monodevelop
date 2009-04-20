@@ -355,9 +355,9 @@ namespace MonoDevelop.Ide.Tasks
 				Document doc = IdeApp.Workbench.OpenDocument (task.FileName, Math.Max (1, task.Line), Math.Max (1, task.Column), true);
 				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
 					IDotNetLanguageBinding binding = ((DotNetProject)doc.Project).LanguageBinding;
-					if (! String.IsNullOrEmpty (binding.CommentTag)) {
+					if (! String.IsNullOrEmpty (binding.SingleLineCommentTag)) {
 						string line = doc.TextEditor.GetLineText (task.Line);
-						int index = line.IndexOf (binding.CommentTag);
+						int index = line.IndexOf (binding.SingleLineCommentTag);
 						if (index != -1) {
 							doc.TextEditor.JumpTo (task.Line, task.Column);
 							line = line.Substring (0, index);

@@ -46,11 +46,9 @@ namespace PyBinding
 			}
 		}
 		
-		public string CommentTag {
-			get {
-				return s_CommentTag;
-			}
-		}
+		public string SingleLineCommentTag { get { return s_CommentTag; } }
+		public string BlockCommentStartTag { get { return null; } }
+		public string BlockCommentEndTag { get { return null; } }
 		
 		public IParser Parser {
 			get {

@@ -69,11 +69,10 @@ namespace MonoDevelop.VBNetBinding
 		{
 			return new VBCompilerParameters ();
 		}
-
-		public string CommentTag
-		{
-			get { return "'"; }
-		}
+		
+		public string SingleLineCommentTag { get { return "'"; } }
+		public string BlockCommentStartTag { get { return null; } }
+		public string BlockCommentEndTag { get { return null; } }
 		
 		public CodeDomProvider GetCodeDomProvider ()
 		{

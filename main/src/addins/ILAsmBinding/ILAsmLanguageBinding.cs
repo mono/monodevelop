@@ -82,10 +82,9 @@ namespace ILAsmBinding
 			return null;
 		}
 		
-		public string CommentTag
-		{
-			get { return "//"; }
-		}
+		public string SingleLineCommentTag { get { return "//"; } }
+		public string BlockCommentStartTag { get { return null; } }
+		public string BlockCommentEndTag { get { return null; } }
 		
 		public System.CodeDom.Compiler.CodeDomProvider GetCodeDomProvider ()
 		{

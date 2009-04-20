@@ -1,3 +1,8 @@
+2009-04-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/ILanguageBinding.cs: Track comment tag
+	  API.
+
 2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs:

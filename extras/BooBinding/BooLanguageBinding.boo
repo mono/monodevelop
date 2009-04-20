@@ -62,9 +62,17 @@ public class BooLanguageBinding(IDotNetLanguageBinding):
 	public def CreateProjectParameters (projectOptions as XmlElement) as ProjectParameters:
 		return null
 	
-	public CommentTag as string:
+	public SingleLineCommentTag as string:
 		get:
 			return "//"
+	
+	public BlockCommentStartTag as string:
+		get:
+			return null
+	
+	public BlockCommentEndTag as string:
+		get:
+			return null
 
 	def IsSourceCodeFile (fileName as string):
 		return Path.GetExtension(fileName).ToLower() == ".boo"

@@ -93,11 +93,9 @@ namespace JavaBinding
 			return null;
 		}
 		
-		// http://www.nbirn.net/Resources/Developers/Conventions/Commenting/Java_Comments.htm#CommentBlock
-		public string CommentTag
-		{
-			get { return "//"; }
-		}
+		public string SingleLineCommentTag { get { return "//"; } }
+		public string BlockCommentStartTag { get { return "/*"; } }
+		public string BlockCommentEndTag { get { return "*/"; } }
 		
 		public CodeDomProvider GetCodeDomProvider ()
 		{

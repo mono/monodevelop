@@ -48,13 +48,13 @@ namespace CBinding
 			get { return "C"; }
 		}
 		
-		public string CommentTag {
-			get { return "//"; }
-		}
+		public string SingleLineCommentTag { get { return null; } }
+		public string BlockCommentStartTag { get { return "/*"; } }
+		public string BlockCommentEndTag { get { return "*/"; } }
 		
 		public bool IsSourceCodeFile (string fileName)
 		{
-			return Path.GetExtension (fileName.ToUpper ()) == ".C";
+			return fileName.EndsWith (".c", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public IParser Parser {

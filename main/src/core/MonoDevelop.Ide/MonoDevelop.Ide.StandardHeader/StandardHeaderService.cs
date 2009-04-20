@@ -42,12 +42,16 @@ namespace MonoDevelop.Ide.StandardHeader
 	public static class StandardHeaderService
 	{
 	
-		static string GetComment (string language)
+		static string[] GetComment (string language)
 		{
 			LanguageBindingService languageBindingService = MonoDevelop.Projects.Services.Languages;
 			ILanguageBinding binding = languageBindingService.GetBindingPerLanguageName (language);
-			if (binding != null)
-				return binding.CommentTag;
+			if (binding != null) {
+				if (!String.IsNullOrEmpty (binding.SingleLineCommentTag))
+					return new string[] { binding.SingleLineCommentTag };
+				if (!String.IsNullOrEmpty (binding.BlockCommentStartTag) && !String.IsNullOrEmpty (binding.BlockCommentEndTag))
+					return new string[] { binding.BlockCommentStartTag, binding.BlockCommentEndTag };
+			}
 			return null;
 		}
 		
@@ -64,27 +68,37 @@ namespace MonoDevelop.Ide.StandardHeader
 		public static string GetHeader (AuthorInformation authorInfo, StandardHeaderPolicy policy,
 		                                string language, string fileName, bool newFile)
 		{
-			string comment = GetComment (language);
+			string[] comment = GetComment (language);
 			if (comment == null)
 				return "";
 				
 			if (string.IsNullOrEmpty (policy.Text) || (newFile && !policy.IncludeInNewFiles))
 				return "";
 			
-			//make sure there's a space between the comment char and the license text
-			if (comment.Length > 0 && !char.IsWhiteSpace (comment[comment.Length -1]))
-				comment = comment + " ";
+			string result;
 			
-			StringBuilder result = new StringBuilder (policy.Text.Length);
-			string[] lines = policy.Text.Split ('\n');
-			foreach (string line in lines) {
-				result.Append (comment);
-				result.Append (line);
-				// the text editor should take care of conversions to preferred newline char
-				result.Append ('\n');
+			if (comment.Length == 1) {
+				string cmt = comment[0];
+				//make sure there's a space between the comment char and the license text
+				if (!char.IsWhiteSpace (cmt[cmt.Length -1]))
+					cmt = cmt + " ";
+			
+				StringBuilder sb = new StringBuilder (policy.Text.Length);
+				string[] lines = policy.Text.Split ('\n');
+				foreach (string line in lines) {
+					sb.Append (cmt);
+					sb.Append (line);
+					// the text editor should take care of conversions to preferred newline char
+					sb.Append ('\n');
+				}
+				result = sb.ToString ();
+			} else {
+				//multiline comment
+				result = String.Concat (comment[0], "\n", policy.Text, "\n", comment[1], "\n");
+				
 			}
 			
-			return StringParserService.Parse (result.ToString(), new string[,] { 
+			return StringParserService.Parse (result, new string[,] { 
 				{ "FileName", Path.GetFileName (fileName) }, 
 				{ "FileNameWithoutExtension", Path.GetFileNameWithoutExtension (fileName) }, 
 				{ "Directory", Path.GetDirectoryName (fileName) }, 
