@@ -30,6 +30,7 @@ using System.IO;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
@@ -67,9 +68,9 @@ namespace MonoDevelop.ChangeLogAddIn
 			foreach (ChangeLogEntry ce in entries.Values) {
 				Gdk.Pixbuf pic;
 				if (ce.CantGenerate)
-					pic = IdeApp.Services.Resources.GetIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
+					pic = PixbufService.GetPixbuf (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
 				else if (ce.IsNew)
-					pic = IdeApp.Services.Resources.GetIcon (Gtk.Stock.New, Gtk.IconSize.Menu);
+					pic = PixbufService.GetPixbuf (Gtk.Stock.New, Gtk.IconSize.Menu);
 				else
 					pic = null;
 				store.AppendValues (ce, pic, ce.File);
