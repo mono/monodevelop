@@ -127,6 +127,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\BreakpointPropertiesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.BreakpointPropertiesDialog.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebugExecutionModeSet.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml" />

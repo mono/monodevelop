@@ -34,6 +34,7 @@ FILES =  \
 	MonoDevelop.Debugger/BreakpointPropertiesDialog.cs \
 	MonoDevelop.Debugger/DebugCommands.cs \
 	MonoDevelop.Debugger/DebugExecutionHandlerFactory.cs \
+	MonoDevelop.Debugger/DebugExecutionModeSet.cs \
 	MonoDevelop.Debugger/DebuggingService.cs \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisassemblyView.cs \

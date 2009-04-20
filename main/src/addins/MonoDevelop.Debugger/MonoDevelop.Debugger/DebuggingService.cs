@@ -135,7 +135,7 @@ namespace MonoDevelop.Debugger
 			return fc.SupportedFeatures;
 		}
 
-		public static DebuggerFeatures GetSupportedFeaturesForCommand (string command)
+		public static DebuggerFeatures GetSupportedFeaturesForCommand (ExecutionCommand command)
 		{
 			IDebuggerEngine engine = GetFactoryForCommand (command);
 			if (engine != null)
@@ -219,8 +219,9 @@ namespace MonoDevelop.Debugger
 
 		public static IProcessAsyncOperation Run (string file, IConsole console)
 		{
-			DebugExecutionHandler h = new DebugExecutionHandler ();
-			return h.Execute (file, null, null, null, console);
+			DebugExecutionHandler h = new DebugExecutionHandler (null);
+			ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (file);
+			return h.Execute (cmd, console);
 		}
 		
 		public static IAsyncOperation AttachToProcess (IDebuggerEngine debugger, ProcessInfo proc)
@@ -242,11 +243,29 @@ namespace MonoDevelop.Debugger
 				DisassemblyRequested (null, EventArgs.Empty);
 		}
 		
-		internal static void InternalRun (DebuggerStartInfo startInfo, IConsole c)
+		internal static void InternalRun (ExecutionCommand cmd, IDebuggerEngine factory, IConsole c)
 		{
+			DebuggerStartInfo startInfo = new DebuggerStartInfo ();
+			
+			ProcessExecutionCommand pec = cmd as ProcessExecutionCommand;
+			if (pec != null) {
+				startInfo.Command = pec.Command;
+				startInfo.Arguments = pec.Arguments;
+				startInfo.WorkingDirectory = pec.WorkingDirectory;
+				if (pec.EnvironmentVariables.Count > 0) {
+					foreach (KeyValuePair<string,string> val in pec.EnvironmentVariables)
+						startInfo.EnvironmentVariables [val.Key] = val.Value;
+				}
+			} else {
+				startInfo.Command = cmd.CommandString;
+			}
+
 			console = c;
 			
-			session = CreateDebugSessionForCommand (startInfo.Command);
+			if (factory != null)
+				session = CreateDebugSession (factory);
+			else
+				session = CreateDebugSessionForCommand (cmd);
 			
 			SetupSession ();
 
@@ -277,15 +296,20 @@ namespace MonoDevelop.Debugger
 			NotifyLocationChanged ();
 		}
 		
+		static DateTime lastStart;
+		
 		static void OnStarted (object s, EventArgs a)
 		{
+			lastStart = DateTime.Now;
 			currentBacktrace = null;
 			DispatchService.GuiDispatch (delegate {
+				DateTime t = DateTime.Now;
 				if (ResumedEvent != null)
 					ResumedEvent (null, a);
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
+				Console.WriteLine ("MDB start events: " + (DateTime.Now - t).TotalMilliseconds);
 			});
 		}
 		
@@ -322,10 +346,13 @@ namespace MonoDevelop.Debugger
 		static void NotifyPaused ()
 		{
 			DispatchService.GuiDispatch (delegate {
+				Console.WriteLine ("MDB running time: " + (DateTime.Now - lastStart).TotalMilliseconds);
+				DateTime t = DateTime.Now;
 				if (PausedEvent != null)
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
 				IdeApp.Workbench.RootWindow.Present ();
+				Console.WriteLine ("MDB stop events: " + (DateTime.Now - t).TotalMilliseconds);
 			});
 		}
 		
@@ -473,18 +500,23 @@ namespace MonoDevelop.Debugger
 			});
 		}
 		
-		public static bool CanDebugCommand (string command)
+		public static bool CanDebugCommand (ExecutionCommand command)
 		{
 			return GetFactoryForCommand (command) != null;
 		}
 		
-		public static DebuggerSession CreateDebugSessionForCommand (string command)
+		public static DebuggerSession CreateDebugSession (IDebuggerEngine factory)
+		{
+			DebuggerSession ds = factory.CreateSession ();
+			ds.Initialize ();
+			return ds;
+		}
+		
+		public static DebuggerSession CreateDebugSessionForCommand (ExecutionCommand command)
 		{
 			IDebuggerEngine factory = GetFactoryForCommand (command);
 			if (factory != null) {
-				DebuggerSession ds = factory.CreateSession ();
-				ds.Initialize ();
-				return ds;
+				return CreateDebugSession (factory);
 			} else
 				throw new InvalidOperationException ("Unsupported command: " + command);
 		}
@@ -494,11 +526,11 @@ namespace MonoDevelop.Debugger
 			return (IDebuggerEngine[]) AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true);
 		}		
 		
-		static IDebuggerEngine GetFactoryForCommand (string cmd)
+		static IDebuggerEngine GetFactoryForCommand (ExecutionCommand cmd)
 		{
 			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath)) {
 				IDebuggerEngine factory = (IDebuggerEngine) node.GetInstance ();
-				if (factory.CanDebugCommand (cmd))
+				if (factory.CanDebugCommand (cmd.CommandString))
 					return factory;
 			}
 			return null;
@@ -532,16 +564,37 @@ namespace MonoDevelop.Debugger
 	{
 		public DebuggerFeatures SupportedFeatures { get; set; }
 		
-		public bool CanExecute (string command)
+		public bool CanExecute (ExecutionCommand command)
 		{
 			SupportedFeatures = DebuggingService.GetSupportedFeaturesForCommand (command);
 			return SupportedFeatures != DebuggerFeatures.None;
 		}
 
-		public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
+		public IProcessAsyncOperation Execute (ExecutionCommand cmd, IConsole console)
 		{
 			// Never called
 			throw new System.NotImplementedException();
+		}
+	}
+	
+	internal class InternalDebugExecutionHandler: IExecutionHandler
+	{
+		IDebuggerEngine engine;
+		
+		public InternalDebugExecutionHandler (IDebuggerEngine engine)
+		{
+			this.engine = engine;
+		}
+		
+		public bool CanExecute (ExecutionCommand command)
+		{
+			return engine.CanDebugCommand (command.CommandString);
+		}
+
+		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		{
+			DebugExecutionHandler h = new DebugExecutionHandler (engine);
+			return h.Execute (command, console);
 		}
 	}
 }

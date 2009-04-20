@@ -172,6 +172,7 @@
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
 		<Mode id="Debug" _name="Debug" class="MonoDevelop.Debugger.DebugExecutionHandlerFactory"/>
+		<ModeSetType class="MonoDevelop.Debugger.DebugExecutionModeSet"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">

@@ -39,48 +39,35 @@ namespace MonoDevelop.Debugger
 {
 	internal class DebugExecutionHandlerFactory: IExecutionHandler
 	{
-		public bool CanExecute (string command)
+		public bool CanExecute (ExecutionCommand command)
 		{
 			return DebuggingService.CanDebugCommand (command);
 		}
 
-		public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
+		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			if (!CanExecute (command))
 			    return null;
-			DebugExecutionHandler h = new DebugExecutionHandler ();
-			return h.Execute (command, arguments, workingDirectory, environmentVariables, console);
+			DebugExecutionHandler h = new DebugExecutionHandler (null);
+			return h.Execute (command, console);
 		}
 	}
 	
-	class DebugExecutionHandler: IExecutionHandler, IProcessAsyncOperation
+	class DebugExecutionHandler: IProcessAsyncOperation
 	{
 		bool done;
 		ManualResetEvent stopEvent;
+		IDebuggerEngine factory;
 		
-		public DebugExecutionHandler ()
+		public DebugExecutionHandler (IDebuggerEngine factory)
 		{
+			this.factory = factory;
 			DebuggingService.StoppedEvent += new EventHandler (OnStopDebug);
 		}
 		
-		public bool CanExecute (string command)
+		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			// Never called
-			throw new InvalidOperationException ();
-		}
-
-		public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
-		{
-			DebuggerStartInfo startInfo = new DebuggerStartInfo ();
-			startInfo.Command = command;
-			startInfo.Arguments = arguments;
-			startInfo.WorkingDirectory = workingDirectory;
-			if (environmentVariables != null) {
-				foreach (KeyValuePair<string,string> val in environmentVariables)
-					startInfo.EnvironmentVariables [val.Key] = val.Value;
-			}
-
-			DebuggingService.InternalRun (startInfo, console);
+			DebuggingService.InternalRun (command, factory, console);
 			return this;
 		}
 		

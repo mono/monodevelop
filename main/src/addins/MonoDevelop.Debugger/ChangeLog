@@ -1,3 +1,15 @@
+2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/DebugExecutionModeSet.cs: Created an
+	  execution mode set for debuggers.
+
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/DebugExecutionHandlerFactory.cs: Track
+	  api changes done in IExecutionHandler.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Debugger.csproj: don't require specific
