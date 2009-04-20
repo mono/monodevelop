@@ -69,7 +69,7 @@ namespace MonoDevelop.SourceEditor
 		FileSystemWatcher fileSystemWatcher;
 		static bool isInWrite = false;
 		DateTime lastSaveTime;
-		
+		object attributes; // Contains platform specific file attributes
 		
 		TextMarker currentDebugLineMarker;
 		TextMarker breakpointMarker;
@@ -229,6 +229,7 @@ namespace MonoDevelop.SourceEditor
 			try {
 				TextFile.WriteFile (fileName, Document.Text, encoding);
 				lastSaveTime = File.GetLastWriteTime (fileName);
+				IdeApp.Services.PlatformService.SetFileAttributes (fileName, attributes);
 			} finally {
 				isInWrite = false;
 			}
@@ -255,6 +256,8 @@ namespace MonoDevelop.SourceEditor
 			if (autoSave.FileName == fileName) {
 				autoSave.RemoveAutoSaveFile ();
 			}
+			
+			attributes = IdeApp.Services.PlatformService.GetFileAttributes (fileName);
 			autoSave.FileName = fileName;
 			if (warnOverwrite) {
 				warnOverwrite = false;
