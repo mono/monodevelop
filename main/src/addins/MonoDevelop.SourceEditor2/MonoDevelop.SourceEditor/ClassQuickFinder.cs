@@ -35,6 +35,7 @@ using System.Linq;
 using Gtk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 
@@ -171,7 +172,7 @@ namespace MonoDevelop.SourceEditor
 			
 			public Gdk.Pixbuf GetIcon (int n)
 			{
-				return MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, IconSize.Menu);
+				return PixbufService.GetPixbuf (Gtk.Stock.Add, IconSize.Menu);
 			}
 			
 			public object GetTag (int n)
@@ -193,7 +194,7 @@ namespace MonoDevelop.SourceEditor
 					if (regionCombo.CurrentItem == region)
 						return;
 					regionCombo.SetItem (region.Name, //GettextCatalog.GetString ("Region {0}", region.Name),
-					                     MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, IconSize.Menu),
+					                     PixbufService.GetPixbuf (Gtk.Stock.Add, IconSize.Menu),
 					                     region);
 					UpdateRegionComboTip (region);
 					return;
@@ -261,7 +262,7 @@ namespace MonoDevelop.SourceEditor
 			
 			public Gdk.Pixbuf GetIcon (int n)
 			{
-				return MonoDevelop.Core.Gui.Services.Resources.GetIcon (memberList[n].StockIcon, IconSize.Menu);
+				return PixbufService.GetPixbuf (memberList[n].StockIcon, IconSize.Menu);
 			}
 			
 			public object GetTag (int n)
@@ -288,7 +289,7 @@ namespace MonoDevelop.SourceEditor
 						if (membersCombo.CurrentItem == member)
 							return;
 						membersCombo.SetItem (editor.Ambience.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters),
-						                      MonoDevelop.Core.Gui.Services.Resources.GetIcon (member.StockIcon, IconSize.Menu),
+						                      MonoDevelop.Core.Gui.PixbufService.GetPixbuf (member.StockIcon, IconSize.Menu),
 						                      member);
 						UpdateMemberComboTip (member);
 						return;
@@ -364,7 +365,7 @@ namespace MonoDevelop.SourceEditor
 			
 			public Gdk.Pixbuf GetIcon (int n)
 			{
-				return MonoDevelop.Core.Gui.Services.Resources.GetIcon (typeList[n].StockIcon, IconSize.Menu);
+				return PixbufService.GetPixbuf (typeList[n].StockIcon, IconSize.Menu);
 			}
 			
 			public object GetTag (int n)
@@ -388,7 +389,7 @@ namespace MonoDevelop.SourceEditor
 				typeCombo.SetItem ("", null, null);
 			} else {
 				typeCombo.SetItem (editor.Ambience.GetString (c, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters),
-				                   MonoDevelop.Core.Gui.Services.Resources.GetIcon (c.StockIcon, IconSize.Menu),
+				                   MonoDevelop.Core.Gui.PixbufService.GetPixbuf (c.StockIcon, IconSize.Menu),
 				                   c);
 				
 			}

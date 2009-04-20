@@ -633,7 +633,7 @@ namespace MonoDevelop.SourceEditor
 			if (messageBar == null) {
 				messageBar = new MessageArea ();
 				
-				Gtk.Image img = MonoDevelop.Core.Gui.Services.Resources.GetImage ("gtk-dialog-warning", IconSize.Dialog);
+				Gtk.Image img = PixbufService.GetImage ("gtk-dialog-warning", IconSize.Dialog);
 				img.SetAlignment (0.5f, 0);
 				messageBar.PackStart (img, false, false, 0);
 				
@@ -660,12 +660,12 @@ namespace MonoDevelop.SourceEditor
 				messageBar.PackEnd (box, false, false, 10);
 				
 				Button b1 = new Button (GettextCatalog.GetString("_Reload"));
-				b1.Image = MonoDevelop.Core.Gui.Services.Resources.GetImage (Gtk.Stock.Refresh, IconSize.Button);
+				b1.Image = PixbufService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
 				box.PackStart (b1, false, false, 5);
 				b1.Clicked += new EventHandler (ClickedReload);
 				
 				Button b2 = new Button (GettextCatalog.GetString("_Ignore"));
-				b2.Image = MonoDevelop.Core.Gui.Services.Resources.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+				b2.Image = PixbufService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
 				box.PackStart (b2, false, false, 5);
 				b2.Clicked += new EventHandler (ClickedIgnore);
 			}
@@ -688,7 +688,7 @@ namespace MonoDevelop.SourceEditor
 			if (messageBar == null) {
 				messageBar = new MessageArea ();
 				
-				Gtk.Image img = MonoDevelop.Core.Gui.Services.Resources.GetImage ("gtk-dialog-warning", IconSize.Dialog);
+				Gtk.Image img = PixbufService.GetImage ("gtk-dialog-warning", IconSize.Dialog);
 				img.SetAlignment (0.5f, 0);
 				messageBar.PackStart (img, false, false, 0);
 				
@@ -716,7 +716,7 @@ namespace MonoDevelop.SourceEditor
 				messageBar.PackEnd (box, false, false, 10);
 				
 				Button b1 = new Button (GettextCatalog.GetString("_Load"));
-				b1.Image = MonoDevelop.Core.Gui.Services.Resources.GetImage (Gtk.Stock.Refresh, IconSize.Button);
+				b1.Image = PixbufService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
 				box.PackStart (b1, false, false, 5);
 				b1.Clicked += delegate {
 					try {
@@ -732,7 +732,7 @@ namespace MonoDevelop.SourceEditor
 				};
 				
 				Button b2 = new Button (GettextCatalog.GetString("_Restore"));
-				b2.Image = MonoDevelop.Core.Gui.Services.Resources.GetImage (Gtk.Stock.RevertToSaved, IconSize.Button);
+				b2.Image = PixbufService.GetImage (Gtk.Stock.RevertToSaved, IconSize.Button);
 				box.PackStart (b2, false, false, 5);
 				b2.Clicked += delegate {
 					try {
