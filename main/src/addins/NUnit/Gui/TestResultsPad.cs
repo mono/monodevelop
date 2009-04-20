@@ -137,7 +137,7 @@ namespace MonoDevelop.NUnit
 			buttonOutput = new ToggleToolButton ();
 			buttonOutput.Label = GettextCatalog.GetString ("Output");
 			buttonOutput.Active = false;
-			buttonOutput.IconWidget = PixbufService.GetImage (MonoDevelop.Core.Gui.Stock.OutputIcon, IconSize.Menu);
+			buttonOutput.IconWidget = ImageService.GetImage (MonoDevelop.Core.Gui.Stock.OutputIcon, IconSize.Menu);
 			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
 			buttonOutput.IsImportant = true;
 			buttonOutput.SetTooltip (tips, GettextCatalog.GetString ("Show Output"), GettextCatalog.GetString ("Show Output"));
