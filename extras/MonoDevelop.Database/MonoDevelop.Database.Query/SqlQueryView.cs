@@ -74,11 +74,11 @@ namespace MonoDevelop.Database.Query
 			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
 			
 			buttonExecute = new ToolButton (
-				Services.Resources.GetImage ("md-db-execute", IconSize.SmallToolbar),
+				PixbufService.GetPixbuf ("md-db-execute", IconSize.SmallToolbar),
 					AddinCatalog.GetString ("Execute")
 			);
 			buttonStop = new ToolButton ("gtk-stop");
-			buttonClear = new ToolButton (Services.Resources.GetImage ("gtk-clear", IconSize.Button), AddinCatalog.GetString ("Clear Results"));
+			buttonClear = new ToolButton (PixbufService.GetPixbuf ("gtk-clear", IconSize.Button), AddinCatalog.GetString ("Clear Results"));
 			buttonStop.Sensitive = false;
 			buttonExecute.Sensitive = false;
 			
@@ -211,7 +211,7 @@ namespace MonoDevelop.Database.Query
 							Environment.NewLine, "\t", AddinCatalog.GetString ("Affected Rows"), ": ", table.Rows.Count);
 						status.Buffer.Text += msg;
 							
-						TabLabel label = new TabLabel (new Label (table.TableName), Services.Resources.GetImage ("md-db-table", IconSize.Menu));
+						TabLabel label = new TabLabel (new Label (table.TableName), PixbufService.GetPixbuf ("md-db-table", IconSize.Menu));
 						label.CloseClicked += new EventHandler (OnResultTabClose);
 						notebook.AppendPage (grid, label);
 						notebook.ShowAll ();
