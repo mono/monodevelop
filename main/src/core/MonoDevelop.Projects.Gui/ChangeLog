@@ -1,3 +1,10 @@
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Track API changes.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Projects.Gui.csproj: don't require specific

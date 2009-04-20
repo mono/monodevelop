@@ -444,7 +444,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			string iconName = completionDataList[n].Icon;
 			if (string.IsNullOrEmpty (iconName))
 				return null;
-			return MonoDevelop.Core.Gui.Services.Resources.GetIcon (iconName, Gtk.IconSize.Menu);
+			return PixbufService.GetPixbuf (iconName, Gtk.IconSize.Menu);
 		}
 		
 		#endregion

@@ -42,9 +42,5 @@ namespace MonoDevelop.Projects.Gui
 		internal static ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
-	
-		internal static ResourceService Resources {
-			get { return MonoDevelop.Core.Gui.Services.Resources; }
-		}
 	}
 }
