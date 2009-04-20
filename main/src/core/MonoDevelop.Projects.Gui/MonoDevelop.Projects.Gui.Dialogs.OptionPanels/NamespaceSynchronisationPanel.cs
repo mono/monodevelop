@@ -228,8 +228,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			string rootNamespace = checkDefaultAsRoot.Active? GettextCatalog.GetString ("Default.Namespace") : "";
 			
-			Gdk.Pixbuf folderIcon = PixbufService.GetPixbuf ("md-open-folder", IconSize.Menu);
-			Gdk.Pixbuf projectIcon = PixbufService.GetPixbuf ("md-project", IconSize.Menu);
+			Gdk.Pixbuf folderIcon = ImageService.GetPixbuf ("md-open-folder", IconSize.Menu);
+			Gdk.Pixbuf projectIcon = ImageService.GetPixbuf ("md-project", IconSize.Menu);
 			iter = previewStore.AppendValues (projectIcon, GettextCatalog.GetString ("Project"), rootNamespace);
 			
 			if (rootNamespace.Length > 0)
