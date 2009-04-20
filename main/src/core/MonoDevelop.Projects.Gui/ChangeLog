@@ -1,5 +1,19 @@
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Completion/TextUtilities.cs:
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	  Relicensed some old stuff. Removed text utilities. These
+	  functions can't be done on that level. The backend bindings
+	  have to handle this stuff.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:

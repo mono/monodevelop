@@ -92,7 +92,6 @@
     <Compile Include="MonoDevelop.Projects.Gui.Completion\DeclarationViewWindow.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Completion\ICompletionWidget.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Completion\ListWindow.cs" />
-    <Compile Include="MonoDevelop.Projects.Gui.Completion\TextUtilities.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\SolutionItemConfigurationsPanel.cs" />
     <Compile Include="MonoDevelop.Projects.Gui\ProjectsGuiServices.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\RuntimeOptionsPanel.cs" />
