@@ -68,9 +68,9 @@ namespace MonoDevelop.ChangeLogAddIn
 			foreach (ChangeLogEntry ce in entries.Values) {
 				Gdk.Pixbuf pic;
 				if (ce.CantGenerate)
-					pic = PixbufService.GetPixbuf (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
+					pic = ImageService.GetPixbuf (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
 				else if (ce.IsNew)
-					pic = PixbufService.GetPixbuf (Gtk.Stock.New, Gtk.IconSize.Menu);
+					pic = ImageService.GetPixbuf (Gtk.Stock.New, Gtk.IconSize.Menu);
 				else
 					pic = null;
 				store.AppendValues (ce, pic, ce.File);
