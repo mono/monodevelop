@@ -298,20 +298,6 @@ namespace MonoDevelop.Ide.Gui
 			textBuffer.InsertText (pos, txt);
 		}
 		
-		public int GetClosingBraceForLine (int line, out int openingLine)
-		{
-			int offset = textBuffer.GetPositionFromLineColumn (line, 1);
-			offset = MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketBackward (completionWidget, offset, '{', '}');
-			if (offset == -1) {
-				openingLine = -1;
-				return -1;
-			}
-				
-			int col;
-			textBuffer.GetLineColumnFromPosition (offset, out openingLine, out col);
-			return offset;
-		}
-		
 		public static char GetMatchingBrace (char ch)
 		{
 			switch (ch) {
@@ -330,25 +316,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			throw new System.ArgumentException (ch.ToString (), "ch");
 		}
-		public static bool IsBrace (char ch)
-		{
-			return ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == '[' || ch == ']';
-		}
-		public static bool IsOpenBrace (char ch)
-		{
-			return ch == '(' || ch == '{' || ch == '[';
-		}
-
-		public int SearchBracketForward (int offset, char openBracket, char closingBracket)
-		{
-			return MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketForward (completionWidget, offset, openBracket, closingBracket);
-		}
-		
-		public int SearchBracketBackward (int offset, char openBracket, char closingBracket)
-		{
-			return MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketBackward (completionWidget, offset, openBracket, closingBracket);
-		}
-
+	
 		public CodeCompletionContext CurrentCodeCompletionContext {
 			get {
 				if (completionWidget == null)
@@ -399,7 +367,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			return -1;
 		}
-		
+		/*
 		public void GotoMatchingBrace ()
 		{
 			int offset = textBuffer.CursorPosition;
@@ -420,6 +388,6 @@ namespace MonoDevelop.Ide.Gui
 				if (offset >= 0)
 					textBuffer.CursorPosition = offset;
 			}
-		}
+		}*/
 	}
 }

@@ -452,12 +452,6 @@ namespace MonoDevelop.Ide.Gui
 			doc.TextEditor.CursorPosition = doc.TextEditor.TextLength;
 		}
 		
-		[CommandHandler (TextEditorCommands.GotoMatchingBrace)]
-		protected void OnGotoMatchingBrace ()
-		{
-			doc.TextEditor.GotoMatchingBrace ();
-		}
-		
 		[CommandHandler (TextEditorCommands.DeleteLine)]
 		protected void OnDeleteLine ()
 		{

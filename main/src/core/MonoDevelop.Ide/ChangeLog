@@ -1,5 +1,11 @@
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/TextEditor.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Track API
+	  changes.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Ide.cs:
 	* MonoDevelop.Ide/Services.cs:
 	* MonoDevelop.Ide.Gui/InternalLog.cs:
