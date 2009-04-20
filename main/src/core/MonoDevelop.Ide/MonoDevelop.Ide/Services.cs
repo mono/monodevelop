@@ -41,10 +41,6 @@ namespace MonoDevelop.Ide
 	{
 		static TaskService taskService;
 		
-		public static ResourceService Resources {
-			get { return MonoDevelop.Core.Gui.Services.Resources; }
-		}
-		
 		public static TaskService TaskService {
 			get {
 				if (taskService == null)

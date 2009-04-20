@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Gui
 			if (Gtk.IconTheme.Default.HasIcon ("monodevelop")) 
 				Gtk.Window.DefaultIconName = "monodevelop";
 			else
-				this.Icon = Services.Resources.GetBitmap ("md-sharp-develop-icon");
+				this.Icon = PixbufService.GetPixbuf ("md-sharp-develop-icon");
 
 			//this.WindowPosition = Gtk.WindowPosition.None;
 

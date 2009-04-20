@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			if (config["Icon"] != null) {
-				icon = ResourceService.GetStockId (addin, config["Icon"].InnerText);
+				icon = PixbufService.GetStockId (addin, config["Icon"].InnerText);
 			}
 			
 			if (doc.DocumentElement["Combine"] != null) {

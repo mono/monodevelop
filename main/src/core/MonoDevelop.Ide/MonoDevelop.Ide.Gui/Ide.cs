@@ -133,9 +133,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
-			//force the ResourceService to load so that it registers stock icons
-			MonoDevelop.Core.Gui.Services.Resources.ToString ();
-			
 			workbench = new Workbench ();
 			workspace = new RootWorkspace ();
 			projectOperations = new ProjectOperations ();
@@ -369,10 +366,6 @@ namespace MonoDevelop.Ide.Gui
 	
 	public class IdeServices
 	{
-		public ResourceService Resources {
-			get { return MonoDevelop.Core.Gui.Services.Resources; }
-		}
-	
 		public TaskService TaskService {
 			get { return MonoDevelop.Ide.Services.TaskService; }
 		}

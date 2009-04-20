@@ -620,7 +620,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			Gdk.Pixbuf icon;
 			if (!icons.TryGetValue (id, out icon)) {
-				icon = IdeApp.Services.Resources.GetBitmap (id, IconSize.Menu);
+				icon = PixbufService.GetPixbuf (id, IconSize.Menu);
 				icons.Add (id, icon);
 			}
 			return icon;
@@ -725,7 +725,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		public override Gdk.Pixbuf Icon {
 			get {
-				return IdeApp.Services.Resources.GetBitmap (icon, IconSize.Menu);
+				return PixbufService.GetPixbuf (icon, IconSize.Menu);
 			}
 		}
 		

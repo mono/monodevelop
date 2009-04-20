@@ -32,6 +32,8 @@ using System.Linq;
 using Gdk;
 using Gtk;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
+
 
 namespace MonoDevelop.Ide
 {
@@ -59,7 +61,7 @@ namespace MonoDevelop.Ide
 			Gtk.TreeIter iter;
 			if (treeviewPads.Selection.GetSelected (out iter)) {
 				MonoDevelop.Ide.Gui.Pad pad = padListStore.GetValue (iter, 2) as MonoDevelop.Ide.Gui.Pad;
-				ShowType (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (!string.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, Gtk.IconSize.Dialog),
+				ShowType (PixbufService.GetPixbuf (!string.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, Gtk.IconSize.Dialog),
 				          pad.Title,
 				          "",
 				          "");
@@ -69,9 +71,9 @@ namespace MonoDevelop.Ide
 		Pixbuf GetIconForDocument (MonoDevelop.Ide.Gui.Document document, Gtk.IconSize iconSize)
 		{
 			if (!string.IsNullOrEmpty (document.Window.ViewContent.StockIconId))
-				return IdeApp.Services.Resources.GetBitmap (document.Window.ViewContent.StockIconId, iconSize);
+				return PixbufService.GetPixbuf (document.Window.ViewContent.StockIconId, iconSize);
 			if (string.IsNullOrEmpty (document.FileName)) 
-				return IdeApp.Services.Resources.GetBitmap (MonoDevelop.Core.Gui.Stock.MiscFiles, iconSize);
+				return PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.MiscFiles, iconSize);
 			
 			return IdeApp.Services.PlatformService.GetPixbufForFile (document.FileName, iconSize);
 		}
@@ -272,7 +274,7 @@ namespace MonoDevelop.Ide
 			foreach (Pad pad in IdeApp.Workbench.Pads) {
 				if (!pad.Visible)
 					continue;
-				padListStore.AppendValues (IdeApp.Services.Resources.GetBitmap (!String.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, IconSize.Menu),
+				padListStore.AppendValues (PixbufService.GetPixbuf (!String.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, IconSize.Menu),
 				                           pad.Title,
 				                           pad);
 			}

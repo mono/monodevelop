@@ -1,3 +1,30 @@
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide/Services.cs:
+	* MonoDevelop.Ide.Gui/InternalLog.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs:
+	* MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs:
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Components/TreeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateListDataProvider.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	  Track API changes.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Ide.csproj: don't require gtk-sharp specific version.

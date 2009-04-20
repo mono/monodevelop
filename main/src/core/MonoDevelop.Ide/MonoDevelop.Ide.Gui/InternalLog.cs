@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui
 			if (!errorNotificationEnabled)
 				return;
 			ClearErrorIcon ();
-			Gdk.Pixbuf pix = IdeApp.Services.Resources.GetIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu);
+			Gdk.Pixbuf pix = MonoDevelop.Core.Gui.PixbufService.GetPixbuf (Gtk.Stock.DialogError, Gtk.IconSize.Menu);
 			errorIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (pix);
 			errorIcon.EventBox.ButtonPressEvent += new Gtk.ButtonPressEventHandler (OnShowLogPad);
 			errorIcon.SetAlertMode (5);

@@ -203,7 +203,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			lock (searchResults) {
 				int max = Math.Min (50, searchResults.Count);
 				for (int i = 0; i < max; i++) {
-					list.AppendValues (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (searchResults[i].StockIcon, Gtk.IconSize.Menu), searchResults[i].Name, searchResults[i]);
+					list.AppendValues (PixbufService.GetPixbuf (searchResults[i].StockIcon, Gtk.IconSize.Menu), searchResults[i].Name, searchResults[i]);
 				}
 				searchResults.RemoveRange (0, max);
 				return searchResults.Count > 0;

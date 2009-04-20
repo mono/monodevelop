@@ -50,8 +50,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			base.Initialize ();
 			overlay = Gdk.Pixbuf.LoadFromResource ("Icons.16x16.LinkOverlay.png");
-			openFolder = IdeApp.Services.Resources.GetIcon (Stock.OpenFolder, Gtk.IconSize.Menu).Copy ();
-			closedFolder = IdeApp.Services.Resources.GetIcon (Stock.ClosedFolder, Gtk.IconSize.Menu).Copy ();
+			openFolder = PixbufService.GetPixbuf (Stock.OpenFolder, Gtk.IconSize.Menu).Copy ();
+			closedFolder = PixbufService.GetPixbuf (Stock.ClosedFolder, Gtk.IconSize.Menu).Copy ();
 			
 			overlay.Composite (openFolder,
 				0,  0,

@@ -38,6 +38,8 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 using Ambience_ = MonoDevelop.Projects.Dom.Output.Ambience;
+using MonoDevelop.Core.Gui;
+
 
 namespace MonoDevelop.Ide
 {
@@ -135,9 +137,9 @@ namespace MonoDevelop.Ide
 
 			Dictionary<string, TreeIter> iter_cache = new Dictionary<string,TreeIter> ();
 			PopulateTreeView (class_members, iter_cache,
-					IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.Class, IconSize.Menu));
+					PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Class, IconSize.Menu));
 			PopulateTreeView (interface_members, iter_cache,
-					IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.Interface, IconSize.Menu));
+					PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Interface, IconSize.Menu));
 		}
 
 		void PopulateTreeView (List<IMember> members, Dictionary<string, TreeIter> iter_cache, Gdk.Pixbuf parent_icon)
@@ -151,7 +153,7 @@ namespace MonoDevelop.Ide
 				}
 
 				store.AppendValues (iter, false,
-				                    IdeApp.Services.Resources.GetIcon (member.StockIcon, IconSize.Menu),
+				                    PixbufService.GetPixbuf (member.StockIcon, IconSize.Menu),
 				                    GetDescriptionString (member), false, member);
 			}
 		}
