@@ -1,5 +1,10 @@
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:
+	  Fixed "Bug 491090 - Standard Header doesn't work".
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/TextEditor.cs:
 	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Track API
 	  changes.
