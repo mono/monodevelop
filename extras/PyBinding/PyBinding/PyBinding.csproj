@@ -119,9 +119,6 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="MonoDevelop.SourceEditor2, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -161,6 +158,8 @@
     <Compile Include="PyBinding.Gui\PythonEditorIndentation.cs" />
     <Compile Include="PyBinding.Gui\PythonEditorOutline.cs" />
     <Compile Include="PyBinding.Gui\PythonOptionsPanel.cs" />
+    <Compile Include="PyBinding\PythonExecutionCommand.cs" />
+    <Compile Include="PyBinding\PythonExecutionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EmptyPyProject.xpt.xml">
@@ -190,7 +189,7 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile" BuildTargetName="" CleanTargetName="" SyncReferences="true">
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile" CleanTargetName="" SyncReferences="true">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
           <ResourcesVar Sync="true" Name="RESOURCES" />

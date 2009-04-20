@@ -118,7 +118,7 @@ namespace PyBinding
 		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string solutionConfiguration)
 		{
 			PythonConfiguration config = (PythonConfiguration) GetConfiguration (solutionConfiguration);
-			return config.Runtime != null && context.ExecutionHandler.CanExecute (config.Runtime.Path);
+			return config.Runtime != null && context.ExecutionHandler.CanExecute (new PythonExecutionCommand (config));
 		}
 
 		
@@ -150,15 +150,14 @@ namespace PyBinding
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
 			
 			try {
-				string[] args = config.Runtime.GetArguments (config);
-				string dir= Path.GetFullPath (config.OutputDirectory);
+				PythonExecutionCommand cmd = new PythonExecutionCommand (config);
 				
-				if (!context.ExecutionHandler.CanExecute (config.Runtime.Path)) {
+				if (!context.ExecutionHandler.CanExecute (cmd)) {
 					monitor.ReportError ("The selected execution mode is not supported for Python projects.", null);
 					return;
 				}
 				
-				IProcessAsyncOperation op = context.ExecutionHandler.Execute (config.Runtime.Path, String.Join (" ", args), dir, null, console);
+				IProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, console);
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();
 				

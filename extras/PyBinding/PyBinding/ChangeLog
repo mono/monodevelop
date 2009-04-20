@@ -1,3 +1,15 @@
+2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile:
+	* PyBinding.csproj:
+	* PyBinding.addin.xml:
+	* PyBinding/PythonProject.cs:
+	* PyBinding/PythonExecutionHandler.cs:
+	* PyBinding/PythonExecutionCommand.cs: Use an
+	  IExecutionHandler and an ExecutionCommand to handle the
+	  execution of python projects. This will allow supporting
+	  special execution modes such as debug or profile.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

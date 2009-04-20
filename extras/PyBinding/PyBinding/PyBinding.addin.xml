@@ -107,4 +107,9 @@
 		<NodeBuilder id = "PyBinding.Gui.Navigation.AttributeNodeBuilder" class = "PyBinding.Gui.Navigation.AttributeNodeBuilder" />
 		<NodeBuilder id = "PyBinding.Gui.Navigation.FunctionNodeBuilder" class = "PyBinding.Gui.Navigation.FunctionNodeBuilder" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
+		<ExecutionHandler id="Python" class = "PyBinding.PythonExecutionHandler"/>
+	</Extension>
+	
 </Addin>

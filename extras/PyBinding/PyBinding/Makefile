@@ -85,6 +85,8 @@ FILES =  \
 	PyBinding.Runtime/IPythonRuntime.cs \
 	PyBinding.Runtime/Python25Runtime.cs \
 	PyBinding/PythonConfiguration.cs \
+	PyBinding/PythonExecutionCommand.cs \
+	PyBinding/PythonExecutionHandler.cs \
 	PyBinding/PythonHelper.cs \
 	PyBinding/PythonLanguageBinding.cs \
 	PyBinding/PythonProject.cs \
