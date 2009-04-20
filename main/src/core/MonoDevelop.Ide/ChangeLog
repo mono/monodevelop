@@ -1,3 +1,8 @@
+2009-04-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:
+	  Revert change that broke equality checking.
+
 2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.csproj: Added new files.

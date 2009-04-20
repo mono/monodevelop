@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.StandardHeader
 		
 		public bool Equals (StandardHeaderPolicy other)
 		{
-			return other != null && other.Text == Text;
+			return other != null && IncludeInNewFiles == other.IncludeInNewFiles && other.Text == Text;
 		}
 	}
 }
