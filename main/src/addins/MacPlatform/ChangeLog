@@ -1,3 +1,8 @@
+2009-04-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Framework/Carbon.cs: In-progress wrappers for file dialog
+	  APIs.
+
 2009-04-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.cs: Open files when the open-documents event
