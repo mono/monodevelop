@@ -84,7 +84,7 @@ namespace MonoDevelop.Core.Gui
 		{
 			Init ();
 			this.buttons = buttons;
-			image.Pixbuf = PixbufService.GetPixbuf (icon, IconSize.Dialog);
+			image.Pixbuf = ImageService.GetPixbuf (icon, IconSize.Dialog);
 			
 			StringBuilder markup = new StringBuilder (@"<span weight=""bold"" size=""larger"">");
 			markup.Append (GLib.Markup.EscapeText (primaryText));

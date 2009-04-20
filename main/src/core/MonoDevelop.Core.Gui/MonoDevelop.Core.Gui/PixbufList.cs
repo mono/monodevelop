@@ -9,7 +9,7 @@ namespace MonoDevelop.Core.Gui
 		public PixbufList (params string [] resIcons) : base (resIcons.Length)
 		{
 			foreach (string s in resIcons)
-				Add (PixbufService.GetPixbuf (s));
+				Add (ImageService.GetPixbuf (s));
 		}
 		
 		public new Pixbuf this[int idx] {
