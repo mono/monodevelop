@@ -280,12 +280,22 @@ namespace MonoDevelop.ValaBinding
 				pc,
 				monitor);
 		}
+		
+		ExecutionCommand CreateExecutionCommand (ValaProjectConfiguration conf)
+		{
+			NativeExecutionCommand cmd = new NativeExecutionCommand ();
+			cmd.Command = Path.Combine (conf.OutputDirectory, conf.Output);
+			cmd.Arguments = conf.CommandLineParameters;
+			cmd.WorkingDirectory = Path.GetFullPath (conf.OutputDirectory);
+			return cmd;
+		}
 
 		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string solutionConfiguration)
 		{
 			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(solutionConfiguration);
-			return (null != conf && conf.CompileTarget == ValaBinding.CompileTarget.Bin) &&
-				context.ExecutionHandler.CanExecute (Path.Combine (conf.OutputDirectory, conf.Output));
+			ExecutionCommand cmd = CreateExecutionCommand (conf);
+			return (conf.CompileTarget == ValaBinding.CompileTarget.Bin) &&
+				context.ExecutionHandler.CanExecute (cmd);
 		}
 		
 		protected override void DoExecute (IProgressMonitor monitor,
@@ -293,10 +303,6 @@ namespace MonoDevelop.ValaBinding
 		                                   string configuration)
 		{
 			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(configuration);
-			string command = conf.Output;
-			string args = conf.CommandLineParameters;
-			string dir = Path.GetFullPath (conf.OutputDirectory);
-			string platform = "Native";
 			bool pause = conf.PauseConsoleOutput;
 			IConsole console;
 			
@@ -304,6 +310,8 @@ namespace MonoDevelop.ValaBinding
 				MessageService.ShowMessage ("Compile target is not an executable!");
 				return;
 			}
+			
+			ExecutionCommand cmd = CreateExecutionCommand (conf);
 			
 			monitor.Log.WriteLine ("Running project...");
 			
@@ -315,19 +323,19 @@ namespace MonoDevelop.ValaBinding
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
 			
 			try {
-				if (!context.ExecutionHandler.CanExecute (Path.Combine (dir, command))) {
-					monitor.ReportError ("Cannot execute \"" + command + "\". The selected execution mode is not supported for Vala projects.", null);
+				if (!context.ExecutionHandler.CanExecute (cmd)) {
+					monitor.ReportError ("Cannot execute \"" + conf.Output + "\". The selected execution mode is not supported for Vala projects.", null);
 					return;
 				}
 				
-				IProcessAsyncOperation op = context.ExecutionHandler.Execute (Path.Combine (dir, command), args, dir, null, console);
+				IProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, console);
 				
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();
 				
 				monitor.Log.WriteLine ("The operation exited with code: {0}", op.ExitCode);
 			} catch (Exception ex) {
-				monitor.ReportError ("Cannot execute \"" + command + "\"", ex);
+				monitor.ReportError ("Cannot execute \"" + conf.Output + "\"", ex);
 			} finally {			
 				operationMonitor.Dispose ();			
 				console.Dispose ();
