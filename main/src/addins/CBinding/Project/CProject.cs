@@ -298,20 +298,27 @@ namespace CBinding
 				pc,
 			    monitor);
 		}
+		
+		protected virtual ExecutionCommand CreateExecutionCommand (CProjectConfiguration conf)
+		{
+			string app = Path.Combine (conf.OutputDirectory, conf.Output);
+			NativeExecutionCommand cmd = new NativeExecutionCommand (app);
+			cmd.Arguments = conf.CommandLineParameters;
+			cmd.WorkingDirectory = Path.GetFullPath (conf.OutputDirectory);
+			cmd.EnvironmentVariables = conf.EnvironmentVariables;
+			return cmd;
+		}
 
 		protected override bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
 		{
 			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (solutionConfiguration);
-			string cmd = Path.Combine (conf.OutputDirectory, conf.Output);
+			ExecutionCommand cmd = CreateExecutionCommand (conf);
 			return (target == CBinding.CompileTarget.Bin) && context.ExecutionHandler.CanExecute (cmd);
 		}
 
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
 			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
-			string command = conf.Output;
-			string args = conf.CommandLineParameters;
-			string dir = Path.GetFullPath (conf.OutputDirectory);
 			bool pause = conf.PauseConsoleOutput;
 			IConsole console;
 			
@@ -330,20 +337,20 @@ namespace CBinding
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
 			
 			try {
-				string cmd = Path.Combine (dir, command);
+				ExecutionCommand cmd = CreateExecutionCommand (conf);
 				if (!context.ExecutionHandler.CanExecute (cmd)) {
-					monitor.ReportError ("Cannot execute \"" + command + "\". The selected execution mode is not supported for C projects.", null);
+					monitor.ReportError ("Cannot execute \"" + conf.Output + "\". The selected execution mode is not supported for C projects.", null);
 					return;
 				}
 				
-				IProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, args, dir, conf.EnvironmentVariables, console);
+				IProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, console);
 				
 				operationMonitor.AddOperation (op);
 				op.WaitForCompleted ();
 				
 				monitor.Log.WriteLine ("The operation exited with code: {0}", op.ExitCode);
 			} catch (Exception ex) {
-				monitor.ReportError ("Cannot execute \"" + command + "\"", ex);
+				monitor.ReportError ("Cannot execute \"" + conf.Output + "\"", ex);
 			} finally {			
 				operationMonitor.Dispose ();			
 				console.Dispose ();
