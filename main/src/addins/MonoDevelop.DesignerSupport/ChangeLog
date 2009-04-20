@@ -1,3 +1,8 @@
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
+	  Track API changes.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.DesignerSupport.csproj: don't require specific

@@ -36,6 +36,8 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Core.Gui;
+
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -130,9 +132,9 @@ namespace MonoDevelop.DesignerSupport
 			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
 			object o = model.GetValue (iter, 0);
 			if (o is IMember) {
-				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon (((IMember)o).StockIcon, IconSize.Menu);
+				pixRenderer.Pixbuf = PixbufService.GetPixbuf (((IMember)o).StockIcon, IconSize.Menu);
 			} else if (o is FoldingRegion) {
-				pixRenderer.Pixbuf = IdeApp.Services.Resources.GetIcon ("gtk-add", IconSize.Menu);
+				pixRenderer.Pixbuf = PixbufService.GetPixbuf ("gtk-add", IconSize.Menu);
 			}
 		}
 		
