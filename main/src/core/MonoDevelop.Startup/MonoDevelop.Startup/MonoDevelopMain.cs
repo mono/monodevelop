@@ -7,7 +7,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Startup
 {
-	public class SharpDevelopMain
+	public class MonoDevelopMain
 	{
 		public static int Main (string[] args)
 		{
