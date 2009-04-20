@@ -68,7 +68,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (method.IsPrivate || method.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			
-			icon = MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (method.StockIcon, Gtk.IconSize.Menu);
+			icon = PixbufService.GetPixbuf (method.StockIcon, Gtk.IconSize.Menu);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

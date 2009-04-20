@@ -391,7 +391,7 @@ namespace MonoDevelop.AssemblyBrowser
 							DispatchService.GuiSyncDispatch (delegate {
 								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
 								foreach (MonoDevelop.Projects.Dom.IMember member in members) {
-									memberListStore.AppendValues (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (member.StockIcon, Gtk.IconSize.Menu),
+									memberListStore.AppendValues (PixbufService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
 									                              member.Name,
 									                              type.FullName,
 									                              unit.AssemblyDefinition.Name.FullName,
@@ -418,7 +418,7 @@ namespace MonoDevelop.AssemblyBrowser
 							DispatchService.GuiSyncDispatch (delegate {
 								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
 								foreach (MonoDevelop.Projects.Dom.IMember member in members) {
-									memberListStore.AppendValues (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (member.StockIcon, Gtk.IconSize.Menu),
+									memberListStore.AppendValues (PixbufService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
 									                              member.Name,
 									                              type.FullName,
 									                              unit.AssemblyDefinition.Name.FullName,
@@ -444,7 +444,7 @@ namespace MonoDevelop.AssemblyBrowser
 							DispatchService.GuiSyncDispatch (delegate {
 								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
 								foreach (MonoDevelop.Projects.Dom.IMember member in members) {
-									memberListStore.AppendValues (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (member.StockIcon, Gtk.IconSize.Menu),
+									memberListStore.AppendValues (PixbufService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
 									                              member.Name,
 									                              type.FullName,
 									                              unit.AssemblyDefinition.Name.FullName,
@@ -461,7 +461,7 @@ namespace MonoDevelop.AssemblyBrowser
 							DispatchService.GuiSyncDispatch (delegate {
 								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
 								if (type.FullName.ToUpper ().IndexOf (pattern) >= 0) {
-									typeListStore.AppendValues (MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (type.StockIcon, Gtk.IconSize.Menu),
+									typeListStore.AppendValues (PixbufService.GetPixbuf (type.StockIcon, Gtk.IconSize.Menu),
 									                            type.Name,
 									                            type.Namespace,
 									                            unit.AssemblyDefinition.Name.FullName,

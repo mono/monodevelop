@@ -110,7 +110,7 @@ namespace MonoDevelop.AssemblyBrowser
 			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (type, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
 			if (type.IsPrivate || type.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = MonoDevelop.Ide.Gui.IdeApp.Services.Resources.GetIcon (type.StockIcon, Gtk.IconSize.Menu);
+			icon = PixbufService.GetPixbuf (type.StockIcon, Gtk.IconSize.Menu);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
