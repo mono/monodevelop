@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 
@@ -60,9 +61,9 @@ namespace MonoDevelop.AspNet.Gui
 			
 			this.Build();
 			
-			projBuf = IdeApp.Services.Resources.GetIcon (project.StockIcon, IconSize.Menu);
-			dirClosedBuf = IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
-			dirOpenBuf = IdeApp.Services.Resources.GetIcon (MonoDevelop.Core.Gui.Stock.OpenFolder, IconSize.Menu);
+			projBuf = PixbufService.GetPixbuf (project.StockIcon, IconSize.Menu);
+			dirClosedBuf = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
+			dirOpenBuf = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.OpenFolder, IconSize.Menu);
 			
 			TreeViewColumn projectCol = new TreeViewColumn ();
 			projectCol.Title = GettextCatalog.GetString ("Project Folders");
