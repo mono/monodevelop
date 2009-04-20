@@ -269,13 +269,13 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (tree.CopyObjects != null && ((IList)tree.CopyObjects).Contains (dataObject) && tree.CurrentTransferOperation == DragOperation.Move) {
 					Gdk.Pixbuf gicon = tree.BuilderContext.GetComposedIcon (icon, "fade");
 					if (gicon == null) {
-						gicon = PixbufService.MakeTransparent (icon, 0.5);
+						gicon = ImageService.MakeTransparent (icon, 0.5);
 						tree.BuilderContext.CacheComposedIcon (icon, "fade", gicon);
 					}
 					icon = gicon;
 					gicon = tree.BuilderContext.GetComposedIcon (closedIcon, "fade");
 					if (gicon == null) {
-						gicon = PixbufService.MakeTransparent (closedIcon, 0.5);
+						gicon = ImageService.MakeTransparent (closedIcon, 0.5);
 						tree.BuilderContext.CacheComposedIcon (closedIcon, "fade", gicon);
 					}
 					closedIcon = gicon;

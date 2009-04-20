@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				foreach (TemplateItem item in ((Category)catStore.GetValue (iter, 1)).Templates) {
 					string icon = item.Template.Icon;
 					if (icon == null) icon = "md-project";
-					icon = PixbufService.GetStockId (icon);
+					icon = ImageService.GetStockId (icon);
 					TemplateView.AddIcon (icon, Gtk.IconSize.Dnd, item.Name, item.Template);
 				}
 				

@@ -1,5 +1,30 @@
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/InternalLog.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:
+	* MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs:
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Components/TreeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateListDataProvider.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	  Renamed PixbufService to ImageService.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:
 	  Fixed "Bug 491090 - Standard Header doesn't work".
 

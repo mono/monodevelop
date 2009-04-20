@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide
 			Gtk.TreeIter iter;
 			if (treeviewPads.Selection.GetSelected (out iter)) {
 				MonoDevelop.Ide.Gui.Pad pad = padListStore.GetValue (iter, 2) as MonoDevelop.Ide.Gui.Pad;
-				ShowType (PixbufService.GetPixbuf (!string.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, Gtk.IconSize.Dialog),
+				ShowType (ImageService.GetPixbuf (!string.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, Gtk.IconSize.Dialog),
 				          pad.Title,
 				          "",
 				          "");
@@ -71,9 +71,9 @@ namespace MonoDevelop.Ide
 		Pixbuf GetIconForDocument (MonoDevelop.Ide.Gui.Document document, Gtk.IconSize iconSize)
 		{
 			if (!string.IsNullOrEmpty (document.Window.ViewContent.StockIconId))
-				return PixbufService.GetPixbuf (document.Window.ViewContent.StockIconId, iconSize);
+				return ImageService.GetPixbuf (document.Window.ViewContent.StockIconId, iconSize);
 			if (string.IsNullOrEmpty (document.FileName)) 
-				return PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.MiscFiles, iconSize);
+				return ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.MiscFiles, iconSize);
 			
 			return IdeApp.Services.PlatformService.GetPixbufForFile (document.FileName, iconSize);
 		}
@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide
 			foreach (Pad pad in IdeApp.Workbench.Pads) {
 				if (!pad.Visible)
 					continue;
-				padListStore.AppendValues (PixbufService.GetPixbuf (!String.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, IconSize.Menu),
+				padListStore.AppendValues (ImageService.GetPixbuf (!String.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, IconSize.Menu),
 				                           pad.Title,
 				                           pad);
 			}

@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui
 			this.showErrorDialogs = showErrorDialogs;
 			this.showTaskTitles = showTaskTitles;
 			this.title = title;
-			icon = PixbufService.GetImage (iconName, Gtk.IconSize.Menu);
+			icon = ImageService.GetImage (iconName, Gtk.IconSize.Menu);
 			IdeApp.Workbench.StatusBar.BeginProgress (title);
 			IdeApp.Workbench.StatusBar.ShowMessage (icon, title);
 			if (lockGui)
@@ -103,10 +103,10 @@ namespace MonoDevelop.Ide.Gui
 			if (Errors.Count > 0 || Warnings.Count > 0) {
 				if (uniqueMonitor) {
 					if (Errors.Count > 0) {
-						Gtk.Image img = PixbufService.GetImage (Stock.Error, Gtk.IconSize.Menu);
+						Gtk.Image img = ImageService.GetImage (Stock.Error, Gtk.IconSize.Menu);
 						IdeApp.Workbench.StatusBar.ShowMessage (img, Errors [Errors.Count - 1]);
 					} else if (SuccessMessages.Count == 0) {
-						Gtk.Image img = PixbufService.GetImage (Stock.Warning, Gtk.IconSize.Menu);
+						Gtk.Image img = ImageService.GetImage (Stock.Warning, Gtk.IconSize.Menu);
 						IdeApp.Workbench.StatusBar.ShowMessage (img, Warnings [Warnings.Count - 1]);
 					}
 				}

@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 						continue;
 				}
 				
-				Gdk.Pixbuf icon = PixbufService.GetPixbuf (projectEntry.StockIcon, IconSize.Menu);
+				Gdk.Pixbuf icon = ImageService.GetPixbuf (projectEntry.StockIcon, IconSize.Menu);
 				store.AppendValues (projectEntry.Name, projectEntry.BaseDirectory, projectEntry, false, icon, true);
 			}
 			

@@ -101,13 +101,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			PixbufList smalllist  = new PixbufList();
 			PixbufList imglist    = new PixbufList();
 			
-			smalllist.Add (PixbufService.GetPixbuf ("md-empty-file-icon"));
-			imglist.Add (PixbufService.GetPixbuf ("md-empty-file-icon"));
+			smalllist.Add (ImageService.GetPixbuf ("md-empty-file-icon"));
+			imglist.Add (ImageService.GetPixbuf ("md-empty-file-icon"));
 			
 			int i = 0;
 			Hashtable tmp = new Hashtable(icons);
 			foreach (DictionaryEntry entry in icons) {
-				Gdk.Pixbuf bitmap = PixbufService.GetPixbuf (entry.Key.ToString(), Gtk.IconSize.LargeToolbar);
+				Gdk.Pixbuf bitmap = ImageService.GetPixbuf (entry.Key.ToString(), Gtk.IconSize.LargeToolbar);
 				if (bitmap != null) {
 					smalllist.Add(bitmap);
 					imglist.Add(bitmap);
@@ -353,7 +353,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			iconView.Clear ();
 			foreach (TemplateItem item in (List<TemplateItem>)(catStore.GetValue (iter, 2))) {
-				iconView.AddIcon (new Gtk.Image (PixbufService.GetPixbuf (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item);
+				iconView.AddIcon (new Gtk.Image (ImageService.GetPixbuf (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item);
 			}
 		}
 		
@@ -647,8 +647,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			cat_imglist = new PixbufList ();
-			cat_imglist.Add (PixbufService.GetPixbuf ("md-open-folder"));
-			cat_imglist.Add (PixbufService.GetPixbuf ("md-closed-folder"));
+			cat_imglist.Add (ImageService.GetPixbuf ("md-open-folder"));
+			cat_imglist.Add (ImageService.GetPixbuf ("md-closed-folder"));
 			catView.Selection.Changed += new EventHandler (CategoryChange);
 			catView.RowActivated += new RowActivatedHandler (CategoryActivated);
 			iconView.IconSelected += new EventHandler(SelectedIndexChange);

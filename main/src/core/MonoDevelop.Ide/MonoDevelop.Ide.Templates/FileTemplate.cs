@@ -198,7 +198,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			if (config["Icon"] != null) {
-				fileTemplate.icon = PixbufService.GetStockId (addin, config["Icon"].InnerText);
+				fileTemplate.icon = ImageService.GetStockId (addin, config["Icon"].InnerText);
 			}
 			
 			if (config["Wizard"] != null) {

@@ -137,9 +137,9 @@ namespace MonoDevelop.Ide
 
 			Dictionary<string, TreeIter> iter_cache = new Dictionary<string,TreeIter> ();
 			PopulateTreeView (class_members, iter_cache,
-					PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Class, IconSize.Menu));
+					ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Class, IconSize.Menu));
 			PopulateTreeView (interface_members, iter_cache,
-					PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Interface, IconSize.Menu));
+					ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Interface, IconSize.Menu));
 		}
 
 		void PopulateTreeView (List<IMember> members, Dictionary<string, TreeIter> iter_cache, Gdk.Pixbuf parent_icon)
@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide
 				}
 
 				store.AppendValues (iter, false,
-				                    PixbufService.GetPixbuf (member.StockIcon, IconSize.Menu),
+				                    ImageService.GetPixbuf (member.StockIcon, IconSize.Menu),
 				                    GetDescriptionString (member), false, member);
 			}
 		}

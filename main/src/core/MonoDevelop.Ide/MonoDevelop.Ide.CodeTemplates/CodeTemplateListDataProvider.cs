@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			string iconName = itemList[index].Key;
 			if (string.IsNullOrEmpty (iconName))
 				return null;
-			return MonoDevelop.Core.Gui.PixbufService.GetPixbuf (iconName, Gtk.IconSize.Menu);
+			return MonoDevelop.Core.Gui.ImageService.GetPixbuf (iconName, Gtk.IconSize.Menu);
 		}
 		
 		public int Count {

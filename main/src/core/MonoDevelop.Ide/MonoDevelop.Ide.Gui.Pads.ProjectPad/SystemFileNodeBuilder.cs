@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (file.ShowTransparent) {
 				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
 				if (gicon == null) {
-					gicon = PixbufService.MakeTransparent (icon, 0.5);
+					gicon = ImageService.MakeTransparent (icon, 0.5);
 					Context.CacheComposedIcon (icon, "fade", gicon);
 				}
 				icon = gicon;

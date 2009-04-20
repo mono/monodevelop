@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui
 			this.title = title;
 			if (!string.IsNullOrEmpty (iconName)) {
 				Application.Invoke (delegate {
-					Gdk.Pixbuf img = PixbufService.GetPixbuf (iconName, Gtk.IconSize.Menu);
+					Gdk.Pixbuf img = ImageService.GetPixbuf (iconName, Gtk.IconSize.Menu);
 					icon = IdeApp.Workbench.StatusBar.ShowStatusIcon (img);
 					if (icon == null)
 						LoggingService.LogError ("Icon '" + iconName + "' not found.");
