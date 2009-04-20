@@ -1,3 +1,43 @@
+2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.csproj: Added new files.
+
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Implemented new
+	  "Run With" command which allows running a project using a
+	  special execution mode.
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:
+	  Implemented new panel for registering parallel mono
+	  enivornments.
+
+	* MonoDevelop.Ide.addin.xml: Registered new options panel and
+	  new command.
+
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:
+	  Flush.
+
+	* Makefile.am: Updated.
+
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added some
+	  overloads to the Run command.
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/IdePreferences.cs: Allow selecting the
+	  active runtime to be used for building and running the
+	  project.
+
+	* MonoDevelop.Ide.Gui/ConfigurationComboBox.cs: The project
+	  configuration combo box now also allows selecting the active
+	  runtime.
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Initialize the preferences
+	  object before the workspace, since it may be required before
+	  any other object.
+
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/InternalLog.cs:

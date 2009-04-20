@@ -34,6 +34,7 @@ using System.Collections.ObjectModel;
 using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Core.Serialization;
@@ -49,6 +50,9 @@ namespace MonoDevelop.Ide.Gui
 		WorkspaceItemCollection items;
 //		IParserDatabase parserDatabase;
 		string activeConfiguration;
+		TargetRuntime activeRuntime;
+		bool useDefaultRuntime;
+		
 		Dictionary<WorkspaceItem, PropertyBag> userPrefs;
 		
 		ProjectFileEventHandler fileAddedToProjectHandler;
@@ -86,6 +90,16 @@ namespace MonoDevelop.Ide.Gui
 			
 			userPrefs = new Dictionary<WorkspaceItem,PropertyBag> ();
 			
+			// Set the initial active runtime
+			UseDefaultRuntime = true;
+			IdeApp.Preferences.DefaultTargetRuntimeChanged += delegate {
+				// If the default runtime changes and current active is default, update it
+				if (UseDefaultRuntime) {
+					Runtime.SystemAssemblyService.DefaultRuntime = IdeApp.Preferences.DefaultTargetRuntime;
+					useDefaultRuntime = true;
+				}
+			};
+			
 			GLib.Timeout.Add (2000, OnRunProjectChecks);
 		}
 		
@@ -117,6 +131,27 @@ namespace MonoDevelop.Ide.Gui
 					activeConfiguration = value;
 					if (ActiveConfigurationChanged != null)
 						ActiveConfigurationChanged (this, EventArgs.Empty);
+				}
+			}
+		}
+		
+		public TargetRuntime ActiveRuntime {
+			get {
+				return Runtime.SystemAssemblyService.DefaultRuntime;
+			}
+			set {
+				Runtime.SystemAssemblyService.DefaultRuntime = value;
+				useDefaultRuntime = false;
+			}
+		}
+		
+		public bool UseDefaultRuntime {
+			get { return useDefaultRuntime; }
+			set {
+				if (useDefaultRuntime != value) {
+					if (value)
+						ActiveRuntime = IdeApp.Preferences.DefaultTargetRuntime;
+					useDefaultRuntime = value;
 				}
 			}
 		}
@@ -638,6 +673,15 @@ namespace MonoDevelop.Ide.Gui
 				WorkspaceUserData data = props.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
 					ActiveConfiguration = data.ActiveConfiguration;
+					if (string.IsNullOrEmpty (data.ActiveRuntime))
+						UseDefaultRuntime = true;
+					else {
+						TargetRuntime tr = Runtime.SystemAssemblyService.GetTargetRuntime (data.ActiveRuntime);
+						if (tr != null)
+							ActiveRuntime = tr;
+						else
+							UseDefaultRuntime = true;
+					}
 				}
 			}
 			catch (Exception ex) {
@@ -669,6 +713,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			WorkspaceUserData data = new WorkspaceUserData ();
 			data.ActiveConfiguration = ActiveConfiguration;
+			data.ActiveRuntime = UseDefaultRuntime ? null : ActiveRuntime.Id;
 			props.SetValue ("MonoDevelop.Ide.Workspace", data);
 			
 			// Allow add-ins to fill-up data
@@ -1091,6 +1136,16 @@ namespace MonoDevelop.Ide.Gui
 
 		public event EventHandler ActiveConfigurationChanged;
 		public event EventHandler ConfigurationsChanged;
+		
+		public event EventHandler RuntimesChanged {
+			add { Runtime.SystemAssemblyService.RuntimesChanged += value; }
+			remove { Runtime.SystemAssemblyService.RuntimesChanged -= value; }
+		}
+		
+		public event EventHandler ActiveRuntimeChanged {
+			add { Runtime.SystemAssemblyService.DefaultRuntimeChanged += value; }
+			remove { Runtime.SystemAssemblyService.DefaultRuntimeChanged -= value; }
+		}
 #endregion
 	}
 	
@@ -1161,6 +1216,8 @@ namespace MonoDevelop.Ide.Gui
 	{
 		[ItemProperty]
 		public string ActiveConfiguration;
+		[ItemProperty]
+		public string ActiveRuntime;
 	}
 }
 namespace Mono.Profiler {

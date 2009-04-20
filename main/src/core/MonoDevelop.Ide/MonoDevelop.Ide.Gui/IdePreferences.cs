@@ -27,6 +27,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -124,6 +125,20 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler<PropertyChangedEventArgs> RunWithWarningsChanged {
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.RunWithWarnings", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.RunWithWarnings", value); }
+		}
+
+		public TargetRuntime DefaultTargetRuntime {
+			get {
+				string id = PropertyService.Get ("MonoDevelop.Ide.DefaultTargetRuntime", Runtime.SystemAssemblyService.CurrentRuntime.Id); 
+				TargetRuntime tr = Runtime.SystemAssemblyService.GetTargetRuntime (id);
+				return tr ?? Runtime.SystemAssemblyService.CurrentRuntime;
+			}
+			set { PropertyService.Set ("MonoDevelop.Ide.DefaultTargetRuntime", value.Id); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> DefaultTargetRuntimeChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.DefaultTargetRuntime", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.DefaultTargetRuntime", value); }
 		}
 	}
 	

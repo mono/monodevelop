@@ -23,6 +23,7 @@ using System.IO;
 using System.Threading;
 using System.Diagnostics;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.ProgressMonitoring;
 using MonoDevelop.Projects;
@@ -56,6 +57,7 @@ namespace MonoDevelop.Ide.Commands
 		GenerateMakefiles,
 		RunEntry,
 		Run,
+		RunWithList,
 		IncludeInBuild,
 		IncludeInDeploy,
 		Deploy,
@@ -77,6 +79,21 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
+			Run (new DefaultExecutionHandlerFactory ());
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Text = GettextCatalog.GetString ("_Run");
+			if (IdeApp.Workspace.IsOpen) {
+				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
+					info.Text = GettextCatalog.GetString ("_Run again");
+			}
+			info.Enabled = CanRun (new DefaultExecutionHandlerFactory ());
+		}
+		
+		protected void Run (IExecutionHandler handler)
+		{
 			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
 				StopHandler.StopBuildOperations ();
 				IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
@@ -84,52 +101,66 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.Workspace.IsOpen) {
 				if (IdeApp.Preferences.BuildBeforeExecuting) {
 					IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
-					op.Completed += ExecuteCombine;
+					op.Completed += delegate { ExecuteCombine (op, handler); };
 				} else
-					IdeApp.ProjectOperations.Execute (IdeApp.Workspace);
+					IdeApp.ProjectOperations.Execute (IdeApp.Workspace, handler);
 			} else {
 				doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) {
 					if (IdeApp.Preferences.BuildBeforeExecuting) {
 						IAsyncOperation op = doc.Build ();
-						op.Completed += ExecuteFile;
+						op.Completed += delegate { ExecuteFile (op, doc, handler); };
 					} else {
-						doc.Run ();
+						doc.Run (handler);
 					}
 				}
 			}
 		}
 		
-		protected override void Update (CommandInfo info)
+		protected bool CanRun (IExecutionHandler handler)
 		{
-			info.Text = GettextCatalog.GetString ("_Run");
-			if (IdeApp.Workspace.IsOpen) {
-				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
-					info.Text = GettextCatalog.GetString ("_Run again");
-				}
-				info.Enabled = !(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace) && IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace);
-			} else {
-				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
-			}
+			if (IdeApp.Workspace.IsOpen)
+				return !(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace) && IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace, handler);
+			else
+				return IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.CanRun (handler);
 		}
 		
-		void ExecuteCombine (IAsyncOperation op)
+		void ExecuteCombine (IAsyncOperation op, IExecutionHandler handler)
 		{
 			if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
 				return;
 			if (op.Success)
-				IdeApp.ProjectOperations.Execute (IdeApp.Workspace);
+				IdeApp.ProjectOperations.Execute (IdeApp.Workspace, handler);
 		}
 		
-		void ExecuteFile (IAsyncOperation op)
+		void ExecuteFile (IAsyncOperation op, Document doc, IExecutionHandler handler)
 		{
 			if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
 				return;
 			if (op.Success)
-				doc.Run ();
+				doc.Run (handler);
 		}
 	}
 	
+	internal class RunWithHandler: RunHandler
+	{
+		protected override void Run (object dataItem)
+		{
+			Run ((IExecutionHandler) dataItem);
+		}
+
+		protected override void Update (CommandArrayInfo info)
+		{
+			foreach (IExecutionModeSet mset in Runtime.ProcessService.GetExecutionModes ()) {
+				foreach (IExecutionMode mode in mset.ExecutionModes) {
+					if (CanRun (mode.ExecutionHandler))
+						info.Add (mode.Name, mode.ExecutionHandler);
+				}
+				info.AddSeparator ();
+			}
+		}
+
+	}
 	
 	internal class RunEntryHandler: CommandHandler
 	{

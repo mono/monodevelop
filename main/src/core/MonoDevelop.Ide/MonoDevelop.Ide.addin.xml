@@ -401,6 +401,11 @@
 				shortcut = "Control|F5"
 				_description = "Run"
 				_label = "_Run" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList"
+				defaultHandler = "MonoDevelop.Ide.Commands.RunWithHandler"
+				type="array"
+				_description = "Run With List"
+				_label = "Run With List" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry"
 				defaultHandler = "MonoDevelop.Ide.Commands.RunEntryHandler"
 				icon = "gtk-execute"
@@ -1192,6 +1197,7 @@
 			<Section id = "TaskList" _label = "Task List" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
 			<Section id = "ExternalTools" _label = "External Tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
 			<Section id = "GeneralAuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" />
+			<Section id = "MonoRuntime" _label = ".NET Runtimes" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanel" />
 		</Section>
 
 		<Section id = "Coding" _label = "Coding">
@@ -1477,6 +1483,9 @@
 
 		<ItemSet id = "Run" _label = "_Run">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
+			<ItemSet id = "RunWith" _label = "Run With">
+				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
+			</ItemSet>
 			<SeparatorItem id = "StopSection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />
 		</ItemSet>

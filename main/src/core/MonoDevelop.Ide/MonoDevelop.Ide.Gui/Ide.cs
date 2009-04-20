@@ -133,13 +133,13 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
+			preferences = new IdePreferences ();
 			workbench = new Workbench ();
 			workspace = new RootWorkspace ();
 			projectOperations = new ProjectOperations ();
 			helpOperations = new HelpOperations ();
 			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
-			preferences = new IdePreferences ();
 
 			KeyBindingService.LoadBindingsFromExtensionPath ("/MonoDevelop/Ide/KeyBindingSchemes");
 			KeyBindingService.LoadCurrentBindings ("MD2");

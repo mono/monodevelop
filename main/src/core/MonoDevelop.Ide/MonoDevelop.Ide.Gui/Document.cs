@@ -35,6 +35,7 @@ using System.IO;
 using Gtk;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
@@ -316,14 +317,24 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 		
-		public virtual IAsyncOperation Run ()
+		public IAsyncOperation Run ()
 		{
-			return IdeApp.ProjectOperations.ExecuteFile (Window.ViewContent.ContentName);
+			return Run (new DefaultExecutionHandlerFactory ());
+		}
+
+		public virtual IAsyncOperation Run (IExecutionHandler handler)
+		{
+			return IdeApp.ProjectOperations.ExecuteFile (Window.ViewContent.ContentName, handler);
 		}
 
 		public virtual bool CanRun ()
 		{
-			return Window.ViewContent.ContentName != null && IdeApp.ProjectOperations.CanExecuteFile (Window.ViewContent.ContentName);
+			return CanRun (new DefaultExecutionHandlerFactory ());
+		}
+		
+		public virtual bool CanRun (IExecutionHandler handler)
+		{
+			return IsBuildTarget && Window.ViewContent.ContentName != null && IdeApp.ProjectOperations.CanExecuteFile (Window.ViewContent.ContentName, handler);
 		}
 		
 		public bool Close ()
