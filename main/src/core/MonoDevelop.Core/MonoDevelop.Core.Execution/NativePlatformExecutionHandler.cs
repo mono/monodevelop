@@ -45,27 +45,28 @@ namespace MonoDevelop.Core.Execution
 			this.defaultEnvironmentVariables = defaultEnvironmentVariables;
 		}
 		
-		public virtual IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
+		public virtual IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
+			NativeExecutionCommand cmd = (NativeExecutionCommand) command;
 			IDictionary<string, string> vars;
 			if (defaultEnvironmentVariables != null && defaultEnvironmentVariables.Count > 0) {
-				if (environmentVariables == null || environmentVariables.Count == 0) {
+				if (cmd.EnvironmentVariables.Count == 0) {
 					vars = defaultEnvironmentVariables;
 				} else {
 					// Merge the variables.
 					vars = new Dictionary<string, string> (defaultEnvironmentVariables);
-					foreach (KeyValuePair<string,string> evar in environmentVariables)
+					foreach (KeyValuePair<string,string> evar in cmd.EnvironmentVariables)
 						vars [evar.Key] = evar.Value;
 				}
 			} else
-				vars = environmentVariables;
+				vars = cmd.EnvironmentVariables;
 			
-			return Runtime.ProcessService.StartConsoleProcess (command, arguments, workingDirectory, vars, console, null);
+			return Runtime.ProcessService.StartConsoleProcess (cmd.Command, cmd.Arguments, cmd.WorkingDirectory, vars, console, null);
 		}
 	
-		public virtual bool CanExecute (string command)
+		public virtual bool CanExecute (ExecutionCommand command)
 		{
-			return true;
+			return command is NativeExecutionCommand;
 		}
 	}
 }

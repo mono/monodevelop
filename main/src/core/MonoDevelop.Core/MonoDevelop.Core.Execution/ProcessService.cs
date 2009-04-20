@@ -210,7 +210,7 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public IExecutionHandler GetDefaultExecutionHandler (string command)
+		public IExecutionHandler GetDefaultExecutionHandler (ExecutionCommand command)
 		{
 			if (executionHandlers == null) {
 				executionHandlers = new List<ExtensionNode> ();
@@ -224,12 +224,22 @@ namespace MonoDevelop.Core.Execution
 			return null;
 		}
 		
-		public IExecutionMode[] GetExecutionModes ()
+		public ExecutionCommand CreateCommand (string file)
 		{
-			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/MonoDevelop/Core/ExecutionModes", typeof(ExecutionModeNode));
-			IExecutionMode[] modes = new IExecutionMode [nodes.Count];
-			nodes.CopyTo (modes, 0);
-			return modes;
+			string f = file.ToLower ();
+			if (f.EndsWith (".exe") || f.EndsWith (".dll"))
+				return new DotNetExecutionCommand (file);
+			else
+				return new NativeExecutionCommand (file);
+		}
+		
+		public IEnumerable<IExecutionModeSet> GetExecutionModes ()
+		{
+			yield return new DefaultExecutionModeSet ();
+			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/ExecutionModes")) {
+				if (!(node is ExecutionModeNode))
+					yield return (IExecutionModeSet) node.CreateInstance (typeof (IExecutionModeSet));
+			}
 		}
 		
 		public IExecutionMode DefaultExecutionMode {
@@ -323,7 +333,7 @@ namespace MonoDevelop.Core.Execution
 		{
 			string location = Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location);
 			location = Path.Combine (location, "mdhost.exe");
-			return handler.CanExecute (location);
+			return handler.CanExecute (new DotNetExecutionCommand (location));
 		}
 		
 		string[] GetRequiredAddins (Type type)

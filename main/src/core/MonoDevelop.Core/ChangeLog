@@ -1,3 +1,40 @@
+2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.Execution/ExecutionCommand.cs:
+	* MonoDevelop.Core.Execution/IExecutionHandler.cs:
+	* MonoDevelop.Core.Execution/ProcessHostController.cs:
+	* MonoDevelop.Core.Execution/DotNetExecutionHandler.cs:
+	* MonoDevelop.Core.Execution/DotNetExecutionCommand.cs:
+	* MonoDevelop.Core.Execution/NativeExecutionCommand.cs:
+	* MonoDevelop.Core.Execution/ProcessExecutionCommand.cs:
+	* MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs:
+	* MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs:
+	* MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs:
+	  Changed the way IExecutionHandler works. It now takes an
+	  ExecutionCommand as parameter. ExecutionCommand subclasses
+	  contains all required data to execute a command.
+	  IExecutionHandler can be specialized on specific subtypes of
+	  ExecutionCommand.
+
+	* MonoDevelop.Core.addin.xml:
+	* MonoDevelop.Core.Execution/ExecutionMode.cs:
+	* MonoDevelop.Core.Execution/IExecutionModeSet.cs:
+	* MonoDevelop.Core.Assemblies/CustomRuntimeExecutionModeSet.cs:
+	  Added support for IExecutionModeSet. It is a factory of
+	  related execution modes. For example, debuggers or
+	  profilers.
+
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs: Add
+	  support for mono runtimes installed in prefixes other than
+	  the current runtime.
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj: Added new Files.
+
 2009-04-17  Jason Smith  <jassmith@gmail.com>
 
 	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: Add

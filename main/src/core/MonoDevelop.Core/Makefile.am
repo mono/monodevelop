@@ -9,6 +9,8 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ITargetRuntimeFactory.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageInstalledCondition.cs \
+	MonoDevelop.Core.Assemblies/CustomRuntimeExecutionModeSet.cs \
+	MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs \
 	MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs \
 	MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs \
 	MonoDevelop.Core.Assemblies/SystemAssembly.cs \
@@ -21,6 +23,10 @@ FILES =  \
 	MonoDevelop.Core.Execution/AddinDependencyAttribute.cs \
 	MonoDevelop.Core.Execution/BreakpointEventHandler.cs \
 	MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs \
+	MonoDevelop.Core.Execution/DotNetExecutionCommand.cs \
+	MonoDevelop.Core.Execution/DotNetExecutionHandler.cs \
+	MonoDevelop.Core.Execution/ExecutionCommand.cs \
+	MonoDevelop.Core.Execution/ExecutionMode.cs \
 	MonoDevelop.Core.Execution/ExecutionPlatform.cs \
 	MonoDevelop.Core.Execution/ExternalConsoleFactory.cs \
 	MonoDevelop.Core.Execution/ExternalConsoleLocator.cs \
@@ -29,11 +35,14 @@ FILES =  \
 	MonoDevelop.Core.Execution/IConsoleFactory.cs \
 	MonoDevelop.Core.Execution/IExecutionHandler.cs \
 	MonoDevelop.Core.Execution/IExecutionMode.cs \
+	MonoDevelop.Core.Execution/IExecutionModeSet.cs \
 	MonoDevelop.Core.Execution/IProcessAsyncOperation.cs \
 	MonoDevelop.Core.Execution/IProcessHost.cs \
 	MonoDevelop.Core.Execution/IProcessHostController.cs \
 	MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs \
+	MonoDevelop.Core.Execution/NativeExecutionCommand.cs \
 	MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs \
+	MonoDevelop.Core.Execution/ProcessExecutionCommand.cs \
 	MonoDevelop.Core.Execution/ProcessHostController.cs \
 	MonoDevelop.Core.Execution/ProcessService.cs \
 	MonoDevelop.Core.Execution/ProcessWrapper.cs \

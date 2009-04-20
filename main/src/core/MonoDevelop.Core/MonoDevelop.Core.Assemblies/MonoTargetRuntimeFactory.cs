@@ -25,18 +25,80 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Core.Assemblies
 {
 	class MonoTargetRuntimeFactory: ITargetRuntimeFactory
 	{
+		static RuntimeCollection customRuntimes = new RuntimeCollection ();
+		static string configFile = Path.Combine (PropertyService.ConfigPath, "mono-runtimes.xml");
+		
+		static MonoTargetRuntimeFactory ()
+		{
+			LoadRuntimes ();
+		}
+		
 		public IEnumerable<TargetRuntime> CreateRuntimes ()
 		{
 			if (Type.GetType ("Mono.Runtime") != null) {
 				yield return new MonoTargetRuntime ();
 			}
+			foreach (MonoRuntimeInfo info in customRuntimes)
+				yield return new MonoTargetRuntime (info);
 		}
+		
+		public static TargetRuntime RegisterRuntime (MonoRuntimeInfo info)
+		{
+			MonoTargetRuntime tr = new MonoTargetRuntime (info);
+			Runtime.SystemAssemblyService.RegisterRuntime (tr);
+			customRuntimes.Add (info);
+			SaveRuntimes ();
+			return tr;
+		}
+		
+		public static void UnregisterRuntime (MonoTargetRuntime runtime)
+		{
+			Runtime.SystemAssemblyService.UnregisterRuntime (runtime);
+			foreach (MonoRuntimeInfo ri in customRuntimes) {
+				if (ri.Prefix == runtime.MonoRuntimeInfo.Prefix) {
+					customRuntimes.Remove (ri);
+				}
+			}
+			SaveRuntimes ();
+		}
+		
+		static void LoadRuntimes ()
+		{
+			if (!File.Exists (configFile))
+				return;
+			try {
+				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+				using (StreamReader sr = new StreamReader (configFile)) {
+					customRuntimes = (RuntimeCollection) ser.Deserialize (sr, typeof(RuntimeCollection));
+				}
+			} catch (Exception ex) {
+				Console.WriteLine ("pp: " + ex);
+				LoggingService.LogError ("Error while loading mono-runtimes.xml.");
+			}
+		}
+		
+		static void SaveRuntimes ()
+		{
+			try {
+				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+				using (StreamWriter sw = new StreamWriter (configFile)) {
+					ser.Serialize (sw, customRuntimes);
+				}
+			} catch {
+			}
+		}
+	}
+	
+	class RuntimeCollection: List<MonoRuntimeInfo>
+	{
 	}
 }

@@ -16,6 +16,7 @@
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionModes" name = "Execution modes">
 		<Description>Execution modes such as default, debug, profiler, etc.</Description>
 		<ExtensionNode name="Mode" type="MonoDevelop.Core.AddIns.ExecutionModeNode" />
+		<ExtensionNode name="ModeSetType" />
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionHandlers" name = "Execution handlers">
@@ -44,6 +45,7 @@
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
 		<Mode id="Default" _name="Default" class="MonoDevelop.Core.Execution.DefaultExecutionHandlerFactory"/>
+		<ModeSetType class="MonoDevelop.Core.Assemblies.CustomRuntimeExecutionModeSet"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Runtimes">
@@ -52,7 +54,7 @@
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="Mono"
-		                  class = "MonoDevelop.Core.Execution.MonoPlatformExecutionHandler"/>
+		                  class = "MonoDevelop.Core.Execution.DotNetExecutionHandler"/>
 		<ExecutionHandler id="Native"
 		                  class = "MonoDevelop.Core.Execution.NativePlatformExecutionHandler"/>
 	</Extension>

@@ -52,6 +52,7 @@ namespace MonoDevelop.Core.Assemblies
 		public TargetRuntime CurrentRuntime { get; private set; }
 		
 		public event EventHandler DefaultRuntimeChanged;
+		public event EventHandler RuntimesChanged;
 		
 		internal SystemAssemblyService ()
 		{
@@ -63,10 +64,9 @@ namespace MonoDevelop.Core.Assemblies
 			runtimes = new List<TargetRuntime> ();
 			foreach (ITargetRuntimeFactory factory in AddinManager.GetExtensionObjects ("/MonoDevelop/Core/Runtimes", typeof(ITargetRuntimeFactory))) {
 				foreach (TargetRuntime runtime in factory.CreateRuntimes ()) {
-					runtime.StartInitialization ();
+					RegisterRuntime (runtime);
 					if (runtime.IsRunning)
 						DefaultRuntime = CurrentRuntime = runtime;
-					runtimes.Add (runtime);
 				}
 			}
 		}
@@ -86,6 +86,8 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			runtime.StartInitialization ();
 			runtimes.Add (runtime);
+			if (RuntimesChanged != null)
+				RuntimesChanged (this, EventArgs.Empty);
 		}
 		
 		public void UnregisterRuntime (TargetRuntime runtime)
@@ -94,6 +96,8 @@ namespace MonoDevelop.Core.Assemblies
 				return;
 			DefaultRuntime = CurrentRuntime;
 			runtimes.Remove (runtime);
+			if (RuntimesChanged != null)
+				RuntimesChanged (this, EventArgs.Empty);
 		}
 		
 		public IEnumerable<TargetFramework> GetTargetFrameworks ()

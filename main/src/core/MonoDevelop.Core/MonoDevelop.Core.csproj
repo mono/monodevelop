@@ -154,6 +154,15 @@
     <Compile Include="MonoDevelop.Core.Assemblies\TargetRuntime.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\TargetFramework.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\SystemAssemblyService.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\MonoRuntimeInfo.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\IExecutionModeSet.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\CustomRuntimeExecutionModeSet.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\ExecutionMode.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\ExecutionCommand.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\DotNetExecutionCommand.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\NativeExecutionCommand.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\ProcessExecutionCommand.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\DotNetExecutionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

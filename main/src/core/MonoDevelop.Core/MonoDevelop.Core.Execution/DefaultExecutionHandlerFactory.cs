@@ -32,15 +32,15 @@ namespace MonoDevelop.Core.Execution
 {
 	public class DefaultExecutionHandlerFactory: IExecutionHandler
 	{
-		public bool CanExecute (string command)
+		public bool CanExecute (ExecutionCommand command)
 		{
 			return Runtime.ProcessService.GetDefaultExecutionHandler (command) != null;
 		}
 		
-		public IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, System.Collections.Generic.IDictionary<string, string> environmentVariables, IConsole console)
+		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			IExecutionHandler handler = Runtime.ProcessService.GetDefaultExecutionHandler (command);
-			return handler.Execute (command, arguments, workingDirectory, environmentVariables, console);
+			return handler.Execute (command, console);
 		}
 	}
 }

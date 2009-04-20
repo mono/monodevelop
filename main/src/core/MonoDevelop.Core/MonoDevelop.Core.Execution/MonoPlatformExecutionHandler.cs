@@ -33,34 +33,30 @@ namespace MonoDevelop.Core.Execution
 {
 	public class MonoPlatformExecutionHandler: NativePlatformExecutionHandler
 	{
+		string monoPath = "mono";
+		
 		public MonoPlatformExecutionHandler ()
 		{
 		}
 		
-		public MonoPlatformExecutionHandler (IDictionary<string, string> defaultEnvironmentVariables): base (defaultEnvironmentVariables)
+		public MonoPlatformExecutionHandler (string monoPath, IDictionary<string, string> defaultEnvironmentVariables): base (defaultEnvironmentVariables)
 		{
+			this.monoPath = monoPath;
 		}
 		
-		public override IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console)
+		public override IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			string args = string.Format ("--debug \"{0}\" {1}", command, arguments);
-			return base.Execute ("mono", args, workingDirectory, environmentVariables, console);
-
-// Old method - workaround should no longer be necessary.
-//			string args = string.Format (@"--debug {0} {1}", command.Replace (" ", "\\ "), arguments);
-//			
-//			if (console is ExternalConsole)
-//				return base.Execute ("mono", args, workingDirectory, console);
-//			else
-//				// The use of 'sh' is a workaround. Looks like there is a bug
-//				// in mono, Process can't start a "mono" process.
-//				return base.Execute ("sh", string.Format ("-c \"mono {0}\"", args), workingDirectory, console);
+			DotNetExecutionCommand dotcmd = (DotNetExecutionCommand) command;
+			
+			string args = string.Format ("--debug \"{0}\" {1}", dotcmd.Command, dotcmd.Arguments);
+			NativeExecutionCommand cmd = new NativeExecutionCommand (monoPath, args, dotcmd.WorkingDirectory, dotcmd.EnvironmentVariables);
+			
+			return base.Execute (cmd, console);
 		}
 		
-		public override bool CanExecute (string command)
+		public override bool CanExecute (ExecutionCommand command)
 		{
-			string ext = System.IO.Path.GetExtension (command).ToLower ();
-			return ext == ".exe" || ext == ".dll";
+			return command is DotNetExecutionCommand;
 		}
 
 	}
