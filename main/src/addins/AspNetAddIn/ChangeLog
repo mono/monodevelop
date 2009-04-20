@@ -1,5 +1,10 @@
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AspNet.Gui/AspNetFileSelector.cs: Renamed
+	  PixbufService to ImageService.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AspNet.Gui/AspNetFileSelector.cs: Track API
 	  changes.
 

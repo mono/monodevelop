@@ -61,9 +61,9 @@ namespace MonoDevelop.AspNet.Gui
 			
 			this.Build();
 			
-			projBuf = PixbufService.GetPixbuf (project.StockIcon, IconSize.Menu);
-			dirClosedBuf = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
-			dirOpenBuf = PixbufService.GetPixbuf (MonoDevelop.Core.Gui.Stock.OpenFolder, IconSize.Menu);
+			projBuf = ImageService.GetPixbuf (project.StockIcon, IconSize.Menu);
+			dirClosedBuf = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
+			dirOpenBuf = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.OpenFolder, IconSize.Menu);
 			
 			TreeViewColumn projectCol = new TreeViewColumn ();
 			projectCol.Title = GettextCatalog.GetString ("Project Folders");
