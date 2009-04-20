@@ -36,6 +36,8 @@ using System.Text.RegularExpressions;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Codons;
+using Mono.Unix;
+
 
 namespace MonoDevelop.Core.Gui
 {
@@ -240,6 +242,24 @@ namespace MonoDevelop.Core.Gui
 		public virtual bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager, string commandMenuAddinPath)
 		{
 			return false;
+		}
+		
+		// Used for preserve the file attributes when monodevelop opens & writes a file.
+		// This should work on unix & mac platform.
+		public virtual object GetFileAttributes (string fileName)
+		{
+			UnixFileSystemInfo info = UnixFileSystemInfo.GetFileSystemEntry (fileName);
+			if (info == null)
+				return null;
+			return info.FileAccessPermissions;
+		}
+		
+		public virtual void SetFileAttributes (string fileName, object attributes)
+		{
+			if (attributes == null)
+				return;
+			UnixFileSystemInfo info = UnixFileSystemInfo.GetFileSystemEntry (fileName);
+			info.FileAccessPermissions = (FileAccessPermissions)attributes;
 		}
 	}
 }

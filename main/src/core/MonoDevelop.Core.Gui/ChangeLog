@@ -1,5 +1,10 @@
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Core.Gui/PlatformService.cs: Fixed "Bug 489963 -
+	  Files loose execution bit when saved".
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.Gui.csproj:
 	* MonoDevelop.Core.Gui/GuiService.cs:
