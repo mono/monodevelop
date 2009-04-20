@@ -76,11 +76,11 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			label = win.Name;
 			
 //			if (win.RootWidget.IsWindow)
-//				icon = PixbufService.GetPixbuf ("md-gtkcore-window");
+//				icon = ImageService.GetPixbuf ("md-gtkcore-window");
 			if (win.RootWidget.IsWindow)
-				icon = PixbufService.GetPixbuf ("md-gtkcore-dialog", Gtk.IconSize.Menu);
+				icon = ImageService.GetPixbuf ("md-gtkcore-dialog", Gtk.IconSize.Menu);
 			else
-				icon = PixbufService.GetPixbuf ("md-gtkcore-widget", Gtk.IconSize.Menu);
+				icon = ImageService.GetPixbuf ("md-gtkcore-widget", Gtk.IconSize.Menu);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

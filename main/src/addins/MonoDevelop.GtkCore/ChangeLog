@@ -3,6 +3,13 @@
 	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs:
 	* MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs:
 	* MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs:
+	  Renamed PixbufService to ImageService.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs:
+	* MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs:
 	  Track API changes.
 
 2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>

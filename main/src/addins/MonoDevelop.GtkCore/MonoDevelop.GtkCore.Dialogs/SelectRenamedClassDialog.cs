@@ -64,7 +64,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			treeClasses.AppendColumn (column);
 			
 			foreach (IType cls in classes) {
-				Pixbuf pic = PixbufService.GetPixbuf (cls.StockIcon);
+				Pixbuf pic = ImageService.GetPixbuf (cls.StockIcon);
 				store.AppendValues (pic, cls.FullName);
 			}
 		}
