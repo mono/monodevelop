@@ -1,3 +1,10 @@
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* Gui/CTextEditorExtension.cs:
+	* gtk-gui/CBinding.AddPathDialog.cs:
+	* gtk-gui/CBinding.AddLibraryDialog.cs: Track api changes.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* CBinding.csproj: don't require specific gtk-sharp version.

@@ -78,6 +78,75 @@ namespace CBinding
 			        (0 <= Array.IndexOf(CProject.SourceExtensions, Path.GetExtension(doc.Name).ToUpper ())));
 		}
 		
+		static bool IsOpenBrace (char c)
+		{
+			return c == '(' || c == '{' || c == '<' || c == '[';
+		}
+		static bool IsCloseBrace (char c)
+		{
+			return c == ')' || c == '}' || c == '>' || c == ']';
+		}
+		
+		static bool IsBrace (char c)
+		{
+			return IsOpenBrace  (c) || IsCloseBrace (c);
+		}
+		
+		static int SearchMatchingBracket (TextEditor editor, int offset, char openBracket, char closingBracket, int direction)
+		{
+			bool isInString       = false;
+			bool isInChar         = false;	
+			bool isInBlockComment = false;
+			int depth = -1;
+			while (offset >= 0 && offset < editor.TextLength) {
+				char ch = editor.GetCharAt (offset);
+				switch (ch) {
+					case '/':
+						if (isInBlockComment) 
+							isInBlockComment = editor.GetCharAt (offset + direction) != '*';
+						if (!isInString && !isInChar && offset - direction < editor.TextLength) 
+							isInBlockComment = offset > 0 && editor.GetCharAt (offset - direction) == '*';
+						break;
+					case '"':
+						if (!isInChar && !isInBlockComment) 
+							isInString = !isInString;
+						break;
+					case '\'':
+						if (!isInString && !isInBlockComment) 
+							isInChar = !isInChar;
+						break;
+					default :
+						if (ch == closingBracket) {
+							if (!(isInString || isInChar || isInBlockComment)) 
+								--depth;
+						} else if (ch == openBracket) {
+							if (!(isInString || isInChar || isInBlockComment)) {
+								++depth;
+								if (depth == 0) 
+									return offset;
+							}
+						}
+						break;
+				}
+				offset += direction;
+			}
+			return -1;
+		}
+		
+		static int GetClosingBraceForLine (TextEditor editor, int line, out int openingLine)
+		{
+			int offset = editor.GetPositionFromLineColumn (line, 1);
+			offset = SearchMatchingBracket (editor, offset, '{', '}', -1);
+			if (offset == -1) {
+				openingLine = -1;
+				return -1;
+			}
+				
+			int col;
+			editor.GetLineColumnFromPosition (offset, out openingLine, out col);
+			return offset;
+		}
+		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			int line, column;
@@ -121,10 +190,10 @@ namespace CBinding
 						}
 
 						// If the next character is an closing brace, indent it appropriately.
-						if(TextEditor.IsBrace(nextChar) && !TextEditor.IsOpenBrace(nextChar))
+						if(IsBrace(nextChar) && !IsOpenBrace(nextChar))
 						{
 							int openingLine;
-							if(Editor.GetClosingBraceForLine(line, out openingLine) >= 0)
+							if(GetClosingBraceForLine (Editor, line, out openingLine) >= 0)
 							{
 								Editor.InsertText(Editor.CursorPosition, Editor.NewLine + GetIndent(Editor, openingLine, 0));
 								return false;
@@ -142,7 +211,7 @@ namespace CBinding
 							break;
 
 						int braceOpeningLine;
-						if(Editor.GetClosingBraceForLine(line, out braceOpeningLine) >= 0)
+						if(GetClosingBraceForLine(Editor, line, out braceOpeningLine) >= 0)
 						{
 							Editor.ReplaceLine(line, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
 							return false;
