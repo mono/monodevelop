@@ -297,7 +297,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			public Gdk.Pixbuf GetIcon (int n)
 			{
-				return MonoDevelop.Core.ImageService.GetPixbuf (List[n].StockIcon,Gtk.IconSize.Menu);
+				return MonoDevelop.Core.Gui.ImageService.GetPixbuf (List[n].StockIcon,Gtk.IconSize.Menu);
 			}
 			
 			public object GetTag (int n)
