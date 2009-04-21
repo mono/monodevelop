@@ -67,6 +67,12 @@ namespace MonoDevelop.Core
 			}
 		}
 		
+		public static bool IsWindows {
+			get {
+				return Path.DirectorySeparatorChar == '\\';
+			}
+		}
+		
 		static PropertyService ()
 		{
 			if (!LoadProperties (Path.Combine (ConfigPath, FileName))) {

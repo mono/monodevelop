@@ -47,8 +47,17 @@ namespace MonoDevelop.Core.Assemblies
 			if (Type.GetType ("Mono.Runtime") != null) {
 				yield return new MonoTargetRuntime ();
 			}
-			foreach (MonoRuntimeInfo info in customRuntimes)
-				yield return new MonoTargetRuntime (info);
+			if (PropertyService.IsWindows) {
+				string progs = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles);
+				foreach (string dir in Directory.GetDirectories (progs, "Mono-")) {
+					MonoRuntimeInfo info = new MonoRuntimeInfo (dir);
+					if (info.IsValidRuntime)
+						yield return new MonoTargetRuntime (info);
+				}
+			} else {
+				foreach (MonoRuntimeInfo info in customRuntimes)
+					yield return new MonoTargetRuntime (info);
+			}
 		}
 		
 		public static TargetRuntime RegisterRuntime (MonoRuntimeInfo info)

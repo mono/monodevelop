@@ -171,6 +171,21 @@ namespace MonoDevelop.Core.Assemblies
 			return aname;
 		}
 		
+		public static string GetAssemblyName (string file)
+		{
+			try {
+				System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (file);
+				return TargetRuntime.NormalizeAsmName (an.FullName);
+			} catch (FileNotFoundException) {
+				// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
+				foreach (string f in Directory.GetFiles (Path.GetDirectoryName (file), Path.GetFileName (file))) {
+					if (f != file)
+						return GetAssemblyName (f);
+				}
+				throw;
+			}
+		}
+		
 		protected void CreateFrameworks ()
 		{
 			using (Stream s = AddinManager.CurrentAddin.GetResource ("frameworks.xml")) {
@@ -214,49 +229,6 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			
 			fx.RelationsBuilt = true;
-		}
-	}
-	
-	internal class AssemblyLocator: RemoteProcessObject
-	{
-		public string Locate (string assemblyName)
-		{
-			Assembly asm = null;
-			try {
-				asm = Assembly.Load (assemblyName);
-			} catch {
-			}
-			if (asm == null) {
-				try {
-#pragma warning disable 612
-					asm = Assembly.LoadWithPartialName (assemblyName);
-#pragma warning restore 612
-				} catch {}
-			}
-			if (asm == null)
-				return null;
-			return asm.Location;
-		}
-		
-		public string GetFullName (string assemblyName)
-		{
-			Assembly asm = null;
-			try {
-				asm = Assembly.Load (assemblyName);
-			} catch {
-			}
-			if (asm == null) {
-				try {
-#pragma warning disable 612
-					asm = Assembly.LoadWithPartialName (assemblyName);
-#pragma warning restore 612
-				} catch {}
-			}
-			
-			if (asm == null)
-				return null;
-			
-			return asm.FullName;
 		}
 	}
 }

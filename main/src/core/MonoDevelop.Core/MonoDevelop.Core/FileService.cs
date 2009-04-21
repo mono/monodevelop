@@ -286,7 +286,7 @@ namespace MonoDevelop.Core
 				return false;
 			if (fileName.IndexOfAny (Path.GetInvalidPathChars ()) >= 0)
 				return false;
-			if(fileName.IndexOfAny("$#@!%^&*?|'\";:}{".ToCharArray()) > -1)
+			if(fileName.IndexOfAny("$#@!%^&*?|'\";}{".ToCharArray()) > -1)
 				return false;
 			return true;
 		}
@@ -297,7 +297,7 @@ namespace MonoDevelop.Core
 				return false;
 			if (fileName.IndexOfAny (Path.GetInvalidFileNameChars ()) >= 0)
 				return false;
-			if(fileName.IndexOfAny("$#@!%^&*?\\|'\";:}{".ToCharArray()) > -1)
+			if(fileName.IndexOfAny(("$#@!%^&*?|'\";:}{" + Path.DirectorySeparatorChar).ToCharArray()) > -1)
 				return false;
 			return true;
 		}

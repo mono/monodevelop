@@ -1,3 +1,37 @@
+2009-04-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks.xml: Remove invalid assemblies.
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.addin.xml:
+	* MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs:
+	* MonoDevelop.Core.Execution/MsNetExecutionHandler.cs:
+	* MonoDevelop.Core.Assemblies/MsNetTargetRuntimeFactory.cs:
+	* MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs:
+	  Initial support for the MS.NET runtime.
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs:
+	  Autodetect mono runtimes when running on windows.
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Don't use
+	  an external process for locating assemblies from partial
+	  names. Implemented the logic by looking at directories. Add
+	  support for multiple gac paths.
+
+	* MonoDevelop.Core.Assemblies/SystemAssembly.cs:
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: Added
+	  GetAssemblyName method that works around a bug in
+	  mono/windows (AssemblyName.GetAssemblyName is not case
+	  insensitive).
+
+	* MonoDevelop.Core/FileService.cs: Fixed file name and path
+	  validation methods, so they work for Windows.
+
+	* MonoDevelop.Core/PropertyService.cs: Added property for
+	  checking if we are running on windows.
+
 2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/ProcessService.cs:

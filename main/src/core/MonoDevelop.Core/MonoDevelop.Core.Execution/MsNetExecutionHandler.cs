@@ -1,5 +1,5 @@
 // 
-// SystemAssembly.cs
+// MsNetExecutionHandler.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -26,50 +26,13 @@
 
 using System;
 
-namespace MonoDevelop.Core.Assemblies
+namespace MonoDevelop.Core.Execution
 {
-	public class SystemAssembly
+	class MsNetExecutionHandler: NativePlatformExecutionHandler
 	{
-		public string FullName { get; internal set; }
-		public string Location { get; private set; }
-		
-		public SystemPackage Package { get; internal set; }
-		
-		internal SystemAssembly NextSameName;
-		internal SystemAssembly NextSamePackage;
-		
-		public SystemAssembly (string file, string name)
+		public override bool CanExecute (ExecutionCommand command)
 		{
-			FullName = name;
-			Location = file;
-		}
-		
-		internal static SystemAssembly FromFile (string file)
-		{
-			return new SystemAssembly (file, SystemAssemblyService.GetAssemblyName (file));
-		}
-		
-		public string Name {
-			get {
-				int i = FullName.IndexOf (',');
-				if (i != -1)
-					return FullName.Substring (0, i).Trim ();
-				else
-					return FullName;
-			}
-		}
-		
-		public string Version {
-			get {
-				int i = FullName.IndexOf ("Version=");
-				if (i == -1)
-					return string.Empty;
-				i += 8;
-				int j = FullName.IndexOf (',', i);
-				if (j == -1)
-					j = FullName.Length;
-				return FullName.Substring (i, j - i);
-			}
+			return command is DotNetExecutionCommand;
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace MonoDevelop.Core.Execution
 		
 		public virtual IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			NativeExecutionCommand cmd = (NativeExecutionCommand) command;
+			ProcessExecutionCommand cmd = (ProcessExecutionCommand) command;
 			IDictionary<string, string> vars;
 			if (defaultEnvironmentVariables != null && defaultEnvironmentVariables.Count > 0) {
 				if (cmd.EnvironmentVariables.Count == 0) {

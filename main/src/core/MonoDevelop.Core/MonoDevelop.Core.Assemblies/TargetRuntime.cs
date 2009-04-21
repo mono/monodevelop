@@ -107,6 +107,30 @@ namespace MonoDevelop.Core.Assemblies
 			return new Dictionary<string,string> ();
 		}
 		
+		public string GetToolPath (string toolName)
+		{
+			foreach (string path in GetToolsPaths ()) {
+				string toolPath = Path.Combine (path, toolName);
+				if (PropertyService.IsWindows) {
+					if (File.Exists (toolPath + ".bat"))
+						return toolPath + ".bat";
+				}
+				if (File.Exists (toolPath + ".exe"))
+					return toolPath + ".exe";
+				if (File.Exists (toolPath))
+					return toolPath;
+			}
+			return null;
+		}
+		
+		public virtual IEnumerable<string> GetToolsPaths ()
+		{
+			string paths;
+			if (!GetToolsEnvironmentVariables ().TryGetValue ("PATH", out paths))
+				return new string[0];
+			return paths.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
+		}
+		
 		public SystemPackage RegisterPackage (SystemPackageInfo pinfo, params string[] assemblyFiles)
 		{
 			return RegisterPackage (pinfo, true, assemblyFiles);
@@ -310,73 +334,109 @@ namespace MonoDevelop.Core.Assemblies
 			if (assemblyName == "mscorlib" || assemblyName.StartsWith ("mscorlib,"))
 				return typeof(object).Assembly.Location;
 			
-			string path = FindAssembly (assemblyName, AppDomain.CurrentDomain.BaseDirectory);
-			if (path != null)
-				return path;
-			
-			AssemblyLocator locator = (AssemblyLocator) Runtime.ProcessService.CreateExternalProcessObject (typeof(AssemblyLocator), true);
-			using (locator) {
-				return locator.Locate (assemblyName);
-			}
-		}
-
-		public bool AssemblyIsInGac (string aname)
-		{
-			string gf = GetGacFile (aname);
-			return gf != null && File.Exists (gf);
+			return FindAssembly (assemblyName, AppDomain.CurrentDomain.BaseDirectory);
 		}
 		
-		string FindAssembly (string aname, string baseDirectory)
+		public bool AssemblyIsInGac (string aname)
 		{
-			// A fast but hacky way of location an assembly.
+			return GetGacFile (aname, false) != null;
+		}
+		
+		string FindAssembly (string assemblyName, string baseDirectory)
+		{
+			string name;
 			
-			int i = aname.IndexOf (",");
-			if (i == -1) return null;
+			int i = assemblyName.IndexOf (',');
+			if (i == -1)
+				name = assemblyName;
+			else
+				name = assemblyName.Substring (0,i).Trim ();
 
-			string name = aname.Substring (0, i).Trim ();
-			string file = Path.Combine (baseDirectory, name + ".dll");
+			// Look in initial path
+			if (!string.IsNullOrEmpty (baseDirectory)) {
+				string localPath = Path.Combine (baseDirectory, name);
+				if (File.Exists (localPath))
+					return localPath;
+			}
 			
-			if (File.Exists (file))
-				return file;
-				
-			file = Path.Combine (baseDirectory, name + ".exe");
-			if (File.Exists (file))
-				return file;
+			// Look in assembly directories
+			foreach (string path in GetAssemblyDirectories ()) {
+				string localPath = Path.Combine (path, name);
+				if (File.Exists (localPath))
+					return localPath;
+			}
+
+			// Look in the gac
+			return GetGacFile (assemblyName, true);
+		}
+		
+		protected abstract IEnumerable<string> GetGacDirectories ();
+		
+		protected virtual IEnumerable<string> GetAssemblyDirectories ()
+		{
+			yield break;
+		}
+		
+		string GetGacFile (string aname, bool allowPartialMatch)
+		{
+			// Look for the assembly in the GAC.
 			
-			string gf = GetGacFile (aname);
-			if (File.Exists (gf))
-				return gf;
+			string name, version, culture, token;
+			ParseAssemblyName (aname, out name, out version, out culture, out token);
+			if (name == null)
+				return null;
+			
+			if (!allowPartialMatch) {
+				if (name == null || version == null || culture == null || token == null)
+					return null;
+			
+				foreach (string gacDir in GetGacDirectories ()) {
+					string file = Path.Combine (gacDir, name);
+					file = Path.Combine (file, version + "_" + culture + "_" + token);
+					file = Path.Combine (file, name + ".dll");
+					if (File.Exists (file))
+					    return file;
+				}
+			}
+			else {
+				string pattern = (version ?? "*") + "_" + (culture ?? "*") + "_" + (token ?? "*");
+				foreach (string gacDir in GetGacDirectories ()) {
+					string asmDir = Path.Combine (gacDir, name);
+					if (Directory.Exists (asmDir)) {
+						foreach (string dir in Directory.GetDirectories (asmDir, pattern)) {
+							string file = Path.Combine (dir, name + ".dll");
+							if (File.Exists (file))
+								return file;
+						}
+					}
+				}
+			}
 			return null;
 		}
 		
-		protected abstract string GetGacDirectory ();
-		
-		string GetGacFile (string aname)
+		void ParseAssemblyName (string assemblyName, out string name, out string version, out string culture, out string token)
 		{
-			// Look for the assembly in the GAC.
-			// WARNING: this is a hack, but there isn't right now a better
-			// way of doing it
+			name = version = culture = token = null;
+			string[] parts = assemblyName.Split (',');
+			if (parts.Length < 1)
+				return;
+			name = parts[0].Trim ();
 			
-			string gacDir = GetGacDirectory ();
-			
-			string[] parts = aname.Split (',');
-			if (parts.Length != 4) return null;
-			string name = parts[0].Trim ();
-			
+			if (parts.Length < 2)
+				return;
 			int i = parts[1].IndexOf ('=');
-			string version = i != -1 ? parts[1].Substring (i+1).Trim () : parts[1].Trim ();
+			version = i != -1 ? parts[1].Substring (i+1).Trim () : parts[1].Trim ();
 			
+			if (parts.Length < 3)
+				return;
 			i = parts[2].IndexOf ('=');
-			string culture = i != -1 ? parts[2].Substring (i+1).Trim () : parts[2].Trim ();
+			culture = i != -1 ? parts[2].Substring (i+1).Trim () : parts[2].Trim ();
 			if (culture == "neutral") culture = "";
 			
+			if (parts.Length < 4)
+				return;
 			i = parts[3].IndexOf ('=');
-			string token = i != -1 ? parts[3].Substring (i+1).Trim () : parts[3].Trim ();
-			
-			string file = Path.Combine (gacDir, name);
-			file = Path.Combine (file, version + "_" + culture + "_" + token);
-			file = Path.Combine (file, name + ".dll");
-			return file;
+			token = i != -1 ? parts[3].Substring (i+1).Trim () : parts[3].Trim ();
 		}
 		
 		// Given the full name of an assembly, returns the corresponding full assembly name
@@ -438,13 +498,14 @@ namespace MonoDevelop.Core.Assemblies
 			if (assemblyFullNameToAsm.ContainsKey (assemblyName))
 				return assemblyName;
 
-			if (File.Exists (assemblyName)) {
-				return AssemblyName.GetAssemblyName (assemblyName).FullName;
-			}
-			AssemblyLocator locator = (AssemblyLocator) Runtime.ProcessService.CreateExternalProcessObject (typeof(AssemblyLocator), true);
-			using (locator) {
-				return locator.GetFullName (assemblyName);
-			}
+			if (File.Exists (assemblyName))
+				return SystemAssemblyService.GetAssemblyName (assemblyName);
+
+			string file = GetAssemblyLocation (assemblyName);
+			if (file != null)
+				return SystemAssemblyService.GetAssemblyName (file);
+			else
+				return null;
 		}
 		
 		void Initialize ()
@@ -529,7 +590,7 @@ namespace MonoDevelop.Core.Assemblies
 				if (File.Exists (file))
 					list.Add (AddAssembly (file, package));
 			}
-
+			
 			// Include files from extended frameworks but don't register them,
 			// since they belong to another package
 			foreach (string fxid in fx.ExtendedFrameworks) {

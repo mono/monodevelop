@@ -148,9 +148,21 @@ namespace MonoDevelop.Core.Assemblies
 			return environmentVariables;
 		}
 		
-		protected override string GetGacDirectory ()
+		public override IEnumerable<string> GetToolsPaths ()
 		{
-			return Path.Combine (prefix, "gac");
+			yield return Path.GetFullPath (Path.Combine (prefix, ".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "bin"));
+		}
+
+		
+		protected override IEnumerable<string> GetGacDirectories ()
+		{
+			yield return Path.Combine (prefix, "gac");
+			
+			string gacs;
+			if (GetEnvironmentVariables ().TryGetValue ("MONO_GAC_PREFIX", out gacs)) {
+				foreach (string path in gacs.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries))
+					yield return path;
+			}
 		}
 		
 		protected override string GetFrameworkFolder (TargetFramework fx)

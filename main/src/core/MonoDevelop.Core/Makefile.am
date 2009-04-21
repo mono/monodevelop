@@ -13,6 +13,8 @@ FILES =  \
 	MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs \
 	MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs \
 	MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs \
+	MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs \
+	MonoDevelop.Core.Assemblies/MsNetTargetRuntimeFactory.cs \
 	MonoDevelop.Core.Assemblies/SystemAssembly.cs \
 	MonoDevelop.Core.Assemblies/SystemAssemblyService.cs \
 	MonoDevelop.Core.Assemblies/SystemPackage.cs \
@@ -40,6 +42,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/IProcessHost.cs \
 	MonoDevelop.Core.Execution/IProcessHostController.cs \
 	MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs \
+	MonoDevelop.Core.Execution/MsNetExecutionHandler.cs \
 	MonoDevelop.Core.Execution/NativeExecutionCommand.cs \
 	MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs \
 	MonoDevelop.Core.Execution/ProcessExecutionCommand.cs \

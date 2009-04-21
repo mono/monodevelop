@@ -163,6 +163,9 @@
     <Compile Include="MonoDevelop.Core.Execution\NativeExecutionCommand.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ProcessExecutionCommand.cs" />
     <Compile Include="MonoDevelop.Core.Execution\DotNetExecutionHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\MsNetTargetRuntime.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\MsNetTargetRuntimeFactory.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\MsNetExecutionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

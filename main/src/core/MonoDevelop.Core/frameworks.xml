@@ -7,8 +7,6 @@
 			<Assembly>ICSharpCode.SharpZipLib</Assembly>
 			<Assembly>Accessibility</Assembly>
 			<Assembly>cscompmgd</Assembly>
-			<Assembly>Culture</Assembly>
-			<Assembly>CustomMarshalers</Assembly>
 			<Assembly>Microsoft.Build.Engine</Assembly>
 			<Assembly>Microsoft.Build.Framework</Assembly>
 			<Assembly>Microsoft.Build.Tasks</Assembly>
