@@ -543,11 +543,13 @@ namespace MonoDevelop.Projects
 		
 		string GetTargetFile (string file)
 		{
-			try {
-				UnixSymbolicLinkInfo fi = new UnixSymbolicLinkInfo (file);
-				if (fi.IsSymbolicLink)
-					return fi.ContentsPath;
-			} catch {
+			if (!PropertyService.IsWindows) {
+				try {
+					UnixSymbolicLinkInfo fi = new UnixSymbolicLinkInfo (file);
+					if (fi.IsSymbolicLink)
+						return fi.ContentsPath;
+				} catch {
+				}
 			}
 			return file;
 		}
