@@ -30,5 +30,14 @@ namespace MonoDevelop.Platform
 		public override string Name {
 			get { return "Windows"; }
 		}
+		
+		public override object GetFileAttributes (string fileName)
+		{
+			return null;
+		}
+		
+		public override void SetFileAttributes (string fileName, object attributes)
+		{
+		}
 	}
 }

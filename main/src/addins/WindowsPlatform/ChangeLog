@@ -1,3 +1,7 @@
+2009-04-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WindowsPlatform.cs: New overrides.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
