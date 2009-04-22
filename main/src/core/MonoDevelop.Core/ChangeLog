@@ -1,5 +1,9 @@
 2009-04-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core/PropertyService.cs: Add an IsMac property.
+
+2009-04-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs: Log
 	  exception. Use new API for getting current runtime's info.
 
