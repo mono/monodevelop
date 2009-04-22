@@ -44,8 +44,9 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public IEnumerable<TargetRuntime> CreateRuntimes ()
 		{
-			if (Type.GetType ("Mono.Runtime") != null) {
-				yield return new MonoTargetRuntime ();
+			MonoRuntimeInfo currentRuntime = MonoRuntimeInfo.FromCurrentRuntime ();
+			if (currentRuntime != null) {
+				yield return new MonoTargetRuntime (currentRuntime);
 			}
 			if (PropertyService.IsWindows) {
 				string progs = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles);
@@ -90,8 +91,7 @@ namespace MonoDevelop.Core.Assemblies
 					customRuntimes = (RuntimeCollection) ser.Deserialize (sr, typeof(RuntimeCollection));
 				}
 			} catch (Exception ex) {
-				Console.WriteLine ("pp: " + ex);
-				LoggingService.LogError ("Error while loading mono-runtimes.xml.");
+				LoggingService.LogError ("Error while loading mono-runtimes.xml.", ex);
 			}
 		}
 		

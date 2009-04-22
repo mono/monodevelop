@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Reflection;
 using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
@@ -90,10 +91,10 @@ namespace MonoDevelop.Core.Assemblies
 			if (!Directory.Exists (Path.Combine (libDir, "mono")))
 				return false;
 			string binDir = Path.Combine (prefix, "bin");
-			envVars ["PATH"] = libDir + Path.PathSeparator + binDir + Path.PathSeparator + "$PATH";
-			envVars ["LD_LIBRARY_PATH"] = libDir + Path.PathSeparator + "$LD_LIBRARY_PATH";
+			envVars ["PATH"] = Environment.ExpandEnvironmentVariables (libDir + Path.PathSeparator + binDir + Path.PathSeparator + "$PATH");
+			envVars ["LD_LIBRARY_PATH"] = Environment.ExpandEnvironmentVariables (libDir + Path.PathSeparator + "$LD_LIBRARY_PATH");
 			envVars ["MONO_PATH"] = libDir + Path.PathSeparator + binDir;
-			envVars ["PKG_CONFIG_PATH"] = Path.Combine (libDir, "pkgconfig");
+			
 			StringWriter output = new StringWriter ();
 			try {
 				string monoPath = Path.Combine (prefix, "bin");
@@ -109,6 +110,9 @@ namespace MonoDevelop.Core.Assemblies
 			} catch {
 				return false;
 			}
+			
+			//set up paths using the prefix
+			SetupPkgconfigPaths (null, null);
 			
 			string ver = output.ToString ();
 			int i = ver.IndexOf ("version");
@@ -128,6 +132,121 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			Initialize ();
 			return envVars;
+		}
+		
+		internal bool IsRunning { get; private set; }
+		
+		public static MonoRuntimeInfo FromCurrentRuntime ()
+		{
+			// Get the current mono version
+			Type t = Type.GetType ("Mono.Runtime");
+			if (t == null)
+				return null;
+			
+			MonoRuntimeInfo rt = new MonoRuntimeInfo ();
+			
+			rt.monoVersion = (string) t.InvokeMember ("GetDisplayName", BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic, null, null, null);
+			int i = rt.monoVersion.IndexOf (' ');
+			rt.monoVersion = rt.monoVersion.Substring (i+1);
+
+			//Pull up assemblies from the installed mono system.
+			rt.prefix = PathUp (typeof (int).Assembly.Location, 4);
+			if (rt.prefix == null)
+				throw new SystemException ("Could not detect Mono prefix");
+			
+			rt.SetupPkgconfigPaths (Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH"),
+			                        Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBDIR"));
+			rt.envVars ["PATH"] = Environment.GetEnvironmentVariable ("PATH");
+			
+			rt.IsRunning = true;
+			rt.initialized = true;
+			
+			return rt;
+		}
+		
+		void SetupPkgconfigPaths (string pkgConfigPath, string pkgConfigLibdir)
+		{
+			char[] sep = new char[] { Path.PathSeparator };
+			
+			string[] pkgConfigPaths = null;
+			if (!String.IsNullOrEmpty (pkgConfigPath)) {
+				pkgConfigPaths = pkgConfigPath.Split (sep, StringSplitOptions.RemoveEmptyEntries);
+				if (pkgConfigPaths.Length == 0)
+					pkgConfigPaths = null;
+			}
+			
+			string[] pkgConfigLibdirs = null;
+			if (!String.IsNullOrEmpty (pkgConfigLibdir)) {
+				pkgConfigLibdirs = pkgConfigLibdir.Split (sep, StringSplitOptions.RemoveEmptyEntries);
+				if (pkgConfigLibdirs.Length == 0)
+					pkgConfigLibdirs = null;
+			}
+			
+			IEnumerable<string> paths = GetUnfilteredPkgConfigDirs (pkgConfigPaths, pkgConfigLibdirs, new string [] { prefix });
+			paths = NormaliseAndFilterPaths (paths, Environment.CurrentDirectory);
+			
+			//NOTE: we use PKG_CONFIG_LIBDIR so that pkgconfig has the exact set of paths MD is using
+			envVars ["PKG_CONFIG_PATH"] = envVars ["PKG_CONFIG_LIBDIR"] = String.Join (Path.PathSeparator.ToString (), System.Linq.Enumerable.ToArray (paths));
+		}
+		
+		#region Path utilities
+		
+		static string PathUp (string path, int up)
+		{
+			if (up == 0)
+				return path;
+			for (int i = path.Length -1; i >= 0; i--) {
+				if (path[i] == Path.DirectorySeparatorChar) {
+					up--;
+					if (up == 0)
+						return path.Substring (0, i);
+				}
+			}
+			return null;
+		}
+		
+		static IEnumerable<string> NormaliseAndFilterPaths (IEnumerable<string> paths, string workingDirectory)
+		{
+			HashSet<string> filtered = new HashSet<string> ();
+			foreach (string p in paths) {
+				string path = p;
+				if (!Path.IsPathRooted (path))
+					path = Path.Combine (workingDirectory, path);
+				path = Path.GetFullPath (path);
+				if (!filtered.Add (path))
+					continue;
+				try {
+					if (!Directory.Exists (path))
+						continue;
+				} catch (IOException ex) {
+					LoggingService.LogError ("Error checking for directory '" + path + "'.", ex);
+				}
+				yield return path;
+			}
+		}
+		
+		#endregion
+		
+		static IEnumerable<string> GetUnfilteredPkgConfigDirs (IEnumerable<string> pkgConfigPaths, IEnumerable<string> pkgConfigLibdirs, IEnumerable<string> systemPrefixes)
+		{
+			if (pkgConfigPaths != null) {
+				foreach (string dir in pkgConfigPaths)
+					yield return dir;
+			}
+			
+			if (pkgConfigLibdirs != null) {
+				foreach (string dir in pkgConfigLibdirs)
+					yield return dir;
+			} else if (systemPrefixes != null) {
+				string[] suffixes = new string [] {
+					Path.Combine ("lib", "pkgconfig"),
+					Path.Combine ("lib64", "pkgconfig"),
+					Path.Combine ("share", "pkgconfig"),
+				};
+				foreach (string prefix in systemPrefixes)
+					foreach (string suffix in suffixes)
+						yield return Path.Combine (prefix, suffix);
+			}
 		}
 	}
 }

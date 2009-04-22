@@ -45,60 +45,16 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		bool reportedPkgConfigNotFound = false;
 		string monoVersion;
-		string prefix;
+		string monoDir;
 		MonoPlatformExecutionHandler execHandler;
 		Dictionary<string,string> environmentVariables;
-		bool isRunning;
 		
 		MonoRuntimeInfo monoRuntimeInfo;
-		
-		string[] pkgConfigPaths;
-		string[] pkgConfigLibdirs;
-		string[] envPaths;
-		
-		internal MonoTargetRuntime ()
-		{
-			// Get the current mono version
-			Type t = Type.GetType ("Mono.Runtime");
-			monoVersion = (string) t.InvokeMember ("GetDisplayName", BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic, null, null, null);
-			int i = monoVersion.IndexOf (' ');
-			monoVersion = monoVersion.Substring (i+1);
-			
-			string envVar = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
-			if (envVar != null)
-				pkgConfigPaths = envVar.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
-			
-			envVar = Environment.GetEnvironmentVariable ("PATH");
-			if (envVar != null)
-				envPaths = envVar.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
-			
-			envVar = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBDIR");
-			if (envVar != null)
-				pkgConfigLibdirs = envVar.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
-			
-			string versionDir;
-			
-			if (Environment.Version.Major == 1) {
-				versionDir = "1.0";
-			} else {
-				versionDir = "2.0";
-			}
-
-			//Pull up assemblies from the installed mono system.
-			prefix = Path.GetDirectoryName (typeof (int).Assembly.Location);
-
-			if (prefix.IndexOf (Path.Combine("mono", versionDir)) == -1)
-				prefix = Path.Combine (prefix, "mono");
-			else
-				prefix = Path.GetDirectoryName (prefix);
-			
-			isRunning = true;
-		}
 		
 		internal MonoTargetRuntime (MonoRuntimeInfo info)
 		{
 			this.monoVersion = info.MonoVersion;
-			this.prefix = Path.Combine (Path.Combine (info.Prefix, "lib"), "mono");
+			this.monoDir = Path.Combine (Path.Combine (info.Prefix, "lib"), "mono");
 			environmentVariables = info.GetEnvironmentVariables ();
 			monoRuntimeInfo = info;
 		}
@@ -109,7 +65,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override bool IsRunning {
 			get {
-				return isRunning;
+				return monoRuntimeInfo.IsRunning;
 			}
 		}
 		
@@ -128,41 +84,32 @@ namespace MonoDevelop.Core.Assemblies
 		public override IExecutionHandler GetExecutionHandler ()
 		{
 			if (execHandler == null) {
-				string monoPath = Path.Combine (Path.Combine (Path.GetDirectoryName (Path.GetDirectoryName (prefix)), "bin"), "mono");
-				execHandler = new MonoPlatformExecutionHandler (monoPath, GetEnvironmentVariables ());
+				string monoPath = Path.Combine (Path.Combine (MonoRuntimeInfo.Prefix, "bin"), "mono");
+				execHandler = new MonoPlatformExecutionHandler (monoPath, environmentVariables);
 			}
 			return execHandler;
 		}
 		
-		Dictionary<string,string> GetEnvironmentVariables ()
-		{
-			if (environmentVariables == null) {
-				environmentVariables = new Dictionary<string, string> ();
-				if (pkgConfigPaths != null)
-					environmentVariables ["PKG_CONFIG_PATH"] = string.Join (Path.PathSeparator.ToString (), pkgConfigPaths);
-				if (envPaths != null)
-					environmentVariables ["PATH"] = string.Join (Path.PathSeparator.ToString (), envPaths);
-				if (pkgConfigLibdirs != null)
-					environmentVariables ["PKG_CONFIG_LIBDIR"] = string.Join (Path.PathSeparator.ToString (), pkgConfigLibdirs);
-			}
-			return environmentVariables;
-		}
-		
 		public override IEnumerable<string> GetToolsPaths ()
 		{
-			yield return Path.GetFullPath (Path.Combine (prefix, ".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "bin"));
+			yield return Path.Combine (MonoRuntimeInfo.Prefix, "bin");
 		}
-
 		
 		protected override IEnumerable<string> GetGacDirectories ()
 		{
-			yield return Path.Combine (prefix, "gac");
+			yield return Path.Combine (monoDir, "gac");
 			
 			string gacs;
-			if (GetEnvironmentVariables ().TryGetValue ("MONO_GAC_PREFIX", out gacs)) {
+			if (environmentVariables.TryGetValue ("MONO_GAC_PREFIX", out gacs)) {
 				foreach (string path in gacs.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries))
 					yield return path;
 			}
+		}
+		
+		//NOTE: mcs, etc need to use the env vars too 	 
+		public override Dictionary<string, string> GetToolsEnvironmentVariables ()
+		{
+			return environmentVariables;
 		}
 		
 		protected override string GetFrameworkFolder (TargetFramework fx)
@@ -176,7 +123,7 @@ namespace MonoDevelop.Core.Assemblies
 				default:
 					subdir = fx.Id; break;
 			}
-			return Path.Combine (prefix, subdir);
+			return Path.Combine (monoDir, subdir);
 		}
 		
 		protected override SystemPackageInfo GetFrameworkPackageInfo (TargetFramework fx)
@@ -189,105 +136,13 @@ namespace MonoDevelop.Core.Assemblies
 				info.Name = "mono";
 			return info;
 		}
-
 		
-		string GetMDInstallPrefix ()
-		{
-			return Path.GetDirectoryName (Path.GetDirectoryName (prefix));
-		}
-		
-		//returns the install prefixes of monodevelop, mono and pkgconfig, and the prefixes /usr and /local
-		IEnumerable<string> GetSystemPkgConfigDirs ()
-		{
-			yield return GetMDInstallPrefix ();
-			
-			if (envPaths != null) {
-				foreach (string prog in new string [] { "mono", "pkgconfig" }) {
-					foreach (string path in envPaths) {
-						if (path == null)
-							continue;
-						
-						string file = Path.Combine (path, prog);
-						try {
-							if (!File.Exists (file))
-								continue;
-						} catch (IOException ex) {
-							LoggingService.LogError ("Error checking for file '" + file + "'.", ex);
-						}
-						yield return Path.GetFullPath (Path.Combine (path, ".."));		             	   
-					}
-				}
-				
-			}
-		}
-		
-		IEnumerable<string> GetUnfilteredPkgConfigDirs ()
-		{
-			if (pkgConfigPaths != null) {
-				foreach (string dir in pkgConfigPaths)
-					yield return dir;
-			}
-			
-			string[] suffixes = new string [] {
-				Path.Combine ("lib", "pkgconfig"),
-				Path.Combine ("lib64", "pkgconfig"),
-				Path.Combine ("share", "pkgconfig"),
-			};
-			
-			if (pkgConfigLibdirs != null)
-				foreach (string dir in pkgConfigLibdirs)
-					yield return dir;
-			else
-				foreach (string prefix in GetSystemPkgConfigDirs ())
-					foreach (string suffix in suffixes)
-						yield return Path.Combine (prefix, suffix);
-			
-			//mono is symlinked from a weird location on Mac
-			string sysDllLocation = typeof (Uri).Assembly.Location;
-			for (int i = 0;; i++) {
-				int lastIndex = sysDllLocation.LastIndexOf (Path.DirectorySeparatorChar);
-				if (lastIndex < 1)
-					break;
-				sysDllLocation = sysDllLocation.Substring (0, lastIndex);
-				if (i >= 5) {
-					foreach (string suffix in suffixes)
-						yield return Path.Combine (sysDllLocation, suffix);
-					break;
-				}
-			}
-		}
-		
-		IEnumerable<string> GetPkgConfigDirs ()
-		{
-			HashSet<string> set = new HashSet<string> ();
-			foreach (string s in GetUnfilteredPkgConfigDirs ()) {
-				if (set.Contains (s))
-					continue;
-				set.Add (s);
-				try {
-					if (!Directory.Exists (s))
-						continue;
-				} catch (IOException ex) {
-					LoggingService.LogError ("Error checking for directory '" + s + "'.", ex);
-				}
-				yield return s;
-			}
-		}
-		
-		
-		string[] _pkgConfigDirs;
 		public IEnumerable<string> PkgConfigDirs {
-			get {
-				if (_pkgConfigDirs == null)
-					_pkgConfigDirs = System.Linq.Enumerable.ToArray (GetPkgConfigDirs ());
-				return _pkgConfigDirs;
-			}
+			get { return PkgConfigPath.Split (Path.PathSeparator); }
 		}
 		
 		public string PkgConfigPath {
-			get {
-				return string.Join (new string (Path.PathSeparator, 1), (string[])PkgConfigDirs);
-			}
+			get { return environmentVariables ["PKG_CONFIG_LIBDIR"]; }
 		}
 		
 		public IEnumerable<string> GetAllPkgConfigFiles ()

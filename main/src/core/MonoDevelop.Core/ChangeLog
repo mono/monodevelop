@@ -1,3 +1,18 @@
+2009-04-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs: Log
+	  exception. Use new API for getting current runtime's info.
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Remove all
+	  code for detecting the current environment, since that now
+	  comes in a MonoRuntimeInfo parameter object. Restore
+	  GetToolsEnvironmentVariables overload.
+
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Add code to
+	  create a MonoRuntimeInfo for the current runtime, and unify
+	  the pkg-config detection codepaths. Use PKG_CONFIG_LIBDIR to
+	  ensure pkgconfig has the exact set of paths MD does.
+
 2009-04-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* frameworks.xml: Remove invalid assemblies.
