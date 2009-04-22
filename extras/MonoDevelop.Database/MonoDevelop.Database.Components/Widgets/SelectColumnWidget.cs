@@ -66,6 +66,12 @@ namespace MonoDevelop.Database.Components
 			}
 		}
 
+		public virtual void Clear ()
+		{
+			if (store != null)
+				store.Clear ();
+		}
+		
 		protected virtual void InitializeColumns (bool showCheckBoxes)
 		{
 			TreeViewColumn col = new TreeViewColumn ();

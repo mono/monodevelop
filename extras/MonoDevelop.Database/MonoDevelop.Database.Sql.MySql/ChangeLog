@@ -1,3 +1,11 @@
+2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* MySqlGuiProvider.cs: Fix Preview Dialog. Cancel the dialog
+	  should not create the table and don't close the table
+	  creation dialog.
+	* MySqlSchemaProvider.cs: Fix creation table to create a
+	  correct sql.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

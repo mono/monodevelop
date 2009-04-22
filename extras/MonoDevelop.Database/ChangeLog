@@ -1,3 +1,47 @@
+2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* MonoDevelop.Database.Components/Widgets/SelectColumnWidget.cs:
+	* MonoDevelop.Database.Components/Widgets/SortedColumnListStore.cs: Add Clear Method to clear
+	  the Store.
+	* MonoDevelop.Database.ConnectionManager/NodeBuilders/TablesNodeBuilder.cs: Added a new way to add a
+	  New Table with a unique name.
+	* MonoDevelop.Database.Designer/gtk-gui/gui.stetic:
+	* MonoDevelop.Database.Designer/Dialogs/TableEditorDialog.cs:
+	* MonoDevelop.Database.Designer/Widgets/ColumnsEditorWidget.cs:
+	* MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:
+	* MonoDevelop.Database.Designer/Widgets/ConstraintsEditorWidget.cs:
+	* MonoDevelop.Database.Designer/Widgets/CheckConstraintEditorWidget.cs:
+	* MonoDevelop.Database.Designer/Widgets/UniqueConstraintEditorWidget.cs:
+	* MonoDevelop.Database.Designer/Widgets/PrimaryKeyConstraintEditorWidget.cs:
+	* MonoDevelop.Database.Designer/Widgets/ForeignKeyConstraintEditorWidget.cs:
+	* MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:
+	  Fix all the Bugs that prevent run "Create Table" command.
+	* MonoDevelop.Database.Sql/Schema/DataTypeCategory.cs: New Date Interval Type.
+	* MonoDevelop.Database.Sql/Providers/AbstractSchemaProvider.cs: Method to Get
+	  Constraint Action as string.
+	Don't rise some unneeded exceptions.
+	* MonoDevelop.Database.Sql.MySql/MySqlGuiProvider.cs: Fix Preview Dialog. Cancel the dialog
+	  should not create the table and don't close the table
+	  creation dialog.
+	* MonoDevelop.Database.Sql.MySql/MySqlSchemaProvider.cs: Fix creation table to create a
+	  correct sql.
+	* MonoDevelop.Database.Sql.Npgsql/NpgsqlGuiProvider.cs: Fix Preview Dialog. When cancel the
+	  dialog, don't create the table and don't close the table.
+	* MonoDevelop.Database.Sql.Npgsql/NpgsqlSchemaProvider.cs: Fix creation table to create a
+	  correct sql.
+	* MonoDevelop.Database.Sql.Sqlite/SqliteGuiProvider.cs: Fix Preview Dialog. When cancel the
+	  dialog, don't create the table and don't close the table.
+	* MonoDevelop.Database.Sql.Sqlite/SqliteSchemaProvider.cs: Fix creation table to create a
+	  correct sql.
+	* MonoDevelop.Database.Sql.SqlServer/SqlServerPooledDbConnection.cs: Added a way to create a
+	  trigger after a table.
+	* MonoDevelop.Database.Sql.SqlServer/SqlServerSchemaProvider.cs: Fix creation table to create a
+	  correct sql.
+	  Fix Constraint SQL.
+	* MonoDevelop.Database.Sql.SqlServer/SqlServerGuiProvider.cs: Fix Preview Dialog. When cancel the
+	  dialog, don't create the table and don't close the table.
+	
+
 2009-04-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure.in: Reference SourceEditor correctly from makefile

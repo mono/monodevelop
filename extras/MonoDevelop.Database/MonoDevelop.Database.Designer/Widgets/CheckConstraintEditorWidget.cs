@@ -1,3 +1,5 @@
+
+
 //
 // Authors:
 //    Ben Motmans  <ben.motmans@gmail.com>
@@ -52,6 +54,7 @@ namespace MonoDevelop.Database.Designer
 		private const int colIsColumnConstraintIndex = 2;
 		private const int colSourceIndex = 3;
 		private const int colObjIndex = 4;
+		CellRendererCombo columnRenderer;
 		
 		private CheckConstraintEditorSettings settings;
 		
@@ -71,7 +74,6 @@ namespace MonoDevelop.Database.Designer
 			this.Build();
 
 			store = new ListStore (typeof (string), typeof (string), typeof (bool), typeof (string), typeof (object));
-			storeColumns = new SortedColumnListStore (columns);
 
 			listCheck.Model = store;
 
@@ -86,13 +88,12 @@ namespace MonoDevelop.Database.Designer
 			colColumn.MinWidth = 120; //request a bigger width
 			
 			CellRendererText nameRenderer = new CellRendererText ();
-			CellRendererCombo columnRenderer = new CellRendererCombo ();
+			columnRenderer = new CellRendererCombo ();
 			CellRendererToggle isColumnConstraintRenderer = new CellRendererToggle ();
 
 			nameRenderer.Editable = true;
 			nameRenderer.Edited += new EditedHandler (NameEdited);
 			
-			columnRenderer.Model = storeColumns.Store;
 			columnRenderer.TextColumn = SortedColumnListStore.ColNameIndex;
 			columnRenderer.Editable = true;
 			columnRenderer.Edited += new EditedHandler (ColumnEdited);
@@ -135,15 +136,23 @@ namespace MonoDevelop.Database.Designer
 			
 			foreach (CheckConstraintSchema check in constraints.GetConstraints (ConstraintType.Check))
 				AddConstraint (check);
+			storeColumns = new SortedColumnListStore (columns);
+			columnRenderer.Model = storeColumns.Store;
+			
 			//TODO: also col constraints
 		}
 
 		protected virtual void AddClicked (object sender, EventArgs e)
 		{
-			CheckConstraintSchema check = schemaProvider.CreateCheckConstraintSchema ("check_new");
+			CheckConstraintSchema check = schemaProvider.CreateCheckConstraintSchema (string.Concat (table.Name, 
+			                                                                                         "_",
+			                                                                                         "check_new"));
 			int index = 1;
 			while (constraints.Contains (check.Name))
-				check.Name = "check_new" + (index++); 
+				check.Name = string.Concat (table.Name, 
+				                            "_",
+				                            "check_new",
+				                            (index++).ToString ());
 			constraints.Add (check);
 			AddConstraint (check);
 			EmitContentChanged ();
@@ -269,23 +278,10 @@ namespace MonoDevelop.Database.Designer
 		
 		public virtual void FillSchemaObjects ()
 		{
-			TreeIter iter;
-			if (store.GetIterFirst (out iter)) {
-				do {
-					CheckConstraintSchema check = store.GetValue (iter, colObjIndex) as CheckConstraintSchema;
-					
-					check.Name = store.GetValue (iter, colNameIndex) as string;
-					check.Source = store.GetValue (iter, colSourceIndex) as string;
-					check.IsColumnConstraint = (bool)store.GetValue (iter, colIsColumnConstraintIndex);
-					
-					if (check.IsColumnConstraint) {
-						string column = store.GetValue (iter, colColumnNameIndex) as string;
-						check.Columns.Add (columns.Search (column));
-					}
-					
-					table.Constraints.Add (check);
-				} while (store.IterNext (ref iter));
-			}
+			/*
+			 * This code isn't needed anymore, beacause Check's constraint are added on demand when clicking 
+			 * Add Button.
+			 */
 		}
 	}
 	

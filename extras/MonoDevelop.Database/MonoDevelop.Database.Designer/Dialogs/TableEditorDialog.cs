@@ -56,6 +56,7 @@ namespace MonoDevelop.Database.Designer
 		private IndicesEditorWidget indexEditor;
 		private TriggersEditorWidget triggerEditor;
 		private CommentEditorWidget commentEditor;
+		TableEditorSettings settings;
 		
 		public TableEditorDialog (IEditSchemaProvider schemaProvider, bool create, TableEditorSettings settings)
 		{
@@ -64,6 +65,7 @@ namespace MonoDevelop.Database.Designer
 			
 			this.schemaProvider = schemaProvider;
 			this.action = create ? SchemaActions.Create : SchemaActions.Alter;
+			this.settings = settings;
 			
 			this.Build();
 			
@@ -74,43 +76,9 @@ namespace MonoDevelop.Database.Designer
 			
 			notebook = new Notebook ();
 			vboxContent.PackStart (notebook, true, true, 0);
-			
-			SetWarning (null);
-
-			columnEditor = new ColumnsEditorWidget (schemaProvider, action, settings.ColumnSettings);
-			columnEditor.ContentChanged += new EventHandler (OnContentChanged);
-			notebook.AppendPage (columnEditor, new Label (AddinCatalog.GetString ("Columns")));
-			
-			if (settings.ShowConstraints) {
-				constraintEditor = new ConstraintsEditorWidget (schemaProvider, action, settings.ConstraintSettings);
-				constraintEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (constraintEditor, new Label (AddinCatalog.GetString ("Constraints")));
-			}
-
-			//TODO:
-			//indexEditor = new IndicesEditorWidget (schemaProvider);
-			//notebook.AppendPage (indexEditor, new Label (AddinCatalog.GetString ("Indexes")));
-			
-			if (settings.ShowTriggers) {
-				triggerEditor = new TriggersEditorWidget (schemaProvider, action);
-				triggerEditor.ContentChanged += new EventHandler (OnContentChanged);
-				notebook.AppendPage (triggerEditor, new Label (AddinCatalog.GetString ("Triggers")));
-			}
-			
-			if (settings.ShowComment) {
-				commentEditor = new CommentEditorWidget ();
-				notebook.AppendPage (commentEditor, new Label (AddinCatalog.GetString ("Comment")));
-			}
-
-			notebook.Page = 0;
-
-			entryName.Text = originalTable.Name;
-
-			WaitDialog.ShowDialog ("Loading table data ...");
 
 			notebook.Sensitive = false;
 			ThreadPool.QueueUserWorkItem (new WaitCallback (InitializeThreaded));
-			
 			vboxContent.ShowAll ();
 		}
 		
@@ -121,6 +89,53 @@ namespace MonoDevelop.Database.Designer
 			
 			this.originalTable = table;
 			this.table = table;
+			
+			SetWarning (null);
+			columnEditor = new ColumnsEditorWidget (schemaProvider, action, settings.ColumnSettings);
+			columnEditor.ContentChanged += new EventHandler (OnContentChanged);
+			// When primary Key are selected on the "Column Editor", it has to refresh the "Primary Key" Widget.
+			columnEditor.PrimaryKeyChanged += delegate(object sender, EventArgs e) {
+				if (constraintEditor != null)
+					constraintEditor.RefreshConstraints ();
+			};
+			
+			notebook.AppendPage (columnEditor, new Label (AddinCatalog.GetString ("Columns")));
+			
+			if (settings.ShowConstraints) {
+				constraintEditor = new ConstraintsEditorWidget (schemaProvider, action, settings.ConstraintSettings);
+				constraintEditor.ContentChanged += new EventHandler (OnContentChanged);
+				notebook.AppendPage (constraintEditor, new Label (AddinCatalog.GetString ("Constraints")));
+				// If Primary Key are changed on it has to refresh the "Column Editor" Widget to select the correct 
+				// columns
+				constraintEditor.PrimaryKeyChanged += delegate(object sender, EventArgs e) {
+					columnEditor.RefreshConstraints ();
+				};
+			}
+
+			//TODO: Implement Index
+			/*
+			if (settings.ShowIndices) {
+				indexEditor = new IndicesEditorWidget (schemaProvider, action);
+				indexEditor.ContentChanged += OnContentChanged;
+				notebook.AppendPage (indexEditor, new Label (AddinCatalog.GetString ("Indexes")));
+			}
+			*/
+						
+			if (settings.ShowTriggers) {
+				triggerEditor = new TriggersEditorWidget (schemaProvider, action);
+				triggerEditor.ContentChanged += new EventHandler (OnContentChanged);
+				notebook.AppendPage (triggerEditor, new Label (AddinCatalog.GetString ("Triggers")));
+			}
+			
+			if (settings.ShowComment) {
+				commentEditor = new CommentEditorWidget ();
+				notebook.AppendPage (commentEditor, new Label (AddinCatalog.GetString ("Comment")));
+			}
+			notebook.Page = 0;
+
+			entryName.Text = originalTable.Name;
+
+			WaitDialog.ShowDialog ("Loading table data ...");
 		}
 		
 		private void InitializeThreaded (object state)
@@ -173,8 +188,8 @@ namespace MonoDevelop.Database.Designer
 			WaitDialog.HideDialog ();
 			
 			LoggingService.LogDebug ("TableEditorDialog: entering InitializeGui");
-			
 			columnEditor.Initialize (table, columns, constraints, dataTypes);
+			
 			if (constraintEditor != null)
 				constraintEditor.Initialize (tables, table, columns, constraints, dataTypes);
 			if (triggerEditor != null)
@@ -204,13 +219,15 @@ namespace MonoDevelop.Database.Designer
 //				table.Definition = schemaProvider.GetTableAlterStatement (table);
 
 			if (checkPreview.Active) {
+				// Preview Dialog: If it's canceled the response to the previous dialog should be None to know that it
+				// isn't OK and don't close the table editor dialog.
 				PreviewDialog dlg = new PreviewDialog (table.Definition);
 				if (dlg.Run () == (int)ResponseType.Ok) {
 					table.Definition = dlg.Text;
-					
 					Respond (ResponseType.Ok);
 					Hide ();
-				}
+				} else
+					 Respond (ResponseType.None);
 				dlg.Destroy ();
 			} else {
 				Respond (ResponseType.Ok);

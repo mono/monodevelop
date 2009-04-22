@@ -105,5 +105,9 @@ using System;
 		/// A data type defined by the user
 		/// </summary>
 		UserDefined,
+		/// <summary>
+		///A data type containing date intervals
+		/// </summary>
+		Interval
 	}
 }

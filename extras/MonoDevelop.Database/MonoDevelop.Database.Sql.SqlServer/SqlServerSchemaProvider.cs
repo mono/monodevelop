@@ -299,7 +299,13 @@ using MonoDevelop.Core;
 			ConstraintSchemaCollection constraints = new ConstraintSchemaCollection ();
 			
 			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand ("select name, xtype from sysobjects where xtype in ('F','PK','CK')"); //TODO: unique
+			IDbCommand command = conn.CreateCommand (string.Concat ("select sysobjects.name, sysobjects.xtype ",
+			                                                        "from sysobjects inner join sysobjects",
+			                                                        " sysobjectsParents ON sysobjectsParents.id =",
+			                                                        " sysobjects.parent_obj ",
+			                                                        " where sysobjectsParents.name = '", 
+			                                                        table.Name,"' and",
+			                                                        " sysobjects.xtype in ('C', 'UQ', 'F','PK','CK')")); 
 			try {
 				using (command) {
 					using (IDataReader r = command.ExecuteReader()) {
@@ -312,8 +318,12 @@ using MonoDevelop.Core;
 								case "PK": //primary key
 									constraint = new PrimaryKeyConstraintSchema (this);
 									break;
+								case "C":
 								case "CK": //check constraint
 									constraint = new CheckConstraintSchema (this);
+									break;
+								case "UQ":
+									constraint = new UniqueConstraintSchema (this);
 									break;
 								default:
 									break;
@@ -588,7 +598,7 @@ using MonoDevelop.Core;
 				sb.Append (" REFERENCES ");
 				
 				ForeignKeyConstraintSchema fk = constraint as ForeignKeyConstraintSchema;
-				sb.Append (fk.ReferenceTable);
+				sb.Append (fk.ReferenceTableName);
 				sb.Append (' ');
 				if (fk.ReferenceColumns != null)
 					sb.Append (GetColumnsString (fk.ReferenceColumns, true));
@@ -628,19 +638,9 @@ using MonoDevelop.Core;
 		protected virtual string GetTriggerCreateStatement (TriggerSchema trigger)
 		{
 			StringBuilder sb = new StringBuilder ();
-		
-//		{ FOR | AFTER | INSTEAD OF } { [ INSERT ] [ , ] [ UPDATE ] [ , ] [ DELETE ] }
-//        [ WITH APPEND ]
-//        [ NOT FOR REPLICATION ]
-//        AS
-//        [ { IF UPDATE ( column )
-//            [ { AND | OR } UPDATE ( column ) ]
-//                [ ...n ]
-//        | IF ( COLUMNS_UPDATED ( ) { bitwise_operator } updated_bitmask )
-//                { comparison_operator } column_bitmask [ ...n ]
-//        } ]
-//        sql_statement [ ...n ] 
-			
+
+			sb.Append ("GO");
+			sb.Append (Environment.NewLine);
 			sb.Append ("CREATE TRIGGER ");
 			sb.Append (trigger.Name);
 			sb.Append (" ON ");

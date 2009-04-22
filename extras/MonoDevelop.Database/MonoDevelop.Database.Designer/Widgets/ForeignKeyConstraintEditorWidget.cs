@@ -1,3 +1,6 @@
+
+
+
 //
 // Authors:
 //    Ben Motmans  <ben.motmans@gmail.com>
@@ -46,6 +49,7 @@ namespace MonoDevelop.Database.Designer
 		private TableSchemaCollection tables;
 		private ColumnSchemaCollection columns;
 		private ConstraintSchemaCollection constraints;
+		TableSchema refTable = null;
 		
 		private const int colNameIndex = 0;
 		private const int colReferenceTableIndex = 1;
@@ -81,23 +85,19 @@ namespace MonoDevelop.Database.Designer
 			listFK.Model = store;
 			
 			storeActions = new ListStore (typeof (string), typeof (int));
-			storeTables = new ListStore (typeof (string));
+			storeTables = new ListStore (typeof (string), typeof(TableSchema));
 			
 			if (settings.SupportsCascade)
-				storeActions.AppendValues ("Cascade", ForeignKeyAction.Cascade);
+				storeActions.AppendValues ("Cascade", (int)ForeignKeyAction.Cascade);
 			if (settings.SupportsRestrict)
-				storeActions.AppendValues ("Restrict", ForeignKeyAction.Restrict);
+				storeActions.AppendValues ("Restrict", (int)ForeignKeyAction.Restrict);
 			if (settings.SupportsNoAction)
-				storeActions.AppendValues ("No Action", ForeignKeyAction.NoAction);
+				storeActions.AppendValues ("No Action", (int)ForeignKeyAction.NoAction);
 			if (settings.SupportsSetNull)
-				storeActions.AppendValues ("Set Null", ForeignKeyAction.SetNull);
+				storeActions.AppendValues ("Set Null", (int)ForeignKeyAction.SetNull);
 			if (settings.SupportsSetDefault)
-				storeActions.AppendValues ("Set Default", ForeignKeyAction.SetDefault);
+				storeActions.AppendValues ("Set Default", (int)ForeignKeyAction.SetDefault);
 
-			foreach (TableSchema tbl in tables)
-				if (tbl.Name != table.Name)
-					storeTables.AppendValues (tbl.Name);
-			
 			TreeViewColumn colName = new TreeViewColumn ();
 			TreeViewColumn colRefTable = new TreeViewColumn ();
 			TreeViewColumn colIsColumnConstraint = new TreeViewColumn ();
@@ -126,9 +126,6 @@ namespace MonoDevelop.Database.Designer
 			refTableRenderer.Editable = true;
 			refTableRenderer.Edited += new EditedHandler (RefTableEdited);
 			
-			isColumnConstraintRenderer.Activatable = true;
-			isColumnConstraintRenderer.Toggled += new ToggledHandler (IsColumnConstraintToggled);
-			
 			deleteActionRenderer.Model = storeActions;
 			deleteActionRenderer.TextColumn = 0;
 			deleteActionRenderer.Editable = true;
@@ -151,6 +148,7 @@ namespace MonoDevelop.Database.Designer
 			colDeleteAction.AddAttribute (deleteActionRenderer, "text", colDeleteActionIndex);			
 			colUpdateAction.AddAttribute (updateActionRenderer, "text", colUpdateActionIndex);
 			
+			colIsColumnConstraint.Visible = false;
 			listFK.AppendColumn (colName);
 			listFK.AppendColumn (colRefTable);
 			listFK.AppendColumn (colIsColumnConstraint);
@@ -179,14 +177,22 @@ namespace MonoDevelop.Database.Designer
 			this.tables = tables;
 			this.columns = columns;
 			this.constraints = constraints;
+			columnSelecter.Initialize (columns);
+			foreach (TableSchema tbl in tables)
+				if (tbl.Name != table.Name)
+					storeTables.AppendValues (tbl.Name, tbl);
 		}
 		
 		protected virtual void AddClicked (object sender, EventArgs e)
 		{
-			ForeignKeyConstraintSchema fk = schemaProvider.CreateForeignKeyConstraintSchema ("fk_new");
+			ForeignKeyConstraintSchema fk = schemaProvider.CreateForeignKeyConstraintSchema (string.Concat (table.Name, 
+			                                                                                                "_",
+			                                                                                                "fk_new"));
 			int index = 1;
+			
 			while (constraints.Contains (fk.Name))
-				fk.Name = "fk_new" + (index++); 
+				fk.Name = string.Concat (table.Name, "_", "fk_new", (index++).ToString ()); 
+			
 			constraints.Add (fk);
 			AddConstraint (fk);
 			EmitContentChanged ();
@@ -199,7 +205,7 @@ namespace MonoDevelop.Database.Designer
 				ForeignKeyConstraintSchema fk = store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema;
 				
 				if (MessageService.Confirm (
-					AddinCatalog.GetString ("Are you sure you want to remove constraint '{0}'?", fk.Name),
+					AddinCatalog.GetString ("Are you sure you want to remove foreign key constraint '{0}'?", fk.Name),
 					AlertButton.Remove
 				)) {
 					store.Remove (ref iter);
@@ -212,12 +218,17 @@ namespace MonoDevelop.Database.Designer
 		private void SelectionChanged (object sender, EventArgs args)
 		{
 			columnSelecter.DeselectAll ();
+			referenceColumnSelecter.Clear ();
 			
 			TreeIter iter;
 			if (listFK.Selection.GetSelected (out iter)) {
+				FillReferenceColumnSelector (iter, store.GetValue (iter, colReferenceTableIndex).ToString ());
+
+				buttonRemove.Sensitive = true;
 				columnSelecter.Sensitive = true;
 				SetSelectionFromIter (iter);
 			} else {
+				buttonRemove.Sensitive = false;
 				columnSelecter.Sensitive = false;
 			}
 		}
@@ -228,35 +239,53 @@ namespace MonoDevelop.Database.Designer
 			columnSelecter.SingleCheck = iscolc;
 			
 			string colstr = store.GetValue (iter, colColumnsIndex) as string;
-			string[] cols = colstr.Split (',');
-			foreach (string col in cols)
-				columnSelecter.Select (col);
+			if (colstr != String.Empty) {
+				string[] cols = colstr.Split (',');
+				foreach (string col in cols)
+					columnSelecter.Select (col);
+			}
 			
 			colstr = store.GetValue (iter, colReferenceColumnsIndex) as string;
-			cols = colstr.Split (',');
-			foreach (string col in cols)
-				referenceColumnSelecter.Select (col);
+			if (colstr != string.Empty) {
+				string[] cols = colstr.Split (',');
+				foreach (string col in cols)
+					referenceColumnSelecter.Select (col);
+			}
 		}
 		
 		private void RefTableEdited (object sender, EditedArgs args)
 		{
 			TreeIter iter;
 			if (store.GetIterFromString (out iter, args.Path)) {
-				if (tables.Contains (args.NewText)) {
-					store.SetValue (iter, colReferenceTableIndex, args.NewText);
-					SetSelectionFromIter (iter);
-					EmitContentChanged ();
-				} else {
-					string oldText = store.GetValue (iter, colReferenceTableIndex) as string;
-					(sender as CellRendererText).Text = oldText;
-				}
+				FillReferenceColumnSelector (iter, args.NewText);
 			}
+		}
+		
+		private void FillReferenceColumnSelector (TreeIter iter, string table)
+		{
+			if (tables.Contains (table)) {
+				refTable = tables.Search (table);
+				if (refTable != null) {
+					referenceColumnSelecter.Initialize (refTable.Columns);
+					referenceColumnSelecter.Sensitive = true;
+					store.SetValue (iter, colReferenceTableIndex, table);
+					SetSelectionFromIter (iter);
+				} else {
+					referenceColumnSelecter.Sensitive = false;
+					referenceColumnSelecter.Clear ();
+				}
+				EmitContentChanged ();
+				
+			} 
 		}
 		
 		private void ColumnToggled (object sender, EventArgs args)
 		{
 			TreeIter iter;
 			if (listFK.Selection.GetSelected (out iter)) {
+				(store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema).Columns.Clear ();
+				foreach (ColumnSchema col in columnSelecter.CheckedColumns)
+					(store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema).Columns.Add (col);
 				store.SetValue (iter, colColumnsIndex, GetColumnsString (columnSelecter.CheckedColumns));
 				EmitContentChanged ();
 			}
@@ -266,19 +295,15 @@ namespace MonoDevelop.Database.Designer
 		{
 			TreeIter iter;
 			if (listFK.Selection.GetSelected (out iter)) {
-				store.SetValue (iter, colReferenceColumnsIndex, GetColumnsString (referenceColumnSelecter.CheckedColumns));
-				EmitContentChanged ();
+				if (refTable != null) {
+					(store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema).ReferenceTable = refTable;
+					(store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema).ReferenceColumns.Clear ();
+					foreach (ColumnSchema col in referenceColumnSelecter.CheckedColumns)
+						(store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema).ReferenceColumns.Add (col);
+					store.SetValue (iter, colReferenceColumnsIndex, GetColumnsString (referenceColumnSelecter.CheckedColumns));
+					EmitContentChanged ();
+				}
 			}
-		}
-		
-		private void IsColumnConstraintToggled (object sender, ToggledArgs args)
-		{
-	 		TreeIter iter;
-			if (store.GetIterFromString (out iter, args.Path)) {
-	 			bool val = (bool) store.GetValue (iter, colIsColumnConstraintIndex);
-	 			store.SetValue (iter, colIsColumnConstraintIndex, !val);
-				EmitContentChanged ();
-	 		}
 		}
 		
 		private void NameEdited (object sender, EditedArgs args)
@@ -301,6 +326,9 @@ namespace MonoDevelop.Database.Designer
 			if (store.GetIterFromString (out iter, args.Path)) {
 				if (IsValidForeignKeyAction (args.NewText)) {
 					store.SetValue (iter, colUpdateActionIndex, args.NewText);
+					(store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema).UpdateAction = 
+						GetForeignKeyAction (iter, colUpdateActionIndex);
+					
 					EmitContentChanged ();
 				} else {
 					string oldText = store.GetValue (iter, colUpdateActionIndex) as string;
@@ -315,6 +343,8 @@ namespace MonoDevelop.Database.Designer
 			if (store.GetIterFromString (out iter, args.Path)) {
 				if (IsValidForeignKeyAction (args.NewText)) {
 					store.SetValue (iter, colDeleteActionIndex, args.NewText);
+					(store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema).DeleteAction = 
+						GetForeignKeyAction (iter, colDeleteActionIndex);
 					EmitContentChanged ();
 				} else {
 					string oldText = store.GetValue (iter, colDeleteActionIndex) as string;
@@ -326,7 +356,7 @@ namespace MonoDevelop.Database.Designer
 		private bool IsValidForeignKeyAction (string name)
 		{
 			foreach (string item in Enum.GetNames (typeof (ForeignKeyAction))) {
-				if (item == name)
+				if (item == name.Replace (" ", ""))
 					return true;
 			}
 			return false;
@@ -365,35 +395,10 @@ namespace MonoDevelop.Database.Designer
 		
 		public virtual void FillSchemaObjects ()
 		{
-			TreeIter iter;
-			if (store.GetIterFirst (out iter)) {
-				do {
-					ForeignKeyConstraintSchema fk = store.GetValue (iter, colObjIndex) as ForeignKeyConstraintSchema;
-
-					fk.Name = store.GetValue (iter, colNameIndex) as string;
-					fk.IsColumnConstraint = (bool)store.GetValue (iter, colIsColumnConstraintIndex);
-					fk.ReferenceTableName = store.GetValue (iter, colReferenceTableIndex) as string;
-					
-					fk.DeleteAction = GetForeignKeyAction (iter, colDeleteActionIndex);
-					fk.UpdateAction = GetForeignKeyAction (iter, colUpdateActionIndex);
-					
-					string colstr = store.GetValue (iter, colColumnsIndex) as string;
-					string[] cols = colstr.Split (',');
-					foreach (string col in cols) {
-						ColumnSchema column = columns.Search (col);
-						fk.Columns.Add (column);
-					}
-					
-					colstr = store.GetValue (iter, colReferenceColumnsIndex) as string;
-					cols = colstr.Split (',');
-					foreach (string col in cols) {
-						ColumnSchema column = columns.Search (col);
-						fk.ReferenceColumns.Add (column);
-					}
-					
-					table.Constraints.Add (fk);
-				} while (store.IterNext (ref iter));
-			}
+			/*
+			 * This code isn't needed anymore, beacause Foreign Key's constraint are added on demand when clicking 
+			 * Add Button.
+			 */
 		}
 		
 		private string GetColumnsString (IEnumerable<ColumnSchema> collection)

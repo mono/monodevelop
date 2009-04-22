@@ -175,10 +175,9 @@ using MonoDevelop.Core;
 					};
 				}
 			} catch (Exception e) {
-				QueryService.RaiseException (e);
+				// Don't raise error, if the table doesn't exists return an empty collection
 			}
 			conn.Release ();
-
 			return columns;
 		}
 
@@ -384,7 +383,8 @@ using MonoDevelop.Core;
 					}
 				}
 			} catch (Exception e) {
-				QueryService.RaiseException (e);
+				// Don't raise error, if the table doesn't exists return an empty collection
+				// QueryService.RaiseException (e);
 			}
 			conn.Release ();
 
@@ -645,8 +645,7 @@ using MonoDevelop.Core;
 			StringBuilder sb = new StringBuilder ();
 			sb.Append ("CREATE TABLE ");
 			sb.Append (table.Name);
-			sb.Append (" (");
-			
+		 	sb.Append (" (");
 			bool first = true;
 			foreach (ColumnSchema column in table.Columns) {
 				if (first)
@@ -668,20 +667,6 @@ using MonoDevelop.Core;
 						sb.Append (column.DefaultValue);
 				}
 				//TODO: AUTO_INCREMENT
-				
-				foreach (ConstraintSchema constraint in column.Constraints) {
-					switch (constraint.ConstraintType) {
-					case ConstraintType.Unique:
-						sb.Append (" UNIQUE");
-						break;
-					case ConstraintType.PrimaryKey:
-						sb.Append (" PRIMARY KEY");
-						break;
-					default:
-						throw new NotImplementedException ();
-					}
-				}
-				
 				if (column.Comment != null) {
 					sb.Append (" COMMENT '");
 					sb.Append (column.Comment);
@@ -729,7 +714,7 @@ using MonoDevelop.Core;
 				sb.Append (GetColumnsString (constraint.Columns, true));
 				break;
 			case ConstraintType.Unique:
-				sb.Append ("UNIQUE ");
+				sb.Append ("UNIQUE KEY ");
 				sb.Append (GetColumnsString (constraint.Columns, true));
 				break;
 			case ConstraintType.ForeignKey:
@@ -738,10 +723,16 @@ using MonoDevelop.Core;
 				sb.Append (" REFERENCES ");
 				
 				ForeignKeyConstraintSchema fk = constraint as ForeignKeyConstraintSchema;
-				sb.Append (fk.ReferenceTable);
+				sb.Append (fk.ReferenceTableName);
 				sb.Append (' ');
 				if (fk.ReferenceColumns != null)
 					sb.Append (GetColumnsString (fk.ReferenceColumns, true));
+				sb.Append (Environment.NewLine);
+				sb.Append (" ON DELETE ");
+				sb.Append (GetConstraintActionString (fk.DeleteAction));
+				sb.Append (Environment.NewLine);
+				sb.Append (" ON UPDATE ");
+				sb.Append (GetConstraintActionString (fk.UpdateAction));
 				break;
 			default:
 				throw new NotImplementedException ();
@@ -749,7 +740,7 @@ using MonoDevelop.Core;
 			
 			return sb.ToString ();
 		}
-
+		
 		//http://dev.mysql.com/doc/refman/5.1/en/create-view.html
 		public override void CreateView (ViewSchema view)
 		{
@@ -778,7 +769,7 @@ using MonoDevelop.Core;
 		protected virtual string GetTriggerCreateStatement (TriggerSchema trigger)
 		{
 			StringBuilder sb = new StringBuilder ();
-			
+			sb.Append (Environment.NewLine);
 			sb.Append ("CREATE TRIGGER ");
 			sb.Append (trigger.Name);
 			if (trigger.TriggerType == TriggerType.Before)
@@ -802,10 +793,15 @@ using MonoDevelop.Core;
 			
 			sb.Append (" ON ");
 			sb.Append (trigger.TableName);
-			sb.Append (" FOR EACH ROW ");
+			sb.Append (Environment.NewLine);
+			sb.Append ("FOR EACH ROW ");
+			sb.Append (Environment.NewLine);
+			sb.Append ("BEGIN");
 			sb.Append (Environment.NewLine);
 			sb.Append (trigger.Source);
-			sb.Append (";");
+			sb.Append (Environment.NewLine);
+			sb.Append ("END");
+			sb.Append (Environment.NewLine);
 			
 			return sb.ToString ();
 		}

@@ -2,13 +2,11 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8.3</target-gtk-version>
+    <target-gtk-version>2.8</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../build/MonoDevelop.Database.Components.dll" />
-    <widget-library name="MonoDevelop.Components, Version=0.19.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=0.19.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=0.19.0.0, Culture=neutral" />
+    <widget-library name="../../build/MonoDevelop.Database.Sql.dll" />
     <widget-library name="../../build/MonoDevelop.Database.Designer.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Database.Designer.TriggersEditorWidget" design-size="422 300">
@@ -31,7 +29,6 @@
                   <widget class="Gtk.TreeView" id="listTriggers">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -146,7 +143,6 @@
                   <widget class="Gtk.TreeView" id="treeColumns">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -350,7 +346,6 @@
                   <widget class="Gtk.Label" id="labelWarning">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -606,7 +601,6 @@
                   <widget class="Gtk.Label" id="labelWarning">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -751,7 +745,6 @@
                   <widget class="Gtk.Label" id="labelWarning">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -837,7 +830,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Database.Designer.PreviewDialog" design-size="528 382">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Database.Designer.PreviewDialog" design-size="617 382">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Preview</property>
     <property name="TypeHint">Dialog</property>
@@ -902,6 +895,7 @@
             <property name="MemberName" />
             <property name="Sensitive">False</property>
             <property name="CanDefault">True</property>
+            <property name="HasDefault">True</property>
             <property name="CanFocus">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
@@ -1049,7 +1043,6 @@
                   <widget class="Gtk.TreeView" id="listFK">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -1071,6 +1064,7 @@
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-add</property>
+                    <signal name="Clicked" handler="AddClicked" />
                     <property name="label">gtk-add</property>
                   </widget>
                   <packing>
@@ -1086,6 +1080,7 @@
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-remove</property>
+                    <signal name="Clicked" handler="RemoveClicked" />
                     <property name="label">gtk-remove</property>
                   </widget>
                   <packing>
@@ -1210,7 +1205,6 @@
                   <widget class="Gtk.TreeView" id="listCheck">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -1324,7 +1318,6 @@
                   <widget class="Gtk.TreeView" id="listPK">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -1416,7 +1409,6 @@
                   <widget class="Gtk.TreeView" id="listUnique">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>

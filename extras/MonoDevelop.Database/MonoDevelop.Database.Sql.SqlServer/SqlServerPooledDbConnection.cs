@@ -90,5 +90,24 @@ namespace MonoDevelop.Database.Sql.SqlServer
 		{
 			return (connection as SqlConnection).GetSchema (collectionName, restrictionValues);
 		}
+		
+		public override int ExecuteNonQuery (string sql)
+		{
+			int ret = 0;
+			if(sql.IndexOf (String.Concat(Environment.NewLine,  "go", Environment.NewLine), 
+			                 StringComparison.OrdinalIgnoreCase) < 0)
+				return base.ExecuteNonQuery (sql); 
+			else {
+				// Divide the Sql In more than 1 command to avoid: ['CREATE TRIGGER' must be the first statement]
+				// FIXME: This isn't in a transaction scope because Create table/trigger isn't 
+				// affected by START/COMMIT/ROLLBACK transaction.
+				string[] sep = new string[] {string.Concat (Environment.NewLine, "GO", Environment.NewLine)};
+				string[] sqls = sql.Split (sep, StringSplitOptions.RemoveEmptyEntries);
+				foreach (string s in sqls)
+					ret = base.ExecuteNonQuery (s);
+			}
+			return ret;
+		}
 	}
+	
 }

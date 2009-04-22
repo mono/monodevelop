@@ -1,3 +1,10 @@
+2009-04-14  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* SqliteGuiProvider.cs: Fix Preview Dialog. When cancel the
+	  dialog, don't create the table and don't close the table.
+	* SqliteSchemaProvider.cs: Fix creation table to create a
+	  correct sql.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

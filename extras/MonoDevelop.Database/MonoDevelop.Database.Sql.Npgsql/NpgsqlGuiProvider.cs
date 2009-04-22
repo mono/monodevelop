@@ -85,9 +85,19 @@ using MonoDevelop.Database.Components;
 		private bool RunDialog (Dialog dlg)
 		{
 			bool result = false;
+			// If the Preview Dialog is canceled, don't execute and don't close the Editor Dialog.
 			try {	
-				if (dlg.Run () == (int)ResponseType.Ok)
+				int resp;
+					do {
+						resp = dlg.Run ();
+				    } while (resp != (int)ResponseType.Cancel && 
+				    	     resp != (int)ResponseType.Ok && 
+				    		resp != (int)ResponseType.DeleteEvent);
+					
+				if (resp == (int)ResponseType.Ok)
 					result = true;
+				else
+					result = false;
 			} finally {
 				dlg.Destroy ();
 			}

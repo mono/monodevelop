@@ -40,7 +40,7 @@ namespace MonoDevelop.Database.Designer
 	public partial class ConstraintsEditorWidget : Gtk.Bin
 	{
 		public event EventHandler ContentChanged;
-		
+		public event EventHandler PrimaryKeyChanged;
 		private Notebook notebook;
 		
 		private ISchemaProvider schemaProvider;
@@ -69,6 +69,10 @@ namespace MonoDevelop.Database.Designer
 				//not for column constraints, since they are already editable in the column editor
 				pkEditor = new PrimaryKeyConstraintEditorWidget (schemaProvider, action);
 				pkEditor.ContentChanged += new EventHandler (OnContentChanged);
+				pkEditor.PrimaryKeyChanged += delegate(object sender, EventArgs e) {
+					if (PrimaryKeyChanged != null)
+						PrimaryKeyChanged (this, new EventArgs ());
+				};
 				notebook.AppendPage (pkEditor, new Label (AddinCatalog.GetString ("Primary Key")));
 			}
 			
@@ -120,6 +124,11 @@ namespace MonoDevelop.Database.Designer
 				ContentChanged (this, args);
 		}
 		
+		public virtual void RefreshConstraints ()
+		{
+			pkEditor.RefreshConstraints ();
+		}
+		
 		public virtual bool ValidateSchemaObjects (out string msg)
 		{
 			msg = null;
@@ -156,7 +165,7 @@ namespace MonoDevelop.Database.Designer
 				uniqueEditor.FillSchemaObjects ();
 		}
 	}
-	
+
 	public class ConstraintEditorSettings
 	{
 		private bool showPrimaryKeyConstraints = true;

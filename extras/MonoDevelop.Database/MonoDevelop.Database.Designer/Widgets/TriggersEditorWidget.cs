@@ -174,8 +174,9 @@ namespace MonoDevelop.Database.Designer
 			this.table = table;
 			this.triggers = triggers;
 			
-			foreach (TriggerSchema trigger in triggers)
-				AddTrigger (trigger);
+			if (action == SchemaActions.Alter)
+				foreach (TriggerSchema trigger in triggers)
+					AddTrigger (trigger);
 		}
 
 		protected virtual void RemoveClicked (object sender, System.EventArgs e)
@@ -197,12 +198,15 @@ namespace MonoDevelop.Database.Designer
 
 		protected virtual void AddClicked (object sender, EventArgs e)
 		{
-			TriggerSchema trigger = schemaProvider.CreateTriggerSchema ("trigger_" + table.Name);
+			TriggerSchema trigger = schemaProvider.CreateTriggerSchema (string.Concat (table.Name, 
+			                                                                           "_", 
+			                                                                           "trigger_",
+			                                                                           table.Name));
 			trigger.TableName = table.Name;
 			int index = 1;
 			while (triggers.Contains (trigger.Name))
 				trigger.Name = "trigger_" + table.Name + (index++); 
-			triggers.Add (trigger);
+			// triggers.Add (trigger);
 			AddTrigger (trigger);
 			EmitContentChanged ();
 		}
@@ -361,7 +365,10 @@ namespace MonoDevelop.Database.Designer
 					
 					trigger.TriggerType = (TriggerType)Enum.Parse (typeof (TriggerType), store.GetValue (iter, colTypeIndex) as string);
 					trigger.TriggerEvent = (TriggerEvent)Enum.Parse (typeof (TriggerEvent), store.GetValue (iter, colEventIndex) as string);
-					trigger.TriggerFireType = (TriggerFireType)Enum.Parse (typeof (TriggerFireType), store.GetValue (iter, colFireTypeIndex) as string);
+					if (Convert.ToBoolean(store.GetValue (iter, colFireTypeIndex)))
+						trigger.TriggerFireType = TriggerFireType.ForEachRow;
+					else
+						 trigger.TriggerFireType = TriggerFireType.ForEachStatement;
 					
 					trigger.Position = int.Parse (store.GetValue (iter, colPositionIndex) as string);
 					trigger.IsActive = (bool)store.GetValue (iter, colActiveIndex);

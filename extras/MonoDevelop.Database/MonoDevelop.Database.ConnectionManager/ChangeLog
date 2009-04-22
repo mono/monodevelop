@@ -1,3 +1,8 @@
+2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* NodeBuilders/TablesNodeBuilder.cs: Added a new way to add a
+	  New Table with a unique name.
+
 2009-04-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix builddir paths.

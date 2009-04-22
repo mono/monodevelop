@@ -134,8 +134,29 @@ namespace MonoDevelop.Database.ConnectionManager
 			BaseNode node = CurrentNode.DataItem as BaseNode;
 			IDbFactory fac = node.ConnectionContext.DbFactory;
 			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
-			TableSchema table = schemaProvider.CreateTableSchema ("NewTable");
-
+			
+			// Need to detect if it is a previous (saved) table with the same name.
+			string name = AddinCatalog.GetString("NewTable");
+			int lastIdx = 0;
+			TableSchemaCollection tables = schemaProvider.GetTables ();
+			for (int t = tables.Count-1; t > -1; t--) {
+				if (tables[t].Name.ToLower () == name.ToLower ()) {
+					name = string.Concat (name, "1");
+					break;
+				} else if (tables[t].Name.StartsWith (name, StringComparison.OrdinalIgnoreCase)) {
+					string idx = tables[t].Name.Substring (name.Length);
+					int newIdx;
+					if (int.TryParse (idx, out newIdx)) {
+						lastIdx = newIdx;
+						break;
+					}
+						
+				}
+			}
+			if (lastIdx != 0)
+				name = String.Concat (name, lastIdx+1);
+			
+			TableSchema table = schemaProvider.CreateTableSchema (name);
 			if (fac.GuiProvider.ShowTableEditorDialog (schemaProvider, table, true))
 				ThreadPool.QueueUserWorkItem (new WaitCallback (OnCreateTableThreaded), new object[] {schemaProvider, table, node} as object);
 		}

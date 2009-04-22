@@ -59,8 +59,9 @@ namespace MonoDevelop.Database.Sql.Sqlite
 			TableSchemaCollection tables = new TableSchemaCollection ();
 			
 			IPooledDbConnection conn = connectionPool.Request ();
+			// Tables need to be ordered bacause TableSchemaCollection is "created" as sorted by default.
 			IDbCommand command = conn.CreateCommand (
-				"SELECT name, sql FROM sqlite_master WHERE type = 'table'"
+				"SELECT name, sql FROM sqlite_master WHERE type = 'table' ORDER BY name"
 			);
 			try {
 				using (command) {
@@ -273,9 +274,11 @@ namespace MonoDevelop.Database.Sql.Sqlite
 					sb.Append (GetConstraintString (constraint));
 				}
 			}
-			
 			//table constraints
 			foreach (ConstraintSchema constraint in table.Constraints) {
+				// SQLite create a new schema with an auto-index by default.
+				if (constraint.Name.StartsWith ("sqlite_autoindex"))
+					continue;
 				sb.Append (", ");
 				sb.Append (GetConstraintString (constraint));
 			}
@@ -292,30 +295,63 @@ namespace MonoDevelop.Database.Sql.Sqlite
 		
 		protected virtual string GetConstraintString (ConstraintSchema constraint)
 		{
+			bool first = true;
 			//PRIMARY KEY [sort-order] [ conflict-clause ] [AUTOINCREMENT]
 			//UNIQUE [ conflict-clause ]
 			//CHECK ( expr )
 			//COLLATE collation-name
 			
 			StringBuilder sb = new StringBuilder ();
-			sb.Append ("CONSTRAINT ");
-			sb.Append (constraint.Name);
-			sb.Append (' ');
-			
 			switch (constraint.ConstraintType) {
 			case ConstraintType.PrimaryKey:
-				//PrimaryKeyConstraintSchema pk = constraint as PrimaryKeyConstraintSchema;
-				sb.Append ("PRIMARY KEY"); //TODO: auto inc + sort
+				sb.Append ("PRIMARY KEY ("); //TODO: auto inc + sort
+				first = true;
+				foreach (ColumnSchema col in constraint.Columns) {
+					if (!first)
+						sb.Append (",");
+					sb.Append (col.Name);
+					first = false;
+				}
+				sb.Append (")");
 				break;
 			case ConstraintType.Unique:
-				//UniqueConstraintSchema u = constraint as UniqueConstraintSchema;
-				sb.Append ("UNIQUE");
+				sb.Append ("UNIQUE (");
+				first = true;
+				foreach (ColumnSchema col in constraint.Columns) {
+					if (!first)
+						sb.Append (",");
+					sb.Append (col.Name);
+					first = false;
+				}
+				sb.Append (")");
 				break;
 			case ConstraintType.Check:
 				CheckConstraintSchema chk = constraint as CheckConstraintSchema;
 				sb.Append ("CHECK (");
 				sb.Append (chk.Source);
 				sb.Append (")");
+				break;
+			case ConstraintType.ForeignKey:
+				sb.Append ("FOREIGN KEY ");
+				sb.Append (GetColumnsString (constraint.Columns, true));
+				sb.Append (" REFERENCES ");
+				
+				ForeignKeyConstraintSchema fk = constraint as ForeignKeyConstraintSchema;
+				string tableName;
+				if (fk.ReferenceTableName.IndexOf ('.') > 0)
+					 tableName = fk.ReferenceTableName.Substring (fk.ReferenceTableName.IndexOf ('.') + 1);
+				else
+					tableName = fk.ReferenceTableName;
+				sb.Append (tableName);
+				sb.Append (' ');
+				if (fk.ReferenceColumns != null)
+					sb.Append (GetColumnsString (fk.ReferenceColumns, true));
+				sb.Append (Environment.NewLine);
+				sb.Append (" ON DELETE ");
+				sb.Append (GetConstraintActionString (fk.DeleteAction));
+				sb.Append (Environment.NewLine);
+				sb.Append (" ON UPDATE ");
+				sb.Append (GetConstraintActionString (fk.UpdateAction));
 				break;
 			default:
 				throw new NotImplementedException ();
@@ -350,7 +386,6 @@ namespace MonoDevelop.Database.Sql.Sqlite
 		protected virtual string GetTriggerCreateStatement (TriggerSchema trigger)
 		{
 			StringBuilder sb = new StringBuilder ();
-			
 			sb.Append ("CREATE TRIGGER ");
 			sb.Append (trigger.Name);
 			

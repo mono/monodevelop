@@ -94,6 +94,8 @@ using MonoDevelop.Database.Components;
 		public bool ShowTableEditorDialog (IEditSchemaProvider schemaProvider, TableSchema table, bool create)
 		{
 			TableEditorSettings settings = new TableEditorSettings ();
+			// SQLite doesn't support "NO ACTION" on "Foreign Key"
+			settings.ConstraintSettings.ForeignKeySettings.SupportsNoAction = false;
 			TableEditorDialog dlg = new TableEditorDialog (schemaProvider, create, settings);
 			dlg.Initialize (table);
 
@@ -126,9 +128,18 @@ using MonoDevelop.Database.Components;
 		private bool RunDialog (Dialog dlg)
 		{
 			bool result = false;
-			try {	
-				if (dlg.Run () == (int)ResponseType.Ok)
+			// If the Preview Dialog is canceled, don't execute and don't close the Editor Dialog.
+			try {
+				int resp;
+					do {
+						resp = dlg.Run ();
+				         } while (resp != (int)ResponseType.Cancel && resp != (int)ResponseType.Ok && 
+				         resp != (int)ResponseType.DeleteEvent);
+					
+				if (resp == (int)ResponseType.Ok)
 					result = true;
+				else
+					result = false;
 			} finally {
 				dlg.Destroy ();
 			}

@@ -1,3 +1,10 @@
+2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* NpgsqlGuiProvider.cs: Fix Preview Dialog. When cancel the
+	  dialog, don't create the table and don't close the table.
+	* NpgsqlSchemaProvider.cs: Fix creation table to create a
+	  correct sql.
+
 2009-04-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix builddir paths.

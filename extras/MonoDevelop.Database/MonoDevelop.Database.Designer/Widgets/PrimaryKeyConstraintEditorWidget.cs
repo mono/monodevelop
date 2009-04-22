@@ -39,6 +39,7 @@ namespace MonoDevelop.Database.Designer
 	public partial class PrimaryKeyConstraintEditorWidget : Gtk.Bin
 	{
 		public event EventHandler ContentChanged;
+		public event EventHandler PrimaryKeyChanged;
 		
 		private ISchemaProvider schemaProvider;
 		private TableSchema table;
@@ -62,7 +63,6 @@ namespace MonoDevelop.Database.Designer
 			this.action = action;
 			
 			this.Build();
-			
 			store = new ListStore (typeof (string), typeof (string), typeof (object));
 			listPK.Model = store;
 			
@@ -78,13 +78,8 @@ namespace MonoDevelop.Database.Designer
 			colName.AddAttribute (nameRenderer, "text", colNameIndex);
 			listPK.AppendColumn (colName);
 			
-			columnSelecter.Initialize (columns);
-			
 			listPK.Selection.Changed += new EventHandler (SelectionChanged);
 			columnSelecter.ColumnToggled += new EventHandler (ColumnToggled);
-			
-			foreach (PrimaryKeyConstraintSchema pk in constraints.GetConstraints (ConstraintType.PrimaryKey))
-				AddConstraint (pk);
 			
 			ShowAll ();
 		}
@@ -101,7 +96,18 @@ namespace MonoDevelop.Database.Designer
 			this.table = table;
 			this.columns = columns;
 			this.constraints = constraints;
+
+			columnSelecter.Initialize (columns);
+			RefreshConstraints ();
 		}
+		
+		public virtual void RefreshConstraints ()
+		{
+			store.Clear ();
+			foreach (PrimaryKeyConstraintSchema pk in constraints.GetConstraints (ConstraintType.PrimaryKey))
+				AddConstraint (pk);
+		}
+		
 		
 		private void NameEdited (object sender, EditedArgs args)
 		{
@@ -142,7 +148,11 @@ namespace MonoDevelop.Database.Designer
 			if (listPK.Selection.GetSelected (out iter)) {
 				bool first = true;
 				StringBuilder sb = new StringBuilder ();
+				ConstraintSchema constraint = (ConstraintSchema)store.GetValue (iter, colObjIndex);
+				constraint.Columns.Clear ();
+				
 				foreach (ColumnSchema column in columnSelecter.CheckedColumns) {
+					constraint.Columns.Add (column);
 					if (first)
 						first = false;
 					else
@@ -150,18 +160,29 @@ namespace MonoDevelop.Database.Designer
 					
 					sb.Append (column.Name);
 				}
-			
 				store.SetValue (iter, colColumnsIndex, sb.ToString ());
 				EmitContentChanged ();
+				OnPrimaryKeyChanged ();
 			}
 		}
 
+		protected virtual void OnPrimaryKeyChanged ()
+		{ 
+			if (PrimaryKeyChanged != null)
+				PrimaryKeyChanged (this, new EventArgs ());
+		}
+		
 		protected virtual void AddClicked (object sender, System.EventArgs e)
 		{
-			PrimaryKeyConstraintSchema pk = schemaProvider.CreatePrimaryKeyConstraintSchema ("pk_new");
+			PrimaryKeyConstraintSchema pk = 
+				schemaProvider.CreatePrimaryKeyConstraintSchema (
+				                                                 string.Concat (
+				                                                                table.Name,
+				                                                                "_", 
+				                                                                AddinCatalog.GetString ("pk_new")));
 			int index = 1;
 			while (constraints.Contains (pk.Name))
-				pk.Name = "pk_new" + (index++); 
+				pk.Name = string.Concat (table.Name,"_", AddinCatalog.GetString ("pk_new"), (index++).ToString ()); 
 			constraints.Add (pk);
 			AddConstraint (pk);
 			EmitContentChanged ();
@@ -186,7 +207,13 @@ namespace MonoDevelop.Database.Designer
 				
 		private void AddConstraint (PrimaryKeyConstraintSchema pk)
 		{
-			store.AppendValues (pk.Name, String.Empty, pk);
+			System.Text.StringBuilder pk_cols = new System.Text.StringBuilder ();
+			foreach (ColumnSchema col in pk.Columns) {
+				if (pk_cols.Length > 0)
+					pk_cols.Append (",");
+				pk_cols.Append (col.Name);
+			}
+			TreeIter iter = store.AppendValues (pk.Name, pk_cols.ToString (), pk);
 		}
 		
 		public virtual bool ValidateSchemaObjects (out string msg)
@@ -209,23 +236,12 @@ namespace MonoDevelop.Database.Designer
 		
 		public virtual void FillSchemaObjects ()
 		{
-			TreeIter iter;
-			if (store.GetIterFirst (out iter)) {
-				do {
-					PrimaryKeyConstraintSchema pk = store.GetValue (iter, colObjIndex) as PrimaryKeyConstraintSchema;
-
-					pk.Name = store.GetValue (iter, colNameIndex) as string;
-					string colstr = store.GetValue (iter, colColumnsIndex) as string;
-					string[] cols = colstr.Split (',');
-					foreach (string col in cols) {
-						ColumnSchema column = columns.Search (col);
-						pk.Columns.Add (column);
-					}
-					
-					table.Constraints.Add (pk);
-				} while (store.IterNext (ref iter));
-			}
+			/*
+			 * This code isn't needed anymore, beacause PK's are added on demand in
+			 * order to mantain the exact same thing between "ColumnsEditorWiget" and PrimaryKeyConstraintEditorWidget
+			 */
 		}
+		
 		
 		protected virtual void EmitContentChanged ()
 		{

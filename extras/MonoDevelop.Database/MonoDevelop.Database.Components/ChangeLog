@@ -1,3 +1,9 @@
+2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* Widgets/SelectColumnWidget.cs:
+	* Widgets/SortedColumnListStore.cs: Add Clear Method to clear
+	  the Store.
+
 2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Widgets/SelectSchemaWidget.cs: Fix build.

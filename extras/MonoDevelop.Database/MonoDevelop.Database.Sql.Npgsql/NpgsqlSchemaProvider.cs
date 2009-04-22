@@ -151,7 +151,7 @@ using MonoDevelop.Core;
 							column.DataTypeName = r.GetString (3);
 							column.IsNullable = r.GetBoolean (1);
 							column.DefaultValue = r.IsDBNull (4) ? null : r.GetString (4);
-							column.DataType.LengthRange.Default = r.GetInt32 (2);
+							// column.DataType.LengthRange.Default = (int)r.GetValue (2);
 					
 //							StringBuilder sb = new StringBuilder();
 //							sb.AppendFormat("{0} {1}{2}",
@@ -168,6 +168,8 @@ using MonoDevelop.Core;
 						r.Close ();
 					};
 				}
+			} catch (NpgsqlException ex) {
+				// Don't raise error, if the table doesn't exists return an empty collection
 			} catch (Exception e) {
 				QueryService.RaiseException (e);
 			}
@@ -433,7 +435,7 @@ using MonoDevelop.Core;
 					}
 				}
 			} catch (Exception e) {
-				QueryService.RaiseException (e);
+				// Don't raise error, if the table doesn't exists return an empty collection
 			}
 			conn.Release ();
 
@@ -488,26 +490,545 @@ using MonoDevelop.Core;
 
 			return users;
 		}
+		
+		public override DataTypeSchemaCollection GetDataTypes ()
+		{
+			DataTypeSchemaCollection collection = new DataTypeSchemaCollection ();
+			
+			#region Types
+			// ENUM
+			DataTypeSchema schema = new DataTypeSchema (this);
+			schema.Name = "smallint";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(Int16);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// Integer
+			schema = new DataTypeSchema (this);
+			schema.Name = "integer";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(int);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// Big Int
+			schema = new DataTypeSchema (this);
+			schema.Name = "bigint";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(long);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// Serial
+			schema = new DataTypeSchema (this);
+			schema.Name = "serial";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(long);
+			schema.IsAutoincrementable = true;
+			schema.IsFixedLength = true;
+			schema.IsNullable = false;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// Big Serial
+			schema = new DataTypeSchema (this);
+			schema.Name = "bigserial";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(long);
+			schema.IsAutoincrementable = true;
+			schema.IsFixedLength = true;
+			schema.IsNullable = false;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// Numeric
+			schema = new DataTypeSchema (this);
+			schema.Name = "numeric";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(float);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// Decimal
+			schema = new DataTypeSchema (this);
+			schema.Name = "decimal";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(float);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// real
+			schema = new DataTypeSchema (this);
+			schema.Name = "real";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(float);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// double precision
+			schema = new DataTypeSchema (this);
+			schema.Name = "double precision";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(float);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
 
-//		public override DataTypeSchema GetDataType (string name)
-//		{
-//			if (name == null)
-//				throw new ArgumentNullException ("name");
-//			name = name.ToUpper ();
-//
-//			DataTypeSchema dts = new DataTypeSchema (this);
-//			dts.Name = name;
-//			switch (name) {
-//					//TODO: IMPLEMENT
-//				case "":
-//					break;
-//				default:
-//					dts = null;
-//					break;
-//			}
-//			
-//			return dts;
-//		}
+			// money
+			schema = new DataTypeSchema (this);
+			schema.Name = "money";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(float);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+
+			// character varying
+			schema = new DataTypeSchema (this);
+			schema.Name = "character varying";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+
+			// varying
+			schema = new DataTypeSchema (this);
+			schema.Name = "varying";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+
+			// varchar
+			schema = new DataTypeSchema (this);
+			schema.Name = "varchar";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+
+			// text
+			schema = new DataTypeSchema (this);
+			schema.Name = "text";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+
+			// character
+			schema = new DataTypeSchema (this);
+			schema.Name = "character";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// char
+			schema = new DataTypeSchema (this);
+			schema.Name = "char";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// bytea
+			schema = new DataTypeSchema (this);
+			schema.Name = "bytea";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(byte);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);			
+
+			// timeSpan
+			schema = new DataTypeSchema (this);
+			schema.Name = "timespan";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(object);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+
+			// interval
+			schema = new DataTypeSchema (this);
+			schema.Name = "interval";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(TimeSpan);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// Date
+			schema = new DataTypeSchema (this);
+			schema.Name = "date";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(DateTime);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// Time
+			schema = new DataTypeSchema (this);
+			schema.Name = "time";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(DateTime);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// boolean
+			schema = new DataTypeSchema (this);
+			schema.Name = "boolean";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(bool);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// bit
+			schema = new DataTypeSchema (this);
+			schema.Name = "bit";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(bool);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// uuid
+			schema = new DataTypeSchema (this);
+			schema.Name = "bit";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(Guid);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// xml
+			schema = new DataTypeSchema (this);
+			schema.Name = "xml";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(Guid);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// point
+			schema = new DataTypeSchema (this);
+			schema.Name = "point";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// line
+			schema = new DataTypeSchema (this);
+			schema.Name = "line";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// lseg
+			schema = new DataTypeSchema (this);
+			schema.Name = "lseg";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// box
+			schema = new DataTypeSchema (this);
+			schema.Name = "box";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// polygon
+			schema = new DataTypeSchema (this);
+			schema.Name = "polygon";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// circle
+			schema = new DataTypeSchema (this);
+			schema.Name = "circle";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			// inet
+			schema = new DataTypeSchema (this);
+			schema.Name = "inet";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			
+			// cidr
+			schema = new DataTypeSchema (this);
+			schema.Name = "cidr";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(string);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = true;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			schema = new DataTypeSchema (this);
+			schema.Name = "enum";
+			schema.LengthRange = new Range (0);
+			schema.DotNetType = typeof(object);
+			schema.IsAutoincrementable = false;
+			schema.IsFixedLength = false;
+			schema.IsNullable = true;
+			schema.ScaleRange = new Range (0, 0);
+			schema.PrecisionRange = new Range (0, 0);
+			collection.Add (schema);
+			
+			#endregion 
+			return collection;
+		}
+
+		public override DataTypeSchema GetDataType (string name)
+		{
+			if (name == null)
+				throw new ArgumentNullException ("name");
+			
+			if (name == null)
+				throw new ArgumentNullException ("name");
+
+			string type = null;
+			int length = 0;
+			int scale = 0;
+			ParseType (name, out type, out length, out scale);
+
+			DataTypeSchema dts = new DataTypeSchema (this);
+			dts.Name = type;
+			switch (type) {
+				case "enum":
+				case "smallint":
+				case "integer":
+				case "bigint":
+				case "serial":
+				case "bigserial":
+					dts.LengthRange = new Range (length);
+					dts.DataTypeCategory = DataTypeCategory.Integer;
+				break;
+				case "numeric":
+				case "decimal":
+				case "real":
+				case "double precision":
+				case "money":
+					dts.LengthRange = new Range (length);
+					dts.ScaleRange = new Range (scale);
+					dts.DataTypeCategory = DataTypeCategory.Float;
+					break;
+				break;
+				case "character varying":
+				case "varying":
+				case "varchar":
+				case "text":
+					dts.LengthRange = new Range (length);
+					dts.DataTypeCategory = DataTypeCategory.VarChar;
+					break;
+				case "character":
+				case "char":
+					dts.LengthRange = new Range (length);
+					dts.DataTypeCategory = DataTypeCategory.Char;
+					break;
+				case "bytea":
+					dts.LengthRange = new Range (length);
+					dts.DataTypeCategory = DataTypeCategory.Binary;
+					break;
+				case "timestamp":
+					dts.DataTypeCategory = DataTypeCategory.TimeStamp;
+					break;
+				case "interval":
+					dts.DataTypeCategory = DataTypeCategory.Interval;
+					break;
+				case "date":
+					dts.DataTypeCategory = DataTypeCategory.Date;
+					break;
+				case "time":
+					dts.DataTypeCategory = DataTypeCategory.Time;
+					break;
+				case "boolean":
+					dts.DataTypeCategory = DataTypeCategory.Bit;
+					break;
+				case "point":
+				case "line":
+				case "lseg":
+				case "box":
+				case "polygon":
+				case "circle":
+				case "inet":
+				case "cidr":
+					// Research this
+					dts.DataTypeCategory = DataTypeCategory.VarChar;
+					break;
+				case "bit":
+					dts.DataTypeCategory = DataTypeCategory.Bit;
+					break;
+				case "uuid":
+					dts.DataTypeCategory = DataTypeCategory.Uid;
+					break;
+				case "xml":
+					dts.DataTypeCategory = DataTypeCategory.Xml;
+					break;
+				default:
+					dts.DataTypeCategory = DataTypeCategory.Other;
+					break;
+			}
+			
+			return dts;
+		}
+		
+		private void ParseType (string str, out string type, out int length, out int scale)
+		{
+			int parenOpen = str.IndexOf ('(');
+			int parenClose = str.IndexOf (')');
+			int commaPos = -1;
+			if (parenOpen > 0)
+				commaPos = str.IndexOf (',', parenOpen);
+
+			if (parenOpen > 0) {
+				type = str.Substring (0, parenOpen).Trim ();
+				
+				string lengthString = null;
+				if (commaPos > 0) {
+					lengthString = str.Substring (parenOpen + 1, commaPos - parenOpen - 1);
+					string scaleString = str.Substring (commaPos + 1, parenClose - commaPos - 1).Trim ();
+					int.TryParse (scaleString, out scale);
+				} else {
+					lengthString = str.Substring (parenOpen + 1, parenClose - parenOpen - 1);
+					scale = 0;
+				}
+				int.TryParse (lengthString, out length);
+			} else {
+				type = str;
+				length = 1;
+				scale = 0;
+			}
+		}
 		
 		//http://www.postgresql.org/docs/8.2/interactive/sql-createdatabase.html
 		public override void CreateDatabase (DatabaseSchema database)
@@ -536,12 +1057,12 @@ using MonoDevelop.Core;
 				sb.Append (column.DataType.GetCreateString (column));
 				
 				if (!column.IsNullable)
-					sb.Append (" NOT NULL");
+					sb.Append (" NOT NULL ");
 				
 				if (column.HasDefaultValue) {
 					sb.Append (" DEFAULT ");
 					if (column.DefaultValue == null)
-						sb.Append ("NULL");
+						sb.Append (" NULL ");
 					else
 						sb.Append (column.DefaultValue);
 				}
@@ -562,7 +1083,7 @@ using MonoDevelop.Core;
 				sb.Append (table.TableSpaceName);
 				sb.Append (';');
 			}
-			
+			sb.Append (';');
 			foreach (TriggerSchema trigger in table.Triggers) {
 				sb.Append (Environment.NewLine);
 				sb.Append (GetTriggerCreateStatement (trigger));				
@@ -595,7 +1116,7 @@ using MonoDevelop.Core;
 				sb.Append (" REFERENCES ");
 				
 				ForeignKeyConstraintSchema fk = constraint as ForeignKeyConstraintSchema;
-				sb.Append (fk.ReferenceTable);
+				sb.Append (fk.ReferenceTableName);
 				sb.Append (' ');
 				if (fk.ReferenceColumns != null)
 					sb.Append (GetColumnsString (fk.ReferenceColumns, true));

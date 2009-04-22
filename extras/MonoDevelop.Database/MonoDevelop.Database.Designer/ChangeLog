@@ -1,3 +1,17 @@
+2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* gtk-gui/gui.stetic:
+	* Dialogs/TableEditorDialog.cs:
+	* Widgets/ColumnsEditorWidget.cs:
+	* Widgets/TriggersEditorWidget.cs:
+	* Widgets/ConstraintsEditorWidget.cs:
+	* Widgets/CheckConstraintEditorWidget.cs:
+	* Widgets/UniqueConstraintEditorWidget.cs:
+	* Widgets/PrimaryKeyConstraintEditorWidget.cs:
+	* Widgets/ForeignKeyConstraintEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget.cs:
+	  Fix all the Bugs that prevent run "Create Table" command.
+
 2009-04-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix builddir paths.

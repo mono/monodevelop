@@ -114,6 +114,26 @@ namespace MonoDevelop.Database.Sql
 			return schema;
 		}
 
+		public virtual string GetConstraintActionString (ForeignKeyAction action)
+		{
+			switch (action) {
+			case ForeignKeyAction.None:
+				return " NO ACTION ";
+			case ForeignKeyAction.Cascade:
+				return " CASCADE ";
+			case ForeignKeyAction.Restrict:
+				return " RESTRICT ";
+			case ForeignKeyAction.NoAction:
+				return " NO ACTION ";
+			case ForeignKeyAction.SetDefault:
+				return " SET DEFAULT ";
+			case ForeignKeyAction.SetNull:
+				return " SET NULL ";
+			default:
+				throw new NotImplementedException ();
+			}
+		}
+		
 		public virtual TableSchemaCollection GetTables ()
 		{
 			TableSchemaCollection collection = new TableSchemaCollection ();
@@ -127,7 +147,7 @@ namespace MonoDevelop.Database.Sql
 					collection.Add (GetTable (row));
 				}
 			} catch (Exception e) {
-				QueryService.RaiseException (e);
+				// Don't raise error, if the triggers doesn't exists return an empty collection
 			}
 			conn.Release ();
 			

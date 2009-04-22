@@ -169,6 +169,8 @@ namespace MonoDevelop.Database.Designer {
                 this.Child.ShowAll();
             }
             this.Show();
+            this.buttonAdd.Clicked += new System.EventHandler(this.AddClicked);
+            this.buttonRemove.Clicked += new System.EventHandler(this.RemoveClicked);
         }
     }
 }

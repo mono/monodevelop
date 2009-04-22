@@ -40,6 +40,7 @@ namespace MonoDevelop.Database.Designer
 	public partial class ColumnsEditorWidget : Gtk.Bin
 	{
 		public event EventHandler ContentChanged;
+		public event EventHandler PrimaryKeyChanged;
 		
 		private ListStore storeColumns;
 		private ListStore storeTypes;
@@ -107,6 +108,7 @@ namespace MonoDevelop.Database.Designer
 			nameRenderer.Edited += new EditedHandler (NameEdited);
 			
 			typeRenderer.Model = storeTypes;
+			storeTypes.SetSortColumnId (0, SortType.Ascending);
 			typeRenderer.TextColumn = 0;
 			typeRenderer.Editable = true;
 			typeRenderer.Edited += new EditedHandler (TypeEdited);
@@ -183,9 +185,24 @@ namespace MonoDevelop.Database.Designer
 			
 			foreach (ColumnSchema column in columns)
 				AppendColumnSchema (column);
-			
+
 			foreach (DataTypeSchema dataType in dataTypes)
-				storeTypes.AppendValues (dataType.Name, storeTypes);
+				storeTypes.AppendValues (dataType.Name, dataType);
+		}
+		
+		public virtual void RefreshConstraints ()
+		{
+			ColumnSchema sc;
+			storeColumns.Foreach (delegate (TreeModel model, TreePath path, TreeIter iter) {
+				ColumnSchema col = (ColumnSchema)model.GetValue (iter, colObjIndex);
+				model.SetValue (iter, colPKIndex, false);
+				foreach (ConstraintSchema cons in constraints)
+					if (cons is PrimaryKeyConstraintSchema)
+						foreach (ColumnSchema colConstraint in cons.Columns)
+							if (colConstraint.Name == col.Name)
+								model.SetValue (iter, colPKIndex, true);
+				return false;
+			});
 		}
 		
 		private void AppendColumnSchema (ColumnSchema column)
@@ -194,24 +211,41 @@ namespace MonoDevelop.Database.Designer
 			storeColumns.AppendValues (pk, column.Name, column.DataType.Name, column.DataType.LengthRange.Default.ToString (), column.IsNullable, column.Comment, column);
 		}
 
+		protected void OnPrimaryKeyChanged (object sender, EventArgs args)
+		{
+			if (PrimaryKeyChanged != null)
+				PrimaryKeyChanged (this, args);
+		}
+		
 		protected virtual void AddClicked (object sender, EventArgs e)
 		{
-			int index = 1;
-			string name = null;
-			do {
-				name = "column" + index;
-				index++;
-			} while (columns.Contains (name));
+			// Need to detect if it is a previous column with the same name.
+			string name = AddinCatalog.GetString("column");
+			int lastIdx = 0;
+			foreach (ColumnSchema col in columns) {
+				if (col.Name == name) {
+					name = string.Concat (name, "1");
+				} else if (col.Name.StartsWith (name, StringComparison.OrdinalIgnoreCase)) {
+					string idx = col.Name.Substring (name.Length);
+					int newIdx;
+					if (int.TryParse (idx, out newIdx)) 
+						lastIdx = newIdx;
+				}
+			}
+			if (lastIdx != 0)
+				name = String.Concat (name, lastIdx+1);
+			else
+				name = string.Concat (name, "1");
 			
-//			ColumnSchema column = schemaProvider.GetNewColumnSchema (name, table);
-//
-//			TreeIter iter;
-//			if (storeTypes.GetIterFirst (out iter))
-//				column.DataTypeName = storeTypes.GetValue (iter, 0) as string;
-//			
-//			columns.Add (column);
-//			AppendColumnSchema (column);
-//			EmitContentChanged ();
+			ColumnSchema column = new ColumnSchema (schemaProvider, table, name);
+			
+			TreeIter iter;
+			if (storeTypes.GetIterFirst (out iter))
+				column.DataTypeName = storeTypes.GetValue (iter, 0) as string;
+			
+			columns.Add (column);
+			AppendColumnSchema (column);
+			EmitContentChanged ();
 		}
 
 		protected virtual void RemoveClicked (object sender, EventArgs e)
@@ -221,7 +255,6 @@ namespace MonoDevelop.Database.Designer
 				ColumnSchema column = storeColumns.GetValue (iter, colObjIndex) as ColumnSchema;
 				
 				//TODO: also check for attached constraints
-				
 				bool result = MessageService.Confirm (
 					AddinCatalog.GetString ("Are you sure you want to remove column '{0}'", column.Name),
 					AlertButton.Remove
@@ -240,6 +273,46 @@ namespace MonoDevelop.Database.Designer
 			if (storeColumns.GetIterFromString (out iter, args.Path)) {
 	 			bool val = (bool) storeColumns.GetValue (iter, colPKIndex);
 	 			storeColumns.SetValue (iter, colPKIndex, !val);
+				if (val) {
+					// Remove Constraint
+					ColumnSchema column = storeColumns.GetValue (iter, colObjIndex) as ColumnSchema;
+					ConstraintSchema delConstraint = null;
+					foreach (ConstraintSchema c in constraints)
+						if (c is PrimaryKeyConstraintSchema) {
+							foreach (ColumnSchema col in c.Columns)
+								if (col.Name == column.Name) {
+									c.Columns.Remove (col);
+									delConstraint = c;
+									break;
+								}
+						}
+					// If PK doesn't have any columns, delete it.
+					if (delConstraint != null)
+						if (delConstraint.Columns.Count < 1) {
+							constraints.Remove (delConstraint);
+						}
+				} else {
+					// Add Constraint
+					ColumnSchema column = storeColumns.GetValue (iter, colObjIndex) as ColumnSchema;
+					// Add the column for an existing PK
+					foreach (ConstraintSchema c in constraints)
+						if (c is PrimaryKeyConstraintSchema) {
+							c.Columns.Add (column);
+							// Fire the Primary Key Changed Event to tell the other widget that "Primary Key Constraint"
+							// are changed in the Column Editor.
+							OnPrimaryKeyChanged (this, new EventArgs ());
+							EmitContentChanged ();
+							return;
+						}
+					PrimaryKeyConstraintSchema pk = 
+						schemaProvider.CreatePrimaryKeyConstraintSchema (string.Concat (
+						                                                                table.Name,"_", 
+						                                                                AddinCatalog.GetString ("pk_new")
+						                                                                ));
+					pk.Columns.Add (column);
+					constraints.Add (pk);
+				}
+				OnPrimaryKeyChanged (this, new EventArgs ());
 				EmitContentChanged ();
 	 		}
 		}
@@ -422,11 +495,6 @@ namespace MonoDevelop.Database.Designer
 					column.DataType.LengthRange.Default = int.Parse (storeColumns.GetValue (iter, colLengthIndex) as string);
 					column.IsNullable = (bool)storeColumns.GetValue (iter, colNullableIndex);
 					column.Comment = storeColumns.GetValue (iter, colCommentIndex) as string;
-					
-					if ((bool)storeColumns.GetValue (iter, colPKIndex)) {
-						PrimaryKeyConstraintSchema pk = schemaProvider.CreatePrimaryKeyConstraintSchema ("pk_" + column.Name);
-						column.Constraints.Add (pk);
-					}
 				} while (storeColumns.IterNext (ref iter));
 			}
 		}

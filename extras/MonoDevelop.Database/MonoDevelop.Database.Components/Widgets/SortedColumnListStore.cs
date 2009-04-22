@@ -65,6 +65,12 @@ namespace MonoDevelop.Database.Components
 			get { return store; }
 		}
 		
+		public virtual void Clear ()
+		{
+			if (store != null)
+				store.Clear ();
+		}
+		
 		public virtual bool SingleCheck {
 			get { return singleCheck; }
 			set {
@@ -113,13 +119,11 @@ namespace MonoDevelop.Database.Components
 		public virtual void SelectAll ()
 		{
 			SetSelectState (true);
-			OnColumnToggled ();
 		}
 		
 		public virtual void DeselectAll ()
 		{
 			SetSelectState (false);
-			OnColumnToggled ();
 		}
 		
 		public virtual void Select (string name)
@@ -128,6 +132,13 @@ namespace MonoDevelop.Database.Components
 				throw new ArgumentNullException ("name");
 			
 			ColumnSchema col = columns.Search (name);
+			
+			// FIXME: This is a workaround, last item on the list isn't find by columns.Search. 
+			// SortedCollectionBase.BinarySearchIndex Isn't working.
+			if (col == null)
+				if (columns[columns.Count -1].Name.IndexOf (name, StringComparison.OrdinalIgnoreCase) > -1)
+					Select (columns[columns.Count -1]);
+			
 			if (col != null)
 				Select (col);
 		}
