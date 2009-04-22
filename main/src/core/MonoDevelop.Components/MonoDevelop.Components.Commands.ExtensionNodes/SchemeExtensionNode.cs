@@ -40,6 +40,9 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 
 		[NodeAttribute ("file", "Name of the key bindings file")]
 		string file;
+		
+		[NodeAttribute ("forMac", "Whether the keybinding file is for Macs.")]
+		bool isForMac;
 
 		[NodeAttribute ("resource", "Name of the resource containing the key bindings file.")]
 		string resource;
@@ -62,6 +65,10 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			}
 		}
 		
+		public bool IsForMac {
+			get { return isForMac; }
+		}
+		
 		public Stream GetKeyBindingsSchemeStream ()
 		{
 			if (!string.IsNullOrEmpty (file))
@@ -77,7 +84,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 				return cachedSet;
 			
 			XmlTextReader reader = null;
-			Stream stream;
+			Stream stream = null;
 			
 			try {
 				stream = GetKeyBindingsSchemeStream ();
@@ -88,10 +95,13 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 					return cachedSet;
 				}
 			} catch (Exception e) {
-				LoggingService.LogError (e.ToString ());
+				LoggingService.LogError ("Error reading keybindings definition '{0}' in addin '{1}'.\n {2}",
+				                         file ?? resource, Addin.Id,  e.ToString ());
 			} finally {
 				if (reader != null)
 					reader.Close ();
+				if (stream != null)
+					stream.Close ();
 			}
 			return null;
 		}

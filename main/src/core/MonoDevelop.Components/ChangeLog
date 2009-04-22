@@ -1,5 +1,20 @@
 2009-04-22  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Components.Commands.ExtensionNodes/CommandCodon.cs:
+	  Add macShortcut property to commands, and use it as the
+	  shortcut when on Mac.
+
+	* MonoDevelop.Components.Commands.ExtensionNodes/SchemeExtensionNode.cs:
+	  Add forMac property for flagging whether keybinding schemes
+	  are for the Mac. Close streams correctly.
+
+	* MonoDevelop.Components.Commands/KeyBindingService.cs: Use
+	  schemes' new IsForMac property. Store bindings in
+	  KeyBindingsMac.xml when on Mac so that user can have
+	  side-by-side Mac and !Mac bindings.
+
+2009-04-22  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Use
 	  PropertyService.IsMac. Hide IsMac property.
 

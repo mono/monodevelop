@@ -41,6 +41,7 @@ namespace MonoDevelop.Components.Commands
 	public class KeyBindingService
 	{
 		const string configFileName = "KeyBindings.xml";
+		const string configFileNameMac = "KeyBindingsMac.xml";
 		
 		static KeyBindingSet current;
 		static SortedDictionary<string, KeyBindingScheme> schemes;
@@ -62,7 +63,7 @@ namespace MonoDevelop.Components.Commands
 		
 		static string ConfigFileName {
 			get {
-				return Path.Combine (PropertyService.ConfigPath, configFileName);
+				return Path.Combine (PropertyService.ConfigPath, PropertyService.IsMac? configFileNameMac : configFileName);
 			}
 		}
 
@@ -107,11 +108,13 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (args.Change == ExtensionChange.Add) {
 				SchemeExtensionNode node = (SchemeExtensionNode) args.ExtensionNode;
-				schemes.Add (node.Id, node);
+				if (node.IsForMac == PropertyService.IsMac)
+					schemes.Add (node.Id, node);
 			}
 			else {
 				SchemeExtensionNode node = (SchemeExtensionNode) args.ExtensionNode;
-				schemes.Remove (node.Name);
+				if (node.IsForMac == PropertyService.IsMac)
+					schemes.Remove (node.Name);
 			}
 		}
 		
