@@ -702,7 +702,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			// Handle Alt+1-0 keys
-			Gdk.ModifierType winSwitchModifier = KeyBindingManager.IsMac
+			Gdk.ModifierType winSwitchModifier = PropertyService.IsMac
 				? KeyBindingManager.SelectionModifierControl
 				: KeyBindingManager.SelectionModifierAlt;
 			

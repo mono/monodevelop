@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Commands
 				item.Checked = (IdeApp.Workbench.ActiveDocument == doc);
 				item.Description = GettextCatalog.GetString ("Activate window '{0}'", escapedWindowTitle);
 				
-				string prefix = KeyBindingManager.IsMac? "Meta|" : "Alt|";
+				string prefix = PropertyService.IsMac? "Meta|" : "Alt|";
 				if (i + 1 <= 9)
 					item.AccelKey = prefix + (i+1);
 				

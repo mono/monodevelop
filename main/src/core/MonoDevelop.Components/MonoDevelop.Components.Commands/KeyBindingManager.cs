@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 // Terminology:
 //   mode: A 'mode' is a key binding prefix / modifier meant to allow a
@@ -52,19 +51,14 @@ namespace MonoDevelop.Components.Commands
 		const Gdk.ModifierType META_MASK = (Gdk.ModifierType) 0x10000000; //FIXME GTK+ 2.12: Gdk.ModifierType.MetaMask;
 		const Gdk.ModifierType SUPER_MASK = (Gdk.ModifierType) 0x40000000; //FIXME GTK+ 2.12: Gdk.ModifierType.SuperMask;
 		
-		static bool isMac = false;
 		static bool isX11 = false;
 		
 		Dictionary<string, List<Command>> bindings = new Dictionary<string, List<Command>> ();
 		Dictionary<string, int> modes = new Dictionary<string, int> ();
 		List<Command> commands = new List<Command> ();
 		
-		[DllImport ("libc")]
-		static extern int uname (IntPtr buf);
-		
 		static KeyBindingManager ()
 		{
-			isMac = IsRunningOnMac ();
 			isX11 = !isMac && System.Environment.OSVersion.Platform == PlatformID.Unix;
 			
 			if (isMac) {
@@ -78,28 +72,8 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
-		//From Managed.Windows.Forms/XplatUI
-		static bool IsRunningOnMac ()
-		{
-			IntPtr buf = IntPtr.Zero;
-			try {
-				buf = Marshal.AllocHGlobal (8192);
-				// This is a hacktastic way of getting sysname from uname ()
-				if (uname (buf) == 0) {
-					string os = Marshal.PtrToStringAnsi (buf);
-					if (os == "Darwin")
-						return true;
-				}
-			} catch (Exception ex) {
-			} finally {
-				if (buf != IntPtr.Zero)
-					Marshal.FreeHGlobal (buf);
-			}
-			return false;
-		}
-		
-		public static bool IsMac {
-			get { return isMac; }
+		static bool isMac {
+			get { return MonoDevelop.Core.PropertyService.IsMac; }
 		}
 		
 		public void Dispose ()
