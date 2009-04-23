@@ -1,3 +1,9 @@
+2009-04-23  Federico Di Gregorio  <fog@initd.org>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:
+	  Show Edit References dialog when double-clicking on the
+	  References folder.
+
 2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Commands/TextEditorCommands.cs: Add commands

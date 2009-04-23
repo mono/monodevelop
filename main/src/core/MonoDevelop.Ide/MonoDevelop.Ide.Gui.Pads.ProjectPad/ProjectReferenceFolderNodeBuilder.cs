@@ -179,6 +179,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				IdeApp.ProjectOperations.Save (p);
 			}
 		}
+		
+		public override void ActivateItem ()
+		{
+			AddReferenceToProject ();
+		}
+		
 		[CommandHandler (ProjectCommands.AddReference)]
 		public void AddReferenceToProject ()
 		{
