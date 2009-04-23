@@ -33,7 +33,6 @@ using System.ComponentModel;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;

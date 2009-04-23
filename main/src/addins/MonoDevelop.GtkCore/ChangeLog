@@ -1,3 +1,9 @@
+2009-04-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:
+	  Removed unused namespace.
+
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs:
