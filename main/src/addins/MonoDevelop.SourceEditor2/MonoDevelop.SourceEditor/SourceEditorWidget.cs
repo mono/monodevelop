@@ -312,6 +312,9 @@ namespace MonoDevelop.SourceEditor
 								// only fold on document open, later added folds are NOT folded by default.
 								marker.IsFolded = widget.isInitialParseUpdate && folded;
 							}
+							if (marker != null && region.Region.Contains (widget.textEditorData.Caret.Line, widget.textEditorData.Caret.Column))
+								marker.IsFolded = false;
+							
 						}
 						widget.textEditorData.Document.UpdateFoldSegments (foldSegments);
 						widget.isInitialParseUpdate = false;

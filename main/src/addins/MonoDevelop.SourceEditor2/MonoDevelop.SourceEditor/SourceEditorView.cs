@@ -46,7 +46,6 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Debugger;
 using Mono.Debugging.Client;
 using MonoDevelop.DesignerSupport.Toolbox;
@@ -57,7 +56,7 @@ using Services = MonoDevelop.Projects.Services;
 namespace MonoDevelop.SourceEditor
 {	
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
-		ICompletionWidget, IDocumentInformation, ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
+		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
 		ICodeTemplateWidget, ITemplateWidget
 #if GNOME_PRINT
@@ -937,186 +936,6 @@ namespace MonoDevelop.SourceEditor
 		public event EventHandler CompletionContextChanged;
 		#endregion
 		
-		#region IDocumentInformation
-		string IDocumentInformation.FileName {
-			get { 
-				return this.IsUntitled ? UntitledName : ContentName; 
-			}
-		}
-		
-		public ITextIterator GetTextIterator ()
-		{
-			return new DocumentTextIterator (this, 0);
-		}
-		
-		class DocumentTextIterator : GuiSyncObject, ITextIterator
-		{
-			SourceEditorView view;
-			int initialOffset, offset;
-			BasicSearchEngine sarchEngine;
-			bool wrapped;
-			
-			public DocumentTextIterator (SourceEditorView view, int offset)
-			{
-				this.view = view;
-				this.initialOffset = offset;
-				this.offset = -1;
-			}
-
-			public char Current {
-				get {
-					if (offset == -1)
-						throw new InvalidOperationException ();
-					return view.Document.GetCharAt (offset);
-				}
-			}
-			public int Position {
-				[FreeDispatch]
-				get {
-					if (offset == -1)
-						throw new InvalidOperationException ();
-					return offset;
-				}
-				[FreeDispatch]
-				set {
-					offset = value;
-				}
-			}
-			public int Line { 
-				[FreeDispatch]
-				get {
-					if (offset == -1)
-						throw new InvalidOperationException ();
-					return view.Document.OffsetToLineNumber (offset);
-				}
-			}
-			
-			public int Column {
-				[FreeDispatch]
-				get {
-					if (offset == -1)
-						throw new InvalidOperationException ();
-					return view.Document.OffsetToLocation (offset).Column;
-				}
-			}
-			
-			public int DocumentOffset { 
-				get {
-					if (offset == -1)
-						throw new InvalidOperationException ();
-					return offset;
-				}
-			}
-			
-			public char GetCharRelative (int offset)
-			{
-				if (offset == -1)
-					throw new InvalidOperationException ();
-				return view.Document.GetCharAt (this.offset + offset);
-			}
-			
-			public bool MoveAhead (int numChars)
-			{
-				if (view.Document.Length == 0)
-					return false;
-				if (offset == -1) {
-					offset = initialOffset;
-					return true;
-				}
-				bool result = offset < initialOffset ? (offset + numChars < initialOffset) : (offset + numChars < initialOffset + view.Document.Length);
-				offset = (offset + numChars) % view.Document.Length;
-				return result;
-			}
-			public void MoveToEnd ()
-			{
-				if (initialOffset > 0)
-					offset = initialOffset - 1;
-				else
-					offset = view.Document.Length - 1;
-			}
-			
-			public string GetWholeDocument ()
-			{
-				return view.Document.Text;
-			}
-					
-			[FreeDispatch]
-			public void Reset()
-			{
-				offset = -1;
-			}
-			
-			public void Replace (int length, string pattern)
-			{
-				if (offset == -1)
-					throw new InvalidOperationException ();
-				if (view.TextEditor.IsSomethingSelected)
-					view.TextEditor.ClearSelection ();
-				view.TextEditor.Replace (offset, length, pattern);
-			}
-			
-			[FreeDispatch]
-			public void Close ()
-			{
-				// nothing
-			}
-		
-			public IDocumentInformation DocumentInformation { 
-				[FreeDispatch]
-				get {
-					return this.view;
-				}
-			}
-			
-			[FreeDispatch]
-			public bool SupportsSearch (MonoDevelop.Ide.Gui.Search.SearchOptions options, bool reverse)
-			{
-				return options.SearchStrategyType == SearchStrategyType.Normal;
-			}
-			
-			[FreeDispatch]
-			public bool SearchNext (string text, MonoDevelop.Ide.Gui.Search.SearchOptions options, bool reverse)
-			{
-				if (offset == -1) {
-					sarchEngine = new BasicSearchEngine ();
-					sarchEngine.TextEditorData = view.TextEditor.GetTextEditorData ();
-					SearchRequest req = new SearchRequest ();
-					req.SearchPattern = options.SearchPattern;
-					req.CaseSensitive = !options.IgnoreCase;
-					req.WholeWordOnly = options.SearchWholeWordOnly;
-					sarchEngine.SearchRequest = req;
-					offset = initialOffset;
-					wrapped = false;
-				}
-				Mono.TextEditor.SearchResult res;
-				if (!reverse)
-					res = sarchEngine.SearchForward (offset);
-				else
-					res = sarchEngine.SearchBackward (offset);
-				
-				if (res != null) {
-					if (res.SearchWrapped)
-						wrapped = true;
-					if (wrapped && offset >= initialOffset)
-						return false;
-					offset = res.Offset;
-					return true;
-				}
-				else
-					return false;
-					
-			}
-			
-			public string GetLineText (int offset)
-			{
-				LineSegment line = view.widget.TextEditor.Document.GetLineByOffset (offset);
-				if (line == null)
-					return null;
-				return view.widget.TextEditor.Document.GetTextAt (line);
-			}
-		}
-		#endregion
-
 		#region commenting and indentation
 
 		[CommandHandler (MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator)]
