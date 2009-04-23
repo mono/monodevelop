@@ -32,6 +32,9 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -39,8 +42,50 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		SearchResultWidget widget = new SearchResultWidget ();
 		
-		public SearchResultPad ()
+		public string DefaultPlacement {
+			get {
+				return "Bottom"; 
+			}
+		}
+		
+		public override Gtk.Widget Control {
+			get {
+				return widget;
+			}
+		}
+		
+		public IAsyncOperation AsyncOperation {
+			get {
+				return widget.AsyncOperation;
+			}
+			set {
+				widget.AsyncOperation = value;
+			}
+		}
+		
+		public int InstanceNum {
+			get;
+			set;
+		}
+		
+		public bool AllowReuse {
+			get { 
+				return widget.AllowReuse; 
+			}
+		}
+		
+		public string BasePath {
+			get {
+				return widget.BasePath;
+			}
+			set {
+				widget.BasePath = value;
+			}
+		}
+		
+		public SearchResultPad (int instanceNum)
 		{
+			this.InstanceNum = instanceNum;
 		}
 		
 		[AsyncDispatch]
@@ -48,11 +93,58 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			widget.Add (result);
 		}
-
-		public override Gtk.Widget Control {
-			get {
-				return widget;
-			}
+		
+		public override void Initialize (IPadWindow window)
+		{
+			window.Icon = MonoDevelop.Core.Gui.Stock.FindIcon;
+			base.Initialize (window);
 		}
+		
+		string originalTitle;
+		public void BeginProgress (string title)
+		{
+			originalTitle = title;
+			Window.Title = "<span foreground=\"blue\">" + originalTitle + "</span>";
+			widget.ShowStatus (GettextCatalog.GetString ("Searching..."));
+			widget.BeginProgress ();
+		}
+		
+		public void EndProgress ()
+		{
+			Window.Title = originalTitle;
+			widget.ShowStatus (" " + GettextCatalog.GetString("Search completed") + " - " + 
+				string.Format (GettextCatalog.GetPluralString("{0} match.", "{0} matches.", widget.ResultCount), widget.ResultCount));
+			widget.EndProgress ();
+		}
+		
+		public void WriteText (string text)
+		{
+			widget.WriteText (text);
+		}
+		
+		public void ReportStatus (string statusText)
+		{
+			widget.ShowStatus (statusText);
+		}
+		
+		#region CommandHandler
+		[CommandHandler (ViewCommands.Open)]
+		void OnOpen ()
+		{
+			widget.OpenSelectedMatches ();
+		}
+		
+		[CommandHandler (EditCommands.SelectAll)]
+		void OnSelectAll ()
+		{
+			widget.SelectAll ();
+		}
+		
+		[CommandHandler (EditCommands.Copy)]
+		void OnCopy ()
+		{
+			widget.CopySelection ();
+		}
+		#endregion
 	}
 }

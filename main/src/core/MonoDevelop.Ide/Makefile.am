@@ -39,6 +39,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs \
+	gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs \
@@ -50,7 +52,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs \
@@ -117,6 +118,17 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolService.cs \
+	MonoDevelop.Ide.FindInFiles/Commands.cs \
+	MonoDevelop.Ide.FindInFiles/FileProvider.cs \
+	MonoDevelop.Ide.FindInFiles/FilterOptions.cs \
+	MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs \
+	MonoDevelop.Ide.FindInFiles/FindReplace.cs \
+	MonoDevelop.Ide.FindInFiles/ISearchProgressMonitor.cs \
+	MonoDevelop.Ide.FindInFiles/Scope.cs \
+	MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs \
+	MonoDevelop.Ide.FindInFiles/SearchResult.cs \
+	MonoDevelop.Ide.FindInFiles/SearchResultPad.cs \
+	MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.Components/DragOperation.cs \
@@ -179,7 +191,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs \
@@ -238,34 +249,9 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/ILocationListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs \
 	MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs \
-	MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs \
 	MonoDevelop.Ide.Gui.Pads/SolutionPad.cs \
 	MonoDevelop.Ide.Gui.Pads/TaskListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs \
-	MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs \
-	MonoDevelop.Ide.Gui.Search/BruteForceSearchStrategy.cs \
-	MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs \
-	MonoDevelop.Ide.Gui.Search/DefaultFind.cs \
-	MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs \
-	MonoDevelop.Ide.Gui.Search/ExtendedStreamReader.cs \
-	MonoDevelop.Ide.Gui.Search/FileDocumentInformation.cs \
-	MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs \
-	MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs \
-	MonoDevelop.Ide.Gui.Search/IDocumentInformation.cs \
-	MonoDevelop.Ide.Gui.Search/IDocumentIterator.cs \
-	MonoDevelop.Ide.Gui.Search/IFind.cs \
-	MonoDevelop.Ide.Gui.Search/ISearchProgressMonitor.cs \
-	MonoDevelop.Ide.Gui.Search/ISearchStrategy.cs \
-	MonoDevelop.Ide.Gui.Search/ITextIterator.cs \
-	MonoDevelop.Ide.Gui.Search/KMPSearchStrategy.cs \
-	MonoDevelop.Ide.Gui.Search/RegExSearchStrategy.cs \
-	MonoDevelop.Ide.Gui.Search/SearchOptions.cs \
-	MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs \
-	MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs \
-	MonoDevelop.Ide.Gui.Search/SearchReplaceUtilities.cs \
-	MonoDevelop.Ide.Gui.Search/SearchResult.cs \
-	MonoDevelop.Ide.Gui.Search/WholeCombineDocumentIterator.cs \
-	MonoDevelop.Ide.Gui.Search/WildcardSearchStrategy.cs \
 	MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/AbstractPadContent.cs \
 	MonoDevelop.Ide.Gui/AbstractSecondaryViewContent.cs \

@@ -1,29 +1,34 @@
-//  SearchCommands.cs
-//
-//  This file was derived from a file from #Develop. 
-//
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
 // 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
+// SearchCommands.cs
 //  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Author:
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
@@ -53,46 +58,30 @@ namespace MonoDevelop.Ide.Commands
 		NextBookmark,
 		ClearBookmarks,
 	}
-
-	internal class FindInFilesHandler : CommandHandler
+	
+	class GotoTypeHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
-			SearchReplaceInFilesManager.ShowFindDialog ();
-		}
-	}
-	
-	internal class ReplaceInFilesHandler : CommandHandler
-	{
-		protected override void Run()
-		{
-			SearchReplaceInFilesManager.ShowReplaceDialog ();
-		}
-	}
-	
-	internal class GotoTypeHandler : CommandHandler
-	{
-	    protected override void Run()
-		{
 			GoToDialog.Run (false);
-	    }
-	    
-	    protected override void Update(CommandInfo info)
-	    {
-	    	info.Enabled = (IdeApp.Workspace.IsOpen || IdeApp.Workbench.Documents.Count != 0);
-	    }
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workspace.IsOpen || IdeApp.Workbench.Documents.Count != 0;
+		}
 	}
 	
-	internal class GotoFileHandler : CommandHandler
+	class GotoFileHandler : CommandHandler
 	{
-	    protected override void Run()
+		protected override void Run ()
 		{
 			GoToDialog.Run (true);
-	    }
-	    
-	    protected override void Update(CommandInfo info)
-	    {
-	    	info.Enabled = (IdeApp.Workspace.IsOpen || IdeApp.Workbench.Documents.Count != 0);
-	    }
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workspace.IsOpen || IdeApp.Workbench.Documents.Count != 0;
+		}
 	}
 }

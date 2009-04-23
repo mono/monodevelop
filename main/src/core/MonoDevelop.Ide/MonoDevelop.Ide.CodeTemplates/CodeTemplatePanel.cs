@@ -40,7 +40,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 		OptionsDialog parent;
 		List<CodeTemplate> templates;
 		Gtk.TreeStore templateStore;
-		CellRendererText templateCellRenderer;
+		CellRendererText   templateCellRenderer;
+		CellRendererPixbuf pixbufCellRenderer;
 		Mono.TextEditor.TextEditor textEditor = new Mono.TextEditor.TextEditor ();
 
 		public CodeTemplatePanelWidget (OptionsDialog parent)
@@ -51,8 +52,22 @@ namespace MonoDevelop.Ide.CodeTemplates
 			textEditor.ShowAll ();
 			
 			templateStore = new TreeStore (typeof (CodeTemplate), typeof (string), typeof (string));
+			
+			
+			TreeViewColumn column = new TreeViewColumn ();
+			column.Title = GettextCatalog.GetString ("Key");
+			
+			pixbufCellRenderer = new CellRendererPixbuf ();
+			column.PackStart (pixbufCellRenderer, false);
+			column.SetCellDataFunc (pixbufCellRenderer, new Gtk.TreeCellDataFunc (RenderIcon));
+			
 			templateCellRenderer = new CellRendererText ();
-			treeviewCodeTemplates.AppendColumn (GettextCatalog.GetString ("Key"), templateCellRenderer, new Gtk.TreeCellDataFunc (RenderTemplateName));
+			column.PackStart (templateCellRenderer, true);
+			column.SetCellDataFunc (templateCellRenderer, new Gtk.TreeCellDataFunc (RenderTemplateName));
+			
+			
+			treeviewCodeTemplates.AppendColumn (column);
+			
 			treeviewCodeTemplates.Model = templateStore;
 			templates = new List<CodeTemplate> (CodeTemplateService.Templates);
 			templates.ForEach (t => InsertTemplate (t));
@@ -112,6 +127,18 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			CodeTemplateService.Templates = templates;
 			CodeTemplateService.SaveTemplates ();
+		}
+		
+		void RenderIcon (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CodeTemplate template = (CodeTemplate)templateStore.GetValue (iter, 0);
+			
+			if (template == null) {
+				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (treeviewCodeTemplates.GetRowExpanded (templateStore.GetPath (iter)) ? MonoDevelop.Core.Gui.Stock.OpenFolder : MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
+			} else {
+				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf ("md-template", IconSize.Menu);
+			}
+				
 		}
 		
 		void RenderTemplateName (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)

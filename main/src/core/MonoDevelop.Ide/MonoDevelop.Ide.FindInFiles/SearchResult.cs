@@ -33,22 +33,27 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public class SearchResult
 	{
-		public Project Project { get; set; }
-		public string FileName { get; set; }
+		public FileProvider FileProvider { get; set; }
 		
-		public int Line { get; set; }
-		public int Column { get; set; }
-		
+		public int Offset { get; set; }
 		public int Length { get; set; }
 		
-		public SearchResult()
-		{
+		public string FileName {
+			get {
+				return FileProvider.FileName;
+			}
 		}
 		
-		public override string ToString()
+		public SearchResult (FileProvider fileProvider, int offset, int length)
 		{
-			return string.Format("[SearchResult: Project={0}, FileName={1}, Line={2}, Column={3}, Length={4}]", Project, FileName, Line, Column, Length);
+			this.FileProvider = fileProvider;
+			this.Offset = offset;
+			this.Length = length;
 		}
 		
+		public override string ToString ()
+		{
+			return string.Format("[SearchResult: FileProvider={0}, Offset={1}, Length={2}]", FileProvider, Offset, Length);
+		}
 	}
 }

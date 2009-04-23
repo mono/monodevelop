@@ -42,9 +42,9 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.FindInFiles;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -568,7 +568,7 @@ namespace MonoDevelop.Ide.Commands
 				
 				if (references != null) {
 					foreach (MemberReference mref in references) {
-						monitor.ReportResult (mref.FileName, mref.Line, mref.Column, mref.TextLine, mref.Name.Length);
+						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));
 					}
 				}
 			}
@@ -624,8 +624,10 @@ namespace MonoDevelop.Ide.Commands
 
 				CodeRefactorer cr = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				foreach (IType sub in cr.FindDerivedClasses (cls)) {
-					if (!sub.Location.IsEmpty)
-						monitor.ReportResult (sub.CompilationUnit.FileName, sub.Location.Line, sub.Location.Column, sub.FullName, 0);
+					if (!sub.Location.IsEmpty) {
+						int position = cr.TextFileProvider.GetEditableTextFile (sub.CompilationUnit.FileName).GetPositionFromLineColumn (sub.Location.Line, sub.Location.Column);
+						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (sub.CompilationUnit.FileName, sub.SourceProject as Project), position, 0));
+					}
 				}
 			}
 		}

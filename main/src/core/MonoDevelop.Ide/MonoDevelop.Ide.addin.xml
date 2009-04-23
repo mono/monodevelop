@@ -789,13 +789,13 @@
 				shortcut = "Shift|Control|F3" />
 
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles"
-				defaultHandler = "MonoDevelop.Ide.Commands.FindInFilesHandler"
+				defaultHandler = "MonoDevelop.Ide.FindInFiles.FindInFilesHandler"
 				_label = "F_ind in Files..." 
 				icon = "md-find-in-files" 
 				shortcut = "Control|Shift|F" />
 				_description = "Search for text in all files of a directory" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles"
-				defaultHandler = "MonoDevelop.Ide.Commands.ReplaceInFilesHandler"
+				defaultHandler = "MonoDevelop.Ide.FindInFiles.ReplaceInFilesHandler"
 				_label = "R_eplace in Files..." 
 				icon = "md-replace-in-files" 
 				shortcut = "Control|Shift|H" />

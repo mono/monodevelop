@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using Gtk;
 using Pango;
 
-namespace MonoDevelop.Ide.Gui.Search
+namespace MonoDevelop.Ide.FindInFiles
 {
 	public class SearchProgressMonitor : BaseProgressMonitor, ISearchProgressMonitor
 	{
@@ -62,17 +62,17 @@ namespace MonoDevelop.Ide.Gui.Search
 		[FreeDispatch]
 		public void SetBasePath (string path)
 		{
-			outputPad.SetBasePath (path);
+			outputPad.BasePath = path;
 		}
 		
 		[AsyncDispatch]
-		public void ReportResult (string fileName, int line, int column, string text, int matchLength)
+		public void ReportResult (SearchResult result)
 		{
 			try {
-				outputPad.AddResult (fileName, line, column, text, matchLength);
+				outputPad.ReportResult (result);
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error adding search result for file {0}:{1},{2} to result pad:\n{3}",
-				                         fileName, line, column, ex.ToString ());
+				LoggingService.LogError ("Error adding search result for file {0}:{1} to result pad:\n{2}",
+				                         result.FileName, result.Offset, ex.ToString ());
 			}
 		}
 		

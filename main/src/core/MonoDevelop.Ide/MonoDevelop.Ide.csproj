@@ -302,7 +302,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewLayoutDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewProjectDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\ReplaceInFilesDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SharpDevelopAboutPanels.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SplashScreen.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\TipOfTheDay.cs" />
@@ -334,23 +333,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SystemFileNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\SolutionPad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\TreeViewPad.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\DefaultFind.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\IFind.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\SearchReplaceInFilesManager.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\SearchReplaceUtilities.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\DirectoryDocumentIterator.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\FileDocumentInformation.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\IDocumentInformation.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\IDocumentIterator.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\WholeCombineDocumentIterator.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\BruteForceSearchStrategy.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\ISearchStrategy.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\KMPSearchStrategy.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\RegExSearchStrategy.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\WildcardSearchStrategy.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\ExtendedStreamReader.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\ForwardTextFileIterator.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\ITextIterator.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DefaultWorkbench.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchMemento.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SdiWorkspaceLayout.cs" />
@@ -380,9 +362,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\AddinUpdateHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\TipOfTheDayStartupHandler.cs" />
     <Compile Include="MonoDevelop.Ide\Services.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\ISearchProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\SearchProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Pads\SearchResultPad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\TasksOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\FileViewer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\TaskListPad.cs" />
@@ -436,7 +415,6 @@
     <Compile Include="MonoDevelop.Ide.Commands\FileTabCommands.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.SelectEncodingsDialog.cs" />
@@ -490,8 +468,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\SolutionNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\OverridesImplementsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.OverridesImplementsDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\CurrentProjectDocumentIterator.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\FilesDocumentIterator.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\NavigationHistoryService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\TextFileNavigationPoint.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\ExtensibleTreeView.cs" />
@@ -518,9 +494,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Content\INavigable.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IUrlHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISmartIndenter.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\AllOpenDocumentIterator.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\SearchOptions.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Search\SearchResult.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BuildVariables.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentNavigationPoint.cs" />
@@ -560,6 +533,19 @@
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\MonoRuntimePanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchResult.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchResultPad.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\FindInFilesDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\Commands.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\Scope.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\FileProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\FilterOptions.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\FindReplace.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchResultWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\ISearchProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchProgressMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

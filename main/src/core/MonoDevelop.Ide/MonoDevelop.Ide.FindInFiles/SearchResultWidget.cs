@@ -1,246 +1,439 @@
-//
+// 
 // SearchResultWidget.cs
-//
+//  
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
-//
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to
-// permit persons to whom the Software is furnished to do so, subject to
-// the following conditions:
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
 // 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
+using Gtk;
+using Mono.TextEditor;
+using MonoDevelop.Ide.Gui;
+using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using Gtk;
-using Gdk;
-using Pango;
+using System.Text;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
+using System.IO;
+
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	[Flags]
-	public enum GroupMode
+	[System.ComponentModel.ToolboxItem(true)]
+	public partial class SearchResultWidget : Gtk.Bin
 	{
-		None              = 0,
-		GroupByProject    = 1,
-		GroupByDirectory  = 2,
-		GroupByFile       = 4
-	}
-	
-	public class SearchResultWidget : Gtk.DrawingArea
-	{
-		public GroupMode GroupMode { get; set; }
+		Gtk.Tooltips tips = new Gtk.Tooltips ();
+		ListStore store;
+		ToolButton buttonStop;
+		ToggleToolButton buttonPin;
 		
-		Pango.Layout layout, headerLayout;
+		const int SearchResultColumn = 0;
+		const int DidReadColumn      = 1;
+		
+		public string BasePath {
+			get;
+			set;
+		}
+		
+		public IAsyncOperation AsyncOperation {
+			get;
+			set;
+		}
+		
+		public bool AllowReuse {
+			get { 
+				return !buttonStop.Sensitive && !buttonPin.Active; 
+			}
+		}
 		
 		public SearchResultWidget ()
 		{
-			this.Events =  EventMask.ExposureMask | 
-				           EventMask.EnterNotifyMask |
-				           EventMask.LeaveNotifyMask |
-				           EventMask.ButtonPressMask | 
-				           EventMask.ButtonReleaseMask | 
-				           EventMask.KeyPressMask | 
-				           EventMask.PointerMotionMask;
-			this.CanFocus = true;
-			layout = new Pango.Layout (this.PangoContext);
-			headerLayout = new Pango.Layout (this.PangoContext);
+			this.Build ();
+			
+			store = new ListStore (typeof (SearchResult), 
+			                       typeof (bool)          // didRead
+			                       );
+			treeviewSearchResults.Model = store;
+			treeviewSearchResults.Selection.Mode = Gtk.SelectionMode.Multiple;
+			treeviewSearchResults.HeadersClickable = true;
+			treeviewSearchResults.PopupMenu += OnPopupMenu;
+			treeviewSearchResults.ButtonPressEvent += HandleButtonPressEvent;
+			treeviewSearchResults.RulesHint = true;
+			
+			TreeViewColumn fileNameColumn = new TreeViewColumn ();
+			fileNameColumn.SortIndicator = true;
+			fileNameColumn.SortColumnId  = 0;
+			fileNameColumn.Title = GettextCatalog.GetString ("File");
+			CellRendererPixbuf fileNamePixbufRenderer = new CellRendererPixbuf ();
+			fileNameColumn.PackStart (fileNamePixbufRenderer, false);
+			fileNameColumn.SetCellDataFunc (fileNamePixbufRenderer, new Gtk.TreeCellDataFunc (FileIconDataFunc));
+			
+			CellRendererText fileNameRenderer = new CellRendererText ();
+			fileNameColumn.PackStart (fileNameRenderer, true);
+			fileNameColumn.SetCellDataFunc (fileNameRenderer, new Gtk.TreeCellDataFunc (FileNameDataFunc));
+			treeviewSearchResults.AppendColumn (fileNameColumn);
+			store.SetSortColumnId (0, SortType.Ascending);
+			store.SetSortFunc (0, new TreeIterCompareFunc (CompareFileNames));
+			
+			TreeViewColumn lineColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Line"), new Gtk.CellRendererText (), new Gtk.TreeCellDataFunc (ResultLineDataFunc));
+			lineColumn.SortColumnId = 1;
+			store.SetSortFunc (1, new TreeIterCompareFunc (CompareLineNumbers));
+			
+			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"), new Gtk.CellRendererText (), new Gtk.TreeCellDataFunc (ResultTextDataFunc));
+			textColumn.SortColumnId = 2;
+			textColumn.Resizable = true;
+			
+			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"), new Gtk.CellRendererText (), new Gtk.TreeCellDataFunc (ResultPathDataFunc));
+			pathColumn.SortColumnId = 3;
+			pathColumn.Resizable = true;
+			store.SetSortFunc (3, new TreeIterCompareFunc (CompareFilePaths));
+			
+			treeviewSearchResults.RowActivated += delegate {
+				OpenSelectedMatches ();
+			};
+			
+			buttonStop = new ToolButton ("gtk-stop");
+			buttonStop.Sensitive = false;
+			buttonStop.Clicked += delegate {
+				// TODO
+			};
+			
+			buttonStop.SetTooltip (tips, GettextCatalog.GetString ("Stop"), "Stop");
+			toolbar.Insert (buttonStop, -1);
+
+			ToolButton buttonClear = new ToolButton ("gtk-clear");
+			buttonClear.Clicked += delegate {
+				this.Reset ();
+			};
+			buttonClear.SetTooltip (tips, GettextCatalog.GetString ("Clear results"), "Clear results");
+			toolbar.Insert (buttonClear, -1);
+			
+			ToggleToolButton buttonOutput = new ToggleToolButton (MonoDevelop.Core.Gui.Stock.OutputIcon);
+			buttonOutput.Clicked += delegate {
+				if (buttonOutput.Active) {
+					scrolledwindowLogView.Show ();
+				} else {
+					scrolledwindowLogView.Hide ();
+				}
+			};
+			buttonOutput.SetTooltip (tips, GettextCatalog.GetString ("Show output"), "Show output");
+			toolbar.Insert (buttonOutput, -1);
+			
+			buttonPin = new ToggleToolButton ("md-pin-up");
+			buttonPin.Clicked += delegate {
+				buttonPin.StockId = buttonPin.Active ? "md-pin-down" : "md-pin-up";
+			};
+			buttonPin.SetTooltip (tips, GettextCatalog.GetString ("Pin results pad"), GettextCatalog.GetString ("Pin results pad"));
+			toolbar.Insert (buttonPin, -1);
+			ShowAll ();
+			
+			scrolledwindowLogView.Hide ();
+			
 		}
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose e)
+		public void BeginProgress ()
 		{
-			int xpos = spacing - (this.hAdjustement != null ? (int)this.hAdjustement.Value : 0);
-			int ypos = spacing - (this.vAdjustement != null ? (int)this.vAdjustement.Value : 0);
-			
-			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-				//TODO: Draw categories
-			}, delegate (Category curCategory, SearchResult searchResult, Gdk.Size itemDimension) {
-				//TODO: Draw search results
-			});
-			return true;
+			Reset ();
+			buttonStop.Sensitive = true;
 		}
 		
-		// From Mono.TextEditor.FoldMarkerMargin
-		void DrawFoldSegment (Gdk.Drawable win, int x, int y, int w, int h, bool isOpen, bool selected)
+		public void EndProgress ()
 		{
-			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, w, h);
-			
-			win.DrawRectangle (selected ? Style.ForegroundGC (StateType.Normal) : Style.BaseGC (StateType.Normal), true, drawArea);
-			win.DrawRectangle (selected ? Style.ForegroundGC (StateType.Normal) : Style.DarkGC (StateType.Normal), false, drawArea);
-			
-			win.DrawLine (selected ? Style.BaseGC (StateType.Normal) : Style.ForegroundGC (StateType.Normal), 
-			              drawArea.Left  + drawArea.Width * 3 / 10,
-			              drawArea.Top + drawArea.Height / 2,
-			              drawArea.Right - drawArea.Width * 3 / 10,
-			              drawArea.Top + drawArea.Height / 2);
-			
-			if (!isOpen)
-				win.DrawLine (selected ? Style.BaseGC (StateType.Normal) : Style.ForegroundGC (StateType.Normal), 
-				              drawArea.Left + drawArea.Width / 2,
-				              drawArea.Top + drawArea.Height * 3 / 10,
-				              drawArea.Left  + drawArea.Width / 2,
-				              drawArea.Bottom - drawArea.Height * 3 / 10);
+			buttonStop.Sensitive = false;
+		}
+		
+		public void Reset ()
+		{
+			foreach (var doc in documents.Values) {
+				doc.Dispose ();
+			}
+			ResultCount = 0;
+			documents.Clear ();
+			store.Clear ();
+			labelStatus.Text = "";
+			textviewLog.Buffer.Clear ();
 		}
 		
 		protected override void OnDestroyed ()
 		{
-			if (this.layout != null) {
-				this.layout.Dispose ();
-				this.layout = null;
-			}
-			if (this.headerLayout != null) {
-				this.headerLayout.Dispose ();
-				this.headerLayout = null;
-			}
+			Reset ();
 			base.OnDestroyed ();
 		}
-		
-		List<SearchResult> searchResults = new List<SearchResult> ();
-		List<Category> categories = new List<Category> ();
-		
-		public void Clear ()
+
+		[GLib.ConnectBefore]
+		void HandleButtonPressEvent(object sender, ButtonPressEventArgs args)
 		{
-			searchResults.Clear ();
-			this.QueueDraw ();
+			if (args.Event.Button == 3) {
+				OnPopupMenu (this, null);
+				args.RetVal = treeviewSearchResults.Selection.GetSelectedRows ().Length > 1;
+			}
+		}
+		
+		void OnPopupMenu (object sender, PopupMenuArgs args)
+		{
+			CommandEntrySet contextMenu = new CommandEntrySet ();
+			contextMenu.AddItem (ViewCommands.Open);
+			contextMenu.AddItem (EditCommands.Copy);
+			contextMenu.AddItem (EditCommands.SelectAll);
+			IdeApp.CommandService.ShowContextMenu (contextMenu, this);
+		}
+		
+		public void ShowStatus (string text)
+		{
+			labelStatus.Text = text;
+		}
+		
+		void FileIconDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CellRendererPixbuf fileNamePixbufRenderer = (CellRendererPixbuf)cell;
+			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			fileNamePixbufRenderer.Pixbuf =IdeApp.Services.PlatformService.GetPixbufForFile (searchResult.FileName, Gtk.IconSize.Menu);
+		}
+		
+		void FileNameDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CellRendererText fileNameRenderer = (CellRendererText)cell;
+			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
+			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			if (didRead) {
+				fileNameRenderer.Text = System.IO.Path.GetFileName (searchResult.FileName);
+			} else {
+				fileNameRenderer.Markup = "<b>" + GLib.Markup.EscapeText (System.IO.Path.GetFileName (searchResult.FileName)) + "</b>";
+			}
+		}
+		
+		int CompareLineNumbers (TreeModel model, TreeIter first, TreeIter second)
+		{
+			DocumentLocation loc1 = GetLocation ((SearchResult)model.GetValue (first, SearchResultColumn));
+			DocumentLocation loc2 = GetLocation ((SearchResult)model.GetValue (second, SearchResultColumn));
+			return loc1.Line.CompareTo (loc2.Line);
+		}
+		
+		static int CompareFileNames (TreeModel model, TreeIter first, TreeIter second)
+		{
+			SearchResult searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
+			SearchResult searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
+			return System.IO.Path.GetFileName (searchResult1.FileName).CompareTo (System.IO.Path.GetFileName (searchResult2.FileName));
+		}
+		
+		static int CompareFilePaths (TreeModel model, TreeIter first, TreeIter second)
+		{
+			SearchResult searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
+			SearchResult searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
+			return System.IO.Path.GetDirectoryName (searchResult1.FileName).CompareTo (System.IO.Path.GetDirectoryName (searchResult2.FileName));
+		}
+		
+		void ResultPathDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CellRendererText pathRenderer = (CellRendererText)cell;
+			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
+			if (didRead) {
+				pathRenderer.Text = System.IO.Path.GetDirectoryName (searchResult.FileName);
+			} else {
+				pathRenderer.Markup = "<b>" + GLib.Markup.EscapeText (System.IO.Path.GetDirectoryName (searchResult.FileName)) + "</b>";
+			}
+		}
+		
+		void ResultLineDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CellRendererText lineRenderer = (CellRendererText)cell;
+			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			Mono.TextEditor.Document doc = GetDocument (searchResult);
+			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
+			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
+			
+			if (didRead) {
+				lineRenderer.Text = lineNr.ToString ();
+			} else {
+				lineRenderer.Markup = "<b>" + lineNr + "</b>";
+			}
+		}
+		
+		void ResultTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CellRendererText textRenderer = (CellRendererText)cell;
+			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			Mono.TextEditor.Document doc = GetDocument (searchResult);
+			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
+			LineSegment line = doc.GetLine (lineNr);
+			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
+			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
+			
+			string markup;
+			if (doc.SyntaxMode != null) {
+				markup = doc.SyntaxMode.GetMarkup (doc, new TextEditorOptions (), style, line.Offset, line.EditableLength, true, !isSelected, false);
+			} else {
+				markup = GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.EditableLength));
+			}
+			
+			if (!isSelected) {
+				int col = searchResult.Offset - line.Offset;
+				string tag;
+				int pos1 = FindPosition (markup, col, out tag);
+				int pos2 = FindPosition (markup, col + searchResult.Length, out tag);
+				if (pos1 >= 0 && pos2 >= 0) {
+					if (tag.StartsWith ("span")) {
+						markup = markup.Insert (pos2, "</span></span><" + tag + ">");
+					} else {
+						markup = markup.Insert (pos2, "</span>");
+					}
+					markup = markup.Insert (pos1, "<span background=\"" + SyntaxMode.ColorToPangoMarkup (style.SearchTextBg) + "\">");
+				}
+			}
+			textRenderer.Markup = markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize));
+		}
+		
+		static int FindPosition (string markup, int pos, out string tag)
+		{
+			bool inTag = false;
+			bool inChar = false;
+			int realPos = 0;
+			StringBuilder lastTag = new StringBuilder ();
+			for (int i = 0; i < markup.Length; i++) {
+				char ch = markup[i];
+				if (ch != '<' && ch != '&' && !inTag && !inChar && realPos >= pos) {
+					tag = lastTag.ToString ();
+					return i;
+				}
+				switch (ch) {
+				case '&':
+					inChar = true;
+					break;
+				case ';':
+					inChar = false;
+					if (!inTag) 
+						realPos++;
+					break;
+				case '<':
+					lastTag.Length = 0;
+					inTag = true;
+					break;
+				case '>':
+					inTag = false;
+					break;
+				default:
+					if (!inTag && !inChar) 
+						realPos++;
+					if (inTag)
+						lastTag.Append (ch);
+					break;
+				}
+			}
+			tag = lastTag.ToString ();
+			return -1;
+		}
+		
+		Dictionary<string, Mono.TextEditor.Document> documents = new Dictionary<string, Mono.TextEditor.Document> ();
+		
+		Mono.TextEditor.Document GetDocument (SearchResult result)
+		{
+			Mono.TextEditor.Document doc;
+			if (!documents.TryGetValue (result.FileName, out doc)) {
+				doc = new Mono.TextEditor.Document ();
+				doc.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (result.FileName);
+				TextReader reader = result.FileProvider.Open ();
+				doc.Text = reader.ReadToEnd ();
+				reader.Close ();
+				documents[result.FileName] = doc;
+			}
+			return doc;
+		}
+		
+		public void WriteText (string text)
+		{
+			TextIter iter = textviewLog.Buffer.EndIter;
+			textviewLog.Buffer.Insert (ref iter, text);
+			if (text.EndsWith ("\n"))
+				textviewLog.ScrollMarkOnscreen (textviewLog.Buffer.InsertMark);
+		}
+		
+		public int ResultCount {
+			get;
+			private set;
 		}
 		
 		public void Add (SearchResult result)
 		{
-			searchResults.Add (result);
-			Category category = SearchCategory (result);
-			category.SearchResults.Add (result);
-			this.QueueDraw ();
+			ResultCount++;
+			store.AppendValues (result, false);
 		}
 		
-		Category SearchCategory (SearchResult searchResult)
+		void OpenDocumentAt (Gtk.TreeIter iter)
 		{
-			Category result = null;
-			if ((GroupMode & GroupMode.GroupByProject) == GroupMode.GroupByProject) 
-				result = SearchCategory (searchResult.Project);
-			if ((GroupMode & GroupMode.GroupByDirectory) == GroupMode.GroupByDirectory)
-				result = SearchCategoryByDirectory (result != null ? result.Categories : categories, System.IO.Path.GetDirectoryName (System.IO.Path.GetFullPath (searchResult.FileName)));
-			
-			if ((GroupMode & GroupMode.GroupByFile) == GroupMode.GroupByFile)
-				result = SearchCategoryByDirectory (result != null ? result.Categories : categories, System.IO.Path.GetDirectoryName (System.IO.Path.GetFullPath (searchResult.FileName)));
-			
-			if (result  == null) 
-				LoggingService.LogError ("Couldn't find category for search result:" + searchResult);
-			
-			return result;
-		}
-		
-		static Category SearchCategoryByDirectory (List<Category> categories, string directoryName)
-		{
-			foreach (Category category in categories) {
-				if (category.Name == directoryName)
-					return category;
+			SearchResult result = store.GetValue (iter, SearchResultColumn) as SearchResult;
+			if (result != null) {
+				DocumentLocation loc = GetLocation (result);
+				store.SetValue (iter, DidReadColumn, true);
+				IdeApp.Workbench.OpenDocument (result.FileName, loc.Line, loc.Column, true);
 			}
-			Category result = new Category ();
-			result.Name = directoryName;
-			categories.Add (result);
-			return result;
 		}
-		
-		Category SearchCategory (Project project)
+		DocumentLocation GetLocation (SearchResult searchResult)
 		{
-			foreach (Category category in categories) {
-				if (category.Tag == project)
-					return category;
-			}
-			Category result = new Category ();
-			result.Name = project.Name;
-			result.Tag  = project;
-			return result;
+			Mono.TextEditor.Document doc = GetDocument (searchResult);
+			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
+			LineSegment line = doc.GetLine (lineNr);
+			return new DocumentLocation (lineNr + 1, searchResult.Offset - line.Offset + 1);
 		}
 		
-		#region Scrolling
-		Adjustment hAdjustement = null;
-		Adjustment vAdjustement = null;
+		public void OpenSelectedMatches ()
+		{
+			foreach (Gtk.TreePath path in treeviewSearchResults.Selection.GetSelectedRows ()) {
+				Gtk.TreeIter iter;
+				if (!store.GetIter (out iter, path))
+					continue;
+				OpenDocumentAt (iter);
+			}
+		}
+		
+		public void SelectAll ()
+		{
+			treeviewSearchResults.Selection.SelectAll ();
+		}
+		
+		public void CopySelection ()
+		{
+			TreeModel model;
+			StringBuilder sb = new StringBuilder ();
+			foreach (Gtk.TreePath p in treeviewSearchResults.Selection.GetSelectedRows (out model)) {
+				TreeIter iter;
+				if (!model.GetIter (out iter, p))
+					continue;
+				SearchResult result = store.GetValue (iter, SearchResultColumn) as SearchResult;
+				if (result == null)
+					continue;
+				DocumentLocation loc = GetLocation (result);
+				Mono.TextEditor.Document doc = GetDocument (result);
+				LineSegment line = doc.GetLine (loc.Line - 1);
 				
-		public void ScrollToSelectedItem ()
-		{
-			// TODO
-		}
-		
-		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
-		{
-			this.hAdjustement = hAdjustement;
-			this.hAdjustement.ValueChanged += delegate {
-				this.QueueDraw ();
-			};
-			this.vAdjustement = vAdjustement;
-			this.vAdjustement.ValueChanged += delegate {
-				this.QueueDraw ();
-			};
-		}
-		#endregion
-
-		class Category
-		{
-			public string Name { get; set; }
-			public Gdk.Image Icon { get; set; }
-			public bool IsExpanded { get; set; }
-			public object Tag { get; set; }
-			public List<Category> Categories { get; set; }
-			public List<SearchResult> SearchResults { get; set; }
+				sb.AppendFormat ("{0} ({1}, {2}):{3}", result.FileName, loc.Line, loc.Column, doc.GetTextAt (line.Offset, line.EditableLength));
+				sb.AppendLine ();
+			}
+			Gtk.Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = sb.ToString ();
 			
-			public Category ()
-			{
-				Categories = new List<Category> ();
-				SearchResults = new List<SearchResult> ();
-			}
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = sb.ToString ();
 		}
-		#region Item & Category iteration
-		const int spacing = 4;
-		const int categoryHeaderSize = 20;
-		Gdk.Size iconSize = new Gdk.Size (24, 24);
-		Gdk.Size IconSize {
-			get {
-				return iconSize;
-			}
-		}
-		
-		delegate void CategoryAction (Category category, Gdk.Size categoryDimension);
-		delegate void SearchResultAction (Category curCategory, SearchResult searchResult, Gdk.Size itemDimension);
-		
-		void IterateSearchResults (Category category, ref int xpos, ref int ypos, SearchResultAction action)
-		{
-			foreach (SearchResult searchResult in category.SearchResults) {
-				xpos = spacing;
-				if (action != null)
-					action (category, searchResult, new Gdk.Size (Allocation.Width - spacing * 2, IconSize.Height));
-				ypos += IconSize.Height + spacing;
-			}
-		}
-		
-		void Iterate (ref int xpos, ref int ypos, CategoryAction catAction, SearchResultAction action)
-		{
-			foreach (Category category in this.categories) {
-				xpos = spacing;
-				catAction (category, new Size (this.Allocation.Width - spacing * 2, categoryHeaderSize));
-				if (category.IsExpanded)
-					IterateSearchResults (category, ref xpos, ref  ypos, action);
-			}
-		}
-		#endregion
-		
 	}
 }

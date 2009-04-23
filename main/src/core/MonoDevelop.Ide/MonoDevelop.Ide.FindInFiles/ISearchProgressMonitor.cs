@@ -29,12 +29,12 @@
 using System;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Gui.Search
-{	
+namespace MonoDevelop.Ide.FindInFiles
+{
 	public interface ISearchProgressMonitor: IProgressMonitor
 	{
 		void SetBasePath (string path);
-		void ReportResult (string fileName, int line, int column, string text, int matchLenght);
+		void ReportResult (SearchResult result);
 		void ReportStatus (string resultMessage);
 	}
 }

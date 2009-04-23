@@ -1,3 +1,71 @@
+2009-04-23  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui.Search:
+	* MonoDevelop.Ide.Gui.Search/IFind.cs:
+	* MonoDevelop.Ide.FindInFiles/Scope.cs:
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs:
+	* MonoDevelop.Ide.FindInFiles/Commands.cs:
+	* MonoDevelop.Ide.Gui.Search/DefaultFind.cs:
+	* MonoDevelop.Ide.Commands/SearchCommands.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchResult.cs:
+	* MonoDevelop.Ide.FindInFiles/FindReplace.cs:
+	* MonoDevelop.Ide.Gui.Search/ITextIterator.cs:
+	* gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs:
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:
+	* MonoDevelop.Ide.FindInFiles/FileProvider.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchOptions.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResult.cs:
+	* MonoDevelop.Ide.FindInFiles/FilterOptions.cs:
+	* MonoDevelop.Ide.Gui.Search/ISearchStrategy.cs:
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:
+	* MonoDevelop.Ide.Gui.Search/IDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/KMPSearchStrategy.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.Search/RegExSearchStrategy.cs:
+	* MonoDevelop.Ide.Gui.Search/DefaultSearchResult.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
+	* MonoDevelop.Ide.Gui.Search/IDocumentInformation.cs:
+	* MonoDevelop.Ide.Gui.Search/ExtendedStreamReader.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:
+	* MonoDevelop.Ide.Gui.Search/FilesDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.Search/ISearchProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Search/WildcardSearchStrategy.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceUtilities.cs:
+	* MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs:
+	* MonoDevelop.Ide.FindInFiles/ISearchProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Search/FileDocumentInformation.cs:
+	* MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Search/BruteForceSearchStrategy.cs:
+	* MonoDevelop.Ide.Gui.Search/DirectoryDocumentIterator.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:
+	* gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Search/WholeCombineDocumentIterator.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs:
+	* MonoDevelop.Ide.Gui.Search/CurrentProjectDocumentIterator.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:
+	* gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FileOperationsBuilderExtension.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs:
+	  Worked on search & replace in files feature.
+
 2009-04-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs:

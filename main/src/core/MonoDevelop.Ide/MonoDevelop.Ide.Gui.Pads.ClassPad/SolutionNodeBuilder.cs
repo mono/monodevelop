@@ -35,8 +35,8 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.FindInFiles;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public void OnFindInFiles ()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			SearchReplaceInFilesManager.ShowFindDialog (solution.BaseDirectory);
+			FindInFilesDialog.FindInPath (solution.BaseDirectory);
 		}
 	}
 }

@@ -29,8 +29,8 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnFindInFiles ()
 		{
 			string path = GetDir (CurrentNode.DataItem);
-			SearchReplaceInFilesManager.ShowFindDialog (path);
+			FindInFilesDialog.FindInPath (path);
 		}
 		
 		public static string TerminalCommand {

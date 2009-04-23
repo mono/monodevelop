@@ -34,9 +34,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.FindInFiles;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Gui
 			SearchResultPad monitorPad = new SearchResultPad (instanceNum);
 			pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", MonoDevelop.Core.Gui.Stock.FindIcon);
 			pad.Sticky = true;
-		    searchMonitors.Add (pad);
+			searchMonitors.Add (pad);
 
 			if (searchMonitors.Count > 1) {
 				// Additional search pads will be destroyed when hidden

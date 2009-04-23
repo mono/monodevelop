@@ -205,7 +205,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w12.Fill = false;
             // Container child hbox3.Gtk.Box+BoxChild
             this.table1 = new Gtk.Table(((uint)(7)), ((uint)(2)), false);
-            this.table1.Name = "table1";
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
             // Container child table1.Gtk.Table+TableChild
