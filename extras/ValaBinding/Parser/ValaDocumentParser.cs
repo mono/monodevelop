@@ -67,7 +67,7 @@ namespace MonoDevelop.ValaBinding.Parser
 				List<IMember> members = new List<IMember> ();
 				lastLine = node.LastLine;
                 
-				foreach (CodeNode child in pi.GetChildren (node)) {
+				foreach (CodeNode child in pi.CompleteType (node.FullName, fileName, node.FirstLine, 0, null)) {
 					if (child.File != node.File){ continue; }
 					Console.WriteLine ("Got {0}: {1}-{2}", child.Name, child.FirstLine, child.LastLine);
 					lastLine = Math.Max (lastLine, child.LastLine+1);

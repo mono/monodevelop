@@ -99,13 +99,11 @@ namespace MonoDevelop.ValaBinding.Parser
 			}
             
 			if (null != p) {
-				lock (p) {
-					try {
-						if (!p.HasExited){ p.Kill (); }
-						p.Dispose ();
-					} catch {
-						// We don't care about anything that happens here.
-					}
+				try {
+					if (!p.HasExited){ p.Kill (); }
+					p.Dispose ();
+				} catch {
+					// We don't care about anything that happens here.
 				}
 			}
 			
@@ -114,6 +112,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			
 			if (DepsInstalled) {
 				p = Runtime.ProcessService.StartProcess ("vsc-shell", string.Empty, ".", (ProcessEventHandler)null, null, null, true);
+				p.StandardError.Close ();
 				foreach (string package in packages) {
 					AddPackage (package);
 				}
@@ -124,7 +123,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			
 			lock(lockme){ lastRestarted = DateTime.Now; }
 		}// RestartParser
-
+		
 		private static Regex endOutputRegex = new Regex (@"^(\s*vsc-shell -\s*$|^\s*>)", RegexOptions.Compiled);
 		/// <summary>
 		/// Reads process output
@@ -185,6 +184,7 @@ namespace MonoDevelop.ValaBinding.Parser
 				// Console.WriteLine (command, args);
 				p.StandardInput.WriteLine (string.Format (command, args));
 				output =  ReadOutput ();
+				// foreach (string line in output){ Console.WriteLine (line); }
 			}
 			} catch (Exception e) { 
 				Console.WriteLine("{0}{1}{2}", e.Message, Environment.NewLine, e.StackTrace); 
@@ -262,11 +262,15 @@ namespace MonoDevelop.ValaBinding.Parser
 				AddResults (completion, results);
 				ThreadPool.QueueUserWorkItem (delegate{
 					List<CodeNode> newcompletion = CompleteType (typename, filename, linenum, column, null);
-					lock (cache){ cache[typename] = newcompletion; }
+					if (null != newcompletion && 0 != newcompletion.Count) {
+						lock (cache){ cache[typename] = newcompletion; }
+					}
 				});
 			} else {
 				completion = CompleteType (typename, filename, linenum, column, results);
-				lock (cache){ cache[typename] = completion; }
+					if (null != completion && 0 != completion.Count) {
+						lock (cache){ cache[typename] = completion; }
+					}
 			}
 			
 			return completion;
@@ -275,7 +279,7 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// <summary>
 		/// Gets the completion list for a given type name in a given file
 		/// </summary>
-		private List<CodeNode> CompleteType (string typename, string filename, int linenum, int column, ValaCompletionDataList results)
+		internal List<CodeNode> CompleteType (string typename, string filename, int linenum, int column, ValaCompletionDataList results)
 		{
 			string[] output = ParseCommand ("complete {0} {1}", typename, filename);
 			List<CodeNode> children = new List<CodeNode> ();
@@ -309,7 +313,7 @@ namespace MonoDevelop.ValaBinding.Parser
 		public void AddFile (string filename)
 		{
 			lock (files) {
-				if (files.Contains (filename)){ return; }
+				// if (files.Contains (filename)){ return; }
 				files.Add (filename);
 			}
 			ThreadPool.QueueUserWorkItem (delegate {
@@ -334,7 +338,7 @@ namespace MonoDevelop.ValaBinding.Parser
 		public void AddPackage (string packagename)
 		{
 			lock (packages) { 
-				if (packages.Contains (packagename)){ return; }
+				// if (packages.Contains (packagename)){ return; }
 				packages.Add (packagename);
 			}
 			ThreadPool.QueueUserWorkItem (delegate {
@@ -347,7 +351,8 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// </summary>
 		public void Reparse ()
 		{
-			ParseCommand ("reparse");
+			//ParseCommand ("reparse");
+			RestartParser ();
 		}// Reparse
 
 		private static Regex typeNameRegex = new Regex (@"vsc-shell - typename for [^:]+: (?<type>[^\s]+)\s*$", RegexOptions.Compiled);
@@ -356,7 +361,8 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// </summary>
 		public void Complete (string symbol, string filename, int line, int column, ValaCompletionDataList results)
 		{
-			ThreadPool.QueueUserWorkItem (delegate{
+			if (cache.ContainsKey (symbol)){ CacheCompleteType (symbol, filename, line, column, results); }
+			else ThreadPool.QueueUserWorkItem (delegate{
 				string expressionType = GetExpressionType (symbol, filename, line, column);
 				CacheCompleteType (expressionType, filename, line, column, results);
 			});
@@ -399,9 +405,21 @@ namespace MonoDevelop.ValaBinding.Parser
 			string[] tokens = typename.Split ('.');
 			string baseTypeName = tokens[tokens.Length-1];
 			List<Function> constructors = new List<Function> ();
+			List<CodeNode> cachedNode = null;
 			
 			if (cache.ContainsKey (typename)) {
-				constructors = cache[typename].FindAll (delegate (CodeNode node){ 
+				cachedNode = cache[typename];
+			} else {
+				foreach (string cachedType in cache.Keys) {
+					if (cachedType.EndsWith (typename)) { 
+						cachedNode = cache[cachedType];
+						break;
+					}
+				}
+			}
+			
+			if (null != cachedNode) {
+				constructors = cachedNode.FindAll (delegate (CodeNode node){ 
 					return ("method" == node.NodeType && 
 					    (baseTypeName == node.Name || node.Name.StartsWith (baseTypeName + ".")));
 				}).ConvertAll<Function> (delegate (CodeNode node){ 
@@ -414,8 +432,9 @@ namespace MonoDevelop.ValaBinding.Parser
 					}
 					return node as Function; 
 				});
+			} else {
+				ThreadPool.QueueUserWorkItem (delegate (object o){ CacheCompleteType (typename, filename, line, column, null); });
 			}
-			ThreadPool.QueueUserWorkItem (delegate (object o){ CacheCompleteType (typename, filename, line, column, null); });
 			
 			if (null != results) {
 				Gtk.Application.Invoke (delegate (object sender, EventArgs args){

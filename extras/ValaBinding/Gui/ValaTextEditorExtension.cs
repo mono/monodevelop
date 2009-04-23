@@ -166,23 +166,20 @@ namespace MonoDevelop.ValaBinding
 			ValaCompletionDataList list = new ValaCompletionDataList ();
 			list.IsChanging = true;
 			
-			list.Changed += delegate(object sender, EventArgs args) {
-				if (0 == list.Count) { 
-					// Fallback to known types
-					list.IsChanging = true;
-					parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
-				}
-			};
-			
 			if (match.Success) {
 				ThreadPool.QueueUserWorkItem (delegate{
 					// variable initialization
-					if (match.Groups["typename"].Success) {
+					if (match.Groups["typename"].Success || "var" != match.Groups["typename"].Value) {
 						// simultaneous declaration and initialization
 						parser.GetConstructorsForType (match.Groups["typename"].Value, Document.FileName, line, column, list);
 					} else if (match.Groups["variable"].Success) {
 						// initialization of previously declared variable
 						parser.GetConstructorsForExpression (match.Groups["variable"].Value, Document.FileName, line, column, list);
+					}
+					if (0 == list.Count) { 
+						// Fallback to known types
+						list.IsChanging = true;
+						parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
 					}
 				});
 			}

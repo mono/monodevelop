@@ -1,7 +1,8 @@
-2009-04-23  Full Name  <Email Address>
+2009-04-23  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
-	* ChangeLog:
-	* Parser/ProjectInformation.cs: 
+	* Gui/ValaTextEditorExtension.cs: 
+	* Parser/ValaDocumentParser.cs: 
+	* Parser/ProjectInformation.cs: Improve completion robustness.
 
 2009-04-23  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
