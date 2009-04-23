@@ -1,3 +1,8 @@
+2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/DefaultEditActions.cs: Implement actions for
+	  scrolling PageDown and PageUp.
+
 2009-04-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed bug in

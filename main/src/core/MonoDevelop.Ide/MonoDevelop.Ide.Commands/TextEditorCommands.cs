@@ -48,6 +48,8 @@ namespace MonoDevelop.Ide.Commands
 		PageDown,
 		ScrollLineUp,
 		ScrollLineDown,
+		ScrollPageUp,
+		ScrollPageDown,
 		DeleteLine,
 		DeleteToLineEnd,
 		MoveBlockUp,

@@ -803,6 +803,18 @@ namespace MonoDevelop.SourceEditor
 		{
 			RunAction (ScrollActions.Down);
 		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ScrollPageUp)]
+		internal void OnScrollPageUp ()
+		{
+			RunAction (ScrollActions.PageUp);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ScrollPageDown)]
+		internal void OnScrollPageDown ()
+		{
+			RunAction (ScrollActions.PageDown);
+		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
 		internal void OnGotoMatchingBrace ()

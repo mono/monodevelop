@@ -43,10 +43,23 @@ namespace Mono.TextEditor
 			data.VAdjustment.Value = System.Math.Max (data.VAdjustment.Lower, 
 			                                          data.VAdjustment.Value - data.VAdjustment.StepIncrement); 
 		}
+		
 		public static void Down (TextEditorData data)
 		{
 			data.VAdjustment.Value = System.Math.Min (data.VAdjustment.Upper - data.VAdjustment.PageSize, 
 			                                          data.VAdjustment.Value + data.VAdjustment.StepIncrement); 
+		}
+		
+		public static void PageUp (TextEditorData data)
+		{
+			data.VAdjustment.Value = System.Math.Max (data.VAdjustment.Lower, 
+			                                          data.VAdjustment.Value - data.VAdjustment.PageSize); 
+		}
+		
+		public static void PageDown (TextEditorData data)
+		{
+			data.VAdjustment.Value = System.Math.Min (data.VAdjustment.Upper - data.VAdjustment.PageSize, 
+			                                          data.VAdjustment.Value + data.VAdjustment.PageSize); 
 		}
 	}
 	
