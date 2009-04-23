@@ -1,5 +1,10 @@
 2009-04-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Search
+	  result widget is now themed.
+
+2009-04-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/FindReplace.cs:
 	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Replaced
 	  search algorithm implementation (The old one didn't work as

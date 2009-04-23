@@ -78,8 +78,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			treeviewSearchResults.HeadersClickable = true;
 			treeviewSearchResults.PopupMenu += OnPopupMenu;
 			treeviewSearchResults.ButtonPressEvent += HandleButtonPressEvent;
-			treeviewSearchResults.RulesHint = true;
-			
 			
 			TreeViewColumn fileNameColumn = new TreeViewColumn ();
 			fileNameColumn.SortIndicator = true;
@@ -150,7 +148,27 @@ namespace MonoDevelop.Ide.FindInFiles
 			ShowAll ();
 			
 			scrolledwindowLogView.Hide ();
+			PropertyService.AddPropertyHandler ("ColorScheme", SetColorSheme);
+			SetColorSheme (null, null);
+		}
+		
+		void SetColorSheme (object sender, PropertyChangedEventArgs args)
+		{
+			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
 			
+			treeviewSearchResults.ModifyBase (StateType.Normal, style.Default.BackgroundColor);
+			treeviewSearchResults.ModifyBase (StateType.Selected, style.Selection.BackgroundColor);
+			treeviewSearchResults.ModifyBase (StateType.Active, style.Selection.BackgroundColor);
+			treeviewSearchResults.ModifyBase (StateType.Prelight, style.Selection.BackgroundColor);
+			
+			treeviewSearchResults.ModifyBg (StateType.Active, style.Selection.BackgroundColor);
+			treeviewSearchResults.ModifyBg (StateType.Prelight, style.Selection.BackgroundColor);
+			treeviewSearchResults.ModifyBg (StateType.Selected, style.Selection.BackgroundColor);
+			
+			treeviewSearchResults.ModifyText (StateType.Selected, style.Selection.Color);
+			treeviewSearchResults.ModifyText (StateType.Prelight, style.Selection.Color);
+			treeviewSearchResults.ModifyText (StateType.Active, style.Selection.Color);
+			treeviewSearchResults.ModifyText (StateType.Insensitive, style.Selection.Color);
 		}
 		
 		public void BeginProgress ()
@@ -180,6 +198,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		protected override void OnDestroyed ()
 		{
+			PropertyService.RemovePropertyHandler ("ColorScheme", SetColorSheme);
 			Reset ();
 			base.OnDestroyed ();
 		}
@@ -219,10 +238,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			CellRendererText fileNameRenderer = (CellRendererText)cell;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
+			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
+			
 			if (didRead) {
-				fileNameRenderer.Text = System.IO.Path.GetFileName (searchResult.FileName);
+				fileNameRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", System.IO.Path.GetFileName (searchResult.FileName));
 			} else {
-				fileNameRenderer.Markup = "<b>" + GLib.Markup.EscapeText (System.IO.Path.GetFileName (searchResult.FileName)) + "</b>";
+				fileNameRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", "<b>" + GLib.Markup.EscapeText (System.IO.Path.GetFileName (searchResult.FileName)) + "</b>");
 			}
 		}
 		
@@ -252,10 +274,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			CellRendererText pathRenderer = (CellRendererText)cell;
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
+			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
+			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
 			if (didRead) {
-				pathRenderer.Text = System.IO.Path.GetDirectoryName (searchResult.FileName);
+				pathRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", System.IO.Path.GetDirectoryName (searchResult.FileName));
 			} else {
-				pathRenderer.Markup = "<b>" + GLib.Markup.EscapeText (System.IO.Path.GetDirectoryName (searchResult.FileName)) + "</b>";
+				pathRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", "<b>" + GLib.Markup.EscapeText (System.IO.Path.GetDirectoryName (searchResult.FileName)) + "</b>");
 			}
 		}
 		
@@ -266,11 +290,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			Mono.TextEditor.Document doc = GetDocument (searchResult);
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
+			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
+			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
 			
 			if (didRead) {
-				lineRenderer.Text = lineNr.ToString ();
+				lineRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", lineNr.ToString ());
 			} else {
-				lineRenderer.Markup = "<b>" + lineNr + "</b>";
+				lineRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", "<b>" + lineNr + "</b>");
 			}
 		}
 		
