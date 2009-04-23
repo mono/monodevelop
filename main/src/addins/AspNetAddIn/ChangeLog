@@ -1,3 +1,8 @@
+2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/WebContentForm-CodeBehind.xft.xml: Fix the
+	  DependsOn value. Thanks to Dax@daxxfiles.net for the patch.
+
 2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

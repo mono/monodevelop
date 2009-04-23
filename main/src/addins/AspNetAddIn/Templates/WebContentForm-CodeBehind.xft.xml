@@ -27,7 +27,7 @@ ${AspNetMasterContent}
 ]]>
 			</FileText>
 		</AspNetMasterContentFile>
-		<CodeTranslationFile name="${Name}.aspx.${LanguageExtension}" DependsOn="${Name}.master" >
+		<CodeTranslationFile name="${Name}.aspx.${LanguageExtension}" DependsOn="${Name}.aspx" >
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;
@@ -39,7 +39,7 @@ namespace ${Namespace} {
 ]]>
 		</CodeTranslationFile>
 		<CodeTranslationFile name="${Name}.aspx.designer.${LanguageExtension}" ShowAutogenerationNotice="True" 
-			AddStandardHeader="False" SuppressAutoOpen="True" DependsOn="${Name}.master" >
+			AddStandardHeader="False" SuppressAutoOpen="True" DependsOn="${Name}.aspx" >
 <![CDATA[using System;
 using System.Web;
 using System.Web.UI;
