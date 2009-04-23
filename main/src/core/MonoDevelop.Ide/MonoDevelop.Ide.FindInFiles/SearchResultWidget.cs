@@ -55,6 +55,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			set;
 		}
 		
+		public bool UseThemeColors {
+			get;
+			set;
+		}
+		
 		public IAsyncOperation AsyncOperation {
 			get;
 			set;
@@ -68,6 +73,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public SearchResultWidget ()
 		{
+			UseThemeColors = PropertyService.Get ("SearchResultPadUsesEditorThemes", false);
 			this.Build ();
 			
 			store = new ListStore (typeof (SearchResult), 
@@ -154,21 +160,23 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		void SetColorSheme (object sender, PropertyChangedEventArgs args)
 		{
-			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
-			
-			treeviewSearchResults.ModifyBase (StateType.Normal, style.Default.BackgroundColor);
-			treeviewSearchResults.ModifyBase (StateType.Selected, style.Selection.BackgroundColor);
-			treeviewSearchResults.ModifyBase (StateType.Active, style.Selection.BackgroundColor);
-			treeviewSearchResults.ModifyBase (StateType.Prelight, style.Selection.BackgroundColor);
-			
-			treeviewSearchResults.ModifyBg (StateType.Active, style.Selection.BackgroundColor);
-			treeviewSearchResults.ModifyBg (StateType.Prelight, style.Selection.BackgroundColor);
-			treeviewSearchResults.ModifyBg (StateType.Selected, style.Selection.BackgroundColor);
-			
-			treeviewSearchResults.ModifyText (StateType.Selected, style.Selection.Color);
-			treeviewSearchResults.ModifyText (StateType.Prelight, style.Selection.Color);
-			treeviewSearchResults.ModifyText (StateType.Active, style.Selection.Color);
-			treeviewSearchResults.ModifyText (StateType.Insensitive, style.Selection.Color);
+			if (UseThemeColors) {
+				Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
+				
+				treeviewSearchResults.ModifyBase (StateType.Normal, style.Default.BackgroundColor);
+				treeviewSearchResults.ModifyBase (StateType.Selected, style.Selection.BackgroundColor);
+				treeviewSearchResults.ModifyBase (StateType.Active, style.Selection.BackgroundColor);
+				treeviewSearchResults.ModifyBase (StateType.Prelight, style.Selection.BackgroundColor);
+				
+				treeviewSearchResults.ModifyBg (StateType.Active, style.Selection.BackgroundColor);
+				treeviewSearchResults.ModifyBg (StateType.Prelight, style.Selection.BackgroundColor);
+				treeviewSearchResults.ModifyBg (StateType.Selected, style.Selection.BackgroundColor);
+				
+				treeviewSearchResults.ModifyText (StateType.Selected, style.Selection.Color);
+				treeviewSearchResults.ModifyText (StateType.Prelight, style.Selection.Color);
+				treeviewSearchResults.ModifyText (StateType.Active, style.Selection.Color);
+				treeviewSearchResults.ModifyText (StateType.Insensitive, style.Selection.Color);
+			}
 		}
 		
 		public void BeginProgress ()
@@ -212,6 +220,45 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
+		string AdjustColors (string markup)
+		{
+			if (UseThemeColors)
+				return markup;
+			Gdk.Color baseColor = Style.Base (StateType.Normal);
+			StringBuilder result = new StringBuilder ();
+			int idx = markup.IndexOf ("foreground=\"");
+			int offset = 0;
+			while (idx > 0) {
+				idx += "foreground=\"".Length;
+				result.Append (markup.Substring (offset, idx - offset));
+				if (idx + 7 >= markup.Length) {
+					offset = idx;
+					break;
+				}
+				offset = idx + 7;
+				string colorStr = markup.Substring (idx, 7);
+				Gdk.Color color = Gdk.Color.Zero;
+				if (Gdk.Color.Parse (colorStr, ref color)) {
+					int delta = Math.Abs (color.Red - baseColor.Red) + 
+					            Math.Abs (color.Green - baseColor.Green) +
+					            Math.Abs (color.Blue  - baseColor.Blue);
+					
+					int sign = Math.Sign (color.Red - baseColor.Red + color.Green - baseColor.Green + color.Blue  - baseColor.Blue);
+					if (delta < 50000) {
+						delta = 50000 - delta;
+						color.Red = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Red + color.Red * sign * delta / 100000.0)));
+						color.Green = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Green + color.Green * sign * delta / 100000.0)));
+						color.Blue = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Blue + color.Blue * sign * delta / 100000.0)));
+						colorStr = SyntaxMode.ColorToPangoMarkup (color);
+					}
+				}
+				result.Append (colorStr);
+				idx = markup.IndexOf ("foreground=\"", idx);
+			}
+			result.Append (markup.Substring (offset, markup.Length - offset));
+			return result.ToString ();
+		}
+		
 		void OnPopupMenu (object sender, PopupMenuArgs args)
 		{
 			CommandEntrySet contextMenu = new CommandEntrySet ();
@@ -233,19 +280,29 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileNamePixbufRenderer.Pixbuf =IdeApp.Services.PlatformService.GetPixbufForFile (searchResult.FileName, Gtk.IconSize.Menu);
 		}
 		
+		Gdk.Color GetColor (Gdk.Color baseColor)
+		{
+			return baseColor;
+		}
+		
+		string MarkupText (string text, bool didRead, bool isSelected)
+		{
+			if (UseThemeColors) {
+				Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
+				return string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\" weight=\"{1}\">{0}</span>", GLib.Markup.EscapeText (text), didRead ? "normal" : "bold");
+			}
+			return string.Format ("<span weight=\"{1}\">{0}</span>", GLib.Markup.EscapeText (text), didRead ? "normal" : "bold");
+		}
+		
 		void FileNameDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			CellRendererText fileNameRenderer = (CellRendererText)cell;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
-			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
+			
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
 			
-			if (didRead) {
-				fileNameRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", System.IO.Path.GetFileName (searchResult.FileName));
-			} else {
-				fileNameRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", "<b>" + GLib.Markup.EscapeText (System.IO.Path.GetFileName (searchResult.FileName)) + "</b>");
-			}
+			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName), didRead, isSelected);
 		}
 		
 		int CompareLineNumbers (TreeModel model, TreeIter first, TreeIter second)
@@ -275,12 +332,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
-			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
-			if (didRead) {
-				pathRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", System.IO.Path.GetDirectoryName (searchResult.FileName));
-			} else {
-				pathRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", "<b>" + GLib.Markup.EscapeText (System.IO.Path.GetDirectoryName (searchResult.FileName)) + "</b>");
-			}
+			pathRenderer.Markup = MarkupText (System.IO.Path.GetDirectoryName (searchResult.FileName), didRead, isSelected);
 		}
 		
 		void ResultLineDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -291,13 +343,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
-			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
-			
-			if (didRead) {
-				lineRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", lineNr.ToString ());
-			} else {
-				lineRenderer.Markup = string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\">{0}</span>", "<b>" + lineNr + "</b>");
-			}
+			lineRenderer.Markup = MarkupText (lineNr.ToString (), didRead, isSelected);
 		}
 		
 		void ResultTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -331,7 +377,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					markup = markup.Insert (pos1, "<span background=\"" + SyntaxMode.ColorToPangoMarkup (style.SearchTextBg) + "\">");
 				}
 			}
-			textRenderer.Markup = markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize));
+			textRenderer.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
 		}
 		
 		static int FindPosition (string markup, int pos, out string tag)

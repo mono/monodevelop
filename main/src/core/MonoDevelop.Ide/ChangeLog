@@ -1,5 +1,10 @@
 2009-04-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Added
+	  simple color adjustment to handle the 'oblivion' problem.
+
+2009-04-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Search
 	  result widget is now themed.
 
