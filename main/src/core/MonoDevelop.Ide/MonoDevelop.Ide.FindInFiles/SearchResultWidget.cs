@@ -239,16 +239,15 @@ namespace MonoDevelop.Ide.FindInFiles
 				string colorStr = markup.Substring (idx, 7);
 				Gdk.Color color = Gdk.Color.Zero;
 				if (Gdk.Color.Parse (colorStr, ref color)) {
-					int delta = Math.Abs (color.Red - baseColor.Red) + 
-					            Math.Abs (color.Green - baseColor.Green) +
-					            Math.Abs (color.Blue  - baseColor.Blue);
-					
-					int sign = Math.Sign (color.Red - baseColor.Red + color.Green - baseColor.Green + color.Blue  - baseColor.Blue);
-					if (delta < 50000) {
-						delta = 50000 - delta;
-						color.Red = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Red + color.Red * sign * delta / 100000.0)));
-						color.Green = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Green + color.Green * sign * delta / 100000.0)));
-						color.Blue = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Blue + color.Blue * sign * delta / 100000.0)));
+					double gray1 = 0.3 * color.Red + 0.59 * color.Green + 0.11 * color.Blue;
+					double gray2 = 0.3 * baseColor.Red + 0.59 * baseColor.Green + 0.11 * baseColor.Blue;
+					double delta = Math.Abs (gray2 - gray1);
+					int sign = Math.Sign (gray1 - gray2);
+					if (delta < 30000) {
+						delta = 30000 - delta;
+						color.Red = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Red + sign * delta )));
+						color.Green = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Green + sign * delta)));
+						color.Blue = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Blue + sign * delta)));
 						colorStr = SyntaxMode.ColorToPangoMarkup (color);
 					}
 				}
