@@ -1,5 +1,21 @@
 2009-04-23  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs:
+	  Added an option to set search result pad theming.
+
+2009-04-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Handled
 	  use theme color change.
 

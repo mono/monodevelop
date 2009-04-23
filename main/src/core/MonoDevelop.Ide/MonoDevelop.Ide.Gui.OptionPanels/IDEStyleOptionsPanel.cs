@@ -78,6 +78,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			Gtk.IconSize curSize = PropertyService.Get <Gtk.IconSize> ("MonoDevelop.ToolbarSize", Gtk.IconSize.LargeToolbar);
 			toolbarCombobox.Active = Array.IndexOf (sizes, curSize);
+			
+			this.checkbuttonSearchResults.Active = PropertyService.Get ("SearchResultPadUsesEditorThemes", false);
 		}
 		void FontCheckboxToggled (object sender, EventArgs e)
 		{
@@ -92,6 +94,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			PropertyService.Set("MonoDevelop.ToolbarSize", sizes [toolbarCombobox.Active]);
 			PropertyService.Set ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", documentSwitcherButton.Active);
+			PropertyService.Set ("SearchResultPadUsesEditorThemes", this.checkbuttonSearchResults.Active);
 		}
 		
 	}

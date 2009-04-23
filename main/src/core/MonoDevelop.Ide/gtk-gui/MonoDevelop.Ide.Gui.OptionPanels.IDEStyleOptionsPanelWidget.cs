@@ -37,11 +37,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.Alignment GtkAlignment1;
         
+        private Gtk.VBox vbox2;
+        
         private Gtk.HBox hbox2;
         
         private Gtk.CheckButton fontCheckbox;
         
         private Gtk.FontButton fontButton;
+        
+        private Gtk.CheckButton checkbuttonSearchResults;
         
         private Gtk.Label GtkLabel6;
         
@@ -141,6 +145,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.GtkAlignment1.Name = "GtkAlignment1";
             this.GtkAlignment1.LeftPadding = ((uint)(12));
             // Container child GtkAlignment1.Gtk.Container+ContainerChild
+            this.vbox2 = new Gtk.VBox();
+            this.vbox2.Name = "vbox2";
+            this.vbox2.Spacing = 6;
+            // Container child vbox2.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
             this.hbox2.Spacing = 6;
@@ -148,7 +156,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.fontCheckbox = new Gtk.CheckButton();
             this.fontCheckbox.Name = "fontCheckbox";
             this.fontCheckbox.Label = Mono.Unix.Catalog.GetString("_Use a different font for pads:");
-            this.fontCheckbox.Active = true;
             this.fontCheckbox.DrawIndicator = true;
             this.fontCheckbox.UseUnderline = true;
             this.hbox2.Add(this.fontCheckbox);
@@ -163,7 +170,25 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w10.Position = 1;
             w10.Expand = false;
             w10.Fill = false;
-            this.GtkAlignment1.Add(this.hbox2);
+            this.vbox2.Add(this.hbox2);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            w11.Position = 0;
+            w11.Expand = false;
+            w11.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
+            this.checkbuttonSearchResults = new Gtk.CheckButton();
+            this.checkbuttonSearchResults.CanFocus = true;
+            this.checkbuttonSearchResults.Name = "checkbuttonSearchResults";
+            this.checkbuttonSearchResults.Label = Mono.Unix.Catalog.GetString("_Search result pad use color shemes");
+            this.checkbuttonSearchResults.Active = true;
+            this.checkbuttonSearchResults.DrawIndicator = true;
+            this.checkbuttonSearchResults.UseUnderline = true;
+            this.vbox2.Add(this.checkbuttonSearchResults);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox2[this.checkbuttonSearchResults]));
+            w12.Position = 1;
+            w12.Expand = false;
+            w12.Fill = false;
+            this.GtkAlignment1.Add(this.vbox2);
             this.frame2.Add(this.GtkAlignment1);
             this.GtkLabel6 = new Gtk.Label();
             this.GtkLabel6.Name = "GtkLabel6";
@@ -171,10 +196,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.GtkLabel6.UseMarkup = true;
             this.frame2.LabelWidget = this.GtkLabel6;
             this.vbox13.Add(this.frame2);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox13[this.frame2]));
-            w13.Position = 3;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox13[this.frame2]));
+            w15.Position = 3;
+            w15.Expand = false;
+            w15.Fill = false;
             this.Add(this.vbox13);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

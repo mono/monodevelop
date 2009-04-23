@@ -83,6 +83,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			treeviewSearchResults.HeadersClickable = true;
 			treeviewSearchResults.PopupMenu += OnPopupMenu;
 			treeviewSearchResults.ButtonPressEvent += HandleButtonPressEvent;
+			treeviewSearchResults.RulesHint = true;
 			
 			TreeViewColumn fileNameColumn = new TreeViewColumn ();
 			fileNameColumn.SortIndicator = true;
