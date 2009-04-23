@@ -81,6 +81,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (!filter.CaseSensitive)
 					regexOptions |= RegexOptions.IgnoreCase;
 				regex = new Regex (pattern, regexOptions);
+			} else {
+				CompilePattern (pattern);
 			}
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
@@ -145,32 +147,74 @@ namespace MonoDevelop.Ide.FindInFiles
 			return results;
 		}
 		
+		int[] skip;
+		int[] next;
+		
+		void CompilePattern (string pattern)
+		{
+			int plen = pattern.Length;
+			skip = new int[(int)Char.MaxValue];
+			
+			for (int i = 0; i < (int)Char.MaxValue; i++) {
+				skip[i] = plen;
+			}
+			
+			for (int i = 0; i < plen; i++) 
+				skip[(int)pattern[i]] = plen - i - 1;
+			
+			next = new int[plen + 1];
+			
+			for (int j = 0; j <= plen; j++) {
+				int i = plen - 1;
+				for (; i >= 1; i--) {
+					for (int k = 1; k <= j; k++) {
+						if (i - k < 0) 
+							break;
+						if (pattern[plen - k] != pattern[i - k]) 
+							goto nexttry;
+					}
+					goto matched;
+				nexttry:
+					;
+				}
+			matched:
+				next[j] = plen - i;
+			}
+		}
+		
 		IEnumerable<SearchResult> Search (FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
 		{
 			StringComparison comparison = filter.CaseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase;
 			int start = 0;
 			List<SearchResult> results = new List<SearchResult> ();
-			if (replacePattern == null) {
-				while (!IsCanceled) {
-					int idx = content.IndexOf (pattern, start, comparison);
-					if (idx < 0)
-						break;
-					start = idx + pattern.Length;
-					results.Add (new SearchResult (provider, idx, pattern.Length));
+			int plen = pattern.Length - 1;
+			int i = plen; // position of last p letter in s
+			int delta = 0;
+			
+			while (i < content.Length) {
+				int j = 0; // matched letter count
+				while (j <= plen) {
+					if (IsCanceled)
+						return results;
+					char ch = content[i - j];
+					if (ch == pattern[plen - j]) {
+						j++;
+					} else {
+						i += skip[(int)ch] > next[j] ? skip[(int)ch] : next[j];
+						goto newi;
+					}
 				}
-			} else {
-				provider.BeginReplace ();
-				int delta = 0;
-				while (!IsCanceled) {
-					int idx = content.IndexOf (pattern, start, comparison);
-					if (idx < 0)
-						break;
-					start = idx + replacePattern.Length;
+				int idx = i - plen;
+				if (replacePattern != null) {
 					results.Add (new SearchResult (provider, idx + delta, replacePattern.Length));
 					provider.Replace (idx + delta, pattern.Length, replacePattern);
 					delta += replacePattern.Length - pattern.Length;
+				} else {
+					results.Add (new SearchResult (provider, idx, pattern.Length));
 				}
-				provider.EndReplace ();
+				i++;
+			newi:
+				;
 			}
 			return results;
 		}

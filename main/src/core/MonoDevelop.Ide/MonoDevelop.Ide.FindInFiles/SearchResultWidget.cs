@@ -341,6 +341,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			}
 			tag = lastTag.ToString ();
+			if (realPos >= pos) 
+				return markup.Length;
 			return -1;
 		}
 		
