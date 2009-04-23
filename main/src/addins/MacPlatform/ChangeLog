@@ -1,3 +1,7 @@
+2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Framework/Carbon.cs: More bindings.
+
 2009-04-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Framework/Carbon.cs: In-progress wrappers for file dialog

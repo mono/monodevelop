@@ -796,7 +796,7 @@ namespace OSXIntegration.Framework
 		LocationPopup = 4
 	}
 	
-	[StructLayout(LayoutKind.Sequential, Pack = 255)]
+	[StructLayout(LayoutKind.Sequential, Pack = 2, Size=255)]
 	struct NavReplyRecord
 	{
 		ushort version;
@@ -810,8 +810,8 @@ namespace OSXIntegration.Framework
 		bool translationNeeded;
 		AEDesc selection; //actually an AEDescList
 		short keyScript;
-		//fileTranslation is a FileTranslationSpecArrayHandle, which apparently is a pointer to  FileTranslationSpecArrayPtr,
-		//which is a pointer to a FileTranslationSpecArray
+		//fileTranslation is a FileTranslationSpecArrayHandle, which apparently is a pointer to a FileTranslationSpecArrayPtr,
+		//which is a pointer to a FileTranslationSpec
 		IntPtr fileTranslation;
 		uint reserved1;
 		IntPtr saveFileName; //CFStringRef
@@ -819,5 +819,24 @@ namespace OSXIntegration.Framework
 		bool saveFileExtensionHidden;
 		byte reserved2;
 		char reserved; //size [225];
+	}
+	
+	[StructLayout(LayoutKind.Sequential, Pack = 2)]
+	struct FileTranslationSpec
+	{
+		uint componentSignature; // OSType
+		IntPtr translationSystemInfo; // void*
+		FileTypeSpec src;
+		FileTypeSpec dst;
+	}
+	
+	[StructLayout(LayoutKind.Sequential, Pack = 2)]
+	struct FileTypeSpec
+	{
+		uint format; // FileType
+		long hint;
+		TranslationAttributes flags;
+		uint catInfoType; // OSType
+		uint catInfoCreator; // OSType
 	}
 }
