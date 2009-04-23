@@ -1,5 +1,12 @@
 2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/CodeBehind.cs: Notify fileservice when a
+	  file that isn't open has been changed. Fixes "Bug 496278 -
+	  C# completion doesn't update when designer codebehind is
+	  updated".
+
+2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Templates/WebContentForm-CodeBehind.xft.xml: Fix the
 	  DependsOn value. Thanks to Dax@daxxfiles.net for the patch.
 

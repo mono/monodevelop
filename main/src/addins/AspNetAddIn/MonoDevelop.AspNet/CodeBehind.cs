@@ -213,6 +213,10 @@ namespace MonoDevelop.AspNet
 					using (StreamWriter sw = new StreamWriter (path)) {
 						provider.GenerateCodeFromCompileUnit (ccu, sw, options);
 					}
+					//mark the file as changed so it gets reparsed
+					Gtk.Application.Invoke (delegate {
+						FileService.NotifyFileChanged (path);
+					});
 					WrittenCount++;
 				} catch (IOException ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Failed to write file '{0}'.", path), ex);
