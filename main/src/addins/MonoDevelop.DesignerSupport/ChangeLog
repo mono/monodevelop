@@ -1,3 +1,8 @@
+2009-04-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DesignerSupport/WrapperDesignView.cs: Removed
+	  unused namespace.
+
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
