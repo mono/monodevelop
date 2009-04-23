@@ -312,7 +312,9 @@ namespace MonoDevelop.ValaBinding.Parser
 				if (files.Contains (filename)){ return; }
 				files.Add (filename);
 			}
-			ParseCommand ("add-source {0}", filename);
+			ThreadPool.QueueUserWorkItem (delegate {
+				ParseCommand ("add-source {0}", filename);
+			});
 		}// AddFile
 
 		/// <summary>
@@ -321,7 +323,9 @@ namespace MonoDevelop.ValaBinding.Parser
 		public void RemoveFile (string filename)
 		{
 			lock (files) { files.Remove (filename); }
-			ParseCommand ("remove-source {0}", filename);
+			ThreadPool.QueueUserWorkItem (delegate {
+				ParseCommand ("remove-source {0}", filename);
+			});
 		}// RemoveFile
 
 		/// <summary>
@@ -333,7 +337,9 @@ namespace MonoDevelop.ValaBinding.Parser
 				if (packages.Contains (packagename)){ return; }
 				packages.Add (packagename);
 			}
-			ParseCommand ("add-package {0}", packagename);
+			ThreadPool.QueueUserWorkItem (delegate {
+				ParseCommand ("add-package {0}", packagename);
+			});
 		}// AddPackage
 
 		/// <summary>
