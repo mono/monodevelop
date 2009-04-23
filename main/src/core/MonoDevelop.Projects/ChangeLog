@@ -1,3 +1,13 @@
+2009-04-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Text/TextEncoding.cs: Added some
+	  encodings.
+
+	* MonoDevelop.Projects.Text/TextFile.cs: Re-enabled the check
+	  for user selected encodings when opening a file. Use
+	  PtrToStringAnsi instead of PtrToStringAuto, which gives
+	  wrong values in windows.
+
 2009-04-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectService.cs: GetTargetFile should

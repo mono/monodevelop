@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.Text
 			get { return "UTF-8"; }
 		}
 		
-		static string[] defaultEncodings = {"UTF-8", "UTF-16", "ISO-8859-15"};
+		static string[] defaultEncodings = {"UTF-8", "ISO-8859-15", "UTF-16"};
 		
 		static string[,] encodings = {
 		
@@ -158,6 +158,9 @@ namespace MonoDevelop.Projects.Text
 		  { "UTF-7", GettextCatalog.GetString("Unicode") },
 		  { "UTF-8", GettextCatalog.GetString("Unicode") },
 		  { "UTF-16", GettextCatalog.GetString("Unicode") },
+		  { "UTF-16BE", GettextCatalog.GetString("Unicode") },
+		  { "UTF-16LE", GettextCatalog.GetString("Unicode") },
+		  { "UTF-32", GettextCatalog.GetString("Unicode") },
 		  { "UCS-2", GettextCatalog.GetString("Unicode") },
 		  { "UCS-4", GettextCatalog.GetString("Unicode") },
 

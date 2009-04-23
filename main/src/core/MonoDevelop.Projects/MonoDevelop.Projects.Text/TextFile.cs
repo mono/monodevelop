@@ -114,7 +114,26 @@ namespace MonoDevelop.Projects.Text
 					new { Enc = "GB18030", Bytes = new byte[] {0x84, 0x31, 0x95, 0x33} },
 				};
 				string enc = (from bom in bomTable where content.StartsWith (bom.Bytes) select bom.Enc).FirstOrDefault ();
-				if (string.IsNullOrEmpty (enc))
+
+				if (!string.IsNullOrEmpty (enc)) {
+					string s = Convert (content, "UTF-8", enc);
+					if (s != null) {
+						sourceEncoding = enc;
+						text = new StringBuilder (s);
+						return;
+					}
+				}
+				
+				foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
+					string s = Convert (content, "UTF-8", co.Id);
+					if (s != null) {
+						sourceEncoding = co.Id;
+						text = new StringBuilder (s);
+						return;
+					}
+				}
+				
+/*				if (string.IsNullOrEmpty (enc))
 					enc = "UTF-8";
 				string s = Convert (content, "UTF-8", enc);
 				if (s != null) {
@@ -126,15 +145,9 @@ namespace MonoDevelop.Projects.Text
 				s = Convert (content, "UTF-8", enc);
 				sourceEncoding = enc;
 				text = new StringBuilder (s);
-			/*	foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
-					s = Convert (content, "UTF-8", co.Id);
-					if (s != null) {
-						sourceEncoding = co.Id;
-						text = new StringBuilder (s);
-						return;
-					}
-				}
-				throw new Exception ("Unknown text file encoding");*/
+*/
+				throw new Exception ("Unknown text file encoding");
+				
 			}
 		}
 		
@@ -147,32 +160,32 @@ namespace MonoDevelop.Projects.Text
 		
 		#region g_convert
 		
-		static string Convert (byte[] content, string fromEncoding, string toEncoding)
+		static string Convert (byte[] content, string toEncoding, string fromEncoding)
 		{
 			if (content.LongLength > int.MaxValue)
 				throw new Exception ("Cannot handle long arrays");
 			
 			IntPtr nr = IntPtr.Zero, nw = IntPtr.Zero;
 			IntPtr clPtr = new IntPtr (content.Length);
-			IntPtr cc = g_convert (content, clPtr, fromEncoding, toEncoding, ref nr, ref nw, IntPtr.Zero);
+			IntPtr cc = g_convert (content, clPtr, toEncoding, fromEncoding, ref nr, ref nw, IntPtr.Zero);
 			if (cc != IntPtr.Zero) {
 				//FIXME: check for out-of-range conversions on uints
 				int len = (int)(uint)nw.ToInt64 ();
-				string s = System.Runtime.InteropServices.Marshal.PtrToStringAuto (cc, len);
+				string s = System.Runtime.InteropServices.Marshal.PtrToStringAnsi (cc, len);
 				g_free (cc);
 				return s;
 			} else
 				return null;
 		}
 		
-		static byte[] ConvertToBytes (byte[] content, string fromEncoding, string toEncoding)
+		static byte[] ConvertToBytes (byte[] content, string toEncoding, string fromEncoding)
 		{
 			if (content.LongLength > int.MaxValue)
 				throw new Exception ("Cannot handle long arrays");
 			
 			IntPtr nr = IntPtr.Zero, nw = IntPtr.Zero;
 			IntPtr clPtr = new IntPtr (content.Length);
-			IntPtr cc = g_convert (content, clPtr, fromEncoding, toEncoding, ref nr, ref nw, IntPtr.Zero);
+			IntPtr cc = g_convert (content, clPtr, toEncoding, fromEncoding, ref nr, ref nw, IntPtr.Zero);
 			if (cc != IntPtr.Zero) {
 				//FIXME: check for out-of-range conversions on uints
 				int len = (int)(uint)nw.ToInt64 ();
