@@ -150,7 +150,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			return results;
 		}
 		
-		int[] skip;
+		
+		int[] occ;
 		int[] next;
 		
 		void CompilePattern (string pattern, FilterOptions filter)
@@ -158,59 +159,62 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (!filter.CaseSensitive)
 				pattern = pattern.ToUpper ();
 			int plen = pattern.Length;
-			skip = new int[(int)Char.MaxValue];
 			
-			for (int i = 0; i < (int)Char.MaxValue; i++) {
-				skip[i] = plen;
+			occ = new int[(int)Char.MaxValue];
+			int i;
+			for (i = 0; i < (int)Char.MaxValue; i++) {
+				occ[i] = -1;
 			}
+			for (i = 0; i < plen; i++) 
+				occ[(int)pattern[i]] = i;
 			
-			for (int i = 0; i < plen; i++) 
-				skip[(int)pattern[i]] = plen - i - 1;
-			
+			int[] f = new int[plen + 1];
 			next = new int[plen + 1];
 			
-			for (int j = 0; j <= plen; j++) {
-				int i = plen - 1;
-				for (; i >= 1; i--) {
-					for (int k = 1; k <= j; k++) {
-						if (i - k < 0) 
-							break;
-						if (pattern[plen - k] != pattern[i - k]) 
-							goto nexttry;
-					}
-					goto matched;
-				nexttry:
-					;
+			// Pre process part 1
+			i = plen;
+			int j = plen + 1;
+			f[i] = j;
+			while (i > 0) {
+				while (j <= plen && pattern[i - 1] != pattern[j - 1]) {
+					if (next[j] == 0) 
+						next[j] = j-i;
+					j = f[j];
 				}
-			matched:
-				next[j] = plen - i;
+				i--;
+				j--;
+				f[i] = j;
 			}
+			
+			// Pre process part 2
+			j = f[0];
+			for (i = 0; i <= plen; i++) {
+				if (next[i] == 0) 
+					next[i] = j;
+				if (i == j) 
+					j = f[j];
+			}
+			
 		}
 		
 		IEnumerable<SearchResult> Search (FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
 		{
-			StringComparison comparison = filter.CaseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase;
-			int start = 0;
+			if (!filter.CaseSensitive) {
+				pattern = pattern.ToUpper ();
+				content = content.ToUpper ();
+			}
 			
 			List<SearchResult> results = new List<SearchResult> ();
 			int plen = pattern.Length - 1;
-			int i = plen; // position of last p letter in s
 			int delta = 0;
-			if (filter.CaseSensitive) { // code duplication is ugly, but it's
-				while (i < content.Length) {
-					int j = 0; // matched letter count
-					while (j <= plen) {
-						if (IsCanceled)
-							return results;
-						char ch = content[i - j];
-						if (ch == pattern[plen - j]) {
-							j++;
-						} else {
-							i += skip[(int)ch] > next[j] ? skip[(int)ch] : next[j];
-							goto newi;
-						}
-					}
-					int idx = i - plen;
+			int i = 0, end = content.Length - pattern.Length;
+			while (i <= end) {
+				int j = plen;
+				while (j >= 0 && pattern[j] == content[i + j]) 
+					j--;
+				
+				if (j < 0) {
+					int idx = i;
 					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
 						if (replacePattern != null) {
 							results.Add (new SearchResult (provider, idx + delta, replacePattern.Length));
@@ -220,40 +224,12 @@ namespace MonoDevelop.Ide.FindInFiles
 							results.Add (new SearchResult (provider, idx, pattern.Length));
 						}
 					}
-					i++;
-				newi:
-					;
+					i += next[0];
 				}
-			} else {
-				pattern = pattern.ToUpper ();
-				while (i < content.Length) {
-					int j = 0; // matched letter count
-					while (j <= plen) {
-						if (IsCanceled)
-							return results;
-						char ch = Char.ToUpper (content[i - j]);
-						if (ch == pattern[plen - j]) {
-							j++;
-						} else {
-							i += skip[(int)ch] > next[j] ? skip[(int)ch] : next[j];
-							goto newi;
-						}
-					}
-					int idx = i - plen;
-					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
-						if (replacePattern != null) {
-							results.Add (new SearchResult (provider, idx + delta, replacePattern.Length));
-							provider.Replace (idx + delta, pattern.Length, replacePattern);
-							delta += replacePattern.Length - pattern.Length;
-						} else {
-							results.Add (new SearchResult (provider, idx, pattern.Length));
-						}
-					}
-					i++;
-				newi:
-					;
-				}
+				else
+					i += System.Math.Max (next[j + 1], j-occ[(int)content[i + j]]);
 			}
+			
 			return results;
 		}
 	}

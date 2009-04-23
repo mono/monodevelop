@@ -211,7 +211,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (showReplace)
 				LoadHistory ("MonoDevelop.FindReplaceDialogs.ReplaceHistory", comboboxentryReplace);
 //			LoadHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", comboboxentryPath);
-			properties.Get ("MonoDevelop.FindReplaceDialogs.FileMaskHistory", "*");
 			LoadHistory ("MonoDevelop.FindReplaceDialogs.FileMaskHistory", comboboxentryFileMask);
 		}
 		
@@ -251,7 +250,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (showReplace)
 				StoreHistory ("MonoDevelop.FindReplaceDialogs.ReplaceHistory", comboboxentryReplace);
 //			StoreHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", comboboxentryPath);
-			StoreHistory ("MonoDevelop.FindReplaceDialogs.FileMasHistory", comboboxentryFileMask);
+			StoreHistory ("MonoDevelop.FindReplaceDialogs.FileMaskHistory", comboboxentryFileMask);
 		}
 		
 		static void StoreHistory (string propertyName, Gtk.ComboBoxEntry comboBox)
