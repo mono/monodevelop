@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			treeviewSearchResults.ButtonPressEvent += HandleButtonPressEvent;
 			treeviewSearchResults.RulesHint = true;
 			
+			
 			TreeViewColumn fileNameColumn = new TreeViewColumn ();
 			fileNameColumn.SortIndicator = true;
 			fileNameColumn.SortColumnId  = 0;
@@ -115,7 +116,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonStop = new ToolButton ("gtk-stop");
 			buttonStop.Sensitive = false;
 			buttonStop.Clicked += delegate {
-				// TODO
+				if (AsyncOperation != null)
+					AsyncOperation.Cancel ();
 			};
 			
 			buttonStop.SetTooltip (tips, GettextCatalog.GetString ("Stop"), "Stop");
@@ -155,11 +157,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			Reset ();
 			buttonStop.Sensitive = true;
+			treeviewSearchResults.Model = null;
 		}
 		
 		public void EndProgress ()
 		{
 			buttonStop.Sensitive = false;
+			treeviewSearchResults.Model = store;
 		}
 		
 		public void Reset ()

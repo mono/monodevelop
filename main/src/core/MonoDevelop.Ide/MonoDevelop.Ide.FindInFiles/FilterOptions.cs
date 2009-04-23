@@ -66,11 +66,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public static bool IsWholeWordAt (string text, int offset, int length)
 		{
-			if (offset < 0 && !IsWordSeparator (text[offset - 1])) 
-				return false;
-			if (offset + length < text.Length) 
-				return IsWordSeparator (text[offset + length]);
-			return true;
+			return (offset          <= 0           || IsWordSeparator (text[offset - 1]))  &&
+				   (offset + length >= text.Length || IsWordSeparator (text[offset + length]));
 		}
 	}
 	

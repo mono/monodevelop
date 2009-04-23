@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					regexOptions |= RegexOptions.IgnoreCase;
 				regex = new Regex (pattern, regexOptions);
 			} else {
-				CompilePattern (pattern);
+				CompilePattern (pattern, filter);
 			}
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
@@ -127,7 +127,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (Match match in regex.Matches (content)) {
 					if (IsCanceled)
 						break;
-					results.Add (new SearchResult (provider, match.Index, match.Length)); 
+					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, match.Index, match.Length))
+						results.Add (new SearchResult (provider, match.Index, match.Length)); 
 				}
 			} else {
 				List<Match> matches = new List<Match> ();
@@ -137,10 +138,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				int delta = 0;
 				for (int i = 0; !IsCanceled && i < matches.Count ; i++) {
 					Match match = matches[i];
-					string replacement = match.Result (replacePattern);
-					results.Add (new SearchResult (provider, match.Index + delta, replacement.Length));
-					provider.Replace (match.Index + delta, match.Length, replacement);
-					delta += replacement.Length - match.Length;
+					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, match.Index, match.Length)) {
+						string replacement = match.Result (replacePattern);
+						results.Add (new SearchResult (provider, match.Index + delta, replacement.Length));
+						provider.Replace (match.Index + delta, match.Length, replacement);
+						delta += replacement.Length - match.Length;
+					}
 				}
 				provider.EndReplace ();
 			}
@@ -150,8 +153,10 @@ namespace MonoDevelop.Ide.FindInFiles
 		int[] skip;
 		int[] next;
 		
-		void CompilePattern (string pattern)
+		void CompilePattern (string pattern, FilterOptions filter)
 		{
+			if (!filter.CaseSensitive)
+				pattern = pattern.ToUpper ();
 			int plen = pattern.Length;
 			skip = new int[(int)Char.MaxValue];
 			
@@ -186,35 +191,68 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			StringComparison comparison = filter.CaseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase;
 			int start = 0;
+			
 			List<SearchResult> results = new List<SearchResult> ();
 			int plen = pattern.Length - 1;
 			int i = plen; // position of last p letter in s
 			int delta = 0;
-			
-			while (i < content.Length) {
-				int j = 0; // matched letter count
-				while (j <= plen) {
-					if (IsCanceled)
-						return results;
-					char ch = content[i - j];
-					if (ch == pattern[plen - j]) {
-						j++;
-					} else {
-						i += skip[(int)ch] > next[j] ? skip[(int)ch] : next[j];
-						goto newi;
+			if (filter.CaseSensitive) { // code duplication is ugly, but it's
+				while (i < content.Length) {
+					int j = 0; // matched letter count
+					while (j <= plen) {
+						if (IsCanceled)
+							return results;
+						char ch = content[i - j];
+						if (ch == pattern[plen - j]) {
+							j++;
+						} else {
+							i += skip[(int)ch] > next[j] ? skip[(int)ch] : next[j];
+							goto newi;
+						}
 					}
+					int idx = i - plen;
+					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
+						if (replacePattern != null) {
+							results.Add (new SearchResult (provider, idx + delta, replacePattern.Length));
+							provider.Replace (idx + delta, pattern.Length, replacePattern);
+							delta += replacePattern.Length - pattern.Length;
+						} else {
+							results.Add (new SearchResult (provider, idx, pattern.Length));
+						}
+					}
+					i++;
+				newi:
+					;
 				}
-				int idx = i - plen;
-				if (replacePattern != null) {
-					results.Add (new SearchResult (provider, idx + delta, replacePattern.Length));
-					provider.Replace (idx + delta, pattern.Length, replacePattern);
-					delta += replacePattern.Length - pattern.Length;
-				} else {
-					results.Add (new SearchResult (provider, idx, pattern.Length));
+			} else {
+				pattern = pattern.ToUpper ();
+				while (i < content.Length) {
+					int j = 0; // matched letter count
+					while (j <= plen) {
+						if (IsCanceled)
+							return results;
+						char ch = Char.ToUpper (content[i - j]);
+						if (ch == pattern[plen - j]) {
+							j++;
+						} else {
+							i += skip[(int)ch] > next[j] ? skip[(int)ch] : next[j];
+							goto newi;
+						}
+					}
+					int idx = i - plen;
+					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
+						if (replacePattern != null) {
+							results.Add (new SearchResult (provider, idx + delta, replacePattern.Length));
+							provider.Replace (idx + delta, pattern.Length, replacePattern);
+							delta += replacePattern.Length - pattern.Length;
+						} else {
+							results.Add (new SearchResult (provider, idx, pattern.Length));
+						}
+					}
+					i++;
+				newi:
+					;
 				}
-				i++;
-			newi:
-				;
 			}
 			return results;
 		}

@@ -1,6 +1,13 @@
 2009-04-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/FindReplace.cs:
+	* MonoDevelop.Ide.FindInFiles/FilterOptions.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Respect
+	  case sensitive & search whole words only options.
+
+2009-04-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/FindReplace.cs:
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Now using
 	  Boyer-Moore searching algorithm for pattern matching.
 
