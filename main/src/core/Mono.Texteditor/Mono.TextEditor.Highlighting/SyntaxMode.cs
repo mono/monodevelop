@@ -82,6 +82,16 @@ namespace Mono.TextEditor.Highlighting
 		
 		public string GetMarkup (Document doc, ITextEditorOptions options, Style style, int offset, int length, bool removeIndent)
 		{
+			return GetMarkup (doc, options, style, offset, length, removeIndent, true, true);
+		}
+		
+		public static string ColorToPangoMarkup (Gdk.Color color)
+		{
+			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);
+		}
+		
+		public string GetMarkup (Document doc, ITextEditorOptions options, Style style, int offset, int length, bool removeIndent, bool useColors, bool replaceTabs)
+		{
 			int curOffset = offset;
 			int indentLength = int.MaxValue;
 			while (curOffset < offset + length) {
@@ -99,9 +109,12 @@ namespace Mono.TextEditor.Highlighting
 				for (Chunk chunk = GetChunks (doc, style, line, curOffset, toOffset - curOffset); chunk != null; chunk = chunk.Next) {
 					
 					ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
-					bool setBold   = chunkStyle.Bold && (styleStack.Count == 0 || !styleStack.Peek ().Bold);
-					bool setItalic = chunkStyle.Italic && (styleStack.Count == 0 || !styleStack.Peek ().Italic);
-					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || !styleStack.Peek ().Underline);
+					bool setBold = chunkStyle.Bold && (styleStack.Count == 0 || !styleStack.Peek ().Bold) ||
+						!chunkStyle.Bold && (styleStack.Count == 0 || styleStack.Peek ().Bold);
+					bool setItalic = chunkStyle.Italic && (styleStack.Count == 0 || !styleStack.Peek ().Italic) ||
+						!chunkStyle.Italic && (styleStack.Count == 0 || styleStack.Peek ().Italic);
+					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || !styleStack.Peek ().Underline) || 
+						!chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline);
 					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().Color) != TextViewMargin.GetPixel (chunkStyle.Color);
 					if (setColor || setBold || setItalic || setUnderline) {
 						if (styleStack.Count > 0) {
@@ -109,12 +122,11 @@ namespace Mono.TextEditor.Highlighting
 							styleStack.Pop ();
 						}
 						result.Append("<span");
-						result.Append(" foreground=\"");
-						result.Append(String.Format ("#{0:X2}{1:X2}{2:X2}", 
-						                             chunkStyle.Color.Red   >> 8,
-						                             chunkStyle.Color.Green >> 8,
-						                             chunkStyle.Color.Blue  >> 8));
-						result.Append("\"");
+						if (useColors) {
+							result.Append(" foreground=\"");
+							result.Append(ColorToPangoMarkup (chunkStyle.Color));
+							result.Append("\"");
+						}
 						if (chunkStyle.Bold)
 							result.Append(" weight=\"bold\"");
 						if (chunkStyle.Italic)
@@ -138,7 +150,11 @@ namespace Mono.TextEditor.Highlighting
 							result.Append ("&gt;");
 							break;
 						case '\t':
-							result.Append (new string (' ', options.TabSize));
+							if (replaceTabs) {
+								result.Append (new string (' ', options.TabSize));
+							} else {
+								result.Append ('\t');
+							}
 							break;
 						default:
 							result.Append (ch);
