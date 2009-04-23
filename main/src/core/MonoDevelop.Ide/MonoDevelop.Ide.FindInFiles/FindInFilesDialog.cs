@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						
 						folderDialog.SetFilename (defaultFolder);
 						if (folderDialog.Run() == (int)Gtk.ResponseType.Ok) 
-							this.comboboxentryFind.Entry.Text = folderDialog.Filename;
+							this.comboboxentryPath.Entry.Text = folderDialog.Filename;
 					} finally {
 						folderDialog.Destroy ();
 					}
