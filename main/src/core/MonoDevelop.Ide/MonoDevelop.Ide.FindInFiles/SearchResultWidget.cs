@@ -73,7 +73,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public SearchResultWidget ()
 		{
-			UseThemeColors = PropertyService.Get ("SearchResultPadUsesEditorThemes", false);
 			this.Build ();
 			
 			store = new ListStore (typeof (SearchResult), 
@@ -155,6 +154,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			scrolledwindowLogView.Hide ();
 			PropertyService.AddPropertyHandler ("ColorScheme", SetColorSheme);
+			PropertyService.AddPropertyHandler ("SearchResultPadUsesEditorThemes", SetTheme);
+			SetTheme (null, null);
+		}
+		
+		void SetTheme (object sender, PropertyChangedEventArgs args)
+		{
+			UseThemeColors = PropertyService.Get ("SearchResultPadUsesEditorThemes", false);
 			SetColorSheme (null, null);
 		}
 		
@@ -176,7 +182,21 @@ namespace MonoDevelop.Ide.FindInFiles
 				treeviewSearchResults.ModifyText (StateType.Prelight, style.Selection.Color);
 				treeviewSearchResults.ModifyText (StateType.Active, style.Selection.Color);
 				treeviewSearchResults.ModifyText (StateType.Insensitive, style.Selection.Color);
+			} else {
+				treeviewSearchResults.ModifyBase (StateType.Normal);
+				treeviewSearchResults.ModifyBase (StateType.Selected);
+				treeviewSearchResults.ModifyBase (StateType.Active);
+				treeviewSearchResults.ModifyBase (StateType.Prelight);
+				treeviewSearchResults.ModifyBg (StateType.Active);
+				treeviewSearchResults.ModifyBg (StateType.Prelight);
+				treeviewSearchResults.ModifyBg (StateType.Selected);
+				
+				treeviewSearchResults.ModifyText (StateType.Selected);
+				treeviewSearchResults.ModifyText (StateType.Prelight);
+				treeviewSearchResults.ModifyText (StateType.Active);
+				treeviewSearchResults.ModifyText (StateType.Insensitive);
 			}
+			treeviewSearchResults.QueueDraw ();
 		}
 		
 		public void BeginProgress ()
@@ -207,6 +227,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void OnDestroyed ()
 		{
 			PropertyService.RemovePropertyHandler ("ColorScheme", SetColorSheme);
+			PropertyService.RemovePropertyHandler ("SearchResultPadUsesEditorThemes", SetTheme);
 			Reset ();
 			base.OnDestroyed ();
 		}
