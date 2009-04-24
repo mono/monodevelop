@@ -1,5 +1,10 @@
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs: Fixed bug in code
+	  templates.
+
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/ISearchEngine.cs:

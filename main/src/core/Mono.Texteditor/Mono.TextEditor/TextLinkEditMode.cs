@@ -228,10 +228,9 @@ namespace Mono.TextEditor
 			Editor.Caret.Offset    = baseOffset + link.PrimaryLink.Offset;
 			Editor.ScrollToCaret ();
 			Editor.Caret.Offset    = baseOffset + link.PrimaryLink.EndOffset;
-			Editor.MainSelection = new Selection (Document.OffsetToLocation (baseOffset + link.PrimaryLink.Offset),
-			                                      Document.OffsetToLocation (baseOffset + link.PrimaryLink.EndOffset));
+			Editor.MainSelection = new Selection (Editor.Document.OffsetToLocation (baseOffset + link.PrimaryLink.Offset),
+			                                      Editor.Document.OffsetToLocation (baseOffset + link.PrimaryLink.EndOffset));
 			Editor.Document.CommitUpdateAll ();
-			
 		}
 		
 		void ExitTextLinkMode ()
