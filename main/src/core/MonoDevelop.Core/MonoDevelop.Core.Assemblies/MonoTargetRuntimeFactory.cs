@@ -55,6 +55,14 @@ namespace MonoDevelop.Core.Assemblies
 					if (info.IsValidRuntime)
 						yield return new MonoTargetRuntime (info);
 				}
+			} else if (PropertyService.IsMac) {
+				foreach (string dir in Directory.GetDirectories ("/Library/Frameworks/Mono.framework/Versions")) {
+					if (dir.EndsWith ("/Current") || currentRuntime.Prefix == dir)
+						continue;
+					MonoRuntimeInfo info = new MonoRuntimeInfo (dir);
+					if (info.IsValidRuntime)
+						yield return new MonoTargetRuntime (info);
+				}
 			} else {
 				foreach (MonoRuntimeInfo info in customRuntimes)
 					yield return new MonoTargetRuntime (info);

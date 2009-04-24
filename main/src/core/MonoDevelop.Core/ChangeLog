@@ -1,3 +1,8 @@
+2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs:
+	  Detect available runtimes on Mac.
+
 2009-04-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core/PropertyService.cs: Add an IsMac property.
