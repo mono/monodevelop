@@ -162,7 +162,7 @@ namespace MonoDevelop.CSharpBinding
 					case "#endif":
 						DomLocation endLoc = new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column);
 						CloseConditionBlock (endLoc);
-						if (!ConditionalRegion.ElseBlock.Start.IsEmpty)
+						if (ConditionalRegion != null && ConditionalRegion.ElseBlock != null && !ConditionalRegion.ElseBlock.Start.IsEmpty)
 							ConditionalRegion.ElseBlock = new DomRegion (ConditionalRegion.ElseBlock.Start, endLoc);
 						AddCurRegion (directive.EndPosition);
 						if (ifBlocks.Count > 0) {
