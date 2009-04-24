@@ -2,7 +2,7 @@
        namespace   = "MonoDevelop"
        name        = "CSharp Language Binding"
        author      = "Todd Berman"
-       copyright   = "GPL"
+       copyright   = "MIT X11"
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
 	   category    = "Language bindings"
