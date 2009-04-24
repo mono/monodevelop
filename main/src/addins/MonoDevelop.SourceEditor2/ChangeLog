@@ -1,3 +1,8 @@
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: track api
+	  changes.
+
 2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Implement
