@@ -1,3 +1,9 @@
+2009-04-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: More Mac shortcuts. Add "Edit
+	  references" command to the Project menu. Fix Search menu ID
+	  typo.
+
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Search is
