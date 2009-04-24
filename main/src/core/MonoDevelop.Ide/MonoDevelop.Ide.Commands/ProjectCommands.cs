@@ -413,4 +413,19 @@ namespace MonoDevelop.Ide.Commands
 		}
 
 	}
+	
+	internal class EditReferencesHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			DotNetProject p = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			if (p != null && IdeApp.ProjectOperations.AddReferenceToProject (p))
+				IdeApp.ProjectOperations.Save (p);
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Bypass = !(info.Enabled = IdeApp.ProjectOperations.CurrentSelectedProject is DotNetProject);
+		}
+	}
 }

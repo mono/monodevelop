@@ -1,5 +1,10 @@
 2009-04-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Add default
+	  handler for Edit References command.
+
+2009-04-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: On Windows, touch Win32
 	  before GTK, to make sure GTK native theme is inited
 	  correctly.
