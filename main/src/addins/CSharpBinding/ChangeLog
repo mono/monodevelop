@@ -1,5 +1,10 @@
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NewOverrideCompletionData.cs: "overriding" interface
+	  members is now public.
+
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: Fixed 'Bug 495275 -
 	  override completion popup no longer includes unimplemented
 	  members from interfaces'.

@@ -267,7 +267,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		string GetModifiers (IMember member)
 		{
-			if (member.IsPublic) 
+			if (member.IsPublic || member.DeclaringType.ClassType == ClassType.Interface) 
 				return "public ";
 			if (member.IsPrivate) 
 				return "";
