@@ -238,7 +238,7 @@ namespace Mono.TextEditor
 		
 		public override SearchResult SearchForward (int fromOffset)
 		{
-			if (regex == null)
+			if (regex == null || String.IsNullOrEmpty (searchRequest.SearchPattern))
 				return null;
 			System.Text.RegularExpressions.Match match = regex.Match (this.textEditorData.Document.Text, fromOffset);
 			if (match.Success) {
@@ -255,7 +255,7 @@ namespace Mono.TextEditor
 		
 		public override SearchResult SearchBackward (int fromOffset)
 		{
-			if (regex == null)
+			if (regex == null || String.IsNullOrEmpty (searchRequest.SearchPattern))
 				return null;
 			System.Text.RegularExpressions.Match found = null; 
 			System.Text.RegularExpressions.Match last = null; 

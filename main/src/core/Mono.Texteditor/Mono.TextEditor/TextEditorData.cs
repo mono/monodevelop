@@ -606,8 +606,20 @@ namespace Mono.TextEditor
 				value.TextEditorData = this;
 				value.SearchRequest = SearchRequest;
 				searchEngine = value;
+				searchEngine.SearchRequest.Changed += delegate {
+					OnSearchChanged (EventArgs.Empty);
+				};
+				OnSearchChanged (EventArgs.Empty);
 			}
 		}
+		
+		protected virtual void OnSearchChanged (EventArgs args)
+		{
+			if (SearchChanged != null)
+				SearchChanged (this, args);
+		}
+		
+		public event EventHandler SearchChanged;
 		
 		SearchRequest currentSearchRequest;
 		

@@ -1,3 +1,13 @@
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/ISearchEngine.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextEditorData.cs: Fixed "Bug 495626 - Regex
+	  searches are slow, and CPU usage is high while results are
+	  highlighted".
+
 2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/DefaultEditActions.cs: Implement actions for

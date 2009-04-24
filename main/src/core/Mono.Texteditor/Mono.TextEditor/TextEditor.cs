@@ -1373,8 +1373,10 @@ namespace Mono.TextEditor
 				return this.textEditorData.SearchRequest.SearchPattern;
 			}
 			set {
-				this.textEditorData.SearchRequest.SearchPattern = value;
-				this.QueueDraw ();
+				if (this.textEditorData.SearchRequest.SearchPattern != value) {
+					this.textEditorData.SearchRequest.SearchPattern = value;
+					this.QueueDraw ();
+				}
 			}
 		}
 		
@@ -1389,6 +1391,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public event EventHandler HighlightSearchPatternChanged;
 		public bool HighlightSearchPattern {
 			get {
 				return highlightSearchPattern;
@@ -1396,10 +1399,13 @@ namespace Mono.TextEditor
 			set {
 				if (highlightSearchPattern != value) {
 					this.highlightSearchPattern = value;
+					if (HighlightSearchPatternChanged != null)
+						HighlightSearchPatternChanged (this, EventArgs.Empty);
 					this.QueueDraw ();
 				}
 			}
 		}
+		
 		public bool IsCaseSensitive {
 			get {
 				return this.textEditorData.SearchRequest.CaseSensitive;

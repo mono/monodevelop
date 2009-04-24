@@ -116,7 +116,58 @@ namespace Mono.TextEditor
 			Caret.PositionChanged += UpdateBracketHighlighting;
 			base.cursor = xtermCursor;
 			Document.LineChanged += CheckLongestLine;
+			textEditor.HighlightSearchPatternChanged += delegate {
+				selectedRegions.Clear ();
+			};
+			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
+				if (selectedRegions == null || selectedRegions.Count == 0)
+					return;
+				List<ISegment> newRegions = new List<ISegment> (this.selectedRegions);
+				Document.UpdateSegments (newRegions, e);
+				
+				if (searchPatternWorker == null || !searchPatternWorker.IsBusy) {
+					this.selectedRegions = newRegions;
+					HandleSearchChanged (this, EventArgs.Empty);
+				}
+			};
+			
+			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged; 
 		}
+		
+		void HandleSearchChanged (object sender, EventArgs args)
+		{
+			if (textEditor.HighlightSearchPattern) {
+				if (searchPatternWorker != null && searchPatternWorker.IsBusy) 
+					searchPatternWorker.CancelAsync ();
+				searchPatternWorker = new System.ComponentModel.BackgroundWorker ();
+				searchPatternWorker.WorkerSupportsCancellation = true;
+				searchPatternWorker.DoWork += delegate(object s, System.ComponentModel.DoWorkEventArgs e) {
+					System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)s;
+					List<ISegment> newRegions = new List<ISegment> ();
+					int offset = 0;
+					do {
+						if (worker.CancellationPending)
+							return;
+						SearchResult result = null;
+						try {
+							result = this.textEditor.GetTextEditorData ().SearchEngine.SearchForward (offset);
+						} catch (Exception ex) {
+							Console.WriteLine ("Got exception while search forward:" + ex);
+							break;
+						}
+						if (result == null || result.SearchWrapped)
+							break;
+						offset = result.EndOffset;
+						newRegions.Add (result);
+					} while (true);
+					this.selectedRegions = newRegions;
+				};
+				searchPatternWorker.RunWorkerAsync ();
+			}
+		}
+		
+		System.ComponentModel.BackgroundWorker searchPatternWorker;
+		
 		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
 		internal void Initialize ()
@@ -1110,14 +1161,7 @@ namespace Mono.TextEditor
 				}
 				return;
 			}
-			selectedRegions.Clear ();
-			if (textEditor.HighlightSearchPattern) {
-				for (int i = line.Offset; i < line.EndOffset; i++) {
-					SearchResult result = this.textEditor.GetTextEditorData ().GetMatchAt (i);
-					if (result != null) 
-						selectedRegions.Add (new Segment (i, result.Length));
-				}
-			}
+			//selectedRegions.Clear ();
 			
 			IEnumerable<FoldSegment> foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;

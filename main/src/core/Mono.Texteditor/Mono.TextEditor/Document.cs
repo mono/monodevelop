@@ -1249,6 +1249,17 @@ namespace Mono.TextEditor
 			return CharacterClass.Unknown;
 		}
 		
+		public static void UpdateSegments (IEnumerable<ISegment> segments, ReplaceEventArgs args)
+		{
+			int delta = -args.Count + (!string.IsNullOrEmpty (args.Value) ? args.Value.Length : 0);
+			foreach (ISegment segment in segments) {
+				if (args.Offset < segment.Offset) {
+					segment.Offset += delta;
+				} else if (args.Offset <= segment.EndOffset) {
+					segment.Length += delta;
+				}
+			}
+		}
 		#endregion
 	}
 	
