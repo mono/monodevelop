@@ -1,5 +1,11 @@
 2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/Ide.cs: Fix Bug 497833 - When loading
+	  .sln from command line: MonoDevelop failed to start:
+	  Collection is read-only.
+
+2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Track
 	  KeyBindingManager API.
 

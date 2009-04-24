@@ -261,27 +261,28 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 			
+			var filteredFiles = new System.Collections.Generic.List<string> ();
+			
 			//open the firsts sln/workspace file, and remove the others from the list
 		 	//FIXME: can we handle multiple slns?
 			bool foundSln = false;
-			for (int i = 0; i < files.Count;) {
-				string file = files[i];
+			foreach (string file in files) {
 				if (Services.ProjectService.IsWorkspaceItemFile (file)) {
 					if (!foundSln) {
 						try {
 							Workspace.OpenWorkspaceItem (file);
+							foundSln = true;
 						} catch (Exception ex) {
 							LoggingService.LogError ("Unhandled error opening solution/workspace \"" + file + "\"", ex);
 							MessageService.ShowException (ex, "Could not load solution: " + file);
 						}
 					}
-					files.RemoveAt (i);
 				} else {
-					i++;
+					filteredFiles.Add (file);
 				}
 			}
 			
-			foreach (string file in files) {
+			foreach (string file in filteredFiles) {
 				try {
 					Workbench.OpenDocument (file);
 				} catch (Exception ex) {
