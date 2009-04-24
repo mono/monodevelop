@@ -6,4 +6,4 @@ using System.Reflection;
 [assembly: AssemblyTitle ("MonoDevelop GUI for Project Services")]
 [assembly: AssemblyDescription ("Provides GUI resources for managing MonoDevelop projects")]
 [assembly: AssemblyVersion ("2.1.0")]
-[assembly: AssemblyCopyright ("GPL")]
+[assembly: AssemblyCopyright ("MIT X11")]

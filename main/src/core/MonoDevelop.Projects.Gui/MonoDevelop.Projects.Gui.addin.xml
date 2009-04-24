@@ -1,7 +1,7 @@
 <Addin id          = "MonoDevelop.Projects.Gui"
        name        = "MonoDevelop GUI for Project Services"
        author      = "Todd Berman, Pedro Abelleira Seco, John Luke, Daniel Kornhauser, Alex Graveley, nricciar, John Bou Antoun, Ben Maurer, Jeroen Zwartepoorte, Gustavo Giráldez, Miguel de Icaza, Inigo Illan, Iain McCoy, Nick Drochak, Paweł Różański, Richard Torkar, Paco Martinez, Lluis Sanchez Gual, Christian Hergert, Mike Krueger"
-       copyright   = "GPL"
+       copyright   = "MIT X11"
        url         = "http://www.icsharpcode.net"
        description = "Provides GUI resources for managing MonoDevelop projects"
 	   category    = "MonoDevelop Core"

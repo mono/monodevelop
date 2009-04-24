@@ -1,3 +1,8 @@
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Projects.Gui.addin.xml: Changed copyright tag.
+
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
