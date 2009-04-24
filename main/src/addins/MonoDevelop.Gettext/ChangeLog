@@ -1,3 +1,9 @@
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Added new
+	  translation rule - translation should end with ' ' when
+	  original string ends with ' '.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Gettext.csproj: don't require specific

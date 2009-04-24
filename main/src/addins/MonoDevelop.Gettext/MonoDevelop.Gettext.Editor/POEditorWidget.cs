@@ -1055,13 +1055,15 @@ namespace MonoDevelop.Gettext
 			new PointRuleCatalogEntryRule (),
 			new CaseMismatchCatalogEntryRule (),
 			new UnderscoreCatalogEntryRule (),
-			new StringFormatCatalogEntryRule ()
+			new StringFormatCatalogEntryRule (),
+			new EndsWithWhitespaceCatalogEntryRule ()
 		};
 		IEnumerable<CatalogEntryRule> rules = new CatalogEntryRule[] {};
 		
 		public void UpdateRules (string country)
 		{
 			rules = from n in allRules where n.IsValid (country) select n;
+			UpdateTasks ();
 		}
 		
 		abstract class CatalogEntryRule
@@ -1088,6 +1090,19 @@ namespace MonoDevelop.Gettext
 			public abstract string FailReason (CatalogEntry entry);
 		}
 		
+		class EndsWithWhitespaceCatalogEntryRule : CatalogEntryRule
+		{
+			public override bool EntryFails (CatalogEntry entry)
+			{
+				return entry.String.EndsWith (" ") && !entry.GetTranslation (0).EndsWith (" ");
+			}
+			
+			public override string FailReason (CatalogEntry entry)
+			{
+				return GettextCatalog.GetString ("Translation for '{0}' doesn't end with whitespace ' '.", entry.String);
+			}
+		}
+			
 		class PointRuleCatalogEntryRule : CatalogEntryRule
 		{
 			public override bool EntryFails (CatalogEntry entry)
