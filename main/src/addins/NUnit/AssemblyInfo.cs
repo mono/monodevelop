@@ -6,4 +6,4 @@ using System.Reflection;
 [assembly: AssemblyTitle ("NUnit support")]
 [assembly: AssemblyDescription ("Integrates NUnit into the MonoDevelop IDE.")]
 [assembly: AssemblyVersion ("2.1.0")]
-[assembly: AssemblyCopyright ("GPL")]
+[assembly: AssemblyCopyright ("MIT X11")]
