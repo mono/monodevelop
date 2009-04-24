@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2009-03-06 14:28:41+0100\n"
+"PO-Revision-Date: 2009-04-23 14:50:08+0200\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -3030,7 +3030,7 @@ msgstr "Es wird bereits eine Suche ausgeführt. Möchten Sie diese abbrechen?"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:99
 msgid "{0} match found "
 msgid_plural "{0} matches found "
-msgstr[0] "{0} Übereinstimmung gefunden"
+msgstr[0] "{0} Übereinstimmung gefunden "
 msgstr[1] "{0} Übereinstimmungen gefunden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:100
@@ -7108,7 +7108,7 @@ msgstr "Beim Starten Willkommen-Seite anzeigen"
 
 #: ../src/addins/WelcomePage/WelcomePageOptionPanel.cs:19
 msgid "Update welcome page from internet"
-msgstr "Willkommen-Seite aus dem web aktualisieren"
+msgstr "Willkommen-Seite aus dem Web aktualisieren"
 
 #: ../src/addins/WelcomePage/WelcomePageView.cs:74
 msgid "Welcome"
@@ -14617,10 +14617,8 @@ msgstr "Schließe die folgenden Kategorien ein:"
 #~ msgstr "Ab_wärts"
 #~ msgid "R_eplace:"
 #~ msgstr "E_rsetzen:"
-
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
-
 #~ msgid "Question"
 #~ msgstr "Frage"
 
