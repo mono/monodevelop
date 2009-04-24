@@ -1,5 +1,11 @@
 2009-04-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: On Windows, touch Win32
+	  before GTK, to make sure GTK native theme is inited
+	  correctly.
+
+2009-04-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: More Mac shortcuts. Add "Edit
 	  references" command to the Project menu. Fix Search menu ID
 	  typo.
