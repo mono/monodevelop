@@ -6,4 +6,4 @@ using System.Reflection;
 [assembly: AssemblyTitle ("CSharp Language Binding")]
 [assembly: AssemblyDescription ("CSharp Language Binding")]
 [assembly: AssemblyVersion ("2.1.0")]
-[assembly: AssemblyCopyright ("GPL")]
+[assembly: AssemblyCopyright ("MIT X11")]
