@@ -6,7 +6,7 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,1681,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2009-04-23 14:50:08+0200\n"
+"PO-Revision-Date: 2009-04-24 08:46:32+0200\n"
 "Language-Team: \n"
 "Project-Id-Version: Monodevelop\n"
 "MIME-Version: 1.0\n"
@@ -312,7 +312,7 @@ msgstr "Zugriff verweigert"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:205
 msgid "Could not access to directory: "
-msgstr "Zugriff auf folgenden Ordner verweigert:"
+msgstr "Zugriff auf folgenden Ordner verweigert: "
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:239
 msgid "_Open with file browser"
@@ -381,12 +381,12 @@ msgstr "Operation erfolgreich beendet."
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:124
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs:135
 msgid "WARNING: "
-msgstr "WARNUNG:"
+msgstr "WARNUNG: "
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:146
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs:157
 msgid "ERROR: "
-msgstr "FEHLER:"
+msgstr "FEHLER: "
 
 #: ../src/core/MonoDevelop.Core.Gui/gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs:35
 msgid "Progress"
@@ -3016,7 +3016,7 @@ msgstr "Suche abgebrochen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:101
 msgid "Search completed. "
-msgstr "Suche abgeschlossen."
+msgstr "Suche abgeschlossen. "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:107
 msgid "Search time: {0} seconds."
@@ -3181,7 +3181,7 @@ msgstr "Erstellung erfolgreich."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:844
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:846
 msgid "Build: "
-msgstr "Erstellung:"
+msgstr "Erstellung: "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:877
 msgid "Adding files..."
@@ -3823,11 +3823,11 @@ msgstr "Kontrolle nicht gefunden!"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:177
 msgid "New "
-msgstr "Neu"
+msgstr "Neu "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:190
 msgid "Edit "
-msgstr "Bearbeiten"
+msgstr "Bearbeiten "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/EditTemplateGroupDialog.cs:67
 msgid "{0} Code Group"
@@ -3974,7 +3974,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:150
 msgid "_Don't save changes to open documents "
-msgstr "Ä_nderungen an geöffneten Dokumenten nicht speichern"
+msgstr "Ä_nderungen an geöffneten Dokumenten nicht speichern "
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ReplaceInFilesDialog.cs:146
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:198
@@ -6164,7 +6164,7 @@ msgstr "Hinzugefügt     {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:909
 msgid "Restored '{0}'"
-msgstr "Wieder hergestellt »%s«"
+msgstr "Wieder hergestellt »{0}«"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:912
 msgid "Reverted '{0}'"
@@ -6178,7 +6178,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:918
 msgid "Resolved conflict state of '{0}'"
-msgstr "Konflikt von »%s« aufgelöst"
+msgstr "Konflikt von »{0}« aufgelöst"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:922
 msgid "Add (bin) '{0}'"
@@ -6198,7 +6198,7 @@ msgstr "Aktualisiere    {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:958
 msgid "Fetching external item into '{0}'"
-msgstr "Hole externen Verweis nach »%s«"
+msgstr "Hole externen Verweis nach »{0}«"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:961
 msgid "Finished"
@@ -6248,7 +6248,7 @@ msgstr "»{0}« freigegeben."
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs:12
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/UserPasswordDialog.cs:18
 msgid "Authentication realm: "
-msgstr "Authentifizierungsgebiet:"
+msgstr "Authentifizierungsgebiet: "
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs:27
 msgid "Certificate is not yet valid."
@@ -6491,7 +6491,7 @@ msgstr "Verknüpfe das Design mit einer existierenden Klasse"
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:290
 msgid "Select a class: "
-msgstr "Eine Klasse auswählen:"
+msgstr "Eine Klasse auswählen: "
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:336
 msgid "Create a new class"
@@ -7238,7 +7238,7 @@ msgstr "Konnte Projekt nicht importieren:"
 
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:173
 msgid "Importing project: "
-msgstr "Importiere Projekt:"
+msgstr "Importiere Projekt: "
 
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:229
 msgid "Importing solution"
@@ -7246,7 +7246,7 @@ msgstr "Importiere Projektmappe"
 
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:243
 msgid "Project file not found: "
-msgstr "Projekt-Datei nicht gefunden:"
+msgstr "Projekt-Datei nicht gefunden: "
 
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:265
 msgid "The solution could not be imported."
@@ -7255,11 +7255,11 @@ msgstr "Die Projektmappe konnte nicht importiert werden."
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:330
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:366
 msgid "Assembly reference could not be imported: "
-msgstr "Assembly-Verweis konnte nicht importiert werden:"
+msgstr "Assembly-Verweis konnte nicht importiert werden: "
 
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:411
 msgid "Can't import file: "
-msgstr "Kann Datei nicht importieren:"
+msgstr "Kann Datei nicht importieren: "
 
 #: ../src/addins/prj2make-sharp-lib/MsPrjHelper.cs:457
 msgid ""
@@ -8462,7 +8462,7 @@ msgstr "Vollständiger Dateipfad."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:62
 msgid "Type of the file."
-msgstr "Dateityp"
+msgstr "Typ der Datei."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:72
 msgid "Action to perform when building this file."
@@ -8517,7 +8517,7 @@ msgstr "Dateiforma"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:44
 msgid "Name of the item."
-msgstr "Elementname"
+msgstr "Name des Elements."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:52
 msgid "File path of the item."
@@ -8627,7 +8627,7 @@ msgstr "{0} wurden erfolgreich erzeugt."
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:131
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:132
 msgid "{0} could not be generated: "
-msgstr "{0} konnte nicht erzeugt werden:"
+msgstr "{0} konnte nicht erzeugt werden: "
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:150
 msgid "Deploying Solution to Tarball"
@@ -8641,7 +8641,7 @@ msgstr "Ein nicht spezifizierter Fehler ist beim Laufen von '{0}' aufgetreten"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:198
 msgid "Solution could not be deployed: "
-msgstr "Projektmappe konnte nicht verbreitet werden:"
+msgstr "Projektmappe konnte nicht verbreitet werden: "
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:205
 msgid "Solution was succesfully deployed"
@@ -8727,11 +8727,11 @@ msgid ""
 "Invalid configuration {0}. Valid configurations : "
 msgstr ""
 "\n"
-"Ungültige Konfiguration {0}. Gültige Konfigurationen :"
+"Ungültige Konfiguration {0}. Gültige Konfigurationen : "
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:68
 msgid "Select configuration : "
-msgstr "Wähle Konfiguration :"
+msgstr "Wähle Konfiguration : "
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:84
 msgid ""
@@ -8866,7 +8866,7 @@ msgstr "Erstelle {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:187
 msgid "Project could not be built: "
-msgstr "Projekt konnte nicht erstellt werden:"
+msgstr "Projekt konnte nicht erstellt werden: "
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:201
 msgid "Build failed. See Build Output panel."
@@ -8878,7 +8878,7 @@ msgstr "Räume Projekt auf"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:365
 msgid "Project could not be cleaned: "
-msgstr "Projekt konnte nicht gereinigt werden:"
+msgstr "Projekt konnte nicht gereinigt werden: "
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:372
 msgid "Project successfully cleaned"
@@ -8890,7 +8890,7 @@ msgstr "Führe {0} aus"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:416
 msgid "Project could not be executed: "
-msgstr "Projekt konnte nicht ausgeführt werden:"
+msgstr "Projekt konnte nicht ausgeführt werden: "
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:636
 msgid "Invalid Makefile '{0}'. Disabling Makefile integration."
@@ -9285,15 +9285,15 @@ msgstr "Web-Verweis hinzufügen"
 
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:122
 msgid "Web Service Url: "
-msgstr "Web-Service-URL:"
+msgstr "Web-Service-URL: "
 
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:163
 msgid "Namespace: "
-msgstr "Namensraum:"
+msgstr "Namensraum: "
 
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:174
 msgid "Reference: "
-msgstr "Verweis:"
+msgstr "Verweis: "
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:40
 msgid "Web Reference"
@@ -9646,7 +9646,7 @@ msgstr "Sprache '{0}' erfolgreich hinzugefügt."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:186
 msgid "Language '{0}' could not be added: "
-msgstr "Sprache '{0}' konnte nicht hinzugefügt werden:"
+msgstr "Sprache '{0}' konnte nicht hinzugefügt werden: "
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:248
 msgid "Scanning project {0}..."
@@ -10712,7 +10712,7 @@ msgstr ""
 "Gruppe; für mehr Informationen, siehe die ExplicitCapture Option in den\n"
 "Regulärer-Ausdruck-Optionen). () benutzende Erfassungen werden\n"
 "automatisch basierend auf der Reihenfolge ihrer öffnenden Klammern\n"
-"nummeriert, beginnend mit eins."
+"nummeriert, beginnend mit eins. "
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:132
 msgid "(?<name> subexpression)"
@@ -10727,7 +10727,7 @@ msgstr ""
 "Erfasst den übereinstimmenden Teilausdruck in einen Gruppen-Namen\n"
 "oder einen Nummer-Namen. Die für den Namen verwendete Zeichenkette\n"
 "darf keine Zeichensetzung enthalten und darf nicht mit einer Nummer "
-"beginnen."
+"beginnen. "
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:136
 msgid "(?<name1-name2> subexpression)"
@@ -13853,7 +13853,7 @@ msgstr "Starte {0}..."
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:582
 msgid "Running "
-msgstr "Ausführend"
+msgstr "Ausführend "
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:592
 msgid "Test execution cancelled."
@@ -13905,11 +13905,11 @@ msgstr ""
 
 #: ../src/addins/NUnit/Services/NUnitOptions.cs:79
 msgid "Exclude the following categories: "
-msgstr "Schließe die folgenden Kategorien aus:"
+msgstr "Schließe die folgenden Kategorien aus: "
 
 #: ../src/addins/NUnit/Services/NUnitOptions.cs:81
 msgid "Include the following categories: "
-msgstr "Schließe die folgenden Kategorien ein:"
+msgstr "Schließe die folgenden Kategorien ein: "
 
 #~ msgid "Added"
 #~ msgstr "Hinzugefügt"
@@ -14621,10 +14621,8 @@ msgstr "Schließe die folgenden Kategorien ein:"
 #~ msgstr "Fehler aufgetreten: {0}"
 #~ msgid "Question"
 #~ msgstr "Frage"
-
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
-
 #~ msgid "Do you want to save the current changes?"
 #~ msgstr "Wollen sie die aktuellen Änderungen speichern?"
 
