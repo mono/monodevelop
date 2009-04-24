@@ -99,7 +99,6 @@ FILES =  \
 	MonoDevelop.Ide.Codons/ProjectTemplateCodon.cs \
 	MonoDevelop.Ide.Codons/SolutionPadCodon.cs \
 	MonoDevelop.Ide.Codons/TaskListViewCodon.cs \
-	MonoDevelop.Ide.Codons/WindowActiveCondition.cs \
 	MonoDevelop.Ide.Codons/WorkbenchContextCodon.cs \
 	MonoDevelop.Ide.Codons/WorkbenchContextCondition.cs \
 	MonoDevelop.Ide.Commands/CustomStringTagProvider.cs \

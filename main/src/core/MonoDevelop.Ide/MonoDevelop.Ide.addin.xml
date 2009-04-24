@@ -27,7 +27,6 @@
 	<ConditionType id="combineopen" type="MonoDevelop.Ide.Codons.CombineOpenCondition" />
 	<ConditionType id="activeproject" type="MonoDevelop.Ide.Codons.ProjectActiveCondition" />
 	<ConditionType id="activelanguage" type="MonoDevelop.Ide.Codons.LanguageActiveCondition" />
-	<ConditionType id="activewindow" type="MonoDevelop.Ide.Codons.WindowActiveCondition" />
 	<ConditionType id="activecontext" type="MonoDevelop.Ide.Codons.WorkbenchContextCondition" />
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/DisplayBindings" name = "Display bindings">

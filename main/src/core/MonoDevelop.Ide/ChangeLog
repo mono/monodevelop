@@ -2,6 +2,16 @@
 
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Codons/WindowOpenCondition.cs:
+	* MonoDevelop.Ide.Codons/ProjectOpenCondition.cs:
+	* MonoDevelop.Ide.Codons/WindowActiveCondition.cs: Removed
+	  some old unused code.
+
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.Gui.Content/IParsableContent.cs: Removed
 	  unused interface.
 

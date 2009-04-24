@@ -261,7 +261,6 @@
     <Compile Include="MonoDevelop.Ide.Codons\CombineOpenCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\LanguageActiveCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\ProjectActiveCondition.cs" />
-    <Compile Include="MonoDevelop.Ide.Codons\WindowActiveCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\WorkbenchContextCondition.cs" />
     <Compile Include="MonoDevelop.Ide.ExternalTools\ExternalTool.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\IncludeFilesDialog.cs" />
