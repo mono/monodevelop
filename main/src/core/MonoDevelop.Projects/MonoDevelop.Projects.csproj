@@ -262,7 +262,6 @@
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\DomTypeProxy.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\DatabaseProjectDom.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\ParserDatabase.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\IParserService.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\ClassInformationEventHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Parser\IParserDatabase.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Parser\CommentTasksChangedEventHandler.cs" />

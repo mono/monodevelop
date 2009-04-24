@@ -61,7 +61,6 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs \
 	MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs \
 	MonoDevelop.Projects.Dom.Serialization/FileEntry.cs \
-	MonoDevelop.Projects.Dom.Serialization/IParserService.cs \
 	MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs \
 	MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs \

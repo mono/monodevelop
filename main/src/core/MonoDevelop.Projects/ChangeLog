@@ -1,3 +1,11 @@
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj: 
+
+	* MonoDevelop.Projects.Dom.Serialization/IParserService.cs:
+	  Removed some unused code.
+
 2009-04-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Text/TextEncoding.cs: Added some
