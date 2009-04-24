@@ -1,5 +1,10 @@
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Search is
+	  now the default button.
+
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: File name
 	  column is now resizable.
 

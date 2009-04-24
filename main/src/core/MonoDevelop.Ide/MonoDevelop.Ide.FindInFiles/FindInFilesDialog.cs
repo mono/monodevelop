@@ -96,7 +96,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				
 				ShowAll ();
 			}
-			
+			comboboxentryFind.Entry.Activated += delegate {
+				buttonSearch.Click ();
+			};
 			checkbuttonFileMask.Toggled += CheckSensitivity;
 			buttonReplace.Clicked += HandleReplaceClicked;
 			buttonSearch.Clicked += HandleSearchClicked;
