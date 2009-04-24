@@ -87,6 +87,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			TreeViewColumn fileNameColumn = new TreeViewColumn ();
 			fileNameColumn.SortIndicator = true;
+			fileNameColumn.Resizable = true;
 			fileNameColumn.SortColumnId  = 0;
 			fileNameColumn.Title = GettextCatalog.GetString ("File");
 			CellRendererPixbuf fileNamePixbufRenderer = new CellRendererPixbuf ();

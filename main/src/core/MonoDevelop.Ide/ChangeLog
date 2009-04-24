@@ -1,5 +1,10 @@
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: File name
+	  column is now resizable.
+
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.addin.xml:
