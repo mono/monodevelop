@@ -199,10 +199,12 @@ namespace MonoDevelop.CSharpBinding
 				return null;
 			}
 		}
+		
 		public ICSharpCode.NRefactory.Ast.CompilationUnit LastUnit {
 			get;
 			set;
 		}
+		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (content))) {

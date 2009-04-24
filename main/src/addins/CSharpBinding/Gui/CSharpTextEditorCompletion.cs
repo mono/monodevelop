@@ -1090,7 +1090,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					//System.Console.WriteLine ("scan:" + m);
 					if (m.IsSpecialName || m.IsInternal && searchType.SourceProject != Document.Project)
 						continue;
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
+					if (t.ClassType == ClassType.Interface || (isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
 						// filter out the "Finalize" methods, because finalizers should be done with destructors.
 						if (m is IMethod && m.Name == "Finalize")
 							continue;
