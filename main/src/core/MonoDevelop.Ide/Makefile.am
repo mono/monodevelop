@@ -160,7 +160,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IFoldable.cs \
 	MonoDevelop.Ide.Gui.Content/INavigable.cs \
 	MonoDevelop.Ide.Gui.Content/IndentStyle.cs \
-	MonoDevelop.Ide.Gui.Content/IParsableContent.cs \
 	MonoDevelop.Ide.Gui.Content/IPathedDocument.cs \
 	MonoDevelop.Ide.Gui.Content/IPrintable.cs \
 	MonoDevelop.Ide.Gui.Content/ISmartIndenter.cs \
