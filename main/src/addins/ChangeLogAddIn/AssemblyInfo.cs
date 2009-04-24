@@ -6,4 +6,4 @@ using System.Reflection;
 [assembly: AssemblyTitle ("ChangeLog Add-in")]
 [assembly: AssemblyDescription ("Add-in for working with ChangeLog files")]
 [assembly: AssemblyVersion ("2.1.0")]
-[assembly: AssemblyCopyright ("GPL")]
+[assembly: AssemblyCopyright ("MIT X11")]
