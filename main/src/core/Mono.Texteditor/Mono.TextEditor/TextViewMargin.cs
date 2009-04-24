@@ -120,7 +120,7 @@ namespace Mono.TextEditor
 				selectedRegions.Clear ();
 			};
 			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
-				if (selectedRegions == null || selectedRegions.Count == 0)
+				if (selectedRegions.Count == 0)
 					return;
 				List<ISegment> newRegions = new List<ISegment> (this.selectedRegions);
 				Document.UpdateSegments (newRegions, e);
@@ -131,7 +131,7 @@ namespace Mono.TextEditor
 				}
 			};
 			
-			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged; 
+			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 		}
 		
 		void HandleSearchChanged (object sender, EventArgs args)
@@ -139,6 +139,10 @@ namespace Mono.TextEditor
 			if (textEditor.HighlightSearchPattern) {
 				if (searchPatternWorker != null && searchPatternWorker.IsBusy) 
 					searchPatternWorker.CancelAsync ();
+				if (string.IsNullOrEmpty (this.textEditor.SearchPattern)) {
+					selectedRegions.Clear ();
+					return;
+				}
 				searchPatternWorker = new System.ComponentModel.BackgroundWorker ();
 				searchPatternWorker.WorkerSupportsCancellation = true;
 				searchPatternWorker.DoWork += delegate(object s, System.ComponentModel.DoWorkEventArgs e) {

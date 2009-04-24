@@ -1,5 +1,10 @@
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Improved search pattern
+	  update.
+
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/SelectionActions.cs: Select All now works
 	  correct.
