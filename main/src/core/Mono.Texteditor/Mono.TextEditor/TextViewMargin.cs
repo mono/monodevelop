@@ -1109,7 +1109,7 @@ namespace Mono.TextEditor
 					continue;
 				
 				if (folding.IsFolded) {
-					layout.SetText (Document.GetTextAt (offset, foldOffset - offset).Replace ("\t", new string (' ', textEditor.Options.TabSize)));
+					layout.SetText (Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.Length - offset))).Replace ("\t", new string (' ', textEditor.Options.TabSize)));
 					layout.GetPixelSize (out width, out height);
 					xPos += width;
 					offset = folding.EndLine.Offset + folding.EndColumn;
