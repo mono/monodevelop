@@ -2,7 +2,7 @@
        namespace   = "MonoDevelop"
        name	 = "NUnit support"
        author	 = "Lluis Sanchez, John Luke"
-       copyright = "GPL"
+       copyright = "MIT X11"
        url       = "http://monodevelop.com"
        description = "Integrates NUnit into the MonoDevelop IDE."
 	   category    = "IDE extensions"
