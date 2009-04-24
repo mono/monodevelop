@@ -895,7 +895,7 @@ namespace Mono.TextEditor
 			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)e.X, (int)e.Y)) {
 				dragContents = new ClipboardActions.CopyOperation ();
 				dragContents.CopyData (textEditorData);
-				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList, DragAction.Copy | DragAction.Move, 1, e);
+				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList (textEditorData.SelectionMode), DragAction.Copy | DragAction.Move, 1, e);
 				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
 				Gtk.Drag.SetIconWidget (context, window, 0, 0);
 				selection = Selection.Clone (MainSelection);
@@ -985,6 +985,7 @@ namespace Mono.TextEditor
 		{
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
+			UpdateAdjustments ();
 //			Adjustment adj;
 			//adj.Upper
 			if (this.textEditorData.VAdjustment.Upper < Allocation.Height)  {
@@ -1007,6 +1008,7 @@ namespace Mono.TextEditor
 		{
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
+			UpdateAdjustments ();
 			if (this.textEditorData.VAdjustment.Upper < Allocation.Height)  {
 				this.textEditorData.VAdjustment.Value = 0;
 			} else {
@@ -1177,17 +1179,22 @@ namespace Mono.TextEditor
 				repaint = true;
 			}
 		}
+		void UpdateAdjustments ()
+		{
+			int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount - 1);
+			if (oldRequest != lastVisibleLine) {
+				SetAdjustments (this.Allocation);
+				oldRequest = lastVisibleLine;
+			}
+		}
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)
 				return true;
 			
 			lock (disposeLock) {
-				int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount - 1);
-				if (oldRequest != lastVisibleLine) {
-					SetAdjustments (this.Allocation);
-					oldRequest = lastVisibleLine;
-				}
+				UpdateAdjustments ();
+				
 				//RenderMargins (e.Window, e.Area);
 				
 				if (repaint) {

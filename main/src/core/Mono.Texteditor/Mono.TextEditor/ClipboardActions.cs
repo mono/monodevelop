@@ -57,7 +57,7 @@ namespace Mono.TextEditor
 			Clipboard clipboard = Clipboard.Get (CopyOperation.CLIPBOARD_ATOM);
 			operation.CopyData (data);
 			
-			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.TargetList, operation.ClipboardGetFunc,
+			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.TargetList (data.SelectionMode), operation.ClipboardGetFunc,
 			                       operation.ClipboardClearFunc);
 		}
 	
@@ -232,14 +232,14 @@ namespace Mono.TextEditor
 				return rtf.ToString ();
 			}
 			
-			public static Gtk.TargetList TargetList {
-				get {
-					Gtk.TargetList list = new Gtk.TargetList ();
-					list.Add (RTF_ATOM, /* FLAGS */ 0, RichTextType);
+			public static Gtk.TargetList TargetList (SelectionMode mode) 
+			{
+				Gtk.TargetList list = new Gtk.TargetList ();
+				list.Add (RTF_ATOM, /* FLAGS */ 0, RichTextType);
+				if (mode == SelectionMode.Block)
 					list.Add (MD_ATOM, /* FLAGS */ 0, MonoTextType);
-					list.AddTextTargets (TextType);
-					return list;
-				}
+				list.AddTextTargets (TextType);
+				return list;
 			}
 			
 			void CopyData (TextEditorData data, Selection selection)
@@ -262,7 +262,6 @@ namespace Mono.TextEditor
 					case SelectionMode.Normal:
 						ISegment segment = selection.GetSelectionRange (data);
 						copiedDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
-						monoDocument.Text   = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
 						LineSegment line    = data.Document.GetLineByOffset (segment.Offset);
 						Stack<Span> spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, segment.Offset);
@@ -328,7 +327,7 @@ namespace Mono.TextEditor
 		{
 			CopyOperation operation = new CopyOperation (data, data.MainSelection);
 			Clipboard clipboard = Clipboard.Get (CopyOperation.PRIMARYCLIPBOARD_ATOM);
-			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.TargetList, operation.ClipboardGetFuncLazy,
+			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.TargetList (data.SelectionMode), operation.ClipboardGetFuncLazy,
 			                       operation.ClipboardClearFunc);
 		}
 		
@@ -396,13 +395,13 @@ namespace Mono.TextEditor
 					//int oldLine = data.Caret.Line;
 					int textLength = data.Insert (insertionOffset, text);
 					result = textLength;
-					if (data.Caret.Offset >= insertionOffset) 
-						data.Caret.Offset += textLength;
+					
 					if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset) 
 						data.SelectionRange.Offset += textLength;
 					if (data.IsSomethingSelected && data.MainSelection.GetAnchorOffset (data) >= insertionOffset) 
 						data.MainSelection.Anchor = data.Document.OffsetToLocation (data.MainSelection.GetAnchorOffset (data) + textLength);
 					data.Caret.PreserveSelection = false;
+					data.Caret.Offset = insertionOffset + textLength;
 					data.Document.EndAtomicUndo ();
 				});
 			}
@@ -420,11 +419,12 @@ namespace Mono.TextEditor
 			if (!data.CanEditSelection)
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			int offset = data.Caret.Offset;
 			if (data.Caret.Column > line.EditableLength) {
-				int offset = data.Caret.Offset;
 				string text = data.GetVirtualSpaces (data.Caret.Line, data.Caret.Column);
 				int textLength = data.Insert (data.Caret.Offset, text);
-				data.Caret.Offset = offset + textLength;
+				offset += textLength;
+				data.Caret.Offset = offset;
 			}
 			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
 		}

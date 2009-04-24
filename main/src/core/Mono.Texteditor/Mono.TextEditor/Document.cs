@@ -90,6 +90,7 @@ namespace Mono.TextEditor
 				if (LineInserted != null) 
 					LineInserted (this, args);
 			};*/
+			TextReplacing += UpdateFoldSegmentsOnReplace;
 		}
 		
 		public event EventHandler<LineEventArgs> LineChanged;
@@ -715,6 +716,20 @@ namespace Mono.TextEditor
 			public FoldSegmentTreeNode () : this (null)
 			{
 			}
+			
+			
+			public void UpdateFoldSegmentsOnReplace (ReplaceEventArgs e)
+			{
+				for (int i = 0; i < childNodes.Count; i++) {
+					FoldSegmentTreeNode child = childNodes[i];
+					if (e.Offset <= child.FoldSegment.Offset && child.FoldSegment.EndOffset <= e.Offset + e.Count) {
+						childNodes.RemoveAt (i);
+						i--;
+						continue;
+					}
+					child.UpdateFoldSegmentsOnReplace (e);
+				}
+			}
 
 			public FoldSegmentTreeNode (FoldSegment foldSegment) 
 			{
@@ -746,8 +761,6 @@ namespace Mono.TextEditor
 			
 			public IEnumerable<FoldSegment> GetFoldingsFromOffset (int offset)
 			{
-//				return FoldSegments.Where (s => s.Offset <= offset && offset <= s.EndOffset);
-				
 				Stack<FoldSegmentTreeNode> stack = new Stack<FoldSegmentTreeNode> ();
 				stack.Push (this);
 				while (stack.Count > 0) {
@@ -764,8 +777,6 @@ namespace Mono.TextEditor
 			
 			public IEnumerable<FoldSegment> GetFoldingContaining (LineSegment line)
 			{
-//				return FoldSegments.Where (s => s.StartLine.Offset <= line.Offset && line.Offset <= s.EndLine.Offset);
-
 				Stack<FoldSegmentTreeNode> stack = new Stack<FoldSegmentTreeNode> ();
 				stack.Push (this);
 				while (stack.Count > 0) {
@@ -784,6 +795,7 @@ namespace Mono.TextEditor
 					}
 				}
 			}
+			
 			
 			public IEnumerable<FoldSegment> GetStartFoldings (LineSegment line)
 			{
@@ -932,6 +944,10 @@ namespace Mono.TextEditor
 				foldSegmentWorkerThread = new FoldSegmentWorkerThread (this, newSegments);
 				foldSegmentWorkerThread.Start ();
 			}
+		}
+		void UpdateFoldSegmentsOnReplace (object sender, ReplaceEventArgs e)
+		{
+			foldSegmentTree.UpdateFoldSegmentsOnReplace (e);
 		}
 		
 		void InterruptFoldWorker ()
