@@ -2,7 +2,7 @@
        namespace   = "MonoDevelop"
        name        = "MonoDevelop Gui Services"
        author      = "Lluis Sanchez, Todd Berman, John Luke, Mike Krueger"
-       copyright   = "GPL"
+       copyright   = "MIT X11"
        url         = "http://www.monodevelop.com"
        description = "Provides basic GUI services"
 	   category    = "MonoDevelop Core"
