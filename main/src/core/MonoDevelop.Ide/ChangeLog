@@ -1,3 +1,8 @@
+2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Track
+	  KeyBindingManager API.
+
 2009-04-23  Federico Di Gregorio  <fog@initd.org>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:

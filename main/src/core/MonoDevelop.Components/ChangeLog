@@ -1,3 +1,12 @@
+2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs:
+	  Remwork raw key remapping code. Decompose the real keys
+	  behind the Mac's alt-composed chars.
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Track
+	  KeyBindingManager API.
+
 2009-04-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.Commands.ExtensionNodes/CommandCodon.cs:

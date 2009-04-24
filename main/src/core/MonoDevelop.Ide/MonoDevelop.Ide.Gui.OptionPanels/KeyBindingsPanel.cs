@@ -262,7 +262,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			accelComplete = false;
 			bool combinationComplete;
-			accel = KeyBindingManager.AccelFromKey (key, mod, out combinationComplete);
+			accel = KeyBindingManager.AccelFromKey (e.Event, out combinationComplete);
 			if (combinationComplete) {
 				CurrentBinding = KeyBindingManager.Binding (mode, accel);
 				accelIncomplete = false;

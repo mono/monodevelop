@@ -138,18 +138,19 @@ namespace MonoDevelop.Components.Commands
 		static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			bool complete;
-			return AccelFromKey (key, modifier, out complete, false);
+			return AccelFromKey (key, modifier, out complete);
 		}
 		
-		public static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier, out bool complete)
+		public static string AccelFromKey (Gdk.EventKey raw, out bool complete)
 		{
-			return AccelFromKey (key, modifier, out complete, true);
+			Gdk.Key key;
+			Gdk.ModifierType modifier;
+			MapRawKeys (raw, out key, out modifier);
+			return AccelFromKey (key, modifier, out complete);
 		}
 		
-		static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier, out bool complete, bool remapRawKeys)
+		static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier, out bool complete)
 		{
-			if (remapRawKeys)
-				MapRawKeys (ref modifier, ref key);
 			bool keyIsModifier;
 			string modifierlabel = ModifierToPartialAccel (modifier, key, out keyIsModifier);
 			complete = !keyIsModifier;
@@ -286,15 +287,20 @@ namespace MonoDevelop.Components.Commands
 			return mode + "|" + accel;
 		}
 		
-		//this is a workaround for a common X mapping issue
-		//where shift-alt is translated to the meta key
-		static void MapRawKeys (ref Gdk.ModifierType mod, ref Gdk.Key key)
+		
+		static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod)
 		{
+			key = evt.Key;
+			mod = evt.State;
+			
 			if (isX11) {
+				//this is a workaround for a common X mapping issue
+				//where shift-alt is translated to the meta key
 				if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
 					key = Gdk.Key.Alt_L;
 			}
 			
+			//HACK: the MAC GTK+ port currently does some horrible, un-GTK-ish key mappings
 			if (isMac && !isX11) {
 				if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
 					mod ^= Gdk.ModifierType.Mod1Mask;
@@ -304,8 +310,19 @@ namespace MonoDevelop.Components.Commands
 					mod |= Gdk.ModifierType.Mod1Mask;
 					mod ^= Gdk.ModifierType.Mod5Mask;
 				}
+				if (evt.Group == (byte) 1) {
+					mod |= Gdk.ModifierType.Mod1Mask;
+					//FIXME: LookupKey isn't implemented on Mac, so we ahve to use this workaround
+					uint[] keyvals;
+					Gdk.KeymapKey [] keys;
+					keymap.GetEntriesForKeycode (evt.HardwareKeycode, out keys, out keyvals);
+					if (keyvals.Length > 0)
+						key = (Gdk.Key) keyvals[0];
+				}
 			}
 		}
+		
+		static Gdk.Keymap keymap = Gdk.Keymap.Default;
 		
 		static string ModifierToPartialAccel (Gdk.ModifierType mod, Gdk.Key key, out bool keyIsModifier)
 		{
