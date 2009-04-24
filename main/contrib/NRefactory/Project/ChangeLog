@@ -1,3 +1,9 @@
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Lexer/AbstractLexer.cs: Allow whitespaces as symbol
+	  separator/Fixed 'Bug 497682 - Specific case in which the
+	  class & method not shown'.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* NRefactory.csproj: kill pre task, update outdirs

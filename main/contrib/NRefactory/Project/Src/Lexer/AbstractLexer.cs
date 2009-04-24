@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.Parser
 		protected static IEnumerable<string> GetSymbols (string symbols)
 		{
 			if (!string.IsNullOrEmpty(symbols)) {
-				foreach (string symbol in symbols.Split (';')) {
+				foreach (string symbol in symbols.Split (';', ' ', '\t')) {
 					string s = symbol.Trim ();
 					if (s.Length == 0)
 						continue;
