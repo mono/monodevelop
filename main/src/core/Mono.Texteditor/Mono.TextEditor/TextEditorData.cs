@@ -492,16 +492,15 @@ namespace Mono.TextEditor
 					yield return this.document.GetLine (this.caret.Line);
 				} else {
 					foreach (Selection selection in Selections) {
-						ISegment selectionRange = selection.GetSelectionRange (this);
-						int startLineNr = Document.OffsetToLineNumber (selectionRange.Offset);
+						int startLineNr = selection.MinLine;
 						RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = this.document.GetLine (startLineNr).Iter;
-						LineSegment endLine = Document.GetLineByOffset (selectionRange.EndOffset);
-						bool skipEndLine = selectionRange.EndOffset == endLine.Offset;
+						LineSegment endLine = Document.GetLine (selection.MaxLine);
+						bool skipEndLine = selection.Anchor < selection.Lead ? selection.Lead.Column == 0 : selection.Anchor.Column == 0;
 						do {
 							if (iter.Current == endLine && skipEndLine)
 								break;
 							yield return iter.Current;
-							if (iter.Current == Document.GetLineByOffset (selectionRange.EndOffset))
+							if (iter.Current == endLine)
 								break;
 						} while (iter.MoveNext ());
 					}

@@ -1,5 +1,11 @@
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditorData.cs: Fixed selected lines
+	  property. Several IDE commands used that (ex.
+	  comment/uncomment). They should now work correctly again.
+
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/SearchRequest.cs: Only fire change event
 	  when the value actually changed.
 
