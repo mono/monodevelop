@@ -317,7 +317,13 @@ namespace MonoDevelop.SourceEditor
 							
 						}
 						widget.textEditorData.Document.UpdateFoldSegments (foldSegments);
-						widget.isInitialParseUpdate = false;
+						if (widget.isInitialParseUpdate) {
+							Application.Invoke (delegate {
+								widget.textEditorData.Document.WaitForFoldUpdateFinished ();
+								widget.TextEditor.CenterToCaret ();
+							});
+							widget.isInitialParseUpdate = false;
+						}
 					}
 					widget.UpdateAutocorTimer ();
 					widget.PopulateClassCombo ();
