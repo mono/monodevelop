@@ -40,8 +40,10 @@ namespace Mono.TextEditor
 				return wholeWordOnly;
 			}
 			set {
-				wholeWordOnly = value;
-				OnChanged ();
+				if (wholeWordOnly != value) {
+					wholeWordOnly = value;
+					OnChanged ();
+				}
 			}
 		}
 		
@@ -50,8 +52,10 @@ namespace Mono.TextEditor
 				return searchPattern;
 			}
 			set {
-				searchPattern = value;
-				OnChanged ();
+				if (searchPattern != value) {
+					searchPattern = value;
+					OnChanged ();
+				}
 			}
 		}
 		
@@ -60,8 +64,10 @@ namespace Mono.TextEditor
 				return caseSensitive;
 			}
 			set {
-				caseSensitive = value;
-				OnChanged ();
+				if (caseSensitive != value) {
+					caseSensitive = value;
+					OnChanged ();
+				}
 			}
 		}
 		

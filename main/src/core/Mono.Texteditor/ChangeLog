@@ -1,5 +1,10 @@
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/SearchRequest.cs: Only fire change event
+	  when the value actually changed.
+
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: Fixed bug in code
 	  templates.
 
