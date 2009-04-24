@@ -1,6 +1,13 @@
 2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.Commands/KeyBindingManager.cs:
+	  Refactor out GetRootKey method from MapRawKeys. It's
+	  currently only used on the Mac platform but could be used by
+	  others. Also cache the mappings.
+
+2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs:
 	  Remwork raw key remapping code. Decompose the real keys
 	  behind the Mac's alt-composed chars.
 

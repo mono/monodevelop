@@ -312,17 +312,45 @@ namespace MonoDevelop.Components.Commands
 				}
 				if (evt.Group == (byte) 1) {
 					mod |= Gdk.ModifierType.Mod1Mask;
-					//FIXME: LookupKey isn't implemented on Mac, so we ahve to use this workaround
-					uint[] keyvals;
-					Gdk.KeymapKey [] keys;
-					keymap.GetEntriesForKeycode (evt.HardwareKeycode, out keys, out keyvals);
-					if (keyvals.Length > 0)
-						key = (Gdk.Key) keyvals[0];
+					key = GetRootKey (evt);
 				}
 			}
+			
+			
 		}
 		
-		static Gdk.Keymap keymap = Gdk.Keymap.Default;
+		static Dictionary<Gdk.Key,Gdk.Key> hardwareMappings;
+		static Gdk.Keymap keymap;
+		
+		static Gdk.Key GetRootKey (Gdk.EventKey evt)
+		{
+			if (keymap == null) {
+				keymap = Gdk.Keymap.Default;
+				keymap.KeysChanged += delegate { hardwareMappings.Clear (); };
+				hardwareMappings = new Dictionary<Gdk.Key,Gdk.Key> ();
+			}
+			
+			Gdk.Key ret;
+			if (hardwareMappings.TryGetValue (evt.Key, out ret))
+				return ret;
+			
+			//FIXME: LookupKey isn't implemented on Mac, so we have to use this workaround
+			uint[] keyvals;
+			Gdk.KeymapKey [] keys;
+			keymap.GetEntriesForKeycode (evt.HardwareKeycode, out keys, out keyvals);
+			
+			for (uint i = 0; i < keys.Length; i++) {
+				if (keys[i].Group == 0 && keys[i].Level == 0) {
+					ret = (Gdk.Key)keyvals[i];
+					foreach (Gdk.Key key in keyvals)
+						hardwareMappings[key] = ret;
+					return ret;
+				}
+			}
+			
+			//failed, but avoid looking it up again
+			return hardwareMappings[evt.Key] = evt.Key;
+		}
 		
 		static string ModifierToPartialAccel (Gdk.ModifierType mod, Gdk.Key key, out bool keyIsModifier)
 		{
