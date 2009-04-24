@@ -985,13 +985,14 @@ namespace Mono.TextEditor
 		{
 			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
-			UpdateAdjustments ();
+			SetAdjustments (this.Allocation);
 //			Adjustment adj;
 			//adj.Upper
 			if (this.textEditorData.VAdjustment.Upper < Allocation.Height)  {
 				this.textEditorData.VAdjustment.Value = 0;
 				return;
 			}
+			this.textEditorData.HAdjustment.Value = 0;
 //			int yMargin = 1 * this.LineHeight;
 			int xMargin = 10 * this.textViewMargin.CharWidth;
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
@@ -1179,6 +1180,7 @@ namespace Mono.TextEditor
 				repaint = true;
 			}
 		}
+		
 		void UpdateAdjustments ()
 		{
 			int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount - 1);
@@ -1187,6 +1189,7 @@ namespace Mono.TextEditor
 				oldRequest = lastVisibleLine;
 			}
 		}
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)

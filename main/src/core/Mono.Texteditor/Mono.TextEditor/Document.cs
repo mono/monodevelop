@@ -914,15 +914,15 @@ namespace Mono.TextEditor
 					newFoldSegmentTree.AddSegment (oldSegments [i]);
 					i++;
 				}
-			
-				GLib.Timeout.Add (0, delegate {
+				doc.foldSegmentTree = newFoldSegmentTree;
+				
+				Gtk.Application.Invoke (delegate {
 //					bool needsUpdate = doc.foldSegments.Count != newSegments.Count;
-					doc.foldSegmentTree = newFoldSegmentTree;
 //					if (needsUpdate) {
 						doc.RequestUpdate (new UpdateAll ());
 						doc.CommitDocumentUpdate ();
+					
 //					}
-					return false;
 				});
 				base.Stop ();
 			}
@@ -945,6 +945,15 @@ namespace Mono.TextEditor
 				foldSegmentWorkerThread.Start ();
 			}
 		}
+		
+		public void WaitForFoldUpdateFinished ()
+		{
+			if (foldSegmentWorkerThread != null) {
+				foldSegmentWorkerThread.WaitForFinish ();
+				foldSegmentWorkerThread = null;
+			}
+		}
+		
 		void UpdateFoldSegmentsOnReplace (object sender, ReplaceEventArgs e)
 		{
 			foldSegmentTree.UpdateFoldSegmentsOnReplace (e);

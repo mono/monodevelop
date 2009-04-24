@@ -1,6 +1,12 @@
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextEditor.cs: Fixed "Bug 497118 - Code
+	  folding makes debugging annoying".
+
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/ClipboardActions.cs: Fixed some minor text
 	  editor issues.
