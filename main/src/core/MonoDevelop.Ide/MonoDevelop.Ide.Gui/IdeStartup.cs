@@ -173,7 +173,8 @@ namespace MonoDevelop.Ide.Gui
 					Dns.GetHostEntry (Dns.GetHostName ());
 				} catch {
 					using (ErrorDialog dialog = new ErrorDialog (null)) {
-						SplashScreenForm.SplashScreen.Hide ();
+						if (monitor is SplashScreenForm)
+							SplashScreenForm.SplashScreen.Hide ();
 						dialog.Message = GettextCatalog.GetString ("MonoDevelop failed to start. Local hostname cannot be resolved.");
 						dialog.AddDetails (GettextCatalog.GetString ("Your network may be misconfigured. Make sure the hostname of your system is added to the /etc/hosts file."), true);
 						dialog.Run ();
@@ -186,14 +187,17 @@ namespace MonoDevelop.Ide.Gui
 			int reportedFailures = 0;
 			
 			try {
-				//force initialisation
+				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
+				MonoDevelop.Core.Gui.ImageService.Initialize ();
+				
 				if (errorsList.Count > 0) {
 					if (monitor is SplashScreenForm)
 						SplashScreenForm.SplashScreen.Hide ();
 					AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false);
 					if (!dlg.Run ())
 						return 1;
-					SplashScreenForm.SplashScreen.Show ();
+					if (monitor is SplashScreenForm)
+						SplashScreenForm.SplashScreen.Show ();
 					reportedFailures = errorsList.Count;
 				}
 				

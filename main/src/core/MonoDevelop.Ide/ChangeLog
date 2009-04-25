@@ -1,5 +1,12 @@
 2009-04-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Initialize the
+	  ImageService before showing the GUI so that it can register
+	  stock icons for GTK before they get requested by the
+	  toolbars, etc. Fixes invisible icon bug.
+
+2009-04-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Add default
 	  handler for Edit References command.
 

@@ -61,6 +61,11 @@ namespace MonoDevelop.Core.Gui
 			});
 		}
 		
+		public static void Initialize ()
+		{
+			//forces static constructor to run
+		}
+		
 		public static Gdk.Pixbuf MakeTransparent (Gdk.Pixbuf icon, double opacity)
 		{
 			Gdk.Pixbuf gicon = icon.Copy ();

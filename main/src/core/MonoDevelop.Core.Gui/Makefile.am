@@ -59,10 +59,10 @@ FILES =  \
 	MonoDevelop.Core.Gui/GuiService.cs \
 	MonoDevelop.Core.Gui/GuiSyncContext.cs \
 	MonoDevelop.Core.Gui/GuiSyncObject.cs \
+	MonoDevelop.Core.Gui/ImageService.cs \
 	MonoDevelop.Core.Gui/IMementoCapable.cs \
 	MonoDevelop.Core.Gui/MessageService.cs \
 	MonoDevelop.Core.Gui/PixbufList.cs \
-	MonoDevelop.Core.Gui/ImageService.cs \
 	MonoDevelop.Core.Gui/PlatformService.cs \
 	MonoDevelop.Core.Gui/RecentFileStorage.cs \
 	MonoDevelop.Core.Gui/RecentItem.cs \
