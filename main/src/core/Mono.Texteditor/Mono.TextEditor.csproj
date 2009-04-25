@@ -201,6 +201,7 @@
     <EmbeddedResource Include="SyntaxModes\DiffSyntaxMode.xml">
       <LogicalName>DiffSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\LuaSyntaxMode.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
