@@ -243,5 +243,8 @@
 			<File pattern="Makefile|Makefile.am|Makefile.in"/>
 		</MimeType>
 		
+		<MimeType id="text/x-lua" _description="lua files" isText="true">
+			<File pattern="*.lua" />
+		</MimeType>
 	</Extension>
 </Addin>

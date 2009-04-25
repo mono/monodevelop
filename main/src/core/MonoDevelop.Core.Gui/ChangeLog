@@ -1,3 +1,7 @@
+2009-04-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui.addin.xml: Added lua syntax mode.
+
 2009-04-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Flush file order.
