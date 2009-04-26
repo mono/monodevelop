@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Template originator = "Mike Krüger" created = "04/26/2009" lastModified = "04/26/2009">
+	
+	<TemplateConfiguration>
+		<_Name>WoW addin</_Name>
+		<_Category>Lua</_Category>
+		<Icon>md-project</Icon>
+		<LanguageName>Lua</LanguageName>
+		<_Description>Creates an empty WoW addin.</_Description>
+	</TemplateConfiguration>
+	
+	<Combine name = "${ProjectName}" directory = ".">
+		<Project name = "${ProjectName}" directory = "."/>
+	</Combine>
+</Template>

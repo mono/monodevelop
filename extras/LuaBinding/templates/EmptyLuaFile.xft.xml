@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<Template Language="Lua">
+	
+	<TemplateConfiguration>
+		<_Name>Empty File</_Name>
+		<Icon>md-text-file-icon</Icon>
+		<_Category>General</_Category>
+		<LanguageName>Lua</LanguageName>
+		<_Description>Creates an empty Lua file.</_Description>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".lua" DefaultName="EmptyLuaFile">
+			<![CDATA[-- created on ${Date} at ${Time}]]>
+		</File>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>
