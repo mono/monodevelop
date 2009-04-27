@@ -1122,7 +1122,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
 		protected void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
 		{
-			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (view.ContentName);
+			ILanguageBinding binding = LanguageBindingService.GetBindingPerFileName (view.ContentName);
 			info.Visible = binding != null && !String.IsNullOrEmpty (binding.SingleLineCommentTag);
 		}
 		
@@ -1130,7 +1130,7 @@ namespace MonoDevelop.SourceEditor
 		public void ToggleCodeComment ()
 		{
 			bool comment = false;
-			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (view.ContentName);
+			ILanguageBinding binding = LanguageBindingService.GetBindingPerFileName (view.ContentName);
 			if (binding == null || String.IsNullOrEmpty (binding.SingleLineCommentTag))
 				return;
 			string commentTag = binding.SingleLineCommentTag;
