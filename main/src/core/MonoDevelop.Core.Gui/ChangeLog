@@ -1,3 +1,7 @@
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui.addin.xml: Added IL mime type.
+
 2009-04-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core.Gui.addin.xml: Added lua syntax mode.

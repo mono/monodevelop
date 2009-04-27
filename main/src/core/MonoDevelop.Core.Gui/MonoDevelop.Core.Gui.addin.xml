@@ -246,5 +246,9 @@
 		<MimeType id="text/x-lua" _description="lua files" isText="true">
 			<File pattern="*.lua" />
 		</MimeType>
+		
+		<MimeType id="text/x-ilasm" _description="il files" isText="true">
+			<File pattern="*.il" />
+		</MimeType>
 	</Extension>
 </Addin>
