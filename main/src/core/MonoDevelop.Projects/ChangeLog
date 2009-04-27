@@ -1,5 +1,9 @@
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/DotNetProject.cs: Fix nullref.
+
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
 	  Throw an error when trying to load a project of an unknown
 	  type. Fixes bug #497351 - MD opens projects with subtype

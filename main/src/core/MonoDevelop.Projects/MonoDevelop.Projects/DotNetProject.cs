@@ -580,6 +580,8 @@ namespace MonoDevelop.Projects
 		protected internal override bool OnGetCanExecute (ExecutionContext context, string configuration)
 		{
 			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetConfiguration (configuration);
+			if (config == null)
+				return false;
 			ExecutionCommand cmd = CreateExecutionCommand (config);
 			
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) &&
