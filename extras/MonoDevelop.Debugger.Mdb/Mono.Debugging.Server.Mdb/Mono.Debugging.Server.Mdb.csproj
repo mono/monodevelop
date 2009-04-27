@@ -119,9 +119,6 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="MonoDevelop.SourceEditor2, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Debugging.Backend.Mdb\Mono.Debugging.Backend.Mdb.csproj">
@@ -160,6 +157,8 @@
     <Compile Include="EvaluationContext.cs" />
     <Compile Include="TimeOutException.cs" />
     <Compile Include="RuntimeInvokeManager.cs" />
+    <Compile Include="MdbAdaptor.cs" />
+    <Compile Include="MdbAdaptorFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -181,4 +180,9 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <EmbeddedResource Include="MdbAdaptor-2-6.cs">
+      <LogicalName>MdbAdaptor-2-6.cs</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

@@ -1,3 +1,13 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile:
+	* MdbAdaptor.cs:
+	* DebuggerServer.cs:
+	* MdbAdaptor-2-6.cs:
+	* BacktraceWrapper.cs:
+	* MdbAdaptorFactory.cs:
+	* Mono.Debugging.Server.Mdb.csproj: Initial support for XSP.
+
 2009-03-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* NRefactoryEvaluator.cs: Fix typo.

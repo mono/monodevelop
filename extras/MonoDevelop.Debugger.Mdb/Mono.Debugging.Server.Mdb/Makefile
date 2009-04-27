@@ -59,6 +59,8 @@ FILES =  \
 	ICollectionAdaptor.cs \
 	IndexerValueReference.cs \
 	LiteralValueReference.cs \
+	MdbAdaptor.cs \
+	MdbAdaptorFactory.cs \
 	NamespaceValueReference.cs \
 	NRefactoryEvaluator.cs \
 	NullValueReference.cs \
@@ -77,7 +79,7 @@ FILES =  \
 
 DATA_FILES = 
 
-RESOURCES = 
+RESOURCES = MdbAdaptor-2-6.cs 
 
 EXTRAS = \
 	ChangeLog 

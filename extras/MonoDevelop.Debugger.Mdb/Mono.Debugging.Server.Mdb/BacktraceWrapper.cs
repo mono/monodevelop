@@ -118,6 +118,7 @@ namespace DebuggerServer
 		
 		public ObjectValue[] GetAllLocals (int frameIndex, int timeout)
 		{
+			DateTime tt = DateTime.Now;
 			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
 			
 			List<ObjectValue> locals = new List<ObjectValue> ();
@@ -140,7 +141,7 @@ namespace DebuggerServer
 			
 			// Local variables
 			locals.AddRange (GetLocalVariables (frameIndex, timeout));
-			
+			Console.WriteLine ("pp server GetAllLocals: " + (DateTime.Now - tt).TotalMilliseconds);
 			return locals.ToArray ();
 		}
 		

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Lifetime;
@@ -24,6 +25,7 @@ namespace DebuggerServer
 		MD.DebuggerSession session;
 		MD.Process process;
 		MD.GUIManager guiManager;
+		MdbAdaptor mdbAdaptor;
 		int max_frames;
 		bool internalInterruptionRequested;
 		List<ST.WaitCallback> stoppedWorkQueue = new List<ST.WaitCallback> ();
@@ -56,6 +58,9 @@ namespace DebuggerServer
 			lease.Register(this);
 			max_frames = 100;
 			
+			mdbAdaptor = MdbAdaptorFactory.CreateAdaptor ();
+			Console.WriteLine ("MDB version: " + mdbAdaptor.MdbVersion);
+				
 			ST.Thread t = new ST.Thread ((ST.ThreadStart)EventDispatcher);
 			t.IsBackground = true;
 			t.Start ();
@@ -81,7 +86,7 @@ namespace DebuggerServer
 
 		#region IDebugger Members
 
-		public void Run (DL.DebuggerStartInfo startInfo)
+		public void Run (MonoDebuggerStartInfo startInfo)
 		{
 			try {
 				if (startInfo == null)
@@ -101,6 +106,9 @@ namespace DebuggerServer
 					NotifyStarted ();
 				};
 
+				if (startInfo.IsXsp)
+					mdbAdaptor.SetupXsp (config);
+				
 				DebuggerOptions options = DebuggerOptions.ParseCommandLine (new string[] { startInfo.Command } );
 				options.WorkingDirectory = startInfo.WorkingDirectory;
 				Environment.CurrentDirectory = startInfo.WorkingDirectory;
@@ -250,7 +258,7 @@ namespace DebuggerServer
 				}
 				if (exc == null)
 					throw new Exception ("Unknown exception type.");
-				ev = session.InsertExceptionCatchPoint (process.MainThread, ThreadGroup.Global, exc);
+				ev = session.InsertExceptionCatchPoint (process.MainThread, ThreadGroup.Global, exc, true);
 			}
 			
 			ev.IsEnabled = enable;
