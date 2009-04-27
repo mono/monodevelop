@@ -164,7 +164,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					item = st.CreateInstance (language);
 					if (!string.IsNullOrEmpty (st.Import))
 						targetImports.AddRange (st.Import.Split (':'));
-				}
+				} else
+					throw new InvalidOperationException ("Unknown solution item type.");
 			}
 			if (item == null && itemClass != null)
 				item = (SolutionItem) Activator.CreateInstance (itemClass);

@@ -674,10 +674,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							fileName, sec.Start + 1, projectPath));
 						continue;
 					}
-					
-					items.Add (projectGuid, item);
-					sortedList.Add (item);
-					data.ItemsByGuid [projectGuid] = item;
 
 					MSBuildProjectHandler handler = (MSBuildProjectHandler) item.ItemHandler;
 					handler.SlnProjectContent = lines.GetRange (sec.Start + 1, sec.Count - 2).ToArray ();
@@ -688,9 +684,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					monitor.ReportWarning (GettextCatalog.GetString (
 						"Error while trying to load the project '{0}': {1}", projectPath, e.Message));
 
-					if (item == null)
-						data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));
+					UnknownSolutionItem uitem = new UnknownSolutionItem ();
+					uitem.FileName = projectPath;
+					uitem.LoadError = e.Message;
+					item = uitem;
 				}
+					
+				items.Add (projectGuid, item);
+				sortedList.Add (item);
+				data.ItemsByGuid [projectGuid] = item;
 			}
 			monitor.EndTask ();
 

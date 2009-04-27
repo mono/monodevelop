@@ -1,3 +1,15 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Throw an error when trying to load a project of an unknown
+	  type. Fixes bug #497351 - MD opens projects with subtype
+	  GUIDs it cannot handle.
+
+	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs: If
+	  there is an error while loading the project of a solution,
+	  create the project as an UnknownSolutionItem, so it will
+	  still be shown in the solution pad.
+
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Fixed possible
