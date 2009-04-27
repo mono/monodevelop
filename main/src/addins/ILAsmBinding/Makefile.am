@@ -14,17 +14,21 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
 
 FILES =  \
 	AssemblyInfo.cs \
-	Gui/CompilerParametersPanel.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/ILAsmBinding.CompilerParametersPanelWidget.cs \
+	Gui/CompilerParametersPanelWidget.cs \
 	ILAsmCompilerManager.cs \
 	ILAsmLanguageBinding.cs \
 	Project/ILAsmCompilerParameters.cs
 
 RES =  \
+	gtk-gui/gui.stetic \
 	ILAsmBinding.addin.xml \
 	ILAsmConsoleProject.xpt.xml
 

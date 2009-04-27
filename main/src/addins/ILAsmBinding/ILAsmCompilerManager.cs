@@ -1,197 +1,248 @@
-//  ILAsmCompilerManager.cs
-//
-//  This file was derived from a file from #Develop. 
-//
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
 // 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
+// ILAsmCompilerManager.cs
 //  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Author:
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.CodeDom.Compiler;
-using Gtk;
+using System.Text;
 
-using MonoDevelop.Core.Gui.Components;
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 namespace ILAsmBinding
 {
-	/// <summary>
-	/// Description of ILAsmCompilerManager.	
-	/// </summary>
-	public class ILAsmCompilerManager
+	static class ILAsmCompilerManager
 	{
-		public bool CanCompile(string fileName)
+		static void AppendQuoted (StringBuilder sb, string option, string val)
 		{
-			return Path.GetExtension (fileName).ToLower () == ".il";
+			sb.Append ('"');
+			sb.Append (option);
+			sb.Append (val);
+			sb.Append ("\" ");
 		}
 		
-		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
-			// FIXME: response file?
-			StringBuilder parameters = new StringBuilder();
-			foreach (ProjectFile finfo in projectItems.GetAll<ProjectFile> ()) {
-				if (finfo.Subtype != Subtype.Directory) {
-					if (finfo.BuildAction == "Compile" && CanCompile (finfo.Name)) {
-						parameters.Append (finfo.Name);
-						parameters.Append (" ");
-					}
-				}
-			}
+			ILAsmCompilerParameters compilerParameters = (ILAsmCompilerParameters)configuration.CompilationParameters ?? new ILAsmCompilerParameters ();
+			string outputName       = configuration.CompiledOutputName;
 			
-			parameters.Append("/out:");
-			parameters.Append(configuration.CompiledOutputName);
-			parameters.Append(" ");
+			StringBuilder sb = new StringBuilder ();
+			sb.AppendFormat ("\"/output:{0}\" ", outputName);
+			
+			List<string> gacRoots = new List<string> ();
+			
 			
 			switch (configuration.CompileTarget) {
-				case CompileTarget.Library:
-					parameters.Append("/dll ");
-					break;
+				case CompileTarget.WinExe:
 				case CompileTarget.Exe:
-					parameters.Append("/exe ");
+					sb.Append ("/exe ");
 					break;
-				default:
-					throw new System.NotSupportedException("Unsupported compilation target : " + configuration.CompileTarget);
+				case CompileTarget.Library:
+					sb.Append ("/dll ");
+					break;
 			}
 			
 			if (configuration.DebugMode)
-				parameters.Append("/debug ");
-				
-			string output = String.Empty;
-			string error = String.Empty;
-			TempFileCollection tf = new TempFileCollection();
-			bool pres = DoCompilation (parameters.ToString (), tf, ref output, ref error);
-			BuildResult result = ParseOutput(tf, output, error);
-			if (result.CompilerOutput.Trim () != "")
+				sb.Append ("/debug ");
+			
+			foreach (ProjectFile finfo in projectItems.GetAll<ProjectFile> ()) {
+				if (finfo.Subtype == Subtype.Directory)
+					continue;
+
+				switch (finfo.BuildAction) {
+					case "Compile":
+						AppendQuoted (sb, "", finfo.Name);
+						break;
+					default:
+						continue;
+				}
+			}
+			
+			string output = "";
+			string error  = "";
+			
+			
+			string outstr = "ilasm " + sb.ToString ();
+			monitor.Log.WriteLine (outstr);
+			
+			string workingDir = ".";
+			if (configuration.ParentItem != null) {
+				workingDir = configuration.ParentItem.BaseDirectory;
+				if (workingDir == null)
+					// Dummy projects created for single files have no filename
+					// and so no BaseDirectory.
+					// This is a workaround for a bug in 
+					// ProcessStartInfo.WorkingDirectory - not able to handle null
+					workingDir = ".";
+			}
+
+			LoggingService.LogInfo ("ilasm " + sb.ToString ());
+			
+			//FIXME: is Current the real target framework?
+			Dictionary<string,string> envVars = MonoDevelop.Core.Runtime.SystemAssemblyService.CurrentRuntime.GetToolsEnvironmentVariables ();
+			int exitCode = DoCompilation (outstr, workingDir, envVars, gacRoots, ref output, ref error);
+			
+			BuildResult result = ParseOutput (output, error);
+			if (result.CompilerOutput.Trim ().Length != 0)
 				monitor.Log.WriteLine (result.CompilerOutput);
 			
-			if (!pres && result.ErrorCount == 0)
-				result.AddError (GettextCatalog.GetString ("Compilation failed."));
+			//if compiler crashes, output entire error string
+			if (result.ErrorCount == 0 && exitCode != 0) {
+				if (!string.IsNullOrEmpty (error))
+					result.AddError (error);
+				else
+					result.AddError ("The compiler appears to have crashed without any error output.");
+			}
 			
-			File.Delete(output);
-			File.Delete(error);
+			FileService.DeleteFile (output);
+			FileService.DeleteFile (error);
 			return result;
 		}
-
-		private bool DoCompilation (string outstr, TempFileCollection tf, ref string output, ref string error)
-		{
-			output = Path.GetTempFileName ();
-			error = Path.GetTempFileName ();
-
-			string arguments = String.Format ("-c \"{0} {1} > {2} 2> {3}\"", GetCompilerName (), outstr, output, error);
-			ProcessStartInfo si = new ProcessStartInfo ("/bin/sh", arguments);
-			si.RedirectStandardOutput = true;
-			si.RedirectStandardError = true;
-			si.UseShellExecute = false;
-			Process p = new Process ();
-			p.StartInfo = si;
-			p.Start ();
-			p.WaitForExit ();
-			return p.ExitCode == 0;
-        }
 		
-		string GetCompilerName ()
+		static BuildResult ParseOutput (string stdout, string stderr)
 		{
-			return "ilasm";
-		}
-		
-		BuildResult ParseOutput (TempFileCollection tf, string stdout, string stderr)
-		{
-			StringBuilder compilerOutput = new StringBuilder ();
-			CompilerResults cr = new CompilerResults (tf);
+			BuildResult result = new BuildResult ();
 			
-			foreach (string s in new string[] { stdout, stderr })
-			{
+			StringBuilder compilerOutput = new StringBuilder ();
+			bool typeLoadException = false;
+			foreach (string s in new string[] { stdout, stderr }) {
 				StreamReader sr = File.OpenText (s);
 				while (true) {
-					string curLine = sr.ReadLine ();
-					compilerOutput.Append (curLine);
-					compilerOutput.Append ('\n');
-
-					if (curLine == null)
+					if (typeLoadException) {
+						compilerOutput.Append (sr.ReadToEnd ());
 						break;
-
-					curLine = curLine.Trim ();
-
-					if (curLine.Length == 0)
+					}
+					string curLine = sr.ReadLine();
+					compilerOutput.AppendLine (curLine);
+					
+					if (curLine == null) 
+						break;
+					
+					curLine = curLine.Trim();
+					if (curLine.Length == 0) 
 						continue;
-				
-					CompilerError error = CreateErrorFromString (curLine);
+					
+					if (curLine.StartsWith ("Unhandled Exception: System.TypeLoadException") || 
+					    curLine.StartsWith ("Unhandled Exception: System.IO.FileNotFoundException")) {
+						result.ClearErrors ();
+						typeLoadException = true;
+					}
+					
+					BuildError error = CreateErrorFromString (curLine);
 					
 					if (error != null)
-						cr.Errors.Add (error);
+						result.Append (error);
 				}
-				sr.Close ();
+				sr.Close();
 			}
-			return new BuildResult (cr, compilerOutput.ToString ());
+			if (typeLoadException) {
+				Regex reg  = new Regex (@".*WARNING.*used in (mscorlib|System),.*", RegexOptions.Multiline);
+				if (reg.Match (compilerOutput.ToString ()).Success)
+					result.AddError ("", 0, 0, "", "Error: A referenced assembly may be built with an incompatible CLR version. See the compilation output for more details.");
+				else
+					result.AddError ("", 0, 0, "", "Error: A dependency of a referenced assembly may be missing, or you may be referencing an assembly created with a newer CLR version. See the compilation output for more details.");
+			}
+			result.CompilerOutput = compilerOutput.ToString ();
+			return result;
+		}
+		
+		static int DoCompilation (string outstr, string working_dir, Dictionary<string, string> envVars, List<string> gacRoots, ref string output, ref string error) 
+		{
+			output = Path.GetTempFileName();
+			error = Path.GetTempFileName();
+			
+			StreamWriter outwr = new StreamWriter (output);
+			StreamWriter errwr = new StreamWriter (error);
+			string[] tokens = outstr.Split (' ');
+			
+			outstr = outstr.Substring (tokens[0].Length+1);
+
+			ProcessStartInfo pinfo = new ProcessStartInfo (tokens[0], outstr);
+			pinfo.WorkingDirectory = working_dir;
+			
+			if (gacRoots.Count > 0) {
+				// Create the gac prefix string
+				string gacPrefix = string.Join ("" + Path.PathSeparator, gacRoots.ToArray ());
+				string oldGacVar = Environment.GetEnvironmentVariable ("MONO_GAC_PREFIX");
+				if (!string.IsNullOrEmpty (oldGacVar))
+					gacPrefix += Path.PathSeparator + oldGacVar;
+				pinfo.EnvironmentVariables ["MONO_GAC_PREFIX"] = gacPrefix;
+			}
+			
+			foreach (KeyValuePair<string,string> ev in envVars) {
+				if (ev.Value == null)
+					pinfo.EnvironmentVariables.Remove (ev.Key);
+				else
+					pinfo.EnvironmentVariables [ev.Key] = ev.Value;
+			}
+			
+			pinfo.UseShellExecute = false;
+			pinfo.RedirectStandardOutput = true;
+			pinfo.RedirectStandardError = true;
+			
+			MonoDevelop.Core.Execution.ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
+			pw.WaitForOutput();
+			int exitCode = pw.ExitCode;
+			outwr.Close();
+			errwr.Close();
+			pw.Dispose ();
+			return exitCode;
 		}
 
-		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\s\((?<line>\d*)(,\s(?<column>\d*[\+]*))?\)\s(:|)\s+)*(?<level>\w+)\s*:\s*(?<message>.*)",
-			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-		
-		private static string efile, etext = String.Empty;
-		// FIXME: ilasm seems to use > 1 line per error
-		private static CompilerError CreateErrorFromString (string error)
+		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\s\((?<line>\d*)(,\s(?<column>\d*[\+]*))?\)\s(:|)\s+)*(?<level>\w+)\s*:\s*(?<message>.*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		static BuildError CreateErrorFromString (string error_string)
 		{
-			if (error.StartsWith ("Assembling ")) {
-				int start = error.IndexOf ('\'');
-				int length = error.IndexOf ('\'', start + 1) - start;
-				efile = error.Substring (start, length);
-			}
-			if (error.StartsWith ("syntax error, ")) {
-				etext = error;
-			}
-			if (error.StartsWith ("Error at: ")) {
-				string[] info = error.Substring ("Error at: ".Length).Split (' ');
-				CompilerError cerror = new CompilerError();
-				int col = 0;
-				int line = 0;
-				try {
-					line = int.Parse (info[1].Trim ('(', ')'));
-					col = int.Parse (info[3].Trim ('(', ')'));
-				} catch {}
-				cerror.Line = line;
-				cerror.Column = col;
-				cerror.ErrorText = etext;
-				cerror.FileName = efile;
-				return cerror;
-			}
-			CompilerError err = new CompilerError();
-
-			Match match=regexError.Match (error);
-			if (!match.Success) return null;
-			if (String.Empty != match.Result("${file}"))
-				err.FileName=match.Result("${file}");
-			if (String.Empty != match.Result("${line}"))
-				err.Line=Int32.Parse(match.Result("${line}"));
-			if (String.Empty != match.Result("${column}")) {
-				if (match.Result("${column}") == "255+")
-					err.Column = -1;
-				else
-					err.Column=Int32.Parse(match.Result("${column}"));
-			}
-			if (match.Result("${level}").ToLower () == "warning")
-				err.IsWarning=true;
-			err.ErrorText=match.Result("${message}");
-			return err;
+			// When IncludeDebugInformation is true, prevents the debug symbols stats from breaking this.
+			if (error_string.StartsWith ("WROTE SYMFILE") ||
+			    error_string.StartsWith ("OffsetTable") ||
+			    error_string.StartsWith ("Compilation succeeded") ||
+			    error_string.StartsWith ("Compilation failed"))
+				return null;
+			
+			Match match = regexError.Match(error_string);
+			if (!match.Success) 
+				return null;
+			
+			BuildError error = new BuildError ();
+			error.FileName = match.Result ("${file}") ?? "";
+			
+			string line = match.Result ("${line}");
+			error.Line = !string.IsNullOrEmpty (line) ? Int32.Parse (line) : 0;
+			
+			string col = match.Result ("${column}");
+			if (!string.IsNullOrEmpty (col)) 
+				error.Column = col == "255+" ? -1 : Int32.Parse (col);
+			
+			error.IsWarning   = match.Result ("${level}") == "warning";
+			error.ErrorNumber = match.Result ("${number}");
+			error.ErrorText   = match.Result ("${message}");
+			return error;
 		}
 	}
 }

@@ -54,6 +54,7 @@
     <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -90,13 +91,18 @@
   <ItemGroup>
     <EmbeddedResource Include="ILAsmConsoleProject.xpt.xml" />
     <EmbeddedResource Include="ILAsmBinding.addin.xml" />
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\CompilerParametersPanel.cs" />
     <Compile Include="Project\ILAsmCompilerParameters.cs" />
     <Compile Include="ILAsmCompilerManager.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ILAsmLanguageBinding.cs" />
+    <Compile Include="Gui\CompilerParametersPanelWidget.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="gtk-gui\ILAsmBinding.CompilerParametersPanelWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
