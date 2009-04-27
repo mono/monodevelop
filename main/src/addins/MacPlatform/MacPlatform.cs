@@ -76,7 +76,7 @@ namespace MonoDevelop.Platform
 		}
 
 		public override string DefaultMonospaceFont {
-			get { return "Monaco 12"; }
+			get { return "Osaka Regular-Mono 14"; }
 		}
 		
 		public override string Name {

@@ -1,3 +1,9 @@
+2009-04-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs: Use Osaka Regular-Mono font as a workaround
+	  for kerning-related text selection issues with other
+	  Monospace fonts on Mac.
+
 2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Framework/Carbon.cs: More bindings.
