@@ -1,3 +1,9 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GdbSessionFactory.cs:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.Gdb.make: Track api changes.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure:

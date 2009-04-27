@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.IO;
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger.Gdb
 {
@@ -46,12 +47,13 @@ namespace MonoDevelop.Debugger.Gdb
 			get { return "GNU Debugger (GDB)"; }
 		}
 		
-		public bool CanDebugCommand (string file)
+		public bool CanDebugCommand (ExecutionCommand command)
 		{
-			string ext = System.IO.Path.GetExtension (file).ToLower ();
-			if (ext == ".exe" || ext == ".dll")
+			NativeExecutionCommand cmd = command as NativeExecutionCommand;
+			if (cmd == null)
 				return false;
-			file = FindFile (file);
+			
+			string file = FindFile (cmd.Command);
 			if (!File.Exists (file)) {
 				// The provided file is not guaranteed to exist. If it doesn't
 				// we assume we can execute it because otherwise the run command
@@ -76,6 +78,20 @@ namespace MonoDevelop.Debugger.Gdb
 			}
 			fileCheckCache [file] = data;
 			return data.IsExe;
+		}
+		
+		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
+		{
+			NativeExecutionCommand pec = (NativeExecutionCommand) command;
+			DebuggerStartInfo startInfo = new DebuggerStartInfo ();
+			startInfo.Command = pec.Command;
+			startInfo.Arguments = pec.Arguments;
+			startInfo.WorkingDirectory = pec.WorkingDirectory;
+			if (pec.EnvironmentVariables.Count > 0) {
+				foreach (KeyValuePair<string,string> val in pec.EnvironmentVariables)
+					startInfo.EnvironmentVariables [val.Key] = val.Value;
+			}
+			return startInfo;
 		}
 		
 		public bool IsExecutable (string file)

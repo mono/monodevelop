@@ -60,6 +60,7 @@ RESOURCES = Manifest.addin.xml
 REFERENCES =  \
 	Mono.Posix \
 	-pkg:monodevelop \
+	-pkg:monodevelop-core-addins \
 	System
 
 DLL_REFERENCES = 
