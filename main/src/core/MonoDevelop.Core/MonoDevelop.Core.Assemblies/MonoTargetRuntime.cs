@@ -63,6 +63,10 @@ namespace MonoDevelop.Core.Assemblies
 			get { return monoRuntimeInfo; }
 		}
 		
+		public string Prefix {
+			get { return monoRuntimeInfo.Prefix; }
+		}
+		
 		public override bool IsRunning {
 			get {
 				return monoRuntimeInfo.IsRunning;

@@ -91,8 +91,8 @@ namespace MonoDevelop.Core.Assemblies
 			if (!Directory.Exists (Path.Combine (libDir, "mono")))
 				return false;
 			string binDir = Path.Combine (prefix, "bin");
-			envVars ["PATH"] = Environment.ExpandEnvironmentVariables (libDir + Path.PathSeparator + binDir + Path.PathSeparator + "$PATH");
-			envVars ["LD_LIBRARY_PATH"] = Environment.ExpandEnvironmentVariables (libDir + Path.PathSeparator + "$LD_LIBRARY_PATH");
+			envVars ["PATH"] = libDir + Path.PathSeparator + binDir + Path.PathSeparator + Environment.GetEnvironmentVariable ("PATH");
+			envVars ["LD_LIBRARY_PATH"] = libDir + Path.PathSeparator + Environment.GetEnvironmentVariable ("LD_LIBRARY_PATH");
 			envVars ["MONO_PATH"] = libDir + Path.PathSeparator + binDir;
 			
 			StringWriter output = new StringWriter ();

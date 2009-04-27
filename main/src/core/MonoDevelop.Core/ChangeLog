@@ -1,3 +1,11 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Added
+	  public property for getting the install prefix.
+
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Properly
+	  expand vars when initializing the runtime environment.
+
 2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs:
