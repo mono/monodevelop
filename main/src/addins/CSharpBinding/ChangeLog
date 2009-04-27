@@ -1,3 +1,8 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBindingCompilerManager.cs: Use correct environment for
+	  building the project, according to the target runtime.
+
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* CSharpBinding.csproj:

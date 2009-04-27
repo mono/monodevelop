@@ -225,9 +225,14 @@ namespace CSharpBinding
 			
 			File.WriteAllText (responseFileName, sb.ToString ());
 			
+			TargetRuntime runtime = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
+			DotNetProject project = configuration.ParentItem as DotNetProject;
+			if (project != null)
+				runtime = project.TargetRuntime;
+
 			string compilerName;
 			try {
-				compilerName = GetCompilerName (configuration.TargetFramework.ClrVersion);
+				compilerName = GetCompilerName (runtime, configuration.TargetFramework.ClrVersion);
 			} catch (Exception e) {
 				string message = "Could not obtain a C# compiler";
 				monitor.ReportError (message, e);
@@ -251,8 +256,8 @@ namespace CSharpBinding
 
 			LoggingService.LogInfo (compilerName + " " + sb.ToString ());
 			
-			//FIXME: is Current the real target framework?
-			Dictionary<string,string> envVars = MonoDevelop.Core.Runtime.SystemAssemblyService.CurrentRuntime.GetToolsEnvironmentVariables ();
+			Dictionary<string,string> envVars = runtime.GetToolsEnvironmentVariables ();
+
 			int exitCode = DoCompilation (outstr, workingDir, envVars, gacRoots, ref output, ref error);
 			
 			BuildResult result = ParseOutput (output, error);
@@ -273,33 +278,35 @@ namespace CSharpBinding
 			return result;
 		}
 		
-		static string GetCompilerName (ClrVersion version)
+		static string GetCompilerName (TargetRuntime runtime, ClrVersion version)
 		{
-			string runtimeDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory ();
 			// The following regex foo gets the index of the
 			// last match of lib/lib32/lib64 and uses
 			// the text before that as the 'prefix' in order
 			// to find the right mcs to use.
-			Regex regex = new Regex ("lib[32 64]?");
-			MatchCollection matches = regex.Matches(runtimeDir);
-			Match match = matches[matches.Count - 1];
-			string mcs;
-			switch (version) {
-			case ClrVersion.Net_1_1:
-				mcs = "mcs";
-				break;
-			case ClrVersion.Net_2_0:
-				mcs = "gmcs";
-				break;
-			case ClrVersion.Clr_2_1:
-				mcs = "smcs";
-				break;
-			default:
-				string message = "Cannot handle unknown runtime version ClrVersion.'" + version.ToString () + "'.";
-				LoggingService.LogError (message);
-				throw new Exception (message);
+			
+			if (runtime is MonoTargetRuntime) {
+				string mcs;
+				switch (version) {
+				case ClrVersion.Net_1_1:
+					mcs = "mcs";
+					break;
+				case ClrVersion.Net_2_0:
+					mcs = "gmcs";
+					break;
+				case ClrVersion.Clr_2_1:
+					mcs = "smcs";
+					break;
+				default:
+					string message = "Cannot handle unknown runtime version ClrVersion.'" + version.ToString () + "'.";
+					LoggingService.LogError (message);
+					throw new Exception (message);
+				}
+				return runtime.GetToolPath (mcs);
+				
+			} else {
+				return runtime.GetToolPath ("csc.exe");
 			}
-			return Path.Combine (runtimeDir.Substring (0, match.Index), Path.Combine ("bin", mcs));
 		}
 		
 		static BuildResult ParseOutput (string stdout, string stderr)
