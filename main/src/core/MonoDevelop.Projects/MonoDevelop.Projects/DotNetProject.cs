@@ -100,7 +100,7 @@ namespace MonoDevelop.Projects
 					
 					//older projects may not have this property but may not support partial types
 					//so need to verify that the default attribute is OK
-					if (UsePartialTypes && !SupportsPartialTypes) {
+					if (languageBinding != null && UsePartialTypes && !SupportsPartialTypes) {
 						LoggingService.LogWarning ("Project '{0}' has been set to use partial types but does not support them.", Name);
 						UsePartialTypes = false;
 					}
