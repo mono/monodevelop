@@ -28,7 +28,6 @@ FILES =  \
 	Mono.Debugging.Client/DebuggerFeatures.cs \
 	Mono.Debugging.Client/DebuggerSession.cs \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \
-	Mono.Debugging.Client/IDebuggerEngine.cs \
 	Mono.Debugging.Client/ObjectPath.cs \
 	Mono.Debugging.Client/ObjectValue.cs \
 	Mono.Debugging.Client/ObjectValueFlags.cs \

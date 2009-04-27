@@ -60,7 +60,6 @@
     <Compile Include="Mono.Debugging.Client\ObjectPath.cs" />
     <Compile Include="Mono.Debugging.Client\ThreadInfo.cs" />
     <Compile Include="Mono.Debugging.Client\ProcessInfo.cs" />
-    <Compile Include="Mono.Debugging.Client\IDebuggerEngine.cs" />
     <Compile Include="Mono.Debugging.Client\AssemblyLine.cs" />
     <Compile Include="Mono.Debugging.Backend\DissassemblyBuffer.cs" />
     <Compile Include="Mono.Debugging.Client\CompletionData.cs" />

@@ -1,3 +1,10 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/IDebuggerEngine.cs: Moved
+	  IDebuggerEngine to MD.Debugger.
+
 2009-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/IDebuggerEngine.cs: Removed unused
