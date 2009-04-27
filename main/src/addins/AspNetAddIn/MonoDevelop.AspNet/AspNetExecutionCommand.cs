@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.AspNet
 {
@@ -44,9 +45,11 @@ namespace MonoDevelop.AspNet
 		
 		public string BaseDirectory { get; set; }
 		
+		public TargetRuntime TargetRuntime { get; set; }
+		
 		public override string CommandString {
 			get {
-				return "aspnet:" + BaseDirectory;
+				return "[asp-net]";
 			}
 		}
 	}

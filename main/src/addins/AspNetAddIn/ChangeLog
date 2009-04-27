@@ -1,3 +1,9 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet/AspNetExecutionCommand.cs: Added
+	  TargetRuntime parameter to AspNetExecutionComand.
+
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs: Track

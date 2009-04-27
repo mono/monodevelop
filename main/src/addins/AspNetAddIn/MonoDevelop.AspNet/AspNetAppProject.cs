@@ -224,6 +224,7 @@ namespace MonoDevelop.AspNet
 			cmd.DebugMode = configuration.DebugMode;
 			cmd.XspParameters = XspParameters;
 			cmd.BaseDirectory = BaseDirectory;
+			cmd.TargetRuntime = TargetRuntime;
 			return cmd;
 		}
 		
