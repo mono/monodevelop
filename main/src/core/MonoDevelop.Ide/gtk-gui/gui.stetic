@@ -7356,7 +7356,7 @@ Large</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.FindInFiles.FindInFilesDialog" design-size="456 255">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.FindInFiles.FindInFilesDialog" design-size="456 256">
     <property name="MemberName" />
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>

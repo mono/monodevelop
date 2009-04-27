@@ -109,7 +109,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			scopeStore.AppendValues (GettextCatalog.GetString ("All open files"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Directories"));
 			comboboxScope.Model = scopeStore;
-			CellRendererText textRenderer = new CellRendererText ();
 			
 			comboboxScope.Changed += HandleScopeChanged;
 			comboboxScope.Changed += CheckSensitivity;
@@ -149,15 +148,27 @@ namespace MonoDevelop.Ide.FindInFiles
 				placeHolder.Hide ();
 			}
 			if (comboboxScope.Active == 3) { // DirectoryScope
-				Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+				VBox vbox = new VBox ();
+				HBox hbox2 = new HBox ();
+				vbox.Add (hbox2);
+				Label labelPath = new Label ();
+				labelPath.Text = GettextCatalog.GetString ("Path:");
+				hbox2.PackStart (labelPath);
+				Gtk.Box.BoxChild boxChild = (Gtk.Box.BoxChild)hbox2[labelPath];
+				boxChild.Expand = boxChild.Fill = false;
+				
+				Properties properties = (Properties)PropertyService.
+					Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 				comboboxentryPath = new ComboBoxEntry ();
+				
 				comboboxentryPath.Destroyed += delegate(object sender2, EventArgs e2) {
 					StoreHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", (ComboBoxEntry)sender2);
 				};
 				LoadHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", comboboxentryPath);
-				boxScopeSelector.PackStart (comboboxentryPath);
-				Gtk.Box.BoxChild boxChild = (Gtk.Box.BoxChild)boxScopeSelector[comboboxentryPath];
-				boxChild.Position = 0;
+				hbox2.PackStart (comboboxentryPath);
+				
+				boxChild = (Gtk.Box.BoxChild)hbox2[comboboxentryPath];
+				boxChild.Position = 1;
 				boxChild.Expand = boxChild.Fill = true;
 				
 				buttonBrowsePaths = new Button ();
@@ -176,9 +187,9 @@ namespace MonoDevelop.Ide.FindInFiles
 						folderDialog.Destroy ();
 					}
 				};
-				boxScopeSelector.PackStart (buttonBrowsePaths);
-				boxChild = (Gtk.Box.BoxChild)boxScopeSelector[buttonBrowsePaths];
-				boxChild.Position = 1;
+				hbox2.PackStart (buttonBrowsePaths);
+				boxChild = (Gtk.Box.BoxChild)hbox2[buttonBrowsePaths];
+				boxChild.Position = 2;
 				boxChild.Expand = boxChild.Fill = false;
 				
 				checkbuttonRecursively = new CheckButton ();
@@ -188,10 +199,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				checkbuttonRecursively.Destroyed += delegate(object sender2, EventArgs e2) {
 					properties.Set ("SearchPathRecursively", ((CheckButton)sender2).Active);
 				};
-				boxScopeSelector.PackEnd (checkbuttonRecursively);
-				boxChild = (Gtk.Box.BoxChild)boxScopeSelector[checkbuttonRecursively];
-				boxChild.Position = 2;
-				boxChild.Expand = boxChild.Fill = false;
+				vbox.PackEnd (checkbuttonRecursively);
+				boxScopeSelector.PackStart (vbox);
 				
 				ShowAll ();
 			}
@@ -219,18 +228,18 @@ namespace MonoDevelop.Ide.FindInFiles
 		static void LoadHistory (string propertyName, ComboBoxEntry entry)
 		{
 			entry.Entry.Completion = new EntryCompletion ();
-			
 			ListStore store = new ListStore (typeof (string));
-			
 			entry.Entry.Completion.Model = store;
 			entry.Model = store;
-			
 			entry.Entry.ActivatesDefault = true;
-			
+			if (entry.TextColumn != 0)
+				entry.TextColumn = 0;
 			string history = PropertyService.Get<string> (propertyName);
 			if (!string.IsNullOrEmpty (history)) {
 				string[] items = history.Split (historySeparator);
 				foreach (string item in items) {
+					if (string.IsNullOrEmpty (item))
+						continue;
 					store.AppendValues (item);
 				}
 				entry.Entry.Text = items[0];

@@ -31,17 +31,17 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public struct HslColor
 	{
-		public double Hue {
+		public double H {
 			get;
 			set;
 		}
 		
-		public double Saturation {
+		public double S {
 			get;
 			set;
 		}
 		
-		public double Luminosity {
+		public double L {
 			get;
 			set;
 		}
@@ -51,16 +51,16 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			double r = 0, g = 0, b = 0;
 			
-			if (hsl.Luminosity == 0)
+			if (hsl.L == 0)
 				return black;
 			
-			if (hsl.Saturation == 0) {
-				r = g = b = hsl.Luminosity;
+			if (hsl.S == 0) {
+				r = g = b = hsl.L;
 			} else {
-				double temp2 = hsl.Luminosity <= 0.5 ? hsl.Luminosity * (1.0 + hsl.Saturation) : hsl.Luminosity + hsl.Saturation -(hsl.Luminosity * hsl.Saturation);
-				double temp1 = 2.0 * hsl.Luminosity - temp2;
+				double temp2 = hsl.L <= 0.5 ? hsl.L * (1.0 + hsl.S) : hsl.L + hsl.S -(hsl.L * hsl.S);
+				double temp1 = 2.0 * hsl.L - temp2;
 				
-				double[] t3 = new double[] { hsl.Hue + 1.0 / 3.0, hsl.Hue, hsl.Hue - 1.0 / 3.0};
+				double[] t3 = new double[] { hsl.H + 1.0 / 3.0, hsl.H, hsl.H - 1.0 / 3.0};
 				double[] clr= new double[] { 0, 0, 0};
 				for (int i = 0; i < 3; i++) {
 					if (t3[i] < 0)
@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			double g = color.Green / (double)ushort.MaxValue;
 			double b = color.Blue  / (double)ushort.MaxValue;
 			
-			Hue = Saturation = Luminosity = 0;
+			H = S = L = 0;
 
 			double v = Math.Max (r, g);
 			v = Math.Max (v, b);
@@ -105,14 +105,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			double m = Math.Min (r, g);
 			m = Math.Min (m, b);
 			
-			this.Luminosity = (m + v) / 2.0;
-			if (this.Luminosity <= 0.0)
+			this.L = (m + v) / 2.0;
+			if (this.L <= 0.0)
 				return;
 			double vm = v - m;
-			this.Saturation = vm;
+			this.S = vm;
 			
-			if (this.Saturation > 0.0) {
-				this.Saturation /= (this.Luminosity <= 0.5) ? (v + m) : (2.0 - v - m);
+			if (this.S > 0.0) {
+				this.S /= (this.L <= 0.5) ? (v + m) : (2.0 - v - m);
 			} else {
 				return;
 			}
@@ -122,18 +122,18 @@ namespace MonoDevelop.Ide.FindInFiles
 			double b2 = (v - b) / vm;
 			
 			if (r == v) {
-				this.Hue = (g == m ? 5.0 + b2 : 1.0 - g2);
+				this.H = (g == m ? 5.0 + b2 : 1.0 - g2);
 			} else if (g == v) {
-				this.Hue = (b == m ? 1.0 + r2 : 3.0 - b2);
+				this.H = (b == m ? 1.0 + r2 : 3.0 - b2);
 			} else {
-				this.Hue = (r == m ? 3.0 + g2 : 5.0 - r2);
+				this.H = (r == m ? 3.0 + g2 : 5.0 - r2);
 			}
-			this.Hue /= 6.0;
+			this.H /= 6.0;
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format("[HslColor: Hue={0}, Saturation={1}, Luminosity={2}]", Hue, Saturation, Luminosity);
+			return string.Format ("[HslColor: H={0}, S={1}, L={2}]", H, S, L);
 		}
 	}
 }

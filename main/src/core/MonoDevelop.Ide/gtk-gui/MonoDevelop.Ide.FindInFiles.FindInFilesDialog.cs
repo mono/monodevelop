@@ -282,7 +282,7 @@ namespace MonoDevelop.Ide.FindInFiles {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 456;
-            this.DefaultHeight = 255;
+            this.DefaultHeight = 256;
             this.Show();
         }
     }

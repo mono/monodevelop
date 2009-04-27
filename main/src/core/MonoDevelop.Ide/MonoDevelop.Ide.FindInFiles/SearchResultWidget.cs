@@ -207,10 +207,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			double delta = Math.Abs (b1 - b2);
 			if (delta < 0.0001) {
 				HslColor color1 = color;
-				if (color1.Luminosity + 0.5 > 1.0) {
-					color1.Luminosity -= 0.5;
+				if (color1.L + 0.5 > 1.0) {
+					color1.L -= 0.5;
 				} else {
-					color1.Luminosity += 0.5;
+					color1.L += 0.5;
 				}
 				return color1;
 			}
@@ -360,10 +360,10 @@ namespace MonoDevelop.Ide.FindInFiles
 					double delta = Math.Abs (b1 - b2);
 					if (delta < 0.0001) {
 						HslColor color1 = style.SearchTextBg;
-						if (color1.Luminosity + 0.5 > 1.0) {
-							color1.Luminosity -= 0.5;
+						if (color1.L + 0.5 > 1.0) {
+							color1.L -= 0.5;
 						} else {
-							color1.Luminosity += 0.5;
+							color1.L += 0.5;
 						}
 						searchColor = color1;
 					}

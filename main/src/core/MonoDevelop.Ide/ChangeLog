@@ -1,5 +1,14 @@
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.FindInFiles/HslColor.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:
+	  Worked on find in files dialog.
+
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.csproj:
