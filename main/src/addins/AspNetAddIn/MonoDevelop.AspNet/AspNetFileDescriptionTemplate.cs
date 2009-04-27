@@ -101,7 +101,7 @@ namespace MonoDevelop.AspNet
 			//get a language binding
 			IDotNetLanguageBinding langbinding = null;
 			if (project == null) {
-				langbinding = (IDotNetLanguageBinding) Services.Languages.GetBindingPerLanguageName (language);
+				langbinding = (IDotNetLanguageBinding) LanguageBindingService.GetBindingPerLanguageName (language);
 			} else {
 				DotNetProject dnp = (DotNetProject) project;
 				langbinding = dnp.LanguageBinding;

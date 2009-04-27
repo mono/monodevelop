@@ -1,3 +1,8 @@
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs: Track
+	  API changes.
+
 2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/CodeBehind.cs: Notify fileservice when a
