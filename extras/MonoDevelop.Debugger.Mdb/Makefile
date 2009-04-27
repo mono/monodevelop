@@ -12,10 +12,10 @@ include $(top_srcdir)/rules.make
 
 #Warning: This is an automatically generated file, do not edit!
 ifeq ($(CONFIG),DEBUG)
- SUBDIRS =  Mono.Debugging.Backend.Mdb Mono.Debugging.Server.Mdb
+ SUBDIRS =  Mono.Debugging.Backend.Mdb Mono.Debugging.Backend.Mdb.AspNet Mono.Debugging.Server.Mdb
 endif
 ifeq ($(CONFIG),RELEASE)
- SUBDIRS =  Mono.Debugging.Backend.Mdb Mono.Debugging.Server.Mdb
+ SUBDIRS =  Mono.Debugging.Backend.Mdb Mono.Debugging.Backend.Mdb.AspNet Mono.Debugging.Server.Mdb
 endif
 
 

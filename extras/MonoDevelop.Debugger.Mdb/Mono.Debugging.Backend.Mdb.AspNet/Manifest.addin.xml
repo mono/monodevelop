@@ -1,0 +1,22 @@
+<Addin id = "MonoDevelop.Debugger.Mdb.AspNet"
+       name	     = "Asp.Net Debugging Support"
+       author	 = "Lluis Sanchez"
+       url       = "http://www.mono-project.com"
+       description = "Managed Debugging Engine support for MDB"
+       copyright   = "MIT X11"
+       category = "Debugging"
+       version   = "2.1.0">
+
+	<Dependencies>
+		<Addin id="MonoDevelop.Core" version="2.1.0"/>
+		<Addin id="MonoDevelop.Ide" version="2.1.0"/>
+		<Addin id="MonoDevelop.Debugger" version="2.1.0"/>
+		<Addin id="MonoDevelop.Debugger.Mdb" version="2.1.0"/>
+		<Addin id="MonoDevelop.AspNet" version="2.1.0"/>
+	</Dependencies>
+	
+	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
+		<DebuggerFactory type="MonoDevelop.Debugger.Mdb.MonoXspDebuggerSessionFactory" />
+	</Extension>
+
+</Addin>

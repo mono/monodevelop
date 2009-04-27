@@ -1,3 +1,10 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile:
+	* MonoDevelop.Debugger.Mdb.sln:
+	* Mono.Debugging.Backend.Mdb.AspNet: Initial support for XSP
+	  debugging.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure: Bump MD version.

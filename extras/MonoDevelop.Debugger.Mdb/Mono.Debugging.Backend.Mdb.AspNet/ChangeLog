@@ -1,0 +1,9 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile:
+	* AssemblyInfo.cs:
+	* Manifest.addin.xml:
+	* MonoXspDebuggerSessionFactory.cs:
+	* Mono.Debugging.Backend.Mdb.AspNet.csproj: Initial support
+	  for XSP debugging.
+
