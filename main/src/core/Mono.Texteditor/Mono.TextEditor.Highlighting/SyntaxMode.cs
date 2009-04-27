@@ -455,7 +455,7 @@ namespace Mono.TextEditor.Highlighting
 			{
 				int textOffset = i - line.Offset;
 				
-				bool isWordPart = Char.IsLetterOrDigit (ch) || ch == '_' || ch == '.' || ch == '#';
+				bool isWordPart = Char.IsLetterOrDigit (ch) || ch == '_';
 				
 				if (inWord && !isWordPart || !inWord && isWordPart) 
 					AddChunk (ref curChunk, 0, curChunk.Style = GetStyle (curChunk) ?? GetSpanStyle ());

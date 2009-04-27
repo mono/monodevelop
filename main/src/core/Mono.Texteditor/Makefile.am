@@ -111,10 +111,10 @@ RES =  \
 	SyntaxModes/CSharpSyntaxMode.xml \
 	SyntaxModes/CSyntaxMode.xml \
 	SyntaxModes/DiffSyntaxMode.xml \
-	SyntaxModes/ILSyntaxMode.xml \
+	SyntaxModes/ILSyntaxMode.xml,SyntaxModes.ILSyntaxMode.xml \
 	SyntaxModes/JavascriptSyntaxMode.xml \
 	SyntaxModes/JavaSyntaxMode.xml \
-	SyntaxModes/LuaSyntaxMode.xml \
+	SyntaxModes/LuaSyntaxMode.xml,SyntaxModes.LuaSyntaxMode.xml \
 	SyntaxModes/MakefileSyntaxMode.xml \
 	SyntaxModes/PythonSyntaxMode.xml \
 	SyntaxModes/ValaSyntaxMode.xml \
