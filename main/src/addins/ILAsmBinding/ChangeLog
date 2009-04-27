@@ -1,5 +1,13 @@
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* gtk-gui/ILAsmBinding.CompilerParametersPanelWidget.cs:
+	  Checked in gtk-gui
+
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* ILAsmBinding.csproj:
 	* ILAsmBinding.addin.xml:
