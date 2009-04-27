@@ -1,3 +1,8 @@
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs:
+	  Reimplemented language binding service.
+
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
 	* AssemblyInfo.cs:

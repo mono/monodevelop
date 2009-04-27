@@ -35,10 +35,6 @@ namespace MonoDevelop.Projects.Gui
 {
 	public class Services
 	{
-		internal static LanguageBindingService Languages {
-			get { return MonoDevelop.Projects.Services.Languages; }
-		}
-	
 		internal static ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
