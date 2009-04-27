@@ -1,3 +1,9 @@
+2009-04-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Restore
+	  behaviour of not closing the list on punctuation when it
+	  matches an item in the list.
+
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs:

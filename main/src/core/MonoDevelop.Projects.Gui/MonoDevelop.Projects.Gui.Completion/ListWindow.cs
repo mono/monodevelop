@@ -276,8 +276,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 				UpdateWordSelection ();
 				return KeyAction.Process;
 			} else if (System.Char.IsPunctuation (c) || c == ' ' || c == '<') {
-				if (!CompleteWithSpaceOrPunctuation) 
-					return KeyAction.CloseWindow | KeyAction.Process;
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, c);
 				bool hasMismatches;
@@ -286,9 +284,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 					curPos++;
 					SelectEntry (match);
 					return KeyAction.Process;
-				} else {
+				} else if (CompleteWithSpaceOrPunctuation) {
 					word.Remove (curPos, 1);
 					return KeyAction.Complete | KeyAction.Process | KeyAction.CloseWindow;
+				} else {
+					return KeyAction.CloseWindow | KeyAction.Process;
 				}
 			}
 			
