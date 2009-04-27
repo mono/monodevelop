@@ -87,14 +87,33 @@ namespace MonoDevelop.Core.Gui
 		
 		public bool GetMimeTypeIsText (string mimeType)
 		{
-			if (mimeType.StartsWith ("text") || mimeType.EndsWith ("+xml"))
-				return true;
+			return GetMimeTypeIsSubtype (mimeType, "text/plain");
+		}
+		
+		public bool GetMimeTypeIsSubtype (string subMimeType, string baseMimeType)
+		{
+			foreach (string mt in GetMimeTypeInheritanceChain (subMimeType))
+				if (mt == baseMimeType)
+					return true;
+			return false;
+		}
+		
+		public IEnumerable<string> GetMimeTypeInheritanceChain (string mimeType)
+		{
+			yield return mimeType;
 			
-			MimeTypeNode mt = FindMimeType (mimeType);
-			if (mt != null)
-				return mt.IsText;
-			else
-				return OnGetMimeTypeIsText (mimeType);
+			while (mimeType != null && mimeType != "text/plain") {
+				MimeTypeNode mt = FindMimeType (mimeType);
+				if (mt != null && !string.IsNullOrEmpty (mt.BaseType))
+					mimeType = mt.BaseType;
+				else {
+					if (mimeType.EndsWith ("+xml"))
+						mimeType = "application/xml";
+					else if (mimeType.StartsWith ("text") || OnGetMimeTypeIsText (mimeType))
+						mimeType = "text/plain";
+				}
+				yield return mimeType;
+			}
 		}
 		
 		public Gdk.Pixbuf GetPixbufForFile (string filename, Gtk.IconSize size)
@@ -109,35 +128,45 @@ namespace MonoDevelop.Core.Gui
 				pic = OnGetPixbufForFile (filename, size);
 			
 			if (pic == null) {
-				string mt = GetMimeTypeForUri (filename);
-				if (mt != null)
-					pic = GetPixbufForType (mt, size);
+				string mtype = GetMimeTypeForUri (filename);
+				if (mtype != null) {
+					foreach (string mt in GetMimeTypeInheritanceChain (mtype)) {
+						pic = GetPixbufForType (mt, size);
+						if (pic != null)
+							return pic;
+					}
+				}
 			}
 			return pic ?? GetDefaultIcon (size);
 		}
 		
-		public Gdk.Pixbuf GetPixbufForType (string type, Gtk.IconSize size)
+		public Gdk.Pixbuf GetPixbufForType (string mimeType, Gtk.IconSize size)
 		{
-			Gdk.Pixbuf bf = (Gdk.Pixbuf) iconHash [type+size];
+			Gdk.Pixbuf bf = (Gdk.Pixbuf) iconHash [mimeType+size];
 			if (bf != null)
 				return bf;
 			
-			// Try getting an icon name for the type
-			string icon = GetIconForType (type);
-			if (icon != null)
-				bf = ImageService.GetPixbuf (icon, size);
-			
-			if (bf == null) {
+			foreach (string type in GetMimeTypeInheritanceChain (mimeType)) {
+				// Try getting an icon name for the type
+				string icon = GetIconForType (type);
+				if (icon != null) {
+					bf = ImageService.GetPixbuf (icon, size);
+					if (bf != null)
+						break;
+				}
+				
 				// Try getting a pixbuff
 				bf = OnGetPixbufForType (type, size);
+				if (bf != null)
+					break;
 			}
 			
 			if (bf == null) {
-				bf = ImageService.GetPixbuf (type, size);
+				bf = ImageService.GetPixbuf (mimeType, size);
 				if (bf == null)
 					bf = GetDefaultIcon (size);
 			}
-			iconHash [type+size] = bf;
+			iconHash [mimeType+size] = bf;
 			return bf;
 		}
 		

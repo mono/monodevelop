@@ -217,20 +217,24 @@
 		</MimeType>
 		<MimeType id="application/xml" _description="XML document" icon="md-xml-file-icon" isText="true">
 			<File pattern="*.xml" />
+		</MimeType>
+		<MimeType id="application/config+xml" _description="Configuration File" baseType="application/xml">
 			<File pattern="*.config" />
+		</MimeType>
+		<MimeType id="application/glade+xml" _description="Glade File" baseType="application/xml">
 			<File pattern="*.glade" />
 		</MimeType>
 		<MimeType id="text/x-changelog" _description="ChangeLog document" isText="true">
 			<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog"/>
 		</MimeType>
-		<MimeType id="application/x-executable" _description=".NET program" icon="md-empty-file-icon" isText="false">
+		<MimeType id="application/x-executable" _description=".NET program" icon="md-empty-file-icon">
 			<File pattern="*.exe" />
 			<File pattern="*.dll" />
 		</MimeType>
 		<MimeType id="application/x-sln" _description="MonoDevelop/MSBuild Solution" icon="md-solution" >
 			<File pattern="*.sln" />
 		</MimeType>
-		<MimeType id="application/x-mds" _description="MonoDevelop 1.0 Solution" icon="md-solution" >
+		<MimeType id="application/x-mds" _description="MonoDevelop 1.0 Solution" icon="md-solution" baseType="application/xml">
 			<File pattern="*.mds" />
 		</MimeType>
 		

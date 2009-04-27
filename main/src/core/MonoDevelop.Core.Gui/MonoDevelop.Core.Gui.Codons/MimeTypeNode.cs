@@ -43,7 +43,10 @@ namespace MonoDevelop.Core.Gui.Codons
 		string description;
 		
 		[NodeAttribute (Required=false)]
-		bool isText = false;
+		string baseType;
+		
+		[NodeAttribute (Required=false)]
+		protected bool isText;
 		
 		Regex regex;
 		
@@ -65,9 +68,13 @@ namespace MonoDevelop.Core.Gui.Codons
 			}
 		}
 		
-		public bool IsText {
-			set { isText = value; }
-			get { return isText; }
+		public string BaseType {
+			get {
+				if (string.IsNullOrEmpty (baseType))
+					return isText ? "text/plain" : null;
+				else
+					return baseType;
+			}
 		}
 		
 		Regex CreateRegex ()
