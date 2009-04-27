@@ -258,7 +258,7 @@ namespace DebuggerServer
 				}
 				if (exc == null)
 					throw new Exception ("Unknown exception type.");
-				ev = session.InsertExceptionCatchPoint (process.MainThread, ThreadGroup.Global, exc, true);
+				ev = session.InsertExceptionCatchPoint (process.MainThread, ThreadGroup.Global, exc);
 			}
 			
 			ev.IsEnabled = enable;
