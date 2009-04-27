@@ -1,3 +1,10 @@
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* CSharpBinding.csproj:
+	* Gui/NewOverrideCompletionData.cs: Fixed "Bug 497991 -
+	  Completion of "overriding" an interface member results in a
+	  call to base".
+
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
 	* CSharpBinding.addin.xml: Changed copyright tag.

@@ -140,7 +140,7 @@ namespace MonoDevelop.CSharpBinding
 				return;
 			}
 			
-			if (!method.IsAbstract) {
+			if (!method.IsAbstract && method.DeclaringType.ClassType != ClassType.Interface) {
 				if (method.ReturnType != null && method.ReturnType.FullName != "System.Void")
 					sb.Append ("return ");
 				sb.Append ("base.");
