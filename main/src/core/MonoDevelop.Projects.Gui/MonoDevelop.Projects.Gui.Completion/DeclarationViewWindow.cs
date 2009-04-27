@@ -27,6 +27,8 @@ using System;
 using Gtk;
 using MonoDevelop.Components;
 using System.Collections.Generic;
+using MonoDevelop.Core;
+
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
@@ -51,8 +53,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			set {
 				if (string.IsNullOrEmpty (value)) {
-					headlabel.Markup = string.Empty;
-					bodylabel.Markup = string.Empty;
+					headlabel.Markup = bodylabel.Markup = "";
 					return;
 				}
 				string[] parts = value.Split (newline, 2);
@@ -87,7 +88,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		void ShowOverload ()
 		{
 			DescriptionMarkup = overloads[current_overload];
-			helplabel.Markup = string.Format ("<small>{0} of {1} overloads</small>", current_overload + 1, overloads.Count);
+			helplabel.Markup = string.Format ("<small>" + GettextCatalog.GetString ("{0} of {1} overloads") + "</small>", current_overload + 1, overloads.Count);
 		}
 
 		public void OverloadLeft ()
@@ -119,7 +120,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public void SetFixedWidth (int w)
 		{
 			if (w != -1) {
-				w -= (SizeRequest ().Width - headlabel.SizeRequest ().Width);//  otherWidths ();
+				w -= SizeRequest ().Width - headlabel.SizeRequest ().Width;
 				headlabel.MaxWidth = w > 0 ? w : 1;
 			} else {
 				headlabel.MaxWidth = -1;

@@ -1,5 +1,10 @@
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs:
+	  Added missing translation string.
+
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs:
 	  Reimplemented language binding service.
 
