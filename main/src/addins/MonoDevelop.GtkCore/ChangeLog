@@ -1,3 +1,9 @@
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Track
+	  API changes.
+
 2009-04-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:
