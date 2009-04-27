@@ -1,3 +1,11 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Don't
+	  assign the method if there is already one assigned (maybe
+	  from a subclass). Fixes regression for bug #320874 - Add
+	  "Exclude from project" in contextual menu of a file in the
+	  solution explorer.
+
 2009-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.Commands/KeyBindingManager.cs:

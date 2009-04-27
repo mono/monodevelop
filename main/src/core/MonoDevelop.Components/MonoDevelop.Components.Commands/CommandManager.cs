@@ -1029,8 +1029,11 @@ namespace MonoDevelop.Components.Commands
 		
 		protected void Init (MethodInfo method, CommandMethodAttribute attr)
 		{
-			this.Method = method;
-			CommandId = attr.CommandId;
+			// Don't assign the method if there is already one assigned (maybe from a subclass)
+			if (this.Method == null) {
+				this.Method = method;
+				CommandId = attr.CommandId;
+			}
 		}
 		
 		public CommandMethodInfo (object commandId)
