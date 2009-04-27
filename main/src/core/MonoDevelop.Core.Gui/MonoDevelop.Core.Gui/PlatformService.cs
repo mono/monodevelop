@@ -111,6 +111,8 @@ namespace MonoDevelop.Core.Gui
 						mimeType = "application/xml";
 					else if (mimeType.StartsWith ("text") || OnGetMimeTypeIsText (mimeType))
 						mimeType = "text/plain";
+					else
+						break;
 				}
 				yield return mimeType;
 			}

@@ -1,5 +1,9 @@
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Gui/PlatformService.cs: Fix infinite loop.
+
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Gui.addin.xml:
 	* MonoDevelop.Core.Gui/PlatformService.cs:
 	* MonoDevelop.Core.Gui.Codons/MimeTypeNode.cs: Allow defining
