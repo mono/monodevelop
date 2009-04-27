@@ -54,7 +54,7 @@ namespace MonoDevelop.DesignerSupport
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
 			MonoDevelop.Projects.IDotNetLanguageBinding binding = 
-				MonoDevelop.Projects.Services.Languages.GetBindingPerFileName (doc.Name)
+				MonoDevelop.Projects.LanguageBindingService.GetBindingPerFileName (doc.Name)
 				as MonoDevelop.Projects.IDotNetLanguageBinding;
 			return binding != null;
 		}
