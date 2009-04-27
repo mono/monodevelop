@@ -1,3 +1,13 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger/IDebuggerEngine.cs: Moved
+	  IDebuggerEngine from Mono.Debugging.
+
+	* MonoDevelop.Debugger/DebuggingService.cs: IDebuggerEngine
+	  now takes an ExecutionCommand as parameter.
+
 2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

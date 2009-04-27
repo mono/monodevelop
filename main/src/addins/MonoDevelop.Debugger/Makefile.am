@@ -41,6 +41,7 @@ FILES =  \
 	MonoDevelop.Debugger/ExceptionsDialog.cs \
 	MonoDevelop.Debugger/ExpressionEvaluatorDialog.cs \
 	MonoDevelop.Debugger/Extensions.cs \
+	MonoDevelop.Debugger/IDebuggerEngine.cs \
 	MonoDevelop.Debugger/Initializer.cs \
 	MonoDevelop.Debugger/LocalsPad.cs \
 	MonoDevelop.Debugger/ObjectValuePad.cs \

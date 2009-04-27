@@ -245,27 +245,16 @@ namespace MonoDevelop.Debugger
 		
 		internal static void InternalRun (ExecutionCommand cmd, IDebuggerEngine factory, IConsole c)
 		{
-			DebuggerStartInfo startInfo = new DebuggerStartInfo ();
-			
-			ProcessExecutionCommand pec = cmd as ProcessExecutionCommand;
-			if (pec != null) {
-				startInfo.Command = pec.Command;
-				startInfo.Arguments = pec.Arguments;
-				startInfo.WorkingDirectory = pec.WorkingDirectory;
-				if (pec.EnvironmentVariables.Count > 0) {
-					foreach (KeyValuePair<string,string> val in pec.EnvironmentVariables)
-						startInfo.EnvironmentVariables [val.Key] = val.Value;
-				}
-			} else {
-				startInfo.Command = cmd.CommandString;
+			if (factory == null) {
+				factory = GetFactoryForCommand (cmd);
+				if (factory == null)
+					throw new InvalidOperationException ("Unsupported command: " + cmd);
 			}
-
-			console = c;
 			
-			if (factory != null)
-				session = CreateDebugSession (factory);
-			else
-				session = CreateDebugSessionForCommand (cmd);
+			DebuggerStartInfo startInfo = factory.CreateDebuggerStartInfo (cmd);
+			session = factory.CreateSession ();
+			session.Initialize ();
+			console = c;
 			
 			SetupSession ();
 
@@ -505,22 +494,6 @@ namespace MonoDevelop.Debugger
 			return GetFactoryForCommand (command) != null;
 		}
 		
-		public static DebuggerSession CreateDebugSession (IDebuggerEngine factory)
-		{
-			DebuggerSession ds = factory.CreateSession ();
-			ds.Initialize ();
-			return ds;
-		}
-		
-		public static DebuggerSession CreateDebugSessionForCommand (ExecutionCommand command)
-		{
-			IDebuggerEngine factory = GetFactoryForCommand (command);
-			if (factory != null) {
-				return CreateDebugSession (factory);
-			} else
-				throw new InvalidOperationException ("Unsupported command: " + command);
-		}
-		
 		public static IDebuggerEngine[] GetDebuggerEngines ()
 		{
 			return (IDebuggerEngine[]) AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true);
@@ -530,7 +503,7 @@ namespace MonoDevelop.Debugger
 		{
 			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath)) {
 				IDebuggerEngine factory = (IDebuggerEngine) node.GetInstance ();
-				if (factory.CanDebugCommand (cmd.CommandString))
+				if (factory.CanDebugCommand (cmd))
 					return factory;
 			}
 			return null;
@@ -588,7 +561,7 @@ namespace MonoDevelop.Debugger
 		
 		public bool CanExecute (ExecutionCommand command)
 		{
-			return engine.CanDebugCommand (command.CommandString);
+			return engine.CanDebugCommand (command);
 		}
 
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
