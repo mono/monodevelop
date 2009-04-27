@@ -44,8 +44,7 @@ namespace MonoDevelop.Ide.StandardHeader
 	
 		static string[] GetComment (string language)
 		{
-			LanguageBindingService languageBindingService = MonoDevelop.Projects.Services.Languages;
-			ILanguageBinding binding = languageBindingService.GetBindingPerLanguageName (language);
+			ILanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language);
 			if (binding != null) {
 				if (!String.IsNullOrEmpty (binding.SingleLineCommentTag))
 					return new string[] { binding.SingleLineCommentTag };

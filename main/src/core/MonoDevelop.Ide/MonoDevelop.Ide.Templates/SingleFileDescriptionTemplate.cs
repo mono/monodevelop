@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		protected ILanguageBinding GetLanguageBinding (string language)
 		{
-			ILanguageBinding binding = MonoDevelop.Projects.Services.Languages.GetBindingPerLanguageName (language);
+			ILanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language);
 			if (binding == null)
 				throw new InvalidOperationException ("Language '" + language + "' not found");
 			return binding;

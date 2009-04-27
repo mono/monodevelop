@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		bool ValidateName ()
 		{
-			INameValidator nameValidator = MonoDevelop.Projects.Services.Languages.GetRefactorerForFile (fileName ?? "default.cs");
+			INameValidator nameValidator = MonoDevelop.Projects.LanguageBindingService.GetRefactorerForFile (fileName ?? "default.cs");
 			if (nameValidator == null)
 				return true;
 			ValidationResult result = nameValidator.ValidateName (this.item, entry.Text);

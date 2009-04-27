@@ -1,3 +1,14 @@
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Commands/EditCommands.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs:
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs:
+	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Reimplemented language binding service.
+
 2009-04-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Initialize the

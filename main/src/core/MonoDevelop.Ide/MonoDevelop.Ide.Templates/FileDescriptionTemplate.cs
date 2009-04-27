@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			if (name.Length > 0) {
 				if (language != null && language.Length > 0) {
-					IDotNetLanguageBinding binding = MonoDevelop.Projects.Services.Languages.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
+					IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
 					if (binding != null) {
 						System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
 						if (provider != null)
