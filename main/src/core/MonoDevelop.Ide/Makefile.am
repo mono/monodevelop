@@ -122,6 +122,7 @@ FILES =  \
 	MonoDevelop.Ide.FindInFiles/FilterOptions.cs \
 	MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs \
 	MonoDevelop.Ide.FindInFiles/FindReplace.cs \
+	MonoDevelop.Ide.FindInFiles/HslColor.cs \
 	MonoDevelop.Ide.FindInFiles/ISearchProgressMonitor.cs \
 	MonoDevelop.Ide.FindInFiles/Scope.cs \
 	MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs \

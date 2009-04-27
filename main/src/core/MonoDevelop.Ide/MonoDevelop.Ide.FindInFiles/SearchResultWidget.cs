@@ -55,11 +55,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			set;
 		}
 		
-		public bool UseThemeColors {
-			get;
-			set;
-		}
-		
 		public IAsyncOperation AsyncOperation {
 			get;
 			set;
@@ -155,50 +150,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			ShowAll ();
 			
 			scrolledwindowLogView.Hide ();
-			PropertyService.AddPropertyHandler ("ColorScheme", SetColorSheme);
-			PropertyService.AddPropertyHandler ("SearchResultPadUsesEditorThemes", SetTheme);
-			SetTheme (null, null);
-		}
-		
-		void SetTheme (object sender, PropertyChangedEventArgs args)
-		{
-			UseThemeColors = PropertyService.Get ("SearchResultPadUsesEditorThemes", false);
-			SetColorSheme (null, null);
-		}
-		
-		void SetColorSheme (object sender, PropertyChangedEventArgs args)
-		{
-			if (UseThemeColors) {
-				Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
-				
-				treeviewSearchResults.ModifyBase (StateType.Normal, style.Default.BackgroundColor);
-				treeviewSearchResults.ModifyBase (StateType.Selected, style.Selection.BackgroundColor);
-				treeviewSearchResults.ModifyBase (StateType.Active, style.Selection.BackgroundColor);
-				treeviewSearchResults.ModifyBase (StateType.Prelight, style.Selection.BackgroundColor);
-				
-				treeviewSearchResults.ModifyBg (StateType.Active, style.Selection.BackgroundColor);
-				treeviewSearchResults.ModifyBg (StateType.Prelight, style.Selection.BackgroundColor);
-				treeviewSearchResults.ModifyBg (StateType.Selected, style.Selection.BackgroundColor);
-				
-				treeviewSearchResults.ModifyText (StateType.Selected, style.Selection.Color);
-				treeviewSearchResults.ModifyText (StateType.Prelight, style.Selection.Color);
-				treeviewSearchResults.ModifyText (StateType.Active, style.Selection.Color);
-				treeviewSearchResults.ModifyText (StateType.Insensitive, style.Selection.Color);
-			} else {
-				treeviewSearchResults.ModifyBase (StateType.Normal);
-				treeviewSearchResults.ModifyBase (StateType.Selected);
-				treeviewSearchResults.ModifyBase (StateType.Active);
-				treeviewSearchResults.ModifyBase (StateType.Prelight);
-				treeviewSearchResults.ModifyBg (StateType.Active);
-				treeviewSearchResults.ModifyBg (StateType.Prelight);
-				treeviewSearchResults.ModifyBg (StateType.Selected);
-				
-				treeviewSearchResults.ModifyText (StateType.Selected);
-				treeviewSearchResults.ModifyText (StateType.Prelight);
-				treeviewSearchResults.ModifyText (StateType.Active);
-				treeviewSearchResults.ModifyText (StateType.Insensitive);
-			}
-			treeviewSearchResults.QueueDraw ();
 		}
 		
 		public void BeginProgress ()
@@ -228,8 +179,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		protected override void OnDestroyed ()
 		{
-			PropertyService.RemovePropertyHandler ("ColorScheme", SetColorSheme);
-			PropertyService.RemovePropertyHandler ("SearchResultPadUsesEditorThemes", SetTheme);
 			Reset ();
 			base.OnDestroyed ();
 		}
@@ -243,10 +192,33 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
+		static double Brightness (Gdk.Color c)
+		{
+			double r = c.Red / (double)ushort.MaxValue;
+			double g = c.Red / (double)ushort.MaxValue;
+			double b = c.Red / (double)ushort.MaxValue;
+			return Math.Sqrt (r * .241 + g * .691 + b * .068) / 1000.0;
+		}
+		
+		Gdk.Color AdjustColor (Gdk.Color color)
+		{
+			double b1 = Brightness (color);
+			double b2 = Brightness (Style.Base (StateType.Normal));
+			double delta = Math.Abs (b1 - b2);
+			if (delta < 0.0001) {
+				HslColor color1 = color;
+				if (color1.Luminosity + 0.5 > 1.0) {
+					color1.Luminosity -= 0.5;
+				} else {
+					color1.Luminosity += 0.5;
+				}
+				return color1;
+			}
+			return color;
+		}
+		
 		string AdjustColors (string markup)
 		{
-			if (UseThemeColors)
-				return markup;
 			Gdk.Color baseColor = Style.Base (StateType.Normal);
 			StringBuilder result = new StringBuilder ();
 			int idx = markup.IndexOf ("foreground=\"");
@@ -262,17 +234,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				string colorStr = markup.Substring (idx, 7);
 				Gdk.Color color = Gdk.Color.Zero;
 				if (Gdk.Color.Parse (colorStr, ref color)) {
-					double gray1 = 0.3 * color.Red + 0.59 * color.Green + 0.11 * color.Blue;
-					double gray2 = 0.3 * baseColor.Red + 0.59 * baseColor.Green + 0.11 * baseColor.Blue;
-					double delta = Math.Abs (gray2 - gray1);
-					int sign = Math.Sign (gray1 - gray2);
-					if (delta < 30000) {
-						delta = 30000 - delta;
-						color.Red = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Red + sign * delta )));
-						color.Green = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Green + sign * delta)));
-						color.Blue = (ushort)(Math.Min (ushort.MaxValue, Math.Max (0, color.Blue + sign * delta)));
-						colorStr = SyntaxMode.ColorToPangoMarkup (color);
-					}
+					colorStr = SyntaxMode.ColorToPangoMarkup (AdjustColor (color));
 				}
 				result.Append (colorStr);
 				idx = markup.IndexOf ("foreground=\"", idx);
@@ -309,10 +271,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		string MarkupText (string text, bool didRead, bool isSelected)
 		{
-			if (UseThemeColors) {
-				Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
-				return string.Format ("<span foreground=\"" + SyntaxMode.ColorToPangoMarkup (isSelected ? style.Selection.Color : style.Default.Color) + "\" weight=\"{1}\">{0}</span>", GLib.Markup.EscapeText (text), didRead ? "normal" : "bold");
-			}
 			return string.Format ("<span weight=\"{1}\">{0}</span>", GLib.Markup.EscapeText (text), didRead ? "normal" : "bold");
 		}
 		
@@ -396,7 +354,20 @@ namespace MonoDevelop.Ide.FindInFiles
 					} else {
 						markup = markup.Insert (pos2, "</span>");
 					}
-					markup = markup.Insert (pos1, "<span background=\"" + SyntaxMode.ColorToPangoMarkup (style.SearchTextBg) + "\">");
+					Gdk.Color searchColor = style.SearchTextBg;
+					double b1 = Brightness (searchColor);
+					double b2 = Brightness (AdjustColor (style.Default.Color));
+					double delta = Math.Abs (b1 - b2);
+					if (delta < 0.0001) {
+						HslColor color1 = style.SearchTextBg;
+						if (color1.Luminosity + 0.5 > 1.0) {
+							color1.Luminosity -= 0.5;
+						} else {
+							color1.Luminosity += 0.5;
+						}
+						searchColor = color1;
+					}
+					markup = markup.Insert (pos1, "<span background=\"" + SyntaxMode.ColorToPangoMarkup (searchColor) + "\">");
 				}
 			}
 			textRenderer.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));

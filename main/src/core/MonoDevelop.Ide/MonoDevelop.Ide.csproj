@@ -544,6 +544,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\ISearchProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\HslColor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

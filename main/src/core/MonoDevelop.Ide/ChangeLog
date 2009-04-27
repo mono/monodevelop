@@ -1,5 +1,19 @@
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.FindInFiles/HslColor.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:
+	  Worked on search result box theming. Should now work with
+	  more gtk+ styles and color sheme combinations. Removed the
+	  UseEditorTheme 'feature' (the new one should work as
+	  expected).
+
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Commands/EditCommands.cs:
 	* MonoDevelop.Ide.Templates/FileTemplate.cs:
 	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:

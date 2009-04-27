@@ -45,8 +45,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.FontButton fontButton;
         
-        private Gtk.CheckButton checkbuttonSearchResults;
-        
         private Gtk.Label GtkLabel6;
         
         protected virtual void Build() {
@@ -175,19 +173,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w11.Position = 0;
             w11.Expand = false;
             w11.Fill = false;
-            // Container child vbox2.Gtk.Box+BoxChild
-            this.checkbuttonSearchResults = new Gtk.CheckButton();
-            this.checkbuttonSearchResults.CanFocus = true;
-            this.checkbuttonSearchResults.Name = "checkbuttonSearchResults";
-            this.checkbuttonSearchResults.Label = Mono.Unix.Catalog.GetString("_Search result pad use color shemes");
-            this.checkbuttonSearchResults.Active = true;
-            this.checkbuttonSearchResults.DrawIndicator = true;
-            this.checkbuttonSearchResults.UseUnderline = true;
-            this.vbox2.Add(this.checkbuttonSearchResults);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox2[this.checkbuttonSearchResults]));
-            w12.Position = 1;
-            w12.Expand = false;
-            w12.Fill = false;
             this.GtkAlignment1.Add(this.vbox2);
             this.frame2.Add(this.GtkAlignment1);
             this.GtkLabel6 = new Gtk.Label();
@@ -196,10 +181,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.GtkLabel6.UseMarkup = true;
             this.frame2.LabelWidget = this.GtkLabel6;
             this.vbox13.Add(this.frame2);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox13[this.frame2]));
-            w15.Position = 3;
-            w15.Expand = false;
-            w15.Fill = false;
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox13[this.frame2]));
+            w14.Position = 3;
+            w14.Expand = false;
+            w14.Fill = false;
             this.Add(this.vbox13);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
