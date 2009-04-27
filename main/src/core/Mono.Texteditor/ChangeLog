@@ -1,5 +1,13 @@
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* SyntaxModes/ILSyntaxMode.xml:
+	* Mono.TextEditor.Highlighting/Rule.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Delimiters are
+	  now configurable in the syntax mode (IL syntax mode made
+	  this required).
+
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am: Reverted makefile.
 
 2009-04-27  Mike Krüger  <mkrueger@novell.com>

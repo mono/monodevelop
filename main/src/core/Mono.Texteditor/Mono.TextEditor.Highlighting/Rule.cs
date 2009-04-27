@@ -109,6 +109,11 @@ namespace Mono.TextEditor.Highlighting
 			get;
 			protected set;
 		}
+		
+		public string Delimiter {
+			get;
+			protected set;
+		}
 
 		public List<Marker> PrevMarker {
 			get {
@@ -121,6 +126,7 @@ namespace Mono.TextEditor.Highlighting
 		public Rule (SyntaxMode mode)
 		{
 			this.mode = mode;
+			this.Delimiter = "&()<>{}[]~!@%^*-+=|\\#/:;\"' ,\t.?";
 		}
 		
 		public virtual Rule GetRule (string name)
@@ -179,6 +185,9 @@ namespace Mono.TextEditor.Highlighting
 		protected bool ReadNode (XmlReader reader, List<Match> matchList)
 		{
 			switch (reader.LocalName) {
+			case "Delimiters":
+				this.Delimiter = reader.ReadElementString ();
+				return true;
 			case Match.Node:
 				matchList.Add (Match.Read (reader));
 				return true;

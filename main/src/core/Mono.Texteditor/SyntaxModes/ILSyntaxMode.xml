@@ -25,6 +25,8 @@
  
 <SyntaxMode name = "IL" mimeTypes="text/x-ilasm">
 	
+	<Delimiters>&amp;&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	?</Delimiters>
+	
 	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
 	
 	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
