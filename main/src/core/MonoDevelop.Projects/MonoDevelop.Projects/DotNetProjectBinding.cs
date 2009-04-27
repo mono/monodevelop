@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 		
 		public Project CreateSingleFileProject (string file)
 		{
-			IDotNetLanguageBinding binding = Services.Languages.GetBindingPerFileName (file) as IDotNetLanguageBinding;
+			IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerFileName (file) as IDotNetLanguageBinding;
 			if (binding != null) {
 				ProjectCreateInformation info = new ProjectCreateInformation ();
 				info.ProjectName = Path.GetFileNameWithoutExtension (file);
@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects
 		
 		public bool CanCreateSingleFileProject (string file)
 		{
-			IDotNetLanguageBinding binding = Services.Languages.GetBindingPerFileName (file) as IDotNetLanguageBinding;
+			IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerFileName (file) as IDotNetLanguageBinding;
 			return binding != null;
 		}
 		

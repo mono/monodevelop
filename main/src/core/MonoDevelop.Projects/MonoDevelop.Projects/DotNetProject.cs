@@ -487,7 +487,7 @@ namespace MonoDevelop.Projects
 
 		IDotNetLanguageBinding FindLanguage (string name)
 		{
-			IDotNetLanguageBinding binding = Services.Languages.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
+			IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
 			return binding;
 		}
 		

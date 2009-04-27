@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		
 		public static Ambience GetAmbienceForLanguage (string languageName)
 		{
-			ILanguageBinding binding = Services.Languages.GetBindingPerLanguageName (languageName);
+			ILanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (languageName);
 			if (binding != null) {
 				return GetAmbienceForFile (binding.GetFileName ("a"));
 			} else {

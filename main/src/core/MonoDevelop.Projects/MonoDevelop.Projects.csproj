@@ -65,7 +65,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MonoDevelop.Projects\LanguageBindingService.cs" />
     <Compile Include="MonoDevelop.Projects\CombineEventArgs.cs" />
     <Compile Include="MonoDevelop.Projects\FileFormatManager.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectEventArgs.cs" />
@@ -324,6 +323,7 @@
     <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\NamespaceEntry.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\ProjectMemoryProjectDom.cs" />
     <Compile Include="MonoDevelop.Projects.CodeGeneration\INameValidator.cs" />
+    <Compile Include="MonoDevelop.Projects\LanguageBindingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

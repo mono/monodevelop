@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public bool FileSupportsOperation (string file, RefactorOperations operation)
 		{
-			IRefactorer r = Services.Languages.GetRefactorerForFile (file);
+			IRefactorer r = LanguageBindingService.GetRefactorerForFile (file);
 			if (r == null)
 				return false;
 			return (r.SupportedOperations & operation) == operation;
@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public bool LanguageSupportsOperation (string langName, RefactorOperations operation)
 		{
-			IRefactorer r = Services.Languages.GetRefactorerForLanguage (langName);
+			IRefactorer r = LanguageBindingService.GetRefactorerForLanguage (langName);
 			if (r == null)
 				return false;
 			return (r.SupportedOperations & operation) == operation;
@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			ProjectDom ctx = ProjectDomService.GetProjectDom (project);
 			RefactorerContext gctx = new RefactorerContext (ctx, fileProvider, null);
-			IRefactorer gen = Services.Languages.GetRefactorerForLanguage (language);
+			IRefactorer gen = LanguageBindingService.GetRefactorerForLanguage (language);
 			IType c = gen.CreateClass (gctx, directory, namspace, type);
 			gctx.Save ();
 			return c;
@@ -299,13 +299,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public void AddNamespaceImport (ProjectDom dom, string fileName, string nsName)
 		{
-			IRefactorer refactorer = Services.Languages.GetRefactorerForFile (fileName);
+			IRefactorer refactorer = LanguageBindingService.GetRefactorerForFile (fileName);
 			refactorer.AddNamespaceImport (new RefactorerContext (dom, fileProvider, null), fileName, nsName);
 		}
 		
 		public DomLocation CompleteStatement (ProjectDom dom, string fileName, DomLocation caretLocation)
 		{
-			IRefactorer refactorer = Services.Languages.GetRefactorerForFile (fileName);
+			IRefactorer refactorer = LanguageBindingService.GetRefactorerForFile (fileName);
 			return refactorer.CompleteStatement (new RefactorerContext (dom, fileProvider, null), fileName, caretLocation);
 		}
 		
@@ -673,7 +673,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (scope == RefactoryScope.File || solution == null) {
 				string file = cls.CompilationUnit.FileName;
 				RefactorerContext gctx = GetGeneratorContext (cls);
-				IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
+				IRefactorer gen = LanguageBindingService.GetRefactorerForFile (file);
 				if (gen == null)
 					return;
 				refactorDelegate (monitor, gctx, gen, file);
@@ -699,7 +699,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			RefactorerContext gctx = GetGeneratorContext (var);
 			string file = var.FileName;
 			
-			IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
+			IRefactorer gen = LanguageBindingService.GetRefactorerForFile (file);
 			if (gen == null)
 				return;
 			
@@ -718,7 +718,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			foreach (IType part in cls.Parts) {
 				file = part.CompilationUnit.FileName;
 				
-				if ((gen = Services.Languages.GetRefactorerForFile (file)) == null)
+				if ((gen = LanguageBindingService.GetRefactorerForFile (file)) == null)
 					continue;
 				
 				refactorDelegate (monitor, gctx, gen, file);
@@ -733,7 +733,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			foreach (ProjectFile file in p.Files) {
 				if (file.BuildAction != BuildAction.Compile || !System.IO.File.Exists (file.FilePath))
 					continue;
-				IRefactorer gen = Services.Languages.GetRefactorerForFile (file.Name);
+				IRefactorer gen = LanguageBindingService.GetRefactorerForFile (file.Name);
 				if (gen == null)
 					continue;
 				refactorDelegate (monitor, gctx, gen, file.Name);
@@ -788,12 +788,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		IRefactorer GetGeneratorForClass (IType cls)
 		{
-			return Services.Languages.GetRefactorerForFile (cls.CompilationUnit.FileName);
+			return LanguageBindingService.GetRefactorerForFile (cls.CompilationUnit.FileName);
 		}
 		
 		IRefactorer GetGeneratorForVariable (LocalVariable var)
 		{
-			return Services.Languages.GetRefactorerForFile (var.FileName);
+			return LanguageBindingService.GetRefactorerForFile (var.FileName);
 		}
 	}
 	

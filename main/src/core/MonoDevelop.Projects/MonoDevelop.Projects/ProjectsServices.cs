@@ -35,16 +35,6 @@ namespace MonoDevelop.Projects
 	public class Services
 	{
 		static ProjectService projectService;
-		static LanguageBindingService languageBindingService;
-	
-	
-		public static LanguageBindingService Languages {
-			get {
-				if (languageBindingService == null)
-					languageBindingService = new LanguageBindingService ();
-				return languageBindingService;
-			}
-		}
 	
 		public static ProjectService ProjectService {
 			get {

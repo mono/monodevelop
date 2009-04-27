@@ -1,161 +1,104 @@
-//  LanguageBindingService.cs
-//
-//  This file was derived from a file from #Develop. 
-//
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
 // 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
+// LanguageBindingService.cs
 //  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Author:
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
-using System.Xml;
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using System.CodeDom.Compiler;
-
-using MonoDevelop.Projects;
+using System.Linq;
+using Mono.Addins;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 
-using MonoDevelop.Core;
-using Mono.Addins;
 
 namespace MonoDevelop.Projects
 {
-	public class LanguageBindingService
+	public static class LanguageBindingService
 	{
-		List<LanguageBindingCodon> bindings = null;
-		ILanguageBinding[] langs;
+		static List<LanguageBindingCodon> languageBindingCodons = new List<LanguageBindingCodon> ();
 		
-		public LanguageBindingService ()
+		static LanguageBindingService ()
 		{
-			bindings = new List<LanguageBindingCodon> ();
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/LanguageBindings", OnExtensionChanged);
-		}
-		
-		public ILanguageBinding GetBindingPerLanguageName(string languagename)
-		{
-			LanguageBindingCodon codon = GetCodonPerLanguageName(languagename);
-			return codon == null ? null : codon.LanguageBinding;
-		}
-		
-		public ILanguageBinding GetBindingPerFileName(string filename)
-		{
-			LanguageBindingCodon codon = GetCodonPerFileName(filename);
-			return codon == null ? null : codon.LanguageBinding;
-		}
-		
-		public ILanguageBinding GetBindingPerProjectFile(string filename)
-		{
-			LanguageBindingCodon codon = GetCodonPerProjectFile(filename);
-			return codon == null ? null : codon.LanguageBinding;
-		}
-		
-		public ILanguageBinding[] GetLanguageBindings ()
-		{
-			if (langs != null)
-				return langs;
-				
-			langs = new ILanguageBinding [bindings.Count];
-			for (int n=0; n<langs.Length; n++)
-				langs [n] = bindings [n].LanguageBinding;
-
-			return langs;
-		}
-/*
-		public IParser GetParserForFile (string fileName)
-		{
-			foreach (LanguageBindingCodon binding in bindings) {
-				if (binding.LanguageBinding.IsSourceCodeFile (fileName) && binding.LanguageBinding.Parser != null) {
-					return binding.LanguageBinding.Parser;
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/LanguageBindings", delegate(object sender, ExtensionNodeEventArgs args) {
+				LanguageBindingCodon languageBindingCodon = (LanguageBindingCodon)args.ExtensionNode;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					languageBindingCodons.Add (languageBindingCodon);
+					IDotNetLanguageBinding dotNetBinding = languageBindingCodon as IDotNetLanguageBinding;
+					if (dotNetBinding != null) {
+						object par = dotNetBinding.CreateCompilationParameters (null);
+						if (par != null)
+							Services.ProjectService.DataContext.IncludeType (par.GetType ());
+						par = dotNetBinding.CreateProjectParameters (null);
+						if (par != null)
+							Services.ProjectService.DataContext.IncludeType (par.GetType ());
+					}
+					break;
+				case ExtensionChange.Remove:
+					languageBindingCodons.Remove (languageBindingCodon);
+					break;
 				}
-			}
-			return null;
-		}
-		*/
-		public IRefactorer GetRefactorerForFile (string fileName)
-		{
-			foreach (LanguageBindingCodon binding in bindings) {
-				if (binding.LanguageBinding.IsSourceCodeFile (fileName) && binding.LanguageBinding.Refactorer != null) {
-					return binding.LanguageBinding.Refactorer;
-				}
-			}
-			return null;
+				languageBindings = null;
+			});
 		}
 		
-		public IRefactorer GetRefactorerForLanguage (string languagename)
-		{
-			foreach (LanguageBindingCodon binding in bindings) {
-				if (binding.LanguageBinding.Language == languagename && binding.LanguageBinding.Refactorer != null) {
-					return binding.LanguageBinding.Refactorer;
-				}
+		static List<ILanguageBinding> languageBindings = null;
+		public static IEnumerable<ILanguageBinding> LanguageBindings {
+			get {
+				CheckBindings ();
+				return languageBindings;
 			}
-			return null;
 		}
 		
-		internal LanguageBindingCodon GetCodonPerLanguageName(string languagename)
+		static void CheckBindings ()
 		{
-			foreach (LanguageBindingCodon binding in bindings) {
-				if (binding.LanguageBinding.Language == languagename) {
-					return binding;
-				}
-			}
-			return null;
+			if (languageBindings == null)
+				languageBindings = new List<ILanguageBinding> (from codon in languageBindingCodons select codon.LanguageBinding);
 		}
 		
-		internal LanguageBindingCodon GetCodonPerFileName(string filename)
+		public static ILanguageBinding GetBindingPerFileName (string fileName)
 		{
-			foreach (LanguageBindingCodon binding in bindings) {
-				if (binding.LanguageBinding.IsSourceCodeFile(filename)) {
-					return binding;
-				}
-			}
-			return null;
+			CheckBindings ();
+			return languageBindings.FirstOrDefault (binding => binding.IsSourceCodeFile (fileName));
 		}
 		
-		internal LanguageBindingCodon GetCodonPerProjectFile(string filename)
+		public static ILanguageBinding GetBindingPerLanguageName (string language)
 		{
-			XmlDocument doc = new XmlDocument();
-			doc.Load(filename);
-			return GetCodonPerLanguageName(doc.DocumentElement.Attributes["projecttype"].InnerText);
+			CheckBindings ();
+			return languageBindings.FirstOrDefault (binding => binding.Language == language);
 		}
 		
-		void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
+		public static IRefactorer GetRefactorerForFile (string fileName)
 		{
-			if (args.Change == ExtensionChange.Add) {
-				LanguageBindingCodon node = (LanguageBindingCodon) args.ExtensionNode;
-				bindings.Add (node);
-				
-				IDotNetLanguageBinding binding = node.LanguageBinding as IDotNetLanguageBinding;
-				if (binding != null) {
-					object ob = binding.CreateCompilationParameters (null);
-					if (ob != null)
-						Services.ProjectService.DataContext.IncludeType (ob.GetType ());
-					ob = binding.CreateProjectParameters (null);
-					if (ob != null)
-						Services.ProjectService.DataContext.IncludeType (ob.GetType ());
-				}
-				
-				// Make sure the langs list is re-created
-				langs = null;
-			}
-			else
-				bindings.Remove ((LanguageBindingCodon) args.ExtensionNode);
+			ILanguageBinding binding = GetBindingPerFileName (fileName);
+			return binding != null ? binding.Refactorer : null;
+		}
+		
+		public static IRefactorer GetRefactorerForLanguage (string language)
+		{
+			ILanguageBinding binding = GetBindingPerLanguageName (language);
+			return binding != null ? binding.Refactorer : null;
 		}
 	}
 }

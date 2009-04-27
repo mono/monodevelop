@@ -1,3 +1,15 @@
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/ILanguageBinding.cs:
+	* MonoDevelop.Projects/ProjectsServices.cs:
+	* MonoDevelop.Projects/DotNetProjectBinding.cs:
+	* MonoDevelop.Projects/LanguageBindingService.cs:
+	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	  Reimplemented language binding service.
+
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
