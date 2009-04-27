@@ -57,7 +57,8 @@ FILES =  \
 	IDebuggerController.cs \
 	IDebuggerServer.cs \
 	MonoDebuggerSession.cs \
-	MonoDebuggerSessionFactory.cs 
+	MonoDebuggerSessionFactory.cs \
+	MonoDebuggerStartInfo.cs 
 
 DATA_FILES = 
 

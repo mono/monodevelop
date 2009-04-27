@@ -37,26 +37,32 @@ namespace Mono.Debugging.Backend.Mdb
 	public class MonoDebuggerSession: DebuggerSession
 	{
 		DebuggerController controller;
+		bool started;
 		
 		public void StartDebugger ()
 		{
 			controller = new DebuggerController (this, Frontend);
-			controller.StartDebugger ();
 		}
 		
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			controller.StopDebugger ();
+			if (started)
+				controller.StopDebugger ();
 		}
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			controller.DebuggerServer.Run (startInfo);
+			started = true;
+			MonoDebuggerStartInfo info = (MonoDebuggerStartInfo) startInfo;
+			controller.StartDebugger (info);
+			controller.DebuggerServer.Run (info);
 		}
 
 		protected override void OnAttachToProcess (int processId)
 		{
+			started = true;
+			controller.StartDebugger (null);
 			controller.DebuggerServer.AttachToProcess (processId);
 		}
 		

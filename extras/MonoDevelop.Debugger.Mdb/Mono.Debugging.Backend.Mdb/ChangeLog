@@ -1,3 +1,16 @@
+2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile:
+	* Manifest.addin.xml:
+	* IDebuggerServer.cs:
+	* DebuggerController.cs:
+	* MonoDebuggerSession.cs:
+	* MonoDebuggerStartInfo.cs:
+	* MonoDebuggerSessionFactory.cs:
+	* Mono.Debugging.Backend.Mdb.csproj: Track api changes. Added
+	  support for targetting a runtime other than the current one
+	  (as long as it has the debugger installed).
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

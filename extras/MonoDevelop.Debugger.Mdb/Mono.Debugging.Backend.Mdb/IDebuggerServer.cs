@@ -32,7 +32,7 @@ namespace Mono.Debugging.Backend.Mdb
 {
 	public interface IDebuggerServer
 	{
-		void Run (DebuggerStartInfo startInfo);
+		void Run (MonoDebuggerStartInfo startInfo);
 
 		void Stop ();
 		

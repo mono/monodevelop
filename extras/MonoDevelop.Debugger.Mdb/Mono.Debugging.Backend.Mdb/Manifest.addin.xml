@@ -1,4 +1,4 @@
-<Addin id = "Mono.Debugging.Mdb"
+<Addin id = "MonoDevelop.Debugger.Mdb"
        name	     = "MDB support for Mono.Debugging"
        author	 = "Ankit Jain, Lluis Sanchez"
        url       = "http://www.mono-project.com"
@@ -14,7 +14,7 @@
 	</Dependencies>
 	
 	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
-		<DebuggerFactory type="Mono.Debugging.Backend.Mdb.MonoDebuggerSessionFactory" />
+		<DebuggerFactory type="MonoDevelop.Debugger.Mdb.MonoDebuggerSessionFactory" />
 	</Extension>
 
 </Addin>

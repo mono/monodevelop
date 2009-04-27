@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Remoting;
@@ -86,7 +87,7 @@ namespace Mono.Debugging.Backend.Mdb
 		
 		#endregion
 
-		public void StartDebugger ()
+		public void StartDebugger (MonoDebuggerStartInfo startInfo)
 		{
 			lock (this)
 			{
@@ -108,7 +109,13 @@ namespace Mono.Debugging.Backend.Mdb
 					//if (isDebugMode) argv += " --debug";
 					argv += " --debug '" + Path.Combine(location, "DebuggerServer.exe") + "' ";
 
-					process.StartInfo = new ProcessStartInfo("mono", argv);
+					process.StartInfo = new ProcessStartInfo ("mono", argv);
+					
+					if (startInfo != null) {
+						string monoPath = Path.Combine (startInfo.MonoPrefix, "bin");
+						process.StartInfo.FileName = Path.Combine (monoPath, "mono");
+					}
+					
 					process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
 					process.StartInfo.UseShellExecute = false;
 					process.StartInfo.RedirectStandardInput = true;

@@ -30,8 +30,12 @@ using System.Collections.Generic;
 using System.IO;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
+using MonoDevelop.Debugger;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Assemblies;
+using Mono.Debugging.Backend.Mdb;
 
-namespace Mono.Debugging.Backend.Mdb
+namespace MonoDevelop.Debugger.Mdb
 {
 	public class MonoDebuggerSessionFactory: IDebuggerEngine
 	{
@@ -39,10 +43,25 @@ namespace Mono.Debugging.Backend.Mdb
 			get { return "Mono Debugger"; }
 		}
 		
-		public bool CanDebugCommand (string file)
+		public bool CanDebugCommand (ExecutionCommand command)
 		{
-			string ext = System.IO.Path.GetExtension (file).ToLower ();
-			return ext == ".exe" || ext == ".dll";
+			DotNetExecutionCommand cmd = command as DotNetExecutionCommand;
+			return cmd != null && DebuggingSupported (cmd.TargetRuntime);
+		}
+		
+		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
+		{
+			DotNetExecutionCommand cmd = (DotNetExecutionCommand) command;
+			MonoDebuggerStartInfo startInfo = CreateDebuggerStartInfo (cmd.TargetRuntime);
+			
+			startInfo.Command = cmd.Command;
+			startInfo.Arguments = cmd.Arguments;
+			startInfo.WorkingDirectory = cmd.WorkingDirectory;
+			if (cmd.EnvironmentVariables.Count > 0) {
+				foreach (KeyValuePair<string,string> val in cmd.EnvironmentVariables)
+					startInfo.EnvironmentVariables [val.Key] = val.Value;
+			}
+			return startInfo;
 		}
 
 		public DebuggerFeatures SupportedFeatures {
@@ -79,6 +98,20 @@ namespace Mono.Debugging.Backend.Mdb
 				procs.Add (pi);
 			}
 			return procs.ToArray ();
+		}
+		
+		public static bool DebuggingSupported (TargetRuntime tr)
+		{
+			return (tr is MonoTargetRuntime) && tr.GetPackage ("mono-debugger") != null;
+		}
+		
+		public static MonoDebuggerStartInfo CreateDebuggerStartInfo (TargetRuntime tr)
+		{
+			MonoDebuggerStartInfo startInfo = new MonoDebuggerStartInfo ();
+			MonoTargetRuntime mtr = (MonoTargetRuntime) tr;
+			startInfo.ServerEnvironment = mtr.GetToolsEnvironmentVariables ();
+			startInfo.MonoPrefix = mtr.Prefix;
+			return startInfo;
 		}
 	}
 }

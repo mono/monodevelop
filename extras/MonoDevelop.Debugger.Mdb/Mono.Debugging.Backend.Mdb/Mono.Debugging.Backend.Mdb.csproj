@@ -120,6 +120,7 @@
     <Compile Include="MonoDebuggerSession.cs" />
     <Compile Include="MonoDebuggerSessionFactory.cs" />
     <Compile Include="IDebuggerServer.cs" />
+    <Compile Include="MonoDebuggerStartInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
