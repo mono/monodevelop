@@ -1,28 +1,34 @@
-//  DeclarationViewWindow.cs
+// DeclarationViewWindow.cs
 //
-//  This file was derived from a file from #Develop. 
+// Author:
+//   Mike Krüger <mkrueger@novell.com>
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
-// 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
 using System.Reflection;
 using System.Collections;
 
 using Gtk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
@@ -31,70 +37,59 @@ namespace MonoDevelop.Projects.Gui.Completion
 		static char[] newline = {'\n'};
 		static char[] whitespace = {' '};
 
-		ArrayList overloads;
+		List<string> overloads = new List<string> ();
 		int current_overload;
-
+		
 		HeaderWidget headlabel;
-		Label bodylabel, helplabel;
+		Label bodylabel;
+		Label helplabel;
 		Arrow left, right;
 		VBox helpbox;
 		
-		public string DescriptionMarkup
-		{
+		public string DescriptionMarkup {
 			get {
-			 	if (bodylabel.Text == "")
+			 	if (string.IsNullOrEmpty (bodylabel.Text))
 					return headlabel.Text;
-				else
-					return headlabel.Text + "\n" + bodylabel.Text;
+				return headlabel.Text + "\n" + bodylabel.Text;
 			}
-			
 			set {
-				if (value == null) {
-					headlabel.Markup = "";
-					bodylabel.Markup = "";
+				if (string.IsNullOrEmpty (value)) {
+					headlabel.Markup = bodylabel.Markup = "";
 					return;
 				}
-
 				string[] parts = value.Split (newline, 2);
 				headlabel.Markup = parts[0].Trim (whitespace);
-				bodylabel.Markup = "<span size=\"smaller\">" + (parts.Length == 2 ? parts[1].Trim (whitespace) : String.Empty) + "</span>";
-
-				headlabel.Visible = headlabel.Text != "";
-				bodylabel.Visible = bodylabel.Text != "";
-				//QueueDraw ();
+				bodylabel.Markup = parts.Length == 2 ? "<span size=\"smaller\">" + parts[1].Trim (whitespace) + "</span>" : "";
+				headlabel.Visible = !string.IsNullOrEmpty (headlabel.Text);
+				bodylabel.Visible = !string.IsNullOrEmpty (bodylabel.Text);
 			}
 		}
 
-		public bool Multiple
-		{
+		public bool Multiple {
 			get {
 				return left.Visible;
 			}
-
 			set {
-				left.Visible = value;
-				right.Visible = value;
-				helpbox.Visible = value;
+				left.Visible = right.Visible = helpbox.Visible = value;
 				
 				//this could go somewhere better, as long as it's after realization
-				headlabel.Visible = headlabel.Text != "";
-				bodylabel.Visible = bodylabel.Text != "";
+				headlabel.Visible = !string.IsNullOrEmpty (headlabel.Text);
+				bodylabel.Visible = !string.IsNullOrEmpty (bodylabel.Text);
 			}
 		}
 
 		public void AddOverload (string desc)
 		{
 			overloads.Add (desc);
-			if (overloads.Count == 2) {
+			if (overloads.Count == 2)
 				Multiple = true;
-			}
 			ShowOverload ();
 		}
 
 		void ShowOverload ()
 		{
-			DescriptionMarkup = (string)overloads[current_overload];
-			helplabel.Markup = String.Format ("<small>{0} of {1} overloads</small>", current_overload + 1, overloads.Count);
+			DescriptionMarkup = overloads[current_overload];
+			helplabel.Markup = string.Format ("<small>" + GettextCatalog.GetString ("{0} of {1} overloads") + "</small>", current_overload + 1, overloads.Count);
 		}
 
 		public void OverloadLeft ()
@@ -126,8 +121,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public void SetFixedWidth (int w)
 		{
 			if (w != -1) {
-				int boxMargin = SizeRequest().Width - headlabel.SizeRequest().Width;
-				w -= boxMargin;
+				w -= SizeRequest ().Width - headlabel.SizeRequest ().Width;
 				headlabel.Width = w > 0 ? w : 1;
 			} else {
 				headlabel.Width = -1;

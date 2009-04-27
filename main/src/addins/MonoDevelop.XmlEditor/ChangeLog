@@ -1,3 +1,8 @@
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.XmlEditor/DeclarationViewWindow.cs: Updated
+	  declaration view from MonoDevelop.Projects.Gui
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.XmlEditor.csproj: don't require specific
