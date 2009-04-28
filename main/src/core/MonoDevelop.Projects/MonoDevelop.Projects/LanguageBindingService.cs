@@ -79,12 +79,20 @@ namespace MonoDevelop.Projects
 		
 		public static ILanguageBinding GetBindingPerFileName (string fileName)
 		{
+			if (String.IsNullOrEmpty (fileName)) {
+				MonoDevelop.Core.LoggingService.LogWarning ("Cannot get binding for null filename at {0}", Environment.StackTrace);
+				return null;
+			}
 			CheckBindings ();
 			return languageBindings.FirstOrDefault (binding => binding.IsSourceCodeFile (fileName));
 		}
 		
 		public static ILanguageBinding GetBindingPerLanguageName (string language)
 		{
+			if (String.IsNullOrEmpty (language)) {
+				MonoDevelop.Core.LoggingService.LogWarning ("Cannot get binding for null language at {0}", Environment.StackTrace);
+				return null;
+			}
 			CheckBindings ();
 			return languageBindings.FirstOrDefault (binding => binding.Language == language);
 		}
