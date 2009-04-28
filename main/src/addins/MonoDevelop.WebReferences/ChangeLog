@@ -1,5 +1,10 @@
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.WebReferences/WebReferenceItem.cs: fixed
+	  compilation error.
+
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.WebReferences/WebReferenceItem.cs: Applied patch
 	  from Luciano N. Callero <lnc19@hotmail.com> : "Fix Web
 	  Reference Update bug that prevent a web reference from being

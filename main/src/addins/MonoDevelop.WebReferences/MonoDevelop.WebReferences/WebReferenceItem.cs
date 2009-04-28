@@ -80,7 +80,7 @@ namespace MonoDevelop.WebReferences
 
 			// Refresh the disco and wsdl from the server
 			foreach (object doc in protocol.References.Values) { 
-				string url;
+				string url = null;
 				if (doc is DiscoveryDocumentReference) {
 					url = ((DiscoveryDocumentReference)doc).Url;
 				} else if (doc is ContractReference) {
