@@ -1,3 +1,13 @@
+2009-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
+	  Added ParentWorkspaceObject to SystemFile and ProjectFolder,
+	  which replaces the old Project property. It is required
+	  because now it is possible to show hiddem folders and files
+	  as children of a solution.
+
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Added missing

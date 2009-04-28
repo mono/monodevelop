@@ -39,18 +39,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	public class ProjectFolder: IDisposable, IFolderItem
 	{
 		string absolutePath;
-		Project project;
+		IWorkspaceObject parentWorkspaceObject;
 		object parent;
 		bool trackChanges;
 		
-		public ProjectFolder (string absolutePath, Project project): this (absolutePath, project, null)
+		public ProjectFolder (string absolutePath, IWorkspaceObject parentWorkspaceObject): this (absolutePath, parentWorkspaceObject, null)
 		{
 		}
 		
-		public ProjectFolder (string absolutePath, Project project, object parent)
+		public ProjectFolder (string absolutePath, IWorkspaceObject parentWorkspaceObject, object parent)
 		{
 			this.parent = parent;
-			this.project = project;
+			this.parentWorkspaceObject = parentWorkspaceObject;
 			this.absolutePath = absolutePath;
 		}
 		
@@ -79,35 +79,39 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			get { return System.IO.Path.GetFileName (absolutePath); }
 		}
 		
+		public IWorkspaceObject ParentWorkspaceObject {
+			get { return parentWorkspaceObject; }
+		}
+		
 		public Project Project {
-			get { return project; }
+			get { return parentWorkspaceObject as Project; }
 		}
 		
 		public object Parent {
 			get {
 				if (parent != null)
 					return parent; 
-				if (project == null)
+				if (parentWorkspaceObject == null)
 					return null;
 
 				string dir = System.IO.Path.GetDirectoryName (absolutePath);
-				if (dir == project.BaseDirectory)
-					return project;
+				if (dir == parentWorkspaceObject.BaseDirectory)
+					return parentWorkspaceObject;
 				else
-					return new ProjectFolder (dir, project, null);
+					return new ProjectFolder (dir, parentWorkspaceObject, null);
 			}
 		}
 		
 		public override bool Equals (object other)
 		{
 			ProjectFolder f = other as ProjectFolder;
-			return f != null && absolutePath == f.absolutePath && project == f.project;
+			return f != null && absolutePath == f.absolutePath && parentWorkspaceObject == f.parentWorkspaceObject;
 		}
 		
 		public override int GetHashCode ()
 		{
-			if (project != null)
-				return (absolutePath + project.Name).GetHashCode ();
+			if (parentWorkspaceObject != null)
+				return (absolutePath + parentWorkspaceObject.Name).GetHashCode ();
 			else
 				return absolutePath.GetHashCode ();
 		}

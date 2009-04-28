@@ -60,8 +60,11 @@ namespace MonoDevelop.VersionControl
 
 			// Don't cache node items because they can change
 			VersionControlItemList nodeItems = new VersionControlItemList ();
-			foreach (ITreeNavigator node in CurrentNodes)
-				nodeItems.Add (CreateItem (node.DataItem));
+			foreach (ITreeNavigator node in CurrentNodes) {
+				VersionControlItem item = CreateItem (node.DataItem);
+				if (item != null)
+					nodeItems.Add (item);
+			}
 			return nodeItems;
 		}
 		
@@ -81,12 +84,12 @@ namespace MonoDevelop.VersionControl
 				SystemFile file = (SystemFile)obj;
 				path = file.Path;
 				isDir = false;
-				pentry = file.Project;
+				pentry = file.ParentWorkspaceObject;
 			} else if (obj is ProjectFolder) {
 				ProjectFolder f = ((ProjectFolder)obj);
 				path = f.Path;
 				isDir = true;
-				pentry = f.Project;
+				pentry = f.ParentWorkspaceObject;
 			} else if (obj is IWorkspaceObject) {
 				pentry = ((IWorkspaceObject)obj);
 				path = pentry.BaseDirectory;
@@ -94,6 +97,9 @@ namespace MonoDevelop.VersionControl
 			} else
 				return null;
 
+			if (pentry == null)
+				return null;
+			
 			repo = VersionControlService.GetRepository (pentry);
 			return new VersionControlItem (repo, pentry, path, isDir);
 		}

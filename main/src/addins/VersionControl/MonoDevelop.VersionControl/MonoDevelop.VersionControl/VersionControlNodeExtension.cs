@@ -53,15 +53,15 @@ namespace MonoDevelop.VersionControl
 				return;
 			} else if (dataObject is ProjectFolder) {
 				ProjectFolder ce = (ProjectFolder) dataObject;
-				if (ce.Project != null) {
-					Repository rep = VersionControlService.GetRepository (ce.Project);
+				if (ce.ParentWorkspaceObject != null) {
+					Repository rep = VersionControlService.GetRepository (ce.ParentWorkspaceObject);
 					if (rep != null)
 						AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon);
 				}
 				return;
 			}
 			
-			Project prj;
+			IWorkspaceObject prj;
 			string file;
 			
 			if (dataObject is ProjectFile) {
@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl
 				file = pfile.FilePath;
 			} else {
 				SystemFile pfile = (SystemFile) dataObject;
-				prj = pfile.Project;
+				prj = pfile.ParentWorkspaceObject;
 				file = pfile.Path;
 			}
 			

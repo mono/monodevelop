@@ -175,9 +175,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (ITreeNavigator node in CurrentNodes) {
 				ProjectFolder folder = (ProjectFolder) node.DataItem as ProjectFolder;
 				Project project = folder.Project;
-				ProjectFile[] files = folder.Project.Files.GetFilesInPath (folder.Path);
+				ProjectFile[] files = project != null ? project.Files.GetFilesInPath (folder.Path) : null;
 				
-				if (files.Length == 0) {
+				if (files != null && files.Length == 0) {
 					bool yes = MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to permanently delete the folder {0}?", folder.Path), AlertButton.Delete);
 					if (!yes) 
 						return;
@@ -203,9 +203,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					}
 					
 					foreach (ProjectFile file in files)
-						folder.Project.Files.Remove (file);
+						project.Files.Remove (file);
 					
-					projects.Add (folder.Project);
+					projects.Add (project);
 				}
 			}
 			IdeApp.ProjectOperations.Save (projects);
@@ -244,7 +244,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (ITreeNavigator nav in CurrentNodes) {
 				Project project = nav.GetParentDataItem (typeof (Project), true) as Project;
 				string thisPath = GetFolderPath (nav.DataItem);
-				if (PathExistsInProject (project, thisPath)) {
+				if (project == null || PathExistsInProject (project, thisPath)) {
 					item.Visible = false;
 					return;
 				}

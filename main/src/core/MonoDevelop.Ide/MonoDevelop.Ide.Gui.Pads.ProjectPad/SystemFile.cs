@@ -36,16 +36,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	public class SystemFile: IFileItem
 	{
 		string absolutePath;
-		Project project;
+		IWorkspaceObject parent;
 		bool showTransparent;
 		
-		public SystemFile (string absolutePath, Project project): this (absolutePath, project, true)
+		public SystemFile (string absolutePath, IWorkspaceObject parent): this (absolutePath, parent, true)
 		{
 		}
 		
-		public SystemFile (string absolutePath, Project project, bool showTransparent)
+		public SystemFile (string absolutePath, IWorkspaceObject parent, bool showTransparent)
 		{
-			this.project = project;
+			this.parent = parent;
 			this.absolutePath = absolutePath;
 			this.showTransparent = showTransparent;
 		}
@@ -62,8 +62,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			get { return System.IO.Path.GetFileName (absolutePath); }
 		}
 
-		public Project Project {
-			get { return project; }
+		public IWorkspaceObject ParentWorkspaceObject {
+			get { return parent; }
 		}
 		
 		public bool ShowTransparent {
@@ -74,13 +74,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override bool Equals (object other)
 		{
 			SystemFile f = other as SystemFile;
-			return f != null && absolutePath == f.absolutePath && project == f.project;
+			return f != null && absolutePath == f.absolutePath && parent == f.parent;
 		}
 		
 		public override int GetHashCode ()
 		{
-			if (project != null)
-				return (absolutePath + project.Name).GetHashCode ();
+			if (parent != null)
+				return (absolutePath + parent.Name).GetHashCode ();
 			else
 				return absolutePath.GetHashCode ();
 		}
