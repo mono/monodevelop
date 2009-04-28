@@ -1,3 +1,8 @@
+2009-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/ReferenceManager.cs: Remove vte-sharp
+	  from the gnome libs list, since it now has its own package.
+
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.GtkCore/GtkDesignInfo.cs:

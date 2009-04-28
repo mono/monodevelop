@@ -203,7 +203,7 @@ namespace MonoDevelop.GtkCore {
 			"art-sharp", "atk-sharp", "gconf-sharp", "gdk-sharp", 
 			"glade-sharp","glib-sharp","gnome-sharp",
 			"gnome-vfs-sharp", "gtk-dotnet", "gtkhtml-sharp", 
-			"gtk-sharp", "pango-sharp", "rsvg-sharp", "vte-sharp"
+			"gtk-sharp", "pango-sharp", "rsvg-sharp"
 		};
 		
 		public static void Initialize ()
