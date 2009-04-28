@@ -106,8 +106,8 @@ namespace Mono.TextEditor
 		public static void RemoveIndentSelection (TextEditorData data)
 		{
 			Debug.Assert (data.IsSomethingSelected);
-			int startLineNr = data.IsSomethingSelected ? data.MainSelection.Anchor.Line : data.Caret.Line;
-			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.Lead.Line : data.Caret.Line;
+			int startLineNr = data.IsSomethingSelected ? data.MainSelection.MinLine : data.Caret.Line;
+			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.MaxLine : data.Caret.Line;
 			
 			if (endLineNr < 0)
 				endLineNr = data.Document.LineCount;
@@ -172,8 +172,8 @@ namespace Mono.TextEditor
 		
 		public static void IndentSelection (TextEditorData data)
 		{
-			int startLineNr = data.IsSomethingSelected ? data.MainSelection.Anchor.Line : data.Caret.Line;
-			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.Lead.Line : data.Caret.Line;
+			int startLineNr = data.IsSomethingSelected ? data.MainSelection.MinLine : data.Caret.Line;
+			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.MaxLine : data.Caret.Line;
 			if (endLineNr < 0)
 				endLineNr = data.Document.LineCount;
 			

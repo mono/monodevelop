@@ -1,5 +1,10 @@
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/DefaultEditActions.cs: Fixed update issues
+	  with indent selection commands.
+
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed "Bug
 	  498581 - Syntax highlighting engine crashes MD".
 
