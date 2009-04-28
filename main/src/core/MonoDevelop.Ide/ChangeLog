@@ -1,5 +1,10 @@
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs: Added
+	  missing gettext call.
+
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs: Added
 	  missing Gettext call.
 
