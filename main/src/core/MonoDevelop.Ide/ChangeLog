@@ -1,5 +1,10 @@
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs: Added
+	  missing Gettext call.
+
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs:
 	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
