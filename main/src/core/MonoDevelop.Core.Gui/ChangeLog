@@ -1,3 +1,9 @@
+2009-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs: Fix
+	  broken changes in ok button handling.
+
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

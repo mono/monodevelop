@@ -144,7 +144,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.buttonOk.UseStock = true;
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
-            this.AddActionWidget(this.buttonOk, -5);
+            w11.Add(this.buttonOk);
             Gtk.ButtonBox.ButtonBoxChild w13 = ((Gtk.ButtonBox.ButtonBoxChild)(w11[this.buttonOk]));
             w13.Position = 1;
             w13.Expand = false;
@@ -155,6 +155,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.DefaultWidth = 722;
             this.DefaultHeight = 502;
             this.Show();
+            this.buttonOk.Clicked += new System.EventHandler(this.OnButtonOkClicked);
         }
     }
 }
