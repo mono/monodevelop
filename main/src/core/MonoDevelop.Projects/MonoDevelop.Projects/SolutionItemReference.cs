@@ -48,7 +48,10 @@ namespace MonoDevelop.Projects
 				path = ((SolutionEntityItem)item).FileName;
 			} else {
 				path = item.ParentSolution.FileName;
-				id = item.ItemId;
+				if ((item is SolutionFolder) && ((SolutionFolder)item).IsRoot)
+					id = ":root:";
+				else
+					id = item.ItemId;
 			}
 		}
 		

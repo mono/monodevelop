@@ -159,7 +159,10 @@ namespace MonoDevelop.Projects
 				if (sol == null)
 					return null;
 				
-				return sol.GetSolutionItem (reference.Id);
+				if (reference.Id == ":root:")
+					return sol.RootFolder;
+				else
+					return sol.GetSolutionItem (reference.Id);
 			}
 		}
 		

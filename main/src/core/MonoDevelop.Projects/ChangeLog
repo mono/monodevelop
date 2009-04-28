@@ -1,3 +1,10 @@
+2009-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/SolutionItemReference.cs: When creating
+	  a SolutionItemReference use a special id for root folders,
+	  since the id for those is not stored.
+
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Fix nullref.
