@@ -107,6 +107,7 @@ RES =  \
 	icons/element-interface-16.png \
 	icons/element-literal-16.png \
 	icons/element-method-16.png \
+	icons/element-method-new-16.png \
 	icons/element-namespace-16.png \
 	icons/element-property-16.png \
 	icons/element-structure-16.png \

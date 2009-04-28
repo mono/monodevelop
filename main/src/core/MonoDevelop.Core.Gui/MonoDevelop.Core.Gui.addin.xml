@@ -109,6 +109,7 @@
 		<StockIcon stockid = "md-internal-struct" icon = "res:element-structure-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-literal" resource = "element-literal-16.png" />
 		<StockIcon stockid = "md-method" resource = "element-method-16.png" />
+		<StockIcon stockid = "md-newmethod" resource = "element-method-new-16.png" />
 		<StockIcon stockid = "md-misc-files" resource = "Icons.16x16.MiscFiles" />
 		<StockIcon stockid = "md-name-space" resource = "element-namespace-16.png" />
 		<StockIcon stockid = "md-new-folder-icon" resource = "Icons.16x16.NewFolderIcon" />

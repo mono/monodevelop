@@ -1,5 +1,12 @@
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* icons/element-method-new-16.png: Added icon for new method.
+
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs: Option dialog
 	  no longer closes when it's not valid and ok is pressed.
 
