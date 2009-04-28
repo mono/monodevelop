@@ -424,8 +424,28 @@ namespace MonoDevelop.CSharpBinding.Gui
 								sb.Append (CompletionDataCollector.ambience.GetString (delegateMethod.Parameters[k], OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName));
 							}
 							sb.Append (")");
-							completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb+" {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
-							completionList.Add (new EventCreationCompletionData (Editor, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
+							completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
+							string varName = GetPreviousToken (ref tokenIndex, false);
+							varName = GetPreviousToken (ref tokenIndex, false);
+							if (varName != ".") {
+								varName = null;
+							} else {
+								List<string> names = new List<string> ();
+								while (varName == ".") {
+									varName = GetPreviousToken (ref tokenIndex, false);
+									if (varName == "this") {
+										names.Add ("handle");
+									} else if (varName != null) {
+										string trimmedName = varName.Trim ();
+										if (trimmedName.Length == 0)
+											break;
+										names.Insert (0, trimmedName);
+									}
+									varName = GetPreviousToken (ref tokenIndex, false);
+								}
+								varName = String.Join ("", names.ToArray ());
+							}
+							completionList.Add (new EventCreationCompletionData (Editor, varName, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
 						}
 						return completionList;
 					}

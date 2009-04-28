@@ -1,3 +1,9 @@
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/EventCreationCompletionData.cs: Fixed/Improved the
+	  create event handler feature.
+
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBindingCompilerManager.cs: Use correct environment for

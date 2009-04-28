@@ -44,13 +44,12 @@ namespace MonoDevelop.CSharpBinding
 		MonoDevelop.Ide.Gui.TextEditor editor;
 		int initialOffset;
 		
-		public EventCreationCompletionData (MonoDevelop.Ide.Gui.TextEditor editor, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
+		public EventCreationCompletionData (MonoDevelop.Ide.Gui.TextEditor editor, string varName, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
 		{
-			if (delegateType is InstantiatedType) {
-				this.DisplayText   = "Handle" + evt.Name;
-			} else {
-				this.DisplayText   = "Handle" + evt.Name;
-			}
+			if (string.IsNullOrEmpty (varName))
+				varName = "handle";
+			this.DisplayText   = Char.ToUpper (varName[0]) + varName.Substring (1) + evt.Name;
+			
 			if (declaringType.SearchMember (this.DisplayText, true).Count > 0) {
 				for (int i = 1; i < 10000; i++) {
 					if (declaringType.SearchMember (this.DisplayText + i.ToString (), true).Count == 0) {
@@ -62,23 +61,25 @@ namespace MonoDevelop.CSharpBinding
 			this.editor        = editor;
 			this.parameterList = parameterList;
 			this.callingMember = callingMember;
-			this.Icon          = delegateType.Methods.First ().StockIcon;
+			this.Icon          = "md-newmethod";
 			this.initialOffset = editor.CursorPosition;
 		}
+		
 		static int SearchMatchingBracket (TextEditor editor, int offset, char openBracket, char closingBracket, int direction)
 		{
 			bool isInString       = false;
 			bool isInChar         = false;	
 			bool isInBlockComment = false;
-			int depth = -1;
+			int depth = direction;
 			while (offset >= 0 && offset < editor.TextLength) {
 				char ch = editor.GetCharAt (offset);
 				switch (ch) {
 					case '/':
-						if (isInBlockComment) 
-							isInBlockComment = editor.GetCharAt (offset + direction) != '*';
-						if (!isInString && !isInChar && offset - direction < editor.TextLength) 
-							isInBlockComment = offset > 0 && editor.GetCharAt (offset - direction) == '*';
+						if (isInBlockComment) {
+							isInBlockComment = editor.GetCharAt (offset - direction) != '*';
+						} else if (!isInString && !isInChar && offset - direction < editor.TextLength) {
+							isInBlockComment = offset + 1 < editor.TextLength && editor.GetCharAt (offset + direction) == '*';
+						}
 						break;
 					case '"':
 						if (!isInChar && !isInBlockComment) 
@@ -95,10 +96,11 @@ namespace MonoDevelop.CSharpBinding
 						} else if (ch == openBracket) {
 							if (!(isInString || isInChar || isInBlockComment)) {
 								++depth;
-								if (depth == 0) 
-									return offset;
 							}
 						}
+						if (depth == 0) 
+							return offset;
+					
 						break;
 				}
 				offset += direction;
@@ -117,8 +119,8 @@ namespace MonoDevelop.CSharpBinding
 			
 			// Search closing bracket of member
 			pos = SearchMatchingBracket (editor, pos + 1, '{', '}', 1) + 1;
-//			int lastPos = editor.GetPositionFromLineColumn (callingMember.DeclaringType.BodyRegion.End.Line, callingMember.DeclaringType.BodyRegion.End.Column);
-			pos = Math.Min (pos /*Math.Min (pos, lastPos)*/, editor.TextLength - 1);
+			
+			pos = Math.Min (pos, editor.TextLength - 1);
 			
 			// Insert new event handler after closing bracket
 			string indent = NewOverrideCompletionData.GetIndentString (editor, editor.GetPositionFromLineColumn (callingMember.Location.Line + 1, 0));
@@ -128,7 +130,7 @@ namespace MonoDevelop.CSharpBinding
 			sb.Append (indent);
 			if (callingMember.IsStatic)
 				sb.Append ("static ");
-			sb.Append ("void ");sb.Append (this.DisplayText);sb.Append (this.parameterList);sb.AppendLine ();
+			sb.Append ("void ");sb.Append (this.DisplayText);sb.Append (' ');sb.Append (this.parameterList);sb.AppendLine ();
 			sb.Append (indent);sb.Append ("{");sb.AppendLine ();
 			sb.Append (indent);sb.Append (TextEditorProperties.IndentString);
 			int cursorPos = pos + sb.Length;
