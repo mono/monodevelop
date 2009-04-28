@@ -514,6 +514,8 @@ namespace Mono.TextEditor.Highlighting
 		
 		public override Rule GetRule (string name)
 		{
+			if (name == null)
+				return this;
 			if (name.StartsWith ("mode:"))
 				return SyntaxModeService.GetSyntaxMode (name.Substring ("mode:".Length));
 			

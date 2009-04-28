@@ -1,3 +1,8 @@
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed "Bug
+	  498581 - Syntax highlighting engine crashes MD".
+
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor.csproj: Fix build.
