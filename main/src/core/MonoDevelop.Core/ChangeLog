@@ -1,3 +1,9 @@
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core/FileService.cs: Fixed "Bug 492716 - #
+	  characters are not supported in path names in Preferences
+	  dialog".
+
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Added

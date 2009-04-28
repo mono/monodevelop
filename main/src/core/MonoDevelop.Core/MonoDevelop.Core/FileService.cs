@@ -286,8 +286,6 @@ namespace MonoDevelop.Core
 				return false;
 			if (fileName.IndexOfAny (Path.GetInvalidPathChars ()) >= 0)
 				return false;
-			if(fileName.IndexOfAny("$#@!%^&*?|'\";}{".ToCharArray()) > -1)
-				return false;
 			return true;
 		}
 
