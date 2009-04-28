@@ -194,12 +194,15 @@ namespace MonoDevelop.Core.Assemblies
 						continue;
 					string var = line.ToLower ().Substring (0, i).Trim ();
 					string value = line.Substring (i+1).Trim ();
-					if (var == "libs" && value.IndexOf (".dll") != -1) {
+					if (var == "libs" && value.IndexOf (".dll") != -1 && fullassemblies == null) {
 						if (value.IndexOf ("-lib:") != -1 || value.IndexOf ("/lib:") != -1) {
 							fullassemblies = GetAssembliesWithLibInfo (value, pcfile);
 						} else {
 							fullassemblies = GetAssembliesWithoutLibInfo (value, pcfile);
 						}
+					}
+					else if (var == "libraries") {
+						fullassemblies = GetAssembliesFromLibrariesVar (value, pcfile);
 					}
 					else if (var == "version") {
 						pinfo.Version = value;
@@ -268,6 +271,16 @@ namespace MonoDevelop.Core.Assemblies
 			}
 	
 			return retval;
+		}
+		
+		List<string> GetAssembliesFromLibrariesVar (string line, string file)
+		{
+			List<string> references = new List<string> ();
+			foreach (string reference in line.Split (' ')) {
+				if (!string.IsNullOrEmpty (reference))
+					references.Add (ProcessPiece (reference, file));
+			}
+			return references;
 		}
 	
 		private List<string> GetAssembliesWithoutLibInfo (string line, string file)

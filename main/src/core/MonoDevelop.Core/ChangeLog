@@ -1,3 +1,9 @@
+2009-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: If a .pc
+	  file has a Libraries var, get the assemblies list from it
+	  instead of taking it from "Libs".
+
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core/FileService.cs: Fixed wrong invalid chars.
