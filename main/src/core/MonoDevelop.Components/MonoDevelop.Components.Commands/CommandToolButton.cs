@@ -75,9 +75,16 @@ namespace MonoDevelop.Components.Commands
 		void Update (CommandInfo cmdInfo)
 		{
 			if (lastDesc != cmdInfo.Description) {
-				SetTooltip (tips, cmdInfo.Description, cmdInfo.Description);
+				string toolTip;
+				if (string.IsNullOrEmpty (cmdInfo.AccelKey)) {
+					toolTip = cmdInfo.Description;
+				} else {
+					toolTip = cmdInfo.Description + " (" + cmdInfo.AccelKey + ")";
+				}
+				SetTooltip (tips, toolTip, toolTip);
 				lastDesc = cmdInfo.Description;
 			}
+			
 			if (Label != cmdInfo.Text)
 				Label = cmdInfo.Text;
 			if (cmdInfo.Icon != StockId)

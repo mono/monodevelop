@@ -1,3 +1,8 @@
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandToolButton.cs:
+	  Toolbar buttons show now the accel keys of the command.
+
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandManager.cs: Don't
