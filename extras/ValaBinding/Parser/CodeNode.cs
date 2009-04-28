@@ -107,6 +107,17 @@ namespace MonoDevelop.ValaBinding.Parser
 		public string File{ get; set; }
 		public int FirstLine{ get; set; }
 		public int LastLine{ get; set; }
+		
+		/// <value>
+		/// Whether this node is a class/struct/etc
+		/// </value>
+		public virtual bool IsContainerType 
+		{
+			get {
+				return (0 <= Array.IndexOf (containerTypes, NodeType));
+			}
+		}
+		private static readonly string[] containerTypes = new string[]{ "namespaces", "class", "struct", "enums" };
 
 		public CodeNode () {}
 
@@ -125,6 +136,13 @@ namespace MonoDevelop.ValaBinding.Parser
 			Access = access;
 		}
 		
+		public static string GetIconForType (string nodeType, AccessModifier visibility)
+		{
+			string icon = null;
+			iconTable[visibility].TryGetValue (nodeType, out icon);
+			return icon;
+		}
+
 		/// <summary>
 		/// Clone the current CodeNode
 		/// </summary>
@@ -134,13 +152,5 @@ namespace MonoDevelop.ValaBinding.Parser
 			clone.FullName = FullName;
 			return clone;
 		}
-
-		public static string GetIconForType (string nodeType, AccessModifier visibility)
-		{
-			string icon = null;
-			iconTable[visibility].TryGetValue (nodeType, out icon);
-			return icon;
-		}
-
 	}
 }

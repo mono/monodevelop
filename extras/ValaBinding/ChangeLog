@@ -1,5 +1,11 @@
 2009-04-28  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Parser/CodeNode.cs:
+	* Parser/ProjectInformation.cs: Make document type extraction
+	  more robust.
+
+2009-04-28  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Parser/ProjectInformation.cs: Force reparse on file update.
 
 2009-04-23  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>

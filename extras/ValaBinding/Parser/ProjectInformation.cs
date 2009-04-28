@@ -598,7 +598,9 @@ namespace MonoDevelop.ValaBinding.Parser
 			foreach (string result in ParseCommand ("get-classes {0}", file)) {
 				Console.WriteLine ("get-classes: got {0}", result);
 				node = ParseType (string.Empty, result);
-				if(null != node){ classes.Add (node); }
+				if(null != node && node.IsContainerType) { 
+					classes.Add (node); 
+				}
 			}
 			
 			return classes;
