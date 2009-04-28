@@ -199,18 +199,6 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		
 		protected override void OnResponse (ResponseType resp)
 		{
-			if (resp == ResponseType.Ok) {
-				Console.WriteLine (ValidateChanges ());
-				// Validate changes before saving
-				if (!ValidateChanges ())
-					return;
-				
-				// Now save
-				ApplyChanges ();
-				
-				if (DataObject != null)
-					modifiedObjects.Add (DataObject);
-			}
 			base.OnResponse (resp);
 			DetachWidgets ();
 		}
@@ -421,6 +409,21 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			} else {
 				page.Widget = box;
 			}
+		}
+
+		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
+		{
+			// Validate changes before saving
+			if (!ValidateChanges ())
+				return;
+			
+			// Now save
+			ApplyChanges ();
+			
+			if (DataObject != null)
+				modifiedObjects.Add (DataObject);
+			
+			this.Respond (ResponseType.Ok);
 		}
 		
 		class PanelInstance

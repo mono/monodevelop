@@ -1,3 +1,8 @@
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs: Option dialog
+	  no longer closes when it's not valid and ok is pressed.
+
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/PlatformService.cs: Fix infinite loop.
