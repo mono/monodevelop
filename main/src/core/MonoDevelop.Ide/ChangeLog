@@ -1,3 +1,8 @@
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs: Added
+	  missing translation string.
+
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:
