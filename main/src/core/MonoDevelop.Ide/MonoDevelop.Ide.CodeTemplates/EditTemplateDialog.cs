@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 	{
 		CodeTemplate template;
 		Mono.TextEditor.TextEditor textEditor = new Mono.TextEditor.TextEditor ();
+		Mono.TextEditor.TextEditorOptions options;
 		
 		ListStore variablesListStore;
 		List<CodeTemplateVariable> variables = new List<CodeTemplateVariable> ();
@@ -65,46 +66,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			scrolledwindow1.Child = textEditor;
 			textEditor.ShowAll ();
-			textEditor.Caret.PositionChanged += delegate {
-				comboboxVariables.Active = -1;
-				int offset = textEditor.Caret.Offset;
-				int start = offset;
-				while (start >= 0 && start < textEditor.Document.Length) { // caret offset may be behind the text
-					char ch = textEditor.Document.GetCharAt (start);
-					if (ch == '$')
-						break;
-					if (!char.IsLetterOrDigit (ch) && ch != '_')
-						return;
-					start--;
-				}
-				
-				int end = offset;
-				while (end < textEditor.Document.Length) {
-					char ch = textEditor.Document.GetCharAt (end);
-					if (ch == '$')
-						break;
-					if (!char.IsLetterOrDigit (ch) && ch != '_')
-						return;
-					end++;
-				}
-				if (start >= 0 && end < textEditor.Document.Length) {
-					string varName = textEditor.Document.GetTextBetween (start, end).Trim ('$');
-					TreeIter iter;
-					if (variablesListStore.GetIterFirst (out iter)) {
-						int i = -1;
-						do {
-							i++;
-							CodeTemplateVariable var = (CodeTemplateVariable)variablesListStore.GetValue (iter, 1);
-							if (var.Name == varName) {
-								comboboxVariables.Active = i;
-								break;
-							}
-						} while (variablesListStore.IterNext (ref iter));
-					}
-					
-				}
-			};
-			Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
+			textEditor.Caret.PositionChanged += CaretPositionChanged;
+			options = new Mono.TextEditor.TextEditorOptions ();
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
@@ -127,56 +90,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 			foreach (string group in groups) {
 				comboboxentryGroups.AppendText (group);
 			}
-			textEditor.Document.TextReplaced += delegate {
-				List<string> vars = template.ParseVariables (textEditor.Document.Text);
-				foreach (string var in vars) {
-					if (!variables.Any (v => v.Name == var) && !template.Variables.Any (v => v.Name == var)) {
-						variables.Add (new CodeTemplateVariable (var));
-					}
-				}
-				for (int i = 0; i < variables.Count; i++) {
-					CodeTemplateVariable var = variables[i];
-					if (!vars.Any (v => v == var.Name)) {
-						variables.RemoveAt (i);
-						i--;
-					}
-				}
-				this.UpdateVariables ();
-			};
-			this.buttonOk.Clicked += delegate {
-				template.Shortcut = this.entryShortcut1.Text;
-				template.Group = this.comboboxentryGroups.Entry.Text;
-				template.MimeType = this.comboboxentryMime.Entry.Text;
-				template.Description = this.entryDescription.Text;
-				template.Code = this.textEditor.Document.Text;
-				variables.ForEach (v => template.AddVariable (v));
-				template.CodeTemplateType = CodeTemplateType.Unknown;
-				if (checkbuttonExpansion.Active)
-					template.CodeTemplateType |= CodeTemplateType.Expansion;
-				if (checkbuttonSurroundWith.Active)
-					template.CodeTemplateType |= CodeTemplateType.SurroundsWith;
-			};
+			textEditor.Document.TextReplaced += DocumentTextReplaced;
+			this.buttonOk.Clicked += ButtonOkClicked;
 			
-			checkbuttonWhiteSpaces.Toggled += delegate {
-				options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonWhiteSpaces.Active;
-				textEditor.QueueDraw ();
-			};
+			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
 			
 			variablesListStore = new ListStore (typeof (string), typeof (CodeTemplateVariable));
 			comboboxVariables.Model = variablesListStore;
-			comboboxVariables.Changed += delegate { 
-				if (comboboxVariables.Active < 0) {
-					this.FillVariableTree (null);
-					return;
-				}
-				TreeIter iter;
-				if (variablesListStore.GetIterFromString (out iter, comboboxVariables.Active.ToString ())) {
-					this.FillVariableTree ((CodeTemplateVariable)variablesListStore.GetValue (iter, 1));
-				} else {
-					this.FillVariableTree (null);
-				}
-				
-			};
+			comboboxVariables.Changed += ComboboxVariablesChanged;
 			
 			variableStore = new TreeStore (typeof (string), typeof (CodeTemplateVariable), typeof (string), typeof (int));
 			treeviewVariable.Model = variableStore;
@@ -301,6 +222,100 @@ namespace MonoDevelop.Ide.CodeTemplates
 			#endregion
 			*/
 			UpdateVariables ();
+		}
+
+		void ComboboxVariablesChanged (object sender, EventArgs e)
+		{
+			if (comboboxVariables.Active < 0) {
+				this.FillVariableTree (null);
+				return;
+			}
+			TreeIter iter;
+			if (variablesListStore.GetIterFromString (out iter, comboboxVariables.Active.ToString ())) {
+				this.FillVariableTree ((CodeTemplateVariable)variablesListStore.GetValue (iter, 1));
+			} else {
+				this.FillVariableTree (null);
+			}
+		}
+
+		void ButtonOkClicked (object sender, EventArgs e)
+		{
+			template.Shortcut = this.entryShortcut1.Text;
+			template.Group = this.comboboxentryGroups.Entry.Text;
+			template.MimeType = this.comboboxentryMime.Entry.Text;
+			template.Description = this.entryDescription.Text;
+			template.Code = this.textEditor.Document.Text;
+			variables.ForEach (v => template.AddVariable (v));
+			template.CodeTemplateType = CodeTemplateType.Unknown;
+			if (checkbuttonExpansion.Active)
+				template.CodeTemplateType |= CodeTemplateType.Expansion;
+			if (checkbuttonSurroundWith.Active)
+				template.CodeTemplateType |= CodeTemplateType.SurroundsWith;
+		}
+
+		void DocumentTextReplaced (object sender, Mono.TextEditor.ReplaceEventArgs e)
+		{
+			List<string> vars = template.ParseVariables (textEditor.Document.Text);
+			foreach (string var in vars) {
+				if (!variables.Any (v => v.Name == var) && !template.Variables.Any (v => v.Name == var)) {
+					variables.Add (new CodeTemplateVariable (var));
+				}
+			}
+			for (int i = 0; i < variables.Count; i++) {
+				CodeTemplateVariable var = variables[i];
+				if (!vars.Any (v => v == var.Name)) {
+					variables.RemoveAt (i);
+					i--;
+				}
+			}
+			this.UpdateVariables ();
+		}
+
+		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
+		{
+			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonWhiteSpaces.Active;
+			textEditor.QueueDraw ();
+		}
+
+		void CaretPositionChanged (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		{
+			comboboxVariables.Active = -1;
+			int offset = textEditor.Caret.Offset;
+			int start = offset;
+			while (start >= 0 && start < textEditor.Document.Length) { // caret offset may be behind the text
+				char ch = textEditor.Document.GetCharAt (start);
+				if (ch == '$')
+					break;
+				if (!char.IsLetterOrDigit (ch) && ch != '_')
+					return;
+				start--;
+			}
+			
+			int end = offset;
+			while (end < textEditor.Document.Length) {
+				char ch = textEditor.Document.GetCharAt (end);
+				if (ch == '$')
+					break;
+				if (!char.IsLetterOrDigit (ch) && ch != '_')
+					return;
+				end++;
+			}
+			if (start >= 0 && end < textEditor.Document.Length) {
+				string varName = textEditor.Document.GetTextBetween (start, end).Trim ('$');
+				TreeIter iter;
+				if (variablesListStore.GetIterFirst (out iter)) {
+					int i = -1;
+					do {
+						i++;
+						CodeTemplateVariable var = (CodeTemplateVariable)variablesListStore.GetValue (iter, 1);
+						if (var.Name == varName) {
+							comboboxVariables.Active = i;
+							break;
+						}
+					} while (variablesListStore.IterNext (ref iter));
+				}
+				
+			}
 		}
 		class CellRendererProperty : CellRendererText
 		{

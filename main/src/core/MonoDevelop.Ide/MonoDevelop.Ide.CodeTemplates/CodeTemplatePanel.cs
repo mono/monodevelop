@@ -43,7 +43,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 		CellRendererText   templateCellRenderer;
 		CellRendererPixbuf pixbufCellRenderer;
 		Mono.TextEditor.TextEditor textEditor = new Mono.TextEditor.TextEditor ();
-
+		Mono.TextEditor.TextEditorOptions options;
+		
 		public CodeTemplatePanelWidget (OptionsDialog parent)
 		{
 			this.parent = parent;
@@ -75,7 +76,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			treeviewCodeTemplates.ExpandAll ();
 			treeviewCodeTemplates.Selection.Changed += HandleChanged;
 			
-			Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
+			options = new Mono.TextEditor.TextEditorOptions ();
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
@@ -84,43 +85,52 @@ namespace MonoDevelop.Ide.CodeTemplates
 			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
 			textEditor.Options = options;
 			textEditor.Document.ReadOnly = true;
-			this.buttonAdd.Clicked += delegate {
-				CodeTemplate newTemplate = new CodeTemplate ();
-				EditTemplateDialog editDialog = new EditTemplateDialog (newTemplate, true);
-				
-				editDialog.Parent = parent;
-				if (ResponseType.Ok == (ResponseType)editDialog.Run ()) {
-					InsertTemplate (newTemplate);
-					templates.Add (newTemplate);
-				}
-				editDialog.Destroy ();
-			};
-			
-			this.buttonEdit.Clicked += delegate {
-				TreeIter selected;
-				if (treeviewCodeTemplates.Selection.GetSelected (out selected)) {
-					EditTemplateDialog editDialog = new EditTemplateDialog ((CodeTemplate)templateStore.GetValue (selected, 0), false);
-					editDialog.Parent = parent;
-					editDialog.Run ();
-					editDialog.Destroy ();
-				}
-			};
-			
-			this.buttonRemove.Clicked += delegate {
-				TreeIter selected;
-				if (treeviewCodeTemplates.Selection.GetSelected (out selected)) {
-					if (MessageService.AskQuestion (GettextCatalog.GetString ("Remove template"), GettextCatalog.GetString ("Are you sure you want to remove this template?"), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove) {
-						CodeTemplate template = (CodeTemplate)templateStore.GetValue (selected, 0);
-						templates.Remove (template);
-						templateStore.Remove (ref selected);
-					}
-				}
-			};
-			checkbuttonWhiteSpaces.Toggled += delegate {
-				options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonWhiteSpaces.Active;
-				textEditor.QueueDraw ();
-			};
+			this.buttonAdd.Clicked += ButtonAddClicked;
+			this.buttonEdit.Clicked += ButtonEditClicked;
+			this.buttonRemove.Clicked += ButtonRemoveClicked;
+			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
+		}
 
+		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
+		{
+			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonWhiteSpaces.Active;
+			textEditor.QueueDraw ();
+		}
+
+		void ButtonRemoveClicked (object sender, EventArgs e)
+		{
+			TreeIter selected;
+			if (treeviewCodeTemplates.Selection.GetSelected (out selected)) {
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("Remove template"), GettextCatalog.GetString ("Are you sure you want to remove this template?"), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove) {
+					CodeTemplate template = (CodeTemplate)templateStore.GetValue (selected, 0);
+					templates.Remove (template);
+					templateStore.Remove (ref selected);
+				}
+			}
+		}
+
+		void ButtonEditClicked (object sender, EventArgs e)
+		{
+			TreeIter selected;
+			if (treeviewCodeTemplates.Selection.GetSelected (out selected)) {
+				EditTemplateDialog editDialog = new EditTemplateDialog ((CodeTemplate)templateStore.GetValue (selected, 0), false);
+				editDialog.Parent = parent;
+				editDialog.Run ();
+				editDialog.Destroy ();
+			}
+		}
+
+		void ButtonAddClicked (object sender, EventArgs e)
+		{
+			CodeTemplate newTemplate = new CodeTemplate ();
+			EditTemplateDialog editDialog = new EditTemplateDialog (newTemplate, true);
+			
+			editDialog.Parent = parent;
+			if (ResponseType.Ok == (ResponseType)editDialog.Run ()) {
+				InsertTemplate (newTemplate);
+				templates.Add (newTemplate);
+			}
+			editDialog.Destroy ();
 		}
 		
 		public void Store ()

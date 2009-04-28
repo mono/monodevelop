@@ -96,6 +96,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				
 				ShowAll ();
 			}
+			
 			comboboxentryFind.Entry.Activated += delegate {
 				buttonSearch.Click ();
 			};
@@ -157,13 +158,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				Gtk.Box.BoxChild boxChild = (Gtk.Box.BoxChild)hbox2[labelPath];
 				boxChild.Expand = boxChild.Fill = false;
 				
-				Properties properties = (Properties)PropertyService.
-					Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+				Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 				comboboxentryPath = new ComboBoxEntry ();
 				
-				comboboxentryPath.Destroyed += delegate(object sender2, EventArgs e2) {
-					StoreHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", (ComboBoxEntry)sender2);
-				};
+				comboboxentryPath.Destroyed += ComboboxentryPathDestroyed;
 				LoadHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", comboboxentryPath);
 				hbox2.PackStart (comboboxentryPath);
 				
@@ -173,20 +171,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				
 				buttonBrowsePaths = new Button ();
 				buttonBrowsePaths.Label = "...";
-				buttonBrowsePaths.Clicked += delegate {
-					FolderDialog folderDialog = new FolderDialog (GettextCatalog.GetString ("Select directory"));
-					try {
-						string defaultFolder = this.comboboxentryFind.Entry.Text;	
-						if (string.IsNullOrEmpty (defaultFolder)) 
-							defaultFolder = IdeApp.ProjectOperations.ProjectsDefaultPath;
-						
-						folderDialog.SetFilename (defaultFolder);
-						if (folderDialog.Run() == (int)Gtk.ResponseType.Ok) 
-							this.comboboxentryPath.Entry.Text = folderDialog.Filename;
-					} finally {
-						folderDialog.Destroy ();
-					}
-				};
+				buttonBrowsePaths.Clicked += ButtonBrowsePathsClicked;
 				hbox2.PackStart (buttonBrowsePaths);
 				boxChild = (Gtk.Box.BoxChild)hbox2[buttonBrowsePaths];
 				boxChild.Position = 2;
@@ -196,14 +181,39 @@ namespace MonoDevelop.Ide.FindInFiles
 				checkbuttonRecursively.Label = GettextCatalog.GetString ("Re_cursively");
 				checkbuttonRecursively.Active = properties.Get ("SearchPathRecursively", true);
 				checkbuttonRecursively.UseUnderline = true;
-				checkbuttonRecursively.Destroyed += delegate(object sender2, EventArgs e2) {
-					properties.Set ("SearchPathRecursively", ((CheckButton)sender2).Active);
-				};
+				checkbuttonRecursively.Destroyed += CheckbuttonRecursivelyDestroyed;
 				vbox.PackEnd (checkbuttonRecursively);
 				boxScopeSelector.PackStart (vbox);
 				
 				ShowAll ();
 			}
+		}
+
+		void ComboboxentryPathDestroyed (object sender, EventArgs e)
+		{
+			StoreHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", (ComboBoxEntry)sender);
+		}
+
+		void ButtonBrowsePathsClicked (object sender, EventArgs e)
+		{
+			FolderDialog folderDialog = new FolderDialog (GettextCatalog.GetString ("Select directory"));
+			try {
+				string defaultFolder = this.comboboxentryFind.Entry.Text;	
+				if (string.IsNullOrEmpty (defaultFolder)) 
+					defaultFolder = IdeApp.ProjectOperations.ProjectsDefaultPath;
+				
+				folderDialog.SetFilename (defaultFolder);
+				if (folderDialog.Run() == (int)Gtk.ResponseType.Ok) 
+					this.comboboxentryPath.Entry.Text = folderDialog.Filename;
+			} finally {
+				folderDialog.Destroy ();
+			}
+		}
+
+		void CheckbuttonRecursivelyDestroyed (object sender, EventArgs e)
+		{
+			Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+			properties.Set ("SearchPathRecursively", ((CheckButton)sender).Active);
 		}
 		
 		const char historySeparator = '\n';

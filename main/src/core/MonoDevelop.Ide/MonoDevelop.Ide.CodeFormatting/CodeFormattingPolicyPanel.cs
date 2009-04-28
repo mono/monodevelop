@@ -113,61 +113,70 @@ namespace MonoDevelop.Ide.CodeFormatting
 			texteditor1.Document.ReadOnly = true;
 			texteditor1.Document.MimeType = description.MimeType;
 			
-			buttonAdd.Clicked += delegate {
-				AddPolicyDialog addPolicy = new AddPolicyDialog (settings);
-				ResponseType response = (ResponseType)addPolicy.Run ();
-				if (response == ResponseType.Ok) {
-					settings.Add (new CodeFormatSettings (TextFileService.GetSettings (description, addPolicy.InitFrom), addPolicy.NewPolicyName));
-					FillFormattingPolicies ();
-					comboboxFormattingPolicies.Active = settings.Count - 1;
-					TextFileService.SetSettings (description, settings);
-				}
-				addPolicy.Destroy ();
-			};
-			
-			buttonEdit.Clicked += delegate {
-				EditFormattingPolicyDialog d = new EditFormattingPolicyDialog ();
-				CodeFormatSettings setting = new CodeFormatSettings ("New settings");
+			buttonAdd.Clicked += ButtonAddClicked;
+			buttonEdit.Clicked += ButtonEditClicked;
+			buttonImport.Clicked += ButtonImportClicked;
+			buttonRemove.Clicked += ButtonRemoveClicked;
+			FillFormattingPolicies ();
+		}
+		
+		void ButtonRemoveClicked (object sender, EventArgs e)
+		{
+			int a = comboboxFormattingPolicies.Active;
+			if (a >= 0 && a < settings.Count)
+				settings.RemoveAt (a);
+			FillFormattingPolicies ();
+			TextFileService.SetSettings (description, settings);
+		}
+		
+		void ButtonImportClicked (object sender, EventArgs e)
+		{
+			Gtk.FileChooserDialog dialog = new Gtk.FileChooserDialog (GettextCatalog.GetString ("Import Profile"),
+			                                                          null,
+			                                                          FileChooserAction.Open,
+			                                                          Gtk.Stock.Cancel, Gtk.ResponseType.Cancel, Gtk.Stock.Open, Gtk.ResponseType.Ok);
+			FileFilter f1 = new FileFilter();
+			f1.Name = "*.xml";
+			f1.AddPattern ("*.xml");
+			dialog.AddFilter (f1);
+			FileFilter f2 = new FileFilter();
+			f1.Name = "*";
+			f2.AddPattern ("*");
+			dialog.AddFilter (f2);
+			if (ResponseType.Ok == (ResponseType)dialog.Run ()) {
+				settings.Add (description.ImportSettings (dialog.Filename));
 				int a = comboboxFormattingPolicies.Active;
-				if (a >= 0 && a < settings.Count) 
-					setting = settings [a];
-				d.SetFormat (description, setting);
-				d.Run ();
-				d.Destroy ();
 				FillFormattingPolicies ();
 				comboboxFormattingPolicies.Active = a;
-			};
-			
-			buttonImport.Clicked += delegate {
-				Gtk.FileChooserDialog dialog = new Gtk.FileChooserDialog (GettextCatalog.GetString ("Import Profile"),
-				                                                          null,
-				                                                          FileChooserAction.Open,
-				                                                          Gtk.Stock.Cancel, Gtk.ResponseType.Cancel, Gtk.Stock.Open, Gtk.ResponseType.Ok);
-				FileFilter f1 = new FileFilter();
-				f1.Name = "*.xml";
-				f1.AddPattern ("*.xml");
-				dialog.AddFilter (f1);
-				FileFilter f2 = new FileFilter();
-				f1.Name = "*";
-				f2.AddPattern ("*");
-				dialog.AddFilter (f2);
-				if (ResponseType.Ok == (ResponseType)dialog.Run ()) {
-					settings.Add (description.ImportSettings (dialog.Filename));
-					int a = comboboxFormattingPolicies.Active;
-					FillFormattingPolicies ();
-					comboboxFormattingPolicies.Active = a;
-				}
-				dialog.Destroy ();
-			};
-			
-			buttonRemove.Clicked += delegate {
-				int a = comboboxFormattingPolicies.Active;
-				if (a >= 0 && a < settings.Count)
-					settings.RemoveAt (a);
-				FillFormattingPolicies ();
-				TextFileService.SetSettings (description, settings);
-			};
+			}
+			dialog.Destroy ();
+		}
+
+		void ButtonEditClicked (object sender, EventArgs e)
+		{
+			EditFormattingPolicyDialog d = new EditFormattingPolicyDialog ();
+			CodeFormatSettings setting = new CodeFormatSettings ("New settings");
+			int a = comboboxFormattingPolicies.Active;
+			if (a >= 0 && a < settings.Count) 
+				setting = settings [a];
+			d.SetFormat (description, setting);
+			d.Run ();
+			d.Destroy ();
 			FillFormattingPolicies ();
+			comboboxFormattingPolicies.Active = a;
+		}
+
+		void ButtonAddClicked (object sender, EventArgs e)
+		{
+			AddPolicyDialog addPolicy = new AddPolicyDialog (settings);
+			ResponseType response = (ResponseType)addPolicy.Run ();
+			if (response == ResponseType.Ok) {
+				settings.Add (new CodeFormatSettings (TextFileService.GetSettings (description, addPolicy.InitFrom), addPolicy.NewPolicyName));
+				FillFormattingPolicies ();
+				comboboxFormattingPolicies.Active = settings.Count - 1;
+				TextFileService.SetSettings (description, settings);
+			}
+			addPolicy.Destroy ();
 		}
 	}
 	

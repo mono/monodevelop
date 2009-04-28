@@ -109,47 +109,62 @@ namespace MonoDevelop.Ide.FindInFiles
 			pathColumn.Resizable = true;
 			store.SetSortFunc (3, new TreeIterCompareFunc (CompareFilePaths));
 			
-			treeviewSearchResults.RowActivated += delegate {
-				OpenSelectedMatches ();
-			};
+			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
 			
 			buttonStop = new ToolButton ("gtk-stop");
 			buttonStop.Sensitive = false;
-			buttonStop.Clicked += delegate {
-				if (AsyncOperation != null)
-					AsyncOperation.Cancel ();
-			};
+			buttonStop.Clicked += ButtonStopClicked;
 			
 			buttonStop.SetTooltip (tips, GettextCatalog.GetString ("Stop"), "Stop");
 			toolbar.Insert (buttonStop, -1);
 
 			ToolButton buttonClear = new ToolButton ("gtk-clear");
-			buttonClear.Clicked += delegate {
-				this.Reset ();
-			};
+			buttonClear.Clicked += ButtonClearClicked;
 			buttonClear.SetTooltip (tips, GettextCatalog.GetString ("Clear results"), "Clear results");
 			toolbar.Insert (buttonClear, -1);
 			
 			ToggleToolButton buttonOutput = new ToggleToolButton (MonoDevelop.Core.Gui.Stock.OutputIcon);
-			buttonOutput.Clicked += delegate {
-				if (buttonOutput.Active) {
-					scrolledwindowLogView.Show ();
-				} else {
-					scrolledwindowLogView.Hide ();
-				}
-			};
+			buttonOutput.Clicked += ButtonOutputClicked;
 			buttonOutput.SetTooltip (tips, GettextCatalog.GetString ("Show output"), "Show output");
 			toolbar.Insert (buttonOutput, -1);
 			
 			buttonPin = new ToggleToolButton ("md-pin-up");
-			buttonPin.Clicked += delegate {
-				buttonPin.StockId = buttonPin.Active ? "md-pin-down" : "md-pin-up";
-			};
+			buttonPin.Clicked += ButtonPinClicked;
 			buttonPin.SetTooltip (tips, GettextCatalog.GetString ("Pin results pad"), GettextCatalog.GetString ("Pin results pad"));
 			toolbar.Insert (buttonPin, -1);
 			ShowAll ();
 			
 			scrolledwindowLogView.Hide ();
+		}
+
+		void ButtonPinClicked (object sender, EventArgs e)
+		{
+			buttonPin.StockId = buttonPin.Active ? "md-pin-down" : "md-pin-up";
+		}
+
+		void ButtonOutputClicked (object sender, EventArgs e)
+		{
+			if (((ToggleToolButton)sender).Active) {
+				scrolledwindowLogView.Show ();
+			} else {
+				scrolledwindowLogView.Hide ();
+			}
+		}
+
+		void ButtonClearClicked (object sender, EventArgs e)
+		{
+			this.Reset ();
+		}
+
+		void ButtonStopClicked (object sender, EventArgs e)
+		{
+			if (AsyncOperation != null)
+				AsyncOperation.Cancel ();
+		}
+
+		void TreeviewSearchResultsRowActivated(object o, RowActivatedArgs args)
+		{
+			OpenSelectedMatches ();
 		}
 		
 		public void BeginProgress ()

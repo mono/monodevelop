@@ -99,13 +99,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			this.searchEntry.Changed += SearchEntryChanged;
 			this.buttonCancelSearch.Clicked += CancelSearchClicked;
 			this.searchEntry.Activated += SearchClicked;
-			this.searchEntry.KeyPressEvent += delegate(object sender, KeyPressEventArgs args) {
-				if (args.Event.Key == Gdk.Key.Escape)
-					CancelSearchClicked (this, System.EventArgs.Empty);
-			};
+			this.searchEntry.KeyPressEvent += SearchEntryKeyPressEvent;
 			this.buttonSearch.Clicked += SearchClicked;
 			
 			this.ShowAll ();
+		}
+
+		void SearchEntryKeyPressEvent(object o, KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Escape)
+				CancelSearchClicked (this, System.EventArgs.Empty);
 		}
 		
 		List<IType> searchResults = new List<IType> ();

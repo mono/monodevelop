@@ -115,17 +115,13 @@ namespace MonoDevelop.Ide
 			treeviewPads.AppendColumn ("text", new Gtk.CellRendererText (), "text", 1);
 			treeviewPads.HeadersVisible = false;
 			
-			treeviewPads.Selection.Changed += delegate {
-				ShowSelectedPad ();
-			};
+			treeviewPads.Selection.Changed += TreeviewPadsSelectionChanged;
 			documentListStore = new Gtk.ListStore (typeof (Gdk.Pixbuf), typeof (string), typeof (Document));
 			treeviewDocuments.Model = documentListStore;
 			treeviewDocuments.AppendColumn ("icon", new Gtk.CellRendererPixbuf (), "pixbuf", 0);
 			treeviewDocuments.AppendColumn ("text", new Gtk.CellRendererText (), "text", 1);
 			treeviewDocuments.HeadersVisible = false;
-			treeviewDocuments.Selection.Changed += delegate {
-				ShowSelectedDocument ();
-			};
+			treeviewDocuments.Selection.Changed += TreeviewDocumentsSelectionChanged;
 			
 			FillLists ();
 			this.labelFileName.Ellipsize = Pango.EllipsizeMode.Start;
@@ -136,6 +132,17 @@ namespace MonoDevelop.Ide
 				SwitchToPad ();
 			}
 		}
+
+		void TreeviewPadsSelectionChanged (object sender, EventArgs e)
+		{
+			ShowSelectedPad ();
+		}
+
+		void TreeviewDocumentsSelectionChanged (object sender, EventArgs e)
+		{
+			ShowSelectedDocument ();
+		}
+		
 		bool documentFocus = true;
 		Gtk.TreeIter selectedPadIter, selectedDocumentIter;
 		

@@ -1,5 +1,19 @@
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:
+	* MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanel.cs:
+	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:
+	  Removed some delegate methods and added explicit event
+	  handlers.
+
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs: Added
 	  missing translation string.
 

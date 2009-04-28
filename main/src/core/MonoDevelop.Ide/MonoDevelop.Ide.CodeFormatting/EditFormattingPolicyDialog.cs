@@ -47,29 +47,10 @@ namespace MonoDevelop.Ide.CodeFormatting
 		public EditFormattingPolicyDialog()
 		{
 			this.Build();
-			buttonOk.Clicked += delegate {
-				if (description == null)
-					return;
-				settings.Name = this.entryName.Text;
-			};
+			buttonOk.Clicked += ButtonOkClicked;
 			
-			buttonExport.Clicked += delegate {
-				Gtk.FileChooserDialog dialog = new Gtk.FileChooserDialog (GettextCatalog.GetString ("Export Profile"),
-				                                                          this,
-				                                                          FileChooserAction.Save,
-				                                                          Gtk.Stock.Cancel, Gtk.ResponseType.Cancel, Gtk.Stock.Save, Gtk.ResponseType.Ok);
-				dialog.Filter = new FileFilter();
-				dialog.Filter.AddPattern ("*.xml");
-				if (ResponseType.Ok == (ResponseType)dialog.Run ()) {
-//					System.Console.WriteLine("fn:" + dialog.Filename);
-					description.ExportSettings (settings, dialog.Filename);
-				}
-				dialog.Destroy ();
-			};
-			checkbuttonWhiteSpaces.Toggled += delegate {
-				options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonWhiteSpaces.Active;
-				this.texteditor1.QueueDraw ();
-			};
+			buttonExport.Clicked += ButtonExportClicked;
+			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
 			comboboxValue.Clear ();
 			Gtk.CellRendererText ctx = new Gtk.CellRendererText ();
 			comboboxValue.PackStart (ctx, true);
@@ -82,6 +63,35 @@ namespace MonoDevelop.Ide.CodeFormatting
 			scrolledwindow2.Child = texteditor1;
 			scrolledwindow2.ShowAll ();
 		}
+
+		void ButtonOkClicked (object sender, EventArgs e)
+		{
+			if (description == null)
+				return;
+			settings.Name = this.entryName.Text;
+		}
+
+		void ButtonExportClicked (object sender, EventArgs e)
+		{
+			Gtk.FileChooserDialog dialog = new Gtk.FileChooserDialog (GettextCatalog.GetString ("Export Profile"),
+			                                                          this,
+			                                                          FileChooserAction.Save,
+			                                                          Gtk.Stock.Cancel, Gtk.ResponseType.Cancel, Gtk.Stock.Save, Gtk.ResponseType.Ok);
+			dialog.Filter = new FileFilter();
+			dialog.Filter.AddPattern ("*.xml");
+			if (ResponseType.Ok == (ResponseType)dialog.Run ()) {
+//					System.Console.WriteLine("fn:" + dialog.Filename);
+				description.ExportSettings (settings, dialog.Filename);
+			}
+			dialog.Destroy ();
+		}
+
+		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
+		{
+			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonWhiteSpaces.Active;
+			this.texteditor1.QueueDraw ();
+		}
+		
 		Mono.TextEditor.TextEditor texteditor1 = new Mono.TextEditor.TextEditor ();
 		class CustomFormattingPolicy : CodeFormattingPolicy
 		{
@@ -187,38 +197,41 @@ namespace MonoDevelop.Ide.CodeFormatting
 			Gtk.TreeView tree = new Gtk.TreeView (store);
 			tree.AppendColumn (GettextCatalog.GetString ("Key"), new CellRendererText (), "text", keyColumn);
 			tree.AppendColumn (GettextCatalog.GetString ("Value"), new CellRendererText (), "text", valueDisplayTextColumn);
-			tree.Selection.Changed += delegate {
-				if (tree.Selection.GetSelected (out model, out iter)) {
-
-					option =  model.GetValue (iter, objectColumn) as CodeFormatOption;
-					this.store = store;
-					if (option == null) {
-						texteditor1.Document.Text = "";
-	//					comboboxentryValue.Sensitive = false;
-						return;
-					}
-					comboboxValue.Changed -= HandleChanged;
-	//				comboboxentryValue.Sensitive = true;
-					CodeFormatType type = description.GetCodeFormatType (option.Type);
-					texteditor1.Document.Text = option.Example;
-					
-					comboBoxStore.Clear ();
-					int active = 0, i = 0;
-					KeyValuePair<string, string> curValue = settings.GetValue (description, option);
-					foreach (KeyValuePair<string, string> v in type.Values) {
-						if (v.Key == curValue.Key)
-							active = i;
-					 	comboBoxStore.AppendValues (v.Key, GettextCatalog.GetString (v.Value));
-						i++;
-					}
-					comboboxValue.Active = active;
-					comboboxValue.Changed += HandleChanged;
-					UpdateExample ();
-				}
-			};
+			tree.Selection.Changed += TreeSelectionChanged;
 			ScrolledWindow sw = new ScrolledWindow ();
 			sw.Child = tree;
 			notebookCategories.AppendPage (sw, label);
+		}
+
+		void TreeSelectionChanged (object sender, EventArgs e)
+		{
+			Gtk.TreeView tree = (Gtk.TreeView)sender;
+			if (tree.Selection.GetSelected (out model, out iter)) {
+				option =  model.GetValue (iter, objectColumn) as CodeFormatOption;
+				this.store = store;
+				if (option == null) {
+					texteditor1.Document.Text = "";
+//					comboboxentryValue.Sensitive = false;
+					return;
+				}
+				comboboxValue.Changed -= HandleChanged;
+//				comboboxentryValue.Sensitive = true;
+				CodeFormatType type = description.GetCodeFormatType (option.Type);
+				texteditor1.Document.Text = option.Example;
+				
+				comboBoxStore.Clear ();
+				int active = 0, i = 0;
+				KeyValuePair<string, string> curValue = settings.GetValue (description, option);
+				foreach (KeyValuePair<string, string> v in type.Values) {
+					if (v.Key == curValue.Key)
+						active = i;
+				 	comboBoxStore.AppendValues (v.Key, GettextCatalog.GetString (v.Value));
+					i++;
+				}
+				comboboxValue.Active = active;
+				comboboxValue.Changed += HandleChanged;
+				UpdateExample ();
+			}
 		}
 	}
 }
