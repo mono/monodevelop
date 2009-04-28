@@ -1,5 +1,10 @@
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/LineSplitter.cs: Return no longer removes
+	  bookmarks from lines.
+
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/DefaultEditActions.cs: Fixed update issues
 	  with indent selection commands.
 
