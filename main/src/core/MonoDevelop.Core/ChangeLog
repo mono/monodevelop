@@ -1,5 +1,9 @@
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Core/FileService.cs: Fixed wrong invalid chars.
+
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Core/FileService.cs: Fixed "Bug 492716 - #
 	  characters are not supported in path names in Preferences
 	  dialog".

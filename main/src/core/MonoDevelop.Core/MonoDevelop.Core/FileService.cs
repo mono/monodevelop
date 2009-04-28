@@ -295,8 +295,6 @@ namespace MonoDevelop.Core
 				return false;
 			if (fileName.IndexOfAny (Path.GetInvalidFileNameChars ()) >= 0)
 				return false;
-			if(fileName.IndexOfAny(("$#@!%^&*?|'\";:}{" + Path.DirectorySeparatorChar).ToCharArray()) > -1)
-				return false;
 			return true;
 		}
 		
