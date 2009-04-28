@@ -80,12 +80,19 @@ namespace MonoDevelop.WebReferences
 
 			// Refresh the disco and wsdl from the server
 			foreach (object doc in protocol.References.Values) { 
+				string url;
 				if (doc is DiscoveryDocumentReference) {
+					url = ((DiscoveryDocumentReference)doc).Url;
+				} else if (doc is ContractReference) {
+					url = ((ContractReference)doc).Url;
+				}
+				
+				if (!string.IsNullOrEmpty (url)) {
 					remoteProtocol = new DiscoveryProtocol();
 					try {
-						remoteProtocol.DiscoverAny(((DiscoveryDocumentReference)doc).Url);
+						remoteProtocol.DiscoverAny (url);
 						break;
-					} catch (WebException) {
+					} catch (WebException we) {
 						remoteProtocol = null;
 					}
 				}

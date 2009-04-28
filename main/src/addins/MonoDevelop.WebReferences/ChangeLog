@@ -1,3 +1,11 @@
+2009-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.WebReferences/WebReferenceItem.cs: Applied patch
+	  from Luciano N. Callero <lnc19@hotmail.com> : "Fix Web
+	  Reference Update bug that prevent a web reference from being
+	  update."
+
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.WebReferences.csproj: don't require specific
