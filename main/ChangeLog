@@ -1,3 +1,12 @@
+2009-04-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* build/MacOSX/Makefile.am: Better build deps.
+
+	* build/MacOSX/mdtool: Simpler launch script.
+
+	* build/MacOSX/monodevelop: Simpler launch script. Detect Mono
+	  version and show error dialog if Mono not found or too old.
+
 2009-04-21  Mike Kestner  <mkestner@novell.com>
 
 	* Main.sln: activate CSharpBinding.Autotools.dll build for

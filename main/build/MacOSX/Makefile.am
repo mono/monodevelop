@@ -19,7 +19,7 @@ clean-local:
 	rm -rf MonoDevelop.dmg
 	rm -f MonoDevelop.app.zip
 
-MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* ../locale/*/*/*
+MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* ../locale/*/*/* mdtool monodevelop 
 	mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/{lib,share}
 	mkdir -p $(MAC_APP_LIB_DIR)
