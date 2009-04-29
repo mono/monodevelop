@@ -120,7 +120,8 @@ namespace MonoDevelop.Projects
 			base.CopyFrom (configuration);
 			
 			SolutionConfiguration conf = (SolutionConfiguration) configuration;
-			parentSolution = conf.parentSolution;
+			if (parentSolution == null)
+				parentSolution = conf.parentSolution;
 			
 			configurations.Clear ();
 			foreach (SolutionConfigurationEntry entry in conf.configurations)

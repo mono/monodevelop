@@ -1,3 +1,9 @@
+2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/SolutionConfiguration.cs: When copying
+	  the configuration don't overwrite the parent solution if it
+	  is already set.
+
 2009-04-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/LanguageBindingService.cs: Warn about
