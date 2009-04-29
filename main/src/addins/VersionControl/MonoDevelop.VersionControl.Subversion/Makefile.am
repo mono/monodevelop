@@ -28,6 +28,7 @@ FILES =  \
 	MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs \
 	MonoDevelop.VersionControl.Subversion.Gui/UserPasswordDialog.cs \
 	MonoDevelop.VersionControl.Subversion/Commands.cs \
+	MonoDevelop.VersionControl.Subversion/ISvnClient.cs \
 	MonoDevelop.VersionControl.Subversion/LibApr.cs \
 	MonoDevelop.VersionControl.Subversion/LibSvnClient.cs \
 	MonoDevelop.VersionControl.Subversion/SubversionNodeExtension.cs \

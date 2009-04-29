@@ -1,3 +1,15 @@
+2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/ISvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  Created ISvnClient. May be required to implement other svn
+	  client backends.
+
+	* MonoDevelop.VersionControl.Subversion.csproj: Don't require
+	  a specific gtk# version.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

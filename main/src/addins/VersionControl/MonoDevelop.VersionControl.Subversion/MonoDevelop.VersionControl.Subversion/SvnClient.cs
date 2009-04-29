@@ -7,8 +7,10 @@ using System.Runtime.InteropServices;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Subversion.Gui;
 
-namespace MonoDevelop.VersionControl.Subversion {
-	public class SvnClient : IDisposable {
+namespace MonoDevelop.VersionControl.Subversion
+{
+	public class SvnClient : ISvnClient
+	{
 		static LibSvnClient svn;
 		static LibApr apr;
 		static bool isInstallChecked;

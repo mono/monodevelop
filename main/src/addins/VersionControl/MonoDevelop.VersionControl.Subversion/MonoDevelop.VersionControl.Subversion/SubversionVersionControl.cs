@@ -9,7 +9,7 @@ namespace MonoDevelop.VersionControl.Subversion
 {
 	class SubversionVersionControl : VersionControlSystem
 	{
-		SvnClient client;
+		ISvnClient client;
 		readonly string[] protocolsSvn = {"svn", "svn+ssh", "http", "https", "file"};
 		
 		public override string Name {
@@ -51,7 +51,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			// Nothing to do
 		}
 		
-		SvnClient Client {
+		ISvnClient Client {
 			get {
 				if (client == null) client = new SvnClient();
 				return client;
