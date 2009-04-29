@@ -609,7 +609,6 @@ namespace MonoDevelop.Ide.Gui
 					}
 				} else {
 					args.Cancel = result != AlertButton.CloseWithoutSave;
-					System.Console.WriteLine(result + " --- " + args.Cancel);
 				}
 			}
 		}
@@ -682,10 +681,11 @@ namespace MonoDevelop.Ide.Gui
 				
 				IDisplayBinding binding;
 				
-				if (oFileInfo.DisplayBinding != null)
+				if (oFileInfo.DisplayBinding != null) {
 					binding = oFileInfo.DisplayBinding;
-				else
-					binding = DisplayBindingService.GetBindingForUri (fileName);
+				} else {
+					binding = DisplayBindingService.GetBindingForUri (fileName) ?? DisplayBindingService.GetBindingForMimeType (IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName));
+				}
 				
 				if (binding != null) {
 					// When looking for the project to which the file belongs, look first
@@ -871,10 +871,19 @@ namespace MonoDevelop.Ide.Gui
 			this.project = project;
 		}
 		
-		public void Invoke(string fileName)
+		public void Invoke (string fileName)
 		{
 			try {
-				newContent = binding.CreateContentForUri (fileName);
+				if (binding.CanCreateContentForUri (fileName)) {
+					newContent = binding.CreateContentForUri (fileName);
+				} else {
+					string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+					if (!binding.CanCreateContentForMimeType (mimeType)) {
+						fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
+						return;
+					}
+					newContent = binding.CreateContentForMimeType (mimeType, null);
+				}
 				if (newContent == null) {
 					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 					return;

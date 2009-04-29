@@ -36,7 +36,20 @@ namespace MonoDevelop.Ide.Codons
 	public interface IDisplayBinding : IBaseDisplayBinding
 	{
 		bool CanCreateContentForMimeType (string mimeType);
-		IViewContent CreateContentForMimeType (string mimeType, Stream content);
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="mimeType">
+		/// A <see cref="System.String"/>
+		/// </param>
+		/// <param name="content">
+		/// A <see cref="System.IO.Stream"/> may be null. If it's null the contents are loaded with an ordinary "Load" call.
+		/// </param>
+		/// <returns>
+		/// A <see cref="IViewContent"/>
+		/// </returns>
+		IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content);
 		
 		bool CanCreateContentForUri (string uri);
 		IViewContent CreateContentForUri (string uri);

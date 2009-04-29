@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Gui
 			throw new NotSupportedException ();
 		}
 		
-		public virtual IViewContent CreateContentForMimeType (string mimeType, Stream content)
+		public virtual IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
 		{
 			throw new NotSupportedException ();
 		}

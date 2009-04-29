@@ -1,5 +1,15 @@
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Codons/IDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Display bindings can now "choose" if they want handle files
+	  & file names or mime types.
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.Gui/Workbench.cs:

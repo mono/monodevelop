@@ -57,18 +57,28 @@ namespace MonoDevelop.Ide.Gui
 		
 		static IEnumerable<IDisplayBinding> RealDisplayBindings {
 			get {
-				return from binding in displayBindings where binding.DisplayBinding is IDisplayBinding select (IDisplayBinding)binding.DisplayBinding;
+				foreach (DisplayBindingCodon codon in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/DisplayBindings")) {
+					IDisplayBinding binding = codon.DisplayBinding as IDisplayBinding;
+					if (binding == null)
+						continue;
+					yield return binding;
+				}
+//				return from binding in displayBindings where binding.DisplayBinding is IDisplayBinding select (IDisplayBinding)binding.DisplayBinding;
 			}
 		}
 			
 		public static IDisplayBinding GetBindingForMimeType (string mimeType)
 		{
+			Console.WriteLine ("mime:" + mimeType);
 			return RealDisplayBindings.FirstOrDefault (binding => binding.CanCreateContentForMimeType (mimeType));
 		}
 		
 		public static IDisplayBinding GetBindingForUri (string uri)
 		{
-			return RealDisplayBindings.FirstOrDefault (binding => binding.CanCreateContentForUri (uri));
+			Console.WriteLine ("uri:" + uri);
+			IDisplayBinding result =  RealDisplayBindings.FirstOrDefault (binding => binding.CanCreateContentForUri (uri));
+			Console.WriteLine ("result: " + result);
+			return result;
 		}
 		
 		public static IEnumerable<IDisplayBinding> GetBindingsForMimeType (string mimeType)
