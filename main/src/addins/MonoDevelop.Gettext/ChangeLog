@@ -1,5 +1,10 @@
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Gettext.addin.xml: Ensure that the display
+	  binding is inserted before the text editor
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Gettext.Editor/GettextEditorDisplayBinding.cs:
 	  Track API changes.
 
