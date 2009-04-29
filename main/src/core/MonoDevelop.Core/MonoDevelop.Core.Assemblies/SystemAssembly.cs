@@ -49,6 +49,14 @@ namespace MonoDevelop.Core.Assemblies
 			return new SystemAssembly (file, SystemAssemblyService.GetAssemblyName (file));
 		}
 		
+		internal static SystemAssembly FromFile (string file, AssemblyInfo ainfo)
+		{
+			if (ainfo == null || ainfo.Version == null)
+				return FromFile (file);
+			string fn = ainfo.Name + ", Version=" + ainfo.Version +", Culture=neutral, PublicKeyToken=" + ainfo.PublicKeyToken;
+			return new SystemAssembly (file, fn);
+		}
+		
 		public string Name {
 			get {
 				int i = FullName.IndexOf (',');

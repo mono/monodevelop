@@ -166,10 +166,12 @@
     <Compile Include="MonoDevelop.Core.Assemblies\MsNetTargetRuntime.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\MsNetTargetRuntimeFactory.cs" />
     <Compile Include="MonoDevelop.Core.Execution\MsNetExecutionHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\PcFileCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
+    <None Include="frameworks-source.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Core.addin.xml" />

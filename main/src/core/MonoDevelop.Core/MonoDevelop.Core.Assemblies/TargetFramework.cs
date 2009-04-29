@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
+using System.Reflection;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -60,7 +61,7 @@ namespace MonoDevelop.Core.Assemblies
 			this.id = id;
 			this.name = id;
 			clrVersion = ClrVersion.Default;
-			Assemblies = new string[0];
+			Assemblies = new AssemblyInfo[0];
 			IsSupported = false;
 			compatibleFrameworks.Add (id);
 			extendedFrameworks.Add (id);
@@ -101,6 +102,8 @@ namespace MonoDevelop.Core.Assemblies
 		internal List<string> ExtendedFrameworks {
 			get { return extendedFrameworks; }
 		}
+		
+		internal string BaseCoreFramework { get; set; }
 
 		public bool IsSupported { get; internal set; }
 		
@@ -115,9 +118,48 @@ namespace MonoDevelop.Core.Assemblies
 		
 		[ItemProperty]
 		[ItemProperty ("Assembly", Scope="*")]
-		internal string[] Assemblies {
+		internal AssemblyInfo[] Assemblies {
 			get;
 			set;
+		}
+		
+		internal AssemblyInfo[] AssembliesExpanded {
+			get;
+			set;
+		}
+	}
+	
+	class AssemblyInfo
+	{
+		[ItemProperty ("name")]
+		public string Name;
+		
+		[ItemProperty ("version")]
+		public string Version;
+		
+		[ItemProperty ("publicKeyToken", DefaultValue="null")]
+		public string PublicKeyToken;
+		
+		public void UpdateFromFile (string file)
+		{
+			Update (SystemAssemblyService.GetAssemblyNameObj (file));
+		}
+		
+		public void Update (AssemblyName aname)
+		{
+			Name = aname.Name;
+			Version = aname.Version.ToString ();
+			string fn = aname.ToString ();
+			string key = "publickeytoken=";
+			int i = fn.ToLower().IndexOf (key) + key.Length;
+			int j = fn.IndexOf (',', i);
+			if (j == -1) j = fn.Length;
+			PublicKeyToken = fn.Substring (i, j - i);
+		}
+		
+		public AssemblyInfo Clone ()
+		{
+			return (AssemblyInfo) MemberwiseClone ();
 		}
 	}
 }

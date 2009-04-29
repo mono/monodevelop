@@ -57,12 +57,14 @@ namespace MonoDevelop.Core.AddIns
 		
 		public string[] Assemblies {
 			get {
-				if (assemblies == null) {
-					assemblies = new string [ChildNodes.Count];
-					for (int n=0; n<ChildNodes.Count; n++) {
-						string file = ((AssemblyExtensionNode)ChildNodes [n]).FileName;
-						file = base.Addin.GetFilePath (file);
-						assemblies [n] = file;
+				lock (this) {
+					if (assemblies == null) {
+						assemblies = new string [ChildNodes.Count];
+						for (int n=0; n<ChildNodes.Count; n++) {
+							string file = ((AssemblyExtensionNode)ChildNodes [n]).FileName;
+							file = base.Addin.GetFilePath (file);
+							assemblies [n] = file;
+						}
 					}
 				}
 				return assemblies; 

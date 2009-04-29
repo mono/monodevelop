@@ -144,7 +144,7 @@ namespace MonoDevelop.Core.Serialization
 			defaultData.ValueName = "Value";
 			defaultData.ItemName = "Item";
 			defaultData.KeyType = Context.GetConfigurationDataType (keyType);
-			defaultData.ValueType = Context.GetConfigurationDataType (keyType);
+			defaultData.ValueType = Context.GetConfigurationDataType (valType);
 			
 			return defaultData;
 		}

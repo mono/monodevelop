@@ -1,3 +1,35 @@
+2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks.xml:
+	* frameworks-source.xml:
+	* MonoDevelop.Core.Assemblies/SystemAssembly.cs:
+	* MonoDevelop.Core.Assemblies/TargetFramework.cs:
+	* MonoDevelop.Core.AddIns/PackageExtensionNode.cs:
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: The
+	  frameworks.xml file now contains full assembly info. There
+	  is no need to scan the frameworks assemblies anymore. Added
+	  some code which can be used to update that file.
+
+	* MonoDevelop.Core.Serialization/DataType.cs: Get a better
+	  default element name for generic types.
+
+	* MonoDevelop.Core.Serialization/DictionaryDataType.cs: Fix
+	  bug in creation of dictionary type maps.
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs:
+	* MonoDevelop.Core.Assemblies/SystemPackage.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Added a
+	  .pc file cache, to avoid having to scan all pc files every
+	  time MD starts.
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Load framework
+	  assembly data from the frameworks.xml file. The core package
+	  for a framework now don't include assemblies from extended
+	  frameowrks. Those assemblies will now be available from the
+	  original packages.
+
 2009-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: If a .pc

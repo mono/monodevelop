@@ -1,165 +1,211 @@
-<FrameworkList>
-	<TargetFramework id="1.1" _name="Mono / .NET 1.1" clrVersion="Net_1_1">
-		<Assemblies>
-			<!-- The first assembly is used to check if the framework is installed -->
-			<Assembly>System</Assembly>
-			<Assembly>mscorlib</Assembly>
-			<Assembly>ICSharpCode.SharpZipLib</Assembly>
-			<Assembly>Accessibility</Assembly>
-			<Assembly>cscompmgd</Assembly>
-			<Assembly>Microsoft.Build.Engine</Assembly>
-			<Assembly>Microsoft.Build.Framework</Assembly>
-			<Assembly>Microsoft.Build.Tasks</Assembly>
-			<Assembly>Microsoft.Build.Utilities</Assembly>
-			<Assembly>Microsoft.JScript</Assembly>
-			<Assembly>Microsoft.VisualBasic.Compatibility.Data</Assembly>
-			<Assembly>Microsoft.VisualBasic.Compatibility</Assembly>
-			<Assembly>Microsoft.VisualBasic</Assembly>
-			<Assembly>Microsoft.VisualBasic.Vsa</Assembly>
-			<Assembly>Microsoft.VisualC</Assembly>
-			<Assembly>Microsoft.Vsa</Assembly>
-			<Assembly>Microsoft.Vsa.Vb.CodeDOMProcessor</Assembly>
-			<Assembly>Mono.Data</Assembly>
-			<Assembly>Mono.Data.Sqlite</Assembly>
-			<Assembly>Mono.Data.SqliteClient</Assembly>
-			<Assembly>Mono.Data.SybaseClient</Assembly>
-			<Assembly>Mono.Data.Tds</Assembly>
-			<Assembly>Mono.Data.TdsClient</Assembly>
-			<Assembly>Mono.GetOptions</Assembly>
-			<Assembly>Mono.Posix</Assembly>
-			<Assembly>Mono.Security</Assembly>
-			<Assembly>Mono.WebBrowser</Assembly>
-			<Assembly>Mono.CompilerServices.SymbolWriter</Assembly>
-			<Assembly>Mono.Cairo</Assembly>
-			<Assembly>Mono.Http</Assembly>
-			<Assembly>Mono.Mozilla</Assembly>
-			<Assembly>Mono.Security.Win32</Assembly>
-			<Assembly>Mono.WebServer</Assembly>
-			<Assembly>Novell.Directory.Ldap</Assembly>
-			<Assembly>Npgsql</Assembly>
-			<Assembly>System.Configuration.Install</Assembly>
-			<Assembly>System.Data</Assembly>
-			<Assembly>System.Data.OracleClient</Assembly>
-			<Assembly>System.Data.SqlXml</Assembly>
-			<Assembly>System.Design</Assembly>
-			<Assembly>System.DirectoryServices</Assembly>
-			<Assembly>System.DirectoryServices.Protocols</Assembly>
-			<Assembly>System.Drawing.Design</Assembly>
-			<Assembly>System.Drawing</Assembly>
-			<Assembly>System.EnterpriseServices</Assembly>
-			<Assembly>System.EnterpriseServices.Thunk</Assembly>
-			<Assembly>System.EnterpriseServices.Wrapper</Assembly>
-			<Assembly>System.Management</Assembly>
-			<Assembly>System.Messaging</Assembly>
-			<Assembly>System.Runtime.Remoting</Assembly>
-			<Assembly>System.Runtime.Serialization.Formatters.Soap</Assembly>
-			<Assembly>System.Security</Assembly>
-			<Assembly>System.ServiceProcess</Assembly>
-			<Assembly>System.Web</Assembly>
-			<Assembly>System.Web.Mobile</Assembly>
-			<Assembly>System.Web.RegularExpressions</Assembly>
-			<Assembly>System.Web.Services</Assembly>
-			<Assembly>System.Windows.Forms</Assembly>
-			<Assembly>System.Xml</Assembly>
-		</Assemblies>
-	</TargetFramework>
-	
-	<TargetFramework id="2.0" _name="Mono / .NET 2.0" clrVersion="Net_2_0">
-		<CompatibleWithFramework>1.1</CompatibleWithFramework>
-		<Assemblies>
-			<!-- The first assembly is used to check if the framework is installed -->
-			<Assembly>System.Configuration</Assembly>
-			<Assembly>System.Deployment</Assembly>
-			<Assembly>System.DirectoryServices.Protocols</Assembly>
-			<Assembly>System.EnterpriseServices.Thunk</Assembly>
-			<Assembly>System.EnterpriseServices.Wrapper</Assembly>
-			<Assembly>System.Transactions</Assembly>
-			<Assembly>Microsoft.VisualBasic.Compatibility.Data</Assembly>
-			<Assembly>Microsoft.VisualBasic.Compatibility</Assembly>
-			<Assembly>Culture</Assembly>
-		</Assemblies>
-	</TargetFramework>
-	
-	<TargetFramework id="3.0" _name="Mono / .NET 3.0" clrVersion="Net_2_0">
-		<ExtendsFramework>2.0</ExtendsFramework>
-		<Package>olive</Package>
-		<Assemblies>
-			<!-- The first assembly is used to check if the framework is installed -->
-			<Assembly>System.Workflow.Runtime</Assembly>
-			<Assembly>PresentationBuildTasks</Assembly>
-			<Assembly>PresentationCore</Assembly>
-			<Assembly>PresentationUI</Assembly>
-			<Assembly>PresentationFramework.Aero</Assembly>
-			<Assembly>PresentationFramework.Classic</Assembly>
-			<Assembly>PresentationFramework</Assembly>
-			<Assembly>PresentationFramework.Luna</Assembly>
-			<Assembly>PresentationFramework.Royale</Assembly>
-			<Assembly>ReachFramework</Assembly>
-			<Assembly>System.IdentityModel</Assembly>
-			<Assembly>System.IdentityModel.Selectors</Assembly>
-			<Assembly>System.IO.Log</Assembly>
-			<Assembly>System.Printing</Assembly>
-			<Assembly>System.Runtime.Serialization</Assembly>
-			<Assembly>System.ServiceModel</Assembly>
-			<Assembly>System.Speech</Assembly>
-			<Assembly>System.Workflow.Activities</Assembly>
-			<Assembly>System.Workflow.ComponentModel</Assembly>
-			<Assembly>UIAutomationClient</Assembly>
-			<Assembly>UIAutomationClientsideProviders</Assembly>
-			<Assembly>UIAutomationProvider</Assembly>
-			<Assembly>UIAutomationTypes</Assembly>
-			<Assembly>WindowsBase</Assembly>
-			<Assembly>WindowsFormsIntegration</Assembly>
-		</Assemblies>
-	</TargetFramework>
-	
-	<TargetFramework id="3.5" _name="Mono / .NET 3.5" clrVersion="Net_2_0">
-		<ExtendsFramework>3.0</ExtendsFramework>
-		<Assemblies>
-			<!-- The first assembly is used to check if the framework is installed -->
-			<Assembly>System.Core</Assembly>
-			<Assembly>System.AddIn.Contract</Assembly>
-			<Assembly>System.AddIn</Assembly>
-			<Assembly>System.ComponentModel.DataAnnotations</Assembly>
-			<Assembly>System.Data.DataSetExtensions</Assembly>
-			<Assembly>System.Data.Entity.Design</Assembly>
-			<Assembly>System.Data.Entity</Assembly>
-			<Assembly>System.Data.Linq</Assembly>
-			<Assembly>System.Data.Services.Client</Assembly>
-			<Assembly>System.Data.Services.Design</Assembly>
-			<Assembly>System.Data.Services</Assembly>
-			<Assembly>System.DirectoryServices.AccountManagement</Assembly>
-			<Assembly>System.Management.Instrumentation</Assembly>
-			<Assembly>System.Net</Assembly>
-			<Assembly>System.ServiceModel.Web</Assembly>
-			<Assembly>System.Web.Abstractions</Assembly>
-			<Assembly>System.Web.DynamicData.Design</Assembly>
-			<Assembly>System.Web.DynamicData</Assembly>
-			<Assembly>System.Web.Entity.Design</Assembly>
-			<Assembly>System.Web.Entity</Assembly>
-			<Assembly>System.Web.Extensions.Design</Assembly>
-			<Assembly>System.Web.Extensions</Assembly>
-			<Assembly>System.Web.Routing</Assembly>
-			<Assembly>System.Windows.Presentation</Assembly>
-			<Assembly>System.WorkflowServices</Assembly>
-			<Assembly>System.Xml.Linq</Assembly>
-		</Assemblies>
-	</TargetFramework>
-	
-	<TargetFramework id="2.1" _name="Moonlight / Silverlight 2.0" clrVersion="Clr_2_1">
-		<SubsetOfFramework>3.5</SubsetOfFramework>
-		<Assemblies>
-			<!-- The first assembly is used to check if the framework is installed -->
-			<Assembly>System</Assembly>
-			<Assembly>mscorlib</Assembly>
-			<Assembly>System.Core</Assembly>
-			<Assembly>System.Net</Assembly>
-			<Assembly>System.Runtime.Serialization</Assembly>
-			<Assembly>System.ServiceModel</Assembly>
-			<Assembly>System.ServiceModel.Web</Assembly>
-			<Assembly>System.Windows</Assembly>
-			<Assembly>System.Windows.Browser</Assembly>
-			<Assembly>System.Xml</Assembly>
-		</Assemblies>
-	</TargetFramework>
-</FrameworkList>
+<ListOfTargetFramework>
+  <!--This file has been autogenerated. DO NOT MODIFY!-->
+  <TargetFramework id="1.1" _name="Mono / .NET 1.1" clrVersion="Net_1_1">
+    <Assemblies>
+      <Assembly name="System" version="1.0.5000.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="mscorlib" version="1.0.5000.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="ICSharpCode.SharpZipLib" version="0.84.0.0" publicKeyToken="1b03e6acf1164f73" />
+      <Assembly name="Accessibility" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="cscompmgd" version="7.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.Build.Engine" />
+      <Assembly name="Microsoft.Build.Framework" />
+      <Assembly name="Microsoft.Build.Tasks" />
+      <Assembly name="Microsoft.Build.Utilities" />
+      <Assembly name="Microsoft.JScript" version="7.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.VisualBasic.Compatibility.Data" />
+      <Assembly name="Microsoft.VisualBasic.Compatibility" />
+      <Assembly name="Microsoft.VisualBasic" />
+      <Assembly name="Microsoft.VisualBasic.Vsa" />
+      <Assembly name="Microsoft.VisualC" version="7.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.Vsa" version="7.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.Vsa.Vb.CodeDOMProcessor" />
+      <Assembly name="Mono.Data" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Data.Sqlite" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Data.SqliteClient" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Data.SybaseClient" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Data.Tds" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Data.TdsClient" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.GetOptions" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Posix" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Security" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.WebBrowser" version="0.5.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.CompilerServices.SymbolWriter" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Cairo" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Http" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Mozilla" />
+      <Assembly name="Mono.Security.Win32" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.WebServer" version="0.1.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Novell.Directory.Ldap" version="1.0.5000.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Npgsql" version="1.0.5000.0" publicKeyToken="5d8b90d52f46fda7" />
+      <Assembly name="System.Configuration.Install" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Data" version="1.0.5000.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.Data.OracleClient" version="1.0.5000.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.Data.SqlXml" />
+      <Assembly name="System.Design" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.DirectoryServices" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.DirectoryServices.Protocols" />
+      <Assembly name="System.Drawing.Design" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Drawing" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.EnterpriseServices" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.EnterpriseServices.Thunk" />
+      <Assembly name="System.EnterpriseServices.Wrapper" />
+      <Assembly name="System.Management" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Messaging" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Runtime.Remoting" version="1.0.5000.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.Runtime.Serialization.Formatters.Soap" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Security" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.ServiceProcess" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Web" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Web.Mobile" />
+      <Assembly name="System.Web.RegularExpressions" />
+      <Assembly name="System.Web.Services" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Windows.Forms" version="1.0.5000.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.Xml" version="1.0.5000.0" publicKeyToken="b77a5c561934e089" />
+    </Assemblies>
+  </TargetFramework>
+  <TargetFramework id="2.0" _name="Mono / .NET 2.0" clrVersion="Net_2_0" CompatibleWithFramework="1.1">
+    <Assemblies>
+      <Assembly name="System.Configuration" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Deployment" />
+      <Assembly name="System.DirectoryServices.Protocols" />
+      <Assembly name="System.EnterpriseServices.Thunk" />
+      <Assembly name="System.EnterpriseServices.Wrapper" />
+      <Assembly name="System.Transactions" version="2.0.0.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="Microsoft.VisualBasic.Compatibility.Data" />
+      <Assembly name="Microsoft.VisualBasic.Compatibility" />
+      <Assembly name="Culture" />
+      <Assembly name="System" version="2.0.0.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="mscorlib" version="2.0.0.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="ICSharpCode.SharpZipLib" version="2.84.0.0" publicKeyToken="1b03e6acf1164f73" />
+      <Assembly name="Accessibility" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="cscompmgd" version="8.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.Build.Engine" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.Build.Framework" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.Build.Tasks" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.Build.Utilities" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.JScript" version="8.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.VisualBasic.Compatibility.Data" />
+      <Assembly name="Microsoft.VisualBasic.Compatibility" />
+      <Assembly name="Microsoft.VisualBasic" />
+      <Assembly name="Microsoft.VisualBasic.Vsa" />
+      <Assembly name="Microsoft.VisualC" version="8.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.Vsa" version="8.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="Microsoft.Vsa.Vb.CodeDOMProcessor" />
+      <Assembly name="Mono.Data" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Data.Sqlite" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Data.SqliteClient" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Data.SybaseClient" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Data.Tds" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Data.TdsClient" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.GetOptions" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Posix" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Security" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.WebBrowser" version="0.5.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.CompilerServices.SymbolWriter" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Cairo" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Http" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.Mozilla" />
+      <Assembly name="Mono.Security.Win32" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Mono.WebServer" />
+      <Assembly name="Novell.Directory.Ldap" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
+      <Assembly name="Npgsql" version="2.0.0.0" publicKeyToken="5d8b90d52f46fda7" />
+      <Assembly name="System.Configuration.Install" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Data" version="2.0.0.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.Data.OracleClient" version="2.0.0.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.Data.SqlXml" />
+      <Assembly name="System.Design" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.DirectoryServices" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.DirectoryServices.Protocols" />
+      <Assembly name="System.Drawing.Design" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Drawing" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.EnterpriseServices" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.EnterpriseServices.Thunk" />
+      <Assembly name="System.EnterpriseServices.Wrapper" />
+      <Assembly name="System.Management" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Messaging" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Runtime.Remoting" version="2.0.0.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.Runtime.Serialization.Formatters.Soap" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Security" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.ServiceProcess" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Web" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Web.Mobile" />
+      <Assembly name="System.Web.RegularExpressions" />
+      <Assembly name="System.Web.Services" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+      <Assembly name="System.Windows.Forms" version="2.0.0.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.Xml" version="2.0.0.0" publicKeyToken="b77a5c561934e089" />
+    </Assemblies>
+  </TargetFramework>
+  <TargetFramework id="3.0" _name="Mono / .NET 3.0" clrVersion="Net_2_0" ExtendsFramework="2.0">
+    <Assemblies>
+      <Assembly name="System.Workflow.Runtime" version="3.0.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="PresentationBuildTasks" />
+      <Assembly name="PresentationCore" version="3.0.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="PresentationUI" />
+      <Assembly name="PresentationFramework.Aero" />
+      <Assembly name="PresentationFramework.Classic" />
+      <Assembly name="PresentationFramework" version="3.0.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="PresentationFramework.Luna" />
+      <Assembly name="PresentationFramework.Royale" />
+      <Assembly name="ReachFramework" />
+      <Assembly name="System.IdentityModel" />
+      <Assembly name="System.IdentityModel.Selectors" />
+      <Assembly name="System.IO.Log" />
+      <Assembly name="System.Printing" />
+      <Assembly name="System.Runtime.Serialization" />
+      <Assembly name="System.ServiceModel" />
+      <Assembly name="System.Speech" />
+      <Assembly name="System.Workflow.Activities" version="3.0.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="System.Workflow.ComponentModel" version="3.0.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="UIAutomationClient" />
+      <Assembly name="UIAutomationClientsideProviders" />
+      <Assembly name="UIAutomationProvider" />
+      <Assembly name="UIAutomationTypes" />
+      <Assembly name="WindowsBase" version="3.0.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="WindowsFormsIntegration" />
+    </Assemblies>
+  </TargetFramework>
+  <TargetFramework id="3.5" _name="Mono / .NET 3.5" clrVersion="Net_2_0" ExtendsFramework="3.0">
+    <Assemblies>
+      <Assembly name="System.Core" version="3.5.0.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.AddIn.Contract" />
+      <Assembly name="System.AddIn" />
+      <Assembly name="System.ComponentModel.DataAnnotations" version="3.5.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="System.Data.DataSetExtensions" version="3.5.0.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.Data.Entity.Design" />
+      <Assembly name="System.Data.Entity" />
+      <Assembly name="System.Data.Linq" version="3.5.0.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.Data.Services.Client" />
+      <Assembly name="System.Data.Services.Design" />
+      <Assembly name="System.Data.Services" />
+      <Assembly name="System.DirectoryServices.AccountManagement" />
+      <Assembly name="System.Management.Instrumentation" />
+      <Assembly name="System.Net" />
+      <Assembly name="System.ServiceModel.Web" version="3.5.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="System.Web.Abstractions" version="3.5.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="System.Web.DynamicData.Design" />
+      <Assembly name="System.Web.DynamicData" version="3.5.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="System.Web.Entity.Design" />
+      <Assembly name="System.Web.Entity" />
+      <Assembly name="System.Web.Extensions.Design" version="3.5.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="System.Web.Extensions" version="3.5.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="System.Web.Routing" version="3.5.0.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="System.Windows.Presentation" />
+      <Assembly name="System.WorkflowServices" />
+      <Assembly name="System.Xml.Linq" version="3.5.0.0" publicKeyToken="b77a5c561934e089" />
+    </Assemblies>
+  </TargetFramework>
+  <TargetFramework id="2.1" _name="Moonlight / Silverlight 2.0" clrVersion="Clr_2_1" SubsetOfFramework="3.5">
+    <Assemblies>
+      <Assembly name="System" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
+      <Assembly name="mscorlib" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
+      <Assembly name="System.Core" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
+      <Assembly name="System.Net" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
+      <Assembly name="System.Runtime.Serialization" version="2.0.5.0" publicKeyToken="b77a5c561934e089" />
+      <Assembly name="System.ServiceModel" version="2.0.5.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="System.ServiceModel.Web" version="2.0.5.0" publicKeyToken="31bf3856ad364e35" />
+      <Assembly name="System.Windows" />
+      <Assembly name="System.Windows.Browser" />
+      <Assembly name="System.Xml" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
+    </Assemblies>
+  </TargetFramework>
+</ListOfTargetFramework>

@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -136,23 +137,47 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			IsGacPackage = true;
 		}
-		
+
+		[ItemProperty]
 		public string Name { get; set; }
 		
+		[ItemProperty (DefaultValue=null)]
 		public string GacRoot { get; set; }
 		
+		[ItemProperty (DefaultValue=true)]
 		public bool IsGacPackage { get; set; }
 		
+		[ItemProperty]
 		public string Version { get; set; }
 		
+		[ItemProperty (DefaultValue=null)]
 		public string Description { get; set; }
 		
 		public string TargetFramework { get; set; }
 		
 		// The package is part of the core mono SDK
+		[ItemProperty (DefaultValue=false)]
 		public bool IsCorePackage { get; set; }
 		
 		// The package is part of the mono SDK (unlike IsCorePackage, it may be provided by a non-core package)
+		[ItemProperty (DefaultValue=false)]
 		public bool IsFrameworkPackage { get; set; }
+		
+		[ExpandedCollection]
+		[ItemProperty ("Assembly")]
+		internal List<PackageAssemblyInfo> Assemblies { get; set; }
+		
+		[ItemProperty]
+		internal DateTime LastWriteTime { get; set; }
+		
+		internal bool IsValidPackage {
+			get { return Assemblies != null && Assemblies.Count > 0; }
+		}
+	}
+	
+	class PackageAssemblyInfo: AssemblyInfo
+	{
+		[ItemProperty]
+		public string File { get; set; }
 	}
 }

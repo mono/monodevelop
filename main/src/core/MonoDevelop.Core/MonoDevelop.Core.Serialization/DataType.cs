@@ -40,7 +40,21 @@ namespace MonoDevelop.Core.Serialization
 		public DataType (Type type)
 		{
 			this.type = type;
-			name = type.Name;
+			name = GetTypeName (type);
+		}
+		
+		string GetTypeName (Type type)
+		{
+			Type[] targs = type.GetGenericArguments ();
+			if (targs != null && targs.Length > 0) {
+				string name = type.Name;
+				name = name.Substring (0, name.IndexOf ('`'));
+				name += "Of";
+				foreach (Type pt in targs)
+					name += GetTypeName (pt);
+				return name;
+			} else
+				return type.Name;
 		}
 		
 		internal void SetContext (DataContext ctx)

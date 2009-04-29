@@ -15,6 +15,7 @@ FILES =  \
 	MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs \
 	MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs \
 	MonoDevelop.Core.Assemblies/MsNetTargetRuntimeFactory.cs \
+	MonoDevelop.Core.Assemblies/PcFileCache.cs \
 	MonoDevelop.Core.Assemblies/SystemAssembly.cs \
 	MonoDevelop.Core.Assemblies/SystemAssemblyService.cs \
 	MonoDevelop.Core.Assemblies/SystemPackage.cs \

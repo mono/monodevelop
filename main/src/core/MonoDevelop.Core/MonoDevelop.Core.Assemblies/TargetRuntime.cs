@@ -138,10 +138,22 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, params string[] assemblyFiles)
 		{
+			PackageAssemblyInfo[] pinfos = new PackageAssemblyInfo [assemblyFiles.Length];
+			for (int n=0; n<assemblyFiles.Length; n++) {
+				PackageAssemblyInfo pi = new PackageAssemblyInfo ();
+				pi.File = assemblyFiles [n];
+				pi.Update (SystemAssemblyService.GetAssemblyNameObj (pi.File));
+				pinfos [n] = pi;
+			}
+			return RegisterPackage (pinfo, isInternal, pinfos);
+		}
+		
+		internal SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, PackageAssemblyInfo[] assemblyFiles)
+		{
 			SystemPackage p = new SystemPackage (this);
 			List<SystemAssembly> asms = new List<SystemAssembly> ();
-			foreach (string asm in assemblyFiles)
-				asms.Add (AddAssembly (asm, p));
+			foreach (PackageAssemblyInfo asm in assemblyFiles)
+				asms.Add (AddAssembly (asm.File, asm, p));
 			p.Initialize (pinfo, asms, isInternal);
 			packages.Add (p);
 			packagesHash [pinfo.Name] = p;
@@ -173,8 +185,8 @@ namespace MonoDevelop.Core.Assemblies
 		public IEnumerable<SystemPackage> GetPackages (TargetFramework fx)
 		{
 			foreach (SystemPackage pkg in packages) {
-				if (pkg.IsFrameworkPackage) {
-					if (pkg.TargetFramework == fx.Id)
+				if (pkg.IsCorePackage) {
+					if (pkg.TargetFramework == fx.BaseCoreFramework || pkg.TargetFramework == fx.Id)
 						yield return pkg;
 				}
 				else if (fx.IsCompatibleWithFramework (pkg.TargetFramework))
@@ -219,15 +231,18 @@ namespace MonoDevelop.Core.Assemblies
 			if (fx != null && !fx.IsSupported)
 				yield break;
 			
-			foreach (SystemPackage pkg in packages) {
-				if (pkg.IsFrameworkPackage) {
-					if (fx == null || pkg.TargetFramework != fx.Id)
+			if (fx == null) {
+				foreach (SystemPackage pkg in packages) {
+					if (pkg.IsFrameworkPackage)
 						continue;
-				} else if (fx != null && !fx.IsCompatibleWithFramework (pkg.TargetFramework))
-					continue;
-				
-				foreach (SystemAssembly asm in pkg.Assemblies)
-					yield return asm;
+					foreach (SystemAssembly asm in pkg.Assemblies)
+						yield return asm;
+				}
+			} else {
+				foreach (SystemPackage pkg in GetPackages (fx)) {
+					foreach (SystemAssembly asm in pkg.Assemblies)
+						yield return asm;
+				}
 			}
 		}
 		
@@ -554,20 +569,48 @@ namespace MonoDevelop.Core.Assemblies
 					UnregisterPackage (pi.Name, pi.Version);
 			}
 		}
+		
+		public bool IsInstalled (TargetFramework fx)
+		{
+			string dir = GetFrameworkFolder (fx);
+			if (Directory.Exists (dir)) {
+				string firstAsm = Path.Combine (dir, fx.Assemblies [0].Name) + ".dll";
+				return File.Exists (firstAsm);
+			}
+			return false;
+		}
 
 		void CreateFrameworks ()
 		{
+			if ((SystemAssemblyService.UpdateExpandedFrameworksFile || !SystemAssemblyService.UseExpandedFrameworksFile)) {
+				// Read the assembly versions
+				foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+					if (IsInstalled (fx)) {
+						string dir = GetFrameworkFolder (fx);
+						foreach (AssemblyInfo assembly in fx.Assemblies) {
+							string file = Path.Combine (dir, assembly.Name) + ".dll";
+							if (File.Exists (file)) {
+								if ((assembly.Version == null || SystemAssemblyService.UpdateExpandedFrameworksFile) && IsRunning) {
+									System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
+									assembly.Update (aname);
+								}
+							}
+						}
+					}
+				}
+			}
+			
 			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
 				// A framework is installed if the assemblies directory exists and the first
 				// assembly of the list exists.
-				string dir = GetFrameworkFolder (fx);
-				if (Directory.Exists (dir)) {
-					string firstAsm = Path.Combine (dir, fx.Assemblies [0]) + ".dll";
-					if (File.Exists (firstAsm)) {
-						fx.IsSupported = true;
-						RegisterSystemAssemblies (fx);
-					}
+				if (IsInstalled (fx)) {
+					fx.IsSupported = true;
+					RegisterSystemAssemblies (fx);
 				}
+			}
+			
+			if (SystemAssemblyService.UpdateExpandedFrameworksFile && IsRunning) {
+				Runtime.SystemAssemblyService.SaveGeneratedFrameworkInfo ();
 			}
 		}
 		
@@ -585,40 +628,28 @@ namespace MonoDevelop.Core.Assemblies
 			if (!Directory.Exists(dir))
 				return;
 
-			foreach (string assembly in fx.Assemblies) {
-				string file = Path.Combine (dir, assembly) + ".dll";
-				if (File.Exists (file))
-					list.Add (AddAssembly (file, package));
-			}
-			
-			// Include files from extended frameworks but don't register them,
-			// since they belong to another package
-			foreach (string fxid in fx.ExtendedFrameworks) {
-				if (fxid == fx.Id)
-					continue;
-				TargetFramework compFx = Runtime.SystemAssemblyService.GetTargetFramework (fxid);
-				dir = GetFrameworkFolder (compFx);
-				if (!Directory.Exists(dir))
-					continue;
-				foreach (string assembly in compFx.Assemblies) {
-					string file = Path.Combine (dir, assembly) + ".dll";
-					if (File.Exists (file))
-						list.Add (SystemAssembly.FromFile (file));
+			foreach (AssemblyInfo assembly in fx.Assemblies) {
+				string file = Path.Combine (dir, assembly.Name) + ".dll";
+				if (File.Exists (file)) {
+					if ((assembly.Version == null || SystemAssemblyService.UpdateExpandedFrameworksFile) && IsRunning) {
+						System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
+						assembly.Update (aname);
+					}
+					list.Add (AddAssembly (file, assembly, package));
 				}
 			}
-
+			
 			SystemPackageInfo info = GetFrameworkPackageInfo (fx);
+			if (!info.IsCorePackage)
+				corePackages.Add (info.Name);
 			package.Initialize (info, list.ToArray (), false);
 			packages.Add (package);
-			
-			if (info.IsCorePackage)
-				corePackages.Add (info.Name);
 		}
 		
 		protected virtual SystemPackageInfo GetFrameworkPackageInfo (TargetFramework fx)
 		{
 			SystemPackageInfo info = new SystemPackageInfo ();
-			info.Name = "system";
+			info.Name = DisplayRuntimeName;
 			info.Description = fx.Name;
 			info.IsFrameworkPackage = true;
 			info.IsCorePackage = true;
@@ -629,13 +660,13 @@ namespace MonoDevelop.Core.Assemblies
 		}
 
 
-		protected SystemAssembly AddAssembly (string assemblyfile, SystemPackage package)
+		internal SystemAssembly AddAssembly (string assemblyfile, AssemblyInfo ainfo, SystemPackage package)
 		{
 			if (!File.Exists (assemblyfile))
 				return null;
 
 			try {
-				SystemAssembly asm = SystemAssembly.FromFile (assemblyfile);
+				SystemAssembly asm = SystemAssembly.FromFile (assemblyfile, ainfo);
 				SystemAssembly prevAsm;
 				if (assemblyFullNameToAsm.TryGetValue (asm.FullName, out prevAsm)) {
 					asm.NextSameName = prevAsm.NextSameName;

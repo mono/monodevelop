@@ -49,6 +49,8 @@ namespace MonoDevelop.Core.Assemblies
 		MonoPlatformExecutionHandler execHandler;
 		Dictionary<string,string> environmentVariables;
 		
+		static PcFileCache pcFileCache = new PcFileCache ();
+		
 		MonoRuntimeInfo monoRuntimeInfo;
 		
 		internal MonoTargetRuntime (MonoRuntimeInfo info)
@@ -170,6 +172,7 @@ namespace MonoDevelop.Core.Assemblies
 					}
 				}
 			}
+			pcFileCache.Save ();
 		}
 
 		private void ParsePCFile (string pcfile)
@@ -179,6 +182,20 @@ namespace MonoDevelop.Core.Assemblies
 			if (GetPackage (pname) != null || IsCorePackage (pname))
 				return;
 
+			SystemPackageInfo pinfo;
+			lock (pcFileCache.SyncRoot) {
+				pinfo = pcFileCache.GetPackageInfo (pcfile);
+				if (pinfo == null) {
+					pinfo = GetPackageInfo (pcfile, pname);
+					pcFileCache.StorePackageInfo (pcfile, pinfo);
+				}
+			}
+			if (pinfo.IsValidPackage)
+				RegisterPackage (pinfo, false, pinfo.Assemblies.ToArray ());
+		}
+		
+		SystemPackageInfo GetPackageInfo (string pcfile, string pname)
+		{
 			SystemPackageInfo pinfo = new SystemPackageInfo ();
 			pinfo.Name = pname;
 			List<string> fullassemblies = null;
@@ -219,13 +236,13 @@ namespace MonoDevelop.Core.Assemblies
 			}
 	
 			if (fullassemblies == null)
-				return;
+				return pinfo;
 			
 			string pcDir = Path.GetDirectoryName (pcfile);
 			string monoPrefix = Path.GetDirectoryName (Path.GetDirectoryName (pcDir));
 			monoPrefix = Path.GetFullPath (monoPrefix + Path.DirectorySeparatorChar + "lib" + Path.DirectorySeparatorChar + "mono" + Path.DirectorySeparatorChar);
 
-			List<string> list = new List<string> ();
+			List<PackageAssemblyInfo> list = new List<PackageAssemblyInfo> ();
 			foreach (string assembly in fullassemblies) {
 				string asm;
 				if (Path.IsPathRooted (assembly))
@@ -237,15 +254,20 @@ namespace MonoDevelop.Core.Assemblies
 						asm = Path.GetFullPath (Path.Combine (pcDir, assembly));
 					}
 				}
-				list.Add (asm);
-				if (!gacPackageSet && !asm.StartsWith (monoPrefix) && Path.IsPathRooted (asm)) {
-					// Assembly installed outside $(prefix)/lib/mono. It is most likely not a gac package.
-					gacPackageSet = true;
-					pinfo.IsGacPackage = false;
+				if (File.Exists (asm)) {
+					PackageAssemblyInfo pi = new PackageAssemblyInfo ();
+					pi.File = asm;
+					pi.UpdateFromFile (pi.File);
+					list.Add (pi);
+					if (!gacPackageSet && !asm.StartsWith (monoPrefix) && Path.IsPathRooted (asm)) {
+						// Assembly installed outside $(prefix)/lib/mono. It is most likely not a gac package.
+						gacPackageSet = true;
+						pinfo.IsGacPackage = false;
+					}
 				}
 			}
-			
-			RegisterPackage (pinfo, false, list.ToArray ());
+			pinfo.Assemblies = list;
+			return pinfo;
 		}
 		
 	
