@@ -1,6 +1,29 @@
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/FileViewer.cs:
+	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Codons/IDisplayBinding.cs:
+	* MonoDevelop.Ide.Codons/FileFilterCodon.cs:
+	* MonoDevelop.Ide.Codons/ISubDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui/ISecondaryViewContent.cs:
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs:
+	* MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs:
+	* MonoDevelop.Ide.Codons/DisplayBindingCodon.cs:
+	* MonoDevelop.Ide.Gui/AbstractSecondaryViewContent.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	  Removed some unused code (subview bindings. They were ment
+	  to be used by 'designers' like stetic. But stetic doesn't
+	  use it.). Reworked the display binding subsystem (updated
+	  display binding service to static class model).
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs:

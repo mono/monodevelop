@@ -89,7 +89,6 @@ FILES =  \
 	MonoDevelop.Ide.Codons/FileTemplateConditionTypeCodon.cs \
 	MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs \
 	MonoDevelop.Ide.Codons/IDisplayBinding.cs \
-	MonoDevelop.Ide.Codons/ISubDisplayBinding.cs \
 	MonoDevelop.Ide.Codons/LanguageActiveCondition.cs \
 	MonoDevelop.Ide.Codons/NodeBuilderCodon.cs \
 	MonoDevelop.Ide.Codons/PadCodon.cs \
@@ -129,8 +128,6 @@ FILES =  \
 	MonoDevelop.Ide.FindInFiles/SearchResult.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResultPad.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs \
-	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
-	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.Components/DragOperation.cs \
 	MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs \
@@ -253,7 +250,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs \
 	MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/AbstractPadContent.cs \
-	MonoDevelop.Ide.Gui/AbstractSecondaryViewContent.cs \
 	MonoDevelop.Ide.Gui/AbstractViewContent.cs \
 	MonoDevelop.Ide.Gui/AddEntryEventHandler.cs \
 	MonoDevelop.Ide.Gui/AddinUpdateHandler.cs \
@@ -277,7 +273,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/InternalLog.cs \
 	MonoDevelop.Ide.Gui/IPadContainer.cs \
 	MonoDevelop.Ide.Gui/IPadContent.cs \
-	MonoDevelop.Ide.Gui/ISecondaryViewContent.cs \
 	MonoDevelop.Ide.Gui/IViewContent.cs \
 	MonoDevelop.Ide.Gui/IWorkbench.cs \
 	MonoDevelop.Ide.Gui/IWorkbenchLayout.cs \

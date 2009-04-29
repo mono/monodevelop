@@ -55,7 +55,6 @@ namespace MonoDevelop.Ide.Gui
 		ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		DefaultWorkbench workbench;
 		RecentOpen recentOpen = null;
-		DisplayBindingService displayBindingService;
 		
 		public event EventHandler ActiveDocumentChanged;
 		public event EventHandler LayoutChanged;
@@ -207,14 +206,6 @@ namespace MonoDevelop.Ide.Gui
 			get { return monitors; }
 		}
 		
-		public DisplayBindingService DisplayBindings {
-			get {
-				if (displayBindingService == null)
-					displayBindingService = new DisplayBindingService ();
-				return displayBindingService; 
-			}
-		}
-		
 		public MonoDevelopStatusBar StatusBar {
 			get {
 				return workbench.StatusBar;
@@ -304,8 +295,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 
-			IDisplayBinding[] bindings = DisplayBindings.GetBindingsForMimeType (mimeType);
-			foreach (IDisplayBinding bin in bindings)
+			foreach (IDisplayBinding bin in DisplayBindingService.GetBindingsForMimeType (mimeType))
 				list.Add (new FileViewer (bin));
 
 			foreach (DesktopApplication app in IdeApp.Services.PlatformService.GetAllApplications (mimeType))
@@ -351,15 +341,7 @@ namespace MonoDevelop.Ide.Gui
 				//search all ViewContents to see if they can "re-use" this filename
 				if (doc.Window.ViewContent.CanReuseView (fileName))
 					vcFound = doc.Window.ViewContent;
-				else if (doc.Window.SubViewContents != null) {
-					for (int i = 0; i < doc.Window.SubViewContents.Count; i++) {
-						ISecondaryViewContent vc = (ISecondaryViewContent) doc.Window.SubViewContents [i];
-						if (vc.CanReuseView (fileName)) {
-							vcIndex = i +1;
-							vcFound = vc;
-						}
-					}
-				}
+				
 				
 				//old method as fallback
 				if ((vcFound == null) && (doc.FileName == fileName))
@@ -434,7 +416,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document NewDocument (string defaultName, string mimeType, Stream content)
 		{
-			IDisplayBinding binding = DisplayBindings.GetBindingForMimeType (mimeType);
+			IDisplayBinding binding = DisplayBindingService.GetBindingForMimeType (mimeType);
 			IViewContent newContent;
 			
 			if (binding != null) {
@@ -450,8 +432,6 @@ namespace MonoDevelop.Ide.Gui
 				newContent.UntitledName = defaultName;
 				newContent.IsDirty = true;
 				workbench.ShowView(newContent, true);
-				
-				DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
 			} else {
 				throw new ApplicationException("Can't create display binding for mime type: " + mimeType);				
 			}
@@ -700,10 +680,11 @@ namespace MonoDevelop.Ide.Gui
 				}
 				
 				IDisplayBinding binding;
+				
 				if (oFileInfo.DisplayBinding != null)
 					binding = oFileInfo.DisplayBinding;
 				else
-					binding = DisplayBindings.GetBindingPerFileName(fileName);
+					binding = DisplayBindingService.GetBindingForFileName (fileName);
 				
 				if (binding != null) {
 					// When looking for the project to which the file belongs, look first
@@ -892,7 +873,7 @@ namespace MonoDevelop.Ide.Gui
 		public void Invoke(string fileName)
 		{
 			try {
-				newContent = binding.CreateContentForFile (fileName);
+				newContent = binding.CreateContentForUri (fileName);
 				if (newContent == null) {
 					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 					return;
@@ -917,8 +898,8 @@ namespace MonoDevelop.Ide.Gui
 				newContent.Project = project;
 			
 			workbench.ShowView (newContent, fileInfo.BringToFront);
-			IdeApp.Workbench.DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
-			newContent.WorkbenchWindow.DocumentType = binding.DisplayName;
+			
+			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
 			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
 			if (fileInfo.Line != -1 && ipos != null) {

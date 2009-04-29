@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public string Title {
-			get { return binding != null ? binding.DisplayName : app.DisplayName; }
+			get { return binding != null ? binding.Name : app.DisplayName; }
 		}
 		
 		public bool IsExternal {

@@ -34,17 +34,12 @@ namespace MonoDevelop.Ide.Gui
 {
 	class DefaultDisplayBinding: IDisplayBinding
 	{
-		public bool CanCreateContentForFile (string fileName)
-		{
-			return false;
-		}
-		
 		public bool CanCreateContentForMimeType (string mimetype)
 		{
 			return false;
 		}
 
-		public IViewContent CreateContentForFile (string fileName)
+		public IViewContent CreateContentForUri (string fileName)
 		{
 			throw new NotSupportedException ();
 		}
@@ -54,7 +49,7 @@ namespace MonoDevelop.Ide.Gui
 			throw new NotSupportedException ();
 		}
 
-		public string DisplayName {
+		public string Name {
 			get { return ""; }
 		}
 

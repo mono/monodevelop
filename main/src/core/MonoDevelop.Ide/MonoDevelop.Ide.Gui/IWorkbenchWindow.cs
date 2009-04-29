@@ -85,8 +85,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		void SwitchView(int viewNumber);
 		
-		void AttachSecondaryViewContent(ISecondaryViewContent secondaryViewContent);
-		
 		/// <summary>
 		/// Is called when the title of this window has changed.
 		/// </summary>

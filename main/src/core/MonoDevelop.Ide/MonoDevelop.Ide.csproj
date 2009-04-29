@@ -277,18 +277,14 @@
     <Compile Include="MonoDevelop.Ide.Templates\ResourceFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AbstractBaseViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AbstractPadContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\AbstractSecondaryViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AbstractViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IBaseViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IPadContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\ISecondaryViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IWorkbench.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IWorkbenchLayout.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ViewCommandHandlers.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.BrowserDisplayBinding\BrowserDisplayBinding.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.BrowserDisplayBinding\HtmlViewPane.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IBookmarkBuffer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IClipboardHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IEditableTextBuffer.cs" />
@@ -336,7 +332,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\SdiWorkspaceWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\DisplayBindingCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\IDisplayBinding.cs" />
-    <Compile Include="MonoDevelop.Ide.Codons\ISubDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\FileTemplateTypeCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\ProjectTemplateCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\NodeBuilderCodon.cs" />

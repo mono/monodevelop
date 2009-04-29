@@ -200,9 +200,6 @@
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "DefaultDisplayBinding"
 		                class = "MonoDevelop.Ide.Gui.DefaultDisplayBinding"/>
-		<DisplayBinding id    = "Browser"
-		                supportedformats = "Web Pages"
-		                class = "MonoDevelop.Ide.Gui.BrowserDisplayBinding.BrowserDisplayBinding"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">

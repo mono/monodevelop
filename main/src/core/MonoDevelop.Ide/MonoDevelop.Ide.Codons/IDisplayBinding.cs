@@ -1,22 +1,29 @@
 //  IDisplayBinding.cs
 //
-//  This file was derived from a file from #Develop. 
+// Author:
+//   Mike Krüger <mkrueger@novell.com>
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
+// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
 // 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
 // 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
 using System.IO;
@@ -26,43 +33,15 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
-	/// <summary>
-	/// This class defines the SharpDevelop display binding interface, it is a factory
-	/// structure, which creates IViewContents.
-	/// </summary>
 	public interface IDisplayBinding
 	{
-		// Display name of the binding, to be shown when there are several
-		// options for opening a file.
-		string DisplayName { get; }
+		string Name { 
+			get; 
+		}
 		
-		/// <remarks>
-		/// This function determines, if this display binding is able to create
-		/// an IViewContent for the file given by fileName.
-		/// </remarks>
-		/// <returns>
-		/// true, if this display binding is able to create
-		/// an IViewContent for the file given by fileName.
-		/// false otherwise
-		/// </returns>
-		bool CanCreateContentForFile(string fileName);
+		bool CanCreateContentForMimeType (string mimeType);
 		
-		bool CanCreateContentForMimeType (string mimetype);
-		
-		/// <remarks>
-		/// Creates a new IViewContent object for the file fileName
-		/// </remarks>
-		/// <returns>
-		/// A newly created IViewContent object.
-		/// </returns>
-		IViewContent CreateContentForFile(string fileName);
-		
-		/// <remarks>
-		/// Creates a new IViewContent object for the given mime type  
-		/// </remarks>
-		/// <returns>
-		/// A newly created IViewContent object.
-		/// </returns>
 		IViewContent CreateContentForMimeType (string mimeType, Stream content);
+		IViewContent CreateContentForUri (string uri);
 	}
 }
