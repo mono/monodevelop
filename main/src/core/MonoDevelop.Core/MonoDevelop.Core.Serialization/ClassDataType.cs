@@ -106,7 +106,10 @@ namespace MonoDevelop.Core.Serialization
 		
 		void AddProperty (object member, string name, Type memberType)
 		{
-			object[] ats = Context.AttributeProvider.GetCustomAttributes (member, typeof(Attribute), true);
+			// Using inherit=false because if a base class already has an ItemProperty applied to the property
+			// then that property will already have been added while copying props from the base class.
+			
+			object[] ats = Context.AttributeProvider.GetCustomAttributes (member, typeof(Attribute), false);
 			
 			ItemPropertyAttribute at = FindPropertyAttribute (ats, "");
 			if (at == null)

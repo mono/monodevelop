@@ -1,3 +1,12 @@
+2009-04-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/ClassDataType.cs: When
+	  looking for ItemPropertyAttribute on a member, use
+	  inherit=false because if a base class already has an
+	  ItemProperty applied to the member, then that member will
+	  already have been added while copying props from the base
+	  class.
+
 2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* frameworks.xml:
