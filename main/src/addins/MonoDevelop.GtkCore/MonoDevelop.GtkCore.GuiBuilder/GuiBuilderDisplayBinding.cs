@@ -37,15 +37,15 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderDisplayBinding: IDisplayBinding
+	public class GuiBuilderDisplayBinding : DefaultDisplayBinding
 	{
 		bool excludeThis = false;
 		
-		public string Name {
+		public override string Name {
 			get { return "Window Designer"; }
 		}
 		
-		public virtual bool CanCreateContentForFile (string fileName)
+		public override bool CanCreateContentForUri (string fileName)
 		{
 			if (excludeThis) return false;
 			
@@ -53,33 +53,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return false;
 			
 			excludeThis = true;
-			IDisplayBinding db = DisplayBindingService.GetBindingForFileName (fileName);
+			IDisplayBinding db = DisplayBindingService.GetBindingForUri (fileName);
 			excludeThis = false;
 			return db != null;
 		}
 
-		public virtual bool CanCreateContentForMimeType (string mimetype)
-		{
-			if (excludeThis) return false;
-			
-			excludeThis = true;
-			IDisplayBinding db = DisplayBindingService.GetBindingForMimeType (mimetype);
-			excludeThis = false;
-			return db != null;
-		}
-		
-		public virtual IViewContent CreateContentForUri (string fileName)
+		public override IViewContent CreateContentForUri (string fileName)
 		{
 			excludeThis = true;
-			IDisplayBinding db = DisplayBindingService.GetBindingForFileName (fileName);
+			IDisplayBinding db = DisplayBindingService.GetBindingForUri (fileName);
 			GuiBuilderView view = new GuiBuilderView (db.CreateContentForUri (fileName), GetWindow (fileName));
 			excludeThis = false;
 			return view;
-		}
-		
-		public virtual IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
-		{
-			return null;
 		}
 		
 		GuiBuilderWindow GetWindow (string file)

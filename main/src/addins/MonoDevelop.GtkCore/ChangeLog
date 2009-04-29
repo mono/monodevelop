@@ -4,6 +4,12 @@
 	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs:
 	  Track API changes.
 
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs:
+	  Track API changes.
+
 2009-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore/ReferenceManager.cs: Remove vte-sharp
