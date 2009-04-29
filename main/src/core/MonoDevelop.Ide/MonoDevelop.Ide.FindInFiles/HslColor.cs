@@ -91,13 +91,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			return new HslColor (color);
 		}
 		
-		public HslColor (Color color)
+		public HslColor (Color color) : this ()
 		{
 			double r = color.Red   / (double)ushort.MaxValue;
 			double g = color.Green / (double)ushort.MaxValue;
 			double b = color.Blue  / (double)ushort.MaxValue;
-			
-			H = S = L = 0;
 
 			double v = Math.Max (r, g);
 			v = Math.Max (v, b);
