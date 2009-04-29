@@ -1,5 +1,10 @@
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs: the
+	  content may be == null now.
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs:
 	  Track API changes.
 
