@@ -263,7 +263,6 @@
     <Compile Include="MonoDevelop.Ide.Codons\ProjectActiveCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\WorkbenchContextCondition.cs" />
     <Compile Include="MonoDevelop.Ide.ExternalTools\ExternalTool.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\IncludeFilesDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateService.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FileDescriptionTemplate.cs" />
@@ -421,7 +420,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\FileFilterCodon.cs" />
     <Compile Include="MonoDevelop.Ide.ExternalTools\ExternalToolService.cs" />
@@ -545,6 +543,8 @@
     <Compile Include="MonoDevelop.Ide.FindInFiles\ISearchProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\HslColor.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\IncludeNewFilesDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.IncludeNewFilesDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

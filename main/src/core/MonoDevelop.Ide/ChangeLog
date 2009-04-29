@@ -1,5 +1,19 @@
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/IncludeNewFilesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeFilesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeNewFilesDialog.cs:
+	  Fixed "Bug 491107 - Unexpected behavior of "Automatically
+	  include found files" from project options". Replaced the old
+	  GPLed inclutde new files dialog with a new version.
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: Fixed "Bug 498901 - Missing
 	  keybindings for Expand Selection To Next/Prev word".
 

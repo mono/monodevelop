@@ -576,7 +576,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void SearchNewFiles (Project project)
 		{
-			StringCollection newFiles   = new StringCollection();
+			List<string> newFiles   = new List<string> ();
 			string[] collection = Directory.GetFiles (project.BaseDirectory, "*", SearchOption.AllDirectories);
 			
 			HashSet<string> projectFiles = new HashSet<string> ();
@@ -608,6 +608,7 @@ namespace MonoDevelop.Ide.Gui
 					!file.StartsWith (".") &&
 					!(Path.GetDirectoryName(sfile).IndexOf("CVS") != -1) &&
 					!(Path.GetDirectoryName(sfile).IndexOf(".svn") != -1) &&
+					!(Path.GetDirectoryName(sfile).IndexOf(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar) != -1) &&
 					!file.StartsWith ("Makefile") &&
 					!Path.GetDirectoryName(file).EndsWith("ProjectDocumentation")) {
 
@@ -624,7 +625,10 @@ namespace MonoDevelop.Ide.Gui
 					DispatchService.GuiDispatch (
 						delegate (object state) {
 							NewFilesMessage message = (NewFilesMessage) state;
-							new IncludeFilesDialog (message.Project, message.NewFiles).ShowDialog ();
+							IncludeNewFilesDialog includeNewFilesDialog = new IncludeNewFilesDialog (message.Project);
+							includeNewFilesDialog.AddFiles (message.NewFiles);
+							includeNewFilesDialog.Run ();
+							includeNewFilesDialog.Destroy ();
 						},
 						new NewFilesMessage (project, newFiles)
 					);
@@ -635,8 +639,8 @@ namespace MonoDevelop.Ide.Gui
 		private class NewFilesMessage
 		{
 			public Project Project;
-			public StringCollection NewFiles;
-			public NewFilesMessage (Project p, StringCollection newFiles)
+			public List<string> NewFiles;
+			public NewFilesMessage (Project p, List<string> newFiles)
 			{
 				this.Project = p;
 				this.NewFiles = newFiles;
