@@ -1,3 +1,8 @@
+2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.csproj: Don't require a specific gtk#
+	  version.
+
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.GtkCore.addin.xml: gui designer is now before
