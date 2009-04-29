@@ -1,3 +1,8 @@
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Deployment.Linux/DotDesktopDisplayBinding.cs:
+	  Track API changes.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Deployment.Linux.csproj: don't require specific

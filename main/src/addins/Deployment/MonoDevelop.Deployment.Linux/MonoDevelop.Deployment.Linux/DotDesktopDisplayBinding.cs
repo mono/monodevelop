@@ -20,7 +20,7 @@ namespace MonoDevelop.Deployment.Linux
 			return mimetype == "application/x-desktop";
 		}
 
-		public IViewContent CreateContentForFile (string fileName)
+		public IViewContent CreateContentForUri (string fileName)
 		{
 			return new DotDesktopView ();
 		}
@@ -30,7 +30,7 @@ namespace MonoDevelop.Deployment.Linux
 			return new DotDesktopView ();
 		}
 
-		public string DisplayName {
+		public string Name {
 			get { return "Desktop Entry"; }
 		}
 	}
