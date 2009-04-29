@@ -1,3 +1,7 @@
+2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libstetic.csproj: Don't require a specific gtk# version.
+
 2009-03-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Registry.cs:
