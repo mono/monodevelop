@@ -884,12 +884,25 @@ namespace Mono.TextEditor
 			double x = e.X;
 			double y = e.Y;
 			Gdk.ModifierType mod = e.State;
-			FireMotionEvent (x, y, mod);
-			if (mouseButtonPressed != 0) {
-				scrollWindowTimer = GLib.Timeout.Add (50, delegate {
-					FireMotionEvent (x, y, mod);
-					return true;
-				});
+			
+			int startPos;
+			Margin margin = GetMarginAtX ((int)x, out startPos);
+			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)x, (int)y)) {
+				dragContents = new ClipboardActions.CopyOperation ();
+				dragContents.CopyData (textEditorData);
+				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList (textEditorData.SelectionMode), DragAction.Copy | DragAction.Move, 1, e);
+				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
+				Gtk.Drag.SetIconWidget (context, window, 0, 0);
+				selection = Selection.Clone (MainSelection);
+				textViewMargin.inDrag = false;
+			} else {
+				FireMotionEvent (x, y, mod);
+				if (mouseButtonPressed != 0) {
+					scrollWindowTimer = GLib.Timeout.Add (50, delegate {
+						FireMotionEvent (x, y, mod);
+						return true;
+					});
+				}
 			}
 			return base.OnMotionNotifyEvent (e);
 		}
@@ -920,15 +933,7 @@ namespace Mono.TextEditor
 			}
 			if (oldMargin != margin && oldMargin != null)
 				oldMargin.MouseLeft ();
-			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)x, (int)y)) {
-				dragContents = new ClipboardActions.CopyOperation ();
-				dragContents.CopyData (textEditorData);
-				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList (textEditorData.SelectionMode), DragAction.Copy | DragAction.Move, 1, null);
-				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
-				Gtk.Drag.SetIconWidget (context, window, 0, 0);
-				selection = Selection.Clone (MainSelection);
-				textViewMargin.inDrag = false;
-			} else if (margin != null) {
+			if (margin != null) {
 				margin.MouseHover (new MarginMouseEventArgs (this, mouseButtonPressed, (int)(x - startPos), (int)y, EventType.MotionNotify, state));
 			}
 			oldMargin = margin;
