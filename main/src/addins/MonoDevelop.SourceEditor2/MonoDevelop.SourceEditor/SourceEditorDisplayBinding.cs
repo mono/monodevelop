@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class SourceEditorDisplayBinding : IDisplayBinding
+	public class SourceEditorDisplayBinding : DefaultDisplayBinding
 	{
 		public static string SyntaxModePath {
 			get {
@@ -63,25 +63,25 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		
-		string IDisplayBinding.Name {
+		public override string Name {
 			get {
 				return GettextCatalog.GetString ("Source Code Editor");
 			}
 		}
 		
-		MonoDevelop.Ide.Gui.IViewContent IDisplayBinding.CreateContentForUri (string fileName)
+		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForUri (string fileName)
 		{
 			return new SourceEditorView ();
 		}
 
-		bool IDisplayBinding.CanCreateContentForMimeType (string mimetype)
+		public override bool CanCreateContentForMimeType (string mimetype)
 		{
 			if (String.IsNullOrEmpty (mimetype))
 				return false;
 			return IdeApp.Services.PlatformService.GetMimeTypeIsText (mimetype);
 		}
 
-		MonoDevelop.Ide.Gui.IViewContent IDisplayBinding.CreateContentForMimeType (string mimeType, System.IO.Stream content)
+		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
 		{
 			SourceEditorView result = new SourceEditorView ();
 			result.Document.MimeType = mimeType;
@@ -91,5 +91,11 @@ namespace MonoDevelop.SourceEditor
 			}
 			return result;
 		}
+
+		public override bool CanCreateContentForUri (string fileName)
+		{
+			return true;
+		}
+		
 	}
 }
