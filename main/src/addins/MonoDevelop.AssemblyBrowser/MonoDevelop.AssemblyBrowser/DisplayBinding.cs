@@ -31,14 +31,15 @@ using System.IO;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DisplayBinding : IDisplayBinding
+	public class DisplayBinding : DefaultDisplayBinding
 	{
-		string IDisplayBinding.Name {
+		public override string Name {
 			get {
-				return "Assembly Browser";
+				return GettextCatalog.GetString ("Assembly Browser");
 			}
 		}
 		
@@ -51,17 +52,12 @@ namespace MonoDevelop.AssemblyBrowser
 			return viewContent;
 		}
 		
-		IViewContent IDisplayBinding.CreateContentForUri (string fileName)
-		{
-			return GetViewContent ();
-		}
-		
-		bool IDisplayBinding.CanCreateContentForMimeType (string mimeType)
+		public override bool CanCreateContentForMimeType (string mimeType)
 		{
 			return mimeType == "application/x-ms-dos-executable" || mimeType == "application/x-executable";
 		}
 		
-		IViewContent IDisplayBinding.CreateContentForMimeType (string mimeType, System.IO.Stream content)
+		public override IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
 		{
 			return GetViewContent ();
 		}

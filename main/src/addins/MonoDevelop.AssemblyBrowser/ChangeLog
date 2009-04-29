@@ -3,6 +3,11 @@
 	* MonoDevelop.AssemblyBrowser/DisplayBinding.cs: Track API
 	  changes.
 
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DisplayBinding.cs: Track API
+	  changes.
+
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
