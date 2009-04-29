@@ -63,17 +63,13 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		
-		string IDisplayBinding.DisplayName {
+		string IDisplayBinding.Name {
 			get {
 				return GettextCatalog.GetString ("Source Code Editor");
 			}
 		}
 		
-		bool IDisplayBinding.CanCreateContentForFile (string fileName)
-		{
-			return false;
-		}
-		MonoDevelop.Ide.Gui.IViewContent IDisplayBinding.CreateContentForFile (string fileName)
+		MonoDevelop.Ide.Gui.IViewContent IDisplayBinding.CreateContentForUri (string fileName)
 		{
 			return new SourceEditorView ();
 		}
