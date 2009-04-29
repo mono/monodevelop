@@ -1,6 +1,13 @@
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs: Merged the get
+	  binding uri/mime type call (otherwise the display binding
+	  order isn't respected correctly).
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
 	* MonoDevelop.Ide.Codons/IDisplayBinding.cs:
 	* MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs:
 	* MonoDevelop.Ide.Gui/DisplayBindingService.cs:

@@ -416,7 +416,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document NewDocument (string defaultName, string mimeType, Stream content)
 		{
-			IDisplayBinding binding = DisplayBindingService.GetBindingForMimeType (mimeType);
+			IDisplayBinding binding = DisplayBindingService.GetBinding (null, mimeType);
 			IViewContent newContent;
 			
 			if (binding != null) {
@@ -684,7 +684,7 @@ namespace MonoDevelop.Ide.Gui
 				if (oFileInfo.DisplayBinding != null) {
 					binding = oFileInfo.DisplayBinding;
 				} else {
-					binding = DisplayBindingService.GetBindingForUri (fileName) ?? DisplayBindingService.GetBindingForMimeType (IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName));
+					binding = DisplayBindingService.GetBinding (fileName, IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName));
 				}
 				
 				if (binding != null) {
