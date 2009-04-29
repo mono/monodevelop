@@ -885,10 +885,12 @@ namespace Mono.TextEditor
 			double y = e.Y;
 			Gdk.ModifierType mod = e.State;
 			FireMotionEvent (x, y, mod);
-			scrollWindowTimer = GLib.Timeout.Add (50, delegate {
-				FireMotionEvent (x, y, mod);
-				return true;
-			});
+			if (mouseButtonPressed != 0) {
+				scrollWindowTimer = GLib.Timeout.Add (50, delegate {
+					FireMotionEvent (x, y, mod);
+					return true;
+				});
+			}
 			return base.OnMotionNotifyEvent (e);
 		}
 		
@@ -961,6 +963,8 @@ namespace Mono.TextEditor
 				DelayedHideTooltip ();
 			else
 				HideTooltip ();
+			
+			textViewMargin.HideCodeSegmentPreviewWindow ();
 			
 			if (e.Mode == CrossingMode.Normal) {
 				GdkWindow.Cursor = null;

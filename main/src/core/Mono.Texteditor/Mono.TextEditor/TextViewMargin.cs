@@ -866,14 +866,20 @@ namespace Mono.TextEditor
 		
 		CodeSegmentPreviewWindow previewWindow = null;
 		ISegment previewSegment = null;
-		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
+		
+		public void HideCodeSegmentPreviewWindow ()
 		{
-			if (previewSegment == segment)
-				return;
 			if (previewWindow != null) {
 				previewWindow.Destroy ();
 				previewWindow = null;
 			}
+		}
+		
+		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
+		{
+			if (previewSegment == segment)
+				return;
+			HideCodeSegmentPreviewWindow ();
 			previewSegment = segment;
 			if (segment == null) {
 				return;
@@ -922,7 +928,7 @@ namespace Mono.TextEditor
 		{
 			base.MouseHover (args);
 			
-			if (args.Button != 1) {
+			if (args.Button != 1 && args.Y >= 0 && args.Y <= this.textEditor.Allocation.Height) {
 				// folding marker 
 				int lineNr = args.LineNumber;
 				foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
