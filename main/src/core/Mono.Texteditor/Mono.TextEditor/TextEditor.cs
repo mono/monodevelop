@@ -740,6 +740,7 @@ namespace Mono.TextEditor
 		
 		protected override bool OnButtonReleaseEvent (EventButton e)
 		{
+			RemoveScrollWindowTimer ();
 			int startPos;
 			Margin margin = GetMarginAtX ((int)e.X, out startPos);
 			if (margin != null)
@@ -747,6 +748,7 @@ namespace Mono.TextEditor
 			ResetMouseState ();
 			return base.OnButtonReleaseEvent (e);
 		}
+		
 		protected void ResetMouseState ()
 		{
 			mouseButtonPressed = 0;
@@ -874,15 +876,38 @@ namespace Mono.TextEditor
 		}
 		
 		Margin oldMargin = null;
+		uint   scrollWindowTimer = 0;
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
-			mx = e.X - textViewMargin.XOffset;
-			my = e.Y;
+			RemoveScrollWindowTimer ();
+			double x = e.X;
+			double y = e.Y;
+			Gdk.ModifierType mod = e.State;
+			FireMotionEvent (x, y, mod);
+			scrollWindowTimer = GLib.Timeout.Add (50, delegate {
+				FireMotionEvent (x, y, mod);
+				return true;
+			});
+			return base.OnMotionNotifyEvent (e);
+		}
+		
+		void RemoveScrollWindowTimer ()
+		{
+			if (scrollWindowTimer != 0) {
+				GLib.Source.Remove (scrollWindowTimer);
+				scrollWindowTimer = 0;
+			}
+		}
+		
+		void FireMotionEvent (double x, double y, Gdk.ModifierType state)
+		{
+			mx = x - textViewMargin.XOffset;
+			my = y;
 			
-			UpdateTooltip (e.State);
+			UpdateTooltip (state);
 			
 			int startPos;
-			Margin margin = GetMarginAtX ((int)e.X, out startPos);
+			Margin margin = GetMarginAtX ((int)x, out startPos);
 			if (margin != null)
 				GdkWindow.Cursor = margin.MarginCursor;
 			
@@ -892,19 +917,18 @@ namespace Mono.TextEditor
 			}
 			if (oldMargin != margin && oldMargin != null)
 				oldMargin.MouseLeft ();
-			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)e.X, (int)e.Y)) {
+			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)x, (int)y)) {
 				dragContents = new ClipboardActions.CopyOperation ();
 				dragContents.CopyData (textEditorData);
-				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList (textEditorData.SelectionMode), DragAction.Copy | DragAction.Move, 1, e);
+				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList (textEditorData.SelectionMode), DragAction.Copy | DragAction.Move, 1, null);
 				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
 				Gtk.Drag.SetIconWidget (context, window, 0, 0);
 				selection = Selection.Clone (MainSelection);
 				textViewMargin.inDrag = false;
 			} else if (margin != null) {
-				margin.MouseHover (new MarginMouseEventArgs (this, mouseButtonPressed, (int)(e.X - startPos), (int)e.Y, EventType.MotionNotify, e.State));
+				margin.MouseHover (new MarginMouseEventArgs (this, mouseButtonPressed, (int)(x - startPos), (int)y, EventType.MotionNotify, state));
 			}
 			oldMargin = margin;
-			return base.OnMotionNotifyEvent (e);
 		}
 
 		#region CustomDrag (for getting dnd data from toolbox items for example)
