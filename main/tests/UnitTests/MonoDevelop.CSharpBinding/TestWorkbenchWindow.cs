@@ -88,10 +88,6 @@ namespace MonoDevelop.CSharpBinding.Tests
 		{
 		}
 		
-		public void AttachSecondaryViewContent (ISecondaryViewContent secondaryViewContent)
-		{
-		}
-		
 		public event EventHandler TitleChanged;
 		public event WorkbenchWindowEventHandler Closing;
 		public event EventHandler Closed;
