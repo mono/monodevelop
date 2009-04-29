@@ -68,7 +68,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding insertbefore = "NewText"
+		<DisplayBinding insertbefore = "NewText2"
 		       supportedformats = "Text Files,Source Files"
 		       class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderDisplayBinding" />
 		<DisplayBinding 

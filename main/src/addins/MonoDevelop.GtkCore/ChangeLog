@@ -1,5 +1,10 @@
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.GtkCore.addin.xml: gui designer is now before
+	  the text editor (wrong text editor id).
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs:
 	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs:
 	  Track API changes.
