@@ -579,7 +579,7 @@ namespace MonoDevelop.Projects
 		
 		protected internal override bool OnGetCanExecute (ExecutionContext context, string configuration)
 		{
-			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetConfiguration (configuration);
+			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetActiveConfiguration (configuration);
 			if (config == null)
 				return false;
 			ExecutionCommand cmd = CreateExecutionCommand (config);

@@ -1,5 +1,12 @@
 2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/DotNetProject.cs: The configuration
+	  provided to OnGetCanExecute is the solution configuration,
+	  so GetActiveConfiguration has to be used to get the correct
+	  project config. Fix by Zach Lute.
+
+2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/SolutionConfiguration.cs: When copying
 	  the configuration don't overwrite the parent solution if it
 	  is already set.
