@@ -41,7 +41,7 @@ namespace MonoDevelop.AddinAuthoring
 			}
 		}
 		
-		public bool CanCreateContentForFile (string fileName)
+		public bool CanCreateContentForUri (string fileName)
 		{
 			if (fileName.EndsWith (".addin.xml") || fileName.EndsWith (".xml")) {
 				if (IdeApp.Workspace.IsOpen) {
@@ -54,7 +54,7 @@ namespace MonoDevelop.AddinAuthoring
 
 		public bool CanCreateContentForMimeType (string mimetype)
 		{
-			return mimetype == "application/xml";
+			return false;
 		}
 
 		public IViewContent CreateContentForUri (string fileName)
