@@ -1,3 +1,8 @@
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Fixed possible cast exception.
+
 2009-04-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Restore
