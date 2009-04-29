@@ -36,17 +36,12 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class DisplayBinding : IDisplayBinding
 	{
-		string IDisplayBinding.DisplayName {
+		string IDisplayBinding.Name {
 			get {
 				return "Assembly Browser";
 			}
 		}
 		
-		bool IDisplayBinding.CanCreateContentForFile (string fileName)
-		{
-			string ext = Path.GetExtension (fileName).ToLower ();
-			return ext == ".exe" || ext == ".dll";
-		}
 		AssemblyBrowserViewContent viewContent = null;
 		
 		AssemblyBrowserViewContent GetViewContent ()
@@ -56,7 +51,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return viewContent;
 		}
 		
-		IViewContent IDisplayBinding.CreateContentForFile (string fileName)
+		IViewContent IDisplayBinding.CreateContentForUri (string fileName)
 		{
 			return GetViewContent ();
 		}
