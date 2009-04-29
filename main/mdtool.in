@@ -1,46 +1,15 @@
 #!/bin/bash
 
 #this script should be in $PREFIX/bin
-PREFIX="${0%%/bin/mdtool}"
 MONO_EXEC="exec -a mdtool mono"
-EXE_PATH="$PREFIX/lib/monodevelop/bin/mdrun.exe"
+EXE_PATH="${0%%/bin/mdtool}/lib/monodevelop/bin/mdrun.exe"
 
-MD_FORCE_DEBUG=yes
-
-for arg in "$@"; do 
-case x$arg in
-	x--profile*)
-		MONO_OPTIONS+=("$arg")
-		shift
-		;;
-	x--debug*)
-		export MONODEVELOP_DISPATCH_DEBUG=yes
-		unset MD_FORCE_DEBUG
-		MONO_OPTIONS+=("$arg")
-		shift
-		;;
-	x--trace*)
-		MONO_OPTIONS+=("$arg")
-		shift
-		;;
-	x--no-debug)
-		unset MD_FORCE_DEBUG
-		shift
-		;;
-	*)
-		ARGS+=("$arg")
-		shift
-		;;
-esac		
-done
-
-if [ -z MD_FORCE_DEBUG ]; then
-	MONO_OPTIONS+=("--debug")
+##NOTE: remove this for stable releases
+if [ -z "$MD_NO_DEBUG" ]; then
+	_MONO_OPTIONS=${MONO_OPTIONS:---debug}
+else
+	_MONO_OPTIONS=$MONO_OPTIONS
 fi
 
-if [ -n "${MONO_OPTIONS[0]}" ]; then
-	echo "** Running with Mono options: ${MONO_OPTIONS[@]} **"
-fi
-
-$MONO_EXEC "${MONO_OPTIONS[@]}" "$EXE_PATH" "${ARGS[@]}"
+$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $*
 
