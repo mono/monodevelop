@@ -1,3 +1,7 @@
+2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GnomePlatform.csproj: Don't require a specific gtk# version.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
