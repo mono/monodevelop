@@ -1,5 +1,10 @@
 2009-04-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs: Work around
+	  Mono 2.0 compiler bug.
+
+2009-04-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/HslColor.cs: Fix build with csc.
 	  See mcs bug 421838 - CS0188 is not triggered by property
 	  setters.

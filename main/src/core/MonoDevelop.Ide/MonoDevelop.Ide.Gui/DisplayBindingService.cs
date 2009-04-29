@@ -78,8 +78,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void AttachSubWindows (IWorkbenchWindow workbenchWindow)
 		{
-			foreach (IAttachableDisplayBinding binding in from binding in displayBindings where binding.DisplayBinding is IAttachableDisplayBinding select binding.DisplayBinding) {
-				if (binding.CanAttachTo (workbenchWindow.ViewContent)) 
+			foreach (DisplayBindingCodon codon in displayBindings) {
+				IAttachableDisplayBinding binding = codon.DisplayBinding as IAttachableDisplayBinding;
+				if (binding != null && binding.CanAttachTo (workbenchWindow.ViewContent)) 
 					workbenchWindow.AttachViewContent (binding.CreateViewContent (workbenchWindow.ViewContent));
 			}
 		}
