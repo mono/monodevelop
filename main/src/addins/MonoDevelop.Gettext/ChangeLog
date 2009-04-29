@@ -1,3 +1,8 @@
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Gettext.Editor/GettextEditorDisplayBinding.cs:
+	  Track API changes.
+
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Added rule for

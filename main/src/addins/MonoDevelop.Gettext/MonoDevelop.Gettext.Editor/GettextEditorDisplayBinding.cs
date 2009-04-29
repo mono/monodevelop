@@ -37,7 +37,7 @@ namespace MonoDevelop.Gettext
 {	
 	public class GettextEditorDisplayBinding : IDisplayBinding
 	{
-		public string DisplayName 
+		public string Name 
 		{
 			get { return GettextCatalog.GetString ("Gettext Editor"); }
 		}
@@ -51,7 +51,7 @@ namespace MonoDevelop.Gettext
 			return mimeType == "text/x-gettext-translation";
 		}
 		
-		public IViewContent CreateContentForFile (string fileName)
+		public IViewContent CreateContentForUri (string fileName)
 		{
 			foreach (TranslationProject tp in IdeApp.Workspace.GetAllSolutionItems<TranslationProject>  ())
 				if (tp.BaseDirectory == Path.GetDirectoryName (fileName))
