@@ -96,6 +96,7 @@ namespace Mono.TextEditor.Vi
 			case '/':
 				searchBackward = ('?' == command[0]);
 				if (1 < command.Length) {
+					Editor.HighlightSearchPattern = true;
 					Editor.SearchEngine = new RegexSearchEngine ();
 					Editor.SearchPattern = command.Substring (1);
 				}
@@ -168,7 +169,6 @@ namespace Mono.TextEditor.Vi
 			
 			switch (state) {
 			case State.Normal:
-				Editor.HighlightSearchPattern = false;
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0)) {
 					switch ((char)unicodeKey) {
 					case '?':
@@ -678,10 +678,10 @@ namespace Mono.TextEditor.Vi
 			SearchResult result = searchBackward?
 				Editor.SearchBackward (Caret.Offset):
 				Editor.SearchForward (Caret.Offset+1);
+			Editor.HighlightSearchPattern = (null != result);
 			if (null == result) 
 				return string.Format ("Pattern not found: '{0}'", Editor.SearchPattern);
 			else Caret.Offset = result.Offset;
-			Editor.HighlightSearchPattern = (null != result);
 		
 			return string.Empty;
 		}
