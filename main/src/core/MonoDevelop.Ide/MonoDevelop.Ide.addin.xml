@@ -959,9 +959,9 @@
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextWord"
 				_label = "Go to next word" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevWord"
-				_label = "Select previous word" />
+				_label = "Expand selection to previous word" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord"
-				_label = "Select next word" />
+				_label = "Expand selection to next word" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveUp"
 				_label = "Expand selection to previous line" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveDown"

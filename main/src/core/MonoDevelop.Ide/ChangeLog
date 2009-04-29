@@ -1,5 +1,10 @@
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Fixed "Bug 498901 - Missing
+	  keybindings for Expand Selection To Next/Prev word".
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Only call
 	  GetString for != null values.
 
