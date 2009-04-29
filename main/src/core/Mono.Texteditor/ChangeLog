@@ -1,3 +1,8 @@
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Fixed "Bug 497566 -
+	  Mouse-based word selection is a bit weird".
+
 2009-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/LineSplitter.cs: Return no longer removes

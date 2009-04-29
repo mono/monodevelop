@@ -840,6 +840,10 @@ namespace Mono.TextEditor
 			base.MouseReleased (args);
 		}
 		
+		static bool IsNoLetterOrDigit (char ch)
+		{
+			return !char.IsWhiteSpace (ch) && !char.IsLetterOrDigit (ch);
+		}
 		
 		int ScanWord (int offset, bool forwardDirection)
 		{
@@ -847,18 +851,16 @@ namespace Mono.TextEditor
 				return offset;
 			LineSegment line = Document.GetLineByOffset (offset);
 			char first = Document.GetCharAt (offset);
+			
 			while (offset >= line.Offset && offset < line.Offset + line.EditableLength) {
 				char ch = Document.GetCharAt (offset);
 				if (char.IsWhiteSpace (first) && !char.IsWhiteSpace (ch) ||
-				    char.IsPunctuation (first) && !char.IsPunctuation (ch) ||
+				    IsNoLetterOrDigit (first) && !IsNoLetterOrDigit (ch) ||
 				    (char.IsLetterOrDigit (first) || first == '_') && !(char.IsLetterOrDigit (ch) || ch == '_'))
 				    break;
 				
 				offset = forwardDirection ? offset + 1 : offset - 1; 
 			}
-//			while (offset >= line.Offset && offset < line.Offset + line.EditableLength && (char.IsLetterOrDigit (Document.GetCharAt (offset)) || Document.GetCharAt (offset) == '_')) {
-//				offset = forwardDirection ? offset + 1 : offset - 1; 
-//			}
 			return System.Math.Min (line.EndOffset - 1, System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
 		}
 		
