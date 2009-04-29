@@ -1,5 +1,10 @@
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Remove scroll timer on
+	  dispose.
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed "Bug 497566 -
 	  Mouse-based word selection is a bit weird".
 

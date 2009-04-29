@@ -528,6 +528,7 @@ namespace Mono.TextEditor
 				if (isDisposed)
 					return;
 				this.isDisposed = true;
+				RemoveScrollWindowTimer ();
 				DisposeBgBuffer ();
 /*				if (snooperID > 0) {
 					Gtk.Key.SnooperRemove (snooperID);
