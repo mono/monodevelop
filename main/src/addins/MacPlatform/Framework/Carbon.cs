@@ -832,11 +832,12 @@ namespace OSXIntegration.Framework
 	
 	[StructLayout(LayoutKind.Sequential, Pack = 2)]
 	struct FileTypeSpec
-	{
+	{/*
 		uint format; // FileType
 		long hint;
 		TranslationAttributes flags;
 		uint catInfoType; // OSType
 		uint catInfoCreator; // OSType
+		*/
 	}
 }

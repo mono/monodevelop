@@ -50,6 +50,32 @@ namespace MonoDevelop.Platform
 			GlobalSetup ();
 			mimemap = new Dictionary<string, string> ();
 			LoadMimeMap ();
+			
+			CheckGtkVersion (2, 14, 7);
+		}
+		
+		//Mac GTK+ is unstable, even between micro releases
+		static void CheckGtkVersion (uint major, uint minor, uint micro)
+		{
+			string url = "http://www.go-mono.com/mono-downloads/download.html";
+			
+			// to require exact version, also check : || Gtk.Global.CheckVersion (major, minor, micro + 1) == null
+			if (Gtk.Global.CheckVersion (major, minor, micro) != null) {
+				
+				MonoDevelop.Core.LoggingService.LogFatalError ("GTK+ version is incompatible with required version {0}.{1}.{2}.", major, minor, micro);
+				
+				AlertButton downloadButton = new AlertButton ("Download...", null);
+				if (downloadButton == MessageService.GenericAlert (
+					Stock.Error,
+					"Incompatible Mono Framework Version",
+					"MonoDevelop requires a newer version of the Mono Framework.",
+					new AlertButton ("Cancel", null), downloadButton))
+				{
+					Process.Start (url);
+				}
+				
+				Environment.Exit (1);
+			}
 		}
 
 		public override DesktopApplication GetDefaultApplication (string mimetype) {
@@ -76,7 +102,7 @@ namespace MonoDevelop.Platform
 		}
 
 		public override string DefaultMonospaceFont {
-			get { return "Osaka Regular-Mono 14"; }
+			get { return "Osaka 14"; } //for some reason Pango needs "Osaka Regular-Mono 14" to be named this way
 		}
 		
 		public override string Name {

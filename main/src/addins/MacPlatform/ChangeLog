@@ -1,3 +1,9 @@
+2009-04-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs: Check GTK# version. Fix default font string.
+
+	* Framework/Carbon.cs: Fix build.
+
 2009-04-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.cs: Use Osaka Regular-Mono font as a workaround
