@@ -35,40 +35,24 @@ using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Gettext
 {	
-	public class GettextEditorDisplayBinding : IDisplayBinding
+	public class GettextEditorDisplayBinding : DefaultDisplayBinding
 	{
-		public string Name 
-		{
+		public override string Name {
 			get { return GettextCatalog.GetString ("Gettext Editor"); }
 		}
 		
-		public bool CanCreateContentForFile (string fileName)
+		public override bool CanCreateContentForUri (string fileName)
 		{
 			return Path.GetExtension (fileName).Equals (".po", StringComparison.OrdinalIgnoreCase);
 		}
-		public bool CanCreateContentForMimeType (string mimeType)
-		{
-			return mimeType == "text/x-gettext-translation";
-		}
 		
-		public IViewContent CreateContentForUri (string fileName)
+		public override IViewContent CreateContentForUri (string fileName)
 		{
 			foreach (TranslationProject tp in IdeApp.Workspace.GetAllSolutionItems<TranslationProject>  ())
 				if (tp.BaseDirectory == Path.GetDirectoryName (fileName))
 					return new Editor.CatalogEditorView (tp, fileName);
 			
 			return new Editor.CatalogEditorView (null, fileName);
-		}
-		
-		public IViewContent CreateContentForMimeType (string mimeType, Stream content)
-		{
-//			StreamReader sr = new StreamReader (content);
-//			string text = sr.ReadToEnd ();
-//			sr.Close ();
-			
-			// text/x-gettext-translation
-			// TODO: implement such loading
-			return null;
 		}
 	}
 }
