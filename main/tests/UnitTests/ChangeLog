@@ -3,6 +3,11 @@
 	* MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs: Track API
 	  changes.
 
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs: Track API
+	  changes.
+
 2009-04-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added

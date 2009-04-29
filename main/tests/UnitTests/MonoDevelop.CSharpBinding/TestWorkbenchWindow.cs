@@ -87,7 +87,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 		public void SwitchView (int viewNumber)
 		{
 		}
-		
+		public void AttachViewContent (IAttachableViewContent subViewContent)
+		{
+			
+		}
 		public event EventHandler TitleChanged;
 		public event WorkbenchWindowEventHandler Closing;
 		public event EventHandler Closed;
