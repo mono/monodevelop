@@ -41,7 +41,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		bool excludeThis = false;
 		
-		public string DisplayName {
+		public string Name {
 			get { return "Window Designer"; }
 		}
 		
@@ -53,21 +53,26 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return false;
 			
 			excludeThis = true;
-			IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingPerFileName (fileName);
+			IDisplayBinding db = DisplayBindingService.GetBindingForFileName (fileName);
 			excludeThis = false;
 			return db != null;
 		}
 
 		public virtual bool CanCreateContentForMimeType (string mimetype)
 		{
-			return false;
+			if (excludeThis) return false;
+			
+			excludeThis = true;
+			IDisplayBinding db = DisplayBindingService.GetBindingForMimeType (mimetype);
+			excludeThis = false;
+			return db != null;
 		}
 		
-		public virtual IViewContent CreateContentForFile (string fileName)
+		public virtual IViewContent CreateContentForUri (string fileName)
 		{
 			excludeThis = true;
-			IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingPerFileName (fileName);
-			GuiBuilderView view = new GuiBuilderView (db.CreateContentForFile (fileName), GetWindow (fileName));
+			IDisplayBinding db = DisplayBindingService.GetBindingForFileName (fileName);
+			GuiBuilderView view = new GuiBuilderView (db.CreateContentForUri (fileName), GetWindow (fileName));
 			excludeThis = false;
 			return view;
 		}

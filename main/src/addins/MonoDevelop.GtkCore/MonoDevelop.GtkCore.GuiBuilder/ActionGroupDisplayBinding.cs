@@ -47,7 +47,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		bool excludeThis = false;
 		
-		public string DisplayName {
+		public string Name {
 			get { return "Action Group Editor"; }
 		}
 		
@@ -62,25 +62,33 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return false;
 			
 			excludeThis = true;
-			IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingPerFileName (fileName);
+			IDisplayBinding db = DisplayBindingService.GetBindingForFileName (fileName);
 			excludeThis = false;
 			return db != null;
 		}
 
 		public virtual bool CanCreateContentForMimeType (string mimetype)
 		{
-			return false;
+			if (excludeThis)
+				return false;
+			if (!IdeApp.Workspace.IsOpen)
+				return false;
+			
+			excludeThis = true;
+			IDisplayBinding db = DisplayBindingService.GetBindingForMimeType (mimetype);
+			excludeThis = false;
+			return db != null;
 		}
 		
-		public virtual IViewContent CreateContentForFile (string fileName)
+		public virtual IViewContent CreateContentForUri (string fileName)
 		{
 			excludeThis = true;
-			IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingPerFileName (fileName);
+			IDisplayBinding db = DisplayBindingService.GetBindingForFileName (fileName);
 			
 			Project project = IdeApp.Workspace.GetProjectContainingFile (fileName);
 			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) project);
 			
-			ActionGroupView view = new ActionGroupView (db.CreateContentForFile (fileName), GetActionGroup (fileName), info.GuiBuilderProject);
+			ActionGroupView view = new ActionGroupView (db.CreateContentForUri (fileName), GetActionGroup (fileName), info.GuiBuilderProject);
 			excludeThis = false;
 			return view;
 		}
