@@ -1,3 +1,7 @@
+2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.sln: Disable a few projects in the win32 build.
+
 2009-04-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* build/MacOSX/Makefile.am: Better build deps.
