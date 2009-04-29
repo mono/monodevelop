@@ -54,7 +54,7 @@ namespace MonoDevelop.AddinAuthoring
 
 		public bool CanCreateContentForMimeType (string mimetype)
 		{
-			return false;
+			return mimetype == "application/xml";
 		}
 
 		public IViewContent CreateContentForUri (string fileName)
