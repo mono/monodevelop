@@ -10,7 +10,7 @@ namespace MonoDevelop.Deployment.Linux
 {
 	public class DotDesktopDisplayBinding: IDisplayBinding
 	{
-		public bool CanCreateContentForFile (string fileName)
+		public bool CanCreateContentForUri (string fileName)
 		{
 			return fileName.EndsWith (".desktop");
 		}
