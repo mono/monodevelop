@@ -48,7 +48,7 @@ using AspNetEdit.Editor;
 namespace AspNetEdit.Integration
 {
 	
-	public class AspNetEditViewContent : AbstractSecondaryViewContent, IToolboxConsumer //, IEditableTextBuffer
+	public class AspNetEditViewContent : AbstractAttachableViewContent, IToolboxConsumer //, IEditableTextBuffer
 	{
 		IViewContent viewContent;
 		EditorProcess editorProcess;

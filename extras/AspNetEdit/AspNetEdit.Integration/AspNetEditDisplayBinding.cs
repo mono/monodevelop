@@ -41,8 +41,14 @@ using MonoDevelop.AspNet;
 namespace AspNetEdit.Integration
 {
 	
-	public class AspNetEditDisplayBinding : ISecondaryDisplayBinding
+	public class AspNetEditDisplayBinding : IAttachableDisplayBinding
 	{
+		public string Name {
+			get {
+				return "ASP.NET";
+			}
+		}
+		
 		public bool CanAttachTo (IViewContent content)
 		{
 			if (content.GetContent (typeof(MonoDevelop.Ide.Gui.Content.IEditableTextBuffer)) == null)
@@ -56,8 +62,8 @@ namespace AspNetEdit.Integration
 			}
 		}
 		
-		public ISecondaryViewContent CreateSecondaryViewContent (IViewContent viewContent)
-		{			
+		public IAttachableViewContent CreateViewContent (IViewContent viewContent)
+		{
 			return new AspNetEditViewContent (viewContent);
 		}
 	}

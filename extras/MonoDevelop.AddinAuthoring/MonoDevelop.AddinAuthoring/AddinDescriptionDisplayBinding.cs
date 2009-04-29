@@ -35,7 +35,7 @@ namespace MonoDevelop.AddinAuthoring
 {
 	public class AddinDescriptionDisplayBinding: IDisplayBinding
 	{
-		public string DisplayName {
+		public string Name {
 			get {
 				return AddinManager.CurrentLocalizer.GetString ("Add-in description editor");
 			}
@@ -57,7 +57,7 @@ namespace MonoDevelop.AddinAuthoring
 			return false;
 		}
 
-		public IViewContent CreateContentForFile (string fileName)
+		public IViewContent CreateContentForUri (string fileName)
 		{
 			DotNetProject p = IdeApp.Workspace.GetProjectContainingFile (fileName) as DotNetProject;
 			AddinData data = AddinData.GetAddinData (p);
