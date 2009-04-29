@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			content.ContentNameChanged += new EventHandler(SetTitleEvent);
 			content.DirtyChanged       += new EventHandler(SetTitleEvent);
+			content.BeforeSave         += new EventHandler(BeforeSave);
+			content.ContentChanged     += new EventHandler (OnContentChanged);
 			
 			ShadowType = ShadowType.None;
 			box = new VBox ();
@@ -172,6 +174,15 @@ namespace MonoDevelop.Ide.Gui
 			tabControl.CurrentPage = toSelect;
 		}
 		
+
+		void BeforeSave(object sender, EventArgs e)
+		{
+			IAttachableViewContent secondaryViewContent = ActiveViewContent as IAttachableViewContent;
+			if (secondaryViewContent != null) {
+				secondaryViewContent.BeforeSave ();
+			}
+		}
+		
 		public IViewContent ViewContent {
 			get {
 				return content;
@@ -241,6 +252,17 @@ namespace MonoDevelop.Ide.Gui
 				Title = newTitle;
 			}
 		}
+		
+		public void OnContentChanged (object o, EventArgs e)
+		{
+			if (subViewContents != null) {
+				foreach (IAttachableViewContent subContent in subViewContents)
+				{
+					subContent.BaseContentChanged ();
+				}
+			}
+		}
+		
 		public bool CloseWindow (bool force, bool fromMenu, int pageNum)
 		{
 			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force);
@@ -256,9 +278,15 @@ namespace MonoDevelop.Ide.Gui
 			
 			content.ContentNameChanged -= new EventHandler(SetTitleEvent);
 			content.DirtyChanged       -= new EventHandler(SetTitleEvent);
+			content.BeforeSave         -= new EventHandler(BeforeSave);
+			content.ContentChanged     -= new EventHandler (OnContentChanged);
 			content.WorkbenchWindow = null;
 			
 			if (subViewContents != null) {
+				foreach (IAttachableViewContent sv in subViewContents) {
+					subViewNotebook.Remove (sv.Control);
+					sv.Dispose ();
+				}
 				this.subViewContents = null;
 				subViewNotebook.Remove (content.Control);
 			} else {
@@ -353,6 +381,18 @@ namespace MonoDevelop.Ide.Gui
 		
 		#endregion
 		
+			
+		public void AttachViewContent (IAttachableViewContent subViewContent)
+		{
+			// need to create child Notebook when first IAttachableViewContent is added
+			CheckCreateSubViewContents ();
+			
+			subViewContents.Add (subViewContent);
+			subViewContent.WorkbenchWindow = this;
+			AddButton (subViewContent.TabPageLabel, subViewContent.Control);
+			
+			OnContentChanged (null, null);
+		}
 		
 		bool updating = false;
 		protected ToggleToolButton AddButton (string label, Gtk.Widget page)
@@ -501,7 +541,19 @@ namespace MonoDevelop.Ide.Gui
 		int oldIndex = -1;
 		protected void subViewNotebookIndexChanged(object sender, SwitchPageArgs e)
 		{
+			if (oldIndex > 0) {
+				IAttachableViewContent secondaryViewContent = subViewContents[oldIndex - 1] as IAttachableViewContent;
+				if (secondaryViewContent != null) {
+					secondaryViewContent.Deselected();
+				}
+			}
 			
+			if (subViewNotebook.CurrentPage > 0) {
+				IAttachableViewContent secondaryViewContent = subViewContents[subViewNotebook.CurrentPage - 1] as IAttachableViewContent;
+				if (secondaryViewContent != null) {
+					secondaryViewContent.Selected();
+				}
+			}
 			oldIndex = subViewNotebook.CurrentPage;
 			
 			OnActiveViewContentChanged (new ActiveViewContentEventArgs (this.ActiveViewContent));

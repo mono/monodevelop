@@ -33,9 +33,9 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description="A display binding. The specified class must implement MonoDevelop.Ide.Codons.IDisplayBinding.")]
 	internal class DisplayBindingCodon : TypeExtensionNode
 	{
-		public IDisplayBinding DisplayBinding {
+		public IBaseDisplayBinding DisplayBinding {
 			get {
-				return GetInstance () as IDisplayBinding;
+				return GetInstance () as IBaseDisplayBinding;
 			}
 		}
 	}

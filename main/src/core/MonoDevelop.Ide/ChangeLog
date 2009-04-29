@@ -2,6 +2,28 @@
 
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding:
+	* MonoDevelop.Ide.Codons/IDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs:
+	* MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui/IAttachableViewContent.cs:
+	* MonoDevelop.Ide.Codons/IBaseDisplayBinding.cs:
+	* MonoDevelop.Ide.Codons/DisplayBindingCodon.cs:
+	* MonoDevelop.Ide.Codons/IAttachableDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui/AbstractAttachableViewContent.cs:
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs:
+	  Added attachable view contents. These are view contents that
+	  are displayed in the same document as notebook (like
+	  designers). Cleaned up some naming.
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.addin.xml:
 	* MonoDevelop.Ide.Gui/Workbench.cs:
 	* MonoDevelop.Ide.Gui/FileViewer.cs:

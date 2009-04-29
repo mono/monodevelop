@@ -33,15 +33,12 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
-	public interface IDisplayBinding
+	public interface IDisplayBinding : IBaseDisplayBinding
 	{
-		string Name { 
-			get; 
-		}
-		
 		bool CanCreateContentForMimeType (string mimeType);
-		
 		IViewContent CreateContentForMimeType (string mimeType, Stream content);
+		
+		bool CanCreateContentForUri (string uri);
 		IViewContent CreateContentForUri (string uri);
 	}
 }

@@ -432,6 +432,7 @@ namespace MonoDevelop.Ide.Gui
 				newContent.UntitledName = defaultName;
 				newContent.IsDirty = true;
 				workbench.ShowView(newContent, true);
+				DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow);
 			} else {
 				throw new ApplicationException("Can't create display binding for mime type: " + mimeType);				
 			}
@@ -684,7 +685,7 @@ namespace MonoDevelop.Ide.Gui
 				if (oFileInfo.DisplayBinding != null)
 					binding = oFileInfo.DisplayBinding;
 				else
-					binding = DisplayBindingService.GetBindingForFileName (fileName);
+					binding = DisplayBindingService.GetBindingForUri (fileName);
 				
 				if (binding != null) {
 					// When looking for the project to which the file belongs, look first
@@ -898,6 +899,7 @@ namespace MonoDevelop.Ide.Gui
 				newContent.Project = project;
 			
 			workbench.ShowView (newContent, fileInfo.BringToFront);
+			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow);
 			
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			

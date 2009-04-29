@@ -540,6 +540,10 @@
     <Compile Include="MonoDevelop.Ide.FindInFiles\HslColor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\IncludeNewFilesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.IncludeNewFilesDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\IAttachableDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\IAttachableViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\AbstractAttachableViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\IBaseDisplayBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

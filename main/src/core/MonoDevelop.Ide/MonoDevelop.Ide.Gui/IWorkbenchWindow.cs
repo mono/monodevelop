@@ -84,6 +84,7 @@ namespace MonoDevelop.Ide.Gui
 		void SelectWindow();
 		
 		void SwitchView(int viewNumber);
+		void AttachViewContent (IAttachableViewContent subViewContent);
 		
 		/// <summary>
 		/// Is called when the title of this window has changed.

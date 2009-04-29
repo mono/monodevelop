@@ -88,6 +88,8 @@ FILES =  \
 	MonoDevelop.Ide.Codons/FileFilterCodon.cs \
 	MonoDevelop.Ide.Codons/FileTemplateConditionTypeCodon.cs \
 	MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs \
+	MonoDevelop.Ide.Codons/IAttachableDisplayBinding.cs \
+	MonoDevelop.Ide.Codons/IBaseDisplayBinding.cs \
 	MonoDevelop.Ide.Codons/IDisplayBinding.cs \
 	MonoDevelop.Ide.Codons/LanguageActiveCondition.cs \
 	MonoDevelop.Ide.Codons/NodeBuilderCodon.cs \
@@ -248,6 +250,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/SolutionPad.cs \
 	MonoDevelop.Ide.Gui.Pads/TaskListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs \
+	MonoDevelop.Ide.Gui/AbstractAttachableViewContent.cs \
 	MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/AbstractPadContent.cs \
 	MonoDevelop.Ide.Gui/AbstractViewContent.cs \
@@ -266,6 +269,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/ExitEventHandler.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
 	MonoDevelop.Ide.Gui/HelpOperations.cs \
+	MonoDevelop.Ide.Gui/IAttachableViewContent.cs \
 	MonoDevelop.Ide.Gui/IBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/Ide.cs \
 	MonoDevelop.Ide.Gui/IdePreferences.cs \

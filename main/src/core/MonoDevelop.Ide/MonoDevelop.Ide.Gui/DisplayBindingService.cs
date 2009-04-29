@@ -55,20 +55,33 @@ namespace MonoDevelop.Ide.Gui
 			});
 		}
 		
+		static IEnumerable<IDisplayBinding> RealDisplayBindings {
+			get {
+				return from binding in displayBindings where binding.DisplayBinding is IDisplayBinding select (IDisplayBinding)binding.DisplayBinding;
+			}
+		}
+			
 		public static IDisplayBinding GetBindingForMimeType (string mimeType)
 		{
-			DisplayBindingCodon codon = displayBindings.FirstOrDefault (binding => binding.DisplayBinding.CanCreateContentForMimeType (mimeType));
-			return codon != null ? codon.DisplayBinding : null;
+			return RealDisplayBindings.FirstOrDefault (binding => binding.CanCreateContentForMimeType (mimeType));
 		}
 		
-		public static IDisplayBinding GetBindingForFileName (string fileName)
+		public static IDisplayBinding GetBindingForUri (string uri)
 		{
-			return GetBindingForMimeType (IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName));
+			return RealDisplayBindings.FirstOrDefault (binding => binding.CanCreateContentForUri (uri));
 		}
 		
 		public static IEnumerable<IDisplayBinding> GetBindingsForMimeType (string mimeType)
 		{
-			return from binding in displayBindings where binding.DisplayBinding.CanCreateContentForMimeType (mimeType) select binding.DisplayBinding;
+			return from binding in RealDisplayBindings where binding.CanCreateContentForMimeType (mimeType) select binding;
+		}
+		
+		public static void AttachSubWindows (IWorkbenchWindow workbenchWindow)
+		{
+			foreach (IAttachableDisplayBinding binding in from binding in displayBindings where binding.DisplayBinding is IAttachableDisplayBinding select binding.DisplayBinding) {
+				if (binding.CanAttachTo (workbenchWindow.ViewContent)) 
+					workbenchWindow.AttachViewContent (binding.CreateViewContent (workbenchWindow.ViewContent));
+			}
 		}
 	}
 }
