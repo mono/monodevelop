@@ -223,7 +223,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				bool isNew = link == null;
 				if (isNew) {
 					link         = new TextLink (name);
-					link.Tooltip = GettextCatalog.GetString (variableDecarations[name].ToolTip);
+					if (!string.IsNullOrEmpty (variableDecarations[name].ToolTip))
+						link.Tooltip = GettextCatalog.GetString (variableDecarations[name].ToolTip);
 					link.Values  = new CodeTemplateListDataProvider (variableDecarations[name].Values);
 					if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
 						link.Values  = expansion.RunFunction (context, null, variableDecarations[name].Function);
