@@ -136,6 +136,7 @@
     <Compile Include="Mono.TextEditor.Highlighting.Regex\Regex.cs" />
     <Compile Include="Mono.TextEditor.Highlighting.Regex\RegexMatch.cs" />
     <Compile Include="Mono.TextEditor\Selection.cs" />
+    <Compile Include="Mono.TextEditor\Platform.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

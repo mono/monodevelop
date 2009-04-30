@@ -42,6 +42,12 @@ namespace Mono.TextEditor
 	{
 		public static void Left (TextEditorData data)
 		{
+			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
+				data.Caret.Offset = System.Math.Min (data.SelectionAnchor, data.Caret.Offset);
+				data.ClearSelection ();
+				return;
+			}
+			
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			IEnumerable<FoldSegment> foldings = data.Document.GetEndFoldings (line);
 			FoldSegment segment = null;
@@ -71,6 +77,12 @@ namespace Mono.TextEditor
 		
 		public static void Right (TextEditorData data)
 		{
+			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
+				data.Caret.Offset = System.Math.Max (data.SelectionAnchor, data.Caret.Offset);
+				data.ClearSelection ();
+				return;
+			}
+			
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);
 			FoldSegment segment = null;
@@ -244,6 +256,18 @@ namespace Mono.TextEditor
 			visualLine += pageIncrement / LineHeight;
 			int line = System.Math.Min (data.Document.VisualToLogicalLine (visualLine), data.Document.LineCount - 1);
 			data.Caret.Line = line;
+		}
+		
+		public static void UpLineStart (TextEditorData data)
+		{
+			Up (data);
+			LineStart (data);
+		}
+		
+		public static void DownLineEnd (TextEditorData data)
+		{
+			Down (data);
+			LineEnd (data);
 		}
 	}
 }

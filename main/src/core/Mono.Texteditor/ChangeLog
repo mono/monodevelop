@@ -1,3 +1,29 @@
+2009-04-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj: Updated.
+
+	* Mono.TextEditor/TextEditor.cs: Use raw keymapping code from
+	  keybinding service so we can extract Meta and Alt modifiers
+	  when on Mac. More comprehensive handling of the modifiers
+	  that reach the EditMode and that prevent the key being
+	  treated as character input.
+
+	* Mono.TextEditor/SimpleEditMode.cs: Add Mac command bindings,
+	  used when on Mac.
+
+	* Mono.TextEditor/SelectionActions.cs: Add MoveDownLineEnd and
+	  MoveUpLineStart actions for Mac.
+
+	* Mono.TextEditor/Platform.cs: Added platform detection code.
+
+	* Mono.TextEditor/EditMode.cs: Better keycode handling. Allows
+	  binding other modifiers than Shift and Control.
+
+	* Mono.TextEditor/CaretMoveActions.cs: Add DownLineEnd and
+	  UpLineStart actions for Mac. Made Left/Right behave
+	  correctly on Mac when there's a selection.
+
 2009-04-29  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Highlight matches for 

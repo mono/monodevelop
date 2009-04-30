@@ -40,12 +40,12 @@ namespace Mono.TextEditor
 	//	string status;
 		
 		internal void InternalHandleKeypress (TextEditor editor, TextEditorData data, Gdk.Key key, 
-		                                      uint unicodeKey, Gdk.ModifierType modifier)
+		                                      uint unicodeChar, Gdk.ModifierType modifier)
 		{
 			this.Editor = editor; 
 			this.textEditorData = data;
 			
-			HandleKeypress (key, unicodeKey, modifier & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
+			HandleKeypress (key, unicodeChar, modifier);
 			
 			//make sure that nothing funny goes on when the mode should have finished
 			this.textEditorData = null;
@@ -148,8 +148,13 @@ namespace Mono.TextEditor
 		
 		public static int GetKeyCode (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			int m = ((int)modifier) & ((int)Gdk.ModifierType.ControlMask | (int)Gdk.ModifierType.ShiftMask);
-			return (int)key | (int)m << 16;
+			uint m =       (uint)(((modifier & Gdk.ModifierType.ControlMask) != 0)? 1 : 0);
+			m = (m << 1) | (uint)(((modifier & Gdk.ModifierType.ShiftMask)   != 0)? 1 : 0);
+			m = (m << 1) | (uint)(((modifier & Gdk.ModifierType.MetaMask)    != 0)? 1 : 0);
+			m = (m << 1) | (uint)(((modifier & Gdk.ModifierType.Mod1Mask)    != 0)? 1 : 0);
+			m = (m << 1) | (uint)(((modifier & Gdk.ModifierType.SuperMask)    != 0)? 1 : 0);
+			
+			return (int)key | (int)(m << 16);
 		}
 	}
 }

@@ -160,5 +160,15 @@ namespace Mono.TextEditor
 		{
 			Select (data, CaretMoveActions.PageDown);
 		}
+		
+		public static void MoveUpLineStart (TextEditorData data)
+		{
+			Select (data, CaretMoveActions.UpLineStart);
+		}
+		
+		public static void MoveDownLineEnd (TextEditorData data)
+		{
+			Select (data, CaretMoveActions.DownLineEnd);
+		}
 	}
 }

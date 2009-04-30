@@ -637,11 +637,18 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void SimulateKeyPress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
+		public void SimulateKeyPress (Gdk.Key key, uint unicodeChar, ModifierType modifier)
 		{
-			if ((modifier & (Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | META_MASK | SUPER_MASK)) != 0) 
-				unicodeKey = 0;
-			CurrentMode.InternalHandleKeypress (this, textEditorData, key, unicodeKey, modifier);
+			ModifierType filteredModifiers = modifier & (ModifierType.ShiftMask | ModifierType.Mod1Mask | ModifierType.ControlMask | META_MASK | SUPER_MASK);
+			
+			ModifierType modifiersThatPermitChars = ModifierType.ShiftMask;
+			if (Platform.IsMac)
+				modifiersThatPermitChars |= ModifierType.Mod1Mask;
+			
+			if ((filteredModifiers & ~modifiersThatPermitChars) != 0)
+				unicodeChar = 0;
+			
+			CurrentMode.InternalHandleKeypress (this, textEditorData, key, unicodeChar, filteredModifiers);
 			textViewMargin.ResetCaretBlink ();
 		}
 		
@@ -660,25 +667,30 @@ namespace Mono.TextEditor
 				return false;
 			}
 		}
+		
 		Gdk.Cursor invisibleCursor;
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
+			ModifierType mod;
+			Gdk.Key key;
+			Platform.MapRawKeys (evt, out key, out mod);
+			
 			GdkWindow.Cursor = invisibleCursor;
-			if (evt.Key == Gdk.Key.F1 && (evt.State & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
+			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				Point p = textViewMargin.LocationToDisplayCoordinates (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
 				return true;
 			}
 			    
 			uint unicodeChar = Gdk.Keyval.ToUnicode (evt.KeyValue);
-			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (evt.Key, unicodeChar, evt.State)) {
+			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
 				ResetIMContext ();	
-				SimulateKeyPress (evt.Key, unicodeChar, evt.State);
+				SimulateKeyPress (key, unicodeChar, mod);
 				return true;
 			}
 			bool filter = IMFilterKeyPress (evt);
 			if (!filter) {
-				return OnIMProcessedKeyPressEvent (evt.Key, unicodeChar, evt.State);
+				return OnIMProcessedKeyPressEvent (key, unicodeChar, mod);
 			}
 			return true;
 		}
