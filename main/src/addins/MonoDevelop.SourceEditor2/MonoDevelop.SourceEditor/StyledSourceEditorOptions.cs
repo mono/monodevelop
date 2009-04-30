@@ -33,7 +33,6 @@ namespace MonoDevelop.SourceEditor
 	
 	internal class StyledSourceEditorOptions : ISourceEditorOptions
 	{
-		TextStylePolicy currentPolicy;
 		Project styleParent;
 		EventHandler changed;
 		
@@ -42,21 +41,35 @@ namespace MonoDevelop.SourceEditor
 			UpdateStyleParent (styleParent);
 		}
 		
+		bool HasPolicy {
+			get {
+				return this.styleParent != null;
+			}
+		}
+		TextStylePolicy CurrentPolicy {
+			get {
+				if (this.styleParent != null)
+					return styleParent.Policies.Get<TextStylePolicy> ();
+				return null;
+			}
+		}
+		
 		public void UpdateStyleParent (Project styleParent)
 		{
-			if (this.styleParent != null)
-				this.styleParent.Policies.PolicyChanged -= HandlePolicyChanged;
+//			if (this.styleParent != null)
+//				this.styleParent.Policies.PolicyChanged -= HandlePolicyChanged;
 			
 			this.styleParent = styleParent;
 			
-			if (styleParent != null) {
+/*			if (styleParent != null) {
 				currentPolicy = styleParent.Policies.Get<TextStylePolicy> ();
 				styleParent.Policies.PolicyChanged += HandlePolicyChanged;
 			} else {
 				currentPolicy = null;
-			}
+			}*/
 		}
-
+		
+		/*
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
 		{
 			TextStylePolicy newPolicy = args.Policy as TextStylePolicy;
@@ -64,7 +77,7 @@ namespace MonoDevelop.SourceEditor
 				currentPolicy = newPolicy;
 				this.changed (this, EventArgs.Empty);
 			}
-		}
+		}*/
 		
 		public bool OverrideDocumentEolMarker {
 			get {
@@ -80,40 +93,40 @@ namespace MonoDevelop.SourceEditor
 		
 		public int RulerColumn {
 			get {
-				return currentPolicy != null
-					? currentPolicy.FileWidth
+				return HasPolicy
+					? CurrentPolicy.FileWidth
 					: DefaultSourceEditorOptions.Instance.RulerColumn;
 			}
 		}
 
 		public int TabSize {
 			get {
-				return currentPolicy != null
-					? currentPolicy.TabWidth
+				return HasPolicy
+					? CurrentPolicy.TabWidth
 					: DefaultSourceEditorOptions.Instance.TabSize;
 			}
 		}
 		
 		public bool TabsToSpaces {
 			get {
-				return currentPolicy != null
-					? currentPolicy.TabsToSpaces
+				return HasPolicy
+					? CurrentPolicy.TabsToSpaces
 					: DefaultSourceEditorOptions.Instance.TabsToSpaces;
 			}
 		}
 		
 		public bool RemoveTrailingWhitespaces {
 			get {
-				return currentPolicy != null
-					? currentPolicy.RemoveTrailingWhitespace
+				return HasPolicy
+					? CurrentPolicy.RemoveTrailingWhitespace
 					: DefaultSourceEditorOptions.Instance.RemoveTrailingWhitespaces;
 			}
 		}
 		
 		public bool AllowTabsAfterNonTabs {
 			get {
-				return currentPolicy != null
-					? !currentPolicy.NoTabsAfterNonTabs
+				return HasPolicy
+					? !CurrentPolicy.NoTabsAfterNonTabs
 					: DefaultSourceEditorOptions.Instance.AllowTabsAfterNonTabs;
 			}
 		}
@@ -306,7 +319,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Dispose ()
 		{
-			UpdateStyleParent (null);
+		//	UpdateStyleParent (null);
 			if (changed != null) {
 				DefaultSourceEditorOptions.Instance.Changed -= HandleDefaultsChanged;
 				changed = null;

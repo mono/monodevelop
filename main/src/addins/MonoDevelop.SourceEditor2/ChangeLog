@@ -1,3 +1,11 @@
+2009-04-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
+	  Fixed 'Bug 499151 - Some text style policies are not
+	  respected'.
+
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs: the
