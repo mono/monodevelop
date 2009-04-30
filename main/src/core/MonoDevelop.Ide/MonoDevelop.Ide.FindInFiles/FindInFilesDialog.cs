@@ -45,9 +45,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			comboboxScope.Active = 3;
 			comboboxentryPath.Entry.Text = directory;
-			CheckSensitivity (this, EventArgs.Empty);
 			writeScope = false;
 		}
+		
 		ComboBoxEntry comboboxentryReplace;
 		Label labelReplace;
 		public FindInFilesDialog (bool showReplace)
@@ -63,7 +63,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (showReplace) {
 				tableFindAndReplace.NRows = 3;
 				labelReplace = new Label ();
-				labelReplace.Text = GettextCatalog.GetString ("_Replace");
+				labelReplace.Text = GettextCatalog.GetString ("_Replace:");
+				labelReplace.Xalign = 0F;
 				labelReplace.UseUnderline = true;
 				tableFindAndReplace.Add (labelReplace);
 				
@@ -94,13 +95,21 @@ namespace MonoDevelop.Ide.FindInFiles
 				childCombo.RightAttach = 2;
 				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
 				
+				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelFileMask];
+				childCombo.TopAttach = 3;
+				childCombo.BottomAttach = 4;
+				
+				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.comboboxentryFileMask];
+				childCombo.TopAttach = 3;
+				childCombo.BottomAttach = 4;
+				
 				ShowAll ();
 			}
 			
 			comboboxentryFind.Entry.Activated += delegate {
 				buttonSearch.Click ();
 			};
-			checkbuttonFileMask.Toggled += CheckSensitivity;
+			
 			buttonReplace.Clicked += HandleReplaceClicked;
 			buttonSearch.Clicked += HandleSearchClicked;
 			
@@ -112,10 +121,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			comboboxScope.Model = scopeStore;
 			
 			comboboxScope.Changed += HandleScopeChanged;
-			comboboxScope.Changed += CheckSensitivity;
 			
 			InitFromProperties ();
-			CheckSensitivity (this, EventArgs.Empty);
 			
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				ITextBuffer view = IdeApp.Workbench.ActiveDocument.GetContent<ITextBuffer> (); 
@@ -129,64 +136,100 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 		}
 		
+		Label labelPath;
 		ComboBoxEntry comboboxentryPath;
+		HBox          hboxPath;
 		Button        buttonBrowsePaths;
 		CheckButton   checkbuttonRecursively;
+		
 		void HandleScopeChanged (object sender, EventArgs e)
 		{
-			while (boxScopeSelector.Children.Length > 0) {
-				Widget w = boxScopeSelector.Children [0];
-				boxScopeSelector.Remove (w);
-				w.Destroy ();
-			}
-			comboboxentryPath = null;
-			buttonBrowsePaths = null;
-			checkbuttonRecursively = null;
-			if (comboboxScope.Active != 3) {
-				Button placeHolder = new Button ();
-				boxScopeSelector.PackEnd (placeHolder);
-				ShowAll ();
-				placeHolder.Hide ();
-			}
-			if (comboboxScope.Active == 3) { // DirectoryScope
-				VBox vbox = new VBox ();
-				HBox hbox2 = new HBox ();
-				vbox.Add (hbox2);
-				Label labelPath = new Label ();
-				labelPath.Text = GettextCatalog.GetString ("Path:");
-				hbox2.PackStart (labelPath);
-				Gtk.Box.BoxChild boxChild = (Gtk.Box.BoxChild)hbox2[labelPath];
-				boxChild.Expand = boxChild.Fill = false;
+			if (hboxPath != null) {
+				// comboboxentryPath and buttonBrowsePaths are destroyed with hboxPath
+				foreach (Widget w in new Widget[] {labelPath, hboxPath, checkbuttonRecursively}) {
+					tableFindAndReplace.Remove (w);
+					w.Destroy ();
+				}
+				labelPath              = null;
+				hboxPath               = null; 
+				comboboxentryPath      = null;
+				buttonBrowsePaths      = null;
+				checkbuttonRecursively = null;
 				
+				Gtk.Table.TableChild childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelFileMask];
+				childCombo.TopAttach = 3;
+				childCombo.BottomAttach = 4;
+				
+				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.comboboxentryFileMask];
+				childCombo.TopAttach = 3;
+				childCombo.BottomAttach = 4;
+				tableFindAndReplace.NRows = showReplace ? 5u : 4u;
+			}
+			
+			if (comboboxScope.Active == 3) { // DirectoryScope
+				tableFindAndReplace.NRows = 5;
+				labelPath = new Label ();
+				labelPath.Text = GettextCatalog.GetString ("Path:");
+				labelPath.Xalign = 0F;
+				tableFindAndReplace.Add (labelPath);
+				
+				Gtk.Table.TableChild childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[labelPath];
+				childCombo.TopAttach = 3;
+				childCombo.BottomAttach = 4;
+				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
+				
+				hboxPath = new HBox ();
 				Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 				comboboxentryPath = new ComboBoxEntry ();
-				
 				comboboxentryPath.Destroyed += ComboboxentryPathDestroyed;
 				LoadHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", comboboxentryPath);
-				hbox2.PackStart (comboboxentryPath);
+				hboxPath.PackStart (comboboxentryPath);
 				
-				boxChild = (Gtk.Box.BoxChild)hbox2[comboboxentryPath];
-				boxChild.Position = 1;
+				Gtk.Box.BoxChild boxChild = (Gtk.Box.BoxChild)hboxPath[comboboxentryPath];
+				boxChild.Position = 0;
 				boxChild.Expand = boxChild.Fill = true;
 				
 				buttonBrowsePaths = new Button ();
 				buttonBrowsePaths.Label = "...";
 				buttonBrowsePaths.Clicked += ButtonBrowsePathsClicked;
-				hbox2.PackStart (buttonBrowsePaths);
-				boxChild = (Gtk.Box.BoxChild)hbox2[buttonBrowsePaths];
-				boxChild.Position = 2;
+				hboxPath.PackStart (buttonBrowsePaths);
+				boxChild = (Gtk.Box.BoxChild)hboxPath[buttonBrowsePaths];
+				boxChild.Position = 1;
 				boxChild.Expand = boxChild.Fill = false;
+				
+				tableFindAndReplace.Add (hboxPath);
+				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[hboxPath];
+				childCombo.TopAttach = 3;
+				childCombo.BottomAttach = 4;
+				childCombo.LeftAttach = 1;
+				childCombo.RightAttach = 2;
+				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
 				
 				checkbuttonRecursively = new CheckButton ();
 				checkbuttonRecursively.Label = GettextCatalog.GetString ("Re_cursively");
 				checkbuttonRecursively.Active = properties.Get ("SearchPathRecursively", true);
 				checkbuttonRecursively.UseUnderline = true;
 				checkbuttonRecursively.Destroyed += CheckbuttonRecursivelyDestroyed;
-				vbox.PackEnd (checkbuttonRecursively);
-				boxScopeSelector.PackStart (vbox);
+				tableFindAndReplace.Add (checkbuttonRecursively);
+				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[checkbuttonRecursively];
+				childCombo.TopAttach = 4;
+				childCombo.BottomAttach = 5;
+				childCombo.LeftAttach = 1;
+				childCombo.RightAttach = 2;
+				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
 				
-				ShowAll ();
+				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelFileMask];
+				childCombo.TopAttach = 5;
+				childCombo.BottomAttach = 6;
+				
+				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.comboboxentryFileMask];
+				childCombo.TopAttach = 5;
+				childCombo.BottomAttach = 6;
 			}
+			Requisition req = this.SizeRequest ();
+			this.Resize (req.Width, req.Height);
+		//	this.QueueResize ();
+			ShowAll ();
 		}
 
 		void ComboboxentryPathDestroyed (object sender, EventArgs e)
@@ -223,7 +266,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			comboboxScope.Active = properties.Get ("Scope", 0);
 			
 			//checkbuttonRecursively.Active    = properties.Get ("SearchPathRecursively", true);
-			checkbuttonFileMask.Active       = properties.Get ("UseFileMask", false);
+	//		checkbuttonFileMask.Active       = properties.Get ("UseFileMask", false);
 			checkbuttonCaseSensitive.Active  = properties.Get ("CaseSensitive", true);
 			checkbuttonWholeWordsOnly.Active = properties.Get ("WholeWordsOnly", false);
 			checkbuttonRegexSearch.Active    = properties.Get ("RegexSearch", false);
@@ -262,7 +305,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (writeScope)
 				properties.Set ("Scope", comboboxScope.Active);
 //			properties.Set ("SearchPathRecursively", checkbuttonRecursively.Active);
-			properties.Set ("UseFileMask", checkbuttonFileMask.Active);
+//			properties.Set ("UseFileMask", checkbuttonFileMask.Active);
 			properties.Set ("CaseSensitive", checkbuttonCaseSensitive.Active);
 			properties.Set ("WholeWordsOnly", checkbuttonWholeWordsOnly.Active);
 			properties.Set ("RegexSearch", checkbuttonRegexSearch.Active);
@@ -307,13 +350,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			findInFilesDialog.Destroy ();
 		}
 		
-		void CheckSensitivity (object sender, EventArgs args)
-		{
-			comboboxentryFileMask.Sensitive = checkbuttonFileMask.Active;
-			//comboboxentryProject.Sensitive = radiobuttonProject.Active;
-			//comboboxentryPath.Sensitive = buttonBrowsePaths.Sensitive = checkbuttonRecursively.Sensitive = radiobuttonDirectory.Active;
-		}
-		
 		Scope GetScope ()
 		{
 			switch (comboboxScope.Active) {
@@ -332,7 +368,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		FilterOptions GetFilterOptions ()
 		{
 			FilterOptions result = new FilterOptions ();
-			result.FileMask = checkbuttonFileMask.Active ? comboboxentryFileMask.Entry.Text : "*";
+			result.FileMask = !string.IsNullOrEmpty (comboboxentryFileMask.Entry.Text) ? comboboxentryFileMask.Entry.Text : "*";
 			result.CaseSensitive = checkbuttonCaseSensitive.Active;
 			result.RegexSearch = checkbuttonRegexSearch.Active;
 			result.WholeWordsOnly = checkbuttonWholeWordsOnly.Active;

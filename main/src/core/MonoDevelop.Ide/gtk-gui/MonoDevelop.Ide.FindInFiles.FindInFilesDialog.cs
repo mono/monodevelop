@@ -19,21 +19,17 @@ namespace MonoDevelop.Ide.FindInFiles {
         
         private Gtk.Table tableFindAndReplace;
         
+        private Gtk.ComboBoxEntry comboboxentryFileMask;
+        
         private Gtk.ComboBoxEntry comboboxentryFind;
         
         private Gtk.ComboBox comboboxScope;
         
+        private Gtk.Label labelFileMask;
+        
         private Gtk.Label labelFind;
         
         private Gtk.Label labelScope;
-        
-        private Gtk.HBox boxScopeSelector;
-        
-        private Gtk.HBox hbox4;
-        
-        private Gtk.CheckButton checkbuttonFileMask;
-        
-        private Gtk.ComboBoxEntry comboboxentryFileMask;
         
         private Gtk.Table table1;
         
@@ -76,29 +72,52 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.tableFindAndReplace = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
+            this.tableFindAndReplace = new Gtk.Table(((uint)(3)), ((uint)(2)), false);
             this.tableFindAndReplace.Name = "tableFindAndReplace";
             this.tableFindAndReplace.RowSpacing = ((uint)(6));
             this.tableFindAndReplace.ColumnSpacing = ((uint)(6));
             // Container child tableFindAndReplace.Gtk.Table+TableChild
+            this.comboboxentryFileMask = Gtk.ComboBoxEntry.NewText();
+            this.comboboxentryFileMask.Name = "comboboxentryFileMask";
+            this.tableFindAndReplace.Add(this.comboboxentryFileMask);
+            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.tableFindAndReplace[this.comboboxentryFileMask]));
+            w2.TopAttach = ((uint)(2));
+            w2.BottomAttach = ((uint)(3));
+            w2.LeftAttach = ((uint)(1));
+            w2.RightAttach = ((uint)(2));
+            w2.XOptions = ((Gtk.AttachOptions)(4));
+            w2.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child tableFindAndReplace.Gtk.Table+TableChild
             this.comboboxentryFind = Gtk.ComboBoxEntry.NewText();
             this.comboboxentryFind.Name = "comboboxentryFind";
             this.tableFindAndReplace.Add(this.comboboxentryFind);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.tableFindAndReplace[this.comboboxentryFind]));
-            w2.LeftAttach = ((uint)(1));
-            w2.RightAttach = ((uint)(2));
-            w2.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.tableFindAndReplace[this.comboboxentryFind]));
+            w3.LeftAttach = ((uint)(1));
+            w3.RightAttach = ((uint)(2));
+            w3.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableFindAndReplace.Gtk.Table+TableChild
             this.comboboxScope = Gtk.ComboBox.NewText();
             this.comboboxScope.Name = "comboboxScope";
             this.tableFindAndReplace.Add(this.comboboxScope);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.tableFindAndReplace[this.comboboxScope]));
-            w3.TopAttach = ((uint)(1));
-            w3.BottomAttach = ((uint)(2));
-            w3.LeftAttach = ((uint)(1));
-            w3.RightAttach = ((uint)(2));
-            w3.XOptions = ((Gtk.AttachOptions)(4));
-            w3.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.tableFindAndReplace[this.comboboxScope]));
+            w4.TopAttach = ((uint)(1));
+            w4.BottomAttach = ((uint)(2));
+            w4.LeftAttach = ((uint)(1));
+            w4.RightAttach = ((uint)(2));
+            w4.XOptions = ((Gtk.AttachOptions)(4));
+            w4.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child tableFindAndReplace.Gtk.Table+TableChild
+            this.labelFileMask = new Gtk.Label();
+            this.labelFileMask.Name = "labelFileMask";
+            this.labelFileMask.Xalign = 0F;
+            this.labelFileMask.LabelProp = Mono.Unix.Catalog.GetString("_File Mask:");
+            this.labelFileMask.UseUnderline = true;
+            this.tableFindAndReplace.Add(this.labelFileMask);
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelFileMask]));
+            w5.TopAttach = ((uint)(2));
+            w5.BottomAttach = ((uint)(3));
+            w5.XOptions = ((Gtk.AttachOptions)(4));
+            w5.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableFindAndReplace.Gtk.Table+TableChild
             this.labelFind = new Gtk.Label();
             this.labelFind.Name = "labelFind";
@@ -106,9 +125,9 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.labelFind.LabelProp = Mono.Unix.Catalog.GetString("_Find:");
             this.labelFind.UseUnderline = true;
             this.tableFindAndReplace.Add(this.labelFind);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelFind]));
-            w4.XOptions = ((Gtk.AttachOptions)(4));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelFind]));
+            w6.XOptions = ((Gtk.AttachOptions)(4));
+            w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableFindAndReplace.Gtk.Table+TableChild
             this.labelScope = new Gtk.Label();
             this.labelScope.Name = "labelScope";
@@ -116,52 +135,19 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.labelScope.LabelProp = Mono.Unix.Catalog.GetString("_Scope:");
             this.labelScope.UseUnderline = true;
             this.tableFindAndReplace.Add(this.labelScope);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelScope]));
-            w5.TopAttach = ((uint)(1));
-            w5.BottomAttach = ((uint)(2));
-            w5.XOptions = ((Gtk.AttachOptions)(4));
-            w5.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelScope]));
+            w7.TopAttach = ((uint)(1));
+            w7.BottomAttach = ((uint)(2));
+            w7.XOptions = ((Gtk.AttachOptions)(4));
+            w7.YOptions = ((Gtk.AttachOptions)(4));
             this.hbox1.Add(this.tableFindAndReplace);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.tableFindAndReplace]));
-            w6.Position = 0;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox1[this.tableFindAndReplace]));
+            w8.Position = 0;
             this.vbox2.Add(this.hbox1);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-            w7.Position = 0;
-            w7.Expand = false;
-            w7.Fill = false;
-            // Container child vbox2.Gtk.Box+BoxChild
-            this.boxScopeSelector = new Gtk.HBox();
-            this.boxScopeSelector.Name = "boxScopeSelector";
-            this.boxScopeSelector.Spacing = 6;
-            this.vbox2.Add(this.boxScopeSelector);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.boxScopeSelector]));
-            w8.Position = 1;
-            // Container child vbox2.Gtk.Box+BoxChild
-            this.hbox4 = new Gtk.HBox();
-            this.hbox4.Name = "hbox4";
-            this.hbox4.Spacing = 6;
-            // Container child hbox4.Gtk.Box+BoxChild
-            this.checkbuttonFileMask = new Gtk.CheckButton();
-            this.checkbuttonFileMask.CanFocus = true;
-            this.checkbuttonFileMask.Name = "checkbuttonFileMask";
-            this.checkbuttonFileMask.Label = Mono.Unix.Catalog.GetString("F_ile mask:");
-            this.checkbuttonFileMask.DrawIndicator = true;
-            this.checkbuttonFileMask.UseUnderline = true;
-            this.hbox4.Add(this.checkbuttonFileMask);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox4[this.checkbuttonFileMask]));
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
             w9.Position = 0;
             w9.Expand = false;
-            // Container child hbox4.Gtk.Box+BoxChild
-            this.comboboxentryFileMask = Gtk.ComboBoxEntry.NewText();
-            this.comboboxentryFileMask.Name = "comboboxentryFileMask";
-            this.hbox4.Add(this.comboboxentryFileMask);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox4[this.comboboxentryFileMask]));
-            w10.Position = 1;
-            this.vbox2.Add(this.hbox4);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox4]));
-            w11.Position = 2;
-            w11.Expand = false;
-            w11.Fill = false;
+            w9.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.table1 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
             this.table1.Name = "table1";
@@ -175,8 +161,8 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.checkbuttonCaseSensitive.DrawIndicator = true;
             this.checkbuttonCaseSensitive.UseUnderline = true;
             this.table1.Add(this.checkbuttonCaseSensitive);
-            Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.table1[this.checkbuttonCaseSensitive]));
-            w12.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.table1[this.checkbuttonCaseSensitive]));
+            w10.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.checkbuttonRegexSearch = new Gtk.CheckButton();
             this.checkbuttonRegexSearch.CanFocus = true;
@@ -185,10 +171,10 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.checkbuttonRegexSearch.DrawIndicator = true;
             this.checkbuttonRegexSearch.UseUnderline = true;
             this.table1.Add(this.checkbuttonRegexSearch);
-            Gtk.Table.TableChild w13 = ((Gtk.Table.TableChild)(this.table1[this.checkbuttonRegexSearch]));
-            w13.LeftAttach = ((uint)(1));
-            w13.RightAttach = ((uint)(2));
-            w13.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table1[this.checkbuttonRegexSearch]));
+            w11.LeftAttach = ((uint)(1));
+            w11.RightAttach = ((uint)(2));
+            w11.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.checkbuttonWholeWordsOnly = new Gtk.CheckButton();
             this.checkbuttonWholeWordsOnly.CanFocus = true;
@@ -197,24 +183,26 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.checkbuttonWholeWordsOnly.DrawIndicator = true;
             this.checkbuttonWholeWordsOnly.UseUnderline = true;
             this.table1.Add(this.checkbuttonWholeWordsOnly);
-            Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.table1[this.checkbuttonWholeWordsOnly]));
-            w14.TopAttach = ((uint)(1));
-            w14.BottomAttach = ((uint)(2));
-            w14.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.table1[this.checkbuttonWholeWordsOnly]));
+            w12.TopAttach = ((uint)(1));
+            w12.BottomAttach = ((uint)(2));
+            w12.YOptions = ((Gtk.AttachOptions)(4));
             this.vbox2.Add(this.table1);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox2[this.table1]));
-            w15.Position = 3;
-            w15.Expand = false;
-            w15.Fill = false;
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.table1]));
+            w13.Position = 1;
+            w13.Expand = false;
+            w13.Fill = false;
             w1.Add(this.vbox2);
-            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
-            w16.Position = 0;
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
+            w14.Position = 0;
+            w14.Expand = false;
+            w14.Fill = false;
             // Internal child MonoDevelop.Ide.FindInFiles.FindInFilesDialog.ActionArea
-            Gtk.HButtonBox w17 = this.ActionArea;
-            w17.Name = "dialog1_ActionArea";
-            w17.Spacing = 6;
-            w17.BorderWidth = ((uint)(5));
-            w17.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w15 = this.ActionArea;
+            w15.Name = "dialog1_ActionArea";
+            w15.Spacing = 6;
+            w15.BorderWidth = ((uint)(5));
+            w15.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonStop = new Gtk.Button();
             this.buttonStop.CanFocus = true;
@@ -223,9 +211,9 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.buttonStop.UseUnderline = true;
             this.buttonStop.Label = "gtk-stop";
             this.AddActionWidget(this.buttonStop, 0);
-            Gtk.ButtonBox.ButtonBoxChild w18 = ((Gtk.ButtonBox.ButtonBoxChild)(w17[this.buttonStop]));
-            w18.Expand = false;
-            w18.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w16 = ((Gtk.ButtonBox.ButtonBoxChild)(w15[this.buttonStop]));
+            w16.Expand = false;
+            w16.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonClose = new Gtk.Button();
             this.buttonClose.CanDefault = true;
@@ -235,36 +223,36 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.buttonClose.UseUnderline = true;
             this.buttonClose.Label = "gtk-close";
             this.AddActionWidget(this.buttonClose, -7);
-            Gtk.ButtonBox.ButtonBoxChild w19 = ((Gtk.ButtonBox.ButtonBoxChild)(w17[this.buttonClose]));
-            w19.Position = 1;
-            w19.Expand = false;
-            w19.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w17 = ((Gtk.ButtonBox.ButtonBoxChild)(w15[this.buttonClose]));
+            w17.Position = 1;
+            w17.Expand = false;
+            w17.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonReplace = new Gtk.Button();
             this.buttonReplace.CanFocus = true;
             this.buttonReplace.Name = "buttonReplace";
             this.buttonReplace.UseUnderline = true;
             // Container child buttonReplace.Gtk.Container+ContainerChild
-            Gtk.Alignment w20 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w18 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment2.Gtk.Container+ContainerChild
-            Gtk.HBox w21 = new Gtk.HBox();
-            w21.Spacing = 2;
+            Gtk.HBox w19 = new Gtk.HBox();
+            w19.Spacing = 2;
             // Container child GtkHBox5.Gtk.Container+ContainerChild
-            Gtk.Image w22 = new Gtk.Image();
-            w22.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Menu, 16);
-            w21.Add(w22);
+            Gtk.Image w20 = new Gtk.Image();
+            w20.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Menu, 16);
+            w19.Add(w20);
             // Container child GtkHBox5.Gtk.Container+ContainerChild
-            Gtk.Label w24 = new Gtk.Label();
-            w24.LabelProp = Mono.Unix.Catalog.GetString("R_eplace");
-            w24.UseUnderline = true;
-            w21.Add(w24);
-            w20.Add(w21);
-            this.buttonReplace.Add(w20);
+            Gtk.Label w22 = new Gtk.Label();
+            w22.LabelProp = Mono.Unix.Catalog.GetString("R_eplace");
+            w22.UseUnderline = true;
+            w19.Add(w22);
+            w18.Add(w19);
+            this.buttonReplace.Add(w18);
             this.AddActionWidget(this.buttonReplace, 0);
-            Gtk.ButtonBox.ButtonBoxChild w28 = ((Gtk.ButtonBox.ButtonBoxChild)(w17[this.buttonReplace]));
-            w28.Position = 2;
-            w28.Expand = false;
-            w28.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w26 = ((Gtk.ButtonBox.ButtonBoxChild)(w15[this.buttonReplace]));
+            w26.Position = 2;
+            w26.Expand = false;
+            w26.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonSearch = new Gtk.Button();
             this.buttonSearch.CanDefault = true;
@@ -274,15 +262,15 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.buttonSearch.UseUnderline = true;
             this.buttonSearch.Label = "gtk-find";
             this.AddActionWidget(this.buttonSearch, 0);
-            Gtk.ButtonBox.ButtonBoxChild w29 = ((Gtk.ButtonBox.ButtonBoxChild)(w17[this.buttonSearch]));
-            w29.Position = 3;
-            w29.Expand = false;
-            w29.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w27 = ((Gtk.ButtonBox.ButtonBoxChild)(w15[this.buttonSearch]));
+            w27.Position = 3;
+            w27.Expand = false;
+            w27.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 456;
-            this.DefaultHeight = 256;
+            this.DefaultHeight = 240;
             this.Show();
         }
     }

@@ -7134,7 +7134,7 @@ Large</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.FindInFiles.FindInFilesDialog" design-size="456 256">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.FindInFiles.FindInFilesDialog" design-size="456 240">
     <property name="MemberName" />
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -7161,10 +7161,32 @@ Large</property>
                 <child>
                   <widget class="Gtk.Table" id="tableFindAndReplace">
                     <property name="MemberName" />
-                    <property name="NRows">2</property>
+                    <property name="NRows">3</property>
                     <property name="NColumns">2</property>
                     <property name="RowSpacing">6</property>
                     <property name="ColumnSpacing">6</property>
+                    <child>
+                      <widget class="Gtk.ComboBoxEntry" id="comboboxentryFileMask">
+                        <property name="MemberName" />
+                        <property name="IsTextCombo">True</property>
+                        <property name="Items" translatable="yes" />
+                      </widget>
+                      <packing>
+                        <property name="TopAttach">2</property>
+                        <property name="BottomAttach">3</property>
+                        <property name="LeftAttach">1</property>
+                        <property name="RightAttach">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
                     <child>
                       <widget class="Gtk.ComboBoxEntry" id="comboboxentryFind">
                         <property name="MemberName" />
@@ -7195,6 +7217,27 @@ Large</property>
                         <property name="BottomAttach">2</property>
                         <property name="LeftAttach">1</property>
                         <property name="RightAttach">2</property>
+                        <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Label" id="labelFileMask">
+                        <property name="MemberName" />
+                        <property name="Xalign">0</property>
+                        <property name="LabelProp" translatable="yes">_File Mask:</property>
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="TopAttach">2</property>
+                        <property name="BottomAttach">3</property>
                         <property name="AutoSize">True</property>
                         <property name="XOptions">Fill</property>
                         <property name="YOptions">Fill</property>
@@ -7255,57 +7298,6 @@ Large</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.HBox" id="boxScopeSelector">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <placeholder />
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.HBox" id="hbox4">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <widget class="Gtk.CheckButton" id="checkbuttonFileMask">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">F_ile mask:</property>
-                    <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">False</property>
-                    <property name="Expand">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.ComboBoxEntry" id="comboboxentryFileMask">
-                    <property name="MemberName" />
-                    <property name="IsTextCombo">True</property>
-                    <property name="Items" translatable="yes" />
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">False</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">2</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -7387,7 +7379,7 @@ Large</property>
                 </child>
               </widget>
               <packing>
-                <property name="Position">3</property>
+                <property name="Position">1</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -7397,6 +7389,8 @@ Large</property>
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>
