@@ -333,6 +333,16 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.z, META_MASK), MiscActions.Undo);
 			keyBindings.Add (GetKeyCode (Gdk.Key.z, META_MASK | Gdk.ModifierType.ShiftMask), MiscActions.Redo);
 			
+			// selection actions
+			
+			action = SelectionActions.MoveDown;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Down, Gdk.ModifierType.ShiftMask), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.ShiftMask), action);
+			
+			action = SelectionActions.MoveUp;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Up, Gdk.ModifierType.ShiftMask), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ShiftMask), action);
+			
 			// == subword motions ==
 			
 			Gdk.ModifierType subwordModifier = Gdk.ModifierType.ControlMask;
