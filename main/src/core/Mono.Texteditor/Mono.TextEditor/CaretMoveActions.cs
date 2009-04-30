@@ -130,15 +130,41 @@ namespace Mono.TextEditor
 		
 		public static void Up (TextEditorData data)
 		{
+			//on Mac, when deselecting and moving up/down a line, column is always the column of the selection's start
+			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
+				int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
+				int line = data.MainSelection.MinLine - 1;
+				data.ClearSelection ();
+				data.Caret.Location = (line >= 0) ? new DocumentLocation (line, col) : new DocumentLocation (0, 0);
+				return;
+			}
+			
 			if (data.Caret.Line > 0) {
 				data.Caret.Line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) - 1);
+			} else {
+				ToDocumentStart (data);
 			}
 		}
 		
 		public static void Down (TextEditorData data)
 		{
+			//on Mac, when deselecting and moving up/down a line, column is always the column of the selection's start
+			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
+				int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
+				int line = data.MainSelection.MaxLine + 1;
+				data.ClearSelection ();
+				if (line < data.Document.LineCount) {
+					data.Caret.Location = new DocumentLocation (line, col);
+				} else {
+					data.Caret.Offset = data.Document.Length;
+				}
+				return;
+			}
+			
 			if (data.Caret.Line < data.Document.LineCount - 1) {
 				data.Caret.Line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) + 1);
+			} else {
+				ToDocumentEnd (data);
 			}
 		}
 		
