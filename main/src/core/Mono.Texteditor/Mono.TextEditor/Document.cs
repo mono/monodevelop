@@ -1285,6 +1285,26 @@ namespace Mono.TextEditor
 				}
 			}
 		}
+		
+		public static void RemoveTrailingWhitespaces (TextEditorData data, LineSegment line)
+		{
+			int whitespaces = 0;
+			for (int i = line.EditableLength - 1; i >= 0 ; i--) {
+				if (Char.IsWhiteSpace (data.Document.GetCharAt (line.Offset + i))) {
+					whitespaces++;
+				} else {
+					break;
+				}
+			}
+			
+			if (whitespaces > 0) {
+				int offset = line.Offset + line.EditableLength - whitespaces;
+				if (data.Caret.Offset > offset)
+					data.Caret.Offset -= whitespaces;
+				data.Remove (offset, whitespaces);
+			}			
+		}
+		
 		#endregion
 	}
 	

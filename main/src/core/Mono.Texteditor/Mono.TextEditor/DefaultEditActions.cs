@@ -274,25 +274,6 @@ namespace Mono.TextEditor
 			int caretColumnOffset = 0;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			
-			if (data.Options.RemoveTrailingWhitespaces) {
-				int whitespaces = 0;
-				for (int i = line.EditableLength - 1; i >= 0 ; i--) {
-					if (Char.IsWhiteSpace (data.Document.GetCharAt (line.Offset + i))) {
-						whitespaces++;
-					} else {
-						break;
-					}
-				}
-
-				
-				if (whitespaces > 0) {
-					int offset = line.Offset + line.EditableLength - whitespaces;
-					if (data.Caret.Offset > offset)
-						data.Caret.Offset -= whitespaces;
-					data.Remove (offset, whitespaces);
-				}
-			}
-			
 			if (data.Options.AutoIndent) {
 				int i;
 				for (i = 0; i < line.EditableLength; i++) {

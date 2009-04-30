@@ -84,6 +84,10 @@ namespace Mono.TextEditor
 			Document = doc;
 			this.SearchEngine = new BasicSearchEngine ();
 			SelectionChanging += HandleSelectionChanging;
+			Caret.PositionChanged += delegate(object sender, DocumentLocationEventArgs e) {
+				if (Options.RemoveTrailingWhitespaces && e.Location.Line != Caret.Line) 
+					Document.RemoveTrailingWhitespaces (this, Document.GetLine (e.Location.Line));
+			};
 		}
 		
 		public Document Document {
@@ -738,6 +742,7 @@ namespace Mono.TextEditor
 				virtualSpaceManager = value;
 			}
 		}
+		
 		public interface IVirtualSpaceManager
 		{
 			string GetVirtualSpaces (int lineNumber, int column);
