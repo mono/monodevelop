@@ -1,5 +1,10 @@
 2009-04-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/EmacsWordFindStrategy.cs: Fix subword
+	  behaviour on digits boundaries. Tidy using type alias.
+
+2009-04-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/SharpDevelopWordFindStrategy.cs: Make a
 	  method private.
 

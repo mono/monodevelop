@@ -28,6 +28,7 @@
 
 using System;
 using CC = Mono.TextEditor.SharpDevelopWordFindStrategy.CharacterClass;
+using SW = Mono.TextEditor.SharpDevelopWordFindStrategy;
 
 namespace Mono.TextEditor
 {
@@ -45,21 +46,22 @@ namespace Mono.TextEditor
 			if (offset + 1 >= doc.Length)
 				return doc.Length;
 			int result = offset + 1;
-			CC previous = SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result), subword, treat_);
+			CC previous = SW.GetCharacterClass (doc.GetCharAt (result), subword, treat_);
 			bool inIndentifier = previous != CC.Unknown && previous != CC.Whitespace;			
 			while (result < doc.Length) {
 				char ch = doc.GetCharAt (result);
-				CC current = SharpDevelopWordFindStrategy.GetCharacterClass (ch, subword, treat_);
+				CC current = SW.GetCharacterClass (ch, subword, treat_);
 				
 				//camelCase / PascalCase splitting
 				if (subword) {
-					if (current == CC.Digit && previous != CC.Digit) {
-						result++;
+					if (current == CC.Digit && (previous != CC.Digit || (result-1 == offset && !Char.IsDigit (doc.GetCharAt (result-1))))) {
 						break;
-					} else if (current == CC.UppercaseLetter && previous == CC.LowercaseLetter) {
+					} else if (previous == CC.Digit && current != CC.Digit) {
+						break;
+					} else if (current == CC.UppercaseLetter && previous != CC.UppercaseLetter) {
 						break;
 					} else if (current == CC.LowercaseLetter && previous == CC.UppercaseLetter && result - 2 > 0
-					           && SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result - 2), subword, treat_) == CC.UppercaseLetter)
+					           && SW.GetCharacterClass (doc.GetCharAt (result - 2), subword, treat_) != CC.LowercaseLetter)
 					{
 						result--;
 						break;
@@ -88,21 +90,24 @@ namespace Mono.TextEditor
 			if (offset <= 0)
 				return 0;
 			int  result = offset - 1;
-			CC previous = SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result), subword, treat_);
+			CC previous = SW.GetCharacterClass (doc.GetCharAt (result), subword, treat_);
 			bool inIndentifier = previous != CC.Unknown && previous != CC.Whitespace;			
 			while (result > 0) {
 				char ch = doc.GetCharAt (result);
-				CC current = SharpDevelopWordFindStrategy.GetCharacterClass (ch, subword, treat_);
+				CC current = SW.GetCharacterClass (ch, subword, treat_);
 				
 				//camelCase / PascalCase splitting
 				if (subword) {
 					if (current == CC.Digit && previous != CC.Digit) {
 						result++;
 						break;
-					} else if (current == CC.UppercaseLetter && previous == CC.LowercaseLetter) {
+					} else if (previous == CC.Digit && current != CC.Digit) {
+						result++;
+						break;
+					} else if (current == CC.UppercaseLetter && previous != CC.UppercaseLetter) {
 						break;
 					} else if (current == CC.LowercaseLetter && previous == CC.UppercaseLetter && result + 2 < doc.Length
-					           && SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result + 2), subword, treat_) == CC.UppercaseLetter)
+					           && SW.GetCharacterClass (doc.GetCharAt (result + 2), subword, treat_) != CC.LowercaseLetter)
 					{
 						result++;
 						break;
