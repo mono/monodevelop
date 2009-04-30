@@ -27,6 +27,7 @@
 //
 
 using System;
+using CC = Mono.TextEditor.SharpDevelopWordFindStrategy.CharacterClass;
 
 namespace Mono.TextEditor
 {
@@ -39,27 +40,40 @@ namespace Mono.TextEditor
 			this.treat_ = treat_;
 		}
 		
-		public int FindNextWordOffset (Document doc, int offset)
+		int FindNextWordOffset (Document doc, int offset, bool subword)
 		{
 			if (offset + 1 >= doc.Length)
 				return doc.Length;
 			int result = offset + 1;
-			SharpDevelopWordFindStrategy.CharacterClass charClass = SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result), false, treat_);
-			bool done = false;
-			while (!done && result < doc.Length) {
+			CC previous = SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result), subword, treat_);
+			bool inIndentifier = previous != CC.Unknown && previous != CC.Whitespace;			
+			while (result < doc.Length) {
 				char ch = doc.GetCharAt (result);
-				SharpDevelopWordFindStrategy.CharacterClass curCharClass = SharpDevelopWordFindStrategy.GetCharacterClass (ch, false, treat_);
-				switch (curCharClass) {
-				case SharpDevelopWordFindStrategy.CharacterClass.IdentifierPart:
-					charClass = SharpDevelopWordFindStrategy.CharacterClass.IdentifierPart;
-					break;
-				default:
-					if (charClass == SharpDevelopWordFindStrategy.CharacterClass.IdentifierPart) {
-						done = true;
+				CC current = SharpDevelopWordFindStrategy.GetCharacterClass (ch, subword, treat_);
+				
+				//camelCase / PascalCase splitting
+				if (subword) {
+					if (current == CC.Digit && previous != CC.Digit) {
+						result++;
+						break;
+					} else if (current == CC.UppercaseLetter && previous == CC.LowercaseLetter) {
+						break;
+					} else if (current == CC.LowercaseLetter && previous == CC.UppercaseLetter && result - 2 > 0
+					           && SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result - 2), subword, treat_) == CC.UppercaseLetter)
+					{
 						result--;
+						break;
 					}
+				}
+				
+				//else break at end of identifiers
+				if (previous != CC.Unknown && previous != CC.Whitespace) {
+					inIndentifier = true;
+				} else if (inIndentifier) {
+					result--;
 					break;
 				}
+				previous = current;
 				result++;
 			}
 			foreach (FoldSegment segment in doc.GetFoldingsFromOffset (result)) {
@@ -69,27 +83,40 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public int FindPrevWordOffset (Document doc, int offset)
+		int FindPrevWordOffset (Document doc, int offset, bool subword)
 		{
 			if (offset <= 0)
 				return 0;
 			int  result = offset - 1;
-			SharpDevelopWordFindStrategy.CharacterClass charClass = SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result), false, treat_);
-			bool done = false;
-			while (!done && result > 0) {
+			CC previous = SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result), subword, treat_);
+			bool inIndentifier = previous != CC.Unknown && previous != CC.Whitespace;			
+			while (result > 0) {
 				char ch = doc.GetCharAt (result);
-				SharpDevelopWordFindStrategy.CharacterClass curCharClass = SharpDevelopWordFindStrategy.GetCharacterClass (ch, false, treat_);
-				switch (curCharClass) {
-				case SharpDevelopWordFindStrategy.CharacterClass.IdentifierPart:
-					charClass = SharpDevelopWordFindStrategy.CharacterClass.IdentifierPart;
-					break;
-				default:
-					if (charClass == SharpDevelopWordFindStrategy.CharacterClass.IdentifierPart) {
-						done = true;
-						result += 2;
+				CC current = SharpDevelopWordFindStrategy.GetCharacterClass (ch, subword, treat_);
+				
+				//camelCase / PascalCase splitting
+				if (subword) {
+					if (current == CC.Digit && previous != CC.Digit) {
+						result++;
+						break;
+					} else if (current == CC.UppercaseLetter && previous == CC.LowercaseLetter) {
+						break;
+					} else if (current == CC.LowercaseLetter && previous == CC.UppercaseLetter && result + 2 < doc.Length
+					           && SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result + 2), subword, treat_) == CC.UppercaseLetter)
+					{
+						result++;
+						break;
 					}
+				}
+				
+				//else break at end of identifiers
+				if (previous != CC.Unknown && previous != CC.Whitespace) {
+					inIndentifier = true;
+				} else if (inIndentifier) {
+					result += 2;
 					break;
 				}
+				previous = current;
 				result--;
 			}
 			foreach (FoldSegment segment in doc.GetFoldingsFromOffset (result)) {
@@ -99,14 +126,24 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
+		public int FindNextWordOffset (Document doc, int offset)
+		{
+			return FindNextWordOffset (doc, offset, false);
+		}
+		
+		public int FindPrevWordOffset (Document doc, int offset)
+		{
+			return FindPrevWordOffset (doc, offset, false);
+		}
+		
 		public int FindNextSubwordOffset (Document doc, int offset)
 		{
-			return FindNextWordOffset (doc, offset);
+			return FindNextWordOffset (doc, offset, true);
 		}
 		
 		public int FindPrevSubwordOffset (Document doc, int offset)
 		{
-			return FindPrevWordOffset (doc, offset);
+			return FindPrevWordOffset (doc, offset, true);
 		}
 	}
 }

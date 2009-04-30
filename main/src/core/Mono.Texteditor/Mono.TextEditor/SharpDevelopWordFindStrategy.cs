@@ -111,7 +111,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public int FindPrevWordOffset (Document doc, int offset, bool subword)
+		int FindPrevWordOffset (Document doc, int offset, bool subword)
 		{
 			int lineNumber = doc.OffsetToLineNumber (offset);
 			LineSegment line = doc.GetLine (lineNumber);

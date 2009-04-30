@@ -1,5 +1,13 @@
 2009-04-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/SharpDevelopWordFindStrategy.cs: Make a
+	  method private.
+
+	* Mono.TextEditor/EmacsWordFindStrategy.cs: Implement subword
+	  splitting (camelCase/PascalCase).
+
+2009-04-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/SharpDevelopWordFindStrategy.cs: Implement
 	  subword (camelCase/PascalCase) word splitting.
 
