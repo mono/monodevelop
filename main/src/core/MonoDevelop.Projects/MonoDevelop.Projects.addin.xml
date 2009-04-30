@@ -153,6 +153,7 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
 		<PolicyType id="DotNetNamingPolicy" class="MonoDevelop.Projects.Policies.DotNetNamingPolicy" />
+		<PolicyType id="CodeFormattingPolicy" class="MonoDevelop.Projects.Text.CodeFormattingPolicy" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
@@ -160,4 +161,6 @@
 		<!--	<Policies resource="" /> -->
 		</PolicySet>
 	</Extension>
+	
+	
 </Addin>
