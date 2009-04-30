@@ -106,5 +106,14 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
+		public int FindNextSubwordOffset (Document doc, int offset)
+		{
+			return FindNextWordOffset (doc, offset);
+		}
+		
+		public int FindPrevSubwordOffset (Document doc, int offset)
+		{
+			return FindPrevWordOffset (doc, offset);
+		}
 	}
 }

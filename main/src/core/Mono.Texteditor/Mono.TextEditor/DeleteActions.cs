@@ -51,10 +51,10 @@ namespace Mono.TextEditor
 			};
 		}
 		
-		public static void PreviousWord (TextEditorData data)
+		static void PreviousWord (TextEditorData data, bool subword)
 		{
 			int oldLine = data.Caret.Line;
-			int offset = data.FindPrevWordOffset (data.Caret.Offset);
+			int offset = subword? data.FindPrevSubwordOffset (data.Caret.Offset) : data.FindPrevWordOffset (data.Caret.Offset);
 			if (data.Caret.Offset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line)) {
 				data.Remove (offset, data.Caret.Offset - offset);
 				data.Caret.Offset = offset;
@@ -63,14 +63,34 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public static void NextWord (TextEditorData data)
+		static void NextWord (TextEditorData data, bool subword)
 		{
 			int oldLine = data.Caret.Line;
-			int offset = data.FindNextWordOffset (data.Caret.Offset);
+			int offset = subword? data.FindNextSubwordOffset (data.Caret.Offset) : data.FindNextWordOffset (data.Caret.Offset);
 			if (data.Caret.Offset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line))  {
 				data.Remove (data.Caret.Offset, offset - data.Caret.Offset);
 				data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			}
+		}
+		
+		public static void PreviousWord (TextEditorData data)
+		{
+			PreviousWord (data, false);
+		}
+		
+		public static void PreviousSubword (TextEditorData data)
+		{
+			PreviousWord (data, true);
+		}
+		
+		public static void NextWord (TextEditorData data)
+		{
+			NextWord (data, false);
+		}
+		
+		public static void NextSubword (TextEditorData data)
+		{
+			NextWord (data, true);
 		}
 		
 		public static void CaretLine (TextEditorData data)

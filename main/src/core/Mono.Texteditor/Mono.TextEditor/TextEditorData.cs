@@ -245,7 +245,16 @@ namespace Mono.TextEditor
 		{
 			return this.options.WordFindStrategy.FindPrevWordOffset (this.Document, offset);
 		}
-
+		
+		public int FindNextSubwordOffset (int offset)
+		{
+			return this.options.WordFindStrategy.FindNextSubwordOffset (this.Document, offset);
+		}
+		
+		public int FindPrevSubwordOffset (int offset)
+		{
+			return this.options.WordFindStrategy.FindPrevSubwordOffset (this.Document, offset);
+		}
 
 		#region undo/redo handling
 		int       savedCaretPos;

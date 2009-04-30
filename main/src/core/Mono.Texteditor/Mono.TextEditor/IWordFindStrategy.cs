@@ -34,5 +34,7 @@ namespace Mono.TextEditor
 	{
 		int FindNextWordOffset (Document doc, int offset);
 		int FindPrevWordOffset (Document doc, int offset);
+		int FindNextSubwordOffset (Document doc, int offset);
+		int FindPrevSubwordOffset (Document doc, int offset);
 	}
 }

@@ -75,6 +75,11 @@ namespace Mono.TextEditor
 			data.Caret.Offset = data.FindPrevWordOffset (data.Caret.Offset);
 		}
 		
+		public static void PreviousSubword (TextEditorData data)
+		{
+			data.Caret.Offset = data.FindPrevSubwordOffset (data.Caret.Offset);
+		}
+		
 		public static void Right (TextEditorData data)
 		{
 			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
@@ -116,6 +121,11 @@ namespace Mono.TextEditor
 		public static void NextWord (TextEditorData data)
 		{
 			data.Caret.Offset = data.FindNextWordOffset (data.Caret.Offset);
+		}
+		
+		public static void NextSubword (TextEditorData data)
+		{
+			data.Caret.Offset = data.FindNextSubwordOffset (data.Caret.Offset);
 		}
 		
 		public static void Up (TextEditorData data)

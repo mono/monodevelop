@@ -111,6 +111,11 @@ namespace Mono.TextEditor
 			Select (data, CaretMoveActions.PreviousWord);
 		}
 		
+		public static void MovePreviousSubword (TextEditorData data)
+		{
+			Select (data, CaretMoveActions.PreviousSubword);
+		}
+		
 		public static void MoveRight (TextEditorData data)
 		{
 			Select (data, CaretMoveActions.Right);
@@ -119,6 +124,11 @@ namespace Mono.TextEditor
 		public static void MoveNextWord (TextEditorData data)
 		{
 			Select (data, CaretMoveActions.NextWord);
+		}
+		
+		public static void MoveNextSubword (TextEditorData data)
+		{
+			Select (data, CaretMoveActions.NextSubword);
 		}
 		
 		public static void MoveUp (TextEditorData data)

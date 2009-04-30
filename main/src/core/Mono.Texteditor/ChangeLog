@@ -1,5 +1,17 @@
 2009-04-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/DeleteActions.cs:
+	* Mono.TextEditor/SimpleEditMode.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/CaretMoveActions.cs:
+	* Mono.TextEditor/SelectionActions.cs:
+	* Mono.TextEditor/IWordFindStrategy.cs:
+	* Mono.TextEditor/EmacsWordFindStrategy.cs:
+	* Mono.TextEditor/SharpDevelopWordFindStrategy.cs: Add subword
+	  move/select commands.
+
+2009-04-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj: Updated.
 
