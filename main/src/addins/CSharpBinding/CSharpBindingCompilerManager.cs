@@ -241,8 +241,6 @@ namespace CSharpBinding
 			
 			monitor.Log.WriteLine (compilerName + " " + sb.ToString ().Replace ('\n',' '));
 			
-			string outstr = compilerName + " @" + responseFileName;
-			
 			string workingDir = ".";
 			if (configuration.ParentItem != null) {
 				workingDir = configuration.ParentItem.BaseDirectory;
@@ -258,7 +256,7 @@ namespace CSharpBinding
 			
 			Dictionary<string,string> envVars = runtime.GetToolsEnvironmentVariables ();
 
-			int exitCode = DoCompilation (outstr, workingDir, envVars, gacRoots, ref output, ref error);
+			int exitCode = DoCompilation (compilerName, "@" + responseFileName, workingDir, envVars, gacRoots, ref output, ref error);
 			
 			BuildResult result = ParseOutput (output, error);
 			if (result.CompilerOutput.Trim ().Length != 0)
@@ -356,18 +354,15 @@ namespace CSharpBinding
 			return result;
 		}
 		
-		static int DoCompilation (string outstr, string working_dir, Dictionary<string, string> envVars, List<string> gacRoots, ref string output, ref string error) 
+		static int DoCompilation (string compilerName, string compilerArgs, string working_dir, Dictionary<string, string> envVars, List<string> gacRoots, ref string output, ref string error) 
 		{
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
 			
 			StreamWriter outwr = new StreamWriter (output);
 			StreamWriter errwr = new StreamWriter (error);
-			string[] tokens = outstr.Split (' ');
 			
-			outstr = outstr.Substring (tokens[0].Length+1);
-
-			ProcessStartInfo pinfo = new ProcessStartInfo (tokens[0], "\"" + outstr + "\"");
+			ProcessStartInfo pinfo = new ProcessStartInfo (compilerName, "\"" + compilerArgs + "\"");
 			pinfo.WorkingDirectory = working_dir;
 			
 			if (gacRoots.Count > 0) {
