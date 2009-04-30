@@ -79,7 +79,7 @@ namespace MonoDevelop.Components.Commands
 				if (string.IsNullOrEmpty (cmdInfo.AccelKey)) {
 					toolTip = cmdInfo.Description;
 				} else {
-					toolTip = cmdInfo.Description + " (" + cmdInfo.AccelKey + ")";
+					toolTip = cmdInfo.Description + " (" + KeyBindingManager.BindingToDisplayLabel (cmdInfo.AccelKey, false) + ")";
 				}
 				SetTooltip (tips, toolTip, toolTip);
 				lastDesc = cmdInfo.Description;
