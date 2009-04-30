@@ -78,6 +78,12 @@ namespace MonoDevelop.Ide.Commands
 		DeletePrevWord,
 		DeleteNextWord,
 		SelectionPageDownAction,
-		SelectionPageUpAction
+		SelectionPageUpAction,
+		MovePrevSubword,
+		MoveNextSubword,
+		SelectionMovePrevSubword,
+		SelectionMoveNextSubword,
+		DeletePrevSubword,
+		DeleteNextSubword,
 	}
 }

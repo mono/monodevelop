@@ -857,6 +857,30 @@ namespace MonoDevelop.SourceEditor
 		{
 			RunAction (SelectionActions.MoveNextWord);
 		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevSubword)]
+		internal void OnMovePrevSubword ()
+		{
+			RunAction (CaretMoveActions.PreviousSubword);
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextSubword)]
+		internal void OnMoveNextSubword ()
+		{
+			RunAction (CaretMoveActions.NextSubword);
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevSubword)]
+		internal void OnSelectionMovePrevSubword ()
+		{
+			RunAction (SelectionActions.MovePreviousSubword);
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextSubword)]
+		internal void OnSelectionMoveNextSubword ()
+		{
+			RunAction (SelectionActions.MoveNextSubword);
+		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveUp)]
 		internal void OnSelectionMoveUp ()
@@ -951,6 +975,18 @@ namespace MonoDevelop.SourceEditor
 		internal void OnDeleteNextWord ()
 		{
 			RunAction (DeleteActions.NextWord);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevSubword)]
+		internal void OnDeletePrevSubword ()
+		{
+			RunAction (DeleteActions.PreviousSubword);
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextSubword)]
+		internal void OnDeleteNextSubword ()
+		{
+			RunAction (DeleteActions.NextSubword);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageDownAction)]

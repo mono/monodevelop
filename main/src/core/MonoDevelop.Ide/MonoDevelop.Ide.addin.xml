@@ -959,6 +959,14 @@
 				_label = "Expand selection to previous word" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord"
 				_label = "Expand selection to next word" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevSubword"
+				_label = "Go to previous subword" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextSubword"
+				_label = "Go to next subword" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevSubword"
+				_label = "Expand selection to previous subword" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextSubword"
+				_label = "Expand selection to next subword" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveUp"
 				_label = "Expand selection to previous line" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveDown"
@@ -991,6 +999,10 @@
 				_label = "Delete previous word" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextWord"
 				_label = "Delete next word" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevSubword"
+				_label = "Delete previous subword" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextSubword"
+				_label = "Delete next subword" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageDownAction"
 				_label = "Expand selection to page down" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageUpAction"
