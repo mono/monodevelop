@@ -1,3 +1,10 @@
+2009-04-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/SharpDevelopWordFindStrategy.cs: Implement
+	  subword (camelCase/PascalCase) word splitting.
+
+	* Mono.TextEditor/EmacsWordFindStrategy.cs: Track API.
+
 2009-04-30  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs:

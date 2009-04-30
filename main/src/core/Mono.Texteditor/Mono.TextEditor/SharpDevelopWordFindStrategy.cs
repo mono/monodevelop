@@ -35,24 +35,37 @@ namespace Mono.TextEditor
 		public enum CharacterClass {
 			Unknown,
 			Whitespace,
-			IdentifierPart
+			IdentifierPart,
+			UppercaseLetter,
+			LowercaseLetter,
+			Digit
 		}
 		
 		public static CharacterClass GetCharacterClass (char ch)
 		{
-			return  GetCharacterClass (ch, true);
+			return GetCharacterClass (ch, false, false);
 		}
 		
-		public static CharacterClass GetCharacterClass (char ch, bool treat_)
+		public static CharacterClass GetCharacterClass (char ch, bool subword, bool treat_)
 		{
 			if (Char.IsWhiteSpace (ch))
 				return CharacterClass.Whitespace;
-			if (Char.IsLetterOrDigit (ch) || (treat_ && ch == '_'))
-				return CharacterClass.IdentifierPart;
-			return CharacterClass.Unknown;
-		}
+			if (Char.IsDigit (ch))
+				return subword? CharacterClass.Digit : CharacterClass.IdentifierPart;
+			if (Char.IsLetter (ch)) {
+				if (!subword)
+					return CharacterClass.IdentifierPart;
+				else if (Char.IsUpper (ch))
+					return CharacterClass.UppercaseLetter;
+				else
+					return CharacterClass.LowercaseLetter;
+			}
+			if (!subword && treat_ && ch == '_')
+ 				return CharacterClass.IdentifierPart;
+ 			return CharacterClass.Unknown;
+ 		}
 		
-		public int FindNextWordOffset (Document doc, int offset)
+		int FindNextWordOffset (Document doc, int offset, bool subword)
 		{
 			int lineNumber   = doc.OffsetToLineNumber (offset);
 			LineSegment line = doc.GetLine (lineNumber);
@@ -68,17 +81,37 @@ namespace Mono.TextEditor
 				return result;
 			}
 			
-			CharacterClass startClass = GetCharacterClass (doc.GetCharAt (result));
-			while (offset < endOffset && GetCharacterClass (doc.GetCharAt (result)) == startClass) {
+			CharacterClass current = GetCharacterClass (doc.GetCharAt (result), subword, false);
+			while (result < endOffset) {
+				CharacterClass next = GetCharacterClass (doc.GetCharAt (result), subword, false);
+				if (next != current) {
+					
+					// camelCase and PascalCase handling
+					bool camelSkip = false;
+					if (next == CharacterClass.LowercaseLetter && current == CharacterClass.UppercaseLetter) {
+						if (result-2 > line.Offset) {
+							CharacterClass previous = GetCharacterClass (doc.GetCharAt (result-2), subword, false);
+							if (previous == CharacterClass.UppercaseLetter && result-2 > offset)
+								result--;
+							else
+								camelSkip = true;
+						}
+					}
+					
+					if (!camelSkip)
+						break;
+				}
+				
+				current = next;		
 				result++;
 			}
-			while (result < endOffset && GetCharacterClass (doc.GetCharAt (result)) == CharacterClass.Whitespace) {
+			while (result < endOffset && GetCharacterClass (doc.GetCharAt (result), subword, false) == CharacterClass.Whitespace) {
 				result++;
 			}
 			return result;
 		}
 		
-		public int FindPrevWordOffset (Document doc, int offset)
+		public int FindPrevWordOffset (Document doc, int offset, bool subword)
 		{
 			int lineNumber = doc.OffsetToLineNumber (offset);
 			LineSegment line = doc.GetLine (lineNumber);
@@ -93,27 +126,58 @@ namespace Mono.TextEditor
 				return result;
 			}
 			
-			CharacterClass startClass = GetCharacterClass (doc.GetCharAt (result - 1));
-			while (result > line.Offset && GetCharacterClass (doc.GetCharAt (result - 1)) == startClass) {
+			CharacterClass current = GetCharacterClass (doc.GetCharAt (result - 1), subword, false);
+			
+			if (current == CharacterClass.Whitespace && result - 1 > line.Offset) {
+				result--;
+				current = GetCharacterClass (doc.GetCharAt (result - 2), subword, false);
+			}
+			
+			while (result > line.Offset) {
+				CharacterClass prev = GetCharacterClass (doc.GetCharAt (result - 1), subword, false);
+				if (prev != current) {
+					
+					// camelCase and PascalCase handling
+					bool camelSkip = false;
+					if (prev == CharacterClass.UppercaseLetter && current == CharacterClass.LowercaseLetter) {
+						if (result-2 > line.Offset) {
+							CharacterClass back2 = GetCharacterClass (doc.GetCharAt (result-2), subword, false);
+							if (back2 == CharacterClass.UppercaseLetter)
+								result--;
+							else
+								camelSkip = true;
+						}
+					}
+					
+					if (!camelSkip)
+						break;
+				}
+				
+				current = prev;
 				result--;
 			}
-			if (startClass == CharacterClass.Whitespace && result > line.Offset) {
-				startClass = GetCharacterClass (doc.GetCharAt (result - 1));
-				while (result > line.Offset && GetCharacterClass (doc.GetCharAt (result - 1)) == startClass) {
-					result--;
-				}
-			}
+			
 			return result;
+		}
+		
+		public int FindNextWordOffset (Document doc, int offset)
+		{
+			return FindNextWordOffset (doc, offset, false);
+		}
+		
+		public int FindPrevWordOffset (Document doc, int offset)
+		{
+			return FindPrevWordOffset (doc, offset, false);
 		}
 		
 		public int FindNextSubwordOffset (Document doc, int offset)
 		{
-			return FindNextWordOffset (doc, offset);
+			return FindNextWordOffset (doc, offset, true);
 		}
 		
 		public int FindPrevSubwordOffset (Document doc, int offset)
 		{
-			return FindPrevWordOffset (doc, offset);
+			return FindPrevWordOffset (doc, offset, true);
 		}
 	}
 }

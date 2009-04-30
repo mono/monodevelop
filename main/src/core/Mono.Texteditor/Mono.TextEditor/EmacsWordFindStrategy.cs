@@ -44,11 +44,11 @@ namespace Mono.TextEditor
 			if (offset + 1 >= doc.Length)
 				return doc.Length;
 			int result = offset + 1;
-			SharpDevelopWordFindStrategy.CharacterClass charClass = SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result), treat_);
+			SharpDevelopWordFindStrategy.CharacterClass charClass = SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result), false, treat_);
 			bool done = false;
 			while (!done && result < doc.Length) {
 				char ch = doc.GetCharAt (result);
-				SharpDevelopWordFindStrategy.CharacterClass curCharClass = SharpDevelopWordFindStrategy.GetCharacterClass (ch, treat_);
+				SharpDevelopWordFindStrategy.CharacterClass curCharClass = SharpDevelopWordFindStrategy.GetCharacterClass (ch, false, treat_);
 				switch (curCharClass) {
 				case SharpDevelopWordFindStrategy.CharacterClass.IdentifierPart:
 					charClass = SharpDevelopWordFindStrategy.CharacterClass.IdentifierPart;
@@ -74,11 +74,11 @@ namespace Mono.TextEditor
 			if (offset <= 0)
 				return 0;
 			int  result = offset - 1;
-			SharpDevelopWordFindStrategy.CharacterClass charClass = SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result), treat_);
+			SharpDevelopWordFindStrategy.CharacterClass charClass = SharpDevelopWordFindStrategy.GetCharacterClass (doc.GetCharAt (result), false, treat_);
 			bool done = false;
 			while (!done && result > 0) {
 				char ch = doc.GetCharAt (result);
-				SharpDevelopWordFindStrategy.CharacterClass curCharClass = SharpDevelopWordFindStrategy.GetCharacterClass (ch, treat_);
+				SharpDevelopWordFindStrategy.CharacterClass curCharClass = SharpDevelopWordFindStrategy.GetCharacterClass (ch, false, treat_);
 				switch (curCharClass) {
 				case SharpDevelopWordFindStrategy.CharacterClass.IdentifierPart:
 					charClass = SharpDevelopWordFindStrategy.CharacterClass.IdentifierPart;
