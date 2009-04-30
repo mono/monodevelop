@@ -632,8 +632,12 @@ namespace MonoDevelop.Core.Assemblies
 				string file = Path.Combine (dir, assembly.Name) + ".dll";
 				if (File.Exists (file)) {
 					if ((assembly.Version == null || SystemAssemblyService.UpdateExpandedFrameworksFile) && IsRunning) {
-						System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
-						assembly.Update (aname);
+						try {
+							System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
+							assembly.Update (aname);
+						} catch {
+							// If something goes wrong when getting the name, just ignore the assembly
+						}
 					}
 					list.Add (AddAssembly (file, assembly, package));
 				}

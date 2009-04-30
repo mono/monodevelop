@@ -49,8 +49,6 @@
 			<Assembly name="System.Drawing.Design"/>
 			<Assembly name="System.Drawing"/>
 			<Assembly name="System.EnterpriseServices"/>
-			<Assembly name="System.EnterpriseServices.Thunk"/>
-			<Assembly name="System.EnterpriseServices.Wrapper"/>
 			<Assembly name="System.Management"/>
 			<Assembly name="System.Messaging"/>
 			<Assembly name="System.Runtime.Remoting"/>
@@ -73,8 +71,6 @@
 			<Assembly name="System.Configuration"/>
 			<Assembly name="System.Deployment"/>
 			<Assembly name="System.DirectoryServices.Protocols"/>
-			<Assembly name="System.EnterpriseServices.Thunk"/>
-			<Assembly name="System.EnterpriseServices.Wrapper"/>
 			<Assembly name="System.Transactions"/>
 			<Assembly name="Microsoft.VisualBasic.Compatibility.Data"/>
 			<Assembly name="Microsoft.VisualBasic.Compatibility"/>

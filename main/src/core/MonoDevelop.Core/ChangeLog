@@ -1,5 +1,14 @@
 2009-04-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* frameworks.xml:
+	* frameworks-source.xml: Removed some invalid assemblies.
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: If something
+	  goes wrong when getting an assembly name, just ignore the
+	  assembly.
+
+2009-04-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Serialization/ClassDataType.cs: When
 	  looking for ItemPropertyAttribute on a member, use
 	  inherit=false because if a base class already has an

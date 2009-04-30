@@ -47,8 +47,6 @@
       <Assembly name="System.Drawing.Design" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
       <Assembly name="System.Drawing" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
       <Assembly name="System.EnterpriseServices" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
-      <Assembly name="System.EnterpriseServices.Thunk" />
-      <Assembly name="System.EnterpriseServices.Wrapper" />
       <Assembly name="System.Management" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
       <Assembly name="System.Messaging" version="1.0.5000.0" publicKeyToken="b03f5f7f11d50a3a" />
       <Assembly name="System.Runtime.Remoting" version="1.0.5000.0" publicKeyToken="b77a5c561934e089" />
@@ -68,8 +66,6 @@
       <Assembly name="System.Configuration" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
       <Assembly name="System.Deployment" />
       <Assembly name="System.DirectoryServices.Protocols" />
-      <Assembly name="System.EnterpriseServices.Thunk" />
-      <Assembly name="System.EnterpriseServices.Wrapper" />
       <Assembly name="System.Transactions" version="2.0.0.0" publicKeyToken="b77a5c561934e089" />
       <Assembly name="Microsoft.VisualBasic.Compatibility.Data" />
       <Assembly name="Microsoft.VisualBasic.Compatibility" />
@@ -119,8 +115,6 @@
       <Assembly name="System.Drawing.Design" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
       <Assembly name="System.Drawing" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
       <Assembly name="System.EnterpriseServices" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
-      <Assembly name="System.EnterpriseServices.Thunk" />
-      <Assembly name="System.EnterpriseServices.Wrapper" />
       <Assembly name="System.Management" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
       <Assembly name="System.Messaging" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
       <Assembly name="System.Runtime.Remoting" version="2.0.0.0" publicKeyToken="b77a5c561934e089" />
