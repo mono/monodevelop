@@ -289,7 +289,7 @@ namespace MonoDevelop.CSharpBinding
 				overloads = new Dictionary<string, ICompletionData> ();
 			if (overload.Member is IMember && Member is IMember) {
 				string MemberId = (overload.Member as IMember).HelpUrl;
-				if (MemberId != (this.Member as IMember).HelpUrl || !overloads.ContainsKey (MemberId)) {
+				if (MemberId != (this.Member as IMember).HelpUrl && !overloads.ContainsKey (MemberId)) {
 					if (((IMember)overload.Member).IsPartial)
 						return;
 					overloads[MemberId] = overload;

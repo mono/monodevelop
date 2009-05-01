@@ -1,3 +1,8 @@
+2009-05-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/MemberCompletionData.cs: Fix duplicate filtering, so
+	  that unnecessary "overloads" don't show up.
+
 2009-04-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBindingCompilerManager.cs: Remove unnecessary compiler
