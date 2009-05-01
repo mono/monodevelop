@@ -4,7 +4,7 @@
        author	 = "Francisco 'Paco' Martinez, Ankit Jain"
        copyright = "GPL"
        url       = ""
-       description = "Support for VS2005 or MSBuild based projects and importer for VS2003 projects"
+       description = "Importer for VS2003 projects"
        category    = "Project Import and Export"
        version   = "2.1.0">
 
@@ -17,11 +17,6 @@
 		<Addin id="VBBinding" version="2.1.0"/>
 	</Dependencies>
 	
-	<ExtensionPoint path = "/MonoDevelop/Prj2Make/MSBuildProjectExtension">
-		<Description>Extensions to msbuild project support</Description>
-		<ExtensionNode name ="Class" />
-	</ExtensionPoint>
-
 	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
 		<FileFormat id="VS2003ProjectFileFormat"
 		            class="MonoDevelop.Prj2Make.VS2003ProjectFileFormat"/>
@@ -35,16 +30,5 @@
 		            _label = "Visual Studio Project"
 		            extensions = "*.csproj,*.vbproj"/>
 	</Extension>
-
-	<Extension path = "/MonoDevelop/Prj2Make/MSBuildProjectExtension">
-		<Class class="MonoDevelop.Prj2Make.CSharpMSBuildProjectExtension"/>
-		<Class class="MonoDevelop.Prj2Make.VBNetMSBuildProjectExtension"/>
-		<Class class="MonoDevelop.Prj2Make.SilverlightMSBuildProjectExtension"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class class = "MonoDevelop.Prj2Make.MSBuildProjectServiceExtension" id="MSBuildProjectServiceExtension" insertafter="InitialStep"/>
-	</Extension>
-
 </Addin>
 

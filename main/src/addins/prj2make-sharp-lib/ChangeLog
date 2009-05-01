@@ -1,3 +1,12 @@
+2009-05-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* prj2make-sharp-lib.csproj:
+	* prj2make-sharp-lib.addin.xml:
+	* MSBuildProjectServiceExtension.cs:
+	* SilverlightMSBuildProjectExtension.cs: Remove unused code
+	  and extensions.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* prj2make-sharp-lib.csproj: don't require specific

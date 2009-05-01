@@ -53,11 +53,6 @@
     <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="NRefactory, Version=1.9.2.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\build\bin\NRefactory.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -110,13 +105,17 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MsPrjHelper.cs" />
     <Compile Include="CsprojInfo.cs" />
     <Compile Include="pkgconfiginvoker.cs" />
     <Compile Include="csproj_ver2003.cs" />
-    <Compile Include="MSBuildProjectServiceExtension.cs" />
     <Compile Include="VS2003ProjectFileFormat.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
@@ -126,7 +125,6 @@
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="ChangeLog" />
-    <None Include="SilverlightMSBuildProjectExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
