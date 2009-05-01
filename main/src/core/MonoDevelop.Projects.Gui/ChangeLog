@@ -1,3 +1,9 @@
+2009-05-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Better set of modifiers for closing completion window on
+	  arrow+modifier.
+
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
