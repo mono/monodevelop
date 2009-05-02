@@ -222,9 +222,54 @@ namespace MonoDevelop.Moonlight
 			if (File.Exists (resFile))
 				File.Delete (resFile);
 			
+			if (proj.XapOutputs) {
+				
+			}
+			
 			base.Clean (monitor, item, configuration);
 		}
 		
+		protected override bool GetNeedsBuilding (MonoDevelop.Projects.SolutionEntityItem item, string configuration)
+		{
+			MoonlightProject proj = item as MoonlightProject;
+			DotNetProjectConfiguration conf = null;
+			if (proj != null)
+				conf = proj.GetActiveConfiguration (configuration) as DotNetProjectConfiguration;
+			if (conf == null)
+				return base.GetNeedsBuilding (item, configuration);
+			
+			if (base.GetNeedsBuilding (item, configuration))
+				return true;
+			
+			string objDir = GetObjDir (proj, conf);
+			
+			DateTime xapLastMod = DateTime.MaxValue;
+			if (proj.XapOutputs) {
+				string xapName = GetXapName (proj, conf);
+				if (!File.Exists (xapName))
+					return true;
+				xapLastMod = File.GetLastWriteTime (xapName);
+			}
+			
+			string appName = proj.Name;
+			string resFile = Path.Combine (objDir, appName + ".g.resources");
+			DateTime resLastMod = DateTime.MinValue;
+			if (File.Exists (resFile))
+				resLastMod = File.GetLastWriteTime (resFile);
+			
+			foreach (ProjectFile pf in proj.Files) {
+				if (pf.FilePath.EndsWith (".xaml") && pf.Generator == "MSBuild:MarkupCompilePass1") {
+					string outFile = Path.Combine (objDir, proj.LanguageBinding.GetFileName (Path.GetFileName (pf.FilePath) + ".g"));
+					if (!File.Exists (outFile) || File.GetLastWriteTime (outFile) < File.GetLastWriteTime (pf.FilePath))
+						return true;
+				}
+				else if (pf.BuildAction == BuildAction.Content && File.GetLastWriteTime (pf.FilePath) > xapLastMod)
+					return true;
+				else if (pf.BuildAction == BuildAction.Resource && File.GetLastWriteTime (pf.FilePath) > resLastMod)
+					return true;
+			}
+			return false;
+		}		
 		
 		protected override BuildResult Build (MonoDevelop.Core.IProgressMonitor monitor, MonoDevelop.Projects.SolutionEntityItem item, string configuration)
 		{
@@ -246,12 +291,17 @@ namespace MonoDevelop.Moonlight
 			return result;
 		}
 		
-		BuildResult Zip (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf)
+		string GetXapName (MoonlightProject proj, DotNetProjectConfiguration conf)
 		{
 			string xapName = proj.XapFilename;
 			if (String.IsNullOrEmpty (xapName))
 				xapName = proj.Name + ".xap";
-			xapName = Path.Combine (conf.OutputDirectory, xapName);
+			return Path.Combine (conf.OutputDirectory, xapName);
+		}
+		
+		BuildResult Zip (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf)
+		{
+			string xapName = GetXapName (proj, conf);
 			
 			//string manifestName = Path.Combine (conf.OutputDirectory, "AppManifest.xaml");
 			
