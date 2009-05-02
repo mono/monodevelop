@@ -111,11 +111,11 @@ namespace MonoDevelop.Xml.StateEngine
 			TestParser parser = new TestParser (CreateRootState ());
 			parser.Parse (@"
 <doc>
-	<tag.a att >
-		<tag.b att="" >
-			<tag.c att = ' 
-				<tag.d att = >
-					<tag.e att='' att=' att = >
+	<tag.a att1 >
+		<tag.b att2="" >
+			<tag.c att3 = ' 
+				<tag.d att4 = >
+					<tag.e att5='' att6=' att7 = >
 						<tag.f id='$foo' />
 					</tag.e>
 				</tag.d>
@@ -131,7 +131,7 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			);
 			parser.AssertEmpty ();
-			parser.AssertErrorCount (5);
+			parser.AssertErrorCount (8);
 		}
 		
 		[Test]

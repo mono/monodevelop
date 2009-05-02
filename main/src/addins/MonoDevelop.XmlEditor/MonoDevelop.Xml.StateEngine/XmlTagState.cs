@@ -69,9 +69,12 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			if (c == '<') {
-				context.LogError ("Unexpected '<' in tag.");
-				if (element.IsNamed)
+				if (element.IsNamed) {
+					context.LogError ("Unexpected '<' in tag '" + element.Name.FullName + "'.");
 					Close (element, context);
+				} else {
+					context.LogError ("Unexpected '<' in unnamed tag.");
+				}
 				
 				rollback = string.Empty;
 				return Parent;

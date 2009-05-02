@@ -64,7 +64,8 @@ namespace MonoDevelop.Xml.StateEngine
 				rollback = string.Empty;
 				return Parent;
 			} else if (c == '>' && context.KeywordBuilder.Length > 0) {
-				context.LogError  ("Attribute value ended unexpectedly.");
+				string fullName = ((XAttribute) context.Nodes.Peek ()).Name.FullName;
+				context.LogError  ("The value of attribute '" + fullName + "' ended unexpectedly.");
 				rollback = string.Empty;
 				return Parent;
 			} else if (char.IsLetterOrDigit (c) || c == '_' || c == '.') {
@@ -98,10 +99,16 @@ namespace MonoDevelop.Xml.StateEngine
 				//the parent state should report the error
 				rollback = string.Empty;
 				return Parent;
-			} else if (c == '\'') {
+			} else if (c == '\r' || c == '\n' || c == '\'') {
 				//ending the value
 				XAttribute att = (XAttribute) context.Nodes.Peek ();
 				att.Value = context.KeywordBuilder.ToString ();
+				
+				if (c != '\'') {
+					rollback = string.Empty;
+					context.LogError ("Unexpected newline in value for attribute '" + att.Name.FullName +"'.", att.Region.Start);
+				}
+				
 				return Parent;
 			}
 			else {
@@ -124,10 +131,16 @@ namespace MonoDevelop.Xml.StateEngine
 				//the parent state should report the error
 				rollback = string.Empty;
 				return Parent;
-			} else if (c == '"') {
+			} else if (c == '\r' || c == '\n' || c == '"') {
 				//ending the value
 				XAttribute att = (XAttribute) context.Nodes.Peek ();
 				att.Value = context.KeywordBuilder.ToString ();
+				
+				if (c != '"') {
+					rollback = string.Empty;
+					context.LogError ("Unexpected newline in value for attribute '" + att.Name.FullName +"'.", att.Region.Start);
+				}
+				
 				return Parent;
 			}
 			else {
