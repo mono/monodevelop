@@ -93,18 +93,27 @@ namespace MonoDevelop.Moonlight
 					File.Delete (resFile);
 			}
 			
-			BuildResult baseResult = base.Compile (monitor, item, buildData);
-			
-			foreach (BuildResult result in results) {
-				foreach (BuildError b in result.Errors) {
+			return MergeResults (base.Compile (monitor, item, buildData), results);
+		}
+		
+		BuildResult MergeResults (BuildResult mergeInto, IEnumerable<BuildResult> mergeFrom)
+		{
+			foreach (BuildResult from in mergeFrom)
+				MergeResults (mergeInto, from);
+			return mergeInto;
+		}
+		
+		BuildResult MergeResults (BuildResult mergeInto, BuildResult mergeFrom)
+		{
+			if (mergeFrom != null) {
+				foreach (BuildError b in mergeFrom.Errors) {
 					if (b.IsWarning)
-						baseResult.AddWarning (b.FileName, b.Line, b.Column, b.ErrorNumber, b.ErrorText);
+						mergeInto.AddWarning (b.FileName, b.Line, b.Column, b.ErrorNumber, b.ErrorText);
 					else
-						baseResult.AddError (b.FileName, b.Line, b.Column, b.ErrorNumber, b.ErrorText);
+						mergeInto.AddError (b.FileName, b.Line, b.Column, b.ErrorNumber, b.ErrorText);
 				}
 			}
-			
-			return baseResult;
+			return mergeInto;
 		}
 		
 		BuildResult Respack (IProgressMonitor monitor, MonoDevelop.Core.Assemblies.TargetRuntime runtime, List<string> toResGen, string outfile)
@@ -187,12 +196,9 @@ namespace MonoDevelop.Moonlight
 		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
 		{
 			MoonlightProject proj = item as MoonlightProject;
-			if (proj == null) {
-				base.Clean (monitor, item, configuration);
-				return;
-			}
-			
-			DotNetProjectConfiguration conf = proj.GetActiveConfiguration (configuration) as DotNetProjectConfiguration;
+			DotNetProjectConfiguration conf = null;
+			if (proj != null)
+				conf = proj.GetActiveConfiguration (configuration) as DotNetProjectConfiguration;
 			if (conf == null) {
 				base.Clean (monitor, item, configuration);
 				return;
@@ -217,6 +223,100 @@ namespace MonoDevelop.Moonlight
 				File.Delete (resFile);
 			
 			base.Clean (monitor, item, configuration);
+		}
+		
+		
+		protected override BuildResult Build (MonoDevelop.Core.IProgressMonitor monitor, MonoDevelop.Projects.SolutionEntityItem item, string configuration)
+		{
+			MoonlightProject proj = item as MoonlightProject;
+			DotNetProjectConfiguration conf = null;
+			if (proj != null)
+				conf = proj.GetActiveConfiguration (configuration) as DotNetProjectConfiguration;
+			if (conf == null)
+				return base.Build (monitor, item, configuration);
+			
+			BuildResult result = base.Build (monitor, item, configuration);
+			if (result.Failed)
+				return result;
+			
+			if (proj.XapOutputs)
+				if (MergeResults (result, Zip (monitor, proj, conf)).Failed)
+					return result;
+			
+			return result;
+		}
+		
+		BuildResult Zip (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf)
+		{
+			string xapName = proj.XapFilename;
+			if (String.IsNullOrEmpty (xapName))
+				xapName = proj.Name + ".xap";
+			xapName = Path.Combine (conf.OutputDirectory, xapName);
+			
+			string manifestName = xapName = Path.Combine (conf.OutputDirectory, xapName);
+			
+			var src = new List<string> ();
+			var targ = new List<string> ();
+			
+			src.Add (conf.OutputAssembly);
+			targ.Add (Path.GetFileName (conf.OutputAssembly));
+			
+			foreach (ProjectFile pf in proj.Files) {
+				if (pf.BuildAction == BuildAction.Content) {
+					src.Add (pf.FilePath);
+					targ.Add (pf.RelativePath);
+				}
+			}
+			
+			if (File.Exists (xapName)) {
+				DateTime lastMod = File.GetLastWriteTime (xapName);
+				bool needsWrite = false;
+				foreach (string file in src) {
+					if (File.GetLastWriteTime (file) > lastMod) {
+						needsWrite = true;
+						break;
+					}
+				}
+				if (!needsWrite)
+					return null;
+			}
+			
+			monitor.BeginStepTask ("Compressing " + xapName + "...", src.Count, 1);
+			try {
+				using (FileStream fs = new FileStream (xapName, FileMode.Create)) {
+					var zipfile = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream (fs);
+					zipfile.SetLevel (9);
+					
+					byte[] buffer = new byte[4096];
+					
+					for (int i = 0; i < src.Count; i++) {
+						monitor.Step (1);
+						zipfile.PutNextEntry (new ICSharpCode.SharpZipLib.Zip.ZipEntry (targ[1]));
+						using (FileStream inStream = File.OpenRead (src[i])) {
+	                 	   int readCount;
+	                 	   do {
+								readCount = inStream.Read (buffer, 0, buffer.Length);
+								zipfile.Write (buffer, 0, readCount);
+							} while (readCount > 0);
+						}
+					}
+				}
+			} catch (IOException ex) {
+				monitor.ReportError ("Error writing xap file.", ex);
+				BuildResult res = new BuildResult ();
+				res.AddError ("Error writing xap file:" + ex.ToString ());
+				
+				try {
+					if (File.Exists (xapName))                                                               
+						File.Delete (xapName);
+				} catch {}
+				
+				return res;
+			} finally {
+				monitor.EndTask ();
+			}
+			
+			return null;
 		}
 	}
 }
