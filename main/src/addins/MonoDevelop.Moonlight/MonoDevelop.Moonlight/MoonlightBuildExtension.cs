@@ -253,13 +253,13 @@ namespace MonoDevelop.Moonlight
 				xapName = proj.Name + ".xap";
 			xapName = Path.Combine (conf.OutputDirectory, xapName);
 			
-			string manifestName = xapName = Path.Combine (conf.OutputDirectory, xapName);
+			//string manifestName = Path.Combine (conf.OutputDirectory, "AppManifest.xaml");
 			
 			var src = new List<string> ();
 			var targ = new List<string> ();
 			
-			src.Add (conf.OutputAssembly);
-			targ.Add (Path.GetFileName (conf.OutputAssembly));
+			src.Add (conf.CompiledOutputName);
+			targ.Add (Path.GetFileName (conf.CompiledOutputName));
 			
 			foreach (ProjectFile pf in proj.Files) {
 				if (pf.BuildAction == BuildAction.Content) {
