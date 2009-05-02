@@ -291,15 +291,17 @@ namespace MonoDevelop.Moonlight
 					
 					for (int i = 0; i < src.Count; i++) {
 						monitor.Step (1);
-						zipfile.PutNextEntry (new ICSharpCode.SharpZipLib.Zip.ZipEntry (targ[1]));
+						zipfile.PutNextEntry (new ICSharpCode.SharpZipLib.Zip.ZipEntry (targ[i]));
 						using (FileStream inStream = File.OpenRead (src[i])) {
-	                 	   int readCount;
-	                 	   do {
+							int readCount;
+							do {
 								readCount = inStream.Read (buffer, 0, buffer.Length);
 								zipfile.Write (buffer, 0, readCount);
 							} while (readCount > 0);
 						}
 					}
+					zipfile.Finish ();
+					zipfile.Close ();
 				}
 			} catch (IOException ex) {
 				monitor.ReportError ("Error writing xap file.", ex);
