@@ -80,4 +80,8 @@
 			         class = "MonoDevelop.Moonlight.Gui.MoonlightOptionsPanel"/>
 		</Condition>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+		<Class class = "MonoDevelop.Moonlight.MoonlightBuildExtension" insertafter="MidStep" />
+	</Extension>
 </Addin>

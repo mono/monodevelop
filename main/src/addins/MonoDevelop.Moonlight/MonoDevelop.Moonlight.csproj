@@ -135,6 +135,7 @@
     <Compile Include="MonoDevelop.Moonlight.Gui\MoonlightOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.Moonlight\MoonlightBuildExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

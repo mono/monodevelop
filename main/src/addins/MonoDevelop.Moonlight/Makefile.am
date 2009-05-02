@@ -27,6 +27,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs \
 	MonoDevelop.Moonlight.Gui/MoonlightOptionsPanel.cs \
 	MonoDevelop.Moonlight.Gui/MoonlightOptionsPanelWidget.cs \
+	MonoDevelop.Moonlight/MoonlightBuildExtension.cs \
 	MonoDevelop.Moonlight/MoonlightEditorExtension.cs \
 	MonoDevelop.Moonlight/MoonlightParser.cs \
 	MonoDevelop.Moonlight/MoonlightProject.cs \

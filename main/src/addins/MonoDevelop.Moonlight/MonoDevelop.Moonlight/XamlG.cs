@@ -44,23 +44,27 @@ namespace MonoDevelop.Moonlight
 	{
 		private static bool sl2 = true;
 
-		public static BuildError GenerateFile (CodeDomProvider provider, string app_name,
-		                                       string xaml_file, string out_file)
+		public static BuildResult GenerateFile (CodeDomProvider provider, string app_name,
+		                                       string xaml_file, string xaml_path_in_project, string out_file)
 		{
 			XmlDocument xmldoc = new XmlDocument ();
 			xmldoc.Load (xaml_file);
+			
+			BuildResult result = new BuildResult ();
 
 			XmlNamespaceManager nsmgr = new XmlNamespaceManager (xmldoc.NameTable);
 			nsmgr.AddNamespace("x", "http://schemas.microsoft.com/winfx/2006/xaml");
 
 			XmlNode root = xmldoc.SelectSingleNode ("/*", nsmgr);
 			if (root == null) {
-				return new BuildError (xaml_file, 0, 0, "", "No root node found.");
+				result.AddError (xaml_file, 0, 0, "", "No root node found.");
+				return result;
 			}
 
 			XmlAttribute root_class = root.Attributes ["x:Class"];
 			if (root_class == null) {
-				return new BuildError (xaml_file, 0, 0, "", "Does not contain an x:Class attribute.");
+				result.AddError (xaml_file, 0, 0, "", "Does not contain an x:Class attribute.");
+				return result;
 			}
 
 			bool is_application = root.LocalName == "Application";
@@ -111,7 +115,7 @@ namespace MonoDevelop.Moonlight
 
 				initcomp.Statements.Add (set_content_loaded);
 
-				string component_path = String.Format ("/{0};component/{1}", app_name, xaml_file);
+				string component_path = String.Format ("/{0};component/{1}", app_name, xaml_path_in_project);
 				CodeMethodInvokeExpression load_component = new CodeMethodInvokeExpression (
 					new CodeTypeReferenceExpression ("System.Windows.Application"), "LoadComponent",
 					new CodeExpression [] { new CodeThisReferenceExpression (),
@@ -155,7 +159,7 @@ namespace MonoDevelop.Moonlight
 				provider.GenerateCodeFromCompileUnit (ccu, writer, new CodeGeneratorOptions ());
 			}
 			
-			return null;
+			return result;
 		}
 
 		private static Hashtable GetNamesAndTypes (XmlNode root, XmlNamespaceManager nsmgr)
