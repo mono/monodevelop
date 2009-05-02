@@ -1,5 +1,10 @@
 2009-05-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Remove xap
+	  file in clean step.
+
+2009-05-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Implement
 	  support for checking when we need to rebuild.
 

@@ -223,7 +223,9 @@ namespace MonoDevelop.Moonlight
 				File.Delete (resFile);
 			
 			if (proj.XapOutputs) {
-				
+				string xapName = GetXapName (proj, conf);
+				if (File.Exists (xapName))
+					File.Delete (xapName);
 			}
 			
 			base.Clean (monitor, item, configuration);
