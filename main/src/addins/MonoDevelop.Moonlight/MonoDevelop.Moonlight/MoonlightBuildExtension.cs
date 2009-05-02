@@ -27,7 +27,9 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Moonlight
 {
@@ -40,7 +42,7 @@ namespace MonoDevelop.Moonlight
 			return Path.Combine (Path.Combine (proj.BaseDirectory, "obj"), conf.Id);
 		}
 		
-		protected override BuildResult Compile (MonoDevelop.Core.IProgressMonitor monitor, MonoDevelop.Projects.SolutionEntityItem item, MonoDevelop.Projects.BuildData buildData)
+		protected override BuildResult Compile (IProgressMonitor monitor, MonoDevelop.Projects.SolutionEntityItem item, MonoDevelop.Projects.BuildData buildData)
 		{
 			MoonlightProject proj = item as MoonlightProject;
 			if (proj == null)
@@ -60,7 +62,7 @@ namespace MonoDevelop.Moonlight
 				if (pf.FilePath.EndsWith (".xaml") && pf.Generator == "MSBuild:MarkupCompilePass1") {
 					string outFile = Path.Combine (objDir, proj.LanguageBinding.GetFileName (Path.GetFileName (pf.FilePath) + ".g"));
 					buildData.Items.Add (new ProjectFile (outFile, BuildAction.Compile));
-					if (File.Exists (outFile) || File.GetLastWriteTime (outFile) > File.GetLastWriteTime (pf.FilePath))
+					if (File.Exists (outFile) && File.GetLastWriteTime (outFile) > File.GetLastWriteTime (pf.FilePath))
 						continue;
 					BuildResult result = XamlG.GenerateFile (codeDomProvider, appName, pf.FilePath, pf.RelativePath, outFile);
 					if (result.Failed)
@@ -78,7 +80,7 @@ namespace MonoDevelop.Moonlight
 					lastMod = File.GetLastWriteTime (resFile);
 				foreach (string f in toResGen) {
 					if (File.GetLastWriteTime (f) > lastMod) {
-						BuildResult result = ResGen (toResGen, resFile);
+						BuildResult result = Respack (monitor, proj.TargetRuntime, toResGen, resFile);
 						if (result.Failed)
 							return result;
 						results.Add (result);
@@ -105,12 +107,80 @@ namespace MonoDevelop.Moonlight
 			return baseResult;
 		}
 		
-		BuildResult ResGen (List<string> toResGen, string outfile)
+		BuildResult Respack (IProgressMonitor monitor, MonoDevelop.Core.Assemblies.TargetRuntime runtime, List<string> toResGen, string outfile)
 		{
-			return new BuildResult ();
+			BuildResult result = new BuildResult ();
+			
+			string respack = runtime.GetToolPath ("respack");
+			if (string.IsNullOrEmpty (respack)) {
+				result.AddError (null, 0, 0, null, "Could not find respack");
+				return result;
+			}
+			
+			var si = new System.Diagnostics.ProcessStartInfo ();
+			foreach (KeyValuePair<string,string> env in runtime.GetToolsEnvironmentVariables ()) {
+				if (env.Value == null) {
+					if (si.EnvironmentVariables.ContainsKey (env.Key))
+						si.EnvironmentVariables.Remove (env.Key);
+				} else {
+					si.EnvironmentVariables[env.Key] = env.Value;
+				}
+			}
+			si.FileName = respack;
+			si.WorkingDirectory = Path.GetDirectoryName (outfile);
+			
+			var sb = new System.Text.StringBuilder (outfile);
+			foreach (string infile in toResGen) {
+				sb.Append (" ");
+				sb.Append (infile);
+			}
+			si.Arguments = sb.ToString ();
+			
+			string err;
+			int exit = ExecuteCommand (monitor, si, out err);
+			if (exit != 0)
+				result.AddError (null, 0, 0, exit.ToString (), "respack failed: " + err);
+			
+			return result;
 		}
 		
-		protected override void Clean (MonoDevelop.Core.IProgressMonitor monitor, MonoDevelop.Projects.SolutionEntityItem item, string configuration)
+		int ExecuteCommand (IProgressMonitor monitor, System.Diagnostics.ProcessStartInfo startInfo, out string errorOutput)
+		{
+			errorOutput = string.Empty;
+			int exitCode = -1;
+			
+			var swError = new StringWriter ();
+			var chainedError = new LogTextWriter ();
+			chainedError.ChainWriter (monitor.Log);
+			chainedError.ChainWriter (swError);
+			
+			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
+			
+			try {
+				var p = Runtime.ProcessService.StartProcess (startInfo, monitor.Log, chainedError, null);
+				operationMonitor.AddOperation (p); //handles cancellation
+				
+				p.WaitForOutput ();
+				errorOutput = swError.ToString ();
+				exitCode = p.ExitCode;
+				p.Dispose ();
+				
+				if (monitor.IsCancelRequested) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Build cancelled"));
+					monitor.ReportError (GettextCatalog.GetString ("Build cancelled"), null);
+					if (exitCode == 0)
+						exitCode = -1;
+				}
+			} finally {
+				chainedError.Close ();
+				swError.Close ();
+				operationMonitor.Dispose ();
+			}
+			
+			return exitCode;
+		}
+		
+		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
 		{
 			MoonlightProject proj = item as MoonlightProject;
 			if (proj == null) {
