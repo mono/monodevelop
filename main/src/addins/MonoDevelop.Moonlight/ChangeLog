@@ -1,5 +1,10 @@
 2009-05-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs:
+	  Fix respack execution.
+
+2009-05-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Implement
 	  respack invocation. Fix updating of xaml.g.cs files.
 

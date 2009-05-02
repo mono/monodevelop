@@ -146,6 +146,10 @@ namespace MonoDevelop.Moonlight
 		
 		int ExecuteCommand (IProgressMonitor monitor, System.Diagnostics.ProcessStartInfo startInfo, out string errorOutput)
 		{
+			startInfo.UseShellExecute = false;
+			startInfo.RedirectStandardError = true;
+			startInfo.RedirectStandardOutput = true;
+			
 			errorOutput = string.Empty;
 			int exitCode = -1;
 			
