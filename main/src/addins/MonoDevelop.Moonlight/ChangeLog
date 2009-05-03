@@ -1,3 +1,9 @@
+2009-05-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/XamlG.cs:
+	* MonoDevelop.Moonlight/MoonlightParser.cs: Add
+	  System.Windows.Controls.Primitives to the generated imports.
+
 2009-05-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Remove xap

@@ -127,6 +127,7 @@ namespace MonoDevelop.Moonlight
 			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Media"));
 			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Media.Animation"));
 			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Shapes"));
+			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Controls.Primitives"));
 			
 //			Dictionary<string,string> namespaceMap = new Dictionary<string, string> ();
 //			namespaceMap["x"] = "http://schemas.microsoft.com/winfx/2006/xaml";

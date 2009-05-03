@@ -89,6 +89,7 @@ namespace MonoDevelop.Moonlight
 			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Media"));
 			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Media.Animation"));
 			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Shapes"));
+			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Controls.Primitives"));
 
 			CodeTypeDeclaration decl_type = new CodeTypeDeclaration (root_type);
 			decl_type.IsPartial = true;
