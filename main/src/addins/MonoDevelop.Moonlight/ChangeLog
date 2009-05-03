@@ -1,5 +1,12 @@
 2009-05-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Moonlight.csproj:
+	* Templates/PreviewTemplate.html: Add HTML template for
+	  previewing.
+
+2009-05-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/XamlG.cs:
 	* MonoDevelop.Moonlight/MoonlightParser.cs: Add
 	  System.Windows.Controls.Primitives to the generated imports.

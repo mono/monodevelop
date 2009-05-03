@@ -42,7 +42,8 @@ RES =  \
 	Templates/Moonlight-ApplicationProject.xpt.xml \
 	Templates/Moonlight-ApplicationXaml.xft.xml \
 	Templates/Moonlight-LibraryProject.xpt.xml \
-	Templates/Moonlight-UserControlXaml.xft.xml
+	Templates/Moonlight-UserControlXaml.xft.xml \
+	Templates/PreviewTemplate.html
 
 DATA_FILES = \
 	Templates/Silverlight.js
