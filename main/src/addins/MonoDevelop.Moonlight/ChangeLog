@@ -1,5 +1,16 @@
 2009-05-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Fix path
+	  serialization. Add StartPageUrl property. Update DoExecute
+	  and implement CanExecute.
+
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Fixed
+	  failed build tracking. Implement manifest generation.
+	  Implement test page creation. Add manifest and referenced
+	  assemblies to XAP.
+
+2009-05-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Moonlight.csproj:
 	* Templates/PreviewTemplate.html: Add HTML template for

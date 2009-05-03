@@ -30,6 +30,8 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Xml;
+using System.Text;
 
 namespace MonoDevelop.Moonlight
 {
@@ -112,6 +114,7 @@ namespace MonoDevelop.Moonlight
 					else
 						mergeInto.AddError (b.FileName, b.Line, b.Column, b.ErrorNumber, b.ErrorText);
 				}
+				mergeInto.FailedBuildCount += mergeFrom.FailedBuildCount;
 			}
 			return mergeInto;
 		}
@@ -123,6 +126,7 @@ namespace MonoDevelop.Moonlight
 			string respack = runtime.GetToolPath ("respack");
 			if (string.IsNullOrEmpty (respack)) {
 				result.AddError (null, 0, 0, null, "Could not find respack");
+				result.FailedBuildCount++;
 				return result;
 			}
 			
@@ -147,9 +151,10 @@ namespace MonoDevelop.Moonlight
 			
 			string err;
 			int exit = ExecuteCommand (monitor, si, out err);
-			if (exit != 0)
+			if (exit != 0) {
 				result.AddError (null, 0, 0, exit.ToString (), "respack failed: " + err);
-			
+				result.FailedBuildCount++;
+			}
 			return result;
 		}
 		
@@ -252,6 +257,23 @@ namespace MonoDevelop.Moonlight
 					return true;
 				xapLastMod = File.GetLastWriteTime (xapName);
 			}
+
+			string manifest = Path.Combine (conf.OutputDirectory, "AppManifest.xaml");
+			if (proj.GenerateSilverlightManifest) {
+				if (!File.Exists (manifest))
+					return true;
+				if (!String.IsNullOrEmpty (proj.SilverlightManifestTemplate)) {
+					string template = proj.GetAbsoluteChildPath (proj.SilverlightManifestTemplate);
+					if (File.Exists (template) && File.GetLastWriteTime (template) > File.GetLastWriteTime (manifest))
+						return true;
+				}
+			}
+
+			if (proj.CreateTestPage) {
+				string testPageFile = GetTestPageFileName (proj, conf);
+				if (!File.Exists (testPageFile))
+					return true;
+			}
 			
 			string appName = proj.Name;
 			string resFile = Path.Combine (objDir, appName + ".g.resources");
@@ -285,12 +307,127 @@ namespace MonoDevelop.Moonlight
 			BuildResult result = base.Build (monitor, item, configuration);
 			if (result.Failed)
 				return result;
+
+			if (proj.GenerateSilverlightManifest)
+				if (MergeResults (result, GenerateManifest (monitor, proj, conf, configuration)).Failed)
+					return result;
 			
 			if (proj.XapOutputs)
-				if (MergeResults (result, Zip (monitor, proj, conf)).Failed)
+				if (MergeResults (result, Zip (monitor, proj, conf, configuration)).Failed)
+					return result;
+
+			if (proj.XapOutputs && proj.CreateTestPage)
+				if (MergeResults (result, CreateTestPage (monitor, proj, conf)).Failed)
 					return result;
 			
 			return result;
+		}
+
+		BuildResult GenerateManifest (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf, string slnConf)
+		{
+			BuildResult res = new BuildResult ();
+			string manifest = Path.Combine (conf.OutputDirectory, "AppManifest.xaml");
+
+			string template = String.IsNullOrEmpty (proj.SilverlightManifestTemplate)?
+				null : proj.GetAbsoluteChildPath (proj.SilverlightManifestTemplate);
+
+			XmlDocument doc = new XmlDocument ();
+			if (template != null) {
+				if (!File.Exists (template)) {
+					monitor.ReportError ("Could not find manifest template '" +  template + "'.", null);
+					res.AddError ("Could not find manifest template '" +  template + "'.");
+					res.FailedBuildCount++;
+					return res;
+				}
+				try {
+					doc.Load (template);
+				} catch (XmlException ex) {
+					monitor.ReportError ("Could not load manifest template '" +  template + "'.", null);
+					res.AddError (template, ex.LineNumber, ex.LinePosition, null, "Error loading manifest template '" + ex.Source);
+					res.FailedBuildCount++;
+					return res;
+				} catch (Exception ex) {
+					monitor.ReportError ("Could not load manifest template '" +  template + "'.", ex);
+					res.AddError ("Could not load manifest template '" +  template + "': " + ex.ToString ());
+					res.FailedBuildCount++;
+				}
+
+			} else {
+				doc.LoadXml (@"<Deployment xmlns=""http://schemas.microsoft.com/client/2007/deployment"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""></Deployment>");
+			}
+
+			try {
+				XmlNode deploymentNode = doc.SelectSingleNode ("//Deployment");
+				if (deploymentNode.Attributes["EntryPointAssembly"] != null)
+					deploymentNode.Attributes.Append (doc.CreateAttribute ("EntryPointAssembly")).Value = Path.GetFileNameWithoutExtension (conf.CompiledOutputName);
+				if (!String.IsNullOrEmpty (proj.SilverlightAppEntry) && deploymentNode.Attributes["EntryPointType"] != null)
+					deploymentNode.Attributes.Append (doc.CreateAttribute ("EntryPointType")).Value = proj.SilverlightAppEntry;
+
+				if (deploymentNode.Attributes["RuntimeVersion"] != null) {
+					if (proj.TargetFramework.ClrVersion == ClrVersion.Clr_2_1)
+						deploymentNode.Attributes.Append (doc.CreateAttribute ("RuntimeVersion")).Value = "2.0.31005.0";
+				}
+
+				XmlNode partsNode = doc.SelectSingleNode ("//Deployment/Deployment.Parts");
+				if (partsNode == null)
+					partsNode = deploymentNode.AppendChild (doc.CreateElement ("Deployment.Parts"));
+
+				AddAssemblyPart (doc, partsNode, conf.CompiledOutputName);
+				foreach (ProjectReference pr in proj.References) {
+					if (pr.LocalCopy) {
+						var pk = pr.Package;
+						if (pk == null || !pk.IsFrameworkPackage) {
+							foreach (string s in pr.GetReferencedFileNames (slnConf))
+								AddAssemblyPart (doc, partsNode, s);
+						}
+					}
+				}
+
+			} catch (XmlException ex) {
+				monitor.ReportError ("Error processing manifest template.", ex);
+				res.AddError (template, ex.LineNumber, ex.LinePosition, null, "Error processing manifest template: '" + ex.Source);
+				res.FailedBuildCount++;
+				return res;
+			}
+
+			return res;
+		}
+
+		static void AddAssemblyPart (XmlDocument doc, XmlNode partsNode, string assem)
+		{
+			XmlNode child = doc.CreateElement ("AssemblyPart", "http://schemas.microsoft.com/client/2007/deployment");
+			child.Attributes.Append (doc.CreateAttribute ("Name", "http://schemas.microsoft.com/winfx/2006/xaml")).Value = Path.GetFileNameWithoutExtension (assem);
+			child.Attributes.Append (doc.CreateAttribute ("Source")).Value = Path.GetFileName (assem);
+			partsNode.AppendChild (child);
+		}
+
+		BuildResult CreateTestPage (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf)
+		{
+			string testPageFile = GetTestPageFileName (proj, conf);
+			try {
+				using (var sr = new StreamReader (System.Reflection.Assembly.GetExecutingAssembly ().GetManifestResourceStream ("PreviewTemplate.html"))) {
+					var sb = new StringBuilder (sr.ReadToEnd ());
+					string xapName = String.IsNullOrEmpty (proj.XapFilename)? proj.Name + ".xap" : proj.XapFilename;
+					sb.Replace ("@TITLE@", proj.Name);
+					sb.Replace ("@XAP_FILE@", xapName);
+					File.WriteAllText (testPageFile, sb.ToString ());
+				}
+			} catch (Exception ex) {
+				monitor.ReportError ("Error generating test page '" + testPageFile + "'.", ex);
+				BuildResult res = new BuildResult ();
+				res.AddError ("Error generating test page '" + testPageFile + "':" + ex.ToString ());
+				res.FailedBuildCount++;
+				return res;
+			}
+			return null;
+		}
+		
+		string GetTestPageFileName (MoonlightProject proj, DotNetProjectConfiguration conf)
+		{
+			string testPage = proj.TestPageFileName;
+			if (String.IsNullOrEmpty (testPage))
+				testPage = "TestPage.html";
+			return Path.Combine (conf.OutputDirectory, "TestPage.html");
 		}
 		
 		string GetXapName (MoonlightProject proj, DotNetProjectConfiguration conf)
@@ -301,23 +438,51 @@ namespace MonoDevelop.Moonlight
 			return Path.Combine (conf.OutputDirectory, xapName);
 		}
 		
-		BuildResult Zip (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf)
+		BuildResult Zip (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf, string slnConf)
 		{
 			string xapName = GetXapName (proj, conf);
-			
-			//string manifestName = Path.Combine (conf.OutputDirectory, "AppManifest.xaml");
 			
 			var src = new List<string> ();
 			var targ = new List<string> ();
 			
 			src.Add (conf.CompiledOutputName);
 			targ.Add (Path.GetFileName (conf.CompiledOutputName));
-			
+
+			if (proj.GenerateSilverlightManifest) {
+				src.Add (Path.Combine (conf.OutputDirectory, "AppManifest.xaml"));
+				targ.Add ("AppManifest.xaml");
+			}
+
 			foreach (ProjectFile pf in proj.Files) {
 				if (pf.BuildAction == BuildAction.Content) {
 					src.Add (pf.FilePath);
 					targ.Add (pf.RelativePath);
 				}
+			}
+			
+			BuildResult res = new BuildResult ();
+
+			foreach (ProjectReference pr in proj.References) {
+				if (pr.LocalCopy) {
+					var pk = pr.Package;
+					if (pk == null || !pk.IsFrameworkPackage) {
+						string err = pr.ValidationErrorMessage;
+						if (err != null) {
+							res.AddError (String.Format ("Could not add reference '{0}' to '{1}': {2}",
+							                             pr.Reference, Path.GetFileName (xapName), err));
+							continue;
+						}
+						foreach (string s in pr.GetReferencedFileNames (slnConf)) {
+							src.Add (s);
+							targ.Add (Path.GetFileName (s));
+						}
+					}
+				}
+			}
+			
+			if (res.ErrorCount > 0) {
+				res.FailedBuildCount++;
+				return res;
 			}
 			
 			if (File.Exists (xapName)) {
@@ -357,8 +522,8 @@ namespace MonoDevelop.Moonlight
 				}
 			} catch (IOException ex) {
 				monitor.ReportError ("Error writing xap file.", ex);
-				BuildResult res = new BuildResult ();
 				res.AddError ("Error writing xap file:" + ex.ToString ());
+				res.FailedBuildCount++;
 				
 				try {
 					if (File.Exists (xapName))                                                               
@@ -370,7 +535,7 @@ namespace MonoDevelop.Moonlight
 				monitor.EndTask ();
 			}
 			
-			return null;
+			return res;
 		}
 	}
 }

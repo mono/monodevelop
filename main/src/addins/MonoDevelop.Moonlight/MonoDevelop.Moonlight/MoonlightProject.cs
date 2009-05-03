@@ -125,24 +125,49 @@ namespace MonoDevelop.Moonlight
 			get { return true; }
 		}
 		
+		public bool CanExecute (MonoDevelop.Projects.ExecutionContext context, string configuration)
+		{
+			if (!String.IsNullOrEmpty (startPageUrl))
+				return true;
+			
+			if (!this.CreateTestPage)
+				return false;
+			
+			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetActiveConfiguration (configuration);
+			string testPage = this.TestPageFileName;
+			if (String.IsNullOrEmpty (testPage))
+				testPage = "TestPage.html";
+			testPage = Path.Combine (config.OutputDirectory, testPage);
+			return File.Exists (testPage);
+		}
+		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
-			string[] pages = { (Name??"TestPage") + ".html", "TestPage.html", "Default.html", "default.html", "Index.html", "index.html" };
-			string testPage = null;
-			for (int i = 0; i < pages.Length; i++) {
-				testPage = Path.Combine (BaseDirectory, pages[i]);
-				if (File.Exists (testPage)) {
-					break;
-				}else if (i + 1 >= pages.Length) {
+			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetActiveConfiguration (configuration);
+			
+			string url = startPageUrl;
+			
+			if (String.IsNullOrEmpty (startPageUrl) && this.CreateTestPage) {
+				string testPage = this.TestPageFileName;
+				if (String.IsNullOrEmpty (testPage))
+					testPage = "TestPage.html";
+				testPage = Path.Combine (config.OutputDirectory, testPage);
+				if (!File.Exists (testPage)) {
 					monitor.ReportError (GettextCatalog.GetString ("Could not find test HTML file '{0}'.", testPage), null);
 					return;
 				}
+				url = testPage;
+			}
+			
+			if (!url.StartsWith ("http://", StringComparison.OrdinalIgnoreCase)
+				&& !url.StartsWith ("https://", StringComparison.OrdinalIgnoreCase))
+			{
+				url = "file://" + url.Replace (Path.PathSeparator, '/');
 			}
 			
 			using (AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor)) {
 				//launch web browser
-				string testPagePath = "file://" + testPage.Replace (Path.PathSeparator, '/');
-				IAsyncOperation browserLauncher = BrowserLauncher.LaunchWhenReady (testPagePath);
+				IAsyncOperation browserLauncher = BrowserLauncher.LaunchWhenReady (url);
 				operationMonitor.AddOperation (browserLauncher);
 				browserLauncher.WaitForCompleted ();
 				if (!browserLauncher.Success)
@@ -164,7 +189,7 @@ namespace MonoDevelop.Moonlight
 		[ItemProperty("XapFilename", DefaultValue="")]
 		string xapFilename = string.Empty;
 		
-		[ItemProperty("SilverlightManifestTemplate", DefaultValue=false)]
+		[ProjectPathItemProperty("SilverlightManifestTemplate")]
 		string silverlightManifestTemplate;
 		
 		[ItemProperty("SilverlightAppEntry", DefaultValue="")]
@@ -175,6 +200,9 @@ namespace MonoDevelop.Moonlight
 		
 		[ItemProperty("CreateTestPage", DefaultValue=false)]
 		bool createTestPage = false;
+		
+		[ProjectPathItemProperty("StartPageUrl", DefaultValue="", IsExternal=true)]
+		string startPageUrl = string.Empty;
 		
 		[ItemProperty("ValidateXaml")]
 		bool validateXaml = true;
@@ -284,6 +312,16 @@ namespace MonoDevelop.Moonlight
 					return;
 				NotifyModified ("ThrowErrorsInValidation");
 				throwErrorsInValidation = value;
+			}
+		}
+		
+		public string StartPageUrl {
+			get { return startPageUrl; }
+			set {
+				if (startPageUrl == value)
+					return;
+				NotifyModified ("StartPageUrl");
+				startPageUrl = value;
 			}
 		}
 		
