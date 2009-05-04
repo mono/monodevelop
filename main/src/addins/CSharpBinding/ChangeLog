@@ -1,3 +1,8 @@
+2009-05-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 499819 -
+	  "true." or "false." doesn't trigger code completion".
+
 2009-05-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/MemberCompletionData.cs: Fix duplicate filtering, so

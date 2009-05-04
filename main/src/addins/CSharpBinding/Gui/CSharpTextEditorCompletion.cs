@@ -182,7 +182,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				ResolveResult resolveResult = resolver.Resolve (result, location);
 				if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression) {
 					ICSharpCode.NRefactory.Ast.PrimitiveExpression pex = (ICSharpCode.NRefactory.Ast.PrimitiveExpression)resolver.ResolvedExpression;
-					if (!tryToForceCompletion && !(pex.Value is string || pex.Value is char))
+					if (!tryToForceCompletion && !(pex.Value is string || pex.Value is char || pex.Value is bool))
 						return null;
 				}
 					
