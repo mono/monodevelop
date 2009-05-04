@@ -66,7 +66,9 @@ namespace MonoDevelop.Moonlight
 					buildData.Items.Add (new ProjectFile (outFile, BuildAction.Compile));
 					if (File.Exists (outFile) && File.GetLastWriteTime (outFile) > File.GetLastWriteTime (pf.FilePath))
 						continue;
-					BuildResult result = XamlG.GenerateFile (codeDomProvider, appName, pf.FilePath, pf.RelativePath, outFile);
+					string rel = pf.RelativePath;
+					monitor.Log.WriteLine ("Generating codebehind accessors for {0}...", rel);
+					BuildResult result = XamlG.GenerateFile (codeDomProvider, appName, pf.FilePath, rel, outFile);
 					if (result.Failed)
 						return result;
 					results.Add (result);
@@ -124,6 +126,8 @@ namespace MonoDevelop.Moonlight
 		
 		BuildResult Respack (IProgressMonitor monitor, MoonlightProject proj, List<string> toResGen, string outfile)
 		{
+			monitor.Log.WriteLine ("Packing resources...");
+			
 			MonoDevelop.Core.Assemblies.TargetRuntime runtime = proj.TargetRuntime;
 			BuildResult result = new BuildResult ();
 			
@@ -320,19 +324,19 @@ namespace MonoDevelop.Moonlight
 				return base.Build (monitor, item, configuration);
 			
 			BuildResult result = base.Build (monitor, item, configuration);
-			if (result.Failed)
+			if (result.ErrorCount > 0 || monitor.IsCancelRequested)
 				return result;
 
 			if (proj.GenerateSilverlightManifest)
-				if (MergeResults (result, GenerateManifest (monitor, proj, conf, configuration)).Failed)
+				if (MergeResults (result, GenerateManifest (monitor, proj, conf, configuration)).Failed || monitor.IsCancelRequested)
 					return result;
 			
 			if (proj.XapOutputs)
-				if (MergeResults (result, Zip (monitor, proj, conf, configuration)).Failed)
+				if (MergeResults (result, Zip (monitor, proj, conf, configuration)).Failed || monitor.IsCancelRequested)
 					return result;
 
 			if (proj.XapOutputs && proj.CreateTestPage)
-				if (MergeResults (result, CreateTestPage (monitor, proj, conf)).Failed)
+				if (MergeResults (result, CreateTestPage (monitor, proj, conf)).Failed || monitor.IsCancelRequested)
 					return result;
 			
 			return result;
@@ -340,6 +344,8 @@ namespace MonoDevelop.Moonlight
 
 		BuildResult GenerateManifest (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf, string slnConf)
 		{
+			monitor.Log.WriteLine ("Generating manifest...");
+			
 			BuildResult res = new BuildResult ();
 			string manifest = Path.Combine (conf.OutputDirectory, "AppManifest.xaml");
 
@@ -427,6 +433,8 @@ namespace MonoDevelop.Moonlight
 
 		BuildResult CreateTestPage (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf)
 		{
+			monitor.Log.WriteLine ("Creating test page...");
+			
 			string testPageFile = GetTestPageFileName (proj, conf);
 			try {
 				using (var sr = new StreamReader (System.Reflection.Assembly.GetExecutingAssembly ().GetManifestResourceStream ("PreviewTemplate.html"))) {
@@ -522,7 +530,8 @@ namespace MonoDevelop.Moonlight
 					return null;
 			}
 			
-			monitor.BeginStepTask ("Compressing " + xapName + "...", src.Count, 1);
+			monitor.Log.WriteLine ("Compressing XAP file...");
+			
 			try {
 				using (FileStream fs = new FileStream (xapName, FileMode.Create)) {
 					var zipfile = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream (fs);
@@ -530,8 +539,7 @@ namespace MonoDevelop.Moonlight
 					
 					byte[] buffer = new byte[4096];
 					
-					for (int i = 0; i < src.Count; i++) {
-						monitor.Step (1);
+					for (int i = 0; i < src.Count && !monitor.IsCancelRequested; i++) {
 						zipfile.PutNextEntry (new ICSharpCode.SharpZipLib.Zip.ZipEntry (targ[i]));
 						using (FileStream inStream = File.OpenRead (src[i])) {
 							int readCount;
@@ -541,8 +549,10 @@ namespace MonoDevelop.Moonlight
 							} while (readCount > 0);
 						}
 					}
-					zipfile.Finish ();
-					zipfile.Close ();
+					if (!monitor.IsCancelRequested) {
+						zipfile.Finish ();
+						zipfile.Close ();
+					}
 				}
 			} catch (IOException ex) {
 				monitor.ReportError ("Error writing xap file.", ex);
@@ -555,8 +565,13 @@ namespace MonoDevelop.Moonlight
 				} catch {}
 				
 				return res;
-			} finally {
-				monitor.EndTask ();
+			}
+			
+			if (monitor.IsCancelRequested) {
+				try {
+					if (File.Exists (xapName))                                                               
+						File.Delete (xapName);
+				} catch {}
 			}
 			
 			return res;

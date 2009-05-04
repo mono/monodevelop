@@ -60,11 +60,11 @@ namespace ${Namespace}
 	
 		public App ()
 		{
-			this.Startup += OnStartup;
+			this.Startup += new StartupEventHandler (OnStartup);
 			InitializeComponent ();
 		}
 		
-		void Startup (object sender, StartupEventArgs args)
+		void OnStartup (object sender, StartupEventArgs args)
 		{
 			this.RootVisual = new Page ();
 		}
