@@ -420,8 +420,8 @@ namespace MonoDevelop.NUnit
 		[CommandHandler (TestCommands.RunTestWith)]
 		protected void OnRunTest (object data)
 		{
-			IExecutionMode mode = (IExecutionMode) data;
-			RunSelectedTest (mode.ExecutionHandler);
+			IExecutionHandler mode = (IExecutionHandler) data;
+			RunSelectedTest (mode);
 		}
 		
 		[CommandUpdateHandler (TestCommands.RunTestWith)]
@@ -429,11 +429,12 @@ namespace MonoDevelop.NUnit
 		{
 			UnitTest test = GetSelectedTest ();
 			if (test != null) {
-				foreach (IExecutionMode mode in Runtime.ProcessService.GetExecutionModes ()) {
-					if (mode != Runtime.ProcessService.DefaultExecutionMode && test.CanRun (mode.ExecutionHandler)) {
-						CommandInfo ci = new CommandInfo (mode.Name);
-						info.Add (ci, mode);
+				foreach (IExecutionModeSet mset in Runtime.ProcessService.GetExecutionModes ()) {
+					foreach (IExecutionMode mode in mset.ExecutionModes) {
+						if (test.CanRun (mode.ExecutionHandler))
+							info.Add (mode.Name, mode.ExecutionHandler);
 					}
+					info.AddSeparator ();
 				}
 			}
 		}

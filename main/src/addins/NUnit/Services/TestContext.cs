@@ -45,7 +45,7 @@ namespace MonoDevelop.NUnit
 		{
 			this.monitor = monitor;
 			if (executionContext == null)
-				executionContext = Runtime.ProcessService.DefaultExecutionMode.ExecutionHandler;
+				executionContext = Runtime.ProcessService.DefaultExecutionHandler;
 			this.executionContext = executionContext;
 			// Round to seconds
 			this.testDate = new DateTime ((testDate.Ticks / TimeSpan.TicksPerSecond) * TimeSpan.TicksPerSecond);

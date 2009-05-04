@@ -1,3 +1,12 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelopNUnit.addin.xml: Added Run Test With submenu,
+	  with support for all registered modes.
+
+	* Gui/TestPad.cs:
+	* Services/UnitTest.cs:
+	* Services/TestContext.cs: Track api changes.
+
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelopNUnit.addin.xml: Changed copyright tag.

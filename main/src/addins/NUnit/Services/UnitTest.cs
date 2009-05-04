@@ -347,7 +347,7 @@ namespace MonoDevelop.NUnit
 		public bool CanRun (IExecutionHandler executionContext)
 		{
 			if (executionContext == null)
-				executionContext = Runtime.ProcessService.DefaultExecutionMode.ExecutionHandler;
+				executionContext = Runtime.ProcessService.DefaultExecutionHandler;
 			return OnCanRun (executionContext);
 		}
 		

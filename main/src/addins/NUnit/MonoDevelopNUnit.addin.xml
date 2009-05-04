@@ -141,7 +141,9 @@
 
 	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestPad">
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunTest" />
-		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunTestWith" />
+		<ItemSet id = "RunTestWith" _label = "Run Test With">
+			<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunTestWith" />
+		</ItemSet>
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestDetails" />
 		<SeparatorItem id = "s1" />
