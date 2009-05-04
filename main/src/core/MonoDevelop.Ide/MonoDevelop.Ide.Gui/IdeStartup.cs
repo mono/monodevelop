@@ -86,6 +86,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			//OSXFIXME
 			Gtk.Application.Init ();
+			if (!GLib.Thread.Supported)
+				GLib.Thread.Init ();
 			InternalLog.Initialize ();
 			MonoDevelopOptions options = new MonoDevelopOptions ();
 			options.ProcessArgs (args);
