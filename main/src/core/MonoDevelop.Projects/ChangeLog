@@ -1,5 +1,11 @@
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Add another assembly name casing hack, for silverlight's
+	  "system".
+
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
 	  Add all project files to the parse DB, since some files may
 	  generate type information but not be "compiled".

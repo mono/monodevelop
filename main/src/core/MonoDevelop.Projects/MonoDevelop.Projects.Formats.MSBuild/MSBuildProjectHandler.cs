@@ -327,6 +327,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							asm = "System.Configuration";
 						else if (asm == "System.XML")
 							asm = "System.Xml";
+						else if (asm == "system")
+							asm = "System";
 						pref = new ProjectReference (ReferenceType.Gac, asm);
 					}
 					pref.Condition = buildItem.Condition;
