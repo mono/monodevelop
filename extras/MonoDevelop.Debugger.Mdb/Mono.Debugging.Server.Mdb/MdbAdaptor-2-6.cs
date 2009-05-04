@@ -22,6 +22,11 @@ namespace DebuggerServer
 			config.StopOnManagedSignals = true;
 		}
 		
+		public override void InitializeBreakpoint (MDB.SourceBreakpoint bp)
+		{
+			bp.IsUserModule = true;
+		}
+		
 		public override void InitializeSession (MonoDebuggerStartInfo startInfo, MDB.DebuggerSession session)
 		{
 			session.AddUserModulePath (startInfo.WorkingDirectory);

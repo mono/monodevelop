@@ -251,7 +251,7 @@ namespace DebuggerServer
 			if (bp != null) {
 				MD.SourceLocation location = new MD.SourceLocation (bp.FileName, bp.Line);
 				MD.SourceBreakpoint sbp = new MD.SourceBreakpoint (session, ThreadGroup.Global, location);
-				sbp.IsUserModule = true;
+				mdbAdaptor.InitializeBreakpoint (sbp);
 				session.AddEvent (sbp);
 				ev = sbp;
 			}

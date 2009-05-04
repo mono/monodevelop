@@ -1,5 +1,12 @@
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MdbAdaptor.cs:
+	* MdbAdaptor-2-6.cs:
+	* DebuggerServer.cs: SourceBreakpoint.IsUserModule requires
+	  latest mdb.
+
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* DebuggerServer.cs:
 	* MdbAdaptorFactory.cs: Try to detect the mdb version only
 	  once per session.

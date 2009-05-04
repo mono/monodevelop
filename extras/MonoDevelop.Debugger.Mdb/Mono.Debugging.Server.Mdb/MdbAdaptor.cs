@@ -44,6 +44,10 @@ namespace DebuggerServer
 			ThrowNotSupported ("ASP.NET debugging not supported");
 		}
 		
+		public virtual void InitializeBreakpoint (MDB.SourceBreakpoint bp)
+		{
+		}
+		
 		public virtual void InitializeSession (MonoDebuggerStartInfo startInfo, MDB.DebuggerSession session)
 		{
 		}
