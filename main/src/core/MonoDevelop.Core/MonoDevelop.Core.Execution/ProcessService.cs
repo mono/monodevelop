@@ -51,6 +51,8 @@ namespace MonoDevelop.Core.Execution
 		List<ExtensionNode> executionHandlers;
 		string remotingChannel = "unix";
 		string unixRemotingFile;
+		DefaultExecutionModeSet defaultExecutionModeSet = new DefaultExecutionModeSet ();
+		DefaultExecutionHandlerFactory defaultExecutionHandler = new DefaultExecutionHandlerFactory ();
 		
 		Dictionary<string, string> environmentVariableOverrides = null;
 		
@@ -237,16 +239,16 @@ namespace MonoDevelop.Core.Execution
 		
 		public IEnumerable<IExecutionModeSet> GetExecutionModes ()
 		{
-			yield return new DefaultExecutionModeSet ();
+			yield return defaultExecutionModeSet;
 			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/ExecutionModes")) {
 				if (!(node is ExecutionModeNode))
 					yield return (IExecutionModeSet) node.CreateInstance (typeof (IExecutionModeSet));
 			}
 		}
 		
-		public IExecutionMode DefaultExecutionMode {
+		public IExecutionHandler DefaultExecutionHandler {
 			get {
-				return AddinManager.GetExtensionNode ("/MonoDevelop/Core/ExecutionModes/Default") as IExecutionMode;
+				return defaultExecutionHandler;
 			}
 		}
 		

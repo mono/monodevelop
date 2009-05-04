@@ -1,5 +1,10 @@
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Execution/ProcessService.cs: Added property
+	  for getting the default execution handler.
+
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Execution/ProcessHostController.cs: Use the
 	  execution handler from the running runtime to fork external
 	  object processes.
