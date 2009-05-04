@@ -1,3 +1,9 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WindowsPlatform.cs:
+	* WindowsPlatform.csproj: Implemented mime type and file icon
+	  support.
+
 2009-04-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* WindowsPlatform.cs: New overrides.
