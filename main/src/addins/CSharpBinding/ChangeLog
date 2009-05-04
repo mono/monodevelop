@@ -1,3 +1,11 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBindingCompilerManager.cs: Don't use -pkg to reference
+	  assemblies, use the full assembly path. Don't add the
+	  default utf8 codepage option when building with csc. Move
+	  the /noconfig option out of the response file, csc doesn't
+	  like it. Properly build with csc when targeting MS.NET.
+
 2009-05-04  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 500001 – Auto

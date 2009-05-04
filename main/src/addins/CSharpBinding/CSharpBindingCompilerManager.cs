@@ -56,14 +56,17 @@ namespace CSharpBinding
 			
 			string outputName       = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
-			
+
+			TargetRuntime runtime = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
+			DotNetProject project = configuration.ParentItem as DotNetProject;
+			if (project != null)
+				runtime = project.TargetRuntime;
+
 			StringBuilder sb = new StringBuilder ();
 			
 			List<string> gacRoots = new List<string> ();
 			sb.AppendFormat ("\"/out:{0}\"", outputName);
 			sb.AppendLine ();
-			
-			List<string> pkg_references = new List<string> ();
 			
 			foreach (ProjectReference lib in projectItems.GetAll <ProjectReference> ()) {
 				if (lib.ReferenceType == ReferenceType.Project && !(lib.OwnerProject.ParentSolution.FindProjectByName (lib.Reference) is DotNetProject))
@@ -79,11 +82,8 @@ namespace CSharpBinding
 						}
 						if (pkg.IsCorePackage) {
 							AppendQuoted (sb, "/r:", Path.GetFileName (fileName));
-						} else if (pkg.IsInternalPackage) {
+						} else {
 							AppendQuoted (sb, "/r:", fileName);
-						} else if (!pkg_references.Contains (pkg.Name)) {
-							pkg_references.Add (pkg.Name);
-							AppendQuoted (sb, "-pkg:", pkg.Name);
 						}
 						if (pkg.GacRoot != null && !gacRoots.Contains (pkg.GacRoot))
 							gacRoots.Add (pkg.GacRoot);
@@ -95,7 +95,6 @@ namespace CSharpBinding
 				}
 			}
 			
-			sb.AppendLine ("/noconfig");
 			sb.AppendLine ("/nologo");
 			sb.Append ("/warn:");sb.Append (compilerParameters.WarningLevel.ToString ());
 			sb.AppendLine ();
@@ -146,7 +145,7 @@ namespace CSharpBinding
 			
 			if (projectParameters.CodePage != 0)
 				sb.AppendLine ("/codepage:" + projectParameters.CodePage);
-			else
+			else if (runtime is MonoTargetRuntime)
 				sb.AppendLine ("/codepage:utf8");
 			
 			if (compilerParameters.UnsafeCode) 
@@ -225,11 +224,6 @@ namespace CSharpBinding
 			
 			File.WriteAllText (responseFileName, sb.ToString ());
 			
-			TargetRuntime runtime = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
-			DotNetProject project = configuration.ParentItem as DotNetProject;
-			if (project != null)
-				runtime = project.TargetRuntime;
-
 			string compilerName;
 			try {
 				compilerName = GetCompilerName (runtime, configuration.TargetFramework.ClrVersion);
@@ -239,7 +233,7 @@ namespace CSharpBinding
 				return null;
 			}
 			
-			monitor.Log.WriteLine (compilerName + " " + sb.ToString ().Replace ('\n',' '));
+			monitor.Log.WriteLine (compilerName + " /noconfig " + sb.ToString ().Replace ('\n',' '));
 			
 			string workingDir = ".";
 			if (configuration.ParentItem != null) {
@@ -255,8 +249,9 @@ namespace CSharpBinding
 			LoggingService.LogInfo (compilerName + " " + sb.ToString ());
 			
 			Dictionary<string,string> envVars = runtime.GetToolsEnvironmentVariables ();
+			string cargs = "/noconfig @\"" + responseFileName + "\"";
 
-			int exitCode = DoCompilation (compilerName, "@" + responseFileName, workingDir, envVars, gacRoots, ref output, ref error);
+			int exitCode = DoCompilation (compilerName, cargs, workingDir, envVars, gacRoots, ref output, ref error);
 			
 			BuildResult result = ParseOutput (output, error);
 			if (result.CompilerOutput.Trim ().Length != 0)
@@ -285,25 +280,44 @@ namespace CSharpBinding
 			
 			if (runtime is MonoTargetRuntime) {
 				string mcs;
+				string fx;
 				switch (version) {
 				case ClrVersion.Net_1_1:
 					mcs = "mcs";
+					fx = "1.1";
 					break;
 				case ClrVersion.Net_2_0:
 					mcs = "gmcs";
+					fx = "2.0";
 					break;
 				case ClrVersion.Clr_2_1:
 					mcs = "smcs";
+					fx = "2.1";
 					break;
 				default:
 					string message = "Cannot handle unknown runtime version ClrVersion.'" + version.ToString () + "'.";
 					LoggingService.LogError (message);
 					throw new Exception (message);
 				}
-				return runtime.GetToolPath (mcs);
+				TargetFramework tfx = Runtime.SystemAssemblyService.GetTargetFramework (fx);
+				return runtime.GetToolPath (tfx, mcs);
 				
 			} else {
-				return runtime.GetToolPath ("csc.exe");
+				string fx;
+				switch (version) {
+					case ClrVersion.Net_1_1:
+						fx = "1.1";
+						break;
+					case ClrVersion.Net_2_0:
+						fx = "2.0";
+						break;
+					default:
+						string message = "Cannot handle unknown runtime version ClrVersion.'" + version.ToString () + "'.";
+						LoggingService.LogError (message);
+						throw new Exception (message);
+				}
+				TargetFramework tfx = Runtime.SystemAssemblyService.GetTargetFramework (fx);
+				return runtime.GetToolPath (tfx, "csc.exe");
 			}
 		}
 		
@@ -362,7 +376,7 @@ namespace CSharpBinding
 			StreamWriter outwr = new StreamWriter (output);
 			StreamWriter errwr = new StreamWriter (error);
 			
-			ProcessStartInfo pinfo = new ProcessStartInfo (compilerName, "\"" + compilerArgs + "\"");
+			ProcessStartInfo pinfo = new ProcessStartInfo (compilerName, compilerArgs);
 			pinfo.WorkingDirectory = working_dir;
 			
 			if (gacRoots.Count > 0) {
