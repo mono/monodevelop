@@ -34,6 +34,8 @@ using Mono.TextEditor.Highlighting;
 
 using Gdk;
 using Gtk;
+using System.Timers;
+
 
 namespace Mono.TextEditor
 {
@@ -285,8 +287,8 @@ namespace Mono.TextEditor
 			if (arrowCursor == null)
 				return;
 			
-			if (caretBlinkTimeoutId != 0)
-				GLib.Source.Remove (caretBlinkTimeoutId);
+			caretTimer.Stop ();
+			caretTimer.Dispose ();
 			
 			Caret.PositionChanged -= CaretPositionChanged;
 			textEditor.Document.TextReplaced -= UpdateBracketHighlighting;
@@ -306,30 +308,33 @@ namespace Mono.TextEditor
 			invalidLineMarker = invalidLineMarker.Kill ();
 			base.Dispose ();
 		}
+		Timer caretTimer = null;
 		
 		public void ResetCaretBlink ()
 		{
-			if (caretBlinkTimeoutId != 0)
-				GLib.Source.Remove (caretBlinkTimeoutId);
-			caretBlinkStatus = 0;
-			caretBlinkTimeoutId = GLib.Timeout.Add ((uint)Gtk.Settings.Default.CursorBlinkTime / 2, 
-			                                        new GLib.TimeoutHandler (CaretThread));
+			if (caretTimer == null) {
+				caretTimer = new Timer ();
+				caretTimer.Elapsed += UpdateCaret;
+				caretTimer.Interval = (uint)Gtk.Settings.Default.CursorBlinkTime / 2;
+			} else {
+				caretTimer.Stop ();
+			}
+			caretTimer.Start();
 		}
 		
-		bool CaretThread ()
+		void UpdateCaret (object sender, EventArgs args)
 		{
 			bool newCaretBlink = caretBlinkStatus < 4 || (caretBlinkStatus - 4) % 3 != 0;
 			if (layout != null && newCaretBlink != caretBlink) {
 				caretBlink = newCaretBlink;
-				try {
-					// may have been disposed.
-					textEditor.RedrawLine (Caret.Line);
-				} catch (Exception) {
-					return true;
-				}
+				Application.Invoke (delegate {
+					try {
+						Document.CommitLineUpdate (Caret.Line);
+					} catch (Exception) {
+					}
+				});
 			}
 			caretBlinkStatus++;
-			return true;
 		}
 		
 		char caretChar; 
