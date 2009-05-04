@@ -1708,5 +1708,30 @@ class Test
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("DirectorySeparatorChar"), "method 'PathTest' not found.");
 		}
+		
+		[Test()]
+		public void TestInvalidCompletion ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+class TestClass
+{
+	public void TestMethod ()
+	{
+	}
+}
+
+class Test
+{
+	public void Foo ()
+	{
+		TestClass tc;
+		$tc.garbage.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("TestMethod"), "method 'TestMethod' found, but shouldn't.");
+		}
 	}
 }

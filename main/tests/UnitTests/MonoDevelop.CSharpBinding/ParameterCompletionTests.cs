@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture()]
-	public class ParameterCompletionTests
+	public class ParameterCompletionTests : UnitTests.TestBase
 	{
 		static int pcount = 0;
 		internal static IParameterDataProvider CreateProvider (string text)

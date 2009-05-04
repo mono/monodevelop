@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture()]
-	public class CodeCompletionCSharp3Tests :  UnitTests.TestBase
+	public class CodeCompletionCSharp3Tests : UnitTests.TestBase
 	{
 		/* Currently fails but works in monodevelop. Seems to be a bug in the unit test somewhere.
 		[Test()]
