@@ -1,3 +1,7 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.csproj: Disable overflow checking.
+
 2009-04-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.addin.xml: Registered code formatting
