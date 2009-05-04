@@ -83,8 +83,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			if (wnd == null)
 				return;
-			// Bugfix for compositing window managers
-			wnd.Opacity = 1.0; 
 			wnd.HideWindow ();
 		}
 	}
@@ -308,8 +306,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			base.Hide ();
 			if (declarationviewwindow != null) {
-				// Bugfix for compositing window managers
-				declarationviewwindow.Opacity = 1.0;
 				declarationviewwindow.Hide ();
 			}
 			

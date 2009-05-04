@@ -177,8 +177,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			if (methods.Count == 0) {
 				if (window != null) {
-					// Bugfix for compositing window managers
-					window.Opacity = 1.0;
 					window.Hide ();
 				}
 				return;
