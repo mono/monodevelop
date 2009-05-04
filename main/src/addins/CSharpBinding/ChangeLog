@@ -1,5 +1,11 @@
 2009-05-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 500001 – Auto
+	  XML comment (///) for struct grabs params and returns from
+	  following function".
+
+2009-05-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 499819 -
 	  "true." or "false." doesn't trigger code completion".
 

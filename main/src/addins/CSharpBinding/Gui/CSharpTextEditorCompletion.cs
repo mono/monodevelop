@@ -1571,26 +1571,19 @@ namespace MonoDevelop.CSharpBinding.Gui
 			newCursorOffset = 0;
 			StringBuilder builder = new StringBuilder ();
 			
-			IMethod method = null;
-			IProperty property = null;
-			foreach (IMethod m in c.Methods) {
+			IMember member = null;
+			
+			foreach (IMember m in c.Members) {
 				if (m.Location.Line < startLine && m.Location.Line > line) {
 					startLine = m.Location.Line;
-					method = m;
-				}
-			}
-			foreach (IProperty p in c.Properties) {
-				if (p.Location.Line < startLine && p.Location.Line > line) {
-					startLine = p.Location.Line;
-					property = p;
-					method = null;
+					member = m;
 				}
 			}
 			
-			if (method != null) {
+			if (member is IMethod) {
 				AppendSummary (builder, indent, out newCursorOffset);
-				AppendMethodComment (builder, indent, method);
-			} else if (property != null) {
+				AppendMethodComment (builder, indent, (IMethod)member);
+			} else if (member is IProperty) {
 				builder.Append ("/ <value>\n");
 				builder.Append (indent);
 				builder.Append ("/// \n");
