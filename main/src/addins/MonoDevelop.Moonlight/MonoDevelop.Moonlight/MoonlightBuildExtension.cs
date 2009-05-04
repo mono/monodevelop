@@ -400,7 +400,7 @@ namespace MonoDevelop.Moonlight
 
 				XmlNamespaceManager mgr = new XmlNamespaceManager (doc.NameTable);
 				mgr.AddNamespace ("dep", depNS);
-				XmlNode partsNode = deploymentNode.SelectSingleNode ("dep:Deployment.Parts");
+				XmlNode partsNode = deploymentNode.SelectSingleNode ("dep:Deployment.Parts", mgr);
 				if (partsNode == null)
 					partsNode = deploymentNode.AppendChild (doc.CreateElement ("Deployment.Parts", depNS));
 
