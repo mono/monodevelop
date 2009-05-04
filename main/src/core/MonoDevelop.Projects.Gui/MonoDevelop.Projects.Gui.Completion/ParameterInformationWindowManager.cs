@@ -172,12 +172,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			// Updates the parameter information window from the information
 			// of the current method overload
-			
-			if (window == null) 
+			if (window == null && methods.Count > 0) 
 				window = new ParameterInformationWindow ();
 			
 			if (methods.Count == 0) {
-				window.Hide ();
+				if (window != null) {
+					// Bugfix for compositing window managers
+					window.Opacity = 1.0;
+					window.Hide ();
+				}
 				return;
 			}
 			

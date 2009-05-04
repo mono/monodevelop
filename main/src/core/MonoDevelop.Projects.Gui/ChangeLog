@@ -1,3 +1,10 @@
+2009-05-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Fixed "Bug 492264 - Intellisense menu locks on top of the
+	  screen".
+
 2009-05-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:

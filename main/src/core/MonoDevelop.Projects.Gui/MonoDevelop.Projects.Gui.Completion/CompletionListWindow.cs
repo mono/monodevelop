@@ -42,12 +42,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		static CompletionWindowManager ()
 		{
-			wnd = new CompletionListWindow ();
 		}
 		
 		public static bool ShowWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget,
 		                               ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
 		{
+			if (wnd == null) 
+				wnd = new CompletionListWindow ();
 			try {
 				if (!wnd.ShowListWindow (firstChar, list,  completionWidget, completionContext, closedDelegate)) {
 					if (list is IDisposable)
@@ -63,7 +64,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public static bool PreProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier, out KeyAction ka)
 		{
-			if (!wnd.Visible) {
+			if (wnd == null || !wnd.Visible) {
 				ka = KeyAction.None;
 				return false;
 			}
@@ -73,12 +74,18 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public static void PostProcessKeyEvent (KeyAction ka)
 		{
+			if (wnd == null)
+				return;
 			wnd.PostProcessKeyEvent (ka);
 		}
 		
 		public static void HideWindow ()
 		{
-			wnd.Hide ();
+			if (wnd == null)
+				return;
+			// Bugfix for compositing window managers
+			wnd.Opacity = 1.0; 
+			wnd.HideWindow ();
 		}
 	}
 	
@@ -100,6 +107,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		internal CompletionListWindow ()
 		{
 			SizeAllocated += new SizeAllocatedHandler (ListSizeChanged);
+			Events = Gdk.EventMask.PropertyChangeMask;
 			WindowTransparencyDecorator.Attach (this);
 		}
 		
@@ -123,7 +131,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			 ka = ProcessKey (key, modifier);
 			
 			if ((ka & KeyAction.CloseWindow) != 0)
-				Hide ();
+				CompletionWindowManager.HideWindow ();
 			
 			if ((ka & KeyAction.Ignore) != 0)
 				return true;
@@ -138,7 +146,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 						& ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask 
 					        | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)
 					))) != 0) {
-						Hide ();
+						CompletionWindowManager.HideWindow ();
 						return false;
 					}
 					
@@ -199,14 +207,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging)
 				{	
 					UpdateWord ();
-					Hide ();
+					CompletionWindowManager.HideWindow ();
 				} else {
 					Show ();
 				}
 				return true;
 			}
 			else {
-				Hide ();
+				CompletionWindowManager.HideWindow ();
 				return false;
 			}
 		}
@@ -296,10 +304,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 			completionWidget.SetCompletionText (completionContext, pword, word);
 		}
 		
-		public new void Hide ()
+		public void HideWindow ()
 		{
 			base.Hide ();
-			declarationviewwindow.HideAll ();
+			if (declarationviewwindow != null) {
+				// Bugfix for compositing window managers
+				declarationviewwindow.Opacity = 1.0;
+				declarationviewwindow.Hide ();
+			}
 			
 			if (mutableList != null) {
 				mutableList.Changing -= OnCompletionDataChanging;
@@ -328,7 +340,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		protected override void DoubleClick ()
 		{
 			UpdateWord ();
-			Hide ();
+			CompletionWindowManager.HideWindow ();
 		}
 		
 		protected override void OnSelectionChanged ()
