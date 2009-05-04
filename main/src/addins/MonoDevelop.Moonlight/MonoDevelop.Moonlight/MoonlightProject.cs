@@ -125,20 +125,9 @@ namespace MonoDevelop.Moonlight
 			get { return true; }
 		}
 		
-		public bool CanExecute (MonoDevelop.Projects.ExecutionContext context, string configuration)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string configuration)
 		{
-			if (!String.IsNullOrEmpty (startPageUrl))
-				return true;
-			
-			if (!this.CreateTestPage)
-				return false;
-			
-			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetActiveConfiguration (configuration);
-			string testPage = this.TestPageFileName;
-			if (String.IsNullOrEmpty (testPage))
-				testPage = "TestPage.html";
-			testPage = Path.Combine (config.OutputDirectory, testPage);
-			return File.Exists (testPage);
+			return silverlightApplication && (!String.IsNullOrEmpty (startPageUrl) || this.CreateTestPage);
 		}
 		
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)

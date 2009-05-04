@@ -1,3 +1,14 @@
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Fix
+	  OnGetCanExecute.
+
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Embed Page
+	  and ApplicationDefinition files. Fix resource ID for
+	  resources file. Clean test page and manifest. Fix paths and
+	  namespaces in app definition generation. Write out app
+	  manifest.
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Track api

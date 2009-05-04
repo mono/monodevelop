@@ -70,9 +70,10 @@ namespace MonoDevelop.Moonlight
 					if (result.Failed)
 						return result;
 					results.Add (result);
-				} else if (pf.BuildAction == BuildAction.Resource) {
-					toResGen.Add (pf.FilePath);
 				}
+				
+				if (pf.BuildAction == BuildAction.Resource || pf.BuildAction == BuildAction.Page || pf.BuildAction == BuildAction.ApplicationDefinition)
+					toResGen.Add (pf.FilePath);
 			}
 			
 			string resFile = Path.Combine (objDir, appName + ".g.resources");
@@ -89,7 +90,9 @@ namespace MonoDevelop.Moonlight
 						break;
 					}
 				}
-				buildData.Items.Add (new ProjectFile (resFile, BuildAction.EmbeddedResource));
+				ProjectFile pf = new ProjectFile (resFile, BuildAction.EmbeddedResource);
+				pf.ResourceId = appName + ".g.resources";
+				buildData.Items.Add (pf);
 			} else {
 				if (File.Exists (resFile))
 					File.Delete (resFile);
@@ -125,7 +128,7 @@ namespace MonoDevelop.Moonlight
 			BuildResult result = new BuildResult ();
 			
 			string respack = runtime.GetToolPath (proj.TargetFramework, "respack");
-			if (string.IsNullOrEmpty (respack)) {
+			if (String.IsNullOrEmpty (respack)) {
 				result.AddError (null, 0, 0, null, "Could not find respack");
 				result.FailedBuildCount++;
 				return result;
@@ -149,7 +152,6 @@ namespace MonoDevelop.Moonlight
 				sb.Append (infile);
 			}
 			si.Arguments = sb.ToString ();
-			
 			string err;
 			int exit = ExecuteCommand (monitor, si, out err);
 			if (exit != 0) {
@@ -222,6 +224,18 @@ namespace MonoDevelop.Moonlight
 					if (File.Exists (outFile))
 						File.Delete (outFile);
 				}
+			}
+			
+			if (proj.GenerateSilverlightManifest) {
+				string manifest = Path.Combine (conf.OutputDirectory, "AppManifest.xaml");
+				if (File.Exists (manifest))
+					File.Delete (manifest);
+			}
+			
+			if (proj.CreateTestPage) {
+				string testPageFile = GetTestPageFileName (proj, conf);
+				if (File.Exists (testPageFile))
+					File.Delete (testPageFile);
 			}
 			
 			string resFile = Path.Combine (objDir, proj.Name + ".g.resources");
@@ -351,27 +365,34 @@ namespace MonoDevelop.Moonlight
 					monitor.ReportError ("Could not load manifest template '" +  template + "'.", ex);
 					res.AddError ("Could not load manifest template '" +  template + "': " + ex.ToString ());
 					res.FailedBuildCount++;
+					return res;
 				}
 
 			} else {
 				doc.LoadXml (@"<Deployment xmlns=""http://schemas.microsoft.com/client/2007/deployment"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""></Deployment>");
 			}
-
+			
 			try {
-				XmlNode deploymentNode = doc.SelectSingleNode ("//Deployment");
-				if (deploymentNode.Attributes["EntryPointAssembly"] != null)
+				XmlNode deploymentNode = doc.DocumentElement;
+				if (deploymentNode == null || deploymentNode.Name != "Deployment" || deploymentNode.NamespaceURI != "http://schemas.microsoft.com/client/2007/deployment") {
+					monitor.ReportError ("Missing or invalid root <Deployment> element in manifest template '" +  template + "'.", null);
+					res.AddError ("Missing root <Deployment> element in manifest template '" +  template + "'.");
+					res.FailedBuildCount++;
+					return res;
+				}
+				if (deploymentNode.Attributes["EntryPointAssembly"] == null)
 					deploymentNode.Attributes.Append (doc.CreateAttribute ("EntryPointAssembly")).Value = Path.GetFileNameWithoutExtension (conf.CompiledOutputName);
-				if (!String.IsNullOrEmpty (proj.SilverlightAppEntry) && deploymentNode.Attributes["EntryPointType"] != null)
+				if (!String.IsNullOrEmpty (proj.SilverlightAppEntry) && deploymentNode.Attributes["EntryPointType"] == null)
 					deploymentNode.Attributes.Append (doc.CreateAttribute ("EntryPointType")).Value = proj.SilverlightAppEntry;
 
-				if (deploymentNode.Attributes["RuntimeVersion"] != null) {
+				if (deploymentNode.Attributes["RuntimeVersion"] == null) {
 					if (proj.TargetFramework.ClrVersion == ClrVersion.Clr_2_1)
 						deploymentNode.Attributes.Append (doc.CreateAttribute ("RuntimeVersion")).Value = "2.0.31005.0";
 				}
 
-				XmlNode partsNode = doc.SelectSingleNode ("//Deployment/Deployment.Parts");
+				XmlNode partsNode = deploymentNode.SelectSingleNode ("Deployment.Parts");
 				if (partsNode == null)
-					partsNode = deploymentNode.AppendChild (doc.CreateElement ("Deployment.Parts"));
+					partsNode = deploymentNode.AppendChild (doc.CreateElement ("Deployment.Parts", "http://schemas.microsoft.com/client/2007/deployment"));
 
 				AddAssemblyPart (doc, partsNode, conf.CompiledOutputName);
 				foreach (ProjectReference pr in proj.References) {
@@ -390,6 +411,8 @@ namespace MonoDevelop.Moonlight
 				res.FailedBuildCount++;
 				return res;
 			}
+			
+			doc.Save (manifest);
 
 			return res;
 		}
