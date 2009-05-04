@@ -503,7 +503,7 @@ namespace MonoDevelop.Moonlight
 					var pk = pr.Package;
 					if (pk == null || !pk.IsFrameworkPackage) {
 						string err = pr.ValidationErrorMessage;
-						if (err != null) {
+						if (!String.IsNullOrEmpty (err)) {
 							res.AddError (String.Format ("Could not add reference '{0}' to '{1}': {2}",
 							                             pr.Reference, Path.GetFileName (xapName), err));
 							continue;
