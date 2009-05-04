@@ -504,8 +504,10 @@ namespace MonoDevelop.Moonlight
 					if (pk == null || !pk.IsFrameworkPackage) {
 						string err = pr.ValidationErrorMessage;
 						if (!String.IsNullOrEmpty (err)) {
-							res.AddError (String.Format ("Could not add reference '{0}' to '{1}': {2}",
-							                             pr.Reference, Path.GetFileName (xapName), err));
+							string msg = String.Format ("Could not add reference '{0}' to '{1}': {2}",
+							                            pr.Reference, Path.GetFileName (xapName), err);
+							res.AddError (msg);
+							monitor.Log.WriteLine (msg);
 							continue;
 						}
 						foreach (string s in pr.GetReferencedFileNames (slnConf)) {
