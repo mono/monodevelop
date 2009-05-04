@@ -82,7 +82,7 @@ namespace MonoDevelop.Moonlight
 					lastMod = File.GetLastWriteTime (resFile);
 				foreach (string f in toResGen) {
 					if (File.GetLastWriteTime (f) > lastMod) {
-						BuildResult result = Respack (monitor, proj.TargetRuntime, toResGen, resFile);
+						BuildResult result = Respack (monitor, proj, toResGen, resFile);
 						if (result.Failed)
 							return result;
 						results.Add (result);
@@ -119,11 +119,12 @@ namespace MonoDevelop.Moonlight
 			return mergeInto;
 		}
 		
-		BuildResult Respack (IProgressMonitor monitor, MonoDevelop.Core.Assemblies.TargetRuntime runtime, List<string> toResGen, string outfile)
+		BuildResult Respack (IProgressMonitor monitor, MoonlightProject proj, List<string> toResGen, string outfile)
 		{
+			MonoDevelop.Core.Assemblies.TargetRuntime runtime = proj.TargetRuntime;
 			BuildResult result = new BuildResult ();
 			
-			string respack = runtime.GetToolPath ("respack");
+			string respack = runtime.GetToolPath (proj.TargetFramework, "respack");
 			if (string.IsNullOrEmpty (respack)) {
 				result.AddError (null, 0, 0, null, "Could not find respack");
 				result.FailedBuildCount++;
