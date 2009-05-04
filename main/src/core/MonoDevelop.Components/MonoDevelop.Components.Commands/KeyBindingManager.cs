@@ -307,16 +307,14 @@ namespace MonoDevelop.Components.Commands
 					mod |= META_MASK;
 				}
 				if ((mod & Gdk.ModifierType.Mod5Mask) != 0) {
-					mod |= Gdk.ModifierType.Mod1Mask;
 					mod ^= Gdk.ModifierType.Mod5Mask;
+					mod |= Gdk.ModifierType.Mod1Mask;
 				}
 				if (evt.Group == (byte) 1) {
 					mod |= Gdk.ModifierType.Mod1Mask;
 					key = GetRootKey (evt);
 				}
 			}
-			
-			
 		}
 		
 		static Dictionary<Gdk.Key,Gdk.Key> hardwareMappings;

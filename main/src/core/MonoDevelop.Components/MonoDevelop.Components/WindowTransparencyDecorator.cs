@@ -88,6 +88,8 @@ namespace MonoDevelop.Components
 			snooperInstalled = true;
 		}
 		
+		//HACK:we have to set the window opacity to 1 before it's actually hidden, to work around a metacity compositing bug
+		[GLib.ConnectBefore]
 		void HiddenHandler (object sender, EventArgs args)
 		{
 			if (snooperInstalled)

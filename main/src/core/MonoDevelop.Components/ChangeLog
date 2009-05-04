@@ -1,3 +1,13 @@
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components/WindowTransparencyDecorator.cs: Move
+	  the workaround for "Bug 492264 - Intellisense menu locks on
+	  top of the screen" to here so that it affects all users of
+	  the decorator.
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs:
+	  Reorder Mod5 setting in raw key mapping for consistency.
+
 2009-04-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandToolButton.cs: Use
