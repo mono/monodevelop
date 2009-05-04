@@ -60,7 +60,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public IMessageSink GetObjectSink (MarshalByRefObject ob, IMessageSink nextSink)
 		{
-			return new SyncContextDispatchSink (nextSink, syncContext);
+			return new SyncContextDispatchSink (nextSink, syncContext, ob);
 		}
 		
 		public Type ConextType
@@ -73,6 +73,13 @@ namespace MonoDevelop.Core.Gui
 	{
 		IMessageSink nextSink;
 		SyncContext syncContext;
+		MarshalByRefObject target;
+		static bool isMono;
+		
+		static SyncContextDispatchSink ()
+		{
+			isMono = Type.GetType ("Mono.Runtime") != null;
+		}
 		
 		class MsgData
 		{
@@ -80,11 +87,12 @@ namespace MonoDevelop.Core.Gui
 			public IMessage OutMessage;
 			public IMessageSink ReplySink;
 		}
-		
-		public SyncContextDispatchSink (IMessageSink nextSink, SyncContext syncContext)
+
+		public SyncContextDispatchSink (IMessageSink nextSink, SyncContext syncContext, MarshalByRefObject ob)
 		{
 			this.nextSink = nextSink;
 			this.syncContext = syncContext;
+			target = ob;
 		}
 		
         public IMessage SyncProcessMessage (IMessage msg)
@@ -139,7 +147,15 @@ namespace MonoDevelop.Core.Gui
 		void AsyncDispatchMessage (object data)
 		{
 			MsgData md = (MsgData)data;
-			md.ReplySink.SyncProcessMessage (nextSink.SyncProcessMessage (md.InMessage));
+			if (isMono) {
+				md.ReplySink.SyncProcessMessage (nextSink.SyncProcessMessage (md.InMessage));
+			} else {
+				// In MS.NET, async calls have to be dispatched using ExecuteMessage,
+				// but this doesn't work in mono because mono will route the message
+				// through the remoting context sink again causing an infinite loop.
+				IMethodCallMessage msg = (IMethodCallMessage) md.InMessage;
+				System.Runtime.Remoting.RemotingServices.ExecuteMessage (target, msg);
+			}
 		}
 		
         public IMessageSink NextSink

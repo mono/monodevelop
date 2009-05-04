@@ -1,3 +1,9 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/SyncContextAttribute.cs: Changed the
+	  way async messages are dispatched. The old method did not
+	  work well in ms.net.
+
 2009-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:
