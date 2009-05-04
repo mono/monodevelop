@@ -656,16 +656,16 @@ namespace MonoDevelop.Ide.Gui
 			return padWindows [content];
 		}
 		
-		bool SelectLastActiveWindow ()
+		bool SelectLastActiveWindow (IWorkbenchWindow cur)
 		{
-			if (lastActiveWindows.Count == 0 || lastActive == ActiveWorkbenchwindow)
+			if (lastActiveWindows.Count == 0)
 				return false;
 			IWorkbenchWindow last = null;
 			do {
 				last = lastActiveWindows.Last.Value;
 				lastActiveWindows.RemoveLast ();
-			} while (lastActiveWindows.Count > 0 && (last == null || (last != null && last.ViewContent == null)));
-			if (last != null)  {
+			} while (lastActiveWindows.Count > 0 && (last == cur || last == null || (last != null && last.ViewContent == null)));
+			if (last != null) {
 				last.SelectWindow ();
 				return true;
 			}
@@ -681,7 +681,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (f.ViewContent != null) {
 				((IWorkbench)wbWindow).CloseContent (f.ViewContent);
-				if (!SelectLastActiveWindow ())
+				if (!SelectLastActiveWindow (f))
 					ActiveMdiChanged(this, null);
 			}
 		}

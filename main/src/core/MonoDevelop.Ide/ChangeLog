@@ -1,3 +1,9 @@
+2009-05-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fixed "Bug 442022
+	  - CTRL+W should switch between files in same order as they
+	  were opened".
+
 2009-04-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.addin.xml:
