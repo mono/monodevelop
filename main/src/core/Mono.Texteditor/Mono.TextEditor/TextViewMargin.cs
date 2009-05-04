@@ -798,11 +798,15 @@ namespace Mono.TextEditor
 					inSelectionDrag = true;
 					if ((args.ModifierState & Gdk.ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 						Caret.PreserveSelection = true;
-						if (!textEditor.IsSomethingSelected)
-							textEditor.MainSelection  = new Selection (Caret.Location, Caret.Location);
-						Caret.Location = clickLocation;
+						if (!textEditor.IsSomethingSelected) {
+							textEditor.MainSelection  = new Selection (Caret.Location, clickLocation);
+							Caret.Location = clickLocation;
+						} else {
+							Caret.Location = clickLocation;
+							textEditor.ExtendSelectionTo (clickLocation);
+						}
 						Caret.PreserveSelection = false;
-						textEditor.ExtendSelectionTo (clickLocation);
+						
 					} else {
 						textEditor.ClearSelection ();
 						Caret.Location = clickLocation; 

@@ -346,7 +346,7 @@ namespace Mono.TextEditor
 		#region Selection management
 		public bool IsSomethingSelected {
 			get {
-				return MainSelection != null; 
+				return MainSelection != null && MainSelection.Anchor != MainSelection.Lead; 
 			}
 		}
 		
