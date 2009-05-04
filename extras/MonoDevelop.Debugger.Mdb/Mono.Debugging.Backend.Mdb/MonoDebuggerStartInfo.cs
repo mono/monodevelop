@@ -36,5 +36,6 @@ namespace Mono.Debugging.Backend.Mdb
 		public bool IsXsp { get; set; }
 		public string MonoPrefix { get; set; }
 		public IDictionary<string,string> ServerEnvironment { get; set; }
+		public List<string> UserModules { get; set; }
 	}
 }

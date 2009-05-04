@@ -67,6 +67,13 @@ namespace MonoDevelop.Debugger.Mdb
 			startInfo.WorkingDirectory = cmd.BaseDirectory;
 			startInfo.Arguments = cmd.XspParameters.GetXspParameters ().Trim ();
 			
+			string binDir = Path.Combine (cmd.BaseDirectory, "bin");
+			startInfo.UserModules = new List<string> ();
+			foreach (string file in Directory.GetFiles (binDir)) {
+				if (file.EndsWith (".dll") || file.EndsWith (".exe"))
+					startInfo.UserModules.Add (file);
+			}
+			
 			return startInfo;
 		}
 

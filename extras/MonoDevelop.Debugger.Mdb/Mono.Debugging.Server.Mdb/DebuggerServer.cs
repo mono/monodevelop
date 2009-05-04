@@ -57,9 +57,6 @@ namespace DebuggerServer
 			ILease lease = mbr.GetLifetimeService() as ILease;
 			lease.Register(this);
 			max_frames = 100;
-			
-			mdbAdaptor = MdbAdaptorFactory.CreateAdaptor ();
-			Console.WriteLine ("MDB version: " + mdbAdaptor.MdbVersion);
 				
 			ST.Thread t = new ST.Thread ((ST.ThreadStart)EventDispatcher);
 			t.IsBackground = true;
@@ -86,11 +83,14 @@ namespace DebuggerServer
 
 		#region IDebugger Members
 
-		public void Run (MonoDebuggerStartInfo startInfo)
+		public void Run (MonoDebuggerStartInfo startInfo, bool detectMdbVersion)
 		{
 			try {
 				if (startInfo == null)
 					throw new ArgumentNullException ("startInfo");
+			
+				mdbAdaptor = MdbAdaptorFactory.CreateAdaptor (detectMdbVersion);
+				Console.WriteLine ("MDB version: " + mdbAdaptor.MdbVersion);
 
 				Report.Initialize ();
 
@@ -106,8 +106,11 @@ namespace DebuggerServer
 					NotifyStarted ();
 				};
 
-				if (startInfo.IsXsp)
+				if (startInfo.IsXsp) {
 					mdbAdaptor.SetupXsp (config);
+					config.FollowFork = false;
+				}
+				config.OpaqueFileNames = false;
 				
 				DebuggerOptions options = DebuggerOptions.ParseCommandLine (new string[] { startInfo.Command } );
 				options.WorkingDirectory = startInfo.WorkingDirectory;
@@ -122,6 +125,7 @@ namespace DebuggerServer
 						options.SetEnvironment (env.Key, env.Value);
 				}
 				session = new MD.DebuggerSession (config, options, "main", null);
+				mdbAdaptor.InitializeSession (startInfo, session);
 				
 				debugger.Run(session);
 
@@ -246,7 +250,10 @@ namespace DebuggerServer
 			
 			if (bp != null) {
 				MD.SourceLocation location = new MD.SourceLocation (bp.FileName, bp.Line);
-				ev = session.InsertBreakpoint (ThreadGroup.Global, location);
+				MD.SourceBreakpoint sbp = new MD.SourceBreakpoint (session, ThreadGroup.Global, location);
+				sbp.IsUserModule = true;
+				session.AddEvent (sbp);
+				ev = sbp;
 			}
 			else if (be is Catchpoint) {
 				Catchpoint cp = (Catchpoint) be;

@@ -38,6 +38,7 @@ namespace Mono.Debugging.Backend.Mdb
 	{
 		DebuggerController controller;
 		bool started;
+		static bool detectMdbVersion = true;
 		
 		public void StartDebugger ()
 		{
@@ -56,7 +57,10 @@ namespace Mono.Debugging.Backend.Mdb
 			started = true;
 			MonoDebuggerStartInfo info = (MonoDebuggerStartInfo) startInfo;
 			controller.StartDebugger (info);
-			controller.DebuggerServer.Run (info);
+			controller.DebuggerServer.Run (info, detectMdbVersion);
+			
+			// Try to detect mdb version only once per session
+			detectMdbVersion = false;
 		}
 
 		protected override void OnAttachToProcess (int processId)

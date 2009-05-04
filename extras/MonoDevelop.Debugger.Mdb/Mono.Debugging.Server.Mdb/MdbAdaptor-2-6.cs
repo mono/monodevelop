@@ -9,6 +9,8 @@ this way because features implemented here depend on the installed MDB version.
 
 using System;
 using Mono.Debugger;
+using MDB=Mono.Debugger;
+using Mono.Debugging.Backend.Mdb;
 
 namespace DebuggerServer
 {
@@ -17,7 +19,16 @@ namespace DebuggerServer
 		public override void SetupXsp (DebuggerConfiguration config)
 		{
 			config.SetupXSP ();
-			Console.WriteLine ("XSP configured");
+			config.StopOnManagedSignals = true;
+		}
+		
+		public override void InitializeSession (MonoDebuggerStartInfo startInfo, MDB.DebuggerSession session)
+		{
+			session.AddUserModulePath (startInfo.WorkingDirectory);
+			if (startInfo.UserModules != null) {
+				foreach (string path in startInfo.UserModules)
+					session.AddUserModule (path);
+			}
 		}
 	}
 }

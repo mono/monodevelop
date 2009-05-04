@@ -38,20 +38,20 @@ namespace DebuggerServer
 		
 		static readonly string[] supportedVersions = new string[] {"2-6"};
 		
-		public static MdbAdaptor CreateAdaptor ()
+		public static MdbAdaptor CreateAdaptor (bool detectMdbVersion)
 		{
 			ProcessStartInfo pinfo = new ProcessStartInfo ();
 			pinfo.FileName = "gmcs";
 			
 			foreach (string v in supportedVersions) {
-				MdbAdaptor mdb = TryCreateAdaptor (pinfo, v);
+				MdbAdaptor mdb = TryCreateAdaptor (pinfo, v, detectMdbVersion);
 				if (mdb != null)
 					return mdb;
 			}
 			return new MdbAdaptor ();
 		}
 		
-		static MdbAdaptor TryCreateAdaptor (ProcessStartInfo pinfo, string version)
+		static MdbAdaptor TryCreateAdaptor (ProcessStartInfo pinfo, string version, bool detectMdbVersion)
 		{
 			string tmpPath = Path.GetTempPath ();
 			tmpPath = Path.Combine (tmpPath, "monodevelop-debugger-mdb");
@@ -62,6 +62,8 @@ namespace DebuggerServer
 			DateTime thisTime = File.GetLastWriteTime (typeof(MdbAdaptorFactory).Assembly.Location);
 			
 			if (!File.Exists (outFile) || File.GetLastWriteTime (outFile) < thisTime) {
+				if (!detectMdbVersion)
+					return null;
 				Stream s = typeof(MdbAdaptorFactory).Assembly.GetManifestResourceStream ("MdbAdaptor-" + version + ".cs");
 				StreamReader sr = new StreamReader (s);
 				string txt = sr.ReadToEnd ();
@@ -75,6 +77,8 @@ namespace DebuggerServer
 				args += "\"/out:" + outFile + "\" ";
 				args += "\"/r:" + typeof(MdbAdaptorFactory).Assembly.Location + "\" ";
 				args += "\"/r:" + typeof(Mono.Debugger.Debugger).Assembly.Location + "\" ";
+				args += "\"/r:" + typeof(Mono.Debugging.Client.DebuggerSession).Assembly.Location + "\" ";
+				args += "\"/r:" + typeof(Mono.Debugging.Backend.Mdb.IDebuggerServer).Assembly.Location + "\" ";
 				args += "\"" + csfile + "\"";
 				
 				pinfo.Arguments = args;

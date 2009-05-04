@@ -26,6 +26,7 @@
 
 using System;
 using MDB=Mono.Debugger;
+using Mono.Debugging.Backend.Mdb;
 
 namespace DebuggerServer
 {
@@ -41,6 +42,10 @@ namespace DebuggerServer
 		public virtual void SetupXsp (MDB.DebuggerConfiguration config)
 		{
 			ThrowNotSupported ("ASP.NET debugging not supported");
+		}
+		
+		public virtual void InitializeSession (MonoDebuggerStartInfo startInfo, MDB.DebuggerSession session)
+		{
 		}
 		
 		public void ThrowNotSupported (string feature)

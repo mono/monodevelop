@@ -1,3 +1,14 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* IDebuggerServer.cs:
+	* MonoDebuggerSession.cs: Try to detect the mdb version only
+	  once per session.
+
+	* MonoDebuggerStartInfo.cs: Register user modules.
+
+	* MonoDebuggerSessionFactory.cs: Use the default runtime if
+	  none is specified.
+
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile:

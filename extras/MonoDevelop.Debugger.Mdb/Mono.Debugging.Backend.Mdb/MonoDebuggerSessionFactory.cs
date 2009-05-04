@@ -102,11 +102,13 @@ namespace MonoDevelop.Debugger.Mdb
 		
 		public static bool DebuggingSupported (TargetRuntime tr)
 		{
+			if (tr == null) tr = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
 			return (tr is MonoTargetRuntime) && tr.GetPackage ("mono-debugger") != null;
 		}
 		
 		public static MonoDebuggerStartInfo CreateDebuggerStartInfo (TargetRuntime tr)
 		{
+			if (tr == null) tr = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
 			MonoDebuggerStartInfo startInfo = new MonoDebuggerStartInfo ();
 			MonoTargetRuntime mtr = (MonoTargetRuntime) tr;
 			startInfo.ServerEnvironment = mtr.GetToolsEnvironmentVariables ();

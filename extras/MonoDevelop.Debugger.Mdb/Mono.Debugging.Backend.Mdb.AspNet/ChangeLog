@@ -1,3 +1,7 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoXspDebuggerSessionFactory.cs: Register user modules.
+
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile:
