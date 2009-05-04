@@ -117,5 +117,16 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return execHandler;
 		}
+
+		public override IEnumerable<string> GetToolsPaths (TargetFramework fx)
+		{
+			if (fx.Id != "1.1" && fx.Id != "2.0")
+				yield return GetFrameworkFolder (Runtime.SystemAssemblyService.GetTargetFramework ("2.0"));
+			
+			yield return GetFrameworkFolder (fx);
+			
+			foreach (string s in base.GetToolsPaths (fx))
+				yield return s;
+		}
 	}
 }

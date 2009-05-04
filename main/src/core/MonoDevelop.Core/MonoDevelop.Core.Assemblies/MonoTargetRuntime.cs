@@ -95,8 +95,8 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			return execHandler;
 		}
-		
-		public override IEnumerable<string> GetToolsPaths ()
+
+		public override IEnumerable<string> GetToolsPaths (TargetFramework fx)
 		{
 			yield return Path.Combine (MonoRuntimeInfo.Prefix, "bin");
 		}

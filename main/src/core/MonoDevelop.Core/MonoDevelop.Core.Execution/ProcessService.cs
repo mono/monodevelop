@@ -137,7 +137,8 @@ namespace MonoDevelop.Core.Execution
 			
 			if (exited != null)
 				p.Exited += exited;
-				
+
+			startInfo.CreateNoWindow = true;
 			p.StartInfo = startInfo;
 			ProcessEnvironmentVariableOverrides (p.StartInfo);
 			
@@ -194,7 +195,8 @@ namespace MonoDevelop.Core.Execution
 				
 				if (exited != null)
 					p.Exited += exited;
-				
+
+				psi.CreateNoWindow = true;
 				p.StartInfo = psi;
 				ProcessEnvironmentVariableOverrides (p.StartInfo);
 				p.Start();

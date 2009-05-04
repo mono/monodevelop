@@ -50,7 +50,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			if (PropertyService.IsWindows) {
 				string progs = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles);
-				foreach (string dir in Directory.GetDirectories (progs, "Mono-")) {
+				foreach (string dir in Directory.GetDirectories (progs, "Mono-*")) {
 					MonoRuntimeInfo info = new MonoRuntimeInfo (dir);
 					if (info.IsValidRuntime)
 						yield return new MonoTargetRuntime (info);

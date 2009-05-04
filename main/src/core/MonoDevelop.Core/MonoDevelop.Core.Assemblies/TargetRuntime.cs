@@ -107,9 +107,9 @@ namespace MonoDevelop.Core.Assemblies
 			return new Dictionary<string,string> ();
 		}
 		
-		public string GetToolPath (string toolName)
+		public string GetToolPath (TargetFramework fx, string toolName)
 		{
-			foreach (string path in GetToolsPaths ()) {
+			foreach (string path in GetToolsPaths (fx)) {
 				string toolPath = Path.Combine (path, toolName);
 				if (PropertyService.IsWindows) {
 					if (File.Exists (toolPath + ".bat"))
@@ -123,7 +123,7 @@ namespace MonoDevelop.Core.Assemblies
 			return null;
 		}
 		
-		public virtual IEnumerable<string> GetToolsPaths ()
+		public virtual IEnumerable<string> GetToolsPaths (TargetFramework fx)
 		{
 			string paths;
 			if (!GetToolsEnvironmentVariables ().TryGetValue ("PATH", out paths))

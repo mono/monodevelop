@@ -85,34 +85,20 @@ namespace MonoDevelop.Core.Execution
 				string sref = Convert.ToBase64String (ms.ToArray ());
 				string tmpFile = null;
 
+				if (executionHandlerFactory == null)
+					executionHandlerFactory = Runtime.SystemAssemblyService.CurrentRuntime.GetExecutionHandler ();
+
 				try {
 					string location = Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location);
 					location = Path.Combine (location, "mdhost.exe");
 					
-					if (executionHandlerFactory != null) {
-						ProcessHostConsole cons = new ProcessHostConsole ();
-						tmpFile = Path.GetTempFileName ();
-						File.WriteAllText (tmpFile, chId + "\n" + sref + "\n");
-						DotNetExecutionCommand cmd = new DotNetExecutionCommand (location, id + " " + tmpFile, AppDomain.CurrentDomain.BaseDirectory);
-						process = executionHandlerFactory.Execute (cmd, cons);
-					}
-					else {
-						string args = string.Empty;
-						if (isDebugMode) args += " --debug";
-						args += " \"" + location + "\" " + id;
-						
-						InernalProcessHost proc = new InernalProcessHost ();
-						proc.StartInfo = new ProcessStartInfo ("mono", args);
-						proc.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
-						proc.StartInfo.UseShellExecute = false;
-						proc.StartInfo.RedirectStandardInput = true;
-						proc.EnableRaisingEvents = true;
-						proc.Start ();
-						proc.StandardInput.WriteLine (chId);
-						proc.StandardInput.WriteLine (sref);
-						proc.StandardInput.Flush ();
-						process = proc;
-					}
+					ProcessHostConsole cons = new ProcessHostConsole ();
+					tmpFile = Path.GetTempFileName ();
+					File.WriteAllText (tmpFile, chId + "\n" + sref + "\n");
+					DotNetExecutionCommand cmd = new DotNetExecutionCommand (location, id + " " + tmpFile, AppDomain.CurrentDomain.BaseDirectory);
+					cmd.DebugMode = isDebugMode;
+					process = executionHandlerFactory.Execute (cmd, cons);
+					
 					process.Completed += ProcessExited;
 					
 				} catch (Exception ex) {

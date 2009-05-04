@@ -1,3 +1,26 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution/ProcessHostController.cs: Use the
+	  execution handler from the running runtime to fork external
+	  object processes.
+
+	* MonoDevelop.Core.Execution/DotNetExecutionCommand.cs: Added
+	  DebugMode property.
+
+	* MonoDevelop.Core.Execution/ProcessService.cs: Never show the
+	  console window when forking a process in Windows.
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs:
+	  Properly detect mono frameworks in windows.
+
+	* MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs:
+	  Implemented GetToolsPaths.
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Added
+	  TargetFramework argument to GetToolPath, since tools may
+	  differ depending on the framework.
+
 2009-04-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* frameworks.xml:
