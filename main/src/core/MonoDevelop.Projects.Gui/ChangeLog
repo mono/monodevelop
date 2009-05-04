@@ -1,5 +1,10 @@
 2009-05-04  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Changed
+	  default for completewithpunctuation
+
+2009-05-04  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
 	  Fixed "Bug 492264 - Intellisense menu locks on top of the

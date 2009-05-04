@@ -185,7 +185,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		bool CompleteWithSpaceOrPunctuation {
 			get {
-				return MonoDevelop.Core.PropertyService.Get ("CompleteWithSpaceOrPunctuation", false);
+				return MonoDevelop.Core.PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
 			}
 		}
 		
