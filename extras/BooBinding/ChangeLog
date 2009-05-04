@@ -1,3 +1,7 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BooLanguageBinding.boo: Track api changes.
+
 2009-04-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* BooLanguageBinding.boo: Track comment tag API.
