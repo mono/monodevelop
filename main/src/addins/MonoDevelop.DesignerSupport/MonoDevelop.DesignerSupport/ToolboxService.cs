@@ -41,6 +41,7 @@ using System.Drawing.Design;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
 using Mono.Addins;
@@ -57,6 +58,7 @@ namespace MonoDevelop.DesignerSupport
 		readonly static string toolboxProviderPath = "/MonoDevelop/DesignerSupport/ToolboxProviders";
 
 		ToolboxConfiguration config;
+		int initializing;
 		List<IToolboxLoader> loaders = new List<IToolboxLoader> ();
 		List<IToolboxDynamicProvider> dynamicProviders  = new List<IToolboxDynamicProvider> ();
 		
@@ -81,6 +83,10 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		#region Extension loading
+		
+		public bool Initializing {
+			get { return initializing > 0; }
+		}
 		
 		void OnLoaderExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
@@ -132,10 +138,10 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		void AddUserItems (LoaderContext ctx, string fileName)
+		void AddUserItems (IList<ItemToolboxNode> nodes)
 		{			
 			//prevent user from loading the same items again
-			foreach (ItemToolboxNode node in GetFileItems (ctx, fileName)) {
+			foreach (ItemToolboxNode node in nodes) {
 				bool found = false;
 				foreach (ItemToolboxNode n in Configuration.ItemList) {
 					if (node.Equals (n))
@@ -159,23 +165,39 @@ namespace MonoDevelop.DesignerSupport
 			
 			if (!Configuration.LoadedDefaultProviders.Contains (pname)) {
 				Configuration.LoadedDefaultProviders.Add (pname);
-				
-				IEnumerable<ItemToolboxNode> newItems = provider.GetDefaultItems ();
-				if (newItems != null)
-					Configuration.ItemList.AddRange (newItems);
-				
-				IEnumerable<string> files = provider.GetDefaultFiles ();
-				if (files != null) {
-					LoaderContext ctx = new LoaderContext ();
-					try {
-						foreach (string f in files)
-							AddUserItems (ctx, f);
-					} finally {
-						ctx.Dispose ();
-					}
-				}
-				SaveConfiguration ();
+				initializing++;
 				OnToolboxContentsChanged ();
+
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					List<ItemToolboxNode> nodes = new List<ItemToolboxNode> ();
+					try {
+						IEnumerable<ItemToolboxNode> newItems = provider.GetDefaultItems ();
+						if (newItems != null)
+							nodes.AddRange (newItems);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error getting default items from a IToolboxDefaultProvider", ex);
+					}
+
+					LoaderContext ctx = null;
+					try {
+						IEnumerable<string> files = provider.GetDefaultFiles ();
+						if (files != null) {
+							ctx = new LoaderContext ();
+							foreach (string f in files)
+								nodes.AddRange (GetFileItems (ctx, f));
+						}
+					} finally {
+						if (ctx != null)
+							ctx.Dispose ();
+					}
+
+					DispatchService.GuiDispatch (delegate {
+						AddUserItems (nodes);
+						initializing--;
+						SaveConfiguration ();
+						OnToolboxContentsChanged ();
+					});
+				});
 			}
 		}
 		
@@ -601,7 +623,7 @@ namespace MonoDevelop.DesignerSupport
 			if (!File.Exists (ToolboxIndexFile))
 				return new ComponentIndex ();
 			
-			XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
+			XmlDataSerializer ser = new XmlDataSerializer (IdeApp.Services.ProjectService.DataContext);
 			try {
 				using (StreamReader sr = new StreamReader (ToolboxIndexFile)) {
 					return (ComponentIndex) ser.Deserialize (sr, typeof(ComponentIndex));
@@ -616,7 +638,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public void Save ()
 		{
-			XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
+			XmlDataSerializer ser = new XmlDataSerializer (IdeApp.Services.ProjectService.DataContext);
 			try {
 				using (StreamWriter sw = new StreamWriter (ToolboxIndexFile)) {
 					ser.Serialize (sw, this, typeof(ComponentIndex));

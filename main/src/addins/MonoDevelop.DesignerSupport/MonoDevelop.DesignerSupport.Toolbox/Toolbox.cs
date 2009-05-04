@@ -36,6 +36,7 @@ using System.Collections;
 using System.Drawing.Design;
 using System.ComponentModel.Design;
 using System.ComponentModel;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 
@@ -228,6 +229,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			// GUI assert here is to catch Bug 434065 - Exception while going to the editor
 			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
+			
+			if (toolboxService.Initializing) {
+				toolboxWidget.CustomMessage = GettextCatalog.GetString ("Initializing...");
+				return;
+			}
+			
+			toolboxWidget.CustomMessage = null;
+			
 			categories.Clear ();
 			AddItems (toolboxService.GetCurrentToolboxItems ());
 			

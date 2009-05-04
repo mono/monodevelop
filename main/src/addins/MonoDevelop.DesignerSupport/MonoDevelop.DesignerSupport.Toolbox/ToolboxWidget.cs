@@ -76,6 +76,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
+		public string CustomMessage { get; set; }
+		
 		internal void SetCustomFont (Pango.FontDescription desc)
 		{
 			this.desc = desc;
@@ -194,11 +196,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Gdk.Drawable  draw = e.Window;
 			Gdk.Rectangle area = e.Area;
-			if (this.categories.Count == 0) {
+			if (this.categories.Count == 0 || !string.IsNullOrEmpty (CustomMessage)) {
 				Pango.Layout messageLayout = new Pango.Layout (this.PangoContext);
 				messageLayout.Alignment = Pango.Alignment.Center;
 				messageLayout.Width = (int)(Allocation.Width * 2 / 3 * Pango.Scale.PangoScale);
-				messageLayout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("There are no tools available for the current document."));
+				if (!string.IsNullOrEmpty (CustomMessage))
+					messageLayout.SetText (CustomMessage);
+				else
+					messageLayout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("There are no tools available for the current document."));
 				draw.DrawLayout (Style.TextGC (StateType.Normal), Allocation.Width * 1 / 6 , 12, messageLayout);
 				messageLayout.Dispose ();
 				return true;

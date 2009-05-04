@@ -92,10 +92,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				string s = loader.LoadItems (loaderType.Assembly.FullName, loaderType.FullName, filename);
 				XmlDataSerializer ser = new XmlDataSerializer (MonoDevelop.Projects.Services.ProjectService.DataContext);
 				ToolboxList list = (ToolboxList) ser.Deserialize (new StringReader (s), typeof(ToolboxList));
-				Console.WriteLine (">> FOUND: " + list.Count + " " + filename);
 				return list;
 			} catch {
-				Console.WriteLine (">> FAILED: " + filename);
 				return new List<ItemToolboxNode> ();
 			}
 		}
@@ -146,7 +144,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public string LoadItems (string asmName, string typeName, string fileName)
 		{
 			Gtk.Application.Init ();
-			ToolboxService service = new ToolboxService ();
 			XmlDataSerializer ser = new XmlDataSerializer (MonoDevelop.Projects.Services.ProjectService.DataContext);
 			ToolboxList tl = new ToolboxList ();
 			object ob = Activator.CreateInstance (asmName, typeName).Unwrap ();

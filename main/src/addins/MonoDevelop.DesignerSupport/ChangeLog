@@ -1,3 +1,16 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport/ToolboxService.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: Load
+	  the default toolbox items in the background, to avoid delays
+	  the first time the toolbox is shown.
+
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs: Don't
+	  create a toolbox service instance in the external process,
+	  since it may recursively create other external processes.
+	  Fixes bug #498685 - MD Locks up when toolbox is opened.
+
 2009-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport.csproj: 
