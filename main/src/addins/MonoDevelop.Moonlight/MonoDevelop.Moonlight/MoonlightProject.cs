@@ -93,9 +93,8 @@ namespace MonoDevelop.Moonlight
 			else
 				createTestPage = true;
 			
-			XmlNode appEntryNode = projectOptions.SelectSingleNode ("SilverlightAppEntry");
-			if (testPageNode != null)
-				silverlightAppEntry = appEntryNode.InnerText;
+			silverlightAppEntry = DefaultNamespace + ".App";
+			generateSilverlightManifest = true;
 		}
 		
 		void Init ()

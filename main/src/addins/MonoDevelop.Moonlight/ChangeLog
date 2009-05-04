@@ -1,5 +1,10 @@
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Set entry point
+	  and enable manifest generation on new projects.
+
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightProject.cs: Fix
 	  OnGetCanExecute.
 
