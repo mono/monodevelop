@@ -1,3 +1,9 @@
+2009-05-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/ResolveVisitor.cs: Fixed a bug that code completion
+	  shows up for not declared members ("string s; s.c."
+	  shouldn't complete anymore)
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBindingCompilerManager.cs: Don't use -pkg to reference

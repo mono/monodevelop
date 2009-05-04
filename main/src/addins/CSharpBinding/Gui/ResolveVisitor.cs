@@ -542,7 +542,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			return result;
+			return null;
 		}
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
