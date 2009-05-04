@@ -1,3 +1,13 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui.csproj: Copy the config file to the output dir.
+	  Set project type to library.
+
+	* Metacity/Preview.cs:
+	* WidgetDesignerBackend.cs: Avoid exception in the
+	  MetacityPreview class constructor, since it crashes MD under
+	  ms.net.
+
 2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libsteticui.csproj: Don't require a specific gtk# version.

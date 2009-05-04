@@ -336,9 +336,27 @@ namespace Stetic {
 				if (t != null) return t;
 			}
 			
+			string tname, aname;
+			int i = typeName.IndexOf (',');
+			if (i != -1) {
+				tname = typeName.Substring (0, i).Trim ();
+				aname = typeName.Substring (i + 1).Trim ();
+			}
+			else {
+				tname = typeName;
+				aname = null;
+			}
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies ()) {
+				if (aname == null || asm.GetName ().Name == aname) {
+					t = asm.GetType (tname);
+					if (t != null)
+						return t;
+				}
+			}
+			
 			if (throwOnError)
 				throw new TypeLoadException ("Could not load type '" + typeName + "'");
-				
+			
 			return null;
 		}
 	}

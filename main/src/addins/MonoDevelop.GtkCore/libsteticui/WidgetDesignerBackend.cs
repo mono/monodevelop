@@ -168,6 +168,7 @@ namespace Stetic
 		
 		Metacity.Preview CreateMetacityPreview (Gtk.Window window)
 		{
+			Metacity.Preview.Init ();
 			Metacity.Preview metacityPreview = new Metacity.Preview ();
 			
 			switch (window.TypeHint) {

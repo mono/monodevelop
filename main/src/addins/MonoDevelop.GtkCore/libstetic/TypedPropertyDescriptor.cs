@@ -103,7 +103,7 @@ namespace Stetic
 
 		static PropertyInfo FindProperty (Type wrapperType, Type objectType, string propertyName)
 		{
-			PropertyInfo info;
+			PropertyInfo info = null;
 
 			if (wrapperType != null) {
 				info = wrapperType.GetProperty (propertyName, flags);
@@ -111,7 +111,18 @@ namespace Stetic
 					return info;
 			}
 
-			info = objectType.GetProperty (propertyName, flags);
+			try {
+				info = objectType.GetProperty (propertyName, flags);
+			}
+			catch (AmbiguousMatchException) {
+				foreach (PropertyInfo pi in objectType.GetProperties ()) {
+					if (pi.Name == propertyName) {
+						info = pi;
+						break;
+					}
+				}
+			}
+
 			if (info != null)
 				return info;
 

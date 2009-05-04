@@ -112,7 +112,7 @@ namespace Metacity {
 		}
 
 
-		static Preview ()
+		public static void Init()
 		{
 			GtkSharp.MetacitySharp.ObjectManager.Initialize ();
 		}
