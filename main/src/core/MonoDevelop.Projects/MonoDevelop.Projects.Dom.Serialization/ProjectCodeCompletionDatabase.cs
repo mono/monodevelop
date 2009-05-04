@@ -99,12 +99,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		void OnFileAdded (object sender, ProjectFileEventArgs args)
 		{
-			if (args.ProjectFile.BuildAction == BuildAction.Compile) {
-				FileEntry file = AddFile (args.ProjectFile.Name);
-				// CheckModifiedFiles won't detect new files, so parsing
-				// must be manyally signaled
-				QueueParseJob (file);
-			}
+			FileEntry file = AddFile (args.ProjectFile.Name);
+			// CheckModifiedFiles won't detect new files, so parsing
+			// must be manyally signaled
+			QueueParseJob (file);
 		}
 
 		void OnFileRemoved (object sender, ProjectFileEventArgs args)
@@ -114,13 +112,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		void OnFileRenamed (object sender, ProjectFileRenamedEventArgs args)
 		{
-			if (args.ProjectFile.BuildAction == BuildAction.Compile) {
-				RemoveFile (args.OldName);
-				FileEntry file = AddFile (args.NewName);
-				// CheckModifiedFiles won't detect new files, so parsing
-				// must be manyally signaled
-				QueueParseJob (file);
-			}
+			RemoveFile (args.OldName);
+			FileEntry file = AddFile (args.NewName);
+			// CheckModifiedFiles won't detect new files, so parsing
+			// must be manyally signaled
+			QueueParseJob (file);
 		}
 		
 		void OnProjectModified (object s, SolutionItemModifiedEventArgs args)
@@ -135,7 +131,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			Hashtable fs = new Hashtable ();
 			foreach (ProjectFile file in project.Files)
 			{
-				if (file.BuildAction != BuildAction.Compile) continue;
 				if (GetFile (file.Name) == null) AddFile (file.Name);
 				fs [file.Name] = null;
 			}
