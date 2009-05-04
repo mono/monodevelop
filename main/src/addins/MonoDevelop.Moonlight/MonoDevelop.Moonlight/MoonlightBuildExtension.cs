@@ -344,6 +344,8 @@ namespace MonoDevelop.Moonlight
 
 		BuildResult GenerateManifest (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf, string slnConf)
 		{
+			const string depNS = "http://schemas.microsoft.com/client/2007/deployment";
+			
 			monitor.Log.WriteLine ("Generating manifest...");
 			
 			BuildResult res = new BuildResult ();
@@ -380,7 +382,7 @@ namespace MonoDevelop.Moonlight
 			
 			try {
 				XmlNode deploymentNode = doc.DocumentElement;
-				if (deploymentNode == null || deploymentNode.Name != "Deployment" || deploymentNode.NamespaceURI != "http://schemas.microsoft.com/client/2007/deployment") {
+				if (deploymentNode == null || deploymentNode.Name != "Deployment" || deploymentNode.NamespaceURI != depNS) {
 					monitor.ReportError ("Missing or invalid root <Deployment> element in manifest template '" +  template + "'.", null);
 					res.AddError ("Missing root <Deployment> element in manifest template '" +  template + "'.");
 					res.FailedBuildCount++;
@@ -396,9 +398,11 @@ namespace MonoDevelop.Moonlight
 						deploymentNode.Attributes.Append (doc.CreateAttribute ("RuntimeVersion")).Value = "2.0.31005.0";
 				}
 
-				XmlNode partsNode = deploymentNode.SelectSingleNode ("Deployment.Parts");
+				XmlNamespaceManager mgr = new XmlNamespaceManager (doc.NameTable);
+				mgr.AddNamespace ("dep", depNS);
+				XmlNode partsNode = deploymentNode.SelectSingleNode ("dep:Deployment.Parts");
 				if (partsNode == null)
-					partsNode = deploymentNode.AppendChild (doc.CreateElement ("Deployment.Parts", "http://schemas.microsoft.com/client/2007/deployment"));
+					partsNode = deploymentNode.AppendChild (doc.CreateElement ("Deployment.Parts", depNS));
 
 				AddAssemblyPart (doc, partsNode, conf.CompiledOutputName);
 				foreach (ProjectReference pr in proj.References) {

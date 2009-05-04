@@ -1,5 +1,10 @@
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Fix
+	  deployment namespace handling.
+
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: More
 	  status messages. Some handling of cancelling build.
 
