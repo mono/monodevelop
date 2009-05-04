@@ -44,11 +44,8 @@ namespace Mono.TextEditor
 		TextEditor textEditor;
 		Pango.Layout tabMarker, spaceMarker, eolMarker, invalidLineMarker;
 		Pango.Layout layout;
-		bool caretBlink = true;
 		
 		int charWidth;
-		int caretBlinkStatus;
-		uint caretBlinkTimeoutId = 0;
 		
 		int lineHeight = 16;
 		int highlightBracketOffset = -1;
@@ -308,7 +305,11 @@ namespace Mono.TextEditor
 			invalidLineMarker = invalidLineMarker.Kill ();
 			base.Dispose ();
 		}
+		
+		#region Caret blinking
 		Timer caretTimer = null;
+		bool caretBlink = true;
+		int caretBlinkStatus;
 		
 		public void ResetCaretBlink ()
 		{
@@ -336,8 +337,9 @@ namespace Mono.TextEditor
 			}
 			caretBlinkStatus++;
 		}
+		#endregion
 		
-		char caretChar; 
+		char caretChar;
 		internal int  caretX;
 		int  caretY;
 		
