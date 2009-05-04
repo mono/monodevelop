@@ -1,3 +1,8 @@
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Added
+	  missing empty region check.
+
 2009-05-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Changed

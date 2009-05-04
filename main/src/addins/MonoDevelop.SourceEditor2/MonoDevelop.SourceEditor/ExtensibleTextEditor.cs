@@ -456,6 +456,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			// Search for possible generic parameters.
 //			if (this.resolveResult == null || this.resolveResult.ResolvedType == null || String.IsNullOrEmpty (this.resolveResult.ResolvedType.Name)) {
+			if (!expressionResult.Region.IsEmpty) {
 				int j = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
 				int bracket = 0;
 				for (int i = j; i >= 0 && i < Document.Length; i++) {
@@ -477,7 +478,7 @@ namespace MonoDevelop.SourceEditor
 							break;
 					}
 				}
-//			}
+			}
 			
 			// To resolve method overloads the full expression must be parsed.
 			// ex.: Overload (1)/ Overload("one") - parsing "Overload" gives just a MethodResolveResult
