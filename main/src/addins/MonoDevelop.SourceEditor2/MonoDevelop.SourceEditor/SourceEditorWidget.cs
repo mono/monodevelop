@@ -607,7 +607,7 @@ namespace MonoDevelop.SourceEditor
 				                    Allocation.Y + 1,
 				                    Allocation.Width - 2,
 				                    Allocation.Height - 2);
-				                    
+				
 				return base.OnExposeEvent (evnt);
 			}	
 			
@@ -644,6 +644,7 @@ namespace MonoDevelop.SourceEditor
 			
 			if (messageBar == null) {
 				messageBar = new MessageArea ();
+				messageBar.EnsureStyle ();
 				
 				Gtk.Image img = ImageService.GetImage ("gtk-dialog-warning", IconSize.Dialog);
 				img.SetAlignment (0.5f, 0);
@@ -654,16 +655,17 @@ namespace MonoDevelop.SourceEditor
 				Gtk.Label l = new Gtk.Label ();
 				l.Markup = "<b>" + string.Format (GettextCatalog.GetString ("The file »{0}« has been changed outside of MonoDevelop."), StrMiddleTruncate(Document.FileName, 50)) + "</b>";
 				l.Wrap = true;
-				l.SetAlignment (0.5f, 0);
+				l.SetAlignment (0, 0.5f);
 				l.Selectable = true;
+				l.Style = messageBar.Style;
 				labelBox.PackStart (l, false, false, 5);
 				
 				l = new Gtk.Label ();
 				l.Wrap = true;
-				l.SetAlignment (0.5f, 0);
+				l.SetAlignment (0, 0.5f);
 				l.Selectable = true;
 				l.Markup = "<small>" + string.Format (GettextCatalog.GetString ("Do you want to drop your changes and reload the file?")) +"</small>";
-				
+				l.Style = messageBar.Style;
 				labelBox.PackStart (l, false, false, 5);
 				
 				messageBar.PackStart (labelBox, false, false, 5);
@@ -699,6 +701,7 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.Visible = false;
 			if (messageBar == null) {
 				messageBar = new MessageArea ();
+				messageBar.EnsureStyle ();
 				
 				Gtk.Image img = ImageService.GetImage ("gtk-dialog-warning", IconSize.Dialog);
 				img.SetAlignment (0.5f, 0);
@@ -707,17 +710,19 @@ namespace MonoDevelop.SourceEditor
 				VBox labelBox = new VBox (false, 6);
 				
 				Gtk.Label l = new Gtk.Label ();
+				l.Wrap = true;
+				l.SetAlignment (0, 0.5f);
+				l.Selectable = true;
 				l.Markup = "<b>" + string.Format (GettextCatalog.GetString ("Found auto save file for: »{0}«"), StrMiddleTruncate(fileName, 50)) + "</b>" + Environment.NewLine + Environment.NewLine + 
 					string.Format (GettextCatalog.GetString ("This may have following reasons:\n\n1) An other instance of monodevelop is running and editing this file. If this is the case be you could mess up that file.\n2) Monodevelop opened the file and crashed."));
-				l.Wrap = true;
-				l.SetAlignment (0.5f, 0);
-				l.Selectable = true;
+				l.Style = messageBar.Style;
 				labelBox.PackStart (l, false, false, 5);
 				
 				l = new Gtk.Label ();
 				l.Wrap = true;
-				l.SetAlignment (0.5f, 0);
+				l.SetAlignment (0, 0.5f);
 				l.Selectable = true;
+				l.Style = messageBar.Style;
 				l.Markup = "<small>" + string.Format (GettextCatalog.GetString ("Do you want to restore the contents of the auto save file?")) +"</small>";
 				
 				labelBox.PackStart (l, false, false, 5);
@@ -740,7 +745,6 @@ namespace MonoDevelop.SourceEditor
 					} finally {
 						RemoveMessageBar ();
 					}
-					
 				};
 				
 				Button b2 = new Button (GettextCatalog.GetString("_Restore"));

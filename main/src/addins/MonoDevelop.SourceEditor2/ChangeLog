@@ -1,3 +1,9 @@
+2009-05-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed "Bug
+	  499981 - "File Changed" notification panel is unreadable
+	  when a dark theme is used".
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Added
