@@ -1,5 +1,10 @@
 2009-05-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Set the
+	  path column as default sort column.
+
+2009-05-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Fixed bug
 	  in find in files dialog.
 

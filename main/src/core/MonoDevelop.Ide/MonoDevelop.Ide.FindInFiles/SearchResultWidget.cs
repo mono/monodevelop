@@ -81,7 +81,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			treeviewSearchResults.RulesHint = true;
 			
 			TreeViewColumn fileNameColumn = new TreeViewColumn ();
-			fileNameColumn.SortIndicator = true;
 			fileNameColumn.Resizable = true;
 			fileNameColumn.SortColumnId  = 0;
 			fileNameColumn.Title = GettextCatalog.GetString ("File");
@@ -93,7 +92,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileNameColumn.PackStart (fileNameRenderer, true);
 			fileNameColumn.SetCellDataFunc (fileNameRenderer, new Gtk.TreeCellDataFunc (FileNameDataFunc));
 			treeviewSearchResults.AppendColumn (fileNameColumn);
-			store.SetSortColumnId (0, SortType.Ascending);
+			
 			store.SetSortFunc (0, new TreeIterCompareFunc (CompareFileNames));
 			
 			TreeViewColumn lineColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Line"), new Gtk.CellRendererText (), new Gtk.TreeCellDataFunc (ResultLineDataFunc));
@@ -132,6 +131,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonPin.Clicked += ButtonPinClicked;
 			buttonPin.SetTooltip (tips, GettextCatalog.GetString ("Pin results pad"), GettextCatalog.GetString ("Pin results pad"));
 			toolbar.Insert (buttonPin, -1);
+			
+			store.SetSortColumnId (3, SortType.Ascending);
 			ShowAll ();
 			
 			scrolledwindowLogView.Hide ();
