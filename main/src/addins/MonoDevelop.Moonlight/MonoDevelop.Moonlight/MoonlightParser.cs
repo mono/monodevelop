@@ -134,27 +134,59 @@ namespace MonoDevelop.Moonlight
 			
 			XName nameAtt = new XName ("x", "Name");
 			
-			IEnumerable<DomField> fields =
-				from XElement el in doc.XDocument.RootElement.AllDescendentElements
-				let name = el.Attributes [nameAtt]
-				where name != null
-				select new DomField (name.Value, Modifiers.Internal, el.Region.Start,
-					             new DomReturnType (ResolveType (el)));
-			
-			foreach (DomField f in fields)
-				declType.Add (f);
+			foreach (XElement el in doc.XDocument.RootElement.AllDescendentElements) {
+				XAttribute name = el.Attributes [nameAtt];
+				if (name != null && name.IsComplete) {
+					string type = ResolveType (el);
+					if (type == null || type.Length == 0)
+						doc.Add (new Error (ErrorType.Error, el.Region.Start, "Could not find namespace for '" + el.Name.FullName + "'."));
+					else
+						declType.Add (new DomField (name.Value, Modifiers.Internal, el.Region.Start, new DomReturnType (type)));
+				}
+			}
 		}
+		
+		static string GetNamespace (XElement el)
+		{
+			XName attName;
+			if (el.Name.HasPrefix) {
+				attName = new XName ("xmlns", el.Name.Prefix);
+		 	} else {
+				attName = new XName ("xmlns");
+				XAttribute att = el.Attributes[attName];
+				if (att != null)
+						return att.Value;
+			}
+			
+			foreach (XNode node in el.Parents) {
+				XElement parentElement = node as XElement;
+				if (parentElement != null) {
+					XAttribute att = parentElement.Attributes[attName];
+					if (att != null)
+						return att.Value;
+				}
+			}
+			return null;
+		}
+		
+		static string PresentationNS = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
 		
 		static string ResolveType (XElement el)
 		{
-			//FIXME implement
-//			string name = attr.Value;
-//			string ns = XamlG.GetNamespace (node);
-//			string type = node.LocalName;
-//			
-//			if (ns != null)
-//				type = String.Concat (ns, ".", type);
-			return el.Name.Name;
+			string name = el.Name.Name;
+			string ns = GetNamespace (el);
+			if (ns != null) {
+				if (ns.StartsWith ("clr-namespace:")) {
+					int end = ns.IndexOf (';', 14);
+					if (end > 0)
+						return ns.Substring (14, ns.Length - end + 1);
+					else
+						return (ns.Substring (14));
+				} else if (ns == PresentationNS) {
+					return el.Name.Name;
+				}
+			}
+			return null;
 		}
 	}
 }

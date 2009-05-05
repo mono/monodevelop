@@ -1,5 +1,10 @@
 2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightParser.cs: Implement
+	  resolving types' namespaces.
+
+2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightProject.cs: Use project name
 	  for app entry point, since default namespace isn't
 	  initalised during project creation.
