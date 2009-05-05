@@ -1,3 +1,8 @@
+2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs: Improve
+	  an error message.
+
 2009-05-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs: Break
