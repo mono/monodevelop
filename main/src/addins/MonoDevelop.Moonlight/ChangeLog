@@ -1,5 +1,10 @@
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Fix
+	  dependency checks for respacked files.
+
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Write
 	  assembly error message to monitor's log.
 

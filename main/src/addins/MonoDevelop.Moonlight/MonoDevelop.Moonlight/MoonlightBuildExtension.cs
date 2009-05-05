@@ -61,21 +61,21 @@ namespace MonoDevelop.Moonlight
 			List<BuildResult> results = new List<BuildResult> ();
 			
 			foreach (ProjectFile pf in proj.Files) {
+				if (pf.BuildAction == BuildAction.Resource || pf.BuildAction == BuildAction.Page || pf.BuildAction == BuildAction.ApplicationDefinition)
+					toResGen.Add (pf.FilePath);
+				
 				if (pf.FilePath.EndsWith (".xaml") && pf.Generator == "MSBuild:MarkupCompilePass1") {
 					string outFile = Path.Combine (objDir, proj.LanguageBinding.GetFileName (Path.GetFileName (pf.FilePath) + ".g"));
 					buildData.Items.Add (new ProjectFile (outFile, BuildAction.Compile));
-					if (File.Exists (outFile) && File.GetLastWriteTime (outFile) > File.GetLastWriteTime (pf.FilePath))
-						continue;
-					string rel = pf.RelativePath;
-					monitor.Log.WriteLine ("Generating codebehind accessors for {0}...", rel);
-					BuildResult result = XamlG.GenerateFile (codeDomProvider, appName, pf.FilePath, rel, outFile);
-					if (result.Failed)
-						return result;
-					results.Add (result);
+					if (!File.Exists (outFile) || File.GetLastWriteTime (outFile) < File.GetLastWriteTime (pf.FilePath)) {
+						string rel = pf.RelativePath;
+						monitor.Log.WriteLine ("Generating codebehind accessors for {0}...", rel);
+						BuildResult result = XamlG.GenerateFile (codeDomProvider, appName, pf.FilePath, rel, outFile);
+						if (result.Failed)
+							return result;
+						results.Add (result);
+					}
 				}
-				
-				if (pf.BuildAction == BuildAction.Resource || pf.BuildAction == BuildAction.Page || pf.BuildAction == BuildAction.ApplicationDefinition)
-					toResGen.Add (pf.FilePath);
 			}
 			
 			string resFile = Path.Combine (objDir, appName + ".g.resources");
@@ -301,14 +301,17 @@ namespace MonoDevelop.Moonlight
 				resLastMod = File.GetLastWriteTime (resFile);
 			
 			foreach (ProjectFile pf in proj.Files) {
+				if ((pf.BuildAction == BuildAction.Page || pf.BuildAction == BuildAction.ApplicationDefinition || pf.BuildAction == BuildAction.Resource)
+				    && File.GetLastWriteTime (pf.FilePath) > resLastMod)
+				{
+					return true;
+				}
 				if (pf.FilePath.EndsWith (".xaml") && pf.Generator == "MSBuild:MarkupCompilePass1") {
 					string outFile = Path.Combine (objDir, proj.LanguageBinding.GetFileName (Path.GetFileName (pf.FilePath) + ".g"));
 					if (!File.Exists (outFile) || File.GetLastWriteTime (outFile) < File.GetLastWriteTime (pf.FilePath))
 						return true;
 				}
-				else if (pf.BuildAction == BuildAction.Content && File.GetLastWriteTime (pf.FilePath) > xapLastMod)
-					return true;
-				else if (pf.BuildAction == BuildAction.Resource && File.GetLastWriteTime (pf.FilePath) > resLastMod)
+				if (pf.BuildAction == BuildAction.Content && File.GetLastWriteTime (pf.FilePath) > xapLastMod)
 					return true;
 			}
 			return false;
