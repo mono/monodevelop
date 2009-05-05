@@ -1,3 +1,9 @@
+2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components/WindowTransparencyDecorator.cs: Fix
+	  typo - set property, not its backing field. Fixes window
+	  remaining transparent after hiding.
+
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components/WindowTransparencyDecorator.cs:

@@ -89,7 +89,7 @@ namespace MonoDevelop.Components
 			
 			//NOTE: we unset transparency when showing, instead of when hiding
 			//because the latter case triggers a metacity+compositing bug that shows the window again
-			semiTransparent = false;
+			SemiTransparent = false;
 		}
 		
 		void HiddenHandler (object sender, EventArgs args)
