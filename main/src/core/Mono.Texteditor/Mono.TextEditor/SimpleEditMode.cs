@@ -49,6 +49,7 @@ namespace Mono.TextEditor
 			Action<TextEditorData> action;
 			
 			Gdk.ModifierType wordModifier = Platform.IsMac? Gdk.ModifierType.Mod1Mask : Gdk.ModifierType.ControlMask;
+			Gdk.ModifierType subwordModifier = Platform.IsMac? Gdk.ModifierType.ControlMask : Gdk.ModifierType.Mod1Mask;
 						
 			// ==== Left ====
 			
@@ -135,6 +136,31 @@ namespace Mono.TextEditor
 			action = DeleteActions.NextWord;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Delete, wordModifier), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Delete, wordModifier), action);
+			
+			
+			// == subword motions ==
+						
+			action = CaretMoveActions.PreviousSubword;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left, subwordModifier), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Left, subwordModifier), action);
+			
+			action = SelectionActions.MovePreviousSubword;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left, Gdk.ModifierType.ShiftMask | subwordModifier), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.ShiftMask | subwordModifier), action);
+			
+			action = CaretMoveActions.NextSubword;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Right, subwordModifier), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Right, subwordModifier), action);
+			
+			action = SelectionActions.MoveNextSubword;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Right, Gdk.ModifierType.ShiftMask | subwordModifier), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.ShiftMask | subwordModifier), action);
+			
+			keyBindings.Add (GetKeyCode (Gdk.Key.BackSpace, subwordModifier), DeleteActions.PreviousSubword);
+			
+			action = DeleteActions.NextSubword;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Delete, subwordModifier), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Delete, subwordModifier), action);
 		}
 		
 		void InitDefaultBindings ()
@@ -240,7 +266,6 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Up, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask), action);
-			
 		}
 		
 		void InitMacBindings ()
@@ -342,32 +367,6 @@ namespace Mono.TextEditor
 			action = SelectionActions.MoveUp;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Up, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ShiftMask), action);
-			
-			// == subword motions ==
-			
-			Gdk.ModifierType subwordModifier = Gdk.ModifierType.ControlMask;
-			
-			action = CaretMoveActions.PreviousSubword;
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left, subwordModifier), action);
-			keyBindings.Add (GetKeyCode (Gdk.Key.Left, subwordModifier), action);
-			
-			action = SelectionActions.MovePreviousSubword;
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left, Gdk.ModifierType.ShiftMask | subwordModifier), action);
-			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.ShiftMask | subwordModifier), action);
-			
-			action = CaretMoveActions.NextSubword;
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Right, subwordModifier), action);
-			keyBindings.Add (GetKeyCode (Gdk.Key.Right, subwordModifier), action);
-			
-			action = SelectionActions.MoveNextSubword;
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Right, Gdk.ModifierType.ShiftMask | subwordModifier), action);
-			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.ShiftMask | subwordModifier), action);
-			
-			keyBindings.Add (GetKeyCode (Gdk.Key.BackSpace, subwordModifier), DeleteActions.PreviousSubword);
-			
-			action = DeleteActions.NextSubword;
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Delete, subwordModifier), action);
-			keyBindings.Add (GetKeyCode (Gdk.Key.Delete, subwordModifier), action);
 		}
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
