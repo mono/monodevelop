@@ -1,5 +1,10 @@
 2009-05-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Worked on
+	  find in files dialog.
+
+2009-05-05  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:

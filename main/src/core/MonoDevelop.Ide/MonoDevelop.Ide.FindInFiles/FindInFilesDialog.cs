@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			
 			if (showReplace) {
-				tableFindAndReplace.NRows = 3;
+				tableFindAndReplace.NRows = 4;
 				labelReplace = new Label ();
 				labelReplace.Text = GettextCatalog.GetString ("_Replace:");
 				labelReplace.Xalign = 0F;
@@ -86,14 +86,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				childLabel = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelScope];
 				childLabel.TopAttach = 2;
 				childLabel.BottomAttach = 3;
-				childLabel.XOptions = childLabel.YOptions = (Gtk.AttachOptions)4;
 				
-				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.comboboxScope];
+				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.hbox2];
 				childCombo.TopAttach = 2;
 				childCombo.BottomAttach = 3;
-				childCombo.LeftAttach = 1;
-				childCombo.RightAttach = 2;
-				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
 				
 				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelFileMask];
 				childCombo.TopAttach = 3;
@@ -156,18 +152,19 @@ namespace MonoDevelop.Ide.FindInFiles
 				buttonBrowsePaths      = null;
 				checkbuttonRecursively = null;
 				
+				//tableFindAndReplace.NRows = showReplace ? 4u : 3u;
+				
 				Gtk.Table.TableChild childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelFileMask];
-				childCombo.TopAttach = 3;
-				childCombo.BottomAttach = 4;
+				childCombo.TopAttach = tableFindAndReplace.NRows - 3;
+				childCombo.BottomAttach = tableFindAndReplace.NRows - 2;
 				
 				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.comboboxentryFileMask];
-				childCombo.TopAttach = 3;
-				childCombo.BottomAttach = 4;
-				tableFindAndReplace.NRows = showReplace ? 5u : 4u;
+				childCombo.TopAttach = tableFindAndReplace.NRows - 3;
+				childCombo.BottomAttach = tableFindAndReplace.NRows - 2;
 			}
 			
 			if (comboboxScope.Active == 3) { // DirectoryScope
-				tableFindAndReplace.NRows = 5;
+				tableFindAndReplace.NRows = showReplace ? 6u : 5u;
 				labelPath = new Label ();
 				labelPath.LabelProp = GettextCatalog.GetString ("_Path:");
 				labelPath.UseUnderline = true;
@@ -175,8 +172,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				tableFindAndReplace.Add (labelPath);
 				
 				Gtk.Table.TableChild childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[labelPath];
-				childCombo.TopAttach = 3;
-				childCombo.BottomAttach = 4;
+				childCombo.TopAttach = tableFindAndReplace.NRows - 3;
+				childCombo.BottomAttach = tableFindAndReplace.NRows - 2;
 				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
 				
 				hboxPath = new HBox ();
@@ -202,13 +199,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				
 				tableFindAndReplace.Add (hboxPath);
 				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[hboxPath];
-				childCombo.TopAttach = 3;
-				childCombo.BottomAttach = 4;
+				childCombo.TopAttach = tableFindAndReplace.NRows - 3;
+				childCombo.BottomAttach = tableFindAndReplace.NRows -2;
 				childCombo.LeftAttach = 1;
 				childCombo.RightAttach = 2;
 				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
-				
-				
 				
 				checkbuttonRecursively = new CheckButton ();
 				checkbuttonRecursively.Label = GettextCatalog.GetString ("Re_cursively");
@@ -217,19 +212,19 @@ namespace MonoDevelop.Ide.FindInFiles
 				checkbuttonRecursively.Destroyed += CheckbuttonRecursivelyDestroyed;
 				tableFindAndReplace.Add (checkbuttonRecursively);
 				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[checkbuttonRecursively];
-				childCombo.TopAttach = 4;
-				childCombo.BottomAttach = 5;
+				childCombo.TopAttach = tableFindAndReplace.NRows - 2;
+				childCombo.BottomAttach = tableFindAndReplace.NRows - 1;
 				childCombo.LeftAttach = 1;
 				childCombo.RightAttach = 2;
 				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
 				
 				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelFileMask];
-				childCombo.TopAttach = 5;
-				childCombo.BottomAttach = 6;
+				childCombo.TopAttach = tableFindAndReplace.NRows - 1;
+				childCombo.BottomAttach = tableFindAndReplace.NRows;
 				
 				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.comboboxentryFileMask];
-				childCombo.TopAttach = 5;
-				childCombo.BottomAttach = 6;
+				childCombo.TopAttach = tableFindAndReplace.NRows - 1;
+				childCombo.BottomAttach = tableFindAndReplace.NRows;
 			}
 			Requisition req = this.SizeRequest ();
 			this.Resize (req.Width, req.Height);
