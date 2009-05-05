@@ -1,3 +1,18 @@
+2009-05-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.Assemblies/SystemPackage.cs:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: When
+	  parsing a .pc file, detect the target runtime of the package
+	  and store it in the cache.
+
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Store a cache
+	  version number in the cache file, so we can force a
+	  regeneration if the format changes.
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/ProcessService.cs: Added property

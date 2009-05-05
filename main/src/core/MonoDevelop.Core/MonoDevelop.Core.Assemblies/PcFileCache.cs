@@ -37,6 +37,7 @@ namespace MonoDevelop.Core.Assemblies
 		Dictionary<string, SystemPackageInfo> infos = new Dictionary<string, SystemPackageInfo> ();
 		string cacheFile;
 		bool hasChanges;
+		const string CacheVersion = "1";
 		
 		public PcFileCache()
 		{
@@ -45,7 +46,9 @@ namespace MonoDevelop.Core.Assemblies
 				if (File.Exists (cacheFile)) {
 					using (StreamReader sr = new StreamReader (cacheFile)) {
 						XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-						infos = (Dictionary<string, SystemPackageInfo>) ser.Deserialize (sr, typeof(Dictionary<string, SystemPackageInfo>));
+						PcFileCacheData data = (PcFileCacheData) ser.Deserialize (sr, typeof(PcFileCacheData));
+						if (data.Version == CacheVersion)
+							infos = data.Infos;
 					}
 				}
 			} catch (Exception ex) {
@@ -89,7 +92,10 @@ namespace MonoDevelop.Core.Assemblies
 					XmlTextWriter tw = new XmlTextWriter (sw);
 					tw.Formatting = Formatting.Indented;
 					XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-					ser.Serialize (tw, infos);
+					PcFileCacheData data = new PcFileCacheData ();
+					data.Infos = infos;
+					data.Version = CacheVersion;
+					ser.Serialize (tw, data);
 					hasChanges = false;
 				}
 			}
@@ -98,5 +104,15 @@ namespace MonoDevelop.Core.Assemblies
 		public object SyncRoot {
 			get { return infos; }
 		}
+	}
+
+	[DataItem ("PcFileCache")]
+	class PcFileCacheData
+	{
+		[ItemProperty ("Files")]
+		public Dictionary<string, SystemPackageInfo> Infos = new Dictionary<string, SystemPackageInfo> ();
+		
+		[ItemProperty ("version")]
+		public string Version;
 	}
 }

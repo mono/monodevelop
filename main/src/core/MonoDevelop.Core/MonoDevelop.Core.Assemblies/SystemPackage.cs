@@ -153,6 +153,7 @@ namespace MonoDevelop.Core.Assemblies
 		[ItemProperty (DefaultValue=null)]
 		public string Description { get; set; }
 		
+		[ItemProperty (DefaultValue=null)]
 		public string TargetFramework { get; set; }
 		
 		// The package is part of the core mono SDK

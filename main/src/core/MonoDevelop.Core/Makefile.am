@@ -126,6 +126,7 @@ RES =  \
 REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
+	-r:../../../build/bin/Mono.Cecil.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Posix \
 	-r:System \

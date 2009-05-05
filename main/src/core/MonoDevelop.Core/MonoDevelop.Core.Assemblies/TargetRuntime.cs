@@ -215,6 +215,17 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
+		internal string GetCorlibFramework (string fullName)
+		{
+			// Called during initialization, so the Initialize() call is not required here
+			fullName = NormalizeAsmName (fullName);
+			SystemAssembly asm;
+			if (assemblyFullNameToAsm.TryGetValue (fullName, out asm))
+				return asm.Package.TargetFramework;
+			else
+				return null;
+		}
+		
 		public IEnumerable<SystemAssembly> GetAssemblies ()
 		{
 			Initialize ();

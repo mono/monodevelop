@@ -242,6 +242,9 @@ namespace MonoDevelop.Core.Assemblies
 			string monoPrefix = Path.GetDirectoryName (Path.GetDirectoryName (pcDir));
 			monoPrefix = Path.GetFullPath (monoPrefix + Path.DirectorySeparatorChar + "lib" + Path.DirectorySeparatorChar + "mono" + Path.DirectorySeparatorChar);
 
+			TargetFramework commonFramework = null;
+			bool inconsistentFrameworks = false;
+			
 			List<PackageAssemblyInfo> list = new List<PackageAssemblyInfo> ();
 			foreach (string assembly in fullassemblies) {
 				string asm;
@@ -258,14 +261,40 @@ namespace MonoDevelop.Core.Assemblies
 					PackageAssemblyInfo pi = new PackageAssemblyInfo ();
 					pi.File = asm;
 					pi.UpdateFromFile (pi.File);
+					string targetFramework = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (this, pi.File);
 					list.Add (pi);
 					if (!gacPackageSet && !asm.StartsWith (monoPrefix) && Path.IsPathRooted (asm)) {
 						// Assembly installed outside $(prefix)/lib/mono. It is most likely not a gac package.
 						gacPackageSet = true;
 						pinfo.IsGacPackage = false;
 					}
+					if (commonFramework == null) {
+						commonFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFramework);
+						if (commonFramework == null)
+							inconsistentFrameworks = true;
+					}
+					else if (targetFramework != null) {
+						TargetFramework newfx = Runtime.SystemAssemblyService.GetTargetFramework (targetFramework);
+						if (newfx == null)
+							inconsistentFrameworks = true;
+						else {
+							if (newfx.IsCompatibleWithFramework (commonFramework.Id))
+								commonFramework = newfx;
+							else if (!commonFramework.IsCompatibleWithFramework (newfx.Id))
+								inconsistentFrameworks = true;
+						}
+					}
 				}
+				if (inconsistentFrameworks)
+					break;
 			}
+			if (inconsistentFrameworks) {
+				LoggingService.LogError ("Inconsistent target frameworks found in " + pcfile);
+				return pinfo;
+			}
+			if (commonFramework != null)
+				pinfo.TargetFramework = commonFramework.Id;
+			
 			pinfo.Assemblies = list;
 			return pinfo;
 		}
