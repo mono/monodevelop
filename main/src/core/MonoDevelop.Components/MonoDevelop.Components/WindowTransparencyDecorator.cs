@@ -86,17 +86,17 @@ namespace MonoDevelop.Components
 			if (!snooperInstalled)
 				snooperID = InstallSnooper (snoopFunc);
 			snooperInstalled = true;
+			
+			//NOTE: we unset transparency when showing, instead of when hiding
+			//because the latter case triggers a metacity+compositing bug that shows the window again
+			semiTransparent = false;
 		}
 		
-		//HACK:we have to set the window opacity to 1 before it's actually hidden, to work around a metacity compositing bug
-		[GLib.ConnectBefore]
 		void HiddenHandler (object sender, EventArgs args)
 		{
 			if (snooperInstalled)
 				RemoveSnooper (snooperID);
-			
 			snooperInstalled = false;
-			SemiTransparent = false;
 		}
 		
 		void DestroyedHandler (object sender, EventArgs args)

@@ -1,5 +1,10 @@
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Components/WindowTransparencyDecorator.cs:
+	  Better fix for the metacity bug.
+
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Components/WindowTransparencyDecorator.cs: Move
 	  the workaround for "Bug 492264 - Intellisense menu locks on
 	  top of the screen" to here so that it affects all users of
