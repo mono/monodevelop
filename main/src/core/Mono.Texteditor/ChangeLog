@@ -1,3 +1,8 @@
+2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/Platform.cs: Fixed build with GTK# 2.8.
+
 2009-04-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/EmacsWordFindStrategy.cs: Fix subword
