@@ -1,5 +1,10 @@
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Handle
+	  respack.exe if the runtime gives us that.
+
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Fix
 	  dependency checks for respacked files.
 

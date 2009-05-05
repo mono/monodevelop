@@ -147,10 +147,16 @@ namespace MonoDevelop.Moonlight
 					si.EnvironmentVariables[env.Key] = env.Value;
 				}
 			}
-			si.FileName = respack;
+			si.FileName = respack.EndsWith (".exe")? "mono" : respack;
 			si.WorkingDirectory = Path.GetDirectoryName (outfile);
 			
-			var sb = new System.Text.StringBuilder (outfile);
+			var sb = new System.Text.StringBuilder ();
+			if (respack.EndsWith (".exe")) {
+				sb.Append (respack);
+				sb.Append (" ");
+			}
+			sb.Append (outfile);
+			
 			foreach (string infile in toResGen) {
 				sb.Append (" ");
 				sb.Append (infile);
