@@ -247,12 +247,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			FolderDialog folderDialog = new FolderDialog (GettextCatalog.GetString ("Select directory"));
 			try {
-				string defaultFolder = this.comboboxentryFind.Entry.Text;	
+				string defaultFolder = this.comboboxentryPath.Entry.Text;
 				if (string.IsNullOrEmpty (defaultFolder)) 
 					defaultFolder = IdeApp.ProjectOperations.ProjectsDefaultPath;
-				
-				folderDialog.SetFilename (defaultFolder);
-				if (folderDialog.Run() == (int)Gtk.ResponseType.Ok) 
+				if (!string.IsNullOrEmpty (defaultFolder)) 
+					folderDialog.SetFilename (defaultFolder);
+				if (folderDialog.Run() == (int)Gtk.ResponseType.Ok)
 					this.comboboxentryPath.Entry.Text = folderDialog.Filename;
 			} finally {
 				folderDialog.Destroy ();
