@@ -158,6 +158,12 @@ namespace MonoDevelop.Core.Assemblies
 			                        Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBDIR"));
 			rt.envVars ["PATH"] = Environment.GetEnvironmentVariable ("PATH");
 			
+			string mlPath = Environment.GetEnvironmentVariable ("MOONLIGHT_2_SDK_PATH");
+			if (!String.IsNullOrEmpty (mlPath)) {
+				rt.envVars ["MOONLIGHT_2_SDK_PATH"] = mlPath;
+				rt.envVars ["PKG_CONFIG_PATH"] = mlPath + Path.PathSeparator + rt.envVars ["PKG_CONFIG_PATH"];
+			}
+			
 			rt.IsRunning = true;
 			rt.initialized = true;
 			

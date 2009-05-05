@@ -98,7 +98,10 @@ namespace MonoDevelop.Core.Assemblies
 
 		public override IEnumerable<string> GetToolsPaths (TargetFramework fx)
 		{
-			yield return Path.Combine (MonoRuntimeInfo.Prefix, "bin");
+			if (fx.Id == "2.1" && environmentVariables.ContainsKey ("MOONLIGHT_2_SDK_PATH"))
+				yield return environmentVariables ["MOONLIGHT_2_SDK_PATH"];
+			else
+				yield return Path.Combine (MonoRuntimeInfo.Prefix, "bin");
 		}
 		
 		protected override IEnumerable<string> GetGacDirectories ()
@@ -126,6 +129,11 @@ namespace MonoDevelop.Core.Assemblies
 					subdir = "1.0"; break;
 				case "3.5":
 					subdir = "2.0"; break;
+				case "2.1":
+					string moonSDKPath;
+					if (environmentVariables.TryGetValue ("MOONLIGHT_2_SDK_PATH", out moonSDKPath))
+						return moonSDKPath;
+					subdir = "2.1"; break;
 				default:
 					subdir = fx.Id; break;
 			}
@@ -138,8 +146,11 @@ namespace MonoDevelop.Core.Assemblies
 			if (fx.Id == "3.0") {
 				info.Name = "olive";
 				info.IsCorePackage = false;
-			} else
+			} else if (fx.Id == "2.1") {
+				info.Name = "moonlight";
+			} else {
 				info.Name = "mono";
+			}
 			return info;
 		}
 		

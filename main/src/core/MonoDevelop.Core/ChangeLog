@@ -1,3 +1,10 @@
+2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Add
+	  MOONLIGHT_2_SDK_PATH env var for using a non-installed
+	  Moonlight SDK.
+
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* frameworks.xml: Add assembly version for System.Windows.dll
