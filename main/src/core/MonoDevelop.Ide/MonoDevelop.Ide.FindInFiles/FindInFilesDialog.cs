@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			comboboxScope.Active = 3;
 			comboboxentryPath.Entry.Text = directory;
 			writeScope = false;
+			
 		}
 		
 		ComboBoxEntry comboboxentryReplace;
@@ -129,7 +130,6 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			}
 			comboboxentryFind.Entry.SelectRegion (0, comboboxentryFind.ActiveText.Length);
-			
 		}
 		
 		Label labelPath;
@@ -230,6 +230,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.Resize (req.Width, req.Height);
 		//	this.QueueResize ();
 			ShowAll ();
+		}
+		
+		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			requisition.Width = Math.Max (480, requisition.Width);
 		}
 
 		void ComboboxentryPathDestroyed (object sender, EventArgs e)
