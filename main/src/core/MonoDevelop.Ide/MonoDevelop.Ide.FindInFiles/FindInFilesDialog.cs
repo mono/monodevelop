@@ -169,7 +169,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (comboboxScope.Active == 3) { // DirectoryScope
 				tableFindAndReplace.NRows = 5;
 				labelPath = new Label ();
-				labelPath.Text = GettextCatalog.GetString ("Path:");
+				labelPath.LabelProp = GettextCatalog.GetString ("_Path:");
+				labelPath.UseUnderline = true;
 				labelPath.Xalign = 0F;
 				tableFindAndReplace.Add (labelPath);
 				
@@ -184,6 +185,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				comboboxentryPath.Destroyed += ComboboxentryPathDestroyed;
 				LoadHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", comboboxentryPath);
 				hboxPath.PackStart (comboboxentryPath);
+				
+				labelPath.MnemonicWidget = comboboxentryPath;
 				
 				Gtk.Box.BoxChild boxChild = (Gtk.Box.BoxChild)hboxPath[comboboxentryPath];
 				boxChild.Position = 0;
@@ -204,6 +207,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				childCombo.LeftAttach = 1;
 				childCombo.RightAttach = 2;
 				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
+				
+				
 				
 				checkbuttonRecursively = new CheckButton ();
 				checkbuttonRecursively.Label = GettextCatalog.GetString ("Re_cursively");
