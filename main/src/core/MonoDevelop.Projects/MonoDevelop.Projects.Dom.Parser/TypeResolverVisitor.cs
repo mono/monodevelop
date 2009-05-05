@@ -66,8 +66,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 			
-			IReturnTypePart firstPart = type.Parts [0];
-			string name = type.Namespace.Length > 0 ? type.Namespace + "." + firstPart.Name : firstPart.Name;
+			IReturnTypePart firstPart = type.Parts[0];
+			string name = !string.IsNullOrEmpty (type.Namespace) ? type.Namespace + "." + firstPart.Name : firstPart.Name;
 			if (firstPart.GenericArguments.Count > 0)
 				name += "`" + firstPart.GenericArguments.Count;
 			IType c = db.SearchType (new SearchTypeRequest (unit, contextType, name));

@@ -1,3 +1,9 @@
+2009-05-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
+	  Fixed possible null reference exception (Bug 500612 -
+	  Frequent NRE on the typeResolver).
+
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
