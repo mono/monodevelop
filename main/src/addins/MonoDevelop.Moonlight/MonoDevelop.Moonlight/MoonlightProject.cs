@@ -93,7 +93,8 @@ namespace MonoDevelop.Moonlight
 			else
 				createTestPage = true;
 			
-			silverlightAppEntry = DefaultNamespace + ".App";
+			//default namespace isn't initialised yet, but this should be okay OOTB
+			silverlightAppEntry = info.ProjectName + ".App";
 			generateSilverlightManifest = true;
 		}
 		
