@@ -1,5 +1,9 @@
 2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightParser.cs: Fix logic.
+
+2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight.Gui/MoonlightOptionsPanelWidget.cs:
 	* gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:
 	  Improve the moonlight options panel. Add support for setting

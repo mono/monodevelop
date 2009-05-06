@@ -62,7 +62,7 @@ namespace MonoDevelop.Moonlight
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
 				doc.Add (xmlParser.Errors);
 				
-				if (doc.XDocument != null || doc.XDocument.RootElement != null) {
+				if (doc.XDocument != null && doc.XDocument.RootElement != null) {
 					if (!doc.XDocument.RootElement.IsEnded)
 						doc.XDocument.RootElement.End (xmlParser.Location);
 					GenerateCU (doc);
