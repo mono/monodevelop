@@ -1,3 +1,20 @@
+2009-05-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution/ProcessService.cs: Make suer
+	  GetExecutionModes always reuses the IExecutionModeSet
+	  instances. Added class for keeping execution mode handler
+	  references.
+
+	* MonoDevelop.Core.addin.xml: Don't add the default execution
+	  handler as a special execution mode.
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs:
+	  Automatically detect mono runtimes in some common install
+	  locations.
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Show the
+	  prefix in the display name.
+
 2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs:

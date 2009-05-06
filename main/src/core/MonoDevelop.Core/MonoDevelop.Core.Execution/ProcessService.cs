@@ -242,7 +242,7 @@ namespace MonoDevelop.Core.Execution
 			yield return defaultExecutionModeSet;
 			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/ExecutionModes")) {
 				if (!(node is ExecutionModeNode))
-					yield return (IExecutionModeSet) node.CreateInstance (typeof (IExecutionModeSet));
+					yield return (IExecutionModeSet) node.GetInstance (typeof (IExecutionModeSet));
 			}
 		}
 		
@@ -389,6 +389,41 @@ namespace MonoDevelop.Core.Execution
 		{
 			if (unixRemotingFile != null)
 				File.Delete (unixRemotingFile);
+		}
+		
+		public class ExecutionModeReference
+		{
+			// This class can be used to hold a reference to the execution mode of an
+			// execution set, and be able to compare it with other references.
+			// It's useful for comparing references to IExecutionMode objects
+			// obtained from different GetExecutionModes calls (which may return
+			// new instances of IExecutionMode).
+			
+			IExecutionModeSet mset;
+			IExecutionMode mode;
+			
+			public ExecutionModeReference (IExecutionModeSet mset, IExecutionMode mode)
+			{
+				this.mset = mset;
+				this.mode = mode;
+			}
+			
+			public override bool Equals (object obj)
+			{
+				ExecutionModeReference mref = obj as ExecutionModeReference;
+				if (mref == null)
+					return false;
+				return mref.mset == mset && mref.mode.Name == mode.Name;
+			}
+			
+			public override int GetHashCode ()
+			{
+				return mset.GetHashCode () + mode.Name.GetHashCode ();
+			}
+			
+			public IExecutionMode ExecutionMode {
+				get { return mode; }
+			}
 		}
 	}
 	

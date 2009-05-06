@@ -44,7 +44,7 @@
 	</ExtensionPoint>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
-		<Mode id="Default" _name="Default" class="MonoDevelop.Core.Execution.DefaultExecutionHandlerFactory"/>
+<!--		<Mode id="Default" _name="Default" class="MonoDevelop.Core.Execution.DefaultExecutionHandlerFactory"/>-->
 		<ModeSetType class="MonoDevelop.Core.Assemblies.CustomRuntimeExecutionModeSet"/>
 	</Extension>
 	

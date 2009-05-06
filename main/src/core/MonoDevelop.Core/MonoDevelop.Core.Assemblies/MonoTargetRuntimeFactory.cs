@@ -36,6 +36,7 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		static RuntimeCollection customRuntimes = new RuntimeCollection ();
 		static string configFile = Path.Combine (PropertyService.ConfigPath, "mono-runtimes.xml");
+		static string[] commonLinuxPrefixes = new string[] { "/usr", "/usr/local" };
 		
 		static MonoTargetRuntimeFactory ()
 		{
@@ -64,8 +65,26 @@ namespace MonoDevelop.Core.Assemblies
 						yield return new MonoTargetRuntime (info);
 				}
 			} else {
-				foreach (MonoRuntimeInfo info in customRuntimes)
-					yield return new MonoTargetRuntime (info);
+				foreach (string pref in commonLinuxPrefixes) {
+					if (currentRuntime != null && currentRuntime.Prefix == pref)
+						continue;
+					MonoRuntimeInfo info = new MonoRuntimeInfo (pref);
+					if (info.IsValidRuntime) {
+						// Clean up old registered runtimes
+						foreach (MonoRuntimeInfo ei in customRuntimes) {
+							if (ei.Prefix == info.Prefix) {
+								customRuntimes.Remove (ei);
+								break;
+							}
+						}
+						yield return new MonoTargetRuntime (info);
+					}
+				}
+				foreach (MonoRuntimeInfo info in customRuntimes) {
+					MonoTargetRuntime rt = new MonoTargetRuntime (info);
+					rt.UserDefined = true;
+					yield return rt;
+				}
 			}
 		}
 		

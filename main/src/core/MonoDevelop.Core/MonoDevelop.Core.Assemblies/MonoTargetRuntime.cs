@@ -87,6 +87,17 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
+		public override string DisplayName {
+			get {
+				if (!IsRunning)
+					return base.DisplayName + " (" + Prefix + ")";
+				else
+					return base.DisplayName;
+			}
+		}
+
+		public bool UserDefined { get; internal set; }
+		
 		public override IExecutionHandler GetExecutionHandler ()
 		{
 			if (execHandler == null) {
