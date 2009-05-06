@@ -63,6 +63,7 @@ namespace MonoDevelop.Debugger.Mdb
 				xspPath += Path.Combine ("2.0","xsp2.exe");
 			
 			startInfo.IsXsp = true;
+			startInfo.UserCodeOnly = true;
 			startInfo.Command = xspPath;
 			startInfo.WorkingDirectory = cmd.BaseDirectory;
 			startInfo.Arguments = cmd.XspParameters.GetXspParameters ().Trim ();

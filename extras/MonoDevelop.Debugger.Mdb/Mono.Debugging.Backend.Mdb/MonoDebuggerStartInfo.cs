@@ -34,6 +34,7 @@ namespace Mono.Debugging.Backend.Mdb
 	public class MonoDebuggerStartInfo: DebuggerStartInfo
 	{
 		public bool IsXsp { get; set; }
+		public bool UserCodeOnly { get; set; }
 		public string MonoPrefix { get; set; }
 		public IDictionary<string,string> ServerEnvironment { get; set; }
 		public List<string> UserModules { get; set; }

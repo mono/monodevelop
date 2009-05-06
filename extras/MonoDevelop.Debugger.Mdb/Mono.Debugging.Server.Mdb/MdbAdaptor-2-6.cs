@@ -29,10 +29,12 @@ namespace DebuggerServer
 		
 		public override void InitializeSession (MonoDebuggerStartInfo startInfo, MDB.DebuggerSession session)
 		{
-			session.AddUserModulePath (startInfo.WorkingDirectory);
-			if (startInfo.UserModules != null) {
-				foreach (string path in startInfo.UserModules)
-					session.AddUserModule (path);
+			if (startInfo.UserCodeOnly) {
+				session.AddUserModulePath (startInfo.WorkingDirectory);
+				if (startInfo.UserModules != null) {
+					foreach (string path in startInfo.UserModules)
+						session.AddUserModule (path);
+				}
 			}
 		}
 	}

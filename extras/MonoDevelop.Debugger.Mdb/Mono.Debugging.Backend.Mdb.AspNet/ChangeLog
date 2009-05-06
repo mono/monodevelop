@@ -1,3 +1,8 @@
+2009-05-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoXspDebuggerSessionFactory.cs: Don't enable user modules
+	  for normal app debugging.
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoXspDebuggerSessionFactory.cs: Register user modules.
