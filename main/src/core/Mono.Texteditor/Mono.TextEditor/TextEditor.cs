@@ -791,24 +791,6 @@ namespace Mono.TextEditor
 			dragContext = context;
 			base.OnDragBegin (context);
 		}
-
-		protected override void OnDragDataDelete (DragContext context)
-		{
-			int offset = Caret.Offset;
-			if (CanEdit (Caret.Line)) {
-				Caret.PreserveSelection = true;
-				textEditorData.DeleteSelection (selection);
-				Caret.PreserveSelection = false;
-				
-				if (this.textEditorData.IsSomethingSelected && selection.GetSelectionRange (textEditorData).Offset <= this.textEditorData.SelectionRange.Offset) {
-					this.textEditorData.SelectionRange = new Segment (this.textEditorData.SelectionRange.Offset - selection.GetSelectionRange (textEditorData).Length, this.textEditorData.SelectionRange.Length);
-					this.textEditorData.SelectionMode = selection.SelectionMode;
-				}
-				selection = null;
-				textEditorData.Document.MergeUndoOperations (2);
-			}
-			base.OnDragDataDelete (context); 
-		}
 		
 		protected override void OnDragLeave (DragContext context, uint time_)
 		{
@@ -832,6 +814,21 @@ namespace Mono.TextEditor
 				
 		protected override void OnDragDataReceived (DragContext context, int x, int y, SelectionData selection_data, uint info, uint time_)
 		{
+			if (context.Action == DragAction.Move) {
+				int offset = Caret.Offset;
+				if (CanEdit (Caret.Line)) {
+					Caret.PreserveSelection = true;
+					textEditorData.DeleteSelection (selection);
+					Caret.PreserveSelection = false;
+					
+					if (this.textEditorData.IsSomethingSelected && selection.GetSelectionRange (textEditorData).Offset <= this.textEditorData.SelectionRange.Offset) {
+						this.textEditorData.SelectionRange = new Segment (this.textEditorData.SelectionRange.Offset - selection.GetSelectionRange (textEditorData).Length, this.textEditorData.SelectionRange.Length);
+						this.textEditorData.SelectionMode = selection.SelectionMode;
+					}
+					selection = null;
+					textEditorData.Document.MergeUndoOperations (2);
+				}
+			}
 			if (selection_data.Length > 0 && selection_data.Format == 8) {
 				Caret.Location = dragCaretPos;
 				if (CanEdit (dragCaretPos.Line)) {

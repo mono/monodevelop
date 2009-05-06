@@ -352,10 +352,12 @@ namespace Mono.TextEditor
 		
 		public void DrawCaret (Gdk.Drawable win)
 		{
-			if (!this.textEditor.IsInDrag && !(this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0)))
-				return;
-			if (!textEditor.HasFocus)
-				return;
+			if (!this.textEditor.IsInDrag) {
+				if (!(this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0)))
+					return;
+				if (!textEditor.HasFocus)
+					return;
+			}
 			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink)) 
 				return;
 			

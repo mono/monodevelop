@@ -32,6 +32,8 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Diagnostics;
+
 
 
 namespace Mono.TextEditor.Highlighting
@@ -215,16 +217,15 @@ namespace Mono.TextEditor.Highlighting
 				//this.ruleStack = ruleStack ?? new Stack<Span> (line.StartRule != null ? line.StartRule : new Rule[0]);
 				
 				ruleStack = new Stack<Rule> ();
-				if (mode != null) {
+				if (mode != null) 
 					ruleStack.Push (mode);
-					foreach (Span span in this.spanStack) {
-						Rule rule = CurRule.GetRule (span.Rule);
-						ruleStack.Push (rule ?? CurRule);
-					}
+				foreach (Span span in this.spanStack) {
+					Rule rule = CurRule.GetRule (span.Rule);
+					ruleStack.Push (rule ?? CurRule);
 				}
 			}
 			
-			Rule GetRule (Span span)
+			protected Rule GetRule (Span span)
 			{
 				if (string.IsNullOrEmpty (span.Rule))
 					return new Rule (mode);
@@ -277,7 +278,8 @@ namespace Mono.TextEditor.Highlighting
 							if (match.Success) {
 								FoundSpanEnd (cur, i, match);
 								spanStack.Pop ();
-								ruleStack.Pop ();
+								if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
+									ruleStack.Pop ();
 								endOffset = 0;
 								continue;
 							}
@@ -287,7 +289,8 @@ namespace Mono.TextEditor.Highlighting
 							RegexMatch match = cur.Exit.TryMatch (doc, i);
 							if (match.Success) {
 								spanStack.Pop ();
-								ruleStack.Pop ();
+								if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
+									ruleStack.Pop ();
 								FoundSpanExit (cur, i, match);
 								endOffset = 0;
 								continue;
@@ -454,7 +457,9 @@ namespace Mono.TextEditor.Highlighting
 			public override void ParseChar (ref int i, char ch)
 			{
 				int textOffset = i - line.Offset;
-				
+				if (textOffset >= str.Length)
+					return;
+
 				bool isWordPart = CurRule.Delimiter.IndexOf (ch) < 0;
 				
 				if (inWord && !isWordPart || !inWord && isWordPart) 

@@ -563,7 +563,9 @@ namespace Mono.TextEditor
 					ISegment segment = selection.GetSelectionRange (this);
 					if (Caret.Offset > segment.Offset)
 						Caret.Offset -= System.Math.Min (segment.Length, Caret.Offset - segment.Offset);
-					Remove (segment.Offset, segment.Length);
+					int len = System.Math.Min (segment.Length, Document.Length - segment.Offset);
+					if (len > 0)
+						Remove (segment.Offset, len);
 					break;
 				case SelectionMode.Block:
 					DocumentLocation visStart = LogicalToVisualLocation (selection.Anchor);

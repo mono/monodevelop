@@ -69,7 +69,7 @@ namespace Mono.TextEditor
 		
 		public SyntaxMode SyntaxMode {
 			get {
-				return syntaxMode;
+				return syntaxMode ?? new SyntaxMode ();
 			}
 			set {
 				syntaxMode = value;
