@@ -58,6 +58,12 @@ namespace MonoDevelop.NUnit
 			return rootSuite.RunUnitTest (this, fullName, null, testContext);
 		}
 		
+		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
+		{
+			return rootSuite.CanRun (executionContext);
+		}
+
+		
 		protected override void OnCreateTests ()
 		{
 			if (testInfo.Tests == null)

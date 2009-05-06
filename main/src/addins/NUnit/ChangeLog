@@ -1,3 +1,15 @@
+2009-05-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/NUnitTestCase.cs:
+	* Services/NUnitTestSuite.cs: Implement OnCanRun for NUnit
+	  tests and test suites.
+
+	* Services/UnitTestGroup.cs: A test suite can be run using a
+	  specific mode if all child tests can.
+
+	* Gui/TestPad.cs: Improve support for using a custom execution
+	  mode.
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelopNUnit.addin.xml: Added Run Test With submenu,

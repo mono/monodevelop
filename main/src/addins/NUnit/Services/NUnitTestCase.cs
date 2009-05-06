@@ -56,6 +56,12 @@ namespace MonoDevelop.NUnit
 			return rootSuite.RunUnitTest (this, className, Name, testContext);
 		}
 		
+		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
+		{
+			return rootSuite.CanRun (executionContext);
+		}
+
+		
 		public override SourceCodeLocation SourceCodeLocation {
 			get {
 				UnitTest p = Parent;
