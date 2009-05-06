@@ -89,6 +89,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 	
 	internal class CompletionListWindow : ListWindow, IListDataProvider
 	{
+		const Gdk.ModifierType META_MASK = (Gdk.ModifierType) 0x10000000; //FIXME GTK+ 2.12: Gdk.ModifierType.MetaMask;
+		const Gdk.ModifierType SUPER_MASK = (Gdk.ModifierType) 0x40000000; //FIXME GTK+ 2.12: Gdk.ModifierType.SuperMask;
+		
 		internal ICompletionWidget completionWidget;
 		ICodeCompletionContext completionContext;
 		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
@@ -142,7 +145,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					// FIXME: modifier mappings depend on X server settings
 					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask 
 						& ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask 
-					        | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)
+					        | META_MASK | SUPER_MASK)
 					))) != 0) {
 						CompletionWindowManager.HideWindow ();
 						return false;
