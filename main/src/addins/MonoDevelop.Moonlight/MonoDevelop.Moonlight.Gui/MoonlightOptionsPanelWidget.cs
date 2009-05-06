@@ -27,12 +27,17 @@
 //
 
 using System;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Moonlight.Gui
 {
 	
 	public partial class MoonlightOptionsPanelWidget : Gtk.Bin
 	{
+		Gtk.ListStore classListStore;
+		bool classesFilled = false;
+		
 		public MoonlightOptionsPanelWidget ()
 		{
 			this.Build();
@@ -42,11 +47,11 @@ namespace MonoDevelop.Moonlight.Gui
 			};
 			
 			this.generateManifestCheck.Toggled += delegate {
-				this.manifestTemplateFilenameEntry.Sensitive = this.generateManifestCheck.Active;
+				this.manifestTable.Sensitive = this.generateManifestCheck.Active;
 			};
 			
 			this.generateTestPageCheck.Toggled += delegate {
-				this.testPageFilenameEntry.Sensitive = this.generateTestPageCheck.Active;
+				this.testPageBox.Sensitive = this.generateTestPageCheck.Active;
 			};
 		}
 		
@@ -55,7 +60,10 @@ namespace MonoDevelop.Moonlight.Gui
 			
 			this.validateXamlCheck.Active = project.ValidateXaml;
 			this.throwXamlErrorsCheck.Active = project.ThrowErrorsInValidation;
-			this.throwXamlErrorsCheck.Sensitive = this.validateXamlCheck.Active;
+			
+			//TODO: enable after implementing xaml validation
+//			this.throwXamlErrorsCheck.Sensitive = this.validateXamlCheck.Active;
+			this.xamlAlignment.Sensitive = false;
 			
 			this.applicationOptionsBox.Visible = project.SilverlightApplication;
 			
@@ -71,6 +79,30 @@ namespace MonoDevelop.Moonlight.Gui
 			this.generateTestPageCheck.Active = project.CreateTestPage;
 			this.testPageFilenameEntry.Text = project.TestPageFileName ?? "";
 			this.testPageFilenameEntry.Sensitive = this.generateTestPageCheck.Active;
+			
+			this.entryPointCombo.Entry.Text = project.SilverlightAppEntry;
+			classListStore = new Gtk.ListStore (typeof(string));
+			entryPointCombo.Model = classListStore;
+			entryPointCombo.TextColumn = 0;
+			
+			FillClasses (project);
+		}
+		
+		void FillClasses (MoonlightProject project)
+		{
+			if (classesFilled)
+				return;
+			classesFilled = true;
+			try {
+				ProjectDom dom = ProjectDomService.GetProjectDom (project);
+				IType appType = dom.GetType ("System.Windows.Application", true);
+				if (appType == null)
+					return;
+				foreach (IType type in dom.GetSubclasses (appType, false))
+					classListStore.AppendValues (type.FullName);
+			} catch (InvalidOperationException) {
+				// Project not found in parser database
+			}
 		}
 		
 		public void Store (MoonlightProject project)
@@ -89,6 +121,8 @@ namespace MonoDevelop.Moonlight.Gui
 			
 			project.CreateTestPage = this.generateTestPageCheck.Active;
 			project.TestPageFileName = this.testPageFilenameEntry.Text;
+			
+			project.SilverlightAppEntry = this.entryPointCombo.Entry.Text;
 		}
 	}
 }
