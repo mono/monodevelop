@@ -49,6 +49,7 @@
 				defaultHandler = "MonoDevelop.Debugger.DebugHandler"
 				icon = "md-execute-debug"
 				shortcut = "F5"
+				macShortcut = "Alt|Meta|Return"
 				_description = "Debug"
 				_label = "_Debug" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.DebugEntry"

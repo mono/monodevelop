@@ -276,10 +276,12 @@
 				shortcut = "Control|Alt|End"
 				_description = "Indent selected lines of code" 
 				_label = "_Indent Selection"
+				macShortcut = "Meta|]"
 				icon = "gtk-indent" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection"
 				shortcut = "Control|Alt|Home"
 				_description = "Unindent selected lines of code" 
+				macShortcut = "Meta|["
 				_label = "_Unindent Selection"
 				icon = "gtk-unindent" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection"
@@ -313,6 +315,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding"
 				_label = "_Toggle Fold" 
 				shortcut = "Control|Shift|M"
+				macShortcut = "Control|Meta|Left"
 				_description = "Toggles the folding at caret position."/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings"
 				_label = "Toggle _All Folds" 
@@ -362,11 +365,12 @@
 				_label = "_Edit References..."
 				defaultHandler = "MonoDevelop.Ide.Commands.EditReferencesHandler" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles"
-				_label = "New _File..." 
+				_label = "New _File..."
 				_description = "Create a new file"
 				icon  = "gtk-new" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
 				_description = "Add existing files to the project"
+				macShortcut = "Alt|Meta|A"
 				_label = "_Add Files..." />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder"
 				_label = "New _Folder" 
@@ -379,22 +383,26 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.BuildSolutionHandler"
 				_label = "_Build Solution"
 				shortcut = "F8"
+				macShortcut = "Meta|B"
 				_description = "Build all projects of the solution"
 				icon  = "md-build-combine" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Build"
 				defaultHandler = "MonoDevelop.Ide.Commands.BuildHandler"
 				_label = "Buil_d" 
 				shortcut = "F7"
+				macShortcut = "Meta|K"
 				_description = "Build the current project"
 				icon  = "md-build-current-selected-project" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution"
 				defaultHandler = "MonoDevelop.Ide.Commands.RebuildSolutionHandler"
 				shortcut = "Control|F8"
+				macShortcut="Meta|Control|B"
 				_description = "Rebuild all projects of the solution"
 				_label = "_Rebuild Solution" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild"
 				defaultHandler = "MonoDevelop.Ide.Commands.RebuildHandler"
 				shortcut = "Control|F7"
+				macShortcut="Meta|Control|K"
 				_description = "Rebuild the current project"
 				_label = "R_ebuild" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject"
@@ -403,6 +411,7 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.RunHandler"
 				icon = "gtk-execute"
 				shortcut = "Control|F5"
+				macShortcut = "Alt|Meta|R"
 				_description = "Run"
 				_label = "_Run" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList"
@@ -418,6 +427,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean"
 				defaultHandler = "MonoDevelop.Ide.Commands.CleanHandler"
 				_description = "Clean the selected project or solution"
+				macShortcut = "Shift|Meta|K"
 				_label = "C_lean" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution"
 				defaultHandler = "MonoDevelop.Ide.Commands.CleanSolutionHandler"
@@ -430,6 +440,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop"
 				defaultHandler = "MonoDevelop.Ide.Commands.StopHandler"
 				icon = "gtk-stop"
+				macShortcut = "Shift|Meta|Return"
 				shortcut = "Shift|F5"
 				_description = "Stop current build or application execution"
 				_label = "_Stop" />
@@ -459,6 +470,7 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.OpenFileHandler"
 				_label = "_Open..." 
 				shortcut = "Control|O"
+				macShortcut = "Meta|O"
 				_description = "Open file or solution"
 				icon  = "gtk-open" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" 
@@ -640,11 +652,13 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.ShowNextHandler"
 				_label = "Browse Next" 
 				_description = "Move cursor to next error or search match"
+				macShortcut = "Meta|="
 				shortcut = "F4" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious"
 				defaultHandler = "MonoDevelop.Ide.Commands.ShowPreviousHandler"
 				_label = "Browse Previous" 
 				_description = "Move cursor to previous error or search match"
+				macShortcut = "Meta|Shift|="
 				shortcut = "Shift|F4" />
 		
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"
@@ -652,12 +666,14 @@
 				icon = "md-navigate-back"
 				defaultHandler = "MonoDevelop.Ide.Commands.NavigateBack"
 				shortcut = "Alt|Left"
+				macShortcut= "Meta|Alt|Left"
 				_description = "Move to previous point in code navigation history"/>
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward"
 				_label = "Navigate _Forward"
 				icon = "md-navigate-forward"
 				defaultHandler = "MonoDevelop.Ide.Commands.NavigateForward"
 				shortcut = "Alt|Right"
+				macShortcut= "Meta|Alt|Right"
 				_description = "Move to next point in code navigation history"/>
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateHistory"
 				type="radio|array" 
@@ -674,14 +690,12 @@
 				_label = "_Zoom In"
 				icon = "gtk-zoom-in" 
 				shortcut = "Control|+"
-				macShortcut = "Meta|+"
 				_description = "Zooms view in" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut"
 				defaultHandler = "MonoDevelop.Ide.Commands.ZoomOut"
 				_label = "Zoom _Out"
 				icon = "gtk-zoom-out" 
 				shortcut = "Control|-"
-				macShortcut = "Meta|-"
 				_description = "Zooms view out" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset"
 				defaultHandler = "MonoDevelop.Ide.Commands.ZoomReset"
@@ -825,11 +839,13 @@
 		         defaultHandler = "MonoDevelop.Ide.Commands.GotoTypeHandler"
 		         _label = "Go to Type..."
 				_description = "Jump to the declaration of type in the current workspace"
-		         shortcut = "Control|Shift|T" />
+		         shortcut = "Control|Shift|T"
+		         macShortcut = "Meta|Shift|T" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile"
 				defaultHandler = "MonoDevelop.Ide.Commands.GotoFileHandler"
 				_label = "Go to File..." 
 				shortcut = "Alt|Shift|O"
+				macShortcut = "Meta|Shift|D"
 				_description = "Jump to a file in the current workspace"
 				icon  = "gtk-open" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark"
@@ -886,6 +902,7 @@
 		
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
 				_label = "Show Completion Window" 
+				macShortcut="Control|space"
 				shortcut = "Control|space" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
 				_label = "_Insert Template..." 
@@ -942,6 +959,7 @@
 				shortcut="Alt|Down" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow"
 				_label = "Show Parameter List"
+				macShortcut = "Control|Shift|space"
 				shortcut = "Control|Shift|space" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace"
 				_label = "Go to Matching _Brace" 

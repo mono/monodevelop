@@ -1,3 +1,7 @@
+2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: More Mac shortcuts.
+
 2009-05-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Set the
