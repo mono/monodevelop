@@ -181,7 +181,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			TreeIter it;
 			if (tree.Selection.GetSelected (out it)) {
 				object ob = store.GetValue (it, 1);
-				buttonRemove.Sensitive = !(ob is TargetRuntime && ((TargetRuntime)ob).IsRunning);
+				MonoTargetRuntime tr = ob as MonoTargetRuntime;
+				buttonRemove.Sensitive = tr != null && tr.UserDefined;
 				buttonDefault.Sensitive = true;
 			} else {
 				buttonRemove.Sensitive = false;
