@@ -179,60 +179,93 @@ namespace OSXIntegration
 		{
 			ushort key;
 			MenuAccelModifier mod;
-			if (GetAcceleratorKeys (accelKey, out key, out mod)) {
-				HIToolbox.SetMenuItemCommandKey (item.MenuRef, item.Index, true, key);
+			bool isVirtualKeycode;
+			if (GetAcceleratorKeys (accelKey, out key, out mod, out isVirtualKeycode)) {
+				HIToolbox.SetMenuItemCommandKey (item.MenuRef, item.Index, isVirtualKeycode, key);
 				HIToolbox.SetMenuItemModifiers (item.MenuRef, item.Index, mod);
 			}
 		}
 		
 		//FIXME: handle the mode key
-		static bool GetAcceleratorKeys (string accelKey, out ushort outKey, out MenuAccelModifier outMod)
+		static bool GetAcceleratorKeys (string accelKey, out ushort outKey, out MenuAccelModifier outMod, out bool isVirtual)
 		{
 			uint modeKey, key;
 			Gdk.ModifierType modeMod, mod;
-			
-			if (KeyBindingManager.BindingToKeys (accelKey, out modeKey, out modeMod, out key, out mod)){
-				Gdk.KeymapKey [] map = keymap.GetEntriesForKeyval (key);
-				if (map != null && map.Length > 0){
-					outKey = (ushort) map [0].Keycode;
-					outMod = 0;
-					
-					if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
-						outMod |= MenuAccelModifier.OptionModifier;
-						mod ^= Gdk.ModifierType.Mod1Mask;
-					}
-					if ((mod & Gdk.ModifierType.ShiftMask) != 0) {
-						outMod |= MenuAccelModifier.ShiftModifier;
-						mod ^= Gdk.ModifierType.ShiftMask;
-					}
-					if ((mod & Gdk.ModifierType.ControlMask) != 0) {
-						outMod |= MenuAccelModifier.ControlModifier;
-						mod ^= Gdk.ModifierType.ControlMask;
-					}
-					
-					// This is inverted, because by default on OSX no setting means use the Command-key
-					if ((mod & Gdk.ModifierType.MetaMask) == 0) {
-						outMod |= MenuAccelModifier.None;
-					} else {
-						mod ^= Gdk.ModifierType.MetaMask;
-					}
-					
-					if (mod != 0) {
-						System.Console.WriteLine("WARNING: Cannot display accelerators with modifiers: {0}", mod);
-						return false;
-					}
-					
-					if (modeKey != 0) {
-						System.Console.WriteLine("WARNING: Cannot display accelerators with mode keys ({0})", accelKey);
-						return false;
-					}
-					
-					return true;
-				}
-			}
+			isVirtual = false;
 			outKey = 0;
 			outMod = (MenuAccelModifier) 0;
-			return false;
+			
+			if (!KeyBindingManager.BindingToKeys (accelKey, out modeKey, out modeMod, out key, out mod))
+				return false;
+			
+			if (modeKey != 0) {
+				System.Console.WriteLine("WARNING: Cannot display accelerators with mode keys ({0})", accelKey);
+				return false;
+			}
+			
+			MenuGlyphs glyphMapping = GlyphMappings ((Gdk.Key)key);
+			if (glyphMapping != MenuGlyphs.None) {
+				outKey = (ushort)glyphMapping;
+			} else {
+				Gdk.KeymapKey [] map = keymap.GetEntriesForKeyval (key);
+				if (map == null || map.Length == 0) {
+					System.Console.WriteLine("WARNING: Could not map key ({0})", key);
+					return false;
+				}
+				isVirtual = true;
+				outKey = (ushort) map [0].Keycode;
+			}
+			
+			if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
+				outMod |= MenuAccelModifier.OptionModifier;
+				mod ^= Gdk.ModifierType.Mod1Mask;
+			}
+			if ((mod & Gdk.ModifierType.ShiftMask) != 0) {
+				outMod |= MenuAccelModifier.ShiftModifier;
+				mod ^= Gdk.ModifierType.ShiftMask;
+			}
+			if ((mod & Gdk.ModifierType.ControlMask) != 0) {
+				outMod |= MenuAccelModifier.ControlModifier;
+				mod ^= Gdk.ModifierType.ControlMask;
+			}
+			
+			// This is inverted, because by default on OSX no setting means use the Command-key
+			if ((mod & Gdk.ModifierType.MetaMask) == 0) {
+				outMod |= MenuAccelModifier.None;
+			} else {
+				mod ^= Gdk.ModifierType.MetaMask;
+			}
+			
+			if (mod != 0) {
+				System.Console.WriteLine("WARNING: Cannot display accelerators with modifiers: {0}", mod);
+				return false;
+			}
+			
+			return true;
+		}
+		
+		static MenuGlyphs GlyphMappings (Gdk.Key key)
+		{
+			switch (key) {
+			case Gdk.Key.Page_Up:
+				return MenuGlyphs.PageUp;
+			case Gdk.Key.Page_Down:
+				return MenuGlyphs.PageDown;
+			case Gdk.Key.Up:
+				return MenuGlyphs.UpArrow;
+			case Gdk.Key.Down:
+				return MenuGlyphs.DownArrow;
+			case Gdk.Key.Left:
+				return MenuGlyphs.LeftArrow;
+			case Gdk.Key.Right:
+				return MenuGlyphs.RightArrow;
+			case Gdk.Key.space:
+				return MenuGlyphs.Space;
+			case Gdk.Key.Escape:
+				return MenuGlyphs.Escape;
+			default:
+				return MenuGlyphs.None;
+			}
 		}
 		
 		static uint GetNewMenuItemId (Command cmd)
@@ -282,11 +315,19 @@ namespace OSXIntegration
 					
 					ushort key;
 					MenuAccelModifier mod;
-					if (GetAcceleratorKeys (ci.AccelKey, out key, out mod)) {
+					bool isVirtual;
+					if (GetAcceleratorKeys (ci.AccelKey, out key, out mod, out isVirtual)) {
 						data.CommandKeyModifiers = mod;
-						data.Attributes |= MenuItemAttributes.UseVirtualKey;
-						data.CommandVirtualKey = key;
+						if (isVirtual) {
+							data.Attributes |= MenuItemAttributes.UseVirtualKey;
+							data.CommandVirtualKey = key;
+						} else {
+							data.CommandKeyGlyph = key;
+							data.Attributes ^= MenuItemAttributes.UseVirtualKey;
+						}
 					}
+					//else{
+				 	//FIXME: remove existing commands if necessary
 					
 					data.Mark = ci.Checked
 						? ci.CheckedInconsistent
