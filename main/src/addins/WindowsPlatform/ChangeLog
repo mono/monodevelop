@@ -1,3 +1,10 @@
+2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WindowsPlatform.cs: Don't crash if icon for a file can't be
+	  found.
+
+	* Win32.cs: Some win32 api.
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* WindowsPlatform.cs:

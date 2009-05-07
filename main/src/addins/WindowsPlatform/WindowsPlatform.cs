@@ -77,6 +77,8 @@ namespace MonoDevelop.Platform
 		{
 			SHFILEINFO shinfo = new SHFILEINFO();
 			Win32.SHGetFileInfo (filename, 0, ref shinfo, (uint) Marshal.SizeOf (shinfo), Win32.SHGFI_ICON | Win32.SHGFI_SMALLICON | Win32.SHGFI_ICONLOCATION | Win32.SHGFI_TYPENAME);
+			if (shinfo.iIcon == IntPtr.Zero)
+				return null;
 			string key = shinfo.iIcon.ToString () + " - " + shinfo.szDisplayName;
 			Gdk.Pixbuf pix;
 			if (!icons.TryGetValue (key, out pix)) {
