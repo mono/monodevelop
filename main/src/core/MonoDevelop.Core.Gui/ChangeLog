@@ -1,3 +1,10 @@
+2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/SyncContextAttribute.cs: Don't use
+	  ExecuteMessage to dispatch async calls, because this method
+	  can only be used from the context of the target object. Use
+	  reflection instead.
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/SyncContextAttribute.cs: Changed the

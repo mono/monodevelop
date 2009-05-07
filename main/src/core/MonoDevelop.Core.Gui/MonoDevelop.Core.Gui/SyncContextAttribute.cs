@@ -137,6 +137,11 @@ namespace MonoDevelop.Core.Gui
 		{
 			if (syncContext == null) return nextSink.AsyncProcessMessage (msg, replySink);
 
+			// Make a copy of the message since MS.NET seems to free the original message
+			// once it has been dispatched.
+			if (!isMono)
+				msg = new MethodCall (msg);
+
 			MsgData md = new MsgData ();
 			md.InMessage = msg;
 			md.ReplySink = replySink;
@@ -154,7 +159,7 @@ namespace MonoDevelop.Core.Gui
 				// but this doesn't work in mono because mono will route the message
 				// through the remoting context sink again causing an infinite loop.
 				IMethodCallMessage msg = (IMethodCallMessage) md.InMessage;
-				System.Runtime.Remoting.RemotingServices.ExecuteMessage (target, msg);
+				msg.MethodBase.Invoke (target, msg.Args);
 			}
 		}
 		
