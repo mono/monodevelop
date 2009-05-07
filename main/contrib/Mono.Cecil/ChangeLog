@@ -1,3 +1,7 @@
+2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Cecil.csproj: Disable overflow checking.
+
 2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Cecil.csproj:
