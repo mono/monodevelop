@@ -381,10 +381,12 @@ namespace MonoDevelop.Ide.Gui
 			// Parse the file when the document is closed. In this way if the document
 			// is closed without saving the changes, the saved compilation unit
 			// information will be restored
-			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-				// Don't access Document properties from the thread
-				ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile));
-			});
+			if (currentParseFile != null) {
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					// Don't access Document properties from the thread
+					ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile));
+				});
+			}
 		}
 #region document tasks
 		List<Task> tasks = new List<Task> ();
