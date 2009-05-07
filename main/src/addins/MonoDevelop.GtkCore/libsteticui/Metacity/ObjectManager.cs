@@ -13,7 +13,7 @@ namespace GtkSharp.MetacitySharp {
 				return;
 
 			initialized = true;
-			GLib.GType.Register (Metacity.Preview.GType, typeof (Metacity.Preview));
+			GLib.GType.Register (Stetic.Metacity.Preview.GType, typeof (Stetic.Metacity.Preview));
 		}
 	}
 }

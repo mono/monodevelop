@@ -1,3 +1,9 @@
+2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Don't
+	  create a new drop target list. Use the one defined by
+	  Stetic.
+
 2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.csproj: Don't require a specific gtk#

@@ -30,7 +30,6 @@ FILES =  \
 	ContainerUndoRedoManager.cs \
 	ContextMenu.cs \
 	Designer.cs \
-	EmbedWindow.cs \
 	Glade.cs \
 	Grid.cs \
 	GuiDispatchServerSink.cs \
@@ -67,7 +66,9 @@ FILES =  \
 	WidgetPropertyTree.cs \
 	WidgetPropertyTreeBackend.cs \
 	WidgetTree.cs \
-	WidgetTreeCombo.cs
+	WidgetTreeCombo.cs \
+	Windows/Preview.cs \
+	Windows/WindowsTheme.cs
 
 RES =  \
 	action.png \

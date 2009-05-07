@@ -17,14 +17,14 @@ namespace Stetic
 		
 		public static WidgetDesignerBackend CreateWidgetDesigner (Gtk.Container widget, int designWidth, int designHeight)
 		{
-			return EmbedWindow.Wrap (widget, designWidth, designHeight);
+			return new WidgetDesignerBackend (widget, designWidth, designHeight);
 		}
 		
 		public static ActionGroupDesignerBackend CreateActionGroupDesigner (ProjectBackend project, ActionGroupToolbar groupToolbar)
 		{
 			Editor.ActionGroupEditor agroupEditor = new Editor.ActionGroupEditor ();
 			agroupEditor.Project = project;
-			WidgetDesignerBackend groupDesign = EmbedWindow.Wrap (agroupEditor, -1, -1);
+			WidgetDesignerBackend groupDesign = new WidgetDesignerBackend (agroupEditor, -1, -1);
 			
 			groupToolbar.Bind (agroupEditor);
 			

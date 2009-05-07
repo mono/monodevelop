@@ -142,7 +142,7 @@ namespace Stetic
 				throw new InvalidOperationException ("The class '" + wrapped + "' does not have a default constructor.");
 			
 			if (!useGTypeCtor)
-				inst = cinfo.Invoke (null, new object[0]);
+				inst = cinfo.Invoke (new object[0]);
 			else {
 				IntPtr raw = g_object_new (gtype.Val, IntPtr.Zero);
 				inst = cinfo.Invoke (new object[] { raw });

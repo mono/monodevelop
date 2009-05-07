@@ -1,3 +1,29 @@
+2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ItemDescriptor.cs: Added missing BindingFlags.Instance flag.
+
+	* wrapper/Container.cs: Fix bug when showing the selection
+	  box.
+
+	* TopLevelWindow.cs:
+	* TopLevelDialog.cs:
+	* wrapper/Dialog.cs:
+	* wrapper/Window.cs:
+	* wrapper/objects.xml: Top level windows are not represented
+	  using a Gtk.Window anymore at design time. Instead they are
+	  represented by TopLevelWindow. This is a regular widget, so
+	  window embedding hacks are not required anymore. The same
+	  has been done for Gtk.Dialog/TopLevelDialog.
+
+	* libstetic.csproj: Added new files.
+
+	* Makefile.am: Updated.
+
+	* DND.cs: Accept copy as drop target. Fixed the target list.
+
+	* TypedClassDescriptor.cs: Invocation of a constructor does
+	  not need an instance reference.
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Registry.cs: Make sure GetType can find the type when the

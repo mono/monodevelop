@@ -177,24 +177,24 @@
 		<property name="Type" glade-override="true" internal="true" />
 		<property name="TypeHint" glade-override="true" />
 		<property name="WindowPosition" />
-		<property name="Modal" glade-override="true" />
-		<property name="BorderWidth" />
+		<property name="Modal" glade-override="true" default="false" />
+		<property name="BorderWidth" default="0"/>
 	    </itemgroup>
 	    <itemgroup label="Window Size Properties" name="Size">
-		<property name="Resizable" />
-		<property name="AllowGrow" />
-		<property name="AllowShrink" />
+		<property name="Resizable" default="true"/>
+		<property name="AllowGrow" default="true"/>
+		<property name="AllowShrink" default="false"/>
 		<property name="DefaultWidth" min="-1"/>
 		<property name="DefaultHeight" min="-1"/>
 	    </itemgroup>
 	    <itemgroup label="Miscellaneous Window Properties" name="Misc">
-		<property name="AcceptFocus" />
-		<property name="Decorated" />
-		<property name="DestroyWithParent" />
-		<property name="Gravity" />
+		<property name="AcceptFocus" defaule="true"/>
+		<property name="Decorated" defaule="true"/>
+		<property name="DestroyWithParent" default="false"/>
+		<property name="Gravity" default="NorthWest"/>
 		<property name="Role" />
-		<property name="SkipPagerHint" />
-		<property name="SkipTaskbarHint" />
+		<property name="SkipPagerHint" default="false"/>
+		<property name="SkipTaskbarHint" default="false"/>
 		<property name="FocusOnMap" gtk-version="2.6"/>
 	    </itemgroup>
 	</itemgroups>

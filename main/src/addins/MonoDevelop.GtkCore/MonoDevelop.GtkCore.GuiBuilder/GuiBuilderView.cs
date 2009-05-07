@@ -444,12 +444,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			//Do nothing. We keep the instance to avoid creation cost when switching documents.
 		}
 
-		Gtk.TargetEntry[] targets = new Gtk.TargetEntry[] {
-			new Gtk.TargetEntry ("application/x-stetic-widget", 0, 0)
-		};
-			
 		TargetEntry[] IToolboxConsumer.DragTargets {
-			get { return targets; }
+			get { return Stetic.DND.Targets; }
 		}
 	}
 	

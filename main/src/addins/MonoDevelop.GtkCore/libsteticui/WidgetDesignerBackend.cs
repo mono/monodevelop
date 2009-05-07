@@ -39,9 +39,7 @@ namespace Stetic
 	{
 		ObjectWrapper wrapper;
 		Gtk.Widget preview;
-		Metacity.Preview metacityPreview;
 		ResizableFixed resizableFixed;
-		static Metacity.Theme theme;
 		
 		static IObjectViewer defaultObjectViewer;
 		
@@ -50,20 +48,6 @@ namespace Stetic
 		internal static IObjectViewer DefaultObjectViewer {
 			get { return defaultObjectViewer; }
 			set { defaultObjectViewer = value; }
-		}
-		
-		internal Metacity.Theme Theme {
-			set { 
-				if (metacityPreview != null)
-					metacityPreview.Theme = value;
-			}
-		}
-				
-		internal string Title {
-			set { 
-				if (metacityPreview != null)
-					metacityPreview.Title = value;
-			}
 		}
 		
 		public object Selection {
@@ -90,21 +74,18 @@ namespace Stetic
 			resizableFixed.ObjectViewer = defaultObjectViewer;
 			
 			wrapper = ObjectWrapper.Lookup (container);
-			Gtk.Window window = container as Gtk.Window;
+			TopLevelWindow window = container as TopLevelWindow;
 			
 			if (window != null) {
-				try {
-					metacityPreview = CreateMetacityPreview (window);
-					preview = metacityPreview;
-					if (wrapper != null)
-						wrapper.Notify += OnWindowPropChange;
-				} catch {
-					// If metacity is not available, use a regular box.
+				preview = Stetic.Metacity.Preview.Create (window);
+				if (preview == null)
+					preview = Stetic.Windows.Preview.Create (window);
+				if (preview == null) {
+					// Use a regular box.
 					EventBox eventBox = new EventBox ();
 					eventBox.Add (container);
 					preview = eventBox;
 				}
-
 			} else {
 				EventBox eventBox = new EventBox ();
 				eventBox.Add (container);
@@ -159,86 +140,6 @@ namespace Stetic
 			resizableFixed.UpdateObjectViewers ();
 		}
 		
-		void OnWindowPropChange (object ob, string name)
-		{
-			if (name == "Title") {
-				Title = ((Gtk.Window)((ObjectWrapper)ob).Wrapped).Title;
-			}
-		}
-		
-		Metacity.Preview CreateMetacityPreview (Gtk.Window window)
-		{
-			Metacity.Preview.Init ();
-			Metacity.Preview metacityPreview = new Metacity.Preview ();
-			
-			switch (window.TypeHint) {
-			case Gdk.WindowTypeHint.Normal:
-				metacityPreview.FrameType = Metacity.FrameType.Normal;
-				break;
-			case Gdk.WindowTypeHint.Dialog:
-				metacityPreview.FrameType = window.Modal ? Metacity.FrameType.ModalDialog : Metacity.FrameType.Dialog;	
-				break;
-			case Gdk.WindowTypeHint.Menu:
-				metacityPreview.FrameType = Metacity.FrameType.Menu;
-				break;
-			case Gdk.WindowTypeHint.Splashscreen:
-				metacityPreview.FrameType = Metacity.FrameType.Border;
-				break;
-			case Gdk.WindowTypeHint.Utility:
-				metacityPreview.FrameType = Metacity.FrameType.Utility;
-				break;
-			default:
-				metacityPreview.FrameType = Metacity.FrameType.Normal;
-				break;
-			}
-
-			Metacity.FrameFlags flags =
-				Metacity.FrameFlags.AllowsDelete |
-				Metacity.FrameFlags.AllowsVerticalResize |
-				Metacity.FrameFlags.AllowsHorizontalResize |
-				Metacity.FrameFlags.AllowsMove |
-				Metacity.FrameFlags.AllowsShade |
-				Metacity.FrameFlags.HasFocus;
-				
-			if (window.Resizable)
-				flags = flags | Metacity.FrameFlags.AllowsMaximize;
-				
-			metacityPreview.FrameFlags = flags;
-			metacityPreview.ShowAll ();
-			metacityPreview.Add (window);
-			
-			metacityPreview.Theme = GetTheme ();
-			
-			return metacityPreview;
-		}
-
-		static Metacity.Theme GetTheme ()
-		{
-			if (theme == null) {
-				try {
-					Assembly assm = Assembly.Load ("gconf-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f");
-					Type client_type = assm.GetType ("GConf.Client");
-					MethodInfo method = client_type.GetMethod ("Get", BindingFlags.Instance | BindingFlags.Public);
-					object client = Activator.CreateInstance (client_type, new object[] {});
-					string themeName = (string) method.Invoke (client, new object[] {"/apps/metacity/general/theme"});
-					theme = Metacity.Theme.Load (themeName);
-				} catch {
-					// Don't crash if metacity is not available
-					return null;
-				}
-			}
-			return theme;
-		}
-
-/*		static void GConfNotify (object obj, GConf.NotifyEventArgs args)
-		{
-			if (args.Key == "/apps/metacity/general/theme") {
-				theme = Metacity.Theme.Load ((string)args.Value);
-				foreach (Metacity.Preview prev in wrappers.Values)
-					prev.Theme = Theme;
-			}
-		}
-*/		
 		void OnSelectionChanged (object ob, EventArgs a)
 		{
 			if (SelectionChanged != null)
@@ -586,6 +487,8 @@ namespace Stetic
 		
 		protected override void OnSizeRequested (ref Requisition req)
 		{
+			if (!child.IsRealized)
+				child.Realize ();
 			req = child.SizeRequest ();
 			// Make some room for the border
 			req.Width += padding * 2 + selectionBorder * 2;

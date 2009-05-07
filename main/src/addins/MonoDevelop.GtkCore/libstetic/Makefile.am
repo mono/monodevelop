@@ -90,6 +90,8 @@ FILES =  \
 	Registry.cs \
 	Set.cs \
 	SignalDescriptor.cs \
+	TopLevelDialog.cs \
+	TopLevelWindow.cs \
 	TranslatableAttribute.cs \
 	TypedClassDescriptor.cs \
 	TypedPropertyDescriptor.cs \

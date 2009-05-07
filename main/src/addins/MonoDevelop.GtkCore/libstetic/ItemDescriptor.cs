@@ -149,7 +149,7 @@ namespace Stetic
 					return Value.Equals (depValue);
 				} else {
 					object wrapper = ObjectWrapper.Lookup (obj);
-					object res = wrapper.GetType().InvokeMember (CheckName, BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.NonPublic, null, wrapper, null);
+					object res = wrapper.GetType ().InvokeMember (CheckName, BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, wrapper, null);
 					return !(bool) res;
 				}
 			}

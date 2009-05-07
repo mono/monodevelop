@@ -1066,7 +1066,7 @@ namespace Stetic.Wrapper
 				// to be. (Eg, if you select a widget in a hidden window, the window
 				// should map. If you select a widget on a non-current notebook
 				// page, the notebook should switch pages, etc.)
-				if (selection.IsDrawable && Visible) {
+				if (selection.IsDrawable && selection.Visible) {
 					ShowSelectionBox (selection, dragHandles);
 				}
 				

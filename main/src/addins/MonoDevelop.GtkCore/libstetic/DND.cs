@@ -18,12 +18,15 @@ namespace Stetic {
 			steticWidgetType = Gdk.Atom.Intern ("application/x-stetic-widget", false);
 
 			targets = new Gtk.TargetEntry[2];
-			targets[0] = new Gtk.TargetEntry ("application/x-stetic-widget", 0, SteticType);
-			targets[1] = new Gtk.TargetEntry ((string)GladeUtils.ApplicationXGladeAtom, 0, GladeType);
+			targets[0] = new Gtk.TargetEntry (steticWidgetType, 0, SteticType);
+			targets[1] = new Gtk.TargetEntry ((string) GladeUtils.ApplicationXGladeAtom, 0, GladeType);
 
-			targetList = new Gtk.TargetList ();
-			targetList.Add (steticWidgetType, 0, 0);
-			targetList.Add (GladeUtils.ApplicationXGladeAtom, 0, 1);
+			targetList = new Gtk.TargetList (targets);
+			targets = (Gtk.TargetEntry[]) targetList;
+		}
+
+		public static Gtk.TargetEntry[] Targets {
+			get { return targets; }
 		}
 
 		public static void SourceSet (Gtk.Widget source)
@@ -40,7 +43,7 @@ namespace Stetic {
 		public static void DestSet (Gtk.Widget dest, bool automatic)
 		{
 			Gtk.Drag.DestSet (dest, automatic ? Gtk.DestDefaults.All : 0,
-					  targets, Gdk.DragAction.Move);
+					  targets, Gdk.DragAction.Move | Gdk.DragAction.Copy);
 		}
 
 		public static void DestUnset (Gtk.Widget dest)

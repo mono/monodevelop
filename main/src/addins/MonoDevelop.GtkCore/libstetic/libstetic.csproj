@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>libstetic</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>Stetic</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -213,9 +214,13 @@
     <Compile Include="wrapper\WidgetEventHandler.cs" />
     <Compile Include="wrapper\WidgetNameChangedHandler.cs" />
     <Compile Include="wrapper\Window.cs" />
+    <Compile Include="TopLevelDialog.cs" />
+    <Compile Include="TopLevelWindow.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="stetic.glade" />
+    <EmbeddedResource Include="stetic.glade">
+      <LogicalName>stetic.glade</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="wrapper\objects.xml">
       <LogicalName>objects.xml</LogicalName>
     </EmbeddedResource>

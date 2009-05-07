@@ -6,14 +6,14 @@ namespace Stetic.Wrapper {
 
 	public class Dialog : Window {
 
-		Stetic.Wrapper.ButtonBox ActionArea;
+		Stetic.Wrapper.ButtonBox actionArea;
 
 		public override void Wrap (object obj, bool initialized)
 		{
 			base.Wrap (obj, initialized);
 
-			ActionArea = (ButtonBox)Container.Lookup (dialog.ActionArea);
-			ActionArea.SetActionDialog (this);
+			actionArea = (ButtonBox)Container.Lookup (dialog.ActionArea);
+			actionArea.SetActionDialog (this);
 
 			if (!initialized) {
 				dialog.HasSeparator = false;
@@ -24,39 +24,59 @@ namespace Stetic.Wrapper {
 					Buttons = 1;
 				}
 			} else
-				ButtonsChanged (ActionArea);
+				ButtonsChanged (actionArea);
 
-			ActionArea.ContentsChanged += ButtonsChanged;
+			actionArea.ContentsChanged += ButtonsChanged;
 		}
-		
-		public override void Dispose ()
+
+		internal static new TopLevelDialog CreateInstance ( )
 		{
-			ActionArea.ContentsChanged -= ButtonsChanged;
-			ActionArea.SetActionDialog (null);
+			return new TopLevelDialog ();
+		}
+
+		public override void Dispose ( )
+		{
+			actionArea.ContentsChanged -= ButtonsChanged;
+			actionArea.SetActionDialog (null);
 			base.Dispose ();
 		}
 		
 		protected override void ReadChildren (ObjectReader reader, XmlElement elem)
 		{
 			// Ignore changes in the buttons while loading
-			ActionArea.ContentsChanged -= ButtonsChanged;
+			actionArea.ContentsChanged -= ButtonsChanged;
 			base.ReadChildren (reader, elem);
-			ActionArea.ContentsChanged += ButtonsChanged;
-			ActionArea.SetActionDialog (this);
+			actionArea.ContentsChanged += ButtonsChanged;
+			actionArea.SetActionDialog (this);
 		}
 
-		Gtk.Dialog dialog {
+		TopLevelDialog dialog {
 			get {
-				return (Gtk.Dialog)Wrapped;
+				return (TopLevelDialog) Wrapped;
 			}
 		}
 
-		public int Buttons {
+		public Gtk.HButtonBox ActionArea {
+			get { return dialog.ActionArea; }
+		}
+
+		public Gtk.VBox VBox
+		{
+			get { return dialog.VBox; }
+		}
+
+		public bool HasSeparator {
+			get { return dialog.HasSeparator; }
+			set { dialog.HasSeparator = value; EmitNotify ("HasSeparator"); }
+		}
+
+		public int Buttons
+		{
 			get {
-				return ActionArea.Size - ExtraButtons;
+				return actionArea.Size - ExtraButtons;
 			}
 			set {
-				ActionArea.Size = value + ExtraButtons;
+				actionArea.Size = value + ExtraButtons;
 				EmitNotify ("Buttons");
 			}
 		}

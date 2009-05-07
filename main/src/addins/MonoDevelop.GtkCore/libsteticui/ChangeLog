@@ -1,3 +1,27 @@
+2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* libsteticui.csproj: Updated.
+
+	* Metacity/Theme.cs:
+	* Metacity/FrameType.cs:
+	* Metacity/FrameFlags.cs:
+	* Metacity/ButtonLayout.cs:
+	* Metacity/ObjectManager.cs:
+	* Metacity/ButtonFunction.cs: Use a better namespace.
+
+	* Metacity/Preview.cs: Use the new TopLevelWindow class. Track
+	  changes in the title of the window.
+
+	* Windows:
+	* Windows/Preview.cs:
+	* Windows/WindowsTheme.cs:
+	* WidgetDesignerBackend.cs: Added support for win32 window
+	  decorations.
+
+	* EmbedWindow.cs:
+	* UserInterface.cs: EmbedWindow is not required anymore.
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libsteticui.csproj: Copy the config file to the output dir.

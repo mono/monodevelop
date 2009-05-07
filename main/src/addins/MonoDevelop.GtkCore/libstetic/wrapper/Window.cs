@@ -9,9 +9,8 @@ namespace Stetic.Wrapper {
 
 		public override void Wrap (object obj, bool initialized)
 		{
-			Gtk.Window window = (Gtk.Window)obj;
+			TopLevelWindow window = (TopLevelWindow) obj;
 
-			window.TypeHint = Gdk.WindowTypeHint.Normal;
 			base.Wrap (obj, initialized);
 
 			if (!initialized) {
@@ -21,8 +20,14 @@ namespace Stetic.Wrapper {
 
 			window.DeleteEvent += DeleteEvent;
 		}
-		
-		public override void Dispose ()
+
+		public static new TopLevelWindow CreateInstance ( )
+		{
+			TopLevelWindow t = new TopLevelWindow ();
+			return t;
+		}
+
+		public override void Dispose ( )
 		{
 			Wrapped.DeleteEvent -= DeleteEvent;
 			base.Dispose ();
@@ -38,26 +43,22 @@ namespace Stetic.Wrapper {
 		public override bool HExpandable { get { return true; } }
 		public override bool VExpandable { get { return true; } }
 
-		// We don't want to actually set the underlying properties for these;
-		// that would be annoying to interact with.
-		bool modal;
 		public bool Modal {
 			get {
-				return modal;
+				return window.Modal;
 			}
 			set {
-				modal = value;
+				window.Modal = value;
 				EmitNotify ("Modal");
 			}
 		}
 
-		Gdk.WindowTypeHint typeHint;
 		public Gdk.WindowTypeHint TypeHint {
 			get {
-				return typeHint;
+				return window.TypeHint;
 			}
 			set {
-				typeHint = value;
+				window.TypeHint = value;
 				EmitNotify ("TypeHint");
 			}
 		}
@@ -91,23 +92,102 @@ namespace Stetic.Wrapper {
 			}
 			set {
 				icon = value;
-				Gtk.Window window = (Gtk.Window)Wrapped;
-				try {
-					if (icon != null)
-						window.Icon = icon.GetImage (Project);
-					else
-						window.Icon = null;
-				} catch {
-					window.Icon = null;
-				}
+				EmitNotify ("Icon");
 			}
+		}
+
+		TopLevelWindow window {
+			get { return (TopLevelWindow) Wrapped; }
+		}
+
+		public string Title {
+			get { return window.Title; }
+			set { window.Title = value; EmitNotify ("Title"); }
+		}
+
+		public bool Resizable
+		{
+			get { return window.Resizable; }
+			set { window.Resizable = value; EmitNotify ("Resizable"); }
+		}
+
+		bool allowGrow = true;
+		public bool AllowGrow {
+			get { return allowGrow; }
+			set { allowGrow = value; EmitNotify ("AllowGrow"); }
+		}
+
+		bool allowShrink = false;
+		public bool AllowShrink {
+			get { return allowShrink; }
+			set { allowShrink = value; EmitNotify ("AllowShrink"); }
+		}
+
+		int defaultWidth = -1;
+		public int DefaultWidth {
+			get { return defaultWidth; }
+			set { defaultWidth = value; EmitNotify ("DefaultWidth"); }
+		}
+
+		int defaultHeight = -1;
+		public int DefaultHeight {
+			get { return defaultHeight; }
+			set { defaultHeight = value; EmitNotify ("DefaultHeight"); }
+		}
+
+		bool acceptFocus = true;
+		public bool AcceptFocus {
+			get { return acceptFocus; }
+			set { acceptFocus = value; EmitNotify ("AcceptFocus"); }
+		}
+
+		bool decorated = true;
+		public bool Decorated {
+			get { return decorated; }
+			set { decorated = value; EmitNotify ("Decorated"); }
+		}
+
+		bool destroyWithParent;
+		public bool DestroyWithParent {
+			get { return destroyWithParent; }
+			set { destroyWithParent = value; EmitNotify ("DestroyWithParent"); }
+		}
+
+		Gdk.Gravity gravity = Gdk.Gravity.NorthWest;
+		public Gdk.Gravity Gravity {
+			get { return gravity; }
+			set { gravity = value; EmitNotify ("Gravity"); }
+		}
+
+		string role;
+		public string Role {
+			get { return role; }
+			set { role = value; EmitNotify ("Role"); }
+		}
+
+		bool skipPagerHint;
+		public bool SkipPagerHint {
+			get { return skipPagerHint; }
+			set { skipPagerHint = value; EmitNotify ("SkipPagerHint"); }
+		}
+
+		bool skipTaskbarHint;
+		public bool SkipTaskbarHint {
+			get { return skipTaskbarHint; }
+			set { skipTaskbarHint = value; EmitNotify ("SkipTaskbarHint"); }
+		}
+
+		bool focusOnMap = true;
+		public bool FocusOnMap {
+			get { return focusOnMap; }
+			set { focusOnMap = value; EmitNotify ("FocusOnMap"); }
 		}
 
 		internal protected override void GenerateBuildCode (GeneratorContext ctx, CodeExpression var)
 		{
 			base.GenerateBuildCode (ctx, var);
 			
-			if (((Gtk.Window)Wrapped).DefaultWidth == -1) {
+			if (DefaultWidth == -1) {
 				ctx.Statements.Add (
 					new CodeAssignStatement (
 						new CodePropertyReferenceExpression (
@@ -119,7 +199,7 @@ namespace Stetic.Wrapper {
 				);
 			}
 				
-			if (((Gtk.Window)Wrapped).DefaultHeight == -1) {
+			if (DefaultHeight == -1) {
 				ctx.Statements.Add (
 					new CodeAssignStatement	 (
 						new CodePropertyReferenceExpression (

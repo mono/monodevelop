@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,8 +9,6 @@
     <OutputType>Library</OutputType>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AssemblyName>libsteticui</AssemblyName>
-    <StartupObject>
-    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,8 +18,7 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <additionalargs>-unsafe -main:Stetic.ApplicationBackend</additionalargs>
-    <AssemblyName>libsteticui</AssemblyName>
+    <additionalargs>-unsafe</additionalargs>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -33,7 +30,6 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AssemblyName>libsteticui</AssemblyName>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -100,7 +96,6 @@
     <Compile Include="ContainerUndoRedoManager.cs" />
     <Compile Include="ContextMenu.cs" />
     <Compile Include="Designer.cs" />
-    <Compile Include="EmbedWindow.cs" />
     <Compile Include="Glade.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="GuiDispatchServerSink.cs" />
@@ -138,6 +133,8 @@
     <Compile Include="WidgetPropertyTreeBackend.cs" />
     <Compile Include="WidgetTree.cs" />
     <Compile Include="WidgetTreeCombo.cs" />
+    <Compile Include="Windows\Preview.cs" />
+    <Compile Include="Windows\WindowsTheme.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="action.png" />
