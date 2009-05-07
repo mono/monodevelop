@@ -165,7 +165,9 @@
     <Compile Include="MonoDevelop.SourceEditor\ISourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DefaultFormatter.cs" />
     <Compile Include="MonoDevelop.SourceEditor\AutoSave.cs" />
-  </ItemGroup>
+    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeCodon.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeService.cs" />
+   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>

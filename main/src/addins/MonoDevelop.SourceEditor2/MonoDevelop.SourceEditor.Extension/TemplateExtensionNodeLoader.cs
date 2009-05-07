@@ -47,9 +47,9 @@ namespace MonoDevelop.SourceEditor.Extension
 		{
 			TemplateCodon codon = (TemplateCodon)args.ExtensionNode;
 			if (args.Change == ExtensionChange.Add) {
-				SyntaxModeService.AddSyntaxMode (codon);
+				Mono.TextEditor.Highlighting.SyntaxModeService.AddSyntaxMode (codon);
 			} else {
-				SyntaxModeService.RemoveSyntaxMode (codon);
+				Mono.TextEditor.Highlighting.SyntaxModeService.RemoveSyntaxMode (codon);
 			}
 		}
 		
@@ -57,9 +57,9 @@ namespace MonoDevelop.SourceEditor.Extension
 		{
 			TemplateCodon codon = (TemplateCodon)args.ExtensionNode;
 			if (args.Change == ExtensionChange.Add) {
-				SyntaxModeService.AddStyle (codon);
+				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (codon);
 			} else {
-				SyntaxModeService.RemoveStyle (codon);
+				Mono.TextEditor.Highlighting.SyntaxModeService.RemoveStyle (codon);
 			}
 		}
 		

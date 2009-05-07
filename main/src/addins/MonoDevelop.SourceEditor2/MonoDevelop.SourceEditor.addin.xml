@@ -57,9 +57,12 @@
 		<ExtensionNode name="Templates" type="MonoDevelop.SourceEditor.Extension.TemplateCodon"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/CustomModes" name = "Text editor custom syntax modes">
+		<Description>Styles</Description>
+		<ExtensionNode name="SyntaxMode" type="MonoDevelop.SourceEditor.SyntaxModeCodon"/>
+	</ExtensionPoint>
 	
 	<!-- Extensions -->
-
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
 		<Class id="LanguageItem" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />

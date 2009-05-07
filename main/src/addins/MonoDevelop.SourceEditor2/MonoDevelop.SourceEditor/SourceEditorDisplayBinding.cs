@@ -44,6 +44,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			MonoDevelop.SourceEditor.Extension.TemplateExtensionNodeLoader.Init ();
 			DefaultSourceEditorOptions.Init ();
+			SyntaxModeService.EnsureLoad ();
 			LoadCustomStylesAndModes ();
 		}
 		

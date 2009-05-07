@@ -86,9 +86,9 @@ namespace MonoDevelop.SourceEditor
 			
 			Mono.TextEditor.TextEditorOptions.DefaultOptions.Changed += delegate {
 				if (Instance.EnableSemanticHighlighting) {
-					SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule (new HighlightPropertiesRule ());
+					Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule (new HighlightPropertiesRule ());
 				} else {
-					SyntaxModeService.GetSyntaxMode ("text/x-csharp").RemoveSemanticRule (typeof (HighlightPropertiesRule));
+					Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode ("text/x-csharp").RemoveSemanticRule (typeof (HighlightPropertiesRule));
 				}
 			};
 			

@@ -77,8 +77,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			styleStore.Clear ();
 			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color scheme.")), "Default");
-			foreach (string styleName in SyntaxModeService.Styles) {
-				Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (null, styleName);
+			foreach (string styleName in Mono.TextEditor.Highlighting.SyntaxModeService.Styles) {
+				Mono.TextEditor.Highlighting.Style style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (null, styleName);
 				TreeIter iter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString (style.Name), GettextCatalog.GetString (style.Description)), style.Name);
 				if (style.Name == DefaultSourceEditorOptions.Instance.ColorScheme)
 					selectedIter = iter;
@@ -92,11 +92,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) 
 				styleName = (string)this.styleStore.GetValue (selectedIter, 1);
-			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, styleName);
-			UrlXmlProvider provider = SyntaxModeService.GetProvider (style) as UrlXmlProvider;
+			Mono.TextEditor.Highlighting.Style style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (this, styleName);
+			UrlXmlProvider provider = Mono.TextEditor.Highlighting.SyntaxModeService.GetProvider (style) as UrlXmlProvider;
 			if (provider != null) {
 				if (provider.Url.StartsWith (SourceEditorDisplayBinding.SyntaxModePath)) {
-					SyntaxModeService.Remove (style);
+					Mono.TextEditor.Highlighting.SyntaxModeService.Remove (style);
 					File.Delete (provider.Url);
 					SourceEditorDisplayBinding.LoadCustomStylesAndModes ();
 					ShowStyles ();
@@ -110,7 +110,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			FileSelector fd = new FileSelector ();
 			int response = fd.Run ();
 			if (response == (int)ResponseType.Ok) {
-				if (SyntaxModeService.IsValidStyle (fd.Filename)) {
+				if (Mono.TextEditor.Highlighting.SyntaxModeService.IsValidStyle (fd.Filename)) {
 					string newFileName = System.IO.Path.Combine (SourceEditorDisplayBinding.SyntaxModePath, System.IO.Path.GetFileName (fd.Filename));
 					bool success = true;
 					try {
