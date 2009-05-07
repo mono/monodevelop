@@ -107,6 +107,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			ChunkStyle result = new ChunkStyle ();
 			result.Color = style.Default.Color;
+			
 			foreach (Tag tag in tagStack) {
 				//System.Console.WriteLine("'" + tag.Command + "'");
 				switch (tag.Command.ToUpper ()) {

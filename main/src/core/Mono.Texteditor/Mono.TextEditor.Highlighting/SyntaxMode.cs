@@ -34,14 +34,12 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Diagnostics;
 
-
-
 namespace Mono.TextEditor.Highlighting
 {
 	public class SyntaxMode : Rule
 	{
 		public static readonly SyntaxMode Default = new SyntaxMode ();
-		List<Rule> rules = new List<Rule> ();
+		protected List<Rule> rules = new List<Rule> ();
 		
 		public string MimeType {
 			get;
@@ -178,7 +176,7 @@ namespace Mono.TextEditor.Highlighting
 			return result.ToString ();
 		}
 		
-		internal class SpanParser
+		public class SpanParser
 		{
 			protected SyntaxMode mode;
 			protected Stack<Span> spanStack;
@@ -330,7 +328,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		class ChunkParser : SpanParser
+		public class ChunkParser : SpanParser
 		{
 			readonly string defaultStyle = "text";
 			List<Chunk> result = new List<Chunk> ();

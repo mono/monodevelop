@@ -1,3 +1,12 @@
+2009-05-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/Rule.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Worked on
+	  highlighting engine to better support customized
+	  highlighting.
+
 2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/SimpleEditMode.cs: Add subword actions for

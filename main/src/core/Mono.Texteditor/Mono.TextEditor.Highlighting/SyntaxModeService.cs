@@ -57,6 +57,13 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		public static void InstallSyntaxMode (string mimeType, SyntaxMode mode)
+		{
+			if (syntaxModeLookup.ContainsKey (mimeType))
+				syntaxModeLookup.Remove (mimeType);
+			syntaxModes[mimeType] = mode;
+		}
+		
 		public static Style GetColorStyle (Gtk.Widget widget, string name) 
 		{
 			if (styles.ContainsKey (name))
@@ -156,6 +163,7 @@ namespace Mono.TextEditor.Highlighting
 			if (styleLookup.ContainsKey (style.Name))
 				styleLookup.Remove (style.Name);
 		}
+		
 		public static void Remove (SyntaxMode mode)
 		{
 			foreach (string mimeType in mode.MimeType.Split (';')) {

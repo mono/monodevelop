@@ -139,14 +139,18 @@ namespace Mono.TextEditor.Highlighting
 			return String.Format ("[Rule: Name={0}, #Keywords={1}]", Name, keywords.Count);
 		}
 		
-		class KeyTable 
+		public class KeyTable 
 		{
 			public Keywords   keywords = null;
 			public KeyTable[] table    = new KeyTable[255];
 		}
 		
-		KeyTable[] table = new KeyTable[255];
-		
+		protected KeyTable[] table = new KeyTable[255];
+		public KeyTable[] Table {
+			get {
+				return table;
+			}
+		}
 		void AddToTable (Keywords keywords, char[] word)
 		{
 			KeyTable[] curTable = table;
