@@ -1,3 +1,8 @@
+2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport.csproj: Disable overflow
+	  checking.
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport/ToolboxService.cs:
