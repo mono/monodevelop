@@ -1,5 +1,10 @@
 2009-05-08  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects/DomTests.cs: Added test where
+	  CreateInstantiatedGenericMethod fails.
+
+2009-05-08  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
 	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
 	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
