@@ -1,3 +1,22 @@
+2009-05-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.VersionControl.Subversion.csproj:
+	* MonoDevelop.VersionControl.Subversion/LibApr.cs:
+	* MonoDevelop.VersionControl.Subversion.addin.xml:
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/ISvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/SvnRevision.cs:
+	* MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	* MonoDevelop.VersionControl.Subversion.Gui/UserPasswordDialog.cs:
+	* MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	* MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs:
+	* MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs:
+	  Refactored the subversion add-in to make it easier to
+	  implement support for svn using other subversion backends.
+
 2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

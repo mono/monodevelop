@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -7,9 +8,9 @@ using System.Runtime.InteropServices;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Subversion.Gui;
 
-namespace MonoDevelop.VersionControl.Subversion
+namespace MonoDevelop.VersionControl.Subversion.Unix
 {
-	public class SvnClient : ISvnClient
+	class SvnClient : SubversionVersionControl
 	{
 		static LibSvnClient svn;
 		static LibApr apr;
@@ -55,7 +56,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		internal static bool IsInstalled {
+		public override bool IsInstalled {
 			get {
 				if (!isInstallChecked)
 					CheckInstalled ();
@@ -92,8 +93,18 @@ namespace MonoDevelop.VersionControl.Subversion
 			return p;
 		}
 		
+		public override string Id {
+			get {
+				return "MonoDevelop.VersionControl.Subversion.SubversionVersionControl";
+			}
+		}
+
+		
 		public SvnClient ()
 		{
+			if (!IsInstalled)
+				return;
+			
 			// Allocate the APR pool and the SVN client context.
 			pool = newpool (IntPtr.Zero);
 
@@ -205,8 +216,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.LPStr)] string user_name, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
-			LibSvnClient.svn_auth_cred_simple_t data; 
-			if (UserPasswordDialog.Show (user_name, realm, may_save != 0, out data)) {
+			LibSvnClient.svn_auth_cred_simple_t data = new LibSvnClient.svn_auth_cred_simple_t (); 
+			if (SimpleAuthenticationPrompt (realm, may_save != 0, ref data.username, out data.password, out data.may_save)) {
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
@@ -220,8 +231,9 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		static IntPtr OnAuthUsernamePrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
-			LibSvnClient.svn_auth_cred_username_t data;
-			if (UserPasswordDialog.Show (realm, may_save != 0, out data)) {
+			LibSvnClient.svn_auth_cred_username_t data = new LibSvnClient.svn_auth_cred_username_t ();
+			data.username = "";
+			if (UserNameAuthenticationPrompt (realm, may_save != 0, ref data.username, out data.may_save)) {
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
@@ -234,8 +246,19 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		static IntPtr OnAuthSslServerTrustPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, uint failures, ref LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
-			LibSvnClient.svn_auth_cred_ssl_server_trust_t data;
-			if (SslServerTrustDialog.Show (realm, failures, may_save, cert_info, out data) && data.accepted_failures != 0) {
+			LibSvnClient.svn_auth_cred_ssl_server_trust_t data = new LibSvnClient.svn_auth_cred_ssl_server_trust_t ();
+			
+			CertficateInfo ci = new CertficateInfo ();
+			ci.AsciiCert = cert_info.ascii_cert;
+			ci.Fingerprint = cert_info.fingerprint;
+			ci.HostName = cert_info.hostname;
+			ci.IssuerName = cert_info.issuer_dname;
+			ci.ValidFrom = cert_info.valid_from;
+			ci.ValidUntil = cert_info.valid_until;
+
+			SslFailure accepted_failures;
+			if (SslServerTrustAuthenticationPrompt (realm, (SslFailure) failures, may_save, ci, out accepted_failures, out data.may_save) && accepted_failures != SslFailure.None) {
+				data.accepted_failures = (uint) accepted_failures;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
@@ -248,8 +271,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		static IntPtr OnAuthSslClientCertPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
-			LibSvnClient.svn_auth_cred_ssl_client_cert_t data;
-			if (ClientCertificateDialog.Show (realm, may_save, out data)) {
+			LibSvnClient.svn_auth_cred_ssl_client_cert_t data = new LibSvnClient.svn_auth_cred_ssl_client_cert_t ();
+			if (SslClientCertAuthenticationPrompt (realm, may_save, out data.cert_file, out data.may_save)) {
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
@@ -263,7 +286,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		static IntPtr OnAuthSslClientCertPwPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_client_cert_pw_t data;
-			if (ClientCertificatePasswordDialog.Show (realm, may_save, out data)) {
+			if (SslClientCertPwAuthenticationPrompt (realm, may_save, out data.password, out data.may_save)) {
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
@@ -276,21 +299,21 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		// Wrappers for native interop
 		
-		public string Version {
-			get {
-				IntPtr ptr = svn.client_version ();
-				LibSvnClient.svn_version_t ver = (LibSvnClient.svn_version_t) Marshal.PtrToStructure (ptr, typeof (LibSvnClient.svn_version_t));				
-				return ver.major + "." + ver.minor + "." + ver.patch;
-			}
+		public override string GetVersion ()
+		{
+			IntPtr ptr = svn.client_version ();
+			LibSvnClient.svn_version_t ver = (LibSvnClient.svn_version_t) Marshal.PtrToStructure (ptr, typeof (LibSvnClient.svn_version_t));				
+			return ver.major + "." + ver.minor + "." + ver.patch;
 		}
 		
-		public IList List (string pathorurl, bool recurse, LibSvnClient.Rev revision)
+		public override IEnumerable<DirectoryEntry> List (string pathorurl, bool recurse, SvnRevision rev)
 		{
 			if (pathorurl == null)
 				throw new ArgumentNullException ();
 			
+			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
 			IntPtr localpool = newpool (pool);
-			ArrayList items = new ArrayList ();
+			List<DirectoryEntry> items = new List<DirectoryEntry> ();
 			try {
 				IntPtr hash;
 				
@@ -307,7 +330,15 @@ namespace MonoDevelop.VersionControl.Subversion
 					LibSvnClient.svn_dirent_t ent = (LibSvnClient.svn_dirent_t) Marshal.PtrToStructure (val, typeof (LibSvnClient.svn_dirent_t));				
 					item = apr.hash_next (item);
 					
-					items.Add (new LibSvnClient.DirEnt (name, ent));
+					DirectoryEntry dent = new DirectoryEntry ();
+					dent.Name = name;
+					dent.IsDirectory = (ent.kind.ToInt32 () == (int) LibSvnClient.NodeKind.Dir);
+					dent.Size = ent.size;
+					dent.HasProps = ent.has_props != 0;
+					dent.CreatedRevision = ent.created_rev;
+					dent.Time = new DateTime (1970, 1, 1).AddTicks(ent.time * 10);
+					dent.LastAuthor = ent.last_author;
+					items.Add (dent);
 				}
 			} finally {
 				apr.pool_destroy (localpool);
@@ -315,17 +346,13 @@ namespace MonoDevelop.VersionControl.Subversion
 			
 			return items;
 		}
-
-		public IList Status (string path, LibSvnClient.Rev revision)
-		{
-			return Status (path, revision, false, false, false);
-		}
 		
-		public IList Status (string path, LibSvnClient.Rev revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus)
+		public override IEnumerable<VersionInfo> Status (Repository repo, string path, SvnRevision rev, bool descendDirs, bool changedItemsOnly, bool remoteStatus)
 		{
 			if (path == null)
 				throw new ArgumentNullException ();
-			
+		
+			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
 			ArrayList ret = new ArrayList ();
 			
 			StatusCollector collector = new StatusCollector (ret);
@@ -342,15 +369,19 @@ namespace MonoDevelop.VersionControl.Subversion
 				apr.pool_destroy (localpool);
 			}
 			
-			return ret;
+			foreach (LibSvnClient.StatusEnt ent in ret)
+				yield return CreateNode (ent, repo);
 		}
 		
-		public IList Log (string path, LibSvnClient.Rev revisionStart, LibSvnClient.Rev revisionEnd)
+		public override IEnumerable<SvnRevision> Log (Repository repo, string path, SvnRevision revStart, SvnRevision revEnd)
 		{
 			if (path == null)
 				throw new ArgumentNullException ();
 			
-			ArrayList ret = new ArrayList ();
+			LibSvnClient.Rev revisionStart = (LibSvnClient.Rev) revStart;
+			LibSvnClient.Rev revisionEnd = (LibSvnClient.Rev) revEnd;
+			
+			List<SvnRevision> ret = new List<SvnRevision> ();
 			IntPtr localpool = newpool (pool);
 			IntPtr strptr = IntPtr.Zero;
 			try {
@@ -373,7 +404,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			return ret;
 		}
 		
-		public string GetPathUrl (string path)
+		public override string GetPathUrl (string path)
 		{
 			if (path == null)
 				throw new ArgumentNullException();
@@ -392,10 +423,10 @@ namespace MonoDevelop.VersionControl.Subversion
 			return Marshal.PtrToStringAnsi (ret);
 		}
 		
-		public string Cat (string pathorurl, LibSvnClient.Rev revision)
+		public override string GetTextAtRevision (string pathorurl, Revision revision)
 		{
 			MemoryStream memstream = new MemoryStream ();
-			Cat (pathorurl, revision, memstream);
+			Cat (pathorurl, (SvnRevision) revision, memstream);
 			
 			try {
 				return System.Text.Encoding.UTF8.GetString (memstream.GetBuffer ());
@@ -405,10 +436,12 @@ namespace MonoDevelop.VersionControl.Subversion
 			return System.Text.Encoding.ASCII.GetString (memstream.GetBuffer ());
 		}
 		
-		public void Cat (string pathorurl, LibSvnClient.Rev revision, Stream stream)
+		public void Cat (string pathorurl, SvnRevision rev, Stream stream)
 		{
 			if (pathorurl == null || stream == null)
 				throw new ArgumentNullException ();
+		
+			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
 			
 			IntPtr localpool = newpool (pool);
 			try {
@@ -422,7 +455,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Update (string path, bool recurse, IProgressMonitor monitor)
+		public override void Update (string path, bool recurse, IProgressMonitor monitor)
 		{
 			if (path == null || monitor == null)
 				throw new ArgumentNullException();
@@ -451,7 +484,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Revert (string[] paths, bool recurse, IProgressMonitor monitor)
+		public override void Revert (string[] paths, bool recurse, IProgressMonitor monitor)
 		{
 			if (paths == null || monitor == null)
 				throw new ArgumentNullException();
@@ -481,7 +514,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Resolve (string path, bool recurse, IProgressMonitor monitor)
+		public override void Resolve (string path, bool recurse, IProgressMonitor monitor)
 		{
 			if (path == null || monitor == null)
 				throw new ArgumentNullException();
@@ -504,7 +537,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Add (string path, bool recurse, IProgressMonitor monitor)
+		public override void Add (string path, bool recurse, IProgressMonitor monitor)
 		{
 			if (path == null || monitor == null)
 				throw new ArgumentNullException ();
@@ -526,10 +559,14 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Checkout (string url, string path, LibSvnClient.Rev rev, bool recurse, IProgressMonitor monitor)
+		public override void Checkout (string url, string path, Revision revision, bool recurse, IProgressMonitor monitor)
 		{
 			if (url == null || monitor == null)
 				throw new ArgumentNullException ();
+			
+			if (revision == null)
+				revision = SvnRevision.Head;
+			LibSvnClient.Rev rev = (LibSvnClient.Rev) revision;
 			
 			lock (sync) {
 				if (inProgress)
@@ -549,7 +586,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Commit (string[] paths, string message, IProgressMonitor monitor)
+		public override void Commit (string[] paths, string message, IProgressMonitor monitor)
 		{
 			if (paths == null || message == null || monitor == null)
 				throw new ArgumentNullException();
@@ -591,7 +628,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Mkdir (string[] paths, string message, IProgressMonitor monitor) 
+		public override void Mkdir (string[] paths, string message, IProgressMonitor monitor) 
 		{
 			if (paths == null || monitor == null)
 				throw new ArgumentNullException ();
@@ -626,7 +663,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Delete (string path, bool force, IProgressMonitor monitor)
+		public override void Delete (string path, bool force, IProgressMonitor monitor)
 		{
 			if (path == null || monitor == null)
 				throw new ArgumentNullException ();
@@ -658,10 +695,12 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Move (string srcPath, string destPath, LibSvnClient.Rev revision, bool force, IProgressMonitor monitor)
+		public override void Move (string srcPath, string destPath, SvnRevision rev, bool force, IProgressMonitor monitor)
 		{
 			if (srcPath == null || destPath == null || monitor == null)
 				throw new ArgumentNullException ();
+			
+			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
 			
 			lock (sync) {
 				if (inProgress)
@@ -683,7 +722,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Lock (IProgressMonitor monitor, string comment, bool stealLock, params string[] paths)
+		public override void Lock (IProgressMonitor monitor, string comment, bool stealLock, params string[] paths)
 		{
 			lock (sync) {
 				if (inProgress)
@@ -715,7 +754,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public void Unlock (IProgressMonitor monitor, bool breakLock, params string[] paths)
+		public override void Unlock (IProgressMonitor monitor, bool breakLock, params string[] paths)
 		{
 			lock (sync) {
 				if (inProgress)
@@ -747,13 +786,16 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		public string PathDiff (string path1, LibSvnClient.Rev revision1, string path2, LibSvnClient.Rev revision2, bool recursive)
+		public override string PathDiff (string path1, SvnRevision rev1, string path2, SvnRevision rev2, bool recursive)
 		{
 			IntPtr localpool = newpool (pool);
 			IntPtr outfile = IntPtr.Zero;
 			IntPtr errfile = IntPtr.Zero;
 			string fout = null;
 			string ferr = null;
+			
+			LibSvnClient.Rev revision1 = (LibSvnClient.Rev) rev1;
+			LibSvnClient.Rev revision2 = (LibSvnClient.Rev) rev2;
 			
 			try {
 				IntPtr options = apr.array_make (localpool, 0, IntPtr.Size);
@@ -793,14 +835,15 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
-		public void RevertToRevision (string path, int revision)
+		public override void RevertToRevision (string path, Revision revision, IProgressMonitor monitor)
 		{
-			Merge (path, LibSvnClient.Rev.Head, LibSvnClient.Rev.Number(revision));
+			Merge (path, LibSvnClient.Rev.Head, (LibSvnClient.Rev) revision);
 		}
 		
-		public void RevertRevision (string path, int revision)
+		public override void RevertRevision (string path, Revision revision, IProgressMonitor monitor)
 		{
-			Merge (path, LibSvnClient.Rev.Number(revision), LibSvnClient.Rev.Number (revision - 1));
+			SvnRevision srev = (SvnRevision) revision;
+			Merge (path, (LibSvnClient.Rev) srev, LibSvnClient.Rev.Number (srev.Rev - 1));
 		}
 		
 		private void Merge (string path, LibSvnClient.Rev revision1, LibSvnClient.Rev revision2)
@@ -845,6 +888,60 @@ namespace MonoDevelop.VersionControl.Subversion
 				msg = "Unknown error";
 			
 			throw new SubversionException (msg);
+		}
+		
+		private VersionInfo CreateNode (LibSvnClient.StatusEnt ent, Repository repo) 
+		{
+			VersionStatus rs = VersionStatus.Unversioned;
+			Revision rr = null;
+			
+			if (ent.RemoteTextStatus != LibSvnClient.VersionStatus.EMPTY) {
+				rs = ConvertStatus (LibSvnClient.NodeSchedule.Normal, ent.RemoteTextStatus);
+				rr = new SvnRevision (repo, ent.LastCommitRevision, ent.LastCommitDate,
+				                      ent.LastCommitAuthor, "(unavailable)", null);
+			}
+
+			VersionStatus status = ConvertStatus (ent.Schedule, ent.TextStatus);
+			
+			bool readOnly = File.Exists (ent.LocalFilePath) && (File.GetAttributes (ent.LocalFilePath) & FileAttributes.ReadOnly) != 0;
+			
+			if (ent.RepoLocked) {
+				status |= VersionStatus.LockRequired;
+				if (ent.LockOwned)
+					status |= VersionStatus.LockOwned;
+				else
+					status |= VersionStatus.Locked;
+			} else if (readOnly)
+				status |= VersionStatus.LockRequired;
+
+			VersionInfo ret = new VersionInfo (ent.LocalFilePath, ent.Url, ent.IsDirectory,
+			                                   status, new SvnRevision (repo, ent.Revision),
+			                                   rs, rr);
+			return ret;
+		}
+		
+		private VersionStatus ConvertStatus (LibSvnClient.NodeSchedule schedule, LibSvnClient.VersionStatus status) {
+			switch (schedule) {
+				case LibSvnClient.NodeSchedule.Add: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
+				case LibSvnClient.NodeSchedule.Delete: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
+				case LibSvnClient.NodeSchedule.Replace: return VersionStatus.Versioned | VersionStatus.ScheduledReplace;
+			}
+			
+			switch (status) {
+				case LibSvnClient.VersionStatus.None: return VersionStatus.Versioned;
+				case LibSvnClient.VersionStatus.Normal: return VersionStatus.Versioned;
+				case LibSvnClient.VersionStatus.Unversioned: return VersionStatus.Unversioned;
+				case LibSvnClient.VersionStatus.Modified: return VersionStatus.Versioned | VersionStatus.Modified;
+				case LibSvnClient.VersionStatus.Merged: return VersionStatus.Versioned | VersionStatus.Modified;
+				case LibSvnClient.VersionStatus.Conflicted: return VersionStatus.Versioned | VersionStatus.Conflicted;
+				case LibSvnClient.VersionStatus.Ignored: return VersionStatus.Unversioned | VersionStatus.Ignored;
+				case LibSvnClient.VersionStatus.Obstructed: return VersionStatus.Versioned;
+				case LibSvnClient.VersionStatus.Added: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
+				case LibSvnClient.VersionStatus.Deleted: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
+				case LibSvnClient.VersionStatus.Replaced: return VersionStatus.Versioned | VersionStatus.ScheduledReplace;
+			}
+			
+			return VersionStatus.Unversioned;
 		}
 		
 		// same logic as svn_mime_type_is_binary, but I don't see a reason for a native call
@@ -1050,12 +1147,13 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		private class LogCollector {
+		private class LogCollector
+		{
 			static readonly DateTime Epoch = new DateTime (1970, 1, 1);
 			
-			ArrayList logs;
+			List<SvnRevision> logs;
 			
-			public LogCollector (ArrayList logs) { this.logs = logs; }
+			public LogCollector (List<SvnRevision> logs) { this.logs = logs; }
 			
 			public IntPtr Func (IntPtr baton, IntPtr apr_hash_changed_paths, int revision, IntPtr author, IntPtr date, IntPtr message, IntPtr pool)
 			{
@@ -1066,7 +1164,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				if (message != IntPtr.Zero)
 					smessage = Marshal.PtrToStringAnsi (message).Trim ();
 				
-				ArrayList items = new ArrayList();
+				List<RevisionPath> items = new List<RevisionPath>();
 				
 				IntPtr item = apr.hash_first (pool, apr_hash_changed_paths);
 				while (item != IntPtr.Zero) {
@@ -1078,11 +1176,18 @@ namespace MonoDevelop.VersionControl.Subversion
 					LibSvnClient.svn_log_changed_path_t ch = (LibSvnClient.svn_log_changed_path_t) Marshal.PtrToStructure (val, typeof (LibSvnClient.svn_log_changed_path_t));
 					item = apr.hash_next (item);
 					
-					items.Add (new LibSvnClient.LogEntChangedPath (name, ch));
+					RevisionAction ac;
+					switch (ch.action) {
+						case 'A': ac = RevisionAction.Add; break;
+						case 'D': ac = RevisionAction.Delete; break;
+						case 'R': ac = RevisionAction.Replace; break;
+						default: ac = RevisionAction.Modify; break; // should be an 'M'
+					}
+					items.Add (new RevisionPath (name, ac, ""));
 				}
 				
-				logs.Add (new LibSvnClient.LogEnt (revision, Marshal.PtrToStringAnsi (author), Epoch.AddTicks (time * 10),
-				                                   smessage, (LibSvnClient.LogEntChangedPath[]) items.ToArray (typeof (LibSvnClient.LogEntChangedPath))));
+				SvnRevision ent = new SvnRevision (null, revision, Epoch.AddTicks (time * 10), Marshal.PtrToStringAnsi (author), smessage, items.ToArray ());
+				logs.Add (ent);
 				
 				return IntPtr.Zero;
 			}

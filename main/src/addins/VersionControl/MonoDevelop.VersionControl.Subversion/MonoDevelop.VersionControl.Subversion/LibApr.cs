@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MonoDevelop.VersionControl.Subversion
+namespace MonoDevelop.VersionControl.Subversion.Unix
 {
 	public abstract class LibApr
 	{

@@ -28,13 +28,13 @@ FILES =  \
 	MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs \
 	MonoDevelop.VersionControl.Subversion.Gui/UserPasswordDialog.cs \
 	MonoDevelop.VersionControl.Subversion/Commands.cs \
-	MonoDevelop.VersionControl.Subversion/ISvnClient.cs \
 	MonoDevelop.VersionControl.Subversion/LibApr.cs \
 	MonoDevelop.VersionControl.Subversion/LibSvnClient.cs \
 	MonoDevelop.VersionControl.Subversion/SubversionNodeExtension.cs \
 	MonoDevelop.VersionControl.Subversion/SubversionRepository.cs \
 	MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs \
-	MonoDevelop.VersionControl.Subversion/SvnClient.cs
+	MonoDevelop.VersionControl.Subversion/SvnClient.cs \
+	MonoDevelop.VersionControl.Subversion/SvnRevision.cs
 
 ASM_CONFIG = MonoDevelop.VersionControl.Subversion.dll.config
 

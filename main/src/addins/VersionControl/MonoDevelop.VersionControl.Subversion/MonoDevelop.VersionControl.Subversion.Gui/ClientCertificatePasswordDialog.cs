@@ -24,9 +24,10 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			get { return checkSave.Active; }
 		}
 		
-		internal static bool Show (string realm, int may_save, out LibSvnClient.svn_auth_cred_ssl_client_cert_pw_t retData)
+		internal static bool Show (string realm, int may_save, out string password, out int save)
 		{
-			LibSvnClient.svn_auth_cred_ssl_client_cert_pw_t data = new LibSvnClient.svn_auth_cred_ssl_client_cert_pw_t ();
+			string local_password = null;
+			int local_save = 0;
 			
 			bool res = false;
 			object monitor = new Object ();
@@ -36,8 +37,8 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 					try {
 						res = (dlg.Run () == (int) Gtk.ResponseType.Ok);
 						if (res) {
-							data.may_save = dlg.Save ? 1 : 0;
-							data.password = dlg.Password;
+							local_save = dlg.Save ? 1 : 0;
+							local_password = dlg.Password;
 						}
 					} finally {
 						dlg.Destroy ();
@@ -57,7 +58,10 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 					System.Threading.Monitor.Wait (monitor);
 				}
 			}
-			retData = data;
+			
+			password = local_password;
+			save = local_save;
+			
 			return res;
 		}	
 	}

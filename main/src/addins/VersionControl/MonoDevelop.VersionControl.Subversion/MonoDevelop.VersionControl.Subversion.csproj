@@ -104,7 +104,7 @@
     <Compile Include="MonoDevelop.VersionControl.Subversion\SubversionNodeExtension.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion\Commands.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Subversion\ISvnClient.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion\SvnRevision.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

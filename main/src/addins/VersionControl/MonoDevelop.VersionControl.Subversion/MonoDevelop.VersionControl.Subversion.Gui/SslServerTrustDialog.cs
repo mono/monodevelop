@@ -6,31 +6,31 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 {
 	public partial class SslServerTrustDialog : Gtk.Dialog
 	{
-		uint failures;
+		SslFailure failures;
 		
-		internal SslServerTrustDialog (string realm, uint failures, LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, bool may_save)
+		internal SslServerTrustDialog (string realm, SslFailure failures, CertficateInfo cert_info, bool may_save)
 		{
 			this.Build();
 			
 			this.failures = failures;
 			labelRealm.Text = realm;
-			labelHost.Text = cert_info.hostname;
-			labelIssuer.Text = cert_info.issuer_dname;
-			labelFrom.Text = cert_info.valid_from;
-			labelUntil.Text = cert_info.valid_until;
-			labelFprint.Text = cert_info.fingerprint;
+			labelHost.Text = cert_info.HostName;
+			labelIssuer.Text = cert_info.IssuerName;
+			labelFrom.Text = cert_info.ValidFrom;
+			labelUntil.Text = cert_info.ValidUntil;
+			labelFprint.Text = cert_info.Fingerprint;
 			
 			if (!may_save)
 				radioAccept.Visible = false;
 			
 			string reason = "";
-			if ((failures & LibSvnClient.SVN_AUTH_SSL_NOTYETVALID) != 0)
+			if ((failures & SslFailure.NotYetValid) != 0)
 				reason += "\n" + GettextCatalog.GetString ("Certificate is not yet valid.");
-			if ((failures & LibSvnClient.SVN_AUTH_SSL_EXPIRED) != 0)
+			if ((failures & SslFailure.Expired) != 0)
 				reason += "\n" + GettextCatalog.GetString ("Certificate has expired.");
-			if ((failures & LibSvnClient.SVN_AUTH_SSL_CNMISMATCH) != 0)
+			if ((failures & SslFailure.CNMismatch) != 0)
 				reason += "\n" + GettextCatalog.GetString ("Certificate's CN (hostname) does not match the remote hostname.");
-			if ((failures & LibSvnClient.SVN_AUTH_SSL_UNKNOWNCA) != 0)
+			if ((failures & SslFailure.UnknownCA) != 0)
 				reason += "\n" + GettextCatalog.GetString ("Certificate authority is unknown (i.e. not trusted).");
 			if (reason.Length > 0) {
 				labelReason.Markup = "<b>" + reason.Substring (1) + "</b>";
@@ -41,32 +41,30 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			get { return radioAccept.Active; }
 		}
 		
-		public uint AcceptedFailures {
+		public SslFailure AcceptedFailures {
 			get {
 				if (radioNotAccept.Active)
-					return 0;
+					return SslFailure.None;
 				else
 					return failures;
 			}
 		}
 		
-		internal static bool Show (string realm, uint failures, int may_save, LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, out LibSvnClient.svn_auth_cred_ssl_server_trust_t retData)
+		internal static bool Show (string realm, SslFailure failures, int may_save, CertficateInfo certInfo, out SslFailure accepted_failures, out int save)
 		{
-			LibSvnClient.svn_auth_cred_ssl_server_trust_t data = new LibSvnClient.svn_auth_cred_ssl_server_trust_t ();
+			SslFailure local_accepted_failures = SslFailure.None;
+			int local_save = 0;
 			
 			bool res = false;
 			object monitor = new Object ();
 			
 			EventHandler del = delegate {
 					try {
-						SslServerTrustDialog dlg = new SslServerTrustDialog (realm, failures, cert_info, may_save != 0);
+						SslServerTrustDialog dlg = new SslServerTrustDialog (realm, failures, certInfo, may_save != 0);
 						res = (dlg.Run () == (int) Gtk.ResponseType.Ok);
 						if (res) {
-							data.may_save = dlg.Save ? 1 : 0;
-							data.accepted_failures = dlg.AcceptedFailures;
-						} else {
-							data.may_save = 0;
-							data.accepted_failures = 0;
+							local_save = dlg.Save ? 1 : 0;
+							local_accepted_failures = dlg.AcceptedFailures;
 						}
 					
 						dlg.Destroy ();
@@ -87,7 +85,8 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 					System.Threading.Monitor.Wait (monitor);
 				}
 			}
-			retData = data;
+			accepted_failures = local_accepted_failures;
+			save = local_save;
 			return res;
 		}
 	}

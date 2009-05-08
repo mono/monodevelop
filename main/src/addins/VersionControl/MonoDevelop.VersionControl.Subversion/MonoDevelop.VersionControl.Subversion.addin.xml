@@ -21,7 +21,7 @@
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
-		<Class class = "MonoDevelop.VersionControl.Subversion.SubversionVersionControl" />
+		<Class class = "MonoDevelop.VersionControl.Subversion.Unix.SvnClient" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/VersionControl">

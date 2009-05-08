@@ -6,6 +6,7 @@ using System.Collections;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.VersionControl.Subversion.Gui;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
@@ -29,7 +30,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			get {
 				List<Repository> list = new List<Repository> ();
 				
-				foreach (LibSvnClient.DirEnt ent in Svn.List (Url, false)) {
+				foreach (DirectoryEntry ent in Svn.List (Url, false)) {
 					if (ent.IsDirectory) {
 						SubversionRepository rep = new SubversionRepository (Svn, Url + "/" + ent.Name);
 						rep.Name = ent.Name;

@@ -12,7 +12,7 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Subversion.Gui;
 
 
-namespace MonoDevelop.VersionControl.Subversion {
+namespace MonoDevelop.VersionControl.Subversion.Unix {
 	public abstract class LibSvnClient {
 		public LibSvnClient ()
 		{
@@ -254,44 +254,6 @@ namespace MonoDevelop.VersionControl.Subversion {
 			}
 		}
 		
-		public class LogEnt {
-			public readonly int Revision;
-			public readonly string Author;
-			public readonly DateTime Time;
-			public readonly string Message;
-			public readonly LogEntChangedPath[] ChangedPaths;
-			
-			internal LogEnt (int rev, string author, DateTime time, string msg, LogEntChangedPath[] changes)
-			{
-				Revision = rev;
-				Author = author;
-				Time = time;
-				Message = msg;
-				ChangedPaths = changes;
-			}
-		}
-		
-		public class LogEntChangedPath {
-			public readonly string Path;
-			public readonly RevisionAction Action;
-			public readonly string ActionDesc;
-			public readonly string CopyFromPath;
-			public readonly int CopyFromRevision;
-			
-			internal LogEntChangedPath(string path, svn_log_changed_path_t info) {
-				Path = path;
-				CopyFromPath = info.copy_from_path;
-				CopyFromRevision = info.copy_from_rev;
-				
-				switch (info.action) {
-				case 'A': Action = RevisionAction.Add; break;
-				case 'D': Action = RevisionAction.Delete; break;
-				case 'R': Action = RevisionAction.Replace; break;
-				default: Action = RevisionAction.Modify; break; // should be an 'M'
-				}
-			}
-		}
-		
 		// Native Interop
 		[StructLayout(LayoutKind.Sequential)]
 		public struct svn_client_ctx_t {
@@ -460,6 +422,20 @@ namespace MonoDevelop.VersionControl.Subversion {
 				Rev r = new Rev(1);
 				r.value.number = (IntPtr) rev;
 				return r;
+			}
+			
+			public static explicit operator Rev (SvnRevision rev)
+			{
+				Rev r = new Rev ();
+				r.kind = (IntPtr) rev.Kind;
+				if (rev.Kind == 1)
+					r.value.number = (IntPtr) rev.Rev;
+				return r;
+			}
+			
+			public static explicit operator Rev (Revision rev)
+			{
+				return (Rev) (SvnRevision) rev;
 			}
 			
 			public readonly static Rev Blank = new Rev(0);
