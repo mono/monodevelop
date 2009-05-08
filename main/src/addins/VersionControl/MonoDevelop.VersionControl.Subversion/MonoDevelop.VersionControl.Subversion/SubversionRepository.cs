@@ -441,23 +441,15 @@ namespace MonoDevelop.VersionControl.Subversion
 			if (localPaths != null) {
 				ArrayList list = new ArrayList ();
 				foreach (string path in localPaths) {
-					string diff = Svn.PathDiff (path, false, remoteDiff);
-					if (diff == null)
+					string diff = Svn.GetUnifiedDiff (path, false, remoteDiff);
+					if (string.IsNullOrEmpty (diff))
 						continue;
-					try {
-						list.AddRange (GenerateUnifiedDiffInfo (diff, path, new string [] { path }));
-					} finally {
-						FileService.DeleteFile (diff);
-					}
+					list.AddRange (GenerateUnifiedDiffInfo (diff, path, new string [] { path }));
 				}
 				return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
 			} else {
-				string diff = Svn.PathDiff (baseLocalPath, true, remoteDiff);
-				try {
-					return GenerateUnifiedDiffInfo (diff, baseLocalPath, null);
-				} finally {
-					FileService.DeleteFile (diff);
-				}
+				string diff = Svn.GetUnifiedDiff (baseLocalPath, true, remoteDiff);
+				return GenerateUnifiedDiffInfo (diff, baseLocalPath, null);
 			}
 		}
 	}

@@ -49,21 +49,21 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 					return failures;
 			}
 		}
-		
-		internal static bool Show (string realm, SslFailure failures, int may_save, CertficateInfo certInfo, out SslFailure accepted_failures, out int save)
+
+		internal static bool Show (string realm, SslFailure failures, bool may_save, CertficateInfo certInfo, out SslFailure accepted_failures, out bool save)
 		{
 			SslFailure local_accepted_failures = SslFailure.None;
-			int local_save = 0;
+			bool local_save = false;
 			
 			bool res = false;
 			object monitor = new Object ();
 			
 			EventHandler del = delegate {
 					try {
-						SslServerTrustDialog dlg = new SslServerTrustDialog (realm, failures, certInfo, may_save != 0);
+						SslServerTrustDialog dlg = new SslServerTrustDialog (realm, failures, certInfo, may_save);
 						res = (dlg.Run () == (int) Gtk.ResponseType.Ok);
 						if (res) {
-							local_save = dlg.Save ? 1 : 0;
+							local_save = dlg.Save;
 							local_accepted_failures = dlg.AcceptedFailures;
 						}
 					

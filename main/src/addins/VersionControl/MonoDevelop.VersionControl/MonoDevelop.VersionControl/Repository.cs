@@ -334,10 +334,10 @@ namespace MonoDevelop.VersionControl
 		
 		public abstract string GetTextAtRevision (string repositoryPath, Revision revision);
 		
-		static protected DiffInfo[] GenerateUnifiedDiffInfo (string diffFile, string basePath, string[] localPaths)
+		static protected DiffInfo[] GenerateUnifiedDiffInfo (string diffContent, string basePath, string[] localPaths)
 		{
 			ArrayList list = new ArrayList ();
-			using (StreamReader sr = new StreamReader (diffFile)) {
+			using (StringReader sr = new StringReader (diffContent)) {
 				string line;
 				StringBuilder content = new StringBuilder ();
 				string fileName = null;
@@ -351,6 +351,7 @@ namespace MonoDevelop.VersionControl
 							fileName = null;
 						}
 						fileName = line.Substring (6).Trim ();
+						fileName = fileName.Replace ('/', Path.DirectorySeparatorChar); // svn returns paths using unix separators
 						content = new StringBuilder ();
 						line = sr.ReadLine ();	// "===" Separator
 						

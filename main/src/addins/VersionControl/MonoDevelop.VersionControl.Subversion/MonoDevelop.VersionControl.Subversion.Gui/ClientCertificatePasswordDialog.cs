@@ -23,21 +23,21 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 		public bool Save {
 			get { return checkSave.Active; }
 		}
-		
-		internal static bool Show (string realm, int may_save, out string password, out int save)
+
+		internal static bool Show (string realm, bool may_save, out string password, out bool save)
 		{
 			string local_password = null;
-			int local_save = 0;
+			bool local_save = false;
 			
 			bool res = false;
 			object monitor = new Object ();
 			
 			EventHandler del = delegate {
-					ClientCertificatePasswordDialog dlg = new ClientCertificatePasswordDialog (realm, may_save != 0);
+					ClientCertificatePasswordDialog dlg = new ClientCertificatePasswordDialog (realm, may_save);
 					try {
 						res = (dlg.Run () == (int) Gtk.ResponseType.Ok);
 						if (res) {
-							local_save = dlg.Save ? 1 : 0;
+							local_save = dlg.Save;
 							local_password = dlg.Password;
 						}
 					} finally {

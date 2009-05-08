@@ -43,8 +43,8 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 		{
 			this.Respond ((int) Gtk.ResponseType.Ok);
 		}
-		
-		internal static bool Show (bool showPwd, string realm, bool may_save, ref string user_name, out string password, out int save)
+
+		internal static bool Show (bool showPwd, string realm, bool may_save, ref string user_name, out string password, out bool save)
 		{
 			string pwd = "", user = user_name;
 			int s = 0;
@@ -81,7 +81,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			}
 			
 			user_name = user;
-			save = s;
+			save = s != 0;
 			password = pwd;
 			return res;
 		}

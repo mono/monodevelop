@@ -216,8 +216,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.LPStr)] string user_name, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
-			LibSvnClient.svn_auth_cred_simple_t data = new LibSvnClient.svn_auth_cred_simple_t (); 
-			if (SimpleAuthenticationPrompt (realm, may_save != 0, ref data.username, out data.password, out data.may_save)) {
+			LibSvnClient.svn_auth_cred_simple_t data = new LibSvnClient.svn_auth_cred_simple_t ();
+			bool ms;
+			if (SimpleAuthenticationPrompt (realm, may_save != 0, ref data.username, out data.password, out ms)) {
+				data.may_save = ms ? 1 : 0;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
@@ -233,7 +235,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			LibSvnClient.svn_auth_cred_username_t data = new LibSvnClient.svn_auth_cred_username_t ();
 			data.username = "";
-			if (UserNameAuthenticationPrompt (realm, may_save != 0, ref data.username, out data.may_save)) {
+			bool ms;
+			if (UserNameAuthenticationPrompt (realm, may_save != 0, ref data.username, out ms)) {
+				data.may_save = ms ? 1 : 0;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
@@ -257,7 +261,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			ci.ValidUntil = cert_info.valid_until;
 
 			SslFailure accepted_failures;
-			if (SslServerTrustAuthenticationPrompt (realm, (SslFailure) failures, may_save, ci, out accepted_failures, out data.may_save) && accepted_failures != SslFailure.None) {
+			bool ms;
+			if (SslServerTrustAuthenticationPrompt (realm, (SslFailure) failures, may_save != 0, ci, out accepted_failures, out ms) && accepted_failures != SslFailure.None) {
+				data.may_save = ms ? 1 : 0;
 				data.accepted_failures = (uint) accepted_failures;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
@@ -272,7 +278,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		static IntPtr OnAuthSslClientCertPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_client_cert_t data = new LibSvnClient.svn_auth_cred_ssl_client_cert_t ();
-			if (SslClientCertAuthenticationPrompt (realm, may_save, out data.cert_file, out data.may_save)) {
+			bool ms;
+			if (SslClientCertAuthenticationPrompt (realm, may_save != 0, out data.cert_file, out ms)) {
+				data.may_save = ms ? 1 : 0;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
@@ -286,7 +294,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		static IntPtr OnAuthSslClientCertPwPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_client_cert_pw_t data;
-			if (SslClientCertPwAuthenticationPrompt (realm, may_save, out data.password, out data.may_save)) {
+			bool ms;
+			if (SslClientCertPwAuthenticationPrompt (realm, may_save != 0, out data.password, out ms)) {
+				data.may_save = ms ? 1 : 0;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
@@ -785,8 +795,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				inProgress = false;
 			}
 		}
-		
-		public override string PathDiff (string path1, SvnRevision rev1, string path2, SvnRevision rev2, bool recursive)
+
+		public override string GetUnifiedDiff (string path1, SvnRevision rev1, string path2, SvnRevision rev2, bool recursive)
 		{
 			IntPtr localpool = newpool (pool);
 			IntPtr outfile = IntPtr.Zero;
@@ -807,7 +817,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				
 				if (res1 == 0 && res2 == 0) {
 					CheckError (svn.client_diff (options, path1, ref revision1, path2, ref revision2, (recursive ? 1 : 0), 0, 1, outfile, errfile, ctx, localpool));
-					return fout;
+					using (StreamReader sr = new StreamReader (fout)) {
+						return sr.ReadToEnd ();
+					}
 				} else {
 					throw new Exception ("Could not get diff information");
 				}
@@ -815,10 +827,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				try {
 					if (outfile != IntPtr.Zero)
 						apr.file_close (outfile);
-					if (fout != null)
-						FileService.DeleteFile (fout);
 					outfile = IntPtr.Zero;
-					fout = null;
 				} catch {}
 				throw;
 			} finally {
@@ -831,6 +840,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 						apr.file_close (errfile);
 					if (ferr != null)
 						FileService.DeleteFile (ferr);
+					if (fout != null)
+						FileService.DeleteFile (fout);
 				} catch {}
 			}
 		}

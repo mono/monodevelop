@@ -240,43 +240,43 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public abstract void Unlock (IProgressMonitor monitor, bool breakLock, params string[] paths);
 		
-		public string PathDiff (string path, bool recursive, bool remoteDiff)
+		public string GetUnifiedDiff (string path, bool recursive, bool remoteDiff)
 		{
 			if (remoteDiff)
-				return PathDiff (path, SvnRevision.Head, path, SvnRevision.Working, recursive);
+				return GetUnifiedDiff (path, SvnRevision.Head, path, SvnRevision.Working, recursive);
 			else
-				return PathDiff (path, SvnRevision.Base, path, SvnRevision.Working, recursive);
+				return GetUnifiedDiff (path, SvnRevision.Base, path, SvnRevision.Working, recursive);
 		}
-		
-		public abstract string PathDiff (string path1, SvnRevision revision1, string path2, SvnRevision revision2, bool recursive);
+
+		public abstract string GetUnifiedDiff (string path1, SvnRevision revision1, string path2, SvnRevision revision2, bool recursive);
 		
 		public abstract string GetVersion ();
 		
 		public abstract string GetPathUrl (string path);
-		
-		
-		static protected bool SimpleAuthenticationPrompt (string realm, bool may_save, ref string user_name, out string password, out int save)
+
+
+		static protected bool SimpleAuthenticationPrompt (string realm, bool may_save, ref string user_name, out string password, out bool save)
 		{
 			return UserPasswordDialog.Show (true, realm, may_save, ref user_name, out password, out save);
 		}
-		
-		static protected bool UserNameAuthenticationPrompt (string realm, bool may_save, ref string user_name, out int save)
+
+		static protected bool UserNameAuthenticationPrompt (string realm, bool may_save, ref string user_name, out bool save)
 		{
 			string password;
 			return UserPasswordDialog.Show (false, realm, may_save, ref user_name, out password, out save);
 		}
 
-		static protected bool SslServerTrustAuthenticationPrompt (string realm, SslFailure failures, int may_save, CertficateInfo certInfo, out SslFailure accepted_failures, out int save)
+		static protected bool SslServerTrustAuthenticationPrompt (string realm, SslFailure failures, bool may_save, CertficateInfo certInfo, out SslFailure accepted_failures, out bool save)
 		{
 			return SslServerTrustDialog.Show (realm, failures, may_save, certInfo, out accepted_failures, out save);
 		}
-		
-		static protected bool SslClientCertAuthenticationPrompt (string realm, int may_save, out string cert_file, out int save)
+
+		static protected bool SslClientCertAuthenticationPrompt (string realm, bool may_save, out string cert_file, out bool save)
 		{
 			return ClientCertificateDialog.Show (realm, may_save, out cert_file, out save);
 		}
-		
-		static protected bool SslClientCertPwAuthenticationPrompt (string realm, int may_save, out string password, out int save)
+
+		static protected bool SslClientCertPwAuthenticationPrompt (string realm, bool may_save, out string password, out bool save)
 		{
 			return ClientCertificatePasswordDialog.Show (realm, may_save, out password, out save);
 		}
