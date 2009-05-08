@@ -650,9 +650,7 @@ class Test
 		$x.$
 		
 	}
-}
-
- ");
+}");
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
 		}

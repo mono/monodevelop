@@ -148,6 +148,16 @@ class Program
 		{
 			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 @"
+using System;
+using System.Collections.Generic;
+
+static class Linq
+{
+	public static IEnumerable<T> Select<S, T> (this IEnumerable<S> collection, Func<S, T> func)
+	{
+	}
+}
+
 class Program
 {
 	public void TestMethod ()

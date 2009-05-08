@@ -1552,9 +1552,14 @@ class CastByExample
 			CompletionDataList provider = CreateProvider (
 @"
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+
+static class Linq
+{
+	public static IEnumerable<T> Select<S, T> (this IEnumerable<S> collection, Func<S, T> func)
+	{
+	}
+}
 
 class Program 
 {
