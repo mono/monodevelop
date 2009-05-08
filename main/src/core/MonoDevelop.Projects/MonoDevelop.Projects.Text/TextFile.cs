@@ -34,6 +34,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using Mono.Unix;
 using Mono.Unix.Native;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Text
 {
@@ -318,8 +319,41 @@ namespace MonoDevelop.Projects.Text
 			fs.Write (buf, 0, buf.Length);
 			fs.Flush ();
 			fs.Close ();
-			
-			Syscall.rename (tempName, fileName);
+
+			if (PropertyService.IsWindows) {
+				string wtmp = null;
+				if (File.Exists (fileName)) {
+					do {
+						wtmp = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
+					} while (File.Exists (wtmp));
+
+					File.Move (fileName, wtmp);
+				}
+				try {
+					File.Move (tempName, fileName);
+				}
+				catch {
+					try {
+						if (wtmp != null)
+							File.Move (wtmp, fileName);
+					}
+					catch {
+						wtmp = null;
+					}
+					throw;
+				}
+				finally {
+					if (wtmp != null) {
+						try {
+							File.Delete (wtmp);
+						}
+						catch { }
+					}
+				}
+			}
+			else {
+				Syscall.rename (tempName, fileName);
+			}
 		}
 	}
 	

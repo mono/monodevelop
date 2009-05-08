@@ -1,17 +1,25 @@
-2009-05-08  Mike Krüger  <mkrueger@novell.com>
+2009-05-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectService.cs:
+	  Avoid case insensitive path check when running on windows.
+
+	* MonoDevelop.Projects.Text\TextFile.cs: Syscall.rename
+	  doesn't work on windows. Added a replacement.
+
+2009-05-08  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
 	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs: Fixed failing
 	  unit test.
 
-2009-05-08  Mike Krüger  <mkrueger@novell.com>
+2009-05-08  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Finally tracked &
 	  fixed a code completion lookup bug. This one never occured
 	  until a bugfix for a minor code completion issue. 
 
-2009-05-05  Mike Krüger  <mkrueger@novell.com>
+2009-05-05  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
 	  Fixed possible null reference exception (Bug 500612 -
@@ -33,7 +41,7 @@
 
 	* MonoDevelop.Projects.csproj: Disable overflow checking.
 
-2009-04-30  Mike Krüger  <mkrueger@novell.com>
+2009-04-30  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.addin.xml: Registered code formatting
 	  policy.
@@ -81,12 +89,12 @@
 	  create the project as an UnknownSolutionItem, so it will
 	  still be shown in the solution pad.
 
-2009-04-27  Mike Krüger  <mkrueger@novell.com>
+2009-04-27  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Fixed possible
 	  endless loop.
 
-2009-04-27  Mike Krüger  <mkrueger@novell.com>
+2009-04-27  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.csproj:
 	* MonoDevelop.Projects/DotNetProject.cs:
@@ -98,7 +106,7 @@
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
 	  Reimplemented language binding service.
 
-2009-04-24  Mike Krüger  <mkrueger@novell.com>
+2009-04-24  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj: 
@@ -137,11 +145,11 @@
 	* MonoDevelop.Projects.csproj: remove TreatWarningsAsErrors as
 	we have obsolete warnings in System.Xml 3.5 on .net.
 
-2009-04-17  Mike Krüger  <mkrueger@novell.com>
+2009-04-17  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/BuildResult.cs: Added clear method.
 
-2009-04-17  Mike Krüger  <mkrueger@novell.com>
+2009-04-17  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/Project.cs:
 	* MonoDevelop.Projects/DotNetProject.cs:
@@ -190,7 +198,7 @@
 	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
 	  Track api changes to support multiple target runtimes.
 
-2009-04-07  Mike Krüger  <mkrueger@novell.com>
+2009-04-07  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs:
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
@@ -201,14 +209,14 @@
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj: 
 
-2009-04-07  Mike Krüger  <mkrueger@novell.com>
+2009-04-07  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs:
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
 	  Implemented "Bug 492675 - New line & ; at end of line".
 
-2009-04-06  Mike Krüger  <mkrueger@novell.com>
+2009-04-06  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IType.cs:
 	* MonoDevelop.Projects.Dom/IReturnType.cs:
@@ -219,13 +227,13 @@
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Added
 	  "resolve namespace" feature.
 
-2009-04-03  Mike Krüger  <mkrueger@novell.com>
+2009-04-03  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs: Added extension
 	  methods icons.
 
-2009-04-03  Mike Krüger  <mkrueger@novell.com>
+2009-04-03  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IMethod.cs:
 	* MonoDevelop.Projects.Dom/DomType.cs:
@@ -236,27 +244,27 @@
 	* MonoDevelop.Projects.Dom/InstantiatedType.cs: Worked on
 	  issues resolving extension methods.
 
-2009-04-03  Mike Krüger  <mkrueger@novell.com>
+2009-04-03  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Fixed "Bug
 	  491019 - No intellisense for recursive generics".
 
-2009-04-02  Mike Krüger  <mkrueger@novell.com>
+2009-04-02  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomReturnType.cs: Fixed "Bug 491017
 	  - No intellisense for static LINQ queries".
 
-2009-04-02  Mike Krüger  <mkrueger@novell.com>
+2009-04-02  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: Fixed unit test.
 
-2009-04-02  Mike Krüger  <mkrueger@novell.com>
+2009-04-02  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs: Fixed anonymous
 	  types.
 
-2009-04-02  Mike Krüger  <mkrueger@novell.com>
+2009-04-02  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
@@ -264,7 +272,7 @@
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed failing
 	  unit test.
 
-2009-04-01  Mike Krüger  <mkrueger@novell.com>
+2009-04-01  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IMethod.cs:
 	* MonoDevelop.Projects.Dom/DomType.cs:
@@ -272,24 +280,24 @@
 	* MonoDevelop.Projects.Dom/ExtensionMethod.cs: fixed "Bug
 	  491016 - No intellisense for lambdas inside linq query".
 
-2009-04-01  Mike Krüger  <mkrueger@novell.com>
+2009-04-01  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: fixed "Bug 487226 - No
 	  intellisense in LINQ queries".
 
-2009-03-31  Mike Krüger  <mkrueger@novell.com>
+2009-03-31  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
 	* MonoDevelop.Projects.Dom/ExtensionMethod.cs: Worked on C#3
 	  lambda resolving.
 
-2009-03-30  Mike Krüger  <mkrueger@novell.com>
+2009-03-30  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/FoldingRegion.cs: Track api
 	  changes.
 
-2009-03-27  Mike Krüger  <mkrueger@novell.com>
+2009-03-27  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs:
 	* MonoDevelop.Projects.Dom.MemoryDatabase/MemoryDatabase.cs:
@@ -300,7 +308,7 @@
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj: 
 
-2009-03-26  Mike Krüger  <mkrueger@novell.com>
+2009-03-26  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/Error.cs:
 	* MonoDevelop.Projects.Dom/TypeParameter.cs:
@@ -311,7 +319,7 @@
 	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
 	  Worked on project dom & unit tests.
 
-2009-03-25  Mike Krüger  <mkrueger@novell.com>
+2009-03-25  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Added
 	  the ability to set the parser factory.
@@ -360,7 +368,7 @@
 	  this fixes bug #487934 - Stetic throws exception while
 	  adding event to control.
 
-2009-03-24  Mike Krüger  <mkrueger@novell.com>
+2009-03-24  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
@@ -368,17 +376,17 @@
 	  lambda expression resolving (fixing Bug 487203 - Extension
 	  methods not working)
 
-2009-03-23  Mike Krüger  <mkrueger@novell.com>
+2009-03-23  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs: Fixed "Bug 487206 -
 	  Intellisense not working".
 
-2009-03-22  Mike Krüger  <mkrueger@novell.com>
+2009-03-22  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IExpressionFinder.cs: Added support
 	  for contextual templates.
 
-2009-03-22  Mike Krüger  <mkrueger@novell.com>
+2009-03-22  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/IFormatter.cs:
 	* MonoDevelop.Projects.Dom/AnonymousType.cs:
@@ -391,12 +399,12 @@
 	* MonoDevelop.Projects.Dom.Refactoring/RefactoringService.cs:
 	  Fixed headers.
 
-2009-03-22  Mike Krüger  <mkrueger@novell.com>
+2009-03-22  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: fixed possible null
 	  reference.
 
-2009-03-20  Mike Krüger  <mkrueger@novell.com>
+2009-03-20  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj: 
@@ -468,7 +476,7 @@
 	* MonoDevelop.Projects/DotNetProject.cs: Fully qualify the
 	  output path of new configurations.
 
-2009-03-17  Mike Krüger  <mkrueger@novell.com>
+2009-03-17  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/IParser.cs:
 	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs:
@@ -478,36 +486,36 @@
 	  for getting the compilation symbols defined in the project
 	  settings).
 
-2009-03-16  Mike Krüger  <mkrueger@novell.com>
+2009-03-16  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Added
 	  option categories.
 
-2009-03-16  Mike Krüger  <mkrueger@novell.com>
+2009-03-16  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Changed
 	  return type of values.
 
-2009-03-16  Mike Krüger  <mkrueger@novell.com>
+2009-03-16  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Fixed
 	  reading routine.
 
-2009-03-15  Mike Krüger  <mkrueger@novell.com>
+2009-03-15  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Worked
 	  on code format.
 
-2009-03-13  Mike Krüger  <mkrueger@novell.com>
+2009-03-13  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.csproj: 
 
-2009-03-13  Mike Krüger  <mkrueger@novell.com>
+2009-03-13  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: fixed
 	  compiler error.
 
-2009-03-13  Mike Krüger  <mkrueger@novell.com>
+2009-03-13  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj:
@@ -523,7 +531,7 @@
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj: Remove unused references.
 
-2009-03-12  Mike Krüger  <mkrueger@novell.com>
+2009-03-12  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/IFormatter.cs:
 	* MonoDevelop.Projects.Text/TextFileService.cs:
@@ -535,7 +543,7 @@
 	* MonoDevelop.Projects.Text/TextFileService.cs: Work around 
 	  gmcs 2.2 bug that generated invalid IL.
 
-2009-03-11  Mike Krüger  <mkrueger@novell.com>
+2009-03-11  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFileService.cs:
 	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Worked
@@ -554,7 +562,7 @@
 	  #483981 - [Regression] C# Library projects have a bad
 	  reference to the System library.
 
-2009-03-10  Mike Krüger  <mkrueger@novell.com>
+2009-03-10  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj:
@@ -583,25 +591,25 @@
 	  Project base directory doesn't appear to be serialized
 	  correctly.
 
-2009-03-06  Mike Krüger  <mkrueger@novell.com>
+2009-03-06  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFile.cs: Added some more
 	  encodings to bom detection.
 
-2009-03-06  Mike Krüger  <mkrueger@novell.com>
+2009-03-06  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFile.cs: Use BOM to detect
 	  source encodings. (We had a file that was miss-interpreted
 	  as UTF-16)
 
-2009-03-05  Mike Krüger  <mkrueger@novell.com>
+2009-03-05  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj:
 	* MonoDevelop.Projects.Dom/AnonymousType.cs: Added
 	  anonymoustype representation.
 
-2009-03-05  Mike Krüger  <mkrueger@novell.com>
+2009-03-05  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj: 
@@ -630,19 +638,19 @@
 	  which has a new CanExecute method. This model is more simple
 	  and more generic.
 
-2009-03-03  Mike Krüger  <mkrueger@novell.com>
+2009-03-03  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs: added new
 	  constructor.
 
-2009-03-03  Mike Krüger  <mkrueger@novell.com>
+2009-03-03  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IParameter.cs:
 	* MonoDevelop.Projects.Dom/DomParameter.cs:
 	* MonoDevelop.Projects.Dom/LocalVariable.cs: Added stock icon
 	  properties for parameters & local variables.
 
-2009-03-02  Mike Krüger  <mkrueger@novell.com>
+2009-03-02  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFile.cs:
 	* MonoDevelop.Projects.Text/TextEncoding.cs: Worked on "Bug
@@ -687,35 +695,35 @@
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
 	  Case insensitive compare for reading bools in references.
 
-2009-02-26  Mike Krüger  <mkrueger@novell.com>
+2009-02-26  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/Project.cs:
 	* MonoDevelop.Projects/BuildAction.cs: Worked on property pad
 	  translation.
 
-2009-02-26  Mike Krüger  <mkrueger@novell.com>
+2009-02-26  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/FileCopyMode.cs: Worked on propertygrid
 	  localization.
 
-2009-02-26  Mike Krüger  <mkrueger@novell.com>
+2009-02-26  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Changed
 	  output settings space print after highlight
 
-2009-02-26  Mike Krüger  <mkrueger@novell.com>
+2009-02-26  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: fixed
 	  keyword output issues.
 
-2009-02-25  Mike Krüger  <mkrueger@novell.com>
+2009-02-25  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs: 
 
 	* MonoDevelop.Projects.Dom/CompoundType.cs: fixed compound
 	  type soureproject dom bug.
 
-2009-02-25  Mike Krüger  <mkrueger@novell.com>
+2009-02-25  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/CompoundType.cs: Compound types now
@@ -739,7 +747,7 @@
 	  Added a new base class for configuration parameters and
 	  project parameters.
 
-2009-02-24  Mike Krüger  <mkrueger@novell.com>
+2009-02-24  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
 	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs:
@@ -763,7 +771,7 @@
 	  ide (e.g. by the solution pad) to provide generic operations
 	  on files and folders.
 
-2009-02-23  Mike Krüger  <mkrueger@novell.com>
+2009-02-23  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
 	* MonoDevelop.Projects.Dom/DomReturnType.cs:
@@ -772,36 +780,36 @@
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed some
 	  resolving issues.
 
-2009-02-23  Mike Krüger  <mkrueger@novell.com>
+2009-02-23  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs: removed debug
 	  message.
 
-2009-02-23  Mike Krüger  <mkrueger@novell.com>
+2009-02-23  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Worked on
 	  implicit generic method parameters.
 
-2009-02-23  Mike Krüger  <mkrueger@novell.com>
+2009-02-23  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Worked on
 	  explicit generic method parameters.
 
-2009-02-23  Mike Krüger  <mkrueger@novell.com>
+2009-02-23  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: Fixed inner type
 	  bug.
 
-2009-02-23  Mike Krüger  <mkrueger@novell.com>
+2009-02-23  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  Fixed inner type access issues.
 
-2009-02-23  Mike Krüger  <mkrueger@novell.com>
+2009-02-23  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Added
 	  AttributeArguments context.
@@ -824,7 +832,7 @@
 	(Token.ToString): Override.
 	(TokenType.Transform): Uncomment.
 
-2009-02-20  Mike Krüger  <mkrueger@novell.com>
+2009-02-20  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed "Bug
 	  477641 - Completion showing incorrect members for a
@@ -850,7 +858,7 @@
 	  Clean on a project causes the deletion of a reference in
 	  another.
 
-2009-02-19  Mike Krüger  <mkrueger@novell.com>
+2009-02-19  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/CompoundType.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
@@ -859,7 +867,7 @@
 	  "Bug 402388 - Several refactory commands are not aware of
 	  partial classes".
 
-2009-02-18  Mike Krüger  <mkrueger@novell.com>
+2009-02-18  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed
 	  "Bug 404706 - Refactorer is not aware of existing regions
@@ -926,35 +934,35 @@
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
 	  Improve warning message.
 
-2009-02-17  Mike Krüger  <mkrueger@novell.com>
+2009-02-17  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed
 	  "Bug 405704 - Implement implicit interface should bypass
 	  already implemented members in the base class".
 
-2009-02-17  Mike Krüger  <mkrueger@novell.com>
+2009-02-17  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Fixed
 	  possible endless loop.
 
-2009-02-16  Mike Krüger  <mkrueger@novell.com>
+2009-02-16  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed
 	  "Bug 325171 - Rename fails with overloads".
 
-2009-02-16  Mike Krüger  <mkrueger@novell.com>
+2009-02-16  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: 
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed
 	  "Bug 325171 - Rename fails with overloads".
 
-2009-02-16  Mike Krüger  <mkrueger@novell.com>
+2009-02-16  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: implemented
 	  equals for abstract member.
 
-2009-02-13  Mike Krüger  <mkrueger@novell.com>
+2009-02-13  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed
 	  "Bug 402343 - 'Implement interface' command places new
@@ -1006,7 +1014,7 @@
 	* MonoDevelop.Projects/Project.cs: Consider the project dirty
 	  if the project file has changed. Fixes bug #473696.
 
-2009-02-12  Mike Krüger  <mkrueger@novell.com>
+2009-02-12  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed possible
 	  null reference exception.
@@ -1058,12 +1066,12 @@
 	  Use the new special tags api. Make sure the LastParseTime is
 	  properly set when forcing a manual update of the database.
 
-2009-02-11  Mike Krüger  <mkrueger@novell.com>
+2009-02-11  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: made primary
 	  resolve result public in aggregated resolve results.
 
-2009-02-11  Mike Krüger  <mkrueger@novell.com>
+2009-02-11  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj:
@@ -1072,13 +1080,13 @@
 	* MonoDevelop.Projects.Text/TextFileService.cs: Added text
 	  formatter infrastructure.
 
-2009-02-11  Mike Krüger  <mkrueger@novell.com>
+2009-02-11  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed
 	  "Bug 434752 - Encapsulate field, encapsulates in wrong
 	  order".
 
-2009-02-11  Mike Krüger  <mkrueger@novell.com>
+2009-02-11  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed "Bug 470954
 	  - using System.Windows.Forms is not honored".
@@ -1095,7 +1103,7 @@
 	* MonoDevelop.Projects.Policies/PolicyService.cs: Add some
 	  more error checks to try to track down serialisation bugs.
 
-2009-02-10  Mike Krüger  <mkrueger@novell.com>
+2009-02-10  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
@@ -1108,7 +1116,7 @@
 	  default values on serialiser. Improve error messages; warn
 	  about null values in policies.
 
-2009-02-09  Mike Krüger  <mkrueger@novell.com>
+2009-02-09  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed little
 	  issue in IsAccessible when it's tested, if a member is
@@ -1126,7 +1134,7 @@
 	  with a multiplatform one. Removes another autotools build
 	  dependency.
 
-2009-02-06  Mike Krüger  <mkrueger@novell.com>
+2009-02-06  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs: private & internal
 	  nested types are now recognizing the loadInternal flag.
@@ -1147,7 +1155,7 @@
 	* md1format.xml: Add skipEmpty flag for Solution's policies
 	  object.
 
-2009-02-05  Mike Krüger  <mkrueger@novell.com>
+2009-02-05  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFile.cs:
 	* MonoDevelop.Projects.Text/IEditableTextFile.cs: fixed "Bug
@@ -1176,7 +1184,7 @@
 	* MonoDevelop.Projects.Text/TextFormatter.cs: Added new
 	  TextFormatter class.
 
-2009-02-04  Mike Krüger  <mkrueger@novell.com>
+2009-02-04  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
 	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:
@@ -1295,7 +1303,7 @@
 	* MonoDevelop.Projects.Policies/PolicyService.cs: Implement storage for
 	user-preferred default policies.
 
-2009-01-29  Mike Krüger  <mkrueger@novell.com>
+2009-01-29  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: handled type == null
 	case.
@@ -1469,7 +1477,7 @@
 
 	* MonoDevelop.Projects.Extensions/PolicySetNode.cs: Load child nodes.
 
-2009-01-23  Mike Krüger  <mkrueger@novell.com>
+2009-01-23  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
 	* MonoDevelop.Projects.Dom/ICompilationUnit.cs: Added GetTypeAt method
@@ -1555,7 +1563,7 @@
 	that have not been accessed and lazily deserialised. Prevents user
 	data loss.
 
-2009-01-20  Mike Krüger  <mkrueger@novell.com>
+2009-01-20  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed "Bug 467409 - Bad
@@ -1594,21 +1602,21 @@
 	* MonoDevelop.Projects/Project.cs: Fix local copy path for external
 	files.
 
-2009-01-15  Mike Krüger  <mkrueger@novell.com>
+2009-01-15  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Fixed type
 	proxy.
 
-2009-01-15  Mike Krüger  <mkrueger@novell.com>
+2009-01-15  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: fixed 'Bug
 	466337 - Incorrect intelisense for class attribute'.
 
-2009-01-15  Mike Krüger  <mkrueger@novell.com>
+2009-01-15  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: fixed markup bug.
 
-2009-01-15  Mike Krüger  <mkrueger@novell.com>
+2009-01-15  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Added some markup
 	features for ambiences.
@@ -1647,7 +1655,7 @@
 	Moved CreateInstantiatedGenericType to ProjectDom, which takes care
 	of caching instantiated types.
 
-2009-01-09  Mike Krüger  <mkrueger@novell.com>
+2009-01-09  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IDomVisitor.cs:
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs:
@@ -1668,51 +1676,51 @@
 	deleted. Fixes bug #461105 - Reverting C# language version to Default
 	does not work.
 
-2009-01-07  Mike Krüger  <mkrueger@novell.com>
+2009-01-07  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/InstantiatedType.cs: Fixed help urls for
 	generic types.
 
-2009-01-07  Mike Krüger  <mkrueger@novell.com>
+2009-01-07  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Worked on on the fly
 	type resolving.
 
-2009-01-07  Mike Krüger  <mkrueger@novell.com>
+2009-01-07  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs: Net ambience now
 	outputs property parameters.
 
-2009-01-06  Mike Krüger  <mkrueger@novell.com>
+2009-01-06  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed 'Bug 459682 -
 	Static methods/properties don't show up in subclasses'.
 
-2009-01-06  Mike Krüger  <mkrueger@novell.com>
+2009-01-06  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed 'Bug 457237 - code
 	completion doesn't show static methods when setting global variable'.
 
-2009-01-06  Mike Krüger  <mkrueger@novell.com>
+2009-01-06  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed "Bug
 	456579 - implement interface on inner class adds methods to outer
 	class".
 
-2009-01-05  Mike Krüger  <mkrueger@novell.com>
+2009-01-05  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilMethod.cs: fixed 'Bug 444112 -
 	Generic parameters missing in code completion (reopened)'
 
-2009-01-05  Mike Krüger  <mkrueger@novell.com>
+2009-01-05  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed unit test for bug
 	444110.
 
-2009-01-02  Mike Krüger  <mkrueger@novell.com>
+2009-01-02  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed 'Bug
 	460232 - Override/Implement doesn't work'.
@@ -1884,7 +1892,7 @@
 	* MonoDevelop.Projects/ProjectService.cs: Moved BeforeCompilationAction
 	enum to MD.Ide.
 
-2008-12-03  Mike Krüger  <mkrueger@novell.com>
+2008-12-03  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs:
 	fixed 'Bug 455892 - Crash when closing tabs'.
@@ -1916,7 +1924,7 @@
 	project type guids from the project file. Fixes bug 447811 -
 	ProjectTypeGuids are erased from MSBuild files.
 
-2008-11-29  Mike Krüger  <mkrueger@novell.com>
+2008-11-29  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomField.cs:
@@ -1939,25 +1947,25 @@
 	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Refactored
 	ambiences/domoutputvisitor.
 
-2008-11-28  Mike Krüger  <mkrueger@novell.com>
+2008-11-28  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs:
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs: Taken back last
 	change.
 
-2008-11-28  Mike Krüger  <mkrueger@novell.com>
+2008-11-28  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs:
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs: added strongly typed
 	overloads for getstring.
 
-2008-11-27  Mike Krüger  <mkrueger@novell.com>
+2008-11-27  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs:
 	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Changed postprocess
 	synopsis.
 
-2008-11-27  Mike Krüger  <mkrueger@novell.com>
+2008-11-27  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs:
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs:
@@ -1981,7 +1989,7 @@
 	* Makefile.am:
 	* MonoDevelop.Projects.mdp: Updated.
 
-2008-11-26  Mike Krüger  <mkrueger@novell.com>
+2008-11-26  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
 	* MonoDevelop.Projects.Dom/DomProperty.cs:
@@ -1989,12 +1997,12 @@
 	* MonoDevelop.Projects.Dom/DomCecilProperty.cs: Worked on ambiences/dom
 	output.
 
-2008-11-26  Mike Krüger  <mkrueger@novell.com>
+2008-11-26  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs: fixed ambience modifier
 	outputs too many spaces.
 
-2008-11-26  Mike Krüger  <mkrueger@novell.com>
+2008-11-26  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs: ambience strings now can
 	be post processed.
@@ -2005,7 +2013,7 @@
 	Temporary workaround for Bug 447811 - ProjectTypeGuids are erased
 	from MSBuild files.
 
-2008-11-24  Mike Krüger  <mkrueger@novell.com>
+2008-11-24  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/CompoundType.cs:
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: Bug 447636 - Code
@@ -2016,7 +2024,7 @@
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Fix
 	spelling.
 
-2008-11-21  Mike Krüger  <mkrueger@novell.com>
+2008-11-21  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: fixed compilation
 	error.
@@ -2048,7 +2056,7 @@
 	time of dependencies when checking if the project needs to be
 	rebuilt. Fixes bug #447058.
 
-2008-11-20  Mike Krüger  <mkrueger@novell.com>
+2008-11-20  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed 'Bug 444911 -
 	Refactor options not shown'.
@@ -2070,7 +2078,7 @@
 
 	* MonoDevelop.Projects/BuildTool.cs: Fix help message.
 
-2008-11-19  Mike Krüger  <mkrueger@novell.com>
+2008-11-19  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:
 	* MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs:
@@ -2078,13 +2086,13 @@
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	Fixed bug with templates that could lead to an infinite loop.
 
-2008-11-19  Mike Krüger  <mkrueger@novell.com>
+2008-11-19  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs:
 	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs: Worked on .NET
 	ambience.
 
-2008-11-19  Mike Krüger  <mkrueger@novell.com>
+2008-11-19  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:
 	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs: worked
@@ -2098,7 +2106,7 @@
 
 	* MonoDevelop.Projects.Dom/DomAttribute.cs: Add a ToString override.
 
-2008-11-18  Mike Krüger  <mkrueger@novell.com>
+2008-11-18  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed unit tests.
 
@@ -2107,7 +2115,7 @@
 	* MonoDevelop.Projects.Dom/Error.cs: Allow errors to contain a region
 	instead of just a line/col location.
 
-2008-11-17  Mike Krüger  <mkrueger@novell.com>
+2008-11-17  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: fixed 'Bug 444538 -
 	Namespaces missing when completing 'new' operator'.
@@ -2131,7 +2139,7 @@
 	#427285, but this is the wrong fix. Everything seems to work fine
 	without it, and it is a performance bottleneck.
 
-2008-11-14  Mike Krüger  <mkrueger@novell.com>
+2008-11-14  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed 'Bug 444643 -
 	Extension methods don't show up on array types'.
@@ -2150,7 +2158,7 @@
 	* MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs: Reduce
 	string allocation.
 
-2008-11-12  Mike Krüger  <mkrueger@novell.com>
+2008-11-12  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/Error.cs:
 	* MonoDevelop.Projects.Dom/DomType.cs:
@@ -2205,7 +2213,7 @@
 	* MonoDevelop.Projects/ProjectFile.cs: Set default build action so it's
 	never null.
 
-2008-11-06  Mike Krüger  <mkrueger@novell.com>
+2008-11-06  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	upped code completion format for "Bug 442147 - Autocompletion shows
@@ -2215,12 +2223,12 @@
 
 	* MonoDevelop.Projects.addin.xml: Bump MD version.
 
-2008-11-05  Mike Krüger  <mkrueger@novell.com>
+2008-11-05  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: optimized
 	GetNamespaceContents
 
-2008-11-05  Mike Krüger  <mkrueger@novell.com>
+2008-11-05  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IMethod.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
@@ -2254,7 +2262,7 @@
 	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
 	Don't try to read an existing db when creating a new temporary one.
 
-2008-11-04  Mike Krüger  <mkrueger@novell.com>
+2008-11-04  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IType.cs:
 	* MonoDevelop.Projects.Dom/DomType.cs:
@@ -2267,7 +2275,7 @@
 	Properly read the clr version. It must be assigned to the project in
 	addition to assigning to the configurations.
 
-2008-11-03  Mike Krüger  <mkrueger@novell.com>
+2008-11-03  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs: fixed 'Bug 440366 - Cannot
 	override base methods'.
@@ -2302,7 +2310,7 @@
 	file, and then move it to the original file. Also unlock the original
 	file before copying. Fixes bug #440254.
 
-2008-10-31  Mike Krüger  <mkrueger@novell.com>
+2008-10-31  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
 	* MonoDevelop.Projects.Dom/DomCecilField.cs:
@@ -2312,14 +2320,14 @@
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: fixed 'Bug 440366
 	- Cannot override base methods'.
 
-2008-10-31  Mike Krüger  <mkrueger@novell.com>
+2008-10-31  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
 	* MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs:
 	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
 	fixed 'Bug 436879 - 'exe' references not added to code completion'.
 
-2008-10-31  Mike Krüger  <mkrueger@novell.com>
+2008-10-31  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/IMember.cs:
@@ -2338,13 +2346,13 @@
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs: Reset
 	the default output assembly name before reading a configuration.
 
-2008-10-30  Mike Krüger  <mkrueger@novell.com>
+2008-10-30  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
 	* MonoDevelop.Projects.Dom/AbstractMember.cs:
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Fixed speed issue.
 
-2008-10-30  Mike Krüger  <mkrueger@novell.com>
+2008-10-30  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomReturnType.cs:
 	* MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs:
@@ -2352,7 +2360,7 @@
 	fixed 'Bug 436312 - Couldn't deal well with elements which have
 	generic and non-generic presence at the same time'.
 
-2008-10-30  Mike Krüger  <mkrueger@novell.com>
+2008-10-30  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomReturnType.cs: fixed "Bug 432434 - Code
 	completion doesn't work with subclasses".
@@ -2375,7 +2383,7 @@
 	* MonoDevelop.Projects/Project.cs: Fix bug 431720 - Build failed. XXX is
 	a directory.
 
-2008-10-29  Mike Krüger  <mkrueger@novell.com>
+2008-10-29  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
 	* MonoDevelop.Projects.Dom/AbstractMember.cs:
@@ -2400,12 +2408,12 @@
 	includeExternalReferences is specified. Fixes bug 389127 - Solution
 	doesn't build while all their projects build.
 
-2008-10-28  Mike Krüger  <mkrueger@novell.com>
+2008-10-28  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: don't show members for
 	"System.Void".
 
-2008-10-28  Mike Krüger  <mkrueger@novell.com>
+2008-10-28  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IMethod.cs:
 	* MonoDevelop.Projects.Dom/DomType.cs:
@@ -2413,16 +2421,16 @@
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed 'Bug 431806 -
 	Extension methods aren't shown in autocomplete'.
 
-2008-10-28  Mike Krüger  <mkrueger@novell.com>
+2008-10-28  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.addin.xml: updated netambience reference.
 
-2008-10-28  Mike Krüger  <mkrueger@novell.com>
+2008-10-28  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: moved ambience
 	extension node to project model.
 
-2008-10-28  Mike Krüger  <mkrueger@novell.com>
+2008-10-28  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.addin.xml:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: fixed 'Bug
@@ -2430,30 +2438,30 @@
 	not in GAC, are outside of the solution, and which are referenced by
 	other non-GAC outside referenced assemblies'.
 
-2008-10-27  Mike Krüger  <mkrueger@novell.com>
+2008-10-27  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed 'Bug
 	438139 - Refactory commands missing'.
 
-2008-10-27  Mike Krüger  <mkrueger@novell.com>
+2008-10-27  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: filtered more
 	types.
 
-2008-10-27  Mike Krüger  <mkrueger@novell.com>
+2008-10-27  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs:
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	fixed 'Bug 438699 - Code completion shows too many options'.
 
-2008-10-27  Mike Krüger  <mkrueger@novell.com>
+2008-10-27  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed "Bug
 	436951 - Overriding an abstract property is incorrect".
 
-2008-10-27  Mike Krüger  <mkrueger@novell.com>
+2008-10-27  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: removed debug message.
 
@@ -2495,12 +2503,12 @@
 	Conditions are only evaluated and compile time, not when showing
 	items in the IDE.
 
-2008-10-24  Mike Krüger  <mkrueger@novell.com>
+2008-10-24  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Added cyclic check for 
 	GetInheritanceTree.
 
-2008-10-24  Mike Krüger  <mkrueger@novell.com>
+2008-10-24  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs:
@@ -2508,7 +2516,7 @@
 	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs: Fixed
 	possible endless loop.
 
-2008-10-24  Mike Krüger  <mkrueger@novell.com>
+2008-10-24  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	fixed issue in generic type lookup.
@@ -2556,13 +2564,13 @@
 	the common name property is removed. Fixes bug Bug 433511 - project
 	configurations are not preserved.
 
-2008-10-22  Mike Krüger  <mkrueger@novell.com>
+2008-10-22  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomReturnType.cs: Worked on instantiated
 	types.
 
-2008-10-22  Mike Krüger  <mkrueger@novell.com>
+2008-10-22  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/InstantiatedType.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
@@ -2572,11 +2580,11 @@
 	Fixed the lookup of generic classes in the custom code completion
 	database.
 
-2008-10-21  Mike Krüger  <mkrueger@novell.com>
+2008-10-21  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/InstantiatedType.cs: changed header.
 
-2008-10-21  Mike Krüger  <mkrueger@novell.com>
+2008-10-21  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/InstantiatedType.cs:
@@ -2600,7 +2608,7 @@
 	"Folder" item type. Fixes Bug 436656 - empty folder disappears after
 	close/reopen solution.
 
-2008-10-18  Mike Krüger  <mkrueger@novell.com>
+2008-10-18  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
@@ -2614,11 +2622,11 @@
 	* MonoDevelop.Projects.Dom/DomCecilEvent.cs: Load event's return type 
 	  from the assembly. Fixes Bug 436315 - ReturnType of IEvents is null.
 
-2008-10-16 Mike Krüger  <mkrueger@novell.com>
+2008-10-16 Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed accessible issue.
 
-2008-10-16 Mike Krüger  <mkrueger@novell.com>
+2008-10-16 Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:
@@ -2628,20 +2636,20 @@
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	Worked on dom & implement interfaces.
 
-2008-10-16 Mike Krüger  <mkrueger@novell.com>
+2008-10-16 Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: set source project dom for
 	instantiated types.
 
-2008-10-15 Mike Krüger  <mkrueger@novell.com>
+2008-10-15 Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed failing unit test.
 
-2008-10-15 Mike Krüger  <mkrueger@novell.com>
+2008-10-15 Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: filtered some members.
 
-2008-10-15 Mike Krüger  <mkrueger@novell.com>
+2008-10-15 Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomProperty.cs:
 	* MonoDevelop.Projects.Dom/AbstractMember.cs:
@@ -2652,12 +2660,12 @@
 	Worked on implement  interface feature / fixed explicit interface
 	issue.
 
-2008-10-15 Mike Krüger  <mkrueger@novell.com>
+2008-10-15 Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed failing unit
 	test.
 
-2008-10-15 Mike Krüger  <mkrueger@novell.com>
+2008-10-15 Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
@@ -2665,41 +2673,41 @@
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	fixed 'Bug 435253 - *Lots* of members missing from code completion'.
 
-2008-10-13  Mike Krüger  <mkrueger@novell.com>
+2008-10-13  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed 'Bug
 	434126 - Implement interface explicitly doesn't do base interfaces'.
 
-2008-10-13  Mike Krüger  <mkrueger@novell.com>
+2008-10-13  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed interface
 	implementation bug.
 
-2008-10-13  Mike Krüger  <mkrueger@novell.com>
+2008-10-13  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs:
 	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
 	Worked on assembly compilation units.
 
-2008-10-10  Mike Krüger  <mkrueger@novell.com>
+2008-10-10  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed 'Bug
 	434143 - Incorrect implementing of an interface'.
 
-2008-10-09  Mike Krüger  <mkrueger@novell.com>
+2008-10-09  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
 	working on non gac assembly references.
 
-2008-10-09  Mike Krüger  <mkrueger@novell.com>
+2008-10-09  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: fixed 'Bug
 	432681 - Incorrect completion in nested classes'.
 
-2008-10-09  Mike Krüger  <mkrueger@novell.com>
+2008-10-09  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: fixed type parameter duplication.
 
@@ -2721,20 +2729,20 @@
 	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs: Fix spelling.
 
-2008-10-08  Mike Krüger  <mkrueger@novell.com>
+2008-10-08  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: fixed regression bug.
 
-2008-10-08  Mike Krüger  <mkrueger@novell.com>
+2008-10-08  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: Changed inner type namespaces.
 
-2008-10-08  Mike Krüger  <mkrueger@novell.com>
+2008-10-08  Mike KrÃ¼ger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: exposed
 	GetAssemblyInfo method.
 
-2008-10-08  Mike Krüger <mkrueger@novell.com> 
+2008-10-08  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomReturnType.cs: domreturntype now throws
 	  null argument exception on null types. 
@@ -2747,56 +2755,56 @@
 
 	* MonoDevelop.Projects/Project.cs: Don't try to copy a file to itself.
 
-2008-10-07  Mike Krüger <mkrueger@novell.com> 
+2008-10-07  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs: fixed possible nullreference.
 
-2008-10-07  Mike Krüger <mkrueger@novell.com> 
+2008-10-07  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs,
 	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  Ensured that sourceprojectdom is set.
 
-2008-10-07  Mike Krüger <mkrueger@novell.com> 
+2008-10-07  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs: Instantiated generic types now
 	  preserve generic parameters.
 
-2008-10-07  Mike Krüger <mkrueger@novell.com> 
+2008-10-07  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs: fixed 'Bug 431761 - Code
 	  completion is incorrect'.
 
-2008-10-07  Mike Krüger <mkrueger@novell.com> 
+2008-10-07  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: worked on expression
 	  context filter.
 
-2008-10-07  Mike Krüger <mkrueger@novell.com> 
+2008-10-07  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: fixed 'Bug
 	  432856 - Creation and editing broken for unsaved files'.
 
-2008-10-06  Mike Krüger <mkrueger@novell.com> 
+2008-10-06  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed bug in base result.
 
-2008-10-06  Mike Krüger <mkrueger@novell.com> 
+2008-10-06  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed a possible resolve
 	  null reference.
 
-2008-10-06  Mike Krüger <mkrueger@novell.com> 
+2008-10-06  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed bug in member
 	  resolve result.
 
-2008-10-06  Mike Krüger <mkrueger@novell.com> 
+2008-10-06  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  filtered compiler generated types.
 
-2008-10-05  Mike Krüger <mkrueger@novell.com> 
+2008-10-05  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/CompoundType.cs,
 	  MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs,
@@ -2830,7 +2838,7 @@
 	  files and references, matching VS behaviour.
 	* MonoDevelop.Projects.mdp, Makefile.am: Updated.
 
-2008-09-29  Mike Krüger <mkrueger@novell.com> 
+2008-09-29  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs,
 	  MonoDevelop.Projects.Dom/ParsedDocument.cs: Added an
@@ -2857,7 +2865,7 @@
 	  SubType must be serialized after DepenentUpon.
 	* MonoDevelop.Projects.mdp, Makefile.am: Add missing reference.
 
-2008-09-26  Mike Krüger <mkrueger@novell.com> 
+2008-09-26  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomCecilParameter.cs,
 	  MonoDevelop.Projects.Dom/DomCecilMethod.cs,
@@ -2891,7 +2899,7 @@
 	  and LinearIL in x86_64 (MonoDevelop.Projects.Text.TextFile.Read
 	  throw NRE exception)".
 
-2008-09-24  Mike Krüger <mkrueger@novell.com> 
+2008-09-24  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomCecilMethod.cs,
 	  MonoDevelop.Projects.Dom/DomCecilEvent.cs,
@@ -2901,12 +2909,12 @@
 	  MonoDevelop.Projects.Dom/DomCecilAttribute.cs: Worked on cecil
 	  layer/extension methods are now recognized.
 
-2008-09-24  Mike Krüger <mkrueger@novell.com> 
+2008-09-24  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed anonymous type
 	  bug.
 
-2008-09-24  Mike Krüger <mkrueger@novell.com> 
+2008-09-24  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
 	  MonoDevelop.Projects.Dom.Output/Ambience.cs,
@@ -2918,14 +2926,14 @@
 	  MonoDevelop.Projects.Dom/AbstractMember.cs: Added support for C#3.0
 	  extension methods.
 
-2008-09-24  Mike Krüger <mkrueger@novell.com> 
+2008-09-24  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomRegion.cs,
 	  MonoDevelop.Projects.Dom/Comment.cs,
 	  MonoDevelop.Projects.Dom/DomLocation.cs: Marked some classes as
 	  serializable (for tag comment saving).
 
-2008-09-24  Mike Krüger <mkrueger@novell.com> 
+2008-09-24  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -2950,7 +2958,7 @@
 	  MonoDevelop.Projects.Dom/DomCecilType.cs: Properly import
 	  constructors.
 
-2008-09-23  Mike Krüger <mkrueger@novell.com> 
+2008-09-23  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ConditionalRegion.cs,
 	  MonoDevelop.Projects.Dom/ParsedDocument.cs: added preprocessor
@@ -2967,35 +2975,35 @@
 	  HasContent() in IsObsolete since that method loads the wrapped
 	  type, and that's not needed in this case. Same for HasParts.
 
-2008-09-23  Mike Krüger <mkrueger@novell.com> 
+2008-09-23  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed exception in base
 	  completion.
 
-2008-09-23  Mike Krüger <mkrueger@novell.com> 
+2008-09-23  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fixed 'Bug 429022 -
 	  Code Completion: inherited members not shown in automatic or
 	  ctrl+space completion'.
 
-2008-09-23  Mike Krüger <mkrueger@novell.com> 
+2008-09-23  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/ExpressionContext.cs: fixed 'Bug 429036 -
 	  Object.Finalize should not be included in the completion list'.
 
-2008-09-23  Mike Krüger <mkrueger@novell.com> 
+2008-09-23  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
 	  MonoDevelop.Projects.Dom.Output/Ambience.cs: Added highlight name
 	  output flag.
 
-2008-09-23  Mike Krüger <mkrueger@novell.com> 
+2008-09-23  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: fixed 'Bug
 	  427700 - CodeCompletion not working properly in class constructor'.
 
-2008-09-22  Mike Krüger <mkrueger@novell.com> 
+2008-09-22  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs,
 	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs,
@@ -3003,40 +3011,40 @@
 	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  Added optimization for isobsolete.
 
-2008-09-22  Mike Krüger <mkrueger@novell.com> 
+2008-09-22  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: making abstract member
 	  virtual.
 
-2008-09-22  Mike Krüger <mkrueger@novell.com> 
+2008-09-22  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixing possible
 	  IsObsolete issue.
 
-2008-09-22  Mike Krüger <mkrueger@novell.com> 
+2008-09-22  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: fixed bug with interface
 	  code completion.
 
-2008-09-22  Mike Krüger <mkrueger@novell.com> 
+2008-09-22  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/Modifiers.cs,
 	  MonoDevelop.Projects.Dom/AbstractMember.cs: Worked on obsolete
 	  detection.
 
-2008-09-22  Mike Krüger <mkrueger@novell.com> 
+2008-09-22  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Changed
 	  method name
 
-2008-09-22  Mike Krüger <mkrueger@novell.com> 
+2008-09-22  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs,
 	  MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
 	  projects now use their file name as key in the parser service.
 
-2008-09-22  Mike Krüger <mkrueger@novell.com> 
+2008-09-22  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs,
@@ -3044,7 +3052,7 @@
 	  'Bug 427285 - Code Completion: Referenced projects not always shown
 	  in code completion'.
 
-2008-09-20  Mike Krüger <mkrueger@novell.com> 
+2008-09-20  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs,
 	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
@@ -3060,30 +3068,30 @@
 	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  ClassEntry.Name must hold the class name without namespace.
 
-2008-09-19  Mike Krüger <mkrueger@novell.com> 
+2008-09-19  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs: fixed 'fixed 'Bug 427734 -
 	  Code Completion issues with enums'.
 
-2008-09-19  Mike Krüger <mkrueger@novell.com> 
+2008-09-19  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed enum issue.
 
-2008-09-19  Mike Krüger <mkrueger@novell.com> 
+2008-09-19  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Removed debug
 	  message/improved method resolve result.
 
-2008-09-19  Mike Krüger <mkrueger@novell.com> 
+2008-09-19  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/IMember.cs,
 	  MonoDevelop.Projects.Dom/AbstractMember.cs: fixed 'Bug 427649 -
 	  Code Completion: protected methods shown in code completion'.
 
-2008-09-19  Mike Krüger <mkrueger@novell.com> 
+2008-09-19  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/DomMethod.cs,
@@ -3092,7 +3100,7 @@
 	  fixed 'Bug 397930 - Navigation to generic method not working
 	  correctly'.
 
-2008-09-19  Mike Krüger <mkrueger@novell.com> 
+2008-09-19  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Found cleaner way for
 	  method resolve result.
@@ -3118,29 +3126,29 @@
 	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
 	  Remove debug code.
 
-2008-09-17  Mike Krüger <mkrueger@novell.com> 
+2008-09-17  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs: fixed unit test issues.
 
-2008-09-17  Mike Krüger <mkrueger@novell.com> 
+2008-09-17  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: removed debug
 	  message/fixed unit test little issue.
 
-2008-09-17  Mike Krüger <mkrueger@novell.com> 
+2008-09-17  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Some changes
 	  required for unit tests.
 
-2008-09-16  Mike Krüger <mkrueger@novell.com> 
+2008-09-16  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs,
 	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Removed
 	  some debug messages.
 
-2008-09-15  Mike Krüger <mkrueger@novell.com> 
+2008-09-15  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomReturnType.cs,
 	  MonoDevelop.Projects.Dom/DomParameter.cs,
@@ -3149,7 +3157,7 @@
 	  MonoDevelop.Projects.Dom/AbstractMember.cs: CHANGE: DOM objects
 	  that return collections now should always return != null.
 
-2008-09-15  Mike Krüger <mkrueger@novell.com> 
+2008-09-15  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: now recognizing internal
 	  members in isaccessible.
@@ -3160,22 +3168,22 @@
 	  MonoDevelop.Projects.mdp, Makefile.am: Renamed. Set correct path
 	  for shared code completion data.
 
-2008-09-15  Mike Krüger <mkrueger@novell.com> 
+2008-09-15  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Resolve result now gets
 	  information about the calling member.
 
-2008-09-15  Mike Krüger <mkrueger@novell.com> 
+2008-09-15  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs: fixed regression 324907.
 
-2008-09-15  Mike Krüger <mkrueger@novell.com> 
+2008-09-15  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: worked on
 	  resolve result bug.
 
-2008-09-15  Mike Krüger <mkrueger@novell.com> 
+2008-09-15  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
 	  MonoDevelop.Projects.Dom.Output/Ambience.cs: Ambiences now take
@@ -3196,7 +3204,7 @@
 	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs: Set the
 	  source project to project doms.
 
-2008-09-12  Mike Krüger <mkrueger@novell.com> 
+2008-09-12  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs,
@@ -3263,25 +3271,25 @@
 	  filter condition. Should return true if the object has to be
 	  filtered out.
 
-2008-09-11  Mike Krüger <mkrueger@novell.com> 
+2008-09-11  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ParsedDocument.cs: Worked on fold
 	  information update.
 
-2008-09-10  Mike Krüger <mkrueger@novell.com> 
+2008-09-10  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom.Serialization/DatabaseProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Worked on
 	  type lookup.
 
-2008-09-10  Mike Krüger <mkrueger@novell.com> 
+2008-09-10  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomUsing.cs,
 	  MonoDevelop.Projects.Dom/IUsing.cs: Added the information to
 	  IUsing, if it came from namespace declaration.
 
-2008-09-10  Mike Krüger <mkrueger@novell.com> 
+2008-09-10  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
@@ -3312,7 +3320,7 @@
 	  MonoDevelop.Projects.Dom/ExpressionContext.cs,
 	  MonoDevelop.Projects.Dom/Namespace.cs: Fix warnings.
 
-2008-09-09  Mike Krüger <mkrueger@novell.com> 
+2008-09-09  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom/CompoundType.cs,
@@ -3324,7 +3332,7 @@
 	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  Worked on dom.
 
-2008-09-09  Mike Krüger <mkrueger@novell.com> 
+2008-09-09  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -3355,7 +3363,7 @@
 	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  Activated custom code completion database.
 
-2008-09-08  Mike Krüger <mkrueger@novell.com> 
+2008-09-08  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/TypeParameter.cs,
 	  MonoDevelop.Projects.Dom/DomUsing.cs,
@@ -3363,7 +3371,7 @@
 	  MonoDevelop.Projects.Dom/Modifiers.cs: Fixed some issues found by
 	  unit testing.
 
-2008-09-05  Mike Krüger <mkrueger@novell.com> 
+2008-09-05  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -3383,56 +3391,56 @@
 	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  Readded custom (binary) database.
 
-2008-09-04  Mike Krüger <mkrueger@novell.com> 
+2008-09-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: Changed
 	  parser threading.
 
-2008-09-04  Mike Krüger <mkrueger@novell.com> 
+2008-09-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: fixed
 	  possible null ref.
 
-2008-09-04  Mike Krüger <mkrueger@novell.com> 
+2008-09-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: fixed
 	  possible null ref.
 
-2008-09-04  Mike Krüger <mkrueger@novell.com> 
+2008-09-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Added
 	  a lock for insert compilation unit.
 
-2008-09-04  Mike Krüger <mkrueger@novell.com> 
+2008-09-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs: add debug
 	  command tracing.
 
-2008-09-04  Mike Krüger <mkrueger@novell.com> 
+2008-09-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs,
 	  MonoDevelop.Projects.Dom.Database/HyenaSqliteConnection.cs: Changed
 	  error message.
 
-2008-09-04  Mike Krüger <mkrueger@novell.com> 
+2008-09-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed some resolve result
 	  issues.
 
-2008-09-04  Mike Krüger <mkrueger@novell.com> 
+2008-09-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Database/HyenaSqliteCommand.cs: changed
 	  error message.
 
-2008-09-04  Mike Krüger <mkrueger@novell.com> 
+2008-09-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomAttribute.cs,
 	  MonoDevelop.Projects.Dom/DomProperty.cs,
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Some
 	  dom enhancements.
 
-2008-09-03  Mike Krüger <mkrueger@novell.com> 
+2008-09-03  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
@@ -3450,12 +3458,12 @@
 	  MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  Worked on custom database layer.
 
-2008-09-03  Mike Krüger <mkrueger@novell.com> 
+2008-09-03  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: member attributes are now
 	  always != null.
 
-2008-09-02  Mike Krüger <mkrueger@novell.com> 
+2008-09-02  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs: fixed bug with
 	  compound types.
@@ -3465,7 +3473,7 @@
 	* MonoDevelop.Projects/Project.cs: Fix nullref.
 	* MonoDevelop.Projects.mdp: Updated.
 
-2008-08-22  Mike Krüger <mkrueger@novell.com> 
+2008-08-22  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/DomReturnType.cs,
@@ -3474,7 +3482,7 @@
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs:
 	  Optimized database layer.
 
-2008-08-21  Mike Krüger <mkrueger@novell.com> 
+2008-08-21  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomCecilProperty.cs,
 	  MonoDevelop.Projects.Dom/DomProperty.cs: Fixed cecil indexer
@@ -3487,17 +3495,17 @@
 	and "resgen2" for ClrVersion.Net_2_0, but only when the current
 	runtime major version is greater than 1.
 
-2008-08-20  Mike Krüger <mkrueger@novell.com> 
+2008-08-20  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: fixed possible null
 	  ref.
 
-2008-08-19  Mike Krüger <mkrueger@novell.com> 
+2008-08-19  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed todos in
 	  base refactorer.
 
-2008-08-19  Mike Krüger <mkrueger@novell.com> 
+2008-08-19  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs,
@@ -3510,11 +3518,11 @@
 	  fix for bug bug #410408 - HintPath handling invalid. Based on patch
 	  by Scott McNally.
 
-2008-08-18  Mike Krüger <mkrueger@novell.com> 
+2008-08-18  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: Worked on completion.
 
-2008-08-15  Mike Krüger <mkrueger@novell.com> 
+2008-08-15  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -3522,12 +3530,12 @@
 	  MonoDevelop.Projects.Dom/ExpressionContext.cs: Removed some debug
 	  messages.
 
-2008-08-11  Mike Krüger <mkrueger@novell.com> 
+2008-08-11  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/LocalVariable.cs: Changed  local variable
 	  interface.
 
-2008-08-08  Mike Krüger <mkrueger@novell.com> 
+2008-08-08  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/DomRegion.cs,
@@ -3538,7 +3546,7 @@
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Fixed
 	  some bugs/worked on dom.
 
-2008-08-08  Mike Krüger <mkrueger@novell.com> 
+2008-08-08  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs,
@@ -3546,7 +3554,7 @@
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Fixed
 	  some bugs in the database layer.
 
-2008-08-07  Mike Krüger <mkrueger@novell.com> 
+2008-08-07  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs,
@@ -3557,7 +3565,7 @@
 	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Worked on
 	  dom
 
-2008-08-07  Mike Krüger <mkrueger@novell.com> 
+2008-08-07  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs,
 	  MonoDevelop.Projects.Dom.Database/DatabaseType.cs,
@@ -3568,7 +3576,7 @@
 
 	* MonoDevelop.Projects/DotNetProject.cs: Add additional null check.
 
-2008-08-06  Mike Krüger <mkrueger@novell.com> 
+2008-08-06  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
@@ -3582,7 +3590,7 @@
 	  when saving a project or solution.
 
 
-2008-08-05  Mike Krüger <mkrueger@novell.com> 
+2008-08-05  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
@@ -3591,12 +3599,12 @@
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Worked
 	  on datatabase layer.
 
-2008-08-05  Mike Krüger <mkrueger@novell.com> 
+2008-08-05  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: fixed
 	  bug in sql statement.
 
-2008-08-04  Mike Krüger <mkrueger@novell.com> 
+2008-08-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
@@ -3607,7 +3615,7 @@
 	  on dom/code completion db/parser and fixed a bug in the dom cecil
 	  type loading.
 
-2008-08-04  Mike Krüger <mkrueger@novell.com> 
+2008-08-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs,
@@ -3616,12 +3624,12 @@
 	  MonoDevelop.Projects.Dom/IReturnType.cs: Worked on C#3 code
 	  completion.
 
-2008-08-04  Mike Krüger <mkrueger@novell.com> 
+2008-08-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomReturnType.cs: fixed fullname bug in
 	  return type.
 
-2008-08-01  Mike Krüger <mkrueger@novell.com> 
+2008-08-01  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom/DomCecilMethod.cs,
@@ -3633,7 +3641,7 @@
 	  Changed return type representation (now it's possible to represent
 	  types of the form A.B.C<GenArg>.Inner1<a1,...>,...,InnerN<aN,...>)
 
-2008-08-01  Mike Krüger <mkrueger@novell.com> 
+2008-08-01  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -3641,18 +3649,18 @@
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Added
 	  getsubclasslist operation.
 
-2008-08-01  Mike Krüger <mkrueger@novell.com> 
+2008-08-01  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/Namespace.cs,
 	  MonoDevelop.Projects.Dom.Database/CodeCompletionDatabase.cs: Fixed
 	  bug in getnamespace contents.
 
-2008-07-31  Mike Krüger <mkrueger@novell.com> 
+2008-07-31  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: worked on C#3 code
 	  completion.
 
-2008-07-30  Mike Krüger <mkrueger@novell.com> 
+2008-07-30  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/DatabaseProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
@@ -3663,7 +3671,7 @@
 	  on code completion database, optimized SQL a bit. Tried out single
 	  code completion database for assemblies.
 
-2008-07-30  Mike Krüger <mkrueger@novell.com> 
+2008-07-30  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: Added
 	  GetAssemblyProjectDom method.
@@ -3676,13 +3684,13 @@
 	  from banshee) to make the database more performant. Threading's
 	  looking worrying though.
 
-2008-07-29  Mike Krüger <mkrueger@novell.com> 
+2008-07-29  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProject.cs, Makefile.am,
 	  MonoDevelop.Projects.mdp: Removed some parts of the documentation
 	  service.
 
-2008-07-29  Mike Krüger <mkrueger@novell.com> 
+2008-07-29  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/ILanguageBinding.cs,
 	  MonoDevelop.Projects/ProjectsServices.cs,
@@ -3802,7 +3810,7 @@
 	  MonoDevelop.Projects.Parser/IUsingCollection.cs: Removed old dom
 	  (GPLed code goes down from over 30% to under 10%)
 
-2008-07-29  Mike Krüger <mkrueger@novell.com> 
+2008-07-29  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Output/OutputFlags.cs,
@@ -3822,12 +3830,12 @@
 	  MonoDevelop.Projects.Dom/ICompilationUnit.cs: Use the FoldingRegion
 	  class for folding regions.
 
-2008-07-27  Mike Krüger <mkrueger@novell.com> 
+2008-07-27  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Database/DatabaseType.cs: database type
 	  caches compilation unit.
 
-2008-07-27  Mike Krüger <mkrueger@novell.com> 
+2008-07-27  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.CodeGeneration,
 	  MonoDevelop.Projects.Dom.CodeGeneration/CodeRefactorer.cs,
@@ -4014,17 +4022,17 @@
 	  MonoDevelop.Projects.Serialization/DataValue.cs: Improve
 	  serialization of DataNodes into xml.
 
-2008-07-16  Mike Krüger <mkrueger@novell.com> 
+2008-07-16  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: fixed Bug 409542
 	  - Code completion database regeneration yielding empty databases.
 
-2008-07-16  Mike Krüger <mkrueger@novell.com> 
+2008-07-16  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/ExpressionResult.cs: some bugfixes.
 
-2008-07-16  Mike Krüger <mkrueger@novell.com> 
+2008-07-16  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/DomMethod.cs,
@@ -4033,7 +4041,7 @@
 	  MonoDevelop.Projects.Dom/IMember.cs: Added monodoc documentation
 	  support.
 
-2008-07-16  Mike Krüger <mkrueger@novell.com> 
+2008-07-16  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs,
@@ -4049,7 +4057,7 @@
 	  MonoDevelop.Projects.Dom/DomProperty.cs: Added help support for new
 	  dom.
 
-2008-07-15  Mike Krüger <mkrueger@novell.com> 
+2008-07-15  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -4063,13 +4071,13 @@
 	  MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs: Worked on new
 	  dom. 
 
-2008-07-15  Mike Krüger <mkrueger@novell.com> 
+2008-07-15  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed referenced
 	  projects bug in new dom.
 
-2008-07-15  Mike Krüger <mkrueger@novell.com> 
+2008-07-15  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -4078,13 +4086,13 @@
 	  MonoDevelop.Projects.Parser/DefaultParserService.cs: Optimized
 	  cecil loading.
 
-2008-07-14  Mike Krüger <mkrueger@novell.com> 
+2008-07-14  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Added parserdatabase
 	  update thread.
 
-2008-07-14  Mike Krüger <mkrueger@novell.com> 
+2008-07-14  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
@@ -4099,25 +4107,25 @@
 	  comments/foldings (old) and pre processor defines/conditional
 	  regions (new) to the new dom infrastructure.
 
-2008-07-14  Mike Krüger <mkrueger@novell.com> 
+2008-07-14  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs: Fixed inner types.
 
-2008-07-13  Mike Krüger <mkrueger@novell.com> 
+2008-07-13  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/AbstractMember.cs,
 	  MonoDevelop.Projects.Dom/ExpressionContext.cs,
 	  MonoDevelop.Projects.Dom/IMember.cs: Worked on code completion.
 
-2008-07-12  Mike Krüger <mkrueger@novell.com> 
+2008-07-12  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/IType.cs: Some dom changes.
 
-2008-07-11  Mike Krüger <mkrueger@novell.com> 
+2008-07-11  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/DomMethod.cs,
@@ -4126,12 +4134,12 @@
 	  MonoDevelop.Projects.Dom/ExpressionContext.cs,
 	  MonoDevelop.Projects.Dom/DomParameter.cs: Worked on new dom.
 
-2008-07-11  Mike Krüger <mkrueger@novell.com> 
+2008-07-11  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: changed
 	  parser serivce thread safety.
 
-2008-07-10  Mike Krüger <mkrueger@novell.com> 
+2008-07-10  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs,
@@ -4142,7 +4150,7 @@
 	  MonoDevelop.Projects.Parser/DefaultParserService.cs: Worked on code
 	  completion.
 
-2008-07-10  Mike Krüger <mkrueger@novell.com> 
+2008-07-10  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/ExpressionContext.cs,
@@ -4156,16 +4164,16 @@
 	  MonoDevelop.Projects.Extensions/ISolutionItemHandler.cs: Added
 	  support for path encoding/decoding specific to the file format.
 
-2008-07-09  Mike Krüger <mkrueger@novell.com> 
+2008-07-09  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs,
 	  MonoDevelop.Projects.Dom/DomReturnType.cs: Worked on new dom.
 
-2008-07-09  Mike Krüger <mkrueger@novell.com> 
+2008-07-09  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/CompoundType.cs: Worked on dom.
 
-2008-07-09  Mike Krüger <mkrueger@novell.com> 
+2008-07-09  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom.Output/Ambience.cs,
@@ -4174,7 +4182,7 @@
 	  MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/IType.cs: Worked on method completion.
 
-2008-07-08  Mike Krüger <mkrueger@novell.com> 
+2008-07-08  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -4182,7 +4190,7 @@
 	  MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/IType.cs: Worked on completion.
 
-2008-07-08  Mike Krüger <mkrueger@novell.com> 
+2008-07-08  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/AbstractMember.cs,
@@ -4191,7 +4199,7 @@
 	  MonoDevelop.Projects.Dom/StringRegistry.cs: Removed string registry
 	  (it's obsolete).
 
-2008-07-08  Mike Krüger <mkrueger@novell.com> 
+2008-07-08  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom/DomCecilParameter.cs,
@@ -4218,11 +4226,11 @@
 	  MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs: Did some memory
 	  optimizations.
 
-2008-07-07  Mike Krüger <mkrueger@novell.com> 
+2008-07-07  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Worked on completion.
 
-2008-07-07  Mike Krüger <mkrueger@novell.com> 
+2008-07-07  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -4236,13 +4244,13 @@
 	  MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs,
 	  MonoDevelop.Projects.Dom/CodeCompletionDatabase.cs: Worked on dom.
 
-2008-07-04  Mike Krüger <mkrueger@novell.com> 
+2008-07-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultCompilationUnit.cs: fixed Bug
 	  405930 - FoldingRegions in compilation units are all folded by
 	  default
 
-2008-07-03  Mike Krüger <mkrueger@novell.com> 
+2008-07-03  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -4250,7 +4258,7 @@
 	  MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: Worked on new
 	  dom. (resolving in the c# backend now works).
 
-2008-07-03  Mike Krüger <mkrueger@novell.com> 
+2008-07-03  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -4273,13 +4281,13 @@
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
 	(CreateImplementation): Handle out/ref/params modifiers.
 
-2008-06-25  Mike Krüger <mkrueger@novell.com> 
+2008-06-25  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs: Worked on code
 	  completion.
 
-2008-06-25  Mike Krüger <mkrueger@novell.com> 
+2008-06-25  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Added support for
@@ -4293,7 +4301,7 @@
 	  UseParentDirectoryAsNamespace from Project to DotNetProject to
 	  increase consistency.
 
-2008-06-24  Mike Krüger <mkrueger@novell.com> 
+2008-06-24  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -4322,7 +4330,7 @@
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
 	(FindOverridables): Move here from CSharpTextEditorExtension.
 
-2008-06-19  Mike Krüger <mkrueger@novell.com> 
+2008-06-19  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
 	  MonoDevelop.Projects.Dom/ResolveResult.cs,
@@ -4330,20 +4338,20 @@
 	  MonoDevelop.Projects.Dom/DomRegion.cs: Worked on code completion
 	  infrastructure.
 
-2008-06-19  Mike Krüger <mkrueger@novell.com> 
+2008-06-19  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Worked on assembly
 	  code completion database.
 
-2008-06-18  Mike Krüger <mkrueger@novell.com> 
+2008-06-18  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/DomPersistence.cs: Worked on dom
 	  persistence.
 
-2008-06-18  Mike Krüger <mkrueger@novell.com> 
+2008-06-18  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/DomTypeProxy.cs,
@@ -4356,13 +4364,13 @@
 	* MonoDevelop.Projects/DotNetProject.cs: Sanitise autogenerated default
 	  namespaces properly.
 
-2008-06-17  Mike Krüger <mkrueger@novell.com> 
+2008-06-17  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomReturnType.cs,
 	  MonoDevelop.Projects.Dom/DomPersistence.cs: Fixed some dom
 	  persistence bugs.
 
-2008-06-17  Mike Krüger <mkrueger@novell.com> 
+2008-06-17  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -4402,7 +4410,7 @@
 	  Loading flag to WorkspaceITem and SolutionITem which is set when an
 	  item is being deserialized from a file.
 
-2008-06-16  Mike Krüger <mkrueger@novell.com> 
+2008-06-16  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom.Parser/ProjectDom.cs,
@@ -4419,7 +4427,7 @@
 	  MonoDevelop.Projects.Dom/TypeUpdateInformation.cs: Worked on new
 	  dom.
 
-2008-06-13  Mike Krüger <mkrueger@novell.com> 
+2008-06-13  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
 	  MonoDevelop.Projects.Dom.Parser/IParser.cs,
@@ -4439,7 +4447,7 @@
 	  MonoDevelop.Projects/ProjectFileCollection.cs: Handle resolving
 	  DependentFiles.
 
-2008-06-10  Mike Krüger <mkrueger@novell.com> 
+2008-06-10  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ProjectCodeCompletionDatabase.cs,
 	  MonoDevelop.Projects.Dom/ExpressionResult.cs,
@@ -4465,7 +4473,7 @@
 	  possible the initialization of the core assembly database. Fixes
 	  some performance issues at MD startup.
 
-2008-06-06  Mike Krüger <mkrueger@novell.com> 
+2008-06-06  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs,
 	  MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs,
@@ -4488,7 +4496,7 @@
 
 	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs: Cosmetic fix.
 
-2008-06-05  Mike Krüger <mkrueger@novell.com> 
+2008-06-05  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/DomReturnType.cs,
@@ -4513,7 +4521,7 @@
 	  ensure the consistency of operations which involve several
 	  projects.
 
-2008-06-04  Mike Krüger <mkrueger@novell.com> 
+2008-06-04  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs,
@@ -4595,7 +4603,7 @@
 	  MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs: Added support
 	  for projects with multiple startup items.
 
-2008-06-03  Mike Krüger <mkrueger@novell.com> 
+2008-06-03  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/ReferenceEntry.cs,
 	  MonoDevelop.Projects.Dom/DomType.cs,
@@ -4616,7 +4624,7 @@
 
 	* md1format.xml: Add missing field.
 
-2008-06-02  Mike Krüger <mkrueger@novell.com> 
+2008-06-02  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/IMethod.cs,
@@ -4654,11 +4662,11 @@
 	  MonoDevelop.Projects/SolutionItemEventArgs.cs,
 	  MonoDevelop.Projects.mdp, Makefile.am: Renamed file.
 
-2008-05-29  Mike Krüger <mkrueger@novell.com> 
+2008-05-29  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomField.cs: checked in domfield.
 
-2008-05-29  Mike Krüger <mkrueger@novell.com> 
+2008-05-29  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/IMember.cs,
 	  MonoDevelop.Projects.Dom/DomReturnType.cs,
@@ -4685,7 +4693,7 @@
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs: Fix bug
 	  379485 - Empty project causes a compile error.
 
-2008-05-28  Mike Krüger <mkrueger@novell.com> 
+2008-05-28  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/DomMethod.cs,
@@ -4693,18 +4701,18 @@
 	  MonoDevelop.Projects.Dom/DomField.cs,
 	  MonoDevelop.Projects.Dom/DomProperty.cs: worked on dom.
 
-2008-05-28  Mike Krüger <mkrueger@novell.com> 
+2008-05-28  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom/DomType.cs,
 	  MonoDevelop.Projects.Dom/DomReturnType.cs,
 	  MonoDevelop.Projects.Dom/DomField.cs: Added some dom functions.
 
-2008-05-27  Mike Krüger <mkrueger@novell.com> 
+2008-05-27  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectParserService.cs: Fixed some
 	  bugs in the new dom parsing.
 
-2008-05-27  Mike Krüger <mkrueger@novell.com> 
+2008-05-27  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Dom.Parser,
 	  MonoDevelop.Projects.Dom.Parser/AbstractParser.cs,
@@ -4992,7 +5000,7 @@
 
 	* MonoDevelop.Projects/Project.cs: Added UseParentDirectoryAsNamespace
 
-2008-03-31  Mike Krüger <mkrueger@novell.com> 
+2008-03-31  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Parser/AbstractUsing.cs: added setter for using
 	  regions.
@@ -5242,12 +5250,12 @@
 	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Track
 	  LoggingService API changes.
 
-2007-11-08  Mike Krüger <mkrueger@novell.com> 
+2007-11-08  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Fixed "Bug 340006 -
 	  "Implement Interface" does not work correctly".
 
-2007-11-06  Mike Krüger <mkrueger@novell.com> 
+2007-11-06  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Parser/PersistentProperty.cs,
 	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Fixed "Bug 337658
@@ -5310,7 +5318,7 @@
 	* MonoDevelop.Projects.Parser/TypeNameResolver.cs: TypeNameResolver don't
 	  resolve partial namespaces, but the enclosing namespace is an exception.
 
-2007-10-17  Mike Krüger <mkrueger@novell.com> 
+2007-10-17  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
 	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs,
@@ -5325,7 +5333,7 @@
 	  - Implementing Interface doesn't allow explicit + implicit" and "Bug
 	  325459 - Cant implement two interfaces explicitly".
 
-2007-10-17  Mike Krüger <mkrueger@novell.com> 
+2007-10-17  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed bug in member
 	  generation.
@@ -5358,7 +5366,7 @@
 	* MonoDevelop.Projects.Parser/ClassWrapper.cs: Make sure the wrapped class
 	  is lazily loaded.
 
-2007-10-12  Mike Krüger <mkrueger@novell.com> 
+2007-10-12  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/ProjectReference.cs,
 	  MonoDevelop.Projects/ProjectService.cs,
@@ -5374,19 +5382,19 @@
 	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Applied changes
 	  that were neccassary for to the new FileService.
 
-2007-10-11  Mike Krüger <mkrueger@novell.com> 
+2007-10-11  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/CustomCommand.cs, MonoDevelop.Projects/Project.cs:
 	  Changed calls for the new StringParser.
 
-2007-10-10  Mike Krüger <mkrueger@novell.com> 
+2007-10-10  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs,
 	  MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
 	  MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Refactored the
 	  IRefactorer a bit (removed the hintreturntype).
 
-2007-10-09  Mike Krüger <mkrueger@novell.com> 
+2007-10-09  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Ambience/ConversionFlags.cs,
 	  MonoDevelop.Projects.Ambience/Ambience.cs,
@@ -5403,7 +5411,7 @@
 	(GetCulture): New.
 	(CultureNamesTable): New.
 
-2007-10-08  Mike Krüger <mkrueger@novell.com> 
+2007-10-08  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs,
 	  MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs,
@@ -5463,7 +5471,7 @@
 	  compiled rather than the project selected in the IDE. Bonus is that it
 	  no longer depends on the tags provider in MonoDevelop.Ide.
 
-2007-09-15  Jérémie Laval <jeremie.laval@gmail.com>
+2007-09-15  JÃ©rÃ©mie Laval <jeremie.laval@gmail.com>
 
 	* MonoDevelop.Projects.Parser/ICompilationUnitBase.cs:
 	  Implemented ErrorInfo stub.
@@ -5519,22 +5527,22 @@
 	* MonoDevelop.Projects/Project.cs: Add a utility method to Project for
 	  adding directories.
 
-2007-09-11  Mike Krüger <mkrueger@novell.com> 
+2007-09-11  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed compilation
 	  error.
 
-2007-09-11  Mike Krüger <mkrueger@novell.com> 
+2007-09-11  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Added some more
 	  error handling code, I hope to track down 82715 with it.
 
-2007-09-11  Mike Krüger <mkrueger@novell.com> 
+2007-09-11  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Added some error
 	  handling code to make it easier to track refactoring bugs.
 
-2007-09-11  Mike Krüger <mkrueger@novell.com> 
+2007-09-11  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Little change in
 	  parser service - it logs now an error instead of generating an
@@ -5568,7 +5576,7 @@
 	* MonoDevelop.Projects/DotNetProject.cs, MonoDevelop.Projects/Project.cs:
 	  Handle mdb files in DotNetProject.
 
-2007-08-31  Mike Krüger <mkrueger@novell.com> 
+2007-08-31  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/ConfigurationCollection.cs,
 	  MonoDevelop.Projects/ProjectService.cs,
@@ -5597,7 +5605,7 @@
 	* MonoDevelop.Projects/Project.cs (GetReferenceDeployFiles): Add .mdb
 	only if ActiveConfiguration has DebugMode set.
 
-2007-08-20  Mike Krüger <mkrueger@novell.com> 
+2007-08-20  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Text/TextFileService.cs: Fixed bug 82282:Error list
 	  pad should take into account line changes done in files.
@@ -5654,7 +5662,7 @@
 	  MonoDevelop.Projects.Parser/DefaultParserService.cs: API cleanup.
 	  Converted core services into regular classes.
 
-2007-08-01  Marcos David Marín Amador <MarcosMarin@gmail.com>
+2007-08-01  Marcos David MarÃ­n Amador <MarcosMarin@gmail.com>
 
 	* MonoDevelop.Projects/CustomCommand.cs: Added the working directory
 	  property which is now parsed to support variables. The arguments 
@@ -5723,7 +5731,7 @@
 	* MonoDevelop.Projects/AbstractProjectConfiguration.cs: Added default
 	  value for signAssembly property.
 
-2007-07-05  Mike Krüger <mkrueger@novell.com> 
+2007-07-05  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Changed source
 	  a bit due to core refactorings.
@@ -5735,12 +5743,12 @@
 	  support for DateTime serialization.
 	* Makefile.am: Updated.
 
-2007-07-03  Mike Krüger <mkrueger@novell.com> 
+2007-07-03  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* MonoDevelop.Projects/AbstractProjectConfiguration.cs: little fix for
 	  signing.
 
-2007-07-03  Mike Krüger <mkrueger@novell.com> 
+2007-07-03  Mike KrÃ¼ger <mkrueger@novell.com> 
 
 	* Makefile.am: added strong naming support to project configuration.
 
@@ -6064,7 +6072,7 @@
 	refactor LocalVariables and Methods (for this purpose, method
 	parameters).
 
-2007-05-03  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+2007-05-03  David MakovskÃ½ (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: use .Net 2.0
 	  style Split for safer behaviour 
@@ -6232,7 +6240,7 @@
 	of disk space we aren't clobbering the original file. Opening with
 	mode Create should fix bug #80973.
 
-2007-03-04 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+2007-03-04 David MakovskÃ½ (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs,
 	* MonoDevelop.Projects.Deployment/InstallDeployHandler.cs,
@@ -6772,7 +6780,7 @@
 	* MonoDevelop.Projects.Parser/ModifierEnum.cs: Added VisibilityMask
 	  member.
 
-2006-12-13 Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+2006-12-13 Jacob IlsÃ¸ Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects/DotNetProjectBinding.cs: Remember to
 	set ProjectBasePath. Fixes bug #79825.
@@ -6796,11 +6804,11 @@
 	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Added null
 	  check.
 
-2006-11-15 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+2006-11-15 David MakovskÃ½ (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: added checks for empty Monodevelop.TaskListTokens property
 
-2006-11-15 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+2006-11-15 David MakovskÃ½ (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: added checks for loaded file entry type, enabling code
 
@@ -6811,7 +6819,7 @@
 	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Disabled
 	  UpdatedCommentTasks call until hang is fixed.
 
-2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+2006-11-13 David MakovskÃ½ (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Projects.mdp:
 	* Makefile.am: updated
@@ -6843,11 +6851,11 @@
 	* MonoDevelop.Projects.mdp:
 	* Makefile.am: Updated.
 
-2006-09-18 Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+2006-09-18 Jacob IlsÃ¸ Christensen <jacobilsoe@gmail.com> 
 
 	* .: Added svn:ignore for MonoDevelop.Projects.pidb.
 
-2006-09-12 Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+2006-09-12 Jacob IlsÃ¸ Christensen <jacobilsoe@gmail.com> 
 
 	* .: Added svn:ignore for MonoDevelop.Projects.dll.config.
 
@@ -6855,7 +6863,7 @@
 
 	* MonoDevelop.Projects/ProjectService.cs: Win32 URI workaround.
 
-2006-09-12 Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+2006-09-12 Jacob IlsÃ¸ Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects.Ambience/Ambience.cs:
 	Added Convert method for LocalVariable instances.
@@ -7345,7 +7353,7 @@
 	* TextFile.cs: In InsertText, insert the text in the text
 	  field, not in the text parameter. Patch by Tom Stephenson.
 
-2006-04-07  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+2006-04-07  David MakovskÃ½ (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Projects.Extensions/FileFormatCodon.cs: Renamed XML attribute
 
@@ -7405,14 +7413,14 @@
 	  avoid build errors when loading a project with references to
 	  old gtk# assemblies. It also fixes bug #70645.
 
-2006-03-17  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+2006-03-17  Jacob IlsÃ¸ Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs:
 	* MonoDevelop.Projects.Parser/IParser.cs:
 	* MonoDevelop.Projects.Parser/IParserService.cs:
 	Removed unused MonodocResolver.
 
-2006-03-16  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+2006-03-16  Jacob IlsÃ¸ Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects/ProjectsServices.cs:
 	* MonoDevelop.Projects.Documentation:
@@ -7473,7 +7481,7 @@
 	  Added a more user friendly error message to show when loading
 	  a project of an unknown language. Fixes bug #77467.
 
-2006-03-03  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+2006-03-03  Jacob IlsÃ¸ Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects/Combine.cs: Make sure that solutions
 	added to an existing solution will inherit the configurations
@@ -7488,7 +7496,7 @@
 	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs:
 	  AddFile now returns the added FileEntry.
 
-2006-02-28  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+2006-02-28  Jacob IlsÃ¸ Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects/Project.cs: Fixed plural issue.
 	
@@ -7583,7 +7591,7 @@
 	classes. It checks if a single file project can be created
 	from a given file.
 
-2006-01-14 Andrés G. Aragoneses  <knocte@gmail.com>
+2006-01-14 AndrÃ©s G. Aragoneses  <knocte@gmail.com>
 
 	* MonoDevelop.Projects/MdsFileFormat.cs: Replaced 'Combine' by
 	'Solution'.

@@ -214,11 +214,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (basePath != null)
 				path = Path.Combine (basePath, path);
 
-			if (System.IO.File.Exists (path)){
+			if (System.IO.File.Exists (path) || System.IO.Directory.Exists (path)){
 				return Path.GetFullPath (path);
 			}
 				
-			if (Path.IsPathRooted (path)) {
+			if (Path.IsPathRooted (path) && !PropertyService.IsWindows) {
 					
 				// Windows paths are case-insensitive. When mapping an absolute path
 				// we can try to find the correct case for the path.
