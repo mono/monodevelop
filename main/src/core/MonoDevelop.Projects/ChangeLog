@@ -1,3 +1,9 @@
+2009-05-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Finally tracked &
+	  fixed a code completion lookup bug. This one never occured
+	  until a bugfix for a minor code completion issue. 
+
 2009-05-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:

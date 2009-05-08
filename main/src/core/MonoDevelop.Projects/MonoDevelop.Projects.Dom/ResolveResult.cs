@@ -425,6 +425,8 @@ namespace MonoDevelop.Projects.Dom
 			for (int i = 0; i < methods.Count; i++) {
 				if (methods[i].IsExtension) {
 					methods[i] = new ExtensionMethod (Type, methods[i], genericArguments, arguments);
+				} else {
+					methods[i] = DomMethod.CreateInstantiatedGenericMethod (methods[i], arguments, null);
 				}
 			}
 //			Console.WriteLine ("-- end resolve extension.");
