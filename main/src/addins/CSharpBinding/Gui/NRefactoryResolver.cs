@@ -723,9 +723,9 @@ namespace MonoDevelop.CSharpBinding
 								ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
 								varType           = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.ResolvedType)   : initializerResolve.ResolvedType;
 								varTypeUnresolved = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
-								Console.WriteLine ("resolved type:" + initializerResolve.ResolvedType + " is loop : " + var.IsLoopVariable);
-								Console.WriteLine (varType);
-								Console.WriteLine ("----------");
+//								Console.WriteLine ("resolved type:" + initializerResolve.ResolvedType + " is loop : " + var.IsLoopVariable);
+//								Console.WriteLine (varType);
+//								Console.WriteLine ("----------");
 							}
 						} else { 
 							varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);

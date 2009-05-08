@@ -621,7 +621,17 @@ namespace MonoDevelop.CSharpBinding
 				selectLambdaExpr.Parent = selectInvocation;
 				selectLambdaExpr.Parameters.Add (new ParameterDeclarationExpression (null, "par"));
 				selectLambdaExpr.ExpressionBody = selectClause.Projection;
-				selectInvocation.Arguments.Add (selectLambdaExpr);
+				TypeReference typeRef = new TypeReference ("System.Func");
+				typeRef.GenericTypes.Add (TypeReference.Null);
+				ResolveResult result = resolver.ResolveExpression (selectLambdaExpr, resolver.ResolvePosition);
+				typeRef.GenericTypes.Add (new TypeReference (result.ResolvedType.ToInvariantString ()));
+				
+				ObjectCreateExpression createExpression = new ObjectCreateExpression (typeRef, new List<Expression> (new Expression [] {
+					null,
+					selectLambdaExpr
+				}));
+				
+				selectInvocation.Arguments.Add (createExpression);
 				return CreateResult (ResolveType (selectInvocation));
 			}
 			

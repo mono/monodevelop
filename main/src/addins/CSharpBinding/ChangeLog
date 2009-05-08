@@ -1,5 +1,11 @@
 2009-05-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryResolver.cs: Fixed query expression resolving
+	  bug.
+
+2009-05-08  Mike Krüger  <mkrueger@novell.com>
+
 	* Syntax:
 	* Makefile.am:
 	* CSharpBinding.csproj:
