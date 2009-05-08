@@ -14,6 +14,7 @@
     	<Addin id="Projects" version="2.1.0"/>
 		<Addin id="Projects.Gui" version="2.1.0"/>
 		<Addin id="Ide" version="2.1.0"/>
+		<Addin id="SourceEditor2" version="2.1.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -131,6 +132,10 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/TextPrettyPrinters">
 		<Class class="CSharpBinding.Parser.CSharpFormatter" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
+		<SyntaxMode mimeTypes="text/x-csharp" class="MonoDevelop.CSharpBinding.CSharpSyntaxMode"/>
 	</Extension>
 	
 	<Module>

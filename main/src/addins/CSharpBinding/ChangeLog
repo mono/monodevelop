@@ -1,3 +1,11 @@
+2009-05-08  Mike Krüger  <mkrueger@novell.com>
+
+	* Syntax:
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* Syntax/CSharpSyntaxMode.cs: Added c# syntax mode.
+
 2009-05-04  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/ResolveVisitor.cs: Fixed a bug that code completion

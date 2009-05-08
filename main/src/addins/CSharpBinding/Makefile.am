@@ -58,7 +58,8 @@ FILES =  \
 	Parser/NRefactoryParser.cs \
 	Project/CSharpCompilerParameters.cs \
 	Project/CSharpProjectParameters.cs \
-	Project/CSharpResourceIdBuilder.cs
+	Project/CSharpResourceIdBuilder.cs \
+	Syntax/CSharpSyntaxMode.cs
 
 RES =  \
 	CSharpBinding.addin.xml \
