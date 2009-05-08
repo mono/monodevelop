@@ -205,7 +205,7 @@ namespace MonoDevelop.SourceEditor
 
 		}
 
-		public void SetMime (string mimeType)
+		public void InformLoad ()
 		{
 			this.isInitialParseUpdate = true;
 		}

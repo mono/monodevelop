@@ -239,7 +239,6 @@ namespace MonoDevelop.SourceEditor
 			
 			ContentName = fileName; 
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
-			widget.SetMime (Document.MimeType);
 			Document.SetNotDirtyState ();
 			this.IsDirty = false;
 		}
@@ -264,7 +263,7 @@ namespace MonoDevelop.SourceEditor
 				WorkbenchWindow.ShowNotification = false;
 			}
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
-			widget.SetMime (Document.MimeType);
+			widget.InformLoad ();
 			
 			if (AutoSave.AutoSaveExists (fileName)) {
 				widget.ShowAutoSaveWarning (fileName);
@@ -299,7 +298,7 @@ namespace MonoDevelop.SourceEditor
 				WorkbenchWindow.ShowNotification = false;
 			}
 			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
-			widget.SetMime (Document.MimeType);
+			widget.InformLoad ();
 			inLoad = true;
 			Document.Text = content;
 			inLoad = false;

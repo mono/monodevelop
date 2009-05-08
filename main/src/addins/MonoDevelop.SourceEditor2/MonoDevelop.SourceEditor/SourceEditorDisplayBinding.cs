@@ -86,12 +86,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			SourceEditorView result = new SourceEditorView ();
 			result.Document.MimeType = mimeType;
-			result.SourceEditorWidget.SetMime (mimeType);
 			if (content != null) {
 				using (StreamReader reader = new StreamReader (content)) {
 					result.Document.Text = reader.ReadToEnd ();
 				}
 			}
+			result.SourceEditorWidget.InformLoad ();
 			return result;
 		}
 
