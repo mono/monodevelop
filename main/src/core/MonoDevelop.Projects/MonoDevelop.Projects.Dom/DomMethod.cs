@@ -217,7 +217,6 @@ namespace MonoDevelop.Projects.Dom
 					for (int i = 0; i < newType.ArrayDimensions; i++)
 							newType.SetDimension (i, parameterType.GetDimension (i));
 					typeTable[name] = newType;
-//					Console.WriteLine (name + " --> " + newType + " orig. Type " + type + " param type: " + parameterType);
 				}
 			}
 			

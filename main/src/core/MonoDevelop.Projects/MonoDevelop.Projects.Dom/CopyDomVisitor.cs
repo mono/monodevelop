@@ -170,6 +170,7 @@ namespace MonoDevelop.Projects.Dom
 			rt.ArrayDimensions = type.ArrayDimensions;
 			for (int n=0; n<type.ArrayDimensions; n++)
 				rt.SetDimension (n, type.GetDimension (n));
+			rt.Type = type.Type; // for anonymous types
 			return rt;
 		}
 		
