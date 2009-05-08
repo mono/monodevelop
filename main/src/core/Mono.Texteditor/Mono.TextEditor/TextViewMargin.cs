@@ -625,7 +625,7 @@ namespace Mono.TextEditor
 				} else if (ch == '\t') {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
-					int delta = GetNextVisualTab (xPos - this.XOffset + (int)this.textEditor.HAdjustment.Value) - xPos - (int)this.textEditor.HAdjustment.Value + this.XOffset;
+					int delta = (newColumn - visibleColumn) * CharWidth;
 					visibleColumn = newColumn;
 					bool drawText = true;
 					bool drawBg   = true;
@@ -1032,7 +1032,7 @@ namespace Mono.TextEditor
 					char ch = chunk.GetCharAt (Document, chunk.Offset + i);
 					if (ch == '\t') {
 						int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
-						delta = GetNextVisualTab (lineXPos) - lineXPos;
+						delta = (newColumn - visibleColumn) * CharWidth;
 						visibleColumn = newColumn;
 					} else {
 						ChunkStyle style = chunk.GetChunkStyle (ColorStyle);
@@ -1060,12 +1060,6 @@ namespace Mono.TextEditor
 				lineXPos += (column - visibleColumn) * this.charWidth;
 			}
 			return lineXPos;
-		}
-		
-		public int GetNextVisualTab (int xPos)
-		{
-			int tabWidth = textEditor.Options.TabSize * this.charWidth;
-			return (xPos / tabWidth + 1) * tabWidth;
 		}
 		
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn)
@@ -1295,7 +1289,7 @@ namespace Mono.TextEditor
 						visibleColumn++;
 					} else {
 						int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
-						int delta = GetNextVisualTab (xPos - this.XOffset + (int)this.textEditor.HAdjustment.Value) - xPos - (int)this.textEditor.HAdjustment.Value + this.XOffset;
+						int delta = (newColumn - visibleColumn) * CharWidth;
 						if (textEditor.Options.ShowTabs) 
 							DrawTabMarker (win, isEolSelected, xPos, y);
 						xPos += delta;
@@ -1351,7 +1345,7 @@ namespace Mono.TextEditor
 						int delta = 0;
 						if (ch == '\t') {
 							int newColumn = GetNextTabstop (margin.textEditor.GetTextEditorData (), visibleColumn);
-							delta = margin.GetNextVisualTab (xPos) - xPos;
+							delta = (newColumn - visibleColumn) * margin.CharWidth;
 							visibleColumn = newColumn;
 						} else if (ch == ' ') {
 							delta = margin.charWidth;
