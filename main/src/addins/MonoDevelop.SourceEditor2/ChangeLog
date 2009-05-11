@@ -1,5 +1,11 @@
 2009-05-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug
+	  502586 - Edit / Format / Join Lines does not join blank
+	  lines".
+
+2009-05-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/EditActions.cs: Fixed "Bug 501996 -
 	  Tab interpreted as reindent sometimes also inserts tabs".
 

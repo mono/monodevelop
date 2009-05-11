@@ -111,6 +111,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		public int LineCount {
+			get {
+				return Document.LineCount;
+			}
+		}
+		
 		public override Project Project {
 			get {
 				return base.Project;
