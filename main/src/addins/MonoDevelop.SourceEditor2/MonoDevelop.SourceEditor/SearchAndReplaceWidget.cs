@@ -242,6 +242,8 @@ namespace MonoDevelop.SourceEditor
 			buttonSearchForward.KeyPressEvent += OnNavigateKeyPressEvent;
 			buttonSearchBackward.KeyPressEvent += OnNavigateKeyPressEvent;
 			entrySearch.KeyPressEvent += OnNavigateKeyPressEvent;
+			entryReplace.KeyPressEvent += OnNavigateKeyPressEvent;
+			buttonReplace.KeyPressEvent += OnNavigateKeyPressEvent;
 		}
 		
 		private void OnNavigateKeyPressEvent (object o, KeyPressEventArgs args)
@@ -277,21 +279,53 @@ But I leave it in in the case I've missed something. Mike
 					entrySearch.Entry.GrabFocus ();
 					break;
 				case Gdk.Key.ISO_Left_Tab:
-					if (o == entrySearch) {
-						buttonSearchMode.GrabFocus ();
-					} else if (o == buttonSearchBackward) {
-						entrySearch.Entry.GrabFocus ();
-					} else if (o == buttonSearchForward) {
-						buttonSearchBackward.GrabFocus ();
+					if (this.IsReplaceMode) {
+						if (o == entrySearch) {
+							buttonSearchForward.GrabFocus ();
+						} else if (o == entryReplace) {
+							entrySearch.Entry.GrabFocus ();
+						} else if (o == buttonReplace) {
+							entryReplace.Entry.GrabFocus ();
+						} else if (o == buttonSearchBackward) {
+							buttonReplace.GrabFocus ();
+						} else if (o == buttonSearchForward) {
+							buttonReplace.GrabFocus ();
+						}
+						args.RetVal = true;
+					} else {
+						if (o == entrySearch) {
+							buttonSearchForward.GrabFocus ();
+						} else if (o == buttonSearchBackward) {
+							entrySearch.Entry.GrabFocus ();
+							args.RetVal = true;
+						} else if (o == buttonSearchForward) {
+							buttonSearchBackward.GrabFocus ();
+						}
 					}
 					break;
 				case Gdk.Key.Tab: 
-					if (o == entrySearch) {
-						buttonSearchBackward.GrabFocus ();
-					} else if (o == buttonSearchBackward) {
-						buttonSearchForward.GrabFocus ();
-					} else if (o == buttonSearchForward) {
-						widget.TextEditor.GrabFocus ();
+					if (this.IsReplaceMode) {
+						if (o == entrySearch) {
+							entryReplace.Entry.GrabFocus ();
+						} if (o == entryReplace) {
+							buttonReplace.GrabFocus ();
+						} else if (o == buttonReplace) {
+							buttonSearchForward.GrabFocus ();
+						} else if (o == buttonSearchBackward) {
+							buttonSearchForward.GrabFocus ();
+						} else if (o == buttonSearchForward) {
+							widget.TextEditor.GrabFocus ();
+						}
+						args.RetVal = true;
+					} else {
+						if (o == entrySearch) {
+							buttonSearchBackward.GrabFocus ();
+						} else if (o == buttonSearchBackward) {
+							buttonSearchForward.GrabFocus ();
+						} else if (o == buttonSearchForward) {
+							widget.TextEditor.GrabFocus ();
+							args.RetVal = true;
+						}
 					}
 					break;
 				default:

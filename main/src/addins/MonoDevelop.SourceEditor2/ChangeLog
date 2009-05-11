@@ -1,3 +1,9 @@
+2009-05-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Fixed
+	  "Bug 501993 - Find and replace: Pressing Tab never gets to
+	  Replace field".
+
 2009-05-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
