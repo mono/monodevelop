@@ -333,6 +333,45 @@ namespace MonoDevelop.Core
 			}
 			return result == "." ? "" : result;
 		}
+
+		// Atomic rename of a file. It does not fire events.
+		public static void SystemRename (string sourceFile, string destFile)
+		{
+			if (PropertyService.IsWindows) {
+				string wtmp = null;
+				if (File.Exists (destFile)) {
+					do {
+						wtmp = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
+					} while (File.Exists (wtmp));
+
+					File.Move (destFile, wtmp);
+				}
+				try {
+					File.Move (sourceFile, destFile);
+				}
+				catch {
+					try {
+						if (wtmp != null)
+							File.Move (wtmp, destFile);
+					}
+					catch {
+						wtmp = null;
+					}
+					throw;
+				}
+				finally {
+					if (wtmp != null) {
+						try {
+							File.Delete (wtmp);
+						}
+						catch { }
+					}
+				}
+			}
+			else {
+				Mono.Unix.Native.Syscall.rename (sourceFile, destFile);
+			}
+		}
 		
 		static bool HandleError (string message, Exception ex)
 		{

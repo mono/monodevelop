@@ -1,3 +1,9 @@
+2009-05-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core\Properties.cs:
+	* MonoDevelop.Core\FileService.cs: Added method for doing
+	  atomic renames. Use it when saving properties.
+
 2009-05-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/ProcessService.cs: Make suer
