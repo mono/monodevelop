@@ -1,3 +1,11 @@
+2009-05-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Policies\PolicyService.cs: Use new
+	  method for renaming files.
+
+	* MonoDevelop.Projects.Text\TextFile.cs: Fixed file content
+	  decoding code. Use new api for doing atomic renames.
+
 2009-05-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectService.cs:

@@ -464,7 +464,7 @@ namespace MonoDevelop.Projects.Policies
 				//write was successful (no exception)
 				//so move the file to the real location, overwriting the old file
 				//(NOTE: File.Move doesn't overwrite existing files, so using Mono.Unix)
-				Mono.Unix.Native.Syscall.rename (tempFileName, fileName);
+				FileService.SystemRename (tempFileName, fileName);
 				return true;
 			}
 			catch (Exception ex) {

@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects.Text
 			}
 			
 			if (encoding != null) {
-				string s = Convert (content, "UTF-8", encoding);
+				string s = ConvertFromEncoding (content, encoding);
 				if (s == null)
 					throw new Exception ("Invalid text file format");
 				text = new StringBuilder (s);
@@ -117,7 +117,7 @@ namespace MonoDevelop.Projects.Text
 				string enc = (from bom in bomTable where content.StartsWith (bom.Bytes) select bom.Enc).FirstOrDefault ();
 
 				if (!string.IsNullOrEmpty (enc)) {
-					string s = Convert (content, "UTF-8", enc);
+					string s = ConvertFromEncoding (content, enc);
 					if (s != null) {
 						sourceEncoding = enc;
 						text = new StringBuilder (s);
@@ -126,7 +126,7 @@ namespace MonoDevelop.Projects.Text
 				}
 				
 				foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
-					string s = Convert (content, "UTF-8", co.Id);
+					string s = ConvertFromEncoding (content, co.Id);
 					if (s != null) {
 						sourceEncoding = co.Id;
 						text = new StringBuilder (s);
@@ -160,22 +160,16 @@ namespace MonoDevelop.Projects.Text
 		}
 		
 		#region g_convert
-		
-		static string Convert (byte[] content, string toEncoding, string fromEncoding)
+
+		static string ConvertFromEncoding (byte[] content, string fromEncoding)
 		{
 			if (content.LongLength > int.MaxValue)
 				throw new Exception ("Cannot handle long arrays");
-			
-			IntPtr nr = IntPtr.Zero, nw = IntPtr.Zero;
-			IntPtr clPtr = new IntPtr (content.Length);
-			IntPtr cc = g_convert (content, clPtr, toEncoding, fromEncoding, ref nr, ref nw, IntPtr.Zero);
-			if (cc != IntPtr.Zero) {
-				//FIXME: check for out-of-range conversions on uints
-				int len = (int)(uint)nw.ToInt64 ();
-				string s = System.Runtime.InteropServices.Marshal.PtrToStringAnsi (cc, len);
-				g_free (cc);
-				return s;
-			} else
+
+			byte[] utfBytes = ConvertToBytes (content, "UTF-8", fromEncoding);
+			if (utfBytes != null)
+				return Encoding.UTF8.GetString (utfBytes);
+			else
 				return null;
 		}
 		
@@ -307,7 +301,7 @@ namespace MonoDevelop.Projects.Text
 		{
 			byte[] buf = Encoding.UTF8.GetBytes (content);
 			
-			if (encoding != null && encoding != "UTF-8") {
+			if (encoding != null) {
 				buf = ConvertToBytes (buf, encoding, "UTF-8");
 				if (buf == null)
 					throw new Exception ("Invalid encoding: " + encoding);
@@ -320,40 +314,7 @@ namespace MonoDevelop.Projects.Text
 			fs.Flush ();
 			fs.Close ();
 
-			if (PropertyService.IsWindows) {
-				string wtmp = null;
-				if (File.Exists (fileName)) {
-					do {
-						wtmp = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
-					} while (File.Exists (wtmp));
-
-					File.Move (fileName, wtmp);
-				}
-				try {
-					File.Move (tempName, fileName);
-				}
-				catch {
-					try {
-						if (wtmp != null)
-							File.Move (wtmp, fileName);
-					}
-					catch {
-						wtmp = null;
-					}
-					throw;
-				}
-				finally {
-					if (wtmp != null) {
-						try {
-							File.Delete (wtmp);
-						}
-						catch { }
-					}
-				}
-			}
-			else {
-				Syscall.rename (tempName, fileName);
-			}
+			FileService.SystemRename (tempName, fileName);
 		}
 	}
 	
