@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface IEditableTextBuffer : ITextBuffer, IEditableTextFile, IUndoHandler
 	{	
-		
+		int LineCount { get; }
 		void SetCaretTo (int line, int column);
 		
 		

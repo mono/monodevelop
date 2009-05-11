@@ -246,9 +246,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int LineCount {
 			get {
-				int line, column;
-				GetLineColumnFromPosition (this.TextLength - 1, out line, out column);
-				return line + 1;
+				return textBuffer.LineCount;
 			}
 		}
 		

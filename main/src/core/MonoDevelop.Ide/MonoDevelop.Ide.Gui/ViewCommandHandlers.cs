@@ -280,30 +280,28 @@ namespace MonoDevelop.Ide.Gui
 				int cursor_pos = buffer.CursorPosition;
 				int line, column;
 				buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out column);
-
-				int start_pos = buffer.GetPositionFromLineColumn (line, 0)+1;
+				if (line >= doc.TextEditor.LineCount)
+					return;
+				int start_pos = buffer.GetPositionFromLineColumn (line, 0) + 1;
 				
 				int line_len = doc.TextEditor.GetLineLength (line);
-				int next_line_len = doc.TextEditor.GetLineLength (line+1);
+				int next_line_len = doc.TextEditor.GetLineLength (line + 1);
 				
-				if (next_line_len <= 0) {
+				if (next_line_len < 0) 
 					return;
-				}
 				
 				int end_pos = start_pos + line_len + next_line_len + 1;
 				
 				string curr_line = doc.TextEditor.GetLineText (line);
-				string next_line = doc.TextEditor.GetLineText (line+1);
+				string next_line = doc.TextEditor.GetLineText (line + 1);
 
 				string new_text = curr_line;
 				string next_line_trimmed = next_line.TrimStart ('\n', '\r', '\t', ' ');
-				if (next_line_trimmed != null &&
-				    next_line_trimmed != String.Empty) {
+				if (!string.IsNullOrEmpty (next_line_trimmed)) 
 					new_text += " " + next_line_trimmed;
-				}
 				
 				buffer.BeginAtomicUndo ();
-				buffer.DeleteText (start_pos, end_pos-start_pos);
+				buffer.DeleteText (start_pos, end_pos - start_pos);
 				buffer.InsertText (start_pos, new_text);
 				buffer.EndAtomicUndo ();
 

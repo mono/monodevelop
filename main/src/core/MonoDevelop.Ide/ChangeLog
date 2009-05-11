@@ -1,3 +1,11 @@
+2009-05-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/TextEditor.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs: Fixed
+	  "Bug 502586 - Edit / Format / Join Lines does not join blank
+	  lines".
+
 2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs: Added null check.
