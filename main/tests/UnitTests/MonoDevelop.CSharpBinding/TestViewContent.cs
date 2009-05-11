@@ -51,6 +51,12 @@ namespace MonoDevelop.CSharpBinding.Tests
 			}
 		}
 		
+		public int LineCount {
+			get {
+				return document.LineCount;
+			}
+		}
+		
 		Mono.TextEditor.Document document = new Mono.TextEditor.Document ();
 		public string Text {
 			get {

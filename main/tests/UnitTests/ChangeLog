@@ -1,3 +1,8 @@
+2009-05-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/TestViewContent.cs: Track API
+	  changes.
+
 2009-05-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/DomTests.cs: Added test where
