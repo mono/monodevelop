@@ -1,3 +1,8 @@
+2009-05-11  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditorData.cs: Fixed "Bug 501995 - Find
+	  and Replace skips first occurrence if 'Find Next' pressed".
+
 2009-05-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/Rule.cs:

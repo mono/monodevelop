@@ -456,13 +456,13 @@ namespace Mono.TextEditor
 				return MainSelection != null ? MainSelection.GetSelectionRange (this) : null;
 			}
 			set {
-				if (!Segment.Equals (this.SelectionRange, value))  {
+				if (!Segment.Equals (this.SelectionRange, value)) {
 					OnSelectionChanging (new TextEditorDataEventArgs (this));
 					if (value == null || value.Length == 0) {
 						MainSelection = null;
 					} else {
 						DocumentLocation loc1 = document.OffsetToLocation (value.Offset);
-						DocumentLocation loc2 = document.OffsetToLocation (value.Offset);
+						DocumentLocation loc2 = document.OffsetToLocation (value.EndOffset);
 						if (MainSelection == null) {
 							MainSelection = new Selection (loc1, loc2);
 						} else {
