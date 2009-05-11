@@ -191,7 +191,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public void Dispose ()
 		{
 			if (!disposed) {
-				apr.pool_destroy(pool);
+				if (apr != null)
+					apr.pool_destroy(pool);
 				disposed = true;
 			}
 		}
