@@ -1,3 +1,8 @@
+2009-05-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands\KeyBindingSet.cs: Use new
+	  api for doing atomic renames.
+
 2009-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components/WindowTransparencyDecorator.cs: Fix

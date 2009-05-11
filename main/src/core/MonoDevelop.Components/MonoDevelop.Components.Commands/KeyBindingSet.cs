@@ -258,7 +258,7 @@ namespace MonoDevelop.Components.Commands
 			}
 			
 			if (success)
-				Unix.Syscall.rename (fileName + '~', fileName);
+				FileService.SystemRename (fileName + '~', fileName);
 		}
 	}
 
