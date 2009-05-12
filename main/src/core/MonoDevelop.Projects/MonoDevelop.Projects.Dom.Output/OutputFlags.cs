@@ -48,8 +48,9 @@ namespace MonoDevelop.Projects.Dom.Output
 		HighlightName            = 0x0400,
 		HideExtensionsParameter  = 0x0800,
 		HideGenericParameterNames= 0x1000,
-
+		HideArrayBrackets        = 0x2000,
+		
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters | IncludeGenerics,
-		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | IncludeMarkup | IncludeKeywords | IncludeModifiers 
+		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | IncludeMarkup | IncludeKeywords | IncludeModifiers
 	}
 }

@@ -170,6 +170,12 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
+		public bool HideArrayBrackets {
+			get {
+				return (OutputFlags & OutputFlags.HideArrayBrackets) == OutputFlags.HideArrayBrackets;
+			}
+		}
+		
 		public bool HighlightName {
 			get {
 				return (OutputFlags & OutputFlags.HighlightName) == OutputFlags.HighlightName;
