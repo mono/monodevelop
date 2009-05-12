@@ -1,3 +1,12 @@
+2009-05-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor.Highlighting/Span.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Worked on
+	  semantic highlighting.
+
 2009-05-11  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditorData.cs: Fixed "Bug 501995 - Find

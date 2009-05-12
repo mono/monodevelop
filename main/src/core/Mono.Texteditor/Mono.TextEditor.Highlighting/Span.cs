@@ -65,37 +65,37 @@ namespace Mono.TextEditor.Highlighting
 
 		public string Color {
 			get;
-			private set;
+			protected set;
 		}
 		
 		public string TagColor {
 			get;
-			private set;
+			protected set;
 		}
 
 		public string Escape {
 			get;
-			private set;
+			protected set;
 		}
 
 		public bool StopAtEol {
 			get;
-			private set;
+			protected set;
 		}
 
 		public string Rule {
 			get;
-			private set;
+			protected set;
 		}
 
 		public string NextColor {
 			get;
-			private set;
+			protected set;
 		}
 		
 		public string Continuation {
 			get;
-			private set;
+			protected set;
 		}
 		
 		HashSet<string> endFlags = new HashSet<string> ();

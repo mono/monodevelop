@@ -176,7 +176,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static void ScanSpans (Document doc, SyntaxMode mode, Rule rule, Stack<Span> spanStack, int start, int end)
 		{
-			SyntaxMode.SpanParser parser = new SyntaxMode.SpanParser (doc, mode, null, spanStack);
+			SyntaxMode.SpanParser parser = mode.CreateSpanParser (doc, mode, null, spanStack);
 			parser.ParseSpans (start, end - start);
 		}
 		
@@ -213,7 +213,7 @@ namespace Mono.TextEditor.Highlighting
 			
 			protected void ScanSpansThreaded (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
 			{
-				SyntaxMode.SpanParser parser = new SyntaxMode.SpanParser (doc, mode, null, spanStack);
+				SyntaxMode.SpanParser parser = mode.CreateSpanParser (doc, mode, null, spanStack);
 				parser.ParseSpans (start, end - start);
 			}
 			

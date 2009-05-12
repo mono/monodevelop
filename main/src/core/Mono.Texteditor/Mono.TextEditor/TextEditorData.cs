@@ -589,7 +589,6 @@ namespace Mono.TextEditor
 			if (!IsSomethingSelected)
 				return;
 			document.BeginAtomicUndo ();
-			List<ISegment> removeSegments = new List<ISegment> ();
 			bool needUpdate = false;
 			foreach (Selection selection in Selections) {
 				ISegment segment = selection.GetSelectionRange (this);
