@@ -1,5 +1,11 @@
 2009-05-12  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* Syntax/CSharpSyntaxMode.cs: Worked on pre processor semantic
+	  highlighting.
+
+2009-05-12  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs:
 	* Syntax/CSharpSyntaxMode.cs:
 	* Gui/CSharpTextEditorCompletion.cs: Fixed 'Bug 501999 -

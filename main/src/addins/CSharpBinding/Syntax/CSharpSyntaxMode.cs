@@ -31,12 +31,15 @@ using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 using Mono.TextEditor;
 using System.Xml;
+using MonoDevelop.Projects;
+using CSharpBinding;
+
+
 
 namespace MonoDevelop.CSharpBinding
 {
 	public class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{
-		
 		public CSharpSyntaxMode ()
 		{
 			ResourceXmlProvider provider = new ResourceXmlProvider (typeof (IXmlProvider).Assembly, "CSharpSyntaxMode.xml");
@@ -52,16 +55,184 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public override Chunk GetChunks (Mono.TextEditor.Document doc, Mono.TextEditor.Highlighting.Style style, Mono.TextEditor.LineSegment line, int offset, int length)
+		public override SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
 		{
-			return new CSharpChunkParser (doc, style, this, line).GetChunks (offset, length);
+			return new CSharpSpanParser (doc, mode, line, spanStack);
 		}
 		
-		protected class CSharpChunkParser : ChunkParser
+		class IfBlockSpan : Span
 		{
-			public CSharpChunkParser (Document doc, Style style, SyntaxMode mode, LineSegment line) : base (doc, style, mode, line)
+			public bool IsValid {
+				get;
+				private set;
+			}
+			
+			public IfBlockSpan (bool isValid)
+			{
+				this.IsValid = isValid;
+				TagColor = "text.preprocessor";
+				if (!isValid) {
+					Color    = "comment.block";
+					Rule     = "text.preprocessor";
+				} else {
+					Color = "text";
+					Rule = "<root>";
+				}
+				StopAtEol = false;
+			}
+			public override string ToString ()
+			{
+				return string.Format("[IfBlockSpan: IsValid={0}]", IsValid);
+			}
+		}
+		
+		class ElseBlockSpan : Span
+		{
+			public bool IsValid {
+				get;
+				private set;
+			}
+			
+			public ElseBlockSpan (bool isValid)
+			{
+				this.IsValid = isValid;
+				TagColor = "text.preprocessor";
+				if (!isValid) {
+					Color    = "comment.block";
+					Rule     = "text.preprocessor";
+				} else {
+					Color = "text";
+					Rule  = "<root>";
+				}
+				StopAtEol = false;
+			}
+			public override string ToString ()
+			{
+				return string.Format("[ElseBlockSpan: IsValid={0}]", IsValid);
+			}
+		}
+		
+		protected class CSharpSpanParser : SpanParser
+		{
+			class ConditinalExpressionEvaluator : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
+			{
+				HashSet<string> symbols = new HashSet<string> ();
+				public ConditinalExpressionEvaluator ()
+				{
+					Project project = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentSelectedProject;
+					
+					CSharpCompilerParameters cparams = ((DotNetProjectConfiguration)project.GetActiveConfiguration (project.ParentSolution.DefaultConfigurationId)).CompilationParameters as CSharpCompilerParameters;
+					if (cparams != null) {
+						string[] syms = cparams.DefineSymbols.Split (';');
+						foreach (string s in syms) {
+							string ss = s.Trim ();
+							if (ss.Length > 0 && !symbols.Contains (ss))
+								symbols.Add (ss);
+						}
+					}
+				}
+				
+				public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
+				{
+					return symbols.Contains (identifierExpression.Identifier);
+				}
+				
+				public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
+				{
+					bool result = (bool)(unaryOperatorExpression.Expression.AcceptVisitor (this, data) ?? (object)false);
+					if (unaryOperatorExpression.Op == ICSharpCode.NRefactory.Ast.UnaryOperatorType.Not)
+						return !result;
+					return result;
+				}
+				
+				public override object VisitPrimitiveExpression (ICSharpCode.NRefactory.Ast.PrimitiveExpression primitiveExpression, object data)
+				{
+					return (bool)primitiveExpression.Value;
+				}
+
+				public override object VisitBinaryOperatorExpression (ICSharpCode.NRefactory.Ast.BinaryOperatorExpression binaryOperatorExpression, object data)
+				{
+					bool left  = (bool)(binaryOperatorExpression.Left.AcceptVisitor (this, data) ?? (object)false);
+					bool right = (bool)(binaryOperatorExpression.Right.AcceptVisitor (this, data) ?? (object)false);
+					
+					switch (binaryOperatorExpression.Op) {
+					case ICSharpCode.NRefactory.Ast.BinaryOperatorType.InEquality:
+						return left != right;
+					case ICSharpCode.NRefactory.Ast.BinaryOperatorType.Equality:
+						return left == right;
+					case ICSharpCode.NRefactory.Ast.BinaryOperatorType.LogicalOr:
+						return left || right;
+					case ICSharpCode.NRefactory.Ast.BinaryOperatorType.LogicalAnd:
+						return left && right;
+					}
+					
+					Console.WriteLine ("Unknown operator:" + binaryOperatorExpression.Op);
+					return left;
+				}
+			}
+			
+			protected override Span ScanSpan (ref int i)
+			{
+				if (CurSpan is IfBlockSpan && i >= 5 && doc.GetTextAt (i - 5, 5) == "#else") {
+					LineSegment line = doc.GetLineByOffset (i);
+					int length = line.Offset + line.EditableLength - i;
+					
+					IfBlockSpan ifBlock = (IfBlockSpan)CurSpan;
+					ElseBlockSpan span = new ElseBlockSpan (!ifBlock.IsValid);
+					OnFoundSpanBegin (span, i, length);
+					i += length - 1;
+					return span;
+				}
+				if (CurRule.Name == "text.preprocessor" && i >= 3 && doc.GetTextAt (i - 3, 3) == "#if") {
+					LineSegment line = doc.GetLineByOffset (i);
+					int length = line.Offset + line.EditableLength - i;
+					string parameter = doc.GetTextAt (i, length);
+					ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
+					ICSharpCode.NRefactory.Ast.Expression expr = lexer.PPExpression ();
+					
+					bool result = !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (), null) : false;
+					
+					IfBlockSpan span = new IfBlockSpan (result);
+					OnFoundSpanBegin (span, i, length);
+					i += length - 1;
+					return span;
+				}
+				return base.ScanSpan (ref i);
+			}
+			
+			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, int i)
+			{
+				if (cur is IfBlockSpan || cur is ElseBlockSpan) {
+					bool end = i + 6 < doc.Length && doc.GetTextAt (i, 6) == "#endif";
+					if (end) {
+						OnFoundSpanEnd (cur, i, 0); // put empty end tag in
+						while (!(spanStack.Peek () is IfBlockSpan)) {
+							spanStack.Pop ();
+							if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
+								ruleStack.Pop ();
+						}
+						spanStack.Pop ();
+						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
+							ruleStack.Pop ();
+						// put pre processor eol span on stack, so that '#endif' gets the correct highlight
+						foreach (Span span in mode.Spans) {
+							if (span.Rule == "text.preprocessor") {
+								OnFoundSpanBegin (span, i, 1);
+								spanStack.Push (span);
+								ruleStack.Push (GetRule (span));
+								break;
+							}
+						}
+					}
+					return end;
+				}
+				return base.ScanSpanEnd (cur, i);
+			}
+			
+			public CSharpSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack) : base (doc, mode, line, spanStack)
 			{
 			}
 		}
 	}
 }
+ 
