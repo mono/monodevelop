@@ -1000,7 +1000,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				IReturnType rt = obj as IReturnType;
 				if (rt != null) {
-					OutputFlags flags = OutputFlags.ClassBrowserEntries;
+					OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.HideArrayBrackets;
 					bool foundNamespace = IsNamespaceInScope (rt.Namespace);
 					if (FullyQualify || !foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
 						flags |= OutputFlags.UseFullName;
@@ -1009,7 +1009,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				IMember member = obj as IMember;
 				if (member != null && !String.IsNullOrEmpty (member.Name)) {
-					OutputFlags flags = OutputFlags.IncludeGenerics;
+					OutputFlags flags = OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets;
 					if (member is IType) {
 						IType type = member as IType;
 						bool foundType = IsNamespaceInScope (type.Namespace);

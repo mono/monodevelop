@@ -32,13 +32,8 @@ using Mono.TextEditor.Highlighting;
 using Mono.TextEditor;
 using System.Xml;
 
-
-
-
 namespace MonoDevelop.CSharpBinding
 {
-	
-	
 	public class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{
 		

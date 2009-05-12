@@ -227,7 +227,7 @@ namespace MonoDevelop.CSharpBinding
 					result.Append (settings.Markup (">"));
 				}
 			}
-			if (returnType.ArrayDimensions > 0) {
+			if (!settings.HideArrayBrackets && returnType.ArrayDimensions > 0) {
 				for (int i = 0; i < returnType.ArrayDimensions; i++) {
 					result.Append (settings.Markup ("["));
 					int dimension = returnType.GetDimension (i);
