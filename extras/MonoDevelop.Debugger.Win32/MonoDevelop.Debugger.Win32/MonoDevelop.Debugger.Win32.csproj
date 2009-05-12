@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7E4B15FB-E8C4-419A-A31C-9310FD9062BD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MonoDevelop.Debugger.Win32</RootNamespace>
+    <AssemblyName>MonoDevelop.Debugger.Win32</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CORDBLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\CORDBLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\bin\Mono.Debugging.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoDevelop.Core, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\bin\MonoDevelop.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoDevelop.Projects, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\bin\MonoDevelop.Projects.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NRefactory, Version=2.1.0.0, Culture=neutral, PublicKeyToken=efe927acf176eea2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\bin\NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ArrayAdaptor.cs" />
+    <Compile Include="ArrayElementGroup.cs" />
+    <Compile Include="ArrayValueReference.cs" />
+    <Compile Include="AsyncEvaluationTracker.cs" />
+    <Compile Include="CorBacktrace.cs" />
+    <Compile Include="EvaluationContext.cs" />
+    <Compile Include="ExpressionEvaluator.cs" />
+    <Compile Include="FieldReference.cs" />
+    <Compile Include="ICollectionAdaptor.cs" />
+    <Compile Include="ObjectValueAdaptor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyReference.cs" />
+    <Compile Include="RawViewSource.cs" />
+    <Compile Include="RemoteFrameObject.cs" />
+    <Compile Include="TimedEvaluator.cs" />
+    <Compile Include="CorObjectAdaptor.cs" />
+    <Compile Include="ValueReference.cs" />
+    <Compile Include="VariableReference.cs" />
+    <Compile Include="Win32.cs" />
+    <Compile Include="CorDebuggerEngine.cs" />
+    <Compile Include="CorDebuggerSession.cs" />
+    <Compile Include="CorEvaluationContext.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MonoDevelop.Debugger.Win32.addin.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CorApi2\CorApi2.csproj">
+      <Project>{69136056-BFD3-4CEC-BB41-D9991C79593C}</Project>
+      <Name>CorApi2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorApi\CorApi.csproj">
+      <Project>{9FBCC262-10DC-4E84-A5C4-17230BBF8862}</Project>
+      <Name>CorApi</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
