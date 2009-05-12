@@ -1,0 +1,71 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9FBCC262-10DC-4E84-A5C4-17230BBF8862}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CorApi</RootNamespace>
+    <AssemblyName>CorApi</AssemblyName>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <SignAssembly>false</SignAssembly>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="context.il" />
+    <None Include="cordblib.il" />
+    <None Include="corpublib.il" />
+    <None Include="refs.il" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IMetadataImport.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>call "$(FrameworkSDKDir)bin\ildasm.exe" /NOBAR "$(TargetDir)CorApi.dll" /OUT="$(TargetDir)CorApiMDImp.il"
+del /F /Q "$(TargetDir)CorApi.dll" 
+call "$(FrameworkDir)\ilasm.exe" /DLL /DEBUG /OUT="$(TargetDir)CorApi.dll" "$(ProjectDir)refs.il" "$(ProjectDir)context.il" "$(ProjectDir)cordblib.il" "$(ProjectDir)corpublib.il" "$(TargetDir)CorApiMDImp.il"
+del /F /Q "$(TargetDir)CorApiMDImp.il"
+del /F /Q "$(TargetDir)CorApiMDImp.res"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

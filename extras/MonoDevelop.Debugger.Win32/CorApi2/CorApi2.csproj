@@ -1,0 +1,127 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{69136056-BFD3-4CEC-BB41-D9991C79593C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CorApi2</RootNamespace>
+    <AssemblyName>CorApi2</AssemblyName>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <SignAssembly>false</SignAssembly>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MDBG_FEATURE_INTEROP,MDBGENG_FEATURE_TRACECALLS,MDBGENG_FEATURE_CAPTUREOUTPUT,CORAPI_EXPOSE_RAW_INTERFACES</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;MDBG_FEATURE_INTEROP,MDBGENG_FEATURE_TRACECALLS,MDBGENG_FEATURE_CAPTUREOUTPUT,CORAPI_EXPOSE_RAW_INTERFACES</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CorApi\CorApi.csproj">
+      <Project>{9FBCC262-10DC-4E84-A5C4-17230BBF8862}</Project>
+      <Name>CorApi</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CorPublish.cs" />
+    <Compile Include="debug\AppDomain.cs" />
+    <Compile Include="debug\AppDomainEnumerator.cs" />
+    <Compile Include="debug\Assembly.cs" />
+    <Compile Include="debug\AssemblyEnumerator.cs" />
+    <Compile Include="debug\Breakpoint.cs" />
+    <Compile Include="debug\BreakpointEnumerator.cs" />
+    <Compile Include="debug\ChainEnumerator.cs" />
+    <Compile Include="debug\Class.cs" />
+    <Compile Include="debug\Constants.cs" />
+    <Compile Include="debug\Controller.cs" />
+    <Compile Include="debug\Debugger.cs" />
+    <Compile Include="debug\ErrorInfoEnumerator.cs" />
+    <Compile Include="debug\Eval.cs" />
+    <Compile Include="debug\FunctionBreakpoint.cs" />
+    <Compile Include="debug\HResults.cs" />
+    <Compile Include="debug\Module.cs" />
+    <Compile Include="debug\ModuleBreakpoint.cs" />
+    <Compile Include="debug\ModuleEnumerator.cs" />
+    <Compile Include="debug\ObjectEnumerator.cs" />
+    <Compile Include="debug\Process.cs" />
+    <Compile Include="debug\ProcessEnumerator.cs" />
+    <Compile Include="debug\RegisterSet.cs" />
+    <Compile Include="debug\Stepper.cs" />
+    <Compile Include="debug\StepperEnumerator.cs" />
+    <Compile Include="debug\Thread.cs" />
+    <Compile Include="debug\ThreadEnumerator.cs" />
+    <Compile Include="debug\Type.cs" />
+    <Compile Include="debug\TypeEnumerator.cs" />
+    <Compile Include="debug\Value.cs" />
+    <Compile Include="debug\ValueBreakpoint.cs" />
+    <Compile Include="debug\WrapperBase.cs" />
+    <Compile Include="Metadata\Constants.cs" />
+    <Compile Include="Metadata\CorMetadata.cs" />
+    <Compile Include="Metadata\MetadataFieldInfo.cs" />
+    <Compile Include="Metadata\MetadataParameterInfo.cs" />
+    <Compile Include="Metadata\MetadataPropertyInfo.cs" />
+    <Compile Include="Metadata\MetadataType.cs" />
+    <Compile Include="SymStore\ISymBinder2.cs" />
+    <Compile Include="SymStore\ISymConstant.cs" />
+    <Compile Include="SymStore\ISymEncMethod.cs" />
+    <Compile Include="SymStore\ISymENCUpdate.cs" />
+    <Compile Include="SymStore\ISymReader2.cs" />
+    <Compile Include="SymStore\ISymScope2.cs" />
+    <Compile Include="SymStore\ISymSearchInfo.cs" />
+    <Compile Include="SymStore\ISymWriter2.cs" />
+    <Compile Include="SymStore\symbinder.cs" />
+    <Compile Include="SymStore\SymConstant.cs" />
+    <Compile Include="SymStore\SymDocument.cs" />
+    <Compile Include="SymStore\SymDocumentWriter.cs" />
+    <Compile Include="SymStore\symmethod.cs" />
+    <Compile Include="SymStore\SymNamespace.cs" />
+    <Compile Include="SymStore\SymReader.cs" />
+    <Compile Include="SymStore\SymScope.cs" />
+    <Compile Include="SymStore\SymSearchInfo.cs" />
+    <Compile Include="SymStore\SymSearchPolicyAttributes.cs" />
+    <Compile Include="SymStore\symvariable.cs" />
+    <Compile Include="SymStore\SymWriter.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
