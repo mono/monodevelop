@@ -1,3 +1,7 @@
+2009-05-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Lexer/CSharp/Lexer.cs: Fixed compilation error.
+
 2009-04-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Lexer/AbstractLexer.cs: Allow whitespaces as symbol

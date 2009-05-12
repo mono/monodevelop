@@ -13,7 +13,7 @@ using System.Text;
 
 namespace ICSharpCode.NRefactory.Parser.CSharp
 {
-	internal sealed class Lexer : AbstractLexer
+	public sealed class Lexer : AbstractLexer
 	{
 		bool isAtLineBegin = true;
 		
@@ -1127,7 +1127,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				ReaderRead();
 		}
 		
-		Ast.Expression PPExpression()
+		public Ast.Expression PPExpression()
 		{
 			Ast.Expression expr = PPAndExpression();
 			while (ReaderPeek() == '|') {
