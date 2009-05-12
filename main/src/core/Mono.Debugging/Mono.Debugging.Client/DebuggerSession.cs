@@ -259,7 +259,9 @@ namespace Mono.Debugging.Client
 				return true;
 			
 			object handle;
-			return (breakpoints.TryGetValue (be, out handle) && handle != null);
+			lock (breakpoints) {
+				return (breakpoints.TryGetValue (be, out handle) && handle != null);
+			}
 		}
 
 		void AddBreakEvent (BreakEvent be)
@@ -275,54 +277,62 @@ namespace Mono.Debugging.Client
 				else
 					logWriter (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
 			}
-			
-			breakpoints.Add (be, handle);
-			Breakpoints.NotifyStatusChanged (be);
+
+			lock (breakpoints) {
+				breakpoints.Add (be, handle);
+				Breakpoints.NotifyStatusChanged (be);
+			}
 		}
 
 		void RemoveBreakEvent (BreakEvent be)
 		{
-			object handle;
-			if (GetBreakpointHandle (be, out handle)) {
-				breakpoints.Remove (be);
-				if (handle != null)
-					OnRemoveBreakEvent (handle);
+			lock (breakpoints) {
+				object handle;
+				if (GetBreakpointHandle (be, out handle)) {
+					breakpoints.Remove (be);
+					if (handle != null)
+						OnRemoveBreakEvent (handle);
+				}
 			}
 		}
 		
 		void UpdateBreakEventStatus (BreakEvent be)
 		{
-			object handle;
-			if (GetBreakpointHandle (be, out handle) && handle != null)
-				OnEnableBreakEvent (handle, be.Enabled);
+			lock (breakpoints) {
+				object handle;
+				if (GetBreakpointHandle (be, out handle) && handle != null)
+					OnEnableBreakEvent (handle, be.Enabled);
+			}
 		}
 		
 		void UpdateBreakEvent (BreakEvent be)
 		{
-			object handle;
-			if (GetBreakpointHandle (be, out handle)) {
-				if (handle != null) {
-					object newHandle = OnUpdateBreakEvent (handle, be);
-					if (newHandle != handle && (newHandle == null || !newHandle.Equals (handle))) {
-						// Update the handle if it has changed, and notify the status change
-						breakpoints [be] = newHandle;
-					}
-					Breakpoints.NotifyStatusChanged (be);
-				} else {
-					// Try inserting the breakpoint again
-					try {
-						handle = OnInsertBreakEvent (be, be.Enabled);
-						if (handle != null) {
-							// This time worked
-							breakpoints [be] = handle;
-							Breakpoints.NotifyStatusChanged (be);
+			lock (breakpoints) {
+				object handle;
+				if (GetBreakpointHandle (be, out handle)) {
+					if (handle != null) {
+						object newHandle = OnUpdateBreakEvent (handle, be);
+						if (newHandle != handle && (newHandle == null || !newHandle.Equals (handle))) {
+							// Update the handle if it has changed, and notify the status change
+							breakpoints [be] = newHandle;
 						}
-					} catch (Exception ex) {
-						Breakpoint bp = be as Breakpoint;
-						if (bp != null)
-							logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
-						else
-							logWriter (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
+						Breakpoints.NotifyStatusChanged (be);
+					} else {
+						// Try inserting the breakpoint again
+						try {
+							handle = OnInsertBreakEvent (be, be.Enabled);
+							if (handle != null) {
+								// This time worked
+								breakpoints [be] = handle;
+								Breakpoints.NotifyStatusChanged (be);
+							}
+						} catch (Exception ex) {
+							Breakpoint bp = be as Breakpoint;
+							if (bp != null)
+								logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
+							else
+								logWriter (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
+						}
 					}
 				}
 			}
@@ -563,7 +573,38 @@ namespace Mono.Debugging.Client
 					logWriter (isStderr, text);
 			}
 		}
-		
+
+		internal protected void NotifySourceFileLoaded (string fullFilePath)
+		{
+			lock (breakpoints) {
+				foreach (KeyValuePair<BreakEvent, object> bps in breakpoints) {
+					Breakpoint bp = bps.Key as Breakpoint;
+					if (bp != null && bps.Value == null) {
+						if (string.Compare (System.IO.Path.GetFullPath (bp.FileName), fullFilePath, System.IO.Path.DirectorySeparatorChar == '\\') == 0)
+							UpdateBreakEvent (bp);
+					}
+				}
+			}
+		}
+
+		internal protected void NotifySourceFileUnloaded (string fullFilePath)
+		{
+			List<BreakEvent> toUpdate = new List<BreakEvent> ();
+			lock (breakpoints) {
+				foreach (KeyValuePair<BreakEvent, object> bps in breakpoints) {
+					Breakpoint bp = bps.Key as Breakpoint;
+					if (bp != null && bps.Value != null) {
+						if (System.IO.Path.GetFullPath (bp.FileName) == fullFilePath)
+							toUpdate.Add (bp);
+					}
+				}
+				foreach (BreakEvent be in toUpdate) {
+					breakpoints[be] = null;
+					Breakpoints.NotifyStatusChanged (be);
+				}
+			}
+		}
+
 		BreakEvent GetBreakEvent (object handle)
 		{
 			foreach (KeyValuePair<BreakEvent,object> e in breakpoints) {

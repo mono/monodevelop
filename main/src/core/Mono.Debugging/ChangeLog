@@ -1,3 +1,9 @@
+2009-05-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client\DebuggerSession.cs: Protect access to
+	  the breakpoints collection. Added method for notifying
+	  loading/unloading of files.
+
 2009-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
