@@ -105,6 +105,7 @@ RES =  \
 	Styles/OblivionStyle.xml \
 	Styles/TangoLightStyle.xml \
 	Styles/VisualStudioStyle.xml \
+	SyntaxModes/ActionScriptSyntaxMode.xml \
 	SyntaxModes/AspNetSyntaxMode.xml \
 	SyntaxModes/BooSyntaxMode.xml \
 	SyntaxModes/ChangeLogSyntaxMode.xml \

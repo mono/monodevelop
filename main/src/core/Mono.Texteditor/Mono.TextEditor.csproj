@@ -208,6 +208,9 @@
     <EmbeddedResource Include="SyntaxModes\ILSyntaxMode.xml">
       <LogicalName>ILSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\ActionScriptSyntaxMode.xml">
+      <LogicalName>ActionScriptSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
