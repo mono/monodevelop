@@ -222,15 +222,15 @@ namespace MonoDevelop.Core
 			}
 			
 			//write out the new state to a temp file
-			XmlTextWriter writer = null;
 			try {
-				writer = new XmlTextWriter (tempFileName, System.Text.Encoding.UTF8);
-				writer.Formatting = Formatting.Indented;
-				writer.WriteStartElement (PropertiesRootNode);
-				writer.WriteAttributeString (PropertiesVersionAttribute, PropertiesVersion);
-				Write (writer, false);
-				writer.WriteEndElement (); // PropertiesRootNode
-				
+				using (XmlTextWriter writer = new XmlTextWriter (tempFileName, System.Text.Encoding.UTF8)) {
+					writer.Formatting = Formatting.Indented;
+					writer.WriteStartElement (PropertiesRootNode);
+					writer.WriteAttributeString (PropertiesVersionAttribute, PropertiesVersion);
+					Write (writer, false);
+					writer.WriteEndElement (); // PropertiesRootNode
+				}
+
 				//write was successful (no exception)
 				//so move the file to the real location, overwriting the old file
 				//(NOTE: File.Move doesn't overwrite existing files, so using Mono.Unix)
@@ -239,10 +239,6 @@ namespace MonoDevelop.Core
 			}
 			catch (Exception ex) {
 				LoggingService.LogError ("Error writing properties file '{0}'\n{1}", tempFileName, ex);
-			}
-			finally {
-				if (writer != null)
-					writer.Close ();
 			}
 		}
 		
