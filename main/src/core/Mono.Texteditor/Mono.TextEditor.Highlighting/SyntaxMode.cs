@@ -203,7 +203,7 @@ namespace Mono.TextEditor.Highlighting
 			public Rule CurRule {
 				get {
 					if (ruleStack.Count == 0)
-						return new Rule (null);
+						return mode;
 					return ruleStack.Peek ();
 				}
 			}
@@ -221,6 +221,12 @@ namespace Mono.TextEditor.Highlighting
 					return spanStack;
 				}
 			}
+
+			public Stack<Rule> RuleStack {
+				get {
+					return ruleStack;
+				}
+			}
 			
 			public SpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
 			{
@@ -235,9 +241,13 @@ namespace Mono.TextEditor.Highlighting
 				ruleStack = new Stack<Rule> ();
 				if (mode != null) 
 					ruleStack.Push (mode);
+				List<Rule> rules = new List<Rule> ();
 				foreach (Span span in this.spanStack) {
 					Rule rule = CurRule.GetRule (span.Rule);
-					ruleStack.Push (rule ?? CurRule);
+					rules.Add (rule ?? CurRule);
+				}
+				for (int i = rules.Count - 1; i >= 0 ; i--) {
+					ruleStack.Push (rules[i]);
 				}
 			}
 			
@@ -279,7 +289,7 @@ namespace Mono.TextEditor.Highlighting
 					ParseChar (ref i, ch);
 			}
 			
-			protected virtual Span ScanSpan (ref int i)
+			protected virtual void ScanSpan (ref int i)
 			{
 				foreach (Span span in CurRule.Spans) {
 					if (span.BeginFlags.Contains ("startsLine") && line != null && i != line.Offset)
@@ -300,10 +310,11 @@ namespace Mono.TextEditor.Highlighting
 							continue;
 						OnFoundSpanBegin (span, i, match.Length);
 						i += match.Length - 1;
-						return span;
+						spanStack.Push (span);
+						ruleStack.Push (GetRule (span));
+						return;
 					}
 				}
-				return null;
 			}
 			
 			protected virtual bool ScanSpanEnd (Span cur, int i)
@@ -356,12 +367,7 @@ namespace Mono.TextEditor.Highlighting
 							continue;
 					}
 					
-					Span span = ScanSpan (ref i);
-					if (span != null) {
-						spanStack.Push (span);
-						ruleStack.Push (GetRule (span));
-					}
-					
+					ScanSpan (ref i);
 					
 					if (i < doc.Length)
 						OnParseChar (ref i, doc.GetCharAt (i));
@@ -536,6 +542,16 @@ namespace Mono.TextEditor.Highlighting
 			string GetStyle (Chunk chunk)
 			{
 				if (chunk.Length > 0) {
+/*					Console.WriteLine (spanParser.CurSpan  + " / " + spanParser.CurRule);
+					Console.WriteLine ("----:Span:");
+					foreach (var o in spanParser.SpanStack) {
+						Console.WriteLine (o);
+					}
+					Console.WriteLine ("----:Rule:");
+					foreach (var o in spanParser.RuleStack) {
+						Console.WriteLine (o);
+					}
+					Console.WriteLine ("----");*/
 					Keywords keyword = spanParser.CurRule.GetKeyword (doc, chunk.Offset, chunk.Length); 
 					if (keyword != null)
 						return keyword.Color;
@@ -562,8 +578,9 @@ namespace Mono.TextEditor.Highlighting
 		
 		public override Rule GetRule (string name)
 		{
-			if (name == null || name == "<root>")
+			if (name == null || name == "<root>") {
 				return this;
+			}
 			if (name.StartsWith ("mode:"))
 				return SyntaxModeService.GetSyntaxMode (name.Substring ("mode:".Length));
 			
