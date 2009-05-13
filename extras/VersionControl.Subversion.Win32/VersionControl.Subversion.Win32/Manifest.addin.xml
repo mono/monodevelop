@@ -1,0 +1,23 @@
+﻿<Addin id        = "SubversionAddinWindows"
+       namespace = "MonoDevelop"
+       name      = "Subversion Add-in for Windows"
+       author    = "Lluis Sanchez"
+       copyright = "GPL"
+       description = "Subversion support for the Version Control Add-in (for Windows)"
+       category    = "Version Control"
+       version   = "2.1.0">
+
+	<Dependencies>
+		<Addin id="Core" version="2.1.0"/>
+		<Addin id="Core.Gui" version="2.1.0"/>
+		<Addin id="Projects" version="2.1.0"/>
+		<Addin id="Ide" version="2.1.0"/>
+		<Addin id="VersionControl" version="2.1.0"/>
+		<Addin id="VersionControl.Subversion" version="2.1.0"/>
+	</Dependencies>
+
+	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
+		<Class class = "SubversionAddinWindows.SvnSharpClient" />
+	</Extension>
+</Addin>
+
