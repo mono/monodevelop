@@ -156,7 +156,8 @@ namespace MonoDevelop.CSharpBinding
 						break;
 					case "#else":
 						CloseConditionBlock (new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column));
-						ConditionalRegion.ElseBlock = new DomRegion (loc, DomLocation.Empty);
+						if (ConditionalRegion != null)
+							ConditionalRegion.ElseBlock = new DomRegion (loc, DomLocation.Empty);
 //						elseBlock = directive;
 						break;
 					case "#endif":

@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 using Mono.TextEditor;
@@ -82,7 +83,33 @@ namespace MonoDevelop.CSharpBinding
 			}
 			public override string ToString ()
 			{
-				return string.Format("[IfBlockSpan: IsValid={0}]", IsValid);
+				return string.Format("[IfBlockSpan: IsValid={0}, Color={1}, Rule={2}]", IsValid, Color, Rule);
+			}
+		}
+		
+		class ElseIfBlockSpan : Span
+		{
+			public bool IsValid {
+				get;
+				private set;
+			}
+			
+			public ElseIfBlockSpan (bool isValid)
+			{
+				this.IsValid = isValid;
+				TagColor = "text.preprocessor";
+				if (!isValid) {
+					Color    = "comment.block";
+					Rule     = "text.preprocessor";
+				} else {
+					Color = "text";
+					Rule = "<root>";
+				}
+				StopAtEol = false;
+			}
+			public override string ToString ()
+			{
+				return string.Format("[ElseIfBlockSpan: IsValid={0}, Color={1}, Rule={2}]", IsValid, Color, Rule);
 			}
 		}
 		
@@ -108,7 +135,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			public override string ToString ()
 			{
-				return string.Format("[ElseBlockSpan: IsValid={0}]", IsValid);
+				return string.Format("[ElseBlockSpan: IsValid={0}, Color={1}, Rule={2}]", IsValid, Color, Rule);
 			}
 		}
 		
@@ -171,17 +198,27 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			protected override Span ScanSpan (ref int i)
+			protected override void ScanSpan (ref int i)
 			{
-				if (CurSpan is IfBlockSpan && i >= 5 && doc.GetTextAt (i - 5, 5) == "#else") {
+				if (i + 5 < doc.Length && doc.GetTextAt (i, 5) == "#else" && spanStack.Any (span => span is IfBlockSpan)) {
 					LineSegment line = doc.GetLineByOffset (i);
 					int length = line.Offset + line.EditableLength - i;
-					
+					while (spanStack.Count > 0 && !(CurSpan is IfBlockSpan)) {
+						spanStack.Pop ();
+					}
 					IfBlockSpan ifBlock = (IfBlockSpan)CurSpan;
-					ElseBlockSpan span = new ElseBlockSpan (!ifBlock.IsValid);
-					OnFoundSpanBegin (span, i, length);
+					ElseBlockSpan elseBlockSpan = new ElseBlockSpan (!ifBlock.IsValid);
+					OnFoundSpanBegin (elseBlockSpan, i, 0);
+					
+					spanStack.Push (elseBlockSpan);
+					ruleStack.Push (GetRule (elseBlockSpan));
+					
+					// put pre processor eol span on stack, so that '#else' gets the correct highlight
+					OnFoundSpanBegin (preprocessorSpan, i, 1);
+					spanStack.Push (preprocessorSpan);
+					ruleStack.Push (preprocessorRule);
 					i += length - 1;
-					return span;
+					return;
 				}
 				if (CurRule.Name == "text.preprocessor" && i >= 3 && doc.GetTextAt (i - 3, 3) == "#if") {
 					LineSegment line = doc.GetLineByOffset (i);
@@ -192,17 +229,43 @@ namespace MonoDevelop.CSharpBinding
 					
 					bool result = !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (), null) : false;
 					
-					IfBlockSpan span = new IfBlockSpan (result);
-					OnFoundSpanBegin (span, i, length);
+					IfBlockSpan ifBlockSpan = new IfBlockSpan (result);
+					OnFoundSpanBegin (ifBlockSpan, i, length);
 					i += length - 1;
-					return span;
+					spanStack.Push (ifBlockSpan);
+					ruleStack.Push (GetRule (ifBlockSpan));
+					return;
 				}
-				return base.ScanSpan (ref i);
+				if (i + 5 < doc.Length && doc.GetTextAt (i, 5) == "#elif" && spanStack.Any (span => span is IfBlockSpan)) {
+					
+					LineSegment line = doc.GetLineByOffset (i);
+					int length = line.Offset + line.EditableLength - i;
+					string parameter = doc.GetTextAt (i + 5, length - 5);
+					
+					ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
+					ICSharpCode.NRefactory.Ast.Expression expr = lexer.PPExpression ();
+				
+					bool result = !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (), null) : false;
+					
+					ElseIfBlockSpan elseIfBlockSpan = new ElseIfBlockSpan (result);
+					OnFoundSpanBegin (elseIfBlockSpan, i, 0);
+					
+					spanStack.Push (elseIfBlockSpan);
+					ruleStack.Push (GetRule (elseIfBlockSpan));
+					
+					// put pre processor eol span on stack, so that '#elif' gets the correct highlight
+					OnFoundSpanBegin (preprocessorSpan, i, 1);
+					spanStack.Push (preprocessorSpan);
+					ruleStack.Push (preprocessorRule);
+					//i += length - 1;
+					return;
+				}
+				base.ScanSpan (ref i);
 			}
 			
 			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, int i)
 			{
-				if (cur is IfBlockSpan || cur is ElseBlockSpan) {
+				if (cur is IfBlockSpan || cur is ElseIfBlockSpan || cur is ElseBlockSpan) {
 					bool end = i + 6 < doc.Length && doc.GetTextAt (i, 6) == "#endif";
 					if (end) {
 						OnFoundSpanEnd (cur, i, 0); // put empty end tag in
@@ -229,8 +292,17 @@ namespace MonoDevelop.CSharpBinding
 				return base.ScanSpanEnd (cur, i);
 			}
 			
+			Span preprocessorSpan;
+			Rule preprocessorRule;
+			
 			public CSharpSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack) : base (doc, mode, line, spanStack)
 			{
+				foreach (Span span in mode.Spans) {
+					if (span.Rule == "text.preprocessor") {
+						preprocessorSpan = span;
+						preprocessorRule = GetRule (span);
+					}
+				}
 			}
 		}
 	}
