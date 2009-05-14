@@ -1288,6 +1288,8 @@ namespace Mono.TextEditor
 		
 		public static void RemoveTrailingWhitespaces (TextEditorData data, LineSegment line)
 		{
+			if (line == null)
+				return;
 			int whitespaces = 0;
 			for (int i = line.EditableLength - 1; i >= 0 ; i--) {
 				if (Char.IsWhiteSpace (data.Document.GetCharAt (line.Offset + i))) {

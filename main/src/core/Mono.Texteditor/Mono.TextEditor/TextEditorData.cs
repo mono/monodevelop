@@ -85,8 +85,11 @@ namespace Mono.TextEditor
 			this.SearchEngine = new BasicSearchEngine ();
 			SelectionChanging += HandleSelectionChanging;
 			Caret.PositionChanged += delegate(object sender, DocumentLocationEventArgs e) {
-				if (Options.RemoveTrailingWhitespaces && e.Location.Line != Caret.Line) 
-					Document.RemoveTrailingWhitespaces (this, Document.GetLine (e.Location.Line));
+				if (Options.RemoveTrailingWhitespaces && e.Location.Line != Caret.Line) {
+					LineSegment line = Document.GetLine (e.Location.Line);
+					if (line != null)
+						Document.RemoveTrailingWhitespaces (this, line);
+				}
 			};
 		}
 		

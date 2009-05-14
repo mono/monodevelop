@@ -1,3 +1,10 @@
+2009-05-14  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextEditorData.cs: Fixed "Bug 503696 -
+	  Clicking on hyperlink in Assembly Browser led to
+	  NulReferenceException and crash".
+
 2009-05-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Worked on
