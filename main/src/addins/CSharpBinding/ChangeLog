@@ -1,5 +1,10 @@
 2009-05-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Syntax/CSharpSyntaxMode.cs: Worked on preprocessor semantic
+	  highlighting.
+
+2009-05-14  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs: Applied
 	  patch Eberhard Beilharz <eb1@sil.org> from (Bug 503410 -

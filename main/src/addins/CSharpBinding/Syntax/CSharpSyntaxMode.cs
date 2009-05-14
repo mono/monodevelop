@@ -147,14 +147,15 @@ namespace MonoDevelop.CSharpBinding
 				public ConditinalExpressionEvaluator ()
 				{
 					Project project = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentSelectedProject;
-					
-					CSharpCompilerParameters cparams = ((DotNetProjectConfiguration)project.GetActiveConfiguration (project.ParentSolution.DefaultConfigurationId)).CompilationParameters as CSharpCompilerParameters;
-					if (cparams != null) {
-						string[] syms = cparams.DefineSymbols.Split (';');
-						foreach (string s in syms) {
-							string ss = s.Trim ();
-							if (ss.Length > 0 && !symbols.Contains (ss))
-								symbols.Add (ss);
+					if (project != null) {
+						CSharpCompilerParameters cparams = ((DotNetProjectConfiguration)project.GetActiveConfiguration (project.ParentSolution.DefaultConfigurationId)).CompilationParameters as CSharpCompilerParameters;
+						if (cparams != null) {
+							string[] syms = cparams.DefineSymbols.Split (';');
+							foreach (string s in syms) {
+								string ss = s.Trim ();
+								if (ss.Length > 0 && !symbols.Contains (ss))
+									symbols.Add (ss);
+							}
 						}
 					}
 				}
@@ -201,13 +202,24 @@ namespace MonoDevelop.CSharpBinding
 			protected override void ScanSpan (ref int i)
 			{
 				if (i + 5 < doc.Length && doc.GetTextAt (i, 5) == "#else" && spanStack.Any (span => span is IfBlockSpan)) {
+					bool previousResult = false;
+					foreach (Span span in spanStack.ToArray ().Reverse ()) {
+						if (span is IfBlockSpan) {
+							previousResult = ((IfBlockSpan)span).IsValid;
+						}
+						if (span is ElseIfBlockSpan) {
+							previousResult |= ((ElseIfBlockSpan)span).IsValid;
+						}
+					}
+					
 					LineSegment line = doc.GetLineByOffset (i);
 					int length = line.Offset + line.EditableLength - i;
 					while (spanStack.Count > 0 && !(CurSpan is IfBlockSpan)) {
 						spanStack.Pop ();
 					}
 					IfBlockSpan ifBlock = (IfBlockSpan)CurSpan;
-					ElseBlockSpan elseBlockSpan = new ElseBlockSpan (!ifBlock.IsValid);
+					
+					ElseBlockSpan elseBlockSpan = new ElseBlockSpan (!previousResult);
 					OnFoundSpanBegin (elseBlockSpan, i, 0);
 					
 					spanStack.Push (elseBlockSpan);
@@ -237,7 +249,6 @@ namespace MonoDevelop.CSharpBinding
 					return;
 				}
 				if (i + 5 < doc.Length && doc.GetTextAt (i, 5) == "#elif" && spanStack.Any (span => span is IfBlockSpan)) {
-					
 					LineSegment line = doc.GetLineByOffset (i);
 					int length = line.Offset + line.EditableLength - i;
 					string parameter = doc.GetTextAt (i + 5, length - 5);
@@ -246,6 +257,21 @@ namespace MonoDevelop.CSharpBinding
 					ICSharpCode.NRefactory.Ast.Expression expr = lexer.PPExpression ();
 				
 					bool result = !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (), null) : false;
+					
+					if (result) {
+						bool previousResult = false;
+						foreach (Span span in spanStack.ToArray ().Reverse ()) {
+							Console.WriteLine (span);
+							if (span is IfBlockSpan) {
+								previousResult = ((IfBlockSpan)span).IsValid;
+							}
+							if (span is ElseIfBlockSpan) {
+								previousResult |= ((ElseIfBlockSpan)span).IsValid;
+							}
+						}
+						Console.WriteLine ("prev:" + previousResult);
+						result = !previousResult;
+					}
 					
 					ElseIfBlockSpan elseIfBlockSpan = new ElseIfBlockSpan (result);
 					OnFoundSpanBegin (elseIfBlockSpan, i, 0);
