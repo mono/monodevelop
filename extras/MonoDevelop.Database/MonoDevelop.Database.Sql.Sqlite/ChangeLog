@@ -1,3 +1,7 @@
+2009-04-23 Luciano N. Callero <lnc19@hotmail.com>
+	 * SqlServerSchemaProvider.cs: Implement a custom GetTableTriggers
+          fix a create table bug.
+
 2009-04-14  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* SqliteGuiProvider.cs: Fix Preview Dialog. When cancel the

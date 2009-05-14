@@ -161,6 +161,76 @@ namespace MonoDevelop.Database.Sql.Sqlite
 			return GetConstraints (table, column);
 		}
 
+		public override TriggerSchemaCollection GetTableTriggers (TableSchema table)
+		{
+			
+			if (table == null)
+				throw new ArgumentNullException ("table");
+			TriggerSchemaCollection triggers = new TriggerSchemaCollection ();
+			
+			IPooledDbConnection conn = connectionPool.Request ();
+
+			IDbCommand command = conn.CreateCommand (string.Format (@"SELECT * FROM sqlite_master
+																	WHERE type = 'trigger' and tbl_name = '{0}'", 
+			                                                        table.Name));
+			try {
+				// Parse Trigger Sql - Needed for alter a table
+				System.Text.RegularExpressions.Regex parseRegEx = new System.Text.RegularExpressions.Regex 
+														(string.Concat (
+					                					@"((CREATE\s*(Temp|Temporary)?\s*TRIGGER){1}\s?(\w+)\s?(IF NOT",
+														@" EXISTS)?\s?(BEFORE|AFTER|INSTEAD OF){1}\s?(\w+)\s*ON(\s+\w*",
+														@")\s*(FOR EACH ROW){1}\s*(BEGIN){1})\s+(\w|\W)*(END)"));
+				using (IDataReader r = command.ExecuteReader ()) {
+					while (r.Read ()) {
+						string sql = r.GetString (r.GetOrdinal ("sql"));
+						System.Text.RegularExpressions.MatchCollection matchs = parseRegEx.Matches (sql);
+						TriggerSchema trigger = new TriggerSchema (this);
+						trigger.Name = r.GetString (r.GetOrdinal ("name"));
+						trigger.TableName = r.GetString (r.GetOrdinal ("tbl_name"));
+						trigger.Definition = sql;
+						if (matchs.Count > 0) {
+							trigger.TriggerFireType = TriggerFireType.ForEachRow;
+							switch (matchs[0].Groups[7].Value.ToLower ()) {
+								case "insert":
+									trigger.TriggerEvent = TriggerEvent.Insert;
+									break;
+								case "update":
+									trigger.TriggerEvent = TriggerEvent.Update;
+									break;
+								case "delete":
+									trigger.TriggerEvent = TriggerEvent.Delete;
+									break;
+								default:
+									throw new NotImplementedException ();
+							}
+							
+							switch (matchs[0].Groups[7].Value.ToLower ()) {
+								case "before":
+									trigger.TriggerType = TriggerType.Before;
+									break;
+								case "after":
+									trigger.TriggerType = TriggerType.After;
+									break;
+								default:
+									throw new NotImplementedException ();
+							}
+							StringBuilder sbSource = new StringBuilder ();
+							foreach (System.Text.RegularExpressions.Capture c in matchs[0].Groups[11].Captures)
+								sbSource.Append (c.Value);
+							trigger.Source = sbSource.ToString ();
+							
+							
+						}
+						triggers.Add (trigger);
+					}
+				}
+			} catch (SqliteException e) {
+				QueryService.RaiseException (e);
+			}
+			return triggers;
+		}
+
+		
 		//http://www.sqlite.org/pragma.html
 		public virtual ConstraintSchemaCollection GetConstraints (TableSchema table, ColumnSchema column)
 		{
