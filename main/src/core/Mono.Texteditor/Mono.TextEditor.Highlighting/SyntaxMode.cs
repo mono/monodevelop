@@ -75,7 +75,13 @@ namespace Mono.TextEditor.Highlighting
 		{
 			SpanParser spanParser = CreateSpanParser (doc, this, line, null);
 			ChunkParser chunkParser = CreateChunkParser (spanParser, doc, style, this, line);
-			return chunkParser.GetChunks (offset, length);
+			Chunk result = chunkParser.GetChunks (offset, length);
+			if (SemanticRules != null) {
+				foreach (SemanticRule sematicRule in SemanticRules) {
+					sematicRule.Analyze (doc, line, result, offset, offset + length);
+				}
+			}
+			return result;
 		}
 		
 		public virtual string GetTextWithoutMarkup (Document doc, Style style, int offset, int length)
@@ -483,6 +489,9 @@ namespace Mono.TextEditor.Highlighting
 				curChunk.Length = length;
 				curChunk.Style  = GetChunkStyle (span);
 				AddChunk (ref curChunk, 0, curChunk.Style);
+				foreach (SemanticRule semanticRule in spanParser.GetRule (span).SemanticRules) {
+					semanticRule.Analyze (this.doc, line, curChunk, offset, line.EndOffset);
+				}
 			}
 			
 			public void FoundSpanExit (Span span, int offset, int length)

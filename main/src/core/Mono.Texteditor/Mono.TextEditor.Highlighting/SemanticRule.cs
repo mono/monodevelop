@@ -34,7 +34,7 @@ namespace Mono.TextEditor
 {
 	public abstract class SemanticRule
 	{
-		public abstract void Analyze (Document doc, LineSegment line, List<Chunk> chunks, int startOffset, int endOffset);
+		public abstract void Analyze (Document doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset);
 	}
 	
 	public class HighlightUrlSemanticRule : SemanticRule
@@ -50,11 +50,12 @@ namespace Mono.TextEditor
 			this.syntax = syntax;
 		}
 		
-		public override void Analyze (Document doc, LineSegment line, List<Chunk> chunks, int startOffset, int endOffset)
+		public override void Analyze (Document doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset)
 		{
 			if (endOffset <= startOffset)
 				return;
 			string text = doc.GetTextAt (startOffset, endOffset - startOffset);
+			
 			int startColumn = startOffset - line.Offset;
 			line.RemoveMarker (typeof(UrlMarker));
 			foreach (System.Text.RegularExpressions.Match m in urlRegex.Matches (text)) {

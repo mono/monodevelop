@@ -1,5 +1,11 @@
 2009-05-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/SemanticRule.cs: URL semantic
+	  rules now work again.
+
+2009-05-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/TextEditorData.cs: Fixed "Bug 503696 -
 	  Clicking on hyperlink in Assembly Browser led to
