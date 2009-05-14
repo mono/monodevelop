@@ -1,5 +1,13 @@
 2009-05-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* Syntax/CSharpSyntaxMode.cs:
+	* Syntax/HighlightPropertiesSemanticRule.cs: Added semantic
+	  rules to the c# syntax mode.
+
+2009-05-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Syntax/CSharpSyntaxMode.cs: Worked on preprocessor semantic
 	  highlighting.
 

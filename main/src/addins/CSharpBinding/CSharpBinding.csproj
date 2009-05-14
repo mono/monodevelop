@@ -187,6 +187,7 @@
     <Compile Include="Parser\CSharpFormatter.cs" />
     <Compile Include="Gui\NRefactoryTemplateParameterDataProvider.cs" />
     <Compile Include="Syntax\CSharpSyntaxMode.cs" />
+    <Compile Include="Syntax\HighlightPropertiesSemanticRule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

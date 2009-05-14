@@ -54,6 +54,10 @@ namespace MonoDevelop.CSharpBinding
 				this.SemanticRules = new List<SemanticRule> (baseMode.SemanticRules);
 				this.table = baseMode.Table;
 			}
+			AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
+			AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
+			AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
+//			AddSemanticRule (new HighlightPropertiesRule ());
 		}
 		
 		public override SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
