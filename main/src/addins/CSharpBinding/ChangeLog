@@ -1,3 +1,10 @@
+2009-05-14  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs: Applied
+	  patch Eberhard Beilharz <eb1@sil.org> from (Bug 503410 -
+	  Can't set warning level to 4).
+
 2009-05-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/NRefactoryParser.cs:

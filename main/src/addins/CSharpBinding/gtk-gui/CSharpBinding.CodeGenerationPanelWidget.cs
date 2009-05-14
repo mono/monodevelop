@@ -241,7 +241,6 @@ namespace CSharpBinding {
             this.warningLevelSpinButton.CanFocus = true;
             this.warningLevelSpinButton.Name = "warningLevelSpinButton";
             this.warningLevelSpinButton.Adjustment.PageIncrement = 1;
-            this.warningLevelSpinButton.Adjustment.PageSize = 1;
             this.warningLevelSpinButton.ClimbRate = 1;
             this.warningLevelSpinButton.Numeric = true;
             this.warningLevelSpinButton.Value = 2;

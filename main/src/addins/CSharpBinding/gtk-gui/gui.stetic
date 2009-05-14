@@ -229,7 +229,6 @@
                         <property name="CanFocus">True</property>
                         <property name="Upper">4</property>
                         <property name="PageIncrement">1</property>
-                        <property name="PageSize">1</property>
                         <property name="StepIncrement">1</property>
                         <property name="ClimbRate">1</property>
                         <property name="Numeric">True</property>
