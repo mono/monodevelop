@@ -907,6 +907,38 @@ using MonoDevelop.Core;
 			#endregion 
 			return collection;
 		}
+		
+		public override TriggerSchemaCollection GetTableTriggers (TableSchema table)
+		{
+			if (table == null)
+				throw new ArgumentNullException ("table");
+			TriggerSchemaCollection triggers = new TriggerSchemaCollection ();
+			IPooledDbConnection conn = connectionPool.Request ();
+			IDbCommand command = conn.CreateCommand (string.Format (
+															@"SELECT * FROM 
+															information_schema.triggers
+			                                                WHERE event_object_table = '{0}' order by trigger_name", 
+															table.Name));
+			try {
+				using (IDataReader r = command.ExecuteReader ()) {
+					while (r.Read ()) {
+						TriggerSchema trigger = new TriggerSchema (this);
+						trigger.Name = r.GetString (r.GetOrdinal ("trigger_name"));
+						trigger.Source = r.GetString (r.GetOrdinal ("action_statement"));
+						trigger.TriggerType = (TriggerType)Enum.Parse (typeof(TriggerType), 
+																		r.GetString (r.GetOrdinal ("condition_timing")));
+						trigger.TriggerEvent = (TriggerEvent)Enum.Parse (typeof(TriggerEvent), 
+																		r.GetString (r.GetOrdinal ("event_manipulation")));
+						trigger.TriggerFireType = TriggerFireType.ForEachRow;
+						triggers.Add (trigger);
+					}
+				}
+			} catch (NpgsqlException e) {
+				QueryService.RaiseException (e);
+			}
+			return triggers;
+		}
+		
 
 		public override DataTypeSchema GetDataType (string name)
 		{
