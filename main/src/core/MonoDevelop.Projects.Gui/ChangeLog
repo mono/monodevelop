@@ -1,3 +1,11 @@
+2009-05-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 385043 - Intellisense should default to
+	  most-recently-used match (instead of first match
+	  alphabetically)".
+
 2009-05-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:

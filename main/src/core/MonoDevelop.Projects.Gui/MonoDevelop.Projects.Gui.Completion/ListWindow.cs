@@ -30,6 +30,8 @@ using Gdk;
 using Pango;
 using System;
 using System.Text;
+using System.Collections.Generic;
+
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
@@ -306,19 +308,38 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			int max = (provider == null ? 0 : provider.ItemCount);
 			string sLower = s.ToLower ();
+			string historyWord = null;
+			for (int i = wordHistory.Count - 1; i >= 0 ; i--) {
+				string word = wordHistory[i];
+				if (word.StartsWith (sLower)) {
+					historyWord = word;
+					break;
+				}
+			}
+			
+			if (historyWord != null) {
+				for (int n=0; n<max; n++) {
+					string txt = provider.GetText (n);
+					if (txt.ToLower () == historyWord) {
+						hasMismatches = false;
+						return n;
+					}
+				}
+			}
 			
 			int bestMatch = -1;
 			int bestMatchLength = 0;
 			for (int n=0; n<max; n++) 
 			{
 				string txt = provider.GetText (n);
+				
 				if (txt.StartsWith (s)) {
 					hasMismatches = false;
 					return n;
 				} else {
 					//try to match as many characters at the beginning of the words as possible
 					int matchLength = 0;
-					int minLength = Math.Min (s.Length, txt.Length);
+					int minLength = Math.Min (sLower.Length, txt.Length);
 					while (matchLength < minLength && char.ToLower (txt[matchLength]) == sLower [matchLength]) {
 						matchLength++;
 					}
@@ -330,6 +351,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			hasMismatches = (bestMatch > -1) && (bestMatchLength != s.Length);
 			return bestMatch;
+		}
+		List<string> wordHistory = new List<string> ();
+		const int maxHistoryLength = 500;
+		protected void AddWordToHistory (string word)
+		{
+			if (!wordHistory.Contains (word.ToLower ())) {
+				wordHistory.Add (word.ToLower ());
+				while (wordHistory.Count > maxHistoryLength)
+					wordHistory.RemoveAt (0);
+			}
 		}
 		
 		void SelectEntry (int n)

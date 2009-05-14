@@ -301,7 +301,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int partialWordLength = partialWord != null ? partialWord.Length : 0;
 			int replaceLen = completionContext.TriggerWordLength + partialWordLength - initialWordLength;
 			string pword = completionWidget.GetText (completionContext.TriggerOffset, completionContext.TriggerOffset + replaceLen);
-			
+			AddWordToHistory (word);
 			completionWidget.SetCompletionText (completionContext, pword, word);
 		}
 		
