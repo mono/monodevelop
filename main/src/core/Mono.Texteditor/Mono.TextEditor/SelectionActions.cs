@@ -81,12 +81,20 @@ namespace Mono.TextEditor
 
 		public static void StartLineSelection (TextEditorData data)
 		{
-			StartSelection (data);
+			data.Caret.PreserveSelection = true;
+			if (!data.IsSomethingSelected) {
+				data.MainSelection = new Selection (new DocumentLocation (data.Caret.Line, 0), new DocumentLocation (data.Caret.Line, 0));
+			}
 		}
 
 		public static void EndLineSelection (TextEditorData data)
 		{
-			data.SetSelectLines (data.MainSelection.Anchor.Line, data.Caret.Line);
+			int fromLine = data.MainSelection.Anchor.Line,
+			    toLine = data.Caret.Line;
+			LineSegment toSegment = data.Document.GetLine (toLine);
+			int toOffset = (toLine < fromLine)? toSegment.Offset: toSegment.EndOffset;
+			
+			data.ExtendSelectionTo (toOffset);
 			data.Caret.PreserveSelection = false;
 		}
 
