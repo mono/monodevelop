@@ -1,3 +1,7 @@
+2009-04-23 Luciano N. Callero <lnc19@hotmail.com>
+	* SqlServerSchemaProvider.cs: Implement a custom GetTableTriggers
+	  fix a create table bug.
+
 2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* SqlServerPooledDbConnection.cs: Added a way to create a

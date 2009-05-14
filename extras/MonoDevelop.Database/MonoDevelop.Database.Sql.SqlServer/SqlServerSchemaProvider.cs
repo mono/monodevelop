@@ -61,7 +61,7 @@ using MonoDevelop.Core;
 		public override DatabaseSchemaCollection GetDatabases ()
 		{
 			DatabaseSchemaCollection databases = new DatabaseSchemaCollection ();
-
+			
 			IPooledDbConnection conn = connectionPool.Request ();
 			conn.DbConnection.ChangeDatabase ("master"); //we don't have to change it back afterwards, since the connectionpool will do this for us
 			IDbCommand command = conn.CreateCommand ("select name from sysdatabases");
@@ -175,6 +175,76 @@ using MonoDevelop.Core;
 			
 			return columns;
 		}
+		
+		public override TriggerSchemaCollection GetTableTriggers (TableSchema table)
+		{
+			if (table == null)
+				throw new ArgumentNullException ("table");
+			
+			TriggerSchemaCollection triggers = new TriggerSchemaCollection ();				
+			IPooledDbConnection conn = connectionPool.Request ();
+			
+			string sql = string.Format(@"SELECT 
+						 	Tables.Name TableName,
+      						Triggers.name TriggerName,
+      						Triggers.crdate TriggerCreatedDate,
+      						Comments.Text TriggerText
+							FROM      sysobjects Triggers
+      						Inner Join sysobjects Tables On Triggers.parent_obj = Tables.id
+      						Inner Join syscomments Comments On Triggers.id = Comments.id
+							WHERE Triggers.xtype = 'TR'
+								And Tables.xtype = 'U' 
+								And Tables.Name = '{0}'
+							ORDER BY Tables.Name, Triggers.name", table.Name);
+			IDbCommand command = conn.CreateCommand (sql);
+			using (IDataReader r = command.ExecuteReader ()) {
+				while (r.Read ()) {
+						System.Text.RegularExpressions.Regex parseRegEx = new System.Text.RegularExpressions.Regex 					
+													(string.Concat (
+					                					@"((CREATE\s*(Temp|Temporary)?\s*TRIGGER){1}\s?(\w+)\s?(IF NOT",
+														@" EXISTS)?\s?(BEFORE|AFTER|INSTEAD OF){1}\s?(\w+)\s*ON(\s+\w*",
+														@")\s*(FOR EACH ROW){1}\s*(BEGIN){1})\s+(\w|\W)*(END)"));
+						TriggerSchema trigger = new TriggerSchema (this);
+						trigger.TableName = table.Name;
+						trigger.Name = r.GetString (r.GetOrdinal ("TriggerName"));
+						sql = r.GetString (r.GetOrdinal ("TriggerText"));
+						System.Text.RegularExpressions.MatchCollection matchs = parseRegEx.Matches (sql);
+						if (matchs.Count > 0) {
+							trigger.TriggerFireType = TriggerFireType.ForEachRow;
+							switch (matchs[0].Groups[7].Value.ToLower ()) {
+								case "insert":
+									trigger.TriggerEvent = TriggerEvent.Insert;
+									break;
+								case "update":
+									trigger.TriggerEvent = TriggerEvent.Update;
+									break;
+								case "delete":
+									trigger.TriggerEvent = TriggerEvent.Delete;
+									break;
+								default:
+									throw new NotImplementedException ();
+							}
+							switch (matchs[0].Groups[7].Value.ToLower ()) {
+								case "before":
+									trigger.TriggerType = TriggerType.Before;
+									break;
+								case "after":
+									trigger.TriggerType = TriggerType.After;
+									break;
+								default:
+									throw new NotImplementedException ();
+							}
+							StringBuilder sbSource = new StringBuilder ();
+							foreach (System.Text.RegularExpressions.Capture c in matchs[0].Groups[11].Captures)
+								sbSource.Append (c.Value);
+							trigger.Source = sbSource.ToString ();
+						}
+						triggers.Add (trigger);
+				}
+			}
+			return triggers;
+		}
+		
 
 		public override ViewSchemaCollection GetViews ()
 		{
