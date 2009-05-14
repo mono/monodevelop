@@ -27,7 +27,6 @@ FILES =  \
 	MonoDevelop.SourceEditor/EditActions.cs \
 	MonoDevelop.SourceEditor/ExtensibleTextEditor.cs \
 	MonoDevelop.SourceEditor/GotoLineNumberWidget.cs \
-	MonoDevelop.SourceEditor/HighlightPropertiesSemanticRule.cs \
 	MonoDevelop.SourceEditor/IdeViMode.cs \
 	MonoDevelop.SourceEditor/ISourceEditorOptions.cs \
 	MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs \

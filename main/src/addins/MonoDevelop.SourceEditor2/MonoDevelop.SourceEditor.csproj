@@ -140,7 +140,6 @@
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\GeneralOptionsPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\HighlightingPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\MarkerPanel.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\HighlightPropertiesSemanticRule.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorCommands.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MarkerOperationsHandler.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceWidget.cs" />
@@ -167,7 +166,7 @@
     <Compile Include="MonoDevelop.SourceEditor\AutoSave.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SyntaxModeCodon.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SyntaxModeService.cs" />
-   </ItemGroup>
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>

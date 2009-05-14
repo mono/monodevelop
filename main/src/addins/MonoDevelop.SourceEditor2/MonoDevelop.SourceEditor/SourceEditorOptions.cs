@@ -83,15 +83,6 @@ namespace MonoDevelop.SourceEditor
 			TextStylePolicy policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ();
 			instance = new DefaultSourceEditorOptions (policy);
 			MonoDevelop.Projects.Policies.PolicyService.GetUserDefaultPolicySet ().PolicyChanged += instance.HandlePolicyChanged;
-			
-			Mono.TextEditor.TextEditorOptions.DefaultOptions.Changed += delegate {
-				if (Instance.EnableSemanticHighlighting) {
-					Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule (new HighlightPropertiesRule ());
-				} else {
-					Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode ("text/x-csharp").RemoveSemanticRule (typeof (HighlightPropertiesRule));
-				}
-			};
-			
 		}
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
