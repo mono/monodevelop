@@ -1,3 +1,11 @@
+2009-05-18 Luciano N. Callero <lnc19@hotmail.com>
+	* SqlQueryView.cs: Implement SourceEditorView. Sql History Tab. 
+	Implemented an ISqlQueryEditorView. Execute selected text (if exists) or all the text.
+	Fix bug that make the query read only after execute.
+	* SqlQueryTextEditorExtension.cs: Implement a TextEditorExtension to handle Ctrl + Enter (Execute Script).
+	* ISqlQueryEditorView.cs: Interfase implementated by a Query Editor View.
+	* SqlQueryDisplayBinding.cs: Implement a Display Binding to open Sql files with SqlQueryView.
+
 2009-04-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix builddir paths.

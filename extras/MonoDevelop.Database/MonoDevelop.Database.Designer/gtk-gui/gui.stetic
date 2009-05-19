@@ -6,7 +6,6 @@
   </configuration>
   <import>
     <widget-library name="../../build/MonoDevelop.Database.Components.dll" />
-    <widget-library name="../../build/MonoDevelop.Database.Sql.dll" />
     <widget-library name="../../build/MonoDevelop.Database.Designer.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Database.Designer.TriggersEditorWidget" design-size="422 300">

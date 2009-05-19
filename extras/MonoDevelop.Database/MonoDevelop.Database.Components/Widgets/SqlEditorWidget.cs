@@ -45,7 +45,6 @@ namespace MonoDevelop.Database.Components
 	public partial class SqlEditorWidget : Bin
 	{
 		public event EventHandler TextChanged;
-		
 		private Mono.TextEditor.TextEditor sourceView;
 		
 		public SqlEditorWidget()
@@ -68,9 +67,18 @@ namespace MonoDevelop.Database.Components
 					IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/Database/ContextMenu/SqlEditor");
 				}
 			};
-			
+
 			scrolledwindow.Add (sourceView);
 			ShowAll ();
+		}
+		
+		public string SelectedText {
+			get {
+				if (sourceView.IsSomethingSelected)
+					return sourceView.SelectedText;
+				else
+					return string.Empty;
+			}
 		}
 		
 		private void BufferChanged (object sender, ReplaceEventArgs args)

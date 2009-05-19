@@ -3,6 +3,8 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.ConnectionManager.dll
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	$(MONO_ADDINS_LIBS) \
+	$(MONODEVELOP_CORE_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Components.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \

@@ -18,8 +18,11 @@
 		<Addin id="Core" version="2.1.0"/>
 		<Addin id="Core.Gui" version="2.1.0"/>
 		<Addin id="Ide" version="2.1.0"/>
+    	<Addin id="Projects" version="2.1.0"/>
+		<Addin id="Projects.Gui" version="2.1.0"/>
 		<Addin id="Database.Sql" version="2.1.0"/>
 		<Addin id="Database.Components" version="2.1.0"/>
+		
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/Database/ToolBar/SqlQueryView">
@@ -39,7 +42,18 @@
 			<CommandItem id = "MonoDevelop.Database.Query.ToolCommands.Query" />
 		</ItemSet>
 	</Extension>
-	
+
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class class = "MonoDevelop.Database.Query.SqlQueryTextEditorExtension" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
+		<FileFilter id = "SqlFile"
+		            insertbefore="AllFiles"
+		            _label = "Sql Script Files"
+			    extensions = "*.sql"/>
+	</Extension>
+		
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-db-column-key" resource = "Icons.16x16.Database.Column.Key.png" />
 		<StockIcon stockid = "md-db-column" resource = "Icons.16x16.Database.Column.png" />
@@ -64,6 +78,16 @@
 		<StockIcon stockid = "md-db-view" resource = "Icons.16x16.Database.View.png" />
 		<StockIcon stockid = "md-db-view-source" resource = "Icons.16x16.Database.View.Source.png" />
 		<StockIcon stockid = "md-db-views" resource = "Icons.16x16.Database.Views.png" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding id = "QueryEditor" insertbefore="DefaultDisplayBinding" supportedextensions = ".sql" supportedformats = ".Sql Files" class = "MonoDevelop.Database.Query.SqlQueryDisplayBinding" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-sql" _description="Sql Files" icon="md-db-connection" isText="true">
+			<File pattern="*.sql" />
+		</MimeType>
 	</Extension>
 
 </Addin>

@@ -4,6 +4,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
+	$(MONODEVELOP_CORE_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Components.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Sql.dll \
@@ -43,7 +44,10 @@ FILES =  \
 	AssemblyInfo.cs \
 	Commands/ToolCommands.cs \
 	gtk-gui/generated.cs \
+	ISqlQueryEditorView.cs \
 	QueryResultView.cs \
+	SqlQueryDisplayBinding.cs \
+	SqlQueryTextEditorExtension.cs \
 	SqlQueryView.cs
 
 all: $(ASSEMBLY)

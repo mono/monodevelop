@@ -5,9 +5,27 @@
     <target-gtk-version>2.8</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../build/MonoDevelop.Database.Sql.dll" />
+    <widget-library name="MonoDevelop.Core.Gui, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.Ide, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.Components, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.VersionControl, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.NUnit, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.XmlEditor, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.AspNet, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.Gettext, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.Deployment, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.Deployment.Linux, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.GtkCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.DesignerSupport, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.VBNetBinding, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.CBinding, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.CSharpBinding, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.Autotools, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.SourceEditor2, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=" />
     <widget-library name="../../build/MonoDevelop.Database.Components.dll" internal="true" />
-    <widget-library name="../../../../main/build/AddIns/MonoDevelop.SourceEditor2.dll" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Database.Components.SelectColumnDialog" design-size="400 300">
     <property name="MemberName" />

@@ -1,3 +1,12 @@
+2009-05-18 Luciano N. Callero <lnc19@hotmail.com>
+	* MonoDevelop.Database.Query/SqlQueryView.cs: Implement SourceEditorView. Sql History Tab. 
+	Implemented an ISqlQueryEditorView. Execute selected text (if exists) or all the text.
+	Fix bug that make the query read only after execute.
+	* MonoDevelop.Database.Query/SqlQueryTextEditorExtension.cs: Implement a TextEditorExtension to handle Ctrl + Enter (Execute Script).
+	* MonoDevelop.Database.Query/ISqlQueryEditorView.cs: Interfase implementated by a Query Editor View.
+	* MonoDevelop.Database.Query/SqlQueryDisplayBinding.cs: Implement a Display Binding to open Sql files with SqlQueryView.
+	* MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs: Selected Text property to execute only the selected part of the SQL.
+
 2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* MonoDevelop.Database.Components/Widgets/SelectColumnWidget.cs:

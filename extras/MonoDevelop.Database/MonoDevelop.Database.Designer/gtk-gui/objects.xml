@@ -36,6 +36,7 @@
     <signals>
       <itemgroup label="PrimaryKeyConstraintEditorWidget Signals">
         <signal name="ContentChanged" />
+        <signal name="PrimaryKeyChanged" />
       </itemgroup>
     </signals>
   </object>
@@ -44,6 +45,7 @@
     <signals>
       <itemgroup label="ConstraintsEditorWidget Signals">
         <signal name="ContentChanged" />
+        <signal name="PrimaryKeyChanged" />
       </itemgroup>
     </signals>
   </object>
@@ -52,14 +54,7 @@
     <signals>
       <itemgroup label="ColumnsEditorWidget Signals">
         <signal name="ContentChanged" />
-      </itemgroup>
-    </signals>
-  </object>
-  <object type="MonoDevelop.Database.Designer.ForeignKeyConstraintEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals>
-      <itemgroup label="ForeignKeyConstraintEditorWidget Signals">
-        <signal name="ContentChanged" />
+        <signal name="PrimaryKeyChanged" />
       </itemgroup>
     </signals>
   </object>
