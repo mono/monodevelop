@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Pads;
@@ -91,7 +92,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
 			if (w != null) {
-				if (w.SourceCodeFile == null && !w.BindToClass ())
+				if (w.SourceCodeFile == FilePath.Null && !w.BindToClass ())
 					return;
 				
 				Document doc = IdeApp.Workbench.OpenDocument (w.SourceCodeFile, true);

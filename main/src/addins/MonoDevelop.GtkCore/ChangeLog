@@ -1,5 +1,14 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs:
+	  Workaround for what seems to be a mcs bug. Looks like it
+	  can't properly resolve the implicit conversion of null to
+	  string.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.GtkCore\GtkDesignInfo.cs:
 	* MonoDevelop.GtkCore.GuiBuilder\GuiBuilderWindow.cs:
 	* MonoDevelop.GtkCore.GuiBuilder\GuiBuilderProject.cs: Use the

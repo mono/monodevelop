@@ -107,7 +107,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public bool BindToClass ()
 		{
-			if (SourceCodeFile != null)
+			if (SourceCodeFile != FilePath.Null)
 				return true;
 			
 			// Find the classes that could be bound to this design

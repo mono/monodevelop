@@ -319,7 +319,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override IEnumerable<DirectoryEntry> List (FilePath pathorurl, bool recurse, SvnRevision rev)
 		{
-			if (pathorurl == null)
+			if (pathorurl == FilePath.Null)
 				throw new ArgumentNullException ();
 			
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
@@ -360,7 +360,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision rev, bool descendDirs, bool changedItemsOnly, bool remoteStatus)
 		{
-			if (path == null)
+			if (path == FilePath.Null)
 				throw new ArgumentNullException ();
 		
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
@@ -386,7 +386,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override IEnumerable<SvnRevision> Log (Repository repo, FilePath path, SvnRevision revStart, SvnRevision revEnd)
 		{
-			if (path == null)
+			if (path == FilePath.Null)
 				throw new ArgumentNullException ();
 			
 			LibSvnClient.Rev revisionStart = (LibSvnClient.Rev) revStart;
@@ -417,7 +417,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string GetPathUrl (FilePath path)
 		{
-			if (path == null)
+			if (path == FilePath.Null)
 				throw new ArgumentNullException();
 			
 			IntPtr ret = IntPtr.Zero;
@@ -468,7 +468,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override void Update (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
-			if (path == null || monitor == null)
+			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException();
 			
 			lock (sync) {
@@ -527,7 +527,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override void Resolve (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
-			if (path == null || monitor == null)
+			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException();
 			
 			lock (sync) {
@@ -550,7 +550,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override void Add (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
-			if (path == null || monitor == null)
+			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException ();
 			
 			lock (sync) {
@@ -676,7 +676,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override void Delete (FilePath path, bool force, IProgressMonitor monitor)
 		{
-			if (path == null || monitor == null)
+			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException ();
 			
 			lock (sync) {
@@ -708,7 +708,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override void Move (FilePath srcPath, FilePath destPath, SvnRevision rev, bool force, IProgressMonitor monitor)
 		{
-			if (srcPath == null || destPath == null || monitor == null)
+			if (srcPath == FilePath.Null || destPath == FilePath.Null || monitor == null)
 				throw new ArgumentNullException ();
 			
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;

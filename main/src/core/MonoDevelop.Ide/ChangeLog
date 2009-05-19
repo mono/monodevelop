@@ -1,5 +1,16 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Tasks/TaskService.cs:
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
+	* MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Workaround for what seems to be a mcs bug. Looks like it
+	  can't properly resolve the implicit conversion of null to
+	  string.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Tasks\Task.cs:
 	* MonoDevelop.Ide.Gui\Document.cs:
 	* MonoDevelop.Ide.Gui\Workbench.cs:

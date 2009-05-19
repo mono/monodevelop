@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
 				return;
 			
 			ITextBuffer editor = doc.GetContent <ITextBuffer> ();

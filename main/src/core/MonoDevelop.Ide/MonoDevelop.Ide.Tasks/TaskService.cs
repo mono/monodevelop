@@ -395,7 +395,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		public void UpdateCommentTags (Solution sol, FilePath fileName, IEnumerable<MonoDevelop.Projects.Dom.Tag> tagComments)
 		{
-			if (fileName == null) {
+			if (fileName == FilePath.Null) {
 				return;
 			}
 			

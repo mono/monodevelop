@@ -1,5 +1,12 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
+	  Workaround for what seems to be a mcs bug. Looks like it
+	  can't properly resolve the implicit conversion of null to
+	  string.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects\Project.cs:
 	* MonoDevelop.Projects\Solution.cs:
 	* MonoDevelop.Projects\Workspace.cs:

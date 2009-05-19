@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			doc.Closed -= HandleClosed;
 			fileName = doc.FileName;
-			if (fileName == null)
+			if (fileName == FilePath.Null)
 				RemoveSelfFromHistory ();
 			doc = null;
 		}
@@ -84,12 +84,12 @@ namespace MonoDevelop.Ide.Gui
 		public override bool Equals (object o)
 		{
 			DocumentNavigationPoint dp = o as DocumentNavigationPoint;
-			return dp != null && ((doc != null && doc == dp.doc) || (FileName != null && FileName == dp.FileName));
+			return dp != null && ((doc != null && doc == dp.doc) || (FileName != FilePath.Null && FileName == dp.FileName));
 		}
 		
 		public override int GetHashCode ()
 		{
-			return (FileName != null ? FileName.GetHashCode () : 0) + (doc != null ? doc.GetHashCode () : 0);
+			return (FileName != FilePath.Null ? FileName.GetHashCode () : 0) + (doc != null ? doc.GetHashCode () : 0);
 		}
 		
 		internal bool HandleRenameEvent (string oldName, string newName)

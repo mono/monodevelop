@@ -122,7 +122,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override void ActivateItem ()
 		{
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.DataItem;
-			if (w.SourceCodeFile == null && !w.BindToClass ())
+			if (w.SourceCodeFile == FilePath.Null && !w.BindToClass ())
 				return;
 			
 			Document doc = IdeApp.Workbench.OpenDocument (w.SourceCodeFile, true);

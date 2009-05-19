@@ -313,7 +313,7 @@ namespace MonoDevelop.Ide.Templates
 			if (languageExtension.Length > 0)
 				tags ["LanguageExtension"] = languageExtension;
 			
-			if (fileName != null) {
+			if (fileName != FilePath.Null) {
 				FilePath fileDirectory = Path.GetDirectoryName (fileName);
 				if (project != null && project.BaseDirectory != null && fileDirectory.IsChildPathOf (project.BaseDirectory))
 					tags ["ProjectRelativeDirectory"] = fileDirectory.ToRelative (project.BaseDirectory);

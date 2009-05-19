@@ -703,7 +703,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			int pos = -1;
 			
 			// It'd be nice if we didn't have to worry about this being null
-			if (member.DeclaringType.CompilationUnit.FileName != null) {
+			if (!member.DeclaringType.CompilationUnit.FileName.IsNull) {
 				if ((file = ctx.GetFile (member.DeclaringType.CompilationUnit.FileName)) != null)
 					pos = GetParameterNamePosition (file, param);
 			}

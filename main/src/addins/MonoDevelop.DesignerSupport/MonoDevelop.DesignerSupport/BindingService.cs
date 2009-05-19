@@ -41,6 +41,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -113,7 +114,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		static DomRegion GetValidRegion (IMember member)
 		{
-			if (member.BodyRegion.IsEmpty || member.DeclaringType.CompilationUnit.FileName == null)
+			if (member.BodyRegion.IsEmpty || member.DeclaringType.CompilationUnit.FileName == FilePath.Null)
 				return member.DeclaringType.BodyRegion;
 			return member.BodyRegion;
 		}

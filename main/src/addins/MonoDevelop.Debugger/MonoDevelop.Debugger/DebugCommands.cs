@@ -319,7 +319,7 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != null;
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null;
 		}
 	}
 	
@@ -340,7 +340,7 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != null) {
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
 				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    	IdeApp.	Workbench.ActiveDocument.FileName,
 			    	IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine).Count > 0;
@@ -395,7 +395,7 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != null) {
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
 				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    	IdeApp.	Workbench.ActiveDocument.FileName,
 			    	IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine).Count > 0;
@@ -419,7 +419,7 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != null) {
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
 				info.Enabled = true;
 			}
 			else
@@ -444,7 +444,7 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != null) {
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
 				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    	IdeApp.	Workbench.ActiveDocument.FileName,
 			    	IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine).Count > 0;
