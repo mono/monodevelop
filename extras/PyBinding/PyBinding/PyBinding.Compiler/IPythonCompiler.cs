@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 using PyBinding;
 
@@ -29,7 +30,7 @@ namespace PyBinding.Compiler
 	public interface IPythonCompiler
 	{
 		void Compile (PythonProject project,
-		              string fileName,
+		              FilePath fileName,
 		              PythonConfiguration config,
 		              BuildResult result);
 	}

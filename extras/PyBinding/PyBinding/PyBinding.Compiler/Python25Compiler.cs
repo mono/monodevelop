@@ -60,7 +60,7 @@ namespace PyBinding.Compiler
 		}
 		
 		public void Compile (PythonProject project,
-		                     string fileName,
+		                     FilePath fileName,
 		                     PythonConfiguration config,
 		                     BuildResult result)
 		{
@@ -74,17 +74,13 @@ namespace PyBinding.Compiler
 				throw new InvalidOperationException ("No supported runtime!");
 			
 			// Get our relative path within the project
-			if (!fileName.StartsWith (project.BaseDirectory)) {
+			if (!fileName.IsChildPathOf (project.BaseDirectory)) {
 				Console.WriteLine ("File is not within our project!");
 				return;
 			}
 			
-			// Get our output file path
-			int len = project.BaseDirectory.Length;
-			if (len < fileName.Length && fileName[len] == Path.DirectorySeparatorChar) {
-				len++;
-			}
-			string outFile = Path.Combine (config.OutputDirectory, fileName.Substring (len));
+			fileName = fileName.ToRelative (project.BaseDirectory);
+			string outFile = fileName.ToAbsolute (config.OutputDirectory);
 			
 			// Create the destination directory
 			FileInfo fileInfo = new FileInfo (outFile);

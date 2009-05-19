@@ -148,7 +148,7 @@ namespace MonoDevelop.AddinAuthoring
 		public string AddinManifestFileName {
 			get {
 				foreach (ProjectFile pf in project.Files) {
-					if (pf.FilePath.EndsWith (".addin") || pf.FilePath.EndsWith (".addin.xml"))
+					if (pf.FilePath.ToString ().EndsWith (".addin") || pf.FilePath.ToString ().EndsWith (".addin.xml"))
 						return pf.FilePath;
 				}
 				
