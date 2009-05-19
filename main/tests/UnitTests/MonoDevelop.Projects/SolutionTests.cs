@@ -312,9 +312,9 @@ namespace MonoDevelop.Projects
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("item-files");
 			
-			List<string> files = sol.GetItemFiles (false);
+			List<FilePath> files = sol.GetItemFiles (false);
 			Assert.AreEqual (1, files.Count);
-			Assert.AreEqual (sol.FileName, files [0]);
+			Assert.AreEqual (sol.FileName, (string)files [0]);
 			
 			DotNetProject p = (DotNetProject) sol.Items [0];
 			files = p.GetItemFiles (false);

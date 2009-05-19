@@ -32,6 +32,7 @@ using System.Text;
 
 using NUnit.Framework;
 using Mono.TextEditor;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
@@ -167,7 +168,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			{
 				this.file = file;
 			}
-			public IEditableTextFile GetEditableTextFile (string filePath)
+			public IEditableTextFile GetEditableTextFile (FilePath filePath)
 			{
 				return file;
 			}

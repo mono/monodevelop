@@ -28,6 +28,7 @@
 
 using System;
 using Mono.TextEditor;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
@@ -45,7 +46,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		{
 		}
 		
-		public string Name { 
+		public FilePath Name { 
 			get {
 				return "";
 			}
