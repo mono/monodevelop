@@ -1,5 +1,9 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* UnitTests.csproj: Flush.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/SolutionTests.cs:
 	* MonoDevelop.CSharpBinding/TestViewContent.cs:
 	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Track

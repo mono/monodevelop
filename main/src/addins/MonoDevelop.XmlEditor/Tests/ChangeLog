@@ -1,3 +1,7 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor.Tests.csproj: Flush.
+
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.XmlEditor.Tests.csproj: Moved text editor to
