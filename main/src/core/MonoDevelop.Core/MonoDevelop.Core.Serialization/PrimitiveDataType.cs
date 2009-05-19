@@ -68,4 +68,22 @@ namespace MonoDevelop.Core.Serialization
 			return XmlConvert.ToDateTime (((DataValue)data).Value, XmlDateTimeSerializationMode.Local);
 		}
 	}
+
+	internal class FilePathDataType: PrimitiveDataType
+	{
+		public FilePathDataType ( )
+			: base (typeof (FilePath))
+		{
+		}
+
+		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
+		{
+			return new DataValue (Name, ((FilePath) value).ToString ());
+		}
+
+		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
+		{
+			return new FilePath (((DataValue) data).Value);
+		}
+	}
 }

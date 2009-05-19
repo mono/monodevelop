@@ -246,7 +246,7 @@ namespace MonoDevelop.Core
 				return absPath;
 			
 			absPath           = Path.GetFullPath (absPath);
-			baseDirectoryPath = Path.GetFullPath (baseDirectoryPath);
+			baseDirectoryPath = Path.GetFullPath (baseDirectoryPath.TrimEnd (Path.DirectorySeparatorChar));
 			
 			string[] bPath = baseDirectoryPath.Split (separators);
 			string[] aPath = absPath.Split (separators);
@@ -337,6 +337,8 @@ namespace MonoDevelop.Core
 		// Atomic rename of a file. It does not fire events.
 		public static void SystemRename (string sourceFile, string destFile)
 		{
+			FilePath fn = null;
+
 			if (PropertyService.IsWindows) {
 				string wtmp = null;
 				if (File.Exists (destFile)) {
@@ -372,7 +374,7 @@ namespace MonoDevelop.Core
 				Mono.Unix.Native.Syscall.rename (sourceFile, destFile);
 			}
 		}
-		
+
 		static bool HandleError (string message, Exception ex)
 		{
 			return errorHandler != null ? errorHandler (message, ex) : false;
@@ -409,6 +411,185 @@ namespace MonoDevelop.Core
 		{
 			if (FileChanged != null) 
 				FileChanged (null, args);
+		}
+	}
+
+	public struct FilePath: IComparable<FilePath>, IComparable, IEquatable<FilePath>
+	{
+		string fileName;
+
+		public static readonly FilePath Null = new FilePath (null);
+		public static readonly FilePath Empty = new FilePath (string.Empty);
+
+		public FilePath (string name)
+		{
+			fileName = name;
+		}
+
+		public bool IsNull {
+			get { return fileName == null; }
+		}
+
+		public bool IsNullOrEmpty {
+			get { return string.IsNullOrEmpty (fileName); }
+		}
+
+		public bool IsEmpty {
+			get { return fileName != null && fileName.Length == 0; }
+		}
+
+		public FilePath FullPath {
+			get {
+				return new FilePath (Path.GetFullPath (fileName));
+			}
+		}
+
+		public string FileName {
+			get {
+				return Path.GetFileName (fileName);
+			}
+		}
+
+		public string Extension {
+			get {
+				return Path.GetExtension (fileName);
+			}
+		}
+
+		public string FileNameWithoutExtension {
+			get {
+				return Path.GetFileNameWithoutExtension (fileName);
+			}
+		}
+
+		public FilePath ParentDirectory {
+			get {
+				return new FilePath (Path.GetDirectoryName (fileName));
+			}
+		}
+
+		public bool IsAbsolute {
+			get { return Path.IsPathRooted (fileName); }
+		}
+
+		public bool IsChildPathOf (FilePath basePath)
+		{
+			StringComparison sc = PropertyService.IsWindows ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+			if (basePath.fileName [basePath.fileName.Length - 1] != Path.DirectorySeparatorChar)
+				return fileName.StartsWith (basePath.fileName + Path.DirectorySeparatorChar, sc);
+			else
+				return fileName.StartsWith (basePath.fileName, sc);
+		}
+
+		public FilePath ChangeExtension (string ext)
+		{
+			return Path.ChangeExtension (fileName, ext);
+		}
+
+		public FilePath Combine (params FilePath[] paths)
+		{
+			string path = fileName;
+			foreach (FilePath p in paths)
+				path = Path.Combine (path, p.fileName);
+			return new FilePath (path);
+		}
+
+		public FilePath Combine (params string[] paths)
+		{
+			string path = fileName;
+			foreach (string p in paths)
+				path = Path.Combine (path, p);
+			return new FilePath (path);
+		}
+
+		public FilePath ToAbsolute (FilePath basePath)
+		{
+			if (IsAbsolute)
+				return FullPath;
+			else
+				return Combine (basePath, this).FullPath;
+		}
+
+		public FilePath ToRelative (FilePath basePath)
+		{
+			return FileService.AbsoluteToRelativePath (basePath, fileName);
+		}
+
+		public static implicit operator FilePath (string name)
+		{
+			return new FilePath (name);
+		}
+
+		public static implicit operator string (FilePath filePath)
+		{
+			return filePath.fileName;
+		}
+
+		public static bool operator == (FilePath name1, FilePath name2)
+		{
+			if (PropertyService.IsWindows)
+				return string.Equals (name1.fileName, name2.fileName, StringComparison.OrdinalIgnoreCase);
+			else
+				return string.Equals (name1.fileName, name2.fileName, StringComparison.Ordinal);
+		}
+
+		public static bool operator != (FilePath name1, FilePath name2)
+		{
+			return !(name1 == name2);
+		}
+
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+
+			FilePath fn = (FilePath) obj;
+			return this == fn;
+		}
+
+		public override int GetHashCode ( )
+		{
+			if (PropertyService.IsWindows)
+				return fileName.ToLower ().GetHashCode ();
+			else
+				return fileName.GetHashCode ();
+		}
+
+		public override string ToString ( )
+		{
+			return fileName;
+		}
+
+		public int CompareTo (FilePath filePath)
+		{
+			return string.Compare (fileName, filePath.fileName, PropertyService.IsWindows);
+		}
+
+		int IComparable.CompareTo (object obj)
+		{
+			if (!(obj is FilePath))
+				return -1;
+			return CompareTo ((FilePath) obj);
+		}
+
+		#region IEquatable<FilePath> Members
+
+		bool IEquatable<FilePath>.Equals (FilePath other)
+		{
+			return this == other;
+		}
+
+		#endregion
+	}
+
+	public static class FilePathUtil
+	{
+		public static string[] ToStringArray (this FilePath[] paths)
+		{
+			string[] array = new string[paths.Length];
+			for (int n = 0; n < paths.Length; n++)
+				array[n] = paths[n].ToString ();
+			return array;
 		}
 	}
 	

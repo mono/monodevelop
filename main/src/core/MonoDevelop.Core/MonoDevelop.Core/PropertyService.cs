@@ -38,7 +38,10 @@ namespace MonoDevelop.Core
 	{
 		readonly static string FileName = "MonoDevelopProperties.xml";
 		static Properties properties;
-		
+
+		public readonly static bool IsWindows;
+		public readonly static bool IsMac;
+
 		public static Properties GlobalInstance {
 			get { return properties; }
 		}
@@ -67,16 +70,6 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		public static bool IsWindows {
-			get {
-				return Path.DirectorySeparatorChar == '\\';
-			}
-		}
-		
-		public static bool IsMac {
-			get; private set;
-		}
-		
 		//From Managed.Windows.Forms/XplatUI
 		static bool IsRunningOnMac ()
 		{
@@ -102,6 +95,8 @@ namespace MonoDevelop.Core
 		
 		static PropertyService ()
 		{
+			IsWindows = Path.DirectorySeparatorChar == '\\';
+
 			if (!LoadProperties (Path.Combine (ConfigPath, FileName))) {
 				if (!LoadProperties (Path.Combine (DataPath, FileName))) {
 					properties = new Properties ();

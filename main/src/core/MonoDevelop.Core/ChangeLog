@@ -1,3 +1,13 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core\FileService.cs:
+	* MonoDevelop.Core.Serialization\DataContext.cs:
+	* MonoDevelop.Core.Serialization\PrimitiveDataType.cs: Use the
+	  new FilePath class for handling file and directory paths.
+
+	* MonoDevelop.Core\PropertyService.cs: Store IsWindows and
+	  IsMac in readonly fields, which are faster than properties.
+
 2009-05-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core\Properties.cs: Fix file saving issue.
