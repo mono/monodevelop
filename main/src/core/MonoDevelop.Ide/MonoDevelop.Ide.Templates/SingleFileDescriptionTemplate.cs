@@ -315,7 +315,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			if (fileName != FilePath.Null) {
 				FilePath fileDirectory = Path.GetDirectoryName (fileName);
-				if (project != null && project.BaseDirectory != null && fileDirectory.IsChildPathOf (project.BaseDirectory))
+				if (project != null && project.BaseDirectory != FilePath.Null && fileDirectory.IsChildPathOf (project.BaseDirectory))
 					tags ["ProjectRelativeDirectory"] = fileDirectory.ToRelative (project.BaseDirectory);
 				else
 					tags ["ProjectRelativeDirectory"] = fileDirectory;

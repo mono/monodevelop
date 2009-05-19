@@ -1,5 +1,10 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Yet another FilePath comparison fix.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Tasks/TaskService.cs:
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
