@@ -1,5 +1,6 @@
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
@@ -7,18 +8,18 @@ namespace MonoDevelop.VersionControl
 
 	public class FileUpdateEventArgs: EventArgs
 	{
-		string filePath;
+		FilePath filePath;
 		Repository repo;
 		bool isDirectory;
 
-		internal FileUpdateEventArgs (Repository repo, string filePath, bool isDirectory)
+		internal FileUpdateEventArgs (Repository repo, FilePath filePath, bool isDirectory)
 		{
 			this.filePath = filePath;
 			this.repo = repo;
 			this.isDirectory = isDirectory;
 		}
 		
-		public string FilePath {
+		public FilePath FilePath {
 			get { return filePath; }
 		}
 		

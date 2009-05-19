@@ -1,5 +1,17 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl\CommitCommand.cs:
+	* MonoDevelop.VersionControl\FileUpdateEventHandler.cs: Track
+	  api changes.
+
+	* MonoDevelop.VersionControl\VersionControlService.cs: Looks
+	  like when deserializing, MS.NET can't resolve assemblies
+	  which are not in the main assembly dir, even if those
+	  assemblies are already loaded. Added a resolver which
+	  handles this case.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.VersionControl\ChangeSet.cs:
 	* MonoDevelop.VersionControl\Repository.cs:
 	* MonoDevelop.VersionControl\VersionInfo.cs:

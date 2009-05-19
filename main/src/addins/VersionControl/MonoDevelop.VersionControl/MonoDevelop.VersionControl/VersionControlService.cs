@@ -213,11 +213,21 @@ namespace MonoDevelop.VersionControl
 		{
 			if (comments != null)
 				return comments;
-			
+
+			ResolveEventHandler localResolve = delegate (object s, ResolveEventArgs args) {
+				foreach (System.Reflection.Assembly asm in AppDomain.CurrentDomain.GetAssemblies ()) {
+					if (asm.GetName ().FullName == args.Name)
+						return asm;
+				}
+				return null;
+			};
+
 			string file = Path.Combine (PropertyService.ConfigPath, "version-control-commit-msg");
 			if (File.Exists (file)) {
 				FileStream stream = null;
 				try {
+					AppDomain.CurrentDomain.AssemblyResolve += localResolve;
+
 					stream = File.OpenRead (file);
 					BinaryFormatter formatter = new BinaryFormatter ();
 					comments = (Hashtable) formatter.Deserialize (stream);
@@ -240,6 +250,7 @@ namespace MonoDevelop.VersionControl
 					LoggingService.LogError (ex.ToString ());
 					comments = new Hashtable ();
 				} finally {
+					AppDomain.CurrentDomain.AssemblyResolve -= localResolve;
 					if (stream != null)
 						stream.Close ();
 				}
@@ -341,8 +352,8 @@ namespace MonoDevelop.VersionControl
 			}
 			return true;
 		}
-		
-		public static void NotifyFileStatusChanged (Repository repo, string localPath, bool isDirectory) 
+
+		public static void NotifyFileStatusChanged (Repository repo, FilePath localPath, bool isDirectory) 
 		{
 			if (!DispatchService.IsGuiThread)
 				Gtk.Application.Invoke (delegate {
