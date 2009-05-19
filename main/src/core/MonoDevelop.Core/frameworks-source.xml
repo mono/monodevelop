@@ -9,10 +9,6 @@
 			<Assembly name="ICSharpCode.SharpZipLib"/>
 			<Assembly name="Accessibility"/>
 			<Assembly name="cscompmgd"/>
-			<Assembly name="Microsoft.Build.Engine"/>
-			<Assembly name="Microsoft.Build.Framework"/>
-			<Assembly name="Microsoft.Build.Tasks"/>
-			<Assembly name="Microsoft.Build.Utilities"/>
 			<Assembly name="Microsoft.JScript"/>
 			<Assembly name="Microsoft.VisualBasic.Compatibility.Data"/>
 			<Assembly name="Microsoft.VisualBasic.Compatibility"/>
@@ -42,7 +38,6 @@
 			<Assembly name="System.Configuration.Install"/>
 			<Assembly name="System.Data"/>
 			<Assembly name="System.Data.OracleClient"/>
-			<Assembly name="System.Data.SqlXml"/>
 			<Assembly name="System.Design"/>
 			<Assembly name="System.DirectoryServices"/>
 			<Assembly name="System.DirectoryServices.Protocols"/>
@@ -69,12 +64,16 @@
 		<Assemblies>
 			<!-- The first assembly is used to check if the framework is installed -->
 			<Assembly name="System.Configuration"/>
+			<Assembly name="System.Data.SqlXml"/>
 			<Assembly name="System.Deployment"/>
 			<Assembly name="System.DirectoryServices.Protocols"/>
 			<Assembly name="System.Transactions"/>
+			<Assembly name="Microsoft.Build.Engine"/>
+			<Assembly name="Microsoft.Build.Framework"/>
+			<Assembly name="Microsoft.Build.Tasks"/>
+			<Assembly name="Microsoft.Build.Utilities"/>
 			<Assembly name="Microsoft.VisualBasic.Compatibility.Data"/>
 			<Assembly name="Microsoft.VisualBasic.Compatibility"/>
-			<Assembly name="Culture"/>
 		</Assemblies>
 	</TargetFramework>
 	
@@ -158,6 +157,34 @@
 			<Assembly name="System.Windows"/>
 			<Assembly name="System.Windows.Browser"/>
 			<Assembly name="System.Xml"/>
+		</Assemblies>
+	</TargetFramework>
+
+	<TargetFramework id="4.0" _name="Mono / .NET 4.0" clrVersion="Net_4_0">
+		<CompatibleWithFramework>3.5</CompatibleWithFramework>
+		<Assemblies>
+			<!-- The first assembly is used to check if the framework is installed -->
+			<Assembly name="System.Activities"/>
+			<Assembly name="System.Activities.Core.Design"/>
+			<Assembly name="System.Activities.Design.Base"/>
+			<Assembly name="System.Activities.Design"/>
+			<Assembly name="System.Activities.Extended"/>
+			<Assembly name="System.Caching"/>
+			<Assembly name="System.Dynamic"/>
+			<Assembly name="System.Runtime"/>
+			<Assembly name="System.ServiceModel.Activities"/>
+			<Assembly name="System.ServiceModel.Channels"/>
+			<Assembly name="System.ServiceModel.Discovery"/>
+			<Assembly name="System.ServiceModel.Routing"/>
+			<Assembly name="System.ServiceModel.WasHosting"/>
+			<Assembly name="System.Web.DataVisualization"/>
+			<Assembly name="System.Web.DataVisualization.Design"/>
+			<Assembly name="System.Windows.Forms.DataVisualization"/>
+			<Assembly name="System.Windows.Forms.DataVisualization.Design"/>
+			<Assembly name="System.Xaml"/>
+			<Assembly name="System.Xaml.Hosting"/>
+			<Assembly name="Microsoft.Build"/>
+			<Assembly name="Microsoft.Build.FileTracker"/>
 		</Assemblies>
 	</TargetFramework>
 </FrameworkList>

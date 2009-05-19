@@ -1,5 +1,15 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* frameworks.xml:
+	* frameworks-source.xml:
+	* MonoDevelop.Core\ClrVersion.cs:
+	* MonoDevelop.Core.Assemblies\TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies\MsNetTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies\SystemAssemblyService.cs: Added
+	  support for .net 4.0.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies/SystemAssembly.cs: If an
 	  assembly has no token, don't add it.
 

@@ -138,14 +138,19 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, params string[] assemblyFiles)
 		{
-			PackageAssemblyInfo[] pinfos = new PackageAssemblyInfo [assemblyFiles.Length];
-			for (int n=0; n<assemblyFiles.Length; n++) {
-				PackageAssemblyInfo pi = new PackageAssemblyInfo ();
-				pi.File = assemblyFiles [n];
-				pi.Update (SystemAssemblyService.GetAssemblyNameObj (pi.File));
-				pinfos [n] = pi;
+			List<PackageAssemblyInfo> pinfos = new List<PackageAssemblyInfo> (assemblyFiles.Length);
+			foreach (string afile in assemblyFiles) {
+				try {
+					PackageAssemblyInfo pi = new PackageAssemblyInfo ();
+					pi.File = afile;
+					pi.Update (SystemAssemblyService.GetAssemblyNameObj (pi.File));
+					pinfos.Add (pi);
+				}
+				catch {
+					// Ignore
+				}
 			}
-			return RegisterPackage (pinfo, isInternal, pinfos);
+			return RegisterPackage (pinfo, isInternal, pinfos.ToArray ());
 		}
 		
 		internal SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, PackageAssemblyInfo[] assemblyFiles)

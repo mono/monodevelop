@@ -34,9 +34,9 @@ namespace MonoDevelop.Core.Assemblies
 {
 	class MsNetTargetRuntime: TargetRuntime
 	{
-		string rootDir;
-		string newFxDir;
-		string gacDir;
+		FilePath rootDir;
+		FilePath newFxDir;
+		FilePath gacDir;
 		bool running;
 		MsNetExecutionHandler execHandler;
 		
@@ -107,8 +107,9 @@ namespace MonoDevelop.Core.Assemblies
 		protected override string GetFrameworkFolder (TargetFramework fx)
 		{
 			switch (fx.Id) {
-				case "1.1": return Path.Combine (rootDir, "v1.1.4322");
-				case "2.0": return Path.Combine (rootDir, "v2.0.50727");
+				case "1.1": return rootDir.Combine ("v1.1.4322");
+				case "2.0": return rootDir.Combine ("v2.0.50727");
+				case "4.0": return newFxDir.Combine (".NETFramework", "v4.0");
 				default: return Path.Combine (newFxDir, "v" + fx.Id);
 			}
 		}
@@ -120,7 +121,7 @@ namespace MonoDevelop.Core.Assemblies
 
 		public override IEnumerable<string> GetToolsPaths (TargetFramework fx)
 		{
-			if (fx.Id != "1.1" && fx.Id != "2.0")
+			if (fx.Id != "1.1" && fx.Id != "2.0" && fx.Id != "4.0")
 				yield return GetFrameworkFolder (Runtime.SystemAssemblyService.GetTargetFramework ("2.0"));
 			
 			yield return GetFrameworkFolder (fx);

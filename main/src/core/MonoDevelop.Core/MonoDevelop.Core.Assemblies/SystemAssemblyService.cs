@@ -187,6 +187,9 @@ namespace MonoDevelop.Core.Assemblies
 						return GetAssemblyNameObj (f);
 				}
 				throw;
+			} catch (BadImageFormatException) {
+				AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (file);
+				return new AssemblyName (asm.Name.FullName);
 			}
 		}
 		
@@ -222,6 +225,9 @@ namespace MonoDevelop.Core.Assemblies
 			// Find framework realtions
 			foreach (TargetFramework fx in frameworks)
 				BuildFrameworkRelations (fx);
+
+			if (!UseExpandedFrameworksFile)
+				LoadKnownAssemblyVersions ();
 		}
 		
 		void BuildFrameworkRelations (TargetFramework fx)
@@ -237,8 +243,11 @@ namespace MonoDevelop.Core.Assemblies
 				BuildFrameworkRelations (compatFx);
 				if (!UseExpandedFrameworksFile) {
 					List<AssemblyInfo> allAsm = new List<AssemblyInfo> (fx.Assemblies);
-					foreach (AssemblyInfo ai in compatFx.Assemblies)
-						allAsm.Add (ai.Clone ());
+					foreach (string extFxId in compatFx.ExtendedFrameworks) {
+						TargetFramework extFx = GetTargetFramework (extFxId);
+						foreach (AssemblyInfo ai in extFx.Assemblies)
+							allAsm.Add (ai.Clone ());
+					}
 					fx.Assemblies = allAsm.ToArray ();
 				}
 				fx.CompatibleFrameworks.AddRange (compatFx.CompatibleFrameworks);
@@ -259,6 +268,28 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			
 			fx.RelationsBuilt = true;
+		}
+
+		void LoadKnownAssemblyVersions ( )
+		{
+			Stream s = AddinManager.CurrentAddin.GetResource ("frameworks.xml");
+			XmlDocument doc = new XmlDocument ();
+			doc.Load (s);
+			s.Close ();
+
+			foreach (TargetFramework fx in frameworks) {
+				foreach (AssemblyInfo ai in fx.Assemblies) {
+					XmlElement elem = (XmlElement) doc.DocumentElement.SelectSingleNode ("TargetFramework[@id='" + fx.Id + "']/Assemblies/Assembly[@name='" + ai.Name + "']");
+					if (elem != null) {
+						string v = elem.GetAttribute ("version");
+						if (!string.IsNullOrEmpty (v))
+							ai.Version = v;
+						v = elem.GetAttribute ("publicKeyToken");
+						if (!string.IsNullOrEmpty (v))
+							ai.PublicKeyToken = v;
+					}
+				}
+			}
 		}
 		
 		internal void SaveGeneratedFrameworkInfo ()
