@@ -61,8 +61,9 @@ namespace MonoDevelop.Core.Serialization
 			ItemPropertyAttribute at = FindPropertyAttribute (attributes, scope + "/*");
 			if (at != null) {
 				itemType = at.ValueType;
+				if (itemType == null) itemType = handler.GetItemType ();
 				if (at.SerializationDataType != null)
-					itemDataType = (DataType) Activator.CreateInstance (at.SerializationDataType, new object[] { handler.GetItemType() });
+					itemDataType = (DataType) Activator.CreateInstance (at.SerializationDataType, new object[] { itemType });
 			}
 			
 			if (itemType == null) itemType = handler.GetItemType ();

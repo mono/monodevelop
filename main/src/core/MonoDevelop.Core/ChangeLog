@@ -1,5 +1,11 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Serialization/CollectionDataType.cs: Use
+	  the correct item type when initializing custom data
+	  serializers.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core\FileService.cs: Fix warning.
 
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
