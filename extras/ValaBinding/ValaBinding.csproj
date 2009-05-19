@@ -48,9 +48,7 @@
     <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <Package>mono-addins</Package>
-    </Reference>
+    <Reference Include="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="MonoDevelop.VersionControl, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
@@ -119,6 +117,12 @@
     </Reference>
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
       <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.SourceEditor2, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>

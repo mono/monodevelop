@@ -68,58 +68,58 @@
     <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="MonoDevelop.VersionControl, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.VersionControl, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.NUnit, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.NUnit, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.XmlEditor, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.XmlEditor, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.AspNet, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.AspNet, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Gettext, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.Gettext, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Deployment, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.Deployment, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Deployment.Linux, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.Deployment.Linux, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.GtkCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.GtkCore, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.DesignerSupport, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.DesignerSupport, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.VBNetBinding, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.VBNetBinding, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.CBinding, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.CBinding, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.CSharpBinding, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.CSharpBinding, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Autotools, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.Autotools, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.SourceEditor2, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.SourceEditor2, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral, PublicKeyToken=">
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=">
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
   </ItemGroup>

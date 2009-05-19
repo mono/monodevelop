@@ -1,3 +1,7 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Backend.Mdb.csproj: Flush.
+
 2009-05-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDebuggerStartInfo.cs: Don't enable user modules for

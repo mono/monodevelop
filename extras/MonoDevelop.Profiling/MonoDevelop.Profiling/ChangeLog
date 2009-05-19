@@ -1,3 +1,7 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Profiling.mdp: Flush.
+
 2009-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AbstractProfiler.cs:

@@ -1,3 +1,7 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Database.Components.csproj: Flush.
+
 2009-05-18 Luciano N. Callero <lnc19@hotmail.com>
     * Widgets/SqlEditorWidget.cs: Selected Text property to execute only the selected part of the SQL.
 

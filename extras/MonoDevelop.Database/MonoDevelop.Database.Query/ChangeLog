@@ -1,3 +1,7 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Database.Query.csproj: Flush.
+
 2009-05-18 Luciano N. Callero <lnc19@hotmail.com>
 	* SqlQueryView.cs: Implement SourceEditorView. Sql History Tab. 
 	Implemented an ISqlQueryEditorView. Execute selected text (if exists) or all the text.

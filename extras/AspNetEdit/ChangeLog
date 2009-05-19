@@ -1,3 +1,7 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AspNetEdit.csproj: Flush.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure:

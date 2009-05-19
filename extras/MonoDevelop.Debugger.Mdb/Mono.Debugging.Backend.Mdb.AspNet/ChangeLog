@@ -1,3 +1,7 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Backend.Mdb.AspNet.csproj: Flush.
+
 2009-05-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoXspDebuggerSessionFactory.cs: Don't enable user modules

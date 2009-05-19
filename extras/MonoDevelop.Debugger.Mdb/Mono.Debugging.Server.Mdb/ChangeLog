@@ -1,3 +1,7 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Server.Mdb.csproj: Flush.
+
 2009-05-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MdbAdaptor-2-6.cs: Don't enable user modules for normal app

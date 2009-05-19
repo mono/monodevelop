@@ -1,5 +1,9 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* PyBinding.csproj: Flush.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* PyBinding.Compiler/IPythonCompiler.cs:
 	* PyBinding.Compiler/Python25Compiler.cs: Track api changes.
 
