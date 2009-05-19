@@ -53,7 +53,8 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			if (ainfo == null || ainfo.Version == null)
 				return FromFile (file);
-			string fn = ainfo.Name + ", Version=" + ainfo.Version +", Culture=neutral, PublicKeyToken=" + ainfo.PublicKeyToken;
+			string token = string.IsNullOrEmpty (ainfo.PublicKeyToken) ? string.Empty : ", PublicKeyToken=" + ainfo.PublicKeyToken;
+			string fn = ainfo.Name + ", Version=" + ainfo.Version +", Culture=neutral" + token;
 			return new SystemAssembly (file, fn);
 		}
 		
