@@ -1,5 +1,9 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core\FileService.cs: Fix warning.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core\FileService.cs:
 	* MonoDevelop.Core.Serialization\DataContext.cs:
 	* MonoDevelop.Core.Serialization\PrimitiveDataType.cs: Use the

@@ -337,8 +337,6 @@ namespace MonoDevelop.Core
 		// Atomic rename of a file. It does not fire events.
 		public static void SystemRename (string sourceFile, string destFile)
 		{
-			FilePath fn = null;
-
 			if (PropertyService.IsWindows) {
 				string wtmp = null;
 				if (File.Exists (destFile)) {
