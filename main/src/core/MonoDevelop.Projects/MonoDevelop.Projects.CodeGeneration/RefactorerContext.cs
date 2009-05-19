@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		ITypeNameResolver GetTypeNameResolver (IType cls)
 		{
-			if (cls.CompilationUnit == null || cls.CompilationUnit.FileName == null)
+			if (cls.CompilationUnit == null || cls.CompilationUnit.FileName == FilePath.Null)
 				return null;
 			string file = cls.CompilationUnit.FileName;
 			ParsedDocument pi = ProjectDomService.GetParsedDocument (cls.SourceProjectDom, file);

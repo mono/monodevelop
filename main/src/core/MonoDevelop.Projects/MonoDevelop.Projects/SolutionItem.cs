@@ -117,7 +117,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				FilePath def = GetDefaultBaseDirectory ();
-				if (value != null && def != null && value.FullPath == def.FullPath)
+				if (value != FilePath.Null && def != FilePath.Null && value.FullPath == def.FullPath)
 					baseDirectory = null;
 				else if (string.IsNullOrEmpty (value))
 					baseDirectory = null;

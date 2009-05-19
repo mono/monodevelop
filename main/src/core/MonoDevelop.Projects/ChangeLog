@@ -1,5 +1,14 @@
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/Solution.cs:
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/SolutionEntityItem.cs:
+	* MonoDevelop.Projects/UnknownSolutionItem.cs:
+	* MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs:
+	  More FilePath comparison fixes.
+
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
 	  Workaround for what seems to be a mcs bug. Looks like it
 	  can't properly resolve the implicit conversion of null to

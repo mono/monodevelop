@@ -169,7 +169,7 @@ namespace MonoDevelop.Projects
 		internal void InstallFormat (FileFormat format)
 		{
 			fileFormat = format;
-			if (fileName != null)
+			if (fileName != FilePath.Null)
 				fileName = fileFormat.GetValidFileName (this, fileName);
 		}
 		

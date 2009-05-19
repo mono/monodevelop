@@ -307,7 +307,7 @@ namespace MonoDevelop.Projects
 		
 		string DefaultOutputDirectory {
 			get {
-				return (BaseDirectory != null) ? Path.Combine (BaseDirectory, Path.Combine ("build", "bin")) : null;
+				return (BaseDirectory != FilePath.Null) ? BaseDirectory.Combine ("build", "bin") : FilePath.Null;
 			}
 		}
 		

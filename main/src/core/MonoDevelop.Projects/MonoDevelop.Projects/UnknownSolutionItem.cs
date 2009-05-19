@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects
 			set {
 				// Don't allow changing the file name once it is set
 				// File formats may try to change it
-				if (fileName == null) {
+				if (fileName == FilePath.Null) {
 					fileName = value; 
 					NeedsReload = false;
 				}
