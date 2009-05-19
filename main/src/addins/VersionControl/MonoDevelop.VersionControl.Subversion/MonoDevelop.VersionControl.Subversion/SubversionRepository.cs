@@ -7,6 +7,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.VersionControl.Subversion.Gui;
+using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
@@ -44,18 +45,18 @@ namespace MonoDevelop.VersionControl.Subversion
 		SubversionVersionControl Svn {
 			get { return (SubversionVersionControl) VersionControlSystem; }
 		}
-		
-		public override bool IsModified (string sourcefile)
+
+		public override bool IsModified (FilePath sourcefile)
 		{
 			return Svn.IsDiffAvailable (this, sourcefile);
 		}
-		
-		public override bool IsVersioned (string sourcefile)
+
+		public override bool IsVersioned (FilePath sourcefile)
 		{
 			return Svn.IsVersioned (sourcefile);
 		}
-		
-		public override bool CanAdd (string sourcepath)
+
+		public override bool CanAdd (FilePath sourcepath)
 		{
 			if (IsVersioned (sourcepath) && File.Exists (sourcepath) && !Directory.Exists (sourcepath)) {
 				VersionInfo srcInfo = GetVersionInfo (sourcepath, false);
@@ -64,38 +65,38 @@ namespace MonoDevelop.VersionControl.Subversion
 
 			return Svn.CanAdd (this, sourcepath);
 		}
-		
-		public override bool CanCommit (string localPath)
+
+		public override bool CanCommit (FilePath localPath)
 		{
 			return Svn.CanCommit (this, localPath);
 		}
-		
-		public override string GetPathToBaseText (string sourcefile)
+
+		public override string GetPathToBaseText (FilePath sourcefile)
 		{
 			return Svn.GetPathToBaseText (sourcefile);
 		}
-		
-		public override string GetTextAtRevision (string repositoryPath, Revision revision)
+
+		public override string GetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
 			return Svn.GetTextAtRevision (repositoryPath, revision);
 		}
-		
-		public override Revision[] GetHistory (string sourcefile, Revision since)
+
+		public override Revision[] GetHistory (FilePath sourcefile, Revision since)
 		{
 			return Svn.GetHistory (this, sourcefile, since);
 		}
-		
-		public override VersionInfo GetVersionInfo (string localPath, bool getRemoteStatus)
+
+		public override VersionInfo GetVersionInfo (FilePath localPath, bool getRemoteStatus)
 		{
 			return Svn.GetVersionInfo (this, localPath, getRemoteStatus);
 		}
-		
-		public override VersionInfo[] GetDirectoryVersionInfo (string sourcepath, bool getRemoteStatus, bool recursive)
+
+		public override VersionInfo[] GetDirectoryVersionInfo (FilePath sourcepath, bool getRemoteStatus, bool recursive)
 		{
 			return Svn.GetDirectoryVersionInfo (this, sourcepath, getRemoteStatus, recursive);
 		}
-		
-		public override bool RequestFileWritePermission (string path)
+
+		public override bool RequestFileWritePermission (FilePath path)
 		{
 			if (!File.Exists (path))
 				return true;
@@ -113,18 +114,18 @@ namespace MonoDevelop.VersionControl.Subversion
 			VersionControlService.NotifyFileStatusChanged (this, path, false);
 			return true;
 		}
-		
-		public override void Lock (IProgressMonitor monitor, params string[] localPaths)
+
+		public override void Lock (IProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			Svn.Lock (monitor, "", false, localPaths);
 		}
-		
-		public override void Unlock (IProgressMonitor monitor, params string[] localPaths)
+
+		public override void Unlock (IProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			Svn.Unlock (monitor, false, localPaths);
 		}
-		
-		public override bool CanLock (string localPath)
+
+		public override bool CanLock (FilePath localPath)
 		{
 			if (Directory.Exists (localPath))
 				return false;
@@ -133,8 +134,8 @@ namespace MonoDevelop.VersionControl.Subversion
 				return false;
 			return (ver.Status & VersionStatus.LockOwned) == 0;
 		}
-		
-		public override bool CanUnlock (string localPath)
+
+		public override bool CanUnlock (FilePath localPath)
 		{
 			if (Directory.Exists (localPath))
 				return false;
@@ -142,7 +143,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			return ver != null && (ver.Status & VersionStatus.LockOwned) != 0;
 		}
 
-		public override Repository Publish (string serverPath, string localPath, string[] files, string message, IProgressMonitor monitor)
+		public override Repository Publish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
 		{
 			string url = Url;
 			if (!serverPath.StartsWith ("/") && !url.EndsWith ("/"))
@@ -154,35 +155,37 @@ namespace MonoDevelop.VersionControl.Subversion
 			CreateDirectory (paths, message, monitor);
 			Svn.Checkout (this.Url + "/" + serverPath, localPath, null, true, monitor);
 
-			Hashtable dirs = new Hashtable ();
+			Set<FilePath> dirs = new Set<FilePath> ();
 			PublishDir (dirs, localPath, false, monitor);
 
-			foreach (string file in files) {
-				PublishDir (dirs, Path.GetDirectoryName (file), true, monitor);
+			foreach (FilePath file in files) {
+				PublishDir (dirs, file.ParentDirectory, true, monitor);
 				Add (file, false, monitor);
 			}
-			
-			Svn.Commit (new string[] { localPath }, message, monitor);
+
+			Svn.Commit (new FilePath[] { localPath }, message, monitor);
 			
 			return new SubversionRepository (Svn, paths[0]);
 		}
 
-		void PublishDir (Hashtable dirs, string dir, bool rec, IProgressMonitor monitor)
+		void PublishDir (Set<FilePath> dirs, FilePath dir, bool rec, IProgressMonitor monitor)
 		{
-			while (dir [dir.Length - 1] == Path.DirectorySeparatorChar)
-				dir = dir.Substring (0, dir.Length - 1);
+			string ndir = (string) dir;
+			while (ndir[ndir.Length - 1] == Path.DirectorySeparatorChar)
+				ndir = ndir.Substring (0, ndir.Length - 1);
 
-			if (dirs.ContainsKey (dir))
+			dir = ndir;
+			if (dirs.Contains (dir))
 				return;
 
-			dirs [dir] = dir;
+			dirs.Add (dir);
 			if (rec) {
-				PublishDir (dirs, Path.GetDirectoryName (dir), true, monitor);
+				PublishDir (dirs, dir.ParentDirectory, true, monitor);
 				Add (dir, false, monitor);
 			}
 		}
 
-		public override void Update (string[] paths, bool recurse, IProgressMonitor monitor)
+		public override void Update (FilePath[] paths, bool recurse, IProgressMonitor monitor)
 		{
 			foreach (string path in paths)
 				Svn.Update (path, recurse, monitor);
@@ -190,47 +193,47 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public override void Commit (ChangeSet changeSet, IProgressMonitor monitor)
 		{
-			ArrayList list = new ArrayList ();
+			List<FilePath> list = new List<FilePath> ();
 			foreach (ChangeSetItem it in changeSet.Items)
 				list.Add (it.LocalPath);
-			Svn.Commit ((string[])list.ToArray (typeof(string)), changeSet.GlobalComment, monitor);
+			Svn.Commit (list.ToArray (), changeSet.GlobalComment, monitor);
 		}
-		
+
 		void CreateDirectory (string[] paths, string message, IProgressMonitor monitor)
 		{
 			Svn.Mkdir (paths, message, monitor);
 		}
-		
-		public override void Checkout (string path, Revision rev, bool recurse, IProgressMonitor monitor)
+
+		public override void Checkout (FilePath path, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
 			Svn.Checkout (this.Url, path, rev, recurse, monitor);
 		}
-		
-		public void Resolve (string[] localPaths, bool recurse, IProgressMonitor monitor)
+
+		public void Resolve (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 			Svn.Resolve (localPaths, recurse, monitor);
 			foreach (string path in localPaths)
 				VersionControlService.NotifyFileStatusChanged (this, path, Directory.Exists (path));
 		}
-		
-		public override void Revert (string[] localPaths, bool recurse, IProgressMonitor monitor)
+
+		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 			Svn.Revert (localPaths, recurse, monitor);
 		}
 
-		public override void RevertRevision (string localPath, Revision revision, IProgressMonitor monitor)
+		public override void RevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
 			Svn.RevertRevision (localPath, revision, monitor);
 		}
 
-		public override void RevertToRevision (string localPath, Revision revision, IProgressMonitor monitor)
+		public override void RevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
 			Svn.RevertToRevision (localPath, revision, monitor);
 		}
-		
-		public override void Add (string[] paths, bool recurse, IProgressMonitor monitor)
+
+		public override void Add (FilePath[] paths, bool recurse, IProgressMonitor monitor)
 		{
-			foreach (string path in paths) {
+			foreach (FilePath path in paths) {
 				if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
 					VersionInfo srcInfo = GetVersionInfo (path, false);
 					if (srcInfo.HasLocalChange (VersionStatus.ScheduledDelete)) {
@@ -252,13 +255,13 @@ namespace MonoDevelop.VersionControl.Subversion
 					Svn.Add (path, recurse, monitor);
 			}
 		}
-		
-		public override bool CanMoveFilesFrom (Repository srcRepository, string localSrcPath, string localDestPath)
+
+		public override bool CanMoveFilesFrom (Repository srcRepository, FilePath localSrcPath, FilePath localDestPath)
 		{
 			return (srcRepository is SubversionRepository) && ((SubversionRepository)srcRepository).Root == Root;
 		}
-		
-		public override void MoveFile (string srcPath, string destPath, bool force, IProgressMonitor monitor)
+
+		public override void MoveFile (FilePath srcPath, FilePath destPath, bool force, IProgressMonitor monitor)
 		{
 			bool destIsVersioned = false;
 			
@@ -290,8 +293,8 @@ namespace MonoDevelop.VersionControl.Subversion
 					base.MoveFile (srcPath, destPath, force, monitor);
 			}
 		}
-		
-		public override void MoveDirectory (string srcPath, string destPath, bool force, IProgressMonitor monitor)
+
+		public override void MoveDirectory (FilePath srcPath, FilePath destPath, bool force, IProgressMonitor monitor)
 		{
 			if (IsVersioned (destPath))
 			{
@@ -299,7 +302,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				if (!vinfo.HasLocalChange (VersionStatus.ScheduledDelete) && Directory.Exists (destPath))
 					throw new InvalidOperationException ("Cannot move directory. Destination directory already exist.");
 					
-				srcPath = Path.GetFullPath (srcPath);
+				srcPath = srcPath.FullPath;
 				
 				// The target directory does not exist, but it is versioned. It may be because
 				// it is scheduled to delete, or maybe it has been physicaly deleted. In any
@@ -322,7 +325,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				Hashtable copiedFolders = new Hashtable ();
 				foreach (string file in newFiles) {
 					string src = Path.GetFullPath (file);
-					string dst = Path.Combine (destPath, src.Substring (srcPath.Length + 1));
+					string dst = Path.Combine (destPath, src.Substring (((string)srcPath).Length + 1));
 					if (File.Exists (dst))
 						File.Delete (dst);
 					
@@ -409,8 +412,8 @@ namespace MonoDevelop.VersionControl.Subversion
 				collection.Add(f);
 		}
 
-		
-		public override void DeleteFiles (string[] paths, bool force, IProgressMonitor monitor)
+
+		public override void DeleteFiles (FilePath[] paths, bool force, IProgressMonitor monitor)
 		{
 			foreach (string path in paths) {
 				if (IsVersioned (path))
@@ -425,8 +428,8 @@ namespace MonoDevelop.VersionControl.Subversion
 				}
 			}
 		}
-		
-		public override void DeleteDirectories (string[] paths, bool force, IProgressMonitor monitor)
+
+		public override void DeleteDirectories (FilePath[] paths, bool force, IProgressMonitor monitor)
 		{
 			foreach (string path in paths) {
 				if (IsVersioned (path))
@@ -435,8 +438,8 @@ namespace MonoDevelop.VersionControl.Subversion
 					Directory.Delete (path, true);
 			}
 		}
-		
-		public override DiffInfo[] PathDiff (string baseLocalPath, string[] localPaths, bool remoteDiff)
+
+		public override DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
 		{
 			if (localPaths != null) {
 				ArrayList list = new ArrayList ();
@@ -444,7 +447,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					string diff = Svn.GetUnifiedDiff (path, false, remoteDiff);
 					if (string.IsNullOrEmpty (diff))
 						continue;
-					list.AddRange (GenerateUnifiedDiffInfo (diff, path, new string [] { path }));
+					list.AddRange (GenerateUnifiedDiffInfo (diff, path, new FilePath[] { path }));
 				}
 				return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
 			} else {

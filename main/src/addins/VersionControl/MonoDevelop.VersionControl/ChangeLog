@@ -1,3 +1,18 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl\ChangeSet.cs:
+	* MonoDevelop.VersionControl\Repository.cs:
+	* MonoDevelop.VersionControl\VersionInfo.cs:
+	* MonoDevelop.VersionControl\PublishCommand.cs:
+	* MonoDevelop.VersionControl.Views\StatusView.cs:
+	* MonoDevelop.VersionControl\UnknownRepository.cs:
+	* MonoDevelop.VersionControl\VersionControlItem.cs:
+	* MonoDevelop.VersionControl.Dialogs\CommitDialog.cs:
+	* MonoDevelop.VersionControl\VersionControlSystem.cs:
+	* MonoDevelop.VersionControl\VersionControlItemList.cs: Use
+	  the new FilePath class for handling file and directory
+	  paths.
+
 2009-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs:

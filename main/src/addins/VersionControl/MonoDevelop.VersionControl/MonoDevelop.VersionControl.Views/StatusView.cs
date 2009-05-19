@@ -425,7 +425,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			string scolor = n.HasLocalChanges && n.HasRemoteChanges ? "red" : null;
 			
-			string localpath = n.LocalPath.Substring(filepath.Length);
+			string localpath = n.LocalPath.ToRelative (filepath);
 			if (localpath.Length > 0 && localpath[0] == Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
 			if (localpath == "") { localpath = "."; } // not sure if this happens
 			
@@ -440,9 +440,9 @@ namespace MonoDevelop.VersionControl.Views
 
 			
 			
-			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, commit, false, n.LocalPath, true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
+			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, commit, false, n.LocalPath.ToString (), true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
 			if (!n.IsDirectory)
-				filestore.AppendValues (it, statusicon, "", "", "", false, true, n.LocalPath, false, false, fileIcon, false, null, null, false);
+				filestore.AppendValues (it, statusicon, "", "", "", false, true, n.LocalPath.ToString (), false, false, fileIcon, false, null, null, false);
 			return it;
 		}
 		
@@ -771,7 +771,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void OnFileStatusChanged (object s, FileUpdateEventArgs args)
 		{
-			if (!args.FilePath.StartsWith (filepath))
+			if (!args.FilePath.IsChildPathOf (filepath) && args.FilePath != filepath)
 				return;
 				
 			if (args.IsDirectory) {

@@ -159,7 +159,7 @@ namespace MonoDevelop.AspNet
 	public class CodeBehindWriter
 	{
 		List<string> openFiles;
-		List<KeyValuePair<string,string>> filesToWrite = new List<KeyValuePair<string,string>> ();
+		List<KeyValuePair<FilePath,string>> filesToWrite = new List<KeyValuePair<FilePath,string>> ();
 		System.CodeDom.Compiler.CodeDomProvider provider;
 		System.CodeDom.Compiler.CodeGeneratorOptions options;
 		MonoDevelop.Core.IProgressMonitor monitor;
@@ -204,8 +204,8 @@ namespace MonoDevelop.AspNet
 				return openFiles;
 			}
 		}
-		
-		public void Write (System.CodeDom.CodeCompileUnit ccu, string path)
+
+		public void Write (System.CodeDom.CodeCompileUnit ccu, FilePath path)
 		{
 			//no? just write out to disc
 			if (!OpenFiles.Contains (path)) {
@@ -229,7 +229,7 @@ namespace MonoDevelop.AspNet
 				try {
 					using (StringWriter sw = new StringWriter ()) {
 						provider.GenerateCodeFromCompileUnit (ccu, sw, options);
-						filesToWrite.Add (new KeyValuePair<string, string> (
+						filesToWrite.Add (new KeyValuePair<FilePath, string> (
 							path, sw.ToString ()));
 					}
 				} catch (Exception ex) {
@@ -246,7 +246,7 @@ namespace MonoDevelop.AspNet
 			
 			//these documents are open, so needs to run in GUI thread
 			MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
-				foreach (KeyValuePair<string, string> item in filesToWrite) {
+				foreach (KeyValuePair<FilePath, string> item in filesToWrite) {
 					try {
 						
 						bool updated = false;

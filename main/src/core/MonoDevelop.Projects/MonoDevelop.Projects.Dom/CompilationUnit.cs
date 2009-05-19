@@ -29,13 +29,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
 	public class CompilationUnit : ICompilationUnit
 	{
-		protected string fileName;
-		public string FileName {
+		protected FilePath fileName;
+		public FilePath FileName {
 			get {
 				return fileName;
 			}

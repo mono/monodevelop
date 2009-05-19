@@ -101,7 +101,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Returns true if the specified local file or directory is under version control
-		public virtual bool IsVersioned (string localPath)
+		public virtual bool IsVersioned (FilePath localPath)
 		{
 			VersionInfo vinfo = GetVersionInfo (localPath, false);
 			if (vinfo == null)
@@ -110,7 +110,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Returns true if the specified file has been modified since the last commit
-		public virtual bool IsModified (string localFile)
+		public virtual bool IsModified (FilePath localFile)
 		{
 			if (!File.Exists (localFile))
 				return false;
@@ -121,7 +121,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Returns true if the specified file or directory can be added to the repository
-		public virtual bool CanAdd (string localPath)
+		public virtual bool CanAdd (FilePath localPath)
 		{
 			if (!File.Exists (localPath) && !Directory.Exists (localPath))
 				return false;
@@ -132,25 +132,25 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Returns true if the repository has history for the specified local file
-		public virtual bool IsHistoryAvailable (string localFile)
+		public virtual bool IsHistoryAvailable (FilePath localFile)
 		{
 			return IsVersioned (localFile);
 		}
 		
 		// Returns true if the specified path can be updated from the repository
-		public virtual bool CanUpdate (string localPath)
+		public virtual bool CanUpdate (FilePath localPath)
 		{
 			return IsVersioned (localPath);
 		}
 		
 		// Returns true if the specified path can be committed to the repository
-		public virtual bool CanCommit (string localPath)
+		public virtual bool CanCommit (FilePath localPath)
 		{
 			return GetVersionInfo (localPath, false) != null;
 		}
 		
 		// Returns true if the specified path can be removed from the repository
-		public virtual bool CanRemove (string localPath)
+		public virtual bool CanRemove (FilePath localPath)
 		{
 			if (!File.Exists (localPath) && !Directory.Exists (localPath))
 				return false;
@@ -161,51 +161,51 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Returns true if the specified path can be reverted
-		public virtual bool CanRevert (string localPath)
+		public virtual bool CanRevert (FilePath localPath)
 		{
 			VersionInfo vinfo = GetVersionInfo (localPath, false);
 			return vinfo != null && vinfo.IsVersioned && vinfo.HasLocalChanges;
 		}
-		
-		public virtual bool CanLock (string localPath)
+
+		public virtual bool CanLock (FilePath localPath)
 		{
 			return false;
 		}
-		
-		public virtual bool CanUnlock (string localPath)
+
+		public virtual bool CanUnlock (FilePath localPath)
 		{
 			return false;
 		}
 		
 		// Returns a path to the last version of the file updated from the repository
-		public abstract string GetPathToBaseText (string localFile);
+		public abstract string GetPathToBaseText (FilePath localFile);
 		
 		// Returns the revision history of a file
-		public abstract Revision[] GetHistory (string localFile, Revision since);
+		public abstract Revision[] GetHistory (FilePath localFile, Revision since);
 		
 		// Returns the versioning status of a file or directory
 		// Returns null if the file or directory is not versioned.
-		public abstract VersionInfo GetVersionInfo (string localPath, bool getRemoteStatus);
+		public abstract VersionInfo GetVersionInfo (FilePath localPath, bool getRemoteStatus);
 		
 		// Returns the versioning status of all files in a directory
-		public abstract VersionInfo[] GetDirectoryVersionInfo (string localDirectory, bool getRemoteStatus, bool recursive);
+		public abstract VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive);
 		
 		// Imports a directory into the repository. 'serverPath' is the relative path in the repository.
 		// 'localPath' is the local directory to publish. 'files' is the list of files to add to the new
 		// repository directory (must use absolute local paths).
-		public abstract Repository Publish (string serverPath, string localPath, string[] files, string message, IProgressMonitor monitor);
+		public abstract Repository Publish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor);
 		
 		// Updates a local file or directory from the repository
 		// Returns a list of updated files
-		public void Update (string localPath, bool recurse, IProgressMonitor monitor)
+		public void Update (FilePath localPath, bool recurse, IProgressMonitor monitor)
 		{
-			Update (new string [] { localPath }, recurse, monitor);
+			Update (new FilePath[] { localPath }, recurse, monitor);
 		}
-		
-		public abstract void Update (string[] localPaths, bool recurse, IProgressMonitor monitor);
+
+		public abstract void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor);
 		
 		// Called to create a ChangeSet to be used for a commit operation
-		public virtual ChangeSet CreateChangeSet (string basePath)
+		public virtual ChangeSet CreateChangeSet (FilePath basePath)
 		{
 			return new ChangeSet (this, basePath);
 		}
@@ -214,30 +214,30 @@ namespace MonoDevelop.VersionControl
 		public abstract void Commit (ChangeSet changeSet, IProgressMonitor monitor);
 		
 		// Gets the contents of this repositories into the specified local path
-		public void Checkout (string targetLocalPath, bool recurse, IProgressMonitor monitor) { Checkout (targetLocalPath, null, recurse, monitor); }
-		public abstract void Checkout (string targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor);
-		
-		public abstract void Revert (string[] localPaths, bool recurse, IProgressMonitor monitor);
-		
-		public void Revert (string localPath, bool recurse, IProgressMonitor monitor)
+		public void Checkout (FilePath targetLocalPath, bool recurse, IProgressMonitor monitor) { Checkout (targetLocalPath, null, recurse, monitor); }
+		public abstract void Checkout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor);
+
+		public abstract void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor);
+
+		public void Revert (FilePath localPath, bool recurse, IProgressMonitor monitor)
 		{
-			Revert (new string[] { localPath }, recurse, monitor);
-		}
-		
-		public abstract void RevertRevision (string localPath, Revision revision, IProgressMonitor monitor);
-		
-		public abstract void RevertToRevision (string localPath, Revision revision, IProgressMonitor monitor);
-		
-		// Adds a file or directory to the repository
-		public void Add (string localPath, bool recurse, IProgressMonitor monitor)
-		{
-			Add (new string[] { localPath }, recurse, monitor);
+			Revert (new FilePath[] { localPath }, recurse, monitor);
 		}
 
-		public abstract void Add (string[] localPaths, bool recurse, IProgressMonitor monitor);
+		public abstract void RevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor);
+
+		public abstract void RevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor);
+		
+		// Adds a file or directory to the repository
+		public void Add (FilePath localPath, bool recurse, IProgressMonitor monitor)
+		{
+			Add (new FilePath[] { localPath }, recurse, monitor);
+		}
+
+		public abstract void Add (FilePath[] localPaths, bool recurse, IProgressMonitor monitor);
 		
 		// Returns true if the file can be moved from source location (and repository) to this repository
-		public virtual bool CanMoveFilesFrom (Repository srcRepository, string localSrcPath, string localDestPath)
+		public virtual bool CanMoveFilesFrom (Repository srcRepository, FilePath localSrcPath, FilePath localDestPath)
 		{
 			return srcRepository == this;
 		}
@@ -248,26 +248,26 @@ namespace MonoDevelop.VersionControl
 		// For example, when moving a file to an unversioned directory, the implementation
 		// might just throw an exception, or it could version the directory, or it could
 		// ask the user what to do.
-		public virtual void MoveFile (string localSrcPath, string localDestPath, bool force, IProgressMonitor monitor)
+		public virtual void MoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
 			File.Move (localSrcPath, localDestPath);
 		}
 		
 		// Moves a directory. This method may be called for versioned and unversioned
 		// files. The default implementetions performs a system file move.
-		public virtual void MoveDirectory (string localSrcPath, string localDestPath, bool force, IProgressMonitor monitor)
+		public virtual void MoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
 			Directory.Move (localSrcPath, localDestPath);
 		}
 		
 		// Deletes a file or directory. This method may be called for versioned and unversioned
 		// files. The default implementetions performs a system file delete.
-		public void DeleteFile (string localPath, bool force, IProgressMonitor monitor)
+		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor)
 		{
-			DeleteFiles (new string[] { localPath }, force, monitor);
+			DeleteFiles (new FilePath[] { localPath }, force, monitor);
 		}
-		
-		public virtual void DeleteFiles (string[] localPaths, bool force, IProgressMonitor monitor)
+
+		public virtual void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
 		{
 			foreach (string localPath in localPaths) {
 				if (Directory.Exists (localPath))
@@ -276,13 +276,13 @@ namespace MonoDevelop.VersionControl
 					File.Delete (localPath);
 			}
 		}
-		
-		public void DeleteDirectory (string localPath, bool force, IProgressMonitor monitor)
+
+		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor)
 		{
-			DeleteDirectories (new string[] { localPath }, force, monitor);
+			DeleteDirectories (new FilePath[] { localPath }, force, monitor);
 		}
-		
-		public virtual void DeleteDirectories (string[] localPaths, bool force, IProgressMonitor monitor)
+
+		public virtual void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
 		{
 			foreach (string localPath in localPaths) {
 				if (Directory.Exists (localPath))
@@ -293,7 +293,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Creates a local directory.
-		public virtual void CreateLocalDirectory (string path)
+		public virtual void CreateLocalDirectory (FilePath path)
 		{
 			Directory.CreateDirectory (path);
 		}
@@ -301,25 +301,25 @@ namespace MonoDevelop.VersionControl
 		// Called to request write permission for a file. The file may not yet exist.
 		// After the file is modified or created, NotifyFileChanged is called.
 		// This method is allways called for versioned and unversioned files.
-		public virtual bool RequestFileWritePermission (string path)
+		public virtual bool RequestFileWritePermission (FilePath path)
 		{
 			return true;
 		}
 		
 		// Called after a file has been modified.
 		// This method is always called for versioned and unversioned files.
-		public virtual void NotifyFileChanged (string path)
+		public virtual void NotifyFileChanged (FilePath path)
 		{
 		}
 		
 		// Locks a file in the repository so no other users can change it
-		public virtual void Lock (IProgressMonitor monitor, params string[] localPaths)
+		public virtual void Lock (IProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			throw new System.NotSupportedException ();
 		}
 		
 		// Unlocks a file in the repository so other users can change it
-		public virtual void Unlock (IProgressMonitor monitor, params string[] localPaths)
+		public virtual void Unlock (IProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			throw new System.NotSupportedException ();
 		}
@@ -327,14 +327,14 @@ namespace MonoDevelop.VersionControl
 		// Returns a dif description between local files and the remote files.
 		// baseLocalPath is the root path of the diff. localPaths is optional and
 		// it can be a list of files to compare.
-		public virtual DiffInfo[] PathDiff (string baseLocalPath, string[] localPaths, bool remoteDiff)
+		public virtual DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
 		{
 			return new DiffInfo [0];
 		}
-		
-		public abstract string GetTextAtRevision (string repositoryPath, Revision revision);
-		
-		static protected DiffInfo[] GenerateUnifiedDiffInfo (string diffContent, string basePath, string[] localPaths)
+
+		public abstract string GetTextAtRevision (FilePath repositoryPath, Revision revision);
+
+		static protected DiffInfo[] GenerateUnifiedDiffInfo (string diffContent, FilePath basePath, FilePath[] localPaths)
 		{
 			ArrayList list = new ArrayList ();
 			using (StringReader sr = new StringReader (diffContent)) {

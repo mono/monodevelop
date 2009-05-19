@@ -25,11 +25,12 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
 	public interface IFileItem
 	{
-		string FileName { get; }
+		FilePath FileName { get; }
 	}
 }

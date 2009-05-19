@@ -27,6 +27,7 @@
 //
 
 using System.Collections;
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
@@ -53,8 +54,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public ProjectDom ParserContext {
 			get { return ctx; }
 		}
-		
-		public IEditableTextFile GetFile (string name)
+
+		public IEditableTextFile GetFile (FilePath name)
 		{
 			if (files != null) {
 				IEditableTextFile ef = files.GetEditableTextFile (name);

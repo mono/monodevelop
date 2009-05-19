@@ -62,14 +62,14 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		public string GetValidFormatName (object obj, string fileName)
+		public FilePath GetValidFormatName (object obj, FilePath fileName)
 		{
 			return fileName;
 		}
 
-		public bool CanReadFile (string file, Type expectedObjectType)
+		public bool CanReadFile (FilePath file, Type expectedObjectType)
 		{
-			if (expectedObjectType.IsAssignableFrom (typeof(Solution)) && String.Compare (Path.GetExtension (file), ".sln", true) == 0) {
+			if (expectedObjectType.IsAssignableFrom (typeof(Solution)) && String.Compare (file.Extension, ".sln", true) == 0) {
 				string ver = GetSlnFileVersion (file);
 				if (ver == "7.00" || ver == "8.00")
 					return true;
@@ -78,8 +78,8 @@ namespace MonoDevelop.Prj2Make
 			if (!expectedObjectType.IsAssignableFrom (typeof(DotNetProject)))
 				return false;
 			
-			if (String.Compare (Path.GetExtension (file), ".csproj", true) != 0 &&
-				String.Compare (Path.GetExtension (file), ".vbproj", true) != 0)
+			if (String.Compare (file.Extension, ".csproj", true) != 0 &&
+				String.Compare (file.Extension, ".vbproj", true) != 0)
 				return false;
 
 			try {
@@ -100,11 +100,11 @@ namespace MonoDevelop.Prj2Make
 			return false;
 		}
 
-		public void WriteFile (string file, object node, IProgressMonitor monitor)
+		public void WriteFile (FilePath file, object node, IProgressMonitor monitor)
 		{
 		}
 
-		public object ReadFile (string file, Type expectedType, IProgressMonitor monitor)
+		public object ReadFile (FilePath file, Type expectedType, IProgressMonitor monitor)
 		{
 			if (expectedType.IsAssignableFrom (typeof(DotNetProject)))
 				return ReadProjectFile (file, monitor);
@@ -112,7 +112,7 @@ namespace MonoDevelop.Prj2Make
 				return ReadSolutionFile (file, monitor);
 		}
 
-		public object ReadProjectFile (string fileName, IProgressMonitor monitor)
+		public object ReadProjectFile (FilePath fileName, IProgressMonitor monitor)
 		{
 			TargetConvert choice = IdeApp.IsInitialized ? GuiHelper.QueryProjectConversion (fileName) : TargetConvert.None;
 			if (choice == TargetConvert.None)
@@ -130,8 +130,8 @@ namespace MonoDevelop.Prj2Make
 			project.Save (monitor);
 			return project;
 		}
-		
-		public object ReadSolutionFile (string fileName, IProgressMonitor monitor)
+
+		public object ReadSolutionFile (FilePath fileName, IProgressMonitor monitor)
 		{
 			TargetConvert choice = IdeApp.IsInitialized ? GuiHelper.QuerySolutionConversion (fileName) : TargetConvert.None;
 			if (choice == TargetConvert.None)
@@ -148,8 +148,8 @@ namespace MonoDevelop.Prj2Make
 			solution.Save (monitor);
 			return solution;
 		}
-		
-		internal DotNetProject ImportCsproj (string fileName)
+
+		internal DotNetProject ImportCsproj (FilePath fileName)
 		{
 			DotNetProject project = null;
 			SlnMaker slnmaker = new SlnMaker ();
@@ -170,13 +170,13 @@ namespace MonoDevelop.Prj2Make
 			throw new NotSupportedException ();
 		}
 
-		public List<string> GetItemFiles (object obj)
+		public List<FilePath> GetItemFiles (object obj)
 		{
-			return new List<string> ();
+			return new List<FilePath> ();
 		}
 
 		// Converts a vs2003 solution to a Combine object
-		internal Solution ImportSln (string fileName)
+		internal Solution ImportSln (FilePath fileName)
 		{
 			SlnMaker slnmaker = new SlnMaker ();
 			Solution solution = null;

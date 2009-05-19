@@ -75,7 +75,7 @@ namespace MonoDevelop.DesignerSupport
 			else {
 				//check whether its extension matches known parent extensions
 				foreach (string ext in groupedExtensions) {
-					if (!file.FilePath.EndsWith (ext, StringComparison.InvariantCultureIgnoreCase))
+					if (!file.FilePath.ToString ().EndsWith (ext, StringComparison.InvariantCultureIgnoreCase))
 						continue;
 					
 					//check for codebehind files
@@ -110,7 +110,7 @@ namespace MonoDevelop.DesignerSupport
 			string designerEnding = ".designer" + Path.GetExtension (cls.CompilationUnit.FileName);
 			
 			foreach (IType c in cls.Parts)
-				if (c.CompilationUnit.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+				if (c.CompilationUnit.FileName.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
 				    return c;
 			
 			return null;
@@ -124,7 +124,7 @@ namespace MonoDevelop.DesignerSupport
 			string designerEnding = ".designer" + Path.GetExtension (cls.CompilationUnit.FileName);
 			
 			foreach (IType c in cls.Parts)
-				if (!c.CompilationUnit.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+				if (!c.CompilationUnit.FileName.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
 				    return c;
 			
 			return null;

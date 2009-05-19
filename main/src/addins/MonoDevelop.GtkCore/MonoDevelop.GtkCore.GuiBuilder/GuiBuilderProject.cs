@@ -425,8 +425,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			return null;
 		}
-		
-		public GuiBuilderWindow GetWindowForFile (string fileName)
+
+		public GuiBuilderWindow GetWindowForFile (FilePath fileName)
 		{
 			if (Windows != null) {
 				foreach (GuiBuilderWindow win in Windows) {
@@ -447,8 +447,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			return null;
 		}
-		
-		public Stetic.ActionGroupInfo GetActionGroupForFile (string fileName)
+
+		public Stetic.ActionGroupInfo GetActionGroupForFile (FilePath fileName)
 		{
 			foreach (Stetic.ActionGroupInfo group in SteticProject.ActionGroups) {
 				if (fileName == GetSourceCodeFile (group, true))
@@ -461,13 +461,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			return SteticProject.GetActionGroup (name);
 		}
-		
-		public string GetSourceCodeFile (Stetic.ProjectItemInfo obj)
+
+		public FilePath GetSourceCodeFile (Stetic.ProjectItemInfo obj)
 		{
 			return GetSourceCodeFile (obj, true);
 		}
-		
-		public string GetSourceCodeFile (Stetic.ProjectItemInfo obj, bool getUserClass)
+
+		public FilePath GetSourceCodeFile (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
 			IType cls = GetClass (obj, getUserClass);
 			if (cls != null && cls.CompilationUnit != null)
@@ -488,7 +488,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IType FindClass (string className, bool getUserClass)
 		{
-			string gui_folder = GtkDesignInfo.FromProject (project).GtkGuiFolder;
+			FilePath gui_folder = GtkDesignInfo.FromProject (project).GtkGuiFolder;
 			ProjectDom ctx = GetParserContext ();
 			if (ctx == null)
 				return null;
@@ -501,13 +501,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						// Return this class only if it is declared outside the gtk-gui
 						// folder. Generated partial classes will be ignored.
 						foreach (IType part in cls.Parts) {
-							if (part.CompilationUnit != null && !part.CompilationUnit.FileName.StartsWith (gui_folder)) {
+							if (part.CompilationUnit != null && !part.CompilationUnit.FileName.IsChildPathOf (gui_folder)) {
 								return part;
 							}
 						}
 						continue;
 					}
-					if (getUserClass && cls.CompilationUnit != null && !string.IsNullOrEmpty (cls.CompilationUnit.FileName) && cls.CompilationUnit.FileName.StartsWith (gui_folder))
+					if (getUserClass && cls.CompilationUnit != null && !string.IsNullOrEmpty (cls.CompilationUnit.FileName) && cls.CompilationUnit.FileName.IsChildPathOf (gui_folder))
 						continue;
 					return cls;
 				}

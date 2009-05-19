@@ -316,8 +316,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.svn_version_t ver = (LibSvnClient.svn_version_t) Marshal.PtrToStructure (ptr, typeof (LibSvnClient.svn_version_t));				
 			return ver.major + "." + ver.minor + "." + ver.patch;
 		}
-		
-		public override IEnumerable<DirectoryEntry> List (string pathorurl, bool recurse, SvnRevision rev)
+
+		public override IEnumerable<DirectoryEntry> List (FilePath pathorurl, bool recurse, SvnRevision rev)
 		{
 			if (pathorurl == null)
 				throw new ArgumentNullException ();
@@ -357,8 +357,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			return items;
 		}
-		
-		public override IEnumerable<VersionInfo> Status (Repository repo, string path, SvnRevision rev, bool descendDirs, bool changedItemsOnly, bool remoteStatus)
+
+		public override IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision rev, bool descendDirs, bool changedItemsOnly, bool remoteStatus)
 		{
 			if (path == null)
 				throw new ArgumentNullException ();
@@ -383,8 +383,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			foreach (LibSvnClient.StatusEnt ent in ret)
 				yield return CreateNode (ent, repo);
 		}
-		
-		public override IEnumerable<SvnRevision> Log (Repository repo, string path, SvnRevision revStart, SvnRevision revEnd)
+
+		public override IEnumerable<SvnRevision> Log (Repository repo, FilePath path, SvnRevision revStart, SvnRevision revEnd)
 		{
 			if (path == null)
 				throw new ArgumentNullException ();
@@ -414,8 +414,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			return ret;
 		}
-		
-		public override string GetPathUrl (string path)
+
+		public override string GetPathUrl (FilePath path)
 		{
 			if (path == null)
 				throw new ArgumentNullException();
@@ -465,8 +465,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				apr.pool_destroy (localpool);
 			}
 		}
-		
-		public override void Update (string path, bool recurse, IProgressMonitor monitor)
+
+		public override void Update (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
 			if (path == null || monitor == null)
 				throw new ArgumentNullException();
@@ -494,8 +494,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				inProgress = false;
 			}
 		}
-		
-		public override void Revert (string[] paths, bool recurse, IProgressMonitor monitor)
+
+		public override void Revert (FilePath[] paths, bool recurse, IProgressMonitor monitor)
 		{
 			if (paths == null || monitor == null)
 				throw new ArgumentNullException();
@@ -524,8 +524,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				inProgress = false;
 			}
 		}
-		
-		public override void Resolve (string path, bool recurse, IProgressMonitor monitor)
+
+		public override void Resolve (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
 			if (path == null || monitor == null)
 				throw new ArgumentNullException();
@@ -547,8 +547,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				inProgress = false;
 			}
 		}
-		
-		public override void Add (string path, bool recurse, IProgressMonitor monitor)
+
+		public override void Add (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
 			if (path == null || monitor == null)
 				throw new ArgumentNullException ();
@@ -569,8 +569,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				inProgress = false;
 			}
 		}
-		
-		public override void Checkout (string url, string path, Revision revision, bool recurse, IProgressMonitor monitor)
+
+		public override void Checkout (string url, FilePath path, Revision revision, bool recurse, IProgressMonitor monitor)
 		{
 			if (url == null || monitor == null)
 				throw new ArgumentNullException ();
@@ -596,8 +596,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				inProgress = false;
 			}
 		}
-		
-		public override void Commit (string[] paths, string message, IProgressMonitor monitor)
+
+		public override void Commit (FilePath[] paths, string message, IProgressMonitor monitor)
 		{
 			if (paths == null || message == null || monitor == null)
 				throw new ArgumentNullException();
@@ -638,7 +638,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				inProgress = false;
 			}
 		}
-		
+
 		public override void Mkdir (string[] paths, string message, IProgressMonitor monitor) 
 		{
 			if (paths == null || monitor == null)
@@ -673,8 +673,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				inProgress = false;
 			}
 		}
-		
-		public override void Delete (string path, bool force, IProgressMonitor monitor)
+
+		public override void Delete (FilePath path, bool force, IProgressMonitor monitor)
 		{
 			if (path == null || monitor == null)
 				throw new ArgumentNullException ();
@@ -705,8 +705,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				inProgress = false;
 			}
 		}
-		
-		public override void Move (string srcPath, string destPath, SvnRevision rev, bool force, IProgressMonitor monitor)
+
+		public override void Move (FilePath srcPath, FilePath destPath, SvnRevision rev, bool force, IProgressMonitor monitor)
 		{
 			if (srcPath == null || destPath == null || monitor == null)
 				throw new ArgumentNullException ();
@@ -732,8 +732,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				inProgress = false;
 			}
 		}
-		
-		public override void Lock (IProgressMonitor monitor, string comment, bool stealLock, params string[] paths)
+
+		public override void Lock (IProgressMonitor monitor, string comment, bool stealLock, params FilePath[] paths)
 		{
 			lock (sync) {
 				if (inProgress)
@@ -765,7 +765,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 		
-		public override void Unlock (IProgressMonitor monitor, bool breakLock, params string[] paths)
+		public override void Unlock (IProgressMonitor monitor, bool breakLock, params FilePath[] paths)
 		{
 			lock (sync) {
 				if (inProgress)
@@ -797,7 +797,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override string GetUnifiedDiff (string path1, SvnRevision rev1, string path2, SvnRevision rev2, bool recursive)
+		public override string GetUnifiedDiff (FilePath path1, SvnRevision rev1, FilePath path2, SvnRevision rev2, bool recursive)
 		{
 			IntPtr localpool = newpool (pool);
 			IntPtr outfile = IntPtr.Zero;
@@ -847,12 +847,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void RevertToRevision (string path, Revision revision, IProgressMonitor monitor)
+		public override void RevertToRevision (FilePath path, Revision revision, IProgressMonitor monitor)
 		{
 			Merge (path, LibSvnClient.Rev.Head, (LibSvnClient.Rev) revision);
 		}
-		
-		public override void RevertRevision (string path, Revision revision, IProgressMonitor monitor)
+
+		public override void RevertRevision (FilePath path, Revision revision, IProgressMonitor monitor)
 		{
 			SvnRevision srev = (SvnRevision) revision;
 			Merge (path, (LibSvnClient.Rev) srev, LibSvnClient.Rev.Number (srev.Rev - 1));

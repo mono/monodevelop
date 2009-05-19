@@ -72,24 +72,24 @@ namespace MonoDevelop.AspNet
 			
 			List<string> dirs = new List<string> (proj.GetSpecialDirectories ());
 			dirs.Sort ();
-			List<string> fullPaths = new List<string> (dirs.Count);
+			List<FilePath> fullPaths = new List<FilePath> (dirs.Count);
 			foreach (string s in dirs)
-				fullPaths.Add (System.IO.Path.Combine (proj.BaseDirectory, s));
+				fullPaths.Add (proj.BaseDirectory.Combine (s));
 			RemoveDirsNotInProject (fullPaths, proj);
 			
 			foreach (string dir in dirs) {
 				CommandInfo cmd = info.Add (dir.Replace("_", "__"), dir);
-				cmd.Enabled = fullPaths.Contains (System.IO.Path.Combine (proj.BaseDirectory, dir));
+				cmd.Enabled = fullPaths.Contains (proj.BaseDirectory.Combine (dir));
 			}
 		}
-		
-		static void RemoveDirsNotInProject (List<string> dirs, Project proj)
+
+		static void RemoveDirsNotInProject (List<FilePath> dirs, Project proj)
 		{
 			//don't query project for existence of each dir, because proj.Files is much bigger than dirs
 			//instead we switch the loops
 			foreach (ProjectFile pf in proj.Files) {
 				for (int i = 0; i < dirs.Count; i++) {
-					if (pf.FilePath.StartsWith (dirs[i], StringComparison.Ordinal)) {
+					if (pf.FilePath.IsChildPathOf (dirs[i])) {
 						dirs.RemoveAt (i);
 						if (dirs.Count == 0)
 							return;

@@ -1,3 +1,12 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion\SvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion\SubversionRepository.cs:
+	* MonoDevelop.VersionControl.Subversion\SubversionNodeExtension.cs:
+	* MonoDevelop.VersionControl.Subversion\SubversionVersionControl.cs:
+	  Use the new FilePath class for handling file and directory
+	  paths.
+
 2009-05-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion\SvnClient.cs: Added

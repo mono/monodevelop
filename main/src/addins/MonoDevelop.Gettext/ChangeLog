@@ -1,3 +1,9 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Gettext\Translation.cs:
+	* MonoDevelop.Gettext\TranslationProject.cs: Use the new
+	  FilePath class for handling file and directory paths.
+
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Gettext.addin.xml: Ensure that the display

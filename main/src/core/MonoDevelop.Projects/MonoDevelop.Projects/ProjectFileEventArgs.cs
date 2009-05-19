@@ -27,6 +27,7 @@
 
 using System;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
@@ -60,17 +61,17 @@ namespace MonoDevelop.Projects
 	
 	public class ProjectFileRenamedEventArgs : ProjectFileEventArgs
 	{
-		string oldName;
+		FilePath oldName;
 	
-		public string OldName {
+		public FilePath OldName {
 			get { return oldName; }
 		}
 		
-		public string NewName {
-			get { return ProjectFile.Name; }
+		public FilePath NewName {
+			get { return ProjectFile.FilePath; }
 		}
 		
-		public ProjectFileRenamedEventArgs (Project project, ProjectFile file, string oldName)
+		public ProjectFileRenamedEventArgs (Project project, ProjectFile file, FilePath oldName)
 		: base (project, file)
 		{
 			this.oldName = oldName;

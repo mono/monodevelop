@@ -27,17 +27,18 @@
 
 using System;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
 	public class VersionControlItem
 	{
-		string path;
+		FilePath path;
 		bool isDirectory;
 		IWorkspaceObject workspaceObject;
 		Repository repository;
 
-		public VersionControlItem (Repository repository, IWorkspaceObject workspaceObject, string path, bool isDirectory)
+		public VersionControlItem (Repository repository, IWorkspaceObject workspaceObject, FilePath path, bool isDirectory)
 		{
 			this.path = path;
 			this.repository = repository;
@@ -57,7 +58,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		public string Path {
+		public FilePath Path {
 			get {
 				return path;
 			}

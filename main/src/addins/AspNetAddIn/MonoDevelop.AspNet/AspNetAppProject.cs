@@ -392,8 +392,8 @@ namespace MonoDevelop.AspNet
 			if (virtualPath == null || virtualPath.Length == 0 || virtualPath[0] == '/'
 			    	|| virtualPath.IndexOf (':') > -1)
 				return null;
-			
-			string relativeToDir;
+
+			FilePath relativeToDir;
 			if (virtualPath.Length > 1 && virtualPath[0] == '~') {
 				if (virtualPath[1] == '/')
 					virtualPath = virtualPath.Substring (2);
@@ -403,11 +403,11 @@ namespace MonoDevelop.AspNet
 			} else {
 				relativeToDir = String.IsNullOrEmpty (relativeToFile)
 					? BaseDirectory
-					: Path.GetDirectoryName (relativeToFile);
+					: (FilePath) Path.GetDirectoryName (relativeToFile);
 			}
 			
 			virtualPath = virtualPath.Replace ('/', Path.DirectorySeparatorChar);
-			return Path.GetFullPath (Path.Combine (relativeToDir, virtualPath));
+			return relativeToDir.Combine (virtualPath).FullPath;
 		}
 		
 		public string LocalToVirtualPath (string filename)

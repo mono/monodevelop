@@ -78,7 +78,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return rootWidget.Name; }
 		}
 		
-		public string SourceCodeFile {
+		public FilePath SourceCodeFile {
 			get { return fproject.GetSourceCodeFile (rootWidget); }
 		}
 		
@@ -246,7 +246,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class OpenDocumentFileProvider: ITextFileProvider
 	{
-		public IEditableTextFile GetEditableTextFile (string filePath)
+		public IEditableTextFile GetEditableTextFile (FilePath filePath)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {

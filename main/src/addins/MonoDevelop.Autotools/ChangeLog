@@ -1,3 +1,11 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MakefileData.cs:
+	* AutotoolsContext.cs:
+	* SimpleProjectMakefileHandler.cs:
+	* MakefileProjectServiceExtension.cs: Use the new FilePath
+	  class for handling file and directory paths.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Autotools.csproj: don't require specific

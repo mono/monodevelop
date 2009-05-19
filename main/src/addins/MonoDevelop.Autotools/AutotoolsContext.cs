@@ -60,9 +60,9 @@ namespace MonoDevelop.Autotools
 		public MakefileType MakefileType {
 			get { return makefileType; }
 		}
-		
-		string base_dir;
-		public string BaseDirectory {
+
+		FilePath base_dir;
+		public FilePath BaseDirectory {
 			get {
 				return base_dir;
 			}

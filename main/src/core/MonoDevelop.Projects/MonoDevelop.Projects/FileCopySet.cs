@@ -29,46 +29,42 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
 	
 	public class FileCopySet : IEnumerable<FileCopySet.Item>
 	{
-		Dictionary<string, Item> files = new Dictionary<string, Item> ();
+		Dictionary<FilePath, Item> files = new Dictionary<FilePath, Item> ();
 		
 		public FileCopySet ()
 		{
 		}
-		
-		public bool Contains (string fileName)
-		{
-			return files.ContainsKey (Path.GetFileName (fileName));
-		}
-		
-		public void Add (string sourcePath)
+
+		public void Add (FilePath sourcePath)
 		{
 			Add (sourcePath, false);
 		}
-		
-		public void Add (string sourcePath, bool copyOnlyIfNewer)
+
+		public void Add (FilePath sourcePath, bool copyOnlyIfNewer)
 		{
-			Add (sourcePath, copyOnlyIfNewer, Path.GetFileName (sourcePath));
+			Add (sourcePath, copyOnlyIfNewer, sourcePath.FileName);
 		}
-		
-		public bool Add (string sourcePath, bool copyOnlyIfNewer, string targetName)
+
+		public bool Add (FilePath sourcePath, bool copyOnlyIfNewer, FilePath targetRelativePath)
 		{
 			//don't add duplicates
-			if (files.ContainsKey (targetName))
+			if (files.ContainsKey (targetRelativePath))
 				return false;
 			
-			files.Add (targetName, new Item (sourcePath, copyOnlyIfNewer, targetName));
+			files.Add (targetRelativePath, new Item (sourcePath, copyOnlyIfNewer, targetRelativePath));
 			return true;
 		}
-		
-		public Item Remove (string fileName)
+
+		public Item Remove (FilePath fileName)
 		{
-			string key = Path.GetFileName (fileName);
+			string key = fileName.FileName;
 			Item f;
 			if (files.TryGetValue (key, out f)) {
 				files.Remove (key);
@@ -90,7 +86,7 @@ namespace MonoDevelop.Projects
 		
 		public class Item
 		{
-			public Item (string src, bool copyOnlyIfNewer, string target)
+			public Item (FilePath src, bool copyOnlyIfNewer, FilePath target)
 			{
 				this.Src = src;
 				this.Target = target;
@@ -98,8 +94,8 @@ namespace MonoDevelop.Projects
 			}
 			
 			public bool CopyOnlyIfNewer { get; private set; }
-			public string Target { get; private set; }
-			public string Src { get; private set; }
+			public FilePath Target { get; private set; }
+			public FilePath Src { get; private set; }
 		}
 	}
 	

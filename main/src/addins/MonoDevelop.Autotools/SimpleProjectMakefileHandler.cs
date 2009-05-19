@@ -156,43 +156,42 @@ namespace MonoDevelop.Autotools
 				string pfpath = null;
 				foreach (ProjectFile projectFile in project.Files) 
 				{
-					pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? projectFile.RelativePath : projectFile.RelativePath.Replace("\\","/");
-					pfpath = FileService.NormalizeRelativePath (pfpath);
+					pfpath = FileService.NormalizeRelativePath (projectFile.RelativePath);
 					switch ( projectFile.BuildAction )
 					{
 						case "Compile":
 							
 							if ( projectFile.Subtype != Subtype.Code ) continue;
-							files.AppendFormat ( "\\\n\t{0} ", EscapeSpace (pfpath));
+							files.AppendFormat ( "\\\n\t{0} ", MakefileData.ToMakefilePath (pfpath));
 							break;
 
 						case "None":
 
-							extraFiles.Add (EscapeSpace(pfpath));
+							extraFiles.Add (MakefileData.ToMakefilePath (pfpath));
 							break;
 
 						case "EmbeddedResource":
 
-							if ( !projectFile.FilePath.StartsWith ( ctx.BaseDirectory ) )
+							if ( !projectFile.FilePath.IsChildPathOf ( ctx.BaseDirectory ) )
 							{
 								// file is not within directory hierarchy, copy it in
 								string rdir = Path.Combine (Path.GetDirectoryName (project.FileName), resourcedir);
 								if ( !Directory.Exists ( rdir ) ) Directory.CreateDirectory ( rdir );
 								string newPath = Path.Combine (rdir, Path.GetFileName ( projectFile.FilePath ));
 								FileService.CopyFile ( projectFile.FilePath, newPath ) ;
-								pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath (newPath) : project.GetRelativeChildPath (newPath).Replace("\\","/");
+								pfpath = project.GetRelativeChildPath (newPath);
 								pfpath = FileService.NormalizeRelativePath (pfpath);
 							}
 							if (!String.IsNullOrEmpty (projectFile.ResourceId) && projectFile.ResourceId != Path.GetFileName (pfpath))
-								res_files.AppendFormat ( "\\\n\t{0},{1} ", EscapeSpace (pfpath), EscapeSpace (projectFile.ResourceId));
+								res_files.AppendFormat ("\\\n\t{0},{1} ", MakefileData.ToMakefilePath (pfpath), MakefileData.EscapeString (projectFile.ResourceId));
 							else
-								res_files.AppendFormat ( "\\\n\t{0} ", EscapeSpace (pfpath));
+								res_files.AppendFormat ("\\\n\t{0} ", MakefileData.ToMakefilePath (pfpath));
  
 							break;
 
 						case "FileCopy":
-						
-							datafiles.AppendFormat ("\\\n\t{0} ", EscapeSpace (pfpath));
+
+							datafiles.AppendFormat ("\\\n\t{0} ", MakefileData.ToMakefilePath (pfpath));
 							break;
 					}
 				}
@@ -255,9 +254,7 @@ namespace MonoDevelop.Autotools
 
 					ConfigSection configSection = new ConfigSection (combineConfig.Id);
 
-					string assembly = (PlatformID.Unix == Environment.OSVersion.Platform) ?
-						project.GetRelativeChildPath ( config.CompiledOutputName ) :
-						project.GetRelativeChildPath ( config.CompiledOutputName ).Replace("\\","/");
+					string assembly = MakefileData.GetUnixPath (project.GetRelativeChildPath (config.CompiledOutputName));
 
 					configSection.BuildVariablesBuilder.AppendFormat ("ASSEMBLY_COMPILER_COMMAND = {0}\n",
 							setup.GetCompilerCommand ( project, config.Id ) );
@@ -311,18 +308,14 @@ namespace MonoDevelop.Autotools
 
 						projectReferences.WriteLine (" \\");
 						projectReferences.Write ("\t");
-						pref = (PlatformID.Unix == Environment.OSVersion.Platform) ?
-							project.GetRelativeChildPath ( dnpc.CompiledOutputName ) :
-							project.GetRelativeChildPath ( dnpc.CompiledOutputName ).Replace("\\","/");
+						pref = project.GetRelativeChildPath (dnpc.CompiledOutputName);
 
-						projectReferences.Write (EscapeSpace (pref));
+						projectReferences.Write (MakefileData.ToMakefilePath (pref));
 					}
 					configSection.BuildVariablesBuilder.AppendFormat ( "PROJECT_REFERENCES = {0}\n", projectReferences.ToString() );
 
-					string buildDir = (PlatformID.Unix == Environment.OSVersion.Platform) ?
-						project.GetRelativeChildPath (config.OutputDirectory) :
-						project.GetRelativeChildPath (config.OutputDirectory).Replace ("\\","/");
-					configSection.BuildVariablesBuilder.AppendFormat ("BUILD_DIR = {0}\n", buildDir);
+					string buildDir = project.GetRelativeChildPath (config.OutputDirectory);
+					configSection.BuildVariablesBuilder.AppendFormat ("BUILD_DIR = {0}\n", MakefileData.ToMakefilePath (buildDir));
 
 					// Register files built by this configuration.
 					// Built files won't be distributed.
@@ -354,9 +347,8 @@ namespace MonoDevelop.Autotools
 
 					if (config.SignAssembly) {
 						string spath = project.GetRelativeChildPath (config.AssemblyKeyFile);
-						spath = (PlatformID.Unix == Environment.OSVersion.Platform) ? spath : spath.Replace("\\","/");
 						spath = FileService.NormalizeRelativePath (spath);
-						extraFiles.Add (EscapeSpace (spath));
+						extraFiles.Add (MakefileData.ToMakefilePath (spath));
 					}
 
 					if (buildEnabled && pkgs.Count > 0)
@@ -365,7 +357,7 @@ namespace MonoDevelop.Autotools
 
 
 				foreach (string ef in extraFiles)
-					extras.AppendFormat ( "\\\n\t{0} ", EscapeSpace (ef));
+					extras.AppendFormat ("\\\n\t{0} ", MakefileData.ToMakefilePath (ef));
 
 				Dictionary<string, DeployFileData> commonDeployVars = new Dictionary<string, DeployFileData> (allDeployVars);
 				foreach (ConfigSection configSection in configSections) {
@@ -395,7 +387,7 @@ namespace MonoDevelop.Autotools
 						if (configSection.DeployFileVars.ContainsKey (targetDeployVar)) {
 							//use the dfile from the config section
 							DeployFile dfile = configSection.DeployFileVars [targetDeployVar];
-							string fname = EscapeSpace (
+							string fname = MakefileData.ToMakefilePath (
 									FileService.AbsoluteToRelativePath (
 										Path.GetFullPath (project.BaseDirectory),
 										Path.GetFullPath (dfile.SourcePath)));
@@ -404,10 +396,9 @@ namespace MonoDevelop.Autotools
 
 							if (!commonDeployVars.ContainsKey (targetDeployVar)) {
 								//FOO_DLL=$(BUILD_DIR)/foo.dll
-								conf_vars.AppendFormat ("{0}=$(BUILD_DIR){1}{2}\n",
+								conf_vars.AppendFormat ("{0}=$(BUILD_DIR)/{1}\n",
 										targetDeployVar,
-										Path.DirectorySeparatorChar,
-										EscapeSpace (dfile.RelativeTargetPath));
+										MakefileData.ToMakefilePath (dfile.RelativeTargetPath));
 							}
 						} else {
 							// not common and not part of @configSection
@@ -426,10 +417,9 @@ namespace MonoDevelop.Autotools
 
 					if (commonDeployVars.ContainsKey (pair.Key)) {
 						//FOO_DLL=$(BUILD_DIR)/foo.dll
-						deployFileCopyVars.AppendFormat ("{0} = $(BUILD_DIR){1}{2}\n",
+						deployFileCopyVars.AppendFormat ("{0} = $(BUILD_DIR)/{1}\n",
 									pair.Key,
-									Path.DirectorySeparatorChar,
-									EscapeSpace (pair.Value.File.RelativeTargetPath));
+									MakefileData.ToMakefilePath (pair.Value.File.RelativeTargetPath));
 					}
 				}
 				
@@ -532,9 +522,9 @@ namespace MonoDevelop.Autotools
 					dllRefWriter.WriteLine (" \\");
 					dllRefWriter.Write ("\t");
 
-					ctx.AddGlobalReferencedFile (EscapeSpace (FileService.AbsoluteToRelativePath (
+					ctx.AddGlobalReferencedFile (MakefileData.ToMakefilePath (FileService.AbsoluteToRelativePath (
 						Path.GetFullPath (ctx.BaseDirectory), assemblyPath)));
-					dllRefWriter.Write (EscapeSpace (FileService.AbsoluteToRelativePath (
+					dllRefWriter.Write (MakefileData.ToMakefilePath (FileService.AbsoluteToRelativePath (
 						project.BaseDirectory, assemblyPath)));
 
 				} 
@@ -600,14 +590,14 @@ namespace MonoDevelop.Autotools
 				fname = FileService.NormalizeRelativePath (
 						FileService.AbsoluteToRelativePath (ctx.TargetSolution.BaseDirectory, full_fname));
 				infname = fname + ".in";
-				ctx.AddAutoconfFile (EscapeSpace (fname));
+				ctx.AddAutoconfFile (MakefileData.ToMakefilePath (fname));
 				ctx.AddGeneratedFile (full_fname + ".in");
 
 				//Path relative to project
 				fname = FileService.NormalizeRelativePath (
 						FileService.AbsoluteToRelativePath (project.BaseDirectory, full_fname));
 				infname = fname + ".in";
-				extras.AppendFormat ( "\\\n\t{0} ", EscapeSpace (infname));
+				extras.AppendFormat ("\\\n\t{0} ", MakefileData.ToMakefilePath (infname));
 
 				//dependencyDeployFile here should be filename relative to the project
 				dependencyDeployFile = fname;
@@ -620,7 +610,7 @@ namespace MonoDevelop.Autotools
 			if (dfile.ContainsPathReferences)
 				deployFileCopyTargets.AppendFormat ("$(eval $(call emit-deploy-wrapper,{0},{1}{2}))\n",
 					targetDeployVar,
-					EscapeSpace (dependencyDeployFile),
+					MakefileData.ToMakefilePath (dependencyDeployFile),
 					(dfile.FileAttributes & DeployFileAttributes.Executable) != 0 ? ",x" : String.Empty);
 			else {
 				// The emit-deploy-target macro copies the deployable file to the output directory.
@@ -636,7 +626,7 @@ namespace MonoDevelop.Autotools
 				default:
 					string var;
 					if (dfile.TargetDirectoryID != TargetDirectory.Binaries) {
-						string ddir = FileService.NormalizeRelativePath (Path.GetDirectoryName (dfile.RelativeTargetPath).Trim ('/',' '));
+						string ddir = FileService.NormalizeRelativePath (dfile.RelativeTargetPath.ParentDirectory.ToString().Trim ('/',' '));
 						if (ddir.Length > 0)
 							ddir = "/" + ddir;
 						var = ctx.GetDeployDirectoryVar (dfile.TargetDirectoryID + ddir);
@@ -775,12 +765,6 @@ namespace MonoDevelop.Autotools
 			
 			return refp;
 		}
-
-		static string EscapeSpace (string str)
-		{
-			return str.Replace (" ", "\\ ");
-		}
-
 	}
 	
 	class DeployFileData

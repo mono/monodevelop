@@ -35,18 +35,18 @@ namespace MonoDevelop.Projects.Extensions
 {
 	public interface IFileFormat
 	{
-		string GetValidFormatName (object obj, string fileName);
-		
-		bool CanReadFile (string file, Type expectedObjectType);
+		FilePath GetValidFormatName (object obj, FilePath fileName);
+
+		bool CanReadFile (FilePath file, Type expectedObjectType);
 		bool CanWriteFile (object obj);
 		
 		void ConvertToFormat (object obj);
-		
-		void WriteFile (string file, object obj, IProgressMonitor monitor);
-		object ReadFile (string file, Type expectedType, IProgressMonitor monitor);
+
+		void WriteFile (FilePath file, object obj, IProgressMonitor monitor);
+		object ReadFile (FilePath file, Type expectedType, IProgressMonitor monitor);
 		
 		// Returns the list of files where the object is stored
-		List<string> GetItemFiles (object obj);
+		List<FilePath> GetItemFiles (object obj);
 		
 		bool SupportsMixedFormats { get; }
 

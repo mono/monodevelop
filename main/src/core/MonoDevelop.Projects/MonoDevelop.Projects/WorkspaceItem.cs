@@ -39,11 +39,11 @@ namespace MonoDevelop.Projects
 		Workspace parentWorkspace;
 		FileFormat format;
 		Hashtable extendedProperties;
-		string fileName;
+		FilePath fileName;
 		int loading;
 		
 		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
-		string baseDirectory;
+		FilePath baseDirectory;
 		
 		Dictionary<string,DateTime> lastSaveTime = new Dictionary<string,DateTime> ();
 		bool savingFlag;
@@ -63,23 +63,23 @@ namespace MonoDevelop.Projects
 		
 		public virtual string Name {
 			get {
-				if (string.IsNullOrEmpty (fileName))
+				if (fileName.IsNullOrEmpty)
 					return string.Empty;
 				else
-					return Path.GetFileNameWithoutExtension (fileName);
+					return fileName.FileNameWithoutExtension;
 			}
 			set {
-				if (string.IsNullOrEmpty (fileName))
-					SetLocation ("", value);
+				if (fileName.IsNullOrEmpty)
+					SetLocation (FilePath.Empty, value);
 				else {
-					string dir = Path.GetDirectoryName (fileName);
-					string ext = Path.GetExtension (fileName);
-					FileName = Path.Combine (dir, value) + ext;
+					FilePath dir = fileName.ParentDirectory;
+					string ext = fileName.Extension;
+					FileName = dir.Combine (value) + ext;
 				}
 			}
 		}
 		
-		public virtual string FileName {
+		public virtual FilePath FileName {
 			get {
 				return fileName;
 			}
@@ -94,33 +94,33 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public void SetLocation (string baseDirectory, string name)
+		public void SetLocation (FilePath baseDirectory, string name)
 		{
 			// Add a dummy extension to the file name.
 			// It will be replaced by the correct one, depending on the format
-			FileName = Path.Combine (baseDirectory, name + ".x");
+			FileName = baseDirectory.Combine (name) + ".x";
 		}
 		
-		public string BaseDirectory {
+		public FilePath BaseDirectory {
 			get {
-				if (baseDirectory == null)
-					return Path.GetFullPath (Path.GetDirectoryName (FileName));
+				if (baseDirectory.IsNull)
+					return FileName.ParentDirectory.FullPath;
 				else
 					return baseDirectory;
 			}
 			set {
-				if (value != null && FileName != null && Path.GetFullPath (Path.GetDirectoryName (FileName)) == Path.GetFullPath (value))
+				if (!value.IsNull && !FileName.IsNull && FileName.ParentDirectory.FullPath == value.FullPath)
 					baseDirectory = null;
-				else if (string.IsNullOrEmpty (value))
+				else if (value.IsNullOrEmpty)
 					baseDirectory = null;
 				else
-					baseDirectory = Path.GetFullPath (value);
+					baseDirectory = value.FullPath;
 				NotifyModified ();
 			}
 		}
 		
-		public string ItemDirectory {
-			get { return Path.GetFullPath (Path.GetDirectoryName (FileName)); }
+		public FilePath ItemDirectory {
+			get { return FileName.ParentDirectory.FullPath; }
 		}
 		
 		protected bool Loading {
@@ -131,10 +131,10 @@ namespace MonoDevelop.Projects
 		{
 			MonoDevelop.Projects.Extensions.ProjectExtensionUtil.LoadControl (this);
 		}
-		
-		public virtual List<string> GetItemFiles (bool includeReferencedFiles)
+
+		public virtual List<FilePath> GetItemFiles (bool includeReferencedFiles)
 		{
-			List<string> col = FileFormat.Format.GetItemFiles (this);
+			List<FilePath> col = FileFormat.Format.GetItemFiles (this);
 			if (!string.IsNullOrEmpty (FileName) && !col.Contains (FileName))
 				col.Add (FileName);
 			return col;
@@ -182,8 +182,8 @@ namespace MonoDevelop.Projects
 				list.Add ((T)this);
 			return list.AsReadOnly ();
 		}
-		
-		public virtual Project GetProjectContainingFile (string fileName)
+
+		public virtual Project GetProjectContainingFile (FilePath fileName)
 		{
 			return null;
 		}
@@ -272,8 +272,8 @@ namespace MonoDevelop.Projects
 			if (ParentWorkspace != null)
 				ParentWorkspace.OnConfigurationsChanged ();
 		}
-		
-		public void Save (string fileName, IProgressMonitor monitor)
+
+		public void Save (FilePath fileName, IProgressMonitor monitor)
 		{
 			FileName = fileName;
 			Save (monitor);
@@ -288,7 +288,7 @@ namespace MonoDevelop.Projects
 				
 				// Update save times
 				lastSaveTime.Clear ();
-				foreach (string file in GetItemFiles (false))
+				foreach (FilePath file in GetItemFiles (false))
 					lastSaveTime [file] = GetLastWriteTime (file);
 				
 				FileService.NotifyFileChanged (FileName);
@@ -301,14 +301,14 @@ namespace MonoDevelop.Projects
 			get {
 				if (savingFlag)
 					return false;
-				foreach (string file in GetItemFiles (false))
+				foreach (FilePath file in GetItemFiles (false))
 					if (GetLastSaveTime (file) != GetLastWriteTime (file))
 						return true;
 				return false;
 			}
 			set {
 				lastSaveTime.Clear ();
-				foreach (string file in GetItemFiles (false)) {
+				foreach (FilePath file in GetItemFiles (false)) {
 					if (value)
 						lastSaveTime [file] = DateTime.MinValue;
 					else
@@ -316,18 +316,18 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}
-		
-		DateTime GetLastWriteTime (string file)
+
+		DateTime GetLastWriteTime (FilePath file)
 		{
 			try {
-				if (file != null && file.Length > 0 && File.Exists (file))
+				if (!file.IsNullOrEmpty && File.Exists (file))
 					return File.GetLastWriteTime (file);
 			} catch {
 			}
 			return GetLastSaveTime (file);
 		}
-					
-		DateTime GetLastSaveTime (string file)
+
+		DateTime GetLastSaveTime (FilePath file)
 		{
 			DateTime dt;
 			if (lastSaveTime.TryGetValue (file, out dt))
@@ -393,17 +393,15 @@ namespace MonoDevelop.Projects
 		protected virtual void OnEndLoad ()
 		{
 		}
-		
-		public string GetAbsoluteChildPath (string relPath)
+
+		public FilePath GetAbsoluteChildPath (FilePath relPath)
 		{
-			if (Path.IsPathRooted (relPath))
-				return relPath;
-			return FileService.RelativeToAbsolutePath (BaseDirectory, relPath);
+			return relPath.ToAbsolute (BaseDirectory);
 		}
-		
-		public string GetRelativeChildPath (string absPath)
+
+		public FilePath GetRelativeChildPath (FilePath absPath)
 		{
-			return FileService.AbsoluteToRelativePath (BaseDirectory, absPath);
+			return absPath.ToRelative (BaseDirectory);
 		}
 		
 		public virtual void Dispose()

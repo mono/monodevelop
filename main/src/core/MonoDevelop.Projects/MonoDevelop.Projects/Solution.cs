@@ -264,8 +264,8 @@ namespace MonoDevelop.Projects
 		{
 			return RootFolder.GetAllProjectsWithTopologicalSort (configuration);
 		}
-		
-		public override Project GetProjectContainingFile (string fileName) 
+
+		public override Project GetProjectContainingFile (FilePath fileName) 
 		{
 			return RootFolder.GetProjectContainingFile (fileName);
 		}
@@ -489,10 +489,10 @@ namespace MonoDevelop.Projects
 			foreach (SolutionItem item in GetAllSolutionItems<SolutionItem> ())
 				ConvertToSolutionFormat (item, convertChildren);
 		}
-		
-		public override List<string> GetItemFiles (bool includeReferencedFiles)
+
+		public override List<FilePath> GetItemFiles (bool includeReferencedFiles)
 		{
-			List<string> files = base.GetItemFiles (includeReferencedFiles);
+			List<FilePath> files = base.GetItemFiles (includeReferencedFiles);
 			if (includeReferencedFiles) {
 				foreach (SolutionEntityItem item in GetAllSolutionItems<SolutionEntityItem> ())
 					files.AddRange (item.GetItemFiles (true));

@@ -490,7 +490,8 @@ namespace MonoDevelop.SourceEditor
 		
 		void AddBreakpoint (Breakpoint bp)
 		{
-			if (bp.FileName == Path.GetFullPath (ContentName)) {
+			FilePath fp = ContentName;
+			if (fp.FullPath == bp.FileName) {
 				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
 				if (!bp.Enabled)
 					widget.TextEditor.Document.AddMarker (line, breakpointDisabledMarker);
@@ -680,7 +681,7 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region ITextFile
-		public string Name {
+		public FilePath Name {
 			get { 
 				return this.ContentName; 
 			} 

@@ -62,7 +62,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		protected void OnResolve()
 		{
 			foreach (VersionControlItemList items in GetItems ().SplitByRepository ()) {
-				string[] files = new string [items.Count];
+				FilePath[] files = new FilePath[items.Count];
 				for (int n=0; n<files.Length; n++)
 					files [n] = items [n].Path;
 				((SubversionRepository)items[0].Repository).Resolve (files, true, new NullProgressMonitor ());

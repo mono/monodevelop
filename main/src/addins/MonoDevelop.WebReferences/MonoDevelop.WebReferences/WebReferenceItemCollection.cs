@@ -2,6 +2,7 @@ using System;
 using System.Collections.Specialized; 
 using System.IO;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.WebReferences
 {
@@ -41,10 +42,10 @@ namespace MonoDevelop.WebReferences
 		/// <summary>Initializes a new instance of the WebReferenceItemCollection class by specifying the project</summary>
 		public WebReferenceItemCollection(Project project)
 		{
-			string webRefPath = Library.GetWebReferencePath(project);
+			FilePath webRefPath = Library.GetWebReferencePath (project);
 			foreach (ProjectFile file in project.Files)
 			{
-				if (file.FilePath.StartsWith(webRefPath))
+				if (file.FilePath.IsChildPathOf (webRefPath))
 				{
 					WebReferenceItem item;
 					FileInfo fileInfo = new FileInfo(file.FilePath); 

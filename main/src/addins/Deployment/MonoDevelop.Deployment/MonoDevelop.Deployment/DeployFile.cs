@@ -39,8 +39,8 @@ namespace MonoDevelop.Deployment
 {
 	public class DeployFile
 	{
-		string sourcePath;
-		string relativeTargetPath;
+		FilePath sourcePath;
+		FilePath relativeTargetPath;
 		string targetDirectoryID;
 		DeployContext deployContext;
 		bool isTemplate;
@@ -59,13 +59,13 @@ namespace MonoDevelop.Deployment
 				isTemplate = true;
 			sourceSolutionItem = pfile.Project;
 		}
-		
-		public DeployFile (SolutionItem sourceSolutionItem, string sourcePath, string relativeTargetPath)
+
+		public DeployFile (SolutionItem sourceSolutionItem, FilePath sourcePath, FilePath relativeTargetPath)
 		 : this (sourceSolutionItem, sourcePath, relativeTargetPath, TargetDirectory.ProgramFiles)
 		{
 		}
-		
-		public DeployFile (SolutionItem sourceSolutionItem, string sourcePath, string relativeTargetPath, string targetDirectoryID)
+
+		public DeployFile (SolutionItem sourceSolutionItem, FilePath sourcePath, FilePath relativeTargetPath, string targetDirectoryID)
 		{
 			this.targetDirectoryID = targetDirectoryID;
 			this.sourcePath = sourcePath;
@@ -93,12 +93,12 @@ namespace MonoDevelop.Deployment
 			set { displayName = value; }
 		}
 		
-		public string SourcePath {
+		public FilePath SourcePath {
 			get { return sourcePath; }
 			set { sourcePath = value; }
 		}
 		
-		public string RelativeTargetPath {
+		public FilePath RelativeTargetPath {
 			get { return relativeTargetPath; }
 			set { relativeTargetPath = value; }
 		}

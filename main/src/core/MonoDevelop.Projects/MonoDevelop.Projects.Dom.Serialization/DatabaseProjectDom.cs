@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {
@@ -54,17 +55,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 
-		public override IEnumerable<IType> GetTypes (string fileName)
+		public override IEnumerable<IType> GetTypes (FilePath fileName)
 		{
 			return database.GetFileContents (fileName);
 		}
 
-		public override IList<Tag> GetSpecialComments (string fileName)
+		public override IList<Tag> GetSpecialComments (FilePath fileName)
 		{
 			return database.GetSpecialComments (fileName);
 		}
-		
-		public override void UpdateTagComments (string fileName, IList<Tag> tags)
+
+		public override void UpdateTagComments (FilePath fileName, IList<Tag> tags)
 		{
 			database.UpdateTagComments (tags, fileName);
 		}
@@ -92,7 +93,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 
 
-		public override bool NeedCompilation (string fileName)
+		public override bool NeedCompilation (FilePath fileName)
 		{
 			FileEntry entry = database.GetFile (fileName);
 			return entry != null ? entry.IsModified : true;

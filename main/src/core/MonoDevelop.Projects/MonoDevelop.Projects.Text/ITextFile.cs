@@ -27,12 +27,13 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Text
 {
 	public interface ITextFile
 	{
-		string Name { get; }
+		FilePath Name { get; }
 
 		string Text { get; }
 		int Length { get; }

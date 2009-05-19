@@ -45,8 +45,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 		public bool SupportsMixedFormats {
 			get { return true; }
 		}
-		
-		public string GetValidFormatName (object obj, string fileName)
+
+		public FilePath GetValidFormatName (object obj, FilePath fileName)
 		{
 			if (obj is Project)
 				return Path.ChangeExtension (fileName, ".mdp");
@@ -57,8 +57,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 			else
 				return Path.ChangeExtension (fileName, ".mdse");
 		}
-		
-		public bool CanReadFile (string file, Type expectedType)
+
+		public bool CanReadFile (FilePath file, Type expectedType)
 		{
 			string ext = Path.GetExtension (file).ToLower ();
 			
@@ -75,10 +75,10 @@ namespace MonoDevelop.Projects.Formats.MD1
 		{
 			return (obj is SolutionEntityItem) || (obj is WorkspaceItem);
 		}
-		
-		public List<string> GetItemFiles (object obj)
+
+		public List<FilePath> GetItemFiles (object obj)
 		{
-			List<string> list = new List<string> ();
+			List<FilePath> list = new List<FilePath> ();
 			if (obj is Solution) {
 				Solution sol = (Solution) obj;
 				list.Add (sol.FileName);
@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			return list;
 		}
 
-		public void WriteFile (string file, object node, IProgressMonitor monitor)
+		public void WriteFile (FilePath file, object node, IProgressMonitor monitor)
 		{
 			string tmpfilename = null;
 			try {
@@ -115,7 +115,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 		}
 
-		void WriteFileInternal (string actualFile, string outFile, object node, IProgressMonitor monitor)
+		void WriteFileInternal (FilePath actualFile, FilePath outFile, object node, IProgressMonitor monitor)
 		{
 			if (node is Project) {
 				WriteProject (actualFile, outFile, (Project) node, monitor);
@@ -130,8 +130,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 				WriteSolutionEntityItem (actualFile, outFile, node, monitor);
 			}
 		}
-		
-		void WriteProject (string actualFile, string outFile, Project project, IProgressMonitor monitor)
+
+		void WriteProject (FilePath actualFile, FilePath outFile, Project project, IProgressMonitor monitor)
 		{
 			StreamWriter sw = new StreamWriter (outFile);
 			try {
@@ -148,8 +148,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 				sw.Close ();
 			}
 		}
-		
-		void WriteSolution (string actualFile, string outFile, Solution solution, IProgressMonitor monitor)
+
+		void WriteSolution (FilePath actualFile, FilePath outFile, Solution solution, IProgressMonitor monitor)
 		{
 			StreamWriter sw = new StreamWriter (outFile);
 			try {
@@ -167,8 +167,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 				sw.Close ();
 			}
 		}
-		
-		void WriteWorkspaceItem (string actualFile, string outFile, WorkspaceItem item, IProgressMonitor monitor)
+
+		void WriteWorkspaceItem (FilePath actualFile, FilePath outFile, WorkspaceItem item, IProgressMonitor monitor)
 		{
 			Workspace ws = item as Workspace;
 			if (ws != null) {
@@ -200,8 +200,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 				sw.Close ();
 			}
 		}
-		
-		void WriteSolutionEntityItem (string actualFile, string outFile, object node, IProgressMonitor monitor)
+
+		void WriteSolutionEntityItem (FilePath actualFile, FilePath outFile, object node, IProgressMonitor monitor)
 		{
 			StreamWriter sw = new StreamWriter (outFile);
 			try {
@@ -217,8 +217,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 				sw.Close ();
 			}
 		}
-		
-		public object ReadFile (string fileName, Type expectedType, IProgressMonitor monitor)
+
+		public object ReadFile (FilePath fileName, Type expectedType, IProgressMonitor monitor)
 		{
 			object readObject = null;
 			
@@ -269,8 +269,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 				fo.ConvertToFormat (MD1ProjectService.FileFormat, false);
 			return readObject;
 		}
-	
-		object ReadCombineFile (string file, IProgressMonitor monitor)
+
+		object ReadCombineFile (FilePath file, IProgressMonitor monitor)
 		{
 			XmlTextReader reader = new XmlTextReader (new StreamReader (file));
 			reader.MoveToContent ();
@@ -296,8 +296,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 				reader.Close ();
 			}
 		}
-		
-		object ReadProjectFile (string fileName, IProgressMonitor monitor)
+
+		object ReadProjectFile (FilePath fileName, IProgressMonitor monitor)
 		{
 			XmlTextReader reader = null;
 			try {
@@ -328,7 +328,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 		}
 
-		object ReadWorkspaceItemFile (string fileName, IProgressMonitor monitor)
+		object ReadWorkspaceItemFile (FilePath fileName, IProgressMonitor monitor)
 		{
 			XmlTextReader reader = new XmlTextReader (new StreamReader (fileName));
 			try {

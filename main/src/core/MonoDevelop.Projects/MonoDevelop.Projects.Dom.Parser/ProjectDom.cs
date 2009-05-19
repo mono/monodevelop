@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom.Parser
 {
@@ -77,12 +78,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 		}
-				
-		public virtual IList<Tag> GetSpecialComments (string fileName)
+
+		public virtual IList<Tag> GetSpecialComments (FilePath fileName)
 		{
 			return new List<Tag> ();
 		}
-		public virtual void UpdateTagComments (string fileName, IList<Tag> tags)
+		public virtual void UpdateTagComments (FilePath fileName, IList<Tag> tags)
 		{
 		
 		}
@@ -135,8 +136,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 			foreach (ProjectDom dom in References)
 				dom.ForceUpdateRec (visited);
 		}
-		
-		public virtual IEnumerable<IType> GetTypes (string fileName)
+
+		public virtual IEnumerable<IType> GetTypes (FilePath fileName)
 		 {
 			foreach (IType type in Types) {
 				if (type.CompilationUnit.FileName == fileName)
@@ -413,8 +414,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			return false;
 		}
-		
-		public virtual bool NeedCompilation (string fileName)
+
+		public virtual bool NeedCompilation (FilePath fileName)
 		{
 			return false;
 		}

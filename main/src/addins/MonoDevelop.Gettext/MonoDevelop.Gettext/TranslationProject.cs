@@ -93,9 +93,9 @@ namespace MonoDevelop.Gettext
 			translations = new TranslationCollection (this);
 		}
 		
-		protected override List<string> OnGetItemFiles (bool includeReferencedFiles)
+		protected override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<string> col = base.OnGetItemFiles (includeReferencedFiles);
+			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles);
 			if (includeReferencedFiles) {
 				foreach (Translation tr in translations)
 					col.Add (tr.PoFile);

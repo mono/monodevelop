@@ -26,6 +26,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.Ide.Tasks
 	{
 		TaskPriority priority = TaskPriority.Normal;
 		string   description;
-		string   fileName;
+		FilePath fileName;
 		TaskType type;
 		int      line;
 		int      column;
@@ -111,15 +112,12 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		public string FileName {
+		public FilePath FileName {
 			get {
 				return fileName;
 			}
 			set {
-				if (!string.IsNullOrEmpty (value))
-					fileName = System.IO.Path.GetFullPath (value);
-				else
-					fileName = null;
+				fileName = !value.IsNullOrEmpty ? value.FullPath : value;
 			}
 		}
 		
@@ -156,25 +154,25 @@ namespace MonoDevelop.Ide.Tasks
 //			this.line        = line;
 //		}
 		
-		public Task (string fileName, string description, int column, int line, TaskType type, Project project)
+		public Task (FilePath fileName, string description, int column, int line, TaskType type, Project project)
 			: this (fileName, description, column, line, type)
 		{
 			owner = project;
 		}
 		
-		public Task (string fileName, string description, int column, int line, TaskType type, Project project, TaskPriority priority)
+		public Task (FilePath fileName, string description, int column, int line, TaskType type, Project project, TaskPriority priority)
 			: this (fileName, description, column, line, type, priority)
 		{
 			owner = project;
 		}
 		
-		public Task (string fileName, string description, int column, int line, TaskType type, TaskPriority priority)
+		public Task (FilePath fileName, string description, int column, int line, TaskType type, TaskPriority priority)
 			: this (fileName, description, column, line, type)
 		{
 			this.priority = priority;
 		}
 		
-		public Task (string fileName, string description, int column, int line, TaskType type)
+		public Task (FilePath fileName, string description, int column, int line, TaskType type)
 		{
 			this.type        = type;
 			this.description = description.Trim();
@@ -198,7 +196,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public virtual void JumpToPosition()
 		{
-			if (!string.IsNullOrEmpty (fileName)) {
+			if (!fileName.IsNullOrEmpty) {
 				IdeApp.Workbench.OpenDocument (fileName, Math.Max (1, line), Math.Max (1, column), true);
 			} else if (owner != null) {
 				Pad pad = IdeApp.Workbench.GetPad<ProjectSolutionPad> ();

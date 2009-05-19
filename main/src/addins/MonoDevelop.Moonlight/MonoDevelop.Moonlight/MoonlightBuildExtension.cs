@@ -64,7 +64,7 @@ namespace MonoDevelop.Moonlight
 				if (pf.BuildAction == BuildAction.Resource || pf.BuildAction == BuildAction.Page || pf.BuildAction == BuildAction.ApplicationDefinition)
 					toResGen.Add (pf.FilePath);
 				
-				if (pf.FilePath.EndsWith (".xaml") && pf.Generator == "MSBuild:MarkupCompilePass1") {
+				if (pf.FilePath.Extension == ".xaml" && pf.Generator == "MSBuild:MarkupCompilePass1") {
 					string outFile = Path.Combine (objDir, proj.LanguageBinding.GetFileName (Path.GetFileName (pf.FilePath) + ".g"));
 					buildData.Items.Add (new ProjectFile (outFile, BuildAction.Compile));
 					if (!File.Exists (outFile) || File.GetLastWriteTime (outFile) < File.GetLastWriteTime (pf.FilePath)) {
@@ -229,7 +229,7 @@ namespace MonoDevelop.Moonlight
 			}
 			
 			foreach (ProjectFile pf in proj.Files) {
-				if (pf.FilePath.EndsWith (".xaml") && pf.Generator == "MSBuild:MarkupCompilePass1") {
+				if (pf.FilePath.Extension == ".xaml" && pf.Generator == "MSBuild:MarkupCompilePass1") {
 					string outFile = Path.Combine (objDir, proj.LanguageBinding.GetFileName (Path.GetFileName (pf.FilePath) + ".g"));
 					if (File.Exists (outFile))
 						File.Delete (outFile);
@@ -312,7 +312,7 @@ namespace MonoDevelop.Moonlight
 				{
 					return true;
 				}
-				if (pf.FilePath.EndsWith (".xaml") && pf.Generator == "MSBuild:MarkupCompilePass1") {
+				if (pf.FilePath.Extension == ".xaml" && pf.Generator == "MSBuild:MarkupCompilePass1") {
 					string outFile = Path.Combine (objDir, proj.LanguageBinding.GetFileName (Path.GetFileName (pf.FilePath) + ".g"));
 					if (!File.Exists (outFile) || File.GetLastWriteTime (outFile) < File.GetLastWriteTime (pf.FilePath))
 						return true;

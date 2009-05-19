@@ -117,10 +117,10 @@ namespace MonoDevelop.Autotools
 					"Error saving to Makefile ({0}) for project {1}", data.AbsoluteMakefileName, project.Name), e);
 			}
 		}
-		
-		public override List<string> GetItemFiles (SolutionEntityItem entry, bool includeReferencedFiles)
+
+		public override List<FilePath> GetItemFiles (SolutionEntityItem entry, bool includeReferencedFiles)
 		{
-			List<string> col = base.GetItemFiles (entry, includeReferencedFiles);
+			List<FilePath> col = base.GetItemFiles (entry, includeReferencedFiles);
 			
 			MakefileData data = entry.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.IntegrationEnabled || string.IsNullOrEmpty (data.AbsoluteMakefileName))

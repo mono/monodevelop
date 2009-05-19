@@ -179,14 +179,14 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		public ProjectFile SelectedFile { get; private set; }
-		
-		string GetSelectedDirectory ()
+
+		FilePath GetSelectedDirectory ( )
 		{
 			TreeIter iter;
 			if (!projectTree.Selection.GetSelected (out iter))
 				return project.BaseDirectory;
 			string dir = (string)dirStore.GetValue (iter, 0);
-			return System.IO.Path.Combine (project.BaseDirectory, dir);
+			return project.BaseDirectory.Combine (dir);
 		}
 		
 		void UpdateFileList (object sender, EventArgs args)
@@ -203,17 +203,13 @@ namespace MonoDevelop.AspNet.Gui
 			pattern = pattern.Replace ("\\|","$|^");
 			pattern = "^" + pattern + "$";
 			System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex (pattern);
-			
-			string dir = GetSelectedDirectory ();
+
+			FilePath dir = GetSelectedDirectory ();
 			foreach (ProjectFile pf in project.Files) {
-				if (pf.Subtype == Subtype.Directory || !pf.FilePath.StartsWith (dir))
-					continue;
-				int split = pf.FilePath.LastIndexOf (System.IO.Path.DirectorySeparatorChar);
-				if (split != dir.Length)
+				if (pf.Subtype == Subtype.Directory || !pf.FilePath.IsChildPathOf (dir))
 					continue;
 				
-				string filename = pf.FilePath.Substring (split + 1);
-				if (regex.IsMatch (System.IO.Path.GetFileName (filename)))
+				if (regex.IsMatch (pf.FilePath.FileName))
 					fileStore.AppendValues (pf);
 			}
 			

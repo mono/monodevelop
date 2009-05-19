@@ -28,6 +28,7 @@
 using System;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
@@ -69,9 +70,9 @@ namespace MonoDevelop.VersionControl
 			return paths;
 		}
 
-		public string[] Paths {
+		public FilePath[] Paths {
 			get {
-				string[] paths = new string [Count];
+				FilePath[] paths = new FilePath[Count];
 				for (int n=0; n < Count; n++)
 					paths [n] = this [n].Path;
 				return paths;

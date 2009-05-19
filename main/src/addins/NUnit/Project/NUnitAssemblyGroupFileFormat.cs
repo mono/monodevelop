@@ -44,13 +44,13 @@ namespace MonoDevelop.NUnit
 		public string Name {
 			get { return "NUnit assembly group"; }
 		}
-		
-		public string GetValidFormatName (object obj, string fileName)
+
+		public FilePath GetValidFormatName (object obj, FilePath fileName)
 		{
-			return Path.ChangeExtension (fileName, ".md-nunit");
+			return fileName.ChangeExtension (".md-nunit");
 		}
-		
-		public bool CanReadFile (string file, Type expectedType)
+
+		public bool CanReadFile (FilePath file, Type expectedType)
 		{
 			return expectedType.IsAssignableFrom (typeof(NUnitAssemblyGroupProject)) && Path.GetExtension (file) == ".md-nunit";
 		}
@@ -59,27 +59,27 @@ namespace MonoDevelop.NUnit
 		{
 			return false;
 		}
-		
-		public void WriteFile (string file, object obj, IProgressMonitor monitor)
+
+		public void WriteFile (FilePath file, object obj, IProgressMonitor monitor)
 		{
 			WriteFile (file, file, obj, monitor);
 		}
-		
-		public void ExportFile (string file, object obj, IProgressMonitor monitor)
+
+		public void ExportFile (FilePath file, object obj, IProgressMonitor monitor)
 		{
 			WriteFile (((NUnitAssemblyGroupProject)obj).FileName, file, obj, monitor);
 		}
-		
-		public List<string> GetItemFiles (object obj)
+
+		public List<FilePath> GetItemFiles (object obj)
 		{
-			return new List<string> ();
+			return new List<FilePath> ();
 		}
-		
-		void WriteFile (string file, string outFile, object obj, IProgressMonitor monitor)
+
+		void WriteFile (FilePath file, FilePath outFile, object obj, IProgressMonitor monitor)
 		{
 		}
-		
-		public object ReadFile (string file, Type expectedType, IProgressMonitor monitor)
+
+		public object ReadFile (FilePath file, Type expectedType, IProgressMonitor monitor)
 		{
 			XmlTextReader reader = new XmlTextReader (new StreamReader (file));
 			try {

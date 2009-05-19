@@ -285,15 +285,15 @@ namespace MonoDevelop.Projects
 					obj = (SolutionEntityItem) ReadSolutionItem (monitor, newFile);
 				
 				using (obj) {
-					List<string> oldFiles = obj.GetItemFiles (true);
+					List<FilePath> oldFiles = obj.GetItemFiles (true);
 					ExcludeEntries (obj, includedChildIds);
 					if (format != null)
 						obj.ConvertToFormat (format, true);
 					obj.Save (monitor);
-					List<string> newFiles = obj.GetItemFiles (true);
+					List<FilePath> newFiles = obj.GetItemFiles (true);
 	
 					// Remove old files
-					foreach (string file in oldFiles) {
+					foreach (FilePath file in oldFiles) {
 						if (newFiles.Contains (file))
 							continue;
 						
@@ -301,7 +301,7 @@ namespace MonoDevelop.Projects
 							File.Delete (file);
 						
 							// Exclude empty directories
-							string dir = Path.GetDirectoryName (file);
+							FilePath dir = file.ParentDirectory;
 							if (Directory.GetFiles (dir).Length == 0 && Directory.GetDirectories (dir).Length == 0) {
 								try {
 									Directory.Delete (dir);
@@ -341,33 +341,32 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}
-		
-		bool CopyFiles (IProgressMonitor monitor, IWorkspaceFileObject obj, List<string> files, string targetBasePath)
+
+		bool CopyFiles (IProgressMonitor monitor, IWorkspaceFileObject obj, List<FilePath> files, FilePath targetBasePath)
 		{
-			string baseDir = Path.GetFullPath (obj.BaseDirectory);
-			foreach (string file in files) {
+			FilePath baseDir = obj.BaseDirectory.FullPath;
+			foreach (FilePath file in files) {
 
 				if (!File.Exists (file)) {
 					monitor.ReportWarning (GettextCatalog.GetString ("File '{0}' not found.", file));
 					continue;
 				}
-				string fname = FileService.GetFullPath (file);
+				FilePath fname = file.FullPath;
 				
 				// Can't export files from outside the root solution directory
-				if (!fname.StartsWith (baseDir + Path.DirectorySeparatorChar)) {
+				if (!fname.IsChildPathOf (baseDir)) {
 					if (obj is Solution)
 						monitor.ReportError ("The solution '" + obj.Name + "' is referencing the file '" + Path.GetFileName (file) + "' which is located outside the root solution directory.", null);
 					else
 						monitor.ReportError ("The project '" + obj.Name + "' is referencing the file '" + Path.GetFileName (file) + "' which is located outside the project directory.", null);
 					return false;
 				}
+
+				FilePath rpath = fname.ToRelative (baseDir);
+				rpath = rpath.ToAbsolute (targetBasePath);
 				
-				string rpath = FileService.AbsoluteToRelativePath (baseDir
-				                                                   , fname);
-				rpath = Path.Combine (targetBasePath, rpath);
-				
-				if (!Directory.Exists (Path.GetDirectoryName (rpath)))
-					Directory.CreateDirectory (FileService.GetFullPath (Path.GetDirectoryName (rpath)));
+				if (!Directory.Exists (rpath.ParentDirectory))
+					Directory.CreateDirectory (rpath.ParentDirectory);
 
 				File.Copy (file, rpath, true);
 			}
@@ -571,8 +570,8 @@ namespace MonoDevelop.Projects
 		{
 			entry.OnSave (monitor);
 		}
-		
-		public override List<string> GetItemFiles (SolutionEntityItem entry, bool includeReferencedFiles)
+
+		public override List<FilePath> GetItemFiles (SolutionEntityItem entry, bool includeReferencedFiles)
 		{
 			return entry.OnGetItemFiles (includeReferencedFiles);
 		}

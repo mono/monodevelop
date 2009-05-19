@@ -59,8 +59,8 @@ namespace MonoDevelop.Projects
 		
 		public override string Name {
 			get {
-				if (FileName != null && FileName.Length > 0)
-					return System.IO.Path.GetFileNameWithoutExtension (FileName);
+				if (!FileName.IsNullOrEmpty)
+					return FileName.FileNameWithoutExtension;
 				else
 					return GettextCatalog.GetString ("Unknown entry");
 			}

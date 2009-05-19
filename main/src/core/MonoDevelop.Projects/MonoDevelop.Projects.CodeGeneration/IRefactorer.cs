@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.CodeDom;
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom;
 
@@ -81,12 +82,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 		int position;
 		int line;
 		int column;
-		string fileName;
+		FilePath fileName;
 		string name;
 		string textLine;
 		RefactorerContext rctx;
-		
-		public MemberReference (RefactorerContext rctx, string fileName, int position, int line, int column, string name, string textLine)
+
+		public MemberReference (RefactorerContext rctx, FilePath fileName, int position, int line, int column, string name, string textLine)
 		{
 			this.position = position;
 			this.line = line;
@@ -116,7 +117,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			get { return column; }
 		}
 		
-		public string FileName {
+		public FilePath FileName {
 			get { return fileName; }
 		}
 		
@@ -187,7 +188,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			{
 				MemberReference r1 = (MemberReference) o1;
 				MemberReference r2 = (MemberReference) o2;
-				int c = r1.FileName.CompareTo (r2.FileName);
+				int c = r1.FileName.ToString ().CompareTo (r2.FileName.ToString ());
 				if (c != 0) return c;
 				return r2.Position - r1.Position; 
 			}

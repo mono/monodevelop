@@ -1206,7 +1206,7 @@ namespace MonoDevelop.Ide.Gui
 	
 	class OpenDocumentFileProvider: ITextFileProvider
 	{
-		public IEditableTextFile GetEditableTextFile (string filePath)
+		public IEditableTextFile GetEditableTextFile (FilePath filePath)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {

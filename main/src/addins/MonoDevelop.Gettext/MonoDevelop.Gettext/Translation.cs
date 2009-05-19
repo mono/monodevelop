@@ -57,7 +57,7 @@ namespace MonoDevelop.Gettext
 			set { isoCode = value; }
 		}
 		
-		public string FileName {
+		public FilePath FileName {
 			get {
 				return isoCode + ".po";
 			}
@@ -72,9 +72,9 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		public string PoFile {
+		public FilePath PoFile {
 			get {
-				return Path.Combine (parentProject.BaseDirectory, isoCode + ".po");
+				return parentProject.BaseDirectory.Combine (isoCode + ".po");
 			}
 		}
 		

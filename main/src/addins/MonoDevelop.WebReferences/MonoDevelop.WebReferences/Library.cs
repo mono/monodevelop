@@ -162,9 +162,9 @@ namespace MonoDevelop.WebReferences
 		/// <summary>Gets the path where all web references will be stored for the specified project.</summary>
 		/// <param name="project">A Project containing the root project information.</project>
 		/// <returns>A string containing the base path for web references.</returns>
-		public static string GetWebReferencePath (Project project)
+		public static FilePath GetWebReferencePath (Project project)
 		{
-			return Path.Combine(project.BaseDirectory, "WebReferences");
+			return project.BaseDirectory.Combine ("WebReferences");
 		}
 		
 		/// <summary>Checks whether or not the current project does contain any web references.</summary>
@@ -174,7 +174,7 @@ namespace MonoDevelop.WebReferences
 			string webRefPath = Library.GetWebReferencePath(project);
 			foreach (ProjectFile file in project.Files)
 			{
-				if (file.FilePath.StartsWith(webRefPath))
+				if (file.FilePath.IsChildPathOf (webRefPath))
 					return true;
 			}
 			return false;

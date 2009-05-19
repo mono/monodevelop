@@ -1,3 +1,10 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore\GtkDesignInfo.cs:
+	* MonoDevelop.GtkCore.GuiBuilder\GuiBuilderWindow.cs:
+	* MonoDevelop.GtkCore.GuiBuilder\GuiBuilderProject.cs: Use the
+	  new FilePath class for handling file and directory paths.
+
 2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Don't

@@ -28,6 +28,7 @@ using System;
 
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -45,7 +46,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		public IEditableTextFile GetEditableTextFile (string filePath)
+		public IEditableTextFile GetEditableTextFile (FilePath filePath)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				//FIXME: look in other views

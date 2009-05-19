@@ -30,31 +30,32 @@ using System;
 using System.IO;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class SystemFile: IFileItem
 	{
-		string absolutePath;
+		FilePath absolutePath;
 		IWorkspaceObject parent;
 		bool showTransparent;
 		
-		public SystemFile (string absolutePath, IWorkspaceObject parent): this (absolutePath, parent, true)
+		public SystemFile (FilePath absolutePath, IWorkspaceObject parent): this (absolutePath, parent, true)
 		{
 		}
-		
-		public SystemFile (string absolutePath, IWorkspaceObject parent, bool showTransparent)
+
+		public SystemFile (FilePath absolutePath, IWorkspaceObject parent, bool showTransparent)
 		{
 			this.parent = parent;
 			this.absolutePath = absolutePath;
 			this.showTransparent = showTransparent;
 		}
 		
-		public string Path {
+		public FilePath Path {
 			get { return absolutePath; }
 		}
 		
-		string IFileItem.FileName {
+		FilePath IFileItem.FileName {
 			get { return Path; }
 		}
 		

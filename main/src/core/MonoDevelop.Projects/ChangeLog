@@ -1,3 +1,44 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects\Project.cs:
+	* MonoDevelop.Projects\Solution.cs:
+	* MonoDevelop.Projects\Workspace.cs:
+	* MonoDevelop.Projects\IFileItem.cs:
+	* MonoDevelop.Projects\ProjectFile.cs:
+	* MonoDevelop.Projects\FileCopySet.cs:
+	* MonoDevelop.Projects\IFolderItem.cs:
+	* MonoDevelop.Projects\SolutionItem.cs:
+	* MonoDevelop.Projects.Text\TextFile.cs:
+	* MonoDevelop.Projects\DotNetProject.cs:
+	* MonoDevelop.Projects\CustomCommand.cs:
+	* MonoDevelop.Projects\WorkspaceItem.cs:
+	* MonoDevelop.Projects\SolutionFolder.cs:
+	* MonoDevelop.Projects\ProjectService.cs:
+	* MonoDevelop.Projects.Text\ITextFile.cs:
+	* MonoDevelop.Projects.Dom\CompoundType.cs:
+	* MonoDevelop.Projects\IWorkspaceObject.cs:
+	* MonoDevelop.Projects\SolutionEntityItem.cs:
+	* MonoDevelop.Projects.Dom\CompilationUnit.cs:
+	* MonoDevelop.Projects\UnknownSolutionItem.cs:
+	* MonoDevelop.Projects.Dom\ICompilationUnit.cs:
+	* MonoDevelop.Projects\UnknownWorkspaceItem.cs:
+	* MonoDevelop.Projects\ProjectFileEventArgs.cs:
+	* MonoDevelop.Projects.Dom.Parser\ProjectDom.cs:
+	* MonoDevelop.Projects.Extensions\IFileFormat.cs:
+	* MonoDevelop.Projects.Text\ITextFileProvider.cs:
+	* MonoDevelop.Projects\ProjectServiceExtension.cs:
+	* MonoDevelop.Projects.Formats.MD1\MD1FileFormat.cs:
+	* MonoDevelop.Projects.CodeGeneration\IRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration\RefactorerContext.cs:
+	* MonoDevelop.Projects\ProjectPathItemPropertyAttribute.cs:
+	* MonoDevelop.Projects.Formats.MSBuild\MSBuildFileFormat.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase\MemoryProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization\DatabaseProjectDom.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase\ProjectMemoryProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization\ProjectCodeCompletionDatabase.cs:
+	  Use the new FilePath class for handling file and directory
+	  paths.
+
 2009-05-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs:

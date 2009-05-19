@@ -27,11 +27,12 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Text
 {
 	public interface ITextFileProvider
 	{
-		IEditableTextFile GetEditableTextFile (string filePath);
+		IEditableTextFile GetEditableTextFile (FilePath filePath);
 	}
 }

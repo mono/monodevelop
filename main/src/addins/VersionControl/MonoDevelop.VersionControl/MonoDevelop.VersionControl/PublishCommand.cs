@@ -13,15 +13,15 @@ namespace MonoDevelop.VersionControl
 {
 	internal class PublishCommand 
 	{
-		public static bool Publish (IWorkspaceObject entry, string localPath, bool test)
+		public static bool Publish (IWorkspaceObject entry, FilePath localPath, bool test)
 		{
 			if (test)
 				return true;
 
 			if (!VersionControlService.CheckVersionControlInstalled ())
 				return false;
-			
-			List<string> files = new List<string> ();
+
+			List<FilePath> files = new List<FilePath> ();
 
 			// Build the list of files to be checked in			
 			string moduleName = entry.Name;
@@ -57,8 +57,8 @@ namespace MonoDevelop.VersionControl
 			}
 			return true;
 		}
-		
-		static void GetFiles (List<string> files, IWorkspaceObject entry)
+
+		static void GetFiles (List<FilePath> files, IWorkspaceObject entry)
 		{
 			if (entry is IWorkspaceFileObject)
 				files.AddRange (((IWorkspaceFileObject)entry).GetItemFiles (true));
@@ -73,12 +73,12 @@ namespace MonoDevelop.VersionControl
 	
 	internal class PublishWorker : Task {
 		Repository vc;
-		string path;
+		FilePath path;
 		string moduleName;
-		string[] files;
+		FilePath[] files;
 		string message;
-					
-		public PublishWorker (Repository vc, string moduleName, string localPath, string[] files, string message) 
+
+		public PublishWorker (Repository vc, string moduleName, FilePath localPath, FilePath[] files, string message) 
 		{
 			this.vc = vc;
 			this.path = localPath;

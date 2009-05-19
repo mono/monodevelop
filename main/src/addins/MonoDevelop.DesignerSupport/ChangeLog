@@ -1,3 +1,10 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport\CodeBehind.cs:
+	* MonoDevelop.DesignerSupport\OpenDocumentFileProvider.cs: Use
+	  the new FilePath class for handling file and directory
+	  paths.
+
 2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.csproj: Disable overflow

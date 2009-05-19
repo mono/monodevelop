@@ -288,8 +288,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}
-		
-		public FileViewer[] GetFileViewers (string fileName)
+
+		public FileViewer[] GetFileViewers (FilePath fileName)
 		{
 			List<FileViewer> list = new List<FileViewer> ();
 			
@@ -304,33 +304,33 @@ namespace MonoDevelop.Ide.Gui
 				
 			return list.ToArray ();
 		}
-		
-		public Document OpenDocument (string fileName)
+
+		public Document OpenDocument (FilePath fileName)
 		{
 			return OpenDocument (fileName, true);
 		}
-		
-		public Document OpenDocument (string fileName, string encoding)
+
+		public Document OpenDocument (FilePath fileName, string encoding)
 		{
 			return OpenDocument (fileName, -1, -1, true, encoding, null);
 		}
-		
-		public Document OpenDocument (string fileName, bool bringToFront)
+
+		public Document OpenDocument (FilePath fileName, bool bringToFront)
 		{
 			return OpenDocument (fileName, -1, -1, bringToFront);
 		}
-		
-		public Document OpenDocument (string fileName, int line, int column, bool bringToFront)
+
+		public Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront)
 		{
 			return OpenDocument (fileName, line, column, bringToFront, null, null);
 		}
-		
-		public Document OpenDocument (string fileName, int line, int column, bool bringToFront, string encoding)
+
+		public Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding)
 		{
 			return OpenDocument (fileName, line, column, bringToFront, encoding, null);
 		}
-		
-		internal Document OpenDocument (string fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding)
+
+		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding)
 		{
 			NavigationHistoryService.LogActiveDocument ();
 			
@@ -621,26 +621,26 @@ namespace MonoDevelop.Ide.Gui
 		
 		void RealOpenFile (object openFileInfo)
 		{
-			string fileName;
+			FilePath fileName;
 			FileInformation oFileInfo = openFileInfo as FileInformation;
 			IProgressMonitor monitor = oFileInfo.ProgressMonitor;
 
 			using (monitor)
 			{
-				fileName = oFileInfo.FileName;
-				
-				if (fileName == null) {
+				string origName = oFileInfo.FileName;
+
+				if (origName == null) {
 					monitor.ReportError (GettextCatalog.GetString ("Invalid file name"), null);
 					return;
 				}
-	
-				string origName = fileName;
-	
-				if (fileName.StartsWith ("file://"))
-					fileName = new Uri(fileName).LocalPath;
-	
-				if (!fileName.StartsWith ("http://"))
-					fileName = System.IO.Path.GetFullPath (fileName);
+
+				if (origName.StartsWith ("file://"))
+					fileName = new Uri (origName).LocalPath;
+				else
+					fileName = origName;
+
+				if (!origName.StartsWith ("http://"))
+					fileName = fileName.FullPath;
 				
 				//Debug.Assert(FileService.IsValidPath(fileName));
 				if (FileService.IsDirectory (fileName)) {
@@ -648,7 +648,7 @@ namespace MonoDevelop.Ide.Gui
 					return;
 				}
 				// test, if file fileName exists
-				if (!fileName.StartsWith("http://")) {
+				if (!origName.StartsWith("http://")) {
 					// test, if an untitled file should be opened
 					if (!System.IO.Path.IsPathRooted(origName)) { 
 						foreach (Document doc in Documents) {
@@ -778,7 +778,7 @@ namespace MonoDevelop.Ide.Gui
 			string currentFileName = prefs.ActiveDocument != null ? Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, prefs.ActiveDocument)) : null;
 			
 			foreach (DocumentUserPrefs doc in prefs.Files) {
-				string fileName = Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, doc.FileName));
+				FilePath fileName = args.Item.BaseDirectory.Combine (doc.FileName).FullPath;
 				if (File.Exists (fileName))
 					IdeApp.Workbench.OpenDocument (fileName, doc.Line, doc.Column, fileName == currentFileName);
 			}

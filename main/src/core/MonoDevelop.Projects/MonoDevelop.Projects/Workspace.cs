@@ -95,8 +95,8 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		
-		public override Project GetProjectContainingFile (string fileName)
+
+		public override Project GetProjectContainingFile (FilePath fileName)
 		{
 			foreach (WorkspaceItem it in Items) {
 				Project p = it.GetProjectContainingFile (fileName);
@@ -207,10 +207,10 @@ namespace MonoDevelop.Projects
 			item.Dispose ();
 			return newItem;
 		}
-		
-		public override List<string> GetItemFiles (bool includeReferencedFiles)
+
+		public override List<FilePath> GetItemFiles (bool includeReferencedFiles)
 		{
-			List<string> list = base.GetItemFiles (includeReferencedFiles);
+			List<FilePath> list = base.GetItemFiles (includeReferencedFiles);
 			if (includeReferencedFiles) {
 				foreach (WorkspaceItem it in Items)
 					list.AddRange (it.GetItemFiles (true));

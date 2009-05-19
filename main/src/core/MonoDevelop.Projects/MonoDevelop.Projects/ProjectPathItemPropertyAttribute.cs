@@ -50,13 +50,16 @@ namespace MonoDevelop.Projects
 	{
 		public PathDataType (Type type): base (type)
 		{
+			if (type != typeof (string) && type != typeof (FilePath))
+				throw new InvalidOperationException ("ProjectPathItemProperty can only be applied to fields of type string and FilePath");
 		}
 
 		protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
 		{
-			if (value == null || ((string)value).Length == 0) return null;
-			string basePath = Path.GetDirectoryName (serCtx.BaseFile);
-			string file = FileService.AbsoluteToRelativePath (basePath, value.ToString ());
+			FilePath path = value is string ? new FilePath ((string) value) : (FilePath) value;
+			if (path.IsNullOrEmpty) return null;
+			FilePath basePath = Path.GetDirectoryName (serCtx.BaseFile);
+			string file = path.ToRelative (basePath);
 			if (Path.DirectorySeparatorChar != serCtx.DirectorySeparatorChar)
 				file = file.Replace (Path.DirectorySeparatorChar, serCtx.DirectorySeparatorChar);
 			return new DataValue (Name, file);
@@ -65,11 +68,16 @@ namespace MonoDevelop.Projects
 		protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
 			string file = ((DataValue)data).Value;
-			if (file == "") return "";
-			if (Path.DirectorySeparatorChar != serCtx.DirectorySeparatorChar)
-				file = file.Replace (serCtx.DirectorySeparatorChar, Path.DirectorySeparatorChar);
-			string basePath = Path.GetDirectoryName (serCtx.BaseFile);
-			return FileService.RelativeToAbsolutePath (basePath, file);
+			if (!string.IsNullOrEmpty (file)) {
+				if (Path.DirectorySeparatorChar != serCtx.DirectorySeparatorChar)
+					file = file.Replace (serCtx.DirectorySeparatorChar, Path.DirectorySeparatorChar);
+				string basePath = Path.GetDirectoryName (serCtx.BaseFile);
+				file = FileService.RelativeToAbsolutePath (basePath, file);
+			}
+			if (ValueType == typeof (string))
+				return file;
+			else
+				return (FilePath) file;
 		}
 	}
 }

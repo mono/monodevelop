@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
@@ -26,16 +27,16 @@ namespace MonoDevelop.VersionControl
 		protected abstract Repository OnCreateRepositoryInstance ();
 		public abstract Gtk.Widget CreateRepositoryEditor (Repository repo);
 		
-		public virtual Repository GetRepositoryReference (string path, string id)
+		public virtual Repository GetRepositoryReference (FilePath path, string id)
 		{
 			return VersionControlService.InternalGetRepositoryReference (path, id);
 		}
-		
-		public virtual void StoreRepositoryReference (Repository repo, string path, string id)
+
+		public virtual void StoreRepositoryReference (Repository repo, FilePath path, string id)
 		{
 			VersionControlService.InternalStoreRepositoryReference (repo, path, id);
 		}
 	}
-	
-	public delegate void UpdateCallback(string path, string action);
+
+	public delegate void UpdateCallback (FilePath path, string action);
 }

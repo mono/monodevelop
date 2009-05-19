@@ -1,3 +1,19 @@
+2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Tasks\Task.cs:
+	* MonoDevelop.Ide.Gui\Document.cs:
+	* MonoDevelop.Ide.Gui\Workbench.cs:
+	* MonoDevelop.Ide.Tasks\TaskService.cs:
+	* MonoDevelop.Ide.Gui\RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui\ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui\DocumentNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad\SystemFile.cs:
+	* MonoDevelop.Ide.Gui.Content\TextEditorExtension.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad\ProjectFolder.cs:
+	* MonoDevelop.Ide.Templates\SingleFileDescriptionTemplate.cs:
+	  Use the new FilePath class for handling file and directory
+	  paths.
+
 2009-05-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/TextEditor.cs:

@@ -161,20 +161,20 @@ namespace MonoDevelop.GtkCore
 			}
 		}
 		
-		string ObjectsFile {
-			get { return Path.Combine (GtkGuiFolder, "objects.xml"); }
+		FilePath ObjectsFile {
+			get { return GtkGuiFolder.Combine ("objects.xml"); }
 		}
 		
-		public string SteticGeneratedFile {
-			get { return Path.Combine (GtkGuiFolder, binding.GetFileName ("generated")); }
+		public FilePath SteticGeneratedFile {
+			get { return GtkGuiFolder.Combine (binding.GetFileName ("generated")); }
 		}
 		
-		public string SteticFile {
-			get { return Path.Combine (GtkGuiFolder, "gui.stetic"); }
+		public FilePath SteticFile {
+			get { return GtkGuiFolder.Combine ("gui.stetic"); }
 		}
 		
-		public string GtkGuiFolder {
-			get { return Path.Combine (project.BaseDirectory, "gtk-gui"); }
+		public FilePath GtkGuiFolder {
+			get { return project.BaseDirectory.Combine ("gtk-gui"); }
 		}
 		
 		public bool GenerateGettext {

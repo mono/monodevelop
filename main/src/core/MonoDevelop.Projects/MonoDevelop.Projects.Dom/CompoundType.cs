@@ -30,6 +30,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -108,8 +109,8 @@ namespace MonoDevelop.Projects.Dom
 		{
 			SetMainPart (fileName, location.Line, location.Column);
 		}
-		
-		public void SetMainPart (string fileName, int line, int column) 
+
+		public void SetMainPart (FilePath fileName, int line, int column) 
 		{
 			int idx = parts.FindIndex (1, x => x.CompilationUnit.FileName == fileName && x.Location.Line == line);
 			if (idx > 0) {
@@ -124,8 +125,8 @@ namespace MonoDevelop.Projects.Dom
 			parts.Add (part);
 			Update ();
 		}
-		
-		public IType RemoveFile (string fileName)
+
+		public IType RemoveFile (FilePath fileName)
 		{
 			for (int i = 0; i < this.parts.Count; i++) {
 				if (parts [i].CompilationUnit != null && parts [i].CompilationUnit.FileName == fileName) {
@@ -197,8 +198,8 @@ namespace MonoDevelop.Projects.Dom
 			result.AddPart (type2);
 			return result;
 		}
-		
-		public static IType RemoveFile (IType type, string fileName)
+
+		public static IType RemoveFile (IType type, FilePath fileName)
 		{
 			if (type is CompoundType) 
 				return ((CompoundType)type).RemoveFile (fileName);

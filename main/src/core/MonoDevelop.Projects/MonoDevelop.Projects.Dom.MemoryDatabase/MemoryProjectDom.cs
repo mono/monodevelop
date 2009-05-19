@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom.MemoryDatabase
 {
@@ -251,8 +252,8 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 				}
 			}
 		}
-		
-		public override bool NeedCompilation (string fileName)
+
+		public override bool NeedCompilation (FilePath fileName)
 		{
 			return !units.Any (u => u.FileName == fileName);
 			//FileEntry entry = database.GetFile (fileName);

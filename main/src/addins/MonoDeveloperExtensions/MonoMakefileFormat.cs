@@ -47,15 +47,15 @@ namespace MonoDeveloper
 		public string Name {
 			get { return "Mono Makefile"; }
 		}
-		
-		public string GetValidFormatName (object obj, string fileName)
+
+		public FilePath GetValidFormatName (object obj, FilePath fileName)
 		{
-			return Path.Combine (Path.GetDirectoryName (fileName), "Makefile");
+			return fileName.ParentDirectory.Combine ("Makefile");
 		}
-		
-		public bool CanReadFile (string file, Type expectedType)
+
+		public bool CanReadFile (FilePath file, Type expectedType)
 		{
-			if (Path.GetFileName (file) != "Makefile") return false;
+			if (file.FileName != "Makefile") return false;
 			MonoMakefile mkfile = new MonoMakefile (file);
 			if (mkfile.Content.IndexOf ("build/rules.make") == -1) return false;
 			
@@ -72,14 +72,14 @@ namespace MonoDeveloper
 		{
 			return (obj is SolutionFolder) || IsMonoProject (obj);
 		}
-		
-		public void WriteFile (string file, object node, IProgressMonitor monitor)
+
+		public void WriteFile (FilePath file, object node, IProgressMonitor monitor)
 		{
 		}
-		
-		public List<string> GetItemFiles (object obj)
+
+		public List<FilePath> GetItemFiles (object obj)
 		{
-			List<string> col = new List<string> ();
+			List<FilePath> col = new List<FilePath> ();
 			DotNetProject mp = obj as DotNetProject;
 			if (mp != null) {
 				MonoSolutionItemHandler handler = ProjectExtensionUtil.GetItemHandler (mp) as MonoSolutionItemHandler;
@@ -90,15 +90,15 @@ namespace MonoDeveloper
 			}
 			return col;
 		}
-		
-		public object ReadFile (string fileName, Type expectedType, IProgressMonitor monitor)
+
+		public object ReadFile (FilePath fileName, Type expectedType, IProgressMonitor monitor)
 		{
 			return ReadFile (fileName, false, monitor);
 		}
-		
-		public object ReadFile (string fileName, bool hasParentSolution, IProgressMonitor monitor)
+
+		public object ReadFile (FilePath fileName, bool hasParentSolution, IProgressMonitor monitor)
 		{
-			string basePath = Path.GetDirectoryName (fileName);
+			FilePath basePath = fileName.ParentDirectory;
 			MonoMakefile mkfile = new MonoMakefile (fileName);
 			string aname = mkfile.GetVariable ("LIBRARY");
 			if (aname == null) aname = mkfile.GetVariable ("PROGRAM");

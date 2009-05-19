@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
 		}
 
-		public string FileName {
+		public FilePath FileName {
 			get {
 				if (!Window.ViewContent.IsFile)
 					return null;

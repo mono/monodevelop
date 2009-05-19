@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Text
 {
 	public class TextFile: IEditableTextFile
 	{
-		string name;
+		FilePath name;
 		StringBuilder text;
 		string sourceEncoding;
 		bool modified;
@@ -48,32 +48,32 @@ namespace MonoDevelop.Projects.Text
 		public TextFile ()
 		{
 		}
-		
-		public TextFile (string name)
+
+		public TextFile (FilePath name)
 		{
 			Read (name);
 		}
-		
-		public void Read (string fileName)
+
+		public void Read (FilePath fileName)
 		{
 			Read (fileName, null);
 		}
-		
-		public static TextFile ReadFile (string fileName)
+
+		public static TextFile ReadFile (FilePath fileName)
 		{
 			TextFile tf = new TextFile ();
 			tf.Read (fileName);
 			return tf;
 		}
-		
-		public static TextFile ReadFile (string fileName, string encoding)
+
+		public static TextFile ReadFile (FilePath fileName, string encoding)
 		{
 			TextFile tf = new TextFile ();
 			tf.Read (fileName, encoding);
 			return tf;
 		}
-		
-		public void Read (string fileName, string encoding)
+
+		public void Read (FilePath fileName, string encoding)
 		{
 			// Reads the file using the specified encoding.
 			// If the encoding is null, it autodetects the
@@ -151,8 +151,8 @@ namespace MonoDevelop.Projects.Text
 				
 			}
 		}
-		
-		public static string GetFileEncoding (string fileName)
+
+		public static string GetFileEncoding (FilePath fileName)
 		{
 			// Maybe this can be optimized later.
 			TextFile file = TextFile.ReadFile (fileName);
@@ -202,7 +202,7 @@ namespace MonoDevelop.Projects.Text
 		
 		#endregion
 		
-		public string Name {
+		public FilePath Name {
 			get { return name; } 
 		}
 
@@ -296,8 +296,8 @@ namespace MonoDevelop.Projects.Text
 			WriteFile (name, text.ToString (), sourceEncoding);
 			modified = false;
 		}
-		
-		public static void WriteFile (string fileName, string content, string encoding)
+
+		public static void WriteFile (FilePath fileName, string content, string encoding)
 		{
 			byte[] buf = Encoding.UTF8.GetBytes (content);
 			

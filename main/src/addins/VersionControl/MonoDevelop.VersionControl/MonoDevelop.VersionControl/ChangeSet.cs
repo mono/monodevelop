@@ -3,8 +3,8 @@ using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
@@ -13,16 +13,17 @@ namespace MonoDevelop.VersionControl
 		string globalComment = string.Empty;
 		List<ChangeSetItem> items = new List<ChangeSetItem> ();
 		Repository repo;
-		string basePath;
-		
-		internal protected ChangeSet (Repository repo, string basePath)
+		FilePath basePath;
+
+		internal protected ChangeSet (Repository repo, FilePath basePath)
 		{
 			this.repo = repo;
 			
 			//make sure the base path has a trailign slash, or ChangeLogWriter's
 			//GetDirectoryName call on it will take us up a directory
-			if (basePath[basePath.Length -1] != System.IO.Path.DirectorySeparatorChar)
-				basePath = basePath + System.IO.Path.DirectorySeparatorChar;
+			string bp = basePath.ToString ();
+			if (bp[bp.Length -1] != System.IO.Path.DirectorySeparatorChar)
+				basePath = bp + System.IO.Path.DirectorySeparatorChar;
 			
 			this.basePath = basePath;
 		}
@@ -63,7 +64,7 @@ namespace MonoDevelop.VersionControl
 			set { globalComment = value; }
 		}
 		
-		public string BaseLocalPath {
+		public FilePath BaseLocalPath {
 			get { return basePath; }
 		}
 		
@@ -74,16 +75,16 @@ namespace MonoDevelop.VersionControl
 		public Repository Repository {
 			get { return repo; }
 		}
-		
-		public bool ContainsFile (string fileName)
+
+		public bool ContainsFile (FilePath fileName)
 		{
 			for (int n=0; n<items.Count; n++)
 				if (items [n].LocalPath == fileName)
 					return true;
 			return false;
 		}
-		
-		public ChangeSetItem AddFile (string file)
+
+		public ChangeSetItem AddFile (FilePath file)
 		{
 			return AddFile (repo.GetVersionInfo (file, false));
 		}
@@ -100,8 +101,8 @@ namespace MonoDevelop.VersionControl
 			foreach (VersionInfo vi in fileVersionInfos)
 				AddFile (vi);
 		}
-		
-		public ChangeSetItem GetFileItem (string file)
+
+		public ChangeSetItem GetFileItem (FilePath file)
 		{
 			foreach (ChangeSetItem it in items)
 				if (it.LocalPath == file)
@@ -109,7 +110,7 @@ namespace MonoDevelop.VersionControl
 			return null;
 		}
 
-		public void RemoveFile (string file)
+		public void RemoveFile (FilePath file)
 		{
 			foreach (ChangeSetItem it in items) {
 				if (it.LocalPath == file) {
@@ -154,7 +155,7 @@ namespace MonoDevelop.VersionControl
 			set { VersionControlService.SetCommitComment (LocalPath, value, true); }
 		}
 		
-		public string LocalPath {
+		public FilePath LocalPath {
 			get { return versionInfo.LocalPath; }
 		}
 		

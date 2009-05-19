@@ -25,11 +25,12 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
 	public interface IFolderItem
 	{
-		string BaseDirectory { get; }
+		FilePath BaseDirectory { get; }
 	}
 }

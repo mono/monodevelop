@@ -395,7 +395,7 @@ namespace MonoDevelop.Projects
 			foreach (ProjectFile pf in Files) {
 				if (pf.CopyToOutputDirectory == FileCopyMode.None)
 					continue;
-				string outpath = pf.IsExternalToProject? Path.GetFileName (pf.Name) : pf.RelativePath;
+				FilePath outpath = pf.IsExternalToProject? (FilePath) pf.FilePath.FileName : pf.RelativePath;
 				list.Add (pf.FilePath, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest, outpath);
 			}
 		}
@@ -546,10 +546,10 @@ namespace MonoDevelop.Projects
 			}
 
 		}
-		
-		internal protected override List<string> OnGetItemFiles (bool includeReferencedFiles)
+
+		internal protected override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<string> col = base.OnGetItemFiles (includeReferencedFiles);
+			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles);
 			if (includeReferencedFiles) {
 				foreach (ProjectFile pf in Files) {
 					if (pf.Subtype != Subtype.Directory)

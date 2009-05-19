@@ -1,19 +1,20 @@
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
 	public class VersionInfo
 	{
-		string localPath;
+		FilePath localPath;
 		string repositoryPath;
  		bool isDirectory;
 		VersionStatus status = VersionStatus.Unversioned;
 		Revision revision;
 		VersionStatus remoteStatus = VersionStatus.Versioned;
 		Revision remoteRevision;
-		
-		public VersionInfo (string localPath, string repositoryPath, bool isDirectory, VersionStatus status, Revision revision, VersionStatus remoteStatus, Revision remoteRevision)
+
+		public VersionInfo (FilePath localPath, string repositoryPath, bool isDirectory, VersionStatus status, Revision revision, VersionStatus remoteStatus, Revision remoteRevision)
 		{
 			this.localPath = localPath;
 			this.repositoryPath = repositoryPath;
@@ -46,7 +47,7 @@ namespace MonoDevelop.VersionControl
 			return (remoteStatus & changeKind) != 0;
 		}
 		
-		public string LocalPath {
+		public FilePath LocalPath {
 			get { return localPath; }
 		}
 		

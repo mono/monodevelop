@@ -587,10 +587,10 @@ namespace MonoDevelop.Projects
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) &&
 				context.ExecutionHandler.CanExecute (cmd);
 		}
-		
-		protected internal override List<string> OnGetItemFiles (bool includeReferencedFiles)
+
+		protected internal override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<string> col = base.OnGetItemFiles (includeReferencedFiles);
+			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles);
 			if (includeReferencedFiles) {
 				foreach (ProjectReference pref in References)
 					if (pref.ReferenceType == ReferenceType.Assembly)

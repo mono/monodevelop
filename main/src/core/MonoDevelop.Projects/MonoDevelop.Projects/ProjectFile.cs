@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects
 	/// </summary>
 	public class ProjectFile : ProjectItem, ICloneable, IFileItem
 	{
-		string filename;
+		FilePath filename;
 		
 		[ItemProperty("subtype")]	
 		Subtype subtype;
@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				Debug.Assert (value != null && value.Length > 0, "name == null || name.Length == 0");
-				string oldName = filename;
+				FilePath oldName = filename;
 				filename = FileService.GetFullPath (value);
 				
 				if (HasChildren)
@@ -119,17 +119,17 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public string FilePath {
+		public FilePath FilePath {
 			get {
 				return filename;
 			}
 		}
 		
-		string IFileItem.FileName {
+		FilePath IFileItem.FileName {
 			get { return FilePath; }
 		}
 		
-		public string RelativePath {
+		public FilePath RelativePath {
 			get {
 				if (project != null)
 					return project.GetRelativeChildPath (filename);

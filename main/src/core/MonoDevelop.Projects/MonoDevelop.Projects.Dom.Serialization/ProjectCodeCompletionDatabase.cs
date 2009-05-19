@@ -220,7 +220,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			if (pr.ReferenceType == ReferenceType.Project) {
 				Project referencedProject = project.ParentSolution.FindProjectByName (pr.Reference);
-				yield return "Project:" + (referencedProject != null ? referencedProject.FileName : "null");
+				yield return "Project:" + (referencedProject != null ? referencedProject.FileName : (FilePath) "null");
 			} else {
 				string runtimeId = ((DotNetProject)project).TargetRuntime.Id;
 				foreach (string s in pr.GetReferencedFileNames (ProjectService.DefaultConfiguration))

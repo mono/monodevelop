@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 		Dictionary<string,DateTime> lastSaveTime = new Dictionary<string,DateTime> ();
 		bool savingFlag;
 
-		string fileName;
+		FilePath fileName;
 		string name;
 		
 		FileFormat fileFormat;
@@ -114,16 +114,15 @@ namespace MonoDevelop.Projects
 					if (string.IsNullOrEmpty (fileName))
 						FileName = value;
 					else {
-						string dir = Path.GetDirectoryName (fileName);
-						string ext = Path.GetExtension (fileName);
-						FileName = Path.Combine (dir, value) + ext;
+						string ext = fileName.Extension;
+						FileName = fileName.ParentDirectory.Combine (value) + ext;
 					}
 				}
 				OnNameChanged (new SolutionItemRenamedEventArgs (this, oldName, name));
 			}
 		}
 		
-		public virtual string FileName {
+		public virtual FilePath FileName {
 			get {
 				return fileName;
 			}
@@ -132,7 +131,7 @@ namespace MonoDevelop.Projects
 				if (FileFormat != null)
 					fileName = FileFormat.GetValidFileName (this, fileName);
 				if (ItemHandler.SyncFileName)
-					Name = Path.GetFileNameWithoutExtension (fileName);
+					Name = fileName.FileNameWithoutExtension;
 				NotifyModified ("FileName");
 			}
 		}
@@ -178,13 +177,13 @@ namespace MonoDevelop.Projects
 		{
 			Services.ProjectService.GetDefaultFormat (this).Format.ConvertToFormat (this);
 		}
-		
-		protected override string GetDefaultBaseDirectory ()
+
+		protected override FilePath GetDefaultBaseDirectory ( )
 		{
-			return string.IsNullOrEmpty (FileName) ? string.Empty : Path.GetDirectoryName (FileName); 
+			return FileName.IsNullOrEmpty ? FilePath.Empty : FileName.ParentDirectory; 
 		}
-		
-		public void Save (string fileName, IProgressMonitor monitor)
+
+		public void Save (FilePath fileName, IProgressMonitor monitor)
 		{
 			FileName = fileName;
 			Save (monitor);
@@ -202,7 +201,7 @@ namespace MonoDevelop.Projects
 				
 				// Update save times
 				lastSaveTime.Clear ();
-				foreach (string file in GetItemFiles (false))
+				foreach (FilePath file in GetItemFiles (false))
 					lastSaveTime [file] = GetLastWriteTime (file);
 				
 				FileService.NotifyFileChanged (FileName);
@@ -221,14 +220,14 @@ namespace MonoDevelop.Projects
 			get {
 				if (savingFlag)
 					return false;
-				foreach (string file in GetItemFiles (false))
+				foreach (FilePath file in GetItemFiles (false))
 					if (GetLastSaveTime (file) != GetLastWriteTime (file))
 						return true;
 				return false;
 			}
 			set {
 				lastSaveTime.Clear ();
-				foreach (string file in GetItemFiles (false)) {
+				foreach (FilePath file in GetItemFiles (false)) {
 					if (value)
 						lastSaveTime [file] = DateTime.MinValue;
 					else
@@ -266,27 +265,25 @@ namespace MonoDevelop.Projects
 			foreach (string conf in GetConfigurations ())
 				SetNeedsBuilding (value, conf);
 		}
-		
-		public string GetAbsoluteChildPath (string relPath)
+
+		public FilePath GetAbsoluteChildPath (FilePath relPath)
 		{
-			if (Path.IsPathRooted (relPath))
-				return relPath;
-			return FileService.RelativeToAbsolutePath (BaseDirectory, relPath);
+			return relPath.ToAbsolute (BaseDirectory);
 		}
-		
-		public string GetRelativeChildPath (string absPath)
+
+		public FilePath GetRelativeChildPath (FilePath absPath)
 		{
-			return FileService.AbsoluteToRelativePath (BaseDirectory, absPath);
+			return absPath.ToRelative (BaseDirectory);
 		}
-		
-		public List<string> GetItemFiles (bool includeReferencedFiles)
+
+		public List<FilePath> GetItemFiles (bool includeReferencedFiles)
 		{
 			return Services.ProjectService.ExtensionChain.GetItemFiles (this, includeReferencedFiles);
 		}
-		
-		internal protected virtual List<string> OnGetItemFiles (bool includeReferencedFiles)
+
+		internal protected virtual List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<string> col = FileFormat.Format.GetItemFiles (this);
+			List<FilePath> col = FileFormat.Format.GetItemFiles (this);
 			if (!string.IsNullOrEmpty (FileName) && !col.Contains (FileName))
 				col.Add (FileName);
 			return col;

@@ -182,13 +182,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public string BaseDirectory {
+		public FilePath BaseDirectory {
 			get {
 				return IdeApp.ProjectOperations.ProjectsDefaultPath;
 			}
 		}
 		
-		string IWorkspaceObject.BaseDirectory {
+		FilePath IWorkspaceObject.BaseDirectory {
 			get {
 				return BaseDirectory;
 			}
@@ -197,7 +197,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		string IWorkspaceObject.ItemDirectory {
+		FilePath IWorkspaceObject.ItemDirectory {
 			get {
 				return BaseDirectory;
 			}
@@ -415,7 +415,7 @@ namespace MonoDevelop.Ide.Gui
 				foreach (Project projectEntry in GetAllProjects()) {
 					foreach (ProjectFile fInfo in projectEntry.Files) {
 						foreach (Document doc in IdeApp.Workbench.Documents) {
-							if (doc.IsDirty && doc.FileName == fInfo.Name) {
+							if (doc.IsDirty && doc.FileName == fInfo.FilePath) {
 								return true;
 							}
 						}

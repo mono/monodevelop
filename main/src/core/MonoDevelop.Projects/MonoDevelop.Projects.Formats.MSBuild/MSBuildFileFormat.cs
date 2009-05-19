@@ -59,20 +59,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public string GetValidFormatName (object obj, string fileName)
+		public FilePath GetValidFormatName (object obj, FilePath fileName)
 		{
 			if (slnFileFormat.CanWriteFile (obj, this))
 				return slnFileFormat.GetValidFormatName (obj, fileName, this);
 			else {
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
 				if (node != null)
-					return Path.ChangeExtension (fileName, "." + node.Extension);
+					return fileName.ChangeExtension ("." + node.Extension);
 				else
-					return Path.ChangeExtension (fileName, ".mdproj");
+					return fileName.ChangeExtension (".mdproj");
 			}
 		}
 
-		public bool CanReadFile (string file, Type expectedType)
+		public bool CanReadFile (FilePath file, Type expectedType)
 		{
 			if (expectedType.IsAssignableFrom (typeof(Solution)) && slnFileFormat.CanReadFile (file, this))
 				return true;
@@ -96,7 +96,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return false;
 		}
 
-		public void WriteFile (string file, object obj, MonoDevelop.Core.IProgressMonitor monitor)
+		public void WriteFile (FilePath file, object obj, MonoDevelop.Core.IProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanWriteFile (obj, this)) {
 				slnFileFormat.WriteFile (file, obj, this, monitor);
@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public object ReadFile (string file, Type expectedType, MonoDevelop.Core.IProgressMonitor monitor)
+		public object ReadFile (FilePath file, Type expectedType, MonoDevelop.Core.IProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanReadFile (file, this))
 				return slnFileFormat.ReadFile (file, this, monitor);
@@ -118,9 +118,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return MSBuildProjectService.LoadItem (monitor, file, null, null);
 		}
 
-		public List<string> GetItemFiles (object obj)
+		public List<FilePath> GetItemFiles (object obj)
 		{
-			return new List<string> ();
+			return new List<FilePath> ();
 		}
 
 		public void InitializeSolutionItem (SolutionItem item)
@@ -181,7 +181,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		string ReadToolsVersion (string file)
+		string ReadToolsVersion (FilePath file)
 		{
 			try {
 				using (XmlTextReader tr = new XmlTextReader (new StreamReader (file))) {

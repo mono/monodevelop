@@ -29,12 +29,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
 	public interface ICompilationUnit : IDisposable, IDomVisitable
 	{
-		string FileName {
+		FilePath FileName {
 			get;
 		}
 				

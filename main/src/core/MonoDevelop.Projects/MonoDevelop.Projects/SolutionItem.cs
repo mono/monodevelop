@@ -104,43 +104,43 @@ namespace MonoDevelop.Projects
 		
 		public abstract string Name { get; set; }
 		
-		public string BaseDirectory {
+		public FilePath BaseDirectory {
 			get {
 				if (baseDirectory == null) {
-					string dir = GetDefaultBaseDirectory ();
-					if (string.IsNullOrEmpty (dir))
+					FilePath dir = GetDefaultBaseDirectory ();
+					if (dir.IsNullOrEmpty)
 						dir = ".";
-					return System.IO.Path.GetFullPath (dir);
+					return dir.FullPath;
 				}
 				else
 					return baseDirectory;
 			}
 			set {
-				string def = GetDefaultBaseDirectory ();
-				if (value != null && def != null && System.IO.Path.GetFullPath (value) == System.IO.Path.GetFullPath (def))
+				FilePath def = GetDefaultBaseDirectory ();
+				if (value != null && def != null && value.FullPath == def.FullPath)
 					baseDirectory = null;
 				else if (string.IsNullOrEmpty (value))
 					baseDirectory = null;
 				else
-					baseDirectory = System.IO.Path.GetFullPath (value);
+					baseDirectory = value.FullPath;
 				NotifyModified ("BaseDirectory");
 			}
 		}
 		
-		public string ItemDirectory {
+		public FilePath ItemDirectory {
 			get {
-				string dir = GetDefaultBaseDirectory ();
+				FilePath dir = GetDefaultBaseDirectory ();
 				if (string.IsNullOrEmpty (dir))
 					dir = ".";
-				return System.IO.Path.GetFullPath (dir);
+				return dir.FullPath;
 			}
 		}
 		
 		internal bool HasCustomBaseDirectory {
 			get { return baseDirectory != null; }
 		}
-		
-		protected virtual string GetDefaultBaseDirectory ()
+
+		protected virtual FilePath GetDefaultBaseDirectory ( )
 		{
 			return ParentSolution.BaseDirectory;
 		}

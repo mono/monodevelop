@@ -163,9 +163,9 @@ namespace MonoDevelop.Projects
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1}", exe, args));
 
-			string dir = (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : StringParserService.Parse (workingdir, customtags));
-			
-			string localPath = Path.Combine (entry.BaseDirectory, exe);
+			FilePath dir = (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : (FilePath) StringParserService.Parse (workingdir, customtags));
+
+			FilePath localPath = entry.BaseDirectory.Combine (exe);
 			if (File.Exists (localPath))
 				exe = localPath;
 			

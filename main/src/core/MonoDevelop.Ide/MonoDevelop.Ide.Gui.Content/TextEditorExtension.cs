@@ -34,6 +34,7 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -56,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			get { return document.TextEditor; }
 		}
 		
-		protected string FileName {
+		protected FilePath FileName {
 			get {
 				IViewContent view = document.Window.ViewContent;
 				return view.IsUntitled ? view.UntitledName : view.ContentName;

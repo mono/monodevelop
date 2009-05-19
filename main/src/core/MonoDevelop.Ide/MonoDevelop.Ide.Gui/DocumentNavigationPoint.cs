@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -35,7 +36,7 @@ namespace MonoDevelop.Ide.Gui
 	public class DocumentNavigationPoint : NavigationPoint
 	{
 		Document doc;
-		string fileName;
+		FilePath fileName;
 		
 		public DocumentNavigationPoint (Document doc)
 		{
@@ -53,10 +54,10 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public override string Tooltip {
-			get { return doc != null? doc.Name : fileName; }
+			get { return doc != null? doc.Name : (string) fileName; }
 		}
 		
-		string FileName {
+		FilePath FileName {
 			get { return doc != null? doc.FileName : fileName; }
 		}
 		
@@ -76,7 +77,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public override string DisplayName {
 			get {
-				return System.IO.Path.GetFileName (doc != null? doc.Name : fileName);
+				return System.IO.Path.GetFileName (doc != null? doc.Name : (string) fileName);
 			}
 		}
 		

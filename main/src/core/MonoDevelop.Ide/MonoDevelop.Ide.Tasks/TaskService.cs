@@ -392,8 +392,8 @@ namespace MonoDevelop.Ide.Tasks
 			}
 			return false;
 		}
-		
-		public void UpdateCommentTags (Solution sol, string fileName, IEnumerable<MonoDevelop.Projects.Dom.Tag> tagComments)
+
+		public void UpdateCommentTags (Solution sol, FilePath fileName, IEnumerable<MonoDevelop.Projects.Dom.Tag> tagComments)
 		{
 			if (fileName == null) {
 				return;
@@ -415,7 +415,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 			List<Task> oldTasks = new List<Task> ();
 
-			fileName = Path.GetFullPath (fileName);
+			fileName = fileName.FullPath;
 			foreach (Task task in CommentTasks) {
 				if (task.FileName == fileName)
 					oldTasks.Add (task);

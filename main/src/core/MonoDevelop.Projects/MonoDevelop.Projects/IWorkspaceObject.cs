@@ -36,8 +36,8 @@ namespace MonoDevelop.Projects
 	public interface IWorkspaceObject: IExtendedDataItem, IFolderItem, IDisposable
 	{
 		string Name { get; set; }
-		string ItemDirectory { get; }
-		new string BaseDirectory { get; set; }
+		FilePath ItemDirectory { get; }
+		new FilePath BaseDirectory { get; set; }
 		void Save (IProgressMonitor monitor);
 	}
 	
@@ -45,6 +45,6 @@ namespace MonoDevelop.Projects
 	{
 		FileFormat FileFormat { get; }
 		void ConvertToFormat (FileFormat format, bool convertChildren);
-		List<string> GetItemFiles (bool includeReferencedFiles);
+		List<FilePath> GetItemFiles (bool includeReferencedFiles);
 	}
 }

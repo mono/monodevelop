@@ -849,7 +849,7 @@ namespace MonoDevelop.Autotools
 						//FIXME: If it doesn't match, then?
 						fname = fname.Substring (len);
 
-					fname = UnescapeString (fname);
+					fname = FromMakefilePath (fname);
 
 					string resourceId = null;
 					if (buildAction == BuildAction.EmbeddedResource && fname.IndexOf (',') >= 0) {
@@ -1413,7 +1413,6 @@ namespace MonoDevelop.Autotools
 						str = pf.RelativePath;
 
 					string unescapedFileName = Path.GetFileName (str);
-					str = EscapeString (str);
 
 					if (EncodeValues [fileVar.Name]) {
 						if (pf.IsExternalToProject)
@@ -1421,6 +1420,7 @@ namespace MonoDevelop.Autotools
 						else
 							str = EncodeFileName (str, "srcdir", false);
 					}
+					str = ToMakefilePath (str);
 
 					// Emit the resource ID only when it is different from the file name
 					if (pf.BuildAction == BuildAction.EmbeddedResource && pf.ResourceId != null && pf.ResourceId.Length > 0 && pf.ResourceId != unescapedFileName)
@@ -1580,14 +1580,14 @@ namespace MonoDevelop.Autotools
 		{
 			if (EncodeValues [refVar.Name]) {
 				if (!isBuiltAssembly)
-					return EncodeFileName (reference, "top_srcdir", true);
+					return ToMakefilePath (EncodeFileName (reference, "top_srcdir", true));
 				else if (!reference.StartsWith (BaseDirectory))
 					//Reference is external to this project
-					return EncodeFileName (reference, "top_builddir", true);
+					return ToMakefilePath (EncodeFileName (reference, "top_builddir", true));
 			}
 
 			// !external and !encode
-			return GetRelativePath (reference);
+			return ToMakefilePath (GetRelativePath (reference));
 		}
 
 		string ProjectRefToString (ProjectReference pr, MakefileVar refVar)
@@ -1600,7 +1600,33 @@ namespace MonoDevelop.Autotools
 			return AsmRefToString (tmp [0], refVar, true);
 		}
 
-		static string EscapeString (string str)
+		public static string GetUnixPath (string path)
+		{
+			if (Path.DirectorySeparatorChar != '/')
+				return path.Replace (Path.DirectorySeparatorChar, '/');
+			else
+				return path;
+		}
+
+		public static string FromUnixPath (string path)
+		{
+			if (Path.DirectorySeparatorChar != '/')
+				return path.Replace (Path.DirectorySeparatorChar, '/');
+			else
+				return path;
+		}
+
+		public static string ToMakefilePath (string str)
+		{
+			return EscapeString (GetUnixPath (str));
+		}
+
+		public static string FromMakefilePath (string str)
+		{
+			return FromUnixPath (UnescapeString (str));
+		}
+
+		public static string EscapeString (string str)
 		{
 			StringBuilder sb = new StringBuilder ();
 			int len = str.Length;

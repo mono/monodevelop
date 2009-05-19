@@ -49,8 +49,8 @@ namespace MonoDevelop.Projects
 		{
 			Next.Save (monitor, item);
 		}
-		
-		public virtual List<string> GetItemFiles (SolutionEntityItem item, bool includeReferencedFiles)
+
+		public virtual List<FilePath> GetItemFiles (SolutionEntityItem item, bool includeReferencedFiles)
 		{
 			return Next.GetItemFiles (item, includeReferencedFiles);
 		}
