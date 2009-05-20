@@ -141,6 +141,10 @@ namespace MonoDevelop.Autotools
 			get { return integrationEnabled; }
 			set { integrationEnabled = value;}
 		}
+
+		public bool SupportsIntegration {
+			get { return IntegrationEnabled && !PropertyService.IsWindows; }
+		}
 		
 		[ItemProperty (DefaultValue = "")]
 		public string RelativeMakefileName {

@@ -1,3 +1,9 @@
+2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MakefileData.cs:
+	* MakefileProjectServiceExtension.cs: Disable makefile
+	  integration on windows for now.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MakefileData.cs:

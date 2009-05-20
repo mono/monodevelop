@@ -82,7 +82,7 @@ namespace MonoDevelop.Autotools
 			monitor.BeginTask (GettextCatalog.GetString ("Updating project from Makefile"), 1);
 			try { 
 				data.OwnerProject = project;
-				if (data.IntegrationEnabled)
+				if (data.SupportsIntegration)
 					data.UpdateProject (monitor, false);
 				monitor.Step (1);
 			} catch (Exception e) {
@@ -105,7 +105,7 @@ namespace MonoDevelop.Autotools
 				return;
 				
 			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-			if (data == null || !data.IntegrationEnabled)
+			if (data == null || !data.SupportsIntegration)
 				return;
 
 			try {
@@ -123,7 +123,7 @@ namespace MonoDevelop.Autotools
 			List<FilePath> col = base.GetItemFiles (entry, includeReferencedFiles);
 			
 			MakefileData data = entry.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-			if (data == null || !data.IntegrationEnabled || string.IsNullOrEmpty (data.AbsoluteMakefileName))
+			if (data == null || !data.SupportsIntegration || string.IsNullOrEmpty (data.AbsoluteMakefileName))
 				return col;
 			
 			col.Add (data.AbsoluteMakefileName);
@@ -152,7 +152,7 @@ namespace MonoDevelop.Autotools
 				return base.Build (monitor, entry, configuration);
 
 			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-			if (data == null || !data.IntegrationEnabled || String.IsNullOrEmpty (data.BuildTargetName))
+			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.BuildTargetName))
 				return base.Build (monitor, entry, configuration);
 
 			//FIXME: Gen autofoo ? autoreconf?
@@ -338,7 +338,7 @@ namespace MonoDevelop.Autotools
 			}
 
 			MakefileData data = proj.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-			if (data == null || !data.IntegrationEnabled || String.IsNullOrEmpty (data.CleanTargetName)) {
+			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.CleanTargetName)) {
 				base.Clean (monitor, entry, configuration); 
 				return;
 			}
@@ -378,7 +378,7 @@ namespace MonoDevelop.Autotools
 			Project project = item as Project;
 			if (project != null) {
 				MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-				if (data != null && data.IntegrationEnabled && !String.IsNullOrEmpty (data.ExecuteTargetName))
+				if (data != null && data.SupportsIntegration && !String.IsNullOrEmpty (data.ExecuteTargetName))
 					return true;
 			}
 			return base.CanExecute (item, context, configuration);
@@ -394,7 +394,7 @@ namespace MonoDevelop.Autotools
 			}
 
 			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-			if (data == null || !data.IntegrationEnabled || String.IsNullOrEmpty (data.ExecuteTargetName)) {
+			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.ExecuteTargetName)) {
 				base.Execute (monitor, entry, context, configuration);
 				return;
 			}
