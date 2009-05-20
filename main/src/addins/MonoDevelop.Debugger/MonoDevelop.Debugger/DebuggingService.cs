@@ -420,7 +420,7 @@ namespace MonoDevelop.Debugger
 			get { return currentBacktrace; }
 		}
 
-		public static string CurrentFilename {
+		public static FilePath CurrentFilename {
 			get {
 				StackFrame sf = CurrentFrame;
 				if (sf != null)

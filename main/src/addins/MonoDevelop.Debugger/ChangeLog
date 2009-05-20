@@ -1,3 +1,9 @@
+2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger\Initializer.cs:
+	* MonoDevelop.Debugger\DebuggingService.cs: Use FilePath for
+	  representing paths.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/Extensions.cs:

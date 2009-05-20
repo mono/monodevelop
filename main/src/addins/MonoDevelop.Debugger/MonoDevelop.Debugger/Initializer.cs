@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using Mono.Debugging.Client;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger
 {
@@ -72,10 +73,10 @@ namespace MonoDevelop.Debugger
 			if (DebuggingService.CurrentFrame == null)
 				return;
 			
-			string file = DebuggingService.CurrentFilename;
+			FilePath file = DebuggingService.CurrentFilename;
 			int line = DebuggingService.CurrentLineNumber;
 			
-			if (!string.IsNullOrEmpty (file) && System.IO.File.Exists (file) && line != -1) {
+			if (!file.IsNullOrEmpty && System.IO.File.Exists (file) && line != -1) {
 				Document doc = IdeApp.Workbench.OpenDocument (file, line, 1, !disassemblyCurrent);
 				if (doc != null)
 					return;
