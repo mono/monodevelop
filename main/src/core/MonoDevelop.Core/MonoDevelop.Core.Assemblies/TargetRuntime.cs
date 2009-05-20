@@ -102,7 +102,7 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		//environment variables that should be set when running tools in this environment
-		public virtual Dictionary<string,string> GetToolsEnvironmentVariables ()
+		public virtual Dictionary<string, string> GetToolsEnvironmentVariables (TargetFramework fx)
 		{
 			return new Dictionary<string,string> ();
 		}
@@ -126,7 +126,7 @@ namespace MonoDevelop.Core.Assemblies
 		public virtual IEnumerable<string> GetToolsPaths (TargetFramework fx)
 		{
 			string paths;
-			if (!GetToolsEnvironmentVariables ().TryGetValue ("PATH", out paths))
+			if (!GetToolsEnvironmentVariables (fx).TryGetValue ("PATH", out paths))
 				return new string[0];
 			return paths.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
 		}
@@ -589,7 +589,7 @@ namespace MonoDevelop.Core.Assemblies
 		public bool IsInstalled (TargetFramework fx)
 		{
 			string dir = GetFrameworkFolder (fx);
-			if (Directory.Exists (dir)) {
+			if (!string.IsNullOrEmpty (dir) && Directory.Exists (dir)) {
 				string firstAsm = Path.Combine (dir, fx.Assemblies [0].Name) + ".dll";
 				return File.Exists (firstAsm);
 			}

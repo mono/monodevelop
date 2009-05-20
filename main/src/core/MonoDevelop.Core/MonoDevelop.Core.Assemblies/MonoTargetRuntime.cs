@@ -127,7 +127,7 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		//NOTE: mcs, etc need to use the env vars too 	 
-		public override Dictionary<string, string> GetToolsEnvironmentVariables ()
+		public override Dictionary<string, string> GetToolsEnvironmentVariables (TargetFramework fx)
 		{
 			return environmentVariables;
 		}

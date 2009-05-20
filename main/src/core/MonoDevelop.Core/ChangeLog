@@ -1,3 +1,15 @@
+2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution\ProcessHostController.cs: Someti
+
+	* MonoDevelop.Core.Assemblies\MsNetTargetRuntime.cs: Fixed
+	  tools and assembly directories.
+
+	* MonoDevelop.Core.Assemblies\TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies\MonoTargetRuntime.cs: Some
+	  runtimes may require the target framework to get the tools
+	  paths.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* frameworks.xml:

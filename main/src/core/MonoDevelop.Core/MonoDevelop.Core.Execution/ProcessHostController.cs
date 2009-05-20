@@ -34,6 +34,7 @@ using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
+using System.Reflection;
 using Timer = System.Timers.Timer;
 
 namespace MonoDevelop.Core.Execution
@@ -55,6 +56,20 @@ namespace MonoDevelop.Core.Execution
 		ManualResetEvent runningEvent = new ManualResetEvent (false);
 		ManualResetEvent exitRequestEvent = new ManualResetEvent (false);
 		ManualResetEvent exitedEvent = new ManualResetEvent (false);
+		
+
+		static ProcessHostController ( )
+		{
+			// In some cases MS.NET can't properly resolve assemblies even if they
+			// are already loaded. For example, when deserializing objects.
+			AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
+				foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies ()) {
+					if (asm.GetName ().FullName == args.Name)
+						return asm;
+				}
+				return null;
+			};
+		}
 		
 		public ProcessHostController (string id, uint stopDelay, IExecutionHandler executionHandlerFactory)
 		{

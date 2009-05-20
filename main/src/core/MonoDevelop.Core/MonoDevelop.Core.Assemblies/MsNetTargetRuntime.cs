@@ -77,19 +77,20 @@ namespace MonoDevelop.Core.Assemblies
 					continue; // Framework assemblies
 				RegistryKey fk = foldersKey.OpenSubKey (key, false);
 				string folder = fk.GetValue ("") as string;
+				string version = fk.GetValue ("version") as string ?? "";
 				if (!string.IsNullOrEmpty (folder))
-					AddPackage (key, folder);
+					AddPackage (key, version, folder);
 				fk.Close ();
 			}
 			foldersKey.Close ();
 		}
 		
-		void AddPackage (string name, string folder)
+		void AddPackage (string name, string version, string folder)
 		{
 			SystemPackageInfo pinfo = new SystemPackageInfo ();
 			pinfo.Name = name;
 			pinfo.Description = name;
-			pinfo.Version = "";
+			pinfo.Version = version;
 			RegisterPackage (pinfo, false, Directory.GetFiles (folder, "*.dll"));
 		}
 
@@ -98,20 +99,45 @@ namespace MonoDevelop.Core.Assemblies
 				return running;
 			}
 		}
+
+		public override Dictionary<string, string> GetToolsEnvironmentVariables (TargetFramework fx)
+		{
+			Dictionary<string, string> vars = new Dictionary<string, string> ();
+			string path = Environment.GetEnvironmentVariable ("PATH");
+			vars["PATH"] = GetFrameworkToolsPath (fx) + Path.PathSeparator + path;
+			return vars;
+		}
 		
 		protected override IEnumerable<string> GetGacDirectories ()
 		{
 			yield return gacDir;
 		}
+
+		string GetClrVersion (ClrVersion v)
+		{
+			switch (v) {
+				case ClrVersion.Net_1_1: return "v1.1.4322";
+				case ClrVersion.Net_2_0: return "v2.0.50727";
+				case ClrVersion.Clr_2_1: return "v2.1";
+				case ClrVersion.Net_4_0: return "v4.0.20506";
+			}
+			return "?";
+		}
 		
 		protected override string GetFrameworkFolder (TargetFramework fx)
 		{
 			switch (fx.Id) {
-				case "1.1": return rootDir.Combine ("v1.1.4322");
-				case "2.0": return rootDir.Combine ("v2.0.50727");
-				case "4.0": return newFxDir.Combine (".NETFramework", "v4.0");
-				default: return Path.Combine (newFxDir, "v" + fx.Id);
+				case "1.1":
+				case "2.0": return rootDir.Combine (GetClrVersion (fx.ClrVersion));
 			}
+
+			RegistryKey fxFolderKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\v" + fx.Id, false);
+			if (fxFolderKey != null) {
+				string folder = fxFolderKey.GetValue ("All Assemblies In") as string;
+				fxFolderKey.Close ();
+				return folder;
+			}
+			return "";
 		}
 		
 		public override IExecutionHandler GetExecutionHandler ()
@@ -119,13 +145,23 @@ namespace MonoDevelop.Core.Assemblies
 			return execHandler;
 		}
 
+		string GetFrameworkToolsPath (TargetFramework fx)
+		{
+			if (fx.Id == "1.1" || fx.Id == "2.0" || fx.Id == "4.0")
+				return rootDir.Combine (GetClrVersion (fx.ClrVersion));
+
+			if (fx.Id == "3.0")
+				return rootDir.Combine (GetClrVersion (ClrVersion.Net_2_0));
+ 
+			return rootDir.Combine ("v" + fx.Id);
+		}
+
 		public override IEnumerable<string> GetToolsPaths (TargetFramework fx)
 		{
-			if (fx.Id != "1.1" && fx.Id != "2.0" && fx.Id != "4.0")
-				yield return GetFrameworkFolder (Runtime.SystemAssemblyService.GetTargetFramework ("2.0"));
-			
-			yield return GetFrameworkFolder (fx);
-			
+			string path = GetFrameworkToolsPath (fx);
+			if (path != null)
+				yield return path;
+
 			foreach (string s in base.GetToolsPaths (fx))
 				yield return s;
 		}
