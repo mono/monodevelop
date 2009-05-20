@@ -22,7 +22,7 @@ namespace MonoDevelop.VersionControl
 {
 	class VersionControlNodeExtension : NodeBuilderExtension
 	{
-		Hashtable filePaths = new Hashtable();
+		Dictionary<string,object> filePaths = new Dictionary<string, object> ();
 	
 		public override bool CanBuildNode (Type dataType)
 		{
@@ -140,8 +140,8 @@ namespace MonoDevelop.VersionControl
 		
 		void Monitor (object sender, FileUpdateEventArgs args)
 		{
-			object obj = filePaths [args.FilePath];
-			if (obj != null) {
+			object obj;
+			if (filePaths.TryGetValue (args.FilePath, out obj)) {
 				ITreeBuilder builder = Context.GetTreeBuilder (obj);
 				if (builder != null)
 					builder.UpdateAll();
@@ -150,15 +150,15 @@ namespace MonoDevelop.VersionControl
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			string path = GetPath (dataObject);
-			if (path != null)
+			FilePath path = GetPath (dataObject);
+			if (path != FilePath.Null)
 				filePaths [path] = dataObject;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			string path = GetPath (dataObject);
-			if (path != null)
+			FilePath path = GetPath (dataObject);
+			if (path != FilePath.Null)
 				filePaths.Remove (path);
 		}
 		
@@ -173,7 +173,7 @@ namespace MonoDevelop.VersionControl
 			} else if (dataObject is ProjectFolder) {
 				return ((ProjectFolder)dataObject).Path;
 			}
-			return null;
+			return FilePath.Null;
 		}
 		
 		public override Type CommandHandlerType {
