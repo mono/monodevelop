@@ -1,3 +1,23 @@
+2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization\CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Parser\CommentTasksChangedEventHandler.cs:
+	  Provide the source project when notifying changes in comment
+	  tasks.
+
+	* MonoDevelop.Projects.Dom.Parser\ProjectDomService.cs: Moved
+	  initialization of the parser database to the constructor.
+	  Provide the source project when notifying changes in comment
+	  tasks.
+
+	* MonoDevelop.Projects.Dom.Serialization\DomTypeProxy.cs: If
+	  something goes wrong when loading a class, attach it to
+	  itself to avoid repeated crashes trying to load.
+
+	* MonoDevelop.Projects.Dom.Serialization\AssemblyCodeCompletionDatabase.cs:
+	  Properly escape drive separator when creating the file name
+	  for cc databases.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Solution.cs:

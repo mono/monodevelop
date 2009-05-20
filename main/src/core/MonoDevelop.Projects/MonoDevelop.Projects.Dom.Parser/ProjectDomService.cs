@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static string codeCompletionPath;
 
-		static Dictionary<string,ProjectDom> databasesTable = new Dictionary<string,ProjectDom>();
+		static Dictionary<string,ProjectDom> databases = new Dictionary<string,ProjectDom>();
 		static Dictionary<string,SingleFileCacheEntry> singleDatabases = new Dictionary<string,SingleFileCacheEntry> ();		
 		
 		static ProjectDomService ()
@@ -119,6 +119,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					}
 				});
 			}
+			parserDatabase.Initialize ();
 		}
 
 		public static RootTree HelpTree {
@@ -243,20 +244,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return path;
 		}
 
-		static bool initialized;
-		
-		static Dictionary<string,ProjectDom> databases {
-			get {
-				lock (databasesTable) {
-					if (!initialized) {
-						initialized = true;
-						parserDatabase.Initialize ();
-					}
-				}
-				return databasesTable;
-			}
-		}
-		
 		public static ParsedDocument Parse (string fileName, string mimeType, ContentDelegate getContent)
 		{
 			List<Project> projects = new List<Project> ();
@@ -496,7 +483,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public static void RegisterDom (ProjectDom dom, string uri)
 		{
 			dom.Uri = uri;
-			databasesTable [uri] = dom;
+			databases [uri] = dom;
 			dom.UpdateReferences ();
 		}
 		
@@ -924,7 +911,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 									TypeUpdateInformation res = db.UpdateFromParseInfo (parseInformation.CompilationUnit);
 									if (res != null)
 										NotifyTypeUpdate (project, fileName, res);
-									UpdatedCommentTasks (fileName, parseInformation.TagComments);
+									UpdatedCommentTasks (fileName, parseInformation.TagComments, project);
 								} catch (Exception e) {
 									LoggingService.LogError (e.ToString ());
 								}
@@ -1077,10 +1064,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		internal static void UpdatedCommentTasks (string file, IList<Tag> commentTasks)
+		internal static void UpdatedCommentTasks (string file, IList<Tag> commentTasks, Project project)
 		{
 			if (CommentTasksChanged != null)
-				CommentTasksChanged (null, new CommentTasksChangedEventArgs (file, commentTasks));
+				CommentTasksChanged (null, new CommentTasksChangedEventArgs (file, commentTasks, project));
 		}
 		
 		public static void NotifyAssemblyInfoChange (string file, string asmName)

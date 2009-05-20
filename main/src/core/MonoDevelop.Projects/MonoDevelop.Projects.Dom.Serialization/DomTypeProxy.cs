@@ -56,6 +56,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							base.innerTypeCount   = wrappedType.InnerTypeCount;
 						}
 					} catch (Exception ex) {
+						entry.AttachClass (this);
 						MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
 					}
 				}

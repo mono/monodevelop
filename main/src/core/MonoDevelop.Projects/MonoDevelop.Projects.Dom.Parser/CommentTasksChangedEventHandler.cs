@@ -34,8 +34,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 	{
 		string filename;
 		IList<Tag> tagComments;
+		Project project;
 		
-		public CommentTasksChangedEventArgs (string filename, IList<Tag> tagComments)
+		public CommentTasksChangedEventArgs (string filename, IList<Tag> tagComments, Project project)
 		{
 			this.filename = filename;
 			this.tagComments = tagComments;
@@ -44,5 +45,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public string FileName { get { return filename; } }
 
 		public IList<Tag> TagComments { get { return tagComments; } }
+
+		public Project Project { get { return project; } }
 	}
 }

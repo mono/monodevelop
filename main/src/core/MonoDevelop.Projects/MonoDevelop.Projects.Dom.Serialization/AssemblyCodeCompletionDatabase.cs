@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return;
 			}
 			
-			string name = assemblyFile.Replace(',','_').Replace(" ","").Replace(Path.DirectorySeparatorChar,'_');
+			string name = assemblyFile.Replace(',','_').Replace(" ","").Replace (":","").Replace(Path.DirectorySeparatorChar,'_');
 			
 			SystemPackage package = Runtime.SystemAssemblyService.GetPackageFromPath (assemblyFile);
 			if (package != null) {

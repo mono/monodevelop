@@ -226,7 +226,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			// Notify read comments
 			foreach (FileEntry fe in files.Values) {
 				if (! fe.IsAssembly && fe.CommentTasks != null) {
-					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks);
+					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, SourceProjectDom.Project);
 				}
 			}
 			
@@ -676,7 +676,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						if (tag.Key == token) markedTags.Add (tag);
 					foreach (Tag tag in markedTags)
 						fe.CommentTasks.Remove (tag);
-					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks);
+					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, SourceProjectDom.Project);
 				}
 			}
 		}
