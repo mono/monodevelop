@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			if (tree_view.Selection.GetSelected (out model, out iter)) {
 
-				if (iter.Equals (root_iter)) return;
+				if (store.GetPath (iter).Equals (store.GetPath (root_iter))) return;
 
 				Node n = (Node)store.GetValue (iter, 1);
 				

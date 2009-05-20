@@ -278,11 +278,16 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			bool IsChildIter (Gtk.TreeIter pit, Gtk.TreeIter cit, bool recursive)
 			{
-				while (store.IterParent (out cit, cit)) {
-					if (cit.Equals (pit)) return true;
-					if (!recursive) return false;
-				}
-				return false;
+				Gtk.TreePath pitPath = tree.Model.GetPath (pit);
+				Gtk.TreePath citPath = tree.Model.GetPath (cit);
+
+				if (!citPath.Up ())
+					return false;
+
+				if (citPath == pitPath)
+					return true;
+
+				return recursive && pitPath.IsAncestor (citPath);
 			}
 			
 			public bool MoveToChild (string name, Type dataType)

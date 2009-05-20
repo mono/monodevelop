@@ -115,9 +115,10 @@ namespace MonoDevelop.Ide
 			TreeIter iter;
 			
 			if (listSelected.Selection.GetSelected (out model, out iter)) {
+				TreePath iterPath = storeSelected.GetPath (iter);
 				TreeIter oldIter;
 				if (storeSelected.GetIterFirst (out oldIter)) {
-					if (oldIter.Equals (iter))
+					if (storeSelected.GetPath (oldIter).Equals (iterPath))
 						return;
 						
 					TreeIter prevIter;
@@ -127,7 +128,7 @@ namespace MonoDevelop.Ide
 						if (!storeSelected.IterNext (ref oldIter))
 							return;
 					}
-					while (!oldIter.Equals (iter));
+					while (!storeSelected.GetPath (oldIter).Equals (iterPath));
 					storeSelected.Swap (prevIter, iter);
 				}
 				

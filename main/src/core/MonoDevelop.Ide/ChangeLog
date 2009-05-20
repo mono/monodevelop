@@ -1,3 +1,19 @@
+2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads\ErrorListPad.cs:
+	* MonoDevelop.Ide.Gui.Pads\MonodocTreePad.cs:
+	* MonoDevelop.Ide.Gui.Components\TreeNodeNavigator.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels\MonoRuntimePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs\SelectEncodingsDialog.cs:
+	* MonoDevelop.Ide.Gui.Components\ExtensibleTreeView.cs:
+	* MonoDevelop.Ide.Gui.Components\TransactedTreeBuilder.cs:
+	  Don't use Gtk.TreeIter.Equals, since it's broken. Compare
+	  TreePaths instead.
+
+	* MonoDevelop.Ide.Tasks\TaskService.cs:
+	  CommentTaskChangedEventArgs now provides the project of the
+	  file. Use it instead of looking for it in the ide.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:

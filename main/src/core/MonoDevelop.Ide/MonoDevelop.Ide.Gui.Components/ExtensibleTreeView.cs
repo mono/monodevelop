@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		TreePadOption[] options;
 		TreeOptions globalOptions;
-		Hashtable nodeOptions = new Hashtable ();
+		Dictionary<Gtk.TreeIter, TreeOptions> nodeOptions;
 		
 		TreeNodeNavigator workNode;
 		TreeNodeNavigator compareNode1;
@@ -168,6 +168,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			store = new Gtk.TreeStore (typeof (string), typeof (Gdk.Pixbuf), typeof (Gdk.Pixbuf), typeof (object), typeof (object), typeof(bool));
 			tree.Model = store;
 			tree.Selection.Mode = Gtk.SelectionMode.Multiple;
+			nodeOptions = new Dictionary<Gtk.TreeIter, TreeOptions> (new IterComparer (store));
 
 			tree.EnableModelDragDest (target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			Gtk.Drag.SourceSet (tree, Gdk.ModifierType.Button1Mask, target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
@@ -508,7 +509,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				NotifyNodeRemoved (dataObject, null);
 			
 			nodeHash = new Hashtable ();
-			nodeOptions = new Hashtable ();
+			nodeOptions.Clear ();
 			store.Clear ();
 		}
 		
@@ -1199,8 +1200,9 @@ namespace MonoDevelop.Ide.Gui.Components
 				return false; // There is only one node, GetFirstNode returned it
 			else {
 				Gtk.TreeIter[] its = (Gtk.TreeIter[]) it;
+				Gtk.TreePath iterPath = store.GetPath (iter);
 				for (int n=0; n<its.Length; n++) {
-					if (its [n].Equals (iter)) {
+					if (store.GetPath (its[n]).Equals (iterPath)) {
 						if (n < its.Length - 1) {
 							iter = its [n+1];
 							return true;
@@ -1337,7 +1339,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			TreeOptions result = null;
 			Gtk.TreeIter it = iter;
 			do {
-				result = nodeOptions [it] as TreeOptions;
+				nodeOptions.TryGetValue (it, out result);
 			} while (result == null && store.IterParent (out it, it));
 
 			if (result == null)
@@ -1355,8 +1357,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			if (nodeOptions.Count == 0)
 				return;
-				
-			ArrayList toDelete = new ArrayList ();
+
+			List<Gtk.TreeIter> toDelete = new List<Gtk.TreeIter> ();
 			string path = store.GetPath (iter).ToString () + ":";
 			
 			foreach (Gtk.TreeIter nit in nodeOptions.Keys) {
@@ -1365,7 +1367,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					toDelete.Add (nit);
 			}
 
-			foreach (object ob in toDelete)
+			foreach (Gtk.TreeIter ob in toDelete)
 				nodeOptions.Remove (ob);
 		}
 		
@@ -1417,12 +1419,22 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal TreeOptions GetNodeOptions (ITreeNavigator nav)
 		{
 			TreeNode node = nav.CurrentPosition._node as TreeNode;
-			if (node != null && node.HasIter)
-				return nodeOptions [node.NodeIter] as TreeOptions;
+			if (node != null && node.HasIter) {
+				TreeOptions ops;
+				if (nodeOptions.TryGetValue (node.NodeIter, out ops))
+					return ops;
+				else
+					return null;
+			}
 			else if (node != null)
 				return null;
-			else
-				return nodeOptions [nav.CurrentPosition._iter] as TreeOptions;
+			else {
+				TreeOptions ops;
+				if (nodeOptions.TryGetValue (nav.CurrentPosition._iter, out ops))
+					return ops;
+				else
+					return null;
+			}
 		}
 		
 		internal bool GetIterFromNamePath (string path, out Gtk.TreeIter iter)
@@ -1810,6 +1822,34 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			target.SetCurrentNodes (nodes);
 			return target;
+		}
+	}
+
+	class IterComparer: IEqualityComparer<Gtk.TreeIter>
+	{
+		Gtk.TreeStore store;
+
+		public IterComparer (Gtk.TreeStore store)
+		{
+			this.store = store;
+		}
+
+		public bool Equals (Gtk.TreeIter x, Gtk.TreeIter y)
+		{
+			Gtk.TreePath px = store.GetPath (x);
+			Gtk.TreePath py = store.GetPath (y);
+			if (px == null || py == null)
+				return false;
+			return x.Equals (y);
+		}
+
+		public int GetHashCode (Gtk.TreeIter obj)
+		{
+			Gtk.TreePath p = store.GetPath (obj);
+			if (p == null)
+				return 0;
+			else
+				return p.ToString ().GetHashCode ();
 		}
 	}
 }

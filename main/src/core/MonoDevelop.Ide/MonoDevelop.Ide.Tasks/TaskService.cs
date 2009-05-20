@@ -227,9 +227,8 @@ namespace MonoDevelop.Ide.Tasks
 		[AsyncDispatch]
 		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
 		{
-			Project p = IdeApp.Workspace.GetProjectContainingFile (e.FileName);
-			if (p != null)
-				UpdateCommentTags (p.ParentSolution, e.FileName, e.TagComments);
+			if (e.Project != null)
+				UpdateCommentTags (e.Project.ParentSolution, e.FileName, e.TagComments);
 		}
 		
 		public void ClearExceptCommentTasks ()

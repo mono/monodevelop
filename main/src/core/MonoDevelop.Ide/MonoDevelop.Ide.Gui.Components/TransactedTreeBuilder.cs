@@ -406,11 +406,16 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			bool IsChildIter (Gtk.TreeIter pit, Gtk.TreeIter cit, bool recursive)
 			{
-				while (tree.Store.IterParent (out cit, cit)) {
-					if (cit.Equals (pit)) return true;
-					if (!recursive) return false;
-				}
-				return false;
+				Gtk.TreePath pitPath = tree.Store.GetPath (pit);
+				Gtk.TreePath citPath = tree.Store.GetPath (cit);
+
+				if (!citPath.Up ())
+					return false;
+
+				if (citPath == pitPath)
+					return true;
+
+				return recursive && pitPath.IsAncestor (citPath);
 			}
 	
 			public ITreeNavigator Clone ()

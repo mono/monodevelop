@@ -743,17 +743,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		public virtual bool GetPreviousLocation (out string file, out int line, out int column)
 		{
-			bool hasNext, hasSel;
+			bool hasNext;
 			TreeIter iter;
 			TreeIter selIter = TreeIter.Zero;
 			TreeIter prevIter = TreeIter.Zero;
-			
-			hasSel = !initializeLocation && view.Selection.GetSelected (out selIter);
+
+			TreePath selPath = null;
+			if (!initializeLocation && view.Selection.GetSelected (out selIter))
+				selPath = store.GetPath (selIter);
+
 			hasNext = view.Model.GetIterFirst (out iter);
 			initializeLocation = false;
 			
 			while (hasNext) {
-				if (hasSel && iter.Equals (selIter))
+				if (selPath != null && store.GetPath (iter).Equals (selPath))
 					break;
 				prevIter = iter;
 				hasNext = view.Model.IterNext (ref iter);

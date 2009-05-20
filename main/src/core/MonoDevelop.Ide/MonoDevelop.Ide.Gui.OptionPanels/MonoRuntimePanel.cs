@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 						return;
 					removedRuntimes.Add (tr);
 				}
-				if (it.Equals (defaultIter)) {
+				if (store.GetPath (it).Equals (store.GetPath (defaultIter))) {
 					defaultIter = runningIter;
 					UpdateRow (defaultIter);
 				}
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				text = ((MonoRuntimeInfo)ob).DisplayName;
 			else
 				text = ((TargetRuntime)ob).DisplayName;
-			if (it.Equals (defaultIter))
+			if (store.GetPath (it).Equals (store.GetPath (defaultIter)))
 				text = "<b>" + text + " (Default)</b>";
 			store.SetValue (it, 0, text);
 		}
