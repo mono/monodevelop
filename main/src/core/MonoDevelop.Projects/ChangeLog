@@ -1,5 +1,10 @@
 2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs:
+	  Properly store the project.
+
+2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization\CodeCompletionDatabase.cs:
 	* MonoDevelop.Projects.Dom.Parser\CommentTasksChangedEventHandler.cs:
 	  Provide the source project when notifying changes in comment

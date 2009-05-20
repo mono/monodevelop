@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			this.filename = filename;
 			this.tagComments = tagComments;
+			this.project = project;
 		}
 		
 		public string FileName { get { return filename; } }
