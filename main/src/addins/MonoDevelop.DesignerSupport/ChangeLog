@@ -1,3 +1,10 @@
+2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport.PropertyGrid\PropertyGridTree.cs:
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors\CollectionEditor.cs:
+	  Don't use Gtk.TreeIter.Equals since it is broken. Use
+	  TreePath instead.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport/BindingService.cs: Workaround

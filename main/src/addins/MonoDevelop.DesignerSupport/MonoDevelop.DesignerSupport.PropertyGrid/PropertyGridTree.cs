@@ -209,7 +209,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				InstanceData idata = (InstanceData) store.GetValue (it, 3);
 				if (prop != null && idata != null && prop.Name == pd.Name && idata.Instance == instance) {
 					// Don't update the current editing node, since it may cause tree update problems
-					if (!tree.EditingIter.Equals (it))
+					if (!store.GetPath (tree.EditingIter).Equals (store.GetPath (it)))
 						store.SetValue (it, 1, pd);
 					return true;
 				}

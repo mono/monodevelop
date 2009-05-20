@@ -377,27 +377,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		//generally useful function... why not in model already?
 		private bool IterPrev (TreeModel model, ref TreeIter iter)
 		{
-			TreeIter prev, next;
-
-			if (!model.GetIterFirst (out prev))
-				return false;
-			
-			do {
-				next = prev;
-
-				if (!itemStore.IterNext (ref next))
-					return false;
-
-				//if next one on from prev is our iter
-				//then 'prev' is correct previous iter
-				if (next.Equals (iter)) {
-					iter = prev;
-					return true;
-				}
-
-			} while (itemStore.IterNext (ref prev));
-
-			return false;
+			TreePath tp = model.GetPath (iter);
+			return tp.Prev() && model.GetIter (out iter, tp);
 		}
 	}
 }
