@@ -139,7 +139,7 @@ namespace MonoDevelop.Moonlight
 			}
 			
 			var si = new System.Diagnostics.ProcessStartInfo ();
-			foreach (KeyValuePair<string,string> env in runtime.GetToolsEnvironmentVariables ()) {
+			foreach (KeyValuePair<string,string> env in runtime.GetToolsEnvironmentVariables (proj.TargetFramework)) {
 				if (env.Value == null) {
 					if (si.EnvironmentVariables.ContainsKey (env.Key))
 						si.EnvironmentVariables.Remove (env.Key);
