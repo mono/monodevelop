@@ -109,7 +109,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			else {
 				TreeIter first;
 				listStore.GetIterFirst (out first);
-				buttonUp.Sensitive = !iter.Equals (first);
+				buttonUp.Sensitive = !listStore.GetPath (iter).Equals (listStore.GetPath (first));
 				buttonDown.Sensitive = listStore.IterNext (ref iter);
 			}
 			

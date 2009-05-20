@@ -1,3 +1,9 @@
+2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels\StartupOptionsPanel.cs:
+	  Don't use Gtk.TreeIter.Equals, since it's broken. Compare
+	  TreePaths instead.
+
 2009-05-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
