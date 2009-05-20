@@ -452,8 +452,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (DebuggingService.IsDebugging && 
 			    !DebuggingService.IsRunning &&
-				DebuggingService.CurrentFilename != null &&
-			    Path.GetFullPath (DebuggingService.CurrentFilename) == Path.GetFullPath (ContentName)
+				DebuggingService.CurrentFilename != FilePath.Null &&
+			    DebuggingService.CurrentFilename.FullPath == Path.GetFullPath (ContentName)
 		    ) {
 				if (lastDebugLine == DebuggingService.CurrentLineNumber)
 					return;
@@ -493,6 +493,8 @@ namespace MonoDevelop.SourceEditor
 			FilePath fp = ContentName;
 			if (fp.FullPath == bp.FileName) {
 				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
+				if (line == null)
+					return;
 				if (!bp.Enabled)
 					widget.TextEditor.Document.AddMarker (line, breakpointDisabledMarker);
 				else if (bp.IsValid (DebuggingService.DebuggerSession))
