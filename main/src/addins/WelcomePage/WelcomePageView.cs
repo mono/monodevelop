@@ -46,7 +46,6 @@ namespace MonoDevelop.WelcomePage
 {	
 	public abstract class WelcomePageView : AbstractViewContent
 	{
-		string datadir;
 		bool loadingProject;
 		EventHandler recentChangesHandler;
 		
@@ -77,11 +76,6 @@ namespace MonoDevelop.WelcomePage
 			this.ContentName = GettextCatalog.GetString ("Welcome");
 			this.IsViewOnly = true;
 			
-			datadir = Path.GetDirectoryName (typeof(ShowWelcomePageHandler).Assembly.Location) + "/";
-
-			if (PlatformID.Unix != Environment.OSVersion.Platform)
-				datadir = datadir.Replace("\\","/");
-
 			recentChangesHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (RecentChangesHandler));
 			IdeApp.Workbench.RecentOpen.RecentProjectChanged += recentChangesHandler;
 			NewsUpdated += (EventHandler) DispatchService.GuiDispatch (new EventHandler (HandleNewsUpdate));
@@ -281,10 +275,6 @@ namespace MonoDevelop.WelcomePage
 				return GettextCatalog.GetPluralString ("{0} minute", "{0} minutes", sincelast.Minutes, sincelast.Minutes);
 			
 			return GettextCatalog.GetString ("Less than a minute");
-		}
-		
-		public virtual string DataDirectory {
-			get { return datadir; }
 		}
 		
 		public IEnumerable<RecentItem> RecentProjects {

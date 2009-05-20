@@ -1,3 +1,9 @@
+2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WelcomePageView.cs:
+	* WelcomePageFallbackWidget.cs: Properly get the path to the
+	  background image. It was unix-specific.
+
 2009-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* WelcomePageFallbackWidget.cs: Renamed PixbufService to

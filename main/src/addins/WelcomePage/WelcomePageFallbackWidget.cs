@@ -38,6 +38,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using Mono.Addins;
 
 using Gtk;
 using Gdk;
@@ -103,7 +104,7 @@ namespace MonoDevelop.WelcomePage
 			linkHoverEnterEventHandler = new Gtk.EnterNotifyEventHandler (handleHoverEnter);
 			linkClickedEventHandler = new EventHandler (HandleLink);
 			
-			string bgPath = System.IO.Path.Combine (parentView.DataDirectory, "mono-bg.png");
+			string bgPath = AddinManager.CurrentAddin.GetFilePath ("mono-bg.png");
 			bgPixbuf = new Gdk.Pixbuf (bgPath);
 			
 			alignment1.SetPadding ((uint) (logoOffset + 70 + logoOffset), 0, (uint) logoOffset, 0);
