@@ -219,6 +219,9 @@ namespace CSharpBinding
 			if (!string.IsNullOrEmpty (compilerParameters.NoWarnings)) 
 				AppendQuoted (sb, "/nowarn:", compilerParameters.NoWarnings);
 
+			if (runtime.RuntimeId == "MS.NET")
+				sb.AppendLine ("/fullpaths");
+
 			string output = "";
 			string error  = "";
 			
@@ -226,7 +229,7 @@ namespace CSharpBinding
 			
 			string compilerName;
 			try {
-				compilerName = GetCompilerName (runtime, configuration.TargetFramework.ClrVersion);
+				compilerName = GetCompilerName (runtime, configuration.TargetFramework);
 			} catch (Exception e) {
 				string message = "Could not obtain a C# compiler";
 				monitor.ReportError (message, e);
@@ -248,7 +251,7 @@ namespace CSharpBinding
 
 			LoggingService.LogInfo (compilerName + " " + sb.ToString ());
 			
-			Dictionary<string,string> envVars = runtime.GetToolsEnvironmentVariables ();
+			Dictionary<string,string> envVars = runtime.GetToolsEnvironmentVariables (project.TargetFramework);
 			string cargs = "/noconfig @\"" + responseFileName + "\"";
 
 			int exitCode = DoCompilation (compilerName, cargs, workingDir, envVars, gacRoots, ref output, ref error);
@@ -271,7 +274,7 @@ namespace CSharpBinding
 			return result;
 		}
 		
-		static string GetCompilerName (TargetRuntime runtime, ClrVersion version)
+		static string GetCompilerName (TargetRuntime runtime, TargetFramework fx)
 		{
 			// The following regex foo gets the index of the
 			// last match of lib/lib32/lib64 and uses
@@ -280,44 +283,25 @@ namespace CSharpBinding
 			
 			if (runtime is MonoTargetRuntime) {
 				string mcs;
-				string fx;
-				switch (version) {
+				switch (fx.ClrVersion) {
 				case ClrVersion.Net_1_1:
 					mcs = "mcs";
-					fx = "1.1";
 					break;
 				case ClrVersion.Net_2_0:
 					mcs = "gmcs";
-					fx = "2.0";
 					break;
 				case ClrVersion.Clr_2_1:
 					mcs = "smcs";
-					fx = "2.1";
 					break;
 				default:
-					string message = "Cannot handle unknown runtime version ClrVersion.'" + version.ToString () + "'.";
+					string message = "Cannot handle unknown runtime version ClrVersion.'" + fx.ClrVersion.ToString () + "'.";
 					LoggingService.LogError (message);
 					throw new Exception (message);
 				}
-				TargetFramework tfx = Runtime.SystemAssemblyService.GetTargetFramework (fx);
-				return runtime.GetToolPath (tfx, mcs);
+				return runtime.GetToolPath (fx, mcs);
 				
 			} else {
-				string fx;
-				switch (version) {
-					case ClrVersion.Net_1_1:
-						fx = "1.1";
-						break;
-					case ClrVersion.Net_2_0:
-						fx = "2.0";
-						break;
-					default:
-						string message = "Cannot handle unknown runtime version ClrVersion.'" + version.ToString () + "'.";
-						LoggingService.LogError (message);
-						throw new Exception (message);
-				}
-				TargetFramework tfx = Runtime.SystemAssemblyService.GetTargetFramework (fx);
-				return runtime.GetToolPath (tfx, "csc.exe");
+				return runtime.GetToolPath (fx, "csc.exe");
 			}
 		}
 		
