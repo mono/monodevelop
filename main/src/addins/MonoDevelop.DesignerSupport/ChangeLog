@@ -1,3 +1,9 @@
+2009-05-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport.PropertyGrid\PropertyGrid.cs:
+	* MonoDevelop.DesignerSupport.PropertyGrid\PropertyGridTree.cs:
+	  Removed the borders. Let the dock manager handle that.
+
 2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.PropertyGrid\PropertyGridTree.cs:

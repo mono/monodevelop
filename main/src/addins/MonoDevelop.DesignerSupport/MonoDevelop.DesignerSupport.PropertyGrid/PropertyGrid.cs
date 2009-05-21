@@ -52,6 +52,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		object[] propertyProviders;
 
 		PropertyGridTree tree;
+		HSeparator helpSeparator;
 		VPaned vpaned;
 		
 		Tooltips tips;
@@ -119,7 +120,12 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				Update ();
 			};
 
-			vpaned.Pack1 (tree, true, true);
+			VBox tbox = new VBox ();
+			tbox.PackStart (tree, true, true, 0);
+			helpSeparator = new HSeparator ();
+			tbox.PackStart (helpSeparator, false, false, 0);
+			helpSeparator.NoShowAll = true;
+			vpaned.Pack1 (tbox, true, true);
 			
 			AddPropertyTab (new DefaultPropertyTab ());
 			AddPropertyTab (new EventPropertyTab ());
@@ -284,12 +290,14 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 					return;
 				if (value) {
 					AddHelpPane ();
+					helpSeparator.Show ();
 				} else {
 					vpaned.Remove (descFrame);
 					descFrame.Destroy ();
 					descFrame = null;
 					descTextView = null;
 					descTitleLabel = null;
+					helpSeparator.Hide ();
 				}
 			}
 		}
@@ -297,11 +305,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		void AddHelpPane ()
 		{
 			descFrame = new Frame ();
-			descFrame.Shadow = ShadowType.In;
+			descFrame.Shadow = ShadowType.None;
 			
 			VBox desc = new VBox (false, 0);
 			descFrame.Add (desc);
-			
+
 			descTitleLabel = new Label ();
 			descTitleLabel.SetAlignment(0, 0);
 			descTitleLabel.SetPadding (5, 5);

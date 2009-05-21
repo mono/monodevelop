@@ -92,7 +92,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			tree.AppendColumn (editorColumn);
 			
 			tree.HeadersVisible = false;
-			this.ShadowType = Gtk.ShadowType.In;
+			this.ShadowType = Gtk.ShadowType.None;
 			
 			this.HscrollbarPolicy = Gtk.PolicyType.Never;
 			
