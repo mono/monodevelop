@@ -351,8 +351,6 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			this.tree = tree;
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
-			Pango.FontDescription des = this.Style.FontDescription.Copy();
-			layout.FontDescription = des;
 		}
 		
 		public bool Editing {
@@ -586,9 +584,6 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			this.tree = tree;
 			layout = new Pango.Layout (tree.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
-			
-			Pango.FontDescription des = tree.Style.FontDescription.Copy();
-			layout.FontDescription = des;
 		}
 		
 		protected void GetCellSize (Widget widget, int availableWidth, out int width, out int height)
