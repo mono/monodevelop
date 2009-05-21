@@ -64,7 +64,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			initialFileCheck = true;
 		}
 		
-		public Project Project {
+		public override Project Project {
 			get { return project; }
 		}
 		

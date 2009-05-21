@@ -140,6 +140,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			set { sourceProjectDom = value; }
 		}
 		
+		public virtual Project Project {
+			get { return sourceProjectDom != null ? sourceProjectDom.Project : null; }
+		}
+		
 		protected void SetLocation (string basePath, string name)
 		{
 			dataFile = Path.Combine (basePath, name + ".pidb");
@@ -226,7 +230,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			// Notify read comments
 			foreach (FileEntry fe in files.Values) {
 				if (! fe.IsAssembly && fe.CommentTasks != null) {
-					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, SourceProjectDom.Project);
+					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, Project);
 				}
 			}
 			
@@ -676,7 +680,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						if (tag.Key == token) markedTags.Add (tag);
 					foreach (Tag tag in markedTags)
 						fe.CommentTasks.Remove (tag);
-					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, SourceProjectDom.Project);
+					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, Project);
 				}
 			}
 		}
