@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.AspNet.Gui;
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.Core;
@@ -39,7 +40,7 @@ namespace MonoDevelop.AspNet
 	public class MasterContentFileDescriptionTemplate : AspNetFileDescriptionTemplate
 	{
 		
-		public override void ModifyTags (MonoDevelop.Projects.SolutionItem policyParent, MonoDevelop.Projects.Project project, string language, string identifier, string fileName, ref System.Collections.Hashtable tags)
+		public override void ModifyTags (MonoDevelop.Projects.SolutionItem policyParent, MonoDevelop.Projects.Project project, string language, string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
 			base.ModifyTags (policyParent, project, language, identifier, fileName, ref tags);
 			if (fileName == null)
