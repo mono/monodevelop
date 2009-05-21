@@ -56,7 +56,14 @@ namespace MonoDevelop.Ide
 			
 			progress = new ProgressBar ();
 			progress.PulseStep = 0.3;
-			this.PackStart (progress, false, false, 0);
+			Requisition req = progress.SizeRequest ();
+			progress.HeightRequest = 1;
+			Alignment pal = new Alignment (0, 0.5f, 1, 1);
+			pal.TopPadding = 2;
+			pal.BottomPadding = 2;
+			pal.LeftPadding = 2;
+			pal.Add (progress);
+			this.PackStart (pal, false, false, 0);
 			
 			this.PackStart (textStatusBarPanel, true, true, 0);
 			statusBox = new HBox ();
@@ -64,14 +71,17 @@ namespace MonoDevelop.Ide
 			statusLabel.SetAlignment (0, 0.5f);
 			statusLabel.Wrap = false;
 			statusBox.PackEnd (statusLabel, true, true, 0);
+			textStatusBarPanel.ShadowType = ShadowType.None;
 			textStatusBarPanel.Add (statusBox);
 			
 			this.PackStart (cursorStatusBarPanel, false, false, 0);
 			cursorLabel = new Label ("  ");
+			cursorStatusBarPanel.ShadowType = ShadowType.None;
 			cursorStatusBarPanel.Add (cursorLabel);
 				
 			this.PackStart (modeStatusBarPanel, false, false, 0);
 			modeLabel = new Label ("  ");
+			modeStatusBarPanel.ShadowType = ShadowType.None;
 			modeStatusBarPanel.Add (modeLabel);
 
 			this.PackStart (iconStatusBarPanel, false, false, 0);

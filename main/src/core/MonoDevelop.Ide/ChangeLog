@@ -1,3 +1,11 @@
+2009-05-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui\MonoDevelopStatusBar.cs: Removed the
+	  borders of the panel sections.
+
+	* MonoDevelop.Ide.Gui\IdeStartup.cs: Removed duplicate
+	  BeginTask call.
+
 2009-05-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:

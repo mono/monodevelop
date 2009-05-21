@@ -126,8 +126,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
-			
-			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
 			monitor.Step (1);
 			Runtime.Initialize (true);
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
