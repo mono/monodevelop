@@ -44,7 +44,7 @@ namespace MonoDevelop.Components.Docking
 		
 		DockContainer container;
 		
-		int handleSize = 8;
+		int handleSize = IsWindows ? 4 : 8;
 		int handlePadding = 1;
 		int defaultItemWidth = 130;
 		int defaultItemHeight = 130;
@@ -76,6 +76,13 @@ namespace MonoDevelop.Components.Docking
 			mainBox.PackStart (dockBarBottom, false, false, 0);
 			Add (mainBox);
 			mainBox.ShowAll ();
+
+			dockBarTop.Hide ();
+			dockBarBottom.Hide ();
+			dockBarLeft.Hide ();
+			dockBarRight.Hide ();
+
+			mainBox.NoShowAll = true;
 		}
 		
 		internal DockContainer Container {
@@ -539,6 +546,10 @@ namespace MonoDevelop.Components.Docking
 			List<DockFrameTopLevel> clone = new List<DockFrameTopLevel> (topLevels);
 			foreach (DockFrameTopLevel child in clone)
 				callback (child);
+		}
+
+		static internal bool IsWindows {
+			get { return System.IO.Path.DirectorySeparatorChar == '\\'; }
 		}
 	}
 	

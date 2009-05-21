@@ -86,12 +86,16 @@ namespace MonoDevelop.Components.Docking
 			DockBarItem it = new DockBarItem (this, item, size);
 			box.PackStart (it, false, false, 0);
 			it.ShowAll ();
+			if (!Visible)
+				Show ();
 			return it;
 		}
 		
 		internal void RemoveItem (DockBarItem it)
 		{
 			box.Remove (it);
+			if (box.Children.Length == 0)
+				Hide ();
 		}
 		
 		public void UpdateTitle (DockItem item)

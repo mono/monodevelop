@@ -1,3 +1,18 @@
+2009-05-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* TabStrip.cs:
+	* DockItemContainer.cs: Use a custom frame instead of
+	  Gtk.Frame. This frame always draws a 1-pixel border. The
+	  border is not drawn if below it there is a tab. Reduced the
+	  padding used in tabs.
+
+	* DockBar.cs:
+	* DockFrame.cs: Hide the autohide dock bars when nothing is
+	  docked.
+
+	* DockGroup.cs: Use a custom frame instead of Gtk.Frame. This
+	  frame always draws a 1-pixel border.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Dock.csproj: don't require specific

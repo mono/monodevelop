@@ -160,6 +160,18 @@ namespace MonoDevelop.Components.Docking
 				ellipsized = ellipsize;
 			}
 		}
+
+		public Gdk.Rectangle GetTabArea (int ntab)
+		{
+			Gtk.Widget[] tabs = box.Children;
+			Tab tab = (Tab) tabs[ntab];
+			Gdk.Rectangle rect = GetTabArea (tab, ntab);
+			int x, y;
+			tab.GdkWindow.GetRootOrigin (out x, out y);
+			rect.X += x;
+			rect.Y += y;
+			return rect;
+		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
@@ -171,32 +183,71 @@ namespace MonoDevelop.Components.Docking
 			}
 			if (currentTab != -1) {
 				Tab ctab = (Tab) tabs [currentTab];
-				//GdkWindow.DrawLine (Style.DarkGC (Gtk.StateType.Normal), Allocation.X, Allocation.Y, Allocation.Right, Allocation.Y);
+//				GdkWindow.DrawLine (Style.DarkGC (Gtk.StateType.Normal), Allocation.X, Allocation.Y, Allocation.Right, Allocation.Y);
 				DrawTab (evnt, ctab, currentTab);
 			}
 			return base.OnExposeEvent (evnt);
 		}
-		
-		void DrawTab (Gdk.EventExpose evnt, Tab tab, int pos)
+
+		public Gdk.Rectangle GetTabArea (Tab tab, int pos)
 		{
+			Gdk.Rectangle rect = tab.Allocation;
+
 			int xdif = 0;
 			if (pos > 0)
 				xdif = 2;
-			
+
 			int reqh;
 			StateType st;
-			
+
 			if (tab.Active) {
 				st = StateType.Normal;
 				reqh = tab.Allocation.Height;
-			} else {
+			}
+			else {
 				reqh = tab.Allocation.Height - 3;
 				st = StateType.Active;
 			}
-			
-			Gtk.Style.PaintExtension (Style, GdkWindow, st, ShadowType.Out, evnt.Area, this, "tab", tab.Allocation.X - xdif, tab.Allocation.Y, tab.Allocation.Width + xdif, reqh, Gtk.PositionType.Top); 
+
+			if (DockFrame.IsWindows) {
+				rect.Height = reqh - 1;
+				rect.Width--;
+				if (pos > 0) {
+					rect.X--;
+					rect.Width++;
+				}
+				return rect;
+			}
+			else {
+				rect.X -= xdif;
+				rect.Width += xdif;
+				rect.Height = reqh;
+				return rect;
+			}
 		}
 
+		void DrawTab (Gdk.EventExpose evnt, Tab tab, int pos)
+		{
+			Gdk.Rectangle rect = GetTabArea (tab, pos);
+			StateType st;
+			if (tab.Active)
+				st = StateType.Normal;
+			else
+				st = StateType.Active;
+
+			if (DockFrame.IsWindows) {
+				Gdk.GC gc = tab.Active
+					? Style.LightGC (Gtk.StateType.Normal)
+					: Style.BackgroundGC (Gtk.StateType.Normal);
+
+				GdkWindow.DrawRectangle (Style.DarkGC (Gtk.StateType.Normal), false, rect);
+				rect.X++;
+				rect.Width--;
+				GdkWindow.DrawRectangle (gc, true, rect);
+			}
+			else
+				Gtk.Style.PaintExtension (Style, GdkWindow, st, ShadowType.Out, evnt.Area, this, "tab", rect.X, rect.Y, rect.Width, rect.Height, Gtk.PositionType.Top); 
+		}
 	}
 	
 	class Tab: Gtk.EventBox
@@ -206,11 +257,11 @@ namespace MonoDevelop.Components.Docking
 		Gtk.Label labelWidget;
 		int labelWidth;
 		
-		const int TopPadding = 4;
-		const int BottomPadding = 6;
-		const int TopPaddingActive = 5;
-		const int BottomPaddingActive = 8;
-		const int HorzPadding = 7;
+		const int TopPadding = 2;
+		const int BottomPadding = 4;
+		const int TopPaddingActive = 3;
+		const int BottomPaddingActive = 5;
+		const int HorzPadding = 5;
 		
 		public Tab ()
 		{

@@ -49,7 +49,7 @@ namespace MonoDevelop.Components.Docking
 		DockFrame frame;
 		DockItem item;
 		Widget widget;
-		Frame borderFrame;
+		Container borderFrame;
 		bool allowPlaceholderDocking;
 		bool pointerHover;
 		Gtk.Tooltips tips = new Tooltips ();
@@ -98,7 +98,7 @@ namespace MonoDevelop.Components.Docking
 			box.PackEnd (btnDock, false, false, 0);
 			
 			headerAlign = new Alignment (0.0f, 0.0f, 1.0f, 1.0f);
-			headerAlign.TopPadding = headerAlign.BottomPadding = headerAlign.RightPadding = headerAlign.LeftPadding = 1;
+			//headerAlign.TopPadding = headerAlign.BottomPadding = headerAlign.RightPadding = headerAlign.LeftPadding = 1;
 			headerAlign.Add (box);
 			
 			header = new EventBox ();
@@ -140,8 +140,7 @@ namespace MonoDevelop.Components.Docking
 			
 			if (item.DrawFrame) {
 				if (borderFrame == null) {
-					borderFrame = new Frame ();
-					borderFrame.ShadowType = ShadowType.In;
+					borderFrame = new CustomFrame (frame, item);
 					borderFrame.Show ();
 					PackStart (borderFrame, true, true, 0);
 				}
@@ -263,6 +262,56 @@ namespace MonoDevelop.Components.Docking
 				title.Markup = "<small>" + value + "</small>";
 				txt = value;
 			}
+		}
+	}
+
+	class CustomFrame: Bin
+	{
+		Gtk.Widget child;
+		DockFrame frame;
+		DockItem item;
+
+		public CustomFrame (DockFrame frame, DockItem item)
+		{
+			this.frame = frame;
+			this.item = item;
+		}
+
+		protected override void OnAdded (Widget widget)
+		{
+			base.OnAdded (widget);
+			child = widget;
+		}
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			requisition = child.SizeRequest ();
+			requisition.Width++;
+			requisition.Height++;
+		}
+
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+			allocation.Inflate (-1, -1);
+			child.Allocation = allocation;
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			bool res = base.OnExposeEvent (evnt);
+			Gdk.Rectangle rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width - 1, Allocation.Height - 1);
+			GdkWindow.DrawRectangle (Style.DarkGC (Gtk.StateType.Normal), false, rect);
+			DockGroupItem dit = frame.Container.FindDockGroupItem (item.Id);
+			if (dit != null && dit.ParentGroup != null && dit.ParentGroup.Type == DockGroupType.Tabbed && dit.ParentGroup.TabStrip != null && dit.ParentGroup.TabStrip.Visible) {
+				rect = dit.ParentGroup.TabStrip.GetTabArea (dit.ParentGroup.TabStrip.CurrentTab);
+				int sx, sy;
+				GdkWindow.GetRootOrigin (out sx, out sy);
+				rect.X -= sx;
+				rect.Y -= sy;
+				GdkWindow.DrawLine (Style.LightGC (Gtk.StateType.Active), rect.X + 1, Allocation.Bottom - 1, rect.Right - 1, Allocation.Bottom - 1);
+			}
+			return res;
 		}
 	}
 }

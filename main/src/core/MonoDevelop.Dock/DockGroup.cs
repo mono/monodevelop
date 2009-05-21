@@ -818,7 +818,8 @@ namespace MonoDevelop.Components.Docking
 					}
 					else {
 						StateType state = (currentHandleGrp == this && currentHandleIndex == n) ? StateType.Prelight : StateType.Normal;
-						Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
+						if (!DockFrame.IsWindows)
+							Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
 					}
 					
 					if (horiz)
@@ -1083,6 +1084,10 @@ namespace MonoDevelop.Components.Docking
 				reader.MoveToContent ();
 			}
 			reader.ReadEndElement ();
+		}
+
+		internal TabStrip TabStrip {
+			get { return boundTabStrip; }
 		}
 		
 		public override string ToString ()
