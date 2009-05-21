@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.Templates
 				ProjectFile projectFile = project.AddFile (generatedFile, buildAction);
 				
 				if (!string.IsNullOrEmpty (dependsOn)) {
-					Hashtable tags = new Hashtable ();
+					Dictionary<string,string> tags = new Dictionary<string,string> ();
 					ModifyTags (policyParent, project, language, null, generatedFile, ref tags);
 					string parsedDepName = StringParserService.Parse (dependsOn, HashtableToStringArray (tags));
 					if (projectFile.DependsOn != parsedDepName)
@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			//substitute tags
 			if ((name != null) && (name.Length > 0)) {
-				Hashtable tags = new Hashtable ();
+				Dictionary<string,string> tags = new Dictionary<string,string> ();
 				ModifyTags (policyParent, project, language, entryName ?? name, null, ref tags);
 				fileName = StringParserService.Parse (name, HashtableToStringArray (tags));
 			}
@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.Templates
 		// project and language parameters are optional
 		public virtual Stream CreateFileContent (SolutionItem policyParent, Project project, string language, string fileName)
 		{
-			Hashtable tags = new Hashtable ();
+			Dictionary<string,string> tags = new Dictionary<string,string> ();
 			ModifyTags (policyParent, project, language, null, fileName, ref tags);
 			
 			string content = CreateContent (language);
@@ -266,7 +266,7 @@ namespace MonoDevelop.Ide.Templates
 		// We supply defaults whenever it is possible, to avoid having unsubstituted tags. However,
 		// do not substitute blanks when a sensible default cannot be guessed, because they result
 		//in less obvious errors.
-		public virtual void ModifyTags (SolutionItem policyParent, Project project, string language, string identifier, string fileName, ref Hashtable tags)
+		public virtual void ModifyTags (SolutionItem policyParent, Project project, string language, string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
 			DotNetProject netProject = project as DotNetProject;
 			string languageExtension = "";
@@ -334,13 +334,13 @@ namespace MonoDevelop.Ide.Templates
 			return binding;
 		}
 		
-		protected string[,] HashtableToStringArray (Hashtable tags)
+		protected string[,] HashtableToStringArray (Dictionary<string,string> tags)
 		{			
 			string[,] tagsArr = new string [tags.Count, 2];
 			int i = 0;
 			foreach (string key in tags.Keys) {
 				tagsArr [i, 0] = key;
-				tagsArr [i, 1] = (string) tags [key];
+				tagsArr [i, 1] = tags [key];
 				i++;
 			}
 			

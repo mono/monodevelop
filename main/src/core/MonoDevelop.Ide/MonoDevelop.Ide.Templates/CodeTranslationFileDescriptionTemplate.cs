@@ -32,6 +32,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Xml;
@@ -131,7 +132,7 @@ namespace MonoDevelop.Ide.Templates
 			return txt.Substring (i+1);
 		}
 		
-		public override void ModifyTags (SolutionItem policyParent, Project project, string language, string identifier, string fileName, ref Hashtable tags)
+		public override void ModifyTags (SolutionItem policyParent, Project project, string language, string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
 			//prevent parser breakage from missing tags, which SingleFile only provides for DotNetProject
 			//if ((project as DotNetProject) == null)
