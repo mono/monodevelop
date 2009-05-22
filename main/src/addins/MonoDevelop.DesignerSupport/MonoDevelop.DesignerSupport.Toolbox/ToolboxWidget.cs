@@ -87,8 +87,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				headerLayout.FontDescription = desc;
 		}
 		
-		const int spacing = 4;
-		const int categoryHeaderSize = 20;
+		const int spacing = 2;
+		const int categoryHeaderSize = 25;
 		Pango.Layout layout;
 		Pango.Layout headerLayout;
 		
@@ -233,8 +233,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					cr.RelLineTo (0, -itemDimension.Height);
 					cr.ClosePath ();
 					Cairo.Gradient pat = new Cairo.LinearGradient (xpos, ypos, xpos, ypos + itemDimension.Height);
-					pat.AddColorStop (0, Convert (Style.Mid (StateType.Normal)));
-					pat.AddColorStop (1, Convert (Style.Base (StateType.Normal)));
+					Cairo.Color ccol = Convert (Style.Mid (StateType.Normal));
+					pat.AddColorStop (0, ccol);
+					ccol.A = 0.4;
+					pat.AddColorStop (1, ccol);
 					cr.Pattern = pat;
 					cr.FillPreserve ();
 					
