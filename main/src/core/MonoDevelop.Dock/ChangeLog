@@ -1,5 +1,9 @@
 2009-05-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* TabStrip.cs: Draw a small drop shadow below the tabs.
+
+2009-05-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* TabStrip.cs:
 	* DockFrame.cs:
 	* DockItemContainer.cs: Improve look of pad tabs on windows.

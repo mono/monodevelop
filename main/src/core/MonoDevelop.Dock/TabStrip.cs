@@ -175,6 +175,26 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
+			Gdk.Rectangle rect = Allocation;
+			
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+				cr.NewPath ();
+				cr.MoveTo (rect.X, rect.Y);
+				cr.RelLineTo (rect.Width, 0);
+				cr.RelLineTo (0, rect.Height);
+				cr.RelLineTo (-rect.Width, 0);
+				cr.RelLineTo (0, -rect.Height);
+				cr.ClosePath ();
+				Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + rect.Height/3);
+				Cairo.Color color1 = DockFrame.ToCairoColor (Style.Mid (StateType.Normal));
+				color1.A = 0.6;
+				pat.AddColorStop (0, color1);
+				color1.A = 0;
+				pat.AddColorStop (1, color1);
+				cr.Pattern = pat;
+				cr.FillPreserve ();
+			}
+			
 			Gtk.Widget[] tabs = box.Children;
 			for (int n=tabs.Length - 1; n>=0; n--) {
 				Tab tab = (Tab) tabs [n];
