@@ -98,7 +98,7 @@ namespace MonoDevelop.Components.Docking
 			box.PackEnd (btnDock, false, false, 0);
 			
 			headerAlign = new Alignment (0.0f, 0.0f, 1.0f, 1.0f);
-			//headerAlign.TopPadding = headerAlign.BottomPadding = headerAlign.RightPadding = headerAlign.LeftPadding = 1;
+			headerAlign.TopPadding = headerAlign.BottomPadding = headerAlign.RightPadding = headerAlign.LeftPadding = 1;
 			headerAlign.Add (box);
 			
 			header = new EventBox ();
@@ -233,15 +233,37 @@ namespace MonoDevelop.Components.Docking
 		private void HeaderExpose (object ob, Gtk.ExposeEventArgs a)
 		{
 			Gdk.Rectangle rect = new Gdk.Rectangle (0, 0, header.Allocation.Width - 1, header.Allocation.Height);
-			Gdk.GC gc = pointerHover
-				? frame.Style.MidGC (Gtk.StateType.Active)
-				: frame.Style.MidGC (Gtk.StateType.Normal);
+			Gdk.Color gcol = pointerHover
+				? frame.Style.Mid (Gtk.StateType.Active)
+				: frame.Style.Mid (Gtk.StateType.Normal);
 			
-			header.GdkWindow.DrawRectangle (gc, true, rect);
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (a.Event.Window)) {
+				cr.NewPath ();
+				cr.MoveTo (0, 0);
+				cr.RelLineTo (rect.Width, 0);
+				cr.RelLineTo (0, rect.Height);
+				cr.RelLineTo (-rect.Width, 0);
+				cr.RelLineTo (0, -rect.Height);
+				cr.ClosePath ();
+				Cairo.Gradient pat = new Cairo.LinearGradient (0, 0, rect.Width, rect.Height);
+				Cairo.Color color1 = Convert (gcol);
+				pat.AddColorStop (0, color1);
+				color1.A = 0.3;
+				pat.AddColorStop (1, color1);
+				cr.Pattern = pat;
+				cr.FillPreserve ();
+			}
+			
+//			header.GdkWindow.DrawRectangle (gc, true, rect);
 			header.GdkWindow.DrawRectangle (frame.Style.DarkGC (Gtk.StateType.Normal), false, rect);
 			
 			foreach (Widget child in header.Children)
 				header.PropagateExpose (child, a.Event);
+		}
+		
+		static Cairo.Color Convert (Gdk.Color color)
+		{
+			return new Cairo.Color (color.Red / (double)ushort.MaxValue, color.Green / (double)ushort.MaxValue,  color.Blue / (double)ushort.MaxValue);
 		}
 		
 		private void HeaderLeaveNotify (object ob, EventArgs a)
@@ -302,7 +324,7 @@ namespace MonoDevelop.Components.Docking
 			bool res = base.OnExposeEvent (evnt);
 			Gdk.Rectangle rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width - 1, Allocation.Height - 1);
 			GdkWindow.DrawRectangle (Style.DarkGC (Gtk.StateType.Normal), false, rect);
-			DockGroupItem dit = frame.Container.FindDockGroupItem (item.Id);
+/*			DockGroupItem dit = frame.Container.FindDockGroupItem (item.Id);
 			if (dit != null && dit.ParentGroup != null && dit.ParentGroup.Type == DockGroupType.Tabbed && dit.ParentGroup.TabStrip != null && dit.ParentGroup.TabStrip.Visible) {
 				rect = dit.ParentGroup.TabStrip.GetTabArea (dit.ParentGroup.TabStrip.CurrentTab);
 				int sx, sy;
@@ -311,6 +333,7 @@ namespace MonoDevelop.Components.Docking
 				rect.Y -= sy;
 				GdkWindow.DrawLine (Style.LightGC (Gtk.StateType.Active), rect.X + 1, Allocation.Bottom - 1, rect.Right - 1, Allocation.Bottom - 1);
 			}
+*/
 			return res;
 		}
 	}

@@ -44,7 +44,7 @@ namespace MonoDevelop.Components.Docking
 		
 		DockContainer container;
 		
-		int handleSize = IsWindows ? 4 : 8;
+		int handleSize = IsWindows ? 4 : 6;
 		int handlePadding = 1;
 		int defaultItemWidth = 130;
 		int defaultItemHeight = 130;

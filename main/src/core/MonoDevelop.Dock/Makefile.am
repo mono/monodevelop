@@ -17,6 +17,7 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml

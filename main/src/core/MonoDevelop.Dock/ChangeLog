@@ -1,5 +1,14 @@
 2009-05-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* DockFrame.cs: Reduce spacing.
+
+	* Makefile.am:
+	* DockItemContainer.cs:
+	* MonoDevelop.Dock.csproj: Add some gradients. Disable drawing
+	  of tab gap.
+
+2009-05-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* TabStrip.cs:
 	* DockItemContainer.cs: Use a custom frame instead of
 	  Gtk.Frame. This frame always draws a 1-pixel border. The
