@@ -246,7 +246,7 @@ namespace MonoDevelop.Components.Docking
 				cr.RelLineTo (0, -rect.Height);
 				cr.ClosePath ();
 				Cairo.Gradient pat = new Cairo.LinearGradient (0, 0, rect.Width, rect.Height);
-				Cairo.Color color1 = Convert (gcol);
+				Cairo.Color color1 = DockFrame.ToCairoColor (gcol);
 				pat.AddColorStop (0, color1);
 				color1.A = 0.3;
 				pat.AddColorStop (1, color1);
@@ -259,11 +259,6 @@ namespace MonoDevelop.Components.Docking
 			
 			foreach (Widget child in header.Children)
 				header.PropagateExpose (child, a.Event);
-		}
-		
-		static Cairo.Color Convert (Gdk.Color color)
-		{
-			return new Cairo.Color (color.Red / (double)ushort.MaxValue, color.Green / (double)ushort.MaxValue,  color.Blue / (double)ushort.MaxValue);
 		}
 		
 		private void HeaderLeaveNotify (object ob, EventArgs a)

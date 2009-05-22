@@ -551,6 +551,11 @@ namespace MonoDevelop.Components.Docking
 		static internal bool IsWindows {
 			get { return System.IO.Path.DirectorySeparatorChar == '\\'; }
 		}
+
+		internal static Cairo.Color ToCairoColor (Gdk.Color color)
+		{
+			return new Cairo.Color (color.Red / (double) ushort.MaxValue, color.Green / (double) ushort.MaxValue, color.Blue / (double) ushort.MaxValue);
+		}
 	}
 	
 	

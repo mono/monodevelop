@@ -236,14 +236,32 @@ namespace MonoDevelop.Components.Docking
 				st = StateType.Active;
 
 			if (DockFrame.IsWindows) {
-				Gdk.GC gc = tab.Active
-					? Style.LightGC (Gtk.StateType.Normal)
-					: Style.BackgroundGC (Gtk.StateType.Normal);
-
 				GdkWindow.DrawRectangle (Style.DarkGC (Gtk.StateType.Normal), false, rect);
 				rect.X++;
 				rect.Width--;
-				GdkWindow.DrawRectangle (gc, true, rect);
+				if (tab.Active) {
+					GdkWindow.DrawRectangle (Style.LightGC (Gtk.StateType.Normal), true, rect);
+				}
+				else {
+					using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+						cr.NewPath ();
+						cr.MoveTo (rect.X, rect.Y);
+						cr.RelLineTo (rect.Width, 0);
+						cr.RelLineTo (0, rect.Height);
+						cr.RelLineTo (-rect.Width, 0);
+						cr.RelLineTo (0, -rect.Height);
+						cr.ClosePath ();
+						Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + rect.Height);
+						Cairo.Color color1 = DockFrame.ToCairoColor (Style.Mid (Gtk.StateType.Normal));
+						pat.AddColorStop (0, color1);
+						color1.R *= 1.2;
+						color1.G *= 1.2;
+						color1.B *= 1.2;
+						pat.AddColorStop (1, color1);
+						cr.Pattern = pat;
+						cr.FillPreserve ();
+					}
+				}
 			}
 			else
 				Gtk.Style.PaintExtension (Style, GdkWindow, st, ShadowType.Out, evnt.Area, this, "tab", rect.X, rect.Y, rect.Width, rect.Height, Gtk.PositionType.Top); 
