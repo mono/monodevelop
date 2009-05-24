@@ -536,8 +536,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			string headerComment;
 			string version = GetSlnFileVersion (fileName, out headerComment);
-			if (version != "9.00" && version != "10.00")
-				throw new UnknownProjectVersionException (fileName, version);
 
 			ListDictionary globals = null;
 			SolutionFolder folder = null;
