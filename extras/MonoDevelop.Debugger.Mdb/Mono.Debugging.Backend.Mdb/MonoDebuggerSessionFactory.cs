@@ -111,7 +111,7 @@ namespace MonoDevelop.Debugger.Mdb
 			if (tr == null) tr = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
 			MonoDebuggerStartInfo startInfo = new MonoDebuggerStartInfo ();
 			MonoTargetRuntime mtr = (MonoTargetRuntime) tr;
-			startInfo.ServerEnvironment = mtr.GetToolsEnvironmentVariables ();
+			startInfo.ServerEnvironment = mtr.GetToolsEnvironmentVariables (null);
 			startInfo.MonoPrefix = mtr.Prefix;
 			return startInfo;
 		}

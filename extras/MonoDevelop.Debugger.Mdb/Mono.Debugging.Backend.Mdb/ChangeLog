@@ -1,3 +1,7 @@
+2009-05-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDebuggerSessionFactory.cs: Track api change.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Backend.Mdb.csproj: Flush.
