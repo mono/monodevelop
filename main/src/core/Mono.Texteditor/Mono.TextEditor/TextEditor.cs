@@ -529,7 +529,6 @@ namespace Mono.TextEditor
 					return;
 				this.isDisposed = true;
 				RemoveScrollWindowTimer ();
-				DisposeBgBuffer ();
 /*				if (snooperID > 0) {
 					Gtk.Key.SnooperRemove (snooperID);
 					snooperID = 0;
@@ -562,6 +561,10 @@ namespace Mono.TextEditor
 					}
 					this.margins = null;
 				}
+
+				// Dispose the buffer after disposing the margins. Gdk will crash when trying to dispose
+				// a drawable if a Win32 hdc is bound to it.
+				DisposeBgBuffer ();
 				
 				iconMargin = null; 
 				gutterMargin = null;
@@ -1170,28 +1173,38 @@ namespace Mono.TextEditor
 			} else {
 				endLine++;
 			}
-			
+
+			// Initialize the rendering of the margins. Determine wether each margin has to be
+			// rendered or not and calculate the X offset.
+			List<Margin> marginsToRender = new List<Margin> (this.margins.Count);
+			int curX = 0;
+			foreach (Margin margin in this.margins) {
+				if (margin.IsVisible) {
+					margin.XOffset = curX;
+					if (curX >= area.X || margin.Width < 0) {
+						margin.BeginRender (win, area, margin.XOffset);
+						marginsToRender.Add (margin);
+					}
+					curX += margin.Width;
+				}
+			}
+
+			int longestLineWidth = this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine));
 			int startY = startLine * this.LineHeight - reminder;
 			int curY = startY;
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
-				int curX = 0;
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				LineSegment line = Document.GetLine (logicalLineNumber);
-				if (line != null && (longestLine == null || longestLine.EndOffset >= this.Document.Length || line != longestLine && this.TextViewMargin.GetWidth (this.Document.GetTextAt (line)) > this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine)))) {
+				if (line != null && (longestLine == null || longestLine.EndOffset >= this.Document.Length || line != longestLine && this.TextViewMargin.GetWidth (this.Document.GetTextAt (line)) > longestLineWidth)) {
 					longestLine = line;
+					longestLineWidth = this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine));
 					oldLongestLineLength = -1;
 				}
-				foreach (Margin margin in this.margins) {
-					if (margin.IsVisible) {
-						margin.XOffset = curX;
-						curX += margin.Width;
-						if (curX >= area.X || margin.Width < 0) {
-							try {
-								margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
-							} catch (Exception e) {
-								System.Console.WriteLine (e);
-							}
-						}
+				foreach (Margin margin in marginsToRender) {
+					try {
+						margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
+					} catch (Exception e) {
+						System.Console.WriteLine (e);
 					}
 				}
 				curY += LineHeight;
@@ -1204,6 +1217,9 @@ namespace Mono.TextEditor
 				if (longestLine != null)
 					oldLongestLineLength = longestLine.Length;
 			}
+
+			foreach (Margin margin in marginsToRender)
+				margin.EndRender (win, area, margin.XOffset);
 		}
 		/*
 		protected override bool OnWidgetEvent (Event evnt)

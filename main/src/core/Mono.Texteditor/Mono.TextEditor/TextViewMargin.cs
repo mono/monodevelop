@@ -280,7 +280,7 @@ namespace Mono.TextEditor
 			// color.Pixel doesn't work
 			ulong colorId = (ulong)color.Red * (1 << 32) + (ulong)color.Blue * (1 << 16) + (ulong)color.Green;
 			if (gcDictionary.TryGetValue (colorId, out result)) {
-				result.ClipRectangle = clipRectangle;
+				// GCs are clipped when starting to draw the line
 				return result;
 			}
 			result = new Gdk.GC (textEditor.GdkWindow);
@@ -375,12 +375,12 @@ namespace Mono.TextEditor
 			if (Caret.IsInInsertMode) {
 				if (caretX < this.XOffset)
 					return;
-				clipRectangle = new Gdk.Rectangle (caretX, caretY, 1, LineHeight);
+				SetClip (new Gdk.Rectangle (caretX, caretY, 1, LineHeight));
 				win.DrawLine (GetGC (ColorStyle.Caret.Color), caretX, caretY, caretX, caretY + LineHeight);
 			} else {
 				if (caretX + this.charWidth < this.XOffset)
 					return;
-				clipRectangle = new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight);
+				SetClip (new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
 				win.DrawRectangle (GetGC (ColorStyle.Caret.Color), true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
 				textRenderer.SetClip (clipRectangle);
 				textRenderer.Color = ColorStyle.Caret.BackgroundColor;
@@ -416,7 +416,7 @@ namespace Mono.TextEditor
 			ChunkStyle chunkStyle = ColorStyle.GetChunkStyle (style);
 			int cWidth, cHeight;
 			preEditLayout.GetPixelSize (out cWidth, out cHeight);
-			DrawRectangleWithRuler (win, xPos, new Gdk.Rectangle (xPos, y, cWidth, cHeight), GetBackgroundColor (textEditor.preeditOffset, false, chunkStyle));
+			DrawRectangleWithRuler (win, xPos, new Gdk.Rectangle (xPos, y, cWidth, cHeight), GetBackgroundColor (textEditor.preeditOffset, false, chunkStyle), false);
 			win.DrawLayout (GetGC (chunkStyle.Color), xPos, y, preEditLayout);
 			
 			xPos += cWidth;
@@ -618,7 +618,7 @@ namespace Mono.TextEditor
 					}
 					xPos += width;
 					visibleColumn++;
-				} else if (ch == ' ') {
+				} else if (ch == ' ' && textEditor.Options.ShowSpaces) {
 					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
 					bool drawText = true;
 					bool drawBg   = true;
@@ -631,7 +631,7 @@ namespace Mono.TextEditor
 					if (drawText) {
 						if (drawBg) {
 							Gdk.Color bgc = GetBackgroundColor (offset, selected, style);
-							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), bgc);
+							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), bgc, false);
 						}
 						
 						if (textEditor.Options.ShowSpaces) 
@@ -659,7 +659,7 @@ namespace Mono.TextEditor
 					}
 					if (drawText) {
 						if (drawBg)
-							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), GetBackgroundColor (offset, selected, style));
+							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), GetBackgroundColor (offset, selected, style), false);
 						if (textEditor.Options.ShowTabs) 
 							DrawTabMarker (win, selected, xPos, y);
 						if (offset == caretOffset) 
@@ -700,7 +700,7 @@ namespace Mono.TextEditor
 			int width, height, xadv;
 			textRenderer.GetPixelSize (out width, out height, out xadv);
 			if (drawBg) 
-				DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, width, height), backgroundColor);
+				DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, width, height), backgroundColor, false);
 			
 			textRenderer.Color = foreColor;
 			textRenderer.DrawText (win, xPos, y);
@@ -1107,8 +1107,11 @@ namespace Mono.TextEditor
 			                  (byte)(((byte)color.Blue * 19) / 20));
 		}
 		
-		void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color)
+		void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color, bool drawDefaultBackground)
 		{
+			bool isDefaultColor = (color.Red == defaultBgColor.Red && color.Green == defaultBgColor.Green && color.Blue == defaultBgColor.Blue);
+			if (isDefaultColor && !drawDefaultBackground)
+				return;
 			Gdk.GC gc = GetGC (color);
 			if (textEditor.Options.ShowRuler) {
 				int divider = System.Math.Max (area.Left, System.Math.Min (x + rulerX, area.Right));
@@ -1169,9 +1172,21 @@ namespace Mono.TextEditor
 			return result;
 		}
 
+		protected internal override void BeginRender (Drawable drawable, Rectangle area, int x)
+		{
+			InitializeTextRenderers (drawable);
+		}
+
+		protected internal override void EndRender (Drawable drawable, Rectangle area, int x)
+		{
+			FinalizeTextRenderers ();
+		}
+
 		List<ISegment> selectedRegions = new List<ISegment> ();
 		Gdk.Color defaultBgColor;
 		Gdk.Rectangle clipRectangle;
+		int clipStamp = 0;
+
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
 //			int visibleLine = y / this.LineHeight;
@@ -1179,29 +1194,33 @@ namespace Mono.TextEditor
 
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
-			clipRectangle = new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight);
-			
-			InitializeTextRenderers (win);
-				
-			if (textEditor.Options.HighlightCaretLine && Caret.Line == lineNr) {
-				defaultBgColor = ColorStyle.LineMarker;
-			} else {
-				defaultBgColor = ColorStyle.Default.BackgroundColor;
-			}
+
+			SetClip (new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight));
+			ClipRenderers ();
+
 				
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
 			int width, height, xadv;
 			int xPos = (int)(x - textEditor.HAdjustment.Value);
-			
+
+			// Draw the default back color for the whole line. Colors other than the default
+			// background will be drawn when rendering the text chunks.
+
+			if (textEditor.Options.HighlightCaretLine && Caret.Line == lineNr)
+				defaultBgColor = ColorStyle.LineMarker;
+			else
+				defaultBgColor = ColorStyle.Default.BackgroundColor;
+			DrawRectangleWithRuler (win, x, lineArea, defaultBgColor, true);
+
+			// Check if line is beyond the document length
+
 			if (line == null) {
-				DrawRectangleWithRuler (win, x, lineArea, defaultBgColor);
 				if (textEditor.Options.ShowInvalidLines) {
 					DrawInvalidLineMarker (win, xPos, y);
 				}
 				if (textEditor.Options.ShowRuler) { // warning: code duplication, look at the method end.
 					win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + LineHeight); 
 				}
-				FinalizeTextRenderers ();
 				return;
 			}
 			//selectedRegions.Clear ();
@@ -1279,18 +1298,18 @@ namespace Mono.TextEditor
 				
 				if (x2 > lineArea.X) {
 					if (x1 - lineArea.X > 0) {
-						DrawRectangleWithRuler (win, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor);
+						DrawRectangleWithRuler (win, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor, false);
 						lineArea.X = x1;
 					}
 					
-					DrawRectangleWithRuler (win, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x2 - lineArea.X, lineArea.Height), this.ColorStyle.Selection.BackgroundColor);
+					DrawRectangleWithRuler (win, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x2 - lineArea.X, lineArea.Height), this.ColorStyle.Selection.BackgroundColor, false);
 					
 					lineArea.X = x2;
 					lineArea.Width = textEditor.Allocation.Width - lineArea.X;
 					
 				}
 			}
-			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.Selection.BackgroundColor : defaultBgColor);
+			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.Selection.BackgroundColor : defaultBgColor, false);
 			
 			
 			
@@ -1326,14 +1345,12 @@ namespace Mono.TextEditor
 				if (caretOffset == line.Offset + line.EditableLength)
 					SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
 			}
-			FinalizeTextRenderers ();
 		}
 		
 		void InitializeTextRenderers (Gdk.Drawable win)
 		{
 			foreach (TextRenderer tr in allTextRenderers) {
 				tr.BeginDraw (win);
-				tr.SetClip (clipRectangle);
 				tr.Size = textEditor.Options.Font.Size;
 			}
 		}
@@ -1342,6 +1359,19 @@ namespace Mono.TextEditor
 		{
 			foreach (TextRenderer tr in allTextRenderers)
 				tr.EndDraw ();
+		}
+
+		void ClipRenderers ( )
+		{
+			foreach (TextRenderer tr in allTextRenderers)
+				tr.SetClip (clipRectangle);
+		}
+
+		void SetClip (Gdk.Rectangle rect)
+		{
+			clipRectangle = rect;
+			foreach (Gdk.GC gc in gcDictionary.Values)
+				gc.ClipRectangle = rect;
 		}
 		
 		internal protected override void MouseLeft ()

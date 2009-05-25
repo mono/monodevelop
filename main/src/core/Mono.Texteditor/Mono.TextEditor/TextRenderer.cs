@@ -55,7 +55,8 @@ namespace Mono.TextEditor
 		public static TextRenderer Create (TextViewMargin textView, TextEditor editor)
 		{
 			if (Platform.IsWindows)
-				return new GdiPlusTextRenderer ();
+				return new PangoTextRenderer (textView, editor);
+//				return new GdiPlusTextRenderer ();
 			else
 				return new CairoTextRenderer ();
 //			return new PangoTextRenderer (this, textEditor);

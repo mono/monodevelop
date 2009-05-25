@@ -42,7 +42,7 @@ namespace Mono.TextEditor
 		{
 			IsMac = IsRunningOnMac ();
 			IsX11 = !IsMac && System.Environment.OSVersion.Platform == PlatformID.Unix;
-			IsWindows = System.IO.Path.PathSeparator == '\\';
+			IsWindows = System.IO.Path.DirectorySeparatorChar == '\\';
 		}
 		
 		public static bool IsMac { get; private set; }

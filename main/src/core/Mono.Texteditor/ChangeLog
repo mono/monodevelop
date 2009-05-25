@@ -1,5 +1,32 @@
 2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.TextEditor\TextRenderer.cs: Use the pango renderer on
+	  windows, the gdi renderer still has some issues.
+
+	* Mono.TextEditor\Margin.cs: Added BeginRender/EndRender,
+	  which are called just before and after renering the lines of
+	  text. It can be used to initialize/finalize drawing
+	  resources.
+
+	* Mono.TextEditor\FoldMarkerMargin.cs: Use DrawLine instead of
+	  DrawPoint to draw the separator line.
+
+	* Mono.TextEditor\TextEditor.cs: Call the new
+	  Margin.BeginRender/EndRender methods. Optimized rendering a
+	  bit.
+
+	* Mono.TextEditor\TextViewMargin.cs: Some optimizations. Avoid
+	  setting the clip area to gcs if it already was set. Don't
+	  special case rendering of whitespace if the 'draw space
+	  marker' option is not set. Don't draw the background for
+	  each text chunk. Instead, draw the default background for
+	  the whole line at the beginig, and then only draw the
+	  background if it is different from the default.
+
+	* Mono.TextEditor\Platform.cs: Fix windows check.
+
+2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Merge consecutive chunks
 	  that have the the same style, so the text for all those
 	  chunks can be measured and rendered together.
