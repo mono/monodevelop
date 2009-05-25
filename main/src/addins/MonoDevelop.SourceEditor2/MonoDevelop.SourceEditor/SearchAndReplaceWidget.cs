@@ -86,7 +86,7 @@ namespace MonoDevelop.SourceEditor
 				return entrySearch.Entry.HasFocus;
 			}
 		}
-
+		
 		public SearchAndReplaceWidget (SourceEditorWidget widget)
 		{
 			Build();
@@ -106,8 +106,8 @@ namespace MonoDevelop.SourceEditor
 				searchPattern = widget.TextEditor.SearchPattern;
 				//FireSearchPatternChanged ();
 			}
+			UpdateSearchPattern ();
 			
-			entrySearch.Entry.Text = widget.TextEditor.SearchPattern;
 			entrySearch.Model = searchHistory;
 			
 			RestoreSearchHistory ();
@@ -244,6 +244,11 @@ namespace MonoDevelop.SourceEditor
 			entrySearch.KeyPressEvent += OnNavigateKeyPressEvent;
 			entryReplace.KeyPressEvent += OnNavigateKeyPressEvent;
 			buttonReplace.KeyPressEvent += OnNavigateKeyPressEvent;
+		}
+		
+		public void UpdateSearchPattern ()
+		{
+			entrySearch.Entry.Text = widget.TextEditor.SearchPattern;
 		}
 		
 		private void OnNavigateKeyPressEvent (object o, KeyPressEventArgs args)

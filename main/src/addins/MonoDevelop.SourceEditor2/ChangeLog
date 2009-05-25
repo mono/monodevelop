@@ -1,3 +1,10 @@
+2009-05-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: fixed
+	  'Bug 506246 - Search command doesn't copy the selected
+	  string if find widget is visible'.
+
 2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor\SourceEditorView.cs: Use FilePath

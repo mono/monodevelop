@@ -937,10 +937,11 @@ namespace MonoDevelop.SourceEditor
 		
 		private void ShowSearchReplaceWidget (bool replace)
 		{
+			if (TextEditor.IsSomethingSelected)
+				TextEditor.SearchPattern = TextEditor.SelectedText;
+			
 			if (searchAndReplaceWidget == null) {
 				KillWidgets ();
-				if (TextEditor.IsSomethingSelected)
-					TextEditor.SearchPattern = TextEditor.SelectedText;
 				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
 				this.PackEnd (searchAndReplaceWidget);
 				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
@@ -951,6 +952,7 @@ namespace MonoDevelop.SourceEditor
 				
 				ResetFocusChain ();
 			}
+			searchAndReplaceWidget.UpdateSearchPattern ();
 			searchAndReplaceWidget.IsReplaceMode = replace;
 			if (searchAndReplaceWidget.SearchFocused) {
 				if (replace) {
@@ -1057,10 +1059,20 @@ namespace MonoDevelop.SourceEditor
 			}
 			return result;
 		}
-	
+		
+		void SetSearchPatternToSelection ()
+		{
+			if (TextEditor.IsSomethingSelected)
+				TextEditor.SearchPattern = TextEditor.SelectedText;
+			if (searchAndReplaceWidget != null)
+				searchAndReplaceWidget.UpdateSearchPattern ();
+		}
+		
 		[CommandHandler (SearchCommands.FindNextSelection)]
 		public SearchResult FindNextSelection ()
 		{
+			SetSearchPatternToSelection ();
+			
 			SetSearchOptions ();
 			SetSearchPattern();
 			TextEditor.GrabFocus ();
@@ -1070,6 +1082,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (SearchCommands.FindPreviousSelection)]
 		public SearchResult FindPreviousSelection ()
 		{
+			SetSearchPatternToSelection ();
 			SetSearchOptions ();
 			SetSearchPattern();
 			TextEditor.GrabFocus ();
