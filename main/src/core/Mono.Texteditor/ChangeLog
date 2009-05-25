@@ -1,5 +1,11 @@
 2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Merge consecutive chunks
+	  that have the the same style, so the text for all those
+	  chunks can be measured and rendered together.
+
+2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Mono.TextEditor/TextRenderer.cs:

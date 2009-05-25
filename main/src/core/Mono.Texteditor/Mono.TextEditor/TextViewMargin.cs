@@ -449,21 +449,33 @@ namespace Mono.TextEditor
 				} 
 			}
 			int visibleColumn = 0;
-			string curStyle = "text";
-			for (Chunk chunk = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length); chunk != null; chunk = chunk.Next) {
+			Chunk lastChunk = null;
+			for (Chunk chunk = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length); (lastChunk != null || chunk != null); chunk = chunk != null ? chunk.Next : null) {
 				if (xPos >= maxX)
 					break;
-				curStyle = chunk.Style;
-				if (chunk.Contains (textEditor.preeditOffset)) {
-					DrawChunkPart (win, line, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, textEditor.preeditOffset, selectionStart, selectionEnd);
-					DrawPreeditString (win, curStyle, ref xPos, y);
-					DrawChunkPart (win, line, chunk, ref visibleColumn, ref xPos, y, textEditor.preeditOffset, chunk.EndOffset, selectionStart, selectionEnd);
-				} else {
-					DrawChunkPart (win, line, chunk, ref visibleColumn, ref xPos, y, chunk.Offset, chunk.EndOffset, selectionStart, selectionEnd);
+				if (lastChunk == null) {
+					lastChunk = chunk;
+					continue;
 				}
+				if (chunk != null && lastChunk.Style == chunk.Style) {
+					// Merge together chunks with the same style
+					lastChunk.Length += chunk.Length;
+					continue;
+				}
+				
+				if (lastChunk.Contains (textEditor.preeditOffset)) {
+					DrawChunkPart (win, line, lastChunk, ref visibleColumn, ref xPos, y, lastChunk.Offset, textEditor.preeditOffset, selectionStart, selectionEnd);
+					DrawPreeditString (win, lastChunk.Style, ref xPos, y);
+					DrawChunkPart (win, line, lastChunk, ref visibleColumn, ref xPos, y, textEditor.preeditOffset, lastChunk.EndOffset, selectionStart, selectionEnd);
+				} else {
+					DrawChunkPart (win, line, lastChunk, ref visibleColumn, ref xPos, y, lastChunk.Offset, lastChunk.EndOffset, selectionStart, selectionEnd);
+				}
+				lastChunk = chunk;
 			}
+			
 			if (textEditor.preeditOffset == offset + length) 
-				DrawPreeditString (win, curStyle, ref xPos, y);
+				DrawPreeditString (win, lastChunk.Style, ref xPos, y);
+			
 		//	if (Caret.Offset == offset + length) 
 		//		SetVisibleCaretPosition (win, ' ', xPos, y);
 		}
