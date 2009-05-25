@@ -67,7 +67,7 @@ namespace MonoDevelop.Debugger
 		
 		public ThreadsPad()
 		{
-			this.ShadowType = ShadowType.In;
+			this.ShadowType = ShadowType.None;
 
 			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(object), typeof(int), typeof(string));
 

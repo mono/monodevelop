@@ -1,3 +1,9 @@
+2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger\ThreadsPad.cs:
+	* MonoDevelop.Debugger\StackTracePad.cs: Don't render a
+	  border. The dock item already provides one.
+
 2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger\Initializer.cs:

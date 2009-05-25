@@ -28,7 +28,7 @@ namespace MonoDevelop.Debugger
 
 		public StackTracePad ()
 		{
-			this.ShadowType = ShadowType.In;
+			this.ShadowType = ShadowType.None;
 
 			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(string), typeof(string));
 
