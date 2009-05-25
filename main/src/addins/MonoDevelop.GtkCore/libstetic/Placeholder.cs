@@ -13,6 +13,7 @@ namespace Stetic {
 			undoId = WidgetUtils.GetUndoId ();
 			DND.DestSet (this, true);
 			Events |= Gdk.EventMask.ButtonPressMask;
+			WidgetFlags |= WidgetFlags.AppPaintable;
 		}
 		
 		internal string UndoId {
@@ -31,28 +32,9 @@ namespace Stetic {
 				req.Height = minSize;
 		}
 
-		static private string[] placeholder_xpm = {
-			"8 8 2 1",
-			"  c #bbbbbb",
-			". c #d6d6d6",
-			"   ..   ",
-			"  .  .  ",
-			" .    . ",
-			".      .",
-			".      .",
-			" .    . ",
-			"  .  .  ",
-			"   ..   "
-		};
-
-		Gdk.Pixmap pixmap;
-		
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-
-			Gdk.Pixmap mask;
-			pixmap = Gdk.Pixmap.CreateFromXpmD (GdkWindow, out mask, new Gdk.Color (99, 99, 99), placeholder_xpm);
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evt)
@@ -62,24 +44,71 @@ namespace Stetic {
 
 			int width, height;
 			GdkWindow.GetSize (out width, out height);
+			
+			Gdk.Rectangle a = new Gdk.Rectangle (0,0,width,height);
+			
+			byte b1 = 210;
+			byte b2 = 210;
+			
+			int ssLT = 12;
+			int ssRB = 7;
+			double grey = 0.6;
+			double greyb1 = 0.9;
+			double greyb2 = 0.6;
+			
+			Gdk.Rectangle rect = a;
+			Cairo.Color back1 = new Cairo.Color (greyb1, greyb1, greyb1);
+			Cairo.Color back2 = new Cairo.Color (greyb2, greyb2, greyb2);
+			Cairo.Color cdark = new Cairo.Color (grey, grey, grey, 1);
+			Cairo.Color clight = new Cairo.Color (grey, grey, grey, 0);
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (evt.Window)) {
+			
+				DrawGradient (cr, rect, 0, 0, 1, 1, back1, back2);
+				
+				rect.X = a.X;
+				rect.Y = a.Y;
+				rect.Height = ssLT;
+				rect.Width = a.Width;
+				DrawGradient (cr, rect, 0, 0, 0, 1, cdark, clight);
 
-			Gdk.GC light, dark;
-			light = Style.LightGC (StateType.Normal);
-			dark = Style.DarkGC (StateType.Normal);
+				rect.Y = a.Bottom - ssRB;
+				rect.Height = ssRB;
+				DrawGradient (cr, rect, 0, 0, 0, 1, clight, cdark);
 
-			// Looks like GdkWindow.SetBackPixmap doesn't work very well,
-			// so draw the pixmap manually.
-			light.Fill = Gdk.Fill.Tiled;
-			light.Tile = pixmap;
-			GdkWindow.DrawRectangle (light, true, 0, 0, width, height);
-			light.Fill = Gdk.Fill.Solid;
+				rect.X = a.X;
+				rect.Y = a.Y;
+				rect.Width = ssLT;
+				rect.Height = a.Height;
+				DrawGradient (cr, rect, 0, 0, 1, 0, cdark, clight);
 
-			GdkWindow.DrawLine (light, 0, 0, width - 1, 0);
-			GdkWindow.DrawLine (light, 0, 0, 0, height - 1);
-			GdkWindow.DrawLine (dark, 0, height - 1, width - 1, height - 1);
-			GdkWindow.DrawLine (dark, width - 1, 0, width - 1, height - 1);
+				rect.X = a.Right - ssRB;
+				rect.Width = ssRB;
+				DrawGradient (cr, rect, 0, 0, 1, 0, clight, cdark);
+				
+				Gdk.GC gc = new Gdk.GC (GdkWindow);
+				gc.RgbBgColor = new Gdk.Color (b2,b2,b2);
+				gc.RgbFgColor = new Gdk.Color (b2,b2,b2);
+				GdkWindow.DrawRectangle (gc, false, a.X, a.Y, a.Width, a.Height);
+				gc.Dispose ();
+			}
 
 			return base.OnExposeEvent (evt);
+		}
+		
+		void DrawGradient (Cairo.Context cr, Gdk.Rectangle rect, int fx, int fy, int fw, int fh, Cairo.Color c1, Cairo.Color c2)
+		{
+			cr.NewPath ();
+			cr.MoveTo (rect.X, rect.Y);
+			cr.RelLineTo (rect.Width, 0);
+			cr.RelLineTo (0, rect.Height);
+			cr.RelLineTo (-rect.Width, 0);
+			cr.RelLineTo (0, -rect.Height);
+			cr.ClosePath ();
+			Cairo.LinearGradient pat = new Cairo.LinearGradient (rect.X + rect.Width*fx, rect.Y + rect.Height*fy, rect.X + rect.Width*fw, rect.Y + rect.Height*fh);
+			pat.AddColorStop (0, c1);
+			pat.AddColorStop (1, c2);
+			cr.Pattern = pat;
+			cr.FillPreserve ();
 		}
 
 		bool IEditableObject.CanDelete {
