@@ -1,3 +1,8 @@
+2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components\TabLabel.cs: Use less spacing on the
+	  tab label.
+
 2009-05-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Commands\KeyBindingSet.cs: Use new

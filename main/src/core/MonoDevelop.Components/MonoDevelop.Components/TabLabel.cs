@@ -28,7 +28,7 @@ namespace MonoDevelop.Components
 		{
 		}
 
-		public TabLabel (Label label, Gtk.Image icon) : base (false, 2)
+		public TabLabel (Label label, Gtk.Image icon) : base (false, 0)
 		{	
 			this.title = label;
 			this.icon = icon;

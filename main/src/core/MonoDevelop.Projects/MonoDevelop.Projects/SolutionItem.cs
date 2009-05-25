@@ -34,6 +34,7 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Projects
 {
@@ -233,7 +234,8 @@ namespace MonoDevelop.Projects
 			// and build them in the correct order
 			
 			List<SolutionItem> referenced = new List<SolutionItem> ();
-			GetBuildableReferencedItems (referenced, this, solutionConfiguration);
+			Set<SolutionItem> visited = new Set<SolutionItem> ();
+			GetBuildableReferencedItems (visited, referenced, this, solutionConfiguration);
 			
 			ReadOnlyCollection<SolutionItem> sortedReferenced = SolutionFolder.TopologicalSort (referenced, solutionConfiguration);
 			
@@ -271,15 +273,16 @@ namespace MonoDevelop.Projects
 			return OnGetLastBuildTime (itemConfiguration);
 		}
 		
-		void GetBuildableReferencedItems (List<SolutionItem> referenced, SolutionItem item, string solutionConfiguration)
+		void GetBuildableReferencedItems (Set<SolutionItem> visited, List<SolutionItem> referenced, SolutionItem item, string solutionConfiguration)
 		{
-			if (referenced.Contains (item)) return;
+			if (!visited.Add(item))
+				return;
 			
 			if (item.NeedsBuilding (solutionConfiguration))
 				referenced.Add (item);
 
 			foreach (SolutionItem ritem in item.GetReferencedItems (solutionConfiguration))
-				GetBuildableReferencedItems (referenced, ritem, solutionConfiguration);
+				GetBuildableReferencedItems (visited, referenced, ritem, solutionConfiguration);
 		}
 		
 		public void Execute (IProgressMonitor monitor, ExecutionContext context, string solutionConfiguration)
