@@ -318,9 +318,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public TemplateResult InsertTemplate (MonoDevelop.Ide.Gui.Document document)
 		{
 			ProjectDom dom = ProjectDomService.GetProjectDom (document.Project) ?? ProjectDomService.GetFileDom (document.FileName);
-			ParsedDocument doc = document.ParsedDocument;
+			ParsedDocument doc = document.ParsedDocument ?? MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (dom, document.FileName);
 			MonoDevelop.Ide.Gui.TextEditor editor = document.TextEditor;
-				
+			
 			int offset = editor.CursorPosition;
 			int line, col;
 			editor.GetLineColumnFromPosition (offset, out line, out col);

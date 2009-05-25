@@ -83,6 +83,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetCurrentClassName ()
 		{
+			if (CurrentContext.ParsedDocument == null)
+				return null;
 			IType type = CurrentContext.ParsedDocument.CompilationUnit.GetTypeAt (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			if (type == null)
 				return null;
@@ -186,11 +188,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			if (foundType == null) 
 				foundType = new DomType (fullTypeName);
-			
-			foreach (IUsing u in CurrentContext.ParsedDocument.CompilationUnit.Usings) {
-				foreach (string includedNamespace in u.Namespaces) {
-					if (includedNamespace == foundType.Namespace)
-						return fullTypeName.Substring (includedNamespace.Length + 1);
+			if (CurrentContext.ParsedDocument != null) {
+				foreach (IUsing u in CurrentContext.ParsedDocument.CompilationUnit.Usings) {
+					foreach (string includedNamespace in u.Namespaces) {
+						if (includedNamespace == foundType.Namespace)
+							return fullTypeName.Substring (includedNamespace.Length + 1);
+					}
 				}
 			}
 			return fullTypeName;

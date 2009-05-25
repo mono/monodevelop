@@ -1,5 +1,12 @@
 2009-05-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs: Fixed "Bug
+	  504553 - Tyring to insert CW text snippet via double click
+	  causes an unhandled exception.".
+
+2009-05-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:
 	  Fixed 'Bug 501345 - Editing code format profile results in
 	  uncaught exception'.
