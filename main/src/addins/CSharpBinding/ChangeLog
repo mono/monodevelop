@@ -1,5 +1,9 @@
 2009-05-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am: Corrected makefile.
+
+2009-05-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* CSharpBinding.csproj:
 	* FormattingStrategy/CSharpFormattingPolicy.cs:

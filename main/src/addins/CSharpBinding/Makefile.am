@@ -65,7 +65,7 @@ FILES =  \
 
 RES =  \
 	CSharpBinding.addin.xml \
-	FormattingStrategy/CSharpFormattingPolicy.xml,FormattingStrategy.CSharpFormattingPolicy.xml \
+	FormattingStrategy/CSharpFormattingPolicy.xml \
 	FormattingStrategy/CSharpFormattingStyleDefinition.xml \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
