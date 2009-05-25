@@ -53,7 +53,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (MonoDevelop.Projects.Dom.IReturnType retType in dom.GetSubclasses (type)) {
 				System.Console.WriteLine(retType);
 			}*/
-			if (!editor.DoInsertTemplate () && !MonoDevelop.Ide.Gui.Content.TextEditorProperties.TabIsReindent)
+			if (!editor.DoInsertTemplate () && (!MonoDevelop.Ide.Gui.Content.TextEditorProperties.TabIsReindent || editor.IsSomethingSelected))
 				MiscActions.InsertTab (data);
 		}
 	}

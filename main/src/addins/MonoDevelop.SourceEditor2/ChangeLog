@@ -1,5 +1,10 @@
 2009-05-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/EditActions.cs: Fixed Bug 506245 -
+	  Block indent doesn't work.
+
+2009-05-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: fixed
 	  'Bug 506246 - Search command doesn't copy the selected
