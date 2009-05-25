@@ -1,3 +1,9 @@
+2009-05-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:
+	  Fixed 'Bug 501345 - Editing code format profile results in
+	  uncaught exception'.
+
 2009-05-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui\MonoDevelopStatusBar.cs: Removed the

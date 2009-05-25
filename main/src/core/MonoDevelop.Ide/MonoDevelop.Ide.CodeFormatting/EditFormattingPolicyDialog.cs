@@ -202,13 +202,13 @@ namespace MonoDevelop.Ide.CodeFormatting
 			sw.Child = tree;
 			notebookCategories.AppendPage (sw, label);
 		}
-
+		
 		void TreeSelectionChanged (object sender, EventArgs e)
 		{
-			Gtk.TreeView tree = (Gtk.TreeView)sender;
-			if (tree.Selection.GetSelected (out model, out iter)) {
+			Gtk.TreeSelection treeSelection = (Gtk.TreeSelection)sender;
+			if (treeSelection.GetSelected (out model, out iter)) {
 				option =  model.GetValue (iter, objectColumn) as CodeFormatOption;
-				this.store = store;
+				this.store = model as TreeStore;
 				if (option == null) {
 					texteditor1.Document.Text = "";
 //					comboboxentryValue.Sensitive = false;
