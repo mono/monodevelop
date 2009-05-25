@@ -1,3 +1,9 @@
+2009-05-25  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 506707 - Code
+	  completion shows fully qualified class names when using
+	  alias directive is used."
+
 2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpLanguageBinding.cs: Add support for .net 4.0.

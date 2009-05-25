@@ -948,6 +948,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 				}
 			}
+			
 			public bool FullyQualify { get; set; }
 			
 			bool hideExtensionParameter = true;
@@ -998,23 +999,26 @@ namespace MonoDevelop.CSharpBinding.Gui
 						return null;
 					return completionList.Add (ns.Name, ns.StockIcon, ns.Documentation);
 				}
+				
 				IReturnType rt = obj as IReturnType;
 				if (rt != null) {
 					OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.HideArrayBrackets;
 					bool foundNamespace = IsNamespaceInScope (rt.Namespace);
 					if (FullyQualify || !foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
 						flags |= OutputFlags.UseFullName;
-					
 					return completionList.Add (ambience.GetString (rt, flags), "md-class");
 				}
+				
 				IMember member = obj as IMember;
 				if (member != null && !String.IsNullOrEmpty (member.Name)) {
 					OutputFlags flags = OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets;
 					if (member is IType) {
 						IType type = member as IType;
 						bool foundType = IsNamespaceInScope (type.Namespace);
-						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null)
+						
+						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null && NamePrefix != null  && !NamePrefix.Contains ("::"))
 							flags |= OutputFlags.UseFullName;
+						Console.WriteLine (" flags:" + flags);
 					}
 					return AddMemberCompletionData (completionList, member, flags);
 				}
@@ -1204,10 +1208,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 			
 			// add aliases
-			foreach (IUsing u in Document.CompilationUnit.Usings) {
-				foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
-					if (alias.Value.ToInvariantString () == returnType.ToInvariantString ())
-						result.Add (alias.Key, "md-class");
+			if (returnType != null) {
+				foreach (IUsing u in Document.CompilationUnit.Usings) {
+					foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+						if (alias.Value.ToInvariantString () == returnType.ToInvariantString ())
+							result.Add (alias.Key, "md-class");
+					}
 				}
 			}
 			return result;
