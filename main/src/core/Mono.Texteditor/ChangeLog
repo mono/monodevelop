@@ -1,3 +1,12 @@
+2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/TextRenderer.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Abstracted the code that
+	  renders text into a new TextRenderer class. Created
+	  subclasses for Pango, Cairo and Gdi+.
+
 2009-05-14  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor/TextEditorData.cs: Fix upward highlighting 
