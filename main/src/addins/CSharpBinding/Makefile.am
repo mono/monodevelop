@@ -30,6 +30,7 @@ FILES =  \
 	CSharpBindingCompilerManager.cs \
 	CSharpEnhancedCodeProvider.cs \
 	CSharpLanguageBinding.cs \
+	FormattingStrategy/CSharpFormattingPolicy.cs \
 	FormattingStrategy/CSharpFormattingProperties.cs \
 	FormattingStrategy/CSharpIndentEngine.cs \
 	FormattingStrategy/CSharpIndentEngineStack.cs \
@@ -64,6 +65,7 @@ FILES =  \
 
 RES =  \
 	CSharpBinding.addin.xml \
+	FormattingStrategy/CSharpFormattingPolicy.xml,FormattingStrategy.CSharpFormattingPolicy.xml \
 	FormattingStrategy/CSharpFormattingStyleDefinition.xml \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \

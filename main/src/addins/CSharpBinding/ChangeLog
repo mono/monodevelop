@@ -1,5 +1,13 @@
 2009-05-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* FormattingStrategy/CSharpFormattingPolicy.cs:
+	* FormattingStrategy/CSharpFormattingPolicy.xml: Worked on C#
+	  formatting policy.
+
+2009-05-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 506707 - Code
 	  completion shows fully qualified class names when using
 	  alias directive is used."

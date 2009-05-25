@@ -151,6 +151,7 @@
     <EmbeddedResource Include="icons\csharp-project-16.png">
       <LogicalName>csharp-project-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormattingStrategy\CSharpFormattingPolicy.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gui\FormattingPanel.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="FormattingStrategy\CSharpIndentEngine.cs" />
     <Compile Include="FormattingStrategy\CSharpIndentEngineStack.cs" />
     <Compile Include="FormattingStrategy\CSharpFormattingProperties.cs" />
+    <Compile Include="FormattingStrategy\CSharpFormattingPolicy.cs" />
     <Compile Include="gtk-gui\CSharpBinding.CodeGenerationPanelWidget.cs" />
     <Compile Include="gtk-gui\CSharpBinding.FormattingPanelWidget.cs" />
     <Compile Include="gtk-gui\CSharpBinding.CompilerOptionsPanelWidget.cs" />
