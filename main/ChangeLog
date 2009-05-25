@@ -1,3 +1,7 @@
+2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Add gtk-dotnet.
+
 2009-04-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* mdtool.in:
