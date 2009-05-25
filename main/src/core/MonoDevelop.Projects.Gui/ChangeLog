@@ -1,3 +1,9 @@
+2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Disable
+	  selection of most-recently-used match until #385043 is
+	  fixed.
+
 2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels\StartupOptionsPanel.cs:

@@ -308,6 +308,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			int max = (provider == null ? 0 : provider.ItemCount);
 			string sLower = s.ToLower ();
+			
+/* Disable for now. See bug #385043
 			string historyWord = null;
 			for (int i = wordHistory.Count - 1; i >= 0 ; i--) {
 				string word = wordHistory[i];
@@ -326,7 +328,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					}
 				}
 			}
-			
+			*/
 			int bestMatch = -1;
 			int bestMatchLength = 0;
 			for (int n=0; n<max; n++) 
