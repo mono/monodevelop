@@ -81,7 +81,7 @@ namespace Mono.Debugging.Client
 			
 			for (int n=0; n<breakpoints.Count; n++) {
 				Breakpoint bp = breakpoints [n] as Breakpoint;
-				if (bp != null && bp.FileName == filename && bp.Line == line) {
+				if (bp != null && FileNameEquals (bp.FileName, filename) && bp.Line == line) {
 					breakpoints.RemoveAt (n);
 					OnBreakEventRemoved (bp);
 					n--;
@@ -128,7 +128,7 @@ namespace Mono.Debugging.Client
 			List<Breakpoint> list = new List<Breakpoint> ();
 			foreach (BreakEvent be in breakpoints) {
 				Breakpoint bp = be as Breakpoint;
-				if (bp != null && bp.FileName == filename)
+				if (bp != null && FileNameEquals (bp.FileName, filename))
 					list.Add (bp);
 			}
 			return list.AsReadOnly ();
@@ -141,7 +141,7 @@ namespace Mono.Debugging.Client
 			List<Breakpoint> list = new List<Breakpoint> ();
 			foreach (BreakEvent be in breakpoints) {
 				Breakpoint bp = be as Breakpoint;
-				if (bp != null && bp.FileName == filename && bp.Line == line)
+				if (bp != null && FileNameEquals (bp.FileName, filename) && bp.Line == line)
 					list.Add (bp);
 			}
 			return list.AsReadOnly ();
@@ -218,6 +218,14 @@ namespace Mono.Debugging.Client
 				if (ev != null)
 					Add (ev);
 			}
+		}
+
+		public static bool FileNameEquals (string file1, string file2)
+		{
+			if (System.IO.Path.DirectorySeparatorChar == '\\')
+				return string.Compare (file1, file2, true) == 0;
+			else
+				return file1 == file2;
 		}
 		
 		internal void EnableBreakEvent (BreakEvent be, bool enabled)

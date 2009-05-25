@@ -1,3 +1,11 @@
+2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client\BreakpointStore.cs: Use case
+	  insensitive compare for files on windows.
+
+	* Mono.Debugging.Client\DebuggerSession.cs: Fix crash when
+	  updating breakpoints.
+
 2009-05-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client\DebuggerSession.cs: Protect access to

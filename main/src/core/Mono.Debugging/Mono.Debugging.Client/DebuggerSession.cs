@@ -577,7 +577,9 @@ namespace Mono.Debugging.Client
 		internal protected void NotifySourceFileLoaded (string fullFilePath)
 		{
 			lock (breakpoints) {
-				foreach (KeyValuePair<BreakEvent, object> bps in breakpoints) {
+				// Make a copy of the breakpoints table since it can be modified while iterating
+				Dictionary<BreakEvent, object> breakpointsCopy = new Dictionary<BreakEvent, object> (breakpoints);
+				foreach (KeyValuePair<BreakEvent, object> bps in breakpointsCopy) {
 					Breakpoint bp = bps.Key as Breakpoint;
 					if (bp != null && bps.Value == null) {
 						if (string.Compare (System.IO.Path.GetFullPath (bp.FileName), fullFilePath, System.IO.Path.DirectorySeparatorChar == '\\') == 0)
@@ -591,7 +593,9 @@ namespace Mono.Debugging.Client
 		{
 			List<BreakEvent> toUpdate = new List<BreakEvent> ();
 			lock (breakpoints) {
-				foreach (KeyValuePair<BreakEvent, object> bps in breakpoints) {
+				// Make a copy of the breakpoints table since it can be modified while iterating
+				Dictionary<BreakEvent, object> breakpointsCopy = new Dictionary<BreakEvent, object> (breakpoints);
+				foreach (KeyValuePair<BreakEvent, object> bps in breakpointsCopy) {
 					Breakpoint bp = bps.Key as Breakpoint;
 					if (bp != null && bps.Value != null) {
 						if (System.IO.Path.GetFullPath (bp.FileName) == fullFilePath)
