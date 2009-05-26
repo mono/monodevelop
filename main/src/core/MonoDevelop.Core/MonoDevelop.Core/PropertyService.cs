@@ -107,7 +107,7 @@ namespace MonoDevelop.Core
 				if (PropertyChanged != null)
 					PropertyChanged (sender, args);
 			};
-			IsMac = IsRunningOnMac ();
+			IsMac = !IsWindows && IsRunningOnMac();
 		}
 		
 		static bool LoadProperties (string fileName)

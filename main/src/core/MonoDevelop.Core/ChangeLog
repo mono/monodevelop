@@ -1,3 +1,10 @@
+2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core/PropertyService.cs:
+	* MonoDevelop.Core.Serialization/GenericCollectionHandler.cs:
+	  Avoid throwing some exceptions using preventive checks.
+	  Patch by Carlo Kok.
+
 2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution\ProcessHostController.cs: Someti

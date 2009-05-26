@@ -1,3 +1,8 @@
+2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicySet.cs: Avoid throwing
+	  some exceptions using preventive checks. Patch by Carlo Kok.
+
 2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects\SolutionItem.cs: Optimized

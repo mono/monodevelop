@@ -52,7 +52,8 @@ namespace MonoDevelop.Core.Serialization
 		public static ICollectionHandler CreateHandler (Type t)
 		{
 			Type elemType;
-
+			if (!typeof(IList).IsAssignableFrom (t))
+				return null;
 			MethodInfo addMethod = null;
 			try {
 				addMethod = t.GetMethod ("Add");

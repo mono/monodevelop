@@ -604,13 +604,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 			string path     = tmpPath;
 			
 			try {
-				fileName = Path.GetFileName(tmpPath);
+				fileName = Path.GetFileName (tmpPath);
 			} catch (Exception) {}
-			
-			try {
-				path = Path.GetDirectoryName(tmpPath);
-			} catch (Exception) {}
-			
+
+			if (tmpPath != null && tmpPath.Contains (Path.DirectorySeparatorChar.ToString ()))
+			{
+				try{
+					path = Path.GetDirectoryName (tmpPath);
+				}
+				catch (Exception) { }
+			}	
 			string project;
 			if (t.OwnerItem is SolutionItem)
 				project = ((SolutionItem)t.OwnerItem).Name;

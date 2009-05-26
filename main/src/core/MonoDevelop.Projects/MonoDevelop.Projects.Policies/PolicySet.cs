@@ -122,9 +122,9 @@ namespace MonoDevelop.Projects.Policies
 		
 		internal void SaveToFile (StreamWriter writer)
 		{
-			using (XmlWriter xw = new XmlTextWriter (writer)) {
-				xw.Settings.Indent = true;
-				xw.WriteStartDocument ();
+			XmlWriterSettings xws = new XmlWriterSettings ();
+			xws.Indent = true;
+			using (XmlWriter xw = XmlTextWriter.Create(writer, xws)) {
 				xw.WriteStartElement ("PolicySet");
 				foreach (object o in policies.Values)
 					XmlConfigurationWriter.DefaultWriter.Write (xw, PolicyService.DiffSerialize (o));

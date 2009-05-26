@@ -1,5 +1,10 @@
 2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.TextEditor/Platform.cs: Avoid throwing some exceptions
+	  using preventive checks. Patch by Carlo Kok.
+
+2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.TextEditor\TextViewMargin.cs: More chunk merging fixes.
 
 2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
