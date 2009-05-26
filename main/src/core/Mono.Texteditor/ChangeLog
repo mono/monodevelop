@@ -1,3 +1,10 @@
+2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor\TextEditor.cs: Fix nullref.
+
+	* Mono.TextEditor\TextViewMargin.cs: Properly compare chunk
+	  styles when trying to merge.
+
 2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor\TextRenderer.cs: Use the pango renderer on

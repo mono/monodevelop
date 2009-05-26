@@ -1189,7 +1189,10 @@ namespace Mono.TextEditor
 				}
 			}
 
-			int longestLineWidth = this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine));
+			int longestLineWidth = 0;
+			if (longestLine != null)
+				longestLineWidth = this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine));
+
 			int startY = startLine * this.LineHeight - reminder;
 			int curY = startY;
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {

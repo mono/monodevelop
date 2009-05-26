@@ -450,14 +450,18 @@ namespace Mono.TextEditor
 			}
 			int visibleColumn = 0;
 			Chunk lastChunk = null;
+			ChunkStyle lastChunkStyle = null;
 			for (Chunk chunk = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length); (lastChunk != null || chunk != null); chunk = chunk != null ? chunk.Next : null) {
 				if (xPos >= maxX)
 					break;
+
+				ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
 				if (lastChunk == null) {
 					lastChunk = chunk;
+					lastChunkStyle = chunkStyle;
 					continue;
 				}
-				if (chunk != null && lastChunk.Style == chunk.Style) {
+				if (chunk != null && lastChunkStyle.Equals (chunkStyle)) {
 					// Merge together chunks with the same style
 					lastChunk.Length += chunk.Length;
 					continue;
@@ -471,6 +475,7 @@ namespace Mono.TextEditor
 					DrawChunkPart (win, line, lastChunk, ref visibleColumn, ref xPos, y, lastChunk.Offset, lastChunk.EndOffset, selectionStart, selectionEnd);
 				}
 				lastChunk = chunk;
+				lastChunkStyle = chunkStyle;
 			}
 			
 			if (textEditor.preeditOffset == offset + length) 
