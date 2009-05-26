@@ -461,7 +461,7 @@ namespace Mono.TextEditor
 					lastChunkStyle = chunkStyle;
 					continue;
 				}
-				if (chunk != null && lastChunkStyle.Equals (chunkStyle)) {
+				if (chunk != null && lastChunk.EndOffset == chunk.Offset && lastChunkStyle.Equals (chunkStyle) && chunk.Style == lastChunk.Style) {
 					// Merge together chunks with the same style
 					lastChunk.Length += chunk.Length;
 					continue;

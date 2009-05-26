@@ -1,5 +1,9 @@
 2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.TextEditor\TextViewMargin.cs: More chunk merging fixes.
+
+2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.TextEditor\TextEditor.cs: Fix nullref.
 
 	* Mono.TextEditor\TextViewMargin.cs: Properly compare chunk
