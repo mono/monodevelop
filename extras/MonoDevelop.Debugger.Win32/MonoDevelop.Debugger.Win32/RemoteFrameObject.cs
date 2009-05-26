@@ -33,11 +33,16 @@ namespace MonoDevelop.Debugger.Evaluation
 	public class RemoteFrameObject: MarshalByRefObject
 	{
 		static List<RemoteFrameObject> connectedValues = new List<RemoteFrameObject> ();
-		
+
+		public static bool TrackConnections = false;
+
 		bool connected;
 		
 		public void Connect ()
 		{
+			if (!TrackConnections)
+				return;
+
 			// Registers the value reference. Once a remote reference of this object
 			// is created, it will never be released, until DisconnectAll is called,
 			// which is done every time the current backtrace changes

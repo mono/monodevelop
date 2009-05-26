@@ -15,7 +15,7 @@ namespace MonoDevelop.Debugger.Win32
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			DotNetExecutionCommand cmd = command as DotNetExecutionCommand;
-			return cmd != null && cmd.TargetRuntime.RuntimeId == "MS.NET";
+			return cmd != null && (cmd.TargetRuntime == null || cmd.TargetRuntime.RuntimeId == "MS.NET");
 		}
 
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)

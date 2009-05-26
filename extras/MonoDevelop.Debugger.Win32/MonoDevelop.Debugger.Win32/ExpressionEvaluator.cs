@@ -30,7 +30,9 @@ using System.Text;
 
 namespace MonoDevelop.Debugger.Evaluation
 {
-	public class ExpressionEvaluator<TValue,TType>
+	public class ExpressionEvaluator<TValue, TType>
+		where TValue: class
+		where TType: class
 	{
 		public virtual ValueReference<TValue, TType> Evaluate (EvaluationContext<TValue, TType> ctx, string exp, EvaluationOptions<TType> options)
 		{

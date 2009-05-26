@@ -1,4 +1,4 @@
-// ArrayValueReference.cs
+// TimeOutException.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -26,59 +26,13 @@
 //
 
 using System;
-using System.Text;
-using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Evaluation
 {
-	public class ArrayValueReference<TValue, TType>: ValueReference<TValue, TType>
-		where TValue: class
-		where TType: class
+	public class TimeOutException: EvaluatorException
 	{
-		TValue arr;
-		int[] indices;
-		ICollectionAdaptor<TValue, TType> adaptor;
-
-		public ArrayValueReference (EvaluationContext<TValue,TType> ctx, TValue arr, int[] indices)
-			: base (ctx)
+		public TimeOutException (): base ("Timed out.")
 		{
-			this.arr = arr;
-			this.indices = indices;
-			adaptor = ctx.Adapter.CreateArrayAdaptor (ctx, arr);
-		}
-
-		public override TValue Value {
-			get {
-				return adaptor.GetElement (indices);
-			}
-			set {
-				adaptor.SetElement (indices, value);
-			}
-		}
-		
-		public override string Name {
-			get {
-				StringBuilder sb = new StringBuilder ();
-				sb.Append ('[');
-				for (int n=0; n<indices.Length; n++) {
-					if (n > 0) sb.Append (", ");
-					sb.Append (indices [n]);
-				}
-				sb.Append (']');
-				return sb.ToString ();
-			}
-		}
-		
-		public override TType Type {
-			get {
-				return adaptor.ElementType;
-			}
-		}
-		
-		public override ObjectValueFlags Flags {
-			get {
-				return ObjectValueFlags.ArrayElement;
-			}
 		}
 	}
 }

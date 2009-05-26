@@ -33,7 +33,9 @@ using Mono.Debugging.Backend;
 
 namespace MonoDevelop.Debugger.Evaluation
 {
-	public class ArrayElementGroup<TValue,TType>: RemoteFrameObject, IObjectValueSource
+	public class ArrayElementGroup<TValue, TType>: RemoteFrameObject, IObjectValueSource
+		where TValue: class
+		where TType: class
 	{
 		EvaluationContext<TValue, TType> ctx;
 		int[] baseIndices;

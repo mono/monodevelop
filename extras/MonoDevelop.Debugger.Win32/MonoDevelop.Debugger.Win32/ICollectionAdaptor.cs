@@ -30,7 +30,9 @@ using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Evaluation
 {
-	public interface ICollectionAdaptor<TValue,TType>
+	public interface ICollectionAdaptor<TValue, TType>
+		where TValue: class
+		where TType: class
 	{
 		int[] GetDimensions ();
 		TValue GetElement (int[] indices);

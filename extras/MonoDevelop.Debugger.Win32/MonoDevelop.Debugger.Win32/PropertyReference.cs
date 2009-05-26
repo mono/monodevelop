@@ -33,53 +33,74 @@ using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	class PropertyReference: ValueReference<CorValue, CorType>
+	class PropertyReference: ValueReference<CorValRef, CorType>
 	{
 		PropertyInfo prop;
-		CorObjectValue thisobj;
+		CorValRef thisobj;
+		CorValRef index;
 		CorModule module;
+		CorValRef.ValueLoader loader;
+		CorValRef cachedValue;
 
-		public PropertyReference (EvaluationContext<CorValue, CorType> ctx, PropertyInfo prop, CorObjectValue thisobj, CorModule module)
+		public PropertyReference (EvaluationContext<CorValRef, CorType> ctx, PropertyInfo prop, CorValRef thisobj, CorModule module)
+			: this (ctx, prop, thisobj, module, null)
+		{
+		}
+
+		public PropertyReference (EvaluationContext<CorValRef, CorType> ctx, PropertyInfo prop, CorValRef thisobj, CorModule module, CorValRef index)
 			: base (ctx)
 		{
 			this.prop = prop;
 			this.thisobj = thisobj;
 			this.module = module;
+			this.index = index;
+
+			loader = delegate {
+				return Value.Val;
+			};
 		}
 		
 		public override CorType Type {
 			get {
 				if (!prop.CanRead)
 					return null;
-				return Value.ExactType;
+				return Value.Val.ExactType;
 			}
 		}
 		
-		public override CorValue Value {
+		public override CorValRef Value {
 			get {
+				if (cachedValue != null && cachedValue.IsValid)
+					return cachedValue;
 				if (!prop.CanRead)
 					return null;
 				CorEvaluationContext ctx = (CorEvaluationContext) Context;
-				CorFunction func = thisobj.ExactType.Class.Module.GetFunctionFromToken (prop.GetGetMethod ().MetadataToken);
-				CorValue val = ctx.RuntimeInvoke (func, thisobj, new CorValue[0]);
-				return Context.Adapter.GetRealObject (Context, val);
+				MethodInfo mi = prop.GetGetMethod ();
+				CorValue[] args = index == null ? new CorValue[0] : new CorValue[] { index.Val };
+				CorFunction func = module.GetFunctionFromToken (mi.MetadataToken);
+				CorValue val = ctx.RuntimeInvoke (func, thisobj.Val.ExactType.TypeParameters, thisobj.Val, args);
+				return cachedValue = new CorValRef (val, loader);
 			}
 			set {
 				CorEvaluationContext ctx = (CorEvaluationContext) Context;
-				CorFunction func = thisobj.ExactType.Class.Module.GetFunctionFromToken (prop.GetSetMethod ().MetadataToken);
-				ctx.RuntimeInvoke (func, thisobj, new CorValue[] { value });
+				CorFunction func = module.GetFunctionFromToken (prop.GetSetMethod ().MetadataToken);
+				CorValue[] args = index == null ? new CorValue[] { value.Val } : new CorValue[] { index.Val, value.Val };
+				ctx.RuntimeInvoke (func, thisobj.Val.ExactType.TypeParameters, thisobj.Val, args);
 			}
 		}
 		
 		public override string Name {
 			get {
-				return prop.Name;
+				if (index != null)
+					return "[" + Context.Evaluator.TargetObjectToExpression (Context, index) + "]";
+				else
+					return prop.Name;
 			}
 		}
 
 		public override ObjectValueFlags Flags {
 			get {
-				ObjectValueFlags flags = ObjectValueFlags.Field;
+				ObjectValueFlags flags = ObjectValueFlags.Property;
 				MethodInfo mi = prop.GetGetMethod () ?? prop.GetSetMethod ();
 				if (mi.IsFamilyOrAssembly || mi.IsFamilyAndAssembly)
 					flags |= ObjectValueFlags.Internal;

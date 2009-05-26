@@ -101,8 +101,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
     {
         private ICorDebugModule m_module;
 
-		public System.Diagnostics.SymbolStore.ISymbolReader SymbolReader { get; set; }
-
         internal CorModule (ICorDebugModule managedModule)
             :base(managedModule)
         {

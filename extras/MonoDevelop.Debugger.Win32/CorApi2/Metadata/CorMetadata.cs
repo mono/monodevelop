@@ -4,11 +4,13 @@
 //  Copyright (C) Microsoft Corporation.  All rights reserved.
 //---------------------------------------------------------------------
 using System;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Globalization;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using Microsoft.Samples.Debugging.CorDebug; 
@@ -19,6 +21,27 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 {
     public sealed class CorMetadataImport
     {
+		public static Dictionary<CorElementType, Type> CoreTypes = new Dictionary<CorElementType, Type> ();
+
+		static CorMetadataImport ( )
+		{
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_BOOLEAN, typeof (bool));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_CHAR, typeof (char));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I1, typeof (sbyte));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U1, typeof (byte));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I2, typeof (short));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U2, typeof (ushort));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I4, typeof (int));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U4, typeof (uint));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I8, typeof (long));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U8, typeof (ulong));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_R4, typeof (float));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_R8, typeof (double));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_STRING, typeof (string));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I, typeof (IntPtr));
+			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U, typeof (UIntPtr));
+		}
+
         public CorMetadataImport(CorModule managedModule)
         {
             // GUID Copied from Cor.h
@@ -313,7 +336,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                     out pulCodeRVA,
                                     out pdwImplFlags);
 
-            m_name = szMethodName.ToString();
+			CorCallingConvention callingConv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref ppvSigBlob);
+			m_name = szMethodName.ToString ();
             m_methodAttributes = (MethodAttributes)pdwAttr;
         }
 
@@ -420,8 +444,10 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                           m_methodToken, out paramToken,1,out count);
                     if(count!=1)
                         break;
-                    al.Add(new MetadataParameterInfo(m_importer,paramToken,
-                                                     this,DeclaringType));
+					MetadataParameterInfo mp = new MetadataParameterInfo (m_importer, paramToken,
+													 this, DeclaringType);
+					if (mp.Name != string.Empty)
+						al.Add(mp);
                 }
             }
             finally 
@@ -836,6 +862,91 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
             return genargs;
         }
-    }
 
+		static object[] emptyAttributes = new object[0];
+
+		static internal object[] GetDebugAttributes (IMetadataImport importer, int token)
+		{
+			ArrayList attributes = new ArrayList ();
+			object attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerTypeProxyAttribute));
+			if (attr != null)
+				attributes.Add (attr);
+			attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerDisplayAttribute));
+			if (attr != null)
+				attributes.Add (attr);
+			attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerBrowsableAttribute));
+			if (attr != null)
+				attributes.Add (attr);
+
+			if (attributes.Count == 0)
+				return emptyAttributes;
+			else
+				return attributes.ToArray ();
+		}
+
+		static internal object GetCustomAttribute (IMetadataImport importer, int token, Type type)
+		{
+			uint sigSize = 0;
+			IntPtr ppvSig = IntPtr.Zero;
+			int hr = importer.GetCustomAttributeByName (token, type.FullName, out ppvSig, out sigSize);
+			if (hr != 0)
+				return null;
+
+			byte[] data = new byte[sigSize];
+			Marshal.Copy (ppvSig, data, 0, (int)sigSize);
+			BinaryReader br = new BinaryReader (new MemoryStream (data));
+
+			// Prolog
+			if (br.ReadUInt16 () != 1)
+				throw new InvalidOperationException ("Incorrect attribute prolog");
+
+			ConstructorInfo ctor = type.GetConstructors ()[0];
+			ParameterInfo[] pars = ctor.GetParameters ();
+
+			object[] args = new object[pars.Length];
+
+			// Fixed args
+			for (int n=0; n<pars.Length; n++)
+				args [n] = ReadValue (br, pars[n].ParameterType);
+
+			object ob = Activator.CreateInstance (type, args);
+			
+			// Named args
+			uint nargs = br.ReadUInt16 ();
+			for (; nargs > 0; nargs--) {
+				byte fieldOrProp = br.ReadByte ();
+				byte atype = br.ReadByte ();
+
+				// Boxed primitive
+				if (atype == 0x51)
+					atype = br.ReadByte ();
+				CorElementType et = (CorElementType) atype;
+				string pname = br.ReadString ();
+				object val = ReadValue (br, CorMetadataImport.CoreTypes[et]);
+
+				if (fieldOrProp == 0x53) {
+					FieldInfo fi = type.GetField (pname);
+					fi.SetValue (ob, val);
+				}
+				else {
+					PropertyInfo pi = type.GetProperty (pname);
+					pi.SetValue (ob, val, null);
+				}
+			}
+			return ob;
+		}
+
+		static object ReadValue (BinaryReader br, Type type)
+		{
+			if (type.IsEnum) {
+				object ob = ReadValue (br, Enum.GetUnderlyingType (type));
+				return Enum.ToObject (type, Convert.ToInt64 (ob));
+			}
+			if (type == typeof (string) || type == typeof(Type))
+				return br.ReadString ();
+			if (type == typeof (int))
+				return br.ReadInt32 ();
+			throw new InvalidOperationException ("Can't parse value of type: " + type);
+		}
+	}
 } // namspace Microsoft.Debugger.MetadataWrapper

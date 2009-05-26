@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,21 +15,28 @@ using MonoDevelop.Debugger.Evaluation;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	class CorDebuggerSession: DebuggerSession
+	public class CorDebuggerSession: DebuggerSession
 	{
+		object debugLock = new object ();
+
 		CorDebugger dbg;
 		CorProcess process;
 		CorThread activeThread;
 		CorStepper stepper;
-		SymbolBinder binder = new SymbolBinder ();
+		bool terminated;
+		bool evaluating;
+
+		static int evaluationTimestamp;
+
+		SymbolBinder symbolBinder = new SymbolBinder ();
 		Dictionary<string, DocInfo> documents;
-		Dictionary<string, ISymbolReader> readers;
 		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
+		Dictionary<string, ModuleInfo> modules;
+		
 
 		public CorObjectAdaptor ObjectAdapter;
-		public ExpressionEvaluator<CorValue, CorType> Evaluator;
-		public AsyncEvaluationTracker AsyncEvaluationTracker;
+		public ExpressionEvaluator<CorValRef, CorType> Evaluator;
 
 		class DocInfo
 		{
@@ -37,18 +45,48 @@ namespace MonoDevelop.Debugger.Win32
 			public CorModule Module;
 		}
 
+		class ModuleInfo
+		{
+			public ISymbolReader Reader;
+			public CorModule Module;
+			public CorMetadataImport Importer;
+		}
+
 		public CorDebuggerSession ( )
 		{
 			documents = new Dictionary<string, DocInfo> (StringComparer.CurrentCultureIgnoreCase);
-			readers = new Dictionary<string, ISymbolReader> (StringComparer.CurrentCultureIgnoreCase);
+			modules = new Dictionary<string, ModuleInfo> (StringComparer.CurrentCultureIgnoreCase);
 
-			AsyncEvaluationTracker = new AsyncEvaluationTracker ();
 			ObjectAdapter = new CorObjectAdaptor ();
-			Evaluator = new ExpressionEvaluator<CorValue, CorType> ();
+			Evaluator = new NRefactoryEvaluator<CorValRef, CorType> ();
 		}
 
 		public new IDebuggerSessionFrontend Frontend {
 			get { return base.Frontend; }
+		}
+
+		public static int EvaluationTimestamp {
+			get { return evaluationTimestamp; }
+		}
+
+
+		public override void Dispose ( )
+		{
+			if (dbg != null && !terminated)
+				dbg.Terminate ();
+			base.Dispose ();
+
+			// There is no explicit way of disposing the metadata objects, so we have
+			// to rely on the GC to do it.
+
+			modules = null;
+			documents = null;
+			threads = null;
+			process = null;
+			processes = null;
+			dbg = null;
+			activeThread = null;
+			GC.Collect ();
 		}
 
 		protected override void OnRun (DebuggerStartInfo startInfo)
@@ -60,6 +98,9 @@ namespace MonoDevelop.Debugger.Win32
 
 			process = dbg.CreateProcess (startInfo.Command, startInfo.Arguments, startInfo.WorkingDirectory);
 
+			// Required to avoid the jit to get rid of variables too early
+			process.DesiredNGENCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+
 			process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
 			process.OnCreateAppDomain += new CorAppDomainEventHandler (OnCreateAppDomain);
 			process.OnAssemblyLoad += new CorAssemblyEventHandler (OnAssemblyLoad);
@@ -67,20 +108,40 @@ namespace MonoDevelop.Debugger.Win32
 			process.OnCreateThread += new CorThreadEventHandler (OnCreateThread);
 			process.OnThreadExit += new CorThreadEventHandler (OnThreadExit);
 			process.OnModuleLoad += new CorModuleEventHandler (OnModuleLoad);
+			process.OnModuleUnload += new CorModuleEventHandler (OnModuleUnload);
 			process.OnProcessExit += new CorProcessEventHandler (OnProcessExit);
 			process.OnUpdateModuleSymbols += new UpdateModuleSymbolsEventHandler (OnUpdateModuleSymbols);
 			process.OnDebuggerError += new DebuggerErrorEventHandler (OnDebuggerError);
 			process.OnBreakpoint += new BreakpointEventHandler (OnBreakpoint);
 			process.OnStepComplete += new StepCompleteEventHandler (OnStepComplete);
 			process.OnBreak += new CorThreadEventHandler (OnBreak);
+			process.OnNameChange += new CorThreadEventHandler (OnNameChange);
 
 			process.Continue (false);
 
 			OnStarted ();
 		}
 
+		void OnNameChange (object sender, CorThreadEventArgs e)
+		{
+		}
+
+		void OnStopped ( )
+		{
+			lock (threads) {
+				threads.Clear ();
+			}
+		}
+
 		void OnBreak (object sender, CorThreadEventArgs e)
 		{
+			lock (debugLock) {
+				if (evaluating) {
+					e.Continue = true;
+					return;
+				}
+			}
+			OnStopped ();
 			e.Continue = false;
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetInterrupted);
@@ -92,6 +153,13 @@ namespace MonoDevelop.Debugger.Win32
 
 		void OnStepComplete (object sender, CorStepCompleteEventArgs e)
 		{
+			lock (debugLock) {
+				if (evaluating) {
+					e.Continue = true;
+					return;
+				}
+			}
+			OnStopped ();
 			e.Continue = false;
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetStopped);
@@ -110,6 +178,13 @@ namespace MonoDevelop.Debugger.Win32
 
 		void OnBreakpoint (object sender, CorBreakpointEventArgs e)
 		{
+			lock (debugLock) {
+				if (evaluating) {
+					e.Continue = true;
+					return;
+				}
+			}
+			OnStopped ();
 			e.Continue = false;
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
@@ -150,29 +225,56 @@ namespace MonoDevelop.Debugger.Win32
 
 		void OnModuleLoad (object sender, CorModuleEventArgs e)
 		{
-			SymbolBinder binder = new SymbolBinder ();
 			CorMetadataImport mi = new CorMetadataImport (e.Module);
+
+			// Required to avoid the jit to get rid of variables too early
+			e.Module.JITCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+
 			string file = e.Module.Assembly.Name;
-			try {
-				lock (documents) {
-					ISymbolReader reader = binder.GetReaderForFile (mi.RawCOMObject, file, ".");
-					foreach (ISymbolDocument doc in reader.GetDocuments ()) {
-						string docFile = System.IO.Path.GetFullPath (doc.URL);
-						DocInfo di = new DocInfo ();
-						di.Document = doc;
-						di.Reader = reader;
-						di.Module = e.Module;
-						di.Module.SymbolReader = reader;
-						documents[docFile] = di;
-						readers[di.Module.Name] = reader;
-						NotifySourceFileLoaded (docFile);
+			lock (documents) {
+				ISymbolReader reader = null;
+				if (file.IndexOfAny (System.IO.Path.InvalidPathChars) == -1 && System.IO.File.Exists (System.IO.Path.ChangeExtension (file, ".pdb"))) {
+					try {
+						reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".");
+						foreach (ISymbolDocument doc in reader.GetDocuments ()) {
+							if (string.IsNullOrEmpty (doc.URL))
+								continue;
+							string docFile = System.IO.Path.GetFullPath (doc.URL);
+							DocInfo di = new DocInfo ();
+							di.Document = doc;
+							di.Reader = reader;
+							di.Module = e.Module;
+							documents[docFile] = di;
+							NotifySourceFileLoaded (docFile);
+						}
+					}
+					catch (Exception ex) {
+						OnDebuggerOutput (true, string.Format ("Debugger Error: {0}\n", ex.Message));
 					}
 				}
+				ModuleInfo moi = new ModuleInfo ();
+				moi.Module = e.Module;
+				moi.Reader = reader;
+				moi.Importer = mi;
+				modules[e.Module.Name] = moi;
 			}
-			catch {
-			}
-
 			e.Continue = true;
+		}
+
+		void OnModuleUnload (object sender, CorModuleEventArgs e)
+		{
+			lock (documents) {
+				modules.Remove (e.Module.Name);
+				List<string> toRemove = new List<string> ();
+				foreach (KeyValuePair<string, DocInfo> di in documents) {
+					if (di.Value.Module.Name == e.Module.Name)
+						toRemove.Add (di.Key);
+				}
+				foreach (string file in toRemove) {
+					documents.Remove (file);
+					NotifySourceFileUnloaded (file);
+				}
+			}
 		}
 
 		void OnCreateAppDomain (object sender, CorAppDomainEventArgs e)
@@ -204,6 +306,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnContinue ( )
 		{
+			ClearEvalStatus ();
 			process.Continue (false);
 		}
 
@@ -223,6 +326,7 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			try {
 				process.Terminate (1);
+				terminated = true;
 			}
 			catch (Exception ex) {
 				OnDebuggerOutput (true, ex.Message + "\n");
@@ -260,10 +364,32 @@ namespace MonoDevelop.Debugger.Win32
 
 		internal ISymbolReader GetReaderForModule (string file)
 		{
-			ISymbolReader doc;
-			if (!readers.TryGetValue (System.IO.Path.GetFullPath (file), out doc))
-				return null;
-			return doc;
+			lock (documents) {
+				ModuleInfo mod;
+				if (!modules.TryGetValue (System.IO.Path.GetFullPath (file), out mod))
+					return null;
+				return mod.Reader;
+			}
+		}
+
+		internal CorMetadataImport GetMetadataForModule (string file)
+		{
+			lock (documents) {
+				ModuleInfo mod;
+				if (!modules.TryGetValue (System.IO.Path.GetFullPath (file), out mod))
+					return null;
+				return mod.Importer;
+			}
+		}
+
+		internal IEnumerable<CorModule> GetModules ( )
+		{
+			List<CorModule> mods = new List<CorModule> ();
+			lock (documents) {
+				foreach (ModuleInfo mod in modules.Values)
+					mods.Add (mod.Module);
+			}
+			return mods;
 		}
 
 		protected override object OnInsertBreakEvent (BreakEvent be, bool activate)
@@ -334,6 +460,7 @@ namespace MonoDevelop.Debugger.Win32
 				ranges[0].startOffset = offset;
 				ranges[0].endOffset = (uint) nextSeq.Offset;
 				stepper.StepRange (false, ranges);
+				ClearEvalStatus ();
 				process.Continue (false);
 			}
 		}
@@ -370,6 +497,7 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			if (stepper != null) {
 				stepper.Step (true);
+				ClearEvalStatus ();
 				process.Continue (false);
 			}
 		}
@@ -377,11 +505,145 @@ namespace MonoDevelop.Debugger.Win32
 		protected override void OnStop ( )
 		{
 			process.Stop (0);
+			OnStopped ();
+			CorThread currentThread = null;
+			foreach (CorThread t in process.Threads) {
+				currentThread = t;
+				break;
+			}
+			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetStopped);
+			args.Process = GetPocess (process);
+			args.Thread = GetThread (currentThread);
+			args.Backtrace = new Backtrace (new CorBacktrace (currentThread, this));
+			OnTargetEvent (args);
 		}
 
 		protected override object OnUpdateBreakEvent (object handle, BreakEvent be)
 		{
 			return null;
+		}
+
+		public CorValue RuntimeInvoke (CorEvaluationContext ctx, CorFunction function, CorType[] typeArgs, CorValue thisObj, CorValue[] arguments)
+		{
+			if (!ctx.Thread.ActiveChain.IsManaged)
+				throw new EvaluatorException ("Cannot evaluate expression because the thread is stopped in native code.");
+
+			lock (debugLock) {
+				evaluating = true;
+			}
+
+			CorValue[] args;
+			if (thisObj == null)
+				args = arguments;
+			else {
+				args = new CorValue[arguments.Length + 1];
+				args[0] = thisObj;
+				arguments.CopyTo (args, 1);
+			}
+
+			CorMethodCall mc = new CorMethodCall ();
+			CorValue exception = null;
+
+			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+				mc.DoneEvent.Set ();
+				eargs.Continue = false;
+			};
+
+			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+				exception = eargs.Eval.Result;
+				mc.DoneEvent.Set ();
+				eargs.Continue = false;
+			};
+
+			process.OnEvalComplete += completeHandler;
+			process.OnEvalException += exceptionHandler;
+
+			mc.OnInvoke = delegate {
+				if (function.GetMethodInfo (this).Name == ".ctor")
+					ctx.Eval.NewParameterizedObject (function, typeArgs, args);
+				else
+					ctx.Eval.CallParameterizedFunction (function, typeArgs, args);
+				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
+				ClearEvalStatus ();
+				process.Continue (false);
+			};
+			mc.OnAbort = delegate {
+				ctx.Eval.Abort ();
+			};
+
+			try {
+				ObjectAdapter.AsyncExecute (mc, ctx.Timeout);
+			}
+			finally {
+				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, ctx.Thread);
+				process.OnEvalComplete -= completeHandler;
+				process.OnEvalException -= exceptionHandler;
+
+				lock (debugLock) {
+					evaluating = false;
+				}
+			}
+
+			if (exception != null) {
+/*				ValueReference<CorValue, CorType> msg = ctx.Adapter.GetMember (ctx, val, "Message");
+				if (msg != null) {
+					string s = msg.ObjectValue as string;
+					mc.ExceptionMessage = s;
+				}
+				else
+					mc.ExceptionMessage = "Evaluation failed.";*/
+				CorValRef vref = new CorValRef (exception);
+				throw new EvaluatorException ("Evaluation failed: " + ObjectAdapter.GetValueTypeName (ctx, vref));
+			}
+
+			return ctx.Eval.Result;
+		}
+
+		public CorValue NewString (CorEvaluationContext ctx, string value)
+		{
+			lock (debugLock) {
+				evaluating = true;
+			}
+
+			ManualResetEvent doneEvent = new ManualResetEvent (false);
+
+			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+				doneEvent.Set ();
+				eargs.Continue = false;
+			};
+
+			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+				doneEvent.Set ();
+				eargs.Continue = false;
+			};
+
+			try {
+				process.OnEvalComplete += completeHandler;
+				process.OnEvalException += exceptionHandler;
+
+				ctx.Eval.NewString (value);
+				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
+				ClearEvalStatus ();
+				process.Continue (false);
+
+				if (doneEvent.WaitOne (ctx.Timeout))
+					return ctx.Eval.Result;
+				else
+					return null;
+			} finally {
+				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, ctx.Thread);
+				process.OnEvalComplete -= completeHandler;
+				process.OnEvalException -= exceptionHandler;
+
+				lock (debugLock) {
+					evaluating = false;
+				}
+			}
+		}
+
+		void ClearEvalStatus ( )
+		{
+			evaluationTimestamp++;
 		}
 
 		ProcessInfo GetPocess (CorProcess proc)
@@ -401,11 +663,38 @@ namespace MonoDevelop.Debugger.Win32
 			ThreadInfo info;
 			lock (threads) {
 				if (!threads.TryGetValue (thread.Id, out info)) {
-					info = new ThreadInfo (thread.Process.Id, thread.Id, "", "");
+					string loc = string.Empty;
+					if (thread.ActiveFrame != null) {
+						StackFrame frame = CorBacktrace.CreateFrame (this, thread.ActiveFrame);
+						loc = frame.ToString ();
+					} else {
+						loc = "<Unknown>";
+					}
+					
+					info = new ThreadInfo (thread.Process.Id, thread.Id, GetThreadName (thread), loc);
 					threads[thread.Id] = info;
 				}
 				return info;
 			}
+		}
+
+		string GetThreadName (CorThread thread)
+		{
+			return string.Empty;
+/*			CorValue to = thread.ThreadVariable;
+			if (to == null)
+				return string.Empty;
+
+			CorEvaluationContext ctx = new CorEvaluationContext (this);
+			ctx.Thread = thread;
+			ctx.Frame = thread.ActiveFrame;
+
+			LiteralValueReference<CorValRef, CorType> val = new LiteralValueReference<CorValRef, CorType> (ctx, "", new CorValRef (to));
+			ValueReference<CorValRef, CorType> prop = val.GetChild ("Name");
+			if (prop != null)
+				return prop.ObjectValue as string;
+			else
+				return string.Empty;*/
 		}
 	}
 
@@ -440,10 +729,13 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		public static Type GetTypeInfo (this CorClass type)
+		public static Type GetTypeInfo (this CorClass type, CorDebuggerSession session)
 		{
-			CorMetadataImport mi = new CorMetadataImport (type.Module);
-			return mi.GetType (type.Token);
+			CorMetadataImport mi = session.GetMetadataForModule (type.Module.Name);
+			if (mi != null)
+				return mi.GetType (type.Token);
+			else
+				return null;
 		}
 
 		public static ISymbolMethod GetSymbolMethod (this CorFunction func, CorDebuggerSession session)
@@ -456,8 +748,26 @@ namespace MonoDevelop.Debugger.Win32
 
 		public static System.Reflection.MethodInfo GetMethodInfo (this CorFunction func, CorDebuggerSession session)
 		{
-			CorMetadataImport mi = new CorMetadataImport (func.Module);
-			return mi.GetMethodInfo (func.Token);
+			CorMetadataImport mi = session.GetMetadataForModule (func.Module.Name);
+			if (mi != null)
+				return mi.GetMethodInfo (func.Token);
+			else
+				return null;
+		}
+
+		public static void SetValue (this CorValRef thisVal, EvaluationContext<CorValRef, CorType> ctx, CorValRef val)
+		{
+			CorReferenceValue s = thisVal.Val.CastToReferenceValue ();
+			if (s != null) {
+				CorReferenceValue v = val.Val.CastToReferenceValue ();
+				if (v != null) {
+					s.Value = v.Value;
+					return;
+				}
+			}
+			CorGenericValue gv = CorObjectAdaptor.GetRealObject (thisVal.Val) as CorGenericValue;
+			if (gv != null)
+				gv.SetValue (ctx.Adapter.TargetObjectToObject (ctx, val));
 		}
 	}
 }

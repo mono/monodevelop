@@ -29,11 +29,12 @@ using System;
 
 namespace MonoDevelop.Debugger.Evaluation
 {
-	public class EvaluationContext<TValue,TType>
+	public class EvaluationContext<TValue, TType>
+		where TValue: class
+		where TType: class
 	{
 		public ExpressionEvaluator<TValue, TType> Evaluator { get; set; }
 		public ObjectValueAdaptor<TValue, TType> Adapter { get; set; }
-		public AsyncEvaluationTracker AsyncEvaluationTracker { get; set; }
 
 		public virtual void WriteDebuggerError (Exception ex)
 		{
@@ -65,7 +66,6 @@ namespace MonoDevelop.Debugger.Evaluation
 			Timeout = ctx.Timeout;
 			Evaluator = ctx.Evaluator;
 			Adapter = ctx.Adapter;
-			AsyncEvaluationTracker = ctx.AsyncEvaluationTracker;
 		}
 	}
 }

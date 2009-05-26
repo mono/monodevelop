@@ -33,49 +33,63 @@ using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	public class FieldReference: ValueReference<CorValue, CorType>
+	public class FieldReference: ValueReference<CorValRef, CorType>
 	{
 		CorType type;
 		FieldInfo field;
-		CorObjectValue thisobj;
+		CorValRef thisobj;
+		CorValRef.ValueLoader loader;
 
-		public FieldReference (EvaluationContext<CorValue, CorType> ctx, CorObjectValue thisobj, CorType type, FieldInfo field)
+		public FieldReference (EvaluationContext<CorValRef, CorType> ctx, CorValRef thisobj, CorType type, FieldInfo field)
 			: base (ctx)
 		{
 			this.type = type;
 			this.field = field;
 			if (!field.IsStatic)
 				this.thisobj = thisobj;
+
+			loader = delegate {
+				return Value.Val;
+			};
 		}
 		
 		public override CorType Type {
 			get {
-				return GetValue ().ExactType;
+				return Value.Val.ExactType;
 			}
 		}
 
-		public override CorValue Value {
+		public override object ObjectValue {
 			get {
-				CorValue val = GetValue ();
-				return Context.Adapter.GetRealObject (Context, val);
+				if (field.IsLiteral && field.IsStatic)
+					return field.GetValue (null);
+				else
+					return base.ObjectValue;
+			}
+		}
+
+		public override CorValRef Value {
+			get {
+				CorEvaluationContext ctx = (CorEvaluationContext) Context;
+				if (thisobj != null && !field.IsStatic) {
+					CorObjectValue cval = (CorObjectValue) CorObjectAdaptor.GetRealObject (thisobj);
+					CorValue val = cval.GetFieldValue (type.Class, field.MetadataToken);
+					return new CorValRef (val, loader);
+				}
+				else {
+					if (field.IsLiteral && field.IsStatic) {
+						object oval = field.GetValue (null);
+						return Context.Adapter.CreateValue (ctx, oval);
+					}
+					CorValue val = type.GetStaticFieldValue (field.MetadataToken, ctx.Frame);
+					return new CorValRef (val, loader);
+				}
 			}
 			set {
-				CorValue val = GetValue ();
-				CorGenericValue gval = val.CastToGenericValue ();
-				if (gval != null)
-					gval.SetValue (Context.Adapter.TargetObjectToObject (Context, value));
+				Value.SetValue (Context, value);
 			}
 		}
 
-		CorValue GetValue ( )
-		{
-			CorEvaluationContext ctx = (CorEvaluationContext) Context;
-			if (thisobj != null)
-				return thisobj.GetFieldValue (type.Class, field.MetadataToken);
-			else
-				return type.Class.GetStaticFieldValue (field.MetadataToken, ctx.Frame);
-		}
-		
 		public override string Name {
 			get {
 				return field.Name;

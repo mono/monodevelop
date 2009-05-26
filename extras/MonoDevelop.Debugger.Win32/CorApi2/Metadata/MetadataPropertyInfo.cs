@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
@@ -14,6 +15,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		private IMetadataImport m_importer;
 		private int m_propertyToken;
 		private MetadataType m_declaringType;
+		private object[] m_customAttributes;
 
 		private string m_name;
 		private PropertyAttributes m_propAttributes;
@@ -80,6 +82,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 			m_propAttributes = (PropertyAttributes) pdwPropFlags;
 			m_name = szProperty.ToString ();
+			MetadataHelperFunctions.GetCustomAttribute (importer, propertyToken, typeof (System.Diagnostics.DebuggerBrowsableAttribute));
 		}
 
 		public override PropertyAttributes Attributes
@@ -148,19 +151,26 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			get { throw new NotImplementedException (); }
 		}
 
+		public override bool IsDefined (Type attributeType, bool inherit)
+		{
+			return GetCustomAttributes (attributeType, inherit).Length > 0;
+		}
+
 		public override object[] GetCustomAttributes (Type attributeType, bool inherit)
 		{
-			throw new NotImplementedException ();
+			ArrayList list = new ArrayList ();
+			foreach (object ob in GetCustomAttributes (inherit)) {
+				if (attributeType.IsInstanceOfType (ob))
+					list.Add (ob);
+			}
+			return list.ToArray ();
 		}
 
 		public override object[] GetCustomAttributes (bool inherit)
 		{
-			throw new NotImplementedException ();
-		}
-
-		public override bool IsDefined (Type attributeType, bool inherit)
-		{
-			throw new NotImplementedException ();
+			if (m_customAttributes == null)
+				m_customAttributes = MetadataHelperFunctions.GetDebugAttributes (m_importer, m_propertyToken);
+			return m_customAttributes;
 		}
 
 		public override string Name

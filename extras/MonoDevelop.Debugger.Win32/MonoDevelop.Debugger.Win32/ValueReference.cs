@@ -35,6 +35,8 @@ using DC = Mono.Debugging.Client;
 namespace MonoDevelop.Debugger.Evaluation
 {
 	public abstract class ValueReference<TValue, TType>: RemoteFrameObject, IObjectValueSource
+		where TValue: class
+		where TType: class
 	{
 		EvaluationContext<TValue, TType> ctx;
 
@@ -46,7 +48,9 @@ namespace MonoDevelop.Debugger.Evaluation
 		public virtual object ObjectValue {
 			get {
 				TValue ob = Value;
-				if (ctx.Adapter.IsPrimitive (ob))
+				if (ctx.Adapter.IsNull (Context, ob))
+					return null;
+				else if (ctx.Adapter.IsPrimitive (Context, ob))
 					return ctx.Adapter.TargetObjectToObject (ctx, ob);
 				else
 					return ob;
@@ -68,7 +72,7 @@ namespace MonoDevelop.Debugger.Evaluation
 		public ObjectValue CreateObjectValue (bool withTimeout)
 		{
 			if (withTimeout) {
-				return ctx.AsyncEvaluationTracker.Run (Name, Flags, delegate {
+				return ctx.Adapter.CreateObjectValueAsync (Name, Flags, delegate {
 					return CreateObjectValue ();
 				});
 			} else
@@ -98,12 +102,12 @@ namespace MonoDevelop.Debugger.Evaluation
 			
 			TValue val = Value;
 			if (val != null)
-				return ctx.Adapter.CreateObjectValue (ctx, this, new ObjectPath (name), Value, Flags);
+				return ctx.Adapter.CreateObjectValue (ctx, this, new ObjectPath (name), val, Flags);
 			else
-				return Mono.Debugging.Client.ObjectValue.CreateNullObject (name, ctx.Adapter.GetTypeName (Type), Flags);
+				return Mono.Debugging.Client.ObjectValue.CreateNullObject (name, ctx.Adapter.GetTypeName (Context, Type), Flags);
 		}
-		
-		public string SetValue (ObjectPath path, string value)
+
+		string IObjectValueSource.SetValue (ObjectPath path, string value)
 		{
 			try {
 				ctx.WaitRuntimeInvokes ();
@@ -128,12 +132,17 @@ namespace MonoDevelop.Debugger.Evaluation
 			
 			return value;
 		}
-		
-		public virtual string CallToString ()
+
+		ObjectValue[] IObjectValueSource.GetChildren (ObjectPath path, int index, int count)
+		{
+			return GetChildren (path, index, count);
+		}
+
+		public virtual string CallToString ( )
 		{
 			return ctx.Adapter.CallToString (ctx, Value);
 		}
-		
+
 		public virtual ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
 			try {
@@ -143,13 +152,13 @@ namespace MonoDevelop.Debugger.Evaluation
 				return new ObjectValue [] { Mono.Debugging.Client.ObjectValue.CreateError ("", ex.Message, ObjectValueFlags.ReadOnly) };
 			}
 		}
-		
-		public virtual IEnumerable<ValueReference<TValue,TType>> GetChildReferences ()
+
+		public virtual IEnumerable<ValueReference<TValue, TType>> GetChildReferences ( )
 		{
 			try {
 				TValue val = Value;
-				if (ctx.Adapter.IsClassInstance (val))
-					return ctx.Adapter.GetMembers (GetChildrenContext (), ctx.Adapter.GetValueType (val), val);
+				if (ctx.Adapter.IsClassInstance (Context, val))
+					return ctx.Adapter.GetMembers (GetChildrenContext (), ctx.Adapter.GetValueType (Context, val), val);
 			} catch {
 				// Ignore
 			}
@@ -163,20 +172,27 @@ namespace MonoDevelop.Debugger.Evaluation
 			newCtx.Timeout = to;
 			return newCtx;
 		}
-		
+
+		public virtual ValueReference<TValue, TType> GetChild (ObjectPath vpath)
+		{
+			if (vpath.Length == 0)
+				return this;
+
+			ValueReference<TValue, TType> val = GetChild (vpath[0]);
+			if (val != null)
+				return val.GetChild (vpath.GetSubpath (1));
+			else
+				return null;
+		}
+
 		public virtual ValueReference<TValue,TType> GetChild (string name)
 		{
 			TValue obj = Value;
 			
 			if (obj == null)
 				return null;
-			
-			obj = ctx.Adapter.GetRealObject (ctx, obj);
-			
-			if (obj == null)
-				return null;
 
-			if (ctx.Adapter.IsArray (obj)) {
+			if (ctx.Adapter.IsArray (Context, obj)) {
 				// Parse the array indices
 				string[] sinds = name.Substring (1, name.Length - 2).Split (',');
 				int[] indices = new int [sinds.Length];
@@ -186,8 +202,8 @@ namespace MonoDevelop.Debugger.Evaluation
 				return new ArrayValueReference<TValue, TType> (ctx, obj, indices);
 			}
 
-			if (ctx.Adapter.IsClassInstance (obj)) {
-				foreach (ValueReference<TValue, TType> val in ctx.Adapter.GetMembers (GetChildrenContext (), ctx.Adapter.GetValueType (obj), obj)) {
+			if (ctx.Adapter.IsClassInstance (Context, obj)) {
+				foreach (ValueReference<TValue, TType> val in ctx.Adapter.GetMembers (GetChildrenContext (), ctx.Adapter.GetValueType (Context, obj), obj)) {
 					if (val.Name == name)
 						return val;
 				}

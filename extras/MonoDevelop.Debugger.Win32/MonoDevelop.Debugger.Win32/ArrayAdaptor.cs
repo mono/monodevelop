@@ -32,46 +32,58 @@ using MonoDevelop.Debugger.Evaluation;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	class ArrayAdaptor: ICollectionAdaptor<CorValue, CorType>
+	class ArrayAdaptor: ICollectionAdaptor<CorValRef, CorType>
 	{
-		CorArrayValue array;
-		EvaluationContext<CorValue, CorType> ctx;
+		CorValRef obj;
+		EvaluationContext<CorValRef, CorType> ctx;
 
-		public ArrayAdaptor (EvaluationContext<CorValue, CorType> ctx, CorArrayValue array)
+		public ArrayAdaptor (EvaluationContext<CorValRef, CorType> ctx, CorValRef obj)
 		{
+			this.obj = obj;
 			this.ctx = ctx;
-			this.array = array;
 		}
 		
 		public int[] GetDimensions ()
 		{
-			return array.GetDimensions ();
+			CorArrayValue array = CorObjectAdaptor.GetRealObject (obj) as CorArrayValue;
+			if (array != null)
+				return array.GetDimensions ();
+			else
+				return new int[0];
 		}
 		
-		public CorValue GetElement (int[] indices)
+		public CorValRef GetElement (int[] indices)
 		{
-			return array.GetElement (indices);
+			return new CorValRef (delegate {
+				CorArrayValue array = CorObjectAdaptor.GetRealObject (obj) as CorArrayValue;
+				if (array != null)
+					return array.GetElement (indices);
+				else
+					return null;
+			});
 		}
 		
-		public void SetElement (int[] indices, CorValue val)
+		public void SetElement (int[] indices, CorValRef val)
 		{
-			CorValue aval = array.GetElement (indices);
-			CorGenericValue gval = aval.CastToGenericValue ();
-			CorGenericValue g = val.CastToGenericValue ();
-			if (gval != null && g != null)
-				gval.SetValue (g.GetValue ());
+			CorValRef it = GetElement (indices);
+			it.SetValue (ctx, val);
 		}
 		
 		public CorType ElementType {
 			get {
-				return array.ExactType;
+				return obj.Val.ExactType;
 			}
 		}
 
-		public ObjectValue CreateElementValue (ArrayElementGroup<CorValue, CorType> grp, ObjectPath path, int[] indices)
+		public ObjectValue CreateElementValue (ArrayElementGroup<CorValRef, CorType> grp, ObjectPath path, int[] indices)
 		{
-			CorValue elem = array.GetElement (indices);
-			return ctx.Adapter.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);
+			CorArrayValue array = CorObjectAdaptor.GetRealObject (obj) as CorArrayValue;
+			if (array != null) {
+				CorValRef elem = GetElement (indices);
+				return ctx.Adapter.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);
+			}
+			else
+				return ObjectValue.CreateUnknown ("?");
 		}
 	}
 }

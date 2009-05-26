@@ -31,7 +31,9 @@ using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Evaluation
 {
-	public class RawViewSource<TValue,TType>: RemoteFrameObject, IObjectValueSource
+	public class RawViewSource<TValue, TType>: RemoteFrameObject, IObjectValueSource
+		where TValue: class
+		where TType: class
 	{
 		TValue obj;
 		EvaluationContext<TValue, TType> ctx;

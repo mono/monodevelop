@@ -17,14 +17,21 @@ namespace MonoDevelop.Debugger.Win32
 	{
 		CorThread thread;
 		CorDebuggerSession session;
-		List<CorFrame> frames = new List<CorFrame> ();
+		List<CorFrame> frames;
 
 		public CorBacktrace (CorThread thread, CorDebuggerSession session)
 		{
 			this.session = session;
 			this.thread = thread;
-			foreach (CorFrame frame in thread.ActiveChain.Frames)
-				frames.Add (frame);
+			frames = new List<CorFrame> (GetFrames (thread));
+		}
+
+		internal static IEnumerable<CorFrame> GetFrames (CorThread thread)
+		{
+			foreach (CorChain chain in thread.Chains) {
+				foreach (CorFrame frame in chain.Frames)
+					yield return frame;
+			}
 		}
 
 		CorEvaluationContext GetEvaluationContext (int frameIndex, int timeout)
@@ -32,9 +39,8 @@ namespace MonoDevelop.Debugger.Win32
 			if (timeout == -1)
 				timeout = session.ObjectAdapter.DefaultEvaluationTimeout;
 			CorFrame frame = frames[frameIndex];
-			CorEvaluationContext ctx = new CorEvaluationContext (session);
+			CorEvaluationContext ctx = new CorEvaluationContext (session, frame, frameIndex);
 			ctx.Thread = thread;
-			ctx.Frame = frame;
 			ctx.Timeout = timeout;
 			return ctx;
 		}
@@ -100,62 +106,70 @@ namespace MonoDevelop.Debugger.Win32
 				lastIndex = frames.Count - 1;
 			StackFrame[] array = new StackFrame[lastIndex - firstIndex + 1];
 			for (int n = 0; n < array.Length; n++)
-				array[n] = CreateFrame (frames[n + firstIndex]);
+				array[n] = CreateFrame (session, frames[n + firstIndex]);
 			return array;
 		}
 
-		StackFrame CreateFrame (CorFrame frame)
+		internal static StackFrame CreateFrame (CorDebuggerSession session, CorFrame frame)
 		{
-			uint address;
+			uint address = 0;
 			string file = "";
 			int line = 0;
 			string method = "";
 			string lang = "";
 			string module = "";
-			frame.GetNativeIP (out address);
 
-			if (frame.Function != null)
-				module = frame.Function.Module.Name;
-
-			if (frame.FrameType == CorFrameType.ILFrame && frame.Function != null) {
-				CorMetadataImport importer = new CorMetadataImport (frame.Function.Module);
-				MethodInfo mi = importer.GetMethodInfo (frame.Function.Token);
-				method = mi.Name;
-				ISymbolReader reader = session.GetReaderForModule (frame.Function.Module.Name);
-				if (reader != null) {
-					ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
-					if (met != null) {
-						uint offset;
-						CorDebugMappingResult mappingResult;
-						frame.GetIP (out offset, out mappingResult);
-						SequencePoint prevSp = null;
-						foreach (SequencePoint sp in met.GetSequencePoints ()) {
-							if (sp.Offset > offset)
-								break;
-							prevSp = sp;
-						}
-						if (prevSp != null) {
-							line = prevSp.Line;
-							file = prevSp.Document.URL;
+			if (frame.FrameType == CorFrameType.ILFrame) {
+				if (frame.Function != null) {
+					module = frame.Function.Module.Name;
+					CorMetadataImport importer = new CorMetadataImport (frame.Function.Module);
+					MethodInfo mi = importer.GetMethodInfo (frame.Function.Token);
+					method = mi.DeclaringType.FullName + "." + mi.Name;
+					ISymbolReader reader = session.GetReaderForModule (frame.Function.Module.Name);
+					if (reader != null) {
+						ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
+						if (met != null) {
+							uint offset;
+							CorDebugMappingResult mappingResult;
+							frame.GetIP (out offset, out mappingResult);
+							SequencePoint prevSp = null;
+							foreach (SequencePoint sp in met.GetSequencePoints ()) {
+								if (sp.Offset > offset)
+									break;
+								prevSp = sp;
+							}
+							if (prevSp != null) {
+								line = prevSp.Line;
+								file = prevSp.Document.URL;
+							}
 						}
 					}
 				}
 				lang = "Managed";
 			}
 			else if (frame.FrameType == CorFrameType.NativeFrame) {
+				frame.GetNativeIP (out address);
 				method = "<Unknown>";
 				lang = "Native";
 			}
-			else {
-				method = "<Unknown>";
+			else if (frame.FrameType == CorFrameType.NativeFrame) {
+				switch (frame.InternalFrameType) {
+					case CorDebugInternalFrameType.STUBFRAME_M2U: method = "[Managed to Native Transition]"; break;
+					case CorDebugInternalFrameType.STUBFRAME_U2M: method = "[Native to Managed Transition]"; break;
+					case CorDebugInternalFrameType.STUBFRAME_LIGHTWEIGHT_FUNCTION: method = "[Lightweight Method Call]"; break;
+					case CorDebugInternalFrameType.STUBFRAME_APPDOMAIN_TRANSITION: method = "[Application Domain Transition]"; break;
+					case CorDebugInternalFrameType.STUBFRAME_FUNC_EVAL: method = "[Function Evaluation]"; break;
+				}
 			}
+			if (method == null)
+				method = "<Unknown>";
 			return new StackFrame ((long) address, module, method, file, line, lang);
 		}
 
 		public ObjectValue GetThisReference (int frameIndex, int timeout)
 		{
 			CorEvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			ValueReference<CorValue, CorType> var = ctx.Adapter.GetThisReference (ctx);
+			ValueReference<CorValRef, CorType> var = ctx.Adapter.GetThisReference (ctx);
 			if (var != null)
 				return var.CreateObjectValue ();
 			else
