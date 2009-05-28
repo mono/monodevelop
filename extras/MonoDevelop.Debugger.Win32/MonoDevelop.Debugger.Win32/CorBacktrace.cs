@@ -152,7 +152,7 @@ namespace MonoDevelop.Debugger.Win32
 				method = "<Unknown>";
 				lang = "Native";
 			}
-			else if (frame.FrameType == CorFrameType.NativeFrame) {
+			else if (frame.FrameType == CorFrameType.InternalFrame) {
 				switch (frame.InternalFrameType) {
 					case CorDebugInternalFrameType.STUBFRAME_M2U: method = "[Managed to Native Transition]"; break;
 					case CorDebugInternalFrameType.STUBFRAME_U2M: method = "[Native to Managed Transition]"; break;
