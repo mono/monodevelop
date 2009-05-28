@@ -144,8 +144,8 @@ namespace MonoDevelop.Debugger
 			treeViewState.Save ();
 			
 			store.Clear ();
-			
-			if (DebuggingService.DebuggerSession == null)
+
+			if (DebuggingService.DebuggerSession == null || DebuggingService.DebuggerSession.IsRunning)
 				return;
 			
 			ProcessInfo[] currentProcesses = DebuggingService.DebuggerSession.GetPocesses ();
@@ -212,16 +212,19 @@ namespace MonoDevelop.Debugger
 		void OnDebuggerPaused (object s, EventArgs a)
 		{
 			Sensitive = true;
+			UpdateDisplay ();
 		}
 		
 		void OnDebuggerResumed (object s, EventArgs a)
 		{
 			Sensitive = false;
+			UpdateDisplay ();
 		}
 		
 		void OnDebuggerStopped (object s, EventArgs a)
 		{
 			Sensitive = false;
+			UpdateDisplay ();
 		}
 	}
 }

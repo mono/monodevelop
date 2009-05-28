@@ -1,3 +1,11 @@
+2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger\ThreadsPad.cs: Don't try to get the
+	  list of threads if the debugger is running.
+
+	* MonoDevelop.Debugger\DebugCommands.cs: Fix logic for
+	  checking if debugging is supported.
+
 2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger\ThreadsPad.cs:

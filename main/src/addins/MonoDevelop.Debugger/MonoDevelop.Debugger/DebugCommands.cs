@@ -137,9 +137,11 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (IdeApp.Workspace.IsOpen) {
+				bool canExecute = IdeApp.ProjectOperations.CanDebug (IdeApp.Workspace) ||
+					 (!DebuggingService.IsDebuggingSupported && IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace));
+
 				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted &&
-					(IdeApp.ProjectOperations.CanDebug (IdeApp.Workspace) ||
-					 IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace)) &&
+					canExecute &&
 					!(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace);
 			} else {
 				Document doc = IdeApp.Workbench.ActiveDocument;
