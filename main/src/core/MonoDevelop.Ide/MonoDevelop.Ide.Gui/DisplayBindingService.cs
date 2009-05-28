@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static IDisplayBinding GetBinding (string uri, string mimeType)
 		{
-			return RealDisplayBindings.FirstOrDefault (binding => binding.CanCreateContentForUri (uri) || binding.CanCreateContentForMimeType (mimeType));
+			return RealDisplayBindings.FirstOrDefault (binding => (uri != null && binding.CanCreateContentForUri (uri)) || (mimeType != null && binding.CanCreateContentForMimeType (mimeType)));
 		}
 		
 		public static IEnumerable<IDisplayBinding> GetBindingsForMimeType (string mimeType)

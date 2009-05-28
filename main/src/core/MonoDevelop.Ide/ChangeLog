@@ -1,3 +1,11 @@
+2009-05-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Don't
+	  try to remove invalid iters from the nodeOptions hash, since
+	  invalid iters can't generate a hash.
+
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs: Fix null ref.
+
 2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Avoid throwing

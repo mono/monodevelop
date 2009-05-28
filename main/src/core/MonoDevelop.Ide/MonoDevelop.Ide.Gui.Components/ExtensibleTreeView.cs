@@ -405,6 +405,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				TransactedNodeStore store = transactionStore;
 				transactionStore = null;
 				store.CommitChanges ();
+				CleanupNodeOptions ();
 			}
 		}
 
@@ -1269,7 +1270,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 			
-			nodeOptions.Remove (iter);
+			if (store.IterIsValid (iter))
+				nodeOptions.Remove (iter);
 			object currentIt = nodeHash [dataObject];
 			if (currentIt is Gtk.TreeIter[]) {
 				Gtk.TreeIter[] arr = (Gtk.TreeIter[]) currentIt;
@@ -1288,6 +1290,16 @@ namespace MonoDevelop.Ide.Gui.Components
 				nodeHash.Remove (dataObject);
 				NotifyNodeRemoved (dataObject, chain);
 			}
+		}
+		
+		internal void CleanupNodeOptions ()
+		{
+			Dictionary<Gtk.TreeIter, TreeOptions> newOps = new Dictionary<Gtk.TreeIter, TreeOptions> ();
+			foreach (KeyValuePair<Gtk.TreeIter,TreeOptions> val in nodeOptions) {
+				if (store.IterIsValid (val.Key))
+					newOps [val.Key] = val.Value;
+			}
+			nodeOptions = newOps;
 		}
 				
 		void NotifyNodeRemoved (object dataObject, NodeBuilder[] chain)
