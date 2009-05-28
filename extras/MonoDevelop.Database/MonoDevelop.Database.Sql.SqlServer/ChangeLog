@@ -1,3 +1,13 @@
+2009-05-27 Luciano N. Callero <lnc19@hotmail.com>
+	* MonoDevelop.Database.Sql.SqlServer.csproj: Include ChangeLog into the project.
+	* SqlServerSchemaProvider: Replace string + string with string.concat/string.format for performance.
+	  Format sql tu use mult-line string and to make sql readable.
+	  Use of using statement where is supported.
+	  Code clean.
+	  Fix alter procedure bugs.
+	  Detect system and user tables differences.
+	  Implemente Create Procedure.
+
 2009-04-23 Luciano N. Callero <lnc19@hotmail.com>
 	* SqlServerSchemaProvider.cs: Implement a custom GetTableTriggers
 	  fix a create table bug.

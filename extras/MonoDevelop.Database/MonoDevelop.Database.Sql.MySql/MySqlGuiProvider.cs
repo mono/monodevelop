@@ -71,9 +71,9 @@ using MonoDevelop.Database.Components;
 		public bool ShowProcedureEditorDialog (IEditSchemaProvider schemaProvider, ProcedureSchema procedure, bool create)
 		{
 			ProcedureEditorSettings settings = new ProcedureEditorSettings ();
+			settings.ShowName = false;
 			ProcedureEditorDialog dlg = new ProcedureEditorDialog (schemaProvider, create, settings);
 			dlg.Initialize (procedure);
-
 			return RunDialog (dlg);
 		}
 

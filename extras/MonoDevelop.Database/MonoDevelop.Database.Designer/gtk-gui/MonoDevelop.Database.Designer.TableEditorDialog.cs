@@ -41,7 +41,6 @@ namespace MonoDevelop.Database.Designer {
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.SkipTaskbarHint = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Database.Designer.TableEditorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

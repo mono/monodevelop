@@ -1,3 +1,8 @@
+2009-05-27 Luciano N. Callero <lnc19@hotmail.com>
+	* MonoDevelop.Database.ConnectionManager.csproj: Include ChangeLog into project.
+	* NodeBuilders/ProcedureNodeBuilders.cs: Show differents image for functions and stored procedures.
+	  Implement alter procedure.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.ConnectionManager.csproj: Flush.

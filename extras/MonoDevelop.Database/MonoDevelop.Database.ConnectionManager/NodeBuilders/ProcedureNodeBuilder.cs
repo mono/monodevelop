@@ -75,9 +75,12 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			ProcedureNode node = dataObject as ProcedureNode;
 			node.RefreshEvent += (EventHandler)DispatchService.GuiDispatch (RefreshHandler);
-
+			
 			label = node.Procedure.Name;
-			icon = Context.GetIcon ("md-db-procedure");
+			if (node.Procedure.IsFunction)
+				icon = Context.GetIcon ("md-db-function");
+			else
+				icon = Context.GetIcon ("md-db-procedure");
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -168,17 +171,19 @@ namespace MonoDevelop.Database.ConnectionManager
 			ProcedureNode node = CurrentNode.DataItem as ProcedureNode;
 			IDbFactory fac = node.ConnectionContext.DbFactory;
 			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
-			
-			if (fac.GuiProvider.ShowProcedureEditorDialog (schemaProvider, node.Procedure, false))
-				ThreadPool.QueueUserWorkItem (new WaitCallback (OnAlterProcedureThreaded), CurrentNode.DataItem);
+			ProcedureSchema alterProc = (ProcedureSchema)node.Procedure.Clone ();
+			if (fac.GuiProvider.ShowProcedureEditorDialog (schemaProvider, alterProc, false))
+				ThreadPool.QueueUserWorkItem (new WaitCallback (OnAlterProcedureThreaded), alterProc);
 		}
 		
 		private void OnAlterProcedureThreaded (object state)
 		{
-//			ProcedureNode node = (ProcedureNode)state;
-//			IEditSchemaProvider provider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
-//			
-//			provider.AlterProcedure (node.Procedure);
+			ProcedureNode node = CurrentNode.DataItem as ProcedureNode;
+			IDbFactory fac = node.ConnectionContext.DbFactory;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			ProcedureAlterSchema alterSchema = new ProcedureAlterSchema (node.Procedure, (ProcedureSchema)((ProcedureSchema)state).Clone ());
+			schemaProvider.AlterProcedure (alterSchema);
+			OnRefreshParent ();
 		}
 		
 		[CommandHandler (ConnectionManagerCommands.DropProcedure)]

@@ -24,6 +24,7 @@ RES =  \
 	icons/Icons.16x16.Database.Database.Ok.png \
 	icons/Icons.16x16.Database.Database.png \
 	icons/Icons.16x16.Database.Execute.png \
+	icons/Icons.16x16.Database.Function.png \
 	icons/Icons.16x16.Database.Parameter.png \
 	icons/Icons.16x16.Database.Procedure.Error.png \
 	icons/Icons.16x16.Database.Procedure.png \

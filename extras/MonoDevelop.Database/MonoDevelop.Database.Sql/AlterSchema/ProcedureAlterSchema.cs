@@ -39,8 +39,6 @@ namespace MonoDevelop.Database.Sql
 		protected override void DetermineDifferences (ProcedureSchema oldSchema, ProcedureSchema newSchema)
 		{
 			base.DetermineDifferences (oldSchema, newSchema);
-			
-			//TODO:
 		}
 	}
 }

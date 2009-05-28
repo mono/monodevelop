@@ -68,6 +68,7 @@
 		<StockIcon stockid = "md-db-procedure-error" resource = "Icons.16x16.Database.Procedure.Error.png" />
 		<StockIcon stockid = "md-db-procedure" resource = "Icons.16x16.Database.Procedure.png" />
 		<StockIcon stockid = "md-db-procedure-source" resource = "Icons.16x16.Database.Procedure.Source.png" />
+		<StockIcon stockid = "md-db-function" resource = "Icons.16x16.Database.Function.png" />
 		<StockIcon stockid = "md-db-relations" resource = "Icons.16x16.Database.Relations.png" />
 		<StockIcon stockid = "md-db-table-error" resource = "Icons.16x16.Database.Table.Error.png" />
 		<StockIcon stockid = "md-db-table" resource = "Icons.16x16.Database.Table.png" />

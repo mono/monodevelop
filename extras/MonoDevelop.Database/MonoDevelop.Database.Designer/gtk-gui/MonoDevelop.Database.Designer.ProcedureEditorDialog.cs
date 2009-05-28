@@ -17,7 +17,7 @@ namespace MonoDevelop.Database.Designer {
         
         private Gtk.HBox hboxName;
         
-        private Gtk.Label label7;
+        private Gtk.Label nameLabel;
         
         private Gtk.Entry entryName;
         
@@ -36,7 +36,6 @@ namespace MonoDevelop.Database.Designer {
             // Widget MonoDevelop.Database.Designer.ProcedureEditorDialog
             this.Name = "MonoDevelop.Database.Designer.ProcedureEditorDialog";
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Database.Designer.ProcedureEditorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
@@ -51,12 +50,12 @@ namespace MonoDevelop.Database.Designer {
             this.hboxName.Name = "hboxName";
             this.hboxName.Spacing = 6;
             // Container child hboxName.Gtk.Box+BoxChild
-            this.label7 = new Gtk.Label();
-            this.label7.Name = "label7";
-            this.label7.Xalign = 0F;
-            this.label7.LabelProp = AddinCatalog.GetString("Name");
-            this.hboxName.Add(this.label7);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hboxName[this.label7]));
+            this.nameLabel = new Gtk.Label();
+            this.nameLabel.Name = "nameLabel";
+            this.nameLabel.Xalign = 0F;
+            this.nameLabel.LabelProp = AddinCatalog.GetString("Name");
+            this.hboxName.Add(this.nameLabel);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hboxName[this.nameLabel]));
             w2.Position = 0;
             w2.Expand = false;
             w2.Fill = false;

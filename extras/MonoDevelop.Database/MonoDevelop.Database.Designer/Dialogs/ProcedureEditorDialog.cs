@@ -46,14 +46,15 @@ namespace MonoDevelop.Database.Designer
 		
 		private CommentEditorWidget commentEditor;
 		private SqlEditorWidget sqlEditor;
+		private ProcedureEditorSettings settings;
 		
 		public ProcedureEditorDialog (IEditSchemaProvider schemaProvider, bool create, ProcedureEditorSettings settings)
 		{
 			if (schemaProvider == null)
 				throw new ArgumentNullException ("schemaProvider");
-
+			
+			this.settings = settings;
 			this.schemaProvider = schemaProvider;
-			this.procedure = procedure;
 			this.action = create ? SchemaActions.Create : SchemaActions.Alter;
 			
 			this.Build();
@@ -73,6 +74,11 @@ namespace MonoDevelop.Database.Designer
 				commentEditor = new CommentEditorWidget ();
 				notebook.AppendPage (commentEditor, new Label (AddinCatalog.GetString ("Comment")));
 			}
+			
+			if (!settings.ShowName) {
+				nameLabel.Visible = false;
+				entryName.Visible = false;
+			}
 
 			vboxContent.PackStart (notebook, true, true, 0);
 			vboxContent.ShowAll ();
@@ -84,20 +90,25 @@ namespace MonoDevelop.Database.Designer
 			if (procedure == null)
 				throw new ArgumentNullException ("procedure");
 			
+			this.procedure = procedure;
 			entryName.Text = procedure.Name;
 
-			if (action == SchemaActions.Create || action == SchemaActions.Alter) {
+			if (action == SchemaActions.Alter) {
 				sqlEditor.Text = schemaProvider.GetProcedureAlterStatement (procedure);
 				if (commentEditor != null)
 					commentEditor.Comment = procedure.Comment;
-			}
+			} else 
+				sqlEditor.Text = procedure.Definition;
 		}
 
 		protected virtual void OkClicked (object sender, EventArgs e)
 		{
-			procedure.Name = entryName.Text;
+			if (settings.ShowName)
+				procedure.Name = entryName.Text;
 			procedure.Definition = sqlEditor.Text;
-			procedure.Comment = commentEditor.Comment;
+			
+			if (settings.ShowComment)
+				procedure.Comment = commentEditor.Comment;
 			
 			Respond (ResponseType.Ok);
 			Hide ();
@@ -139,11 +150,17 @@ namespace MonoDevelop.Database.Designer
 	
 	public class ProcedureEditorSettings
 	{
-		private bool showComment = false;
-
+		bool showComment = false;
+		bool showName = true;
+		
 		public bool ShowComment {
 			get { return showComment; }
 			set { showComment = value; }
+		}
+		
+		public bool ShowName {
+			get { return showName; }
+			set { showName = value; }
 		}
 	}
 }

@@ -1,3 +1,18 @@
+2009-05-27 Luciano N. Callero <lnc19@hotmail.com>
+	* MonoDevelop.Database.Designer.csproj: Include ChangeLog into project.
+	* Dialogs/ProcedureEditorDialog.cs: Fix NullReferenceException. 
+	  No show comment as default.
+	* gtk-gui/gui.stetic: Changes after rebuild the gui.
+	* gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs: 
+	* gtk-gui/MonoDevelop.Database.Designer.PreviewDialog.cs: 
+	* gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs: 
+	* gtk-gui/MonoDevelop.Database.Designer.UserEditorDialog.cs: 
+	* gtk-gui/MonoDevelop.Database.Designer.ViewEditorDialog.cs: 	
+	* gtk-gui/object.xml: 	
+	  Changes after rebuild the gui.
+	* gtk-gui/MonoDevelop.Database.Designer.ProcedureEditorDialog.cs: Hide some widget for some operations.
+	
+
 2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* gtk-gui/gui.stetic:

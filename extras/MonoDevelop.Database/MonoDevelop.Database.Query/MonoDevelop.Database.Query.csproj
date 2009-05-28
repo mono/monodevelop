@@ -211,6 +211,9 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\Icons.16x16.Database.Function.png">
+      <LogicalName>Icons.16x16.Database.Function.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="QueryResultView.cs" />

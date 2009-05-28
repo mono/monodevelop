@@ -1,3 +1,13 @@
+2009-05-27  Luciano N. Callero <lnc19@hotmail.com>
+	* MonoDevelop.Database.Sql.MySql.csproj: Add ChangeLog into the project.
+	* MySqlGuiProvider.cs: Don't show Name entry on alter/create procedure beacause isn't needed.
+	* MySqlSchemaProvider.cs: Code clean.
+	  Replace string + string with string.concat/string.format for performance.
+	  Format sql tu use mult-line string and to make sql readable.
+	  Use of using statement where is supported.
+	  Fix alter procedure bugs.
+	  Remove unneeded comments. (old code)
+
 2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* MySqlGuiProvider.cs: Fix Preview Dialog. Cancel the dialog

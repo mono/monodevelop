@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //	Christian Hergert  <chris@mosaix.net>
 //	Ben Motmans  <ben.motmans@gmail.com>
@@ -36,8 +36,9 @@ using MonoDevelop.Core;
 {
 	public class NpgsqlSchemaProvider : AbstractEditSchemaProvider
 	{
-		public NpgsqlSchemaProvider (IConnectionPool connectionPool)
-			: base (connectionPool)
+		int lastSystemOID = 0;
+		
+		public NpgsqlSchemaProvider (IConnectionPool connectionPool): base (connectionPool)
 		{
 			AddSupportedSchemaActions (SchemaType.Database, SchemaActions.All);
 			AddSupportedSchemaActions (SchemaType.Table, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
@@ -57,65 +58,43 @@ using MonoDevelop.Core;
 		public override TableSchemaCollection GetTables ()
 		{
 			TableSchemaCollection tables = new TableSchemaCollection ();
-			
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT DISTINCT c.relname, n.nspname, u.usename "
-				+ "FROM pg_class c, pg_namespace n, pg_user u "
-				+ "WHERE c.relnamespace = n.oid "
-				+ "AND c.relowner = u.usesysid "
-				+ "AND c.relkind='r' AND NOT EXISTS "
-				+ "   (SELECT 1 FROM pg_rewrite r "
-				+ "      WHERE r.ev_class = c.oid AND r.ev_type = '1') "
-				+ "ORDER BY relname;"
-			);		
-			
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read ()) {
-							TableSchema table = new TableSchema (this);
-		
-							table.Name = r.GetString (0);
-							table.IsSystemTable = table.Name.StartsWith ("pg_") || table.Name.StartsWith ("sql_");
-							table.SchemaName = r.GetString (1);
-							table.OwnerName = r.GetString (2);
-							
-//							StringBuilder sb = new StringBuilder();
-//							sb.AppendFormat ("-- Table: {0}\n", table.Name);
-//							sb.AppendFormat ("-- DROP TABLE {0};\n\n", table.Name);
-//							sb.AppendFormat ("CREATE TABLE {0} (\n", table.Name);
-//							
-//							ColumnSchema[] columns = table.Columns;
-//							string[] parts = new string[columns.Length];
-//							for (int i = 0; i < parts.Length; i++) {
-//								parts[i] = "\t" + columns[i].Definition;
-//							}
-//							sb.Append (String.Join (",\n", parts));
-//							
-//							ConstraintSchema[] cons = table.Constraints;
-//							parts = new string[cons.Length];
-//							if (cons.Length > 0)
-//								sb.Append (",\n");
-//							for (int i = 0; i < parts.Length; i++) {
-//								parts[i] = "\t" + cons[i].Definition;
-//							}
-//							sb.Append (String.Join (",\n", parts));
-//							
-//							sb.Append ("\n);\n");
-//							sb.AppendFormat ("COMMENT ON TABLE {0} IS '{1}';", table.Name, table.Comment);
-//							table.Definition = sb.ToString();
-							
-							tables.Add (table);
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (
+					@"SELECT DISTINCT 
+						c.relname, 
+						n.nspname, 
+						u.usename
+					FROM 
+						pg_class c, 
+						pg_namespace n, 
+						pg_user u
+					WHERE 	
+						c.relnamespace = n.oid
+						AND c.relowner = u.usesysid
+						AND c.relkind='r' 
+						AND NOT EXISTS
+							(SELECT 1 FROM pg_rewrite r WHERE r.ev_class = c.oid AND r.ev_type = '1')
+					ORDER BY relname;")) {
+					try {
+						using (IDataReader r = command.ExecuteReader()) {
+							while (r.Read ()) {
+								TableSchema table = new TableSchema (this);
+								table.Name = r.GetString (0);
+								table.IsSystemTable = table.Name.StartsWith ("pg_") || table.Name.StartsWith ("sql_");
+								table.SchemaName = r.GetString (1);
+								table.OwnerName = r.GetString (2);
+								// TODO: Fill table.Definition
+								tables.Add (table);
+							}
+							r.Close ();
 						}
-						r.Close ();
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
 					}
 				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
 			}
-			conn.Release ();
-
 			return tables;
 		}
 		
@@ -123,107 +102,102 @@ using MonoDevelop.Core;
 		{
 			ColumnSchemaCollection columns = new ColumnSchemaCollection ();
 			
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT a.attname, a.attnotnull, a.attlen, "
-				+ "typ.typname, adef.adsrc "
-				+ "FROM "
-				+ "  pg_catalog.pg_attribute a LEFT JOIN "
-				+ "  pg_catalog.pg_attrdef adef "
-				+ "  ON a.attrelid=adef.adrelid "
-				+ "  AND a.attnum=adef.adnum "
-				+ "  LEFT JOIN pg_catalog.pg_type t ON a.atttypid=t.oid, "
-				+ "  pg_catalog.pg_type typ "
-				+ "WHERE "
-				+ "  a.attrelid = (SELECT oid FROM pg_catalog.pg_class "
-				+ "  WHERE relname='" + table.Name + "') "
-				+ "AND a.attnum > 0 AND NOT a.attisdropped "
-				+ "AND a.atttypid = typ.oid "
-				+ "ORDER BY a.attnum;"
-			);
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read ()) {
-							ColumnSchema column = new ColumnSchema (this, table);
-			
-							column.Name = r.GetString (0);
-							column.DataTypeName = r.GetString (3);
-							column.IsNullable = r.GetBoolean (1);
-							column.DefaultValue = r.IsDBNull (4) ? null : r.GetString (4);
-							// column.DataType.LengthRange.Default = (int)r.GetValue (2);
-					
-//							StringBuilder sb = new StringBuilder();
-//							sb.AppendFormat("{0} {1}{2}",
-//								column.Name,
-//								column.DataTypeName,
-//								(column.DataType.LengthRange.Default > 0) ? ("(" + column.DataType.LengthRange.Default + ")") : "");
-//							sb.AppendFormat(" {0}", column.IsNullable ? "NULL" : "NOT NULL");
-//							if (column.DefaultValue.Length > 0)
-//								sb.AppendFormat(" DEFAULT {0}", column.DefaultValue);
-//							column.Definition = sb.ToString();
-			
-							columns.Add (column);
-						}
-						r.Close ();
-					};
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (string.Format(
+					@"SELECT 
+						a.attname, 
+						a.attnotnull, 
+						a.attlen,
+						typ.typname, 
+						adef.adsrc 
+					FROM
+						pg_catalog.pg_attribute a, 
+						pg_catalog.pg_type typ
+					LEFT JOIN pg_catalog.pg_attrdef adef ON 
+						a.attrelid=adef.adrelid
+						AND a.attnum=adef.adnum
+					LEFT JOIN pg_catalog.pg_type t ON 
+						a.atttypid=t.oid
+					WHERE
+						a.attrelid = 
+							(SELECT oid 
+							FROM pg_catalog.pg_class
+							WHERE relname='{0}')
+						AND a.attnum > 0 
+						AND NOT a.attisdropped
+						AND a.atttypid = typ.oid
+					ORDER BY a.attnum;", table.Name))) {
+					try {
+							using (IDataReader r = command.ExecuteReader()) {
+								while (r.Read ()) {
+									ColumnSchema column = new ColumnSchema (this, table);
+									column.Name = r.GetString (0);
+									column.DataTypeName = r.GetString (3);
+									column.IsNullable = r.GetBoolean (1);
+									column.DefaultValue = r.IsDBNull (4) ? null : r.GetString (4);
+									// TODO: fill column.Definition
+									columns.Add (column);
+								}
+								r.Close ();
+							}
+					} catch (NpgsqlException ex) {
+						// Don't raise error, if the table doesn't exists return an empty collection
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
+					}
 				}
-			} catch (NpgsqlException ex) {
-				// Don't raise error, if the table doesn't exists return an empty collection
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
 			}
-			conn.Release ();
-
 			return columns;
 		}
 
 		public override ViewSchemaCollection GetViews ()
 		{
 			ViewSchemaCollection views = new ViewSchemaCollection ();
-
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT v.schemaname, v.viewname, v.viewowner, v.definition,"
-				+ " (c.oid <= " + LastSystemOID + "), "
-				+ "(SELECT description from pg_description pd, "
-				+ " pg_class pc WHERE pc.oid=pd.objoid AND pc.relname="
-				+ " v.viewname) "
-				+ "FROM pg_views v, pg_class c "
-				+ "WHERE v.viewname = c.relname "
-				+ "ORDER BY viewname"
-			);
-
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read ()) {
-							ViewSchema view = new ViewSchema (this);
-		
-							view.Name = r.GetString (1);
-							view.OwnerName = r.GetString (2);
-							view.SchemaName = r.GetString (0);
-							view.IsSystemView = r.GetBoolean (4);
-							view.Comment = r.IsDBNull (5) ? null : r.GetString (5);
-							
-//							StringBuilder sb = new StringBuilder();
-//							sb.AppendFormat ("-- View: {0}\n", view.Name);
-//							sb.AppendFormat ("-- DROP VIEW {0};\n\n", view.Name);
-//							sb.AppendFormat ("CREATE VIEW {0} AS (\n", view.Name);
-//							string core = r.GetString(3);
-//							sb.AppendFormat ("  {0}\n);", core.Substring (0, core.Length-1));
-//							view.Definition = sb.ToString ();
-							
-							views.Add (view);
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (string.Format (
+					@"SELECT 
+						v.schemaname, 
+						v.viewname, 
+						v.viewowner, 
+						v.definition,
+						(c.oid <= {0}),
+						(SELECT 
+							description 
+						from 
+							pg_description pd,
+							pg_class pc 
+						WHERE 
+							pc.oid = pd.objoid 
+							AND pc.relname= v.viewname)
+					FROM 
+						pg_views v, 
+						pg_class c
+					WHERE 
+						v.viewname = c.relname
+					ORDER BY viewname", LastSystemOID))) {
+					try {
+						using (IDataReader r = command.ExecuteReader()) {
+							while (r.Read ()) {
+								ViewSchema view = new ViewSchema (this);
+								view.Name = r.GetString (1);
+								view.OwnerName = r.GetString (2);
+								view.SchemaName = r.GetString (0);
+								view.IsSystemView = r.GetBoolean (4);
+								view.Comment = r.IsDBNull (5) ? null : r.GetString (5);
+								// TODO: Fill view.Definition
+								views.Add (view);
+							}
+							r.Close ();
 						}
-						r.Close ();
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
 					}
 				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
 			}
-			conn.Release ();
-			
 			return views;
 		}
 
@@ -231,42 +205,46 @@ using MonoDevelop.Core;
 		{
 			ColumnSchemaCollection columns = new ColumnSchemaCollection ();
 			
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT attname, typname, attlen, attnotnull "
-				+ "FROM "
-				+ "  pg_catalog.pg_attribute a LEFT JOIN pg_catalog.pg_attrdef adef "
-				+ "  ON a.attrelid=adef.adrelid "
-				+ "  AND a.attnum=adef.adnum "
-				+ "  LEFT JOIN pg_catalog.pg_type t ON a.atttypid=t.oid "
-				+ "WHERE "
-				+ "  a.attrelid = (SELECT oid FROM pg_catalog.pg_class WHERE relname='"
-				+ view.Name + "') "
-				+ "  AND a.attnum > 0 AND NOT a.attisdropped "
-				+ "     ORDER BY a.attnum;"
-			);
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read ()) {
-							ColumnSchema column = new ColumnSchema (this, view);
-
-							column.Name = r.GetString(0);
-							column.DataTypeName = r.GetString (1);
-							column.SchemaName = view.SchemaName;
-							column.IsNullable = r.GetBoolean (3);
-							column.DataType.LengthRange.Default = r.GetInt32 (2);
-			
-							columns.Add (column);
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (string.Format (
+					@"SELECT 
+						attname, 
+						typname, 
+						attlen, 
+						attnotnull
+					FROM
+						pg_catalog.pg_attribute a 
+					LEFT JOIN pg_catalog.pg_attrdef adef ON 
+						a.attrelid = adef.adrelid
+						AND a.attnum = adef.adnum
+					LEFT JOIN pg_catalog.pg_type t ON 
+						a.atttypid = t.oid
+					WHERE
+						a.attrelid = (SELECT oid FROM pg_catalog.pg_class WHERE relname='{0}')
+						AND a.attnum > 0 
+						AND NOT a.attisdropped
+					ORDER BY a.attnum;", view.Name))) {
+					try {
+						using (IDataReader r = command.ExecuteReader()) {
+							while (r.Read ()) {
+								ColumnSchema column = new ColumnSchema (this, view);
+								column.Name = r.GetString(0);
+								column.DataTypeName = r.GetString (1);
+								column.SchemaName = view.SchemaName;
+								column.IsNullable = r.GetBoolean (3);
+								column.DataType.LengthRange.Default = r.GetInt32 (2);
+								// TODO: Fill column.Definition
+								columns.Add (column);
+							}
+							r.Close ();
 						}
-						r.Close ();
-					};
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
+					}				
 				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
 			}
-			conn.Release ();
-
 			return columns;
 		}
 
@@ -274,86 +252,234 @@ using MonoDevelop.Core;
 		{
 			ProcedureSchemaCollection procedures = new ProcedureSchemaCollection ();
 			
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT pc.proname, pc.oid::integer, pl.lanname, pc.prosrc "
-				+ "FROM "
-				+ " pg_proc pc, "
-				+ " pg_user pu, "
-				+ " pg_type pt, "
-				+ " pg_language pl "
-				+ "WHERE pc.proowner = pu.usesysid "
-				+ "AND pc.prorettype = pt.oid "
-				+ "AND pc.prolang = pl.oid "
-				+ "UNION "
-				+ "SELECT pc.proname, pt.oid::integer, pl.lanname, pc.prosrc "
-				+ "FROM "
-				+ " pg_proc pc, "
-				+ " pg_user pu, "
-				+ " pg_type pt, "
-				+ " pg_language pl "
-				+ "WHERE pc.proowner = pu.usesysid "
-				+ "AND pc.prorettype = 0 "
-				+ "AND pc.prolang = pl.oid;"
-			);
-			try {
-				using (command) {
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				// Exclude: Language Handler (2280) - Triggers (2279) - Void (2278)
+				using (IDbCommand command = conn.CreateCommand (
+						@"SELECT 
+							pc.proname, 
+							pc.oid::integer, 
+							pl.lanname, 
+							pc.prosrc, 
+							pc.procost, 
+							pc.provolatile,
+							pt.typname as rettypename,
+							pc.proargnames as argnames,
+							pc.proargmodes as argmodes,
+							pc.proallargtypes as argtypes
+						FROM 
+							pg_proc pc,
+							pg_user pu,
+							pg_type pt,
+							pg_language pl 
+						WHERE 
+							pc.proowner = pu.usesysid 
+							AND pc.prorettype = pt.oid 
+						    AND pc.prolang = pl.oid 
+							AND pc.prorettype not in (2278, 2279, 2280) 
+		
+						UNION 
+						
+						SELECT 
+							pc.proname, 
+							pt.oid::integer, 
+							pl.lanname, 
+							pc.prosrc, 
+							pc.procost, 
+							pc.provolatile,
+							pt.typname as rettypename,
+							pc.proargnames as argnames,
+							pc.proargmodes as argmodes,
+							pc.proallargtypes as argtypes
+						FROM 
+							pg_proc pc, 
+							pg_user pu, 
+							pg_type pt, 
+							pg_language pl 
+						WHERE 
+							pc.proowner = pu.usesysid 
+							AND pc.prorettype not in (2278, 2279, 2280) 
+							AND pc.prorettype = 0
+							AND pc.prolang = pl.oid;")) {
+					try {
 				    	using (IDataReader r = command.ExecuteReader()) {
-				    		while (r.Read ()) {
+							while (r.Read ()) {
 				    			ProcedureSchema procedure = new ProcedureSchema (this);
+								procedure.Name = r.GetString (0);
+								procedure.LanguageName = r.GetString (2);
+								if (!r.IsDBNull (1) && r.GetInt32 (1) < LastSystemOID)
+									procedure.IsSystemProcedure = true;
+								procedure.IsFunction = true;
 							
-							procedure.Name = r.GetString (0);
-							procedure.Definition = r.GetString (3);
-							procedure.LanguageName = r.GetString (2);
-							
-							if (!r.IsDBNull (1) && r.GetInt32 (1) <= LastSystemOID)
-								procedure.IsSystemProcedure = true;
-				    			
-				    			procedures.Add (procedure);
-				    		}
-						r.Close ();
-					}
+								// Procedure Definition
+								StringBuilder proc = new StringBuilder ();
+								if (procedure.IsFunction) {
+									string lang = r.GetString (2);
+									string proctype = string.Empty;
+									string retType = r.GetString (6);
+									
+									switch (r.GetString (5)) {
+										case "s":
+											proctype = "STABLE";
+											break;
+										case "i":
+											proctype = "INMUTABLE";
+											break;
+										default:
+											proctype = "VOLATILE";
+											break;
+									}
+									
+									float cost = r.GetFloat (4);
+									
+									proc.AppendFormat ("CREATE OR REPLACE FUNCTION {0} (", r.GetString (0));
+									// Get parameters collection
+									ParameterSchemaCollection pars = GetParams (r.GetValue (7).ToString (), 
+									                                            r.GetValue (8).ToString (), 
+																				r.GetValue (9).ToString (), conn);
+									bool first = true;
+									// Set Parameters list
+									foreach (ParameterSchema p in pars) {
+										if (!first) {
+											proc.Append (", ");
+										}
+										first = false;
+										proc.Append (p.ParameterType.ToString ());
+										if (p.Name != "") {
+											proc.AppendFormat (" {0}", p.Name);
+										}
+										proc.AppendFormat (" {0}", p.DataTypeName);
+									}
+									proc.Append (")");
+									if (lang == "edbspl")
+										proc.AppendFormat ("\nRETURN {0} AS \n", retType);
+									else
+										proc.AppendFormat ("\nRETURNS {0} AS \n", retType);
+									proc.AppendFormat ("$BODY$ {0} $BODY$\n", r.GetString (3));
+									proc.AppendFormat ("LANGUAGE '{0}' {1}\n", lang, proctype);
+									proc.AppendFormat ("COST {0};\n", cost.ToString ());
+								}
+								procedure.Definition = proc.ToString ();
+								procedures.Add (procedure);
+							}
+							r.Close ();
+						}
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
+					}					
 				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
 			}
-			conn.Release ();
-			
 			return procedures;
+		}
+		
+		private ParameterSchemaCollection GetParams (string names, string directions, string types, IPooledDbConnection conn)
+		{
+			ParameterSchemaCollection pars = new ParameterSchemaCollection ();
+			
+			if (names == string.Empty || directions == string.Empty || types == String.Empty)
+				return pars;
+			
+			// Array always start with { and end with }
+			if (!names.StartsWith ("{") || !names.EndsWith ("}"))
+				throw new ArgumentOutOfRangeException ("names");
+			
+			string[] namesArray = names.Substring(1, names.Length -2).Split (',');
+			string[] directionsArray = directions.Substring(1, directions.Length -2).Split (',');
+			string[] typesArray = types.Substring(1, types.Length -2).Split (',');
+			
+			for (int idx = 0; idx < namesArray.Length; idx++) {
+				ParameterSchema ps = new ParameterSchema (this);
+				// Name
+				if (namesArray[idx] != "\"\"") 
+					ps.Name = namesArray[idx];
+				
+				// Direction
+				string d = directionsArray[idx];
+				if (d == "i")
+					ps.ParameterType = ParameterType.In;
+				else if (d == "o")
+					ps.ParameterType = ParameterType.Out;
+				else
+					ps.ParameterType = ParameterType.InOut;
+				
+				// Type
+				using (IDbCommand cmd = conn.CreateCommand (string.Format (
+					"select format_type(oid, null) from pg_type WHERE oid = '{0}'::oid", typesArray[idx]))) {
+					using (IDataReader r = cmd.ExecuteReader()) 
+						if (r.Read ())
+							ps.DataTypeName = r.GetString (0);
+				}
+				pars.Add (ps);
+			}
+			return pars;
 		}
 		
 		public override ParameterSchemaCollection GetProcedureParameters (ProcedureSchema procedure)
 		{
-			ParameterSchemaCollection parameters = new ParameterSchemaCollection ();
-			
-			// FIXME: Won't work properly with overload functions.
-			// Maybe check the number of columns in the parameters for
-			// proper match.
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (String.Format (
-				"SELECT format_type (prorettype, NULL) "
-				+ "FROM pg_proc pc, pg_language pl "
-				+ "WHERE pc.prolang = pl.oid "
-				+ "AND pc.proname = '{0}';", procedure.Name
-			));
-			try {
-			using (command) {
-			    	using (IDataReader r = command.ExecuteReader()) {
-			    		while (r.Read ()) {	
-						ParameterSchema param = new ParameterSchema (this);
-
-						param.DataTypeName = r.GetString (0);
-						param.Name = r.GetString (0);
-						parameters.Add (param);
-			    		}
-					r.Close ();
+			ParameterSchemaCollection parameters = null;
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (String.Format (
+										@"SELECT 
+											pc.proname, 
+											pc.oid::integer, 
+											pl.lanname, 
+											pc.prosrc, 
+											pc.procost, 
+											pc.provolatile,
+											pt.typname as rettypename,
+											pc.proargnames as argnames,
+											pc.proargmodes as argmodes,
+											pc.proallargtypes as argtypes
+										FROM 
+											pg_proc pc,
+											pg_user pu,
+											pg_type pt,
+											pg_language pl 
+										WHERE 
+											pc.proowner = pu.usesysid 
+											AND pc.prorettype = pt.oid 
+										    AND pc.prolang = pl.oid 
+											AND pc.prorettype not in (2278, 2279, 2280) 
+											AND pc.proname = '{0}'
+						
+										UNION 
+										
+										SELECT 
+											pc.proname, 
+											pt.oid::integer, 
+											pl.lanname, 
+											pc.prosrc, 
+											pc.procost, 
+											pc.provolatile,
+											pt.typname as rettypename,
+											pc.proargnames as argnames,
+											pc.proargmodes as argmodes,
+											pc.proallargtypes as argtypes
+										FROM 
+											pg_proc pc, 
+											pg_user pu, 
+											pg_type pt, 
+											pg_language pl 
+										WHERE 
+											pc.proowner = pu.usesysid 
+											AND pc.prorettype not in (2278, 2279, 2280) 
+											AND pc.prorettype = 0
+											AND pc.prolang = pl.oid
+											AND pc.proname = '{0}';", procedure.Name))) {
+					try {
+						using (IDataReader r = command.ExecuteReader()) {
+					    	if (r.Read ())
+								parameters = GetParams (r.GetValue (7).ToString (), r.GetValue (8).ToString (), r.GetValue (9).ToString (), conn);
+							r.Close ();
+						}
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
+					}
 				}
 			}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
-			}
-			conn.Release ();
-			
 			return parameters;
 		}
 
@@ -361,84 +487,84 @@ using MonoDevelop.Core;
 		{
 			ConstraintSchemaCollection constraints = new ConstraintSchemaCollection ();
 			
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (String.Format (
-				"SELECT "
-				+ "pc.conname, "
-				+ "pg_catalog.pg_get_constraintdef(pc.oid, true) AS consrc, "
-				+ "pc.contype, "
-				+ "CASE WHEN pc.contype='u' OR pc.contype='p' THEN ( "
-				+ "	SELECT "
-				+ "		indisclustered "
-				+ "	FROM "
-				+ "		pg_catalog.pg_depend pd, "
-				+ "		pg_catalog.pg_class pl, "
-				+ "		pg_catalog.pg_index pi "
-				+ "	WHERE "
-				+ "		pd.refclassid=pc.tableoid "
-				+ "		AND pd.refobjid=pc.oid "
-				+ "		AND pd.objid=pl.oid "
-				+ "		AND pl.oid=pi.indexrelid "
-				+ ") ELSE "
-				+ "	NULL "
-				+ "END AS indisclustered "
-				+ "FROM "
-				+ "pg_catalog.pg_constraint pc "
-				+ "WHERE "
-				+ "pc.conrelid = (SELECT oid FROM pg_catalog.pg_class WHERE relname='{0}' "
-				+ "	AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace "
-				+ "	WHERE nspname='{1}')) "
-				+ "ORDER BY "
-				+ "1;", table.Name, table.SchemaName
-			));
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read ()) {	
-							ConstraintSchema constraint = null;
-											
-							//TODO: Add support for Check constraints.
-							switch (r.GetString (2)) {
-								case "f":
-									string match = @".*REFERENCES (.+)\(.*\).*";
-									constraint = new ForeignKeyConstraintSchema (this);
-									if (Regex.IsMatch (r.GetString (1), match))
-										(constraint as ForeignKeyConstraintSchema).ReferenceTableName
-											= Regex.Match (r.GetString (1), match).Groups[0].Captures[0].Value;
-									break;
-								case "u":
-									constraint = new UniqueConstraintSchema (this);
-									break;
-								case "p":
-								default:
-									constraint = new PrimaryKeyConstraintSchema (this);
-									break;
-							}
-						
-							constraint.Name = r.GetString (0);
-							constraint.Definition = r.GetString (1);
-							
-							int parenOpen = constraint.Definition.IndexOf ('(');
-							if (parenOpen > 0) {
-								int parenClose = constraint.Definition.IndexOf (')');
-								string colstr = constraint.Definition.Substring (parenOpen + 1, parenClose - parenOpen - 1);
-								foreach (string col in colstr.Split (',')) {
-									ColumnSchema column = new ColumnSchema (this, table);
-									column.Name = col.Trim ();
-									constraint.Columns.Add (column);
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (String.Format (
+					@"SELECT
+						pc.conname,
+						pg_catalog.pg_get_constraintdef(pc.oid, true) AS consrc,
+						pc.contype,
+						CASE WHEN pc.contype='u' OR pc.contype='p' THEN ( 
+							SELECT
+								indisclustered
+							FROM
+								pg_catalog.pg_depend pd, 
+								pg_catalog.pg_class pl,
+								pg_catalog.pg_index pi 
+							WHERE
+								pd.refclassid=pc.tableoid
+								AND pd.refobjid=pc.oid
+								AND pd.objid=pl.oid
+								AND pl.oid=pi.indexrelid) 
+						ELSE
+							 NULL
+						END AS indisclustered
+					FROM
+						pg_catalog.pg_constraint pc 
+					WHERE
+						pc.conrelid = (
+								SELECT oid 
+								FROM pg_catalog.pg_class 
+								WHERE 
+									relname='{0}'
+									AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname='{1}'))
+					ORDER BY 1;, table.Name, table.SchemaName"))) {
+					try {
+						using (IDataReader r = command.ExecuteReader()) {
+							while (r.Read ()) {	
+								ConstraintSchema constraint = null;
+												
+								//TODO: Add support for Check constraints.
+								switch (r.GetString (2)) {
+									case "f":
+										string match = @".*REFERENCES (.+)\(.*\).*";
+										constraint = new ForeignKeyConstraintSchema (this);
+										if (Regex.IsMatch (r.GetString (1), match))
+											(constraint as ForeignKeyConstraintSchema).ReferenceTableName
+												= Regex.Match (r.GetString (1), match).Groups[0].Captures[0].Value;
+										break;
+									case "u":
+										constraint = new UniqueConstraintSchema (this);
+										break;
+									case "p":
+									default:
+										constraint = new PrimaryKeyConstraintSchema (this);
+										break;
 								}
-							}
 							
-							constraints.Add (constraint);
+								constraint.Name = r.GetString (0);
+								constraint.Definition = r.GetString (1);
+								
+								int parenOpen = constraint.Definition.IndexOf ('(');
+								if (parenOpen > 0) {
+									int parenClose = constraint.Definition.IndexOf (')');
+									string colstr = constraint.Definition.Substring (parenOpen + 1, parenClose - parenOpen - 1);
+									foreach (string col in colstr.Split (',')) {
+										ColumnSchema column = new ColumnSchema (this, table);
+										column.Name = col.Trim ();
+										constraint.Columns.Add (column);
+									}
+								}
+								constraints.Add (constraint);
+							}
+							r.Close ();
 						}
-						r.Close ();
-					}
+					} catch (Exception e) {
+						// Don't raise error, if the table doesn't exists return an empty collection
+					} finally {
+						conn.Release ();
+					}					
 				}
-			} catch (Exception e) {
-				// Don't raise error, if the table doesn't exists return an empty collection
 			}
-			conn.Release ();
-
 			return constraints;
 		}
 
@@ -446,48 +572,40 @@ using MonoDevelop.Core;
 		{
 			UserSchemaCollection users = new UserSchemaCollection ();
 
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand ("SELECT * FROM pg_user;");
-
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader ()) {
-						while (r.Read ()) {
-							UserSchema user = new UserSchema (this);
-							
-							user.Name = r.GetString (0);
-							user.UserId = String.Format ("{0}", r.GetValue (1));
-							user.Expires = r.IsDBNull (6) ? DateTime.MinValue : r.GetDateTime (6);
-							//user.Options["createdb"] = r.GetBoolean (2);
-							//user.Options["createuser"] = r.GetBoolean (3);
-							user.Password = r.GetString (5);
-							
-							StringBuilder sb = new StringBuilder ();
-							sb.AppendFormat ("-- User: \"{0}\"\n\n", user.Name);
-							sb.AppendFormat ("-- DROP USER {0};\n\n", user.Name);
-							sb.AppendFormat ("CREATE USER {0}", user.Name);
-							sb.AppendFormat ("  WITH SYSID {0}", user.UserId);
-							if (user.Password != "********")
-								sb.AppendFormat (" ENCRYPTED PASSWORD {0}", user.Password);
-							//sb.AppendFormat (((bool) user.Options["createdb"]) ?
-							//	" CREATEDB" : " NOCREATEDB");
-							//sb.AppendFormat (((bool) user.Options["createuser"]) ?
-							//	" CREATEUSER" : " NOCREATEUSER");
-							if (user.Expires != DateTime.MinValue)
-								sb.AppendFormat (" VALID UNTIL {0}", user.Expires);
-							sb.Append (";");
-							user.Definition = sb.ToString ();
-		
-							users.Add (user);
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand ("SELECT * FROM pg_user;")) {
+					try {
+						using (IDataReader r = command.ExecuteReader ()) {
+							while (r.Read ()) {
+								UserSchema user = new UserSchema (this);
+								
+								user.Name = r.GetString (0);
+								user.UserId = String.Format ("{0}", r.GetValue (1));
+								user.Expires = r.IsDBNull (6) ? DateTime.MinValue : r.GetDateTime (6);
+								user.Password = r.GetString (5);
+								
+								StringBuilder sb = new StringBuilder ();
+								sb.AppendFormat ("-- User: \"{0}\"\n\n", user.Name);
+								sb.AppendFormat ("-- DROP USER {0};\n\n", user.Name);
+								sb.AppendFormat ("CREATE USER {0}", user.Name);
+								sb.AppendFormat ("  WITH SYSID {0}", user.UserId);
+								if (user.Password != "********")
+									sb.AppendFormat (" ENCRYPTED PASSWORD {0}", user.Password);
+								if (user.Expires != DateTime.MinValue)
+									sb.AppendFormat (" VALID UNTIL {0}", user.Expires);
+								sb.Append (";");
+								user.Definition = sb.ToString ();
+								users.Add (user);
+							}
+							r.Close ();
 						}
-						r.Close ();
-					}
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
+					}				
 				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
 			}
-			conn.Release ();
-
 			return users;
 		}
 		
@@ -913,32 +1031,35 @@ using MonoDevelop.Core;
 			if (table == null)
 				throw new ArgumentNullException ("table");
 			TriggerSchemaCollection triggers = new TriggerSchemaCollection ();
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (string.Format (
-															@"SELECT * FROM 
-															information_schema.triggers
-			                                                WHERE event_object_table = '{0}' order by trigger_name", 
-															table.Name));
-			try {
-				using (IDataReader r = command.ExecuteReader ()) {
-					while (r.Read ()) {
-						TriggerSchema trigger = new TriggerSchema (this);
-						trigger.Name = r.GetString (r.GetOrdinal ("trigger_name"));
-						trigger.Source = r.GetString (r.GetOrdinal ("action_statement"));
-						trigger.TriggerType = (TriggerType)Enum.Parse (typeof(TriggerType), 
-																		r.GetString (r.GetOrdinal ("condition_timing")));
-						trigger.TriggerEvent = (TriggerEvent)Enum.Parse (typeof(TriggerEvent), 
-																		r.GetString (r.GetOrdinal ("event_manipulation")));
-						trigger.TriggerFireType = TriggerFireType.ForEachRow;
-						triggers.Add (trigger);
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (string.Format (
+																@"SELECT * FROM 
+																information_schema.triggers
+																WHERE event_object_table = '{0}' order by trigger_name", 
+				                                                table.Name))) {
+					try {
+						using (IDataReader r = command.ExecuteReader ()) {
+							while (r.Read ()) {
+								TriggerSchema trigger = new TriggerSchema (this);
+								trigger.Name = r.GetString (r.GetOrdinal ("trigger_name"));
+								trigger.Source = r.GetString (r.GetOrdinal ("action_statement"));
+								trigger.TriggerType = (TriggerType)Enum.Parse (typeof(TriggerType), 
+																				r.GetString (r.GetOrdinal ("condition_timing")));
+								trigger.TriggerEvent = (TriggerEvent)Enum.Parse (typeof(TriggerEvent), 
+																				r.GetString (r.GetOrdinal ("event_manipulation")));
+								trigger.TriggerFireType = TriggerFireType.ForEachRow;
+								triggers.Add (trigger);
+							}
+						}
+					} catch (NpgsqlException e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
 					}
 				}
-			} catch (NpgsqlException e) {
-				QueryService.RaiseException (e);
 			}
 			return triggers;
 		}
-		
 
 		public override DataTypeSchema GetDataType (string name)
 		{
@@ -1065,7 +1186,7 @@ using MonoDevelop.Core;
 		//http://www.postgresql.org/docs/8.2/interactive/sql-createdatabase.html
 		public override void CreateDatabase (DatabaseSchema database)
 		{
-			ExecuteNonQuery ("CREATE DATABASE " + database.Name);
+			ExecuteNonQuery (string.Concat("CREATE DATABASE ", database.Name));
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-createtable.html
@@ -1247,6 +1368,12 @@ using MonoDevelop.Core;
 			throw new NotImplementedException ();
 		}
 		
+		public override void AlterProcedure (ProcedureAlterSchema procedure)
+		{
+			ExecuteNonQuery (procedure.NewSchema.Definition);
+		}
+
+		
 		//http://www.postgresql.org/docs/8.2/interactive/sql-alterdatabase.html
 		public override void AlterDatabase (DatabaseAlterSchema database)
 		{
@@ -1280,44 +1407,43 @@ using MonoDevelop.Core;
 		//http://www.postgresql.org/docs/8.2/interactive/sql-dropdatabase.html
 		public override void DropDatabase (DatabaseSchema database)
 		{
-			ExecuteNonQuery ("DROP DATABASE IF EXISTS " + database.Name + ";");
+			ExecuteNonQuery (string.Concat("DROP DATABASE IF EXISTS ", database.Name, ";"));
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-droptable.html
 		public override void DropTable (TableSchema table)
 		{
-			ExecuteNonQuery ("DROP TABLE IF EXISTS " + table.Name + ";");
+			ExecuteNonQuery (string.Concat("DROP TABLE IF EXISTS ", table.Name, ";"));
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-dropview.html
 		public override void DropView (ViewSchema view)
 		{
-			ExecuteNonQuery ("DROP VIEW IF EXISTS " + view.Name + ";");
+			ExecuteNonQuery (string.Concat("DROP VIEW IF EXISTS ", view.Name, ";"));
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-dropindex.html
 		public override void DropIndex (IndexSchema index)
 		{
-			ExecuteNonQuery ("DROP INDEX IF EXISTS " + index.Name + " ON " + index.TableName + ";");
+			ExecuteNonQuery (string.Concat("DROP INDEX IF EXISTS ", index.Name, " ON ", index.TableName, ";"));
 		}
 		
 		//http://www.postgresql.org/docs/8.2/interactive/sql-droptrigger.html
 		public override void DropTrigger (TriggerSchema trigger)
 		{
-			ExecuteNonQuery ("DROP TRIGGER IF EXISTS " + trigger.Name + " ON " + trigger.TableName + ";");
+			ExecuteNonQuery (string.Concat("DROP TRIGGER IF EXISTS ", trigger.Name, " ON ", trigger.TableName, ";"));
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-dropuser.html
 		public override void DropUser (UserSchema user)
 		{
-			ExecuteNonQuery ("DROP USER IF EXISTS " + user.Name + ";");
+			ExecuteNonQuery (string.Concat("DROP USER IF EXISTS ", user.Name, ";"));
 		}
 		
 		//http://www.postgresql.org/docs/8.2/interactive/sql-alterdatabase.html
 		public override void RenameDatabase (DatabaseSchema database, string name)
 		{
-			ExecuteNonQuery ("ALTER DATABASE " + database.Name + " RENAME TO " + name + ";");
-			
+			ExecuteNonQuery (string.Concat("ALTER DATABASE ", database.Name, " RENAME TO ", name, ";"));
 			connectionPool.ConnectionContext.ConnectionSettings.Database = name;
 			database.Name = name;
 		}
@@ -1325,8 +1451,7 @@ using MonoDevelop.Core;
 		//http://www.postgresql.org/docs/8.2/interactive/sql-altertable.html
 		public override void RenameTable (TableSchema table, string name)
 		{
-			ExecuteNonQuery ("ALTER TABLE " + table.Name + " RENAME TO " + name + ";");
-			
+			ExecuteNonQuery (string.Concat("ALTER TABLE ", table.Name, " RENAME TO ", name, ";"));
 			table.Name = name;
 		}
 
@@ -1334,37 +1459,33 @@ using MonoDevelop.Core;
 		public override void RenameView (ViewSchema view, string name)
 		{
 			//this is no copy paste error, it really is "ALTER TABLE"
-			ExecuteNonQuery ("ALTER TABLE " + view.Name + " RENAME TO " + name + ";");
-			
+			ExecuteNonQuery (string.Concat("ALTER TABLE ", view.Name, " RENAME TO ", name, ";"));
 			view.Name = name;
 		}
 		
 		//http://www.postgresql.org/docs/8.2/interactive/sql-altertrigger.html
 		public override void RenameTrigger (TriggerSchema trigger, string name)
 		{
-			ExecuteNonQuery ("ALTER TRIGGER " + trigger.Name + " ON " + trigger.TableName + " RENAME TO " + name + ";");
-			
+			ExecuteNonQuery (string.Concat("ALTER TRIGGER ", trigger.Name, " ON ", trigger.TableName, " RENAME TO ", 
+											name, ";"));
 			trigger.Name = name;
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-alteruser.html
 		public override void RenameUser (UserSchema user, string name)
 		{
-			ExecuteNonQuery ("ALTER USER " + user.Name + " RENAME TO " + name + ";");
-			
+			ExecuteNonQuery (string.Concat("ALTER USER ", user.Name, " RENAME TO ", name, ";"));
 			user.Name = name;
 		}
 		
 		public override string GetViewAlterStatement (ViewSchema view)
 		{
-			//'CREATE ' <-- after this we insert
-			return view.Definition.Insert (6, "OR REPLACE ");
+			return view.Definition.Insert (8, "OR REPLACE ");
 		}
 		
 		public override string GetProcedureAlterStatement (ProcedureSchema procedure)
 		{
-			//'CREATE ' <-- after this we insert
-			return procedure.Definition.Insert (6, "OR REPLACE ");
+			return procedure.Definition;
 		}
 						
 		/// <summary>
@@ -1373,24 +1494,41 @@ using MonoDevelop.Core;
 		/// </summary>
 		protected int LastSystemOID {
 			get {
-				IPooledDbConnection conn = connectionPool.Request ();
-				NpgsqlConnection internalConn = conn.DbConnection as NpgsqlConnection;
-				int major = internalConn.ServerVersion.Major;
-				int minor = internalConn.ServerVersion.Minor;
-				conn.Release ();
-				
-				if (major == 8)
-					return 17137;
-				else if (major == 7 && minor == 1)
-					return 18539;
-				else if (major == 7 && minor == 2)
-					return 16554;
-				else if (major == 7 && minor == 3)
-					return 16974;
-				else if (major == 7 && minor == 4)
-					return 17137;
-				else
-					return 17137;
+				if (lastSystemOID != 0)
+					return lastSystemOID;
+					
+				using (IPooledDbConnection conn = connectionPool.Request ()) {
+					using (NpgsqlConnection internalConn = conn.DbConnection as NpgsqlConnection) {
+						int major = internalConn.ServerVersion.Major;
+						int minor = internalConn.ServerVersion.Minor;
+						try {
+							using (IDbCommand command = conn.CreateCommand (
+																		"SELECT datlastsysoid FROM pg_database Limit 1"))
+								using (IDataReader r = command.ExecuteReader())
+									if (r.Read ())
+										lastSystemOID = Convert.ToInt32 (r.GetValue (0));
+									else
+										throw new Exception ();
+							
+						} catch (Exception) {
+							if (major == 8)
+								lastSystemOID = 17137;
+							else if (major == 7 && minor == 1)
+								lastSystemOID = 18539;
+							else if (major == 7 && minor == 2)
+								lastSystemOID = 16554;
+							else if (major == 7 && minor == 3)
+								lastSystemOID = 16974;
+							else if (major == 7 && minor == 4)
+								lastSystemOID = 17137;
+							else
+								lastSystemOID = 17137;
+						}  finally {
+							conn.Release ();
+						}
+					}
+					return lastSystemOID;
+				}
 			}
 		}
 	}

@@ -40,6 +40,12 @@ using MonoDevelop.Core;
 	// http://www.alberton.info/sql_server_meta_info.html + msdn
 	public class SqlServerSchemaProvider : AbstractEditSchemaProvider
 	{
+		string[] system_procs = new string [] {"dt_addtosourcecontrol", "dt_addtosourcecontrol_u", "dt_adduserobject", "dt_adduserobject_vcs", "dt_checkinobject", "dt_checkinobject_u",
+			"dt_checkoutobject", "dt_checkoutobject_u", "dt_displayoaerror", "dt_displayoaerror_u", "dt_droppropertiesbyid", "dt_dropuserobjectbyid", 
+			"dt_generateansiname", "dt_getobjwithprop", "dt_getobjwithprop_u", "dt_getpropertiesbyid", "dt_getpropertiesbyid_u", "dt_getpropertiesbyid_vcs",
+			"dt_getpropertiesbyid_vcs_u", "dt_isundersourcecontrol", "dt_isundersourcecontrol_u", "dt_removefromsourcecontrol", "dt_setpropertybyid", 
+			"dt_setpropertybyid_u", "dt_validateloginparams", "dt_validateloginparams_u", "dt_vcsenabled", "dt_verstamp006", "dt_whocheckedout", "dt_whocheckedout_u"};
+
 		public SqlServerSchemaProvider (IConnectionPool connectionPool)
 			: base (connectionPool)
 		{
@@ -62,25 +68,27 @@ using MonoDevelop.Core;
 		{
 			DatabaseSchemaCollection databases = new DatabaseSchemaCollection ();
 			
-			IPooledDbConnection conn = connectionPool.Request ();
-			conn.DbConnection.ChangeDatabase ("master"); //we don't have to change it back afterwards, since the connectionpool will do this for us
-			IDbCommand command = conn.CreateCommand ("select name from sysdatabases");
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read()) {
-							DatabaseSchema db = new DatabaseSchema (this);
-							db.Name = r.GetString (0);
-							databases.Add (db);
-						}
-						r.Close ();
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				//we don't have to change it back afterwards, since the connectionpool will do this for us
+				conn.DbConnection.ChangeDatabase ("master"); 
+				using (IDbCommand command = conn.CreateCommand ("select name from sysdatabases")) {
+					try {
+						using (command)
+							using (IDataReader r = command.ExecuteReader()) {
+								while (r.Read()) {
+									DatabaseSchema db = new DatabaseSchema (this);
+									db.Name = r.GetString (0);
+									databases.Add (db);
+								}
+								r.Close ();
+							}
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
 					}
 				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
 			}
-			conn.Release ();
-
 			return databases;
 		}
 
@@ -88,36 +96,41 @@ using MonoDevelop.Core;
 		{
 			TableSchemaCollection tables = new TableSchemaCollection ();
 			
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT su.name AS owner, so.name as table_name, so.id as table_id, " +
-				" so.crdate as created_date, so.xtype as table_type " +
-				" FROM dbo.sysobjects so, dbo.sysusers su " +
-				"WHERE xtype IN ('S','U') " +
-				"AND su.uid = so.uid " +
-				"ORDER BY 1, 2"
-			);
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read()) {
-							TableSchema table = new TableSchema (this);
-
-							table.Name = r.GetString(1);
-							table.IsSystemTable = r.GetString(4) == "S" ? true : false;
-							table.OwnerName = r.GetString(0);
-							table.Definition = GetTableDefinition (table);
-							
-							tables.Add (table);
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (@"SELECT 
+															su.name AS owner, 
+															so.name as table_name, 
+															so.id as table_id,										
+															so.crdate as created_date, 
+															so.xtype as table_type
+														FROM dbo.sysobjects so, 
+															dbo.sysusers su 
+														WHERE
+															xtype IN ('S','U')
+															AND su.uid = so.uid
+														ORDER BY 1, 2")) {
+					try {
+						using (command) {
+							using (IDataReader r = command.ExecuteReader()) {
+								while (r.Read()) {
+									TableSchema table = new TableSchema (this);
+									table.Name = r.GetString(1);
+									table.IsSystemTable = r.GetString(4) == "S" ? true : false;
+									table.OwnerName = r.GetString(0);
+									table.Definition = GetTableDefinition (table);
+									tables.Add (table);
+								}
+								r.Close ();
+							}
 						}
-						r.Close ();
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
 					}
 				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
-			}
-			conn.Release ();
 			
+			}
 			return tables;
 		}
 		
@@ -125,54 +138,58 @@ using MonoDevelop.Core;
 		{
 			ColumnSchemaCollection columns = new ColumnSchemaCollection ();
 			
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT su.name as owner, so.name as table_name, " +
-				"   sc.name as column_name, " +
-				"   st.name as date_type, sc.length as column_length,  " +
-				"   sc.xprec as data_precision, sc.xscale as data_scale, " +
-				"   sc.isnullable, sc.colid as column_id " +
-				"FROM dbo.syscolumns sc, dbo.sysobjects so, " +
-				"   dbo.systypes st, dbo.sysusers su " +
-				"WHERE sc.id = so.id " +
-				"AND so.xtype in ('U','S') " +
-				"AND so.name = '" + table.Name + "' " +
-				"AND su.name = '" + table.OwnerName + "' " +
-				"AND sc.xusertype = st.xusertype " +
-				"AND su.uid = so.uid " +
-				"ORDER BY sc.colid"
-			);
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read()) {
-							ColumnSchema column = new ColumnSchema (this, table);
-							
-							column.Name = r.GetString (2);
-							column.DataTypeName = r.GetString (3);
-							column.DefaultValue = String.Empty;
-							column.Comment = String.Empty;
-							column.OwnerName = table.OwnerName;
-							column.SchemaName = table.SchemaName;
-							column.IsNullable = r.GetValue (7).ToString () == "0" ? true : false;
-							column.DataType.LengthRange.Default = r.GetInt16 (4);
-							column.DataType.PrecisionRange.Default = r.IsDBNull (5) ? 0 : (int)r.GetByte (5);
-							column.DataType.ScaleRange.Default = r.IsDBNull (6) ? 0 : (int)r.GetByte (6);
-							column.Definition = String.Concat (column.Name, " ", column.DataTypeName, " ",
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (string.Format(@"SELECT 
+																			su.name as owner, 
+																			so.name as table_name,
+																			sc.name as column_name,
+																			st.name as date_type, 
+																			sc.length as column_length, 
+																			sc.xprec as data_precision, 
+																			sc.xscale as data_scale,
+																			sc.isnullable, 
+																			sc.colid as column_id
+																		FROM 
+																			dbo.syscolumns sc, 
+																			dbo.sysobjects so, 
+																			dbo.systypes st, dbo.sysusers su
+																		WHERE 
+																			sc.id = so.id 
+																			AND so.xtype in ('U','S')
+																			AND so.name = '{0}' 
+																			AND su.name = '{1}'
+																			AND sc.xusertype = st.xusertype
+																			AND su.uid = so.uid
+																		ORDER BY sc.colid", table.Name, table.OwnerName)))
+					try {
+						using (IDataReader r = command.ExecuteReader()) {
+							while (r.Read()) {
+								ColumnSchema column = new ColumnSchema (this, table);
+								
+								column.Name = r.GetString (2);
+								column.DataTypeName = r.GetString (3);
+								column.DefaultValue = String.Empty;
+								column.Comment = String.Empty;
+								column.OwnerName = table.OwnerName;
+								column.SchemaName = table.SchemaName;
+								column.IsNullable = r.GetValue (7).ToString () == "0" ? true : false;
+								column.DataType.LengthRange.Default = r.GetInt16 (4);
+								column.DataType.PrecisionRange.Default = r.IsDBNull (5) ? 0 : (int)r.GetByte (5);
+								column.DataType.ScaleRange.Default = r.IsDBNull (6) ? 0 : (int)r.GetByte (6);
+								column.Definition = String.Concat (column.Name, " ", column.DataTypeName, " ",
 								column.DataType.LengthRange.Default > 0 ? "(" + column.DataType.LengthRange.Default + ")" : "",
 								column.IsNullable ? " NULL" : " NOT NULL");
-							//TODO: append " DEFAULT ..." if column.Default.Length > 0
-
-							columns.Add (column);
+								//TODO: append " DEFAULT ..." if column.Default.Length > 0
+								columns.Add (column);
+							}
+							r.Close ();
 						}
-						r.Close ();
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
 					}
-				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
 			}
-			conn.Release ();
-			
 			return columns;
 		}
 		
@@ -182,109 +199,122 @@ using MonoDevelop.Core;
 				throw new ArgumentNullException ("table");
 			
 			TriggerSchemaCollection triggers = new TriggerSchemaCollection ();				
-			IPooledDbConnection conn = connectionPool.Request ();
 			
-			string sql = string.Format(@"SELECT 
-						 	Tables.Name TableName,
-      						Triggers.name TriggerName,
-      						Triggers.crdate TriggerCreatedDate,
-      						Comments.Text TriggerText
-							FROM      sysobjects Triggers
-      						Inner Join sysobjects Tables On Triggers.parent_obj = Tables.id
-      						Inner Join syscomments Comments On Triggers.id = Comments.id
-							WHERE Triggers.xtype = 'TR'
-								And Tables.xtype = 'U' 
-								And Tables.Name = '{0}'
-							ORDER BY Tables.Name, Triggers.name", table.Name);
-			IDbCommand command = conn.CreateCommand (sql);
-			using (IDataReader r = command.ExecuteReader ()) {
-				while (r.Read ()) {
-						System.Text.RegularExpressions.Regex parseRegEx = new System.Text.RegularExpressions.Regex 					
-													(string.Concat (
-					                					@"((CREATE\s*(Temp|Temporary)?\s*TRIGGER){1}\s?(\w+)\s?(IF NOT",
-														@" EXISTS)?\s?(BEFORE|AFTER|INSTEAD OF){1}\s?(\w+)\s*ON(\s+\w*",
-														@")\s*(FOR EACH ROW){1}\s*(BEGIN){1})\s+(\w|\W)*(END)"));
-						TriggerSchema trigger = new TriggerSchema (this);
-						trigger.TableName = table.Name;
-						trigger.Name = r.GetString (r.GetOrdinal ("TriggerName"));
-						sql = r.GetString (r.GetOrdinal ("TriggerText"));
-						System.Text.RegularExpressions.MatchCollection matchs = parseRegEx.Matches (sql);
-						if (matchs.Count > 0) {
-							trigger.TriggerFireType = TriggerFireType.ForEachRow;
-							switch (matchs[0].Groups[7].Value.ToLower ()) {
-								case "insert":
-									trigger.TriggerEvent = TriggerEvent.Insert;
-									break;
-								case "update":
-									trigger.TriggerEvent = TriggerEvent.Update;
-									break;
-								case "delete":
-									trigger.TriggerEvent = TriggerEvent.Delete;
-									break;
-								default:
-									throw new NotImplementedException ();
-							}
-							switch (matchs[0].Groups[7].Value.ToLower ()) {
-								case "before":
-									trigger.TriggerType = TriggerType.Before;
-									break;
-								case "after":
-									trigger.TriggerType = TriggerType.After;
-									break;
-								default:
-									throw new NotImplementedException ();
-							}
-							StringBuilder sbSource = new StringBuilder ();
-							foreach (System.Text.RegularExpressions.Capture c in matchs[0].Groups[11].Captures)
-								sbSource.Append (c.Value);
-							trigger.Source = sbSource.ToString ();
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				string sql = string.Format(@"SELECT 
+							 					Tables.Name TableName,
+	      										Triggers.name TriggerName,
+	      										Triggers.crdate TriggerCreatedDate,
+	      										Comments.Text TriggerText
+											FROM sysobjects Triggers
+											INNER JOIN sysobjects Tables On
+	      										 Triggers.parent_obj = Tables.id
+											INNER JOIN syscomments Comments On 
+	      										Triggers.id = Comments.id
+											WHERE 
+												Triggers.xtype = 'TR'
+												AND Tables.xtype = 'U' 
+												AND Tables.Name = '{0}'
+											ORDER BY 
+												Tables.Name, 
+												Triggers.name", table.Name);
+				using (IDbCommand command = conn.CreateCommand (sql)) {
+					using (IDataReader r = command.ExecuteReader ()) {
+						while (r.Read ()) {
+								System.Text.RegularExpressions.Regex parseRegEx = new System.Text.RegularExpressions.Regex
+															(string.Concat (
+							                					@"((CREATE\s*(Temp|Temporary)?\s*TRIGGER){1}\s?(\w+)\s?(IF NOT",
+																@" EXISTS)?\s?(BEFORE|AFTER|INSTEAD OF){1}\s?(\w+)\s*ON(\s+\w*",
+																@")\s*(FOR EACH ROW){1}\s*(BEGIN){1})\s+(\w|\W)*(END)"));
+								TriggerSchema trigger = new TriggerSchema (this);
+								trigger.TableName = table.Name;
+								trigger.Name = r.GetString (r.GetOrdinal ("TriggerName"));
+								sql = r.GetString (r.GetOrdinal ("TriggerText"));
+								System.Text.RegularExpressions.MatchCollection matchs = parseRegEx.Matches (sql);
+								if (matchs.Count > 0) {
+									trigger.TriggerFireType = TriggerFireType.ForEachRow;
+									switch (matchs[0].Groups[7].Value.ToLower ()) {
+										case "insert":
+											trigger.TriggerEvent = TriggerEvent.Insert;
+											break;
+										case "update":
+											trigger.TriggerEvent = TriggerEvent.Update;
+											break;
+										case "delete":
+											trigger.TriggerEvent = TriggerEvent.Delete;
+											break;
+										default:
+											throw new NotImplementedException ();
+									}
+									switch (matchs[0].Groups[7].Value.ToLower ()) {
+										case "before":
+											trigger.TriggerType = TriggerType.Before;
+											break;
+										case "after":
+											trigger.TriggerType = TriggerType.After;
+											break;
+										default:
+											throw new NotImplementedException ();
+									}
+									StringBuilder sbSource = new StringBuilder ();
+									foreach (System.Text.RegularExpressions.Capture c in matchs[0].Groups[11].Captures)
+										sbSource.Append (c.Value);
+									trigger.Source = sbSource.ToString ();
+								}
+								triggers.Add (trigger);
 						}
-						triggers.Add (trigger);
+					}
 				}
+				conn.Release ();
 			}
 			return triggers;
 		}
 		
-
 		public override ViewSchemaCollection GetViews ()
 		{
 			ViewSchemaCollection views = new ViewSchemaCollection ();
 
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT su.name AS owner, so.name as table_name, so.id as table_id, " +
-				" so.crdate as created_date, so.xtype as table_type " +
-				"FROM dbo.sysobjects so, dbo.sysusers su " +
-				"WHERE xtype = 'V' " +
-				"AND su.uid = so.uid " +
-				"ORDER BY 1, 2"
-			);
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read()) {
-							ViewSchema view = new ViewSchema (this);
-							
-							view.Name = r.GetString (1);
-							view.SchemaName = r.GetString (0);
-							view.OwnerName = r.GetString (0);
-							
-							StringBuilder sb = new StringBuilder();
-							sb.AppendFormat ("-- View: {0}\n", view.Name);
-							sb.AppendFormat ("-- DROP VIEW {0};\n\n", view.Name);
-							sb.AppendFormat ("  {0}\n);", GetSource ("[" + view.OwnerName + "].[" + view.Name + "]"));
-							view.Definition = sb.ToString ();
-							
-							views.Add (view);
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (@"SELECT 
+																	su.name AS owner, 
+																	so.name as table_name, 
+																	so.id as table_id, 
+																	so.crdate as created_date, 
+																	so.xtype as table_type
+																FROM dbo.sysobjects so, 
+																	dbo.sysusers su
+																WHERE 
+																	xtype = 'V'
+																	AND su.uid = so.uid
+																ORDER BY 1, 2"))
+					try {
+						using (command) {
+							using (IDataReader r = command.ExecuteReader()) {
+								while (r.Read()) {
+									ViewSchema view = new ViewSchema (this);
+									
+									view.Name = r.GetString (1);
+									view.SchemaName = r.GetString (0);
+									view.OwnerName = r.GetString (0);
+									
+									StringBuilder sb = new StringBuilder();
+									sb.AppendFormat ("-- View: {0}\n", view.Name);
+									sb.AppendFormat ("-- DROP VIEW {0};\n\n", view.Name);
+									sb.AppendFormat ("  {0}\n);", GetSource ("[" + view.OwnerName + "].[" + view.Name + "]"));
+									view.Definition = sb.ToString ();
+									
+									views.Add (view);
+								}
+								r.Close ();
+							}
 						}
-						r.Close ();
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
 					}
-				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
+					finally {
+						conn.Release ();
+					}
 			}
-			conn.Release ();
-			
 			return views;
 		}
 
@@ -292,34 +322,31 @@ using MonoDevelop.Core;
 		{
 			ColumnSchemaCollection columns = new ColumnSchemaCollection ();
 			
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT * FROM \"" + view.Name +
-				"\" WHERE 1 = 0"
-			);
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						for (int i = 0; i < r.FieldCount; i++) {
-							ColumnSchema column = new ColumnSchema (this, view);
-							
-							column.Name = r.GetName(i);
-							column.DataTypeName = r.GetDataTypeName(i);
-							column.DefaultValue = "";
-							column.Definition = "";
-							column.OwnerName = view.OwnerName;
-							column.SchemaName = view.OwnerName;
-							
-							columns.Add (column);
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				
+				using (IDbCommand command = conn.CreateCommand (string.Format("SELECT * FROM \"{0}\" WHERE 1 = 0", 
+																view.Name)))
+					try {
+						using (IDataReader r = command.ExecuteReader()) {
+							for (int i = 0; i < r.FieldCount; i++) {
+								ColumnSchema column = new ColumnSchema (this, view);
+								
+								column.Name = r.GetName(i);
+								column.DataTypeName = r.GetDataTypeName(i);
+								column.DefaultValue = "";
+								column.Definition = "";
+								column.OwnerName = view.OwnerName;
+								column.SchemaName = view.OwnerName;
+								columns.Add (column);
+							}
+							r.Close ();
 						}
-						r.Close ();
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
 					}
-				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
 			}
-			conn.Release ();
-			
 			return columns;
 		}
 
@@ -327,40 +354,40 @@ using MonoDevelop.Core;
 		{
 			ProcedureSchemaCollection procedures = new ProcedureSchemaCollection ();
 			
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (
-				"SELECT su.name AS owner, so.name as proc_name, so.id as proc_id, " +
-				" so.crdate as created_date, so.xtype as proc_type " +
-				"FROM dbo.sysobjects so, dbo.sysusers su " +
-				"WHERE xtype = 'P' " +
-				"AND su.uid = so.uid " +
-				"ORDER BY 1, 2"
-			);
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read ()) {
-							ProcedureSchema procedure = new ProcedureSchema (this);
-							procedure.Name = r.GetString (1);
-							procedure.OwnerName = r.GetString (0);
-							procedure.LanguageName = "TSQL";
-							
-							StringBuilder sb = new StringBuilder();
-							sb.AppendFormat ("-- Procedure: {0}\n", procedure.Name);
-							sb.AppendFormat ("  {0}\n);", GetSource ("[" + procedure.OwnerName + "].[" + procedure.Name + "]"));
-							procedure.Definition = sb.ToString ();
-
-							// FIXME : get sysproc or not
-							procedures.Add (procedure);
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (@"SELECT 
+																	su.name AS owner, 
+																	so.name as proc_name, 
+																	so.id as proc_id,
+																	so.crdate as created_date, 
+																	so.xtype as proc_type
+																FROM dbo.sysobjects so, 
+																	dbo.sysusers su
+																WHERE xtype = 'P' 
+																	AND su.uid = so.uid
+																ORDER BY 1, 2"))
+					try {
+						using (IDataReader r = command.ExecuteReader()) {
+							while (r.Read ()) {
+								ProcedureSchema procedure = new ProcedureSchema (this);
+								procedure.Name = r.GetString (1);
+								procedure.OwnerName = r.GetString (0);
+								procedure.LanguageName = "TSQL";
+								procedure.Definition = GetSource ("[" + procedure.OwnerName + "].[" + procedure.Name + "]");
+								if (Array.Exists (system_procs, delegate (string s) {return s == procedure.Name; }))
+									procedure.IsSystemProcedure = true;
+								else 
+									procedure.IsSystemProcedure = false;
+								procedures.Add (procedure);
+							}
+							r.Close ();
 						}
-						r.Close ();
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
 					}
-				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
-			}
-			conn.Release ();
-			
+			}			
 			return procedures; 
 		}
 
@@ -368,50 +395,52 @@ using MonoDevelop.Core;
 		{
 			ConstraintSchemaCollection constraints = new ConstraintSchemaCollection ();
 			
-			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (string.Concat ("select sysobjects.name, sysobjects.xtype ",
-			                                                        "from sysobjects inner join sysobjects",
-			                                                        " sysobjectsParents ON sysobjectsParents.id =",
-			                                                        " sysobjects.parent_obj ",
-			                                                        " where sysobjectsParents.name = '", 
-			                                                        table.Name,"' and",
-			                                                        " sysobjects.xtype in ('C', 'UQ', 'F','PK','CK')")); 
-			try {
-				using (command) {
-					using (IDataReader r = command.ExecuteReader()) {
-						while (r.Read ()) {
-							ConstraintSchema constraint = null;
-							switch (r.GetString (1)) {
-								case "F": //foreign key
-									constraint = new ForeignKeyConstraintSchema (this);
-									break;
-								case "PK": //primary key
-									constraint = new PrimaryKeyConstraintSchema (this);
-									break;
-								case "C":
-								case "CK": //check constraint
-									constraint = new CheckConstraintSchema (this);
-									break;
-								case "UQ":
-									constraint = new UniqueConstraintSchema (this);
-									break;
-								default:
-									break;
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (string.Format (@"select 
+																					sysobjects.name, 
+																					sysobjects.xtype 
+																				from sysobjects 
+																				inner join sysobjects sysobjectsParents ON 
+																					sysobjectsParents.id = sysobjects.parent_obj
+																				where 
+																					sysobjectsParents.name = '{0}' and 
+				                                                        			sysobjects.xtype in ('C', 'UQ', 'F','PK','CK')", 
+																				table.Name)))
+					try {
+						using (IDataReader r = command.ExecuteReader()) {
+							while (r.Read ()) {
+								ConstraintSchema constraint = null;
+								switch (r.GetString (1)) {
+									case "F": //foreign key
+										constraint = new ForeignKeyConstraintSchema (this);
+										break;
+									case "PK": //primary key
+										constraint = new PrimaryKeyConstraintSchema (this);
+										break;
+									case "C":
+									case "CK": //check constraint
+										constraint = new CheckConstraintSchema (this);
+										break;
+									case "UQ":
+										constraint = new UniqueConstraintSchema (this);
+										break;
+									default:
+										break;
+								}
+									
+								if (constraint != null) {
+									constraint.Name = r.GetString (0);
+									constraints.Add (constraint);
+								}
 							}
-								
-							if (constraint != null) {
-								constraint.Name = r.GetString (0);
-								constraints.Add (constraint);
-							}
+							r.Close ();
 						}
-						r.Close ();
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
 					}
-				}
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
 			}
-			conn.Release ();
-
 			return constraints;
 		}
 		
@@ -569,14 +598,14 @@ using MonoDevelop.Core;
 		public override void CreateDatabase (DatabaseSchema database)
 		{
 			IPooledDbConnection conn = connectionPool.Request ();
-			IDbCommand command = conn.CreateCommand ("CREATE DATABASE " + database.Name);
-			try {
-				using (command)
-					command.ExecuteNonQuery ();
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
-			}
-			conn.Release ();
+			using (IDbCommand command = conn.CreateCommand (string.Concat("CREATE DATABASE ", database.Name)))
+				try {
+						command.ExecuteNonQuery ();
+				} catch (Exception e) {
+					QueryService.RaiseException (e);
+				} finally {
+					conn.Release ();
+				}
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa258255(SQL.80).aspx
@@ -689,7 +718,7 @@ using MonoDevelop.Core;
 		//http://msdn2.microsoft.com/en-us/library/aa258259(SQL.80).aspx
 		public override void CreateProcedure (ProcedureSchema procedure)
 		{
-			throw new NotImplementedException ();
+			ExecuteNonQuery (procedure.Definition);
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa258259(SQL.80).aspx
@@ -764,7 +793,7 @@ using MonoDevelop.Core;
 		//http://msdn2.microsoft.com/en-us/library/aa225939(SQL.80).aspx
 		public override void AlterProcedure (ProcedureAlterSchema procedure)
 		{
-			//ExecuteNonQuery (procedure.Definition); //FIXME:
+			ExecuteNonQuery (procedure.NewSchema.Definition);
 		}
 
 		public override void AlterIndex (IndexAlterSchema index)
@@ -786,37 +815,37 @@ using MonoDevelop.Core;
 		//http://msdn2.microsoft.com/en-us/library/aa258843(SQL.80).aspx
 		public override void DropDatabase (DatabaseSchema database)
 		{
-			ExecuteNonQuery ("DROP DATABASE " + database.Name);
+			ExecuteNonQuery (string.Concat("DROP DATABASE ", database.Name));
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa258841(SQL.80).aspx
 		public override void DropTable (TableSchema table)
 		{
-			ExecuteNonQuery ("DROP TABLE " + table.Name);
+			ExecuteNonQuery (string.Concat("DROP TABLE ", table.Name));
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa258835(SQL.80).aspx
 		public override void DropView (ViewSchema view)
 		{
-			ExecuteNonQuery ("DROP VIEW " + view.Name);
+			ExecuteNonQuery (string.Concat("DROP VIEW ", view.Name));
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa258830(SQL.80).aspx
 		public override void DropProcedure (ProcedureSchema procedure)
 		{
-			ExecuteNonQuery ("DROP PROCEDURE " + procedure.Name);
+			ExecuteNonQuery (string.Concat("DROP PROCEDURE ", procedure.Name));
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa225939(SQL.80).aspx
 		public override void DropIndex (IndexSchema index)
 		{
-			ExecuteNonQuery ("DROP INDEX '" + index.TableName + "." + index.Name + "'");
+			ExecuteNonQuery (string.Concat("DROP INDEX '", index.TableName, ".", index.Name, "'"));
 		}
 		
 		//http://msdn2.microsoft.com/en-us/library/aa258846(SQL.80).aspx
 		public override void DropTrigger (TriggerSchema trigger)
 		{
-			ExecuteNonQuery ("DROP TRIGGER " + trigger.Name);
+			ExecuteNonQuery (string.Concat("DROP TRIGGER ", trigger.Name));
 		}
 		
 		//http://msdn2.microsoft.com/en-US/library/aa238878(SQL.80).aspx
@@ -870,7 +899,12 @@ using MonoDevelop.Core;
 		
 		public override string GetProcedureAlterStatement (ProcedureSchema procedure)
 		{
-			return String.Concat ("DROP PROCEDURE ", procedure.Name, "; ", Environment.NewLine, procedure.Definition);
+			string sp;
+			if (procedure.Definition.Substring (0, 6).ToLower () == "create")
+				sp = string.Concat("ALTER", procedure.Definition.Substring (6));
+			else
+				sp = procedure.Definition;
+			return sp;
 		}
 		
 		protected string GetTableDefinition (TableSchema table)
@@ -906,7 +940,7 @@ using MonoDevelop.Core;
 			LoggingService.LogDebug ("GetSource: " + objectName);
 			IPooledDbConnection conn = connectionPool.Request ();
 			IDbCommand command = conn.CreateCommand (
-				String.Format ("EXEC sp_helptext '{0}', null", objectName)
+				String.Format ("EXEC sp_helptext '{0}'", objectName)
 			);
 			StringBuilder sb = new StringBuilder ();
 			try {

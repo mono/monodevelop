@@ -42,7 +42,7 @@ namespace MonoDevelop.Database.Sql
 			alterations = new List<IAlteration> ();
 		}
 		
-		protected AbstractAlterSchema (T oldSchema, T newSchema)
+		protected AbstractAlterSchema (T oldSchema, T newSchema):this()
 		{
 			if (oldSchema == null)
 				throw new ArgumentNullException ("oldSchema");

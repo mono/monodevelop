@@ -1,3 +1,17 @@
+2009-05-27  Luciano N. Callero <lnc19@hotmail.com>
+	* MonoDevelop.Database.Sql.Npgsql.csproj: Include ChangeLog into the project.
+	* NpgsqlSchemaProvider.cs: Save lastSystemOID to improve performance. 
+	  Replace string + string with string.concat/string.format for performance.
+	  Format sql tu use mult-line string and to make sql readable.
+	  Use of using statement where is supported.
+	  Remove unneeded comments. (old code)
+	  Implement custom Procedure Definition creation.
+	  Show all the parameters.
+	  Use internal LastSystemOID when is present.
+	  GetProcedureParameters now really works and show all the parameters.
+	  Code clean.
+	  Fix alter procedure bugs.
+
 2009-04-23 Luciano N. Callero <lnc19@hotmail.com>
         * NpgsqlSchemaProvider.cs: Implement a custom GetTableTriggers 
   	  fix a create table bug.

@@ -1,3 +1,10 @@
+2009-05-27 Luciano N. Callero <lnc19@hotmail.com>
+	* icons/Icons.16x16.Database.Functions.png: New Icon for Functions.
+	* Makefile.am: Add new image embeed as a resource.
+	* MonoDevelop.Database.Query.addin.xml: New stock icon.
+	* MonoDevelop.Database.Query.csproj: New png icon for the project.
+	
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.Query.csproj: Flush.

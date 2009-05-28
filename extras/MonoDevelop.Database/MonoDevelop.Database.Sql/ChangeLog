@@ -1,10 +1,13 @@
+2009-05-20  Luciano N. Callero <lnc19@hotmail.com>
+    * AlterSchema/AbstractAlterSchema.cs: Fix NullReferenceException.
+    * AlterSchema/ProcedureAlterSchema.cs: Remove unneeded todo.
+    * MonoDevelop.Database.Sql.csproj: Add ChangeLog into the project.
+
 2009-04-21  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* Schema/DataTypeCategory.cs: New Date Interval Type.
-	* Providers/AbstractSchemaProvider.cs: Method to Get
-	  Constraint Action as string.
-	Don't rise some unneeded exceptions.
-
+	* Providers/AbstractSchemaProvider.cs: Method to Get Constraint Action as string.
+	  Don't rise some unneeded exceptions.
 
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 

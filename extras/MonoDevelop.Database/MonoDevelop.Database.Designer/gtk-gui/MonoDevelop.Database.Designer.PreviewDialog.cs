@@ -29,7 +29,6 @@ namespace MonoDevelop.Database.Designer {
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.SkipTaskbarHint = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Database.Designer.PreviewDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
@@ -84,8 +83,9 @@ namespace MonoDevelop.Database.Designer {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 528;
+            this.DefaultWidth = 617;
             this.DefaultHeight = 382;
+            this.buttonOk.HasDefault = true;
             this.Show();
             this.buttonCancel.Clicked += new System.EventHandler(this.CancelClicked);
             this.buttonOk.Clicked += new System.EventHandler(this.OkClicked);

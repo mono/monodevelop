@@ -1,3 +1,55 @@
+2009-05-27 Luciano N. Callero <lnc19@hotmail.com>
+	* MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.csproj: Include ChangeLog into project.
+	* MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilders.cs: Show differents image for functions and stored procedures.
+	  Implement alter procedure.
+	* MonoDevelop.Database.Designer/MonoDevelop.Database.Designer.csproj: Include ChangeLog into project.
+	* MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs: Fix NullReferenceException. 
+	  No show comment as default.
+	* MonoDevelop.Database.Designer/gtk-gui/gui.stetic: Changes after rebuild the gui.
+	* MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs: 
+	* MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.PreviewDialog.cs: 
+	* MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.TableEditorDialog.cs: 
+	* MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.UserEditorDialog.cs: 
+	* MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ViewEditorDialog.cs: 	
+	* MonoDevelop.Database.Designer/gtk-gui/object.xml: 	
+	  Changes after rebuild the gui.
+	* MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.ProcedureEditorDialog.cs: Hide some widget for some operations.
+	* MonoDevelop.Database.Query/icons/Icons.16x16.Database.Functions.png: New Icon for Functions.
+	* MonoDevelop.Database.Query/Makefile.am: Add new image embeed as a resource.
+	* MonoDevelop.Database.Query/MonoDevelop.Database.Query.addin.xml: New stock icon.
+	* MonoDevelop.Database.Query/MonoDevelop.Database.Query.csproj: New png icon for the project.
+	* MonoDevelop.Database.Sql.MySql/MonoDevelop.Database.Sql.MySql.csproj: Add ChangeLog into the project.
+	* MonoDevelop.Database.Sql.MySql/MySqlGuiProvider.cs: Don't show Name entry on alter/create procedure beacause isn't needed.
+	* MonoDevelop.Database.Sql.MySql/MySqlSchemaProvider.cs: Code clean.
+	  Replace string + string with string.concat/string.format for performance.
+	  Format sql tu use mult-line string and to make sql readable.
+	  Use of using statement where is supported.
+	  Fix alter procedure bugs.
+	  Remove unneeded comments. (old code)	
+	* MonoDevelop.Database.Sql.Npgsql/MonoDevelop.Database.Sql.Npgsql.csproj: Include ChangeLog into the project.
+	* MonoDevelop.Database.Sql.Npgsql/NpgsqlSchemaProvider.cs: Save lastSystemOID to improve performance. 
+	  Replace string + string with string.concat/string.format for performance.
+	  Format sql tu use mult-line string and to make sql readable.
+	  Use of using statement where is supported.
+	  Remove unneeded comments. (old code)
+	  Implement custom Procedure Definition creation.
+	  Show all the parameters.
+	  Use internal LastSystemOID when is present.
+	  GetProcedureParameters now really works and show all the parameters.
+	  Code clean.
+	  Fix alter procedure bugs.
+	* MonoDevelop.Database.Sql.SqlServer/MonoDevelop.Database.Sql.SqlServer.csproj: Include ChangeLog into the project.
+	* MonoDevelop.Database.Sql.SqlServer/SqlServerSchemaProvider: Replace string + string with string.concat/string.format for performance.
+	  Format sql tu use mult-line string and to make sql readable.
+	  Use of using statement where is supported.
+	  Code clean.
+	  Fix alter procedure bugs.
+	  Detect system and user tables differences.
+	  Implemente Create Procedure.
+	* MonoDevelop.Database.Sql/AlterSchema/AbstractAlterSchema.cs: Fix NullReferenceException.
+	* MonoDevelop.Database.Sql/AlterSchema/ProcedureAlterSchema.cs: Remove unneeded todo.
+	* MonoDevelop.Database.Sql/MonoDevelop.Database.Sql.csproj: Add ChangeLog into the project.
+
 2009-05-18 Luciano N. Callero <lnc19@hotmail.com>
 	* MonoDevelop.Database.Query/SqlQueryView.cs: Implement SourceEditorView. Sql History Tab. 
 	Implemented an ISqlQueryEditorView. Execute selected text (if exists) or all the text.

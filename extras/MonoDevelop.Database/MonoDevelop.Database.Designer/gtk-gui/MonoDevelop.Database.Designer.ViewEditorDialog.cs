@@ -36,7 +36,6 @@ namespace MonoDevelop.Database.Designer {
             // Widget MonoDevelop.Database.Designer.ViewEditorDialog
             this.Name = "MonoDevelop.Database.Designer.ViewEditorDialog";
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Database.Designer.ViewEditorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
