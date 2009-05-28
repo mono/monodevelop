@@ -89,7 +89,7 @@ namespace SubversionAddinWindows
 			}
 		}
 
-		public override void Add (string path, bool recurse, IProgressMonitor monitor)
+		public override void Add (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
 			SvnAddArgs args = new SvnAddArgs ();
 			BindMonitor (args, monitor);
@@ -97,7 +97,7 @@ namespace SubversionAddinWindows
 			client.Add (path, args);
 		}
 
-		public override void Checkout (string url, string path, Revision rev, bool recurse, IProgressMonitor monitor)
+		public override void Checkout (string url, FilePath path, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
 			SvnCheckOutArgs args = new SvnCheckOutArgs ();
 			BindMonitor (args, monitor);
@@ -105,15 +105,15 @@ namespace SubversionAddinWindows
 			client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path);
 		}
 
-		public override void Commit (string[] paths, string message, IProgressMonitor monitor)
+		public override void Commit (FilePath[] paths, string message, IProgressMonitor monitor)
 		{
 			SvnCommitArgs args = new SvnCommitArgs ();
 			BindMonitor (args, monitor);
 			args.LogMessage = message;
-			client.Commit (paths, args);
+			client.Commit (paths.ToStringArray (), args);
 		}
 
-		public override void Delete (string path, bool force, IProgressMonitor monitor)
+		public override void Delete (FilePath path, bool force, IProgressMonitor monitor)
 		{
 			SvnDeleteArgs args = new SvnDeleteArgs ();
 			BindMonitor (args, monitor);
@@ -121,7 +121,7 @@ namespace SubversionAddinWindows
 			client.Delete (path, args);
 		}
 
-		public override string GetPathUrl (string path)
+		public override string GetPathUrl (FilePath path)
 		{
 			Uri u = client.GetUriFromWorkingCopy (path);
 			return u != null ? u.ToString () : null;
@@ -142,7 +142,7 @@ namespace SubversionAddinWindows
 			return SvnClient.Version.ToString ();
 		}
 
-		public override IEnumerable<DirectoryEntry> List (string path, bool recurse, SvnRevision rev)
+		public override IEnumerable<DirectoryEntry> List (FilePath path, bool recurse, SvnRevision rev)
 		{
 			List<DirectoryEntry> list = new List<DirectoryEntry> ();
 			SvnListArgs args = new SvnListArgs ();
@@ -161,7 +161,7 @@ namespace SubversionAddinWindows
 			return list;
 		}
 
-		public override IEnumerable<SvnRevision> Log (Repository repo, string path, SvnRevision revisionStart, SvnRevision revisionEnd)
+		public override IEnumerable<SvnRevision> Log (Repository repo, FilePath path, SvnRevision revisionStart, SvnRevision revisionEnd)
 		{
 			List<SvnRevision> list = new List<SvnRevision> ();
 			SvnLogArgs args = new SvnLogArgs ();
@@ -196,7 +196,7 @@ namespace SubversionAddinWindows
 			client.CreateDirectories (paths, args);
 		}
 
-		public override void Move (string srcPath, string destPath, SvnRevision rev, bool force, IProgressMonitor monitor)
+		public override void Move (FilePath srcPath, FilePath destPath, SvnRevision rev, bool force, IProgressMonitor monitor)
 		{
 			SvnMoveArgs args = new SvnMoveArgs ();
 			BindMonitor (args, monitor);
@@ -204,7 +204,7 @@ namespace SubversionAddinWindows
 			client.Move (srcPath, destPath, args);
 		}
 
-		public override string GetUnifiedDiff (string path1, SvnRevision revision1, string path2, SvnRevision revision2, bool recursive)
+		public override string GetUnifiedDiff (FilePath path1, SvnRevision revision1, FilePath path2, SvnRevision revision2, bool recursive)
 		{
 			SvnPathTarget t1 = new SvnPathTarget (path1, GetRevision (revision1));
 			SvnPathTarget t2 = new SvnPathTarget (path2, GetRevision (revision2));
@@ -218,7 +218,7 @@ namespace SubversionAddinWindows
 			}
 		}
 
-		public override void Resolve (string path, bool recurse, IProgressMonitor monitor)
+		public override void Resolve (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
 			SvnResolveArgs args = new SvnResolveArgs ();
 			BindMonitor (args, monitor);
@@ -226,15 +226,15 @@ namespace SubversionAddinWindows
 			client.Resolve (path, SvnAccept.MineFull, args);
 		}
 
-		public override void Revert (string[] paths, bool recurse, IProgressMonitor monitor)
+		public override void Revert (FilePath[] paths, bool recurse, IProgressMonitor monitor)
 		{
 			SvnRevertArgs args = new SvnRevertArgs ();
 			BindMonitor (args, monitor);
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
-			client.Revert (paths, args);
+			client.Revert (paths.ToStringArray (), args);
 		}
 
-		public override void RevertRevision (string path, Revision revision, IProgressMonitor monitor)
+		public override void RevertRevision (FilePath path, Revision revision, IProgressMonitor monitor)
 		{
 			SvnMergeArgs args = new SvnMergeArgs ();
 			BindMonitor (args, monitor);
@@ -243,7 +243,7 @@ namespace SubversionAddinWindows
 			client.Merge (path, new SvnPathTarget (path), range, args);
 		}
 
-		public override void RevertToRevision (string path, Revision revision, IProgressMonitor monitor)
+		public override void RevertToRevision (FilePath path, Revision revision, IProgressMonitor monitor)
 		{
 			SvnMergeArgs args = new SvnMergeArgs ();
 			BindMonitor (args, monitor);
@@ -251,7 +251,7 @@ namespace SubversionAddinWindows
 			client.Merge (path, new SvnPathTarget (path), range, args);
 		}
 
-		public override IEnumerable<VersionInfo> Status (Repository repo, string path, SvnRevision revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus)
+		public override IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus)
 		{
 			List<VersionInfo> list = new List<VersionInfo> ();
 			SvnStatusArgs args = new SvnStatusArgs ();
@@ -329,24 +329,24 @@ namespace SubversionAddinWindows
 			return VersionStatus.Unversioned;
 		}
 
-		public override void Lock (IProgressMonitor monitor, string comment, bool stealLock, params string[] paths)
+		public override void Lock (IProgressMonitor monitor, string comment, bool stealLock, params FilePath[] paths)
 		{
 			SvnLockArgs args = new SvnLockArgs ();
 			BindMonitor (args, monitor);
 			args.Comment = comment;
 			args.StealLock = stealLock;
-			client.Lock (paths, args);
+			client.Lock (paths.ToStringArray (), args);
 		}
 
-		public override void Unlock (IProgressMonitor monitor, bool breakLock, params string[] paths)
+		public override void Unlock (IProgressMonitor monitor, bool breakLock, params FilePath[] paths)
 		{
 			SvnUnlockArgs args = new SvnUnlockArgs ();
 			BindMonitor (args, monitor);
 			args.BreakLock = breakLock;
-			client.Unlock (paths, args);
+			client.Unlock (paths.ToStringArray (), args);
 		}
 
-		public override void Update (string path, bool recurse, IProgressMonitor monitor)
+		public override void Update (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
 			SvnUpdateArgs args = new SvnUpdateArgs ();
 			BindMonitor (args, monitor);
@@ -403,6 +403,9 @@ namespace SubversionAddinWindows
 			};
 			args.Cancel += delegate (object o, SvnCancelEventArgs a) {
 				a.Cancel = monitor.IsCancelRequested;
+			};
+			args.SvnError += delegate (object o, SvnErrorEventArgs a) {
+				monitor.ReportError (a.Exception.Message, a.Exception.RootCause);
 			};
 		}
 
