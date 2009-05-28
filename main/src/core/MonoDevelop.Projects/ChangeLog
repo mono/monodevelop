@@ -1,3 +1,11 @@
+2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects\DotNetProjectConfiguration.cs: Added
+	  TargetRuntime property.
+
+	* MonoDevelop.Projects.Formats.MD1\MD1DotNetProjectHandler.cs:
+	  Rely on the runtime to get the correct path for resgen.
+
 2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicySet.cs: Avoid throwing

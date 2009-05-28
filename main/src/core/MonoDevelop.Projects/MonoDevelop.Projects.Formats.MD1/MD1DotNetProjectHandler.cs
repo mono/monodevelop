@@ -221,13 +221,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 		// and sets @projectItems to a cloned collection minus such resource files.
 		private BuildResult BuildResources (DotNetProjectConfiguration configuration, ref ProjectItemCollection projectItems, IProgressMonitor monitor)
 		{
-			string resgen = "resgen";
-			if (System.Environment.Version.Major >= 2) {
-				switch (configuration.TargetFramework.ClrVersion) {
-					case ClrVersion.Net_2_0: resgen = "resgen2"; break;
-					case ClrVersion.Net_1_1: resgen = "resgen1"; break;
-				}
-			}
+			string resgen = configuration.TargetRuntime.GetToolPath (configuration.TargetFramework, "resgen");
+			
 			bool cloned = false;
 			Dictionary<string, string> resourcesByCulture = new Dictionary<string, string> ();
 			foreach (ProjectFile finfo in projectItems.GetAll<ProjectFile> ()) {

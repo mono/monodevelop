@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
 
@@ -80,6 +81,16 @@ namespace MonoDevelop.Projects
 					return prj.TargetFramework;
 				else
 					return Services.ProjectService.DefaultTargetFramework;
+			}
+		}
+		
+		public TargetRuntime TargetRuntime {
+			get {
+				DotNetProject prj = ParentItem as DotNetProject;
+				if (prj != null)
+					return prj.TargetRuntime;
+				else
+					return Runtime.SystemAssemblyService.DefaultRuntime;
 			}
 		}
 		
