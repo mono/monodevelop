@@ -101,17 +101,12 @@ namespace MonoDevelop.GtkCore {
 			if (String.IsNullOrEmpty (pkg_version))
 				return String.Empty;
 
-			foreach (SystemPackage p in project.TargetRuntime.GetPackages (TargetFramework.Default)) {
-				if (p.Name != "gtk-sharp-2.0" || p.Version != pkg_version)
-					continue;
-
-				IEnumerator<SystemAssembly> asms = p.Assemblies.GetEnumerator ();
-				asms.MoveNext ();
-				string name = asms.Current.FullName;
-				int i = name.IndexOf (',');
-				return name.Substring (i + 1).Trim ();
-			}	
-			return String.Empty;
+			pkg_version = pkg_version + ".";
+			foreach (SystemAssembly asm in project.TargetRuntime.GetAssemblies ()) {
+				if (asm.Name == "gtk-sharp" && asm.Version.StartsWith (pkg_version))
+					return asm.Version;
+			}
+			return string.Empty;
 		}
 
 		string GetGtkPackageVersion (string assembly_version)
@@ -119,19 +114,7 @@ namespace MonoDevelop.GtkCore {
 			if (String.IsNullOrEmpty (assembly_version))
 				return String.Empty;
 
-			foreach (SystemPackage p in project.TargetRuntime.GetPackages (TargetFramework.Default)) {
-				if (p.Name != "gtk-sharp-2.0")
-					continue;
-
-				IEnumerator<SystemAssembly> asms = p.Assemblies.GetEnumerator ();
-				asms.MoveNext ();
-				string name = asms.Current.FullName;
-				int i = name.IndexOf (',');
-				string version = name.Substring (i + 1).Trim ();
-				if (version == assembly_version)
-					return p.Version;
-			}
-			return String.Empty;
+			return GetVersionPrefix (assembly_version);
 		}
 
 		public bool Update ()
@@ -277,17 +260,26 @@ namespace MonoDevelop.GtkCore {
 			get {
 				if (supported_versions == null) {
 					supported_versions = new List<string> ();
-					foreach (SystemPackage p in project.TargetRuntime.GetPackages (TargetFramework.Default)) {
-						if (p.Name == "gtk-sharp-2.0") {
-							supported_versions.Add (p.Version);
-							if (p.Version.StartsWith ("2.8"))
-								default_version = p.Version;
+					foreach (SystemAssembly asm in project.TargetRuntime.GetAssemblies ()) {
+						if (asm.Name == "gtk-sharp") {
+							string v = GetVersionPrefix (asm.Version);
+							if (!supported_versions.Contains (v))
+								supported_versions.Add (v);
+							if (v == "2.8")
+								default_version = v;
 						}
 					}
 					supported_versions.Sort ();
 				}
 				return supported_versions;
 			}
+		}
+		
+		string GetVersionPrefix (string version)
+		{
+			int i = version.IndexOf ('.');
+			i = version.IndexOf ('.', i + 1);
+			return version.Substring (0, i);
 		}
 	}	
 }
