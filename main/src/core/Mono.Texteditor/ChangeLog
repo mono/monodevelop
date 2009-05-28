@@ -1,3 +1,9 @@
+2009-05-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Properly initialize the
+	  renderer when drawing the overwrite cursor. Fixes bug
+	  #507738.
+
 2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor/Platform.cs: Avoid throwing some exceptions

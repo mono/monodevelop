@@ -382,10 +382,12 @@ namespace Mono.TextEditor
 					return;
 				SetClip (new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
 				win.DrawRectangle (GetGC (ColorStyle.Caret.Color), true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
+				textRenderer.BeginDraw (win);
 				textRenderer.SetClip (clipRectangle);
 				textRenderer.Color = ColorStyle.Caret.BackgroundColor;
 				textRenderer.SetText (caretChar.ToString ());
 				textRenderer.DrawText (win, caretX, caretY);
+				textRenderer.EndDraw ();
 			}
 		}
 		
@@ -1190,7 +1192,6 @@ namespace Mono.TextEditor
 		List<ISegment> selectedRegions = new List<ISegment> ();
 		Gdk.Color defaultBgColor;
 		Gdk.Rectangle clipRectangle;
-		int clipStamp = 0;
 
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
