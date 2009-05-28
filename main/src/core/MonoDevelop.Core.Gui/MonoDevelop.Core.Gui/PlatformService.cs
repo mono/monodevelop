@@ -124,7 +124,7 @@ namespace MonoDevelop.Core.Gui
 			
 			string icon = GetIconForFile (filename);
 			if (icon != null)
-				pic = ImageService.GetPixbuf (icon, size);
+				pic = ImageService.GetPixbuf (icon, size, false);
 			
 			if (pic == null)
 				pic = OnGetPixbufForFile (filename, size);
@@ -152,7 +152,7 @@ namespace MonoDevelop.Core.Gui
 				// Try getting an icon name for the type
 				string icon = GetIconForType (type);
 				if (icon != null) {
-					bf = ImageService.GetPixbuf (icon, size);
+					bf = ImageService.GetPixbuf (icon, size, false);
 					if (bf != null)
 						break;
 				}
@@ -164,7 +164,7 @@ namespace MonoDevelop.Core.Gui
 			}
 			
 			if (bf == null) {
-				bf = ImageService.GetPixbuf (mimeType, size);
+				bf = ImageService.GetPixbuf (mimeType, size, false);
 				if (bf == null)
 					bf = GetDefaultIcon (size);
 			}
@@ -181,11 +181,11 @@ namespace MonoDevelop.Core.Gui
 
 			string icon = DefaultFileIcon;
 			if (icon != null)
-				bf = ImageService.GetPixbuf (icon, size);
+				bf = ImageService.GetPixbuf (icon, size, false);
 			if (bf == null)
 				bf = OnGetDefaultFileIcon (size);
 			if (bf == null)
-				bf = ImageService.GetPixbuf ("md-regular-file", size);
+				bf = ImageService.GetPixbuf ("md-regular-file", size, true);
 			iconHash [id] = bf;
 			return bf;
 		}

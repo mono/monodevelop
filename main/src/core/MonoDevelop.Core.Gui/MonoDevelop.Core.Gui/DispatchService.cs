@@ -107,9 +107,16 @@ namespace MonoDevelop.Core.Gui
 		
 		public static void RunPendingEvents ()
 		{
+			// The loop is limited to 1000 iterations as a workaround for an issue that some users
+			// have experienced. Sometimes EventsPending starts return 'true' for all iterations,
+			// causing the loop to never end.
+			
+			int n = 1000;
 			Gdk.Threads.Enter();
-			while (Gtk.Application.EventsPending ())
-				Gtk.Application.RunIteration ();
+			while (Gtk.Application.EventsPending () && --n > 0) {
+				if (!Gtk.Application.RunIteration (false))
+					break;
+			}
 			Gdk.Threads.Leave();
 			guiDispatcher ();
 		}

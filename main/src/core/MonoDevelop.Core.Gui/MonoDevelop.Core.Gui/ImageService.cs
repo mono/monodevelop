@@ -79,8 +79,13 @@ namespace MonoDevelop.Core.Gui
 		{
 			return GetPixbuf (name, Gtk.IconSize.Button);
 		}
-		
+
 		public static Gdk.Pixbuf GetPixbuf (string name, Gtk.IconSize size)
+		{
+			return GetPixbuf (name, size, true);
+		}
+
+		public static Gdk.Pixbuf GetPixbuf (string name, Gtk.IconSize size, bool generateDefaultIcon)
 		{
 			if (string.IsNullOrEmpty (name)) {
 				LoggingService.LogWarning ("Empty icon requested. Stack Trace: " + Environment.NewLine + Environment.StackTrace);
@@ -107,8 +112,11 @@ namespace MonoDevelop.Core.Gui
 				Gdk.Pixbuf result = Gtk.IconTheme.Default.LoadIcon (stockid, h, (Gtk.IconLookupFlags) 0);
 				return result;
 			}
-			LoggingService.LogWarning ("Can't lookup icon: " + name);
-			return GetColourBlock ("#FF0000FF", size);
+			if (generateDefaultIcon) {
+				LoggingService.LogWarning ("Can't lookup icon: " + name);
+				return GetColourBlock ("#FF0000FF", size);
+			} else
+				return null;
 		}
 		
 		static Gdk.Pixbuf GetColourBlock (string name, Gtk.IconSize size)

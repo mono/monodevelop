@@ -1,3 +1,15 @@
+2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui\DispatchService.cs: Limit the loop in
+	  RunPendingEvents to 1000 iterations. This is a workaround
+	  for an issue that some users have experienced. Sometimes
+	  EventsPending starts return 'true' for all iterations,
+	  causing the loop to never end.
+
+	* MonoDevelop.Core.Gui\ImageService.cs:
+	* MonoDevelop.Core.Gui\PlatformService.cs: Make sure the
+	  default icon is returned for a file when none can be found.
+
 2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/SyncContextAttribute.cs: Don't use
