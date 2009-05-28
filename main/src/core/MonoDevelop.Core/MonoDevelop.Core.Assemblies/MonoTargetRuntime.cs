@@ -106,6 +106,25 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			return execHandler;
 		}
+		
+		public override string GetToolPath (TargetFramework fx, string toolName)
+		{
+			if (toolName == "csc" || toolName == "mcs") {
+				if (fx.ClrVersion == ClrVersion.Net_1_1)
+					toolName = "mcs";
+				else if (fx.ClrVersion == ClrVersion.Net_2_0)
+					toolName = "gmcs";
+				else if (fx.ClrVersion == ClrVersion.Clr_2_1)
+					toolName = "smcs";
+			}
+			else if (toolName == "resgen") {
+				if (fx.ClrVersion == ClrVersion.Net_1_1)
+					toolName = "resgen1";
+				else if (fx.ClrVersion == ClrVersion.Net_2_0)
+					toolName = "resgen2";
+			}
+			return base.GetToolPath (fx, toolName);
+		}
 
 		public override IEnumerable<string> GetToolsPaths (TargetFramework fx)
 		{

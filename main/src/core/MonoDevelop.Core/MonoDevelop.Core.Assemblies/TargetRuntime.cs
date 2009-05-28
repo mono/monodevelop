@@ -107,7 +107,7 @@ namespace MonoDevelop.Core.Assemblies
 			return new Dictionary<string,string> ();
 		}
 		
-		public string GetToolPath (TargetFramework fx, string toolName)
+		public virtual string GetToolPath (TargetFramework fx, string toolName)
 		{
 			foreach (string path in GetToolsPaths (fx)) {
 				string toolPath = Path.Combine (path, toolName);

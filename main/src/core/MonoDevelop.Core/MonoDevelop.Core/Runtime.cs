@@ -65,7 +65,11 @@ namespace MonoDevelop.Core
 				AddinManager.Registry.Update (null);
 			setupService = new SetupService (AddinManager.Registry);
 			
-			string mainRep = "http://go-mono.com/md/" + AddinManager.CurrentAddin.Version + "/main.mrep";
+			string prefix = string.Empty;
+			if (PropertyService.IsWindows)
+				prefix = "win-";
+
+			string mainRep = "http://go-mono.com/md/" + prefix + AddinManager.CurrentAddin.Version + "/main.mrep";
 			
 			AddinRepository[] repos = setupService.Repositories.GetRepositories ();
 			foreach (AddinRepository rep in repos) {

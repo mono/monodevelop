@@ -1,3 +1,16 @@
+2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution\ProcessService.cs: Fix crash on
+	  Windows.
+
+	* MonoDevelop.Core.Assemblies\TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies\MonoTargetRuntime.cs: In
+	  GetToolPath, change some tool names depending on the target
+	  framework.
+
+	* MonoDevelop.Core\Runtime.cs: Use a special add-in repo for
+	  windows.
+
 2009-05-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/PropertyService.cs:
