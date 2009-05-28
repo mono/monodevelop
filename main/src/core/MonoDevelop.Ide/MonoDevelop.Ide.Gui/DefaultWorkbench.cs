@@ -229,13 +229,11 @@ namespace MonoDevelop.Ide.Gui
 			toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
 			foreach (Gtk.Toolbar t in toolbars) {
 				t.ToolbarStyle = Gtk.ToolbarStyle.Icons;
-				t.IconSize = PropertyService.Get <Gtk.IconSize> ("MonoDevelop.ToolbarSize", Gtk.IconSize.LargeToolbar);
+				t.IconSize = IdeApp.Preferences.ToolbarSize;
 			}
-			PropertyService.PropertyChanged += delegate (object sender, MonoDevelop.Core.PropertyChangedEventArgs args) {
-				if (args.Key == "MonoDevelop.ToolbarSize") {
-					foreach (Gtk.Toolbar t in toolbars) {
-						t.IconSize = PropertyService.Get <Gtk.IconSize> ("MonoDevelop.ToolbarSize", Gtk.IconSize.LargeToolbar);
-					}
+			IdeApp.Preferences.ToolbarSizeChanged += delegate {
+				foreach (Gtk.Toolbar t in toolbars) {
+					t.IconSize = IdeApp.Preferences.ToolbarSize;
 				}
 			};
 				

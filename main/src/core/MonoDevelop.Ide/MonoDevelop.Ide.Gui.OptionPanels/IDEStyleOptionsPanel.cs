@@ -75,8 +75,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			fontButton.Sensitive = fontCheckbox.Active;
 			
 			fontCheckbox.Toggled += new EventHandler (FontCheckboxToggled);
-			
-			Gtk.IconSize curSize = PropertyService.Get <Gtk.IconSize> ("MonoDevelop.ToolbarSize", Gtk.IconSize.LargeToolbar);
+
+			Gtk.IconSize curSize = IdeApp.Preferences.ToolbarSize;
 			toolbarCombobox.Active = Array.IndexOf (sizes, curSize);
 		}
 		void FontCheckboxToggled (object sender, EventArgs e)
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			PropertyService.Set ("MonoDevelop.Core.Gui.Pads.UseCustomFont", fontCheckbox.Active);
 			PropertyService.Set ("MonoDevelop.Core.Gui.Pads.CustomFont", fontButton.FontName);
 			
-			PropertyService.Set("MonoDevelop.ToolbarSize", sizes [toolbarCombobox.Active]);
+			IdeApp.Preferences.ToolbarSize = sizes [toolbarCombobox.Active];
 			PropertyService.Set ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", documentSwitcherButton.Active);
 		}
 		

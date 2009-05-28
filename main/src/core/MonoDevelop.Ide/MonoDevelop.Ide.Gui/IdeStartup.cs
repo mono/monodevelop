@@ -62,20 +62,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int Run (string[] args)
 		{
-			//touch Win32 before GTK, to make sure that theme API is inited
-			//see http://lists.ximian.com/pipermail/gtk-sharp-list/2009-March/009507.html
-			if (PropertyService.IsWindows) {
-				var a = Assembly.Load ("System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-				if (a != null) {
-					var t = a.GetType ("System.Windows.Forms.Application");
-					if (t != null) {
-						var m = t.GetMethod ("DoEvents");
-						if (m != null)
-							m.Invoke (null, null);
-					}
-				}
-			}
-			
 			SetupExceptionManager ();
 			
 			try {
@@ -86,8 +72,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			//OSXFIXME
 			Gtk.Application.Init ();
-			if (!GLib.Thread.Supported)
-				GLib.Thread.Init ();
 			InternalLog.Initialize ();
 			MonoDevelopOptions options = new MonoDevelopOptions ();
 			options.ProcessArgs (args);

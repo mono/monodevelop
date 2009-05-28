@@ -140,6 +140,16 @@ namespace MonoDevelop.Ide.Gui
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.DefaultTargetRuntime", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.DefaultTargetRuntime", value); }
 		}
+
+		public Gtk.IconSize ToolbarSize {
+			get { return PropertyService.Get ("MonoDevelop.ToolbarSize", Gtk.IconSize.Menu); }
+			set { PropertyService.Set ("MonoDevelop.ToolbarSize", value); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> ToolbarSizeChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.ToolbarSize", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.ToolbarSize", value); }
+		}
 	}
 	
 	public enum BeforeCompileAction {

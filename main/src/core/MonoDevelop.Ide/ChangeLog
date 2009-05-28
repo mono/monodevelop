@@ -1,3 +1,17 @@
+2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui\IdePreferences.cs:
+	* MonoDevelop.Ide.Gui\DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels\IDEStyleOptionsPanel.cs:
+	  Factorized access to ToolbarSize preference. Use small
+	  toolbar by default.
+
+	* MonoDevelop.Ide.Gui\RootWorkspace.cs: Fix issue when setting
+	  the default runtime.
+
+	* MonoDevelop.Ide.Gui\IdeStartup.cs: Theme api initialization
+	  hack is not required anymore. That's now fixed in gtk#.
+
 2009-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Don't

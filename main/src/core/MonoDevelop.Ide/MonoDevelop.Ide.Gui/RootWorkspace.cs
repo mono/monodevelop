@@ -140,8 +140,8 @@ namespace MonoDevelop.Ide.Gui
 				return Runtime.SystemAssemblyService.DefaultRuntime;
 			}
 			set {
-				Runtime.SystemAssemblyService.DefaultRuntime = value;
 				useDefaultRuntime = false;
+				Runtime.SystemAssemblyService.DefaultRuntime = value;
 			}
 		}
 		
@@ -149,9 +149,9 @@ namespace MonoDevelop.Ide.Gui
 			get { return useDefaultRuntime; }
 			set {
 				if (useDefaultRuntime != value) {
-					if (value)
-						ActiveRuntime = IdeApp.Preferences.DefaultTargetRuntime;
 					useDefaultRuntime = value;
+					if (value)
+						Runtime.SystemAssemblyService.DefaultRuntime = IdeApp.Preferences.DefaultTargetRuntime;
 				}
 			}
 		}
