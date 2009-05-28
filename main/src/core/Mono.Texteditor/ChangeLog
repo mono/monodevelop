@@ -1,3 +1,8 @@
+2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor.csproj: Don't define debug for now. It is
+	  causing some issues on windows.
+
 2009-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Properly initialize the
