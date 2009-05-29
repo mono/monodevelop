@@ -252,7 +252,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			((Gtk.ListStore)viewerSelector.Model).Clear ();
 			currentViewers.Clear ();
 			
-			if (Filename == null || Filename.Length == 0 || System.IO.Directory.Exists (Filename))
+			if (Filenames.Length == 0 || Filename.Length == 0 || System.IO.Directory.Exists (Filename))
 				return;
 			
 			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (Filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (Filename)) {

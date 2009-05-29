@@ -1,5 +1,10 @@
 2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs\FileSelectorDialog.cs: Fix glib
+	  warning on windows.
+
+2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui\IdePreferences.cs:
 	* MonoDevelop.Ide.Gui\DefaultWorkbench.cs:
 	* MonoDevelop.Ide.Gui.OptionPanels\IDEStyleOptionsPanel.cs:
