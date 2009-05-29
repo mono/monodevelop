@@ -1,3 +1,8 @@
+2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Cecil\Mono.Cecil\BaseAssemblyResolver.cs: Allow .net
+	  4.0 assemblies.
+
 2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Cecil.csproj: Disable overflow checking.
