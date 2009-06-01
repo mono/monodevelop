@@ -91,5 +91,10 @@ namespace MonoDevelop.VersionControl
 		public override void DeleteDirectories (FilePath[] path, bool force, IProgressMonitor monitor)
 		{
 		}
+		
+		public override string[] GetAnnotations (MonoDevelop.Core.FilePath repositoryPath)
+		{
+			return new string[0];
+		}
 	}
 }

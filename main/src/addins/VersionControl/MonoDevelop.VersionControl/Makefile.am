@@ -16,7 +16,9 @@ FILES =  \
 	MonoDevelop.VersionControl.Views/DiffView.cs \
 	MonoDevelop.VersionControl.Views/LogView.cs \
 	MonoDevelop.VersionControl.Views/StatusView.cs \
+	MonoDevelop.VersionControl.Views/AnnotateView.cs \
 	MonoDevelop.VersionControl/AddRemoveMoveCommand.cs \
+	MonoDevelop.VersionControl/AnnotateCommand.cs \
 	MonoDevelop.VersionControl/BaseView.cs \
 	MonoDevelop.VersionControl/ChangeLogWriter.cs \
 	MonoDevelop.VersionControl/ChangeSet.cs \
@@ -60,7 +62,11 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
+	$(top_builddir)/build/bin/Mono.Debugging.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll 
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \

@@ -5,17 +5,20 @@ namespace MonoDevelop.VersionControl
 {
 	public enum Commands {
 		Update,
-    	Diff,
-    	Log,
-    	Status,
-    	Add,
-    	Remove,
-    	Publish,
-    	Checkout,
-    	Repository,
-    	Commit,
-    	Revert,
+		Diff,
+		Log,
+		Status,
+		Add,
+		Remove,
+		Publish,
+		Checkout,
+		Repository,
+		Commit,
+		Revert,
 		Lock,
-		Unlock
+		Unlock,
+		Annotate,
+		ShowAnnotations,
+		HideAnnotations
 	}
 }

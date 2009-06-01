@@ -455,5 +455,10 @@ namespace MonoDevelop.VersionControl.Subversion
 				return GenerateUnifiedDiffInfo (diff, baseLocalPath, null);
 			}
 		}
+		
+		public override string[] GetAnnotations (FilePath localPath)
+		{
+			return new string[0];
+		}
 	}
 }

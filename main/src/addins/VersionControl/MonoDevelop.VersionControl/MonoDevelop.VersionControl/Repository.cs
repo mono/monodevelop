@@ -177,6 +177,14 @@ namespace MonoDevelop.VersionControl
 			return false;
 		}
 		
+		/// <summary>
+		/// Returns true if annotations can be retrieved for the specified path.
+		/// </summary>
+		public virtual bool CanGetAnnotations (FilePath localPath)
+		{
+			return false;
+		}
+		
 		// Returns a path to the last version of the file updated from the repository
 		public abstract string GetPathToBaseText (FilePath localFile);
 		
@@ -366,6 +374,18 @@ namespace MonoDevelop.VersionControl
 			}
 			return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
 		}
+		
+		/// <summary>
+		/// Retrieves annotations for a given path in the repository.
+		/// </summary>
+		/// <param name="repositoryPath">
+		/// A <see cref="FilePath"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.String"/> corresponding to each line 
+		/// of the file to which repositoryPath points.
+		/// </returns>
+		public abstract string[] GetAnnotations (FilePath repositoryPath);
 	}
 	
 	public class DiffInfo

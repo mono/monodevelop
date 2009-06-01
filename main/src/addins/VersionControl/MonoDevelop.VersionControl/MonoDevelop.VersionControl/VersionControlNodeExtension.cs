@@ -304,6 +304,17 @@ namespace MonoDevelop.VersionControl
 		protected void UpdateUnlock(CommandInfo item) {
 			TestCommand(Commands.Unlock, item);
 		}
+		
+		[AllowMultiSelection]
+		[CommandHandler (Commands.Annotate)]
+		protected void OnAnnotate() {
+			RunCommand(Commands.Annotate, false);
+		}
+		
+		[CommandUpdateHandler (Commands.Annotate)]
+		protected void UpdateAnnotate(CommandInfo item) {
+			TestCommand(Commands.Annotate, item);
+		}
 			
 		private void TestCommand(Commands cmd, CommandInfo item) {
 			TestResult res = RunCommand(cmd, true);
@@ -367,6 +378,9 @@ namespace MonoDevelop.VersionControl
 						VersionControlItem it = items [0];
 						if (items.Count == 1 && it.IsDirectory && it.WorkspaceObject != null)
 							res = PublishCommand.Publish (it.WorkspaceObject, it.Path, test);
+						break;
+					case Commands.Annotate:
+						res = AnnotateView.Show (items[0].Repository, items[0].Path, test);
 						break;
 				}
 			}

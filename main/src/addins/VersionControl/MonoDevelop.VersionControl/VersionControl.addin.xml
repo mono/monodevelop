@@ -17,9 +17,10 @@
 	<Dependencies>
 	    <Addin id="Core" version="2.1.0"/>
 	    <Addin id="Core.Gui" version="2.1.0"/>
-		<Addin id="Projects" version="2.1.0"/>
-		<Addin id="Projects.Gui" version="2.1.0"/>
+	    <Addin id="Projects" version="2.1.0"/>
+	    <Addin id="Projects.Gui" version="2.1.0"/>
 	    <Addin id="Ide" version="2.1.0"/>
+	    <Addin id="SourceEditor2" version="2.1.0"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/VersionControlSystems" name = "Version control systems">
@@ -115,6 +116,17 @@
 		<Command id = "MonoDevelop.VersionControl.Commands.Unlock" 
 			_label = "Release Lock"
 			description = "Unlock files in the repository, so that other user can change them."/>
+		<Command id = "MonoDevelop.VersionControl.Commands.Annotate" 
+			_label = "Show Annotations"
+			description = "Show the origin of each line in a file."/>
+		<Command id = "MonoDevelop.VersionControl.Commands.ShowAnnotations" 
+			defaultHandler = "MonoDevelop.VersionControl.ShowAnnotationsCommand" 
+			_label = "Show Annotations"
+			description = "Show the origin of each line in a file."/>
+		<Command id = "MonoDevelop.VersionControl.Commands.HideAnnotations" 
+			defaultHandler = "MonoDevelop.VersionControl.HideAnnotationsCommand" 
+			_label = "Hide Annotations"
+			description = "Hide Annotations."/>
 		</Category>
 	</Extension>
 	
@@ -135,6 +147,7 @@
 				<Condition id="ItemType" value="IFileItem">
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
+					<CommandItem id = "MonoDevelop.VersionControl.Commands.Annotate"/>
 				</Condition>
 				<SeparatorItem id = "CommandSeparator" />
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
@@ -162,6 +175,11 @@
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
 		<SeparatorItem id = "CommandSeparator3" />
 	</Extension>
+	
+	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor"> 
+		<CommandItem id = "MonoDevelop.VersionControl.Commands.ShowAnnotations"/>
+		<CommandItem id = "MonoDevelop.VersionControl.Commands.HideAnnotations"/>
+	</Extension>	
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id="VersionControl" _label="Version Control">

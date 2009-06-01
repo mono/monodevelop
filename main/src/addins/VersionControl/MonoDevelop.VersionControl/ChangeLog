@@ -1,3 +1,15 @@
+2009-06-01  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Makefile.am:
+	* MonoDevelop.VersionControl.csproj:
+	* MonoDevelop.VersionControl/Commands.cs:
+	* MonoDevelop.VersionControl/Repository.cs:
+	* MonoDevelop.VersionControl/UnknownRepository.cs:
+	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs:
+	* MonoDevelop.VersionControl/AnnotateCommand.cs:
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs:
+	* VersionControl.addin.xml: Added "Annotate" command.
+
 2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs:
