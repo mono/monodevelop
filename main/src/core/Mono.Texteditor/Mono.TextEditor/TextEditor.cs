@@ -621,7 +621,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		internal void RedrawFromLine (int logicalLine)
+		public void RedrawFromLine (int logicalLine)
 		{
 			repaint = true;
 			lock (disposeLock) {
@@ -1686,6 +1686,31 @@ namespace Mono.TextEditor
 		}
 		
 		public event EventHandler<LinkEventArgs> LinkRequest;
+		
+		/// <summary>
+		/// Inserts a margin at the specified list position
+		/// </summary>
+		public void InsertMargin (int index, Margin margin)
+		{
+			margins.Insert (index, margin);
+			RedrawFromLine (0);
+		}
+		
+		/// <summary>
+		/// Checks whether the editor has a margin of a given type
+		/// </summary>
+		public bool HasMargin (Type marginType)
+		{
+			return margins.Exists((margin) => { return marginType.IsAssignableFrom (margin.GetType ()); });
+		}
+		
+		/// <summary>
+		/// Gets the first margin of a given type
+		/// </summary>
+		public Margin GetMargin (Type marginType)
+		{
+			return margins.Find((margin) => { return marginType.IsAssignableFrom (margin.GetType ()); });
+		}
 	}
 	
 	public interface ITextEditorDataProvider

@@ -1,3 +1,8 @@
+2009-06-01  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor/TextEditor.cs: Changes to support annotation 
+	  view in VersionControl addin.
+
 2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor.csproj: Don't define debug for now. It is
