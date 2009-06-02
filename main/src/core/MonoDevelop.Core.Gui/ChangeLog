@@ -1,3 +1,8 @@
+2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.addin.xml: The direct base type of
+	  application/x-addin+xml is xml, not text.
+
 2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui\DispatchService.cs: Limit the loop in
