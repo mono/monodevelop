@@ -218,11 +218,15 @@ namespace MonoDevelop.CSharpBinding
 				if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0) {
 					result.Append (settings.Markup ("<"));
 					if (!settings.HideGenericParameterNames) {
+						bool hideArrays = settings.HideArrayBrackets;
+						settings.OutputFlags &= ~OutputFlags.HideArrayBrackets;
 						for (int i = 0; i < returnType.GenericArguments.Count; i++) {
 							if (i > 0)
 								result.Append (settings.Markup (", "));
 							result.Append (GetString (returnType.GenericArguments[i], settings));
 						}
+						if (hideArrays)
+							settings.OutputFlags |= OutputFlags.HideArrayBrackets;
 					}
 					result.Append (settings.Markup (">"));
 				}

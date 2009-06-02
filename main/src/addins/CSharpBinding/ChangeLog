@@ -1,5 +1,10 @@
 2009-06-02  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpAmbience.cs: Fixed "Bug 509019 - Autocomplete for
+	  new generic of array omits brackets".
+
+2009-06-02  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 507063 - XML
 	  auto-comment doesn't work for indexers or properties".
 
