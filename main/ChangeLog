@@ -1,3 +1,8 @@
+2009-06-02  Jonathan Pobst  <monkey@jpobst.com>
+
+	* Main.sln: Build MonoDevelop.VersionControl.Subversion on
+	DebugWin32.
+
 2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Add gtk-dotnet.
