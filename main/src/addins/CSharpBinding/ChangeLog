@@ -1,3 +1,9 @@
+2009-06-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 507737 - Renaming
+	  parameter of method renames parameter occurrences in other
+	  methods in the same file".
+
 2009-05-25  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am: Corrected makefile.

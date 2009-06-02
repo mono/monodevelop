@@ -398,12 +398,8 @@ namespace MonoDevelop.CSharpBinding
 					}
 				} else if (searchedMember is IParameter && result is ParameterResolveResult) {
 					IParameter param = ((ParameterResolveResult)result).Parameter;
-					
-					// FIXME: might need to match more than this?
-					if (param != null/* && IsExpectedMember (param.DeclaringMember)*/) {
-						//Debug ("adding IdentifierExpression param", idExp.Identifier, idExp);
+					if (param != null && ((IParameter)searchedMember).DeclaringMember.Location == param.DeclaringMember.Location)
 						AddUniqueReference (line, col, idExp.Identifier);
-					}
 				} else if (searchedMember is IMember && result is MemberResolveResult) {
 					IMember item = ((MemberResolveResult)result).ResolvedMember;
 					IMember m = item as IMember;
