@@ -150,9 +150,10 @@
 		<StockIcon stockid = "md-resource-file-icon" resource = "Icons.32x32.ResourceFileIcon" size = "Dnd" />
 		<StockIcon stockid = "md-save-all-icon" resource = "Icons.16x16.SaveAllIcon" size = "Menu"/>
 		<StockIcon stockid = "md-save-all-icon" resource = "Icons.24x24.SaveAllIcon" />
-		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon-22.png" />
-		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon" size="Button"/>
-		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon" size="Dialog"/>
+		<StockIcon stockid = "md-monodevelop" resource = "monodevelop-16.png" size="Menu"/>
+		<StockIcon stockid = "md-monodevelop" resource = "monodevelop-22.png" />
+		<StockIcon stockid = "md-monodevelop" resource = "monodevelop-22.png" size="Button"/>
+		<StockIcon stockid = "md-monodevelop" resource = "monodevelop-48.png" size="Dialog"/>
 		<StockIcon stockid = "md-project" resource = "project-16.png" size="Menu"/>
 		<StockIcon stockid = "md-project" resource = "project-32.png" size="Dnd" />
 		<StockIcon stockid = "md-project-gui" icon = "md-project|res:project-gui-32.png" size="Dnd" />

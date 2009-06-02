@@ -189,9 +189,6 @@
     <EmbeddedResource Include="icons\Icons.32x32.XMLFileIcon">
       <LogicalName>Icons.32x32.XMLFileIcon</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.SharpDevelopIcon">
-      <LogicalName>Icons.SharpDevelopIcon</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\package-x-generic_22.png">
       <LogicalName>package-x-generic_22.png</LogicalName>
     </EmbeddedResource>
@@ -222,9 +219,6 @@
     <EmbeddedResource Include="MonoDevelop.Core.Gui.addin.xml" />
     <EmbeddedResource Include="icons\Icons.24x24.SaveAllIcon">
       <LogicalName>Icons.24x24.SaveAllIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.SharpDevelopIcon-22.png">
-      <LogicalName>Icons.SharpDevelopIcon-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\edit-select-all.png">
       <LogicalName>edit-select-all.png</LogicalName>
@@ -447,6 +441,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-method-new-16.png">
       <LogicalName>element-method-new-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\monodevelop-16.png">
+      <LogicalName>monodevelop-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\monodevelop-22.png">
+      <LogicalName>monodevelop-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\monodevelop-48.png">
+      <LogicalName>monodevelop-48.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

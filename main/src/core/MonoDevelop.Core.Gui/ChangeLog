@@ -1,3 +1,14 @@
+2009-06-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* icons\monodevelop-48.png:
+	* icons\monodevelop-22.png:
+	* icons\monodevelop-16.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* icons\Icons.SharpDevelopIcon:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* MonoDevelop.Core.Gui\StockIcons.cs:
+	* icons\Icons.SharpDevelopIcon-22.png: Updated the MD icon.
+
 2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.addin.xml: The direct base type of

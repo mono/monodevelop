@@ -125,7 +125,7 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string SaveAllIcon = "md-save-all-icon";
 		public static readonly string SaveAsIcon = Gtk.Stock.SaveAs;
 		public static readonly string SaveIcon = Gtk.Stock.Save;
-		public static readonly string SharpDevelopIcon = "md-sharp-develop-icon";
+		public static readonly string MonoDevelop = "md-monodevelop";
 		public static readonly string Project = "md-project";
 		public static readonly string SplitWindow = "md-split-window";
 		public static readonly string Struct = "md-struct";
