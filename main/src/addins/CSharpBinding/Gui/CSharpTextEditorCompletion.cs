@@ -149,7 +149,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return result;
 		}
 		
-					
 		bool tryToForceCompletion = false;
 		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
@@ -1571,6 +1570,25 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 		}
 		
+		void AppendPropertyComment (StringBuilder builder, string indent, IProperty property)
+		{
+			if (property.Parameters != null) {
+				foreach (IParameter para in property.Parameters) {
+					builder.Append (Environment.NewLine);
+					builder.Append (indent);
+					builder.Append ("/// <param name=\"");
+					builder.Append (para.Name);
+					builder.Append ("\">\n");
+					builder.Append (indent);
+					builder.Append ("/// A <see cref=\"");
+					builder.Append (para.ReturnType.FullName);
+					builder.Append ("\"/>\n");
+					builder.Append (indent);
+					builder.Append ("/// </param>");
+				}
+			}
+		}
+		
 		string GenerateBody (IType c, int line, string indent, out int newCursorOffset)
 		{
 			int startLine = int.MaxValue;
@@ -1590,12 +1608,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 				AppendSummary (builder, indent, out newCursorOffset);
 				AppendMethodComment (builder, indent, (IMethod)member);
 			} else if (member is IProperty) {
-				builder.Append ("/ <value>\n");
-				builder.Append (indent);
-				builder.Append ("/// \n");
-				builder.Append (indent);
-				builder.Append ("/// </value>");
-				newCursorOffset = ("/ <value>\n/// " + indent).Length;
+				AppendSummary (builder, indent, out newCursorOffset);
+				AppendPropertyComment (builder, indent, (IProperty)member);
 			}
 			
 			return builder.ToString ();
