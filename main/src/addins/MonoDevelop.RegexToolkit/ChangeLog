@@ -1,3 +1,9 @@
+2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.RegexToolkit/RegexLibraryWindow.cs: On MS.NET
+	  XmlWritter.Settings is not initialized by default. Path by
+	  Carlo Kok.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.RegexToolkit.csproj: don't require specific

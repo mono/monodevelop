@@ -193,7 +193,10 @@ namespace MonoDevelop.RegexToolkit
 		void WriteRegexes ()
 		{
 			Stream stream = new FileStream (LibraryLocation, FileMode.Create);
-			XmlWriter writer = new XmlTextWriter (stream, Encoding.UTF8);
+			XmlWriterSettings settings = new XmlWriterSettings ();
+			settings.Encoding = System.Text.Encoding.UTF8;
+			settings.Indent = true;
+			XmlWriter writer = XmlTextWriter.Create (stream, settings);
 			try {
 				writer.Settings.Indent = true;
 				writer.WriteStartElement (Node);
