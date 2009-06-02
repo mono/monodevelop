@@ -244,7 +244,7 @@ namespace MonoDevelop.SourceEditor
 //			TextFileService.FireCommitCountChanges (this);
 			
 			ContentName = fileName; 
-			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			Document.MimeType = GetKnownMimeType (fileName);
 			Document.SetNotDirtyState ();
 			this.IsDirty = false;
 		}
@@ -268,7 +268,10 @@ namespace MonoDevelop.SourceEditor
 				widget.RemoveMessageBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
-			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			
+			// Look for a mime type for which there is a syntax mode
+			Document.MimeType = GetKnownMimeType (fileName);
+			
 			widget.InformLoad ();
 			
 			if (AutoSave.AutoSaveExists (fileName)) {
@@ -303,7 +306,7 @@ namespace MonoDevelop.SourceEditor
 				widget.RemoveMessageBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
-			Document.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			Document.MimeType = GetKnownMimeType (fileName);
 			widget.InformLoad ();
 			inLoad = true;
 			Document.Text = content;
@@ -316,6 +319,17 @@ namespace MonoDevelop.SourceEditor
 
 			widget.PopulateClassCombo ();
 			this.IsDirty = false;
+		}
+		
+		string GetKnownMimeType (string fileName)
+		{
+			// Look for a mime type for which there is a syntax mode
+			string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			foreach (string mt in IdeApp.Services.PlatformService.GetMimeTypeInheritanceChain (mimeType)) {
+				if (Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (mt) != null)
+					return mt;
+			}
+			return mimeType;
 		}
 		
 		public string SourceEncoding {
