@@ -151,7 +151,9 @@
     <EmbeddedResource Include="icons\csharp-project-16.png">
       <LogicalName>csharp-project-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormattingStrategy\CSharpFormattingPolicy.xml" />
+    <EmbeddedResource Include="FormattingStrategy\CSharpFormattingPolicy.xml">
+      <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gui\FormattingPanel.cs" />
