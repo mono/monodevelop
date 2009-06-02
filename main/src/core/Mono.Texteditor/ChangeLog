@@ -1,3 +1,9 @@
+2009-06-02  Mike Krüger  <mkrueger@novell.com>
+
+	* SyntaxModes/ActionScriptSyntaxMode.xml: Applied patch from
+	  Federico Di Gregorio <fog@initd.org> ("Bug 507379 -
+	  ActionScript 3.0 syntax highlight")
+
 2009-06-01  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor/TextEditor.cs: Changes to support annotation 

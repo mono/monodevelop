@@ -99,11 +99,16 @@
 		<Word>protected</Word>
 		<Word>private</Word>
 		<Word>internal</Word>
+		<Word>static</Word>
+		<Word>override</Word>
+		<Word>extends</Word>
 	</Keywords>
 
 	<Keywords color = "keyword.namespace">
 		<Word>package</Word>
 		<Word>import</Word>
+		<Word>use</Word>
+		<Word>namespace</Word>
 	</Keywords>
 	
 	<Rule name = "Comment">
