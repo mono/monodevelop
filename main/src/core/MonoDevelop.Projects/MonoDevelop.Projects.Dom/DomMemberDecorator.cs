@@ -41,6 +41,12 @@ namespace MonoDevelop.Projects.Dom
 		
 		#region IMember implementation 
 		
+		public virtual MemberType MemberType {
+			get {
+				return member.MemberType;
+			}
+		}
+		
 		public virtual System.Xml.XmlNode GetMonodocDocumentation ()
 		{
 			return member.GetMonodocDocumentation ();

@@ -40,6 +40,10 @@ namespace MonoDevelop.Projects.Dom
 		
 		protected IType  declaringType;
 		
+		public abstract MemberType MemberType {
+			get;
+		}
+		
 		public IType DeclaringType {
 			get {
 				return declaringType;

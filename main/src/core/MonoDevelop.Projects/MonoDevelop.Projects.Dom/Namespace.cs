@@ -43,6 +43,12 @@ namespace MonoDevelop.Projects.Dom
 			this.Documentation = documentation;
 		}
 		
+		public override MemberType MemberType {
+			get {
+				return MemberType.Namespace;
+			}
+		}
+		
 		public override string ToString ()
 		{
 			return string.Format ("[Namespace: Name={0}]", name);

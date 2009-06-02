@@ -31,10 +31,17 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class InstantiatedType : DomType
+	public class InstantiatedType : DomType, IInstantiatedType
 	{
 		IList<IReturnType> genericParameters = null;
 		static readonly IList<IReturnType> emptyList = new IReturnType[0];
+
+		public override TypeKind Kind {
+			get {
+				return TypeKind.GenericInstantiation;
+			}
+		}
+
 		public IList<IReturnType> GenericParameters {
 			get {
 				return genericParameters ?? emptyList;

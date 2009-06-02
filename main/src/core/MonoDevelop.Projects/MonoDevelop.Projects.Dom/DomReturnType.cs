@@ -166,7 +166,7 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		protected string nspace;
-		protected int pointerNestingLevel;
+		protected int pointerNestingLevel, arrayPointerNestingLevel;
 		protected int[] dimensions = null;
 		ReturnTypeModifiers modifiers;
 		
@@ -228,6 +228,16 @@ namespace MonoDevelop.Projects.Dom
 				nspace = value;
 			}
 		}
+		
+		public int ArrayPointerNestingLevel {
+			get {
+				return arrayPointerNestingLevel;
+			}
+			set {
+				arrayPointerNestingLevel = value;
+			}
+		}
+		
 		public int PointerNestingLevel {
 			get {
 				return pointerNestingLevel;
@@ -410,17 +420,23 @@ namespace MonoDevelop.Projects.Dom
 				if (result.Length > 0)
 					result.Append ('.');
 				result.Append (part.ToInvariantString ());
-			}
+							}
+			if (this.IsNullable)
+				result.Append ('?');
+
+			result.Append (new string ('*', this.PointerNestingLevel));
+
 			for (int i = 0; i < ArrayDimensions; i++) {
 				result.Append ('[');
 				result.Append (new string (',', this.GetDimension (i)));
 				result.Append (']');
 			}
-			result.Append (new string ('*', this.PointerNestingLevel));
+			
+			result.Append (new string ('*', this.ArrayPointerNestingLevel));
+
 			if (this.IsByRef)
 				result.Append ('&');
-			if (this.IsNullable)
-				result.Append ('?');
+
 			return invariantString = result.ToString ();
 		}
 		

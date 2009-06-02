@@ -38,6 +38,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public override MemberType MemberType {
+			get {
+				return MemberType.Field;
+			}
+		}
+		
 		static readonly string[] iconTable = {Stock.Field, Stock.PrivateField, Stock.ProtectedField, Stock.InternalField};
 		
 		public override string StockIcon {

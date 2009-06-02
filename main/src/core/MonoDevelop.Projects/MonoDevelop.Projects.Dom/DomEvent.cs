@@ -37,6 +37,12 @@ namespace MonoDevelop.Projects.Dom
 		IMethod removeMethod = null;
 		IMethod raiseMethod = null;
 		
+		public override MemberType MemberType {
+			get {
+				return MemberType.Event;
+			}
+		}
+		
 		public virtual IMethod AddMethod {
 			get {
 				if (addMethod != null)

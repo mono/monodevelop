@@ -33,6 +33,13 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {
+	public enum TypeKind 
+	{
+		Definition,
+		GenericInstantiation,
+		GenericParameter
+	}
+
 	public interface IType : IMember, IEquatable<IType>
 	{
 		string Namespace {
@@ -151,5 +158,24 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		List<IMethod> GetExtensionMethods (List<IType> accessibleExtensionTypes);
+	
+		TypeKind Kind {
+			get;
+		}
+	}
+	
+	public interface IInstantiatedType : IType
+	{
+		IList<IReturnType> GenericParameters {
+			get;
+		}
+		
+		IType UninstantiatedType { 
+			get; 
+		}
+	}
+	
+	public interface ITypeParameterType : IType, ITypeParameter
+	{
 	}
 }

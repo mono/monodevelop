@@ -57,6 +57,8 @@ namespace MonoDevelop.Projects.Dom
 	/// General return type format:
 	/// Namespace.Part1,...,PartN
 	/// Where Part is a typename: Typename&lt;arg1, ... ,argn&gt;
+	/// Elements are defined in the order they would appear on a string:
+	/// {Namespace} {Parts} '?'{nullable} '*'{PointerNestingLevel} '[]'*{ArrayDimensions}, '*'{ArrayPointerNestingLevel} '&'{ByRef}
 	/// </summary>
 	public interface IReturnType : IReturnTypePart, IDomVisitable
 	{
@@ -72,6 +74,11 @@ namespace MonoDevelop.Projects.Dom
 		List<IReturnTypePart> Parts {
 			get;
 		}
+
+		bool IsNullable
+		{
+			get;
+		}
 		
 		int PointerNestingLevel {
 			get;
@@ -80,16 +87,17 @@ namespace MonoDevelop.Projects.Dom
 		int ArrayDimensions {
 			get;
 		}
-		
-		ReturnTypeModifiers Modifiers {
+
+		int ArrayPointerNestingLevel {
 			get;
 		}
 		
 		bool IsByRef {
 			get;
 		}
-		
-		bool IsNullable {
+
+		ReturnTypeModifiers Modifiers
+		{
 			get;
 		}
 		

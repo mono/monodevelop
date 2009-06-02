@@ -50,8 +50,19 @@ namespace MonoDevelop.Projects.Dom
 		
 		protected ClassType classType = ClassType.Unknown;
 		protected string nameSpace;
-		
-		
+
+		public override MemberType MemberType {
+			get {
+				return MemberType.Type;
+			}
+		}
+
+		public virtual TypeKind Kind {
+			get {
+				return TypeKind.Definition;
+			}
+		}
+
 		protected override string CalculateFullName ()
 		{
 			base.fullNameIsDirty = false;
@@ -177,7 +188,7 @@ namespace MonoDevelop.Projects.Dom
 		public virtual IEnumerable<IType> InnerTypes {
 			get {
 				foreach (IMember item in Members)
-					if (item is IType)
+					if (item.MemberType == MemberType.Type)
 						yield return (IType)item;
 			}
 		}
@@ -185,7 +196,7 @@ namespace MonoDevelop.Projects.Dom
 		public virtual IEnumerable<IField> Fields {
 			get {
 				foreach (IMember item in Members)
-					if (item is IField)
+					if (item.MemberType == MemberType.Field)
 						yield return (IField)item;
 			}
 		}
@@ -193,7 +204,7 @@ namespace MonoDevelop.Projects.Dom
 		public virtual IEnumerable<IProperty> Properties {
 			get {
 				foreach (IMember item in Members)
-					if (item is IProperty)
+					if (item.MemberType == MemberType.Property)
 						yield return (IProperty)item;
 			}
 		}
@@ -201,7 +212,7 @@ namespace MonoDevelop.Projects.Dom
 		public virtual IEnumerable<IMethod> Methods {
 			get {
 				foreach (IMember item in Members)
-					if (item is IMethod)
+					if (item.MemberType == MemberType.Method)
 						yield return (IMethod)item;
 			}
 		}
@@ -209,7 +220,7 @@ namespace MonoDevelop.Projects.Dom
 		public virtual IEnumerable<IEvent> Events {
 			get {
 				foreach (IMember item in Members)
-					if (item is IEvent)
+					if (item.MemberType == MemberType.Event)
 						yield return (IEvent)item;
 			}
 		}
@@ -372,11 +383,14 @@ namespace MonoDevelop.Projects.Dom
 		
 		public bool HasOverriden (IMember member)
 		{
-			if (member is IMethod)
-				return HasOverriden (member as IMethod);
-			if (member is IProperty)
-				return HasOverriden (member as IProperty);
-			return false;
+			switch (member.MemberType) {
+				case MemberType.Method:
+					return HasOverriden (member as IMethod);
+				case MemberType.Property:
+					return HasOverriden (member as IProperty);
+				default:
+					return false;
+			}
 		}
 		
 		public bool IsBaseType (IReturnType type)
@@ -510,18 +524,26 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void Add (IMember member)
 		{
-			if (member is IField)
-				Add ((IField) member);
-			else if (member is IMethod)
-				Add ((IMethod) member);
-			else if (member is IProperty)
-				Add ((IProperty) member);
-			else if (member is IEvent)
-				Add ((IEvent) member);
-			else if (member is IType)
-				Add ((IType) member);
-			else
-				throw new InvalidOperationException ();
+			switch (member.MemberType)
+			{
+				case MemberType.Field:
+					Add ((IField) member);
+					break;
+				case MemberType.Method:
+					Add ((IMethod) member);
+					break;
+				case MemberType.Property:
+					Add ((IProperty) member);
+					break;
+				case MemberType.Event:
+					Add ((IEvent) member);
+					break;
+				case MemberType.Type:
+					Add ((IType) member);
+					break;
+				default:
+					throw new InvalidOperationException ();
+			}
 		}
 		
 		protected void ClearInterfaceImplementations ()

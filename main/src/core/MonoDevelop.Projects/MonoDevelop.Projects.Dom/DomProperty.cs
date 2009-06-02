@@ -37,7 +37,13 @@ namespace MonoDevelop.Projects.Dom
 	public class DomProperty : AbstractMember, IProperty
 	{
 		protected List<IParameter> parameters = null;
-
+		
+		public override MemberType MemberType {
+			get {
+				return MemberType.Property;
+			}
+		}
+		
 		public PropertyModifier PropertyModifier {
 			get;
 			set;

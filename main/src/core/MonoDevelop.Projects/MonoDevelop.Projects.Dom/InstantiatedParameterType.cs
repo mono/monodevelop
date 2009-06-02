@@ -32,10 +32,20 @@ using MonoDevelop.Projects.Dom.Output;
 
 namespace MonoDevelop.Projects.Dom
 {
-	internal class InstantiatedParameterType: DomType
+	internal class InstantiatedParameterType : DomType, ITypeParameterType
 	{
+		TypeParameter typeparam;
+
+		public override TypeKind Kind
+		{
+			get {
+				return TypeKind.GenericParameter;
+			}
+		}
+
 		public InstantiatedParameterType (ProjectDom dom, IType outerType, TypeParameter tp)
 		{
+			typeparam = tp;
 			compilationUnit = outerType.CompilationUnit;
 			ClassType = ClassType.Class;
 			Modifiers = Modifiers.Public;
@@ -91,5 +101,34 @@ namespace MonoDevelop.Projects.Dom
 			}
 			return false;
 		}
+
+		#region ITypeParameter Members
+
+
+		public IList<IReturnType> Constraints {
+			get { 
+				return typeparam.Constraints; 
+			}
+		}
+
+		public bool ConstructorRequired {
+			get {
+				return typeparam.ConstructorRequired;
+			}
+		}
+
+		public bool ClassRequired {
+			get { 
+				return typeparam.ClassRequired; 
+			}
+		}
+
+		public bool ValueTypeRequired {
+			get { 
+				return typeparam.ValueTypeRequired;
+			}
+		}
+
+		#endregion
 	}
 }

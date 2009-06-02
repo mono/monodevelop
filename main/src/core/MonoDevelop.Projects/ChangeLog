@@ -1,3 +1,26 @@
+2009-05-27  Carlo Kok  <ck@remobjects.com>
+	* MonoDevelop.Projects.Dom/IMember.cs: 
+	* MonoDevelop.Projects.Dom/Namespace.cs:
+	* MonoDevelop.Projects.Dom/DomEvent.cs:
+	* MonoDevelop.Projects.Dom/DomField.cs:
+	* MonoDevelop.Projects.Dom/DomMemberDecorator.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: added MemberType 
+	  property to distinguish between different member types
+
+	* MonoDevelop.Projects.Dom/IReturnType.cs:
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs: Added pointer to 
+	  array support to IReturnType and cecil loading
+	
+	* MonoDevelop.Projects.Dom/IType.cs:
+	* MonoDevelop.Projects.Dom/InstantiatedParameterType.cs: enum to 
+	  distinguish between the different types.
+
+	* MonoDevelop.Projects.Dom/DomType.cs: enum to distinguish between the 
+	  different types. Small optimization to use the new enum for member
+	  enumeration.
+
 2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs: Avoid

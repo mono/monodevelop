@@ -42,7 +42,13 @@ namespace MonoDevelop.Projects.Dom
 
 		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
 		static readonly ReadOnlyCollection<ITypeParameter> emptyGenericParameters = new ReadOnlyCollection<ITypeParameter> (new ITypeParameter [0]);
-
+		
+		public override MemberType MemberType {
+			get {
+				return MemberType.Method;
+			}
+		}
+		
 		public virtual MethodModifier MethodModifier {
 			get;
 			set;

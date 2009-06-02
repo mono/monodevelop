@@ -32,6 +32,16 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Dom
 {
+	public enum MemberType
+	{
+		Field,
+		Method,
+		Property,
+		Event,
+		Type,
+		Namespace
+	}
+
 	public interface IMember : IComparable, IDomVisitable
 	{
 		string FullName {
@@ -88,7 +98,11 @@ namespace MonoDevelop.Projects.Dom
 		
 		System.Xml.XmlNode GetMonodocDocumentation ();
 		bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member, bool includeProtected);
-		
+
+		MemberType MemberType {
+			get;
+		}
+
 		#region ModifierAccessors
 		bool IsObsolete { get; }
 		bool IsPrivate   { get; }

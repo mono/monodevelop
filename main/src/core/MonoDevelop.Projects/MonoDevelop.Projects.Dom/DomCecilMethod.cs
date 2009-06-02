@@ -104,7 +104,10 @@ namespace MonoDevelop.Projects.Dom
 			if (typeReference is Mono.Cecil.PointerType) {
 				Mono.Cecil.PointerType ptrType = (Mono.Cecil.PointerType)typeReference;
 				DomReturnType result = GetReturnType (ptrType.ElementType);
-				result.PointerNestingLevel++;
+				if (result.ArrayDimensions > 0)
+					result.ArrayPointerNestingLevel++;
+				else 
+					result.PointerNestingLevel++;
 				return result;
 			}
 			if (typeReference is Mono.Cecil.ReferenceType)
