@@ -68,8 +68,10 @@ namespace MonoDevelop.Ide.ExternalTools
 		
 		static void SaveTools (string fileName)
 		{
-			XmlTextWriter writer = new XmlTextWriter (fileName, System.Text.Encoding.UTF8);
-			writer.Settings.Indent = true;
+			XmlWriterSettings settings = new XmlWriterSettings ();
+			settings.Encoding = System.Text.Encoding.UTF8;
+			settings.Indent = true;
+			XmlWriter writer = XmlTextWriter.Create (fileName, settings);
 			try {
 				writer.WriteStartDocument ();
 				writer.WriteStartElement (Node);

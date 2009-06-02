@@ -1,3 +1,9 @@
+2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.ExternalTools/ExternalToolService.cs:
+	  XmlTextWriter.Settings is not initialized by default on
+	  Windows. Patch by Carlo Kok.
+
 2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs\FileSelectorDialog.cs: Fix glib
