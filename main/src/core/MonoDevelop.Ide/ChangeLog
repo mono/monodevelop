@@ -1,5 +1,10 @@
 2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs:
+	  Don't crash if the icon of the node is not set.
+
+2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.ExternalTools/ExternalToolService.cs:
 	  XmlTextWriter.Settings is not initialized by default on
 	  Windows. Patch by Carlo Kok.

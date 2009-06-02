@@ -786,8 +786,10 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 				else if (node.Modified) {
 					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.TextColumn, node.Text);
-					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OpenIconColumn, node.Icon);
-					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.ClosedIconColumn, node.ClosedIcon);
+					if (node.Icon != null)
+						tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OpenIconColumn, node.Icon);
+					if (node.ClosedIcon != null)
+						tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.ClosedIconColumn, node.ClosedIcon);
 				}
 				if (node.Children != null) {
 					foreach (TreeNode cn in node.Children) {
