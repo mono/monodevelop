@@ -1,5 +1,11 @@
 2009-06-02  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: Fixed "Bug 509022 -
+	  Brace-matching gets confused by quote characters within
+	  comments".
+
+2009-06-02  Mike Krüger  <mkrueger@novell.com>
+
 	* SyntaxModes/ActionScriptSyntaxMode.xml: Applied patch from
 	  Federico Di Gregorio <fog@initd.org> ("Bug 507379 -
 	  ActionScript 3.0 syntax highlight")
