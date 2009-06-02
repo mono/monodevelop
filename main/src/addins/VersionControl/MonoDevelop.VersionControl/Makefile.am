@@ -65,7 +65,8 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll 
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	$(top_builddir)/build/bin/Mono.Debugging.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \

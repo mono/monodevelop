@@ -1,3 +1,7 @@
+2009-06-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Fix build by adding reference to Mono.Debugging.
+
 2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
