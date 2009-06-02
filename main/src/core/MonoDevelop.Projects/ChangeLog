@@ -1,3 +1,9 @@
+2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs: Avoid
+	  calling Class.ToString() since it may end recursively
+	  calling ClassEntry.ToString().
+
 2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects\DotNetProjectConfiguration.cs: Added
