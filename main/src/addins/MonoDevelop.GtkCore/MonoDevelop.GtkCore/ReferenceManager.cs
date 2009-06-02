@@ -103,8 +103,10 @@ namespace MonoDevelop.GtkCore {
 
 			pkg_version = pkg_version + ".";
 			foreach (SystemAssembly asm in project.TargetRuntime.GetAssemblies ()) {
-				if (asm.Name == "gtk-sharp" && asm.Version.StartsWith (pkg_version))
-					return asm.Version;
+				if (asm.Name == "gtk-sharp" && asm.Version.StartsWith (pkg_version)) {
+					int i = asm.FullName.IndexOf (',');
+					return asm.FullName.Substring (i+1).Trim ();
+				}
 			}
 			return string.Empty;
 		}

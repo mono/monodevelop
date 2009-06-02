@@ -1,3 +1,9 @@
+2009-06-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/ReferenceManager.cs:
+	  GetGtkAssemblyVersion is expected to return the version and
+	  token, not only the version.
+
 2009-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore\ReferenceManager.cs: Don't get the
