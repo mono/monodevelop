@@ -1,3 +1,7 @@
+2009-06-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui\DefaultWorkbench.cs: Use new stock icon.
+
 2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs:
