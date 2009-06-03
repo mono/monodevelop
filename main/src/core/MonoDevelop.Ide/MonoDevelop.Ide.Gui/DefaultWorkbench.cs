@@ -179,7 +179,12 @@ namespace MonoDevelop.Ide.Gui
 			if (Gtk.IconTheme.Default.HasIcon ("monodevelop")) 
 				Gtk.Window.DefaultIconName = "monodevelop";
 			else
-				this.Icon = ImageService.GetPixbuf (Stock.MonoDevelop);
+				this.IconList = new Gdk.Pixbuf[] {
+					ImageService.GetPixbuf (Stock.MonoDevelop, Gtk.IconSize.Menu),
+					ImageService.GetPixbuf (Stock.MonoDevelop, Gtk.IconSize.Button),
+					ImageService.GetPixbuf (Stock.MonoDevelop, Gtk.IconSize.Dnd),
+					ImageService.GetPixbuf (Stock.MonoDevelop, Gtk.IconSize.Dialog)
+				};
 
 			//this.WindowPosition = Gtk.WindowPosition.None;
 
