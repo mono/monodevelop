@@ -1198,11 +1198,17 @@ namespace Mono.TextEditor
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				LineSegment line = Document.GetLine (logicalLineNumber);
-				if (line != null && (longestLine == null || longestLine.EndOffset >= this.Document.Length || line != longestLine && this.TextViewMargin.GetWidth (this.Document.GetTextAt (line)) > longestLineWidth)) {
+				
+				string lineText  = "";
+				if (line != null && line.EndOffset < Document.Length)
+					lineText = Document.GetTextAt (line);
+				
+				if (line != null && (longestLine == null || longestLine.EndOffset >= this.Document.Length || line != longestLine && this.TextViewMargin.GetWidth (lineText) > longestLineWidth)) {
 					longestLine = line;
-					longestLineWidth = this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine));
+					longestLineWidth = this.TextViewMargin.GetWidth (lineText);
 					oldLongestLineLength = -1;
 				}
+				
 				foreach (Margin margin in marginsToRender) {
 					try {
 						margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);

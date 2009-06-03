@@ -139,7 +139,7 @@ namespace Mono.TextEditor
 				if (!isInBlockComment && curStringQuote < 0) {
 					isInLineComment = StartsWithListMember (document, lineComments, offset) >= 0;
 					if (isInLineComment) 
-						return offset;
+						return System.Math.Min (offset, lineOffset);
 				}
 				// check block comments
 				if (!isInLineComment && curStringQuote < 0) {
@@ -160,14 +160,6 @@ namespace Mono.TextEditor
 							curStringQuote = j;
 						}
 					}
-				}
-				
-				char ch = document.GetCharAt (line.Offset + i);
-				switch (ch) {
-					case '\n':
-					case '\r':
-						isInLineComment = false;
-						break;
 				}
 			}
 			return lineOffset;
@@ -213,6 +205,7 @@ namespace Mono.TextEditor
 				switch (ch) {
 					case '\n':
 					case '\r':
+						offset--;
 						while (offset > 0 && (document.GetCharAt (offset) == '\n' || document.GetCharAt (offset) == '\r')) {
 							offset--;
 						}

@@ -1,5 +1,11 @@
 2009-06-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/IBracketMatcher.cs: Fixed "Bug 509350 -
+	  Issuing multiple "Join Lines" sometimes causes MD to hang".
+
+2009-06-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* SyntaxModes/CSyntaxMode.xml:
