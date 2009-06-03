@@ -1,5 +1,12 @@
 2009-06-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* icons\monodevelop-32.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml: Added new size for the MD
+	  icon.
+
+2009-06-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* icons\monodevelop-48.png:
 	* icons\monodevelop-22.png:
 	* icons\monodevelop-16.png:

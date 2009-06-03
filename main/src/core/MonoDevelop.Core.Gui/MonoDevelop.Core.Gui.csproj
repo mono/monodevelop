@@ -448,6 +448,9 @@
     <EmbeddedResource Include="icons\monodevelop-22.png">
       <LogicalName>monodevelop-22.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\monodevelop-32.png">
+      <LogicalName>monodevelop-32.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\monodevelop-48.png">
       <LogicalName>monodevelop-48.png</LogicalName>
     </EmbeddedResource>
