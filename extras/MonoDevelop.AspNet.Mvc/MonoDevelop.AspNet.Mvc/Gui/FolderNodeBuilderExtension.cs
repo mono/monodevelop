@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
@@ -53,9 +54,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		public void AddControllerUpdate (CommandInfo info)
 		{
 			ProjectFolder pf = (ProjectFolder)CurrentNode.DataItem;
-			string rootName = System.IO.Path.Combine (pf.Project.BaseDirectory, "Controllers");
-			info.Enabled = info.Visible = pf.Path.StartsWith (rootName)
-				&& (pf.Path.Length == rootName.Length || pf.Path[rootName.Length] == System.IO.Path.DirectorySeparatorChar);
+			FilePath rootName = pf.Project.BaseDirectory.Combine ("Controllers");
+			info.Enabled = info.Visible = (pf.Path == rootName || pf.Path.IsChildPathOf (rootName));
 		}
 		
 		[CommandHandler (AspMvcCommands.AddController)]
@@ -68,9 +68,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		public void AddViewUpdate (CommandInfo info)
 		{
 			ProjectFolder pf = (ProjectFolder)CurrentNode.DataItem;
-			string rootName = System.IO.Path.Combine (pf.Project.BaseDirectory, "Views");
-			info.Enabled = info.Visible = pf.Path.StartsWith (rootName)
-				&& (pf.Path.Length == rootName.Length || pf.Path[rootName.Length] == System.IO.Path.DirectorySeparatorChar);
+			FilePath rootName = pf.Project.BaseDirectory.Combine ("Views");
+			info.Enabled = info.Visible =  (pf.Path == rootName || pf.Path.IsChildPathOf (rootName));
 		}
 		
 		[CommandHandler (AspMvcCommands.AddView)]
