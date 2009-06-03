@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?define ProductShortName = "MonoDevelop" ?>
+<?define ProductVersion = "2.1.0" ?>
+<?define ProductVersionText = "2.1" ?>
+<?define Manufacturer = "Novell" ?>
+<?define UpgradeCode = "9134F74C-E7E3-471A-9833-C86FB45CD38E" ?>
+
+<?define BuildRoot= "..\..\main\build" ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="$(var.ProductShortName) $(var.ProductVersionText)" Language="1033" Version="$(var.ProductVersion)" Manufacturer="$(var.Manufacturer)" UpgradeCode="$(var.UpgradeCode)">
+    <Package Id="*" Compressed="yes" Description="$(var.ProductShortName) $(var.ProductVersionText) ($(var.ProductVersion))" InstallerVersion="200" ShortNames="no" Manufacturer="$(var.Manufacturer)" />
+    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+    <!-- Major upgrade -->
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion Minimum="$(var.ProductVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED" />
+      <UpgradeVersion Minimum="0.0.0" IncludeMinimum="yes" Maximum="$(var.ProductVersion)" IncludeMaximum="no" Property="OLDERVERSIONBEINGUPGRADED" />
+    </Upgrade>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLLOCATION" Name="MonoDevelop">
+          <Directory Id="bin" Name="bin">
+            <Component Id="ProductComponent" Guid="38703ED9-C1D1-4DC5-834B-31B8059BF7DF">
+              <File Name="MonoDevelop.exe" Source="$(var.BuildRoot)\bin\MonoDevelop.exe">
+                <Shortcut Id="md_shortcut" Directory="ProgramMenuDir" Name="$(var.ProductShortName)" WorkingDirectory='INSTALLLOCATION' Icon="MonoDevelop.exe" IconIndex="0" Advertise="yes" />
+              </File>
+              <File Name="mdhost.exe" Source="$(var.BuildRoot)\bin\mdhost.exe" />
+              <File Name="mdrun.exe" Source="$(var.BuildRoot)\bin\mdrun.exe" />
+              <File Name="Mono.Cecil.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.dll" />
+              <File Name="Mono.Cecil.Mdb.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.Mdb.dll" />
+              <File Name="Mono.Debugging.dll" Source="$(var.BuildRoot)\bin\Mono.Debugging.dll" />
+              <File Name="Mono.TextEditor.dll" Source="$(var.BuildRoot)\bin\Mono.TextEditor.dll" />
+              <File Name="MonoDevelop.Components.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Components.dll" />
+              <File Name="MonoDevelop.Core.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Core.dll" />
+              <File Name="MonoDevelop.Core.Gui.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Core.Gui.dll" />
+              <File Name="MonoDevelop.Dock.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Dock.dll" />
+              <File Name="MonoDevelop.exe.addins" Source="$(var.BuildRoot)\bin\MonoDevelop.exe.addins" />
+              <File Name="MonoDevelop.exe.config" Source="$(var.BuildRoot)\bin\MonoDevelop.exe.config" />
+              <File Name="MonoDevelop.Ide.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Ide.dll" />
+              <File Name="MonoDevelop.Projects.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.dll" />
+              <File Name="MonoDevelop.Projects.Gui.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Gui.dll" />
+              <File Name="NRefactory.dll" Source="$(var.BuildRoot)\bin\NRefactory.dll" />
+
+              <File Name="ICSharpCode.SharpZipLib.dll" Source="Libraries\ICSharpCode.SharpZipLib.dll" />
+              <File Name="Mono.Addins.dll" Source="Libraries\Mono.Addins.dll" />
+              <File Name="Mono.Addins.Gui.dll" Source="Libraries\Mono.Addins.Gui.dll" />
+              <File Name="Mono.Addins.Setup.dll" Source="Libraries\Mono.Addins.Setup.dll" />
+              <File Name="Mono.Addins.CecilReflector.dll" Source="Libraries\Mono.Addins.CecilReflector.dll" />
+              <File Name="Mono.GetOptions.dll" Source="Libraries\Mono.GetOptions.dll" />
+              <File Name="monodoc.dll" Source="Libraries\monodoc.dll" />
+              
+              <!-- Program Menu Shortcut -->
+              <RemoveFolder Id='ProgramMenuDir' Directory="ProgramMenuDir" On='uninstall' />
+            </Component>
+          </Directory>
+          <Directory Id="AddIns" Name="AddIns">
+            <Directory Id="BackendBindings" Name="BackendBindings">
+              <Component Id="MonoDevelop_AddIns_BackendBindings" Guid="b19ec8a7-dcb7-4261-b043-57c6d10403fe">
+                <File Name="ILAsmBinding.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\ILAsmBinding.dll" />
+                <File Name="MonoDevelop.CBinding.Autotools.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.CBinding.Autotools.dll" />
+                <File Name="MonoDevelop.CBinding.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.CBinding.dll" />
+                <File Name="MonoDevelop.CSharpBinding.Autotools.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.CSharpBinding.Autotools.dll" />
+                <File Name="MonoDevelop.CSharpBinding.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.CSharpBinding.dll" />
+                <File Name="MonoDevelop.VBNetBinding.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.VBNetBinding.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="ChangeLogAddIn" Name="ChangeLogAddIn">
+              <Component Id="MonoDevelop_AddIns_ChangeLogAddIn" Guid="8e611a97-18a5-4dcf-8f46-7580c9444b34">
+                <File Name="ChangeLogAddIn.dll" Source="$(var.BuildRoot)\AddIns\ChangeLogAddIn\ChangeLogAddIn.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.AspNet" Name="MonoDevelop.AspNet">
+              <Directory Id="Schemas" Name="Schemas">
+                <Component Id="MonoDevelop_AddIns_MonoDevelop_AspNet_Schemas" Guid="73b6d898-25ee-4919-a606-2db8e967484b">
+                  <File Name="readme2.txt" Source="$(var.BuildRoot)\AddIns\MonoDevelop.AspNet\Schemas\readme.txt" />
+                  <File Name="W3C-License2.html" Source="$(var.BuildRoot)\AddIns\MonoDevelop.AspNet\Schemas\W3C-License.html" />
+                  <File Name="xhtml1-frameset.xsd" Source="$(var.BuildRoot)\AddIns\MonoDevelop.AspNet\Schemas\xhtml1-frameset.xsd" />
+                  <File Name="xhtml1-strict.xsd" Source="$(var.BuildRoot)\AddIns\MonoDevelop.AspNet\Schemas\xhtml1-strict.xsd" />
+                  <File Name="xhtml1-transitional.xsd" Source="$(var.BuildRoot)\AddIns\MonoDevelop.AspNet\Schemas\xhtml1-transitional.xsd" />
+                </Component>
+              </Directory>
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_AspNet" Guid="9f523acf-05aa-4ac9-b080-b520fea565dc">
+                <File Name="MonoDevelop.AspNet.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.Autotools" Name="MonoDevelop.Autotools">
+              <Directory Id="templates" Name="templates">
+                <Component Id="MonoDevelop_AddIns_MonoDevelop_Autotools_templates" Guid="e83dc765-18b6-4de6-8dc2-a8bbe69fd3c1">
+                  <File Name="autogen.sh.template" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\autogen.sh.template" />
+                  <File Name="configure.ac.template" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\configure.ac.template" />
+                  <File Name="configure.template" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\configure.template" />
+                  <File Name="exe.wrapper.in.template" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\exe.wrapper.in.template" />
+                  <File Name="expansions.m4" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\expansions.m4" />
+                  <File Name="make-dist.targets" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\make-dist.targets" />
+                  <File Name="Makefile.am.project.template" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\Makefile.am.project.template" />
+                  <File Name="Makefile.include" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\Makefile.include" />
+                  <File Name="Makefile.noauto.project.template" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\Makefile.noauto.project.template" />
+                  <File Name="Makefile.solution.template" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\Makefile.solution.template" />
+                  <File Name="package.pc.template" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\package.pc.template" />
+                  <File Name="rules.make" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\rules.make" />
+                </Component>
+              </Directory>
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_Autotools" Guid="d5c8de5b-0262-4cb3-a3d2-fccf94fbf369">
+                <File Name="MonoDevelop.Autotools.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\MonoDevelop.Autotools.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.CodeMetrics" Name="MonoDevelop.CodeMetrics">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_CodeMetrics" Guid="59768b85-97fc-42f9-9afc-5dac181759f6">
+                <File Name="MonoDevelop.CodeMetrics.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.CodeMetrics\MonoDevelop.CodeMetrics.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.Debugger" Name="MonoDevelop.Debugger">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_Debugger" Guid="81b0e56f-9881-4b59-9c69-4ba48380b6d1">
+                <File Name="MonoDevelop.Debugger.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll" />
+                <File Name="CorApi.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger\CorApi.dll" />
+                <File Name="CorApi2.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger\CorApi2.dll" />
+                <File Name="MonoDevelop.Debugger.Win32.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.Win32.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.Deployment" Name="MonoDevelop.Deployment">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_Deployment" Guid="3d8cf1ee-115a-4eb7-ab6c-096cedb49dde">
+                <File Name="MonoDevelop.Deployment.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Deployment\MonoDevelop.Deployment.dll" />
+                <File Name="MonoDevelop.Deployment.Linux.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Deployment\MonoDevelop.Deployment.Linux.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.DesignerSupport" Name="MonoDevelop.DesignerSupport">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_DesignerSupport" Guid="1bc670c4-3e3f-4b91-8ee1-73cc2022282a">
+                <File Name="MonoDevelop.DesignerSupport.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.Gettext" Name="MonoDevelop.Gettext">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_Gettext" Guid="309076af-d0ee-4299-8b36-aa514d18bc9b">
+                <File Name="MonoDevelop.Gettext.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Gettext\MonoDevelop.Gettext.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.GtkCore" Name="MonoDevelop.GtkCore">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_GtkCore" Guid="df7b1e46-44ae-41d4-99ab-9d02455dd963">
+                <File Name="libstetic.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.GtkCore\libstetic.dll" />
+                <File Name="libstetic.dll.config" Source="$(var.BuildRoot)\AddIns\MonoDevelop.GtkCore\libstetic.dll.config" />
+                <File Name="libsteticui.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.GtkCore\libsteticui.dll" />
+                <File Name="libsteticui.dll.config" Source="$(var.BuildRoot)\AddIns\MonoDevelop.GtkCore\libsteticui.dll.config" />
+                <File Name="MonoDevelop.GtkCore.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.GtkCore\MonoDevelop.GtkCore.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.Moonlight" Name="MonoDevelop.Moonlight">
+              <Directory Id="Templates" Name="Templates">
+                <Component Id="MonoDevelop_AddIns_MonoDevelop_Moonlight_Templates" Guid="5d50359a-19c7-4620-80d6-904a949b7093">
+                  <File Name="Silverlight.js" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Moonlight\Templates\Silverlight.js" />
+                </Component>
+              </Directory>
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_Moonlight" Guid="290aa8aa-edf6-4ac4-bca9-5eb5e86e23b7">
+                <File Name="MonoDevelop.Moonlight.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Moonlight\MonoDevelop.Moonlight.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.MsVisualStudio" Name="MonoDevelop.MsVisualStudio">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_MsVisualStudio" Guid="abf039a4-cb3d-4bc4-99ed-f0de6ec1a222">
+                <File Name="MonoDevelop.MsVisualStudio.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.MsVisualStudio\MonoDevelop.MsVisualStudio.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.RegexToolkit" Name="MonoDevelop.RegexToolkit">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_RegexToolkit" Guid="fada4d10-0c22-43a4-826f-fe71a88a3e07">
+                <File Name="MonoDevelop.RegexToolkit.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.RegexToolkit\MonoDevelop.RegexToolkit.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.WebReferences" Name="MonoDevelop.WebReferences">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_WebReferences" Guid="c38deac4-bbb9-43b9-b152-2ce207b1fc41">
+                <File Name="MonoDevelop.WebReferences.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.WebReferences\MonoDevelop.WebReferences.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.XmlEditor" Name="MonoDevelop.XmlEditor">
+              <Directory Id="schemas" Name="schemas">
+                <Component Id="MonoDevelop_AddIns_MonoDevelop_XmlEditor_schemas" Guid="54c2c174-6e29-4474-95cc-00b43c64bfce">
+                  <File Name="appconfig.xsd" Source="$(var.BuildRoot)\AddIns\MonoDevelop.XmlEditor\schemas\appconfig.xsd" />
+                  <File Name="manifest.xsd" Source="$(var.BuildRoot)\AddIns\MonoDevelop.XmlEditor\schemas\manifest.xsd" />
+                  <File Name="MonoDevelopAddIn.xsd" Source="$(var.BuildRoot)\AddIns\MonoDevelop.XmlEditor\schemas\MonoDevelopAddIn.xsd" />
+                  <File Name="nant.xsd" Source="$(var.BuildRoot)\AddIns\MonoDevelop.XmlEditor\schemas\nant.xsd" />
+                  <File Name="readme.txt" Source="$(var.BuildRoot)\AddIns\MonoDevelop.XmlEditor\schemas\readme.txt" />
+                  <File Name="W3C-License.html" Source="$(var.BuildRoot)\AddIns\MonoDevelop.XmlEditor\schemas\W3C-License.html" />
+                  <File Name="XMLSchema.xsd" Source="$(var.BuildRoot)\AddIns\MonoDevelop.XmlEditor\schemas\XMLSchema.xsd" />
+                  <File Name="xslt.xsd" Source="$(var.BuildRoot)\AddIns\MonoDevelop.XmlEditor\schemas\xslt.xsd" />
+                </Component>
+              </Directory>
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_XmlEditor" Guid="215847a4-2297-43cf-91c0-dda9dde92140">
+                <File Name="MonoDevelop.XmlEditor.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDeveloperExtensions" Name="MonoDeveloperExtensions">
+              <Component Id="MonoDevelop_AddIns_MonoDeveloperExtensions" Guid="2c95f1b4-112f-4c57-b195-63e05a9c4f6a">
+                <File Name="MonoDeveloperExtensions.dll" Source="$(var.BuildRoot)\AddIns\MonoDeveloperExtensions\MonoDeveloperExtensions.dll" />
+                <File Name="MonoDeveloperExtensions_nunit.dll" Source="$(var.BuildRoot)\AddIns\MonoDeveloperExtensions\MonoDeveloperExtensions_nunit.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="NUnit" Name="NUnit">
+              <Component Id="MonoDevelop_AddIns_NUnit" Guid="97b2cd9f-32ae-4db4-997c-6232bc5d67dd">
+                <File Name="MonoDevelop.NUnit.dll" Source="$(var.BuildRoot)\AddIns\NUnit\MonoDevelop.NUnit.dll" />
+                <File Name="nunit.core.dll" Source="$(var.BuildRoot)\AddIns\NUnit\nunit.core.dll" />
+                <File Name="nunit.core.interfaces.dll" Source="$(var.BuildRoot)\AddIns\NUnit\nunit.core.interfaces.dll" />
+                <File Name="nunit.framework.dll" Source="$(var.BuildRoot)\AddIns\NUnit\nunit.framework.dll" />
+                <File Name="nunit.util.dll" Source="$(var.BuildRoot)\AddIns\NUnit\nunit.util.dll" />
+                <File Name="NUnitRunner.dll" Source="$(var.BuildRoot)\AddIns\NUnit\NUnitRunner.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="VersionControl" Name="VersionControl">
+              <Component Id="MonoDevelop_AddIns_VersionControl" Guid="185a74d4-17c2-4e94-9dbc-4c391026eb1e">
+                <File Name="Diff.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\Diff.dll" />
+                <File Name="DiffWidget.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\DiffWidget.dll" />
+                <File Name="MonoDevelop.VersionControl.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.dll" />
+                <File Name="MonoDevelop.VersionControl.Subversion.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.dll" />
+                <File Name="SharpSvn.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpSvn.dll" />
+                <File Name="SharpSvn-DB44-20-Win32.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpSvn-DB44-20-Win32.dll" />
+                <File Name="SharpSvn-SASL21-22-Win32.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpSvn-SASL21-22-Win32.dll" />
+                <File Name="SubversionAddinWindows.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SubversionAddinWindows.dll" />
+                <File Name="SharpPlink-Win32.svnExe" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpPlink-Win32.svnExe" />
+              </Component>
+            </Directory>
+            <Directory Id="WelcomePage" Name="WelcomePage">
+              <Component Id="MonoDevelop_AddIns_WelcomePage" Guid="637d09c3-26f7-461c-b310-da92fb969c32">
+                <File Name="mono-bg.png" Source="$(var.BuildRoot)\AddIns\WelcomePage\mono-bg.png" />
+                <File Name="mono-decoration.png" Source="$(var.BuildRoot)\AddIns\WelcomePage\mono-decoration.png" />
+                <File Name="mono-logo.png" Source="$(var.BuildRoot)\AddIns\WelcomePage\mono-logo.png" />
+                <File Name="WelcomePage.css" Source="$(var.BuildRoot)\AddIns\WelcomePage\WelcomePage.css" />
+                <File Name="WelcomePage.dll" Source="$(var.BuildRoot)\AddIns\WelcomePage\WelcomePage.dll" />
+              </Component>
+            </Directory>
+
+            <Component Id="MonoDevelop_AddIns" Guid="46cc2e83-b46c-4c25-9b35-ef5fc55ffec7">
+              <File Name="MonoDevelop.AssemblyBrowser.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.AssemblyBrowser.dll" />
+              <File Name="MonoDevelop.SourceEditor2.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.SourceEditor2.dll" />
+              <File Name="WindowsPlatform.dll" Source="$(var.BuildRoot)\AddIns\WindowsPlatform.dll" />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder" Name="PMenu">
+        <Directory Id="ProgramMenuDir" Name='$(var.ProductShortName)' />
+      </Directory>
+    </Directory>
+
+    <Feature Id="ProductFeature" Title="MonoDevelop" Level="1">
+      <ComponentRef Id="ProductComponent" />
+      <ComponentRef Id="MonoDevelop_AddIns_BackendBindings" />
+      <ComponentRef Id="MonoDevelop_AddIns_ChangeLogAddIn" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_AspNet_Schemas" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_AspNet" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Autotools_templates" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Autotools" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_CodeMetrics" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Debugger" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Deployment" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_DesignerSupport" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Gettext" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_GtkCore" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Moonlight_Templates" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Moonlight" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_MsVisualStudio" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_RegexToolkit" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_WebReferences" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_XmlEditor_schemas" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_XmlEditor" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDeveloperExtensions" />
+      <ComponentRef Id="MonoDevelop_AddIns_NUnit" />
+      <ComponentRef Id="MonoDevelop_AddIns_VersionControl" />
+      <ComponentRef Id="MonoDevelop_AddIns_WelcomePage" />
+      <ComponentRef Id="MonoDevelop_AddIns" />
+    </Feature>
+
+    <!-- Sequences -->
+    <InstallExecuteSequence>
+      <RemoveExistingProducts After="InstallValidate" />
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <!-- Because we have a launch condition that uses the results of FindRelatedProducts, put it first. -->
+      <LaunchConditions After="FindRelatedProducts" />
+    </InstallUISequence>
+
+    <!-- This enables the license screen and where to install screen -->
+    <Property Id="WIXUI_INSTALLDIR">INSTALLLOCATION</Property>
+    <UIRef Id="WixUI_InstallDir"/>
+
+    <!-- Specify the license to display and graphics to use in our GUI -->
+    <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="Bitmaps\bannrbmp.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="Bitmaps\dlgbmp.bmp" />
+
+    <!-- This is for the icon that is shown in the Add/Remove Programs dialog and menu shortcut -->
+    <Icon Id="MonoDevelop.exe" SourceFile="Bitmaps\MonoDevelop.ico" />
+    <Property Id="ARPPRODUCTICON" Value="MonoDevelop.exe" />
+  </Product>
+</Wix>
