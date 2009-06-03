@@ -155,6 +155,7 @@ configure_packages ()
 		create_local_config $path
 		packages="$packages $path"
 	done
+	rm -f local-config/main.addins
 	return 0
 }
 

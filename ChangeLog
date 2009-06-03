@@ -1,3 +1,7 @@
+2009-06-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure: Don't generate a .addins file for main.
+
 2009-02-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile: Re-run configure when it changes.
