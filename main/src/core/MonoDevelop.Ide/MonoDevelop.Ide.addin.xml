@@ -905,7 +905,7 @@
 				macShortcut="Control|space"
 				shortcut = "Control|space" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
-				_label = "_Insert Template..." 
+				_label = "I_nsert Template..." 
 				shortcut = "Control|t" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow"
 				_label = "_Surround With..." 
