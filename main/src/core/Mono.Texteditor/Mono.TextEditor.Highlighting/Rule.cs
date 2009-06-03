@@ -183,7 +183,7 @@ namespace Mono.TextEditor.Highlighting
 			uint idx;
 			for (int i = offset; i < max; i++) {
 				idx = (uint)doc.GetCharAt (i);
-				if (idx > 255 || curTable[idx] == null)
+				if (idx >= curTable.Length || curTable[idx] == null)
 					return null;
 				curTable = curTable[idx].table;
 			}
