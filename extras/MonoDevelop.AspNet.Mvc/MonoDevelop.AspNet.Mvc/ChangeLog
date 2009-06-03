@@ -1,5 +1,9 @@
 2009-06-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Mvc.csproj: Add another project dependency.
+
+2009-06-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/FolderNodeBuilderExtension.cs: Track FilePath API.
 
 2009-04-29  Michael Hutchinson  <mhutchinson@novell.com>
