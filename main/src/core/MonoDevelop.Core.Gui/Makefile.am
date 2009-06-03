@@ -162,9 +162,11 @@ RES =  \
 	icons/Icons.32x32.ResourceFileIcon \
 	icons/Icons.32x32.TextFileIcon \
 	icons/Icons.32x32.XMLFileIcon \
-	icons/Icons.SharpDevelopIcon \
-	icons/Icons.SharpDevelopIcon-22.png \
 	icons/keyword-16.png \
+	icons/monodevelop-16.png \
+	icons/monodevelop-32.png \
+	icons/monodevelop-22.png \
+	icons/monodevelop-48.png \
 	icons/package-x-generic.png \
 	icons/package-x-generic_22.png \
 	icons/pad-task-list-16.png \
