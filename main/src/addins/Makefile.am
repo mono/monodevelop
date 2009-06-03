@@ -11,13 +11,13 @@ SUBDIRS = \
 	ILAsmBinding \
 	NUnit \
 	MonoDeveloperExtensions \
-	MonoDevelop.SourceEditor2 \
-	VersionControl \
 	VBNetBinding \
 	prj2make-sharp-lib \
 	WelcomePage \
-	ChangeLogAddIn \
 	MonoDevelop.GtkCore \
+	MonoDevelop.SourceEditor2 \
+	VersionControl \
+	ChangeLogAddIn \
 	MonoDevelop.XmlEditor \
 	AspNetAddIn \
 	MonoDevelop.WebReferences \
