@@ -98,9 +98,6 @@ namespace MonoDevelop.Debugger.Win32
 
 			process = dbg.CreateProcess (startInfo.Command, startInfo.Arguments, startInfo.WorkingDirectory);
 
-			// Required to avoid the jit to get rid of variables too early
-			process.DesiredNGENCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
-
 			process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
 			process.OnCreateAppDomain += new CorAppDomainEventHandler (OnCreateAppDomain);
 			process.OnAssemblyLoad += new CorAssemblyEventHandler (OnAssemblyLoad);
@@ -285,6 +282,8 @@ namespace MonoDevelop.Debugger.Win32
 
 		void OnCreateProcess (object sender, CorProcessEventArgs e)
 		{
+			// Required to avoid the jit to get rid of variables too early
+			e.Process.DesiredNGENCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
 			e.Continue = true;
 		}
 
