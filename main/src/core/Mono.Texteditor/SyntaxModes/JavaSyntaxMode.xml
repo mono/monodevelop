@@ -24,6 +24,13 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "Java" mimeTypes="text/x-java">
+	
+	<Property name="LineComment">//</Property>
+	<Property name="BlockCommentStart">/*</Property>
+	<Property name="BlockCommentEnd">*/</Property>
+	<Property name="StringQuote">"</Property>
+	<Property name="StringQuote">'</Property>
+	
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	<Span color = "comment" rule="Comment">
 		<Begin>/*</Begin>

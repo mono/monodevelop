@@ -25,6 +25,12 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "Vala" mimeTypes="text/x-vala">
+	<Property name="LineComment">//</Property>
+	<Property name="BlockCommentStart">/*</Property>
+	<Property name="BlockCommentEnd">*/</Property>
+	<Property name="StringQuote">"</Property>
+	<Property name="StringQuote">'</Property>
+	
 	<EolSpan color = "comment" rule="DoxDocumentation" tagColor="comment.tag">///</EolSpan>
 	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">//</EolSpan>
 	

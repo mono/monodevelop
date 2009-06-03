@@ -42,6 +42,14 @@ namespace Mono.TextEditor.Highlighting
 		
 		public List<SemanticRule> SemanticRules = new List<SemanticRule> ();
 		
+		protected Dictionary<string, List<string>> properties = new Dictionary<string, List<string>> ();
+		
+		public Dictionary<string, List<string>> Properties {
+			get {
+				return properties;
+			}
+		}
+		
 		public virtual bool GetIsValid (Style style)
 		{
 			foreach (Keywords keyword in keywords) {
@@ -191,6 +199,14 @@ namespace Mono.TextEditor.Highlighting
 			switch (reader.LocalName) {
 			case "Delimiters":
 				this.Delimiter = reader.ReadElementString ();
+				return true;
+			case "Property":
+				string name  = reader.GetAttribute ("name");
+				string value = reader.ReadElementString ();
+				Console.WriteLine ("name" + name);
+				if (!properties.ContainsKey (name))
+					properties[name] = new List<string> ();
+				properties[name].Add (value);
 				return true;
 			case Match.Node:
 				matchList.Add (Match.Read (reader));

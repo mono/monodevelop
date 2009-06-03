@@ -139,6 +139,7 @@
     <Compile Include="Mono.TextEditor\Selection.cs" />
     <Compile Include="Mono.TextEditor\Platform.cs" />
     <Compile Include="Mono.TextEditor\TextRenderer.cs" />
+    <Compile Include="Mono.TextEditor\IBracketMatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

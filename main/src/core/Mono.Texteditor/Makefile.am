@@ -61,6 +61,7 @@ FILES =  \
 	Mono.TextEditor/GapBuffer.cs \
 	Mono.TextEditor/GutterMargin.cs \
 	Mono.TextEditor/HelperMethods.cs \
+	Mono.TextEditor/IBracketMatcher.cs \
 	Mono.TextEditor/IBuffer.cs \
 	Mono.TextEditor/IconMargin.cs \
 	Mono.TextEditor/ISearchEngine.cs \

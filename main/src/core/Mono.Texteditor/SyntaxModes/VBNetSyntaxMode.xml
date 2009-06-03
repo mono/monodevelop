@@ -24,7 +24,10 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "Visual Basic.NET" mimeTypes="text/x-vb" ignorecase="True">
-
+	<Property name="LineComment">REM</Property>
+	<Property name="LineComment">'</Property>
+	<Property name="StringQuote">"</Property>
+	
 	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
 	<EolSpan color = "comment" rule="Comment">'</EolSpan>
 	<EolSpan color = "comment" rule="Comment">REM</EolSpan>

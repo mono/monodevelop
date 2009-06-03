@@ -24,7 +24,12 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "C#" mimeTypes="text/x-csharp">
-
+	<Property name="LineComment">//</Property>
+	<Property name="BlockCommentStart">/*</Property>
+	<Property name="BlockCommentEnd">*/</Property>
+	<Property name="StringQuote">"</Property>
+	<Property name="StringQuote">'</Property>
+	
 	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
 	<EolSpan color = "comment.doc" rule="XmlDocumentation" tagColor="comment.tag.doc">///</EolSpan>
 	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>

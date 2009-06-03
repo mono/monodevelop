@@ -25,6 +25,12 @@
  
 <SyntaxMode name = "C" mimeTypes="text/x-csrc;text/x-chdr">
 	
+	<Property name="LineComment">//</Property>
+	<Property name="BlockCommentStart">/*</Property>
+	<Property name="BlockCommentEnd">*/</Property>
+	<Property name="StringQuote">"</Property>
+	<Property name="StringQuote">'</Property>
+		
 	<Span color = "comment" rule="Comment" tagColor="comment.tag">
 		<Begin>#if 0</Begin>
 		<End>#endif</End>

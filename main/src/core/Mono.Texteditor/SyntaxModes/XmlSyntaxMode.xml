@@ -24,6 +24,12 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "Xml" mimeTypes="application/xml;application/xaml+xml;application/xhtml+xml;text/html">
+	
+	<Property name="BlockCommentStart">&lt;!--</Property>
+	<Property name="BlockCommentEnd">--!&gt;</Property>
+	<Property name="StringQuote">"</Property>
+	<Property name="StringQuote">'</Property>
+	
 	<Span color = "comment" rule = "Comment">
 		<Begin>&lt;!--</Begin>
 		<End>--&gt;</End>

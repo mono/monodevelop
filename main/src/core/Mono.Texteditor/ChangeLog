@@ -1,3 +1,19 @@
+2009-06-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* SyntaxModes/CSyntaxMode.xml:
+	* Mono.TextEditor/Document.cs:
+	* SyntaxModes/XmlSyntaxMode.xml:
+	* SyntaxModes/JavaSyntaxMode.xml:
+	* SyntaxModes/ValaSyntaxMode.xml:
+	* SyntaxModes/VBNetSyntaxMode.xml:
+	* SyntaxModes/CSharpSyntaxMode.xml:
+	* Mono.TextEditor/IBracketMatcher.cs:
+	* Mono.TextEditor.Highlighting/Rule.cs: Overworked the bracket
+	  matcher. It's now more general & syntax modes now contain
+	  some more meta data about the language.
+
 2009-06-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs: Fixed "Bug 509022 -

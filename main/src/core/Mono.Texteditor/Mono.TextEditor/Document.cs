@@ -1207,159 +1207,27 @@ namespace Mono.TextEditor
 			}
 			return result;
 		}
+		IBracketMatcher bracketMatcher = new DefaultBracketMatcher ();
+		public IBracketMatcher BracketMatcher {
+			get {
+				return bracketMatcher;
+			}
+			set {
+				Debug.Assert (value != null);
+				bracketMatcher = value;
+			}
+		}
 		
 		int SearchMatchingBracketForward (int offset, int bracket)
 		{
-			return SearchMatchingBracketForward (offset, closingBrackets[bracket], openBrackets[bracket]);
+			return bracketMatcher.SearchMatchingBracketForward (this, offset, closingBrackets[bracket], openBrackets[bracket]);
 		}
 		
 		int SearchMatchingBracketBackward (int offset, int bracket)
 		{
-			return SearchMatchingBracketBackward (offset, openBrackets[bracket], closingBrackets[bracket]);
+			return bracketMatcher.SearchMatchingBracketBackward (this, offset, openBrackets[bracket], closingBrackets[bracket]);
 		}
-		
-		int SearchMatchingBracketForward (int offset, char openBracket, char closingBracket)
-		{
-			bool isInString       = false;
-			bool isInChar         = false;
-			bool isInBlockComment = false;
-			bool isInLineComment = false;
-			
-			int depth = -1;
-			while (offset >= 0 && offset < Length) {
-				char ch = GetCharAt (offset);
-				switch (ch) {
-					case '/':
-						if (offset + 1 < Length && !isInBlockComment && !isInLineComment) {
-							char next = GetCharAt (offset + 1);
-							isInBlockComment = next == '*';
-							isInLineComment  = next == '/';
-							break;
-						}
-						if (!isInLineComment && !isInString && !isInChar) 
-							isInBlockComment = offset > 0 && GetCharAt (offset - 1) == '*';
-						break;
-					case '"':
-						if (!isInLineComment && !isInChar && !isInBlockComment) 
-							isInString = !isInString;
-						break;
-					case '\'':
-						if (!isInLineComment && !isInString && !isInBlockComment) 
-							isInChar = !isInChar;
-						break;
-					case '\n':
-					case '\r':
-						isInLineComment = false;
-						break;
-					default :
-						if (ch == closingBracket) {
-							if (!(isInLineComment || isInString || isInChar || isInBlockComment)) 
-								--depth;
-						} else if (ch == openBracket) {
-							if (!(isInLineComment || isInString || isInChar || isInBlockComment)) {
-								++depth;
-								if (depth == 0) 
-									return offset;
-							}
-						}
-						break;
-				}
-				offset++;
-			}
-			return -1;
-		}
-		
-		int GetLastSourceCodePosition (int offset)
-		{
-			LineSegment line = GetLineByOffset (offset);
-			bool isInString       = false;
-			bool isInChar         = false;
-			bool isInBlockComment = false;
-			bool isInLineComment  = false;
-			for (int i = 0 ; i < line.EditableLength; i++) {
-				char ch = GetCharAt (line.Offset + i);
-				switch (ch) {
-					case '/':
-						if (i + 1 < line.EditableLength && !isInBlockComment && !isInLineComment) {
-							char next = GetCharAt (line.Offset + i + 1);
-							isInBlockComment = next == '*';
-							isInLineComment  = next == '/';
-							if (isInLineComment) {
-								return line.Offset + i;
-							}
-							break;
-						}
-						if (!isInLineComment && !isInString && !isInChar) 
-							isInBlockComment = offset > 0 && GetCharAt (line.Offset + i - 1) == '*';
-						break;
-					case '"':
-						if (!isInLineComment && !isInChar && !isInBlockComment) 
-							isInString = !isInString;
-						break;
-					case '\'':
-						if (!isInLineComment && !isInString && !isInBlockComment) 
-							isInChar = !isInChar;
-						break;
-					case '\n':
-					case '\r':
-						isInLineComment = false;
-						break;
-				}
-			}
-			return offset;
-		}
-		
-		int SearchMatchingBracketBackward (int offset, char openBracket, char closingBracket)
-		{
-			bool isInString       = false;
-			bool isInChar         = false;
-			bool isInBlockComment = false;
-			int depth = -1;
-			offset = GetLastSourceCodePosition (offset);
-			
-			while (offset >= 0 && offset < Length) {
-				char ch = GetCharAt (offset);
-				
-				switch (ch) {
-					case '/':
-						if (isInBlockComment) 
-							isInBlockComment = GetCharAt (offset - 1) != '*';
-						if (!isInString && !isInChar && offset + 1 < Length) 
-							isInBlockComment = offset > 0 && GetCharAt (offset + 1) == '*';
-						break;
-					case '"':
-						if (!isInChar && !isInBlockComment) 
-							isInString = !isInString;
-						break;
-					case '\'':
-						if (!isInString && !isInBlockComment) 
-							isInChar = !isInChar;
-						break;
-					case '\n':
-					case '\r':
-						while (offset > 0 && (GetCharAt (offset) == '\n' || GetCharAt (offset) == '\r')) {
-							offset--;
-						}
-						offset = GetLastSourceCodePosition (offset) + 1;
-						break;
-					default:
-						if (ch == closingBracket) {
-							if (!(isInString || isInChar || isInBlockComment)) 
-								--depth;
-						} else if (ch == openBracket) {
-							if (!(isInString || isInChar || isInBlockComment)) {
-								++depth;
-								if (depth == 0) 
-									return offset;
-							}
-						}
-						break;
-				}
-				offset--;
-			}
-			return -1;
-		}
-		
+	
 		public enum CharacterClass {
 			Unknown,
 			Whitespace,
