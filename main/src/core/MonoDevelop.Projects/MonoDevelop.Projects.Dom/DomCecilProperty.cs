@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Dom
 			if (keepDefinitions)
 				this.propertyDefinition = propertyDefinition;
 			base.name = propertyDefinition.Name;
-			if (base.name == "Item" && propertyDefinition.Parameters.Count > 0) {
+			if (propertyDefinition.Parameters.Count > 0) {
 				this.PropertyModifier |= PropertyModifier.IsIndexer;
 				foreach (ParameterDefinition paramDef in propertyDefinition.Parameters) {
 					Add (new DomCecilParameter (paramDef));

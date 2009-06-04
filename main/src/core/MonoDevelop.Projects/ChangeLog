@@ -1,3 +1,8 @@
+2009-06-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomCecilProperty.cs: Indexers may
+	  have a name other than Item.
+
 2009-05-27  Carlo Kok  <ck@remobjects.com>
 	* MonoDevelop.Projects.Dom/IMember.cs: 
 	* MonoDevelop.Projects.Dom/Namespace.cs:
