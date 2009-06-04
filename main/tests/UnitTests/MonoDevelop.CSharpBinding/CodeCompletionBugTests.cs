@@ -648,7 +648,7 @@ class Test{
 }");
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.AreEqual (1, provider.Count);
-			Assert.IsNotNull (provider.Find ("string[]"), "type string not found.");
+			Assert.IsNotNull (provider.Find ("string"), "type string not found.");
 		}
 
 		/// <summary>
