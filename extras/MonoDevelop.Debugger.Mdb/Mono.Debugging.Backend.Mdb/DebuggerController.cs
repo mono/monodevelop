@@ -85,6 +85,18 @@ namespace Mono.Debugging.Backend.Mdb
 			session.UpdateBreakEvent (handle, count, lastTrace);
 		}
 		
+		public void NotifySourceFileLoaded (string[] fullFilePaths)
+		{
+			foreach (string file in fullFilePaths)
+				frontend.NotifySourceFileLoaded (file);
+		}
+
+		public void NotifySourceFileUnloaded (string[] fullFilePaths)
+		{
+			foreach (string file in fullFilePaths)
+				frontend.NotifySourceFileUnloaded (file);
+		}
+		
 		#endregion
 
 		public void StartDebugger (MonoDebuggerStartInfo startInfo)

@@ -1,3 +1,12 @@
+2009-06-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DebuggerController.cs:
+	* IDebuggerController.cs: Track api changes.
+
+	* IDebuggerServer.cs:
+	* MonoDebuggerSession.cs: Cache the mdb version usead by each
+	  mono prefix, to avoid having to auto detect it at every run.
+
 2009-05-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDebuggerSessionFactory.cs: Track api change.

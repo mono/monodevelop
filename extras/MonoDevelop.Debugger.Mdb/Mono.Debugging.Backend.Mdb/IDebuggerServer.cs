@@ -32,7 +32,9 @@ namespace Mono.Debugging.Backend.Mdb
 {
 	public interface IDebuggerServer
 	{
-		void Run (MonoDebuggerStartInfo startInfo, bool detectMdbVersion);
+		string InitializeMdb (string mdbVersion);
+		
+		void Run (MonoDebuggerStartInfo startInfo);
 
 		void Stop ();
 		

@@ -20,5 +20,9 @@ namespace Mono.Debugging.Backend.Mdb
 		bool OnCustomBreakpointAction (string actionId, object handle);
 		
 		void UpdateBreakpoint (object handle, int count, string lastTrace);
+		
+		void NotifySourceFileLoaded (string[] fullFilePaths);
+		
+		void NotifySourceFileUnloaded (string[] fullFilePaths);
 	}
 }

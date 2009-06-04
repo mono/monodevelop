@@ -38,7 +38,7 @@ namespace Mono.Debugging.Backend.Mdb
 	{
 		DebuggerController controller;
 		bool started;
-		static bool detectMdbVersion = true;
+		static Dictionary<string,string> detectedMdbVersions = new Dictionary<string, string> ();
 		
 		public void StartDebugger ()
 		{
@@ -57,16 +57,24 @@ namespace Mono.Debugging.Backend.Mdb
 			started = true;
 			MonoDebuggerStartInfo info = (MonoDebuggerStartInfo) startInfo;
 			controller.StartDebugger (info);
-			controller.DebuggerServer.Run (info, detectMdbVersion);
-			
-			// Try to detect mdb version only once per session
-			detectMdbVersion = false;
+			InitMdbVersion (info.MonoPrefix);
+			controller.DebuggerServer.Run (info);
+		}
+		
+		void InitMdbVersion (string prefix)
+		{
+			// Cache detected mdb versions, so version detection is done only once
+			string mdbVersion;
+			detectedMdbVersions.TryGetValue (prefix, out mdbVersion);
+			mdbVersion = controller.DebuggerServer.InitializeMdb (mdbVersion);
+			detectedMdbVersions [prefix] = mdbVersion;
 		}
 
 		protected override void OnAttachToProcess (int processId)
 		{
 			started = true;
 			controller.StartDebugger (null);
+			InitMdbVersion ("?");
 			controller.DebuggerServer.AttachToProcess (processId);
 		}
 		
