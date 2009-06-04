@@ -450,6 +450,192 @@ namespace Mono.TextEditor
 					}
 				} 
 			}
+			
+			// ---- new renderer
+	/*		Pango.Layout layout = new Pango.Layout (textEditor.PangoContext);
+			layout.Alignment = Pango.Alignment.Left;
+			layout.FontDescription = textEditor.Options.Font;
+			string lineText = Document.GetTextAt (offset, length);
+			layout.SetText (lineText);
+			Pango.TabArray tabArray = new Pango.TabArray (10, true);
+			for (int i = 0; i < 10; i++)
+				tabArray.SetTab (i, Pango.TabAlign.Left, (i + 1) * CharWidth * textEditor.Options.TabSize);
+			
+			layout.Tabs = tabArray;
+			layout.Attributes = new Pango.AttrList ();
+			
+			int startOffset = offset, endOffset = offset + length;
+			if (startOffset >= selectionStart && endOffset <= selectionEnd) {
+				layout.Attributes.Insert (new Pango.AttrBackground (this.ColorStyle.Selection.BackgroundColor.Red,
+				                                                    this.ColorStyle.Selection.BackgroundColor.Green,
+				                                                    this.ColorStyle.Selection.BackgroundColor.Blue));
+			} else if (startOffset >= selectionStart && startOffset < selectionEnd && endOffset > selectionEnd) {
+				Pango.AttrBackground attrBackground = new Pango.AttrBackground (this.ColorStyle.Selection.BackgroundColor.Red,
+				                                                                this.ColorStyle.Selection.BackgroundColor.Green,
+				                                                                this.ColorStyle.Selection.BackgroundColor.Blue);
+				attrBackground.StartIndex = 0;
+				attrBackground.EndIndex   = (uint)(selectionEnd - startOffset);
+				layout.Attributes.Insert (attrBackground);
+				
+			} else if (startOffset < selectionStart && endOffset > selectionStart && endOffset <= selectionEnd) {
+				Pango.AttrBackground attrBackground = new Pango.AttrBackground (this.ColorStyle.Selection.BackgroundColor.Red,
+				                                                                this.ColorStyle.Selection.BackgroundColor.Green,
+				                                                                this.ColorStyle.Selection.BackgroundColor.Blue);
+				attrBackground.StartIndex = (uint)(selectionStart - startOffset);
+				attrBackground.EndIndex   = (uint)length;
+				layout.Attributes.Insert (attrBackground);
+			} else if (startOffset < selectionStart && endOffset > selectionEnd) {
+				Pango.AttrBackground attrBackground = new Pango.AttrBackground (this.ColorStyle.Selection.BackgroundColor.Red,
+				                                                                this.ColorStyle.Selection.BackgroundColor.Green,
+				                                                                this.ColorStyle.Selection.BackgroundColor.Blue);
+				attrBackground.StartIndex = (uint)(selectionStart - startOffset);
+				attrBackground.EndIndex   = (uint)(selectionEnd   - startOffset);
+				layout.Attributes.Insert (attrBackground);
+			}
+			
+			Chunk lastChunk = null;
+			ChunkStyle lastChunkStyle = null;
+			for (Chunk chunk = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length); (lastChunk != null || chunk != null); chunk = chunk != null ? chunk.Next : null) {
+				
+				ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
+				
+				if (chunkStyle != null) {
+					startOffset = chunk.Offset;
+					endOffset   = chunk.EndOffset;
+					uint startIndex = (uint)(chunk.Offset - line.Offset);
+					uint endIndex   = (uint)(startIndex + chunk.Length);
+						
+					if (startOffset >= selectionStart && endOffset <= selectionEnd) {
+						Pango.AttrForeground selectedForeground = new Pango.AttrForeground (ColorStyle.Selection.Color.Red,
+						                                                                    ColorStyle.Selection.Color.Green,
+						                                                                    ColorStyle.Selection.Color.Blue);
+						selectedForeground.StartIndex = startIndex;
+						selectedForeground.EndIndex   = endIndex;
+						layout.Attributes.Insert (selectedForeground);
+					} else if (startOffset >= selectionStart && startOffset < selectionEnd && endOffset > selectionEnd) {
+						Pango.AttrForeground selectedForeground = new Pango.AttrForeground  (ColorStyle.Selection.Color.Red,
+						                                                                     ColorStyle.Selection.Color.Green,
+						                                                                     ColorStyle.Selection.Color.Blue);
+						selectedForeground.StartIndex = startIndex;
+						selectedForeground.EndIndex   = (uint)(selectionEnd - line.Offset);
+						layout.Attributes.Insert (selectedForeground);
+						
+						Pango.AttrForeground foreGround = new Pango.AttrForeground  (chunkStyle.Color.Red,
+						                                                             chunkStyle.Color.Green,
+						                                                             chunkStyle.Color.Blue);
+						foreGround.StartIndex = selectedForeground.EndIndex;
+						foreGround.EndIndex   = (uint)endIndex;
+ 						
+						layout.Attributes.Insert (foreGround);
+					} else if (startOffset < selectionStart && endOffset > selectionStart && endOffset <= selectionEnd) {
+						Pango.AttrForeground foreGround = new Pango.AttrForeground  (chunkStyle.Color.Red,
+						                                                             chunkStyle.Color.Green,
+						                                                             chunkStyle.Color.Blue);
+						foreGround.StartIndex = startIndex;
+						foreGround.EndIndex   = (uint)(selectionStart - line.Offset);
+						layout.Attributes.Insert (foreGround);
+						
+						Pango.AttrForeground selectedForeground = new Pango.AttrForeground  (ColorStyle.Selection.Color.Red,
+						                                                             ColorStyle.Selection.Color.Green,
+						                                                             ColorStyle.Selection.Color.Blue);
+						selectedForeground.StartIndex = foreGround.EndIndex;
+						selectedForeground.EndIndex   = endIndex;
+						layout.Attributes.Insert (selectedForeground);
+					} else if (startOffset < selectionStart && endOffset > selectionEnd) {
+						Pango.AttrForeground foreGround = new Pango.AttrForeground  (chunkStyle.Color.Red,
+						                                                             chunkStyle.Color.Green,
+						                                                             chunkStyle.Color.Blue);
+						foreGround.StartIndex = startIndex;
+						foreGround.EndIndex   = (uint)(selectionStart - line.Offset);
+						layout.Attributes.Insert (foreGround);
+						
+						Pango.AttrForeground selectedForeground = new Pango.AttrForeground  (ColorStyle.Selection.Color.Red,
+						                                                             ColorStyle.Selection.Color.Green,
+						                                                             ColorStyle.Selection.Color.Blue);
+						selectedForeground.StartIndex = foreGround.EndIndex;
+						selectedForeground.EndIndex   = (uint)(selectionEnd - line.Offset);
+						layout.Attributes.Insert (selectedForeground);
+						
+						foreGround = new Pango.AttrForeground  (chunkStyle.Color.Red,
+						                                                             chunkStyle.Color.Green,
+						                                                             chunkStyle.Color.Blue);
+						foreGround.StartIndex = selectedForeground.EndIndex;
+						foreGround.EndIndex   = (uint)endIndex;
+						layout.Attributes.Insert (foreGround);
+					} else {
+						Pango.AttrForeground foreGround = new Pango.AttrForeground  (chunkStyle.Color.Red,
+						                                                             chunkStyle.Color.Green,
+						                                                             chunkStyle.Color.Blue);
+						foreGround.StartIndex = startIndex;
+						foreGround.EndIndex   = endIndex;
+						layout.Attributes.Insert (foreGround);
+					}
+				
+					
+					if (chunkStyle.Bold) {
+						Pango.AttrWeight attrWeight = new Pango.AttrWeight (Pango.Weight.Bold);
+						attrWeight.StartIndex = startIndex;
+						attrWeight.EndIndex   = endIndex;
+						layout.Attributes.Insert (attrWeight);
+					}
+					
+					if (chunkStyle.Italic) {
+						Pango.AttrStyle attrStyle = new Pango.AttrStyle (Pango.Style.Italic);
+						attrStyle.StartIndex = startIndex;
+						attrStyle.EndIndex   = endIndex;
+						layout.Attributes.Insert (attrStyle);
+					}
+				}
+				
+				lastChunk = chunk;
+				lastChunkStyle = chunkStyle;
+			}
+			
+			win.DrawLayout (GetGC (ColorStyle.Default.Color), xPos, y, layout);
+			
+			if (textEditor.Options.ShowSpaces) {
+				for (int i = 0; i < lineText.Length; i++) {
+					if (lineText[i] == ' ') {
+						int line2, xpos;
+						layout.IndexToLineX (i, false, out line2, out xpos);
+						DrawSpaceMarker (win, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos  / 1024, y);
+					}
+				}
+			}
+			
+			if (textEditor.Options.ShowTabs) {
+				for (int i = 0; i < lineText.Length; i++) {
+					if (lineText[i] == '\t') {
+						int line2, xpos;
+						layout.IndexToLineX (i, false, out line2, out xpos);
+						DrawTabMarker (win, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos  / 1024, y);
+					}
+				}
+			}
+			
+			int width, height;
+			layout.GetPixelSize (out width, out height);
+			if (Document.GetLine (Caret.Line) == line) {
+				Pango.Rectangle strong_pos, weak_pos;
+				int index = Caret.Offset - offset;
+				if (index >= 0 && index < length) {
+					layout.GetCursorPos (index, out strong_pos, out weak_pos);
+					char caretChar = Document.GetCharAt (Caret.Offset);
+					if (textEditor.Options.ShowSpaces && caretChar == ' ') 
+						caretChar = spaceMarkerChar;
+					if (textEditor.Options.ShowTabs && caretChar == '\t')
+						caretChar = tabMarkerChar;
+					SetVisibleCaretPosition (win, caretChar, xPos + strong_pos.X / 1024, y);
+				} else if (index == length) {
+					SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos + width, y);
+				}
+			}
+			xPos += width;
+			layout.Dispose ();*/
+			// --- new renderer end
+			
+			// -- old renderer
+			
 			int visibleColumn = 0;
 			Chunk lastChunk = null;
 			ChunkStyle lastChunkStyle = null;
@@ -483,8 +669,11 @@ namespace Mono.TextEditor
 			if (textEditor.preeditOffset == offset + length) 
 				DrawPreeditString (win, lastChunk.Style, ref xPos, y);
 			
+			// --- old renderer end
+			
 		//	if (Caret.Offset == offset + length) 
 		//		SetVisibleCaretPosition (win, ' ', xPos, y);
+		
 		}
 		
 		StringBuilder wordBuilder = new StringBuilder ();
