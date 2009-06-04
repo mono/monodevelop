@@ -85,6 +85,7 @@ namespace MonoDevelop.Projects.Dom
 			result.Namespace     = type.Namespace;
 			result.ClassType     = type.ClassType;
 			result.SourceProjectDom = type.SourceProjectDom;
+			result.TypeModifier  = type.TypeModifier;
 			
 			foreach (ITypeParameter param in type.TypeParameters)
 				result.AddTypeParameter ((TypeParameter) Visit (param, data));

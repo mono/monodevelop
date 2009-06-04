@@ -39,7 +39,13 @@ namespace MonoDevelop.Projects.Dom
 		GenericInstantiation,
 		GenericParameter
 	}
-
+	
+	[Flags]
+	public enum TypeModifier {	
+		None                      = 0,
+		HasOnlyHiddenConstructors = 1 // used for private & internal constructors in assemblies
+	}
+	
 	public interface IType : IMember, IEquatable<IType>
 	{
 		string Namespace {
@@ -47,6 +53,10 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		string DecoratedFullName {
+			get;
+		}
+		
+		TypeModifier TypeModifier {
 			get;
 		}
 		

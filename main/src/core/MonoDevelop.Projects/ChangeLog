@@ -1,3 +1,18 @@
+2009-06-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/IType.cs:
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomCecilType.cs:
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Fixed "Bug 509620 - Auto-completion shows empty constructor
+	  when there are no constructors available (because of being
+	  private)".
+
 2009-06-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilProperty.cs: Indexers may

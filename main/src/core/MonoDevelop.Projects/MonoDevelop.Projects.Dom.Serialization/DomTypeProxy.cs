@@ -90,7 +90,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return entry.NamespaceRef.FullName;
 			}
 		}
-		
+		public override TypeModifier TypeModifier {
+			get {
+				return entry.TypeModifier;
+			}
+		}
 		public override string FullName {
 			get {
 				if (!string.IsNullOrEmpty (Namespace))

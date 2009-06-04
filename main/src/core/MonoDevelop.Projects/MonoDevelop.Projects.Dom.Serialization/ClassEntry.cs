@@ -54,6 +54,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		ContentFlags flags;
 		ClassType ctype;
 		Modifiers modifiers;
+		TypeModifier typeModifier;
 		
 		public ClassEntry (IType cls, NamespaceEntry namespaceRef)
 		{
@@ -105,6 +106,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			Name = cls.Name; 
 			ctype = cls.ClassType;
 			modifiers = cls.Modifiers;
+			typeModifier = cls.TypeModifier;
 			this.typeParameterCount = cls.TypeParameters.Count;
 			flags = (ContentFlags) 0;
 			if (this.typeParameterCount > 0)
@@ -190,6 +192,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			set {
 				typeParameterCount = value;
+			}
+		}
+
+		public TypeModifier TypeModifier {
+			get {
+				return typeModifier;
 			}
 		}
 		

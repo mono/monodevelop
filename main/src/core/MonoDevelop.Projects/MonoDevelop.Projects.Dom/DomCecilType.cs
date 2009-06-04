@@ -117,11 +117,19 @@ namespace MonoDevelop.Projects.Dom
 					continue;
 				base.Add (new DomCecilMethod (this, keepDefinitions, methodDefinition));
 			}
+			
+			bool internalOnly    = true;
+			bool hasConstructors = false;
 			foreach (MethodDefinition methodDefinition in typeDefinition.Constructors) {
+				hasConstructors = true;
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition)))
 					continue;
+				internalOnly = false;
 				base.Add (new DomCecilMethod (this, keepDefinitions, methodDefinition));
 			}
+			if (hasConstructors && internalOnly) 
+				base.TypeModifier |= TypeModifier.HasOnlyHiddenConstructors;
+			
 			foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (propertyDefinition.Attributes)))
 					continue;

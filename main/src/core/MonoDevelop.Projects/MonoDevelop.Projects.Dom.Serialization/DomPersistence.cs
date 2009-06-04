@@ -301,7 +301,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			ReadMemberInformation (reader, nameTable, result);
 //			bool verbose = result.Name == "CopyDelegate";
 //			if (verbose) System.Console.WriteLine("read type:" + result.Name);
-
+			result.TypeModifier = (TypeModifier)reader.ReadUInt32();
 			result.BodyRegion = ReadRegion (reader, nameTable);
 			string compilationUnitFileName = ReadString (reader, nameTable);
 			result.CompilationUnit = new CompilationUnit (compilationUnitFileName);
@@ -395,6 +395,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			writer.Write ((uint)1);
 			WriteMemberInformation (writer, nameTable, type);
+			writer.Write ((uint)type.TypeModifier);
 			Write (writer, nameTable, type.BodyRegion);
 			
 			if (type.CompilationUnit != null) {

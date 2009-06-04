@@ -62,7 +62,12 @@ namespace MonoDevelop.Projects.Dom
 				return TypeKind.Definition;
 			}
 		}
-
+		
+		public virtual TypeModifier TypeModifier {
+			get;
+			set;
+		}
+		
 		protected override string CalculateFullName ()
 		{
 			base.fullNameIsDirty = false;
@@ -489,6 +494,7 @@ namespace MonoDevelop.Projects.Dom
 			((AbstractMember)member).DeclaringType = this;
 			this.members.Add (member);
 		}
+		
 		public void Add (IMethod member)
 		{
 			if (member.IsConstructor) {
@@ -499,6 +505,7 @@ namespace MonoDevelop.Projects.Dom
 			((AbstractMember)member).DeclaringType = this;
 			this.members.Add (member);
 		}
+		
 		public void Add (IProperty member)
 		{
 			if (member.IsIndexer) {
