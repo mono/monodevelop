@@ -14,7 +14,7 @@ using Mono.Debugging.Backend.Mdb;
 
 namespace DebuggerServer
 {
-	public class MdbAdaptor_2_6: MdbAdaptor
+	public class MdbAdaptor_2_6: MdbAdaptor_2_4_2
 	{
 		public override void SetupXsp (DebuggerConfiguration config)
 		{
@@ -24,7 +24,7 @@ namespace DebuggerServer
 		
 		public override void InitializeBreakpoint (MDB.SourceBreakpoint bp)
 		{
-			bp.IsUserModule = true;
+		//	bp.IsUserModule = true;
 		}
 		
 		public override void InitializeSession (MonoDebuggerStartInfo startInfo, MDB.DebuggerSession session)

@@ -54,7 +54,7 @@ namespace DebuggerServer
 							aborted = true;
 							res.Abort ();
 							res.CompletedEvent.WaitOne ();
-							ctx.Thread.AbortInvocation ();
+							Server.Instance.MdbAdaptor.AbortThread (ctx.Thread, res);
 							WaitToStop (ctx.Thread);
 						}
 					}
@@ -75,7 +75,7 @@ namespace DebuggerServer
 							aborted = true;
 						res.Abort ();
 						res.CompletedEvent.WaitOne ();
-						ctx.Thread.AbortInvocation ();
+						Server.Instance.MdbAdaptor.AbortThread (ctx.Thread, res);
 						WaitToStop (ctx.Thread);
 						throw new TimeOutException ();
 					}

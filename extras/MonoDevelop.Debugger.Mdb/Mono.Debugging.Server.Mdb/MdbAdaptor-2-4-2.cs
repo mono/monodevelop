@@ -1,5 +1,5 @@
 // 
-// MdbAdaptor.cs
+// MdbAdaptor22.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -25,42 +25,20 @@
 // THE SOFTWARE.
 
 using System;
-using MDB=Mono.Debugger;
-using Mono.Debugging.Backend.Mdb;
 
 namespace DebuggerServer
 {
-	public abstract class MdbAdaptor
+	public class MdbAdaptor_2_4_2: MdbAdaptor
 	{
-		public MdbAdaptor ()
+		public override void InitializeConfiguration (Mono.Debugger.DebuggerConfiguration config)
 		{
-			MdbVersion = "2.0";
+			base.InitializeConfiguration (config);
+			config.RedirectOutput = true;
 		}
-		
-		public string MdbVersion { get; internal set; }
-		
-		public virtual void SetupXsp (MDB.DebuggerConfiguration config)
+
+		public override void AbortThread (Mono.Debugger.Thread thread, Mono.Debugger.RuntimeInvokeResult result)
 		{
-			ThrowNotSupported ("ASP.NET debugging not supported");
-		}
-		
-		public virtual void InitializeBreakpoint (MDB.SourceBreakpoint bp)
-		{
-		}
-		
-		public virtual void InitializeConfiguration (MDB.DebuggerConfiguration config)
-		{
-		}
-		
-		public virtual void InitializeSession (MonoDebuggerStartInfo startInfo, MDB.DebuggerSession session)
-		{
-		}
-		
-		public abstract void AbortThread (MDB.Thread thread, MDB.RuntimeInvokeResult result);
-		
-		public void ThrowNotSupported (string feature)
-		{
-			throw new InvalidOperationException (feature + ". You need to install a more recent Mono Debugger version.");
+			thread.AbortInvocation (result.ID);
 		}
 	}
 }

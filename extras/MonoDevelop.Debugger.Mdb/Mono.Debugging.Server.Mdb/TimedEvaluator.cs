@@ -113,7 +113,6 @@ namespace DebuggerServer
 				}
 				
 				threadTask.RunningEvent.Set ();
-				DateTime t = DateTime.Now;
 				SafeRun (threadTask.Evaluator);
 				threadTask.RunFinishedEvent.Set ();
 				

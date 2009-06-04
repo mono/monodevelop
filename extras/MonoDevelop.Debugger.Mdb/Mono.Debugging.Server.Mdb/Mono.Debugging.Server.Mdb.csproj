@@ -190,5 +190,11 @@
     <EmbeddedResource Include="MdbAdaptor-2-6.cs">
       <LogicalName>MdbAdaptor-2-6.cs</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MdbAdaptor-2-4-2.cs">
+      <LogicalName>MdbAdaptor-2-4-2.cs</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MdbAdaptor-2-0.cs">
+      <LogicalName>MdbAdaptor-2-0.cs</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

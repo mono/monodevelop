@@ -45,7 +45,7 @@ namespace DebuggerServer
 		TargetObject enumerator;
 		List<TargetObject> items = new List<TargetObject> ();
 		
-		static Dictionary<string,ColInfo> colTypes = new Dictionary<string,ColInfo> ();
+//		static Dictionary<string,ColInfo> colTypes = new Dictionary<string,ColInfo> ();
 		
 		class ColInfo {
 			public TargetPropertyInfo IndexerProp;

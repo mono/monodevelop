@@ -43,7 +43,6 @@ namespace DebuggerServer
 	public static class ObjectUtil
 	{
 		static Dictionary<string,TypeDisplayData> typeDisplayData = new Dictionary<string,TypeDisplayData> ();
-		static Dictionary<TargetType,TargetType> proxyTypes = new Dictionary<TargetType,TargetType> ();
 		
 		public static TargetObject GetRealObject (EvaluationContext ctx, TargetObject obj)
 		{

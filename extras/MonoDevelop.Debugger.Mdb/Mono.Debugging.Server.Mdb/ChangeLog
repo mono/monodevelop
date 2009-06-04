@@ -1,3 +1,20 @@
+2009-06-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile:
+	* MdbAdaptor.cs:
+	* MdbAdaptor-2-0.cs:
+	* DebuggerServer.cs:
+	* MdbAdaptor-2-6.cs:
+	* MdbAdaptor-2-4-2.cs:
+	* MdbAdaptorFactory.cs:
+	* RuntimeInvokeManager.cs:
+	* Mono.Debugging.Server.Mdb.csproj: Track api changes in the
+	  debugger.
+
+	* ObjectUtil.cs:
+	* TimedEvaluator.cs:
+	* CollectionAdaptor.cs: Fix warning.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Server.Mdb.csproj: Flush.

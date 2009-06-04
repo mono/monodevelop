@@ -79,7 +79,10 @@ FILES =  \
 
 DATA_FILES = 
 
-RESOURCES = MdbAdaptor-2-6.cs 
+RESOURCES =  \
+	MdbAdaptor-2-0.cs \
+	MdbAdaptor-2-4-2.cs \
+	MdbAdaptor-2-6.cs 
 
 EXTRAS = \
 	ChangeLog 

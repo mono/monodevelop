@@ -80,22 +80,33 @@ namespace DebuggerServer
 				return asyncEvaluationTracker;
 			}
 		}
+		
+		public MdbAdaptor MdbAdaptor {
+			get { return mdbAdaptor; }
+		}
 
 		#region IDebugger Members
+		
+		public string InitializeMdb (string mdbVersion)
+		{
+			mdbAdaptor = MdbAdaptorFactory.CreateAdaptor (mdbVersion);
+			return mdbAdaptor.MdbVersion;
+		}
 
-		public void Run (MonoDebuggerStartInfo startInfo, bool detectMdbVersion)
+		public void Run (MonoDebuggerStartInfo startInfo)
 		{
 			try {
 				if (startInfo == null)
 					throw new ArgumentNullException ("startInfo");
 			
-				mdbAdaptor = MdbAdaptorFactory.CreateAdaptor (detectMdbVersion);
 				Console.WriteLine ("MDB version: " + mdbAdaptor.MdbVersion);
 
 				Report.Initialize ();
 
 				DebuggerConfiguration config = new DebuggerConfiguration ();
 				config.LoadConfiguration ();
+				mdbAdaptor.InitializeConfiguration (config);
+				
 				debugger = new MD.Debugger (config);
 				
 				debugger.ModuleLoadedEvent += OnModuleLoadedEvent;
@@ -140,6 +151,7 @@ namespace DebuggerServer
 			Report.Initialize ();
 
 			DebuggerConfiguration config = new DebuggerConfiguration ();
+			mdbAdaptor.InitializeConfiguration (config);
 			config.LoadConfiguration ();
 			debugger = new MD.Debugger (config);
 
@@ -191,7 +203,6 @@ namespace DebuggerServer
 			running = false;
 		}
 
-		int ncc = 0;
 		public void NextLine ()
 		{
 			if (running)
@@ -854,12 +865,22 @@ namespace DebuggerServer
 		
 		private void OnModuleLoadedEvent (Module module)
 		{
-			WriteDebuggerOutput (string.Format ("Module {0} loaded.\n", module.Name));
+			SourceFile[] sfiles = module.Sources;
+			string[] files = new string [sfiles.Length];
+			for (int n=0; n<files.Length; n++)
+				files [n] = sfiles [n].FileName;
+			controller.NotifySourceFileLoaded (files);
+			WriteDebuggerOutput (string.Format ("Module loaded: {0}.\n", module.Name));
 		}
 
 		private void OnModuleUnLoadedEvent (Module module)
 		{
-			WriteDebuggerOutput (string.Format ("Module {0} unloaded.\n", module.Name));
+			SourceFile[] sfiles = module.Sources;
+			string[] files = new string [sfiles.Length];
+			for (int n=0; n<files.Length; n++)
+				files [n] = sfiles [n].FileName;
+			controller.NotifySourceFileUnloaded (files);
+			WriteDebuggerOutput (string.Format ("Module unloaded: {0}.\n", module.Name));
 		}
 
 		private void OnTargetExitedEvent (MD.Debugger debugger)
