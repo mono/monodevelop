@@ -36,6 +36,8 @@ namespace Mono.Debugging.Backend
 		void NotifyTargetOutput (bool isStderr, string line);
 		void NotifyDebuggerOutput (bool isStderr, string line);
 		bool NotifyCustomBreakpointAction (string actionId, object handle);
+		void NotifySourceFileLoaded (string fullFilePath);
+		void NotifySourceFileUnloaded (string fullFilePath);
 		
 		// To be called when the process is ready to run.
 		void NotifyStarted ();

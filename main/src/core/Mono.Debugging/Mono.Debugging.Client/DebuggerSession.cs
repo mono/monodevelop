@@ -733,6 +733,16 @@ namespace Mono.Debugging.Client
 		{
 			return session.OnCustomBreakpointAction (actionId, handle);
 		}
+		
+		public void NotifySourceFileLoaded (string fullFilePath)
+		{
+			session.NotifySourceFileLoaded (fullFilePath);
+		}
+
+		public void NotifySourceFileUnloaded (string fullFilePath)
+		{
+			session.NotifySourceFileUnloaded (fullFilePath);
+		}
 	}
 
 	public delegate void OutputWriterDelegate (bool isStderr, string text);
