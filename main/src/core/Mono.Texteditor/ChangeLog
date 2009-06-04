@@ -1,5 +1,9 @@
 2009-06-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/Rule.cs: Removed debug message.
+
+2009-06-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: 
 
 2009-06-03  Mike Krüger  <mkrueger@novell.com>

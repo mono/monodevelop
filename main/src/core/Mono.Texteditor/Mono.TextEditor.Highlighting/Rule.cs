@@ -203,7 +203,7 @@ namespace Mono.TextEditor.Highlighting
 			case "Property":
 				string name  = reader.GetAttribute ("name");
 				string value = reader.ReadElementString ();
-				Console.WriteLine ("name" + name);
+				
 				if (!properties.ContainsKey (name))
 					properties[name] = new List<string> ();
 				properties[name].Add (value);
