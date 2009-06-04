@@ -1189,7 +1189,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 			foreach (IType curType in dom.GetSubclasses (type)) {
 				if (context != null && context.FilterEntry (curType))
 					continue;
-				
+				if ((curType.TypeModifier & TypeModifier.HasOnlyHiddenConstructors) == TypeModifier.HasOnlyHiddenConstructors)
+					continue;
 				if (curType.ConstructorCount > 0) {
 					if (!(curType.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, curType, callingType, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == curType.FullName)))))
 						continue;

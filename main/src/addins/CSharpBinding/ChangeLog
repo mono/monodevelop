@@ -1,3 +1,10 @@
+2009-06-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/NRefactoryParameterDataProvider.cs: Fixed "Bug 509620 -
+	  Auto-completion shows empty constructor when there are no
+	  constructors available (because of being private)".
+
 2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBinding.csproj: Set correct resource id.

@@ -118,7 +118,7 @@ namespace MonoDevelop.CSharpBinding
 						methods.Add (method);
 				}
 				// No constructor - generating default
-				if (!constructorFound) {
+				if (!constructorFound && (type.TypeModifier & TypeModifier.HasOnlyHiddenConstructors) != TypeModifier.HasOnlyHiddenConstructors) {
 					DomMethod defaultConstructor = new DomMethod ();
 					defaultConstructor.MethodModifier = MethodModifier.IsConstructor;
 					defaultConstructor.DeclaringType = type;
