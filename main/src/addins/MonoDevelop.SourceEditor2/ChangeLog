@@ -1,3 +1,8 @@
+2009-06-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/AutoSave.cs: Fixed "Bug 504605 -
+	  Crash after removing a project".
+
 2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: When setting

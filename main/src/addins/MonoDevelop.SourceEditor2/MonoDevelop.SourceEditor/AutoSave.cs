@@ -48,7 +48,11 @@ namespace MonoDevelop.SourceEditor
 		
 		static void CreateAutoSave (string fileName, string content)
 		{
-			File.WriteAllText (GetAutoSaveFileName (fileName), content);
+			try {
+				// Directory may have removed/unmounted. Therefore this operation is not guaranteed to work.
+				File.WriteAllText (GetAutoSaveFileName (fileName), content);
+			} catch (Exception) {
+			}
 		}
 		
 #region AutoSave 
