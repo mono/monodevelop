@@ -1,3 +1,9 @@
+2009-06-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* PluggableWidget.cs: When replacing the child widget (because
+	  of reloading of the project for example), make sure the old
+	  one is destroyed.
+
 2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

@@ -115,7 +115,7 @@ namespace Stetic
 		protected abstract void OnDestroyPlug (uint socketId);
 		
 		protected abstract Gtk.Widget OnCreateWidget ();
-		protected virtual void OnDestroyWidget (Gtk.Widget w) {}
+		protected virtual void OnDestroyWidget (Gtk.Widget w) { w.Destroy (); }
 		
 		public override void Dispose ()
 		{
