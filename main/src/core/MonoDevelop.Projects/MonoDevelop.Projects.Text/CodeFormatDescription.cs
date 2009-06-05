@@ -30,6 +30,8 @@ using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using System.Reflection;
+
 
 namespace MonoDevelop.Projects.Text
 {
@@ -104,11 +106,6 @@ namespace MonoDevelop.Projects.Text
 			set;
 		}
 		
-		public string Type {
-			get;
-			set;
-		}
-		
 		public string Example {
 			get;
 			set;
@@ -118,7 +115,7 @@ namespace MonoDevelop.Projects.Text
 		
 		public override string ToString ()
 		{
-			return string.Format("[CodeFormatOption: Name={0}, DisplayName={1}, Type={2}]", Name, DisplayName, Type);
+			return string.Format("[CodeFormatOption: Name={0}, DisplayName={1}]", Name, DisplayName);
 		}
 		
 		public static CodeFormatOption Read (CodeFormatDescription descr, XmlReader reader)
@@ -126,7 +123,6 @@ namespace MonoDevelop.Projects.Text
 			CodeFormatOption result = new CodeFormatOption ();
 			result.Name        = reader.GetAttribute ("name");
 			result.DisplayName = reader.GetAttribute ("_displayName");
-			result.Type        = reader.GetAttribute ("type");
 			string example    = reader.GetAttribute ("example");
 			if (!string.IsNullOrEmpty (example))
 				result.Example = descr.GetExample (example);
@@ -142,11 +138,6 @@ namespace MonoDevelop.Projects.Text
 	public class CodeFormatCategory
 	{
 		public bool IsOptionCategory {
-			get;
-			set;
-		}
-		
-		public string Name {
 			get;
 			set;
 		}
@@ -190,7 +181,7 @@ namespace MonoDevelop.Projects.Text
 		
 		public override string ToString ()
 		{
-			return string.Format("[CodeFormatCategory: Name={0}, DisplayName={4}, Example={1}, #SubCategories={2}, #Options={3}]", Name, Example, subCategories.Count, options.Count, DisplayName);
+			return string.Format("[CodeFormatCategory: DisplayName={3}, Example={0}, #SubCategories={1}, #Options={2}]", Example, subCategories.Count, options.Count, DisplayName);
 		}
 		
 		internal const string Node = "Category";
@@ -201,7 +192,6 @@ namespace MonoDevelop.Projects.Text
 			CodeFormatCategory result = new CodeFormatCategory ();
 			result.IsOptionCategory = reader.LocalName == OptionCategoryNode;
 			result.DisplayName = reader.GetAttribute ("_displayName");
-			result.Name        = reader.GetAttribute ("name");
 			XmlReadHelper.ReadList (reader, result.IsOptionCategory ? OptionCategoryNode : Node, delegate () {
 				switch (reader.LocalName) {
 				case "Option":
@@ -215,50 +205,6 @@ namespace MonoDevelop.Projects.Text
 				return false;
 			});
 			return result;
-		}
-	}
-	
-	public class CodeFormatSettings
-	{
-		public string Name {
-			get;
-			set;
-		}
-		
-		Dictionary<string, string> properties = new Dictionary<string, string> ();
-		public Dictionary<string, string> Properties {
-			get {
-				return properties;
-			}
-		}
-		
-		public CodeFormatSettings (string name)
-		{
-			this.Name = name;
-		}
-		
-		public CodeFormatSettings (CodeFormatSettings copyFrom, string name)
-		{
-			this.Name = name;
-			if (copyFrom != null) {
-				foreach (KeyValuePair<string, string> item in copyFrom.Properties) {
-					properties.Add (item.Key, item.Value);
-				}
-			}
-		}
-		
-		public void SetValue (CodeFormatOption option, string value)
-		{
-			properties[option.Name] = value;
-		}
-		
-		public KeyValuePair<string, string> GetValue (CodeFormatDescription descr, CodeFormatOption option)
-		{
-			string result;
-			CodeFormatType type = descr.GetCodeFormatType (option.Type);
-			if (properties.TryGetValue (option.Name, out result))
-				return type.GetValue (result);
-			return type.Values.FirstOrDefault ();
 		}
 	}
 	
@@ -282,17 +228,6 @@ namespace MonoDevelop.Projects.Text
 		{
 		}
 		
-		public void ExportSettings (CodeFormatSettings settings, string fileName)
-		{
-			// todo
-		}
-		
-		public CodeFormatSettings ImportSettings (string fileName)
-		{
-			// todo
-			return new CodeFormatSettings (System.IO.Path.GetFileNameWithoutExtension (fileName));
-		}
-		
 		public string GetExample (string name)
 		{
 			string result;
@@ -303,11 +238,12 @@ namespace MonoDevelop.Projects.Text
 		
 		static CodeFormatType codeFormatTypeBool = new CodeFormatType ("Bool", new KeyValuePair <string, string> ("True", "True"), new KeyValuePair <string, string> ("False", "False"));
 			
-		public CodeFormatType GetCodeFormatType (string name)
+		public CodeFormatType GetCodeFormatType (object settings, CodeFormatOption option)
 		{
-			if (name == "Bool")
+			PropertyInfo info = settings.GetType ().GetProperty (option.Name);
+			if (info.PropertyType == typeof (bool))
 				return codeFormatTypeBool;
-			return types.FirstOrDefault (t => t.Name == name);
+			return types.FirstOrDefault (t => t.Name == info.PropertyType.Name);
 		}
 		
 		
@@ -315,6 +251,27 @@ namespace MonoDevelop.Projects.Text
 		new const string Node         = "CodeStyle";
 		const string VersionAttribute = "version";
 
+		// returns value / display name
+		public KeyValuePair<string, string> GetValue (object settings, CodeFormatOption option)
+		{
+			PropertyInfo info = settings.GetType ().GetProperty (option.Name);
+			string value = info.GetValue (settings, null).ToString ();
+			CodeFormatType type = GetCodeFormatType (settings, option);
+			return new KeyValuePair<string, string> (value, type.GetValue (value).Value);
+		}
+		
+		public void SetValue (object settings, CodeFormatOption option, string value)
+		{
+			PropertyInfo info = settings.GetType ().GetProperty (option.Name);
+			object val;
+			if (typeof (System.Enum).IsAssignableFrom (info.PropertyType)) {
+				val = Enum.Parse (info.PropertyType, value);
+			} else {
+				val = Convert.ChangeType (value, info.PropertyType);
+			}
+			info.SetValue (settings, val, null);
+		}
+		
 		public static CodeFormatDescription Load (string fileName)
 		{
 			using (XmlReader reader = XmlTextReader.Create (fileName)) {
@@ -353,33 +310,5 @@ namespace MonoDevelop.Projects.Text
 			}
 			return result;
 		}
-	}
-	
-	[DataItem ("CodeFormat")]
-	public class CodeFormattingPolicy  : IEquatable<CodeFormattingPolicy>
-	{
-		[ItemProperty]
-		public string MimeType { 
-			get; 
-			set; 
-		}
-		
-		[ItemProperty]
-		public string CodeStyle { 
-			get; 
-			set; 
-		}
-		
-		public virtual CodeFormatSettings GetSettings ()
-		{
-			return TextFileService.GetSettings (MimeType, CodeStyle);
-		}
-	
-		#region IEquatable<CodeFormattingPolicy> implementation
-		public bool Equals (CodeFormattingPolicy other)
-		{
-			return other != null && CodeStyle == other.CodeStyle && MimeType == other.MimeType;
-		}
-		#endregion
 	}
 }

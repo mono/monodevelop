@@ -1,3 +1,10 @@
+2009-06-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects.Text/TextFileService.cs:
+	* MonoDevelop.Projects.Text/CodeFormatDescription.cs: Worked
+	  on code formatting.
+
 2009-06-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IType.cs:

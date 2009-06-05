@@ -36,10 +36,9 @@ namespace MonoDevelop.Projects.Text
 {
 	public static class TextFileService
 	{
-		static List<CodeFormatDescription> descriptions = new List<CodeFormatDescription> ();
 		static List<IFormatter> formatters = new List<IFormatter>();
 		static List<IPrettyPrinter> prettyPrinters = new List<IPrettyPrinter>();
-		static List<CodeFormatSettings> settings = new List<CodeFormatSettings> ();
+		
 //		static void PrintCategory (CodeFormatCategory c)
 //		{
 //			System.Console.WriteLine (c);
@@ -55,13 +54,15 @@ namespace MonoDevelop.Projects.Text
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatters", FormatterExtHandler);
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextPrettyPrinters", PrettyPrinterExtHandler);
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/TextFormatDefinition", DefinitionExtHandler);
 		}
+		/*
+		static List<CodeFormatSettings> settings = new List<CodeFormatSettings> ();
+		
 		public static IEnumerable<CodeFormatSettings> GetAvailableSettings (CodeFormatDescription description)
 		{
 			return settings;
 		}
-		 
+		
 		public static CodeFormatSettings GetSettings (string description, string name)
 		{
 			return GetSettings (GetFormatDescription (description), name);
@@ -77,7 +78,7 @@ namespace MonoDevelop.Projects.Text
 		public static void SetSettings (CodeFormatDescription description, IEnumerable<CodeFormatSettings> settings)
 		{
 			TextFileService.settings = new List<CodeFormatSettings> (settings);
-		}
+		}*/
 		
 		static void FormatterExtHandler (object sender, ExtensionNodeEventArgs args)
 		{
@@ -102,7 +103,7 @@ namespace MonoDevelop.Projects.Text
 				break;
 			}
 		}
-		
+		/*
 		static void DefinitionExtHandler (object sender, ExtensionNodeEventArgs args)
 		{
 			XmlDefinitionCodon xmlDef = args.ExtensionNode as XmlDefinitionCodon;
@@ -110,10 +111,6 @@ namespace MonoDevelop.Projects.Text
 				CodeFormatDescription descr = CodeFormatDescription.Read (reader);
 				switch (args.Change) {
 				case ExtensionChange.Add:
-				/*	foreach (var v in descr.Types) {
-						System.Console.WriteLine(v);
-					}
-					PrintCategory (descr);*/
 					descriptions.Add (descr);
 					break;
 				case ExtensionChange.Remove:
@@ -126,7 +123,7 @@ namespace MonoDevelop.Projects.Text
 		public static CodeFormatDescription GetFormatDescription (string mimeType)
 		{
 			return descriptions.Find (d => d.MimeType == mimeType);
-		}
+		}*/
 		
 		public static IFormatter GetFormatter (string mimeType)
 		{
