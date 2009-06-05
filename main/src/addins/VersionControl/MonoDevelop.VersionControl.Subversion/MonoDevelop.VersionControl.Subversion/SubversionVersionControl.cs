@@ -280,6 +280,14 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			return ClientCertificatePasswordDialog.Show (realm, may_save, out password, out save);
 		}
+		
+		/// <summary>
+		/// Get annotations for a versioned file.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> annotation for each line in file.
+		/// </returns>
+		public abstract List<string> GetAnnotations (Repository repo, FilePath file, SvnRevision revStart, SvnRevision revEnd);
 	}
 	
 

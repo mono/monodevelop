@@ -56,6 +56,11 @@
       <Name>MonoDevelop.VersionControl</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Diff\Diff.csproj">
+      <Project>{7FF7B14D-BFE7-493A-9B52-B5F4CA71A2DC}</Project>
+      <Name>Diff</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
       <Project>{659B0888-3956-4040-BDB1-B45F6D64E7FA}</Project>
       <Name>MonoDevelop.Core.Gui</Name>

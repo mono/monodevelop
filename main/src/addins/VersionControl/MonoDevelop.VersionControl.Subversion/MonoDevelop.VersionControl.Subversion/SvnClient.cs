@@ -414,6 +414,33 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			return ret;
 		}
+		
+		public override List<string> GetAnnotations (Repository repo, FilePath file, SvnRevision revStart, SvnRevision revEnd)
+		{
+			if (file == FilePath.Null)
+				throw new ArgumentNullException ();
+				
+			LibSvnClient.Rev revisionStart = (LibSvnClient.Rev) revStart;
+			LibSvnClient.Rev revisionEnd = (LibSvnClient.Rev) revEnd;
+			
+			int numAnnotations = File.ReadAllLines (file.FullPath).Length;
+			List<string> annotations = new List<string> (numAnnotations);
+			for (int i=0; i<numAnnotations; ++i) {
+				annotations.Insert (0, string.Empty);
+			}
+			
+			AnnotationCollector collector = new AnnotationCollector (annotations);
+			
+			IntPtr localpool = newpool (pool);
+			
+			try {
+				CheckError (svn.client_blame (file.FullPath, ref revisionStart, ref revisionEnd, new LibSvnClient.svn_client_blame_receiver_t (collector.Func), IntPtr.Zero, ctx, localpool));
+			} finally {
+				apr.pool_destroy (localpool);
+			}
+			
+			return annotations;
+		}
 
 		public override string GetPathUrl (FilePath path)
 		{
@@ -1223,5 +1250,31 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return IntPtr.Zero;
 			}
 		}
+		
+		/// <summary>
+		/// Class for collecting annotations from libsvn_client
+		/// </summary>
+		private class AnnotationCollector
+		{
+			List<string> annotations;
+			
+			/// <summary>
+			/// A svn_client_blame_receiver_t implementation.
+			/// </summary>
+			public IntPtr Func (IntPtr baton, long line_no, int revision, string author, string date, string line, IntPtr pool)
+			{
+				if (line_no < annotations.Count) {
+					annotations[(int)line_no] = string.Format ("{0} {1} {2}", revision, author, date).Substring (0, 15);
+				}
+				
+				return IntPtr.Zero;
+			}
+			
+			public AnnotationCollector (List<string> annotations)
+			{
+				this.annotations = annotations;
+			}
+		}
+		
 	}
 }

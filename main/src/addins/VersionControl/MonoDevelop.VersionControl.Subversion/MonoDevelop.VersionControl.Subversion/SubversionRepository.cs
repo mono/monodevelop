@@ -8,6 +8,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.VersionControl.Subversion.Gui;
 using MonoDevelop.Core.Collections;
+using Algorithm.Diff;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
@@ -456,9 +457,31 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
+		public override bool CanGetAnnotations (MonoDevelop.Core.FilePath localPath)
+		{
+		    return IsHistoryAvailable (localPath);
+		}
+		
 		public override string[] GetAnnotations (FilePath localPath)
 		{
-			return new string[0];
+			List<string> annotations = Svn.GetAnnotations (this, localPath, SvnRevision.First, SvnRevision.Base);
+			Range    original,
+			         local;
+			string nextRev = GettextCatalog.GetString ("working copy");
+			         
+			// "SubversionException: blame of the WORKING revision is not supported"
+			foreach (Hunk hunk in new Diff (GetPathToBaseText (localPath), localPath.FullPath, true, true)) {
+				if (!hunk.Same) {
+					original = hunk.Original ();
+					local = hunk.Changes (0);
+					annotations.RemoveRange (original.Start, original.Count);
+					for (int i=0; i<local.Count; ++i) {
+						annotations.Insert (local.Start, nextRev);
+					}
+				}
+			}
+			
+			return annotations.ToArray ();
 		}
 	}
 }

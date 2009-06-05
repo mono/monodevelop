@@ -135,6 +135,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		public abstract IntPtr client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool);
 		
+		public abstract IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
+		
 		public class DirEnt {
 			public readonly string Name;
 			public readonly bool IsDirectory;
@@ -572,6 +574,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		public delegate IntPtr svn_client_get_commit_log_t (ref IntPtr log_msg, ref IntPtr tmp_file, IntPtr commit_items,
 		                                                    IntPtr baton, IntPtr pool);
+		
+		public delegate IntPtr svn_client_blame_receiver_t (IntPtr baton, long line_no, int revision, string author, string date, string line, IntPtr pool);
 	}
 	
 	public class LibSvnClient0 : LibSvnClient {
@@ -819,6 +823,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			return svn_client_prop_get (out value, name, target, ref revision, recurse, ctx, pool);
 		}
 		
+		public override IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, System.IntPtr baton, System.IntPtr ctx, System.IntPtr pool)
+		{
+			return svn_client_blame (path, ref rev_start, ref rev_end, receiver, baton, ctx, pool);
+		}
+
+		
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
@@ -924,6 +934,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_unlock (IntPtr apr_array_header_t_targets, int break_lock, IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool);
+
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
 	}
 	
 	public class LibSvnClient1 : LibSvnClient {
@@ -1170,6 +1182,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		{
 			return svn_client_prop_get (out value, name, target, ref revision, recurse, ctx, pool);
 		}
+		
+		public override IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, System.IntPtr baton, System.IntPtr ctx, System.IntPtr pool)
+		{
+			return svn_client_blame (path, ref rev_start, ref rev_end, receiver, baton, ctx, pool);
+		}
+
 
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
@@ -1277,5 +1295,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_unlock (IntPtr apr_array_header_t_targets, int break_lock, IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
 	}
 }

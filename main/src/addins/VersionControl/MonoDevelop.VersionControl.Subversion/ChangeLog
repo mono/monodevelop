@@ -1,3 +1,11 @@
+2009-06-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  Implement annotate.
+
 2009-06-01  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:

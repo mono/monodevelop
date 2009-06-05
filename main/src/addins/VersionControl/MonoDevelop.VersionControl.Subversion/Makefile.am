@@ -4,6 +4,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Subversion.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
+	$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
