@@ -31,9 +31,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	BuildVariables.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.Ide.CodeFormatting.AddPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.OverrideTextSettingsPolicyWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs \
@@ -68,10 +66,9 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
-	MonoDevelop.Ide.CodeFormatting/AddPolicyDialog.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormatterService.cs \
-	MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanel.cs \
-	MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs \
+	MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs \
+	MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs \
 	MonoDevelop.Ide.CodeFormatting/OverrideTextSettingsPolicyWidget.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs \

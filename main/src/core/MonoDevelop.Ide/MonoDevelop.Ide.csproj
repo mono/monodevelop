@@ -505,13 +505,9 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\FileOperationsBuilderExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\DirectoryTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IUndoHandler.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormattingPolicyPanel.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\EditFormattingPolicyDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormattingPolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterService.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\AddPolicyDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.AddPolicyDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\OverrideTextSettingsPolicyWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.OverrideTextSettingsPolicyWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplatePanel.cs" />
@@ -544,6 +540,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\IAttachableViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AbstractAttachableViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\IBaseDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormattingCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

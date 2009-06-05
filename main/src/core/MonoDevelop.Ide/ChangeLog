@@ -1,3 +1,21 @@
+2009-06-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.CodeFormatting/AddPolicyDialog.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.AddPolicyDialog.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:
+	* MonoDevelop.Ide.CodeFormatting/EditFormattingPolicyDialog.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.EditFormattingPolicyDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:
+	  Worked on C# formatter it should now fit better in the
+	  policy system.
+
 2009-06-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Fixed "Bug 507065 - Edit / Insert

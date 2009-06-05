@@ -78,7 +78,6 @@ namespace MonoDevelop.Ide.CodeTemplates {
             this.BorderWidth = ((uint)(6));
             this.SkipPagerHint = true;
             this.SkipTaskbarHint = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

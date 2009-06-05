@@ -718,7 +718,12 @@
 				type="array"
 				_label = "Tool List" />
 				
+		<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer"
+				defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
+				_label = "_Format Buffer" />
+				
 		</Category>
+		
 		
 		<!-- WindowCommands -->
 		<Category _name = "Window" id = "Window">
@@ -1280,13 +1285,11 @@
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
 		<Section id = "ProjectStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 		<Section id = "ProjectTextStylePolicy" _label = "Text Style" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanel" />
-		<Section id = "CodeFormatPolicy" _label = "Code Format" fill="true" class = "MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
 		<Section id = "DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 		<Section id = "DefaultTextStylePolicy" _label = "Text Style" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanel" />
-		<Section id = "CodeFormatPolicy" _label = "Code Format" fill="true" class = "MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanel" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
@@ -1550,10 +1553,12 @@
 
 		<ItemSet id = "Tools" _label = "_Tools">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager" />
+			<SeparatorItem id ="FormatSeparator" /> 
+			<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" />
 			<SeparatorItem id ="AddinManagerSeparator" /> 
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
-        </ItemSet>
-	        
+		</ItemSet>
+
 		<ItemSet id = "Window" _label = "_Window">
 			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow" />

@@ -1,5 +1,5 @@
 // 
-// AddPolicyDialog.cs
+// CodeFormattingCommands.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,41 +25,37 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects;
-using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+
+
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
+	public enum CodeFormattingCommands {
+		FormatBuffer
+	}
 	
-	
-	public partial class AddPolicyDialog : Gtk.Dialog
+	public class FormatBufferHandler : CommandHandler
 	{
-		public string NewPolicyName {
-			get {
-				return entryName.Text;
-			}
-		}
 		
-		public string InitFrom {
-			get {
-				return this.comboboxInitFrom.ActiveText;
-			}
-		}
-		
-		public AddPolicyDialog (List<CodeFormatSettings> settings)
+		protected override void Update (CommandArrayInfo info)
 		{
-			this.Build();
-			this.Title = GettextCatalog.GetString ("New Profile");
-			
-			foreach (var setting in settings) {
-				this.comboboxInitFrom.AppendText (setting.Name);
-			}
-			if (settings.Count == 0) 
-				this.comboboxInitFrom.AppendText ("default");
-			
-			this.comboboxInitFrom.Active = 0;
+		//	if (IdeApp.Workspace.Items.Count == 0)
+		//		info.Enabled = false;
+		}
+		
+		protected override void Run (object tool)
+		{
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return;
+			IPrettyPrinter printer = TextFileService.GetPrettyPrinter (IdeApp.Services.PlatformService.GetMimeTypeForUri (doc.FileName));
+			if (printer == null)
+				return;
+			doc.TextEditor.Select (0, doc.TextEditor.TextLength);
+			doc.TextEditor.SelectedText = printer.FormatText (doc.Project, doc.TextEditor.Text);
 		}
 	}
 }
