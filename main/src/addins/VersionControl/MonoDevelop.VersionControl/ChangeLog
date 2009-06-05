@@ -1,3 +1,8 @@
+2009-06-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs:
+	  Draw background for area after end of annotations.
+
 2009-06-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix build by adding reference to Mono.Debugging.

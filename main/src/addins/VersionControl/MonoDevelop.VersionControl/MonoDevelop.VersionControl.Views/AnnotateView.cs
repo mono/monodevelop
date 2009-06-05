@@ -280,14 +280,12 @@ namespace MonoDevelop.VersionControl.Views
 		/// </summary>
 		protected override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y)
 		{
-			if (line >= annotations.Count){ return; }
-			
-			string ann = annotations[line];
+			string ann = (line < annotations.Count)? annotations[line]: string.Empty;
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
-			
 			drawable.DrawRectangle (locallyModified.Equals (ann, StringComparison.Ordinal)? locallyModifiedGC: lineNumberBgGC, true, drawArea);
 			
-			if (!locallyModified.Equals (ann, StringComparison.Ordinal)) {
+			if (!locallyModified.Equals (ann, StringComparison.Ordinal) &&
+			    (line < annotations.Count)) {
 				layout.SetText (annotations[line]);
 				drawable.DrawLayout ((editor.Caret.Line == line)? lineNumberHighlightGC: lineNumberGC, x + 1, y, layout);
 			}
