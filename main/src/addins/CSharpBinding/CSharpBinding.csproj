@@ -145,9 +145,6 @@
       <LogicalName>AssemblyInfo.xft.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="md1format.xml" />
-    <EmbeddedResource Include="FormattingStrategy\CSharpFormattingStyleDefinition.xml">
-      <LogicalName>CSharpFormattingStyleDefinition.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\csharp-project-16.png">
       <LogicalName>csharp-project-16.png</LogicalName>
     </EmbeddedResource>
@@ -192,6 +189,7 @@
     <Compile Include="Gui\NRefactoryTemplateParameterDataProvider.cs" />
     <Compile Include="Syntax\CSharpSyntaxMode.cs" />
     <Compile Include="Syntax\HighlightPropertiesSemanticRule.cs" />
+    <Compile Include="FormattingStrategy\CSharpFormattingPolicyPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

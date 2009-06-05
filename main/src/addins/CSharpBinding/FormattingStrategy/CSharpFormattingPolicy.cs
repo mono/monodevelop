@@ -27,6 +27,8 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using System.Reflection;
+
 
 
 namespace FormattingStrategy
@@ -39,7 +41,7 @@ namespace FormattingStrategy
 		NextLineShifted2
 	}
 	
-	public class CSharpFormattingPolicy
+	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
 		#region Indentation
 		[ItemProperty]
@@ -511,8 +513,85 @@ namespace FormattingStrategy
 		}
 		#endregion
 		
-		public CSharpFormattingPolicy()
+		public CSharpFormattingPolicy ()
 		{
+			IndentNamespaceBody = true;
+			IndentClassBody = IndentInterfaceBody = IndentStructBody = IndentEnumBody = true;
+			IndentMethodBody = IndentPropertyBody = IndentEventBody = true;
+			IndentBlocks = true;
+			IndentSwitchBody = false;
+			IndentCaseBody = true;
+			IndentBreakStatements = true;
+			NamespaceBraceStyle = BraceStyle.NextLine;
+			ClassBraceStyle = InterfaceBraceStyle = StructBraceStyle = EnumBraceStyle = BraceStyle.NextLine;
+			MethodBraceStyle = ConstructorBraceStyle = DestructorBraceStyle = BraceStyle.EndOfLine;
+			
+			PropertyBraceStyle = PropertyGetBraceStyle = PropertySetBraceStyle = BraceStyle.EndOfLine;
+			AllowPropertyGetBlockInline = AllowPropertySetBlockInline = true;
+			
+			EventBraceStyle = EventAddBraceStyle = EventRemoveBraceStyle = BraceStyle.EndOfLine;
+			AllowEventAddBlockInline = AllowEventRemoveBlockInline = true;
+			StatementBraceStyle = BraceStyle.EndOfLine;
+		
+			PlaceElseOnNewLine = false;
+			PlaceCatchOnNewLine = false;
+			PlaceFinallyOnNewLine = false;
+			PlaceWhileOnNewLine = false;
+			
+			BeforeMethodCallParentheses = true;
+			BeforeMethodDeclarationParentheses = true;
+			IfParentheses = true;
+			WhileParentheses = true;
+			ForParentheses = true;
+			ForeachParentheses = true;
+			CatchParentheses = true;
+			SwitchParentheses = true;
+			LockParentheses = true;
+			UsingParentheses = true;
+			AroundAssignmentParentheses = true;
+			AroundLogicalOperatorParentheses = true;
+			AroundEqualityOperatorParentheses = true;
+			AroundRelationalOperatorParentheses = true;
+			AroundBitwiseOperatorParentheses = true;
+			AroundAdditiveOperatorParentheses = true;
+			AroundMultiplicativeOperatorParentheses = true;
+			AroundShiftOperatorParentheses = true;
+			WithinParentheses = false;
+			WithinMethodCallParentheses = false;
+			WithinMethodDeclarationParentheses = false;
+			WithinIfParentheses = false;
+			WithinWhileParentheses = false;
+			WithinForParentheses = false;
+			WithinForEachParentheses = false;
+			WithinCatchParentheses = false;
+			WithinSwitchParentheses = false;
+			WithinLockParentheses = false;
+			WithinUsingParentheses = false;
+			WithinCastParentheses = false;
+			WithinSizeOfParentheses = false;
+			WithinTypeOfParentheses = false;
+			WithinCheckedExpressionParantheses = false;
+			ConditionalOperatorBeforeConditionSpace = true;
+			ConditionalOperatorAfterConditionSpace = true;
+			ConditionalOperatorBeforeSeparatorSpace = true;
+			ConditionalOperatorAfterSeparatorSpace = true;
+			
+			SpacesWithinBrackets = false;
+			SpacesAfterComma = true;
+			SpacesBeforeComma = false;
+			SpacesAfterSemicolon = true;
+			SpacesAfterTypecast = false;
+		}
+		
+		public bool Equals (CSharpFormattingPolicy other)
+		{
+			foreach (PropertyInfo info in typeof (CSharpFormattingPolicy).GetProperties ()) {
+				object val      = info.GetValue (this, null);
+				object otherVal = info.GetValue (other, null);
+				if (!val.Equals (otherVal))
+					return false;
+			}
+			return true;
 		}
 	}
 }

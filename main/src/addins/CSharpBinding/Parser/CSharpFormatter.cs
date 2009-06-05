@@ -39,6 +39,8 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.CSharp;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using FormattingStrategy;
+
 
 namespace CSharpBinding.Parser
 {
@@ -63,20 +65,20 @@ namespace CSharpBinding.Parser
 			TextStylePolicy currentPolicy = policyParent != null
 					? policyParent.Policies.Get<TextStylePolicy> ()
 					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ();
-			CodeFormattingPolicy codePolicy = policyParent != null
-					? policyParent.Policies.Get<CodeFormattingPolicy> ()
-					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CodeFormattingPolicy> ();
+			CSharpFormattingPolicy codePolicy = policyParent != null
+					? policyParent.Policies.Get<CSharpFormattingPolicy> ()
+					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> ();
 			
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor ();
 			outputVisitor.Options.IndentationChar = currentPolicy.TabsToSpaces ? ' ' : '\t';
 			outputVisitor.Options.TabSize         = currentPolicy.TabWidth;
 			outputVisitor.Options.IndentSize      = currentPolicy.TabWidth;
-			CodeFormatSettings settings = codePolicy.GetSettings ();
-			CodeFormatDescription descr = TextFileService.GetFormatDescription (MimeType);
+			
+			CodeFormatDescription descr = CSharpFormattingPolicyPanel.CodeFormatDescription;
 			Type optionType = outputVisitor.Options.GetType ();
 			
 			foreach (CodeFormatOption option in descr.AllOptions) {
-				KeyValuePair<string, string> val = settings.GetValue (descr, option);
+				KeyValuePair<string, string> val = descr.GetValue (codePolicy, option);
 				PropertyInfo info = optionType.GetProperty (option.Name);
 				if (info == null) {
 					System.Console.WriteLine("option : " + option.Name + " not found.");

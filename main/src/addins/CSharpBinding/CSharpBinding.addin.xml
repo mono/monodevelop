@@ -138,6 +138,10 @@
 		<SyntaxMode mimeTypes="text/x-csharp" class="MonoDevelop.CSharpBinding.CSharpSyntaxMode"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
+		<Section id = "CSharpFormatting" _label = "C# Format" fill="true" class = "FormattingStrategy.CSharpFormattingPolicyPanel" />
+	</Extension>
+	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
