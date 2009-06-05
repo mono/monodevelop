@@ -1,5 +1,10 @@
 2009-06-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* MonoDevelop.VersionControl/Repository.cs:
+	  Unbreak SharpSvn addin build.
+
+2009-06-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* MonoDevelop.VersionControl.Views/AnnotateView.cs:
 	  Draw background for area after end of annotations.
 

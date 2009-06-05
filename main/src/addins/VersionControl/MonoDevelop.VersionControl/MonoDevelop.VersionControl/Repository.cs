@@ -385,7 +385,10 @@ namespace MonoDevelop.VersionControl
 		/// A <see cref="System.String"/> corresponding to each line 
 		/// of the file to which repositoryPath points.
 		/// </returns>
-		public abstract string[] GetAnnotations (FilePath repositoryPath);
+		public virtual string[] GetAnnotations (FilePath repositoryPath)
+		{
+			return new string[0];
+		}
 	}
 	
 	public class DiffInfo

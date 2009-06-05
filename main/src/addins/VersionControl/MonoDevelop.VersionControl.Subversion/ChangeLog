@@ -1,5 +1,10 @@
 2009-06-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  Unbreak SharpSvn addin build.
+
+2009-06-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:
 	* MonoDevelop.VersionControl.Subversion/LibSvnClient.cs:
 	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
