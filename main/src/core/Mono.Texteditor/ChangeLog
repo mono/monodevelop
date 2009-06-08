@@ -1,3 +1,9 @@
+2009-06-08  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor/FoldActions.cs:
+	* Mono.TextEditor.Vi/ViMode.cs:
+	  Vi-style folding.
+
 2009-06-08  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/CaretMoveActions.cs: Fixed "Bug 510224 -

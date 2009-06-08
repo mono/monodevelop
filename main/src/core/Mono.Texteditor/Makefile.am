@@ -55,6 +55,7 @@ FILES =  \
 	Mono.TextEditor/DocumentUpdateRequest.cs \
 	Mono.TextEditor/EditMode.cs \
 	Mono.TextEditor/EmacsWordFindStrategy.cs \
+	Mono.TextEditor/FoldActions.cs \
 	Mono.TextEditor/FoldingType.cs \
 	Mono.TextEditor/FoldMarkerMargin.cs \
 	Mono.TextEditor/FoldSegment.cs \

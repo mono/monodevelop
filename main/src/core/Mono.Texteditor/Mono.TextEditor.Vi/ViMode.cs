@@ -165,7 +165,7 @@ namespace Mono.TextEditor.Vi
 				return;
 			}
 			
-			Action<TextEditorData> action;
+			Action<TextEditorData> action = null;
 			
 			switch (state) {
 			case State.Normal:
@@ -331,6 +331,11 @@ namespace Mono.TextEditor.Vi
 						
 					case '~':
 						RunAction (ViActions.ToggleCase);
+						return;
+						
+					case 'z':
+						Status = "z";
+						state = State.Fold;
 						return;
 					}
 					
@@ -575,6 +580,53 @@ namespace Mono.TextEditor.Vi
 				}
 				Reset ("Unknown command");
 				return;
+			case State.Fold:
+				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0)) {
+					switch ((char)unicodeKey) {
+						case 'A':
+						// Recursive fold toggle
+							action = FoldActions.ToggleFoldRecursive;
+							break;
+						case 'C':
+						// Recursive fold close
+							action = FoldActions.CloseFoldRecursive;
+							break;
+						case 'M':
+						// Close all folds
+							action = FoldActions.CloseAllFolds;
+							break;
+						case 'O':
+						// Recursive fold open
+							action = FoldActions.OpenFoldRecursive;
+							break;
+						case 'R':
+						// Expand all folds
+							action = FoldActions.OpenAllFolds;
+							break;
+						case 'a':
+						// Fold toggle
+							action = FoldActions.ToggleFold;
+							break;
+						case 'c':
+						// Fold close
+							action = FoldActions.CloseFold;
+							break;
+						case 'o':
+						// Fold open
+							action = FoldActions.OpenFold;
+							break;
+						default:
+							Reset ("Unknown command");
+							break;
+					}
+					
+					if (null != action) {
+						RunAction (action);
+						Reset (string.Empty);
+					}
+				}
+					
+				return;
 			}
 		}
 
@@ -796,6 +848,7 @@ namespace Mono.TextEditor.Vi
 			Indent,
 			Unindent,
 			G,
+			Fold
 		}
 	}
 }
