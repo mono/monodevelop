@@ -129,7 +129,11 @@ namespace Mono.TextEditor
 		void PlaceGap (int newOffset, int minLength)
 		{
 			if (gapLength < minLength) {
-				CreateBuffer (newOffset, minLength + (maxGapLength - minLength) / 2);
+				if (minLength < maxGapLength) {
+					CreateBuffer (newOffset, minLength + (maxGapLength - minLength) / 2);
+				} else {
+					CreateBuffer (newOffset, minLength + minGapLength);
+				}
 				return;
 			}
 			

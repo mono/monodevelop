@@ -1,3 +1,9 @@
+2009-06-08  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/GapBuffer.cs: Fixed "Bug 510316 – Pasting in
+	  a lot of text at the end of a file causes crash or unhandled
+	  exception".
+
 2009-06-04  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/Rule.cs: Removed debug message.
