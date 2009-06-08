@@ -656,7 +656,7 @@ namespace Mono.TextEditor.Vi
 
 			// Mogrify group backreferences to .net-style references
 			string replacement = Regex.Replace (match.Groups["replacement"].Value, @"\\([0-9]+)", "$$$1", RegexOptions.Compiled);
-			replacement = Regex.Replace (replacement, "&", "$$$0", RegexOptions.Compiled);
+			replacement = Regex.Replace (replacement, "&", "$$0", RegexOptions.Compiled);
 
 			try {
 				string newline = Regex.Replace (line, match.Groups["pattern"].Value, replacement, options);
