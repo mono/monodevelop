@@ -140,10 +140,24 @@ namespace Mono.TextEditor
 			}
 			
 			if (data.Caret.Line > 0) {
-				data.Caret.Line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) - 1);
+				int line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) - 1);
+				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
+				data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
 			} else {
 				ToDocumentStart (data);
 			}
+		}
+		
+		static int MoveCaretOutOfFolding (TextEditorData data, int offset)
+		{
+			IEnumerable<FoldSegment> foldings = data.Document.GetFoldingsFromOffset (offset);
+			foreach (FoldSegment folding in foldings) {
+				if (folding.IsFolded) {
+					if (offset < folding.EndOffset)
+						offset = folding.EndOffset;
+				}
+			}
+			return offset;
 		}
 		
 		public static void Down (TextEditorData data)
@@ -154,7 +168,8 @@ namespace Mono.TextEditor
 				int line = data.MainSelection.MaxLine + 1;
 				data.ClearSelection ();
 				if (line < data.Document.LineCount) {
-					data.Caret.Location = new DocumentLocation (line, col);
+					int offset = data.Document.LocationToOffset (line, col);
+					data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
 				} else {
 					data.Caret.Offset = data.Document.Length;
 				}
@@ -162,7 +177,10 @@ namespace Mono.TextEditor
 			}
 			
 			if (data.Caret.Line < data.Document.LineCount - 1) {
-				data.Caret.Line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) + 1);
+				int line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) + 1);
+				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
+				data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
+				
 			} else {
 				ToDocumentEnd (data);
 			}
@@ -279,7 +297,8 @@ namespace Mono.TextEditor
 			int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
 			visualLine -= pageIncrement / LineHeight;
 			int line = System.Math.Max (data.Document.VisualToLogicalLine (visualLine), 0);
-			data.Caret.Line = line;
+			int offset = data.Document.LocationToOffset (line, data.Caret.Column);
+			data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
 		}
 		
 		public static void PageDown (TextEditorData data)
@@ -291,7 +310,8 @@ namespace Mono.TextEditor
 			int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
 			visualLine += pageIncrement / LineHeight;
 			int line = System.Math.Min (data.Document.VisualToLogicalLine (visualLine), data.Document.LineCount - 1);
-			data.Caret.Line = line;
+			int offset = data.Document.LocationToOffset (line, data.Caret.Column);
+			data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
 		}
 		
 		public static void UpLineStart (TextEditorData data)

@@ -1,5 +1,13 @@
 2009-06-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/CaretMoveActions.cs: Fixed "Bug 510224 -
+	  Moving cursor past folded code with arrow keys sometimes
+	  unfolds code and sometimes doesn't".
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: 
+
+2009-06-08  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/GapBuffer.cs: Fixed "Bug 510316 – Pasting in
 	  a lot of text at the end of a file causes crash or unhandled
 	  exception".
