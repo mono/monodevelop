@@ -1,3 +1,8 @@
+2009-06-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Fixed "Bug 510319
+	  – Search / Show Previous (Error List) (Shift-F4) is broken".
+
 2009-06-05  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

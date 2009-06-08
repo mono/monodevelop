@@ -748,18 +748,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			bool hasNext;
 			TreeIter iter;
+			TreeModel model;
 			TreeIter selIter = TreeIter.Zero;
 			TreeIter prevIter = TreeIter.Zero;
-
+			
 			TreePath selPath = null;
-			if (!initializeLocation && view.Selection.GetSelected (out selIter))
-				selPath = store.GetPath (selIter);
+			
+			if (!initializeLocation && view.Selection.GetSelected (out model, out selIter))
+				selPath = view.Model.GetPath (selIter);
 
 			hasNext = view.Model.GetIterFirst (out iter);
 			initializeLocation = false;
 			
 			while (hasNext) {
-				if (selPath != null && store.GetPath (iter).Equals (selPath))
+				if (selPath != null && view.Model.GetPath (iter).Equals (selPath))
 					break;
 				prevIter = iter;
 				hasNext = view.Model.IterNext (ref iter);
