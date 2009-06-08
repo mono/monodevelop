@@ -1,5 +1,10 @@
 2009-06-08  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Fixed "Bug
+	  510773 - NRE when looking for derived classes".
+
+2009-06-08  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Fixed "Bug 510319
 	  – Search / Show Previous (Error List) (Shift-F4) is broken".
 

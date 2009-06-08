@@ -621,11 +621,14 @@ namespace MonoDevelop.Ide.Commands
 			using (monitor) {
 				IType cls = (IType) item;
 				if (cls == null) return;
-
+				
 				CodeRefactorer cr = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				foreach (IType sub in cr.FindDerivedClasses (cls)) {
 					if (!sub.Location.IsEmpty) {
-						int position = cr.TextFileProvider.GetEditableTextFile (sub.CompilationUnit.FileName).GetPositionFromLineColumn (sub.Location.Line, sub.Location.Column);
+						IEditableTextFile textFile = cr.TextFileProvider.GetEditableTextFile (sub.CompilationUnit.FileName);
+						if (textFile == null) 
+							textFile = new TextFile (sub.CompilationUnit.FileName);
+						int position = textFile.GetPositionFromLineColumn (sub.Location.Line, sub.Location.Column);
 						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (sub.CompilationUnit.FileName, sub.SourceProject as Project), position, 0));
 					}
 				}
