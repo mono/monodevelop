@@ -59,7 +59,8 @@ namespace MonoDevelop.CSharpBinding
 		IDomVisitable searchedMember;
 		DomLocation   searchedMemberLocation;
 		string        searchedMemberName;
-
+		string        searchedMemberFile = null;
+		
 		Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration> ();
 		
 		public FindMemberAstVisitor (NRefactoryResolver resolver, IEditableTextFile file, IDomVisitable searchedMember)
@@ -71,15 +72,23 @@ namespace MonoDevelop.CSharpBinding
 				IMethod method = (IMethod)searchedMember;
 				this.searchedMemberName     = method.IsConstructor ? method.DeclaringType.Name : method.Name;
 				this.searchedMemberLocation = method.Location;
+				if (method.DeclaringType != null && method.DeclaringType.CompilationUnit != null)
+					this.searchedMemberFile     = method.DeclaringType.CompilationUnit.FileName;
 			} else if (searchedMember is IMember) {
 				this.searchedMemberName     = ((IMember)searchedMember).Name;
 				this.searchedMemberLocation = ((IMember)searchedMember).Location;
+				if (((IMember)searchedMember).DeclaringType.DeclaringType != null && ((IMember)searchedMember).DeclaringType.DeclaringType.CompilationUnit != null)
+					this.searchedMemberFile     = ((IMember)searchedMember).DeclaringType.CompilationUnit.FileName;
 			} else if (searchedMember is IParameter) {
 				this.searchedMemberName     = ((IParameter)searchedMember).Name;
 				this.searchedMemberLocation = ((IParameter)searchedMember).Location;
+				if (((IParameter)searchedMember).DeclaringMember.DeclaringType.CompilationUnit != null)
+					this.searchedMemberFile     = ((IParameter)searchedMember).DeclaringMember.DeclaringType.CompilationUnit.FileName;
 			} else if (searchedMember != null) {
 				this.searchedMemberName     = ((LocalVariable)searchedMember).Name;
 				this.searchedMemberLocation = ((LocalVariable)searchedMember).Region.Start;
+				if (((LocalVariable)searchedMember).CompilationUnit != null)
+					this.searchedMemberFile     = ((LocalVariable)searchedMember).CompilationUnit.FileName;
 			}
 		}
 
@@ -218,7 +227,9 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (node == null || node.StartLocation.IsEmpty)
 				return false;
-			return node.StartLocation.Line == this.searchedMemberLocation.Line && node.StartLocation.Column == this.searchedMemberLocation.Column;
+			return (string.IsNullOrEmpty (searchedMemberFile) || file.Name == searchedMemberFile) && 
+			       node.StartLocation.Line == this.searchedMemberLocation.Line && 
+			       node.StartLocation.Column == this.searchedMemberLocation.Column;
 		}
 		
 		bool SearchText (string text, int startLine, int startColumn, out int line, out int column)
@@ -239,8 +250,9 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (IsSearchedNode (node)) {
 				int line, column;
-				if (SearchText (searchedMemberName, node.StartLocation.Line, node.StartLocation.Column, out line, out column)) 
+				if (SearchText (searchedMemberName, node.StartLocation.Line, node.StartLocation.Column, out line, out column)) {
 					AddUniqueReference (line, column, searchedMemberName);
+				}
 			}
 		}
 		string CurrentTypeFullName {

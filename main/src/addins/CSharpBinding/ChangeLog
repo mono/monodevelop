@@ -1,3 +1,8 @@
+2009-06-08  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 510771 - Find
+	  references finds invalid references".
+
 2009-06-05  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
