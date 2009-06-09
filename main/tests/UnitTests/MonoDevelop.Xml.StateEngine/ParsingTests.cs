@@ -131,7 +131,7 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			);
 			parser.AssertEmpty ();
-			parser.AssertErrorCount (8);
+			parser.AssertErrorCount (5);
 		}
 		
 		[Test]

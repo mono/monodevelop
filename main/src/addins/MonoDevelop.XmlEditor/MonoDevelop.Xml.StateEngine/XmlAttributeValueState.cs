@@ -95,20 +95,17 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
 			
+			if (c == '\n' || c == '\r')
+				context.LogWarning ("Unexpected newline in value for attribute '" + att.Name.FullName +"'.", att.Region.Start);
+			
 			if (c == '<') {
 				//the parent state should report the error
 				rollback = string.Empty;
 				return Parent;
-			} else if (c == '\r' || c == '\n' || c == '\'') {
+			} else if (c == '\'') {
 				//ending the value
 				XAttribute att = (XAttribute) context.Nodes.Peek ();
 				att.Value = context.KeywordBuilder.ToString ();
-				
-				if (c != '\'') {
-					rollback = string.Empty;
-					context.LogError ("Unexpected newline in value for attribute '" + att.Name.FullName +"'.", att.Region.Start);
-				}
-				
 				return Parent;
 			}
 			else {
@@ -127,20 +124,17 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
 			
+			if (c == '\n' || c == '\r')
+				context.LogWarning ("Unexpected newline in value for attribute '" + att.Name.FullName +"'.", att.Region.Start);
+			
 			if (c == '<') {
 				//the parent state should report the error
 				rollback = string.Empty;
 				return Parent;
-			} else if (c == '\r' || c == '\n' || c == '"') {
+			} else if (c == '"') {
 				//ending the value
 				XAttribute att = (XAttribute) context.Nodes.Peek ();
 				att.Value = context.KeywordBuilder.ToString ();
-				
-				if (c != '"') {
-					rollback = string.Empty;
-					context.LogError ("Unexpected newline in value for attribute '" + att.Name.FullName +"'.", att.Region.Start);
-				}
-				
 				return Parent;
 			}
 			else {
