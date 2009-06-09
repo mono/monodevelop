@@ -1,5 +1,11 @@
 2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Xml.StateEngine/TestParser.cs:
+	* MonoDevelop.Xml.StateEngine/ParsingTests.cs: Check count of
+	  errors and warnings separately.
+
+2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am: Fix fixture argument.
 
 2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>

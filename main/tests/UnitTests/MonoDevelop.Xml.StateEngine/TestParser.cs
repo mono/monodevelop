@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
@@ -124,14 +125,21 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public void AssertErrorCount (int count)
 		{
+			AssertErrorCount (count, x => true);
+		}
+		
+		public void AssertErrorCount (int count, Func<Error,bool> filter)
+		{
 			string msg = null;
-			if (count != errors.Count) {
+			int actualCount = errors.Where (filter).Count ();
+			if (actualCount != count) {
 				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
-				foreach (Error err in Errors)
-					sb.AppendFormat ("{0}@{1}: {2}\n", err.ErrorType, err.Region, err.Message);
+				foreach (Error err in errors)
+					if (filter (err))
+						sb.AppendFormat ("{0}@{1}: {2}\n", err.ErrorType, err.Region, err.Message);
 				msg = sb.ToString ();
 			}
-			Assert.AreEqual (count, errors.Count, msg);
+			Assert.AreEqual (count, actualCount, msg);
 		}
 		
 		public void AssertAttributes (params string[] nameValuePairs)
