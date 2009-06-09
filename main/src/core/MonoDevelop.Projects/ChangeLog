@@ -1,5 +1,10 @@
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Text/IPrettyPrinter.cs: Add support for
+	  per-mimetype policies.
+
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Policies/PolicyBag.cs:
 	* MonoDevelop.Projects.Policies/PolicySet.cs:
 	* MonoDevelop.Projects.Policies/PolicyService.cs:

@@ -32,28 +32,28 @@ namespace MonoDevelop.Projects.Text
 	{
 		bool CanFormat (string mimeType);
 		
-		string FormatText (SolutionItem policyParent, string input);
-		string FormatText (SolutionItem policyParent, string input, int fromOffest, int toOffset);
+		string FormatText (SolutionItem policyParent, string mimeType, string input);
+		string FormatText (SolutionItem policyParent, string mimeType, string input, int fromOffest, int toOffset);
 	}
 	
 	public abstract class AbstractPrettyPrinter : IPrettyPrinter
 	{
 		public abstract bool CanFormat (string mimeType);
 		
-		protected abstract string InternalFormat (SolutionItem policyParent, string text, int fromOffest, int toOffset);
+		protected abstract string InternalFormat (SolutionItem policyParent, string mimeType, string text, int fromOffest, int toOffset);
 		
-		public string FormatText (SolutionItem policyParent, string input)
+		public string FormatText (SolutionItem policyParent, string mimeType, string input)
 		{
 			if (string.IsNullOrEmpty (input))
 				return input;
-			return FormatText (policyParent, input, 0, input.Length - 1);
+			return FormatText (policyParent, mimeType, input, 0, input.Length - 1);
 		}
 		
-		public string FormatText (SolutionItem policyParent, string input, int fromOffest, int toOffset)
+		public string FormatText (SolutionItem policyParent, string mimeType, string input, int fromOffest, int toOffset)
 		{
 			if (string.IsNullOrEmpty (input))
 				return input;
-			return InternalFormat (policyParent, input, fromOffest, toOffset);
+			return InternalFormat (policyParent, mimeType, input, fromOffest, toOffset);
 		}
 	}
 }
