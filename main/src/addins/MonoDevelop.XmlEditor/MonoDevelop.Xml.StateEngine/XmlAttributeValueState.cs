@@ -95,8 +95,10 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
 			
-			if (c == '\n' || c == '\r')
+			if (c == '\n' || c == '\r') {
+				XAttribute att = (XAttribute) context.Nodes.Peek ();
 				context.LogWarning ("Unexpected newline in value for attribute '" + att.Name.FullName +"'.", att.Region.Start);
+			}
 			
 			if (c == '<') {
 				//the parent state should report the error
@@ -124,8 +126,10 @@ namespace MonoDevelop.Xml.StateEngine
 		{
 			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
 			
-			if (c == '\n' || c == '\r')
+			if (c == '\n' || c == '\r') {
+				XAttribute att = (XAttribute) context.Nodes.Peek ();
 				context.LogWarning ("Unexpected newline in value for attribute '" + att.Name.FullName +"'.", att.Region.Start);
+			}
 			
 			if (c == '<') {
 				//the parent state should report the error

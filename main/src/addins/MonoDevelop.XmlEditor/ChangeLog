@@ -1,5 +1,10 @@
 2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs: Fix
+	  build.
+
+2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs:
 	  Newlines are technically valid in attribute values. Only
 	  emit a warning, not an error.
