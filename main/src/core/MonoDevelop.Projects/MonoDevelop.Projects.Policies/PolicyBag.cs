@@ -237,7 +237,7 @@ namespace MonoDevelop.Projects.Policies
 		public Type PolicyType { get; private set; }
 		public string Scope { get; private set; }
 		
-		public PolicyKey (Type policyType, string scope)
+		public PolicyKey (Type policyType, string scope): this ()
 		{
 			this.PolicyType = policyType;
 			this.Scope = scope;
