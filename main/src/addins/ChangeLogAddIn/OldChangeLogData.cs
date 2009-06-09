@@ -61,7 +61,8 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			entry.ExtendedProperties.Remove ("MonoDevelop.ChangeLogAddIn.ChangeLogInfo");
 			
-			if (entry.Policies.DirectGet<ChangeLogPolicy> () != null)
+			MonoDevelop.Projects.Policies.IPolicyContainer pc = entry.Policies;
+			if (pc.DirectGet<ChangeLogPolicy> () != null)
 				return;
 			
 			ChangeLogPolicyEnum policy = data.policy;
