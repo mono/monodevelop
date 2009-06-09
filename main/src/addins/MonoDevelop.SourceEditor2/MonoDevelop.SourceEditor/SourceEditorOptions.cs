@@ -80,16 +80,15 @@ namespace MonoDevelop.SourceEditor
 				return;
 			inited = true;
 			
-			TextStylePolicy policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ();
+			TextStylePolicy policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");
 			instance = new DefaultSourceEditorOptions (policy);
-			MonoDevelop.Projects.Policies.PolicyService.GetUserDefaultPolicySet ().PolicyChanged += instance.HandlePolicyChanged;
+			MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies.PolicyChanged += instance.HandlePolicyChanged;
 		}
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
 		{
-			TextStylePolicy pol = args.Policy as TextStylePolicy;
-				if (pol != null)
-					UpdateStylePolicy (pol);
+			TextStylePolicy pol = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");
+			UpdateStylePolicy (pol);
 		}
 		
 		DefaultSourceEditorOptions (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)

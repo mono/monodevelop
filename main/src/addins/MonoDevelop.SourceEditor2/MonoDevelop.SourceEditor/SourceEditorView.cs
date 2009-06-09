@@ -69,6 +69,7 @@ namespace MonoDevelop.SourceEditor
 		static bool isInWrite = false;
 		DateTime lastSaveTime;
 		object attributes; // Contains platform specific file attributes
+		string loadedMimeType;
 		
 		TextMarker currentDebugLineMarker;
 		TextMarker breakpointMarker;
@@ -123,7 +124,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				if (value != base.Project)
-					((StyledSourceEditorOptions)SourceEditorWidget.TextEditor.Options).UpdateStyleParent (value);
+					((StyledSourceEditorOptions)SourceEditorWidget.TextEditor.Options).UpdateStyleParent (value, loadedMimeType);
 				base.Project = value;
 			}
 		}
@@ -244,7 +245,7 @@ namespace MonoDevelop.SourceEditor
 //			TextFileService.FireCommitCountChanges (this);
 			
 			ContentName = fileName; 
-			Document.MimeType = GetKnownMimeType (fileName);
+			UpdateMimeType (fileName);
 			Document.SetNotDirtyState ();
 			this.IsDirty = false;
 		}
@@ -270,7 +271,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			// Look for a mime type for which there is a syntax mode
-			Document.MimeType = GetKnownMimeType (fileName);
+			UpdateMimeType (fileName);
 			
 			widget.InformLoad ();
 			
@@ -306,7 +307,7 @@ namespace MonoDevelop.SourceEditor
 				widget.RemoveMessageBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
-			Document.MimeType = GetKnownMimeType (fileName);
+			UpdateMimeType (fileName);
 			widget.InformLoad ();
 			inLoad = true;
 			Document.Text = content;
@@ -321,15 +322,22 @@ namespace MonoDevelop.SourceEditor
 			this.IsDirty = false;
 		}
 		
-		string GetKnownMimeType (string fileName)
+		void UpdateMimeType (string fileName)
 		{
 			// Look for a mime type for which there is a syntax mode
 			string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
-			foreach (string mt in IdeApp.Services.PlatformService.GetMimeTypeInheritanceChain (mimeType)) {
-				if (Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (mt) != null)
-					return mt;
+			if (loadedMimeType != mimeType) {
+				loadedMimeType = mimeType;
+				if (mimeType != null) {
+					foreach (string mt in IdeApp.Services.PlatformService.GetMimeTypeInheritanceChain (loadedMimeType)) {
+						if (Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (mt) != null) {
+							Document.MimeType = mt;
+							break;
+						}
+					}
+				}
+				((StyledSourceEditorOptions)SourceEditorWidget.TextEditor.Options).UpdateStyleParent (Project, loadedMimeType);
 			}
-			return mimeType;
 		}
 		
 		public string SourceEncoding {

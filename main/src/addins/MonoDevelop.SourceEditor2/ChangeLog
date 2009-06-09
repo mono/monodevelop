@@ -1,3 +1,12 @@
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/DefaultFormatter.cs:
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs:
+	  Implement support for per mime-type formatting policies.
+
 2009-06-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug

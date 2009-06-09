@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
@@ -45,11 +46,13 @@ namespace MonoDevelop.SourceEditor
 			return (result / tabSize) * tabSize;
 		}
 		
-		protected override string InternalFormat (SolutionItem policyParent, string input, int startOffset, int endOffset)
+		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
 		{
+			IEnumerable<string> mtypes = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeInheritanceChain (mimeType);
 			TextStylePolicy currentPolicy = policyParent != null
-					? policyParent.Policies.Get<TextStylePolicy> ()
-					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ();
+					? policyParent.Policies.Get<TextStylePolicy> (mtypes)
+					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (mtypes);
+			
 			input = input ?? "";
 			int line = 0, col = 0;
 			string eolMarker = currentPolicy.GetEolMarker ();

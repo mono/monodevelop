@@ -75,7 +75,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public ExtensibleTextEditor (SourceEditorView view)
 		{
-			base.Options = new StyledSourceEditorOptions (view.Project);
+			base.Options = new StyledSourceEditorOptions (view.Project, null);
 			Initialize (view);
 		}
 		

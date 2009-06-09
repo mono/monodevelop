@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.SourceEditor
@@ -33,51 +35,45 @@ namespace MonoDevelop.SourceEditor
 	
 	internal class StyledSourceEditorOptions : ISourceEditorOptions
 	{
-		Project styleParent;
+		IPolicyContainer policyContainer;
 		EventHandler changed;
+		IEnumerable<string> mimeTypes;
+		TextStylePolicy currentPolicy;
 		
-		public StyledSourceEditorOptions (Project styleParent)
+		public StyledSourceEditorOptions (Project styleParent, string mimeType)
 		{
-			UpdateStyleParent (styleParent);
+			UpdateStyleParent (styleParent, mimeType);
 		}
 		
-		bool HasPolicy {
-			get {
-				return this.styleParent != null;
-			}
-		}
 		TextStylePolicy CurrentPolicy {
 			get {
-				if (this.styleParent != null)
-					return styleParent.Policies.Get<TextStylePolicy> ();
-				return null;
+				return currentPolicy;
 			}
 		}
 		
-		public void UpdateStyleParent (Project styleParent)
+		public void UpdateStyleParent (Project styleParent, string mimeType)
 		{
-//			if (this.styleParent != null)
-//				this.styleParent.Policies.PolicyChanged -= HandlePolicyChanged;
+			if (policyContainer != null)
+				policyContainer.PolicyChanged -= HandlePolicyChanged;
 			
-			this.styleParent = styleParent;
+			if (string.IsNullOrEmpty (mimeType))
+				mimeType = "text/plain";
+			this.mimeTypes = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeInheritanceChain (mimeType);
 			
-/*			if (styleParent != null) {
-				currentPolicy = styleParent.Policies.Get<TextStylePolicy> ();
-				styleParent.Policies.PolicyChanged += HandlePolicyChanged;
-			} else {
-				currentPolicy = null;
-			}*/
+			if (styleParent != null)
+				policyContainer = styleParent.Policies;
+			else
+				policyContainer = MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies;
+			
+			currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
+			policyContainer.PolicyChanged += HandlePolicyChanged;
 		}
 		
-		/*
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
 		{
-			TextStylePolicy newPolicy = args.Policy as TextStylePolicy;
-			if (newPolicy != null) {
-				currentPolicy = newPolicy;
-				this.changed (this, EventArgs.Empty);
-			}
-		}*/
+			currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
+			this.changed (this, EventArgs.Empty);
+		}
 		
 		public bool OverrideDocumentEolMarker {
 			get {
@@ -93,41 +89,31 @@ namespace MonoDevelop.SourceEditor
 		
 		public int RulerColumn {
 			get {
-				return HasPolicy
-					? CurrentPolicy.FileWidth
-					: DefaultSourceEditorOptions.Instance.RulerColumn;
+				return CurrentPolicy.FileWidth;
 			}
 		}
 
 		public int TabSize {
 			get {
-				return HasPolicy
-					? CurrentPolicy.TabWidth
-					: DefaultSourceEditorOptions.Instance.TabSize;
+				return CurrentPolicy.TabWidth;
 			}
 		}
 		
 		public bool TabsToSpaces {
 			get {
-				return HasPolicy
-					? CurrentPolicy.TabsToSpaces
-					: DefaultSourceEditorOptions.Instance.TabsToSpaces;
+				return CurrentPolicy.TabsToSpaces;
 			}
 		}
 		
 		public bool RemoveTrailingWhitespaces {
 			get {
-				return HasPolicy
-					? CurrentPolicy.RemoveTrailingWhitespace
-					: DefaultSourceEditorOptions.Instance.RemoveTrailingWhitespaces;
+				return CurrentPolicy.RemoveTrailingWhitespace;
 			}
 		}
 		
 		public bool AllowTabsAfterNonTabs {
 			get {
-				return HasPolicy
-					? !CurrentPolicy.NoTabsAfterNonTabs
-					: DefaultSourceEditorOptions.Instance.AllowTabsAfterNonTabs;
+				return !CurrentPolicy.NoTabsAfterNonTabs;
 			}
 		}
 		
@@ -319,7 +305,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Dispose ()
 		{
-		//	UpdateStyleParent (null);
+			if (policyContainer != null)
+				policyContainer.PolicyChanged -= HandlePolicyChanged;
 			if (changed != null) {
 				DefaultSourceEditorOptions.Instance.Changed -= HandleDefaultsChanged;
 				changed = null;
