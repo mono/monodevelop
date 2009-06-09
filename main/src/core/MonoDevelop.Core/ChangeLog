@@ -1,5 +1,13 @@
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Properties:
+	* MonoDevelop.Core.Properties/IXmlConvertable.cs:
+	* MonoDevelop.Core.Properties/PropertyFileLoadException.cs:
+	* MonoDevelop.Core.Properties/UnknownPropertyNodeException.cs:
+	  Removed unused code.
+
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Serialization/XmlDataSerializer.cs: Added
 	  an option which allows storing all values as elements.
 
