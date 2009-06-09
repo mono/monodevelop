@@ -1,5 +1,10 @@
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Parser/CSharpFormatter.cs: Add support for per-mimetype
+	  policies.
+
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* CSharpBinding.csproj:
 	* MonoCSharpPolicy.xml:

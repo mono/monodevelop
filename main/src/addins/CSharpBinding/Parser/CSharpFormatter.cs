@@ -58,16 +58,18 @@ namespace CSharpBinding.Parser
 			return (result / tabSize) * tabSize;
 		}
 
-		protected override string InternalFormat (SolutionItem policyParent, string input, int startOffset, int endOffset)
+		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
 		{
 			if (string.IsNullOrEmpty (input))
 				return input;
+			
+			IEnumerable<string> types = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeInheritanceChain (mimeType);
 			TextStylePolicy currentPolicy = policyParent != null
-					? policyParent.Policies.Get<TextStylePolicy> ()
-					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ();
+					? policyParent.Policies.Get<TextStylePolicy> (types)
+					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
 			CSharpFormattingPolicy codePolicy = policyParent != null
-					? policyParent.Policies.Get<CSharpFormattingPolicy> ()
-					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> ();
+					? policyParent.Policies.Get<CSharpFormattingPolicy> (types)
+					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 			
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor ();
 			outputVisitor.Options.IndentationChar = currentPolicy.TabsToSpaces ? ' ' : '\t';
