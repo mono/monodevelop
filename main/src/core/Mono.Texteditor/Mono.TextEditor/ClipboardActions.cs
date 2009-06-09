@@ -85,6 +85,7 @@ namespace Mono.TextEditor
 			{
 				this.data = data;
 				this.selection = selection;
+				isBlockMode = data.SelectionMode == SelectionMode.Block;
 			}
 			
 			public void SetData (SelectionData selection_data, uint info)
@@ -99,11 +100,21 @@ namespace Mono.TextEditor
 					selection_data.Set (RTF_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (GenerateRtf (copiedDocument, mode, docStyle, options)));
 					break;
 				case MonoTextType:
-					selection_data.Set (MD_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (monoDocument.Text));
+					byte[] rawText = System.Text.Encoding.UTF8.GetBytes (monoDocument.Text);
+					byte[] data    = new byte [rawText.Length + 1];
+					rawText.CopyTo (data, 1);
+					data[0] = 0;
+					if (isBlockMode)
+						data[0] |= 1;
+					if (isLineSelectionMode)
+						data[0] |= 2;
+					selection_data.Set (MD_ATOM, UTF8_FORMAT, data);
 					break;
 				}
 			}
-				
+			bool isLineSelectionMode = false;
+			bool isBlockMode         = false;
+			
 			public void ClipboardGetFunc (Clipboard clipboard, SelectionData selection_data, uint info)
 			{
 				SetData (selection_data, info);
@@ -238,8 +249,7 @@ namespace Mono.TextEditor
 			{
 				Gtk.TargetList list = new Gtk.TargetList ();
 				list.Add (RTF_ATOM, /* FLAGS */ 0, RichTextType);
-				if (mode == SelectionMode.Block)
-					list.Add (MD_ATOM, /* FLAGS */ 0, MonoTextType);
+				list.Add (MD_ATOM, /* FLAGS */ 0, MonoTextType);
 				list.AddTextTargets (TextType);
 				return list;
 			}
@@ -264,6 +274,7 @@ namespace Mono.TextEditor
 					case SelectionMode.Normal:
 						ISegment segment = selection.GetSelectionRange (data);
 						copiedDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
+						monoDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
 						LineSegment line    = data.Document.GetLineByOffset (segment.Offset);
 						Stack<Span> spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, segment.Offset);
@@ -301,8 +312,9 @@ namespace Mono.TextEditor
 			public void CopyData (TextEditorData data)
 			{
 				Selection selection;
+				isLineSelectionMode = !data.IsSomethingSelected;
 				if (data.IsSomethingSelected) {
-					 selection = data.MainSelection;
+					selection = data.MainSelection;
 				} else {
 					selection = new Selection (new DocumentLocation (data.Caret.Line, 0), new DocumentLocation (data.Caret.Line, data.Document.GetLine (data.Caret.Line).Length));
 				}
@@ -348,35 +360,44 @@ namespace Mono.TextEditor
 				if (selectionData.Length > 0) {
 					byte[] selBytes = selectionData.Data;
 					
-					string text = System.Text.Encoding.UTF8.GetString (selBytes);
+					string text = System.Text.Encoding.UTF8.GetString (selBytes, 1, selBytes.Length - 1);
+					bool pasteBlock = (selBytes[0] & 1) == 1;
+					bool pasteLine  = (selBytes[0] & 2) == 2;
+					
 					data.Document.BeginAtomicUndo ();
 					if (preserveSelection && data.IsSomethingSelected) 
 						data.DeleteSelectedText ();
 					
 					data.Caret.PreserveSelection = true;
-					string[] lines = text.Split ('\r');
-					int lineNr = data.Document.OffsetToLineNumber (insertionOffset);
-					int col = insertionOffset - data.Document.GetLine (lineNr).Offset;
-					int visCol = data.Document.GetLine (lineNr).GetVisualColumn (data, data.Document, col);
-					LineSegment curLine;
-					int lineCol = col;
-					result = 0;
-					for (int i = 0; i < lines.Length; i++) {
-						while (data.Document.LineCount <= lineNr + i) {
-							data.Insert (data.Document.Length, Environment.NewLine);
-							result += Environment.NewLine.Length;
+					if (pasteBlock) {
+						string[] lines = text.Split ('\r');
+						int lineNr = data.Document.OffsetToLineNumber (insertionOffset);
+						int col = insertionOffset - data.Document.GetLine (lineNr).Offset;
+						int visCol = data.Document.GetLine (lineNr).GetVisualColumn (data, data.Document, col);
+						LineSegment curLine;
+						int lineCol = col;
+						result = 0;
+						for (int i = 0; i < lines.Length; i++) {
+							while (data.Document.LineCount <= lineNr + i) {
+								data.Insert (data.Document.Length, Environment.NewLine);
+								result += Environment.NewLine.Length;
+							}
+							curLine = data.Document.GetLine (lineNr + i);
+							lineCol = curLine.GetLogicalColumn (data, data.Document, visCol);
+							if (curLine.EditableLength < lineCol) {
+								result += lineCol - curLine.EditableLength;
+								data.Insert (curLine.Offset + curLine.EditableLength, new string (' ', lineCol - curLine.EditableLength));
+							}
+							data.Insert (curLine.Offset + lineCol, lines[i]);
+							result += lines[i].Length;
+							data.Caret.Offset = curLine.Offset + lineCol + lines[i].Length;
 						}
-						curLine = data.Document.GetLine (lineNr + i);
-						lineCol = curLine.GetLogicalColumn (data, data.Document, visCol);
-						if (curLine.EditableLength < lineCol) {
-							result += lineCol - curLine.EditableLength;
-							data.Insert (curLine.Offset + curLine.EditableLength, new string (' ', lineCol - curLine.EditableLength));
-						}
-						data.Insert (curLine.Offset + lineCol, lines[i]);
-						result += lines[i].Length;
-						data.Caret.Offset = curLine.Offset + lineCol + lines[i].Length;
+					} else if (pasteLine) {
+						result += text.Length;
+						LineSegment curLine = data.Document.GetLine (data.Caret.Line);
+						data.Insert (curLine.Offset, text + data.EolMarker);
+						data.Caret.Offset += text.Length + data.EolMarker.Length;
 					}
-					
 	/*				data.MainSelection = new Selection (data.Document.OffsetToLocation (insertionOffset),
 					                                    data.Caret.Location,
 					                                    lines.Length > 1 ? SelectionMode.Block : SelectionMode.Normal);*/
