@@ -1,257 +1,225 @@
-//  FileCommands.cs
+﻿// NewFileCommands.cs
 //
-//  This file was derived from a file from #Develop. 
+// Author:
+//   Carlo Kok (ck@remobjects.com)
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
-// 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Copyright (c) 2009 RemObjects Software
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+//
+
 
 using System;
-using System.IO;
-using System.Collections;
-using System.Diagnostics;
-
-using Mono.Addins;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Components;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Core;
+using Mono.Addins;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core.Gui;
+using System.IO;
+using Gtk;
 
 namespace MonoDevelop.Ide.Commands
 {
+	/// <summary>
+	/// Copied from MonoDevelop.Ide.addin.xml
+	/// </summary>
 	public enum FileCommands
 	{
 		OpenFile,
 		NewFile,
+		Save,
+		SaveAll,
 		NewProject,
 		CloseFile,
 		CloseAllFiles,
 		CloseWorkspace,
 		CloseWorkspaceItem,
 		ReloadFile,
-		Save,
-		SaveAll,
 		SaveAs,
+		PrintDocument,
+		PrintPreviewDocument,
 		RecentFileList,
 		ClearRecentFiles,
 		RecentProjectList,
 		ClearRecentProjects,
 		Exit,
-		ClearCombine,
 		OpenInTerminal,
 		OpenFolder,
 		OpenContainingFolder,
-		PrintDocument,
-		PrintPreviewDocument,
 		SetBuildAction,
 		ShowProperties,
 		CopyToOutputDirectory
 	}
-	
-	internal class NewProjectHandler : CommandHandler
+
+	// MonoDevelop.Ide.Commands.FileCommands.OpenFile
+	public class OpenFileHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			FileSelectorDialog dlg = new FileSelectorDialog (GettextCatalog.GetString ("File to Open"));
+			string filename;
+			FileViewer viewer;
+			try {
+				if(((ResponseType)dlg.Run ()) == ResponseType.Ok) {
+					filename = dlg.Filename;
+					viewer = dlg.SelectedViewer;
+					if (string.IsNullOrEmpty (filename)) {
+						if(dlg.Uri != null)
+							MessageService.ShowError (GettextCatalog.GetString ("Only local files can be opened."));
+						else
+							MessageService.ShowError (GettextCatalog.GetString ("The provided file could not be loaded."));
+						return;
+					}
+				}
+				else return;
+			}
+			finally {
+				dlg.Destroy (); // destroy, as dispose doesn't actually remove the window.
+			}
+			// Have to make sure that the FileSelectordialog is not a top level window, else it throws MissingMethodException errors deep in GTK.
+			if (viewer == null) { 
+				if(Services.ProjectService.IsWorkspaceItemFile (filename) || Services.ProjectService.IsSolutionItemFile (filename)) {
+					IdeApp.Workspace.OpenWorkspaceItem (filename);
+				}
+				else
+					IdeApp.Workbench.OpenDocument (filename);
+			}
+			else {
+				viewer.OpenFile (filename, dlg.Encoding);
+			}
+
+		}
+		
+	}
+	// MonoDevelop.Ide.Commands.FileCommands.NewFile
+	public class NewFileHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			NewFileDialog dlg = new NewFileDialog (null, null); // new file seems to fail if I pass the project IdeApp.ProjectOperations.CurrentSelectedProject
+			try {
+				dlg.Run ();
+			}
+			finally {
+				dlg.Destroy ();
+			}
+		}
+	}
+
+	// MonoDevelop.Ide.Commands.FileCommands.SaveAll
+	public class SaveAllHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Workbench.SaveAll ();
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			bool hasdirty = false;
+			for(int i = 0; i < IdeApp.Workbench.Documents.Count; i++) {
+				hasdirty |= IdeApp.Workbench.Documents [i].IsDirty;
+			}
+			info.Enabled = hasdirty;
+		}
+	}
+	//MonoDevelop.Ide.Commands.FileCommands.NewProject
+	public class NewProjectHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
 			IdeApp.ProjectOperations.NewSolution ();
 		}
 	}
-	
-	internal class NewFileHandler : CommandHandler
+
+	// MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles
+	public class CloseAllFilesHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
-			NewFileDialog fd = null;
-			try {
-				fd = new NewFileDialog (null, null);
-				fd.Run ();
-			} finally {
-				if (fd != null) fd.Destroy ();
-			}
-		}
-	}
-	
-	internal class CloseAllFilesHandler : CommandHandler
-	{
-		protected override void Run()
-		{
 			IdeApp.Workbench.CloseAllDocuments (false);
 		}
-	}
-	
-	internal class SaveAllHandler : CommandHandler
-	{
-		protected override void Run()
-		{
-			IdeApp.Workbench.SaveAll ();
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			bool enabled = false;
-			foreach (Document doc in IdeApp.Workbench.Documents)
-			{
-				if (doc.IsDirty)
-				{
-					enabled = true;
-					break;
-				}
-			}
-			info.Enabled = enabled;
-		}
-	}	
-	
 
-	internal class OpenFileHandler : CommandHandler
-	{
-		protected override void Run()
-		{
-			FileSelectorDialog fs = new FileSelectorDialog (GettextCatalog.GetString ("File to Open"));
-			try {
-				
-				int response = fs.Run ();
-				string name = fs.Filename;
-				fs.Hide ();
-				if (response == (int)Gtk.ResponseType.Ok) {
-					if (name == null) {
-						if (fs.Uri != null)
-							MessageService.ShowError (GettextCatalog.GetString ("Only local files can be opened."));
-						else
-							MessageService.ShowError (GettextCatalog.GetString ("The provided file could not be loaded."));
-						return;
-					}
-					ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-					if ((ps.IsWorkspaceItemFile (name) || ps.IsSolutionItemFile (name)) && fs.SelectedViewer == null)
-						IdeApp.Workspace.OpenWorkspaceItem (name, fs.CloseCurrentWorkspace);
-					else if (fs.SelectedViewer != null)
-						fs.SelectedViewer.OpenFile (name, fs.Encoding);
-					else
-						IdeApp.Workbench.OpenDocument (name, fs.Encoding);
-				}	
-			}
-			finally {
-				fs.Destroy ();
-			}
-		}
-	}
-	
-	internal class CloseWorkspaceHandler : CommandHandler
-	{
-		protected override void Run()
-		{
-			IdeApp.Workspace.Close();
-		}
-		
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.Workspace.Items.Count == 0)
-				info.Enabled = false;
-			else if (IdeApp.Workspace.Items.Count == 1 && IdeApp.Workspace.Items [0] is Solution)
+			// No point in closing all when there are no documents open
+			info.Enabled = IdeApp.Workbench.Documents.Count != 0;
+		}
+	}
+
+	// MonoDevelop.Ide.Commands.FileCommands.CloseWorkspace
+	// MonoDevelop.Ide.Commands.FileCommands.CloseWorkspaceItem
+	public class CloseWorkspaceHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Workspace.Close ();
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
+
+			if (info.Enabled && IdeApp.Workspace.Items.Count == 1 && IdeApp.Workspace.Items [0] is Solution) // a project is open, if not only a file is open.
 				info.Text = GettextCatalog.GetString ("C_lose Solution");
-		}
-	}
-		
-	internal class ExitHandler : CommandHandler
-	{
-		protected override void Run()
-		{
-			IdeApp.Exit ();
-		}
-	}
-	
-	internal class PrintHandler : CommandHandler
-	{
-		protected override void Update (CommandInfo info)
-		{
-			if (IdeApp.Workbench.ActiveDocument == null) {
-				info.Enabled = false;
-				return;
-			}
-			IPrintable printable = IdeApp.Workbench.ActiveDocument.GetContent <IPrintable> ();
-			info.Enabled = printable != null;
-		}
-		protected override void Run (object doc)
-		{
-			IPrintable printable = IdeApp.Workbench.ActiveDocument.GetContent <IPrintable> ();
-			Debug.Assert (printable != null);
-			printable.PrintDocument ();
-		}
-	}
-	
-	internal class PrintPreviewHandler : CommandHandler
-	{
-		protected override void Update (CommandInfo info)
-		{
-			if (IdeApp.Workbench.ActiveDocument == null) {
-				info.Enabled = false;
-				return;
-			}
-			IPrintable printable = IdeApp.Workbench.ActiveDocument.GetContent <IPrintable> ();
-			info.Enabled = printable != null;
-		}
-		protected override void Run (object doc)
-		{
-			IPrintable printable = IdeApp.Workbench.ActiveDocument.GetContent <IPrintable> ();
-			Debug.Assert (printable != null);
-			printable.PrintPreviewDocument ();
-		}
-	}
-	
-	internal class ClearRecentFilesHandler : CommandHandler
-	{
-		protected override void Run()
-		{			
-			try {
-				if (IdeApp.Workbench.RecentOpen.RecentFilesCount > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent files"), GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), AlertButton.Clear)) {
-					IdeApp.Workbench.RecentOpen.ClearRecentFiles();
-				}
-			} catch {}
-		}
-	
-		protected override void Update (CommandInfo info)
-		{
-			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
-			info.Enabled = recentOpen.RecentFilesCount > 0;
-		}
-	}
-	
-	internal class ClearRecentProjectsHandler : CommandHandler
-	{
-		protected override void Run()
-		{			
-			try {
-				if (IdeApp.Workbench.RecentOpen.RecentProjectsCount > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent projects"), GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), AlertButton.Clear))
-				{
-					IdeApp.Workbench.RecentOpen.ClearRecentProjects();
-				}
-			} catch {}
-		}
-	
-		protected override void Update (CommandInfo info)
-		{
-			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
-			info.Enabled = recentOpen.RecentProjectsCount > 0;
-		}
-	}
+			else
+				info.Text = GettextCatalog.GetString ("C_lose");
 
-	internal class RecentFileListHandler : CommandHandler
+		}
+	}
+	// MonoDevelop.Ide.Commands.FileCommands.PrintDocument
+	public class PrintHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			IPrintable print = IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ();
+			print.PrintDocument ();
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
+				IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> () != null;
+		}
+	}
+	// MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument
+	public class PrintPreviewHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			IPrintable print = IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ();
+			print.PrintPreviewDocument ();
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
+				IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> () != null;
+		}
+	}
+	// MonoDevelop.Ide.Commands.FileCommands.RecentFileList
+	public class RecentFileListHandler : CommandHandler
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
@@ -263,19 +231,37 @@ namespace MonoDevelop.Ide.Commands
 					string label = ((ri.Private == null || ri.Private.Length < 1) ? Path.GetFileName (ri.ToString ()) : ri.Private);
 					CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
 					cmd.Description = GettextCatalog.GetString ("Open {0}", ri.ToString ());
+					Gdk.Pixbuf icon = IdeApp.Services.PlatformService.GetPixbufForFile (ri.ToString(), IconSize.Menu);
+					if (icon != null)
+						cmd.Icon = ImageService.GetStockId (icon, IconSize.Menu);
 					info.Add (cmd, ri);
 					i++;
 				}
 			}
 		}
-		
 		protected override void Run (object dataItem)
 		{
 			IdeApp.Workbench.OpenDocument (dataItem.ToString());
 		}
 	}
-
-	internal class RecentProjectListHandler : CommandHandler
+	// MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles
+	public class ClearRecentFilesHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			try {
+				if (IdeApp.Workbench.RecentOpen.RecentFilesCount > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent files"), GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), AlertButton.Clear)) {
+					IdeApp.Workbench.RecentOpen.ClearRecentFiles();
+				}
+			} catch {}
+		}
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workbench.RecentOpen.RecentFilesCount > 0;
+		}
+	}
+	// MonoDevelop.Ide.Commands.FileCommands.RecentProjectList
+	public class RecentProjectListHandler : CommandHandler
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
@@ -317,7 +303,6 @@ namespace MonoDevelop.Ide.Commands
 				i++;
 			}
 		}
-		
 		protected override void Run (object dataItem)
 		{
 			string filename = dataItem.ToString();
@@ -326,4 +311,34 @@ namespace MonoDevelop.Ide.Commands
 			IdeApp.Workspace.OpenWorkspaceItem (filename, !inWorkspace);
 		}
 	}
+	// MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects
+	internal class ClearRecentProjectsHandler : CommandHandler
+	{
+		protected override void Run()
+		{			
+			try {
+				if (IdeApp.Workbench.RecentOpen.RecentProjectsCount > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent projects"), GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), AlertButton.Clear))
+				{
+					IdeApp.Workbench.RecentOpen.ClearRecentProjects();
+				}
+			} catch {}
+		}
+	
+		protected override void Update (CommandInfo info)
+		{
+			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
+			info.Enabled = recentOpen.RecentProjectsCount > 0;
+		}
+	}
+	// MonoDevelop.Ide.Commands.FileCommands.Exit
+	public class ExitHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Exit ();
+		}
+	}
+	// MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis    Implemented in FileTabCommands.cs
+	// MonoDevelop.Ide.Commands.CopyPathNameHandler                Implemented in FileTabCommands.cs
+	// MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize     Implemented in FileTabCommands.cs
 }

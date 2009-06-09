@@ -1,3 +1,7 @@
+2009-06-09  Carlo Kok  <ck@remobjects.com>
+
+	* MonoDevelop.Ide.Commands\FileCommands.cs: Rewritten from scratch to make it non-GPL.
+
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
