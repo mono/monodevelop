@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		public Error (ErrorType errorType, DomLocation location , string message)
-			: this (ErrorType.Error, new DomRegion (location, DomLocation.Empty), message)
+			: this (errorType, new DomRegion (location, DomLocation.Empty), message)
 		{
 		}
 		

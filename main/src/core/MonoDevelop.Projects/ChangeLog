@@ -1,3 +1,8 @@
+2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom/Error.cs: Fix minor bug in one of
+	  the constructors that caused it to ignore the errorType.
+
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicyBag.cs: Fix MS.NET build
