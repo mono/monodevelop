@@ -1,5 +1,9 @@
 2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am: Fix fixture argument.
+
+2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Xml.StateEngine/ParsingTests.cs: Newlines are
 	  technically valid in attribute values, so don't expect so
 	  many errors.
