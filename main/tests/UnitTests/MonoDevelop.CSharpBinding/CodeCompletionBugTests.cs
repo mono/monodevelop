@@ -1738,5 +1738,42 @@ class Test
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNull (provider.Find ("TestMethod"), "method 'TestMethod' found, but shouldn't.");
 		}
+		
+		/// <summary>
+		/// Bug 510919 - Code completion does not show interface method when not using a local var 
+		/// </summary>
+		[Test()]
+		public void TestBug510919 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"
+public class Foo : IFoo 
+{
+	public void Bar () { }
+}
+
+public interface IFoo 
+{
+	void Bar ();
+}
+
+public class Program
+{
+	static IFoo GiveMeFoo () 
+	{
+		return new Foo ();
+	}
+
+	static void Main ()
+	{
+		$GiveMeFoo ().$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
+		}
+		
+		
 	}
 }

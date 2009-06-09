@@ -1,3 +1,9 @@
+2009-06-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  test for "Bug 510919 - Code completion does not show
+	  interface method when not using a local var".
+
 2009-06-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Fixed
