@@ -51,11 +51,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return;
-			IPrettyPrinter printer = TextFileService.GetPrettyPrinter (IdeApp.Services.PlatformService.GetMimeTypeForUri (doc.FileName));
+			string mt = IdeApp.Services.PlatformService.GetMimeTypeForUri (doc.FileName);
+			IPrettyPrinter printer = TextFileService.GetPrettyPrinter (mt);
 			if (printer == null)
 				return;
 			doc.TextEditor.Select (0, doc.TextEditor.TextLength);
-			doc.TextEditor.SelectedText = printer.FormatText (doc.Project, doc.TextEditor.Text);
+			doc.TextEditor.SelectedText = printer.FormatText (doc.Project, mt, doc.TextEditor.Text);
 		}
 	}
 }

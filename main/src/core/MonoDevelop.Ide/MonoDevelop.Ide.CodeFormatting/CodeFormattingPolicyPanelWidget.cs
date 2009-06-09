@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				return;
 			DotNetProject parent = new DotNetProject ();
 			parent.Policies.Set (settings);
-			texteditor1.Document.Text  = printer.FormatText (parent, texteditor1.Document.Text);
+			texteditor1.Document.Text  = printer.FormatText (parent, description.MimeType, texteditor1.Document.Text);
 		}
 		
 		protected override void HandleChanged (object sender, EventArgs e)

@@ -1,5 +1,11 @@
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	  Add support for per-mimetype policies.
+
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
 	  Track api changes.
 
