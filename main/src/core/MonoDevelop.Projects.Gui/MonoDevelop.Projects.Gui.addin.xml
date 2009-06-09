@@ -106,9 +106,17 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
-		<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies">
-			<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanel" />
+		<Section id="Common" _label="General">
 		</Section>
-		<Section id="CodeFormattingPolicies" _label="Code Formatting" fill = "true" class="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanel" />
+		<Section id="Build" _label="Build">
+		</Section>
+		<Section id="Run" _label="Run">
+		</Section>
+		<Section id="SourceCode" _label="Source Code">
+			<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies">
+				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanel" />
+			</Section>
+			<Section id="CodeFormattingPolicies" _label="Code Formatting" fill = "true" class="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanel" />
+		</Section>
 	</Extension>
 </Addin>

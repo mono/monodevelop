@@ -1,5 +1,10 @@
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Gui.addin.xml: Added some sections to
+	  the default policies dialog.
+
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Projects.Gui.csproj:
