@@ -1,3 +1,9 @@
+2009-06-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug
+	  510226 - Edit / Folding commands seem to be currently
+	  broken".
+
 2009-06-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/AutoSave.cs: Fixed "Bug 504605 -
