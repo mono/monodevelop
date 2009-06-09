@@ -257,6 +257,12 @@ namespace Mono.TextEditor
 			
 			textRenderer.GetCharSize (out this.charWidth, out this.lineHeight);
 			lineHeight = System.Math.Max (1, lineHeight);
+			DecorateLine -= DecorateSpaces;
+			DecorateLine -= DecorateTabs;
+			if (textEditor.Options.ShowTabs) 
+				DecorateLine += DecorateTabs;
+			if (textEditor.Options.ShowSpaces) 
+				DecorateLine += DecorateSpaces;
 		}
 		
 		void DisposeGCs ()
@@ -425,12 +431,11 @@ namespace Mono.TextEditor
 			preEditLayout.Dispose ();
 		}
 		
-		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y, int maxX)
+		
+		void GetSelectionOffsets (LineSegment line, out int selectionStart, out int selectionEnd)
 		{
-			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
-			
-			int selectionStart = -1;
-			int selectionEnd   = -1;
+			selectionStart = -1;
+			selectionEnd   = -1;
 			if (textEditor.IsSomethingSelected) {
 				ISegment segment = textEditor.SelectionRange;
 				selectionStart = segment.Offset;
@@ -444,15 +449,16 @@ namespace Mono.TextEditor
 					DocumentLocation visEnd   = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), end);
 					
 					if (segment.Contains (line.Offset) || segment.Contains (line.EndOffset)) {
-						
 						selectionStart = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), Document, System.Math.Min (visStart.Column, visEnd.Column));
 						selectionEnd   = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), Document, System.Math.Max (visStart.Column, visEnd.Column));
 					}
 				} 
 			}
-			
-			// ---- new renderer
-	/*		Pango.Layout layout = new Pango.Layout (textEditor.PangoContext);
+		}
+		
+		Pango.Layout CreateLinePartLayout (SyntaxMode mode, LineSegment line, int offset, int length, int selectionStart, int selectionEnd)
+		{
+			Pango.Layout layout = new Pango.Layout (textEditor.PangoContext);
 			layout.Alignment = Pango.Alignment.Left;
 			layout.FontDescription = textEditor.Options.Font;
 			string lineText = Document.GetTextAt (offset, length);
@@ -494,7 +500,6 @@ namespace Mono.TextEditor
 			}
 			
 			Chunk lastChunk = null;
-			ChunkStyle lastChunkStyle = null;
 			for (Chunk chunk = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length); (lastChunk != null || chunk != null); chunk = chunk != null ? chunk.Next : null) {
 				
 				ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
@@ -588,30 +593,49 @@ namespace Mono.TextEditor
 				}
 				
 				lastChunk = chunk;
-				lastChunkStyle = chunkStyle;
 			}
+			return layout;
+		}
+		
+		public delegate void LineDecorator (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd);
+		public event LineDecorator DecorateLine;
+		
+		void DecorateSpaces (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
+		{
+			string lineText = layout.Text;
+			for (int i = 0; i < lineText.Length; i++) {
+				if (lineText[i] == ' ') {
+					int line2, xpos;
+					layout.IndexToLineX (i, false, out line2, out xpos);
+					DrawSpaceMarker (win, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos  / 1024, y);
+				}
+			}
+		}
+		
+		void DecorateTabs (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
+		{
+			string lineText = layout.Text;
+			for (int i = 0; i < lineText.Length; i++) {
+				if (lineText[i] == '\t') {
+					int line2, xpos;
+					layout.IndexToLineX (i, false, out line2, out xpos);
+					DrawTabMarker (win, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos  / 1024, y);
+				}
+			}
+		}
+		
+		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y, int maxX)
+		{
+			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+			int selectionStart;
+			int selectionEnd;
+			GetSelectionOffsets (line, out selectionStart, out selectionEnd);
 			
+			// ---- new renderer
+	/*		Pango.Layout layout = CreateLinePartLayout (mode, line, offset, length, selectionStart, selectionEnd);
 			win.DrawLayout (GetGC (ColorStyle.Default.Color), xPos, y, layout);
-			
-			if (textEditor.Options.ShowSpaces) {
-				for (int i = 0; i < lineText.Length; i++) {
-					if (lineText[i] == ' ') {
-						int line2, xpos;
-						layout.IndexToLineX (i, false, out line2, out xpos);
-						DrawSpaceMarker (win, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos  / 1024, y);
-					}
-				}
-			}
-			
-			if (textEditor.Options.ShowTabs) {
-				for (int i = 0; i < lineText.Length; i++) {
-					if (lineText[i] == '\t') {
-						int line2, xpos;
-						layout.IndexToLineX (i, false, out line2, out xpos);
-						DrawTabMarker (win, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos  / 1024, y);
-					}
-				}
-			}
+			if (DecorateLine != null)
+				DecorateLine (win, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 			
 			int width, height;
 			layout.GetPixelSize (out width, out height);
@@ -636,6 +660,7 @@ namespace Mono.TextEditor
 			
 			// -- old renderer
 			
+				
 			int visibleColumn = 0;
 			Chunk lastChunk = null;
 			ChunkStyle lastChunkStyle = null;
