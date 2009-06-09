@@ -73,6 +73,7 @@ RES =  \
 	icons/csharp-icon-32.png \
 	icons/csharp-project-16.png \
 	md1format.xml \
+	MonoCSharpPolicy.xml \
 	templates/AssemblyInfo.xft.xml \
 	templates/ConsoleProject.xpt.xml \
 	templates/EmptyCSharpFile.xft.xml \

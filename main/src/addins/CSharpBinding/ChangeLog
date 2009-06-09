@@ -1,3 +1,15 @@
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoCSharpPolicy.xml:
+	* CSharpBinding.addin.xml: Register the c# formatting panel
+	  and the Mono policy set.
+
+	* FormattingStrategy/CSharpFormattingPolicy.cs:
+	* FormattingStrategy/CSharpFormattingPolicyPanel.cs: Converted
+	  to mime-type formatting panel.
+
 2009-06-09  Mike Krüger  <mkrueger@novell.com>
 
 	* FormattingStrategy/CSharpIndentEngine.cs: Fixed "Bug 510222

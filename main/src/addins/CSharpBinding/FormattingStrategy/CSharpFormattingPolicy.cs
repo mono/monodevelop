@@ -43,6 +43,11 @@ namespace FormattingStrategy
 	
 	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
+		public CSharpFormattingPolicy Clone ()
+		{
+			return (CSharpFormattingPolicy) MemberwiseClone ();
+		}
+		
 		#region Indentation
 		[ItemProperty]
 		public bool IndentNamespaceBody {

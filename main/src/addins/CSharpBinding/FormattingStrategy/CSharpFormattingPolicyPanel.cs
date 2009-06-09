@@ -36,12 +36,8 @@ using System.Xml;
 
 namespace FormattingStrategy
 {
-	class CSharpFormattingPolicyPanel : PolicyOptionsPanel<CSharpFormattingPolicy>
+	class CSharpFormattingPolicyPanel : MimeTypePolicyOptionsPanel<CSharpFormattingPolicy>
 	{
-		protected override string PolicyTitleWithMnemonic {
-			get { return GettextCatalog.GetString ("Code _Format"); }
-		}
-		
 		TypedCodeFormattingPolicyPanelWidget<CSharpFormattingPolicy> panel;
 		
 		public static CodeFormatDescription CodeFormatDescription {
@@ -57,17 +53,14 @@ namespace FormattingStrategy
 		public override Widget CreatePanelWidget ()
 		{
 			panel = new TypedCodeFormattingPolicyPanelWidget<CSharpFormattingPolicy> ();
-			
-			
-			panel.SetFormat (CodeFormatDescription, new CSharpFormattingPolicy ());
-			
 			return panel;
 		}
 		
 		CSharpFormattingPolicy policy;
 		protected override void LoadFrom (CSharpFormattingPolicy policy)
 		{
-			this.policy = policy;
+			this.policy = policy.Clone ();
+			panel.SetFormat (CodeFormatDescription, this.policy);
 		}
 		
 		protected override CSharpFormattingPolicy GetPolicy ()

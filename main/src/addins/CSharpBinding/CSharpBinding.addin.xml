@@ -138,8 +138,16 @@
 		<SyntaxMode mimeTypes="text/x-csharp" class="MonoDevelop.CSharpBinding.CSharpSyntaxMode"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
-		<Section id = "CSharpFormatting" _label = "C# Format" fill="true" class = "FormattingStrategy.CSharpFormattingPolicyPanel" />
+	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
+		<PolicyType id="DotNetNamingPolicy" class="FormattingStrategy.CSharpFormattingPolicy" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+		<Policies resource="MonoCSharpPolicy.xml" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
+		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "FormattingStrategy.CSharpFormattingPolicyPanel" />
 	</Extension>
 	
 	<Module>
