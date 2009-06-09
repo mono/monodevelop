@@ -772,10 +772,10 @@ namespace CSharpBinding.FormattingStrategy {
 				case ':':
 					canBeLabel = canBeLabel && inside != Inside.FoldedStatement;
 					
-					if ((keyword == "default" || keyword == "case") || canBeLabel)
+					if ((keyword == "default" || keyword == "case") || canBeLabel) 
 						break;
 					
-					//PushFoldedStatement ();
+					PushFoldedStatement ();
 					break;
 				case '[':
 					// handled elsewhere

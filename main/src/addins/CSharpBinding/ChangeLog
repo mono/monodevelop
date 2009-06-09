@@ -1,5 +1,11 @@
 2009-06-09  Mike Krüger  <mkrueger@novell.com>
 
+	* FormattingStrategy/CSharpIndentEngine.cs: Fixed "Bug 510222
+	  - Newline after colon of conditional does not have correct
+	  tabbing".
+
+2009-06-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/ResolveVisitor.cs: Fixed "Bug 510919 - Code completion
 	  does not show interface method when not using a local var".
 
