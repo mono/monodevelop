@@ -164,8 +164,8 @@ RES =  \
 	icons/Icons.32x32.XMLFileIcon \
 	icons/keyword-16.png \
 	icons/monodevelop-16.png \
-	icons/monodevelop-32.png \
 	icons/monodevelop-22.png \
+	icons/monodevelop-32.png \
 	icons/monodevelop-48.png \
 	icons/package-x-generic.png \
 	icons/package-x-generic_22.png \

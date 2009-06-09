@@ -38,6 +38,14 @@ namespace MonoDevelop.Core.Gui.Codons
 		[NodeAttribute ()]
 		string icon;
 		
+		public OptionsDialogSection ()
+		{
+		}
+		
+		public OptionsDialogSection (Type panelType): base (panelType)
+		{
+		}
+		
 		public string Icon {
 			get {
 				return icon;

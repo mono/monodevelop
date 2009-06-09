@@ -1,3 +1,19 @@
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs:
+	* MonoDevelop.Core.Gui.Codons/OptionsPanelNode.cs:
+	* MonoDevelop.Core.Gui.Codons/OptionsDialogSection.cs: Added
+	  support for dynamically adding/removing panels.
+
+	* MonoDevelop.Core.Gui/ImageService.cs: Added method for
+	  getting an stock id for a given pixbuf.
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs:
+	  Flush.
+
 2009-06-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Add missing files.

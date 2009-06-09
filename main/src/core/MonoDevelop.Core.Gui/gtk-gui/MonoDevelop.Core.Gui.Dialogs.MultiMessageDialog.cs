@@ -25,7 +25,6 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.Name = "MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog";
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

@@ -19,7 +19,6 @@
     <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <signal name="DeleteEvent" handler="DeleteActivated" />
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
@@ -311,7 +310,6 @@
     <property name="BorderWidth">6</property>
     <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />

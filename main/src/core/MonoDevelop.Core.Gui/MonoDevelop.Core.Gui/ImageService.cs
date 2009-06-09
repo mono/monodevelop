@@ -40,6 +40,7 @@ namespace MonoDevelop.Core.Gui
 		static List<Dictionary<string, string>> addinIcons = new List<Dictionary<string, string>> ();
 		static List<RuntimeAddin> addins = new List<RuntimeAddin> ();
 		static Dictionary<string,string> composedIcons = new Dictionary<string,string> ();
+		static Dictionary<Gdk.Pixbuf,string> namedIcons = new Dictionary<Gdk.Pixbuf,string> ();
 		
 		static ImageService ()
 		{
@@ -156,6 +157,17 @@ namespace MonoDevelop.Core.Gui
 			return InternalGetStockIdFromResource (addin, id);
 		}
 
+		public static string GetStockId (Gdk.Pixbuf pixbuf, Gtk.IconSize size)
+		{
+			string id;
+			if (namedIcons.TryGetValue (pixbuf, out id))
+				return id;
+			id = "__ni_" + namedIcons.Count;
+			namedIcons [pixbuf] = id;
+			AddToIconFactory (id, pixbuf, size);
+			return id;
+		}
+		
 		public static string GetStockId (string filename)
 		{
 			return InternalGetStockId (filename);

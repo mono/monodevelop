@@ -46,6 +46,17 @@ namespace MonoDevelop.Core.Gui.Codons
 		[NodeAttribute]
 		protected bool fill = false;
 		
+		Type panelType;
+		
+		public OptionsPanelNode ()
+		{
+		}
+		
+		public OptionsPanelNode (Type panelType)
+		{
+			this.panelType = panelType;
+		}
+		
 		public string Label {
 			get {
 				return label;
@@ -77,13 +88,16 @@ namespace MonoDevelop.Core.Gui.Codons
 			get {
 				return typeName;
 			}
-			set {
-				typeName = value;
-			}
+		}
+		
+		internal bool CustomNode {
+			get { return panelType != null; }
 		}
 		
 		public virtual IOptionsPanel CreatePanel ()
 		{
+			if (panelType != null)
+				return (IOptionsPanel) Activator.CreateInstance (panelType);
 			IOptionsPanel p = Addin.CreateInstance (typeName, true) as IOptionsPanel;
 			if (p == null)
 				throw new System.InvalidOperationException ("Type '" + typeName + "' does not implement IOptionsPanel");

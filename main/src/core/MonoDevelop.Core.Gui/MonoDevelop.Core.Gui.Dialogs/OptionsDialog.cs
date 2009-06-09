@@ -146,6 +146,58 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			}
 		}
 		
+		public void AddChildSection (IOptionsPanel parent, OptionsDialogSection section, object dataObject)
+		{
+			foreach (SectionPage page in pages.Values) {
+				foreach (PanelInstance pi in page.Panels) {
+					if (pi.Panel == parent) {
+						AddSection (page.Iter, section, dataObject);
+						return;
+					}
+				}
+			}
+			throw new InvalidOperationException ("Parent options panel not found in the dialog.");
+		}
+		
+		public void RemoveSection (OptionsDialogSection section)
+		{
+			SectionPage page;
+			if (pages.TryGetValue (section, out page))
+				RemoveSection (page.Iter);
+		}
+		
+		void RemoveSection (Gtk.TreeIter it)
+		{
+			Gtk.TreeIter ci;
+			if (store.IterChildren (out ci, it)) {
+				do {
+					RemoveSection (ci);
+				} while (store.IterNext (ref ci));
+			}
+			
+			// If the this panel is the selection, select the parent before removing
+			Gtk.TreeIter itsel;
+			if (tree.Selection.GetSelected (out itsel)) {
+				if (store.GetPath (itsel).Equals (store.GetPath (it))) {
+					Gtk.TreeIter pi;
+					if (store.IterParent (out pi, it))
+						tree.Selection.SelectIter (pi);
+				}
+			}
+			OptionsDialogSection section = (OptionsDialogSection) store.GetValue (it, 0);
+			if (section != null) {
+				SectionPage page;
+				if (pages.TryGetValue (section, out page)) {
+					foreach (PanelInstance pi in page.Panels)
+						panels.Remove (pi.Node);
+					pages.Remove (section);
+					if (page.Widget != null)
+						page.Widget.Destroy ();
+				}
+			}
+			store.Remove (ref it);
+		}
+		
 		protected TreeIter AddSection (OptionsDialogSection section, object dataObject)
 		{
 			return AddSection (TreeIter.Zero, section, dataObject);
@@ -162,10 +214,11 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				it = store.AppendValues (parentIter, section, icon, section.Label, true);
 			}
 			
-			AddChildSections (it, section, dataObject);
+			if (!section.CustomNode)
+				AddChildSections (it, section, dataObject);
 			
 			// Remove the section if it doesn't have children nor panels
-			SectionPage page = CreatePage (section, dataObject);
+			SectionPage page = CreatePage (it, section, dataObject);
 			TreeIter cit;
 			if (removeEmptySections && page.Panels.Count == 0 && !store.IterChildren (out cit, it))
 				store.Remove (ref it);
@@ -236,7 +289,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			}
 		}
 		
-		protected void ShowPage (OptionsDialogSection section)
+		public void ShowPage (OptionsDialogSection section)
 		{
 			SectionPage page;
 			if (!pages.TryGetValue (section, out page))
@@ -276,25 +329,32 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				foreach (Gtk.Widget cw in c)
 					cw.Show ();
 			}
+			
+			tree.ExpandToPath (store.GetPath (page.Iter));
+			tree.Selection.SelectIter (page.Iter);
 		}
 		
-		SectionPage CreatePage (OptionsDialogSection section, object dataObject)
+		SectionPage CreatePage (TreeIter it, OptionsDialogSection section, object dataObject)
 		{
 			SectionPage page;
 			if (pages.TryGetValue (section, out page))
 				return page;
 			
 			page = new SectionPage ();
+			page.Iter = it;
 			page.Panels = new List<PanelInstance> ();
 			pages [section] = page;
 			
 			List<OptionsPanelNode> nodes = new List<OptionsPanelNode> ();
-			if (!string.IsNullOrEmpty (section.TypeName))
+			if (!string.IsNullOrEmpty (section.TypeName) || section.CustomNode)
 				nodes.Add (section);
-			foreach (ExtensionNode nod in section.ChildNodes) {
-				OptionsPanelNode node = nod as OptionsPanelNode;
-				if (node != null && !(node is OptionsDialogSection))
-					nodes.Add (node);
+			
+			if (!section.CustomNode) {
+				foreach (ExtensionNode nod in section.ChildNodes) {
+					OptionsPanelNode node = nod as OptionsPanelNode;
+					if (node != null && !(node is OptionsDialogSection))
+						nodes.Add (node);
+				}
 			}
 			
 			foreach (OptionsPanelNode node in nodes)
@@ -316,16 +376,19 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				}
 				if (pi == null) {
 					IOptionsPanel panel = node.CreatePanel ();
-					panel.Initialize (this, dataObject);
-					if (!panel.IsVisible ())
-						continue;
 					pi = new PanelInstance ();
 					pi.Panel = panel;
 					pi.Node = node;
 					pi.DataObject = dataObject;
+					page.Panels.Add (pi);
+					panel.Initialize (this, dataObject);
+					if (!panel.IsVisible ()) {
+						page.Panels.Remove (pi);
+						continue;
+					}
 					panels [node] = pi;
-				}
-				page.Panels.Add (pi);
+				} else
+					page.Panels.Add (pi);
 			}
 			return page;
 		}
@@ -438,6 +501,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		{
 			public List<PanelInstance> Panels;
 			public Gtk.Widget Widget;
+			public Gtk.TreeIter Iter;
 		}
 	}
 }
