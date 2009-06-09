@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		ListStore store;
 		PolicyBag bag;
 		PolicySet polSet;
+		IPolicyContainer policyContainer;
 		bool loading = true;
 		
 		public PolicyOptionsPanel ()
@@ -87,7 +88,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			LoadFrom (GetCurrentValue ());
 			loading = false;
 			
-			if (!IsRoot && !bag.Has<T> ()) {
+			if (!IsRoot && !policyContainer.DirectHas<T> ()) {
 				//in this case "parent" is always first in the list
 				policyCombo.Active = 0;
 			} else {
@@ -167,7 +168,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			
 			T pol = GetPolicy ();
 			
-			PolicySet s = PolicyService.GetMatchingSet<T> (pol);
+			PolicySet s = PolicyService.GetMatchingSet (pol);
 			
 			TreeIter iter;
 			int i = 0;
@@ -209,25 +210,25 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		{
 			base.Initialize (dialog, dataObject);
 			if (dataObject is SolutionItem) {
-				bag = ((SolutionItem)dataObject).Policies;
+				policyContainer = bag = ((SolutionItem)dataObject).Policies;
 			} else if (dataObject is Solution) {
-				bag = ((Solution)dataObject).Policies;
+				policyContainer = bag = ((Solution)dataObject).Policies;
 			} else if (dataObject is PolicySet) {
-				polSet = ((PolicySet)dataObject);
+				policyContainer = polSet = ((PolicySet)dataObject);
 			}
 		}
 		
 		public override void ApplyChanges ()
 		{
 			if (polSet != null) {
-				polSet.Set<T> (GetPolicy ());
+				polSet.Set (GetPolicy ());
 				return;
 			}
 			
 			if (UseParentPolicy) {
 				bag.Remove<T> ();
 			} else {
-				bag.Set<T> (GetPolicy ());
+				bag.Set (GetPolicy ());
 			}	
 		}
 	}

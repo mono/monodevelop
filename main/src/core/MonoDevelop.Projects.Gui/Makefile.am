@@ -22,6 +22,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs \
@@ -52,6 +53,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ActiveLanguageCondition.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanelWidget.cs \
+	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs \
@@ -72,12 +74,15 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ItemOptionsPanel.cs \
+	MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsPanel.cs \
+	MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsSection.cs \
 	MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs \
+	MonoDevelop.Projects.Gui.Extensions/MimeTypeOptionsPanelNode.cs \
 	MonoDevelop.Projects.Gui/ProjectsGuiServices.cs
 
 RES =  \

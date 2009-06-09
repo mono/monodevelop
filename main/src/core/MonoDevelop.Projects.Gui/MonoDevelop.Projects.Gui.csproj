@@ -144,6 +144,11 @@
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanelWidget.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\DefaultPolicyOptionsDialog.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Completion\BaseMemberCompletionData.cs" />
+    <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\CodeFormattingPanel.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanelWidget.cs" />
+    <Compile Include="MonoDevelop.Projects.Gui.Dialogs\MimeTypePolicyOptionsSection.cs" />
+    <Compile Include="MonoDevelop.Projects.Gui.Dialogs\MimeTypePolicyOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.Projects.Gui.Extensions\MimeTypeOptionsPanelNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -175,4 +180,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Projects.Gui.Extensions\" />
+  </ItemGroup>
 </Project>

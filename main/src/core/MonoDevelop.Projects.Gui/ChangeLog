@@ -1,3 +1,20 @@
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.addin.xml:
+	* MonoDevelop.Projects.Gui.Extensions:
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Extensions/MimeTypeOptionsPanelNode.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanelWidget.cs:
+	  Added support for per mime-type policies. Implemented new
+	  code formatting panel.
+
 2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Disable

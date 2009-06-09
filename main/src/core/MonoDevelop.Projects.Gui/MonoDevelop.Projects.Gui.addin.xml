@@ -31,6 +31,11 @@
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels" name = "Mime Type policy panels">
+		<Description>Panels for editing mime type policies. Must derive from MimeTypePolicyOptionsPanel.</Description>
+		<ExtensionNode name="Panel" type="MonoDevelop.Projects.Gui.Extensions.MimeTypeOptionsPanelNode"/>
+	</ExtensionPoint>
+	
 	<!-- Extensions points -->
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
@@ -91,6 +96,12 @@
 			<Section id="DotNetNamingPolicies" _label=".NET Naming Policies">
 				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanel" />
 			</Section>
+			<Condition id="ItemType" value="Solution">
+				<Section id="CodeFormattingPolicies" _label="Code Formatting" fill = "true" class="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanel" />
+			</Condition>
+			<Condition id="ItemType" value="SolutionItem">
+				<Section id="CodeFormattingPolicies" _label="Code Formatting" fill = "true" class="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanel" />
+			</Condition>
 		</Section>
 	</Extension>
 	
@@ -98,5 +109,6 @@
 		<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies">
 			<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanel" />
 		</Section>
+		<Section id="CodeFormattingPolicies" _label="Code Formatting" fill = "true" class="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanel" />
 	</Extension>
 </Addin>

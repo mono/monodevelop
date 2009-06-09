@@ -109,7 +109,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
             }
             this.DefaultWidth = 0;
             this.DefaultHeight = 0;
-            this.button12.HasDefault = true;
             this.Show();
         }
     }
