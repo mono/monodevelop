@@ -352,7 +352,6 @@ namespace Mono.TextEditor.Highlighting
 			public void ParseSpans (int offset, int length)
 			{
 				maxEnd = System.Math.Min (doc.Length, System.Math.Min (offset + length, line != null ? System.Math.Min (line.Offset + line.EditableLength, doc.Length) : doc.Length));
-				
 				for (int i = offset; i < maxEnd; i++) {
 					Span cur = CurSpan;
 					if (cur != null) {

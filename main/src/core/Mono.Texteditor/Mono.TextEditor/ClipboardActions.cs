@@ -134,13 +134,13 @@ namespace Mono.TextEditor
 				bool isBold   = false;
 				int curColor  = -1;
 				do {
+					bool appendSpace = false;
 					line = iter.Current;
-					for (Chunk chunk = mode.GetChunks (doc, style, line, line.Offset, line.Offset + line.EditableLength); chunk != null; chunk = chunk.Next) {
+					for (Chunk chunk = mode.GetChunks (doc, style, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk.Next) {
 						int start = System.Math.Max (selection.Offset, chunk.Offset);
 						int end   = System.Math.Min (chunk.EndOffset, selection.EndOffset);
 						ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
 						if (start < end) {
-							bool appendSpace = false;
 							if (isBold != chunkStyle.Bold) {
 								rtfText.Append (chunkStyle.Bold ? @"\b" : @"\b0");
 								isBold = chunkStyle.Bold;
@@ -161,10 +161,7 @@ namespace Mono.TextEditor
 							}
 							for (int i = start; i < end; i++) {
 								char ch = chunk.GetCharAt (doc, i);
-								if (appendSpace && ch != '\t') {
-									rtfText.Append (' ');
-									appendSpace = false;
-								}							
+								
 								switch (ch) {
 								case '\\':
 									rtfText.Append (@"\\");
@@ -180,6 +177,10 @@ namespace Mono.TextEditor
 									appendSpace = true;
 									break;
 								default:
+									if (appendSpace) {
+										rtfText.Append (' ');
+										appendSpace = false;
+									}
 									rtfText.Append (ch);
 									break;
 								}
@@ -189,6 +190,7 @@ namespace Mono.TextEditor
 					if (line == endLine)
 						break;
 					rtfText.Append (@"\par");
+					rtfText.AppendLine ();
 				} while (iter.MoveNext ());
 				
 				// color table
@@ -228,7 +230,7 @@ namespace Mono.TextEditor
 				rtf.Append (@"\cf1");
 				rtf.Append (rtfText.ToString ());
 				rtf.Append("}");
-		//		System.Console.WriteLine(rtf);
+//				System.Console.WriteLine(rtf);
 				return rtf.ToString ();
 			}
 			
