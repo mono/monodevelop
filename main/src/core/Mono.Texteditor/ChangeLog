@@ -1,3 +1,7 @@
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor.csproj: Fixed gtk# reference.
+
 2009-06-08  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor/FoldActions.cs:
