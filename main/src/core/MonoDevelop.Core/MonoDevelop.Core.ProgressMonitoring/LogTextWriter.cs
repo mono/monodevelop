@@ -64,6 +64,15 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			if (Closed != null)
 				Closed (this, null);
 		}
+
+		public override void Write (char[] buffer, int index, int count)
+		{
+			if (TextWritten != null)
+				TextWritten (new string (buffer, index, count));
+			if (chainedWriters != null)
+				foreach (TextWriter cw in chainedWriters)
+					cw.Write (buffer, index, count);
+		}
 		
 		public override void Write (char value)
 		{

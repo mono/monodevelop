@@ -1,5 +1,10 @@
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.ProgressMonitoring\LogTextWriter.cs: New
+	  override for TextWriter. Improves performance on Windows.
+
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Properties:
 	* MonoDevelop.Core.Properties/IXmlConvertable.cs:
 	* MonoDevelop.Core.Properties/PropertyFileLoadException.cs:
