@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharpBinding
 			} else if (searchedMember is IMember) {
 				this.searchedMemberName     = ((IMember)searchedMember).Name;
 				this.searchedMemberLocation = ((IMember)searchedMember).Location;
-				if (((IMember)searchedMember).DeclaringType.DeclaringType != null && ((IMember)searchedMember).DeclaringType.DeclaringType.CompilationUnit != null)
+				if (((IMember)searchedMember).DeclaringType != null && ((IMember)searchedMember).DeclaringType.CompilationUnit != null)
 					this.searchedMemberFile     = ((IMember)searchedMember).DeclaringType.CompilationUnit.FileName;
 			} else if (searchedMember is IParameter) {
 				this.searchedMemberName     = ((IParameter)searchedMember).Name;

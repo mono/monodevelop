@@ -1,3 +1,8 @@
+2009-06-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/FindMemberAstVisitor.cs: Fixed find member visitor
+	  bug.
+
 2009-06-08  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 510771 - Find
