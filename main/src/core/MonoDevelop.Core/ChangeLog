@@ -1,3 +1,11 @@
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/XmlDataSerializer.cs: Added
+	  an option which allows storing all values as elements.
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Fix potential
+	  infinite loop
+
 2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution\ProcessService.cs: Fix crash on

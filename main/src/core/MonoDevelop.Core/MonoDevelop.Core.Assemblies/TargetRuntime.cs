@@ -340,6 +340,7 @@ namespace MonoDevelop.Core.Assemblies
 					while (asm != null) {
 						if (package == null || asm.Package.Name == package)
 							return asm.FullName;
+						asm = asm.NextSameName;
 					}
 				}
 			}
