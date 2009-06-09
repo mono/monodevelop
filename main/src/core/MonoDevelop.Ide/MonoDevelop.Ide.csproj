@@ -385,7 +385,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GoToDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\TextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\TextEditor.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\ViewContentEventHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\NavigationCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\ExportProjectDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ISolutionItemFeature.cs" />
