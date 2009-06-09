@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Title = Mono.Unix.Catalog.GetString("New File");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

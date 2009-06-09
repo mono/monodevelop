@@ -41,7 +41,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Title = Mono.Unix.Catalog.GetString("Go to File");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.GoToDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

@@ -238,6 +238,12 @@
     <EmbeddedResource Include="MonoDevelop.Ide.CodeTemplates\MonoDevelop-templates.xml">
       <LogicalName>MonoDevelop-templates.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.CodeFormatting\MonoTextStylePolicy.xml">
+      <LogicalName>MonoTextStylePolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.CodeFormatting\VisualStudioTextStylePolicy.xml">
+      <LogicalName>VisualStudioTextStylePolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -508,8 +514,6 @@
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormattingPolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterService.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\OverrideTextSettingsPolicyWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.OverrideTextSettingsPolicyWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplatePanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\EditTemplateDialog.cs" />

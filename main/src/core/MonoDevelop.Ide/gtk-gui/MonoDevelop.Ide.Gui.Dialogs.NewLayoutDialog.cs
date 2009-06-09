@@ -32,7 +32,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.BorderWidth = ((uint)(6));
             this.Resizable = false;
             this.AllowGrow = false;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox4";

@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide.Templates
 			string mime = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
 			IFormatter formatter = !String.IsNullOrEmpty (mime) ? TextFileService.GetFormatter (mime) : null;
 			if (formatter != null)
-				content = formatter.FormatText (policyParent, content);
+				content = formatter.FormatText (policyParent, mime, content);
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
 			if (AddStandardHeader) {

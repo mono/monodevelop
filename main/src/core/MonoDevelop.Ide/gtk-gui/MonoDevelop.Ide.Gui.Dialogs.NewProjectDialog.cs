@@ -89,7 +89,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.BorderWidth = ((uint)(6));
             this.DestroyWithParent = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox1";
@@ -414,7 +413,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.DefaultHeight = 501;
             this.lbl_name.MnemonicWidget = this.txt_name;
             this.lbl_subdirectory.MnemonicWidget = this.txt_subdirectory;
-            this.btn_new.HasDefault = true;
             this.Show();
             this.txt_subdirectory.Changed += new System.EventHandler(this.PathChanged);
             this.txt_name.Changed += new System.EventHandler(this.NameChanged);

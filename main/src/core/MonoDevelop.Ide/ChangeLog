@@ -1,3 +1,32 @@
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Track api changes.
+
+	* MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:
+	  Use the new dialog for mime-type formatting policies.
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.OverrideTextSettingsPolicyWidget.cs:
+	  Removed unused dialog.
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.CodeFormatting/MonoTextStylePolicy.xml:
+	* MonoDevelop.Ide.CodeFormatting/VisualStudioTextStylePolicy.xml:
+	  Register new policies.
+
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	  The default text settings are now provided by its own
+	  mime-type formatting panel.
+
 2009-06-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Fixed "Bug

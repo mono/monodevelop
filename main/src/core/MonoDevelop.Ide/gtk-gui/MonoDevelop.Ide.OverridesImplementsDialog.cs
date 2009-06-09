@@ -38,7 +38,6 @@ namespace MonoDevelop.Ide {
             this.Title = "";
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.OverridesImplementsDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

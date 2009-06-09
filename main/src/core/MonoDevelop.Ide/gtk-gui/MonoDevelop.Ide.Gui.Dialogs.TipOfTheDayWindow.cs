@@ -165,7 +165,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             }
             this.DefaultWidth = 500;
             this.DefaultHeight = 285;
-            this.closeButton.HasDefault = true;
             this.Show();
         }
     }

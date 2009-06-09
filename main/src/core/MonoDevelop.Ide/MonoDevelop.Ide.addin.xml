@@ -1284,17 +1284,26 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
 		<Section id = "ProjectStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
-		<Section id = "ProjectTextStylePolicy" _label = "Text Style" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanel" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
 		<Section id = "DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
-		<Section id = "DefaultTextStylePolicy" _label = "Text Style" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanel" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
+		<Panel id = "TextStylePolicy" mimeType="text/plain" _label = "Text Style" class = "MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanel" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
 		<PolicyType id="StandardHeaderPolicy" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicy" />
 		<PolicyType id="TextStylePolicy" class="MonoDevelop.Ide.Gui.Content.TextStylePolicy" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+		<Policies resource="MonoTextStylePolicy.xml" />
+	</Extension>
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/VisualStudio" >
+		<Policies resource="VisualStudioTextStylePolicy.xml" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >

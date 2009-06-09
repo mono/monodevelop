@@ -33,9 +33,8 @@ using MonoDevelop.Ide.Gui.Content;
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
 	
-	class TextStylePolicyPanel : PolicyOptionsPanel<TextStylePolicy>
+	class TextStylePolicyPanel : MimeTypePolicyOptionsPanel<TextStylePolicy>
 	{
-		
 		TextStylePolicyPanelWidget widget;
 		
 		public override Gtk.Widget CreatePanelWidget ()
@@ -53,10 +52,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		protected override TextStylePolicy GetPolicy ()
 		{
 			return widget.GetPolicy ();
-		}
-		
-		protected override string PolicyTitleWithMnemonic {
-			get { return GettextCatalog.GetString ("Text Style _Policy"); }
 		}
 	}
 	

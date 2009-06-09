@@ -32,7 +32,6 @@ FILES =  \
 	BuildVariables.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.CodeFormatting.OverrideTextSettingsPolicyWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
@@ -69,7 +68,6 @@ FILES =  \
 	MonoDevelop.Ide.CodeFormatting/CodeFormatterService.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs \
-	MonoDevelop.Ide.CodeFormatting/OverrideTextSettingsPolicyWidget.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateListDataProvider.cs \
@@ -350,6 +348,8 @@ RES =  \
 	icons/text-editor-16.png \
 	icons/text-editor-22.png \
 	MonoDevelop.Ide.addin.xml \
+	MonoDevelop.Ide.CodeFormatting/MonoTextStylePolicy.xml \
+	MonoDevelop.Ide.CodeFormatting/VisualStudioTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml \
 	MonoDevelop.Ide.StandardHeader/Apache2LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml \

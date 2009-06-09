@@ -91,9 +91,6 @@ namespace MonoDevelop.Ide.CodeFormatting
 			}
 			
 			if (description != null) {
-				Gtk.Label label = new Gtk.Label (GettextCatalog.GetString ("Text Style"));
-				NotebookCategories.AppendPage (new OverrideTextSettingsPolicyWidget (), label);
-
 				foreach (CodeFormatCategory category in description.SubCategories) {
 					AddCategoryPage (category);
 				}
