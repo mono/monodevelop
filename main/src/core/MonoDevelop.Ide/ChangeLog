@@ -1,5 +1,10 @@
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Fix location of the formatting
+	  policies panel in the policies dialog.
+
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.Gui/ViewContentEventHandler.cs: Removed

@@ -1286,7 +1286,7 @@
 		<Section id = "ProjectStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/SourceCode">
 		<Section id = "DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 	</Extension>
 	
