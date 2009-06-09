@@ -1,3 +1,11 @@
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/CellRendererComboBox.cs: Provide the
+	  active text in the arguments of the selection changed event.
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Minor
+	  fix.
+
 2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components\TabLabel.cs: Use less spacing on the

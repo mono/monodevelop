@@ -496,7 +496,7 @@ namespace MonoDevelop.Components.Commands
 							if (!ainfo.Bypass) {
 								bool found = false;
 								foreach (CommandInfo ci in ainfo) {
-									if (Object.Equals (dataItem, ci.DataItem)) {
+									if (dataItem == ci.DataItem || Object.Equals (dataItem, ci.DataItem)) {
 										found = true;
 										break;
 									}

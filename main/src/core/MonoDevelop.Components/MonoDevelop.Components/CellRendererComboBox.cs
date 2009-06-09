@@ -74,7 +74,7 @@ namespace MonoDevelop.Components
 		{
 			Gtk.ComboBox combo = (Gtk.ComboBox) s;
 			if (Changed != null)
-				Changed (this, new ComboSelectionChangedArgs (path, combo.Active));
+				Changed (this, new ComboSelectionChangedArgs (path, combo.Active, combo.ActiveText));
 		}
 		
 		// Fired when the selection changes
@@ -87,11 +87,13 @@ namespace MonoDevelop.Components
 	{
 		string path;
 		int active;
+		string activeText;
 		
-		public ComboSelectionChangedArgs (string path, int active)
+		public ComboSelectionChangedArgs (string path, int active, string activeText)
 		{
 			this.path = path;
 			this.active = active;
+			this.activeText = activeText;
 		}
 		
 		public string Path {
@@ -100,6 +102,10 @@ namespace MonoDevelop.Components
 		
 		public int Active {
 			get { return active; }
+		}
+		
+		public string ActiveText {
+			get { return activeText; }
 		}
 	}
 }
