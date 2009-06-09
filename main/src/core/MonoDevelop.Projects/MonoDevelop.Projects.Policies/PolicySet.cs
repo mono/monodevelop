@@ -35,11 +35,39 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Projects.Policies
 {
-	
-	
-	public class PolicySet
+	public interface IPolicyContainer
 	{
-		Dictionary<Type, object> policies = new Dictionary<Type, object> ();
+		// The Get methods return policies taking into account inheritance. If a policy
+		// can't be found it may return null, but never an 'undefined' policy.
+		T Get<T> () where T : class, IEquatable<T>, new ();
+		T Get<T> (IEnumerable<string> scopes) where T : class, IEquatable<T>, new ();
+		
+		void Set<T> (T value) where T : class, IEquatable<T>, new ();
+		void Set<T> (T value, string scope) where T : class, IEquatable<T>, new ();
+		bool Remove<T> ()  where T : class, IEquatable<T>, new ();
+		bool Remove<T> (string scope)  where T : class, IEquatable<T>, new ();
+		
+		bool IsRoot { get; }
+		
+		event EventHandler<PolicyChangedEventArgs> PolicyChanged;
+		
+		#region Methods to be used for fine grained management of policies
+		
+		// The DirectGet set of methods returns policies directly stored in the container,
+		// ignoring inherited policies. Those methods can return undefined policies,
+		// so return values have to be checked with PolicyService.IsUndefinedPolicy
+		T DirectGet<T> () where T : class, IEquatable<T>, new ();
+		T DirectGet<T> (string scope) where T : class, IEquatable<T>, new ();
+		bool DirectHas<T> () where T : class, IEquatable<T>, new ();
+		bool DirectHas<T> (string scope) where T : class, IEquatable<T>, new ();
+		IPolicyContainer ParentPolicies { get; }
+		
+		#endregion
+	}
+	
+	public class PolicySet: IPolicyContainer
+	{
+		PolicyDictionary policies = new PolicyDictionary ();
 		
 		internal PolicySet (string id, string name)
 		{
@@ -47,55 +75,154 @@ namespace MonoDevelop.Projects.Policies
 			this.Name = name;
 		}
 		
-		internal Dictionary<Type, object> Policies { get { return policies; } } 
+		internal PolicyDictionary Policies { get { return policies; } } 
+		
+		bool IPolicyContainer.IsRoot {
+			get { return true; }
+		}
+		
+		IPolicyContainer IPolicyContainer.ParentPolicies {
+			get { return null; }
+		}
+		
+		public IEnumerable<string> GetScopes<T> ()
+		{
+			foreach (PolicyKey pk in policies.Keys) {
+				if (pk.PolicyType == typeof(T))
+					yield return pk.Scope;
+			}
+		}
 		
 		public bool Has<T> ()
 		{
-			return Has (typeof (T));
+			return policies.ContainsKey (new PolicyKey (typeof(T), null));
 		}
 		
-		public bool Has (Type t)
+		public bool Has<T> (string scope)
 		{
-			return policies.ContainsKey (t);
+			return policies.ContainsKey (new PolicyKey (typeof(T), scope));
 		}
 		
-		public object Get (Type t)
+		public bool Has<T> (IEnumerable<string> scopes)
 		{
-			object o;
-			policies.TryGetValue (t, out o);
-			return o;
+			foreach (string scope in scopes) {
+				if (Has<T> (scope))
+					return true;
+			}
+			return false;
+		}
+
+		bool IPolicyContainer.DirectHas<T> ()
+		{
+			return Has<T> ();
 		}
 		
-		public T Get<T> () where T : class, IEquatable<T>
+		bool IPolicyContainer.DirectHas<T> (string scope)
+		{
+			return Has<T> (scope);
+		}
+
+		internal IEnumerable<ScopedPolicy> GetScoped (Type t)
+		{
+			foreach (KeyValuePair<PolicyKey,object> pinfo in policies) {
+				if (pinfo.Key.PolicyType == t)
+					yield return new ScopedPolicy (t, pinfo.Value, pinfo.Key.Scope);
+			}
+			object pol = Get (t);
+			if (pol != null)
+				yield return new ScopedPolicy (t, pol, null);
+		}
+		
+		public IEnumerable<ScopedPolicy<T>> GetScoped<T> () where T : class, IEquatable<T>, new ()
+		{
+			foreach (KeyValuePair<PolicyKey,object> pinfo in policies) {
+				if (pinfo.Key.PolicyType == typeof(T))
+					yield return new ScopedPolicy<T> ((T)pinfo.Value, pinfo.Key.Scope);
+			}
+			T pol = Get<T> ();
+			if (pol != null && !PolicyService.IsUndefinedPolicy (pol))
+				yield return new ScopedPolicy<T> (pol, null);
+		}
+		
+		public T Get<T> () where T : class, IEquatable<T>, new ()
 		{
 			return Get (typeof (T)) as T;
 		}
 		
-		public void Set<T> (T value) where T : class, IEquatable<T>
+		public T Get<T> (string scope) where T : class, IEquatable<T>, new ()
 		{
-			if (IsReadOnly)
-				throw new InvalidOperationException ("Cannot modify fixed policy sets");
-			
-			T oldVal = Get<T> ();
-			if (oldVal != null && oldVal.Equals (value))
-				return;
-			
-			policies[typeof (T)] = value;
-			OnPolicyChanged (typeof (T), value);
+			T pol = ((IPolicyContainer)this).DirectGet<T> (scope);
+			return PolicyService.IsUndefinedPolicy (pol) ? null : pol;
 		}
 		
-		public void Set (object value)
+		public T Get<T> (IEnumerable<string> scopes) where T : class, IEquatable<T>, new ()
+		{
+			foreach (string scope in scopes) {
+				T pol = Get<T> (scope);
+				if (pol != null && !PolicyService.IsUndefinedPolicy (pol))
+					return pol;
+			}
+			return null;
+		}
+		
+		internal object Get (Type type)
+		{
+			return Get (type, (string) null);
+		}
+		
+		internal object Get (Type type, string scope)
+		{
+			object o;
+			if (policies.TryGetValue (type, scope, out o)) {
+				if (PolicyService.IsUndefinedPolicy (o))
+					return null;
+			}
+			return o;
+		}
+		
+		public void Set<T> (T value) where T : class, IEquatable<T>, new ()
+		{
+			Set (value, null);
+		}
+		
+		T IPolicyContainer.DirectGet<T> ()
+		{
+			return ((IPolicyContainer)this).DirectGet<T> ((string)null);
+		}
+		
+		T IPolicyContainer.DirectGet<T> (string scope)
+		{
+			object o;
+			policies.TryGetValue (typeof(T), scope, out o);
+			return (T) o;
+		}
+		
+		public void Set<T> (T value, string scope) where T : class, IEquatable<T>, new ()
 		{
 			if (IsReadOnly)
 				throw new InvalidOperationException ("Cannot modify fixed policy sets");
 			
-			Type t = value.GetType ();
-			object oldVal = Get (t);
+			PolicyKey key = new PolicyKey (typeof(T), scope);
+			IEquatable<T> oldVal = Get<T> (key.Scope);
 			if (oldVal != null && oldVal.Equals (value))
 				return;
 			
-			policies[t] = value;
-			OnPolicyChanged (t, value);
+			policies[key] = value;
+			OnPolicyChanged (key.PolicyType, key.Scope);
+		}
+		
+		public bool Remove<T> () where T : class, IEquatable<T>, new ()
+		{
+			return Remove<T> (null);
+		}
+
+		public bool Remove<T> (string scope) where T : class, IEquatable<T>, new ()
+		{
+			PolicyKey pk = new PolicyKey (typeof(T), scope);
+			if (!policies.Remove (pk))
+				return false;
+			OnPolicyChanged (pk.PolicyType, scope);
+			return true;
 		}
 		
 		public string Name { get; private set; }
@@ -103,12 +230,12 @@ namespace MonoDevelop.Projects.Policies
 		
 		internal void AddSerializedPolicies (StreamReader reader)
 		{
-			foreach (object policy in PolicyService.RawDeserializeXml (reader)) {
-				Type t = policy.GetType ();
-				if (policies.ContainsKey (t))
+			foreach (ScopedPolicy policyPair in PolicyService.RawDeserializeXml (reader)) {
+				PolicyKey key = new PolicyKey (policyPair.PolicyType, policyPair.Scope);
+				if (policies.ContainsKey (key))
 					throw new InvalidOperationException ("Cannot add second policy of type '" +  
-					                                     t.ToString () + "' to policy set '" + Id + "'");
-				policies[policy.GetType ()] = policy;
+					                                     key.ToString () + "' to policy set '" + Id + "'");
+				policies[key] = policyPair.Policy;
 			}
 		}
 		
@@ -116,18 +243,21 @@ namespace MonoDevelop.Projects.Policies
 		{
 			// NOTE: this could be more efficient if it just got the types instead of a 
 			// full deserialisation
-			foreach (object policy in PolicyService.RawDeserializeXml (reader))
-				policies.Remove (policy.GetType ());
+			foreach (ScopedPolicy policyPair in PolicyService.RawDeserializeXml (reader))
+				policies.Remove (new PolicyKey (policyPair.PolicyType, policyPair.Scope));
 		}
 		
 		internal void SaveToFile (StreamWriter writer)
 		{
 			XmlWriterSettings xws = new XmlWriterSettings ();
 			xws.Indent = true;
+			XmlConfigurationWriter cw = new XmlConfigurationWriter ();
+			cw.StoreAllInElements = true;
+			cw.StoreInElementExceptions = new String[] { "scope", "inheritsSet", "inheritsScope" };
 			using (XmlWriter xw = XmlTextWriter.Create(writer, xws)) {
 				xw.WriteStartElement ("PolicySet");
-				foreach (object o in policies.Values)
-					XmlConfigurationWriter.DefaultWriter.Write (xw, PolicyService.DiffSerialize (o));
+				foreach (KeyValuePair<PolicyKey,object> policyPair in policies)
+					cw.Write (xw, PolicyService.DiffSerialize (policyPair.Key.PolicyType, policyPair.Value, policyPair.Key.Scope));
 				xw.WriteEndElement ();
 			}
 		}
@@ -136,23 +266,55 @@ namespace MonoDevelop.Projects.Policies
 		{
 			policies.Clear ();
 			//note: can't use AddSerializedPolicies as we want diff serialisation
-			foreach (object policy in PolicyService.DiffDeserializeXml (reader)) {
-				Type t = policy.GetType ();
-				if (policies.ContainsKey (t))
+			foreach (ScopedPolicy policyPair in PolicyService.DiffDeserializeXml (reader)) {
+				PolicyKey key = new PolicyKey (policyPair.PolicyType, policyPair.Scope);
+				if (policies.ContainsKey (key))
 					throw new InvalidOperationException ("Cannot add second policy of type '" +  
-					                                     t.ToString () + "' to policy set '" + Id + "'");
-				policies[policy.GetType ()] = policy;
+					                                     key.ToString () + "' to policy set '" + Id + "'");
+				policies[key] = policyPair.Policy;
 			}
 		}
 		
 		internal bool IsReadOnly { get; set; }
 		
-		protected void OnPolicyChanged (Type policyType, object policy)
+		protected void OnPolicyChanged (Type policyType, string scope)
 		{
 			if (PolicyChanged != null)
-				PolicyChanged (this, new PolicyChangedEventArgs (policyType, policy));
+				PolicyChanged (this, new PolicyChangedEventArgs (policyType, scope));
 		}
 		
 		public event EventHandler<PolicyChangedEventArgs> PolicyChanged;
+	}
+	
+	public class ScopedPolicy<T>
+	{
+		public ScopedPolicy (T policy, string scope)
+		{
+			Policy = policy;
+			Scope = scope;
+		}
+		
+		public string Scope { get; internal set; }
+		public T Policy { get; internal set; }
+		
+		public virtual Type PolicyType {
+			get { return typeof(T); }
+		}
+	}
+	
+	public class ScopedPolicy: ScopedPolicy<object>
+	{
+		Type type;
+		
+		public ScopedPolicy (Type type, object ob, string scope): base (ob, scope)
+		{
+			this.type = type;
+		}
+		
+		public override Type PolicyType {
+			get {
+				return type;
+			}
+		}
 	}
 }

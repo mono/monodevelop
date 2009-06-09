@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects.Policies
 		static Dictionary<Type, string> policyTypes = new Dictionary<Type, string> ();
 		
 		static PolicySet defaultPolicies;
+		static PolicyBag defaultPolicyBag = new PolicyBag ();
 		
 		static PolicyService ()
 		{
@@ -60,6 +61,7 @@ namespace MonoDevelop.Projects.Policies
 				SaveDefaultPolicies ();
 			};
 			LoadDefaultPolicies ();
+			defaultPolicyBag.ReadOnly = true;
 		}
 		
 		static void HandlePolicySetUpdated (object sender, ExtensionNodeEventArgs args)
@@ -119,7 +121,7 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}		
 		
-		internal static System.Collections.IEnumerable RawDeserializeXml (System.IO.StreamReader reader)
+		internal static IEnumerable<ScopedPolicy> RawDeserializeXml (System.IO.StreamReader reader)
 		{
 			var xr = System.Xml.XmlReader.Create (reader);
 			XmlConfigurationReader configReader = XmlConfigurationReader.DefaultReader;
@@ -134,7 +136,7 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}
 		
-		internal static System.Collections.IEnumerable DiffDeserializeXml (System.IO.StreamReader reader)
+		internal static IEnumerable<ScopedPolicy> DiffDeserializeXml (System.IO.StreamReader reader)
 		{
 			var xr = System.Xml.XmlReader.Create (reader);
 			XmlConfigurationReader configReader = XmlConfigurationReader.DefaultReader;
@@ -149,10 +151,21 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}
 		
-		internal static object RawDeserialize (DataNode data)
+		internal static ScopedPolicy RawDeserialize (DataNode data)
 		{
+			string scope = null;
 			Type t = GetRegisteredType (data.Name);
-			return Serializer.Deserialize (t, data);
+			DataItem di = data as DataItem;
+			if (di != null) {
+				DataValue val = di ["scope"] as DataValue;
+				if (val != null)
+					scope = val.Value;
+				DataValue inh = di ["inheritsSet"] as DataValue;
+				if (inh != null && inh.Value == "null")
+					return new ScopedPolicy (t, null, scope);
+			}
+			object o = Serializer.Deserialize (t, data);
+			return new ScopedPolicy (t, o, scope);
 		}
 		
 		static Type GetRegisteredType (string name)
@@ -163,33 +176,47 @@ namespace MonoDevelop.Projects.Policies
 			return t;
 		}
 		
-		internal static DataNode RawSerialize (object policy)
+		internal static DataNode RawSerialize (Type policyType, object policy)
 		{
 			string name;
-			if (!policyTypes.TryGetValue (policy.GetType (), out name))
-				throw new InvalidOperationException ("Cannot serialise unregistered policy type '" + policy.GetType () + "'");
-			DataNode node = Serializer.Serialize (policy);
+			if (!policyTypes.TryGetValue (policyType, out name))
+				throw new InvalidOperationException ("Cannot serialise unregistered policy type '" + policyType + "'");
+			
+			DataNode node;
+			if (policy != null)
+				node = Serializer.Serialize (policy);
+			else
+				node = new DataItem ();
 			node.Name = name;
 			return node;
 		}
 		
-		internal static object DiffDeserialize (DataNode data)
+		internal static ScopedPolicy DiffDeserialize (DataNode data)
 		{
 			DataItem item = (DataItem) data;
-			DataValue inheritVal = item.ItemData.Extract ("inheritsSet") as DataValue;
-			if (inheritVal == null) {
+			
+			DataValue inheritVal = item.ItemData ["inheritsSet"] as DataValue;
+			if (inheritVal == null || inheritVal.Value == "null")
 				return RawDeserialize (data);
-			}
+			
+			item.ItemData.Remove (inheritVal);
+			
 			PolicySet set = GetSet (inheritVal.Value);
 			if (set == null)
 				throw new InvalidOperationException ("No policy set found for id '" + inheritVal.Value + "'");
+			
+			DataValue inheritScope = item.ItemData.Extract ("inheritsScope") as DataValue;
+			
 			Type t = GetRegisteredType (data.Name);
-			object baseItem = set.Get (t);
+			object baseItem = set.Get (t, inheritScope != null ? inheritScope.Value : null);
 			if (baseItem == null)
 				throw new InvalidOperationException ("Policy set '" + set.Id + "' does not contain a policy for '"
 				                                     + data.Name + "'");
-			DataNode baseline = RawSerialize (baseItem);
-			return RawDeserialize (ApplyOverlay (baseline, data));
+			
+			DataValue scopeVal = item.ItemData.Extract ("scope") as DataValue;
+			DataNode baseline = RawSerialize (t, baseItem);
+			ScopedPolicy p = RawDeserialize (ApplyOverlay (baseline, data));
+			return new ScopedPolicy (t, p.Policy, scopeVal != null ? scopeVal.Value : null);
 		}
 		
 		static PolicySet GetSet (string id)
@@ -200,33 +227,44 @@ namespace MonoDevelop.Projects.Policies
 			return null;
 		}
 		
-		internal static DataNode DiffSerialize (object policy)
+		internal static DataNode DiffSerialize (Type policyType, object policy, string scope)
 		{
-			PolicySet minSet = null;
+			string minSetId = null;
 			int min = Int32.MaxValue;
 			DataNode node = null;
+			string baseScope = null;
 			
-			DataNode raw = RawSerialize (policy);
-			Type t = policy.GetType ();
+			DataNode raw = RawSerialize (policyType, policy);
 			
-			//find the policy with the fewest differences
-			foreach (PolicySet set in GetPolicySets (t)) {
-				DataNode baseline = RawSerialize (set.Get (t));
-				int size = 0;
-				DataNode tempNode = ExtractOverlay (baseline, raw, ref size);
-				if (size < min) {
-					minSet = set;
-					min = size;
-					node = tempNode;
-				}	
+			if (policy != null) {
+				//find the policy with the fewest differences
+				foreach (PolicySet set in sets) {
+					foreach (ScopedPolicy sp in set.GetScoped (policyType)) {
+						DataNode baseline = RawSerialize (policyType, sp.Policy);
+						int size = 0;
+						DataNode tempNode = ExtractOverlay (baseline, raw, ref size);
+						if (size < min) {
+							minSetId = set.Id;
+							min = size;
+							node = tempNode;
+							baseScope = sp.Scope;
+						}
+					}
+				}
+			} else {
+				minSetId = "null";
+				node = raw;
 			}
 			
 			if (node != null) {
-				((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", minSet.Id));
-				return node;
-			} else {
-				return raw;
+				((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", minSetId));
+				if (baseScope != null)
+					((DataItem)node).ItemData.Add (new DataValue ("inheritsScope", baseScope));
+				raw = node;
 			}
+			if (scope != null)
+				((DataItem)raw).ItemData.Add (new DataValue ("scope", scope));
+			return raw;
 		}
 		
 		//DESTRUCTIVE: this alters the nodes in baseline
@@ -320,21 +358,36 @@ namespace MonoDevelop.Projects.Policies
 			return newItem;
 		}
 		
-		public static IEnumerable<PolicySet> GetPolicySets (Type t)
+		public static PolicySet GetPolicySet (string name)
 		{
 			foreach (PolicySet s in sets)
-				if (s.Has (t))
-					yield return s;
+				if (s.Name == name)
+					return s;
+			return null;
 		}
 		
 		public static IEnumerable<PolicySet> GetPolicySets<T> ()
 		{
 			foreach (PolicySet s in sets)
-				if (s.Has<T>())
+				if (s.Has<T> ())
 					yield return s;
 		}
 		
-		public static IEnumerable<PolicySet> GetMatchingSets<T> (T policy) where T : class, IEquatable<T>
+		public static IEnumerable<PolicySet> GetPolicySets<T> (string scope)
+		{
+			foreach (PolicySet s in sets)
+				if (s.Has<T> (scope))
+					yield return s;
+		}
+		
+		public static IEnumerable<PolicySet> GetPolicySets<T> (IEnumerable<string> scopes)
+		{
+			foreach (PolicySet s in sets)
+				if (s.Has<T> (scopes))
+					yield return s;
+		}
+		
+		public static IEnumerable<PolicySet> GetMatchingSets<T> (T policy) where T : class, IEquatable<T>, new ()
 		{
 			foreach (PolicySet ps in sets) {
 				IEquatable<T> match = ps.Get<T> () as IEquatable<T>;
@@ -343,10 +396,20 @@ namespace MonoDevelop.Projects.Policies
 			}
 		}
 		
-		public static PolicySet GetMatchingSet<T> (T policy) where T : class, IEquatable<T>
+		public static PolicySet GetMatchingSet<T> (T policy) where T : class, IEquatable<T>, new ()
 		{
 			foreach (PolicySet ps in sets) {
-				IEquatable<T> match = ps.Get<T> () as IEquatable<T>;
+				T match = ps.Get<T> ();
+				if (match != null && match.Equals (policy))
+					return ps;
+			}
+			return null;
+		}
+		
+		public static PolicySet GetMatchingSet<T> (T policy, IEnumerable<string> scopes) where T : class, IEquatable<T>, new ()
+		{
+			foreach (PolicySet ps in sets) {
+				T match = ps.Get<T> (scopes);
 				if (match != null && match.Equals (policy))
 					return ps;
 			}
@@ -364,14 +427,43 @@ namespace MonoDevelop.Projects.Policies
 			return defaultPolicies.Get<T> () ?? new T ();
 		}
 		
+		public static T GetDefaultPolicy<T> (string scope) where T : class, IEquatable<T>, new ()
+		{
+			return defaultPolicies.Get<T> (scope) ?? new T ();
+		}
+		
+		public static T GetDefaultPolicy<T> (string scope, bool createDefault) where T : class, IEquatable<T>, new ()
+		{
+			return defaultPolicies.Get<T> (scope) ?? (createDefault ? new T () : null);
+		}
+		
+		public static T GetDefaultPolicy<T> (IEnumerable<string> scopes) where T : class, IEquatable<T>, new ()
+		{
+			return defaultPolicies.Get<T> (scopes) ?? new T ();
+		}
+		
 		public static void SetDefaultPolicy<T> (T value) where T : class, IEquatable<T>, new ()
 		{
-			defaultPolicies.Set<T> (value);
+			defaultPolicies.Set (value);
 		}
 		
 		public static PolicySet GetUserDefaultPolicySet ()
 		{
 			return defaultPolicies;
+		}
+		
+		public static PolicyBag DefaultPolicies {
+			get { return defaultPolicyBag; }
+		}
+		
+		public static bool IsUndefinedPolicy<T> (T policy)
+		{
+			return policy == null;
+		}
+		
+		public static T GetUndefinedPolicy<T> () where T : class, IEquatable<T>, new ()
+		{
+			return null;
 		}
 		
 		public static void SaveDefaultPolicies ()
@@ -383,10 +475,18 @@ namespace MonoDevelop.Projects.Policies
 		
 		static void LoadDefaultPolicies ()
 		{
+			if (defaultPolicies != null)
+				defaultPolicies.PolicyChanged -= DefaultPoliciesPolicyChanged;
 			defaultPolicies = new PolicySet (null, null);
 			ParanoidLoad (DefaultPoliciesPath, "default policies", delegate (StreamReader reader) {
 				defaultPolicies.LoadFromFile (reader);
 			});
+			defaultPolicies.PolicyChanged += DefaultPoliciesPolicyChanged;
+		}
+
+		static void DefaultPoliciesPolicyChanged (object sender, PolicyChangedEventArgs e)
+		{
+			defaultPolicyBag.PropagatePolicyChangeEvent (e);
 		}
 		
 		#region Paranoid load /save

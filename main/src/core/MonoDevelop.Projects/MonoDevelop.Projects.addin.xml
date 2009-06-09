@@ -159,6 +159,9 @@
 		<PolicySet id="Mono" _name="Mono">
 		<!--	<Policies resource="" /> -->
 		</PolicySet>
+		<PolicySet id="VisualStudio" _name="Microsoft Visual Studio">
+		<!--	<Policies resource="" /> -->
+		</PolicySet>
 	</Extension>
 	
 	

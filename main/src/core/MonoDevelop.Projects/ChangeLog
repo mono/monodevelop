@@ -1,3 +1,18 @@
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicyBag.cs:
+	* MonoDevelop.Projects.Policies/PolicySet.cs:
+	* MonoDevelop.Projects.Policies/PolicyService.cs:
+	* MonoDevelop.Projects.Policies/PolicyChangedEventArgs.cs:
+	  Added support for scoped policies (where scope can be a mime
+	  type).
+
+	* MonoDevelop.Projects.addin.xml: Added policy set for VS
+	  settings.
+
+	* MonoDevelop.Projects.Text/IFormatter.cs: Fixed to support
+	  per mime-type formatting.
+
 2009-06-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.addin.xml:

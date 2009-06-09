@@ -39,9 +39,10 @@ namespace MonoDevelop.Projects.Policies
 {
 	
 	[DataItem ("Policies")]
-	public class PolicyBag: ICustomDataItem
+	public class PolicyBag: ICustomDataItem, IPolicyContainer
 	{
-		Dictionary<Type, object> policies;
+		PolicyDictionary policies;
+		internal bool ReadOnly { get; set; }
 		
 		public PolicyBag (SolutionItem owner)
 		{
@@ -62,8 +63,12 @@ namespace MonoDevelop.Projects.Policies
 		{
 			if (policies != null) {
 				object policy;
-				if (policies.TryGetValue (typeof(T), out policy))
-					return (T) policy;
+				if (policies.TryGetValue (typeof(T), null, out policy)) {
+					if (!PolicyService.IsUndefinedPolicy (policy))
+						return (T)policy;
+					else
+						return PolicyService.GetDefaultPolicy<T> ();
+				}
 			}
 			if (IsRoot)
 				return PolicyService.GetDefaultPolicy<T> ();
@@ -71,61 +76,112 @@ namespace MonoDevelop.Projects.Policies
 				return Owner.ParentFolder.Policies.Get<T> ();
 		}
 		
+		public T Get<T> (IEnumerable<string> scopes) where T : class, IEquatable<T>, new ()
+		{
+			// The search is done vertically, looking first at the parents
+			foreach (string scope in scopes) {
+				IPolicyContainer currentBag = this;
+				while (currentBag != null) {
+					if (currentBag.DirectHas<T> (scope)) {
+						T pol = currentBag.DirectGet<T> (scope);
+						if (!PolicyService.IsUndefinedPolicy (pol))
+							return pol;
+						// If the bag has the policy (Has<> returns true) but the policy is undefined,
+						// then we have to keep looking using the base scopes.
+						// We start looking from the original bag, using the new scope.
+						break;
+					} else
+						currentBag = currentBag.ParentPolicies;
+				}
+			}
+			return PolicyService.GetDefaultPolicy<T>(scopes);
+		}
+		
 		// Gets policy directly from the bag without cacading or creating default instances
-		public T DirectGet<T> () where T : class, IEquatable<T>, new ()
+		T IPolicyContainer.DirectGet<T> ()
+		{
+			return ((IPolicyContainer)this).DirectGet<T> ((string)null);
+		}
+		
+		T IPolicyContainer.DirectGet<T> (string scope)
 		{
 			if (policies != null) {
 				object policy;
-				if (policies.TryGetValue (typeof(T), out policy))
+				if (policies.TryGetValue (typeof(T), scope, out policy))
 					return (T) policy;
 			}
 			return null;
 		}
 		
 		public bool IsRoot {
-			get { return Owner.ParentFolder == null; }
+			get { return Owner == null || Owner.ParentFolder == null; }
+		}
+		
+		IPolicyContainer IPolicyContainer.ParentPolicies {
+			get {
+				if (Owner != null && Owner.ParentFolder != null)
+					return Owner.ParentFolder.Policies;
+				else
+					return null;
+			}
 		}
 		
 		public void Set<T> (T value) where T : class, IEquatable<T>, new ()
 		{
-			if (value == null) {
-				Remove<T> ();
-				return;
+			Set (value, null);
+		}
+		
+		public void Set<T> (T value, string scope) where T : class, IEquatable<T>, new ()
+		{
+			CheckReadOnly ();
+			PolicyKey key = new PolicyKey (typeof(T), scope);
+			System.Diagnostics.Debug.Assert (key.Scope == scope);
+			
+			if (policies == null) {
+				policies = new PolicyDictionary ();
+			} else {
+				object oldVal = null;
+				policies.TryGetValue (key, out oldVal);
+				if (oldVal != null && ((IEquatable<T>)oldVal).Equals (value))
+					return;
 			}
-			if (policies == null)
-				policies = new Dictionary<Type, object> ();
 			
-			T oldVal = DirectGet<T> ();
-			if (oldVal != null && oldVal.Equals (value))
-				return;
-			
-			policies[typeof(T)] = value;
-			OnPolicyChanged (typeof(T), value);
+			policies[key] = value;
+			OnPolicyChanged (key.PolicyType, key.Scope);
 		}
 		
 		public bool Remove<T> () where T : class, IEquatable<T>, new ()
 		{
+			return Remove<T> (null);
+		}
+		
+		public bool Remove<T> (string scope) where T : class, IEquatable<T>, new ()
+		{
+			CheckReadOnly ();
 			if (policies != null) {
-				bool ret = policies.Remove (typeof (T));
-				if (!ret)
-					return ret;
-				
-				OnPolicyChanged (typeof (T), Get<T> ());
-				if (policies.Count == 0)
-					policies = null;
-				return ret;
+				if (policies.Remove (new PolicyKey (typeof(T), scope))) {
+					OnPolicyChanged (typeof(T), scope);
+					if (policies.Count == 0)
+						policies = null;
+					return true;
+				}
 			}
 			return false;
 		}
 		
-		public bool Has<T> ()
+		bool IPolicyContainer.DirectHas<T> ()
 		{
-			return Has (typeof (T));
+			return ((IPolicyContainer)this).DirectHas<T> ((string)null);
 		}
 		
-		public bool Has (Type type)
+		bool IPolicyContainer.DirectHas<T> (string scope)
 		{
-			return IsRoot || (policies != null && policies.ContainsKey (type));
+			return policies != null && policies.ContainsKey (new PolicyKey (typeof(T), scope));
+		}
+		
+		bool DirectHas (Type type, string scope)
+		{
+			return policies != null && policies.ContainsKey (new PolicyKey (type, scope));
 		}
 		
 		DataCollection ICustomDataItem.Serialize (ITypeSerializer handler)
@@ -134,8 +190,8 @@ namespace MonoDevelop.Projects.Policies
 				return null;
 			
 			DataCollection dc = new DataCollection ();
-			foreach (object p in policies.Values)
-				dc.Add (PolicyService.DiffSerialize (p));
+			foreach (KeyValuePair<PolicyKey,object> p in policies)
+				dc.Add (PolicyService.DiffSerialize (p.Key.PolicyType, p.Value, p.Key.Scope));
 			return dc;
 		}
 
@@ -144,10 +200,10 @@ namespace MonoDevelop.Projects.Policies
 			if (data.Count == 0)
 				return;
 			
-			policies = new Dictionary<Type, object> ();
+			policies = new PolicyDictionary ();
 			foreach (DataNode node in data) {
-				object pol = PolicyService.DiffDeserialize (node);
-				policies.Add (pol.GetType (), pol);
+				ScopedPolicy val = PolicyService.DiffDeserialize (node);
+				policies.Add (val);
 			}
 		}
 		
@@ -158,16 +214,98 @@ namespace MonoDevelop.Projects.Policies
 			SolutionFolder solFol = Owner as SolutionFolder;
 			if (solFol != null)
 				foreach (SolutionItem item in solFol.Items)
-					if (!item.Policies.Has (args.PolicyType))
+					if (!item.Policies.DirectHas (args.PolicyType, args.Scope))
 						item.Policies.PropagatePolicyChangeEvent (args);
 		}
 		
-		protected void OnPolicyChanged (Type policyType, object policy)
+		void CheckReadOnly ()
 		{
-			PropagatePolicyChangeEvent (new PolicyChangedEventArgs (policyType, policy));
+			if (ReadOnly)
+				throw new InvalidOperationException ("This PolicyBag can't be modified");
+		}
+		
+		protected void OnPolicyChanged (Type policyType, string scope)
+		{
+			PropagatePolicyChangeEvent (new PolicyChangedEventArgs (policyType, scope));
 		}
 		
 		public event EventHandler<PolicyChangedEventArgs> PolicyChanged;
 	}
 	
+	internal struct PolicyKey : IEquatable<PolicyKey>
+	{
+		public Type PolicyType { get; private set; }
+		public string Scope { get; private set; }
+		
+		public PolicyKey (Type policyType, string scope)
+		{
+			this.PolicyType = policyType;
+			this.Scope = scope;
+		}
+		
+		public override bool Equals (object obj)
+		{
+			return obj is PolicyKey && Equals ((PolicyKey)obj);
+		}
+		
+		public bool Equals (PolicyKey other)
+		{
+			return other.PolicyType.AssemblyQualifiedName == PolicyType.AssemblyQualifiedName && other.Scope == Scope;
+		}
+		
+		public override int GetHashCode ()
+		{
+			int code = PolicyType.AssemblyQualifiedName.GetHashCode ();
+			unchecked {
+				if (Scope != null)
+					code += Scope.GetHashCode ();
+			}
+			return code;
+		}
+		
+		public override string ToString ()
+		{
+			if (Scope != null)
+				return string.Format("[Policy: Type={0}, scope={1}]", PolicyType, Scope);
+			else
+				return string.Format("[Policy: Type={0}]", PolicyType);
+		}
+	}
+	
+	internal class PolicyDictionary : Dictionary<PolicyKey, object>
+	{
+		public PolicyDictionary ()
+		{
+		}
+		
+		public object this [Type policyType] {
+			get { return this [new PolicyKey (policyType, null)]; }
+			set { this [new PolicyKey (policyType, null)] = value; }
+		}
+		
+		public object this [Type policyType, string scope] {
+			get { return this [new PolicyKey (policyType, scope)]; }
+			set { this [new PolicyKey (policyType, scope)] = value; }
+		}
+		
+		public bool TryGetValue (Type policyTypeKey, string scopeKey, out object value)
+		{
+			return TryGetValue (new PolicyKey (policyTypeKey, scopeKey), out value);
+		}
+		
+		public bool TryGetValue (Type policyTypeKey, out object value)
+		{
+			return TryGetValue (new PolicyKey (policyTypeKey, null), out value);
+		}
+		
+		public void Add (ScopedPolicy scopedPolicy)
+		{
+			Add (new PolicyKey (scopedPolicy.PolicyType, scopedPolicy.Scope), scopedPolicy.Policy);
+		}
+		
+		public bool ContainsKey (Type policyType, string scope)
+		{
+			return ContainsKey (new PolicyKey (policyType, scope));
+		}
+	}
 }

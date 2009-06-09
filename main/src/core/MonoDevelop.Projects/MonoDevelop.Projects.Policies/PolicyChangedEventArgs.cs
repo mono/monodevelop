@@ -32,21 +32,13 @@ namespace MonoDevelop.Projects.Policies
 	
 	public class PolicyChangedEventArgs : EventArgs
 	{
-		object policy;
-		Type policyType;
-		
-		public PolicyChangedEventArgs (Type policyType, object policy)
+		public PolicyChangedEventArgs (Type policyType, string scope)
 		{
-			this.policy = policy;
-			this.policyType = policyType;
+			this.PolicyType = policyType;
+			this.Scope = scope;
 		}
 		
-		public object Policy {
-			get { return policy; }
-		}
-		
-		public Type PolicyType {
-			get { return policyType; }
-		}
+		public Type PolicyType { get; private set; }
+		public string Scope { get; private set; }
 	}
 }
