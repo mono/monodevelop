@@ -559,6 +559,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
+			targetResult.StaticResolve = false; // invocation result is never static
 			//System.Console.WriteLine("target:" + targetResult);
 			MethodResolveResult methodResult = targetResult as MethodResolveResult;
 			if (methodResult != null) {

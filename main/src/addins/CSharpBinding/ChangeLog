@@ -1,5 +1,10 @@
 2009-06-09  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs: Fixed "Bug 510919 - Code completion
+	  does not show interface method when not using a local var".
+
+2009-06-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/FindMemberAstVisitor.cs: Fixed find member visitor
 	  bug.
 
