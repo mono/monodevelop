@@ -551,7 +551,7 @@ namespace MonoDevelop.Projects
 				
 			try {
 				allProjects = GetAllBuildableEntries (configuration, true, true);
-			} catch (CyclicBuildOrderException) {
+			} catch (CyclicDependencyException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
 				return new BuildResult ("", 1, 1);
 			}

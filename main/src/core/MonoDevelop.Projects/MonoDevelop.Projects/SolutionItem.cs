@@ -336,7 +336,7 @@ namespace MonoDevelop.Projects
 		static void Insert<T> (int index, IList<T> allItems, List<T> sortedItems, bool[] inserted, bool[] triedToInsert, string solutionConfiguration) where T: SolutionItem
 		{
 			if (triedToInsert[index]) {
-				throw new CyclicBuildOrderException();
+				throw new CyclicDependencyException ();
 			}
 			triedToInsert[index] = true;
 			SolutionItem insertItem = allItems[index];

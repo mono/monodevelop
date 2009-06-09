@@ -204,15 +204,13 @@ FILES =  \
 	MonoDevelop.Projects/BuildResult.cs \
 	MonoDevelop.Projects/BuildTool.cs \
 	MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs \
-	MonoDevelop.Projects/CombineEventArgs.cs \
 	MonoDevelop.Projects/ConfigurationEventHandler.cs \
 	MonoDevelop.Projects/ConfigurationParameters.cs \
-	MonoDevelop.Projects/ConvertXml.cs \
 	MonoDevelop.Projects/CustomCommand.cs \
 	MonoDevelop.Projects/CustomCommandCollection.cs \
 	MonoDevelop.Projects/CustomCommandExtension.cs \
 	MonoDevelop.Projects/CustomCommandType.cs \
-	MonoDevelop.Projects/CyclicBuildOrderException.cs \
+	MonoDevelop.Projects/CyclicDependencyException.cs \
 	MonoDevelop.Projects/DotNetProject.cs \
 	MonoDevelop.Projects/DotNetProjectBinding.cs \
 	MonoDevelop.Projects/DotNetProjectConfiguration.cs \
@@ -249,7 +247,6 @@ FILES =  \
 	MonoDevelop.Projects/ProjectReference.cs \
 	MonoDevelop.Projects/ProjectReferenceCollection.cs \
 	MonoDevelop.Projects/ProjectReferenceEventArgs.cs \
-	MonoDevelop.Projects/ProjectRenameEventArgs.cs \
 	MonoDevelop.Projects/ProjectService.cs \
 	MonoDevelop.Projects/ProjectServiceExtension.cs \
 	MonoDevelop.Projects/ProjectsServices.cs \

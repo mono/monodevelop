@@ -1,5 +1,25 @@
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.Ambience:
+	* MonoDevelop.Projects/ConvertXml.cs:
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/SolutionFolder.cs:
+	* MonoDevelop.Projects/IProjectService.cs:
+	* MonoDevelop.Projects/CombineEventArgs.cs:
+	* MonoDevelop.Projects.Ambience/Ambience.cs:
+	* MonoDevelop.Projects.Ambience/NetAmbience.cs:
+	* MonoDevelop.Projects/ProjectRenameEventArgs.cs:
+	* MonoDevelop.Projects.Ambience/AmbienceService.cs:
+	* MonoDevelop.Projects.Ambience/ConversionFlags.cs:
+	* MonoDevelop.Projects/CyclicDependencyException.cs:
+	* MonoDevelop.Projects/CyclicBuildOrderException.cs: Removed
+	  some unused files. Rewrote CyclicBuildOrderException. Based
+	  on a patch by Carlo Kok.
+
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Text/IPrettyPrinter.cs: Add support for
 	  per-mimetype policies.
 
