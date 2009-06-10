@@ -1,5 +1,11 @@
 2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs: Limit
+	  the number of expressions when querying. Beyond 1230 there
+	  is an expression which makes the web service reply to fail.
+
+2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs: Properly
 	  show error messages while updating.
 

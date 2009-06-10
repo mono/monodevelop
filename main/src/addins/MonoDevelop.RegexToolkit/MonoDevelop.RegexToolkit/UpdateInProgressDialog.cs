@@ -53,7 +53,7 @@ namespace MonoDevelop.RegexToolkit
 				string doneMessage;
 				try {
 					Webservices services = new Webservices ();
-					this.expressions = services.ListAllAsXml (System.Int32.MaxValue);
+					this.expressions = services.ListAllAsXml (1230);
 					doneMessage = MonoDevelop.Core.GettextCatalog.GetString ("Update done.");
 				} catch (ThreadAbortException) {
 					Thread.ResetAbort ();
