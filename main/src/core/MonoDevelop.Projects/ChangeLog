@@ -1,3 +1,8 @@
+2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MD1\MD1DotNetProjectHandler.cs:
+	  Show a proper error message when resgen can't be found.
+
 2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom/Error.cs: Fix minor bug in one of
