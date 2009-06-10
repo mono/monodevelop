@@ -1,3 +1,10 @@
+2009-06-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Vi/ViMode.cs:
+	  Vi-style visual cursor.
+
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor.csproj: Fix gtk-dotnet reference.

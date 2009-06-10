@@ -140,8 +140,8 @@ namespace Mono.TextEditor.Vi
 			if (data == null)
 				return;
 			data.ClearSelection ();
-			if (!data.Caret.IsInInsertMode)
-				data.Caret.IsInInsertMode = true;
+			if (CaretMode.Block != data.Caret.Mode)
+				data.Caret.Mode = CaretMode.Block;
 		}
 		
 		void Reset (string status)
@@ -168,6 +168,9 @@ namespace Mono.TextEditor.Vi
 			Action<TextEditorData> action = null;
 			
 			switch (state) {
+			case State.Unknown:
+				Reset (string.Empty);
+				goto case State.Normal;
 			case State.Normal:
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0)) {
 					switch ((char)unicodeKey) {
@@ -187,14 +190,17 @@ namespace Mono.TextEditor.Vi
 						RunAction (CaretMoveActions.LineFirstNonWhitespace);
 						goto case 'i';
 					
-					case 'i':
 					case 'a':
+						RunAction (CaretMoveActions.Right);
+						goto case 'i';
+					case 'i':
+						Caret.Mode = CaretMode.Insert;
 						Status = "-- INSERT --";
 						state = State.Insert;
 						return;
 						
 					case 'R':
-						Caret.IsInInsertMode = false;
+						Caret.Mode = CaretMode.Underscore;
 						Status = "-- REPLACE --";
 						state = State.Replace;
 						return;
@@ -237,11 +243,13 @@ namespace Mono.TextEditor.Vi
 						goto case 'i';
 						
 					case 'r':
-						RunAction (SelectionActions.MoveRight);
+						Caret.Mode = CaretMode.Underscore;
+						Status = "-- REPLACE --";
 						state = State.WriteChar;
 						return;
 						
 					case 'c':
+						Caret.Mode = CaretMode.Insert;
 						Status = "c";
 						state = State.Change;
 						return;
@@ -520,6 +528,7 @@ namespace Mono.TextEditor.Vi
 				
 			case State.WriteChar:
 				if (unicodeKey != 0) {
+					RunAction (SelectionActions.StartSelection);
 					int   roffset = Data.SelectionRange.Offset;
 					InsertCharacter ((char) unicodeKey);
 					Caret.Offset = roffset;
@@ -690,6 +699,7 @@ namespace Mono.TextEditor.Vi
 				case 's':
 				case 'c':
 					RunAction (ClipboardActions.Cut);
+					Caret.Mode = CaretMode.Insert;
 					state = State.Insert;
 					Status = "-- INSERT --";
 					return;
@@ -835,7 +845,8 @@ namespace Mono.TextEditor.Vi
 		}
 
 		enum State {
-			Normal = 0,
+			Unknown = 0,
+			Normal,
 			Command,
 			Delete,
 			Yank,

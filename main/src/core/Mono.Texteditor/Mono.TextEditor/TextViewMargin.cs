@@ -378,12 +378,14 @@ namespace Mono.TextEditor
 			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink)) 
 				return;
 			
-			if (Caret.IsInInsertMode) {
+			switch (Caret.Mode) {
+			case CaretMode.Insert:
 				if (caretX < this.XOffset)
 					return;
 				SetClip (new Gdk.Rectangle (caretX, caretY, 1, LineHeight));
 				win.DrawLine (GetGC (ColorStyle.Caret.Color), caretX, caretY, caretX, caretY + LineHeight);
-			} else {
+				break;
+			case CaretMode.Block:
 				if (caretX + this.charWidth < this.XOffset)
 					return;
 				SetClip (new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
@@ -394,6 +396,14 @@ namespace Mono.TextEditor
 				textRenderer.SetText (caretChar.ToString ());
 				textRenderer.DrawText (win, caretX, caretY);
 				textRenderer.EndDraw ();
+				break;
+			case CaretMode.Underscore:
+				if (caretX + this.charWidth < this.XOffset)
+					return;
+				int bottom = caretY + lineHeight;
+				SetClip (new Gdk.Rectangle (caretX, bottom, this.charWidth, 1));
+				win.DrawLine (GetGC (ColorStyle.Caret.Color), caretX, bottom, caretX+this.charWidth, bottom);
+				break;
 			}
 		}
 		

@@ -39,6 +39,7 @@ namespace Mono.TextEditor
 		int  desiredColumn;
 		Document document;
 		TextEditorData editor;
+		CaretMode mode;
 		
 		public int Line {
 			get {
@@ -111,10 +112,23 @@ namespace Mono.TextEditor
 
 		public bool IsInInsertMode {
 			get {
-				return isInInsertMode;
+				return CaretMode.Insert == mode;
 			}
 			set {
-				isInInsertMode = value;
+				mode = value? CaretMode.Insert: CaretMode.Block;
+				OnModeChanged ();
+			}
+		}
+		
+		/// <summary>
+		/// The current mode of the caret
+		/// </summary>
+		public CaretMode Mode {
+			get {
+				return mode;
+			}
+			set {
+				mode = value;
 				OnModeChanged ();
 			}
 		}
@@ -234,5 +248,15 @@ namespace Mono.TextEditor
 				ModeChanged (this, EventArgs.Empty);
 		}
 		public event EventHandler ModeChanged;
+	}
+	
+	/// <summary>
+	/// Possible visual modes for the caret
+	/// </summary>
+	public enum CaretMode
+	{
+		Insert,
+		Block,
+		Underscore
 	}
 }
