@@ -277,7 +277,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void UpdateExtraWidgets ()
 		{
-			if (Filename == null || Filename.Length == 0 || System.IO.Directory.Exists (Filename)) {
+			if (Filenames.Length == 0 || Filename == null || Filename.Length == 0 || System.IO.Directory.Exists (Filename)) {
 				encodingLabel.Sensitive = encodingMenu.Sensitive = false;
 				viewerLabel.Sensitive = viewerSelector.Sensitive = false;
 				closeWorkspaceCheck.Visible = false;

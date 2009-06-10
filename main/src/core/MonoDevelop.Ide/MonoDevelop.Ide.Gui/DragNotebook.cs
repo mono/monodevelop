@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void LeaveDragMode (uint time)
 		{
-			if (Pointer.IsGrabbed) {
+			if (DragInProgress) {
 				Pointer.Ungrab (time);
 				Grab.Remove (this);
 			}
