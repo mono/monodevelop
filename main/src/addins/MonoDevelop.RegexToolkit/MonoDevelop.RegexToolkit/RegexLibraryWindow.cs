@@ -198,7 +198,6 @@ namespace MonoDevelop.RegexToolkit
 			settings.Indent = true;
 			XmlWriter writer = XmlTextWriter.Create (stream, settings);
 			try {
-				writer.Settings.Indent = true;
 				writer.WriteStartElement (Node);
 				writer.WriteAttributeString (VersionAttribute, version);
 				
