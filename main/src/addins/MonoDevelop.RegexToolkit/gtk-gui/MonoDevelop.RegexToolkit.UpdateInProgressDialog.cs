@@ -13,17 +13,17 @@ namespace MonoDevelop.RegexToolkit {
     
     public partial class UpdateInProgressDialog {
         
+        private Gtk.EventBox eventbox1;
+        
         private Gtk.Label label;
         
         private Gtk.Button buttonCancel;
-        
-        private Gtk.Button buttonOk;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.RegexToolkit.UpdateInProgressDialog
             this.Name = "MonoDevelop.RegexToolkit.UpdateInProgressDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Update in progress");
+            this.Title = Mono.Unix.Catalog.GetString("Update in Progress");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.Modal = true;
@@ -31,27 +31,31 @@ namespace MonoDevelop.RegexToolkit {
             this.AllowGrow = false;
             this.DestroyWithParent = true;
             this.Gravity = ((Gdk.Gravity)(5));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.RegexToolkit.UpdateInProgressDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
             w1.BorderWidth = ((uint)(2));
             // Container child dialog1_VBox.Gtk.Box+BoxChild
+            this.eventbox1 = new Gtk.EventBox();
+            this.eventbox1.Name = "eventbox1";
+            this.eventbox1.BorderWidth = ((uint)(12));
+            // Container child eventbox1.Gtk.Container+ContainerChild
             this.label = new Gtk.Label();
             this.label.Name = "label";
             this.label.Xalign = 0F;
             this.label.LabelProp = Mono.Unix.Catalog.GetString("Contacting www.regexlib.com. This may take a while ...");
-            w1.Add(this.label);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(w1[this.label]));
-            w2.Position = 0;
-            w2.Expand = false;
-            w2.Fill = false;
+            this.eventbox1.Add(this.label);
+            w1.Add(this.eventbox1);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(w1[this.eventbox1]));
+            w3.Position = 0;
+            w3.Expand = false;
+            w3.Fill = false;
             // Internal child MonoDevelop.RegexToolkit.UpdateInProgressDialog.ActionArea
-            Gtk.HButtonBox w3 = this.ActionArea;
-            w3.Name = "dialog1_ActionArea";
-            w3.Spacing = 6;
-            w3.BorderWidth = ((uint)(5));
-            w3.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w4 = this.ActionArea;
+            w4.Name = "dialog1_ActionArea";
+            w4.Spacing = 6;
+            w4.BorderWidth = ((uint)(5));
+            w4.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -61,27 +65,14 @@ namespace MonoDevelop.RegexToolkit {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w4 = ((Gtk.ButtonBox.ButtonBoxChild)(w3[this.buttonCancel]));
-            w4.Expand = false;
-            w4.Fill = false;
-            // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-            this.buttonOk = new Gtk.Button();
-            this.buttonOk.CanDefault = true;
-            this.buttonOk.CanFocus = true;
-            this.buttonOk.Name = "buttonOk";
-            this.buttonOk.UseStock = true;
-            this.buttonOk.UseUnderline = true;
-            this.buttonOk.Label = "gtk-ok";
-            this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w5 = ((Gtk.ButtonBox.ButtonBoxChild)(w3[this.buttonOk]));
-            w5.Position = 1;
+            Gtk.ButtonBox.ButtonBoxChild w5 = ((Gtk.ButtonBox.ButtonBoxChild)(w4[this.buttonCancel]));
             w5.Expand = false;
             w5.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 358;
-            this.DefaultHeight = 97;
+            this.DefaultWidth = 392;
+            this.DefaultHeight = 120;
             this.Show();
         }
     }

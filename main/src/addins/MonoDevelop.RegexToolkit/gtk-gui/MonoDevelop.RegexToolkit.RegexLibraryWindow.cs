@@ -67,19 +67,23 @@ namespace MonoDevelop.RegexToolkit {
         
         private Gtk.Entry nonMatchingEntry;
         
+        private Gtk.HSeparator hseparator1;
+        
         private Gtk.HButtonBox hbuttonbox2;
         
-        private Gtk.Button buttonCancel;
-        
         private Gtk.Button buttonOk;
+        
+        private Gtk.Button buttonCancel;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.RegexToolkit.RegexLibraryWindow
             this.Name = "MonoDevelop.RegexToolkit.RegexLibraryWindow";
             this.Title = Mono.Unix.Catalog.GetString("Regex Library");
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.TypeHint = ((Gdk.WindowTypeHint)(1));
+            this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.BorderWidth = ((uint)(6));
+            this.Gravity = ((Gdk.Gravity)(5));
             // Container child MonoDevelop.RegexToolkit.RegexLibraryWindow.Gtk.Container+ContainerChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
@@ -140,7 +144,6 @@ namespace MonoDevelop.RegexToolkit {
             this.expressionsTreeview = new Gtk.TreeView();
             this.expressionsTreeview.CanFocus = true;
             this.expressionsTreeview.Name = "expressionsTreeview";
-            this.expressionsTreeview.HeadersClickable = true;
             this.scrolledwindow2.Add(this.expressionsTreeview);
             this.vbox6.Add(this.scrolledwindow2);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox6[this.scrolledwindow2]));
@@ -312,10 +315,43 @@ namespace MonoDevelop.RegexToolkit {
             Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox2[this.vpaned1]));
             w26.Position = 1;
             // Container child vbox2.Gtk.Box+BoxChild
+            this.hseparator1 = new Gtk.HSeparator();
+            this.hseparator1.Name = "hseparator1";
+            this.vbox2.Add(this.hseparator1);
+            Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.vbox2[this.hseparator1]));
+            w27.Position = 2;
+            w27.Expand = false;
+            w27.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
             this.hbuttonbox2 = new Gtk.HButtonBox();
             this.hbuttonbox2.Name = "hbuttonbox2";
             this.hbuttonbox2.Spacing = 6;
             this.hbuttonbox2.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
+            this.buttonOk = new Gtk.Button();
+            this.buttonOk.CanFocus = true;
+            this.buttonOk.Name = "buttonOk";
+            this.buttonOk.UseUnderline = true;
+            // Container child buttonOk.Gtk.Container+ContainerChild
+            Gtk.Alignment w28 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w29 = new Gtk.HBox();
+            w29.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w30 = new Gtk.Image();
+            w30.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-refresh", Gtk.IconSize.Menu, 16);
+            w29.Add(w30);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w32 = new Gtk.Label();
+            w32.LabelProp = Mono.Unix.Catalog.GetString("Update Library");
+            w32.UseUnderline = true;
+            w29.Add(w32);
+            w28.Add(w29);
+            this.buttonOk.Add(w28);
+            this.hbuttonbox2.Add(this.buttonOk);
+            Gtk.ButtonBox.ButtonBoxChild w36 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonOk]));
+            w36.Expand = false;
+            w36.Fill = false;
             // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanFocus = true;
@@ -324,32 +360,21 @@ namespace MonoDevelop.RegexToolkit {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-close";
             this.hbuttonbox2.Add(this.buttonCancel);
-            Gtk.ButtonBox.ButtonBoxChild w27 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonCancel]));
-            w27.Expand = false;
-            w27.Fill = false;
-            // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
-            this.buttonOk = new Gtk.Button();
-            this.buttonOk.CanFocus = true;
-            this.buttonOk.Name = "buttonOk";
-            this.buttonOk.UseStock = true;
-            this.buttonOk.UseUnderline = true;
-            this.buttonOk.Label = "gtk-refresh";
-            this.hbuttonbox2.Add(this.buttonOk);
-            Gtk.ButtonBox.ButtonBoxChild w28 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonOk]));
-            w28.Position = 1;
-            w28.Expand = false;
-            w28.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w37 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonCancel]));
+            w37.Position = 1;
+            w37.Expand = false;
+            w37.Fill = false;
             this.vbox2.Add(this.hbuttonbox2);
-            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbuttonbox2]));
-            w29.Position = 2;
-            w29.Expand = false;
-            w29.Fill = false;
+            Gtk.Box.BoxChild w38 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbuttonbox2]));
+            w38.Position = 3;
+            w38.Expand = false;
+            w38.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 526;
-            this.DefaultHeight = 508;
+            this.DefaultWidth = 554;
+            this.DefaultHeight = 524;
             this.Show();
         }
     }

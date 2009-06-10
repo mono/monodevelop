@@ -122,7 +122,7 @@ namespace MonoDevelop.RegexToolkit
 		void SynchronizeExpressions ()
 		{
 			UpdateInProgressDialog updateDialog = new UpdateInProgressDialog ();
-			updateDialog.Parent = this;
+			updateDialog.TransientFor = this;
 			updateDialog.Run ();
 			if (updateDialog.Expressions != null) {
 				this.expressions = updateDialog.Expressions;

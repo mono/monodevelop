@@ -69,8 +69,7 @@ namespace MonoDevelop.RegexToolkit
 			this.buttonLibrary.Clicked  += delegate {
 				if (regexLib == null) {
 					regexLib = new RegexLibraryWindow ();
-					regexLib.DestroyWithParent = true;
-					regexLib.Parent = this;
+					regexLib.TransientFor = this;
 					regexLib.Destroyed += delegate {
 						regexLib = null;
 					};

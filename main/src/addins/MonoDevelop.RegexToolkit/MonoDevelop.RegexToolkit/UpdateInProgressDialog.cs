@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 
@@ -41,32 +42,39 @@ namespace MonoDevelop.RegexToolkit
 				return expressions;
 			}
 		}
-		bool cancled = false;
+
 		public UpdateInProgressDialog() 
 		{
 			this.Build();
 			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			
-			this.buttonOk.Sensitive = false;
-			this.buttonOk.Clicked += delegate {
-				Destroy ();
-			};
+			Thread t = new Thread (delegate () {
+				try {
+					Webservices services = new Webservices ();
+					this.expressions = services.ListAllAsXml (System.Int32.MaxValue);
+				} catch (ThreadAbortException) {
+					Thread.ResetAbort ();
+				} catch (Exception ex) {
+					Gtk.Application.Invoke (delegate {
+						this.buttonCancel.Label = Gtk.Stock.Close;
+						this.label.Text = MonoDevelop.Core.GettextCatalog.GetString ("Update failed.") + "\n" + ex.Message;
+					});
+				}
+				
+				Gtk.Application.Invoke (delegate {
+					this.buttonCancel.Label = Gtk.Stock.Close;
+					this.label.Text = MonoDevelop.Core.GettextCatalog.GetString ("Update done.");
+				});
+			});
+			
 			this.buttonCancel.Clicked += delegate {
-				cancled = true;
+				t.Abort ();
 				this.expressions = null;
 				Destroy ();
-			}; 
+			};
 			
-			DispatchService.BackgroundDispatch (
-				delegate {
-				Webservices services = new Webservices ();
-				this.expressions = services.ListAllAsXml (System.Int32.MaxValue);
-				if (!cancled) {
-					this.buttonCancel.Sensitive = false;
-					this.label.Text = MonoDevelop.Core.GettextCatalog.GetString ("Update done.");
-					this.buttonOk.Sensitive = true;
-				}
-			});
+			t.IsBackground = true;
+			t.Start ();
 		}
 	}
 }

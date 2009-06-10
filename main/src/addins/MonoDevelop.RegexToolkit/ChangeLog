@@ -1,3 +1,17 @@
+2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.RegexToolkit.csproj:
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:
+	* MonoDevelop.RegexToolkit/RegexLibraryWindow.cs:
+	* gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:
+	* gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:
+	* gtk-gui/MonoDevelop.RegexToolkit.UpdateInProgressDialog.cs:
+	  Cosmetic GUI fixes.
+
+	* MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs: Properly
+	  handle cancellation of the web service call.
+
 2009-06-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.RegexToolkit/RegexLibraryWindow.cs: On MS.NET

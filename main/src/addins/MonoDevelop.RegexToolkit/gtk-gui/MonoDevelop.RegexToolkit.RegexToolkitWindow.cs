@@ -266,7 +266,6 @@ namespace MonoDevelop.RegexToolkit {
             this.elementsTreeview = new Gtk.TreeView();
             this.elementsTreeview.CanFocus = true;
             this.elementsTreeview.Name = "elementsTreeview";
-            this.elementsTreeview.HeadersClickable = true;
             this.elementsscrolledwindow.Add(this.elementsTreeview);
             this.vbox4.Add(this.elementsscrolledwindow);
             Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox4[this.elementsscrolledwindow]));
@@ -287,7 +286,6 @@ namespace MonoDevelop.RegexToolkit {
             this.optionsTreeview = new Gtk.TreeView();
             this.optionsTreeview.CanFocus = true;
             this.optionsTreeview.Name = "optionsTreeview";
-            this.optionsTreeview.HeadersClickable = true;
             this.scrolledwindow5.Add(this.optionsTreeview);
             this.notebook3.Add(this.scrolledwindow5);
             Gtk.Notebook.NotebookChild w26 = ((Gtk.Notebook.NotebookChild)(this.notebook3[this.scrolledwindow5]));
@@ -320,7 +318,6 @@ namespace MonoDevelop.RegexToolkit {
             this.resultsTreeview = new Gtk.TreeView();
             this.resultsTreeview.CanFocus = true;
             this.resultsTreeview.Name = "resultsTreeview";
-            this.resultsTreeview.HeadersClickable = true;
             this.scrolledwindow2.Add(this.resultsTreeview);
             this.notebook2.Add(this.scrolledwindow2);
             // Notebook tab
