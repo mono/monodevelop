@@ -162,6 +162,15 @@ namespace MonoDevelop.Core.Assemblies
 			if (path != null)
 				yield return path;
 
+			string sdkPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles), "Microsoft SDKs");
+			sdkPath = Path.Combine (sdkPath, "Windows");
+			if (fx.Id == "4.0")
+				yield return Path.Combine (sdkPath, "v7.0A\\bin\\NETFX 4.0 Tools");
+			else if (fx.Id == "3.5")
+				yield return Path.Combine (sdkPath, "v7.0A\\bin");
+			else
+				yield return Path.Combine (sdkPath, "v6.0A");
+
 			foreach (string s in base.GetToolsPaths (fx))
 				yield return s;
 		}
