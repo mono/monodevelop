@@ -47,29 +47,33 @@ namespace MonoDevelop.RegexToolkit
 		{
 			this.Build();
 			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+			bool done = false;
 			
 			Thread t = new Thread (delegate () {
+				string doneMessage;
 				try {
 					Webservices services = new Webservices ();
 					this.expressions = services.ListAllAsXml (System.Int32.MaxValue);
+					doneMessage = MonoDevelop.Core.GettextCatalog.GetString ("Update done.");
 				} catch (ThreadAbortException) {
 					Thread.ResetAbort ();
+					doneMessage = "";
 				} catch (Exception ex) {
-					Gtk.Application.Invoke (delegate {
-						this.buttonCancel.Label = Gtk.Stock.Close;
-						this.label.Text = MonoDevelop.Core.GettextCatalog.GetString ("Update failed.") + "\n" + ex.Message;
-					});
+					doneMessage = MonoDevelop.Core.GettextCatalog.GetString ("Update failed.") + "\n" + ex.Message;
+				} finally {
+					done = true;
 				}
-				
 				Gtk.Application.Invoke (delegate {
 					this.buttonCancel.Label = Gtk.Stock.Close;
-					this.label.Text = MonoDevelop.Core.GettextCatalog.GetString ("Update done.");
+					this.label.Text = doneMessage;
 				});
 			});
 			
 			this.buttonCancel.Clicked += delegate {
-				t.Abort ();
-				this.expressions = null;
+				if (!done) {
+					t.Abort ();
+					this.expressions = null;
+				}
 				Destroy ();
 			};
 			

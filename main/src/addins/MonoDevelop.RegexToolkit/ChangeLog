@@ -1,5 +1,10 @@
 2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs: Properly
+	  show error messages while updating.
+
+2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.RegexToolkit.csproj:
 	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:
