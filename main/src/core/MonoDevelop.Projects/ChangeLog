@@ -1,5 +1,11 @@
 2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectHandler.cs:
+	  Ignore WebReferences and WebReferenceUrl items. We don't
+	  support them.
+
+2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MD1\MD1DotNetProjectHandler.cs:
 	  Show a proper error message when resgen can't be found.
 
