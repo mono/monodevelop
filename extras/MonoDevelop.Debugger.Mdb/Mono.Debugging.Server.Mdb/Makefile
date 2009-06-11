@@ -73,6 +73,7 @@ FILES =  \
 	TimedEvaluator.cs \
 	TimeOutException.cs \
 	TypeValueReference.cs \
+	UserVariableReference.cs \
 	Util.cs \
 	ValueReference.cs \
 	VariableReference.cs 

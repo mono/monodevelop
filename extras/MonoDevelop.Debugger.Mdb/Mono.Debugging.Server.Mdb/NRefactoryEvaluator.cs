@@ -41,12 +41,35 @@ namespace DebuggerServer
 {
 	public class NRefactoryEvaluator: ExpressionEvaluator
 	{
+		Dictionary<string,ValueReference> userVariables = new Dictionary<string, ValueReference> ();
+		
 		public override ValueReference Evaluate (EvaluationContext ctx, string exp, EvaluationOptions options)
 		{
+			if (exp.StartsWith ("var ")) {
+				exp = exp.Substring (4).Trim (' ','\t');
+				string var = null;
+				for (int n=0; n<exp.Length; n++) {
+					if (!char.IsLetterOrDigit (exp[n]) && exp[n] != '_') {
+						var = exp.Substring (0, n);
+						if (!exp.Substring (n).Trim (' ','\t').StartsWith ("="))
+							var = null;
+						break;
+					}
+					if (n == exp.Length - 1) {
+						var = exp;
+						exp = null;
+						break;
+					}
+				}
+				if (!string.IsNullOrEmpty (var))
+					userVariables [var] = new UserVariableReference (ctx, var);
+				if (exp == null)
+					return null;
+			}
 			StringReader codeStream = new StringReader (exp);
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
-			EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, options);
+			EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, options, userVariables);
 			return (ValueReference) expObj.AcceptVisitor (ev, null);
 		}
 	}
@@ -56,12 +79,14 @@ namespace DebuggerServer
 		EvaluationContext ctx;
 		string name;
 		EvaluationOptions options;
+		Dictionary<string,ValueReference> userVariables;
 		
-		public EvaluatorVisitor (EvaluationContext ctx, string name, EvaluationOptions options)
+		public EvaluatorVisitor (EvaluationContext ctx, string name, EvaluationOptions options, Dictionary<string,ValueReference> userVariables)
 		{
 			this.ctx = ctx;
 			this.name = name;
 			this.options = options;
+			this.userVariables = userVariables;
 		}
 		
 		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
@@ -87,6 +112,29 @@ namespace DebuggerServer
 					break;
 				case UnaryOperatorType.Plus:
 					break;
+					
+				case UnaryOperatorType.Decrement:
+				case UnaryOperatorType.Increment: {
+					if (!options.CanEvaluateMethods)
+						throw CreateNotSupportedError ();
+					object origVal = vref.ObjectValue;
+					long newVal = Convert.ToInt64 (origVal);
+					newVal += (unaryOperatorExpression.Op == UnaryOperatorType.Increment) ? 1 : -1;
+					LiteralValueReference nvref = new LiteralValueReference (ctx, name, Convert.ChangeType (newVal, origVal.GetType ()));
+					vref.Value = nvref.Value;
+					return nvref;
+				}
+				case UnaryOperatorType.PostDecrement:
+				case UnaryOperatorType.PostIncrement: {
+					if (!options.CanEvaluateMethods)
+						throw CreateNotSupportedError ();
+					object origVal = vref.ObjectValue;
+					long newVal = Convert.ToInt64 (origVal);
+					newVal += (unaryOperatorExpression.Op == UnaryOperatorType.PostIncrement) ? 1 : -1;
+					LiteralValueReference nvref = new LiteralValueReference (ctx, name, Convert.ChangeType (newVal, origVal.GetType ()));
+					vref.Value = nvref.Value;
+					return new LiteralValueReference (ctx, name, origVal);
+				}
 				default:
 					throw CreateNotSupportedError ();
 			}
@@ -335,6 +383,10 @@ namespace DebuggerServer
 		{
 			string name = identifierExpression.Identifier;
 			
+			ValueReference userVar;
+			if (userVariables.TryGetValue (name, out userVar))
+				return userVar;
+			
 			// Look in variables
 			
 			foreach (TargetVariable var in ctx.Frame.Method.GetLocalVariables (ctx.Thread)) {
@@ -446,25 +498,29 @@ namespace DebuggerServer
 		public override object VisitBinaryOperatorExpression (ICSharpCode.NRefactory.Ast.BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			ValueReference left = (ValueReference) binaryOperatorExpression.Left.AcceptVisitor (this, data);
-			
+			return EvaluateBinaryOperatorExpression (left, binaryOperatorExpression.Right, binaryOperatorExpression.Op, data);
+		}
+		
+		object EvaluateBinaryOperatorExpression (ValueReference left, ICSharpCode.NRefactory.Ast.Expression rightExp, BinaryOperatorType oper, object data)
+		{
 			// Shortcut ops
 			
-			switch (binaryOperatorExpression.Op) {
+			switch (oper) {
 				case BinaryOperatorType.LogicalAnd: {
 					if (!(bool)left.ObjectValue)
 						return left;
-					return binaryOperatorExpression.Right.AcceptVisitor (this, data);
+					return rightExp.AcceptVisitor (this, data);
 				}
 				case BinaryOperatorType.LogicalOr: {
 					if ((bool)left.ObjectValue)
 						return left;
-					return binaryOperatorExpression.Right.AcceptVisitor (this, data);
+					return rightExp.AcceptVisitor (this, data);
 				}
 			}
 			
-			ValueReference right = (ValueReference) binaryOperatorExpression.Right.AcceptVisitor (this, data);
+			ValueReference right = (ValueReference) rightExp.AcceptVisitor (this, data);
 
-			if (binaryOperatorExpression.Op == BinaryOperatorType.Add || binaryOperatorExpression.Op == BinaryOperatorType.Concat) {
+			if (oper == BinaryOperatorType.Add || oper == BinaryOperatorType.Concat) {
 				if (left.Type == ctx.Frame.Language.StringType || right.Type == ctx.Frame.Language.StringType)
 					return new LiteralValueReference (ctx, name, left.CallToString () + right.CallToString ());
 			}
@@ -472,10 +528,10 @@ namespace DebuggerServer
 			object val1 = left.ObjectValue;
 			object val2 = right.ObjectValue;
 			
-			if ((binaryOperatorExpression.Op == BinaryOperatorType.ExclusiveOr) && (val1 is bool) && !(val2 is bool))
+			if ((oper == BinaryOperatorType.ExclusiveOr) && (val1 is bool) && !(val2 is bool))
 				return new LiteralValueReference (ctx, name, (bool)val1 ^ (bool)val2);
 			
-			switch (binaryOperatorExpression.Op) {
+			switch (oper) {
 				case BinaryOperatorType.Equality:
 					return new LiteralValueReference (ctx, name, val1.Equals (val2));
 				case BinaryOperatorType.InEquality:
@@ -492,7 +548,7 @@ namespace DebuggerServer
 			long v2 = Convert.ToInt64 (right.ObjectValue);
 			object res;
 			
-			switch (binaryOperatorExpression.Op) {
+			switch (oper) {
 				case BinaryOperatorType.Add: res = v1 + v2; break;
 				case BinaryOperatorType.BitwiseAnd: res = v1 & v2; break;
 				case BinaryOperatorType.BitwiseOr: res = v1 | v2; break;
@@ -552,6 +608,41 @@ namespace DebuggerServer
 		
 		public override object VisitAssignmentExpression (ICSharpCode.NRefactory.Ast.AssignmentExpression assignmentExpression, object data)
 		{
+			if (!options.CanEvaluateMethods)
+				throw CreateNotSupportedError ();
+			
+			ValueReference left = (ValueReference) assignmentExpression.Left.AcceptVisitor (this, data);
+			
+			if (assignmentExpression.Op == AssignmentOperatorType.Assign) {
+				ValueReference right = (ValueReference) assignmentExpression.Right.AcceptVisitor (this, data);
+				left.Value = right.Value;
+			} else {
+				BinaryOperatorType bop = BinaryOperatorType.None;
+				switch (assignmentExpression.Op) {
+					case AssignmentOperatorType.Add: bop = BinaryOperatorType.Add; break;
+					case AssignmentOperatorType.BitwiseAnd: bop = BinaryOperatorType.BitwiseAnd; break;
+					case AssignmentOperatorType.BitwiseOr: bop = BinaryOperatorType.BitwiseOr; break;
+					case AssignmentOperatorType.ConcatString: bop = BinaryOperatorType.Concat; break;
+					case AssignmentOperatorType.Divide: bop = BinaryOperatorType.Divide; break;
+					case AssignmentOperatorType.DivideInteger: bop = BinaryOperatorType.DivideInteger; break;
+					case AssignmentOperatorType.ExclusiveOr: bop = BinaryOperatorType.ExclusiveOr; break;
+					case AssignmentOperatorType.Modulus: bop = BinaryOperatorType.Modulus; break;
+					case AssignmentOperatorType.Multiply: bop = BinaryOperatorType.Multiply; break;
+					case AssignmentOperatorType.Power: bop = BinaryOperatorType.Power; break;
+					case AssignmentOperatorType.ShiftLeft: bop = BinaryOperatorType.ShiftLeft; break;
+					case AssignmentOperatorType.ShiftRight: bop = BinaryOperatorType.ShiftRight; break;
+					case AssignmentOperatorType.Subtract: bop = BinaryOperatorType.Subtract; break;
+				}
+				ValueReference val = (ValueReference) EvaluateBinaryOperatorExpression (left, assignmentExpression.Right, bop, data);
+				left.Value = val.Value;
+			}
+			return left;
+		}
+		
+		#region Unsupported expressions
+		
+		public override object VisitVariableDeclaration (ICSharpCode.NRefactory.Ast.VariableDeclaration variableDeclaration, object data)
+		{
 			throw CreateNotSupportedError ();
 		}
 		
@@ -559,8 +650,6 @@ namespace DebuggerServer
 		{
 			throw CreateNotSupportedError ();
 		}
-		
-		#region Unsupported expressions
 		
 		public override object VisitPointerReferenceExpression (ICSharpCode.NRefactory.Ast.PointerReferenceExpression pointerReferenceExpression, object data)
 		{
@@ -583,11 +672,6 @@ namespace DebuggerServer
 		}
 		
 		public override object VisitWithStatement (ICSharpCode.NRefactory.Ast.WithStatement withStatement, object data)
-		{
-			throw CreateNotSupportedError ();
-		}
-		
-		public override object VisitVariableDeclaration (ICSharpCode.NRefactory.Ast.VariableDeclaration variableDeclaration, object data)
 		{
 			throw CreateNotSupportedError ();
 		}

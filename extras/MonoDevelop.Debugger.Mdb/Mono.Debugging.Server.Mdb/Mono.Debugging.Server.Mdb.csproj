@@ -165,6 +165,7 @@
     <Compile Include="RuntimeInvokeManager.cs" />
     <Compile Include="MdbAdaptor.cs" />
     <Compile Include="MdbAdaptorFactory.cs" />
+    <Compile Include="UserVariableReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
