@@ -226,7 +226,7 @@ namespace MonoDevelop.Projects
 				foreach (ClrVersion v in versions) {
 					foreach (TargetFramework f in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
 						if (f.ClrVersion == v) {
-							if (f.IsSupported)
+							if (TargetRuntime.IsInstalled (f))
 								return f;
 							else if (oneSupported == null)
 								oneSupported = f;
