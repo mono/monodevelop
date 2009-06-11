@@ -1,3 +1,12 @@
+2009-06-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.csproj:
+	* MonoDevelop.Moonlight.addin.xml:
+	* MonoDevelop.Moonlight/framework_Silverlight.xml:
+	* MonoDevelop.Moonlight/SilverlightFrameworkBackend.cs: Define
+	  and register the Silverlight framework.
+
 2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Moonlight\MoonlightBuildExtension.cs: Track api

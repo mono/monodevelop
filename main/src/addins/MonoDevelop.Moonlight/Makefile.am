@@ -34,11 +34,13 @@ FILES =  \
 	MonoDevelop.Moonlight/MoonlightProject.cs \
 	MonoDevelop.Moonlight/MoonlightProjectBinding.cs \
 	MonoDevelop.Moonlight/MoonlightProjectConfiguration.cs \
+	MonoDevelop.Moonlight/SilverlightFrameworkBackend.cs \
 	MonoDevelop.Moonlight/XamlG.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
 	MonoDevelop.Moonlight.addin.xml \
+	MonoDevelop.Moonlight/framework_Silverlight.xml \
 	Templates/Moonlight-ApplicationProject.xpt.xml \
 	Templates/Moonlight-ApplicationXaml.xft.xml \
 	Templates/Moonlight-LibraryProject.xpt.xml \

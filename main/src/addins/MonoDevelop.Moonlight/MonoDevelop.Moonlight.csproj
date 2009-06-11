@@ -126,6 +126,9 @@
     <EmbeddedResource Include="Templates\PreviewTemplate.html">
       <LogicalName>PreviewTemplate.html</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Moonlight\framework_Silverlight.xml">
+      <LogicalName>framework_Silverlight.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -140,6 +143,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Moonlight\MoonlightBuildExtension.cs" />
+    <Compile Include="MonoDevelop.Moonlight\SilverlightFrameworkBackend.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -84,4 +84,10 @@
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.Moonlight.MoonlightBuildExtension" insertafter="MidStep" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/Frameworks">
+		<Framework id="Silverligt_2.0" resource="framework_Silverlight.xml">
+			<Backend class="MonoDevelop.Moonlight.SilverlightFrameworkBackend" />
+		</Framework>
+	</Extension>
 </Addin>
