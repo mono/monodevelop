@@ -32,7 +32,7 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Core.Assemblies
 {
-	class MsNetTargetRuntime: TargetRuntime
+	public class MsNetTargetRuntime: TargetRuntime
 	{
 		FilePath rootDir;
 		FilePath newFxDir;
@@ -69,6 +69,10 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
+		public FilePath RootDirectory {
+			get { return rootDir; }
+		}
+		
 		protected override void OnInitialize ()
 		{
 			RegistryKey foldersKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\AssemblyFolders", false);
@@ -100,79 +104,19 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
-		public override Dictionary<string, string> GetToolsEnvironmentVariables (TargetFramework fx)
-		{
-			Dictionary<string, string> vars = new Dictionary<string, string> ();
-			string path = Environment.GetEnvironmentVariable ("PATH");
-			vars["PATH"] = GetFrameworkToolsPath (fx) + Path.PathSeparator + path;
-			return vars;
-		}
-		
 		protected override IEnumerable<string> GetGacDirectories ()
 		{
 			yield return gacDir;
 		}
 
-		string GetClrVersion (ClrVersion v)
-		{
-			switch (v) {
-				case ClrVersion.Net_1_1: return "v1.1.4322";
-				case ClrVersion.Net_2_0: return "v2.0.50727";
-				case ClrVersion.Clr_2_1: return "v2.1";
-				case ClrVersion.Net_4_0: return "v4.0.20506";
-			}
-			return "?";
-		}
-		
-		protected override string GetFrameworkFolder (TargetFramework fx)
-		{
-			switch (fx.Id) {
-				case "1.1":
-				case "2.0": return rootDir.Combine (GetClrVersion (fx.ClrVersion));
-			}
-
-			RegistryKey fxFolderKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\v" + fx.Id, false);
-			if (fxFolderKey != null) {
-				string folder = fxFolderKey.GetValue ("All Assemblies In") as string;
-				fxFolderKey.Close ();
-				return folder;
-			}
-			return "";
-		}
-		
 		public override IExecutionHandler GetExecutionHandler ()
 		{
 			return execHandler;
 		}
-
-		string GetFrameworkToolsPath (TargetFramework fx)
+		
+		protected override TargetFrameworkBackend CreateBackend (TargetFramework fx)
 		{
-			if (fx.Id == "1.1" || fx.Id == "2.0" || fx.Id == "4.0")
-				return rootDir.Combine (GetClrVersion (fx.ClrVersion));
-
-			if (fx.Id == "3.0")
-				return rootDir.Combine (GetClrVersion (ClrVersion.Net_2_0));
- 
-			return rootDir.Combine ("v" + fx.Id);
-		}
-
-		public override IEnumerable<string> GetToolsPaths (TargetFramework fx)
-		{
-			string path = GetFrameworkToolsPath (fx);
-			if (path != null)
-				yield return path;
-
-			string sdkPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles), "Microsoft SDKs");
-			sdkPath = Path.Combine (sdkPath, "Windows");
-			if (fx.Id == "4.0")
-				yield return Path.Combine (sdkPath, "v7.0A\\bin\\NETFX 4.0 Tools");
-			else if (fx.Id == "3.5")
-				yield return Path.Combine (sdkPath, "v7.0A\\bin");
-			else
-				yield return Path.Combine (sdkPath, "v6.0A");
-
-			foreach (string s in base.GetToolsPaths (fx))
-				yield return s;
+			return new MsNetFrameworkBackend ();
 		}
 	}
 }

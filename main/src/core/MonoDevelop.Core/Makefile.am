@@ -9,10 +9,13 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ITargetRuntimeFactory.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageInstalledCondition.cs \
+	MonoDevelop.Core.AddIns/TargetFrameworkNode.cs \
 	MonoDevelop.Core.Assemblies/CustomRuntimeExecutionModeSet.cs \
+	MonoDevelop.Core.Assemblies/MonoFrameworkBackend.cs \
 	MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs \
 	MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs \
 	MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs \
+	MonoDevelop.Core.Assemblies/MsNetFrameworkBackend.cs \
 	MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs \
 	MonoDevelop.Core.Assemblies/MsNetTargetRuntimeFactory.cs \
 	MonoDevelop.Core.Assemblies/PcFileCache.cs \
@@ -20,6 +23,7 @@ FILES =  \
 	MonoDevelop.Core.Assemblies/SystemAssemblyService.cs \
 	MonoDevelop.Core.Assemblies/SystemPackage.cs \
 	MonoDevelop.Core.Assemblies/TargetFramework.cs \
+	MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs \
 	MonoDevelop.Core.Assemblies/TargetRuntime.cs \
 	MonoDevelop.Core.Collections/ReadOnlyDictionary.cs \
 	MonoDevelop.Core.Collections/Set.cs \
@@ -120,7 +124,11 @@ FILES =  \
 	MonoDevelop.Core/XmlReadHelper.cs
 
 RES =  \
-	frameworks.xml \
+	frameworks/framework_NET_1_1.xml \
+	frameworks/framework_NET_2_0.xml \
+	frameworks/framework_NET_3_0.xml \
+	frameworks/framework_NET_3_5.xml \
+	frameworks/framework_NET_4_0.xml \
 	MonoDevelop.Core.addin.xml                                                          
 
 REFS =  \

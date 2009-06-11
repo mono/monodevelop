@@ -1,3 +1,27 @@
+2009-06-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks:
+	* Makefile.am:
+	* frameworks.xml:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.addin.xml:
+	* frameworks/framework_NET_2_0.xml:
+	* frameworks/framework_NET_1_1.xml:
+	* frameworks/framework_NET_3_0.xml:
+	* frameworks/framework_NET_4_0.xml:
+	* frameworks/framework_NET_3_5.xml:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/TargetFramework.cs:
+	* MonoDevelop.Core.AddIns/TargetFrameworkNode.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MonoFrameworkBackend.cs:
+	* MonoDevelop.Core.Assemblies/MsNetFrameworkBackend.cs:
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs:
+	* MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs: Added
+	  extensibility support for frameworks. Now add-ins can define
+	  new frameworks and support for them for specific runtimes.
+
 2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies\MsNetTargetRuntime.cs: Added sdk

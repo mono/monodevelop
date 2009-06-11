@@ -51,6 +51,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		object initLock = new object ();
 		bool initialized;
+		TargetFrameworkBackend[] frameworkBackends;
 		
 		public event EventHandler PackagesChanged;
 
@@ -92,43 +93,58 @@ namespace MonoDevelop.Core.Assemblies
 		
 		protected abstract void OnInitialize ();
 		
-		protected abstract string GetFrameworkFolder (TargetFramework fx);
-		
 		public abstract IExecutionHandler GetExecutionHandler ();
+		
+		protected TargetFrameworkBackend GetBackend (TargetFramework fx)
+		{
+			if (frameworkBackends == null)
+				frameworkBackends = new TargetFrameworkBackend [TargetFramework.FrameworkCount];
+			else if (fx.Index > frameworkBackends.Length)
+				Array.Resize (ref frameworkBackends, TargetFramework.FrameworkCount);
+			
+			TargetFrameworkBackend backend = frameworkBackends [fx.Index];
+			if (backend == null) {
+				backend = fx.CreateBackendForRuntime (this);
+				if (backend == null) {
+					backend = CreateBackend (fx);
+					if (backend == null)
+						backend = new NotSupportedFrameworkBackend ();
+				}
+				backend.Initialize (this, fx);
+				frameworkBackends [fx.Index] = backend;
+			}
+			return backend;
+		}
+		
+		protected virtual TargetFrameworkBackend CreateBackend (TargetFramework fx)
+		{
+			return null;
+		}
 		
 		public ICollection<string> GetAssemblyFullNames ()
 		{
 			return assemblyFullNameToAsm.Keys;
 		}
 		
+		internal protected virtual string GetFrameworkFolder (TargetFramework fx)
+		{
+			return GetBackend (fx).GetFrameworkFolder ();
+		}
+		
 		//environment variables that should be set when running tools in this environment
 		public virtual Dictionary<string, string> GetToolsEnvironmentVariables (TargetFramework fx)
 		{
-			return new Dictionary<string,string> ();
+			return GetBackend (fx).GetToolsEnvironmentVariables ();
 		}
 		
 		public virtual string GetToolPath (TargetFramework fx, string toolName)
 		{
-			foreach (string path in GetToolsPaths (fx)) {
-				string toolPath = Path.Combine (path, toolName);
-				if (PropertyService.IsWindows) {
-					if (File.Exists (toolPath + ".bat"))
-						return toolPath + ".bat";
-				}
-				if (File.Exists (toolPath + ".exe"))
-					return toolPath + ".exe";
-				if (File.Exists (toolPath))
-					return toolPath;
-			}
-			return null;
+			return GetBackend (fx).GetToolPath (toolName);
 		}
 		
 		public virtual IEnumerable<string> GetToolsPaths (TargetFramework fx)
 		{
-			string paths;
-			if (!GetToolsEnvironmentVariables (fx).TryGetValue ("PATH", out paths))
-				return new string[0];
-			return paths.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
+			return GetBackend (fx).GetToolsPaths ();
 		}
 		
 		public SystemPackage RegisterPackage (SystemPackageInfo pinfo, params string[] assemblyFiles)
@@ -244,7 +260,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			Initialize ();
 			
-			if (fx != null && !fx.IsSupported)
+			if (fx != null && !IsInstalled (fx))
 				yield break;
 			
 			if (fx == null) {
@@ -589,12 +605,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public bool IsInstalled (TargetFramework fx)
 		{
-			string dir = GetFrameworkFolder (fx);
-			if (!string.IsNullOrEmpty (dir) && Directory.Exists (dir)) {
-				string firstAsm = Path.Combine (dir, fx.Assemblies [0].Name) + ".dll";
-				return File.Exists (firstAsm);
-			}
-			return false;
+			return GetBackend (fx).IsInstalled;
 		}
 
 		void CreateFrameworks ()
@@ -620,10 +631,8 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
 				// A framework is installed if the assemblies directory exists and the first
 				// assembly of the list exists.
-				if (IsInstalled (fx)) {
-					fx.IsSupported = true;
+				if (IsInstalled (fx))
 					RegisterSystemAssemblies (fx);
-				}
 			}
 			
 			if (SystemAssemblyService.UpdateExpandedFrameworksFile && IsRunning) {
@@ -669,15 +678,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		protected virtual SystemPackageInfo GetFrameworkPackageInfo (TargetFramework fx)
 		{
-			SystemPackageInfo info = new SystemPackageInfo ();
-			info.Name = DisplayRuntimeName;
-			info.Description = fx.Name;
-			info.IsFrameworkPackage = true;
-			info.IsCorePackage = true;
-			info.IsGacPackage = true;
-			info.Version = fx.Id;
-			info.TargetFramework = fx.Id;
-			return info;
+			return GetBackend (fx).GetFrameworkPackageInfo ();
 		}
 
 

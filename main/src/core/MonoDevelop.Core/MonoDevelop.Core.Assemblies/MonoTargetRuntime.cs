@@ -61,13 +61,22 @@ namespace MonoDevelop.Core.Assemblies
 			monoRuntimeInfo = info;
 		}
 		
-		internal MonoRuntimeInfo MonoRuntimeInfo {
+		public MonoRuntimeInfo MonoRuntimeInfo {
 			get { return monoRuntimeInfo; }
 		}
 		
 		public string Prefix {
 			get { return monoRuntimeInfo.Prefix; }
 		}
+		
+		public string MonoDirectory {
+			get { return monoDir; }
+		}
+		
+		public Dictionary<string,string> EnvironmentVariables {
+			get { return environmentVariables; }
+		}
+
 		
 		public override bool IsRunning {
 			get {
@@ -98,6 +107,12 @@ namespace MonoDevelop.Core.Assemblies
 
 		public bool UserDefined { get; internal set; }
 		
+		protected override TargetFrameworkBackend CreateBackend (TargetFramework fx)
+		{
+			return new MonoFrameworkBackend ();
+		}
+
+		
 		public override IExecutionHandler GetExecutionHandler ()
 		{
 			if (execHandler == null) {
@@ -105,33 +120,6 @@ namespace MonoDevelop.Core.Assemblies
 				execHandler = new MonoPlatformExecutionHandler (monoPath, environmentVariables);
 			}
 			return execHandler;
-		}
-		
-		public override string GetToolPath (TargetFramework fx, string toolName)
-		{
-			if (toolName == "csc" || toolName == "mcs") {
-				if (fx.ClrVersion == ClrVersion.Net_1_1)
-					toolName = "mcs";
-				else if (fx.ClrVersion == ClrVersion.Net_2_0)
-					toolName = "gmcs";
-				else if (fx.ClrVersion == ClrVersion.Clr_2_1)
-					toolName = "smcs";
-			}
-			else if (toolName == "resgen") {
-				if (fx.ClrVersion == ClrVersion.Net_1_1)
-					toolName = "resgen1";
-				else if (fx.ClrVersion == ClrVersion.Net_2_0)
-					toolName = "resgen2";
-			}
-			return base.GetToolPath (fx, toolName);
-		}
-
-		public override IEnumerable<string> GetToolsPaths (TargetFramework fx)
-		{
-			if (fx.Id == "2.1" && environmentVariables.ContainsKey ("MOONLIGHT_2_SDK_PATH"))
-				yield return environmentVariables ["MOONLIGHT_2_SDK_PATH"];
-			else
-				yield return Path.Combine (MonoRuntimeInfo.Prefix, "bin");
 		}
 		
 		protected override IEnumerable<string> GetGacDirectories ()
@@ -143,45 +131,6 @@ namespace MonoDevelop.Core.Assemblies
 				foreach (string path in gacs.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries))
 					yield return path;
 			}
-		}
-		
-		//NOTE: mcs, etc need to use the env vars too 	 
-		public override Dictionary<string, string> GetToolsEnvironmentVariables (TargetFramework fx)
-		{
-			return environmentVariables;
-		}
-		
-		protected override string GetFrameworkFolder (TargetFramework fx)
-		{
-			string subdir;
-			switch (fx.Id) {
-				case "1.1":
-					subdir = "1.0"; break;
-				case "3.5":
-					subdir = "2.0"; break;
-				case "2.1":
-					string moonSDKPath;
-					if (environmentVariables.TryGetValue ("MOONLIGHT_2_SDK_PATH", out moonSDKPath))
-						return moonSDKPath;
-					subdir = "2.1"; break;
-				default:
-					subdir = fx.Id; break;
-			}
-			return Path.Combine (monoDir, subdir);
-		}
-		
-		protected override SystemPackageInfo GetFrameworkPackageInfo (TargetFramework fx)
-		{
-			SystemPackageInfo info = base.GetFrameworkPackageInfo (fx);
-			if (fx.Id == "3.0") {
-				info.Name = "olive";
-				info.IsCorePackage = false;
-			} else if (fx.Id == "2.1") {
-				info.Name = "moonlight";
-			} else {
-				info.Name = "mono";
-			}
-			return info;
 		}
 		
 		public IEnumerable<string> PkgConfigDirs {

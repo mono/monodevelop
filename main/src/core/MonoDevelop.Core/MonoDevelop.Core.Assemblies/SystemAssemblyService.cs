@@ -49,7 +49,7 @@ namespace MonoDevelop.Core.Assemblies
 		List<TargetFramework> frameworks;
 		List<TargetRuntime> runtimes;
 		TargetRuntime defaultRuntime;
-		internal static string ReferenceFrameworksFile;
+		internal static string ReferenceFrameworksPath;
 		internal static string GeneratedFrameworksFile;
 		
 		public TargetRuntime CurrentRuntime { get; private set; }
@@ -59,7 +59,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal SystemAssemblyService ()
 		{
-			ReferenceFrameworksFile = Environment.GetEnvironmentVariable ("MONODEVELOP_FRAMEWORKS_FILE");
+			ReferenceFrameworksPath = Environment.GetEnvironmentVariable ("MONODEVELOP_FRAMEWORKS_FILE");
 			GeneratedFrameworksFile = Environment.GetEnvironmentVariable ("MONODEVELOP_FRAMEWORKS_OUTFILE");
 		}
 		
@@ -199,7 +199,7 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		internal static bool UseExpandedFrameworksFile {
-			get { return ReferenceFrameworksFile == null; }
+			get { return ReferenceFrameworksPath == null; }
 		}
 		
 		internal static bool UpdateExpandedFrameworksFile {
@@ -208,20 +208,15 @@ namespace MonoDevelop.Core.Assemblies
 		
 		protected void CreateFrameworks ()
 		{
-			Stream s;
-			if (UseExpandedFrameworksFile)
-				s = AddinManager.CurrentAddin.GetResource ("frameworks.xml");
-			else {
-				Console.WriteLine ("Loading frameworks file: " + ReferenceFrameworksFile);
-				s = File.OpenRead (ReferenceFrameworksFile);
+			frameworks = new List<TargetFramework> ();
+			foreach (TargetFrameworkNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/Frameworks")) {
+				try {
+					frameworks.Add (node.CreateFramework ());
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not load framework '" + node.Id + "'", ex);
+				}
 			}
 			
-			using (s) {
-				XmlTextReader reader = new XmlTextReader (s);
-				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-				frameworks = (List<TargetFramework>) ser.Deserialize (reader, typeof(List<TargetFramework>));
-			}
-
 			// Find framework realtions
 			foreach (TargetFramework fx in frameworks)
 				BuildFrameworkRelations (fx);

@@ -43,6 +43,16 @@
 		<ExtensionNode name="Class" objectType="MonoDevelop.Core.AddIns.ITargetRuntimeFactory"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Core/Frameworks">
+		<Description>Target frameworks.</Description>
+		<ExtensionNode name="Framework" type="MonoDevelop.Core.AddIns.TargetFrameworkNode" objectType="MonoDevelop.Core.Assemblies.TargetFramework">
+			<Description>Definition of a framework. The list of assemblies of the framework is defined in the referenced resource file.</Description>
+			<ExtensionNode name="Backend" objectType="MonoDevelop.Core.Assemblies.TargetFrameworkBackend">
+				<Description>A framework backend. Provides support for a framework for a runtime.</Description>
+			</ExtensionNode>
+		</ExtensionNode>
+	</ExtensionPoint>
+	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
 <!--		<Mode id="Default" _name="Default" class="MonoDevelop.Core.Execution.DefaultExecutionHandlerFactory"/>-->
 		<ModeSetType class="MonoDevelop.Core.Assemblies.CustomRuntimeExecutionModeSet"/>
@@ -51,6 +61,14 @@
 	<Extension path = "/MonoDevelop/Core/Runtimes">
 		<Class class="MonoDevelop.Core.Assemblies.MsNetTargetRuntimeFactory"/>
 		<Class class="MonoDevelop.Core.Assemblies.MonoTargetRuntimeFactory"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/Frameworks">
+		<Framework id="Net_1.1" resource="framework_NET_1_1.xml"/>
+		<Framework id="Net_2.0" resource="framework_NET_2_0.xml"/>
+		<Framework id="Net_3.0" resource="framework_NET_3_0.xml"/>
+		<Framework id="Net_3.5" resource="framework_NET_3_5.xml"/>
+		<Framework id="Net_4.0" resource="framework_NET_4_0.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">

@@ -29,6 +29,8 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
 using System.Reflection;
+using Mono.Addins;
+using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -47,6 +49,9 @@ namespace MonoDevelop.Core.Assemblies
 		List<string> extendedFrameworks = new List<string> ();
 
 		internal bool RelationsBuilt;
+		
+		internal static int FrameworkCount;
+		internal int Index;
 
 		public static TargetFramework Default {
 			get { return Runtime.SystemAssemblyService.GetTargetFramework ("1.1"); }
@@ -54,15 +59,16 @@ namespace MonoDevelop.Core.Assemblies
 
 		internal TargetFramework ()
 		{
+			Index = FrameworkCount++;
 		}
 
 		internal TargetFramework (string id)
 		{
+			Index = FrameworkCount++;
 			this.id = id;
 			this.name = id;
 			clrVersion = ClrVersion.Default;
 			Assemblies = new AssemblyInfo[0];
-			IsSupported = false;
 			compatibleFrameworks.Add (id);
 			extendedFrameworks.Add (id);
 		}
@@ -90,6 +96,18 @@ namespace MonoDevelop.Core.Assemblies
 			return compatibleFrameworks.Contains (fxId);
 		}
 
+		internal TargetFrameworkNode FrameworkNode { get; set; }
+		
+		internal TargetFrameworkBackend CreateBackendForRuntime (TargetRuntime runtime)
+		{
+			foreach (TypeExtensionNode node in FrameworkNode.ChildNodes) {
+				TargetFrameworkBackend backend = (TargetFrameworkBackend) node.CreateInstance (typeof (TargetFrameworkBackend));
+				if (backend.SupportsRuntime (runtime))
+					return backend;
+			}
+			return null;
+		}
+		
 		internal bool IsExtensionOfFramework (string fxId)
 		{
 			return extendedFrameworks.Contains (fxId);
@@ -105,8 +123,6 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal string BaseCoreFramework { get; set; }
 
-		public bool IsSupported { get; internal set; }
-		
 		[ItemProperty]
 		internal string ExtendsFramework { get; set; }
 		
