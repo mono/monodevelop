@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -71,6 +71,27 @@
     <Compile Include="Mono.Debugging.Backend\IObjectValueUpdater.cs" />
     <Compile Include="Mono.Debugging.Backend\IObjectValueUpdateCallback.cs" />
     <Compile Include="Mono.Debugging.Backend\UpdateCallback.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\ArrayElementGroup.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\ArrayValueReference.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\AsyncEvaluationTracker.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\AsyncOperationManager.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\EvaluationContext.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\ExpressionEvaluator.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\FilteredMembersSource.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\ICollectionAdaptor.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\LiteralValueReference.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\NamespaceValueReference.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\NRefactoryEvaluator.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\NullValueReference.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\ObjectValueAdaptor.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\RawViewSource.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\RemoteFrameObject.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\TimedEvaluator.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\TimeOutException.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\TypeValueReference.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\ValueReference.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\UserVariableReference.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\Backtrace.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -88,4 +109,13 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="Mono.Debugging.Evaluation\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

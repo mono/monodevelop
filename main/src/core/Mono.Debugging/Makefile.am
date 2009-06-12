@@ -4,6 +4,7 @@ ASSEMBLY = $(ASSEMBLY_BUILD_DIR)/Mono.Debugging.dll
   
 
 REFS =  \
+	-r:../../../build/bin/NRefactory.dll \
 	-r:System \
 	-r:System.Xml
 
@@ -38,7 +39,28 @@ FILES =  \
 	Mono.Debugging.Client/TargetEventArgs.cs \
 	Mono.Debugging.Client/TargetEventType.cs \
 	Mono.Debugging.Client/ThreadEventArgs.cs \
-	Mono.Debugging.Client/ThreadInfo.cs
+	Mono.Debugging.Client/ThreadInfo.cs \
+	Mono.Debugging.Evaluation/ArrayElementGroup.cs \
+	Mono.Debugging.Evaluation/ArrayValueReference.cs \
+	Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs \
+	Mono.Debugging.Evaluation/AsyncOperationManager.cs \
+	Mono.Debugging.Evaluation/Backtrace.cs \
+	Mono.Debugging.Evaluation/EvaluationContext.cs \
+	Mono.Debugging.Evaluation/ExpressionEvaluator.cs \
+	Mono.Debugging.Evaluation/FilteredMembersSource.cs \
+	Mono.Debugging.Evaluation/ICollectionAdaptor.cs \
+	Mono.Debugging.Evaluation/LiteralValueReference.cs \
+	Mono.Debugging.Evaluation/NamespaceValueReference.cs \
+	Mono.Debugging.Evaluation/NRefactoryEvaluator.cs \
+	Mono.Debugging.Evaluation/NullValueReference.cs \
+	Mono.Debugging.Evaluation/ObjectValueAdaptor.cs \
+	Mono.Debugging.Evaluation/RawViewSource.cs \
+	Mono.Debugging.Evaluation/RemoteFrameObject.cs \
+	Mono.Debugging.Evaluation/TimedEvaluator.cs \
+	Mono.Debugging.Evaluation/TimeOutException.cs \
+	Mono.Debugging.Evaluation/TypeValueReference.cs \
+	Mono.Debugging.Evaluation/UserVariableReference.cs \
+	Mono.Debugging.Evaluation/ValueReference.cs
 
 RES = 
 

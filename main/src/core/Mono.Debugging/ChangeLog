@@ -1,3 +1,32 @@
+2009-06-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Evaluation:
+	* Mono.Debugging.Evaluation/Backtrace.cs:
+	* Mono.Debugging.Evaluation/RawViewSource.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/TimedEvaluator.cs:
+	* Mono.Debugging.Evaluation/TimeOutException.cs:
+	* Mono.Debugging.Evaluation/ArrayElementGroup.cs:
+	* Mono.Debugging.Evaluation/EvaluationContext.cs:
+	* Mono.Debugging.Evaluation/RemoteFrameObject.cs:
+	* Mono.Debugging.Evaluation/TypeValueReference.cs:
+	* Mono.Debugging.Evaluation/NullValueReference.cs:
+	* Mono.Debugging.Evaluation/ICollectionAdaptor.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs:
+	* Mono.Debugging.Evaluation/ArrayValueReference.cs:
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs:
+	* Mono.Debugging.Evaluation/LiteralValueReference.cs:
+	* Mono.Debugging.Evaluation/AsyncOperationManager.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs:
+	* Mono.Debugging.Evaluation/UserVariableReference.cs:
+	* Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs:
+	* Mono.Debugging.Evaluation/NamespaceValueReference.cs: Added
+	  an expression evaluator factorized from the Mdb and Win32
+	  debugger addins.
+
 2009-06-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/DebuggerSession.cs:
