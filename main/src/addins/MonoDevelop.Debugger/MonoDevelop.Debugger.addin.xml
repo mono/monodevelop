@@ -29,6 +29,7 @@
 			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
 			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoints" />
 			<Pad id = "MonoDevelop.Debugger.ThreadsPad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.ThreadsPad" _label="Threads" />
+			<Pad id = "MonoDevelop.Debugger.ImmediatePad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.ImmediatePad" _label="Immediate" />
 		</Category>
 	</Extension>
 	
@@ -38,6 +39,7 @@
 		<ContextPad id = "MonoDevelop.Debugger.StackTracePad" />
 		<ContextPad id = "MonoDevelop.Debugger.BreakpointPad" />
 		<ContextPad id = "MonoDevelop.Debugger.ThreadsPad" />
+		<ContextPad id = "MonoDevelop.Debugger.ImmediatePad" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
@@ -172,7 +174,6 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
-		<Mode id="Debug" _name="Debug" class="MonoDevelop.Debugger.DebugExecutionHandlerFactory"/>
 		<ModeSetType class="MonoDevelop.Debugger.DebugExecutionModeSet"/>
 	</Extension>
 	

@@ -1,3 +1,10 @@
+2009-06-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/ImmediatePad.cs: Added immediate pad.
+
 2009-05-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger\ThreadsPad.cs: Don't try to get the
