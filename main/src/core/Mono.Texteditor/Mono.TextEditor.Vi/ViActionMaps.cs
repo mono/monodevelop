@@ -38,11 +38,11 @@ namespace Mono.TextEditor.Vi
 		{
 			switch (c) {
 			case 'h':
-				return CaretMoveActions.Left;
+				return ViActions.Left;
 			case 'b':
 				return CaretMoveActions.PreviousWord;
 			case 'l':
-				return CaretMoveActions.Right;
+				return ViActions.Right;
 			case 'w':
 				return CaretMoveActions.NextWord;
 			case 'k':
@@ -77,11 +77,11 @@ namespace Mono.TextEditor.Vi
 				switch (key) {
 				case Gdk.Key.Left:
 				case Gdk.Key.KP_Left:
-					return CaretMoveActions.Left;
+					return ViActions.Left;
 					
 				case Gdk.Key.Right:
 				case Gdk.Key.KP_Right:
-					return CaretMoveActions.Right;
+					return ViActions.Right;
 					
 				case Gdk.Key.Up:
 				case Gdk.Key.KP_Up:

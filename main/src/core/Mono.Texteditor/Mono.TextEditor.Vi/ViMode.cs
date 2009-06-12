@@ -191,7 +191,7 @@ namespace Mono.TextEditor.Vi
 						goto case 'i';
 					
 					case 'a':
-						RunAction (CaretMoveActions.Right);
+						RunAction (ViActions.Right);
 						goto case 'i';
 					case 'i':
 						Caret.Mode = CaretMode.Insert;
@@ -786,8 +786,7 @@ namespace Mono.TextEditor.Vi
 					// Inline paste
 					if (data.IsSomethingSelected) 
 						RunAction (ClipboardActions.Cut);
-					else if (data.Caret.Offset < data.Document.GetLine (data.Caret.Line).EndOffset)
-						RunAction (CaretMoveActions.Right);
+					else RunAction (ViActions.Right);
 					int offset = data.Caret.Offset;
 					data.InsertAtCaret (contents);
 					data.Caret.Offset = offset;
@@ -834,8 +833,7 @@ namespace Mono.TextEditor.Vi
 					// Inline paste
 					if (data.IsSomethingSelected) 
 						RunAction (ClipboardActions.Cut);
-					else if (Caret.Offset > data.Document.GetLine (Caret.Line).Offset)
-						RunAction (CaretMoveActions.Left);
+					else RunAction (ViActions.Left);
 					int offset = Caret.Offset;
 					data.InsertAtCaret (contents);
 					Caret.Offset = offset;

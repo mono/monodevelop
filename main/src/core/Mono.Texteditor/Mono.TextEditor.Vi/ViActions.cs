@@ -163,5 +163,20 @@ namespace Mono.TextEditor.Vi
 					data.Caret.Offset += length;
 			}
 		}
+		
+		public static void Right (TextEditorData data)
+		{
+			LineSegment segment = data.Document.GetLine (data.Caret.Line);
+			if (segment.EndOffset-1 > data.Caret.Offset) {
+				CaretMoveActions.Right (data);
+			}
+		}
+		
+		public static void Left (TextEditorData data)
+		{
+			if (0 < data.Caret.Column) {
+				CaretMoveActions.Left (data);
+			}
+		}
 	}
 }

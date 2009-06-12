@@ -1,5 +1,12 @@
 2009-06-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Mono.TextEditor.Vi/ViMode.cs:
+	* Mono.TextEditor.Vi/ViActions.cs:
+	* Mono.TextEditor.Vi/ViActionMaps.cs:
+	  Make left/right keybindings more consistent with vim.
+
+2009-06-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Mono.TextEditor/Caret.cs:
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor.Vi/ViMode.cs:
