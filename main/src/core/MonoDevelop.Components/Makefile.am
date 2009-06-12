@@ -92,6 +92,7 @@ FILES =  \
 	MonoDevelop.Components.DockToolbars/PlaceholderWindow.cs \
 	MonoDevelop.Components/BaseFileEntry.cs \
 	MonoDevelop.Components/CellRendererComboBox.cs \
+	MonoDevelop.Components/ConsoleView.cs \
 	MonoDevelop.Components/DataGrid.cs \
 	MonoDevelop.Components/FileEntry.cs \
 	MonoDevelop.Components/FileSelector.cs \

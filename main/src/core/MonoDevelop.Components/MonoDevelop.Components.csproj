@@ -179,6 +179,7 @@
     <Compile Include="MonoDevelop.Components\ListView.cs" />
     <Compile Include="MonoDevelop.Components\TooltipWindow.cs" />
     <Compile Include="MonoDevelop.Components\WindowTransparencyDecorator.cs" />
+    <Compile Include="MonoDevelop.Components\ConsoleView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

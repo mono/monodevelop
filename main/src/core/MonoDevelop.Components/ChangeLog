@@ -1,3 +1,10 @@
+2009-06-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components/ConsoleView.cs: Added ConsoleView, a
+	  widget for implementing consoles.
+
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components/CellRendererComboBox.cs: Provide the
