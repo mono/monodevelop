@@ -48,9 +48,9 @@ namespace MonoDevelop.CSharpBinding
 				SyntaxMode baseMode = SyntaxMode.Read (reader);
 				this.rules = new List<Rule> (baseMode.Rules);
 				this.keywords = new List<Keywords> (baseMode.Keywords);
-				this.spans = new List<Span> (baseMode.Spans);
+				this.spans = baseMode.Spans;
 				this.matches = baseMode.Matches;
-				this.prevMarker = new List<Marker> (baseMode.PrevMarker);
+				this.prevMarker = baseMode.PrevMarker;
 				this.SemanticRules = new List<SemanticRule> (baseMode.SemanticRules);
 				this.table = baseMode.Table;
 			}
