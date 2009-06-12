@@ -50,6 +50,11 @@ namespace Mono.TextEditor
 				return markers ?? nullMarkers;
 			}
 		}
+		public int MarkerCount {
+			get {
+				return markers != null ? markers.Count : 0;
+			}
+		}
 				
 		public int EditableLength {
 			get {

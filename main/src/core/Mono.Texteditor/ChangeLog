@@ -1,3 +1,17 @@
+2009-06-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor/LineSegment.cs:
+	* Mono.TextEditor/GutterMargin.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor.Highlighting/Rule.cs:
+	* Mono.TextEditor.Highlighting/Match.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/SemanticRule.cs: Overworked
+	  rendering backend.
+
 2009-06-10  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs:

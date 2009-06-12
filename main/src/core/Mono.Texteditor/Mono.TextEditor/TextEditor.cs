@@ -217,6 +217,7 @@ namespace Mono.TextEditor
 				RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta));
 			}
 			Caret.IsVisible = true;
+			TextViewMargin.VAdjustmentValueChanged ();
 			
 			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
 			                        buffer,
@@ -300,15 +301,20 @@ namespace Mono.TextEditor
 			imContext.UsePreedit = true; 
 			imContext.PreeditStart += delegate {
 				preeditOffset = Caret.Offset;
+				this.textViewMargin.ForceInvalidateLine (Caret.Line);
 				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
 			};
 			imContext.PreeditEnd += delegate {
 				preeditOffset = -1;
+				this.textViewMargin.ForceInvalidateLine (Caret.Line);
 				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
 			};
 			imContext.PreeditChanged += delegate (object sender, EventArgs e) {
-				imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos); 
-				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
+				if (preeditOffset >= 0) {
+					imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos); 
+					this.textViewMargin.ForceInvalidateLine (Caret.Line);
+					this.textEditorData.Document.CommitLineUpdate (Caret.Line);
+				}
 			};
 			Caret.PositionChanged += CaretPositionChanged;
 			textViewMargin.Initialize ();

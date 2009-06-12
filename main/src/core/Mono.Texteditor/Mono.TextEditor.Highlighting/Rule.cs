@@ -36,9 +36,9 @@ namespace Mono.TextEditor.Highlighting
 	public class Rule
 	{
 		protected List<Keywords> keywords = new List<Keywords> ();
-		protected List<Span> spans = new List<Span> ();
+		protected Span[] spans = new Span[0];
 		protected Match[] matches = new Match[0];
-		protected List<Marker> prevMarker = new List<Marker> ();
+		protected Marker[] prevMarker = new Marker[0];
 		
 		public List<SemanticRule> SemanticRules = new List<SemanticRule> ();
 		
@@ -90,7 +90,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public IEnumerable<Span> Spans {
+		public Span[] Spans {
 			get {
 				return spans;
 			}
@@ -123,7 +123,7 @@ namespace Mono.TextEditor.Highlighting
 			protected set;
 		}
 
-		public List<Marker> PrevMarker {
+		public Marker[] PrevMarker {
 			get {
 				return prevMarker;
 			}
@@ -194,7 +194,7 @@ namespace Mono.TextEditor.Highlighting
 		}
 		
 		
-		protected bool ReadNode (XmlReader reader, List<Match> matchList)
+		protected bool ReadNode (XmlReader reader, List<Match> matchList, List<Span> spanList, List<Marker> prevMarkerList)
 		{
 			switch (reader.LocalName) {
 			case "Delimiters":
@@ -213,7 +213,7 @@ namespace Mono.TextEditor.Highlighting
 				return true;
 			case Span.Node:
 			case Span.AltNode:
-				this.spans.Add (Span.Read (reader));
+				spanList.Add (Span.Read (reader));
 				return true;
 			case Mono.TextEditor.Highlighting.Keywords.Node:
 				Keywords keywords = Mono.TextEditor.Highlighting.Keywords.Read (reader, IgnoreCase);
@@ -235,7 +235,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 				return true;
 			case Marker.PrevMarker:
-				this.prevMarker.Add (Marker.Read (reader));
+				prevMarkerList.Add (Marker.Read (reader));
 				return true;
 			}
 			return false;
@@ -310,14 +310,18 @@ namespace Mono.TextEditor.Highlighting
 			if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase")))
 				result.IgnoreCase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
 			List<Match> matches = new List<Match> ();
+			List<Span> spanList = new List<Span> ();
+			List<Marker> prevMarkerList = new List<Marker> ();
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {
 				case Node:
 					return true;
 				}
-				return result.ReadNode (reader, matches);
+				return result.ReadNode (reader, matches, spanList, prevMarkerList);
 			});
 			result.matches = matches.ToArray ();
+			result.spans   = spanList.ToArray ();
+			result.prevMarker = prevMarkerList.ToArray ();
 			return result;
 		}
 	}

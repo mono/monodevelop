@@ -30,7 +30,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
 using System.Diagnostics;
 
@@ -297,7 +296,9 @@ namespace Mono.TextEditor.Highlighting
 			
 			protected virtual void ScanSpan (ref int i)
 			{
-				foreach (Span span in CurRule.Spans) {
+				for (int j = 0; j < CurRule.Spans.Length; j++) {
+					Span span = CurRule.Spans[j];
+					
 					if (span.BeginFlags.Contains ("startsLine") && line != null && i != line.Offset)
 						continue;
 					
@@ -404,8 +405,19 @@ namespace Mono.TextEditor.Highlighting
 			
 			Chunk startChunk = null;
 			Chunk endChunk;
+			
 			void AddRealChunk (Chunk chunk)
 			{
+				if (startChunk == null) {
+					startChunk = endChunk = chunk;
+					return;
+				}
+				if (endChunk.Style.Equals (chunk.Style)) {
+					endChunk.Length += chunk.Length;
+					return;
+				}
+				endChunk = endChunk.Next = chunk;
+				/*
 				const int MaxChunkLength = 80;
 				int divisor = chunk.Length / MaxChunkLength;
 				int reminder = chunk.Length % MaxChunkLength;
@@ -422,7 +434,7 @@ namespace Mono.TextEditor.Highlighting
 						startChunk = endChunk = newChunk;
 					else 
 						endChunk = endChunk.Next = newChunk;
-				}
+				}*/
 			}
 			
 			void AddChunk (ref Chunk curChunk, int length, string style)
@@ -648,6 +660,8 @@ namespace Mono.TextEditor.Highlighting
 		{
 			SyntaxMode result = new SyntaxMode ();
 			List<Match> matches = new List<Match> ();
+			List<Span> spanList = new List<Span> ();
+			List<Marker> prevMarkerList = new List<Marker> ();
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				switch (reader.LocalName) {
 				case Node:
@@ -664,8 +678,10 @@ namespace Mono.TextEditor.Highlighting
 					result.rules.Add (Rule.Read (result, reader, result.IgnoreCase));
 					return true;
 				}
-				return result.ReadNode (reader, matches);
+				return result.ReadNode (reader, matches, spanList, prevMarkerList);
 			});
+			result.spans   = spanList.ToArray ();
+			result.prevMarker = prevMarkerList.ToArray ();
 			result.matches = matches.ToArray ();
 			return result;
 		}

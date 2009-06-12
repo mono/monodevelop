@@ -68,7 +68,7 @@ namespace Mono.TextEditor
 				return width;
 			}
 		}
-		
+		DocumentLocation anchorLocation = DocumentLocation.Empty;
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
@@ -88,23 +88,12 @@ namespace Mono.TextEditor
 					} 
 					editor.MainSelection.Lead   = loc;
 				} else {
+					anchorLocation = loc;
 					editor.ClearSelection ();
 				}
 				editor.Caret.PreserveSelection = true;
 				editor.Caret.Location = loc;
 				editor.Caret.PreserveSelection = false;
-				
-				
-//				if (loc != editor.Caret.Location) {
-//					
-//				} else if (editor.IsSomethingSelected) {
-//					editor.ClearSelection ();
-//					editor.QueueDraw ();
-//				} else {
-//					LineSegment line = editor.Document.GetLine (lineNumber);
-//					editor.SelectionRange = new Segment (line.Offset, line.EditableLength); 
-//					editor.QueueDraw ();
-//				}
 			}
 		}
 		
@@ -112,19 +101,16 @@ namespace Mono.TextEditor
 		{
 			base.MouseHover (args);
 			
-				if (args.Button == 1) {
+			if (args.Button == 1) {
 				DocumentLocation loc = editor.Document.LogicalToVisualLocation (editor.GetTextEditorData (), editor.Caret.Location);
-				if (!editor.IsSomethingSelected) {
-					editor.MainSelection = new Selection (loc, loc);
-				} 
+				
 				int lineNumber = args.LineNumber != -1 ? args.LineNumber : editor.Document.LineCount - 1;
-				editor.MainSelection.Lead   = loc;
 				editor.Caret.PreserveSelection = true;
 				editor.Caret.Location = new DocumentLocation (lineNumber, 0);
+				editor.MainSelection = new Selection (anchorLocation, editor.Caret.Location);
 				editor.Caret.PreserveSelection = false;
 			}
 		}
-		
 		
 		public override void Dispose ()
 		{

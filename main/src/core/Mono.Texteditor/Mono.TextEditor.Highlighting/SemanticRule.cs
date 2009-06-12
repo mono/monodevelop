@@ -55,7 +55,7 @@ namespace Mono.TextEditor
 			if (endOffset <= startOffset)
 				return;
 			string text = doc.GetTextAt (startOffset, endOffset - startOffset);
-			
+			/*
 			int startColumn = startOffset - line.Offset;
 			line.RemoveMarker (typeof(UrlMarker));
 			foreach (System.Text.RegularExpressions.Match m in urlRegex.Matches (text)) {
@@ -63,7 +63,7 @@ namespace Mono.TextEditor
 			}
 			foreach (System.Text.RegularExpressions.Match m in mailRegex.Matches (text)) {
 				line.AddMarker (new UrlMarker (line, m.Value, UrlType.Email, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
-			}
+			}*/
 		}
 		
 	}
