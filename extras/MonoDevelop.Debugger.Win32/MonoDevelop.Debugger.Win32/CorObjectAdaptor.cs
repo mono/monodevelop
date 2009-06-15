@@ -35,7 +35,7 @@ using SR = System.Reflection;
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
 using Microsoft.Samples.Debugging.CorDebug;
-using MonoDevelop.Debugger.Evaluation;
+using Mono.Debugging.Evaluation;
 using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
 using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugMappingResult;
 using System.Diagnostics.SymbolStore;
@@ -131,6 +131,40 @@ namespace MonoDevelop.Debugger.Win32
 				}
 			}
 			return null;
+		}
+
+		public override CorValRef RuntimeInvoke (EvaluationContext<CorValRef, CorType> gctx, CorType targetType, CorValRef target, string methodName, CorType[] argTypes, CorValRef[] argValues)
+		{
+			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
+			Type type = targetType.Class.GetTypeInfo (ctx.Session);
+			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic;
+			if (target != null)
+				flags |= BindingFlags.Instance;
+			else
+				flags |= BindingFlags.Static;
+
+			MethodInfo method = null;
+			foreach (MethodInfo mi in type.GetMethods (flags)) {
+				if (mi.Name == methodName) {
+					ParameterInfo[] pi = mi.GetParameters ();
+					if (pi.Length == argValues.Length) {
+						method = mi;
+						break;
+					}
+				}
+			}
+			if (method != null) {
+				return new CorValRef (delegate {
+					CorFunction func = targetType.Class.Module.GetFunctionFromToken (method.MetadataToken);
+					CorValue[] args = new CorValue[argValues.Length];
+					for (int n = 0; n < args.Length; n++)
+						args[n] = argValues[n].Val;
+					return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
+				});
+			}
+			else
+				throw new EvaluatorException ("Invalid method name or incompatible arguments.");
+
 		}
 
 		public override string[] GetImportedNamespaces (EvaluationContext<CorValRef, CorType> ctx)
@@ -321,28 +355,6 @@ namespace MonoDevelop.Debugger.Win32
 				return ObjectValue.CreatePrimitive (source, path, "System.String", ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);
 
 			return ObjectValue.CreateError (path.LastName, "Unknown value type: " + GetValueTypeName (ctx, obj), flags);
-		}
-		
-		public override object StringToObject (EvaluationContext<CorValRef, CorType> ctx, CorType type, string value)
-		{
-			switch (type.Type) {
-				case CorElementType.ELEMENT_TYPE_BOOLEAN: return bool.Parse (value);
-				case CorElementType.ELEMENT_TYPE_U1: return byte.Parse (value);
-				case CorElementType.ELEMENT_TYPE_CHAR: return char.Parse (value);
-				case CorElementType.ELEMENT_TYPE_R8: return double.Parse (value);
-				case CorElementType.ELEMENT_TYPE_I2: return short.Parse (value);
-				case CorElementType.ELEMENT_TYPE_I4: return int.Parse (value);
-				case CorElementType.ELEMENT_TYPE_I8: return long.Parse (value);
-				case CorElementType.ELEMENT_TYPE_I: return new IntPtr (long.Parse (value));
-				case CorElementType.ELEMENT_TYPE_I1: return sbyte.Parse (value);
-				case CorElementType.ELEMENT_TYPE_R4: return float.Parse (value);
-				case CorElementType.ELEMENT_TYPE_STRING: return value;
-				case CorElementType.ELEMENT_TYPE_U2: return ushort.Parse (value);
-				case CorElementType.ELEMENT_TYPE_U4: return uint.Parse (value);
-				case CorElementType.ELEMENT_TYPE_U8: return ulong.Parse (value);
-				case CorElementType.ELEMENT_TYPE_U: return new UIntPtr (ulong.Parse (value));
-			}
-			throw new InvalidOperationException ("Value '" + value + "' can't be converted to type '" + GetTypeName (ctx, type) + "'");
 		}
 
 		public override CorType GetEnclosingType (EvaluationContext<CorValRef, CorType> gctx)

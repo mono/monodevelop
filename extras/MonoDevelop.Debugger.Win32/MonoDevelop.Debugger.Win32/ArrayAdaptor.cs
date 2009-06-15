@@ -28,7 +28,7 @@
 using System;
 using Mono.Debugging.Client;
 using Microsoft.Samples.Debugging.CorDebug;
-using MonoDevelop.Debugger.Evaluation;
+using Mono.Debugging.Evaluation;
 
 namespace MonoDevelop.Debugger.Win32
 {

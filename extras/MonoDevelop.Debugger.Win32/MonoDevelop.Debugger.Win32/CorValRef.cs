@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Samples.Debugging.CorDebug;
-using MonoDevelop.Debugger.Evaluation;
+using Mono.Debugging.Evaluation;
 using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Win32

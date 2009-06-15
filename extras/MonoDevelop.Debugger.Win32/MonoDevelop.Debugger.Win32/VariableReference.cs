@@ -27,7 +27,7 @@
 
 using System;
 using DC = Mono.Debugging.Client;
-using MonoDevelop.Debugger.Evaluation;
+using Mono.Debugging.Evaluation;
 using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32

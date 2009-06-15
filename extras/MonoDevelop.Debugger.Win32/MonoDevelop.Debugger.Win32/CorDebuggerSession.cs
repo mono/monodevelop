@@ -11,7 +11,7 @@ using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Samples.Debugging.CorMetadata;
 using Microsoft.Samples.Debugging.CorSymbolStore;
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
-using MonoDevelop.Debugger.Evaluation;
+using Mono.Debugging.Evaluation;
 
 namespace MonoDevelop.Debugger.Win32
 {

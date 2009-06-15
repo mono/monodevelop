@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MonoDevelop.Debugger.Evaluation;
+using Mono.Debugging.Evaluation;
 using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32

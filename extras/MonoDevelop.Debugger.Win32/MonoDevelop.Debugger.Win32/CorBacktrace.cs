@@ -9,7 +9,7 @@ using Mono.Debugging.Backend;
 using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 using Microsoft.Samples.Debugging.CorMetadata;
-using MonoDevelop.Debugger.Evaluation;
+using Mono.Debugging.Evaluation;
 
 namespace MonoDevelop.Debugger.Win32
 {
