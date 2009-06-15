@@ -96,6 +96,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (searchedMember == null)
 				return;
+			
 			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (file.Text));
 			parser.Lexer.EvaluateConditionalCompilation = true;
 			parser.Parse ();
@@ -321,7 +322,13 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (searchedMember is LocalVariable) {
 				LocalVariable searchedVariable = (LocalVariable)searchedMember;
-				if (localVariableDeclaration.Parent.StartLocation.Line == searchedVariable.DeclaringMember.Location.Line + 1 && localVariableDeclaration.Parent.StartLocation.Column == searchedVariable.DeclaringMember.Location.Column) {
+				INode parent = localVariableDeclaration.Parent;
+				while (parent != null && !(parent is MemberNode) && !(parent is ParametrizedNode)) {
+					parent = parent.Parent;
+				}
+				if (parent != null &&
+				    parent.StartLocation.Line == searchedVariable.DeclaringMember.Location.Line && 
+				    parent.StartLocation.Column == searchedVariable.DeclaringMember.Location.Column) {
 					foreach (VariableDeclaration decl in localVariableDeclaration.Variables) {
 						if (decl.Name == searchedMemberName) 
 							AddUniqueReference (decl.StartLocation.Y, decl.StartLocation.X, searchedMemberName);

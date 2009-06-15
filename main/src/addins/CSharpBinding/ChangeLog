@@ -1,5 +1,11 @@
 2009-06-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 504555 - Right
+	  clicking on a variable name and selecting rename does not
+	  work properly.".
+
+2009-06-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/ResolveVisitor.cs:
 	* Gui/NRefactoryParameterDataProvider.cs: Fixed "Bug 512820 –
 	  Different number of overloads reported for same method".
