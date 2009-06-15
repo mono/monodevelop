@@ -1,5 +1,10 @@
 2009-06-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* Mono.Debugging.csproj: Added missing reference.
+
+2009-06-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Evaluation\NRefactoryEvaluator.cs: Small
 	  optimization.
 

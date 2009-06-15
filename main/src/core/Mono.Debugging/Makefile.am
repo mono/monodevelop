@@ -6,6 +6,7 @@ ASSEMBLY = $(ASSEMBLY_BUILD_DIR)/Mono.Debugging.dll
 REFS =  \
 	-r:../../../build/bin/NRefactory.dll \
 	-r:System \
+	-r:System.Core \
 	-r:System.Xml
 
 FILES =  \
