@@ -1,3 +1,7 @@
+2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight.addin.xml: Fix typo in framework ID.
+
 2009-06-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

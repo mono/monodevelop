@@ -86,7 +86,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Frameworks">
-		<Framework id="Silverligt_2.0" resource="framework_Silverlight.xml">
+		<Framework id="Silverlight_2.0" resource="framework_Silverlight.xml">
 			<Backend class="MonoDevelop.Moonlight.SilverlightFrameworkBackend" />
 		</Framework>
 	</Extension>
