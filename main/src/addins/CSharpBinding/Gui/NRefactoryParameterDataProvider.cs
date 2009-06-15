@@ -50,9 +50,21 @@ namespace MonoDevelop.CSharpBinding
 		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, MethodResolveResult resolveResult)
 		{
 			this.editor = editor;
-			
 			this.staticResolve = resolveResult.StaticResolve;
-			methods.AddRange (resolveResult.Methods);
+			bool includeProtected = true;
+			
+			HashSet<string> alreadyAdded = new HashSet<string> ();
+			foreach (IMethod method in resolveResult.Methods) {
+				if (method.IsConstructor)
+					continue;
+				string str = ambience.GetString (method, OutputFlags.ClassBrowserEntries);
+				if (alreadyAdded.Contains (str))
+					continue;
+				alreadyAdded.Add (str);
+				if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
+					methods.Add (method);
+			}
+			
 			if (resolveResult.Methods.Count > 0)
 				this.prefix = ambience.GetString (resolveResult.Methods[0].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) + " ";
 		}

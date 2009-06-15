@@ -1,3 +1,9 @@
+2009-06-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryParameterDataProvider.cs: Fixed "Bug 512820 –
+	  Different number of overloads reported for same method".
+
 2009-06-12  Mike Krüger  <mkrueger@novell.com>
 
 	* Syntax/CSharpSyntaxMode.cs: Track api changes.

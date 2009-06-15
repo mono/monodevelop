@@ -496,16 +496,19 @@ namespace MonoDevelop.CSharpBinding
 							member.Add (method);
 						}
 					}
+					bool includeProtected = true;
 					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
-						member.AddRange (curType.SearchMember (memberReferenceExpression.MemberName, true));
+						if (curType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface)
+							continue;
+						if (curType.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
+							member.AddRange (curType.SearchMember (memberReferenceExpression.MemberName, true));
 					}
-					
 					if (member.Count > 0) {
 						if (member[0] is IMethod) {
 							bool isStatic = result.StaticResolve;
-							bool includeProtected = true;
 							for (int i = 0; i < member.Count; i++) {
 								IMethod method = member[i] as IMethod;
+								
 								if (method != null && !method.IsFinalizer && (method.IsExtension || method.WasExtended) && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
 									continue;
 								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || (method != null && method.IsFinalizer)) {
