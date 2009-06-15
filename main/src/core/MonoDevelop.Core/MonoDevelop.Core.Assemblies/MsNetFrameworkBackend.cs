@@ -70,7 +70,7 @@ namespace MonoDevelop.Core.Assemblies
 			else if (framework.Id == "3.5")
 				yield return Path.Combine (sdkPath, "v7.0A\\bin");
 			else
-				yield return Path.Combine (sdkPath, "v6.0A");
+				yield return Path.Combine (sdkPath, "v6.0A\\bin");
 
 			foreach (string s in base.GetToolsPaths ())
 				yield return s;

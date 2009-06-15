@@ -1,3 +1,8 @@
+2009-06-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies\MsNetFrameworkBackend.cs: Fix
+	  framework location path.
+
 2009-06-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* frameworks:
