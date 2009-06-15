@@ -144,10 +144,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void PrintCache()
 		{
 			foreach (SystemAssembly asm in runtime.GetAssemblies (version)) {
-				string pn = asm.Package.Name;
-				if (pn == "mscorlib")
+				if (asm.Package.IsFrameworkPackage && asm.Name == "mscorlib")
 					continue;
-				if (asm.Package.IsInternalPackage) pn += " " + GettextCatalog.GetString ("(Provided by MonoDevelop)");
+				string pn = asm.Package.Name;
+				if (asm.Package.IsInternalPackage)
+					pn += " " + GettextCatalog.GetString ("(Provided by MonoDevelop)");
 				store.AppendValues (asm.Name, asm.Version, asm, false, asm.FullName, pn);
 			}
 		}

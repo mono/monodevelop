@@ -1,5 +1,10 @@
 2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs: Fix hiding
+	  of mscorlib assemblies.
+
+2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
 	  Track assembly lookup APIs.
 
