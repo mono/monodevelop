@@ -179,6 +179,10 @@ namespace Mono.TextEditor
 			return foldings.Any (s => this.lineHover == s.StartLine);
 		}
 		
+		List<FoldSegment> startFoldings      = new List<FoldSegment> ();
+		List<FoldSegment> containingFoldings = new List<FoldSegment> ();
+		List<FoldSegment> endFoldings        = new List<FoldSegment> ();
+		
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			foldSegmentSize = Width * 4 / 6;
@@ -200,10 +204,9 @@ namespace Mono.TextEditor
 			
 			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
-				List<FoldSegment> startFoldings      = new List<FoldSegment> ();
-				List<FoldSegment> containingFoldings = new List<FoldSegment> ();
-				List<FoldSegment> endFoldings        = new List<FoldSegment> ();
-				
+				startFoldings.Clear ();
+				containingFoldings.Clear ();
+				endFoldings.Clear ();
 				foreach (FoldSegment segment in editor.Document.GetFoldingContaining (lineSegment)) {
 					if (segment.StartLine.Offset == lineSegment.Offset) {
 						startFoldings.Add (segment);
@@ -218,9 +221,9 @@ namespace Mono.TextEditor
 				bool isContaining = containingFoldings.Count > 0;
 				bool isFoldEnd    = endFoldings.Count > 0;
 				
-				bool isStartSelected      = IsMouseHover (startFoldings);
-				bool isContainingSelected = IsMouseHover (containingFoldings);
-				bool isEndSelected        = IsMouseHover (endFoldings);
+				bool isStartSelected      = this.lineHover != null && IsMouseHover (startFoldings);
+				bool isContainingSelected = this.lineHover != null && IsMouseHover (containingFoldings);
+				bool isEndSelected        = this.lineHover != null && IsMouseHover (endFoldings);
 			
 				int foldSegmentYPos = y + (editor.LineHeight - foldSegmentSize) / 2;
 				int xPos = x + Width / 2;
