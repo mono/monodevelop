@@ -19,6 +19,7 @@ namespace MonoDevelop.VersionControl
 		Unlock,
 		Annotate,
 		ShowAnnotations,
-		HideAnnotations
+		HideAnnotations,
+		CreatePatch
 	}
 }

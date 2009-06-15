@@ -75,6 +75,13 @@ namespace MonoDevelop.VersionControl.Views
 		const int ColStatusColor = 12;
 		const int ColStatusRemoteDiff = 13;
 		
+		delegate void DiffDataHandler (DiffData diffdata);
+		
+		/// <summary>
+		/// Fired when content difference data is loaded
+		/// </summary>
+		event DiffDataHandler DiffDataLoaded;
+		
 		public static bool Show (VersionControlItemList items, bool test)
 		{
 			if (items.Count != 1)
@@ -124,6 +131,11 @@ namespace MonoDevelop.VersionControl.Views
 			showRemoteStatus.IsImportant = true;
 			showRemoteStatus.Clicked += new EventHandler(OnShowRemoteStatusClicked);
 			commandbar.Insert (showRemoteStatus, -1);
+			
+			Gtk.ToolButton btnCreatePatch = new Gtk.ToolButton (new Gtk.Image ("vc-diff", Gtk.IconSize.Menu), GettextCatalog.GetString ("Create Patch"));
+			btnCreatePatch.IsImportant = true;
+			btnCreatePatch.Clicked += new EventHandler (OnCreatePatch);
+			commandbar.Insert (btnCreatePatch, -1);
 			
 			commandbar.Insert (new Gtk.SeparatorToolItem (), -1);
 			
@@ -743,6 +755,29 @@ namespace MonoDevelop.VersionControl.Views
 			UpdateSelectionStatus ();
 		}
 		
+		/// <summary>
+		/// Handler for "Create Patch" toolbar button click. 
+		/// </summary>
+		void OnCreatePatch (object s, EventArgs args)
+		{
+			DiffData diffdata = GetDiffData (remoteStatus);
+			if (!diffdata.diffRequested) {
+				DiffDataLoaded += delegate {
+					OnCreatePatch (s, args);
+				};
+				if (!diffdata.diffRunning) {
+					LoadDiffs (remoteStatus);
+				}
+				return;
+			}
+			
+			string patch = vc.CreatePatch (new List<DiffInfo> (diffdata.difs).FindAll (
+				delegate (DiffInfo diff){ return changeSet.ContainsFile (diff.FileName); }
+			));
+			
+			IdeApp.Workbench.NewDocument (string.Format ("{0}.diff", filepath), "text/x-diff", patch);
+		}
+		
 		void OnRefresh (object s, EventArgs args)
 		{
 			StartUpdate ();
@@ -860,6 +895,46 @@ namespace MonoDevelop.VersionControl.Views
 				return localDiff;
 		}
 		
+		/// <summary>
+		/// Loads diff information from a version control provider.
+		/// </summary>
+		/// <param name="remote">
+		/// A <see cref="System.Boolean"/>: Whether the information 
+		/// should be loaded from the remote server.
+		/// </param>
+		void LoadDiffs (bool remote)
+		{
+			DiffData ddata = GetDiffData (remote);
+			if (ddata.diffRunning)
+				return;
+
+			// Diff not yet requested. Do it now.
+			ddata.diffRunning = true;
+			
+			// Run the diff in a separate thread and update the tree when done
+			Thread t = new Thread (
+				delegate () {
+					ddata.diffException = null;
+					try {
+						ddata.difs = vc.PathDiff (filepath, null, remote);
+					} catch (Exception ex) {
+						ddata.diffException = ex;
+					} finally {
+						ddata.diffRequested = true;
+						ddata.diffRunning = false;
+						if (null != DiffDataLoaded) {
+							Gtk.Application.Invoke (delegate {
+								DiffDataLoaded (ddata);
+								DiffDataLoaded = null;
+							});
+						}
+					}
+				}
+			);
+			t.IsBackground = true;
+			t.Start ();
+		}
+		
 		void SetFileDiff (TreeIter iter, string file, bool remote)
 		{
 			// If diff information is already loaded, just look for the
@@ -876,27 +951,8 @@ namespace MonoDevelop.VersionControl.Views
 			if (ddata.diffRunning)
 				return;
 
-			// Diff not yet requested. Do it now.
-			ddata.diffRunning = true;
-			
-			// Run the diff in a separate thread and update the tree when done
-			
-			Thread t = new Thread (
-			delegate () {
-				ddata.diffException = null;
-				try {
-					ddata.difs = vc.PathDiff (filepath, null, remote);
-				} catch (Exception ex) {
-					ddata.diffException = ex;
-				} finally {
-					Gtk.Application.Invoke (delegate {
-						FillDifs (ddata);
-					});
-				}
-			}
-			);
-			t.IsBackground = true;
-			t.Start ();
+			DiffDataLoaded += FillDifs;
+			LoadDiffs (remote);
 		}
 		
 		void FillDiffInfo (TreeIter iter, string file, DiffData ddata)
@@ -916,9 +972,6 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			diffRenderer.Reset ();
 
-			ddata.diffRequested = true;
-			ddata.diffRunning = false;
-			
 			if (ddata.diffException != null) {
 				MessageService.ShowException (ddata.diffException, GettextCatalog.GetString ("Could not get diff information. ") + ddata.diffException.Message);
 			}

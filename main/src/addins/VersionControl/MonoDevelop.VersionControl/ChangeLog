@@ -1,3 +1,15 @@
+2009-06-15  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Makefile.am:
+	* VersionControl.addin.xml:
+	* MonoDevelop.VersionControl.csproj:
+	* MonoDevelop.VersionControl/Commands.cs:
+	* MonoDevelop.VersionControl/Repository.cs:
+	* MonoDevelop.VersionControl/CreatePatchCommand.cs:
+	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs:
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	  Added "CreatePatch" command.
+
 2009-06-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.VersionControl/Repository.cs:

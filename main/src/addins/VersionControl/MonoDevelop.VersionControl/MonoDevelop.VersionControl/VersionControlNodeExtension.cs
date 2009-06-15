@@ -315,6 +315,17 @@ namespace MonoDevelop.VersionControl
 		protected void UpdateAnnotate(CommandInfo item) {
 			TestCommand(Commands.Annotate, item);
 		}
+		
+		[AllowMultiSelection]
+		[CommandHandler (Commands.CreatePatch)]
+		protected void OnCreatePatch() {
+			RunCommand(Commands.CreatePatch, false);
+		}
+		
+		[CommandUpdateHandler (Commands.CreatePatch)]
+		protected void UpdateCreatePatch(CommandInfo item) {
+			TestCommand(Commands.CreatePatch, item);
+		}
 			
 		private void TestCommand(Commands cmd, CommandInfo item) {
 			TestResult res = RunCommand(cmd, true);
@@ -381,6 +392,9 @@ namespace MonoDevelop.VersionControl
 						break;
 					case Commands.Annotate:
 						res = AnnotateView.Show (items[0].Repository, items[0].Path, test);
+						break;
+					case Commands.CreatePatch:
+						res = CreatePatchCommand.CreatePatch (items, test);
 						break;
 				}
 			}

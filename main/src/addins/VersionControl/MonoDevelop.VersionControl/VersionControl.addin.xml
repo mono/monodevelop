@@ -127,6 +127,10 @@
 			defaultHandler = "MonoDevelop.VersionControl.HideAnnotationsCommand" 
 			_label = "Hide Annotations"
 			description = "Hide Annotations."/>
+		<Command id = "MonoDevelop.VersionControl.Commands.CreatePatch" 
+			_label = "Create _Patch"
+			icon = "vc-diff"
+			description = "Create a patch representing local changes."/>
 		</Category>
 	</Extension>
 	
@@ -156,6 +160,7 @@
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
 				</Condition>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.CreatePatch"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
 			</ItemSet>
 			<SeparatorItem />

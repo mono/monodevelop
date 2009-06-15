@@ -218,6 +218,22 @@ namespace MonoDevelop.VersionControl
 			return new ChangeSet (this, basePath);
 		}
 		
+		/// <summary>
+		/// Creates a patch from a set of DiffInfos.
+		/// </summary>
+		public virtual string CreatePatch (IEnumerable<DiffInfo> diffs)
+		{
+			StringBuilder patch = new StringBuilder ();
+			
+			if (null != diffs) {
+				foreach (DiffInfo diff in diffs) {
+					patch.AppendLine (diff.Content);
+				}
+			}
+			
+			return patch.ToString ();
+		}
+		
 		// Commits changes in a set of files or directories into the repository
 		public abstract void Commit (ChangeSet changeSet, IProgressMonitor monitor);
 		

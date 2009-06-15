@@ -199,6 +199,7 @@
     <Compile Include="MonoDevelop.VersionControl\CommitMessageFormat.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlPolicy.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlPolicyPanel.cs" />
+    <Compile Include="MonoDevelop.VersionControl\CreatePatchCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
