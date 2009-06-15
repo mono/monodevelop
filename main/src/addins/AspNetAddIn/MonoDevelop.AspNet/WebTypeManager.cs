@@ -298,13 +298,13 @@ namespace MonoDevelop.AspNet
 		{
 			string path;
 			if (project == null) {
-				assemblyName = project.TargetRuntime.GetAssemblyFullName (assemblyName);
+				assemblyName = Runtime.SystemAssemblyService.CurrentRuntime.GetAssemblyFullName (assemblyName, TargetFramework.Default);
 				if (assemblyName == null)
 					return null;
-				assemblyName = project.TargetRuntime.GetAssemblyNameForVersion (assemblyName, TargetFramework.Default);
+				assemblyName = Runtime.SystemAssemblyService.CurrentRuntime.GetAssemblyNameForVersion (assemblyName, TargetFramework.Default);
 				if (assemblyName == null)
 					return null;
-				path = project.TargetRuntime.GetAssemblyLocation (assemblyName);
+				path = Runtime.SystemAssemblyService.CurrentRuntime.GetAssemblyLocation (assemblyName, TargetFramework.Default);
 			} else {
 				path = project.ResolveAssembly (assemblyName);
 			}
@@ -331,7 +331,7 @@ namespace MonoDevelop.AspNet
 			string file = runtime.GetAssemblyNameForVersion ("System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", targetFramework);
 			if (String.IsNullOrEmpty (file))
 				throw new Exception ("System.Web assembly name not found for framework " + targetFramework.Id);
-			file = runtime.GetAssemblyLocation (file);
+			file = runtime.GetAssemblyLocation (file, targetFramework);
 			if (String.IsNullOrEmpty (file))
 				throw new Exception ("System.Web assembly file not found for framework " + targetFramework.Id);
 			ProjectDom dom = ProjectDomService.GetAssemblyDom (runtime, file);

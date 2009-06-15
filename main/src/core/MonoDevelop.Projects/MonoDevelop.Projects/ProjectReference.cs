@@ -231,7 +231,7 @@ namespace MonoDevelop.Projects
 					return reference;
 				
 				case ReferenceType.Gac:
-					string file = TargetRuntime.GetAssemblyLocation (Reference, package);
+					string file = TargetRuntime.GetAssemblyLocation (Reference, package, ownerProject != null? ownerProject.TargetFramework : null);
 					return file == null ? reference : file;
 				case ReferenceType.Project:
 					if (ownerProject != null) {
@@ -261,7 +261,7 @@ namespace MonoDevelop.Projects
 		{
 			if (referenceType == ReferenceType.Gac) {
 				notFound = false;
-				string cref = TargetRuntime.FindInstalledAssembly (reference, package);
+				string cref = TargetRuntime.FindInstalledAssembly (reference, package, ownerProject != null? ownerProject.TargetFramework : null);
 				if (ownerProject != null) {
 					if (cref == null)
 						cref = reference;
@@ -269,7 +269,7 @@ namespace MonoDevelop.Projects
 					notFound = (cref == null);
 				}
 				if (cref != null && cref != reference) {
-					SystemAssembly asm = TargetRuntime.GetAssemblyFromFullName (cref, package);
+					SystemAssembly asm = TargetRuntime.GetAssemblyFromFullName (cref, package, ownerProject != null? ownerProject.TargetFramework : null);
 					bool isFrameworkAssembly = asm != null && asm.Package.IsFrameworkPackage;
 					if (loadedReference == null && !isFrameworkAssembly) {
 						loadedReference = reference;
@@ -302,10 +302,13 @@ namespace MonoDevelop.Projects
 					// (because non-gac assemblies should have a package name set)
 					SystemAssembly best = null;
 					foreach (SystemAssembly asm in TargetRuntime.GetAssembliesFromFullName (reference)) {
-						if (asm.Package.IsGacPackage) {
+						//highest priority to framework packages
+						if (ownerProject != null && asm.Package.IsFrameworkPackage && asm.Package.TargetFramework == ownerProject.TargetFramework.Id) {
+							return cachedPackage = asm.Package;
+						}
+						if (asm.Package.IsGacPackage)
 							best = asm;
-							break;
-						} else if (best == null)
+						else if (best == null)
 							best = asm;
 					}
 					if (best != null)

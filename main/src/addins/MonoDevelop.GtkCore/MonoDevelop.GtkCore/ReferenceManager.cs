@@ -174,7 +174,7 @@ namespace MonoDevelop.GtkCore {
 				
 			if (!posix && info.GenerateGettext && info.GettextClass == "Mono.Unix.Catalog") {
 				// Add a reference to Mono.Posix. Use the version for the selected project's runtime version.
-				string aname = project.TargetRuntime.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756", null);
+				string aname = project.TargetRuntime.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756", null, project.TargetFramework);
 				aname = project.TargetRuntime.GetAssemblyNameForVersion (aname, project.TargetFramework);
 				project.References.Add (new ProjectReference (ReferenceType.Gac, aname));
 				changed = true;

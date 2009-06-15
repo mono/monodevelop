@@ -1,3 +1,8 @@
+2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Track assembly lookup APIs.
+
 2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs\FileSelectorDialog.cs: Fix gtk

@@ -224,7 +224,6 @@ namespace MonoDevelop.Core.Assemblies
 		IEnumerable<SystemAssembly> GetAssembliesFromFullNameInternal (string fullname)
 		{
 			Initialize ();
-			
 			fullname = NormalizeAsmName (fullname);
 			SystemAssembly asm;
 			if (!assemblyFullNameToAsm.TryGetValue (fullname, out asm))
@@ -278,16 +277,19 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
-		public SystemAssembly GetAssemblyFromFullName (string fullname, string package)
+		public SystemAssembly GetAssemblyFromFullName (string fullname, string package, TargetFramework fx)
 		{
 			if (package == null) {
 				SystemAssembly found = null;
+				SystemAssembly gacFound = null;
 				foreach (SystemAssembly asm in GetAssembliesFromFullNameInternal (fullname)) {
 					found = asm;
-					if (asm.Package.IsGacPackage)
+					if (asm.Package.IsFrameworkPackage && fx != null && asm.Package.TargetFramework == fx.Id)
 						return asm;
+					if (asm.Package.IsGacPackage)
+						gacFound = asm;
 				}
-				return found;
+				return gacFound ?? found;
 			}
 			
 			foreach (SystemAssembly asm in GetAssembliesFromFullNameInternal (fullname)) {
@@ -338,12 +340,12 @@ namespace MonoDevelop.Core.Assemblies
 	
 		// Returns the installed version of the given assembly name
 		// (it returns the full name of the installed assembly).
-		public string FindInstalledAssembly (string fullname, string package)
+		public string FindInstalledAssembly (string fullname, string package, TargetFramework fx)
 		{
 			Initialize ();
 			fullname = NormalizeAsmName (fullname);
 			
-			SystemAssembly fasm = GetAssemblyFromFullName (fullname, package);
+			SystemAssembly fasm = GetAssemblyFromFullName (fullname, package, fx);
 			if (fasm != null)
 				return fullname;
 			
@@ -364,18 +366,18 @@ namespace MonoDevelop.Core.Assemblies
 			return null;
 		}
 	
-		public string GetAssemblyLocation (string assemblyName)
+		public string GetAssemblyLocation (string assemblyName, TargetFramework fx)
 		{
-			return GetAssemblyLocation (assemblyName, null);
+			return GetAssemblyLocation (assemblyName, null, fx);
 		}
 		
-		public string GetAssemblyLocation (string assemblyName, string package)
+		public string GetAssemblyLocation (string assemblyName, string package, TargetFramework fx)
 		{
 			Initialize ();
 			
 			assemblyName = NormalizeAsmName (assemblyName); 
 			
-			SystemAssembly asm = GetAssemblyFromFullName (assemblyName, package);
+			SystemAssembly asm = GetAssemblyFromFullName (assemblyName, package, fx);
 			if (asm != null)
 				return asm.Location;
 			
@@ -510,7 +512,7 @@ namespace MonoDevelop.Core.Assemblies
 			Initialize ();
 
 			fullName = NormalizeAsmName (fullName);
-			SystemAssembly asm = GetAssemblyFromFullName (fullName, packageName);
+			SystemAssembly asm = GetAssemblyFromFullName (fullName, packageName, fx);
 
 			if (asm == null)
 				return null;
@@ -536,7 +538,7 @@ namespace MonoDevelop.Core.Assemblies
 			return null;
 		}
 		
-		public string GetAssemblyFullName (string assemblyName)
+		public string GetAssemblyFullName (string assemblyName, TargetFramework fx)
 		{
 			Initialize ();
 			
@@ -549,7 +551,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (File.Exists (assemblyName))
 				return SystemAssemblyService.GetAssemblyName (assemblyName);
 
-			string file = GetAssemblyLocation (assemblyName);
+			string file = GetAssemblyLocation (assemblyName, fx);
 			if (file != null)
 				return SystemAssemblyService.GetAssemblyName (file);
 			else

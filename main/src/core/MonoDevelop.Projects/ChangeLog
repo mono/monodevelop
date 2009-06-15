@@ -1,3 +1,17 @@
+2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/ProjectReference.cs: Use
+	  TargetFramework for assembly lookups. Prioritize framework
+	  assemblies over GAC assemblies.
+
+	* MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/MemoryDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Track assembly lookup APIs.
+
 2009-06-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Track api changes.

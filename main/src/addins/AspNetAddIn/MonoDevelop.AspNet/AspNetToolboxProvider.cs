@@ -35,6 +35,8 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Assemblies;
+
 
 namespace MonoDevelop.AspNet
 {
@@ -44,15 +46,20 @@ namespace MonoDevelop.AspNet
 		public IEnumerable<string> GetDefaultFiles ()
 		{
 			string location;
-			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web, Version=1.0.5000.0");
+			
+			TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework ("1.1");
+			
+			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web, Version=1.0.5000.0", fx);
 			if (!string.IsNullOrEmpty (location))
 				yield return location;
 			
-			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web, Version=2.0.0.0");
+			fx = Runtime.SystemAssemblyService.GetTargetFramework ("3.5");
+			
+			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web, Version=2.0.0.0", fx);
 			if (!string.IsNullOrEmpty (location))
 				yield return location;
 			
-			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web.Extensions");
+			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web.Extensions", fx);
 			if (!string.IsNullOrEmpty (location))
 				yield return location;
 		}

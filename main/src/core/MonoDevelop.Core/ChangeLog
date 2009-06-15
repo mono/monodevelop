@@ -1,3 +1,12 @@
+2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/SystemAssembly.cs: Make assembly
+	  name consistent with "normalized" names.
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Use
+	  TargetFramework for assembly lookups. Prioritize framework
+	  assemblies over GAC assemblies.
+
 2009-06-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies\MsNetFrameworkBackend.cs: Fix

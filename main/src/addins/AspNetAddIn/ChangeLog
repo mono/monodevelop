@@ -1,3 +1,13 @@
+2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/WebTypeManager.cs: Track assembly lookup
+	  APIs. Fix bad logic that could cause NRE.
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet/AspNetToolboxLoader.cs:
+	* MonoDevelop.AspNet/AspNetToolboxProvider.cs: Track assembly
+	  lookup APIs.
+
 2009-05-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs:

@@ -52,17 +52,19 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		bool parsing;
 		string assemblyFile;
 		TargetRuntime runtime;
+		TargetFramework fx;
 		
 		// This is the package version of the assembly. It is serialized.
 		string packageVersion;
 		
-		public AssemblyCodeCompletionDatabase (TargetRuntime runtime, string assemblyFile, ParserDatabase pdb): this (runtime, assemblyFile, pdb, false)
+		public AssemblyCodeCompletionDatabase (TargetRuntime runtime, TargetFramework fx, string assemblyFile, ParserDatabase pdb): this (runtime, fx, assemblyFile, pdb, false)
 		{
 		}
 		
-		public AssemblyCodeCompletionDatabase (TargetRuntime runtime, string assemblyFile, ParserDatabase pdb, bool isTempDatabase): base (pdb, false)
+		public AssemblyCodeCompletionDatabase (TargetRuntime runtime, TargetFramework fx, string assemblyFile, ParserDatabase pdb, bool isTempDatabase): base (pdb, false)
 		{
 			this.runtime = runtime;
+			this.fx = fx;
 			this.assemblyFile = assemblyFile;
 			
 			if (!File.Exists (assemblyFile)) {
@@ -191,7 +193,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				{
 					using (DatabaseGenerator helper = GetGenerator (true))
 					{
-						string tmpDbFile = helper.GenerateDatabase (runtime.Id, baseDir, assemblyFile);
+						string tmpDbFile = helper.GenerateDatabase (runtime.Id, fx.Id, baseDir, assemblyFile);
 						if (Disposed) {
 							if (tmpDbFile != null)
 								File.Delete (tmpDbFile);
@@ -280,7 +282,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 			AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
 			foreach (AssemblyNameReference aname in names) {
-				string afile = runtime.GetAssemblyLocation (aname.FullName);
+				string afile = runtime.GetAssemblyLocation (aname.FullName, fx);
 				if (afile != null)
 					yield return "Assembly:" + runtime.Id + ":" + Path.GetFullPath (afile);
 			}
@@ -289,15 +291,16 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	
 	internal class DatabaseGenerator: RemoteProcessObject
 	{
-		public string GenerateDatabase (string runtimeId, string baseDir, string assemblyFile)
+		public string GenerateDatabase (string runtimeId, string fxId, string baseDir, string assemblyFile)
 		{
 			try {
 				Runtime.Initialize (false);
 				ParserDatabase pdb = new ParserDatabase ();
 				TargetRuntime runtime = Runtime.SystemAssemblyService.GetTargetRuntime (runtimeId);
+				TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (fxId);
 
 				// Generate the new db in a temp file. The main process will move the file if required.
-				using (AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (runtime, assemblyFile, pdb, true)) {
+				using (AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (runtime, fx, assemblyFile, pdb, true)) {
 					if (db.LoadError)
 						throw new InvalidOperationException ("Could find assembly: " + assemblyFile);
 					db.ParseInExternalProcess = false;

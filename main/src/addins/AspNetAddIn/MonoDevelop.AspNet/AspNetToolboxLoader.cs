@@ -32,6 +32,8 @@ using System.Collections.Generic;
 using System.Drawing.Design;
 
 using MonoDevelop.DesignerSupport.Toolbox;
+using MonoDevelop.Core.Assemblies;
+
 
 namespace MonoDevelop.AspNet
 {
@@ -189,8 +191,9 @@ namespace MonoDevelop.AspNet
 			inited = true;
 			
 			//System.Reflection.Assembly.Load won't load things from the 1.0 GAC
+			TargetFramework fx = MonoDevelop.Core.Runtime.SystemAssemblyService.GetTargetFramework ("1.1");
 			string loc = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ( 
-			    "System.Web, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
+			    "System.Web, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", fx);
 			if (loc != null)
 				webAssem1 = System.Reflection.Assembly.LoadFile (loc);
 			

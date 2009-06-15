@@ -1,3 +1,7 @@
+2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MakefileData.cs: Track assembly lookup APIs.
+
 2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MakefileData.cs:

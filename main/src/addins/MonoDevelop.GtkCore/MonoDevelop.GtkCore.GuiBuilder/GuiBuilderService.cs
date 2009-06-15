@@ -103,7 +103,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string OnAssemblyResolve (string assemblyName)
 		{
-			return Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation (assemblyName);
+			return Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation (assemblyName, null);
 		}
 		
 		static string OnMimeResolve (string url)

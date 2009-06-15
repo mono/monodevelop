@@ -740,7 +740,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			// Set the location field only if this is a widget library
 			if (entries.Count > 0 && Runtime.SystemAssemblyService.GetPackageFromPath (fileName) != null)
-				location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyFullName (fileName);
+				location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyFullName (fileName, TargetFramework.Default);
 		}
 		
 		string GetFileTimestamp (string file)

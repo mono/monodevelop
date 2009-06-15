@@ -1,3 +1,11 @@
+2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.GtkCore/ReferenceManager.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxLoader.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Track
+	  assembly lookup APIs.
+
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore\ProjectResourceProvider.cs:

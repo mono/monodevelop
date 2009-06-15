@@ -370,13 +370,13 @@ namespace MonoDevelop.AspNet
 			if (File.Exists (localName))
 				return localName;
 			
-			assemblyName = TargetRuntime.GetAssemblyFullName (assemblyName);
+			assemblyName = TargetRuntime.GetAssemblyFullName (assemblyName, TargetFramework);
 			if (assemblyName == null)
 				return null;
 			assemblyName = TargetRuntime.GetAssemblyNameForVersion (assemblyName, TargetFramework);
 			if (assemblyName == null)
 				return null;
-			return TargetRuntime.GetAssemblyLocation (assemblyName);
+			return TargetRuntime.GetAssemblyLocation (assemblyName, TargetFramework);
 		}
 		
 		public ProjectFile ResolveVirtualPath (string virtualPath, string relativeToFile)

@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Templates
 				if (netProject != null) {
 					// Add required references
 					foreach (string aref in references) {
-						string res = netProject.TargetRuntime.GetAssemblyFullName (aref);
+						string res = netProject.TargetRuntime.GetAssemblyFullName (aref, netProject.TargetFramework);
 						res = netProject.TargetRuntime.GetAssemblyNameForVersion (res, netProject.TargetFramework);
 						if (!ContainsReference (netProject, res))
 							netProject.References.Add (new ProjectReference (ReferenceType.Gac, aref));

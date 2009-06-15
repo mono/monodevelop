@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		{
 		}
 		
-		public ProjectDom LoadAssemblyDom (TargetRuntime runtime, string file)
+		public ProjectDom LoadAssemblyDom (TargetRuntime runtime, TargetFramework fx, string file)
 		{
 			return new AssemblyProjectDom (file);
 		}

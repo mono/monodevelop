@@ -1,3 +1,9 @@
+2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:
+	  Track assembly lookup APIs.
+
 2009-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DisplayBinding.cs: Track API

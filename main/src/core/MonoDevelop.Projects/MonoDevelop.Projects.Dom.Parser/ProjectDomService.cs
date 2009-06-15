@@ -506,10 +506,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 					// Create/load the database
 					
 					TargetRuntime tr = null;
+					TargetFramework fx = null;
 					string file;
 					
-					if (ParseAssemblyUri (uri, out tr, out file)) {
-						db = parserDatabase.LoadAssemblyDom (tr, file);
+					if (ParseAssemblyUri (uri, out tr, out fx, out file)) {
+						db = parserDatabase.LoadAssemblyDom (tr, fx, file);
 						RegisterDom (db, uri);
 					}
 				}
@@ -519,10 +520,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		internal static bool ParseAssemblyUri (string uri, out TargetRuntime runtime, out string file)
+		internal static bool ParseAssemblyUri (string uri, out TargetRuntime runtime, out TargetFramework fx, out string file)
 		{
 			if (uri.StartsWith ("Assembly:")) {
 				runtime = null;
+				fx = null;
 				int i = uri.IndexOf (':', 9);
 				if (i != -1) {
 					string rid = uri.Substring (9, i - 9);
@@ -533,10 +535,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 				
 				if (runtime == null)
 					runtime = Runtime.SystemAssemblyService.DefaultRuntime;
+				if (fx == null)
+					fx = TargetFramework.Default;
 				return true;
 			}
 			file = null;
 			runtime = null;
+			fx = null;
 			return false;
 		}
 

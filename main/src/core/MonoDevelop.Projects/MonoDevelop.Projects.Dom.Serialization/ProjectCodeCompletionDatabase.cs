@@ -209,8 +209,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		bool IsCorlibReference (ReferenceEntry re)
 		{
 			TargetRuntime tr;
+			TargetFramework fx;
 			string file;
-			if (ProjectDomService.ParseAssemblyUri (re.Uri, out tr, out file))
+			if (ProjectDomService.ParseAssemblyUri (re.Uri, out tr, out fx, out file))
 				return Path.GetFileNameWithoutExtension (file) == "mscorlib";
 			else
 				return false;

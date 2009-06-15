@@ -746,7 +746,7 @@ namespace MonoDevelop.Autotools
 							if (pref.ReferenceType == ReferenceType.Gac) {
 								// Store the package version required by this reference. We'll use
 								// the same version when trying to match references coming from the makefile
-								SystemAssembly asm = targetRuntime.GetAssemblyFromFullName (pref.StoredReference, pref.Package != null ? pref.Package.Name : null);
+								SystemAssembly asm = targetRuntime.GetAssemblyFromFullName (pref.StoredReference, pref.Package != null ? pref.Package.Name : null, dotnetProject.TargetFramework);
 								if (asm != null && asm.Package != null)
 									requiredPackageVersions [asm.Package.Name] = asm.Package.Version;
 							}
@@ -1072,7 +1072,7 @@ namespace MonoDevelop.Autotools
 				// Valid assembly, From a package, add as Gac
 				SystemPackage pkg = targetRuntime.GetPackageFromPath (fullpath);
 				if (fullname != null && pkg != null) {
-					SystemAssembly sa = targetRuntime.GetAssemblyFromFullName (fullname, pkg.Name);
+					SystemAssembly sa = targetRuntime.GetAssemblyFromFullName (fullname, pkg.Name, project.TargetFramework);
 					if (sa != null) {
 						AddNewGacReference (project, sa);
 						continue;
@@ -1141,7 +1141,7 @@ namespace MonoDevelop.Autotools
 
 			string fullname;
 			if (!CorePackageAssemblyNames.TryGetValue (aname, out fullname)) {
-				fullname = targetRuntime.GetAssemblyFullName (aname);
+				fullname = targetRuntime.GetAssemblyFullName (aname, project.TargetFramework);
 
 				//fullname can be null
 				CorePackageAssemblyNames [aname] = fullname;
