@@ -38,7 +38,7 @@ namespace DebuggerServer
 
 		public override void AbortThread (Mono.Debugger.Thread thread, Mono.Debugger.RuntimeInvokeResult result)
 		{
-			thread.AbortInvocation (result.ID);
+			result.Abort ();
 		}
 	}
 }
