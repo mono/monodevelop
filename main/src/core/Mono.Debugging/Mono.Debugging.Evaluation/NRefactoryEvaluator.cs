@@ -355,8 +355,13 @@ namespace Mono.Debugging.Evaluation
 			object val2 = right.ObjectValue;
 
 			if (oper == BinaryOperatorType.Add || oper == BinaryOperatorType.Concat) {
-				if (val1 is string|| val2 is string)
-					return new LiteralValueReference<TValue, TType> (ctx, name, left.CallToString () + right.CallToString ());
+				if (val1 is string || val2 is string) {
+					if (!(val1 is string))
+						val1 = left.CallToString ();
+					if (!(val2 is string))
+						val2 = right.CallToString ();
+					return new LiteralValueReference<TValue, TType> (ctx, name, (string) val1 + (string) val2);
+				}
 			}
 			
 			if ((oper == BinaryOperatorType.ExclusiveOr) && (val1 is bool) && !(val2 is bool))
