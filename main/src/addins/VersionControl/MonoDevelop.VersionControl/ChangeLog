@@ -1,3 +1,16 @@
+2009-06-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs: Use
+	  CreatePatchCommand to create the patch.
+
+	* MonoDevelop.VersionControl/CreatePatchCommand.cs: Include
+	  commit extensions in the generation of the patch, so
+	  generated changelog entries are included.
+
+	* MonoDevelop.VersionControl/Repository.cs: Convert absolute
+	  paths to relative paths when a base path for the diff is
+	  specified. Include patch index info when generating a patch.
+
 2009-06-15  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Makefile.am:

@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using Mono.Addins;
 
 using MonoDevelop.Core;
 
@@ -53,18 +54,43 @@ namespace MonoDevelop.VersionControl
 		/// </returns>
 		public static bool CreatePatch (VersionControlItemList items, bool test)
 		{
+			if (items.Count > 1)
+				return false;
+			FilePath basePath = items[0].IsDirectory ? items[0].Path : items[0].Path.ParentDirectory;
+			ChangeSet cset = new ChangeSet (items[0].Repository, basePath);
+			foreach (VersionControlItem item in items) {
+				cset.AddFile (item.Path);
+			}
+			return CreatePatch (cset, test);
+		}
+		
+		public static bool CreatePatch (ChangeSet items, bool test)
+		{
 			bool can = CanCreatePatch (items);
 			if (test || !can){ return can; }
 			
-			List<DiffInfo> diffs = new List<DiffInfo> ();
-			Repository repo = items[0].Repository;
+			Repository repo = items.Repository;
+			items = items.Clone ();
 			
-			foreach (VersionControlItem item in items) {
-				diffs.AddRange (item.Repository.PathDiff (item.Path, null, false));
+			List<DiffInfo> diffs = new List<DiffInfo> ();
+			
+			object[] exts = AddinManager.GetExtensionObjects ("/MonoDevelop/VersionControl/CommitDialogExtensions", typeof(CommitDialogExtension), false);
+			
+			try {
+				foreach (CommitDialogExtension ext in exts) {
+					ext.Initialize (items);
+					ext.OnBeginCommit (items);
+				}
+				diffs.AddRange (repo.PathDiff (items, false));
+			} finally {
+				foreach (CommitDialogExtension ext in exts) {
+					ext.OnEndCommit (items, false);
+					ext.Destroy ();
+				}
 			}
 			
 			string patch = repo.CreatePatch (diffs);
-			MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (string.Format ("{0}.diff", items[0].Path), "text/x-diff", patch);
+			MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (string.Format ("{0}.diff", items.BaseLocalPath), "text/x-diff", patch);
 			return can;
 		}
 		
@@ -72,13 +98,12 @@ namespace MonoDevelop.VersionControl
 		/// Determines whether a patch can be created 
 		/// from a VersionControlItemList.
 		/// </summary>
-		public static bool CanCreatePatch (VersionControlItemList items) 
+		public static bool CanCreatePatch (ChangeSet items) 
 		{
 			if (null == items || 0 == items.Count){ return false; }
-			Repository repo = items[0].Repository;
 			
-			foreach (VersionControlItem item in items) {
-				if (item.Repository != repo || !item.Repository.CanRevert (item.Path)) {
+			foreach (ChangeSetItem item in items.Items) {
+				if (!items.Repository.CanRevert (item.LocalPath)) {
 					return false;
 				}
 			}

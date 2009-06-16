@@ -227,6 +227,16 @@ namespace MonoDevelop.VersionControl
 			
 			if (null != diffs) {
 				foreach (DiffInfo diff in diffs) {
+					string relpath;
+					if (diff.FileName.IsChildPathOf (diff.BasePath))
+						relpath = diff.FileName.ToRelative (diff.BasePath);
+					else if (diff.FileName == diff.BasePath)
+						relpath = diff.FileName.FileName;
+					else
+						relpath = diff.FileName;
+					relpath = relpath.Replace (Path.DirectorySeparatorChar, '/');
+					patch.AppendLine ("Index: " + relpath);
+					patch.AppendLine (new string ('=', 67));
 					patch.AppendLine (diff.Content);
 				}
 			}
@@ -351,6 +361,14 @@ namespace MonoDevelop.VersionControl
 		// Returns a dif description between local files and the remote files.
 		// baseLocalPath is the root path of the diff. localPaths is optional and
 		// it can be a list of files to compare.
+		public DiffInfo[] PathDiff (ChangeSet cset, bool remoteDiff)
+		{
+			List<FilePath> paths = new List<FilePath> ();
+			foreach (ChangeSetItem item in cset.Items)
+				paths.Add (item.LocalPath);
+			return PathDiff (cset.BaseLocalPath, paths.ToArray (), remoteDiff);
+		}
+		
 		public virtual DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
 		{
 			return new DiffInfo [0];
@@ -360,32 +378,54 @@ namespace MonoDevelop.VersionControl
 
 		static protected DiffInfo[] GenerateUnifiedDiffInfo (string diffContent, FilePath basePath, FilePath[] localPaths)
 		{
+			basePath = basePath.FullPath;
 			ArrayList list = new ArrayList ();
 			using (StringReader sr = new StringReader (diffContent)) {
 				string line;
 				StringBuilder content = new StringBuilder ();
 				string fileName = null;
+				string pathRoot = null;
 				
 				while ((line = sr.ReadLine ()) != null) {
-					if (!line.StartsWith ("Index:")) {
+					if (pathRoot != null && fileName != null && (line.StartsWith ("+++ " + pathRoot) || line.StartsWith ("--- " + pathRoot))) {
+						line = line.Substring (0, 4) + line.Substring (4 + pathRoot.Length);
+						content.Append (line).Append ('\n');
+					}
+					else if (!line.StartsWith ("Index:")) {
 						content.Append (line).Append ('\n');
 					} else {
 						if (fileName != null) {
-							list.Add (new DiffInfo (fileName, content.ToString ()));
+							list.Add (new DiffInfo (basePath, fileName, content.ToString ()));
 							fileName = null;
 						}
 						fileName = line.Substring (6).Trim ();
 						fileName = fileName.Replace ('/', Path.DirectorySeparatorChar); // svn returns paths using unix separators
+						FilePath fp = fileName;
+						pathRoot = null;
+						if (fp.IsAbsolute) {
+							if (fp == basePath)
+								pathRoot = fp.ParentDirectory;
+							else if (fp.IsChildPathOf (basePath))
+								pathRoot = basePath;
+							if (pathRoot != null) {
+								pathRoot = pathRoot.Replace (Path.DirectorySeparatorChar, '/').TrimEnd ('/');
+								pathRoot += '/';
+							}
+						}
+						else {
+							fp = fp.ToAbsolute (basePath);
+						}
+						fileName = fp;
 						content = new StringBuilder ();
 						line = sr.ReadLine ();	// "===" Separator
 						
 						// Filter out files not in the provided path list
-						if (localPaths != null && Array.IndexOf (localPaths, fileName) == -1)
+						if (localPaths != null && Array.IndexOf (localPaths, (FilePath) fileName) == -1)
 							fileName = null;
 					}
 				}
 				if (fileName != null) {
-					list.Add (new DiffInfo (fileName, content.ToString ()));
+					list.Add (new DiffInfo (basePath, fileName, content.ToString ()));
 				}
 			}
 			return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
@@ -409,21 +449,27 @@ namespace MonoDevelop.VersionControl
 	
 	public class DiffInfo
 	{
-		string fileName;
+		FilePath fileName;
+		FilePath basePath;
 		string content;
 		
-		public DiffInfo (string fileName, string content)
+		public DiffInfo (FilePath basePath, FilePath fileName, string content)
 		{
+			this.basePath = basePath;
 			this.fileName = fileName;
 			this.content = content;
 		}
 		
-		public string FileName {
+		public FilePath FileName {
 			get { return fileName; }
 		}
 		
 		public string Content {
 			get { return content; }
+		}
+		
+		public FilePath BasePath {
+			get { return basePath; }
 		}
 	}
 }

@@ -448,7 +448,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					string diff = Svn.GetUnifiedDiff (path, false, remoteDiff);
 					if (string.IsNullOrEmpty (diff))
 						continue;
-					list.AddRange (GenerateUnifiedDiffInfo (diff, path, new FilePath[] { path }));
+					list.AddRange (GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { path }));
 				}
 				return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
 			} else {

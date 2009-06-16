@@ -760,22 +760,7 @@ namespace MonoDevelop.VersionControl.Views
 		/// </summary>
 		void OnCreatePatch (object s, EventArgs args)
 		{
-			DiffData diffdata = GetDiffData (remoteStatus);
-			if (!diffdata.diffRequested) {
-				DiffDataLoaded += delegate {
-					OnCreatePatch (s, args);
-				};
-				if (!diffdata.diffRunning) {
-					LoadDiffs (remoteStatus);
-				}
-				return;
-			}
-			
-			string patch = vc.CreatePatch (new List<DiffInfo> (diffdata.difs).FindAll (
-				delegate (DiffInfo diff){ return changeSet.ContainsFile (diff.FileName); }
-			));
-			
-			IdeApp.Workbench.NewDocument (string.Format ("{0}.diff", filepath), "text/x-diff", patch);
+			CreatePatchCommand.CreatePatch (changeSet, false);
 		}
 		
 		void OnRefresh (object s, EventArgs args)

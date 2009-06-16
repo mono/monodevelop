@@ -1,3 +1,8 @@
+2009-06-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	  Use correct base path when generating diffs.
+
 2009-06-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
