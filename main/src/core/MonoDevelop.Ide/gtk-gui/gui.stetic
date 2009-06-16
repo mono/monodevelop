@@ -5624,39 +5624,20 @@ Large</property>
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Notebook" id="notebookCategories">
+                  <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="CurrentPage">0</property>
+                    <property name="ShadowType">In</property>
                     <child>
-                      <placeholder />
-                    </child>
-                    <child>
-                      <widget class="Gtk.Label" id="label5">
+                      <widget class="Gtk.TreeView" id="treeviewCategories">
                         <property name="MemberName" />
-                        <property name="LabelProp" translatable="yes">page1</property>
+                        <property name="CanFocus">True</property>
+                        <property name="ShowScrollbars">True</property>
                       </widget>
-                      <packing>
-                        <property name="type">tab</property>
-                      </packing>
                     </child>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
                     <property name="AutoSize">True</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.ComboBox" id="comboboxValue">
-                    <property name="MemberName" />
-                    <property name="IsTextCombo">True</property>
-                    <property name="Items" translatable="yes" />
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
                   </packing>
                 </child>
               </widget>

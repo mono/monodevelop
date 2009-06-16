@@ -1,5 +1,12 @@
 2009-06-16  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:
+	  Worked on code format panel.
+
+2009-06-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Fixed "Bug 513383
 	  - Going to declaration of extension method of
 	  System.Drawing.Bitmap crashes MD badly".

@@ -48,6 +48,52 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		public TypedCodeFormattingPolicyPanelWidget ()
 		{
+			store = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof (object));
+			TreeviewCategories.AppendColumn ("", new CellRendererText (), "text", keyColumn);
+			
+			CellRendererCombo cellRendererCombo = new CellRendererCombo ();
+			cellRendererCombo.Mode = CellRendererMode.Editable;
+			cellRendererCombo.TextColumn = 1;
+			cellRendererCombo.Model = comboBoxStore;
+			cellRendererCombo.HasEntry = false;
+			
+			cellRendererCombo.EditingStarted += delegate(object o, EditingStartedArgs args) {
+				CodeFormatType type = description.GetCodeFormatType (settings, option);
+				comboBoxStore.Clear ();
+				int active = 0, i = 0;
+				KeyValuePair<string, string> curValue = description.GetValue (settings, option);
+				foreach (KeyValuePair<string, string> v in type.Values) {
+					if (v.Key == curValue.Key)
+						active = i;
+					comboBoxStore.AppendValues (v.Key, GettextCatalog.GetString (v.Value));
+					i++;
+				}
+			};
+			
+			cellRendererCombo.Edited += delegate(object o, EditedArgs args) {
+				CodeFormatType type = description.GetCodeFormatType (settings, option);
+				foreach (KeyValuePair<string, string> v in type.Values) {
+					if (args.NewText == GettextCatalog.GetString (v.Value)) {
+						description.SetValue (settings, option, v.Key);
+						TreeIter iter;
+						if (store.GetIterFromString (out iter, args.Path)) {
+							store.SetValue (iter, valueColumn, v.Key);
+							store.SetValue (iter, valueDisplayTextColumn, args.NewText);
+						}
+						break;
+					}
+				}
+				UpdateExample ();
+			};
+			
+			cellRendererCombo.Editable = true;
+			TreeviewCategories.AppendColumn ("", cellRendererCombo, delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
+				cellRendererCombo.Markup = ((string)model.GetValue (iter, valueDisplayTextColumn));
+			});
+			TreeviewCategories.HeadersVisible = false;
+			
+			TreeviewCategories.Selection.Changed += TreeSelectionChanged;
+			TreeviewCategories.Model = store;
 		}
 		
 		void UpdateExample ()
@@ -56,21 +102,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 			if (printer == null)
 				return;
 			DotNetProject parent = new DotNetProject ();
-			parent.Policies.Set (settings);
+			parent.Policies.Set<T> (settings, description.MimeType);
 			texteditor1.Document.Text  = printer.FormatText (parent, description.MimeType, texteditor1.Document.Text);
 		}
 		
-		protected override void HandleChanged (object sender, EventArgs e)
+		protected override void HandleChanged (object sender, EditedArgs e)
 		{
-			CodeFormatType type = description.GetCodeFormatType (settings, option);
-			int a = ComboboxValue.Active;
-			if (type == null || a < 0 || a >= type.Values.Count)
-				return;
-			KeyValuePair<string, string> val = type.Values[a];
-			description.SetValue (settings, option, val.Key);
-			store.SetValue (iter, valueColumn, val.Key);
-			store.SetValue (iter, valueDisplayTextColumn, GettextCatalog.GetString (val.Value));
-			UpdateExample ();
 		}
 		
 		public void SetFormat (CodeFormatDescription description, T settings)
@@ -86,16 +123,14 @@ namespace MonoDevelop.Ide.CodeFormatting
 			texteditor1.Options = options;
 			texteditor1.Document.ReadOnly = true;
 			texteditor1.Document.MimeType = description.MimeType;
-			while (NotebookCategories.NPages > 0) {
-				NotebookCategories.RemovePage (0);
-			}
+			store.Clear ();
 			
 			if (description != null) {
 				foreach (CodeFormatCategory category in description.SubCategories) {
-					AddCategoryPage (category);
+					AppendCategory (store, TreeIter.Zero, category);
 				}
 			}
-			NotebookCategories.ShowAll ();
+			TreeviewCategories.ShowAll ();
 		}
 		
 		const int keyColumn   = 0;
@@ -126,21 +161,23 @@ namespace MonoDevelop.Ide.CodeFormatting
 				AppendCategory (store, categoryIter, s);
 			}
 		}
+		
+		/*
 		void AddCategoryPage (CodeFormatCategory category)
 		{
 			Gtk.Label label = new Gtk.Label (GettextCatalog.GetString (category.DisplayName));
-			Gtk.TreeStore store = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof (object));
+			
 			foreach (CodeFormatCategory cat in category.SubCategories) {
 				AppendCategory (store, TreeIter.Zero, cat);
 			}
 			Gtk.TreeView tree = new Gtk.TreeView (store);
 			tree.AppendColumn (GettextCatalog.GetString ("Key"), new CellRendererText (), "text", keyColumn);
 			tree.AppendColumn (GettextCatalog.GetString ("Value"), new CellRendererText (), "text", valueDisplayTextColumn);
-			tree.Selection.Changed += TreeSelectionChanged;
+			
 			ScrolledWindow sw = new ScrolledWindow ();
 			sw.Child = tree;
 			NotebookCategories.AppendPage (sw, label);
-		}
+		}*/
 		
 		void TreeSelectionChanged (object sender, EventArgs e)
 		{
@@ -153,7 +190,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 //					comboboxentryValue.Sensitive = false;
 					return;
 				}
-				ComboboxValue.Changed -= HandleChanged;
+//				ComboboxValue.Changed -= HandleChanged;
 //				comboboxentryValue.Sensitive = true;
 				CodeFormatType type = description.GetCodeFormatType (settings, option);
 				texteditor1.Document.Text = option.Example;
@@ -167,8 +204,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 				 	comboBoxStore.AppendValues (v.Key, GettextCatalog.GetString (v.Value));
 					i++;
 				}
-				ComboboxValue.Active = active;
-				ComboboxValue.Changed += HandleChanged;
+			//	ComboboxValue.Active = active;
+			//	ComboboxValue.Changed += HandleChanged;
 				UpdateExample ();
 			}
 		}
@@ -181,14 +218,9 @@ namespace MonoDevelop.Ide.CodeFormatting
 		protected Mono.TextEditor.TextEditor texteditor1 = new Mono.TextEditor.TextEditor ();
 		protected Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
 		
-		protected Notebook NotebookCategories {
+		protected Gtk.TreeView TreeviewCategories {
 			get {
-				return notebookCategories;
-			}
-		}
-		protected ComboBox ComboboxValue {
-			get {
-				return comboboxValue;
+				return treeviewCategories;
 			}
 		}
 		
@@ -196,20 +228,21 @@ namespace MonoDevelop.Ide.CodeFormatting
 		{
 			this.Build();
 			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
-			comboboxValue.Clear ();
+			comboBoxStore = new ListStore (typeof (string), typeof (string));
+		/*	comboboxValue.Clear ();
 			Gtk.CellRendererText ctx = new Gtk.CellRendererText ();
 			comboboxValue.PackStart (ctx, true);
 			comboboxValue.AddAttribute (ctx, "text", 1);
 			
-			comboBoxStore = new ListStore (typeof (string), typeof (string));
+			
 			comboboxValue.Model = comboBoxStore;
 			
-			comboboxValue.Changed += HandleChanged;
+			comboboxValue.Changed += HandleChanged;*/
 			scrolledwindow2.Child = texteditor1;
 			ShowAll ();
 		}
 		
-		protected virtual void HandleChanged (object sender, EventArgs e)
+		protected virtual void HandleChanged (object sender, EditedArgs e)
 		{
 		}
 		
