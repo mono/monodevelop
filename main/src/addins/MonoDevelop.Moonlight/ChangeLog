@@ -1,3 +1,9 @@
+2009-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:
+	  Get design and code back in sync.
+
 2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight.addin.xml: Fix typo in framework ID.

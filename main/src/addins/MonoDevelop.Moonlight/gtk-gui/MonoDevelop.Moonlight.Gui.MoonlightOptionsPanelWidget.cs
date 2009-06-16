@@ -17,9 +17,9 @@ namespace MonoDevelop.Moonlight.Gui {
         
         private Gtk.VBox applicationOptionsBox;
         
-        private Gtk.Label xapGenLabel;
+        private Gtk.Label label1;
         
-        private Gtk.Alignment xapGenAlignment;
+        private Gtk.Alignment alignment1;
         
         private Gtk.VBox vbox2;
         
@@ -47,11 +47,9 @@ namespace MonoDevelop.Moonlight.Gui {
         
         private Gtk.Entry manifestTemplateFilenameEntry;
         
-        private Gtk.HBox hbox3;
+        private Gtk.Label label3;
         
-        private Gtk.Label testPageLabel;
-        
-        private Gtk.Alignment testPageAlignment;
+        private Gtk.Alignment alignment5;
         
         private Gtk.VBox vbox4;
         
@@ -89,21 +87,21 @@ namespace MonoDevelop.Moonlight.Gui {
             this.applicationOptionsBox.Name = "applicationOptionsBox";
             this.applicationOptionsBox.Spacing = 12;
             // Container child applicationOptionsBox.Gtk.Box+BoxChild
-            this.xapGenLabel = new Gtk.Label();
-            this.xapGenLabel.Name = "xapGenLabel";
-            this.xapGenLabel.Xalign = 0F;
-            this.xapGenLabel.LabelProp = Mono.Unix.Catalog.GetString("<b>XAP Generation</b>");
-            this.xapGenLabel.UseMarkup = true;
-            this.applicationOptionsBox.Add(this.xapGenLabel);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.applicationOptionsBox[this.xapGenLabel]));
+            this.label1 = new Gtk.Label();
+            this.label1.Name = "label1";
+            this.label1.Xalign = 0F;
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("<b>XAP Generation</b>");
+            this.label1.UseMarkup = true;
+            this.applicationOptionsBox.Add(this.label1);
+            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.applicationOptionsBox[this.label1]));
             w1.Position = 0;
             w1.Expand = false;
             w1.Fill = false;
             // Container child applicationOptionsBox.Gtk.Box+BoxChild
-            this.xapGenAlignment = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
-            this.xapGenAlignment.Name = "xapGenAlignment";
-            this.xapGenAlignment.LeftPadding = ((uint)(16));
-            // Container child xapGenAlignment.Gtk.Container+ContainerChild
+            this.alignment1 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment1.Name = "alignment1";
+            this.alignment1.LeftPadding = ((uint)(16));
+            // Container child alignment1.Gtk.Container+ContainerChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
@@ -176,6 +174,7 @@ namespace MonoDevelop.Moonlight.Gui {
             // Container child manifestTable.Gtk.Table+TableChild
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";
+            this.label6.Xalign = 0F;
             this.label6.LabelProp = Mono.Unix.Catalog.GetString("Entry _point:");
             this.label6.UseUnderline = true;
             this.manifestTable.Add(this.label6);
@@ -212,33 +211,26 @@ namespace MonoDevelop.Moonlight.Gui {
             this.vbox2.Add(this.alignment2);
             Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.alignment2]));
             w13.Position = 1;
-            // Container child vbox2.Gtk.Box+BoxChild
-            this.hbox3 = new Gtk.HBox();
-            this.hbox3.Name = "hbox3";
-            this.hbox3.Spacing = 6;
-            this.vbox2.Add(this.hbox3);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox3]));
-            w14.Position = 2;
-            this.xapGenAlignment.Add(this.vbox2);
-            this.applicationOptionsBox.Add(this.xapGenAlignment);
-            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.applicationOptionsBox[this.xapGenAlignment]));
-            w16.Position = 1;
+            this.alignment1.Add(this.vbox2);
+            this.applicationOptionsBox.Add(this.alignment1);
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.applicationOptionsBox[this.alignment1]));
+            w15.Position = 1;
             // Container child applicationOptionsBox.Gtk.Box+BoxChild
-            this.testPageLabel = new Gtk.Label();
-            this.testPageLabel.Name = "testPageLabel";
-            this.testPageLabel.Xalign = 0F;
-            this.testPageLabel.LabelProp = Mono.Unix.Catalog.GetString("<b>Test Page</b>");
-            this.testPageLabel.UseMarkup = true;
-            this.applicationOptionsBox.Add(this.testPageLabel);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.applicationOptionsBox[this.testPageLabel]));
-            w17.Position = 2;
-            w17.Expand = false;
-            w17.Fill = false;
+            this.label3 = new Gtk.Label();
+            this.label3.Name = "label3";
+            this.label3.Xalign = 0F;
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString("<b>Test Page</b>");
+            this.label3.UseMarkup = true;
+            this.applicationOptionsBox.Add(this.label3);
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.applicationOptionsBox[this.label3]));
+            w16.Position = 2;
+            w16.Expand = false;
+            w16.Fill = false;
             // Container child applicationOptionsBox.Gtk.Box+BoxChild
-            this.testPageAlignment = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
-            this.testPageAlignment.Name = "testPageAlignment";
-            this.testPageAlignment.LeftPadding = ((uint)(16));
-            // Container child testPageAlignment.Gtk.Container+ContainerChild
+            this.alignment5 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment5.Name = "alignment5";
+            this.alignment5.LeftPadding = ((uint)(16));
+            // Container child alignment5.Gtk.Container+ContainerChild
             this.vbox4 = new Gtk.VBox();
             this.vbox4.Name = "vbox4";
             this.vbox4.Spacing = 6;
@@ -250,12 +242,12 @@ namespace MonoDevelop.Moonlight.Gui {
             this.generateTestPageCheck.DrawIndicator = true;
             this.generateTestPageCheck.UseUnderline = true;
             this.vbox4.Add(this.generateTestPageCheck);
-            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox4[this.generateTestPageCheck]));
-            w18.Position = 0;
-            w18.Expand = false;
-            w18.Fill = false;
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox4[this.generateTestPageCheck]));
+            w17.Position = 0;
+            w17.Expand = false;
+            w17.Fill = false;
             // Container child vbox4.Gtk.Box+BoxChild
-            this.alignment3 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment3 = new Gtk.Alignment(0F, 0.5F, 1F, 1F);
             this.alignment3.Name = "alignment3";
             this.alignment3.LeftPadding = ((uint)(36));
             // Container child alignment3.Gtk.Container+ContainerChild
@@ -268,10 +260,10 @@ namespace MonoDevelop.Moonlight.Gui {
             this.label5.LabelProp = Mono.Unix.Catalog.GetString("Test _page filename:");
             this.label5.UseUnderline = true;
             this.testPageBox.Add(this.label5);
-            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.testPageBox[this.label5]));
-            w19.Position = 0;
-            w19.Expand = false;
-            w19.Fill = false;
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.testPageBox[this.label5]));
+            w18.Position = 0;
+            w18.Expand = false;
+            w18.Fill = false;
             // Container child testPageBox.Gtk.Box+BoxChild
             this.testPageFilenameEntry = new Gtk.Entry();
             this.testPageFilenameEntry.CanFocus = true;
@@ -279,21 +271,21 @@ namespace MonoDevelop.Moonlight.Gui {
             this.testPageFilenameEntry.IsEditable = true;
             this.testPageFilenameEntry.InvisibleChar = '●';
             this.testPageBox.Add(this.testPageFilenameEntry);
-            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.testPageBox[this.testPageFilenameEntry]));
-            w20.Position = 1;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.testPageBox[this.testPageFilenameEntry]));
+            w19.Position = 1;
             this.alignment3.Add(this.testPageBox);
             this.vbox4.Add(this.alignment3);
-            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.vbox4[this.alignment3]));
-            w22.Position = 1;
-            w22.Expand = false;
-            w22.Fill = false;
-            this.testPageAlignment.Add(this.vbox4);
-            this.applicationOptionsBox.Add(this.testPageAlignment);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.applicationOptionsBox[this.testPageAlignment]));
-            w24.Position = 3;
+            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox4[this.alignment3]));
+            w21.Position = 1;
+            w21.Expand = false;
+            w21.Fill = false;
+            this.alignment5.Add(this.vbox4);
+            this.applicationOptionsBox.Add(this.alignment5);
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.applicationOptionsBox[this.alignment5]));
+            w23.Position = 3;
             this.vbox1.Add(this.applicationOptionsBox);
-            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox1[this.applicationOptionsBox]));
-            w25.Position = 0;
+            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox1[this.applicationOptionsBox]));
+            w24.Position = 0;
             // Container child vbox1.Gtk.Box+BoxChild
             this.label4 = new Gtk.Label();
             this.label4.Name = "label4";
@@ -301,10 +293,10 @@ namespace MonoDevelop.Moonlight.Gui {
             this.label4.LabelProp = Mono.Unix.Catalog.GetString("<b>XAML Validation</b>");
             this.label4.UseMarkup = true;
             this.vbox1.Add(this.label4);
-            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox1[this.label4]));
-            w26.Position = 1;
-            w26.Expand = false;
-            w26.Fill = false;
+            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox1[this.label4]));
+            w25.Position = 1;
+            w25.Expand = false;
+            w25.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.xamlAlignment = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
             this.xamlAlignment.Name = "xamlAlignment";
@@ -321,10 +313,10 @@ namespace MonoDevelop.Moonlight.Gui {
             this.validateXamlCheck.DrawIndicator = true;
             this.validateXamlCheck.UseUnderline = true;
             this.vbox6.Add(this.validateXamlCheck);
-            Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.vbox6[this.validateXamlCheck]));
-            w27.Position = 0;
-            w27.Expand = false;
-            w27.Fill = false;
+            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(this.vbox6[this.validateXamlCheck]));
+            w26.Position = 0;
+            w26.Expand = false;
+            w26.Fill = false;
             // Container child vbox6.Gtk.Box+BoxChild
             this.throwXamlErrorsCheck = new Gtk.CheckButton();
             this.throwXamlErrorsCheck.CanFocus = true;
@@ -333,14 +325,14 @@ namespace MonoDevelop.Moonlight.Gui {
             this.throwXamlErrorsCheck.DrawIndicator = true;
             this.throwXamlErrorsCheck.UseUnderline = true;
             this.vbox6.Add(this.throwXamlErrorsCheck);
-            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox6[this.throwXamlErrorsCheck]));
-            w28.Position = 1;
-            w28.Expand = false;
-            w28.Fill = false;
+            Gtk.Box.BoxChild w27 = ((Gtk.Box.BoxChild)(this.vbox6[this.throwXamlErrorsCheck]));
+            w27.Position = 1;
+            w27.Expand = false;
+            w27.Fill = false;
             this.xamlAlignment.Add(this.vbox6);
             this.vbox1.Add(this.xamlAlignment);
-            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.vbox1[this.xamlAlignment]));
-            w30.Position = 2;
+            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.vbox1[this.xamlAlignment]));
+            w29.Position = 2;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
