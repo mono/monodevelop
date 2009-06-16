@@ -1,3 +1,11 @@
+2009-06-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicyService.cs: Don't stop
+	  with an error if a policy type is not known. The policy type
+	  may be defined by an add-in which is not installed. Instead,
+	  create a dummy policy object and serialize it back when
+	  saving.
+
 2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/ProjectReference.cs: Use

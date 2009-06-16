@@ -155,6 +155,10 @@ namespace MonoDevelop.Projects.Policies
 		{
 			string scope = null;
 			Type t = GetRegisteredType (data.Name);
+			if (t == null) {
+				UnknownPolicy up = new UnknownPolicy (data);
+				return new ScopedPolicy (typeof(UnknownPolicy), up, up.Scope);
+			}
 			DataItem di = data as DataItem;
 			if (di != null) {
 				DataValue val = di ["scope"] as DataValue;
@@ -171,13 +175,18 @@ namespace MonoDevelop.Projects.Policies
 		static Type GetRegisteredType (string name)
 		{
 			Type t;
-			if (!policyNames.TryGetValue (name, out t))
-				throw new InvalidOperationException ("Cannot deserialise unregistered policy name '" + name + "'");
+			if (!policyNames.TryGetValue (name, out t)) {
+				LoggingService.LogWarning ("Cannot deserialise unregistered policy name '" + name + "'");
+				return null;
+			}
 			return t;
 		}
 		
 		internal static DataNode RawSerialize (Type policyType, object policy)
 		{
+			if (policy is UnknownPolicy)
+				return ((UnknownPolicy)policy).Data;
+			
 			string name;
 			if (!policyTypes.TryGetValue (policyType, out name))
 				throw new InvalidOperationException ("Cannot serialise unregistered policy type '" + policyType + "'");
@@ -199,6 +208,12 @@ namespace MonoDevelop.Projects.Policies
 			if (inheritVal == null || inheritVal.Value == "null")
 				return RawDeserialize (data);
 			
+			Type t = GetRegisteredType (data.Name);
+			if (t == null) {
+				UnknownPolicy up = new UnknownPolicy (data);
+				return new ScopedPolicy (typeof(UnknownPolicy), up, up.Scope);
+			}
+			
 			item.ItemData.Remove (inheritVal);
 			
 			PolicySet set = GetSet (inheritVal.Value);
@@ -207,7 +222,6 @@ namespace MonoDevelop.Projects.Policies
 			
 			DataValue inheritScope = item.ItemData.Extract ("inheritsScope") as DataValue;
 			
-			Type t = GetRegisteredType (data.Name);
 			object baseItem = set.Get (t, inheritScope != null ? inheritScope.Value : null);
 			if (baseItem == null)
 				throw new InvalidOperationException ("Policy set '" + set.Id + "' does not contain a policy for '"
@@ -233,6 +247,9 @@ namespace MonoDevelop.Projects.Policies
 			int min = Int32.MaxValue;
 			DataNode node = null;
 			string baseScope = null;
+			
+			if (policy is UnknownPolicy)
+				return ((UnknownPolicy)policy).Data;
 			
 			DataNode raw = RawSerialize (policyType, policy);
 			
@@ -578,5 +595,29 @@ namespace MonoDevelop.Projects.Policies
 		}
 		
 		#endregion
+	}
+	
+	class UnknownPolicy: IEquatable<UnknownPolicy>
+	{
+		static int upCount = 0;
+		
+		string scope;
+		public DataNode Data;
+		
+		
+		public UnknownPolicy (DataNode data)
+		{
+			Data = data;
+			scope = "unknown:" + (++upCount);
+		}
+		
+		public bool Equals (UnknownPolicy other)
+		{
+			return false;
+		}
+		
+		public string Scope {
+			get { return scope; }
+		}
 	}
 }
