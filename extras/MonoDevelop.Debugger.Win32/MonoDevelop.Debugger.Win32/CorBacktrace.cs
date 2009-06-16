@@ -16,14 +16,18 @@ namespace MonoDevelop.Debugger.Win32
 	class CorBacktrace: IBacktrace
 	{
 		CorThread thread;
+		int threadId;
 		CorDebuggerSession session;
 		List<CorFrame> frames;
+		int evalTimestamp;
 
 		public CorBacktrace (CorThread thread, CorDebuggerSession session)
 		{
 			this.session = session;
 			this.thread = thread;
+			threadId = thread.Id;
 			frames = new List<CorFrame> (GetFrames (thread));
+			evalTimestamp = CorDebuggerSession.EvaluationTimestamp;
 		}
 
 		internal static IEnumerable<CorFrame> GetFrames (CorThread thread)
@@ -34,12 +38,23 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
+		internal List<CorFrame> FrameList {
+			get {
+				if (evalTimestamp != CorDebuggerSession.EvaluationTimestamp) {
+					thread = session.GetThread (threadId);
+					frames = new List<CorFrame> (GetFrames (thread));
+					evalTimestamp = CorDebuggerSession.EvaluationTimestamp;
+				}
+				return frames;
+			}
+		}
+
 		CorEvaluationContext GetEvaluationContext (int frameIndex, int timeout)
 		{
 			if (timeout == -1)
 				timeout = session.ObjectAdapter.DefaultEvaluationTimeout;
-			CorFrame frame = frames[frameIndex];
-			CorEvaluationContext ctx = new CorEvaluationContext (session, frame, frameIndex);
+			CorFrame frame = FrameList[frameIndex];
+			CorEvaluationContext ctx = new CorEvaluationContext (session, this, frame, frameIndex);
 			ctx.Thread = thread;
 			ctx.Timeout = timeout;
 			return ctx;
@@ -54,7 +69,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public int FrameCount
 		{
-			get { return frames.Count; }
+			get { return FrameList.Count; }
 		}
 
 		public ObjectValue[] GetAllLocals (int frameIndex, int timeout)
@@ -73,7 +88,8 @@ namespace MonoDevelop.Debugger.Win32
 
 		public CompletionData GetExpressionCompletionData (int frameIndex, string exp)
 		{
-			return new CompletionData ();
+			CorEvaluationContext ctx = GetEvaluationContext (frameIndex, 400);
+			return ctx.Adapter.GetExpressionCompletionData (ctx, exp);
 		}
 
 		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeout)
@@ -102,11 +118,11 @@ namespace MonoDevelop.Debugger.Win32
 
 		public StackFrame[] GetStackFrames (int firstIndex, int lastIndex)
 		{
-			if (lastIndex >= frames.Count)
-				lastIndex = frames.Count - 1;
+			if (lastIndex >= FrameList.Count)
+				lastIndex = FrameList.Count - 1;
 			StackFrame[] array = new StackFrame[lastIndex - firstIndex + 1];
 			for (int n = 0; n < array.Length; n++)
-				array[n] = CreateFrame (session, frames[n + firstIndex]);
+				array[n] = CreateFrame (session, FrameList[n + firstIndex]);
 			return array;
 		}
 

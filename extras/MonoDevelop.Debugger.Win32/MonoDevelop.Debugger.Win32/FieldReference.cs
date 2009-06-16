@@ -38,11 +38,13 @@ namespace MonoDevelop.Debugger.Win32
 		CorType type;
 		FieldInfo field;
 		CorValRef thisobj;
+		CorValRef lastValue;
 		CorValRef.ValueLoader loader;
 
 		public FieldReference (EvaluationContext<CorValRef, CorType> ctx, CorValRef thisobj, CorType type, FieldInfo field)
 			: base (ctx)
 		{
+			this.thisobj = thisobj;
 			this.type = type;
 			this.field = field;
 			if (!field.IsStatic)
@@ -87,6 +89,12 @@ namespace MonoDevelop.Debugger.Win32
 			}
 			set {
 				Value.SetValue (Context, value);
+				if (thisobj != null) {
+					CorObjectValue cob = CorObjectAdaptor.GetRealObject (thisobj) as CorObjectValue;
+					if (cob != null && cob.IsValueClass)
+						thisobj.IsValid = false; // Required to make sure that thisobj returns an up-to-date value object
+
+				}
 			}
 		}
 

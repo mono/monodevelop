@@ -39,20 +39,22 @@ namespace MonoDevelop.Debugger.Win32
 		CorValRef thisobj;
 		CorValRef index;
 		CorModule module;
+		CorType declaringType;
 		CorValRef.ValueLoader loader;
 		CorValRef cachedValue;
 
-		public PropertyReference (EvaluationContext<CorValRef, CorType> ctx, PropertyInfo prop, CorValRef thisobj, CorModule module)
-			: this (ctx, prop, thisobj, module, null)
+		public PropertyReference (EvaluationContext<CorValRef, CorType> ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType)
+			: this (ctx, prop, thisobj, declaringType, null)
 		{
 		}
 
-		public PropertyReference (EvaluationContext<CorValRef, CorType> ctx, PropertyInfo prop, CorValRef thisobj, CorModule module, CorValRef index)
+		public PropertyReference (EvaluationContext<CorValRef, CorType> ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType, CorValRef index)
 			: base (ctx)
 		{
 			this.prop = prop;
 			this.thisobj = thisobj;
-			this.module = module;
+			this.declaringType = declaringType;
+			this.module = declaringType.Class.Module;
 			this.index = index;
 
 			loader = delegate {
@@ -78,14 +80,14 @@ namespace MonoDevelop.Debugger.Win32
 				MethodInfo mi = prop.GetGetMethod ();
 				CorValue[] args = index == null ? new CorValue[0] : new CorValue[] { index.Val };
 				CorFunction func = module.GetFunctionFromToken (mi.MetadataToken);
-				CorValue val = ctx.RuntimeInvoke (func, thisobj.Val.ExactType.TypeParameters, thisobj.Val, args);
+				CorValue val = ctx.RuntimeInvoke (func, declaringType.TypeParameters, thisobj != null ? thisobj.Val : null, args);
 				return cachedValue = new CorValRef (val, loader);
 			}
 			set {
 				CorEvaluationContext ctx = (CorEvaluationContext) Context;
 				CorFunction func = module.GetFunctionFromToken (prop.GetSetMethod ().MetadataToken);
 				CorValue[] args = index == null ? new CorValue[] { value.Val } : new CorValue[] { index.Val, value.Val };
-				ctx.RuntimeInvoke (func, thisobj.Val.ExactType.TypeParameters, thisobj.Val, args);
+				ctx.RuntimeInvoke (func, declaringType.TypeParameters, thisobj != null ? thisobj.Val : null, args);
 			}
 		}
 		

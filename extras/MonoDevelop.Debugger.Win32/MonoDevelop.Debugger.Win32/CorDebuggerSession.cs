@@ -25,6 +25,7 @@ namespace MonoDevelop.Debugger.Win32
 		CorStepper stepper;
 		bool terminated;
 		bool evaluating;
+		int processId;
 
 		static int evaluationTimestamp;
 
@@ -97,6 +98,7 @@ namespace MonoDevelop.Debugger.Win32
 			dbg = new CorDebugger (dversion);
 
 			process = dbg.CreateProcess (startInfo.Command, startInfo.Arguments, startInfo.WorkingDirectory);
+			processId = process.Id;
 
 			process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
 			process.OnCreateAppDomain += new CorAppDomainEventHandler (OnCreateAppDomain);
@@ -542,6 +544,7 @@ namespace MonoDevelop.Debugger.Win32
 
 			CorMethodCall mc = new CorMethodCall ();
 			CorValue exception = null;
+			CorEval eval = ctx.Eval;
 
 			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
 				mc.DoneEvent.Set ();
@@ -559,15 +562,15 @@ namespace MonoDevelop.Debugger.Win32
 
 			mc.OnInvoke = delegate {
 				if (function.GetMethodInfo (this).Name == ".ctor")
-					ctx.Eval.NewParameterizedObject (function, typeArgs, args);
+					eval.NewParameterizedObject (function, typeArgs, args);
 				else
-					ctx.Eval.CallParameterizedFunction (function, typeArgs, args);
+					eval.CallParameterizedFunction (function, typeArgs, args);
 				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
 				ClearEvalStatus ();
 				process.Continue (false);
 			};
 			mc.OnAbort = delegate {
-				ctx.Eval.Abort ();
+				eval.Abort ();
 			};
 
 			try {
@@ -595,7 +598,7 @@ namespace MonoDevelop.Debugger.Win32
 				throw new EvaluatorException ("Evaluation failed: " + ObjectAdapter.GetValueTypeName (ctx, vref));
 			}
 
-			return ctx.Eval.Result;
+			return eval.Result;
 		}
 
 		public CorValue NewString (CorEvaluationContext ctx, string value)
@@ -605,13 +608,16 @@ namespace MonoDevelop.Debugger.Win32
 			}
 
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
+			CorValue result = null;
 
 			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
 			};
 
 			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
 			};
@@ -626,7 +632,7 @@ namespace MonoDevelop.Debugger.Win32
 				process.Continue (false);
 
 				if (doneEvent.WaitOne (ctx.Timeout))
-					return ctx.Eval.Result;
+					return result;
 				else
 					return null;
 			} finally {
@@ -643,6 +649,12 @@ namespace MonoDevelop.Debugger.Win32
 		void ClearEvalStatus ( )
 		{
 			evaluationTimestamp++;
+			foreach (CorProcess p in dbg.Processes) {
+				if (p.Id == processId) {
+					process = p;
+					break;
+				}
+			}
 		}
 
 		ProcessInfo GetPocess (CorProcess proc)
@@ -675,6 +687,14 @@ namespace MonoDevelop.Debugger.Win32
 				}
 				return info;
 			}
+		}
+
+		public CorThread GetThread (int id)
+		{
+			foreach (CorThread t in process.Threads)
+				if (t.Id == id)
+					return t;
+			throw new InvalidOperationException ("Invalid thread id " + id);
 		}
 
 		string GetThreadName (CorThread thread)
@@ -756,6 +776,15 @@ namespace MonoDevelop.Debugger.Win32
 
 		public static void SetValue (this CorValRef thisVal, EvaluationContext<CorValRef, CorType> ctx, CorValRef val)
 		{
+			CorObjectAdaptor actx = (CorObjectAdaptor) ctx.Adapter;
+			if (actx.IsEnum (ctx, thisVal.Val.ExactType) && !actx.IsEnum (ctx, val.Val.ExactType)) {
+				ValueReference<CorValRef, CorType> vr = actx.GetMember (ctx, thisVal, "value__");
+				vr.Value = val;
+				// Required to make sure that var returns an up-to-date value object
+				thisVal.IsValid = false;
+				return;
+			}
+				
 			CorReferenceValue s = thisVal.Val.CastToReferenceValue ();
 			if (s != null) {
 				CorReferenceValue v = val.Val.CastToReferenceValue ();

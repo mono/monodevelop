@@ -154,13 +154,17 @@ namespace MonoDevelop.Debugger.Win32
 				}
 			}
 			if (method != null) {
-				return new CorValRef (delegate {
+				CorValRef v = new CorValRef (delegate {
 					CorFunction func = targetType.Class.Module.GetFunctionFromToken (method.MetadataToken);
 					CorValue[] args = new CorValue[argValues.Length];
 					for (int n = 0; n < args.Length; n++)
 						args[n] = argValues[n].Val;
 					return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
 				});
+				if (v.Val == null)
+					return null;
+				else
+					return v;
 			}
 			else
 				throw new EvaluatorException ("Invalid method name or incompatible arguments.");
@@ -207,11 +211,18 @@ namespace MonoDevelop.Debugger.Win32
 			return null;
 		}
 
+		public bool IsEnum (EvaluationContext<CorValRef, CorType> ctx, CorType targetType)
+		{
+			return targetType.Type == CorElementType.ELEMENT_TYPE_VALUETYPE && GetTypeName (ctx, targetType.Base) == "System.Enum";
+		}
+
 		public override CorValRef CreateValue (EvaluationContext<CorValRef, CorType> gctx, object value)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			if (value is string) {
-				return new CorValRef (ctx.Session.NewString (ctx, (string) value));
+				return new CorValRef (delegate {
+					return ctx.Session.NewString (ctx, (string) value);
+				});
 			}
 
 			foreach (KeyValuePair<CorElementType, Type> tt in CorMetadataImport.CoreTypes) {
@@ -342,6 +353,9 @@ namespace MonoDevelop.Debugger.Win32
 			if ((robj is CorReferenceValue) && ((CorReferenceValue) robj).IsNull)
 				return ObjectValue.CreateObject (null, path, GetTypeName (ctx, robj.ExactType), "(null)", flags, null);
 
+			if ((robj is CorObjectValue) && robj.ExactType.Base != null && GetTypeName (ctx, robj.ExactType.Base) == "System.Enum")
+				return ObjectValue.CreatePrimitive (source, path, GetTypeName (ctx, robj.ExactType), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);
+
 			if ((robj is CorArrayValue) || (robj is CorObjectValue))
 				return ObjectValue.CreateObject (source, path, GetTypeName (ctx, robj.ExactType), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
 
@@ -378,7 +392,6 @@ namespace MonoDevelop.Debugger.Win32
 			if (t.Class == null)
 				yield break;
 
-			bool staticOnly = (val == null);
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 
 			while (t != null) {
@@ -395,7 +408,7 @@ namespace MonoDevelop.Debugger.Win32
 						// Ignore
 					}
 					if (mi != null && mi.GetParameters ().Length == 0)
-						yield return new PropertyReference (ctx, prop, val, t.Class.Module);
+						yield return new PropertyReference (ctx, prop, val, t);
 				}
 				t = t.Base;
 			}
@@ -458,6 +471,35 @@ namespace MonoDevelop.Debugger.Win32
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			CorObjectValue co = obj as CorObjectValue;
 			if (co != null) {
+				if (co.ExactType.Base != null && GetTypeName (ctx, co.ExactType.Base) == "System.Enum") {
+					MetadataType rt = co.ExactType.Class.GetTypeInfo (cctx.Session) as MetadataType;
+					bool isFlags = rt != null && rt.ReallyIsFlagsEnum;
+					string enumName = GetTypeName (ctx, co.ExactType);
+					ValueReference<CorValRef, CorType> val = GetMember (ctx, objr, "value__");
+					ulong nval = (ulong) Convert.ChangeType (val.ObjectValue, typeof(ulong));
+					ulong remainingFlags = nval;
+					string flags = null;
+					foreach (ValueReference<CorValRef, CorType> evals in GetMembers (ctx, co.ExactType, null, BindingFlags.Public | BindingFlags.Static)) {
+						ulong nev = (ulong) Convert.ChangeType (evals.ObjectValue, typeof (ulong));
+						if (nval == nev)
+							return new LiteralExp (enumName + "." + evals.Name);
+						if (isFlags && nev != 0 && (nval & nev) == nev) {
+							if (flags == null)
+								flags = enumName + "." + evals.Name;
+							else
+								flags += " | " + enumName + "." + evals.Name;
+							remainingFlags &= ~nev;
+						}
+					}
+					if (isFlags) {
+						if (remainingFlags == nval)
+							return nval;
+						if (remainingFlags != 0)
+							flags += " | " + remainingFlags;
+						return new LiteralExp (flags);
+					} else
+						return nval;
+				}
 				TypeDisplayData tdata = GetTypeDisplayData (ctx, co.ExactType);
 				if (co == null)
 					return null;

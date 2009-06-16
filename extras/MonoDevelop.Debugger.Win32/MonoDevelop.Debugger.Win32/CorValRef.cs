@@ -38,14 +38,20 @@ namespace MonoDevelop.Debugger.Win32
 
 		public bool IsValid {
 			get { return version == CorDebuggerSession.EvaluationTimestamp; }
+			set {
+				if (value)
+					version = CorDebuggerSession.EvaluationTimestamp;
+				else
+					version = -1;
+			}
 		}
 
 		public CorValue Val {
 			get {
 				if (version < CorDebuggerSession.EvaluationTimestamp && loader != null) {
 					// Obsolete value, get a new one
-					version = CorDebuggerSession.EvaluationTimestamp;
 					CorValue v = loader ();
+					version = CorDebuggerSession.EvaluationTimestamp;
 					if (v != null)
 						val = v;
 				}

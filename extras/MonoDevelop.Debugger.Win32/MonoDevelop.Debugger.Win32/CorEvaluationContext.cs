@@ -13,26 +13,52 @@ namespace MonoDevelop.Debugger.Win32
 		CorFrame frame;
 		int frameIndex;
 		int evalTimestamp;
+		CorBacktrace backtrace;
+		CorThread thread;
+		int threadId;
 
-		public CorThread Thread { get; set; }
 		public CorDebuggerSession Session { get; set; }
 
-		public CorEvaluationContext (CorDebuggerSession session, CorFrame frame, int index)
+		internal CorEvaluationContext (CorDebuggerSession session, CorBacktrace backtrace, CorFrame frame, int index)
 		{
 			Session = session;
 			Evaluator = session.Evaluator;
 			Adapter = session.ObjectAdapter;
 			this.frame = frame;
 			frameIndex = index;
+			this.backtrace = backtrace;
 			evalTimestamp = CorDebuggerSession.EvaluationTimestamp;
+		}
+
+		void CheckTimestamp ( )
+		{
+			if (evalTimestamp != CorDebuggerSession.EvaluationTimestamp) {
+				thread = null;
+				frame = null;
+				corEval = null;
+			}
+		}
+
+		public CorThread Thread {
+			get {
+				CheckTimestamp ();
+				if (thread == null)
+					thread = Session.GetThread (threadId);
+				return thread;
+			}
+			set {
+				thread = value;
+				threadId = thread.Id;
+			}
 		}
 
 		public CorFrame Frame {
 			get {
-				if (frame == null || evalTimestamp != CorDebuggerSession.EvaluationTimestamp) {
+				CheckTimestamp ();
+				if (frame == null) {
 					frame = null;
 					int n = 0;
-					foreach (CorFrame f in CorBacktrace.GetFrames (Thread)) {
+					foreach (CorFrame f in backtrace.FrameList) {
 						if (n++ == frameIndex) {
 							frame = f;
 							break;
@@ -45,6 +71,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public CorEval Eval {
 			get {
+				CheckTimestamp ();
 				if (corEval == null)
 					corEval = Thread.CreateEval ();
 				return corEval;
