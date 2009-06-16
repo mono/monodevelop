@@ -117,7 +117,7 @@ namespace Mono.Debugging.Evaluation
 		public override IEnumerable<ValueReference<TValue, TType>> GetChildReferences ( )
 		{
 			try {
-				return Context.Adapter.GetMembers (Context, type, null);
+				return Context.Adapter.GetMembers (Context, type, null, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				Context.WriteDebuggerOutput (ex.Message);

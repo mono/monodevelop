@@ -207,8 +207,10 @@ namespace Mono.Debugging.Evaluation
 			TValue vtarget = (target is TypeValueReference<TValue, TType>) ? null : target.Value;
 
 			TValue res = ctx.Adapter.RuntimeInvoke (ctx, vtype, vtarget, methodName, argtypes, args);
-			
-			return new LiteralValueReference<TValue, TType> (ctx, name, res);
+			if (res != null)
+				return new LiteralValueReference<TValue, TType> (ctx, name, res);
+			else
+				return new LiteralValueReference<TValue, TType> (ctx, name, new LiteralExp ("No return value."));
 		}
 		
 		public override object VisitInnerClassTypeReference (ICSharpCode.NRefactory.Ast.InnerClassTypeReference innerClassTypeReference, object data)

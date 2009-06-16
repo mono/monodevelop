@@ -100,5 +100,15 @@ namespace Mono.Debugging.Evaluation
 				return ObjectValueFlags.Field | ObjectValueFlags.ReadOnly;
 			}
 		}
+
+		protected override ObjectValue OnCreateObjectValue ( )
+		{
+			if (ObjectValue is LiteralExp) {
+				LiteralExp exp = (LiteralExp) ObjectValue;
+				return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "", exp.Exp, Flags, null);
+			}
+			else
+				return base.OnCreateObjectValue ();
+		}
 	}
 }
