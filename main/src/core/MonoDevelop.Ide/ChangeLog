@@ -1,5 +1,10 @@
 2009-06-16  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	  Worked on formatting panel.
+
+2009-06-16  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
 	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:

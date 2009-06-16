@@ -32,6 +32,8 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
+
 
 
 namespace MonoDevelop.Ide.CodeFormatting
@@ -46,10 +48,25 @@ namespace MonoDevelop.Ide.CodeFormatting
 		TreeIter iter;
 		CodeFormatOption option;
 		
+		CellRendererPixbuf pixbufCellRenderer;
+		
 		public TypedCodeFormattingPolicyPanelWidget ()
 		{
-			store = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof (object));
-			TreeviewCategories.AppendColumn ("", new CellRendererText (), "text", keyColumn);
+			store = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof (object), typeof (string));
+			
+			TreeViewColumn column = new TreeViewColumn ();
+			
+			// pixbuf column
+			pixbufCellRenderer = new CellRendererPixbuf ();
+			column.PackStart (pixbufCellRenderer, false);
+			column.SetCellDataFunc (pixbufCellRenderer, new Gtk.TreeCellDataFunc (RenderIcon));
+			
+			// text column
+			CellRendererText cellRendererText = new CellRendererText ();
+			column.PackStart (cellRendererText, true);
+			column.SetAttributes (cellRendererText, "text", keyColumn);
+			
+			TreeviewCategories.AppendColumn (column);
 			
 			CellRendererCombo cellRendererCombo = new CellRendererCombo ();
 			cellRendererCombo.Mode = CellRendererMode.Editable;
@@ -96,6 +113,16 @@ namespace MonoDevelop.Ide.CodeFormatting
 			TreeviewCategories.Model = store;
 		}
 		
+		void RenderIcon (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) 
+		{
+			object o = store.GetValue (iter, objectColumn);
+			if (o is CodeFormatCategory) {
+				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (TreeviewCategories.GetRowExpanded (store.GetPath (iter)) ? MonoDevelop.Core.Gui.Stock.OpenFolder : MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
+			} else {
+				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Property, IconSize.Menu);
+			}
+		}
+		
 		void UpdateExample ()
 		{
 			IPrettyPrinter printer = TextFileService.GetPrettyPrinter (description.MimeType);
@@ -137,6 +164,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		const int valueColumn = 1;
 		const int valueDisplayTextColumn = 2;
 		const int objectColumn = 3;
+		const int iconColumn = 4;
 
 		public T Settings {
 			get {
