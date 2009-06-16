@@ -300,6 +300,8 @@ namespace Mono.TextEditor
 			DecorateLineBg -= DecorateMatchingBracket;
 			if (textEditor.Options.HighlightMatchingBracket) 
 				DecorateLineBg += DecorateMatchingBracket;
+			DisposeLayoutDict ();
+			chunkDict.Clear ();
 		}
 		
 		void DisposeGCs ()

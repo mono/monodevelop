@@ -26,6 +26,29 @@
 <SyntaxMode name = "C++" mimeTypes="text/x-c++src;text/x-c++hdr" extends="text/x-csrc">
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	
+		
+	<Span color = "comment" rule="Comment" tagColor="comment.tag">
+		<Begin>#if 0</Begin>
+		<End>#endif</End>
+	</Span>
+	
+	<EolSpan color = "text.preprocessor" rule="text.preprocessor" continuation="\">#</EolSpan>
+	
+	<Span color = "comment" rule="Comment" tagColor="comment.tag">
+		<Begin>/*</Begin>
+		<End>*/</End>
+	</Span>
+	
+	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+		<Begin>"</Begin>
+		<End>"</End>
+	</Span>
+	
+	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+		<Begin>&apos;</Begin>
+		<End>&apos;</End>
+	</Span>
+		
 	<Keywords color = "keyword.access">
 		<Word>this</Word>
 		<Word>base</Word>
