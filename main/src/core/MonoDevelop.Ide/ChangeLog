@@ -1,3 +1,9 @@
+2009-06-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Fixed "Bug 513383
+	  - Going to declaration of extension method of
+	  System.Drawing.Bitmap crashes MD badly".
+
 2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs: Fix hiding

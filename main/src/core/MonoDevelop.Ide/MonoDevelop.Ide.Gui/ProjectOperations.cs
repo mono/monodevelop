@@ -245,6 +245,8 @@ namespace MonoDevelop.Ide.Gui
 				if (member.DeclaringType == null) 
 					return;
 				fileName = member.DeclaringType.CompilationUnit.FileName;
+				if (member is ExtensionMethod)
+					fileName = ((ExtensionMethod)member).OriginalMethod.DeclaringType.CompilationUnit.FileName;
 			}
 			Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (fileName, member.Location.Line, member.Location.Column, true);
 			if (doc != null) {
