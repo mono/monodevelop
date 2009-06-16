@@ -269,8 +269,10 @@ namespace MonoDevelop.AssemblyBrowser
 					ITreeNavigator result = SearchMember (nav, helpUrl);
 					if (result != null)
 						return result;
-					nav.MoveToParent ();
-					if (nav.Options["PublicApiOnly"]) {
+					if (!nav.MoveToParent ())
+						return null;
+					
+					if (nav.Options["PublicApiOnly"] && (nav.DataItem is DomCecilType)) {
 						nav.Options["PublicApiOnly"] = false;
 						nav.MoveToFirstChild ();
 						result = SearchMember (nav, helpUrl);

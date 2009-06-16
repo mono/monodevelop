@@ -1,3 +1,9 @@
+2009-06-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Fixed
+	  crash case reported in "Bug 513383 - Going to declaration of
+	  extension method of System.Drawing.Bitmap crashes MD badly".
+
 2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
