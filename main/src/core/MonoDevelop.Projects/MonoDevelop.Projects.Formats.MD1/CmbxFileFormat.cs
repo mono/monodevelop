@@ -270,6 +270,13 @@ namespace MonoDevelop.Projects.Formats.MD1
 				reader.Close ();
 			}
 		}
+		
+		protected override XmlConfigurationReader GetChildReader (MonoDevelop.Core.Serialization.DataItem parent)
+		{
+			// Don't reuse this serializer for children, since it has solution-specific serialization code
+			return XmlConfigurationReader.DefaultReader;
+		}
+
 	}
 	
 	class CombineWriterV2: XmlConfigurationWriter
@@ -467,5 +474,12 @@ namespace MonoDevelop.Projects.Formats.MD1
 				sw.Close ();
 			}
 		}
+		
+		protected override XmlConfigurationWriter GetChildWriter (MonoDevelop.Core.Serialization.DataNode data)
+		{
+			// Don't reuse this serializer for children, since it has solution-specific serialization code
+			return XmlConfigurationWriter.DefaultWriter;
+		}
+
 	}
 }
