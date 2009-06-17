@@ -104,8 +104,10 @@ namespace MonoDevelop.Projects
 			Append (ce);
 		}
 		
-		public void Append (BuildResult res)
+		public BuildResult Append (BuildResult res)
 		{
+			if (res == null)
+				return this;
 			errors.AddRange (res.Errors);
 			warningCount += res.WarningCount;
 			errorCount += res.ErrorCount;
@@ -113,10 +115,20 @@ namespace MonoDevelop.Projects
 			failedBuildCount += res.failedBuildCount;
 			if (!string.IsNullOrEmpty (res.CompilerOutput))
 				compilerOutput += "\n" + res.CompilerOutput;
+			return this;
 		}
 		
-		public void Append (BuildError error)
+		public BuildResult Append (IEnumerable<BuildResult> results)
 		{
+			foreach (var res in results)
+				Append (res);
+			return this;
+		}
+		
+		public BuildResult Append (BuildError error)
+		{
+			if (error == null)
+				return this;
 			errors.Add (error);
 			if (sourceTarget != null && error.SourceTarget == null)
 				error.SourceTarget = sourceTarget;
@@ -124,6 +136,7 @@ namespace MonoDevelop.Projects
 				warningCount++;
 			else
 				errorCount++;
+			return this;
 		}
 
 		public string CompilerOutput {

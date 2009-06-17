@@ -1,3 +1,9 @@
+2009-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/BuildResult.cs: Make Append more usable
+	  by returning 'this' so it can be chained more easily. Also
+	  ignore null values.
+
 2009-06-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicyService.cs: Don't stop
