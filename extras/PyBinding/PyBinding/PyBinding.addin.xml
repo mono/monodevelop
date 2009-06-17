@@ -55,10 +55,6 @@
     	</MimeType>
     </Extension>
     
-    <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-        <Icon extensions = ".py" icon = "res:text-x-pysrc.16x16.png"/>
-    </Extension>
-    
     <Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
         <ProjectBinding
         	id = "PyProject"
