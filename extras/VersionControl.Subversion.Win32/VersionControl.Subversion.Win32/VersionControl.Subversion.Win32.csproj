@@ -85,10 +85,6 @@
       <Link>SharpPlink-Win32.svnExe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\SharpSvn\SharpSvn.wxs">
-      <Link>SharpSvn.wxs</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\SharpSvn\SharpSvn-DB44-20-win32.dll">
@@ -97,10 +93,6 @@
     </Content>
     <Content Include="..\SharpSvn\SharpSvn-Sasl21-22-win32.dll">
       <Link>SharpSvn-Sasl21-22-win32.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\SharpSvn\SharpSvn.xml">
-      <Link>SharpSvn.xml</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

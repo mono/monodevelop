@@ -16,6 +16,12 @@
 		<Addin id="VersionControl.Subversion" version="2.1.0"/>
 	</Dependencies>
 
+	<Runtime>
+		<ScanExclude path="SharpSvn.dll" />
+		<ScanExclude path="SharpSvn-DB44-20-Win32.dll" />
+		<ScanExclude path="SharpSvn-SASL21-22-Win32.dll" />
+	</Runtime>
+
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
 		<Class class = "SubversionAddinWindows.SvnSharpClient" />
 	</Extension>
