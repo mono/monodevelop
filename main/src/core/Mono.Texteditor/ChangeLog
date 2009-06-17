@@ -1,3 +1,12 @@
+2009-06-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/Chunk.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Fixed "Bug
+	  513772 - Assembly browser not working in current SVN
+	  version?".
+
 2009-06-16  Mike Krüger  <mkrueger@novell.com>
 
 	* SyntaxModes/CPPSyntaxMode.xml:

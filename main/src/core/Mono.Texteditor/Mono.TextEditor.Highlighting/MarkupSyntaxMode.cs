@@ -97,9 +97,16 @@ namespace Mono.TextEditor.Highlighting
 				return text [offset - this.Offset];
 			}
 			
+			public override string GetText (Document doc)
+			{
+				if (string.IsNullOrEmpty (text))
+					return base.GetText (doc);
+				return text;
+			}
+			
 			public override string ToString ()
 			{
-				return string.Format("[TextChunk: ChunkStyle={0}]", ChunkStyle);
+				return string.Format("[TextChunk: ChunkStyle={0}, Text={1}, Offset={2}, Length={3}]", ChunkStyle, text, Offset, Length);
 			}
 		}
 		

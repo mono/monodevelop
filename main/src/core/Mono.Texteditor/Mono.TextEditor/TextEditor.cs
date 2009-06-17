@@ -1196,8 +1196,13 @@ namespace Mono.TextEditor
 			}
 
 			int longestLineWidth = 0;
-			if (longestLine != null)
-				longestLineWidth = this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine));
+			if (longestLine != null) {
+				try {
+					longestLineWidth = this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine));
+				} catch (Exception) {
+					longestLine = null;
+				}
+			}
 
 			int startY = startLine * this.LineHeight - reminder;
 			int curY = startY;
