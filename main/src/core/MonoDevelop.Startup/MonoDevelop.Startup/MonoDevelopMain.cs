@@ -1,8 +1,10 @@
 
 using System;
+using System.IO;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using Mono.Addins;
 
 namespace MonoDevelop.Startup
@@ -12,6 +14,8 @@ namespace MonoDevelop.Startup
 		public static int Main (string[] args)
 		{
 			bool retry = false;
+
+			EnableFileLogging ();
 			
 			do {
 				try {
@@ -33,7 +37,44 @@ namespace MonoDevelop.Startup
 				}
 			}
 			while (retry);
+
+			if (logFile != null)
+				logFile.Close ();
+
 			return -1;
+		}
+
+		static StreamWriter logFile;
+
+		static void EnableFileLogging ( )
+		{
+			if (Path.DirectorySeparatorChar != '\\')
+				return;
+
+			// On Windows log all output to a log file
+
+			string configPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+			configPath = Path.Combine (configPath, "MonoDevelop");
+			if (!Directory.Exists (configPath))
+				Directory.CreateDirectory (configPath);
+
+			string file = Path.Combine (configPath, "log.txt");
+			try {
+				logFile = new StreamWriter (file);
+				logFile.AutoFlush = true;
+
+				LogTextWriter tw = new LogTextWriter ();
+				tw.ChainWriter (logFile);
+				tw.ChainWriter (Console.Out);
+				Console.SetOut (tw);
+
+				tw = new LogTextWriter ();
+				tw.ChainWriter (logFile);
+				tw.ChainWriter (Console.Error);
+				Console.SetError (tw);
+			}
+			catch {
+			}
 		}
 	}
 }
