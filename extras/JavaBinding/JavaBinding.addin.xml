@@ -65,14 +65,6 @@
 	<Section _label = "Java" icon="md-java" class = "JavaBinding.GlobalOptionsPanelPanel" />
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-    <Icon language = "Java" icon = "res:Java.ProjectIcon"/>
-  </Extension>
-	
-	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-java-file" resource = "Java.FileIcon" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="text/x-java" _description="Java source code" icon="md-java-file" isText="true">
 			<File pattern="*.java" />
@@ -92,6 +84,7 @@
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-java" resource = "java-16.png" icon="Menu" />
 		<StockIcon stockid = "md-java" resource = "java-22.png" />
+		<StockIcon stockid = "md-java-file" resource = "Java.FileIcon" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
