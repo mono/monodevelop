@@ -47,6 +47,11 @@
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
 	  Track assembly lookup APIs.
 
+2009-06-01  Carlo Kok  <ck@remobjects.com>
+
+	* MonoDevelop.Ide.Commands\HelpCommands.cs:
+	* MonoDevelop.Ide.Commands\ViewCommands.cs: rewritten from scratch to make it non-GPL.
+	
 2009-06-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs\FileSelectorDialog.cs: Fix gtk
