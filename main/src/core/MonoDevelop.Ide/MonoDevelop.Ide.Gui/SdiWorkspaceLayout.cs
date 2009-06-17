@@ -864,5 +864,33 @@ namespace MonoDevelop.Ide.Gui
 			SdiWorkspaceWindow win = (SdiWorkspaceWindow) CurrentPageWidget;
 			return win != null ? win.CommandHandler : null;
 		}
+		
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			bool res = base.OnExposeEvent (evnt);
+			if (Children.Length == 0) {
+				Gdk.Rectangle rect = Allocation;
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+					cr.NewPath ();
+					cr.MoveTo (rect.X, rect.Y);
+					cr.RelLineTo (rect.Width, 0);
+					cr.RelLineTo (0, rect.Height);
+					cr.RelLineTo (-rect.Width, 0);
+					cr.RelLineTo (0, -rect.Height);
+					cr.ClosePath ();
+					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + rect.Height);
+					Gdk.Color gdkcol = Style.Mid (StateType.Normal);
+					Cairo.Color color1 = new Cairo.Color (gdkcol.Red / (double) ushort.MaxValue, gdkcol.Green / (double) ushort.MaxValue, gdkcol.Blue / (double) ushort.MaxValue);
+					color1.A = 0;
+					pat.AddColorStop (0, color1);
+					color1.A = 0.6;
+					pat.AddColorStop (1, color1);
+					cr.Pattern = pat;
+					cr.FillPreserve ();
+				}
+			}
+			return res;
+		}
+
 	}
 }

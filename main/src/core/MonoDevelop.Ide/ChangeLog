@@ -1,5 +1,12 @@
 2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Show a gradient
+	  background when there are no documents opened.
+
+2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui\IdeStartup.cs: Restored incorrectly
 	  removed BeginTask call.
 
