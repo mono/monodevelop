@@ -1,3 +1,8 @@
+2009-06-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Corrected
+	  embedded statement.
+
 2009-05-12  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Lexer/CSharp/Lexer.cs: Fixed compilation error.
