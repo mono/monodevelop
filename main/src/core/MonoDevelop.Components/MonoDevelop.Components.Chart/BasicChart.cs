@@ -731,28 +731,32 @@ namespace MonoDevelop.Components.Chart
 		
 		void GetPoint (double wx, double wy, out int x, out int y)
 		{
-			if (reverseXAxis)
-				x = left + width - (int) (((wx - startX) * ((double)width)) / (endX - startX));
-			else
-				x = left + (int) (((wx - startX) * ((double)width)) / (endX - startX));
-			
-			if (reverseYAxis)
-				y = top + (int) ((wy - startY) * ((double)height) / (endY - startY));
-			else
-				y = top + height - (int) ((wy - startY) * ((double)height) / (endY - startY));
+			unchecked {
+				if (reverseXAxis)
+					x = left + width - (int) (((wx - startX) * ((double) width)) / (endX - startX));
+				else
+					x = left + (int) (((wx - startX) * ((double) width)) / (endX - startX));
+
+				if (reverseYAxis)
+					y = top + (int) ((wy - startY) * ((double) height) / (endY - startY));
+				else
+					y = top + height - (int) ((wy - startY) * ((double) height) / (endY - startY));
+			}
 		}
 		
 		void GetValue (int x, int y, out double wx, out double wy)
 		{
-			if (reverseXAxis)
-				wx = startX + ((double)(left + width - 1 - x)) * (endX - startX) / (double) width;
-			else
-				wx = startX + ((double)(x - left)) * (endX - startX) / (double) width;
-			
-			if (reverseYAxis)
-				wy = startY + ((double)(top + y)) * (endY - startY) / (double) height;
-			else
-				wy = startY + ((double)(top + height - y - 1)) * (endY - startY) / (double) height;
+			unchecked {
+				if (reverseXAxis)
+					wx = startX + ((double) (left + width - 1 - x)) * (endX - startX) / (double) width;
+				else
+					wx = startX + ((double) (x - left)) * (endX - startX) / (double) width;
+
+				if (reverseYAxis)
+					wy = startY + ((double) (top + y)) * (endY - startY) / (double) height;
+				else
+					wy = startY + ((double) (top + height - y - 1)) * (endY - startY) / (double) height;
+			}
 		}
 		
 		string GetValueLabel (AxisDimension ad, double value)

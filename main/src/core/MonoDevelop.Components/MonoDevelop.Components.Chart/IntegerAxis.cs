@@ -42,22 +42,25 @@ namespace MonoDevelop.Components.Chart
 		
 		protected override TickEnumerator CreateTickEnumerator (double minTickStep)
 		{
-			long val = (long) minTickStep;
-			long red = 10;
-			while (val > red)
-				red = red * 10;
-			
-			long scale;
-			
-			if (val <= 1)
-				scale = 1;
-			else if (val > red / 2)
-				scale = red;
-			else if (val > red / 4)
-				scale = red / 2;
-			else
-				scale = red / 4;
-			return new IntegerTickEnumerator (scale);
+			long val;
+			unchecked {
+				val = (long) minTickStep;
+				long red = 10;
+				while (val > red)
+					red = red * 10;
+				
+				long scale;
+				
+				if (val <= 1)
+					scale = 1;
+				else if (val > red / 2)
+					scale = red;
+				else if (val > red / 4)
+					scale = red / 2;
+				else
+					scale = red / 4;
+				return new IntegerTickEnumerator (scale);
+			}
 		}
 	}
 	
