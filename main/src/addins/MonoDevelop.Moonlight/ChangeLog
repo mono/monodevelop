@@ -1,5 +1,15 @@
 2009-06-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Remove
+	  MergeResults members and replace with calls to
+	  result.Append. Tidy up a little.
+
+	* MonoDevelop.Moonlight/SilverlightFrameworkBackend.cs: Fix
+	  building ML apps with separate SDK by allowing tool
+	  fallbacks to the base 3.5 framework.
+
+2009-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:
 	  Get design and code back in sync.

@@ -44,7 +44,7 @@ namespace MonoDevelop.Moonlight
 			return Path.Combine (Path.Combine (proj.BaseDirectory, "obj"), conf.Id);
 		}
 		
-		protected override BuildResult Compile (IProgressMonitor monitor, MonoDevelop.Projects.SolutionEntityItem item, MonoDevelop.Projects.BuildData buildData)
+		protected override BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData)
 		{
 			MoonlightProject proj = item as MoonlightProject;
 			if (proj == null)
@@ -100,35 +100,14 @@ namespace MonoDevelop.Moonlight
 					File.Delete (resFile);
 			}
 			
-			return MergeResults (base.Compile (monitor, item, buildData), results);
-		}
-		
-		BuildResult MergeResults (BuildResult mergeInto, IEnumerable<BuildResult> mergeFrom)
-		{
-			foreach (BuildResult from in mergeFrom)
-				MergeResults (mergeInto, from);
-			return mergeInto;
-		}
-		
-		BuildResult MergeResults (BuildResult mergeInto, BuildResult mergeFrom)
-		{
-			if (mergeFrom != null) {
-				foreach (BuildError b in mergeFrom.Errors) {
-					if (b.IsWarning)
-						mergeInto.AddWarning (b.FileName, b.Line, b.Column, b.ErrorNumber, b.ErrorText);
-					else
-						mergeInto.AddError (b.FileName, b.Line, b.Column, b.ErrorNumber, b.ErrorText);
-				}
-				mergeInto.FailedBuildCount += mergeFrom.FailedBuildCount;
-			}
-			return mergeInto;
+			return base.Compile (monitor, item, buildData).Append (results);
 		}
 		
 		BuildResult Respack (IProgressMonitor monitor, MoonlightProject proj, List<string> toResGen, string outfile)
 		{
 			monitor.Log.WriteLine ("Packing resources...");
 			
-			MonoDevelop.Core.Assemblies.TargetRuntime runtime = proj.TargetRuntime;
+			var runtime = proj.TargetRuntime;
 			BuildResult result = new BuildResult ();
 			
 			string respack = runtime.GetToolPath (proj.TargetFramework, "respack");
@@ -217,16 +196,15 @@ namespace MonoDevelop.Moonlight
 			DotNetProjectConfiguration conf = null;
 			if (proj != null)
 				conf = proj.GetActiveConfiguration (configuration) as DotNetProjectConfiguration;
-			if (conf == null) {
-				base.Clean (monitor, item, configuration);
+			
+			base.Clean (monitor, item, configuration);
+			
+			if (conf == null)
 				return;
-			}
 			
 			string objDir = GetObjDir (proj, conf);
-			if (!Directory.Exists (objDir)) {
-				base.Clean (monitor, item, configuration);
+			if (!Directory.Exists (objDir))
 				return;
-			}
 			
 			foreach (ProjectFile pf in proj.Files) {
 				if (pf.FilePath.Extension == ".xaml" && pf.Generator == "MSBuild:MarkupCompilePass1") {
@@ -257,11 +235,9 @@ namespace MonoDevelop.Moonlight
 				if (File.Exists (xapName))
 					File.Delete (xapName);
 			}
-			
-			base.Clean (monitor, item, configuration);
 		}
 		
-		protected override bool GetNeedsBuilding (MonoDevelop.Projects.SolutionEntityItem item, string configuration)
+		protected override bool GetNeedsBuilding (SolutionEntityItem item, string configuration)
 		{
 			MoonlightProject proj = item as MoonlightProject;
 			DotNetProjectConfiguration conf = null;
@@ -323,7 +299,7 @@ namespace MonoDevelop.Moonlight
 			return false;
 		}		
 		
-		protected override BuildResult Build (MonoDevelop.Core.IProgressMonitor monitor, MonoDevelop.Projects.SolutionEntityItem item, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
 		{
 			MoonlightProject proj = item as MoonlightProject;
 			DotNetProjectConfiguration conf = null;
@@ -337,16 +313,15 @@ namespace MonoDevelop.Moonlight
 				return result;
 
 			if (proj.GenerateSilverlightManifest)
-				if (MergeResults (result, GenerateManifest (monitor, proj, conf, configuration)).Failed || monitor.IsCancelRequested)
+				if (result.Append (GenerateManifest (monitor, proj, conf, configuration)).Failed || monitor.IsCancelRequested)
 					return result;
 			
 			if (proj.XapOutputs)
-				if (MergeResults (result, Zip (monitor, proj, conf, configuration)).Failed || monitor.IsCancelRequested)
+				if (result.Append (Zip (monitor, proj, conf, configuration)).Failed || monitor.IsCancelRequested)
 					return result;
 
 			if (proj.XapOutputs && proj.CreateTestPage)
-				if (MergeResults (result, CreateTestPage (monitor, proj, conf)).Failed || monitor.IsCancelRequested)
-					return result;
+				result.Append (CreateTestPage (monitor, proj, conf));
 			
 			return result;
 		}

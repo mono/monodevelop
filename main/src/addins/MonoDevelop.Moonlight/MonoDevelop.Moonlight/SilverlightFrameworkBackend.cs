@@ -36,9 +36,9 @@ namespace MonoDevelop.Moonlight
 		public override IEnumerable<string> GetToolsPaths ()
 		{
 			if (targetRuntime.EnvironmentVariables.ContainsKey ("MOONLIGHT_2_SDK_PATH"))
-				return new string [] { targetRuntime.EnvironmentVariables ["MOONLIGHT_2_SDK_PATH"] };
-			else
-				return base.GetToolsPaths ();
+				yield return targetRuntime.EnvironmentVariables ["MOONLIGHT_2_SDK_PATH"];
+			foreach (string path in base.GetToolsPaths ())
+				yield return path;
 		}
 		
 		public override string GetFrameworkFolder ()
