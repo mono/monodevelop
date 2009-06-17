@@ -53,11 +53,6 @@
 		</MimeType>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-		<Icon extensions = ".vala" icon = "res:text-x-vala.16x16.png"/>
-		<Icon extensions = ".vapi" icon = "res:text-x-vala.16x16.png"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
 		<ProjectBinding id = "ValaProject" class = "MonoDevelop.ValaBinding.ValaProjectBinding"/>
 	</Extension>

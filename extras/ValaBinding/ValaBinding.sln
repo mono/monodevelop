@@ -26,10 +26,8 @@ Global
 		$0.TextStylePolicy = $3
 		$3.FileWidth = 120
 		$3.TabWidth = 4
-		$3.TabsToSpaces = False
-		$3.NoTabsAfterNonTabs = False
-		$3.RemoveTrailingWhitespace = False
-		$3.EolMarker = Native
+		$3.inheritsSet = Mono
+		$3.inheritsScope = text/plain
 		$0.VersionControlPolicy = $4
 		$4.inheritsSet = Mono
 		$0.ChangeLogPolicy = $5

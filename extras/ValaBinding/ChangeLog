@@ -1,3 +1,10 @@
+2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ValaBinding.sln:
+	* ValaBinding.addin.xml:
+	* gtk-gui/MonoDevelop.ValaBinding.PackageDetails.cs: Remove
+	  obsolete extension.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ValaBinding.sln:
