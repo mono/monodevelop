@@ -1,5 +1,10 @@
 2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui\IdeStartup.cs: Restored incorrectly
+	  removed BeginTask call.
+
+2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
 	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:

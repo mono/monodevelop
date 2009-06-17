@@ -108,7 +108,8 @@ namespace MonoDevelop.Ide.Gui
 				monitor = SplashScreenForm.SplashScreen;
 				SplashScreenForm.SplashScreen.ShowAll ();
 			}
-			
+
+			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
 			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
 			monitor.Step (1);
 			Runtime.Initialize (true);
