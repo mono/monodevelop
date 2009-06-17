@@ -1,3 +1,9 @@
+2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BooBinding.sln:
+	* BooBinding.addin.xml:
+	* BooLanguageBinding.boo: Remove obsolete extension.
+
 2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BooLanguageBinding.boo: Track api changes.

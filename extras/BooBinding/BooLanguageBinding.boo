@@ -49,7 +49,7 @@ public class BooLanguageBinding(IDotNetLanguageBinding):
 	
 	public ProjectStockIcon as string:
 		get:
-			return "md-project"
+			return "boo-project-icon"
 	
 	public def CanCompile(fileName as string) as bool:
 		Debug.Assert(compilerServices is not null)

@@ -58,14 +58,6 @@
     </Condition>
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/Icons">
-    <Icon language = "Boo" icon = "res:Boo.ProjectIcon"/>
-  </Extension>
-	
-	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-boo-file" resource = "Boo.FileIcon" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="text/x-boo" _description="Boo source code" icon="md-boo-file"  isText="true">
 			<File pattern="*.boo" />
@@ -100,6 +92,7 @@
   </Extension>
   
 	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-boo-file" resource = "Boo.FileIcon" />
 		<StockIcon stockid = "boo-icon" resource = "BooBinding.Base" />
 		<StockIcon stockid = "boo-project-icon" resource = "Boo.ProjectIcon" />
 	</Extension>
