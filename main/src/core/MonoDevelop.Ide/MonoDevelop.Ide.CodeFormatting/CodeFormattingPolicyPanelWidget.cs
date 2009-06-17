@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		public TypedCodeFormattingPolicyPanelWidget ()
 		{
-			store = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof (object), typeof (string));
+			store = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof (object), typeof (string), typeof(bool), typeof(bool), typeof(bool));
 			
 			TreeViewColumn column = new TreeViewColumn ();
 			
@@ -63,16 +63,30 @@ namespace MonoDevelop.Ide.CodeFormatting
 			
 			// text column
 			CellRendererText cellRendererText = new CellRendererText ();
+			cellRendererText.Ypad = 1;
 			column.PackStart (cellRendererText, true);
 			column.SetAttributes (cellRendererText, "text", keyColumn);
 			
 			TreeviewCategories.AppendColumn (column);
 			
+			column = new TreeViewColumn ();
 			CellRendererCombo cellRendererCombo = new CellRendererCombo ();
+			cellRendererCombo.Ypad = 1;
 			cellRendererCombo.Mode = CellRendererMode.Editable;
 			cellRendererCombo.TextColumn = 1;
 			cellRendererCombo.Model = comboBoxStore;
 			cellRendererCombo.HasEntry = false;
+			cellRendererCombo.Editable = true;
+			column.PackStart (cellRendererCombo, false);
+			column.SetAttributes (cellRendererCombo, "markup", valueDisplayTextColumn, "visible", comboVisibleColumn);
+			
+			CellRendererToggle cellRendererToggle = new CellRendererToggle ();
+			cellRendererToggle.Ypad = 1;
+			cellRendererToggle.Toggled += CellRendererToggleToggled;
+			column.PackStart (cellRendererToggle, false);
+			column.SetAttributes (cellRendererToggle, "active", toggleColumn, "visible", toggleVisibleColumn);
+			
+			TreeviewCategories.AppendColumn (column);
 			
 			cellRendererCombo.EditingStarted += delegate(object o, EditingStartedArgs args) {
 				CodeFormatType type = description.GetCodeFormatType (settings, option);
@@ -103,14 +117,23 @@ namespace MonoDevelop.Ide.CodeFormatting
 				UpdateExample ();
 			};
 			
-			cellRendererCombo.Editable = true;
-			TreeviewCategories.AppendColumn ("", cellRendererCombo, delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				cellRendererCombo.Markup = ((string)model.GetValue (iter, valueDisplayTextColumn));
-			});
 			TreeviewCategories.HeadersVisible = false;
 			
 			TreeviewCategories.Selection.Changed += TreeSelectionChanged;
 			TreeviewCategories.Model = store;
+		}
+
+		void CellRendererToggleToggled (object o, ToggledArgs args)
+		{
+			TreeIter iter;
+			if (store.GetIterFromString (out iter, args.Path)) {
+				CodeFormatOption option = (CodeFormatOption) store.GetValue (iter, objectColumn);
+				bool value = !(bool) store.GetValue (iter, toggleColumn);
+				description.SetValue (settings, option, value ? "True" : "False");
+				store.SetValue (iter, toggleColumn, value);
+				UpdateExample ();
+			}
+			
 		}
 		
 		void RenderIcon (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) 
@@ -147,6 +170,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			options.ShowInvalidLines = false;
 			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = false;
 			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			options.Zoom = 0.8;
 			texteditor1.Options = options;
 			texteditor1.Document.ReadOnly = true;
 			texteditor1.Document.MimeType = description.MimeType;
@@ -165,6 +189,9 @@ namespace MonoDevelop.Ide.CodeFormatting
 		const int valueDisplayTextColumn = 2;
 		const int objectColumn = 3;
 		const int iconColumn = 4;
+		const int toggleColumn = 5;
+		const int toggleVisibleColumn = 6;
+		const int comboVisibleColumn = 7;
 
 		public T Settings {
 			get {
@@ -178,12 +205,19 @@ namespace MonoDevelop.Ide.CodeFormatting
 				? store.AppendValues (GettextCatalog.GetString (category.DisplayName), null, null, category)
 				: store.AppendValues (iter, GettextCatalog.GetString (category.DisplayName), null, null, category);
 			foreach (CodeFormatOption option in category.Options) {
+				CodeFormatType type = description.GetCodeFormatType (settings, option);
 				KeyValuePair<string, string> val = description.GetValue (settings, option);
+				bool isBool = type.Name == "Bool";
+				bool boolVal = isBool && val.Value == "True";
 				store.AppendValues (categoryIter, 
 				                    GettextCatalog.GetString (option.DisplayName), 
 				                    val.Key,
 				                    GettextCatalog.GetString (val.Value), 
-				                    option);
+				                    option,
+				                    null,
+				                    boolVal,
+				                    isBool,
+				                    !isBool);
 			}
 			foreach (CodeFormatCategory s in category.SubCategories) {
 				AppendCategory (store, categoryIter, s);

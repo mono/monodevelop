@@ -5615,30 +5615,20 @@ Large</property>
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <child>
-          <widget class="Gtk.HPaned" id="hpaned1">
+          <widget class="Gtk.VPaned" id="vpaned1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Position">264</property>
+            <property name="Position">148</property>
             <child>
-              <widget class="Gtk.VBox" id="vbox3">
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                 <property name="MemberName" />
-                <property name="Spacing">6</property>
+                <property name="ShadowType">In</property>
                 <child>
-                  <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+                  <widget class="Gtk.TreeView" id="treeviewCategories">
                     <property name="MemberName" />
-                    <property name="ShadowType">In</property>
-                    <child>
-                      <widget class="Gtk.TreeView" id="treeviewCategories">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="ShowScrollbars">True</property>
-                      </widget>
-                    </child>
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
                   </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                  </packing>
                 </child>
               </widget>
               <packing>

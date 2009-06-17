@@ -15,9 +15,7 @@ namespace MonoDevelop.Ide.CodeFormatting {
         
         private Gtk.VBox vbox2;
         
-        private Gtk.HPaned hpaned1;
-        
-        private Gtk.VBox vbox3;
+        private Gtk.VPaned vpaned1;
         
         private Gtk.ScrolledWindow GtkScrolledWindow;
         
@@ -45,15 +43,11 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.hpaned1 = new Gtk.HPaned();
-            this.hpaned1.CanFocus = true;
-            this.hpaned1.Name = "hpaned1";
-            this.hpaned1.Position = 264;
-            // Container child hpaned1.Gtk.Paned+PanedChild
-            this.vbox3 = new Gtk.VBox();
-            this.vbox3.Name = "vbox3";
-            this.vbox3.Spacing = 6;
-            // Container child vbox3.Gtk.Box+BoxChild
+            this.vpaned1 = new Gtk.VPaned();
+            this.vpaned1.CanFocus = true;
+            this.vpaned1.Name = "vpaned1";
+            this.vpaned1.Position = 148;
+            // Container child vpaned1.Gtk.Paned+PanedChild
             this.GtkScrolledWindow = new Gtk.ScrolledWindow();
             this.GtkScrolledWindow.Name = "GtkScrolledWindow";
             this.GtkScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
@@ -62,13 +56,10 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.treeviewCategories.CanFocus = true;
             this.treeviewCategories.Name = "treeviewCategories";
             this.GtkScrolledWindow.Add(this.treeviewCategories);
-            this.vbox3.Add(this.GtkScrolledWindow);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox3[this.GtkScrolledWindow]));
-            w2.Position = 0;
-            this.hpaned1.Add(this.vbox3);
-            Gtk.Paned.PanedChild w3 = ((Gtk.Paned.PanedChild)(this.hpaned1[this.vbox3]));
-            w3.Resize = false;
-            // Container child hpaned1.Gtk.Paned+PanedChild
+            this.vpaned1.Add(this.GtkScrolledWindow);
+            Gtk.Paned.PanedChild w2 = ((Gtk.Paned.PanedChild)(this.vpaned1[this.GtkScrolledWindow]));
+            w2.Resize = false;
+            // Container child vpaned1.Gtk.Paned+PanedChild
             this.vbox4 = new Gtk.VBox();
             this.vbox4.Name = "vbox4";
             this.vbox4.Spacing = 6;
@@ -81,17 +72,17 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.label3.Name = "label3";
             this.label3.LabelProp = Mono.Unix.Catalog.GetString("Preview:");
             this.hbox2.Add(this.label3);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox2[this.label3]));
-            w4.Position = 0;
-            w4.Expand = false;
-            w4.Fill = false;
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox2[this.label3]));
+            w3.Position = 0;
+            w3.Expand = false;
+            w3.Fill = false;
             // Container child hbox2.Gtk.Box+BoxChild
             this.fixed1 = new Gtk.Fixed();
             this.fixed1.Name = "fixed1";
             this.fixed1.HasWindow = false;
             this.hbox2.Add(this.fixed1);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox2[this.fixed1]));
-            w5.Position = 1;
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox2[this.fixed1]));
+            w4.Position = 1;
             // Container child hbox2.Gtk.Box+BoxChild
             this.checkbuttonWhiteSpaces = new Gtk.CheckButton();
             this.checkbuttonWhiteSpaces.CanFocus = true;
@@ -100,26 +91,26 @@ namespace MonoDevelop.Ide.CodeFormatting {
             this.checkbuttonWhiteSpaces.DrawIndicator = true;
             this.checkbuttonWhiteSpaces.UseUnderline = true;
             this.hbox2.Add(this.checkbuttonWhiteSpaces);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox2[this.checkbuttonWhiteSpaces]));
-            w6.Position = 2;
-            w6.Expand = false;
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox2[this.checkbuttonWhiteSpaces]));
+            w5.Position = 2;
+            w5.Expand = false;
             this.vbox4.Add(this.hbox2);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox4[this.hbox2]));
-            w7.Position = 0;
-            w7.Expand = false;
-            w7.Fill = false;
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox4[this.hbox2]));
+            w6.Position = 0;
+            w6.Expand = false;
+            w6.Fill = false;
             // Container child vbox4.Gtk.Box+BoxChild
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
             this.scrolledwindow2.Name = "scrolledwindow2";
             this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
             this.vbox4.Add(this.scrolledwindow2);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow2]));
-            w8.Position = 1;
-            this.hpaned1.Add(this.vbox4);
-            this.vbox2.Add(this.hpaned1);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox2[this.hpaned1]));
-            w10.Position = 0;
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow2]));
+            w7.Position = 1;
+            this.vpaned1.Add(this.vbox4);
+            this.vbox2.Add(this.vpaned1);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox2[this.vpaned1]));
+            w9.Position = 0;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

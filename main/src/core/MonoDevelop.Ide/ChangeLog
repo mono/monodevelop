@@ -1,3 +1,12 @@
+2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:
+	  Changed the layout of the formatting panel. We use now an
+	  VPaned instead of an HPaned. Also adde checkboxes for the
+	  boolean options.
+
 2009-06-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
