@@ -1,3 +1,9 @@
+2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/XmlDataSerializer.cs: Added
+	  overridables which allow changing the writer/reader to use
+	  for child items.
+
 2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/SystemAssembly.cs: Make assembly

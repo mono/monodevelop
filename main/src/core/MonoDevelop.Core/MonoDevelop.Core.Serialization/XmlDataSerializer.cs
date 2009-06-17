@@ -186,12 +186,12 @@ namespace MonoDevelop.Core.Serialization
 		
 		protected virtual void WriteChild (XmlElement elem, DataNode data)
 		{
-			elem.AppendChild (Write (elem.OwnerDocument, data));
+			elem.AppendChild (GetChildWriter (data).Write (elem.OwnerDocument, data));
 		}
 		
 		protected virtual void WriteChild (XmlWriter writer, DataNode data)
 		{
-			Write (writer, data);
+			GetChildWriter (data).Write (writer, data);
 		}
 		
 		public virtual bool StoreAsAttribute (DataValue val)
@@ -200,6 +200,11 @@ namespace MonoDevelop.Core.Serialization
 				return StoreInElementExceptions != null && ((IList)StoreInElementExceptions).Contains (val.Name);
 			else
 				return true;
+		}
+		
+		protected virtual XmlConfigurationWriter GetChildWriter (DataNode data)
+		{
+			return this;
 		}
 	}
 	
@@ -311,12 +316,17 @@ namespace MonoDevelop.Core.Serialization
 		
 		protected virtual DataNode ReadChild (XmlElement elem, DataItem parent)
 		{
-			return DefaultReader.Read (elem);
+			return GetChildReader (parent).Read (elem);
 		}
 		
 		protected virtual DataNode ReadChild (XmlReader reader, DataItem parent)
 		{
-			return DefaultReader.Read (reader);
+			return GetChildReader (parent).Read (reader);
+		}
+		
+		protected virtual XmlConfigurationReader GetChildReader (DataItem parent)
+		{
+			return this;
 		}
 	}
 }
