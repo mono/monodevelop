@@ -60,13 +60,16 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				MimeTypePanelData data = new MimeTypePanelData ();
 				OptionsDialogSection sec = new OptionsDialogSection (typeof(MimeTypePolicyOptionsSection));
 				sec.Fill = true;
-				sec.Label = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeDescription (mt);
 				Gdk.Pixbuf icon = MonoDevelop.Core.Gui.Services.PlatformService.GetPixbufForType (mt, Gtk.IconSize.Menu);
 				sec.Icon = ImageService.GetStockId (icon, Gtk.IconSize.Menu);
 				data.Section = sec;
 				data.MimeType = mt;
+				data.TypeDescription = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeDescription (mt);
+				if (string.IsNullOrEmpty (data.TypeDescription))
+					data.TypeDescription = mt;
 				data.DataObject = DataObject;
 				data.PolicyContainer = policyContainer;
+				sec.Label = data.TypeDescription;
 				LoadPolicyTypeData (data, mt);
 				typeSections [mt] = data;
 				dialog.AddChildSection (this, sec, data);
@@ -244,7 +247,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		{
 			PlatformService pf = MonoDevelop.Core.Gui.Services.PlatformService;
 			foreach (MimeTypePanelData mt in panel.GetMimeTypeData ()) {
-				store.AppendValues (mt, pf.GetPixbufForType (mt.MimeType, Gtk.IconSize.Menu), pf.GetMimeTypeDescription (mt.MimeType));
+				store.AppendValues (mt, pf.GetPixbufForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
 			}
 		}
 

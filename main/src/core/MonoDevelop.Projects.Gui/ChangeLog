@@ -1,3 +1,10 @@
+2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs\MimeTypePolicyOptionsSection.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels\CodeFormattingPanel.cs:
+	  If there is no description for a mime type, use the mime
+	  type name.
+
 2009-06-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:

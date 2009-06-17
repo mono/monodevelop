@@ -236,6 +236,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 	{
 		public string MimeType;
 		public object DataObject;
+		public string TypeDescription;
 		public OptionsDialogSection Section;
 		public MimeTypePolicyOptionsSection SectionPanel;
 		public List<IMimeTypePolicyOptionsPanel> Panels;
