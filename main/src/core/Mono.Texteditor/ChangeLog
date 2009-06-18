@@ -1,3 +1,8 @@
+2009-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Fixed unlikely (but
+	  possible) null reference.
+
 2009-06-17  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:

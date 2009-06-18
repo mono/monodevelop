@@ -1509,14 +1509,16 @@ namespace Mono.TextEditor
 						end   = ScanWord (offset, true);
 						Caret.Offset = end;
 					}
-					textEditor.MainSelection.Lead = Caret.Location;
+					if (textEditor.MainSelection != null)
+						textEditor.MainSelection.Lead = Caret.Location;
 					break;
 				case MouseSelectionMode.WholeLine:
 					//textEditor.SetSelectLines (loc.Line, textEditor.MainSelection.Anchor.Line);
 					LineSegment line1 = textEditor.Document.GetLine (loc.Line);
 					LineSegment line2 = textEditor.Document.GetLineByOffset (textEditor.SelectionAnchor);
 					Caret.Offset = line1.Offset < line2.Offset ? line1.Offset : line1.EndOffset;
-					textEditor.MainSelection.Lead = Caret.Location;
+					if (textEditor.MainSelection != null)
+						textEditor.MainSelection.Lead = Caret.Location;
 					break;
 				}
 				Caret.PreserveSelection = false;
