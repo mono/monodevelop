@@ -1,3 +1,12 @@
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services\ExternalTestRunner.cs:
+	* Services\NUnitAssemblyTestSuite.cs: In some cases MS.NET
+	  can't properly resolve assemblies even if they are already
+	  loaded. For example, when deserializing objects from
+	  remoting. Added a handler for AssemblyResolve that handle
+	  this case.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Project\NUnitAssemblyGroupFileFormat.cs: Use the new

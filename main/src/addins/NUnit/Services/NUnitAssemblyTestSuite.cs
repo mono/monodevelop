@@ -251,6 +251,7 @@ namespace MonoDevelop.NUnit
 						ld.Info = runner.GetTestInfo (ld.Path, ld.SupportAssemblies);
 					}
 				} catch (Exception ex) {
+					Console.WriteLine (ex);
 					ld.Error = ex;
 				}
 				finally {
@@ -310,6 +311,7 @@ namespace MonoDevelop.NUnit
 					string msg = GettextCatalog.GetString ("Could not get a valid path to the assembly. There may be a conflict in the project configurations.");
 					throw new Exception (msg);
 				}
+				System.Runtime.Remoting.RemotingServices.Marshal (localMonitor, null, typeof (IRemoteEventListener));
 				result = runner.Run (localMonitor, filter, AssemblyPath, suiteName, new List<string> (SupportAssemblies));
 				if (testName != null)
 					result = localMonitor.SingleTestResult;

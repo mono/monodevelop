@@ -44,6 +44,16 @@ namespace MonoDevelop.NUnit.External
 	{
 		public void Initialize (string nunitPath, string nunitCorePath)
 		{
+			// In some cases MS.NET can't properly resolve assemblies even if they
+			// are already loaded. For example, when deserializing objects from remoting.
+			AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
+				foreach (Assembly am in AppDomain.CurrentDomain.GetAssemblies ()) {
+					if (am.GetName ().FullName == args.Name)
+						return am;
+				}
+				return null;
+			};
+
 			// Force the loading of the NUnit.Framework assembly.
 			// It's needed since that dll is not located in the test dll directory.
 			Assembly.LoadFrom (nunitCorePath);

@@ -47,6 +47,19 @@ namespace MonoDevelop.NUnit.External
 	class ExternalTestRunner: RemoteProcessObject
 	{
 		NUnitTestRunner runner;
+
+		public ExternalTestRunner ( )
+		{
+			// In some cases MS.NET can't properly resolve assemblies even if they
+			// are already loaded. For example, when deserializing objects from remoting.
+			AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
+				foreach (Assembly am in AppDomain.CurrentDomain.GetAssemblies ()) {
+					if (am.GetName ().FullName == args.Name)
+						return am;
+				}
+				return null;
+			};
+		}
 		
 		public UnitTestResult Run (IRemoteEventListener listener, ITestFilter filter, string path, string suiteName, List<string> supportAssemblies)
 		{
