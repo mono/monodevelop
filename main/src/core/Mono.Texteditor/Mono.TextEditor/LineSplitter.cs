@@ -94,8 +94,8 @@ namespace Mono.TextEditor
 
 		void TextRemove (int offset, int length)
 		{
-			if (length == 0 || (lines.Count == 1 && lines.Length == 0))
-				return;
+			if (length == 0 || (lines.Count == 1 && lines.Length == 0)) 
+				return; 
 			LineSegmentTree.TreeNode startNode = lines.GetNodeAtOffset (offset);
 			int charsRemoved = startNode.EndOffset - offset;
 			if (offset + length < startNode.EndOffset) {
@@ -103,6 +103,8 @@ namespace Mono.TextEditor
 				return;
 			}
 			LineSegmentTree.TreeNode endNode = lines.GetNodeAtOffset (offset + length);
+			if (endNode == null)
+				return;
 			int charsLeft = endNode.EndOffset - (offset + length);
 			if (startNode == endNode) {
 				lines.ChangeLength (startNode, startNode.Length - length);
@@ -112,7 +114,7 @@ namespace Mono.TextEditor
 			iter.MoveNext ();
 			LineSegment line;
 			int cnt = 0;
-			do  {
+			do {
 				line = iter.Current;
 				iter.MoveNext ();
 				lines.RemoveLine (line);

@@ -1,5 +1,10 @@
 2009-06-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/LineSplitter.cs: Fixed possible null
+	  reference.
+
+2009-06-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed unlikely (but
 	  possible) null reference.
 
