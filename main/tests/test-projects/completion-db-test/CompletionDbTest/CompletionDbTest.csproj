@@ -47,9 +47,4 @@
   <ItemGroup>
     <Folder Include="Replacements/" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Replacements\GenericRewrite.cs" />
-    <None Include="Replacements\EmptyFile.cs" />
-    <None Include="Replacements\PartialTest2.cs" />
-  </ItemGroup>
 </Project>

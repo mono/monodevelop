@@ -1,5 +1,11 @@
 2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* test-projects/completion-db-test/CompletionDbTest/CompletionDbTest.csproj:
+	  Don't include the replacement files in the project since
+	  they interfere with some tests.
+
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* test-projects/completion-db-test/CompletionDbTest/Main.cs:
 	  Added test class.
 
