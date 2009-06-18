@@ -222,10 +222,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 		private BuildResult BuildResources (DotNetProjectConfiguration configuration, ref ProjectItemCollection projectItems, IProgressMonitor monitor)
 		{
 			string resgen = configuration.TargetRuntime.GetToolPath (configuration.TargetFramework, "resgen");
-			if (resgen == null) {
-				monitor.ReportError (GettextCatalog.GetString ("Error: Unable to find 'resgen' tool."), null);
-				return new BuildResult ();
-			}
 			
 			bool cloned = false;
 			Dictionary<string, string> resourcesByCulture = new Dictionary<string, string> ();
@@ -331,6 +327,12 @@ namespace MonoDevelop.Projects.Formats.MD1
 			if (!IsResgenRequired (fname)) {
 				fname = Path.ChangeExtension (fname, ".resources");
 				return null;
+			}
+			
+			if (resgen == null) {
+				string msg = GettextCatalog.GetString ("Unable to find 'resgen' tool.");
+				monitor.ReportError (msg, null);
+				return new CompilerError (fname, 0, 0, String.Empty, msg);
 			}
 
 			using (StringWriter sw = new StringWriter ()) {

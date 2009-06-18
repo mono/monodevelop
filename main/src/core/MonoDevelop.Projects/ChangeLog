@@ -1,5 +1,11 @@
 2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	  Don't report the error about missing resgen if the tool is
+	  not really necessary.
+
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom\AbstractMember.cs: Allow internal
 	  visibility between types from a file not bound to a project.
 
