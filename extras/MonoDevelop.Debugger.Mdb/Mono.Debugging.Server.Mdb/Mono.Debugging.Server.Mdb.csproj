@@ -157,6 +157,8 @@
     <Compile Include="EvaluationContext.cs" />
     <Compile Include="TimeOutException.cs" />
     <Compile Include="RuntimeInvokeManager.cs" />
+    <Compile Include="MdbAdaptor.cs" />
+    <Compile Include="MdbAdaptorFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -178,4 +180,12 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <EmbeddedResource Include="MdbAdaptor-2-0.cs">
+      <LogicalName>MdbAdaptor-2-0.cs</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MdbAdaptor-2-4-2.cs">
+      <LogicalName>MdbAdaptor-2-4-2.cs</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

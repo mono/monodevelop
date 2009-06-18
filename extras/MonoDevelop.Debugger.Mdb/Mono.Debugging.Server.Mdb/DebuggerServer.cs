@@ -39,6 +39,7 @@ namespace DebuggerServer
 		Dictionary<int, ST.WaitCallback> breakUpdates = new Dictionary<int,ST.WaitCallback> ();
 		bool breakUpdateEventsQueued;
 		
+		MdbAdaptor mdbAdaptor;
 		AsyncEvaluationTracker asyncEvaluationTracker;
 		RuntimeInvokeManager invokeManager;
 
@@ -51,6 +52,7 @@ namespace DebuggerServer
 		public DebuggerServer (IDebuggerController dc)
 		{
 			this.controller = dc;
+			
 			MarshalByRefObject mbr = (MarshalByRefObject)controller;
 			ILease lease = mbr.GetLifetimeService() as ILease;
 			lease.Register(this);
@@ -79,7 +81,17 @@ namespace DebuggerServer
 			}
 		}
 
+		public MdbAdaptor MdbAdaptor {
+			get { return mdbAdaptor; }
+		}
+
 		#region IDebugger Members
+
+		public string InitializeMdb (string mdbVersion)
+		{
+			mdbAdaptor = MdbAdaptorFactory.CreateAdaptor (mdbVersion);
+			return mdbAdaptor.MdbVersion;
+		}
 
 		public void Run (DL.DebuggerStartInfo startInfo)
 		{
@@ -91,6 +103,7 @@ namespace DebuggerServer
 
 				DebuggerConfiguration config = new DebuggerConfiguration ();
 				config.LoadConfiguration ();
+				mdbAdaptor.InitializeConfiguration (config);
 				debugger = new MD.Debugger (config);
 				
 				debugger.ModuleLoadedEvent += OnModuleLoadedEvent;

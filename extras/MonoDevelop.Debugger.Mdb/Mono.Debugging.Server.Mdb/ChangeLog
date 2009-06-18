@@ -1,3 +1,16 @@
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile:
+	* MdbAdaptor.cs:
+	* MdbAdaptor-2-0.cs:
+	* DebuggerServer.cs:
+	* MdbAdaptor-2-4-2.cs:
+	* MdbAdaptorFactory.cs:
+	* RuntimeInvokeManager.cs:
+	* Mono.Debugging.Server.Mdb.csproj: Added support for mono
+	  2.4.2. Since the api changed, access to the changed methods
+	  has to be done through a dynamically compiled adapter.
+
 2009-02-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Server.Mdb.csproj: Updated references.

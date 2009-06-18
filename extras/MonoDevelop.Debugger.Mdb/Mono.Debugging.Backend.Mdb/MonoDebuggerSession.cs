@@ -37,11 +37,13 @@ namespace Mono.Debugging.Backend.Mdb
 	public class MonoDebuggerSession: DebuggerSession
 	{
 		DebuggerController controller;
+		static string detectedMdbVersion;
 		
 		public void StartDebugger ()
 		{
 			controller = new DebuggerController (this, Frontend);
 			controller.StartDebugger ();
+			InitMdbVersion ();
 		}
 		
 		public override void Dispose ()
@@ -53,6 +55,12 @@ namespace Mono.Debugging.Backend.Mdb
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			controller.DebuggerServer.Run (startInfo);
+		}
+		
+		void InitMdbVersion ()
+		{
+			// Cache detected mdb versions, so version detection is done only once
+			detectedMdbVersion = controller.DebuggerServer.InitializeMdb (detectedMdbVersion);
 		}
 
 		protected override void OnAttachToProcess (int processId)

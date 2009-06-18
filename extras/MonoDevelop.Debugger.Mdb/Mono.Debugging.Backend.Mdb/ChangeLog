@@ -1,3 +1,10 @@
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* IDebuggerServer.cs:
+	* MonoDebuggerSession.cs: Added support for mono 2.4.2. Since
+	  the api changed, access to the changed methods has to be
+	  done through a dynamically compiled adapter.
+
 2009-03-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
