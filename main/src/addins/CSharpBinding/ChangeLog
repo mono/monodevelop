@@ -1,3 +1,14 @@
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui\CSharpTextEditorCompletion.cs: Remove debug message.
+
+	* Parser\NRefactoryParser.cs: Assign a default visibility flag
+	  for types which don't have one explicitly set in code.
+
+	* templates\GtkSharp2Project.xpt.xml: atk-sharp is a
+	  dependency of gtk-sharp, so it has to be added too to the
+	  project (.NET complains about it).
+
 2009-06-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/CSharpFormatter.cs:

@@ -423,10 +423,16 @@ namespace MonoDevelop.CSharpBinding
 			{
 				// add type to compilation unit or outer type
 				if (typeStack.Count > 0) {
+					// Nested types are private by default
+					if ((type.Modifiers & Modifiers.VisibilityMask) == 0)
+						type.Modifiers |= Modifiers.Private;
 					DomType outerType = typeStack.Peek ();
 					type.DeclaringType = outerType;
 					outerType.Add (type);
 				} else {
+					// Types are internal by default
+					if ((type.Modifiers & Modifiers.VisibilityMask) == 0)
+						type.Modifiers |= Modifiers.Internal;
 					if (namespaceStack.Count > 0) 
 						type.Namespace = namespaceStack.Peek ();
 					((CompilationUnit)result.CompilationUnit).Add (type);

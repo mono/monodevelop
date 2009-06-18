@@ -1017,7 +1017,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 						
 						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null && NamePrefix != null  && !NamePrefix.Contains ("::"))
 							flags |= OutputFlags.UseFullName;
-						Console.WriteLine (" flags:" + flags);
 					}
 					return AddMemberCompletionData (completionList, member, flags);
 				}
