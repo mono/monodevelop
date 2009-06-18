@@ -163,27 +163,27 @@ namespace MonoDevelop.Projects
 			
 			sol.Name = "test1";
 			Assert.AreEqual ("test1", sol.Name);
-			Assert.AreEqual ("test1.sln", sol.FileName);
+			Assert.AreEqual ("test1.sln", (string) sol.FileName);
 			Assert.AreEqual (1, nameChanges);
 			
 			sol.Name = "test2";
 			Assert.AreEqual ("test2", sol.Name);
-			Assert.AreEqual ("test2.sln", sol.FileName);
+			Assert.AreEqual ("test2.sln", (string) sol.FileName);
 			Assert.AreEqual (2, nameChanges);
 			
 			sol.FileName = "/tmp/test3.sln";
 			Assert.AreEqual ("test3", sol.Name);
-			Assert.AreEqual ("/tmp/test3.sln", sol.FileName);
+			Assert.AreEqual ("/tmp/test3.sln", (string) sol.FileName);
 			Assert.AreEqual (3, nameChanges);
 			
 			sol.Name = "test4";
 			Assert.AreEqual ("test4", sol.Name);
-			Assert.AreEqual ("/tmp/test4.sln", sol.FileName);
+			Assert.AreEqual ("/tmp/test4.sln", (string) sol.FileName);
 			Assert.AreEqual (4, nameChanges);
 			
 			sol.ConvertToFormat (Util.FileFormatMD1, true);
 			Assert.AreEqual ("test4", sol.Name);
-			Assert.AreEqual ("/tmp/test4.mds", sol.FileName);
+			Assert.AreEqual ("/tmp/test4.mds", (string) sol.FileName);
 			Assert.AreEqual (4, nameChanges);
 		}
 		
@@ -199,27 +199,27 @@ namespace MonoDevelop.Projects
 			
 			prj.Name = "test1";
 			Assert.AreEqual ("test1", prj.Name);
-			Assert.AreEqual ("test1.csproj", prj.FileName);
+			Assert.AreEqual ("test1.csproj", (string) prj.FileName);
 			Assert.AreEqual (1, nameChanges);
 			
 			prj.Name = "test2";
 			Assert.AreEqual ("test2", prj.Name);
-			Assert.AreEqual ("test2.csproj", prj.FileName);
+			Assert.AreEqual ("test2.csproj", (string) prj.FileName);
 			Assert.AreEqual (2, nameChanges);
 			
 			prj.FileName = "/tmp/test3.csproj";
 			Assert.AreEqual ("test3", prj.Name);
-			Assert.AreEqual ("/tmp/test3.csproj", prj.FileName);
+			Assert.AreEqual ("/tmp/test3.csproj", (string) prj.FileName);
 			Assert.AreEqual (3, nameChanges);
 			
 			prj.Name = "test4";
 			Assert.AreEqual ("test4", prj.Name);
-			Assert.AreEqual ("/tmp/test4.csproj", prj.FileName);
+			Assert.AreEqual ("/tmp/test4.csproj", (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 			
 			prj.FileFormat = Util.FileFormatMD1;
 			Assert.AreEqual ("test4", prj.Name);
-			Assert.AreEqual ("/tmp/test4.mdp", prj.FileName);
+			Assert.AreEqual ("/tmp/test4.mdp", (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 			Assert.AreEqual ("MD1", prj.FileFormat.Id);
 			
@@ -227,7 +227,7 @@ namespace MonoDevelop.Projects
 			Solution sol = new Solution ();
 			sol.RootFolder.Items.Add (prj);
 			Assert.AreEqual ("test4", prj.Name);
-			Assert.AreEqual ("/tmp/test4.csproj", prj.FileName);
+			Assert.AreEqual ("/tmp/test4.csproj", (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 			Assert.AreEqual ("MSBuild05", prj.FileFormat.Id);
 
@@ -235,7 +235,7 @@ namespace MonoDevelop.Projects
 			sol.RootFolder.Items.Remove (prj);
 			Assert.AreEqual ("MSBuild05", prj.FileFormat.Id);
 			Assert.AreEqual ("test4", prj.Name);
-			Assert.AreEqual ("/tmp/test4.csproj", prj.FileName);
+			Assert.AreEqual ("/tmp/test4.csproj", (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 		}
 		
@@ -314,7 +314,7 @@ namespace MonoDevelop.Projects
 			
 			List<FilePath> files = sol.GetItemFiles (false);
 			Assert.AreEqual (1, files.Count);
-			Assert.AreEqual (sol.FileName, (string)files [0]);
+			Assert.AreEqual (sol.FileName, files [0]);
 			
 			DotNetProject p = (DotNetProject) sol.Items [0];
 			files = p.GetItemFiles (false);

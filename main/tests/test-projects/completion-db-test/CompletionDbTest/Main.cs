@@ -54,6 +54,20 @@ namespace CompletionDbTest
 	{
 	}
 	
+	public class ClassWithInnerDelegates
+	{
+		public delegate void SomeCallback ();
+		
+		public class SomeInner
+		{
+			public int n;
+		}
+		
+		public void Run (SomeCallback cb, SomeInner inner)
+		{
+		}
+	}
+	
 #region Generic types with constraints
 	
 	public class GenericConstraintTest0<T>

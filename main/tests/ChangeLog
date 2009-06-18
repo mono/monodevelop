@@ -1,0 +1,8 @@
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* test-projects/completion-db-test/CompletionDbTest/Main.cs:
+	  Added test class.
+
+	* test-projects/resources-tester/ResourcesTester/ResourcesTester.csproj:
+	  Flush.
+
