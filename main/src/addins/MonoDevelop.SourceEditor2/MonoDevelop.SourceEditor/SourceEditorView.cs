@@ -707,7 +707,7 @@ namespace MonoDevelop.SourceEditor
 		#region ITextFile
 		public FilePath Name {
 			get { 
-				return this.ContentName; 
+				return this.ContentName ?? this.UntitledName; 
 			} 
 		}
 

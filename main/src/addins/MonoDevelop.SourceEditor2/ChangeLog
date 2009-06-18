@@ -1,3 +1,7 @@
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor\SourceEditorView.cs: Fix nullref.
+
 2009-06-18  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:
