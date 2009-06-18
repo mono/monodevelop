@@ -44,6 +44,8 @@ using MonoDevelop.Projects.Gui.Completion;
 using CSharpBinding;
 using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Parser;
+using Mono.TextEditor;
+
 
 namespace MonoDevelop.CSharpBinding.Gui
 {
@@ -51,7 +53,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 	{
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		int cursorPositionBeforeKeyPress;
-		
+		TextEditorData textEditorData;
 		public CSharpTextEditorIndentation ()
 		{
 		}
@@ -62,8 +64,25 @@ namespace MonoDevelop.CSharpBinding.Gui
 			InitTracker ();
 			Mono.TextEditor.ITextEditorDataProvider view = this.Document.ActiveView as Mono.TextEditor.ITextEditorDataProvider;
 			if (view != null) {
-				view.GetTextEditorData ().VirtualSpaceManager = new IndentVirtualSpaceManager (view.GetTextEditorData (), new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor));
-				view.GetTextEditorData ().Caret.AllowCaretBehindLineEnd = true;
+				textEditorData = view.GetTextEditorData ();
+				textEditorData.VirtualSpaceManager = new IndentVirtualSpaceManager (view.GetTextEditorData (), new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor));
+				textEditorData.Caret.AllowCaretBehindLineEnd = true;
+				/*
+				textEditorData.Document.TextReplaced += delegate(object sender, ReplaceEventArgs args)
+				{
+					if (string.IsNullOrEmpty (args.Value) || args.Value.Length < 2 || CSharpFormatter.InFormat) 
+						return; 
+					Console.WriteLine ("TEXT REPLACE !!!");
+					if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+						ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
+						if (dom == null) 
+							dom = ProjectDomService.GetFileDom (Document.FileName); 
+						DocumentLocation loc = view.GetTextEditorData ().Document.OffsetToLocation (args.Offset);
+						DomLocation location = new DomLocation (loc.Line, loc.Column);
+						CSharpFormatter formatter = new CSharpFormatter (textEditorData, dom, Document.CompilationUnit, Editor, location);
+					}
+				}
+;*/
 			}
 		}
 		
@@ -189,80 +208,87 @@ namespace MonoDevelop.CSharpBinding.Gui
 		}
 		
 		//special handling for certain characters just inserted , for comments etc
-		void DoPostInsertionSmartIndent (char charInserted, bool hadSelection, out bool reIndent)
-		{
-			stateTracker.UpdateEngine ();
-			reIndent = false;
-			int cursor = Editor.CursorPosition;
-			
-			switch (charInserted) {
-			case '\n':
-				if (stateTracker.Engine.LineNumber > 0) {
-					string previousLine = Editor.GetLineText (stateTracker.Engine.LineNumber - 1);
-					string trimmedPreviousLine = previousLine.TrimStart ();
-					//xml doc comments
-					if (trimmedPreviousLine.StartsWith ("/// ") //check previous line was a doc comment
-					    && Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber + 1, 1) > -1 //check there's a following line?
-					   /*  && cursor > 0 && Editor.GetCharAt (cursor - 1) == '\n'*/) { //check that the newline command actually inserted a newline
-						string nextLine = Editor.GetLineText (stateTracker.Engine.LineNumber + 1);
-						if (trimmedPreviousLine.Length > "/// ".Length || nextLine.TrimStart ().StartsWith ("/// ")) {
-						    Editor.InsertText (cursor, /*GetLineWhiteSpace (previousLine) + */"/// ");
-							return;
-						}
+	void DoPostInsertionSmartIndent (char charInserted, bool hadSelection, out bool reIndent)
+	{
+		stateTracker.UpdateEngine ();
+		reIndent = false;
+		int cursor = Editor.CursorPosition;
+
+		switch (charInserted) {
+		case '\n':
+			if (stateTracker.Engine.LineNumber > 0) {
+				string previousLine = Editor.GetLineText (stateTracker.Engine.LineNumber - 1);
+				string trimmedPreviousLine = previousLine.TrimStart ();
+				//xml doc comments
+				//check previous line was a doc comment
+				//check there's a following line?
+				if (trimmedPreviousLine.StartsWith ("/// ") && Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber + 1, 1) > -1)				/*  && cursor > 0 && Editor.GetCharAt (cursor - 1) == '\n'*/ {
+					//check that the newline command actually inserted a newline
+					string nextLine = Editor.GetLineText (stateTracker.Engine.LineNumber + 1);
+					if (trimmedPreviousLine.Length > "/// ".Length || nextLine.TrimStart ().StartsWith ("/// ")) {
+						Editor.InsertText (cursor, 						/*GetLineWhiteSpace (previousLine) + */"/// ");
+						return;
+					}
 					//multi-line comments
-					} else if (stateTracker.Engine.IsInsideMultiLineComment) {
-					    string commentPrefix = string.Empty;
-						if (trimmedPreviousLine.StartsWith ("* ")) {
-							commentPrefix = "* ";
-						} else if (trimmedPreviousLine.StartsWith ("/**") || trimmedPreviousLine.StartsWith ("/*")) {
-							commentPrefix = " * ";
-						} else if (trimmedPreviousLine.StartsWith ("*")) {
-							commentPrefix = "*";
-						}
-						Editor.InsertText (cursor, /*GetLineWhiteSpace (previousLine) +*/ commentPrefix);
-						return;
-					} else if (stateTracker.Engine.IsInsideStringLiteral) {
-						int lastLineEndPos = Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber - 1,
-						                                                       Editor.GetLineLength (stateTracker.Engine.LineNumber - 1) + 1);
-						int cursorEndPos = cursor + 4;
-						Editor.InsertText (lastLineEndPos, "\" +");
-						if (!trimmedPreviousLine.StartsWith ("\"")) {
-							Editor.InsertText (cursor++ + 3, "\t");
-							cursorEndPos++;
-						}
-						Editor.InsertText (cursor + 3, "\"");
-						Editor.CursorPosition = cursorEndPos;
-						return;
+				} else if (stateTracker.Engine.IsInsideMultiLineComment) {
+					string commentPrefix = string.Empty;
+					if (trimmedPreviousLine.StartsWith ("* ")) {
+						commentPrefix = "* ";
+					} else if (trimmedPreviousLine.StartsWith ("/**") || trimmedPreviousLine.StartsWith ("/*")) {
+						commentPrefix = " * ";
+					} else if (trimmedPreviousLine.StartsWith ("*")) {
+						commentPrefix = "*";
 					}
-				}
-				//newline always reindents unless it's had special handling
-				reIndent = true;
-				break;
-			case '\t':
-				// Tab is a special case... depending on the context, the user may be
-				// requesting a re-indent, tab-completing, or may just be wanting to
-				// insert a literal tab.
-				//
-				// Tab is interpreted as a reindent command when it's neither at the end of a line nor in a verbatim string
-				// and when a tab has just been inserted (i.e. not a template or an autocomplete command)
-				if (TextEditorProperties.TabIsReindent &&
-				    !stateTracker.Engine.IsInsideVerbatimString
-				    && cursor >= 1 && Char.IsWhiteSpace (Editor.GetCharAt (cursor - 1)) //tab was actually inserted, or in a region of tabs
-				    && !hadSelection //was just a cursor, not a block of selected text -- the text editor handles that specially
-				    )
-				{
-					if (Editor.CursorColumn > 2) {
-						int delta = cursor - this.cursorPositionBeforeKeyPress;
-						if (delta < 2) {
-							Editor.DeleteText (cursor - delta, delta);
-							Editor.CursorPosition = cursor - delta;
-						}
+					Editor.InsertText (cursor, 					/*GetLineWhiteSpace (previousLine) +*/commentPrefix);
+					return;
+				} else if (stateTracker.Engine.IsInsideStringLiteral) {
+					int lastLineEndPos = Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber - 1, Editor.GetLineLength (stateTracker.Engine.LineNumber - 1) + 1);
+					int cursorEndPos = cursor + 4;
+					Editor.InsertText (lastLineEndPos, "\" +");
+					if (!trimmedPreviousLine.StartsWith ("\"")) {
+						Editor.InsertText (cursor++ + 3, "\t");
+						cursorEndPos++;
 					}
-					reIndent = true;
+					Editor.InsertText (cursor + 3, "\"");
+					Editor.CursorPosition = cursorEndPos;
+					return;
 				}
-				break;
 			}
+
+			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
+				if (dom == null) 
+					dom = ProjectDomService.GetFileDom (Document.FileName); 
+				
+				DomLocation location = new DomLocation(Editor.CursorLine, Editor.CursorColumn);
+				CSharpFormatter formatter = new CSharpFormatter(textEditorData, dom, Document.CompilationUnit, Editor, location);
+			}
+
+			//newline always reindents unless it's had special handling
+			reIndent = true;
+			break;
+		case '\t':
+			// Tab is a special case... depending on the context, the user may be
+			// requesting a re-indent, tab-completing, or may just be wanting to
+			// insert a literal tab.
+			//
+			// Tab is interpreted as a reindent command when it's neither at the end of a line nor in a verbatim string
+			// and when a tab has just been inserted (i.e. not a template or an autocomplete command)
+			//tab was actually inserted, or in a region of tabs
+			//was just a cursor, not a block of selected text -- the text editor handles that specially
+			if (TextEditorProperties.TabIsReindent && !stateTracker.Engine.IsInsideVerbatimString && cursor >= 1 && Char.IsWhiteSpace (Editor.GetCharAt (cursor - 1)) && !hadSelection) {
+				if (Editor.CursorColumn > 2) {
+					int delta = cursor - this.cursorPositionBeforeKeyPress;
+					if (delta < 2) {
+						Editor.DeleteText (cursor - delta, delta);
+						Editor.CursorPosition = cursor - delta;
+					}
+				}
+				reIndent = true;
+			}
+			break;
 		}
+	}
 		
 		//does re-indenting and cursor positioning
 		void DoReSmartIndent ()

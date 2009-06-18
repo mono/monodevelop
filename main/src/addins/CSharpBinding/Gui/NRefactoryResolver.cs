@@ -48,6 +48,8 @@ using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory;
+using CSharpBinding.Parser;
+
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -135,7 +137,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		static IMember GetMemberAt (IType type, DomLocation location)
+		internal static IMember GetMemberAt (IType type, DomLocation location)
 		{
 			foreach (IMember member in type.Members) {
 				if (!(member is IMethod || member is IProperty || member is IEvent))
@@ -164,7 +166,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			//System.Console.WriteLine("CallingMember: " + callingMember);
 			if (callingMember != null && !setupLookupTableVisitor ) {
-				string wrapper = CreateWrapperClassForMember (callingMember);
+				string wrapper = CreateWrapperClassForMember (callingMember, fileName, editor);
 				using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper))) {
 					parser.Parse ();
 					memberCompilationUnit = parser.CompilationUnit;
@@ -200,7 +202,7 @@ namespace MonoDevelop.CSharpBinding
 //				completionList.Add (p.Name, "md-literal");
 			}
 		}
-				
+		
 		void AddContentsFromClassAndMembers (ExpressionContext context, CompletionDataList completionList, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
 		{
 			IMethod method = callingMember as IMethod;
@@ -853,7 +855,7 @@ namespace MonoDevelop.CSharpBinding
 			return result;
 		}
 		
-		string CreateWrapperClassForMember (IMember member)
+		internal static string CreateWrapperClassForMember (IMember member, string fileName, TextEditor editor)
 		{
 			if (member == null)
 				return "";
@@ -863,16 +865,16 @@ namespace MonoDevelop.CSharpBinding
 			if (!member.BodyRegion.IsEmpty) 
 				endLine = member.BodyRegion.End.Line + 1;
 			string text;
-			result.Append ("class Wrapper {");
+			result.Append ("class " + member.DeclaringType.Name + " {");
 			if (editor != null) {
 				int col, maxLine;
 				editor.GetLineColumnFromPosition (editor.TextLength - 1, out col, out maxLine);
 				endLine = System.Math.Max (endLine, maxLine);
 				
-				int endPos = this.editor.GetPositionFromLineColumn (endLine, this.editor.GetLineLength (endLine));
+				int endPos = editor.GetPositionFromLineColumn (endLine, editor.GetLineLength (endLine));
 				if (endPos < 0)
-					endPos = this.editor.TextLength;
-				text = this.editor.GetText (this.editor.GetPositionFromLineColumn (startLine, 0), endPos);
+					endPos = editor.TextLength;
+				text = editor.GetText (editor.GetPositionFromLineColumn (startLine, 0), endPos);
 			} else {
 				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
 				doc.Text = File.ReadAllText (fileName) ?? "";
@@ -884,6 +886,7 @@ namespace MonoDevelop.CSharpBinding
 			if (!string.IsNullOrEmpty (text))
 				result.Append (text);
 			result.Append ("}");
+			
 			return result.ToString ();
 		}
 	}

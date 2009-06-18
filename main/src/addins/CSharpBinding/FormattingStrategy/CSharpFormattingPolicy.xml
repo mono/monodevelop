@@ -55,6 +55,23 @@
 		}
 	}
 ]]></Example>
+	
+	<Example name = "constructorCallExample"><![CDATA[
+	class ClassDeclaration {
+		public ClassDeclaration ()
+		{
+		}
+		
+		public static ClassDeclaration Foo ()
+		{
+			return new ClassDeclaration();
+		}
+	}
+]]></Example>
+
+<Example name = "delegateExample"><![CDATA[
+	delegate void FooBar (int x, int y);
+]]></Example>
 
 	<Example name = "spaceExample"><![CDATA[
 	class ClassDeclaration { 
@@ -363,6 +380,12 @@ class ClassDeclaration {
 		<Category _displayName="Before Parentheses">
 			<Option name="BeforeMethodCallParentheses" _displayName="Method call" example ="methodSpaceExample"/>
 			<Option name="BeforeMethodDeclarationParentheses" _displayName="Method declaration" example ="methodSpaceExample"/>
+			
+			<Option name="BeforeDelegateDeclarationParentheses" _displayName="Delegate declaration" example ="delegateExample"/>
+			<Option name="BeforeConstructorDeclarationParentheses" _displayName="Constructor declaration" example ="constructorCallExample"/>
+			
+			<Option name="NewParentheses" _displayName="Constructor call" example ="constructorCallExample"/>
+			
 			<OptionCategory _displayName="Statements">
 				<Option name="IfParentheses" _displayName="'if' statement" example="simpleIf"/>
 				<Option name="WhileParentheses" _displayName="'while' statement" example="simpleWhile"/>

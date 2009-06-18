@@ -29,8 +29,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Reflection;
 
-
-
 namespace FormattingStrategy
 {
 	public enum BraceStyle {
@@ -278,6 +276,24 @@ namespace FormattingStrategy
 		}
 		
 		[ItemProperty]
+		public bool BeforeConstructorDeclarationParentheses {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool BeforeDelegateDeclarationParentheses {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool NewParentheses {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
 		public bool IfParentheses {
 			get;
 			set;
@@ -518,7 +534,7 @@ namespace FormattingStrategy
 		}
 		#endregion
 		
-		public CSharpFormattingPolicy ()
+		public CSharpFormattingPolicy()
 		{
 			IndentNamespaceBody = true;
 			IndentClassBody = IndentInterfaceBody = IndentStructBody = IndentEnumBody = true;
@@ -530,21 +546,25 @@ namespace FormattingStrategy
 			NamespaceBraceStyle = BraceStyle.NextLine;
 			ClassBraceStyle = InterfaceBraceStyle = StructBraceStyle = EnumBraceStyle = BraceStyle.NextLine;
 			MethodBraceStyle = ConstructorBraceStyle = DestructorBraceStyle = BraceStyle.NextLine;
-			
+
 			PropertyBraceStyle = PropertyGetBraceStyle = PropertySetBraceStyle = BraceStyle.EndOfLine;
 			AllowPropertyGetBlockInline = AllowPropertySetBlockInline = true;
-			
+
 			EventBraceStyle = EventAddBraceStyle = EventRemoveBraceStyle = BraceStyle.EndOfLine;
 			AllowEventAddBlockInline = AllowEventRemoveBlockInline = true;
 			StatementBraceStyle = BraceStyle.EndOfLine;
-		
+
 			PlaceElseOnNewLine = false;
 			PlaceCatchOnNewLine = false;
 			PlaceFinallyOnNewLine = false;
 			PlaceWhileOnNewLine = false;
-			
+
 			BeforeMethodCallParentheses = true;
 			BeforeMethodDeclarationParentheses = true;
+			BeforeConstructorDeclarationParentheses = true;
+			BeforeDelegateDeclarationParentheses = true;
+			
+			NewParentheses = true;
 			IfParentheses = true;
 			WhileParentheses = true;
 			ForParentheses = true;
@@ -580,7 +600,7 @@ namespace FormattingStrategy
 			ConditionalOperatorAfterConditionSpace = true;
 			ConditionalOperatorBeforeSeparatorSpace = true;
 			ConditionalOperatorAfterSeparatorSpace = true;
-			
+
 			SpacesWithinBrackets = false;
 			SpacesAfterComma = true;
 			SpacesBeforeComma = false;

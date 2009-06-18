@@ -1,3 +1,12 @@
+2009-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/CSharpFormatter.cs:
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorIndentation.cs:
+	* FormattingStrategy/CSharpFormattingPolicy.cs:
+	* FormattingStrategy/CSharpFormattingPolicy.xml: Worked on
+	  code formatting.
+
 2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Parser/NRefactoryParser.cs: Fix issue with detection of
