@@ -137,10 +137,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			switch (comment.CommentType) {
 				case CommentType.Block:
+					bool wasIndented = isIndented;
+					if (!wasIndented) {
+						Indent ();
+					}
 					if (forceWriteInPreviousBlock) {
 						WriteInPreviousLine("/*" + comment.CommentText + "*/", forceWriteInPreviousBlock);
 					} else {
 						PrintSpecialText("/*" + comment.CommentText + "*/");
+					}
+					if (wasIndented) {
+						Indent ();
 					}
 					break;
 				case CommentType.Documentation:

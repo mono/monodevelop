@@ -1,5 +1,11 @@
 2009-06-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
+	* Src/PrettyPrinter/AbstractOutputFormatter.cs: Corrected
+	  block comment output.
+
+2009-06-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Single line
 	  if statements are now correcty indented.
 

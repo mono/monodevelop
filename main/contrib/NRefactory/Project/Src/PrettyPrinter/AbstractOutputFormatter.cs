@@ -70,6 +70,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			this.prettyPrintOptions = prettyPrintOptions;
 		}
 		
+		internal bool isIndented = false;
 		public void Indent()
 		{
 			if (DoIndent) {
@@ -86,17 +87,20 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						++indent;
 					}
 				}
+				isIndented = true;
 			}
 		}
 		
 		public void Reset ()
 		{
 			text.Length = 0;
+			isIndented = false;
 		}
 		
 		public void Space()
 		{
 			text.Append(' ');
+			isIndented = false;
 		}
 		
 		internal int lastLineStart = 0;
@@ -122,6 +126,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				}
 				text.AppendLine();
 				lastLineStart = text.Length;
+				isIndented = false;
 			}
 		}
 		
@@ -164,6 +169,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				lineBeforeLastStart = lastLineStart;
 				lastLineStart = text.Length;
 			}
+			isIndented = false;
 		}
 		
 		/// <summary>
@@ -175,6 +181,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			lineBeforeLastStart = text.Length;
 			text.Append(specialText);
 			lastLineStart = text.Length;
+			isIndented = false;
 		}
 		
 		public void PrintTokenList(ArrayList tokenList)
@@ -209,6 +216,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public void PrintText(string text)
 		{
 			this.text.Append(text);
+			isIndented = false;
 		}
 		
 		public abstract void PrintIdentifier(string identifier);
