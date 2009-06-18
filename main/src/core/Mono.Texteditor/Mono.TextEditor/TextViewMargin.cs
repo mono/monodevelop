@@ -836,32 +836,33 @@ namespace Mono.TextEditor
 		public event LineDecorator DecorateLineBg;
 		public event LineDecorator DecorateLineFg;
 		
-		void DecorateSpaces (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
-		{
-			string lineText = layout.Text;
-			uint curIndex = 0, byteIndex = 0;
-			for (int i = 0; i < lineText.Length; i++) {
-				if (lineText[i] == ' ') {
-					int line2, xpos;
-					
-					layout.IndexToLineX ((int)TranslateToUTF8Index (lineText, (uint)i, ref curIndex, ref byteIndex), false, out line2, out xpos);
-					DrawSpaceMarker (win, selectionStart <= offset + i && offset + i <= selectionEnd, xPos + xpos  / 1024, y);
-				}
+	void DecorateSpaces (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
+	{
+		string lineText = layout.Text;
+		uint curIndex = 0, byteIndex = 0;
+		for (int i = 0; i < lineText.Length; i++) {
+			if (lineText[i] == ' ') {
+				int line2;
+				Pango.Rectangle pos = layout.IndexToPos ((int)TranslateToUTF8Index (lineText, (uint)i, ref curIndex, ref byteIndex));
+				int xpos = pos.X;
+				DrawSpaceMarker (win, selectionStart <= offset + i && offset + i <= selectionEnd, xPos + xpos / 1024, y);
 			}
 		}
+	}
 		
-		void DecorateTabs (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
-		{
-			string lineText = layout.Text;
-			uint curIndex = 0, byteIndex = 0;
-			for (int i = 0; i < lineText.Length; i++) {
-				if (lineText[i] == '\t') {
-					int line2, xpos;
-					layout.IndexToLineX ((int)TranslateToUTF8Index (lineText, (uint)i, ref curIndex, ref byteIndex), false, out line2, out xpos);
-					DrawTabMarker (win, selectionStart <= offset + i && offset + i <= selectionEnd, xPos + xpos  / 1024, y);
-				}
+	void DecorateTabs (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
+	{
+		string lineText = layout.Text;
+		uint curIndex = 0, byteIndex = 0;
+		for (int i = 0; i < lineText.Length; i++) {
+			if (lineText[i] == '\t') {
+				int line2;
+				Pango.Rectangle pos = layout.IndexToPos ((int)TranslateToUTF8Index (lineText, (uint)i, ref curIndex, ref byteIndex));
+				int xpos = pos.X;
+				DrawTabMarker (win, selectionStart <= offset + i && offset + i <= selectionEnd, xPos + xpos / 1024, y);
 			}
 		}
+	}
 		
 		void DecorateMatchingBracket (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
 		{

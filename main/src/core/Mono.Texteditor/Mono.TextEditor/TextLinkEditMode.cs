@@ -534,59 +534,59 @@ namespace Mono.TextEditor
 					start < segment.EndOffset && segment.EndOffset < end;
 		}
 		
-		public bool DrawBackground (TextEditor Editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
-		{
-			int caretOffset = Editor.Caret.Offset - BaseOffset;
-			
-			foreach (TextLink link in mode.Links) {
-				if (!link.IsEditable)
-					continue;
-				bool isPrimaryHighlighted = link.PrimaryLink.Offset <= caretOffset && caretOffset <= link.PrimaryLink.EndOffset;
-				
-				foreach (ISegment segment in link.Links) {
+	public bool DrawBackground (TextEditor Editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg
+	)
+	{
+		int caretOffset = Editor.Caret.Offset - BaseOffset;
+
+		foreach (TextLink link in mode.Links) {
+			if (!link.IsEditable) 
+				continue; 
+			bool isPrimaryHighlighted = link.PrimaryLink.Offset <= caretOffset && caretOffset <= link.PrimaryLink.EndOffset;
+
+			foreach (ISegment segment in link.Links) {
+
+				if ((BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) || (startOffset <= BaseOffset + segment.Offset && BaseOffset + segment.Offset < endOffset)) {
+					int strOffset = BaseOffset + segment.Offset - startOffset;
+					int strEndOffset = BaseOffset + segment.EndOffset - startOffset;
+
+					int x_pos = layout.IndexToPos (strOffset).X;
+					int x_pos2 = layout.IndexToPos (strEndOffset).X;
 					
-					if ((BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) ||
-					    (startOffset <= BaseOffset + segment.Offset && BaseOffset + segment.Offset < endOffset)) {
-						int strOffset    = BaseOffset + segment.Offset - startOffset;
-						int strEndOffset = BaseOffset + segment.EndOffset - startOffset;
-						
-						int lineNr, x_pos, x_pos2;
-						layout.IndexToLineX (strOffset, false, out lineNr, out x_pos);
-						layout.IndexToLineX (strEndOffset, false, out lineNr, out x_pos2);
-						x_pos  = (int)(x_pos / Pango.Scale.PangoScale);
-						x_pos2 = (int)(x_pos2 / Pango.Scale.PangoScale);
-						using (Gdk.GC rectangleGc = new Gdk.GC (win)) {
+					x_pos = (int)(x_pos / Pango.Scale.PangoScale);
+					x_pos2 = (int)(x_pos2 / Pango.Scale.PangoScale);
+					using (Gdk.GC rectangleGc = new Gdk.GC(win)) {
 						//	rectangleGc.ClipRectangle = clipRectangle;
-							using (Gdk.GC fillGc = new Gdk.GC (win)) {
-						//		fillGc.ClipRectangle = clipRectangle;
-								drawBg = false;
-								
-								if (segment == link.PrimaryLink) {
-									fillGc.RgbFgColor      = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.PrimaryTemplate.BackgroundColor;
-									rectangleGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.Color           : Editor.ColorStyle.PrimaryTemplate.Color;
-								} else {
-									fillGc.RgbFgColor      = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.SecondaryTemplate.BackgroundColor;
-									rectangleGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.Color           : Editor.ColorStyle.SecondaryTemplate.Color;
-								}
-								// Draw segment
-								
-								int x1 = startXPos + x_pos - 1;
-								int x2 = startXPos + x_pos2 - 1;
-								int y2 = y + Editor.LineHeight - 1;
-								
-								if (!selected)
-									win.DrawRectangle (fillGc, true, x1, y, x2 - x1, y2);
-								
-								win.DrawLine (rectangleGc, x1, y, x2, y);
-								win.DrawLine (rectangleGc, x1, y2, x2, y2);
-								win.DrawLine (rectangleGc, x1, y, x1, y2);
-								win.DrawLine (rectangleGc, x2, y, x2, y2);
+						using (Gdk.GC fillGc = new Gdk.GC(win)) {
+							//		fillGc.ClipRectangle = clipRectangle;
+							drawBg = false;
+
+							if (segment == link.PrimaryLink) {
+								fillGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.PrimaryTemplate.BackgroundColor;
+								rectangleGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.Color : Editor.ColorStyle.PrimaryTemplate.Color;
+							} else {
+								fillGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.SecondaryTemplate.BackgroundColor;
+								rectangleGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.Color : Editor.ColorStyle.SecondaryTemplate.Color;
 							}
+							// Draw segment
+
+							int x1 = startXPos + x_pos - 1;
+							int x2 = startXPos + x_pos2 - 1;
+							int y2 = y + Editor.LineHeight - 1;
+
+							if (!selected) 
+								win.DrawRectangle (fillGc, true, x1, y, x2 - x1, y2); 
+
+							win.DrawLine (rectangleGc, x1, y, x2, y);
+							win.DrawLine (rectangleGc, x1, y2, x2, y2);
+							win.DrawLine (rectangleGc, x1, y, x1, y2);
+							win.DrawLine (rectangleGc, x2, y, x2, y2);
 						}
 					}
 				}
 			}
-			/*
+		}
+		/*
 			int curOffset = startOffset;
 			foreach (TextLink link in mode.Links) {
 				if (!link.IsEditable)
@@ -601,7 +601,7 @@ namespace Mono.TextEditor
 			}
 			InternalDrawBackground (Editor, win, layout, selected, curOffset, endOffset, y, ref startXPos, endXPos, ref drawBg);
 			*/
-			return true;
-		}
+		return true;
+	}
 	}
 }
