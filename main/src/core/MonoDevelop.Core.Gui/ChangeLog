@@ -1,3 +1,8 @@
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs: Show main
+	  sections in bold.
+
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs:

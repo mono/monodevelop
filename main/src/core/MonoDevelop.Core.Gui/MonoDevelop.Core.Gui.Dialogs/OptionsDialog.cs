@@ -79,7 +79,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			if (parentWindow != null)
 				TransientFor = parentWindow;
 			
-			store = new TreeStore (typeof(OptionsDialogSection), typeof(string), typeof(string), typeof(bool));
+			store = new TreeStore (typeof(OptionsDialogSection), typeof(string), typeof(string), typeof(bool), typeof(string));
 			tree.Model = store;
 			tree.HeadersVisible = false;
 			
@@ -89,9 +89,11 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock-id", 1);
 			col.AddAttribute (crp, "visible", 3);
+			col.AddAttribute (crp, "cell-background", 4);
 			CellRendererText crt = new CellRendererText ();
 			col.PackStart (crt, true);
-			col.AddAttribute (crt, "text", 2);
+			col.AddAttribute (crt, "markup", 2);
+			col.AddAttribute (crt, "cell-background", 4);
 			tree.AppendColumn (col);
 			
 			tree.Selection.Changed += OnSelectionChanged;
@@ -207,11 +209,12 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		{
 			TreeIter it;
 			if (parentIter.Equals (TreeIter.Zero)) {
-				it = store.AppendValues (section, null, section.Label, false);
+				string sectionLabel = "<b>" + GLib.Markup.EscapeText (section.Label) + "</b>";
+				it = store.AppendValues (section, null, sectionLabel, false, null);
 			}
 			else {
 				string icon = string.IsNullOrEmpty (section.Icon) ? "md-empty-category" : section.Icon;
-				it = store.AppendValues (parentIter, section, icon, section.Label, true);
+				it = store.AppendValues (parentIter, section, icon, section.Label, true, null);
 			}
 			
 			if (!section.CustomNode)
