@@ -43,7 +43,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (2, data.Document.LineCount);
 			Assert.AreEqual (1, data.Caret.Line);
 			Assert.AreEqual (0, data.Caret.Column);
-			Assert.AreEqual ("Hello\n World!", data.Document.Text);
+			Assert.AreEqual ("Hello" + Environment.NewLine + " World!", data.Document.Text);
 		}
 		
 		

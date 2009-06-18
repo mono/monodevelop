@@ -1,5 +1,10 @@
 2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.TextEditor.Tests.DefaultEditActions\InsertNewLineTests.cs:
+	  Make test work on windows.
+
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/SolutionTests.cs: Explicitly cast file
 	  names to strings before checking equality.
 
