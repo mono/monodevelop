@@ -247,7 +247,7 @@ namespace MonoDevelop.Projects.Dom
 					return type1.SourceProjectDom.Project.GetProjectFile (type2.CompilationUnit.FileName) != null;
 				if (type2.SourceProjectDom != null && type2.SourceProjectDom.Project != null)
 					return type2.SourceProjectDom.Project.GetProjectFile (type1.CompilationUnit.FileName) != null;
-				return false;
+				return true;
 			}
 			if (!(member is IType) && (member.DeclaringType == null || DeclaringType == null))
 				return false;

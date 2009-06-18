@@ -1,3 +1,8 @@
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom\AbstractMember.cs: Allow internal
+	  visibility between types from a file not bound to a project.
+
 2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs: Don't
