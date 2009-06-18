@@ -326,10 +326,9 @@ namespace MonoDevelop.Debugger.Win32
 		protected override void OnExit ( )
 		{
 			try {
+				terminated = true;
 				process.Stop (4000);
 				process.Terminate (1);
-				process.Continue (false);
-				terminated = true;
 			}
 			catch (Exception ex) {
 				OnDebuggerOutput (true, ex.Message + "\n");
