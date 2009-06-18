@@ -529,7 +529,7 @@ namespace FormattingStrategy
 			IndentBreakStatements = true;
 			NamespaceBraceStyle = BraceStyle.NextLine;
 			ClassBraceStyle = InterfaceBraceStyle = StructBraceStyle = EnumBraceStyle = BraceStyle.NextLine;
-			MethodBraceStyle = ConstructorBraceStyle = DestructorBraceStyle = BraceStyle.EndOfLine;
+			MethodBraceStyle = ConstructorBraceStyle = DestructorBraceStyle = BraceStyle.NextLine;
 			
 			PropertyBraceStyle = PropertyGetBraceStyle = PropertySetBraceStyle = BraceStyle.EndOfLine;
 			AllowPropertyGetBlockInline = AllowPropertySetBlockInline = true;
