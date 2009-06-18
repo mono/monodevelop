@@ -1290,9 +1290,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			if (statements.Count != 1) {
 				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
+			} else {
+				outputFormatter.NewLine ();
+				outputFormatter.IndentationLevel++;
+				outputFormatter.Indent ();
 			}
 			foreach (Statement stmt in statements) {
 				TrackVisit(stmt, prettyPrintOptions.StatementBraceStyle);
+			}
+			if (statements.Count == 1) {
+				outputFormatter.IndentationLevel--;
 			}
 			if (statements.Count != 1) {
 				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
