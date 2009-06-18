@@ -46,12 +46,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
-//			this.autoInsertTemplateCheckbutton.Active  = DefaultSourceEditorOptions.Options.AutoInsertTemplates;
+			//			this.autoInsertTemplateCheckbutton.Active  = DefaultSourceEditorOptions.Options.AutoInsertTemplates;
 			this.autoInsertBraceCheckbutton.Active = DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
 			this.tabAsReindentCheckbutton.Active = DefaultSourceEditorOptions.Instance.TabIsReindent;
 			this.indentationCombobox.Active = (int)DefaultSourceEditorOptions.Instance.IndentStyle;
-			this.controlLeftRightCombobox.Active  = (int)DefaultSourceEditorOptions.Instance.ControlLeftRightMode;
+			this.controlLeftRightCombobox.Active = (int)DefaultSourceEditorOptions.Instance.ControlLeftRightMode;
 			this.useViModesCheck.Active = DefaultSourceEditorOptions.Instance.UseViModes;
+			this.checkbuttonOnTheFlyFormatting.Active = DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
 			return this;
 		}
 		
@@ -63,6 +64,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.TabIsReindent = this.tabAsReindentCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ControlLeftRightMode = (ControlLeftRightMode)this.controlLeftRightCombobox.Active;
 			DefaultSourceEditorOptions.Instance.UseViModes = this.useViModesCheck.Active;
+			DefaultSourceEditorOptions.Instance.OnTheFlyFormatting = this.checkbuttonOnTheFlyFormatting.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

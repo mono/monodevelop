@@ -1,3 +1,12 @@
+2009-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:
+	  Worked on on the fly formatting. DO NOT USE THIS OPTION (it
+	  may break code. But for testing it may be ok)
+
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:

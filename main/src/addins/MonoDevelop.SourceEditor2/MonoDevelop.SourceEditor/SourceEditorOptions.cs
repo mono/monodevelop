@@ -138,6 +138,7 @@ namespace MonoDevelop.SourceEditor
 			this.defaultRegionsFolding      =  PropertyService.Get ("DefaultRegionsFolding", false);
 			this.defaultCommentFolding      =  PropertyService.Get ("DefaultCommentFolding", true);
 			this.useViModes = PropertyService.Get ("UseViModes", false);
+			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", false);
 			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
 			this.completeWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
 			this.ControlLeftRightMode =  (ControlLeftRightMode)Enum.Parse (typeof (ControlLeftRightMode), PropertyService.Get ("ControlLeftRightMode", IdeApp.Services.PlatformService.DefaultControlLeftRightBehavior));
@@ -336,6 +337,20 @@ namespace MonoDevelop.SourceEditor
 					return;
 				useViModes = value;
 				PropertyService.Set ("UseViModes", value);
+				OnChanged (EventArgs.Empty);
+			}
+		}
+		
+		bool onTheFlyFormatting = false;
+		public bool OnTheFlyFormatting {
+			get {
+				return onTheFlyFormatting;
+			}
+			set {
+				if (onTheFlyFormatting == value)
+					return;
+				onTheFlyFormatting = value;
+				PropertyService.Set ("OnTheFlyFormatting", value);
 				OnChanged (EventArgs.Empty);
 			}
 		}
