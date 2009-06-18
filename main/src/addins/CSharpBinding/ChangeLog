@@ -1,3 +1,8 @@
+2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Parser/NRefactoryParser.cs: Fix issue with detection of
+	  generic constraints.
+
 2009-06-18  Mike Krüger  <mkrueger@novell.com>
 
 	* FormattingStrategy/CSharpFormattingPolicy.cs: Corrected
