@@ -239,6 +239,9 @@ namespace MonoDevelop.Ide.Templates
 			IFormatter formatter = !String.IsNullOrEmpty (mime) ? TextFileService.GetFormatter (mime) : null;
 			if (formatter != null)
 				content = formatter.FormatText (policyParent, mime, content);
+			IPrettyPrinter prettyPrinter = !String.IsNullOrEmpty (mime) ? TextFileService.GetPrettyPrinter (mime) : null;
+			if (prettyPrinter != null)
+				content = prettyPrinter.FormatText (policyParent,  mime, content);
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
 			if (AddStandardHeader) {
