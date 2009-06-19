@@ -25,6 +25,9 @@ namespace ICSharpCode.NRefactory.Visitors
 		List<CodeParameterDeclarationExpression> parameters = new List<CodeParameterDeclarationExpression>();
 		Stack<Breakable> breakableStack = new Stack<Breakable>();
 		
+		IEnumerator<ISpecial> specials;
+		bool specialsAvailable;
+		
 		TypeDeclaration currentTypeDeclaration = null;
 		
 		IEnvironmentInformationProvider environmentInformationProvider = DummyEnvironmentInformationProvider.Instance;
@@ -65,6 +68,17 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public CodeCompileUnit codeCompileUnit   = new CodeCompileUnit();
 
+		public CodeDomVisitor () : this (null)
+		{
+		}
+		
+		public CodeDomVisitor (IEnumerable<ISpecial> specials)
+		{
+			if (specials != null)
+				this.specials = specials.GetEnumerator ();
+			specialsAvailable = this.specials != null && this.specials.MoveNext ();
+		}
+		
 		// RG
 		//
 		// Initialise Scope Variables for Current Method
@@ -102,12 +116,13 @@ namespace ICSharpCode.NRefactory.Visitors
 			return t;
 		}
 		
-		void AddStmt(CodeStatement stmt)
+		void AddStmt(CodeStatement stmt, INode flushCommentsToStart)
 		{
 			if (codeStack.Count == 0)
 				return;
 			CodeStatementCollection stmtCollection = codeStack.Peek();
 			if (stmtCollection != null) {
+				FlushComments (flushCommentsToStart, stmtCollection);
 				stmtCollection.Add(stmt);
 			}
 		}
@@ -163,6 +178,26 @@ namespace ICSharpCode.NRefactory.Visitors
 			return attr;
 		}
 		
+		#region inserting specials
+		
+		void FlushComments (INode toStartOf, IList commentable)
+		{
+			FlushComments (toStartOf.StartLocation, commentable);
+		}
+		
+		void FlushComments (Location toLocation, IList commentable)
+		{
+			while (commentable != null && specialsAvailable && specials.Current.StartPosition <= toLocation) {
+				Comment cmt = specials.Current as Comment;
+				if (cmt != null)
+					commentable.Add (new CodeCommentStatement (cmt.CommentText, cmt.CommentType == CommentType.Documentation));
+				specialsAvailable = specials.MoveNext ();
+			}
+		}
+		
+		#endregion
+		
+		
 		#region ICSharpCode.SharpRefactory.Parser.IASTVisitor interface implementation
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
@@ -185,6 +220,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			foreach (CodeNamespaceImport import in ((CodeNamespace)namespaceDeclarations.Peek()).Imports) {
 				currentNamespace.Imports.Add(import);
 			}
+			FlushComments (namespaceDeclaration, currentNamespace.Comments);
 			namespaceDeclarations.Push(currentNamespace);
 			namespaceDeclaration.AcceptChildren(this, data);
 			namespaceDeclarations.Pop();
@@ -208,7 +244,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			CodeMemberEvent evt = new CodeMemberEvent();
 			evt.Type = ConvType(eventDeclaration.TypeReference);
 			evt.Name = eventDeclaration.Name;
-
+			FlushComments (eventDeclaration, evt.Comments);
 			evt.Attributes = ConvMemberAttributes(eventDeclaration.Modifier);
 
 			typeDeclarations.Peek().Members.Add(evt);
@@ -245,6 +281,8 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			
+			FlushComments (typeDeclaration, codeTypeDeclaration.Comments);
+			
 			typeDeclarations.Push(codeTypeDeclaration);
 			typeDeclaration.AcceptChildren(this, data);
 			typeDeclarations.Pop();
@@ -264,6 +302,8 @@ namespace ICSharpCode.NRefactory.Visitors
 			CodeTypeDelegate codeTypeDelegate = new CodeTypeDelegate(delegateDeclaration.Name);
 			codeTypeDelegate.Attributes = ConvMemberAttributes(delegateDeclaration.Modifier);
 			codeTypeDelegate.ReturnType = ConvType(delegateDeclaration.ReturnType);
+			
+			FlushComments (delegateDeclaration, codeTypeDelegate.Comments);
 
 			foreach (ParameterDeclarationExpression parameter in delegateDeclaration.Parameters)
 			{
@@ -302,6 +342,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 				
 				CodeMemberField memberField = new CodeMemberField(ConvType(fieldType), field.Name);
+				FlushComments (field, memberField.Comments);
 				memberField.Attributes = ConvMemberAttributes(fieldDeclaration.Modifier);
 				if (!field.Initializer.IsNull) {
 					memberField.InitExpression = (CodeExpression)field.Initializer.AcceptVisitor(this, data);
@@ -321,6 +362,8 @@ namespace ICSharpCode.NRefactory.Visitors
 			memberMethod.Name = methodDeclaration.Name;
 			memberMethod.Attributes = ConvMemberAttributes(methodDeclaration.Modifier);
 
+			FlushComments (methodDeclaration, memberMethod.Comments);
+			
 			// RG: Private Interface Decl
 			if ((memberMethod.Attributes & MemberAttributes.Public) != MemberAttributes.Public &&
 			    methodDeclaration.InterfaceImplementations.Count > 0)
@@ -348,6 +391,8 @@ namespace ICSharpCode.NRefactory.Visitors
 			variables.Clear();
 			methodDeclaration.Body.AcceptChildren(this, data);
 			
+			FlushComments (methodDeclaration.EndLocation, memberMethod.Statements);
+			
 			codeStack.Pop();
 			
 			return null;
@@ -362,6 +407,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			memberProperty.HasGet = propertyDeclaration.HasGetRegion;
 			memberProperty.HasSet = propertyDeclaration.HasSetRegion;
 			memberProperty.Type = ConvType(propertyDeclaration.TypeReference);
+			FlushComments (propertyDeclaration, memberProperty.Comments);
 
 			typeDeclarations.Peek().Members.Add(memberProperty);
 
@@ -395,6 +441,8 @@ namespace ICSharpCode.NRefactory.Visitors
 			CodeConstructor memberMethod = new CodeConstructor();
 			memberMethod.Attributes = ConvMemberAttributes(constructorDeclaration.Modifier);
 
+			FlushComments (constructorDeclaration, memberMethod.Comments);
+			
 			typeDeclarations.Peek().Members.Add(memberMethod);
 
 			codeStack.Push(NullStmtCollection);
@@ -450,7 +498,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			object exp = expressionStatement.Expression.AcceptVisitor(this, data);
 			if (exp is CodeExpression) {
-				AddStmt(new CodeExpressionStatement((CodeExpression)exp));
+				AddStmt (new CodeExpressionStatement((CodeExpression)exp), expressionStatement);
 			}
 			return exp;
 		}
@@ -471,7 +519,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					                                                var.Name);
 				}
 				variables.Add(declStmt);
-				AddStmt(declStmt);
+				AddStmt(declStmt, localVariableDeclaration);
 			}
 			
 			return declStmt;
@@ -481,7 +529,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			CodeSnippetStatement emptyStmt = new CodeSnippetStatement();
 			
-			AddStmt(emptyStmt);
+			AddStmt(emptyStmt, emptyStatement);
 			
 			return emptyStmt;
 		}
@@ -494,7 +542,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			else
 				returnStmt = new CodeMethodReturnStatement((CodeExpression)returnStatement.Expression.AcceptVisitor(this,data));
 			
-			AddStmt(returnStmt);
+			AddStmt(returnStmt, returnStatement);
 			
 			return returnStmt;
 		}
@@ -502,6 +550,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
 			CodeConditionStatement ifStmt = new CodeConditionStatement();
+			AddStmt(ifStmt, ifElseStatement);
 			
 			ifStmt.Condition = (CodeExpression)ifElseStatement.Condition.AcceptVisitor(this, data);
 			
@@ -524,8 +573,6 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			codeStack.Pop();
-			
-			AddStmt(ifStmt);
 			
 			return ifStmt;
 		}
@@ -554,6 +601,8 @@ namespace ICSharpCode.NRefactory.Visitors
 
 			CodeIterationStatement _for1 = new CodeIterationStatement();
 			breakableStack.Push(new Breakable());
+			
+			AddStmt(_for1, foreachStatement);
 
 			// init
 			CodeVariableDeclarationStatement _decl2 = new CodeVariableDeclarationStatement();
@@ -624,11 +673,9 @@ namespace ICSharpCode.NRefactory.Visitors
 				_for1.Statements.Add(new CodeLabeledStatement("continue" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())));
 			}
 
-			AddStmt(_for1);
-
 			if (breakable.IsBreak)
 			{
-				AddStmt(new CodeLabeledStatement("break" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())));
+				AddStmt(new CodeLabeledStatement("break" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())), null);
 			}
 
 			return _for1;
@@ -641,6 +688,8 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			CodeIterationStatement forLoop = new CodeIterationStatement();
 			breakableStack.Push(new Breakable());
+			
+			AddStmt(forLoop, doLoopStatement);
 
 			codeStack.Push(NullStmtCollection);
 
@@ -701,11 +750,9 @@ namespace ICSharpCode.NRefactory.Visitors
 				forLoop.Statements.Add(new CodeLabeledStatement("continue" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())));
 			}
 
-			AddStmt(forLoop);
-
 			if (breakable.IsBreak)
 			{
-				AddStmt(new CodeLabeledStatement("break" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())));
+				AddStmt(new CodeLabeledStatement("break" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())), null);
 			}
 
 			return forLoop;
@@ -715,6 +762,8 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			CodeIterationStatement forLoop = new CodeIterationStatement();
 			breakableStack.Push(new Breakable());
+			
+			AddStmt(forLoop, forStatement);
 
 			codeStack.Push(NullStmtCollection);
 
@@ -781,11 +830,9 @@ namespace ICSharpCode.NRefactory.Visitors
 				forLoop.Statements.Add(new CodeLabeledStatement("continue" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())));
 			}
 
-			AddStmt(forLoop);
-
 			if (breakable.IsBreak)
 			{
-				AddStmt(new CodeLabeledStatement("break" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())));
+				AddStmt(new CodeLabeledStatement("break" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())), null);
 			}
 			
 			return forLoop;
@@ -796,7 +843,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			System.CodeDom.CodeLabeledStatement labelStmt = new CodeLabeledStatement(labelStatement.Label);
 			
 			// Add Statement to Current Statement Collection
-			AddStmt(labelStmt);
+			AddStmt(labelStmt, labelStatement);
 			
 			return labelStmt;
 		}
@@ -806,7 +853,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			System.CodeDom.CodeGotoStatement gotoStmt = new CodeGotoStatement(gotoStatement.Label);
 			
 			// Add Statement to Current Statement Collection
-			AddStmt(gotoStmt);
+			AddStmt(gotoStmt, gotoStatement);
 			
 			return gotoStmt;
 		}
@@ -882,8 +929,8 @@ namespace ICSharpCode.NRefactory.Visitors
 
 						switchArg = new CodeVariableReferenceExpression(name);
 
-						AddStmt(switchStmt);
-						AddStmt(new CodeSnippetStatement());
+						AddStmt(switchStmt, section);
+						AddStmt(new CodeSnippetStatement(), null);
 					}
 
 					codeStack.Push(NullStmtCollection);
@@ -909,7 +956,7 @@ namespace ICSharpCode.NRefactory.Visitors
 						_if = new CodeConditionStatement();
 						_if.Condition = condition;
 
-						AddStmt(_if);
+						AddStmt(_if, null);
 					}
 					else
 					{
@@ -965,7 +1012,7 @@ namespace ICSharpCode.NRefactory.Visitors
 
 			if (breakable.IsBreak)
 			{
-				AddStmt(new CodeLabeledStatement("break" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())));
+				AddStmt(new CodeLabeledStatement("break" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())), null);
 			}
 
 			return null;
@@ -1001,7 +1048,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 			
 			// Add Statement to Current Statement Collection
-			AddStmt(tryStmt);
+			AddStmt(tryStmt, tryCatchStatement);
 			
 			return tryStmt;
 		}
@@ -1011,7 +1058,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			CodeThrowExceptionStatement throwStmt = new CodeThrowExceptionStatement((CodeExpression)throwStatement.Expression.AcceptVisitor(this, data));
 			
 			// Add Statement to Current Statement Collection
-			AddStmt(throwStmt);
+			AddStmt(throwStmt, throwStatement);
 			
 			return throwStmt;
 		}
@@ -1193,7 +1240,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					                                                                  CodeBinaryOperatorType.Add,
 					                                                                  new CodePrimitiveExpression(1)));
 
-					AddStmt(assign);
+					AddStmt(assign, unaryOperatorExpression);
 
 					return assign;
 
@@ -1218,7 +1265,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					                                                                  CodeBinaryOperatorType.Subtract,
 					                                                                  new CodePrimitiveExpression(1)));
 
-					AddStmt(assign);
+					AddStmt(assign, unaryOperatorExpression);
 
 					return assign;
 					
@@ -1242,7 +1289,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					                                 new CodeBinaryOperatorExpression(var,
 					                                                                  CodeBinaryOperatorType.Subtract,
 					                                                                  new CodePrimitiveExpression(1)));
-					AddStmt(assign);
+					AddStmt(assign, unaryOperatorExpression);
 
 					return assign;
 					//return new CodeAssignStatement(var,
@@ -1265,7 +1312,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					                                                                  CodeBinaryOperatorType.Add,
 					                                                                  new CodePrimitiveExpression(1)));
 
-					AddStmt(assign);
+					AddStmt(assign, unaryOperatorExpression);
 
 					return assign;
 
@@ -1311,11 +1358,11 @@ namespace ICSharpCode.NRefactory.Visitors
 			
 			if (eventExpr is IdentifierExpression) {
 				AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression(new CodeThisReferenceExpression(), ((IdentifierExpression)eventExpr).Identifier),
-				                                     methodInvoker));
+				                                     methodInvoker), eventExpr);
 			} else {
 				MemberReferenceExpression fr = (MemberReferenceExpression)eventExpr;
 				AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression((CodeExpression)fr.TargetObject.AcceptVisitor(this, data), fr.MemberName),
-				                                     methodInvoker));
+				                                     methodInvoker), eventExpr);
 			}
 		}
 		
@@ -1325,9 +1372,9 @@ namespace ICSharpCode.NRefactory.Visitors
 				AddEventHandler(assignmentExpression.Left, assignmentExpression.Right, data);
 			} else {
 				if (assignmentExpression.Left is IdentifierExpression) {
-					AddStmt(new CodeAssignStatement((CodeExpression)assignmentExpression.Left.AcceptVisitor(this, null), (CodeExpression)assignmentExpression.Right.AcceptVisitor(this, null)));
+					AddStmt(new CodeAssignStatement((CodeExpression)assignmentExpression.Left.AcceptVisitor(this, null), (CodeExpression)assignmentExpression.Right.AcceptVisitor(this, null)), assignmentExpression);
 				} else {
-					AddStmt(new CodeAssignStatement((CodeExpression)assignmentExpression.Left.AcceptVisitor(this, null), (CodeExpression)assignmentExpression.Right.AcceptVisitor(this, null)));
+					AddStmt(new CodeAssignStatement((CodeExpression)assignmentExpression.Left.AcceptVisitor(this, null), (CodeExpression)assignmentExpression.Right.AcceptVisitor(this, null)), assignmentExpression);
 				}
 			}
 			return null;
@@ -1379,7 +1426,7 @@ namespace ICSharpCode.NRefactory.Visitors
 
 			CodeVariableDeclarationStatement disposable = new CodeVariableDeclarationStatement("System.Object", name, new CodePrimitiveExpression(null));
 
-			AddStmt(disposable);
+			AddStmt(disposable, usingStatement);
 
 			CodeTryCatchFinallyStatement tryStmt = new CodeTryCatchFinallyStatement();
 
@@ -1409,7 +1456,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			tryStmt.FinallyStatements.Add(if1);
 
 			// Add Statement to Current Statement Collection
-			AddStmt(tryStmt);
+			AddStmt(tryStmt, null);
 
 			return null;
 		}
@@ -1479,7 +1526,7 @@ namespace ICSharpCode.NRefactory.Visitors
 
 			CodeGotoStatement breakStmt = new CodeGotoStatement("break" + breakable.Id);
 
-			AddStmt(breakStmt);
+			AddStmt(breakStmt, breakStatement);
 
 			return breakStmt;
 		}
@@ -1513,7 +1560,7 @@ namespace ICSharpCode.NRefactory.Visitors
 
 			CodeGotoStatement continueStmt = new CodeGotoStatement("continue" + breakable.Id);
 
-			AddStmt(continueStmt);
+			AddStmt(continueStmt, continueStatement);
 
 			return continueStmt;
 		}

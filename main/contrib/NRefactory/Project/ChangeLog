@@ -1,3 +1,8 @@
+2009-06-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Src/Visitors/CodeDOMOutputVisitor.cs: Add support for
+	  comments.
+
 2009-06-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
