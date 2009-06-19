@@ -54,8 +54,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		int cursorPositionBeforeKeyPress;
 		TextEditorData textEditorData;
+		
 		public CSharpTextEditorIndentation ()
 		{
+			
 		}
 		
 		public override void Initialize ()
@@ -67,25 +69,25 @@ namespace MonoDevelop.CSharpBinding.Gui
 				textEditorData = view.GetTextEditorData ();
 				textEditorData.VirtualSpaceManager = new IndentVirtualSpaceManager (view.GetTextEditorData (), new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor));
 				textEditorData.Caret.AllowCaretBehindLineEnd = true;
-				/*
-				textEditorData.Document.TextReplaced += delegate(object sender, ReplaceEventArgs args)
-				{
-					if (string.IsNullOrEmpty (args.Value) || args.Value.Length < 2 || CSharpFormatter.InFormat) 
-						return; 
-					Console.WriteLine ("TEXT REPLACE !!!");
-					if (PropertyService.Get ("OnTheFlyFormatting", false)) {
-						ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
-						if (dom == null) 
-							dom = ProjectDomService.GetFileDom (Document.FileName); 
-						DocumentLocation loc = view.GetTextEditorData ().Document.OffsetToLocation (args.Offset);
-						DomLocation location = new DomLocation (loc.Line, loc.Column);
-						CSharpFormatter formatter = new CSharpFormatter (textEditorData, dom, Document.CompilationUnit, Editor, location);
-					}
-				}
-;*/
+				textEditorData.Paste += TextEditorDataPaste;
 			}
 		}
-		
+
+		void TextEditorDataPaste (int insertionOffset, string text)
+		{
+			if (string.IsNullOrEmpty (text) || text.Length < 2) 
+				return; 
+			
+			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
+				if (dom == null) 
+					dom = ProjectDomService.GetFileDom (Document.FileName); 
+				DocumentLocation loc = textEditorData.Document.OffsetToLocation (insertionOffset);
+				DomLocation location = new DomLocation (loc.Line, loc.Column);
+				CSharpFormatter formatter = new CSharpFormatter (textEditorData, dom, Document.CompilationUnit, Editor, location);
+			}
+		}
+
 		class IndentVirtualSpaceManager : Mono.TextEditor.TextEditorData.IVirtualSpaceManager
 		{
 			Mono.TextEditor.TextEditorData data;
@@ -279,12 +281,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+				textEditorData.Paste -= TextEditorDataPaste;
+				
 				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
 				if (dom == null) 
 					dom = ProjectDomService.GetFileDom (Document.FileName); 
 				
 				DomLocation location = new DomLocation(Editor.CursorLine, Editor.CursorColumn);
 				CSharpFormatter formatter = new CSharpFormatter(textEditorData, dom, Document.CompilationUnit, Editor, location);
+				
+				textEditorData.Paste += TextEditorDataPaste;
 			}
 
 			//newline always reindents unless it's had special handling

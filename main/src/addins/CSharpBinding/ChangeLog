@@ -1,5 +1,11 @@
 2009-06-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/CSharpFormatter.cs:
+	* Gui/CSharpTextEditorIndentation.cs: Worked on code
+	  formatting
+
+2009-06-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs:
 	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 514563 -
 	  Inconsistent treatment of nullable types for comments and

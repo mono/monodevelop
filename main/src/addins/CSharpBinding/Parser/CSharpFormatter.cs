@@ -117,7 +117,7 @@ namespace CSharpBinding.Parser
 			data.Caret.AutoScrollToCaret = false;
 			int len1 = formattedText.IndexOf ('{') + 1;
 			int last = formattedText.LastIndexOf ('}');
-
+		/*	Console.WriteLine (Environment.StackTrace);
 			Console.WriteLine ("start:" + startPos);
 			Console.WriteLine ("end:" + endPos);
 			Console.WriteLine (data.Document.Length);
@@ -125,8 +125,12 @@ namespace CSharpBinding.Parser
 			
 			Console.WriteLine (formattedText);
 			Console.WriteLine ("----");
-			data.Remove (startPos - 1, endPos - startPos);
-			data.Insert (startPos - 1, formattedText.Substring (len1, last - len1 - 1));
+			Console.WriteLine (startPos + " - " + endPos);
+			Console.WriteLine ("----");
+			Console.WriteLine (formattedText.Substring (len1, last - len1 - 1));*/
+			data.Replace (startPos - 1, endPos - startPos, formattedText.Substring (len1, last - len1 - 1));
+//			data.Remove (startPos - 1, endPos - startPos);
+//			data.Insert (startPos - 1, formattedText.Substring (len1, last - len1 - 1));
 			data.Caret.Location = loc;
 			data.Caret.AutoScrollToCaret = true;
 			data.Document.EndAtomicUndo ();
