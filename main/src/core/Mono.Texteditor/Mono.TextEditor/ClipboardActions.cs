@@ -414,15 +414,16 @@ namespace Mono.TextEditor
 						data.DeleteSelectedText ();
 					
 					data.Caret.PreserveSelection = true;
-					
 					//int oldLine = data.Caret.Line;
 					int textLength = data.Insert (insertionOffset, text);
+					data.PasteText (insertionOffset, text);
 					result = textLength;
 					
 					if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset) 
 						data.SelectionRange.Offset += textLength;
 					if (data.IsSomethingSelected && data.MainSelection.GetAnchorOffset (data) >= insertionOffset) 
 						data.MainSelection.Anchor = data.Document.OffsetToLocation (data.MainSelection.GetAnchorOffset (data) + textLength);
+					
 					data.Caret.PreserveSelection = false;
 					data.Caret.Offset = insertionOffset + textLength;
 					data.Document.EndAtomicUndo ();

@@ -54,8 +54,8 @@ namespace Mono.TextEditor
 		{
 			if (endOffset <= startOffset)
 				return;
-			string text = doc.GetTextAt (startOffset, endOffset - startOffset);
 			/*
+			string text = doc.GetTextAt (startOffset, endOffset - startOffset);
 			int startColumn = startOffset - line.Offset;
 			line.RemoveMarker (typeof(UrlMarker));
 			foreach (System.Text.RegularExpressions.Match m in urlRegex.Matches (text)) {

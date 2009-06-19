@@ -557,7 +557,7 @@ namespace Mono.TextEditor
 		Dictionary<LineSegment, List<LayoutDescriptor>> layoutDict = new Dictionary<LineSegment, List<LayoutDescriptor>> ();
 		Pango.Layout GetCachedLayout (LineSegment line, int offset, int length, Action<Pango.Layout> createNew)
 		{
-			List<LayoutDescriptor> list;
+	/*		List<LayoutDescriptor> list;
 			if (!layoutDict.ContainsKey (line)) {
 				list = new List<LayoutDescriptor> ();
 				layoutDict[line] = list;
@@ -574,12 +574,12 @@ namespace Mono.TextEditor
 					list.RemoveAt (i);
 					i--;
 				}
-			}
+			}*/
 			Pango.Layout layout = new Pango.Layout (textEditor.PangoContext);
 			createNew (layout);
 			
 			LayoutDescriptor newDesrc = new LayoutDescriptor (line, offset, length, layout);
-			list.Add (newDesrc);
+//			list.Add (newDesrc);
 			return newDesrc.Layout;
 		}
 		
@@ -616,7 +616,7 @@ namespace Mono.TextEditor
 		Dictionary<LineSegment, List<ChunkDescriptor>> chunkDict = new Dictionary<LineSegment, List<ChunkDescriptor>> ();
 		Chunk GetCachedChunks (SyntaxMode mode, Document doc, Mono.TextEditor.Highlighting.Style style, LineSegment line, int offset, int length)
 		{
-			List<ChunkDescriptor> list;
+	/*		List<ChunkDescriptor> list;
 			if (!chunkDict.ContainsKey (line)) {
 				list = new List<ChunkDescriptor> ();
 				chunkDict[line] = list;
@@ -633,9 +633,9 @@ namespace Mono.TextEditor
 					i--;
 				}
 			}
-			
+			*/
 			ChunkDescriptor newDesrc = new ChunkDescriptor (line, offset, length, mode.GetChunks (doc, style, line, offset, length));
-			list.Add (newDesrc);
+//			list.Add (newDesrc);
 			return newDesrc.Chunk;
 		}
 		

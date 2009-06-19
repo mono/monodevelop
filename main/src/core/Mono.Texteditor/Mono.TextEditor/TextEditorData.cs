@@ -263,6 +263,17 @@ namespace Mono.TextEditor
 			return this.options.WordFindStrategy.FindPrevSubwordOffset (this.Document, offset);
 		}
 
+		
+		public delegate void PasteCallback (int insertionOffset, string text);
+		
+		public event PasteCallback Paste;
+		
+		public void PasteText (int insertionOffset, string text)
+		{
+			if (Paste != null)
+				Paste (insertionOffset, text);
+		}
+		
 		#region undo/redo handling
 		int       savedCaretPos;
 		Selection savedSelection;
