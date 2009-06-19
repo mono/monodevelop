@@ -1,3 +1,8 @@
+2009-06-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor/TextRenderer.cs: Comment out unused
+	  renderers.
+
 2009-06-19  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:

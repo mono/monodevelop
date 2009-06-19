@@ -54,12 +54,7 @@ namespace Mono.TextEditor
 		
 		public static TextRenderer Create (TextViewMargin textView, TextEditor editor)
 		{
-			if (Platform.IsWindows || Platform.IsMac)
-				return new PangoTextRenderer (textView, editor);
-//				return new GdiPlusTextRenderer ();
-			else
-				return new CairoTextRenderer ();
-//			return new PangoTextRenderer (this, textEditor);
+			return new PangoTextRenderer (textView, editor);
 		}
 		
 		public virtual void BeginDraw (Gdk.Drawable drawable)
@@ -211,7 +206,7 @@ namespace Mono.TextEditor
 		}
 	}
 
-	class CairoTextRenderer: TextRenderer
+/*	class CairoTextRenderer: TextRenderer
 	{
 		Cairo.Context cc;
 		string text;
@@ -471,4 +466,5 @@ namespace Mono.TextEditor
 			return true;
 		}
 	}
+	*/
 }
