@@ -1,3 +1,10 @@
+2009-06-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs:
+	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Fixed
+	  "Bug 514563 - Inconsistent treatment of nullable types for
+	  comments and information".
+
 2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:

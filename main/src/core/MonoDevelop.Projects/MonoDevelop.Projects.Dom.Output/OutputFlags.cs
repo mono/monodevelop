@@ -49,6 +49,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		HideExtensionsParameter  = 0x0800,
 		HideGenericParameterNames= 0x1000,
 		HideArrayBrackets        = 0x2000,
+		UseNETTypeNames          = 0x4000, // print 'System.Int32' intead of 'int'
 		
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters | IncludeGenerics,
 		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | IncludeMarkup | IncludeKeywords | IncludeModifiers

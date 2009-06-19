@@ -194,6 +194,12 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
+		public bool UseNETTypeNames {
+			get {
+				return (OutputFlags & OutputFlags.UseNETTypeNames) != 0;
+			}
+		}
+		
 		public MarkupText EmitModifiersCallback;
 		public MarkupText EmitKeywordCallback;
 		public MarkupText MarkupCallback;
