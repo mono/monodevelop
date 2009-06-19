@@ -1489,6 +1489,7 @@ namespace Mono.TextEditor
 					this.highlightSearchPattern = value;
 					if (HighlightSearchPatternChanged != null)
 						HighlightSearchPatternChanged (this, EventArgs.Empty);
+					textViewMargin.DisposeLayoutDict ();
 					this.QueueDraw ();
 				}
 			}

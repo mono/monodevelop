@@ -584,7 +584,7 @@ namespace Mono.TextEditor
 			layoutDict.Remove (line);
 		}
 		
-		void DisposeLayoutDict ()
+		internal void DisposeLayoutDict ()
 		{
 			foreach (List<LayoutDescriptor> list in layoutDict.Values) {
 				foreach (LayoutDescriptor desrc in list)
