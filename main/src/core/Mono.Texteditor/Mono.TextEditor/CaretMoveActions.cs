@@ -130,12 +130,15 @@ namespace Mono.TextEditor
 		
 		public static void Up (TextEditorData data)
 		{
+			int desiredColumn = data.Caret.DesiredColumn;
+			
 			//on Mac, when deselecting and moving up/down a line, column is always the column of the selection's start
 			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
 				int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
 				int line = data.MainSelection.MinLine - 1;
 				data.ClearSelection ();
 				data.Caret.Location = (line >= 0) ? new DocumentLocation (line, col) : new DocumentLocation (0, 0);
+				data.Caret.SetToDesiredColumn (desiredColumn);
 				return;
 			}
 			
@@ -143,6 +146,7 @@ namespace Mono.TextEditor
 				int line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) - 1);
 				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
 				data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
+				data.Caret.SetToDesiredColumn (desiredColumn);
 			} else {
 				ToDocumentStart (data);
 			}
@@ -162,6 +166,7 @@ namespace Mono.TextEditor
 		
 		public static void Down (TextEditorData data)
 		{
+			int desiredColumn = data.Caret.DesiredColumn;
 			//on Mac, when deselecting and moving up/down a line, column is always the column of the selection's start
 			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
 				int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
@@ -170,6 +175,7 @@ namespace Mono.TextEditor
 				if (line < data.Document.LineCount) {
 					int offset = data.Document.LocationToOffset (line, col);
 					data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
+					data.Caret.SetToDesiredColumn (desiredColumn);
 				} else {
 					data.Caret.Offset = data.Document.Length;
 				}
@@ -180,7 +186,7 @@ namespace Mono.TextEditor
 				int line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) + 1);
 				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
 				data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
-				
+				data.Caret.SetToDesiredColumn (desiredColumn);
 			} else {
 				ToDocumentEnd (data);
 			}

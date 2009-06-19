@@ -155,6 +155,15 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
+
+		public int DesiredColumn {
+			get {
+				return desiredColumn;
+			}
+			set {
+				desiredColumn = value;
+			}
+		}
 		
 		public Caret (TextEditorData editor, Document document)
 		{
@@ -201,7 +210,12 @@ namespace Mono.TextEditor
 						this.location.Column = editor.GetNextVirtualColumn (Line, this.location.Column);
 				}
 			}
-			
+		}
+		
+		public void SetToDesiredColumn (int desiredColumn) 
+		{
+			this.desiredColumn = desiredColumn;
+			SetColumn ();
 		}
 		
 		public override string ToString ()
