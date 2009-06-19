@@ -119,6 +119,15 @@ namespace Mono.TextEditor
 			ResetCaretBlink ();
 			Caret.PositionChanged += CaretPositionChanged;
 			textEditor.Document.TextReplaced += UpdateBracketHighlighting;
+			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
+				if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
+					int delta = -e.Count;
+					if (!string.IsNullOrEmpty (e.Value))
+						delta += e.Value.Length;
+					mouseWordStart += delta;
+					mouseWordEnd += delta;
+				}
+			};
 			Caret.PositionChanged += UpdateBracketHighlighting;
 			base.cursor = xtermCursor;
 			Document.LineChanged += CheckLongestLine;
@@ -274,6 +283,7 @@ namespace Mono.TextEditor
 				if (line1 != line2 && line2 >= 0)
 					textEditor.RedrawLine (line2);
 			}
+			
 		}
 		
 		internal protected override void OptionsChanged ()
@@ -1257,6 +1267,7 @@ namespace Mono.TextEditor
 		public bool inSelectionDrag = false;
 		public bool inDrag = false;
 		public DocumentLocation clickLocation;
+		int mouseWordStart, mouseWordEnd;
 		enum MouseSelectionMode {
 			SingleChar,
 			Word,
@@ -1304,11 +1315,11 @@ namespace Mono.TextEditor
 				}
 					
 				if (args.Type == EventType.TwoButtonPress) {
-					int start = ScanWord (offset, false);
-					int end   = ScanWord (offset, true);
-					Caret.Offset = end;
-					textEditor.MainSelection = new Selection (textEditor.Document.OffsetToLocation (start),
-					                                          textEditor.Document.OffsetToLocation (end));
+					mouseWordStart = ScanWord (offset, false);
+					mouseWordEnd   = ScanWord (offset, true);
+					Caret.Offset = mouseWordEnd;
+					textEditor.MainSelection = new Selection (textEditor.Document.OffsetToLocation (mouseWordStart),
+					                                          textEditor.Document.OffsetToLocation (mouseWordEnd));
 					inSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.Word;
 					return;
@@ -1511,8 +1522,14 @@ namespace Mono.TextEditor
 						end   = ScanWord (offset, true);
 						Caret.Offset = end;
 					}
-					if (textEditor.MainSelection != null)
+					if (textEditor.MainSelection != null) {
 						textEditor.MainSelection.Lead = Caret.Location;
+						if (Caret.Offset < mouseWordStart) {
+							textEditor.MainSelection.Anchor = Document.OffsetToLocation (mouseWordEnd);
+						} else {
+							textEditor.MainSelection.Anchor = Document.OffsetToLocation (mouseWordStart);
+						}
+					}
 					break;
 				case MouseSelectionMode.WholeLine:
 					//textEditor.SetSelectLines (loc.Line, textEditor.MainSelection.Anchor.Line);
