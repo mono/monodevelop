@@ -1,3 +1,9 @@
+2009-06-19  Mike Krüger  <mkrueger@novell.com>
+
+	* AssemblyInfo.cs: Commented out empty assembly key file
+	  attribute (Bug 513981 - Project template causes CS1726
+	  errors).
+
 2009-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* CAutotoolsSetup.cs: Fixed 'Bug 456971 - ${ProjectDir} Not
