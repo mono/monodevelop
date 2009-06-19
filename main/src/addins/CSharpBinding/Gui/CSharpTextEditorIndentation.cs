@@ -276,7 +276,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 			// and when a tab has just been inserted (i.e. not a template or an autocomplete command)
 			//tab was actually inserted, or in a region of tabs
 			//was just a cursor, not a block of selected text -- the text editor handles that specially
-			if (TextEditorProperties.TabIsReindent && !stateTracker.Engine.IsInsideVerbatimString && cursor >= 1 && Char.IsWhiteSpace (Editor.GetCharAt (cursor - 1)) && !hadSelection) {
+			if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {
+				// insert normal tab inside @" ... "
+				Editor.InsertText (cursor, "\t");
+			} else if (TextEditorProperties.TabIsReindent && cursor >= 1 && /*Char.IsWhiteSpace (Editor.GetCharAt (cursor - 1)) &&*/ !hadSelection) {
 				if (Editor.CursorColumn > 2) {
 					int delta = cursor - this.cursorPositionBeforeKeyPress;
 					if (delta < 2) {
