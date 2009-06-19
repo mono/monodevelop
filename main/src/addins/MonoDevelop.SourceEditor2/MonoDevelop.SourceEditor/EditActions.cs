@@ -38,22 +38,8 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public void Action (TextEditorData data)
-		{/*
-			MonoDevelop.Projects.Dom.Parser.ProjectDom dom = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument.Project);
-			System.DateTime now = DateTime.Now;
-			long members = 0;
-			foreach (object member in dom.GetNamespaceContents (new string[] {"System", "Gtk", "System.Collections", "System.IO", "System.Xml"}, true, true)) {
-				members++;
-			}
-			System.Console.WriteLine(members + " -- " + (DateTime.Now - now).TotalMilliseconds);
-			*/
-			/*
-			MonoDevelop.Projects.Dom.Parser.ProjectDom dom = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument.Project);
-			MonoDevelop.Projects.Dom.IType type = dom.GetType ("System.Collections.ICollection", -1, true, true);
-			foreach (MonoDevelop.Projects.Dom.IReturnType retType in dom.GetSubclasses (type)) {
-				System.Console.WriteLine(retType);
-			}*/
-			if (!editor.DoInsertTemplate () && (!MonoDevelop.Ide.Gui.Content.TextEditorProperties.TabIsReindent || editor.IsSomethingSelected))
+		{
+			if (!editor.DoInsertTemplate ())
 				MiscActions.InsertTab (data);
 		}
 	}

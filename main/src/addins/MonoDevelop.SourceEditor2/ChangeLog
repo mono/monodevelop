@@ -1,3 +1,9 @@
+2009-06-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/EditActions.cs: Fixed "Bug 514284 -
+	  Tab key doesn't work for plain text files (with tab as
+	  reindent option set)".
+
 2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor\SourceEditorView.cs: Fix nullref.
