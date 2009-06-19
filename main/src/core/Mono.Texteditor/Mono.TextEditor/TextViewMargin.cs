@@ -1341,9 +1341,10 @@ namespace Mono.TextEditor
 						textEditor.ClearSelection ();
 						Caret.Location = clickLocation; 
 					}
-					this.caretBlink = false;
+					ResetCaretBlink ();
 				}
 			}
+			
 			DocumentLocation docLocation = VisualToDocumentLocation (args.X, args.Y);
 			if (args.Button == 2 && this.textEditor.CanEdit (docLocation.Line))  {
 				int offset = Document.LocationToOffset (docLocation);
