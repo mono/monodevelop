@@ -146,6 +146,27 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			cursorPositionBeforeKeyPress = Editor.CursorPosition;
+			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent) {
+				int cursor = Editor.CursorPosition;
+				if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {
+					// insert normal tab inside @" ... "
+					if (Editor.SelectionEndPosition > 0) {
+						Editor.SelectedText = "\t";
+					} else {
+						Editor.InsertText (cursor, "\t");
+					}
+				} else if (TextEditorProperties.TabIsReindent && cursor >= 1) {
+					if (Editor.CursorColumn > 2) {
+						int delta = cursor - this.cursorPositionBeforeKeyPress;
+						if (delta < 2) {
+							Editor.DeleteText (cursor - delta, delta);
+							Editor.CursorPosition = cursor - delta;
+						}
+					}
+					DoReSmartIndent ();
+				}
+				return false;
+			}
 			
 			//do the smart indent
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
@@ -156,7 +177,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				
 				//pass through to the base class, which actually inserts the character
 				//and calls HandleCodeCompletion etc to handles completion
+				
 				bool retval = base.KeyPress (key, keyChar, modifier);
+				
 				stateTracker.UpdateEngine ();
 				
 				//handle inserted characters
@@ -266,29 +289,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 
 			//newline always reindents unless it's had special handling
 			reIndent = true;
-			break;
-		case '\t':
-			// Tab is a special case... depending on the context, the user may be
-			// requesting a re-indent, tab-completing, or may just be wanting to
-			// insert a literal tab.
-			//
-			// Tab is interpreted as a reindent command when it's neither at the end of a line nor in a verbatim string
-			// and when a tab has just been inserted (i.e. not a template or an autocomplete command)
-			//tab was actually inserted, or in a region of tabs
-			//was just a cursor, not a block of selected text -- the text editor handles that specially
-			if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {
-				// insert normal tab inside @" ... "
-				Editor.InsertText (cursor, "\t");
-			} else if (TextEditorProperties.TabIsReindent && cursor >= 1 && /*Char.IsWhiteSpace (Editor.GetCharAt (cursor - 1)) &&*/ !hadSelection) {
-				if (Editor.CursorColumn > 2) {
-					int delta = cursor - this.cursorPositionBeforeKeyPress;
-					if (delta < 2) {
-						Editor.DeleteText (cursor - delta, delta);
-						Editor.CursorPosition = cursor - delta;
-					}
-				}
-				reIndent = true;
-			}
 			break;
 		}
 	}

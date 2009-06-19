@@ -1,5 +1,11 @@
 2009-06-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorIndentation.cs: Fixed "Bug 514284 - Tab
+	  key doesn't work for plain text files (with tab as reindent
+	  option set)".
+
+2009-06-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorIndentation.cs: fixed "Bug 514283 -
 	  Using tab to reindent only works from the begining of the
 	  line".
