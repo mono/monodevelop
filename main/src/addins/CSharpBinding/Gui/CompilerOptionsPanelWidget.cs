@@ -205,6 +205,9 @@ namespace CSharpBinding
 		{
 			try {
 				ProjectDom     ctx = ProjectDomService.GetProjectDom (project);
+				if (ctx == null)
+					// Project not found in parser database
+					return;
 				foreach (IType c in ctx.Types) {
 					if (c.Methods != null) {
 						foreach (IMethod m in c.Methods) {

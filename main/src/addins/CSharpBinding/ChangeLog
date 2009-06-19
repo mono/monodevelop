@@ -1,3 +1,11 @@
+2009-06-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CSharpEnhancedCodeProvider.cs: Pass specials to CodeDOM
+	  visitor so it can collect comments.
+
+	* Gui/CompilerOptionsPanelWidget.cs: Don't explode when
+	  ProjectDom is null.
+
 2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui\CSharpTextEditorCompletion.cs: Remove debug message.

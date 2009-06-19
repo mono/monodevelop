@@ -59,7 +59,6 @@ namespace CSharpBinding
 		
 		static CodeCompileUnit ParseInternal (TextReader codeStream)
 		{
-			CodeDomVisitor cdv = new CodeDomVisitor ();
 			IParser parser = ParserFactory.CreateParser (
 				SupportedLanguage.CSharp,
 				codeStream);
@@ -69,6 +68,7 @@ namespace CSharpBinding
 			if (parser.Errors.Count > 0)
 				throw new ArgumentException (parser.Errors.ErrorOutput);
 			
+			CodeDomVisitor cdv = new CodeDomVisitor (parser.Lexer.SpecialTracker.CurrentSpecials);
 			parser.CompilationUnit.AcceptVisitor (cdv, null);
 			
 			parser.Dispose ();
