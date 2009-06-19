@@ -205,7 +205,7 @@ namespace MonoDevelop.CSharpBinding
 			if (returnType.Type is AnonymousType)
 				return returnType.Type.AcceptVisitor (this, settings);
 			StringBuilder result = new StringBuilder ();
-			if (netToCSharpTypes.ContainsKey (returnType.FullName)) {
+			if (!settings.UseNETTypeNames && netToCSharpTypes.ContainsKey (returnType.FullName)) {
 				result.Append (settings.EmitName (returnType, netToCSharpTypes[returnType.FullName]));
 			} else {
 				if (settings.UseFullName) {

@@ -1542,6 +1542,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		void AppendMethodComment (StringBuilder builder, string indent, IMethod method)
 		{
+			CSharpAmbience ambience = new CSharpAmbience ();
 			if (method.Parameters != null) {
 				foreach (IParameter para in method.Parameters) {
 					builder.Append (Environment.NewLine);
@@ -1551,7 +1552,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					builder.Append ("\">\n");
 					builder.Append (indent);
 					builder.Append ("/// A <see cref=\"");
-					builder.Append (para.ReturnType.FullName);
+					builder.Append (ambience.GetString (para.ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseNETTypeNames));
 					builder.Append ("\"/>\n");
 					builder.Append (indent);
 					builder.Append ("/// </param>");
@@ -1563,7 +1564,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				builder.Append("/// <returns>\n");
 				builder.Append (indent);
 				builder.Append ("/// A <see cref=\"");
-				builder.Append (method.ReturnType.FullName);
+				builder.Append (ambience.GetString (method.ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseNETTypeNames));
 				builder.Append ("\"/>\n");
 				builder.Append (indent);
 				builder.Append ("/// </returns>");
@@ -1573,6 +1574,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		void AppendPropertyComment (StringBuilder builder, string indent, IProperty property)
 		{
 			if (property.Parameters != null) {
+				CSharpAmbience ambience = new CSharpAmbience ();
 				foreach (IParameter para in property.Parameters) {
 					builder.Append (Environment.NewLine);
 					builder.Append (indent);
@@ -1581,7 +1583,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					builder.Append ("\">\n");
 					builder.Append (indent);
 					builder.Append ("/// A <see cref=\"");
-					builder.Append (para.ReturnType.FullName);
+					builder.Append (ambience.GetString (para.ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseNETTypeNames));
 					builder.Append ("\"/>\n");
 					builder.Append (indent);
 					builder.Append ("/// </param>");
