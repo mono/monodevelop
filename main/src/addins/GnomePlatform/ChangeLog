@@ -1,3 +1,8 @@
+2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GnomePlatform.cs: Fallback to Vfs if Gio doesn't have mime
+	  type info for a file.
+
 2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* GnomePlatform.csproj: Don't require a specific gtk# version.

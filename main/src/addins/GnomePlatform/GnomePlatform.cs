@@ -94,10 +94,12 @@ namespace MonoDevelop.Platform
 
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
-			if (useGio)
-				return Gio.GetMimeTypeForUri (uri);
-			else
-				return uri != null ? Gnome.Vfs.MimeType.GetMimeTypeForUri (ConvertFileNameToVFS (uri)) : null;
+			if (useGio) {
+				string mt = Gio.GetMimeTypeForUri (uri);
+				if (mt != null)
+					return mt;
+			}
+			return uri != null ? Gnome.Vfs.MimeType.GetMimeTypeForUri (ConvertFileNameToVFS (uri)) : null;
 		}
 		
 		protected override bool OnGetMimeTypeIsText (string mimeType)
