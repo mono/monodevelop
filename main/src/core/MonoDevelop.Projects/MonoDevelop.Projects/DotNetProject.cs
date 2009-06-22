@@ -708,9 +708,7 @@ namespace MonoDevelop.Projects
 				if (pref.ReferenceType == ReferenceType.Gac) {
 					string newRef = TargetRuntime.GetAssemblyNameForVersion (pref.Reference, pref.Package != null ? pref.Package.Name : null, this.TargetFramework);
 					if (newRef == null) {
-						// re-add the reference. It will be shown as invalid.
-						toDelete.Add (pref);
-						toAdd.Add (new ProjectReference (ReferenceType.Gac, pref.StoredReference));
+						pref.ResetReference ();
 					}
 					else if (newRef != pref.Reference) {
 						toDelete.Add (pref);

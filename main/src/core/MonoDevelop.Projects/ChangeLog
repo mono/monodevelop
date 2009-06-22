@@ -1,5 +1,17 @@
 2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/ProjectReference.cs: Use
+	  StoredReference to compare references, since it never
+	  changes, and Reference may change (depending on the current
+	  framework). Improved error message.
+
+	* MonoDevelop.Projects/DotNetProject.cs: There is no need to
+	  re-add references which don't change. ResetReference will no
+	  fire a StatusChanged event and the solution pad will be
+	  updated.
+
+2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectReference.cs: Notify changes in
 	  SpecificVersion.
 

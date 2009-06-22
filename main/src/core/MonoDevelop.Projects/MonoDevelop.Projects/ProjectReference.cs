@@ -155,9 +155,6 @@ namespace MonoDevelop.Projects
 			get {
 				return loadedReference;
 			}
-			set {
-				loadedReference = value;
-			}
 		}
 
 		public bool SpecificVersion {
@@ -182,8 +179,12 @@ namespace MonoDevelop.Projects
 				if (ReferenceType == ReferenceType.Gac) {
 					if (!IsExactVersion && SpecificVersion)
 						return GettextCatalog.GetString ("Specified version not found: expected {0}, found {1}", GetVersionNum (StoredReference), GetVersionNum (Reference));
-					if (notFound)
-						return GettextCatalog.GetString ("Assembly not found");
+					if (notFound) {
+						if (ownerProject != null)
+							return GettextCatalog.GetString ("Assembly not available for {0} (in {1})", TargetFramework.Name, TargetRuntime.DisplayName);
+						else
+							return GettextCatalog.GetString ("Assembly not found");
+					}
 				} else if (ReferenceType == ReferenceType.Project) {
 					if (ownerProject != null && ownerProject.ParentSolution != null) {
 						DotNetProject p = ownerProject.ParentSolution.FindProjectByName (reference) as DotNetProject;
@@ -295,6 +296,15 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		TargetFramework TargetFramework {
+			get {
+				if (ownerProject != null)
+					return ownerProject.TargetFramework;
+				else
+					return null;
+			}
+		}
+		
 		public SystemPackage Package {
 			get {
 				if (referenceType == ReferenceType.Gac) {
@@ -326,6 +336,7 @@ namespace MonoDevelop.Projects
 		
 		internal void ResetReference ()
 		{
+			string ld = StoredReference;
 			cachedPackage = null;
 			if (loadedReference != null) {
 				reference = loadedReference;
@@ -345,12 +356,12 @@ namespace MonoDevelop.Projects
 			ProjectReference oref = other as ProjectReference;
 			if (oref == null) return false;
 			
-			return reference == oref.reference && referenceType == oref.referenceType && package == oref.package;
+			return StoredReference == oref.StoredReference && referenceType == oref.referenceType && package == oref.package;
 		}
 		
 		public override int GetHashCode ()
 		{
-			return reference.GetHashCode ();
+			return StoredReference.GetHashCode ();
 		}
 		
 		protected virtual void OnStatusChanged ()
