@@ -89,18 +89,26 @@ namespace MonoDevelop.SourceEditor
 		public DropDownBox ()
 		{
 //			this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask;
-			HBox hbox = new HBox ();
+			this.CanDefault = false;
+			HBox hbox = new HBox (false, 0);
+			hbox.BorderWidth = 0;
 			image = new Gtk.Image ();
+			image.SetPadding (0, 0);
 			hbox.PackStart (image, false, false, 3);
 			
 			label = new Label ();
 			label.Xalign = 0;
+			label.SetPadding (0, 0);
 			
 			hbox.PackStart (label, true, true, 3);
 			
 			hbox.PackEnd (new Arrow (ArrowType.Down, ShadowType.None), false, false, 1);
 			hbox.PackEnd (new VSeparator (), false, false, 1);
 			Child = hbox;
+			
+			Gtk.Rc.ParseString ("style \"MonoDevelop.DropDownBox\" {\n GtkButton::inner-border = {0,0,0,0}\n }\n");
+			Gtk.Rc.ParseString ("widget \"*.MonoDevelop.DropDownBox\" style  \"MonoDevelop.DropDownBox\"\n");
+			this.Name = "MonoDevelop.DropDownBox";
 		}
 		
 		protected override void OnDestroyed ()

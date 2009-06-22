@@ -1,3 +1,9 @@
+2009-06-22  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	  Reduce unnecessary whitespace.
+
 2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs: The

@@ -38,6 +38,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Ide.Gui;
+
 
 namespace MonoDevelop.SourceEditor
 {
@@ -56,9 +58,10 @@ namespace MonoDevelop.SourceEditor
 		
 		Tooltips tips = new Tooltips ();
 		
-		public ClassQuickFinder (SourceEditorWidget editor)
+		public ClassQuickFinder (SourceEditorWidget editor): base (false, 0)
 		{
 			this.editor = editor;
+			this.BorderWidth = 0;
 				
 			typeCombo.DataProvider = new TypeDataProvider (this);
 			typeCombo.ItemSet += TypeChanged;
