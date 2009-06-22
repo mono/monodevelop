@@ -70,7 +70,8 @@ namespace MonoDevelop.Ide.Commands
 		ConfigureDeployTargets,
 		CustomCommandList,
 		Reload,
-		ExportProject
+		ExportProject,
+		SpecificAssemblyVersion
 	}
 	
 	internal class RunHandler: CommandHandler

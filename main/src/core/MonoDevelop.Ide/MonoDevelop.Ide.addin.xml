@@ -588,6 +588,9 @@
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CopyToOutputDirectory"
 		         type = "check"
 		        _label = "_Copy to Output Directory" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SpecificAssemblyVersion"
+		         type = "check"
+		        _label = "Require Specific Version" />
 		<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
 		         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
 				_label = "C_lose all but this"
@@ -1157,6 +1160,7 @@
 		</Condition>
 		<Condition id="ItemType" value="ProjectReference">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SpecificAssemblyVersion" />
 		</Condition>
 		<Condition id="ItemType" value="IBuildTarget">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />

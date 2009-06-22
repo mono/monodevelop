@@ -94,6 +94,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (!pref.IsValid)
 				treeBuilder.AddChild (new TreeViewItem (pref.ValidationErrorMessage, Gtk.Stock.DialogWarning));
 		}
+		
+		public override void OnNodeAdded (object dataObject)
+		{
+			ProjectReference pref = (ProjectReference) dataObject;
+			pref.StatusChanged += ReferenceStatusChanged;
+		}
+		
+		public override void OnNodeRemoved (object dataObject)
+		{
+			ProjectReference pref = (ProjectReference) dataObject;
+			pref.StatusChanged -= ReferenceStatusChanged;
+		}
+
+		void ReferenceStatusChanged (object sender, EventArgs e)
+		{
+			ITreeBuilder tb = Context.GetTreeBuilder (sender);
+			if (tb != null)
+				tb.UpdateAll ();
+		}
+
 
 	}
 	
@@ -151,6 +171,46 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					if (lastRef == null || lastRef.LocalCopy == pref.LocalCopy) {
 						lastRef = pref;
 						info.Checked = pref.LocalCopy;
+					} else
+						info.CheckedInconsistent = true;
+				}
+				else {
+					info.Checked = false;
+					info.Enabled = false;
+				}
+			}
+		}
+		
+		[CommandHandler (ProjectCommands.SpecificAssemblyVersion)]
+		[AllowMultiSelection]
+		public void RequireSpecificAssemblyVersion ()
+		{
+			Dictionary<Project,Project> projects = new Dictionary<Project,Project> ();
+			ProjectReference firstRef = null;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectReference pref = (ProjectReference) node.DataItem;
+				if (firstRef == null) {
+					firstRef = pref;
+					pref.SpecificVersion = !pref.SpecificVersion;
+				} else
+					pref.SpecificVersion = firstRef.SpecificVersion;
+				Project project = node.GetParentDataItem (typeof(Project), false) as Project;
+				projects [project] = project;
+			}
+			foreach (Project p in projects.Values)
+				IdeApp.ProjectOperations.Save (p);
+		}
+		
+		[CommandUpdateHandler (ProjectCommands.SpecificAssemblyVersion)]
+		public void UpdateRequireSpecificAssemblyVersion (CommandInfo info)
+		{
+			ProjectReference lastRef = null;
+			foreach (ITreeNavigator node in CurrentNodes) {
+				ProjectReference pref = (ProjectReference) node.DataItem;
+				if (pref.ReferenceType == ReferenceType.Gac) {
+					if (lastRef == null || lastRef.LocalCopy == pref.LocalCopy) {
+						lastRef = pref;
+						info.Checked = pref.SpecificVersion;
 					} else
 						info.CheckedInconsistent = true;
 				}

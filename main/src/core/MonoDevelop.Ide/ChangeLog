@@ -1,5 +1,14 @@
 2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs:
+	  Refresh project reference nodes if the status of the
+	  reference changes. Added command for toggling the 'specific
+	  version' property.
+
+2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
 	  Disable the format command for documents which are not
 	  formattable. Fixes bug #514756.
