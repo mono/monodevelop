@@ -254,6 +254,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			label = new Gtk.Label ();
 			label.Xalign = 0;
+			label.WidthRequest = 125;
+			label.Ellipsize = Pango.EllipsizeMode.End;
 			
 			hbox.PackStart (label, true, true, 3);
 			
