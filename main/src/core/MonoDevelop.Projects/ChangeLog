@@ -1,6 +1,11 @@
 2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectReference.cs: Notify changes in
+	  SpecificVersion.
+
+2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectReference.cs: Notify changes in
 	  the status of the reference.
 
 	* MonoDevelop.Projects/DotNetProject.cs: Update the project

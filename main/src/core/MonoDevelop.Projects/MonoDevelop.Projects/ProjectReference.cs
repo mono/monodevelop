@@ -165,7 +165,10 @@ namespace MonoDevelop.Projects
 				return specificVersion;
 			}
 			set {
-				specificVersion = value;
+				if (specificVersion != value) {
+					specificVersion = value;
+					OnStatusChanged ();
+				}
 			}
 		}
 
