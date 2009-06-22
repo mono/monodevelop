@@ -160,7 +160,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			cursorPositionBeforeKeyPress = Editor.CursorPosition;
-			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !DoInsertTemplate ()) {
+			bool isSomethingSelected = Editor.SelectionEndPosition - Editor.SelectionStartPosition > 0;
+			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !DoInsertTemplate () && !isSomethingSelected) {
 				int cursor = Editor.CursorPosition;
 				
 				if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {

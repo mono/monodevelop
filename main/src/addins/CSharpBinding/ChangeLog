@@ -1,5 +1,11 @@
 2009-06-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/CSharpFormatter.cs:
+	* Gui/CSharpTextEditorIndentation.cs: Fixed tab key multi line
+	  formatting. worked on formatter.
+
+2009-06-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CSharpFormatter.cs: Worked on output formatter.
 
 2009-06-22  Mike Krüger  <mkrueger@novell.com>

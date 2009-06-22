@@ -50,9 +50,9 @@ namespace CSharpBinding.Parser
 {
 	public class CSharpFormatter : AbstractPrettyPrinter
 	{
-		internal static readonly string MimeType = "text/x-csharp";
-		
-		public CSharpFormatter()
+		static internal readonly string MimeType = "text/x-csharp";
+
+		public CSharpFormatter ()
 		{
 		}
 
@@ -76,16 +76,17 @@ namespace CSharpBinding.Parser
 			result.Append (data.Document.GetTextBetween (start, end + 1));
 			result.Append ("}");
 
+
 			return result.ToString ();
 		}
-		
-		
-		public CSharpFormatter(TextEditorData data, ProjectDom dom, ICompilationUnit unit, MonoDevelop.Ide.Gui.TextEditor editor, DomLocation caretLocation)
+
+
+		public CSharpFormatter (TextEditorData data, ProjectDom dom, ICompilationUnit unit, MonoDevelop.Ide.Gui.TextEditor editor, DomLocation caretLocation)
 		{
 			IType type = NRefactoryResolver.GetTypeAtCursor (unit, unit.FileName, caretLocation);
 			if (type == null) 
 				return; 
-	
+
 			IMember member = NRefactoryResolver.GetMemberAt (type, caretLocation);
 			if (member == null) 
 				return; 
@@ -100,21 +101,21 @@ namespace CSharpBinding.Parser
 				;
 			string indent = wrapper.Substring (i, j - i);
 			startIndentLevel = indent.Length - 1;
-			
+
 			int suffixLen = 2;
 			string formattedText = InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
-			
-			if (hasErrors)
-				return;
+
+			if (hasErrors) 
+				return; 
 			int startLine = member.Location.Line;
 			int endLine = member.Location.Line;
-		
+
 			if (!member.BodyRegion.IsEmpty) 
 				endLine = member.BodyRegion.End.Line + 1; 
-			
+
 			int startPos = data.Document.LocationToOffset (member.Location.Line - 1, 0);
 			InFormat = true;
-			
+
 			int len1 = formattedText.IndexOf ('{') + 1;
 			int last = formattedText.LastIndexOf ('}');
 			formattedText = formattedText.Substring (len1, last - len1 - 1);
@@ -125,7 +126,7 @@ namespace CSharpBinding.Parser
 			}
 			InFormat = false;
 		}
-		
+
 		static bool CanInsertFormattedText (TextEditorData data, int offset, string formattedText)
 		{
 			int textOffset = 0;
@@ -151,7 +152,7 @@ namespace CSharpBinding.Parser
 			}
 			return true;
 		}
-		
+
 		static void InsertFormattedText (TextEditorData data, int offset, string formattedText)
 		{
 			int textOffset = 0;
