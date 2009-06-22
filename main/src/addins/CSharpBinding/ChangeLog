@@ -1,3 +1,9 @@
+2009-06-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/CSharpFormatter.cs:
+	* Gui/CSharpTextEditorIndentation.cs: Fixed template
+	  insertion/worked on code formatter.
+
 2009-06-19  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/CSharpFormatter.cs:

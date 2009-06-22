@@ -45,6 +45,8 @@ using CSharpBinding;
 using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Parser;
 using Mono.TextEditor;
+using MonoDevelop.Ide.CodeTemplates;
+
 
 
 namespace MonoDevelop.CSharpBinding.Gui
@@ -145,11 +147,22 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		#endregion
 		
+		public bool DoInsertTemplate ()
+		{
+			string word = CodeTemplate.GetWordBeforeCaret (Editor);
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (CSharpFormatter.MimeType)) {
+				if (template.Shortcut == word) 
+					return true;
+			}
+			return false;
+		}
+		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			cursorPositionBeforeKeyPress = Editor.CursorPosition;
-			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent) {
+			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !DoInsertTemplate ()) {
 				int cursor = Editor.CursorPosition;
+				
 				if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {
 					// insert normal tab inside @" ... "
 					if (Editor.SelectionEndPosition > 0) {

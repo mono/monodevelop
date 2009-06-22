@@ -50,7 +50,7 @@ namespace CSharpBinding.Parser
 {
 	public class CSharpFormatter : AbstractPrettyPrinter
 	{
-		const string MimeType = "text/x-csharp";
+		internal static readonly string MimeType = "text/x-csharp";
 		
 		public CSharpFormatter()
 		{
@@ -85,7 +85,7 @@ namespace CSharpBinding.Parser
 			IType type = NRefactoryResolver.GetTypeAtCursor (unit, unit.FileName, caretLocation);
 			if (type == null) 
 				return; 
-
+	
 			IMember member = NRefactoryResolver.GetMemberAt (type, caretLocation);
 			if (member == null) 
 				return; 
@@ -103,39 +103,88 @@ namespace CSharpBinding.Parser
 			//Console.WriteLine ("startIndentLevel:" + startIndentLevel);
 			int suffixLen = 2;
 			string formattedText = InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
-
+			
 			int startLine = member.Location.Line;
 			int endLine = member.Location.Line;
 
 			if (!member.BodyRegion.IsEmpty) 
 				endLine = member.BodyRegion.End.Line + 1; 
-
+			
 			int startPos = data.Document.LocationToOffset (member.Location.Line - 1, 0);
 			InFormat = true;
-			data.Document.BeginAtomicUndo ();
-			DocumentLocation loc = data.Caret.Location;
-			data.Caret.AutoScrollToCaret = false;
 			int len1 = formattedText.IndexOf ('{') + 1;
 			int last = formattedText.LastIndexOf ('}');
-		/*	Console.WriteLine (Environment.StackTrace);
-			Console.WriteLine ("start:" + startPos);
-			Console.WriteLine ("end:" + endPos);
-			Console.WriteLine (data.Document.Length);
-			Console.WriteLine ("----");
-			
-			Console.WriteLine (formattedText);
-			Console.WriteLine ("----");
-			Console.WriteLine (startPos + " - " + endPos);
-			Console.WriteLine ("----");
-			Console.WriteLine (formattedText.Substring (len1, last - len1 - 1));*/
-			data.Replace (startPos - 1, endPos - startPos, formattedText.Substring (len1, last - len1 - 1));
-//			data.Remove (startPos - 1, endPos - startPos);
-//			data.Insert (startPos - 1, formattedText.Substring (len1, last - len1 - 1));
-			data.Caret.Location = loc;
-			data.Caret.AutoScrollToCaret = true;
-			data.Document.EndAtomicUndo ();
+			formattedText = formattedText.Substring (len1, last - len1 - 1);
+			if (CanInsertFormattedText (data, startPos - 1, formattedText)) {
+				data.Document.BeginAtomicUndo ();
+				InsertFormattedText (data, startPos - 1, formattedText);
+				data.Document.EndAtomicUndo ();
+			}
 			InFormat = false;
 		}
+		
+		static bool CanInsertFormattedText (TextEditorData data, int offset, string formattedText)
+		{
+			int textOffset = 0;
+			while (textOffset < formattedText.Length) {
+				char ch1 = data.Document.GetCharAt (offset);
+				char ch2 = formattedText[textOffset];
+				bool ch1Ws = Char.IsWhiteSpace (ch1);
+				bool ch2Ws = Char.IsWhiteSpace (ch2);
+				if (ch1 == ch2 || ch1Ws && ch2Ws) {
+					textOffset++;
+					offset++;
+					continue;
+				}
+				if (ch2Ws && !ch1Ws) {
+					textOffset++;
+					continue;
+				}
+				if (!ch2Ws && ch1Ws) {
+					offset++;
+					continue;
+				}
+				return false;
+			}
+			return true;
+		}
+		
+		static void InsertFormattedText (TextEditorData data, int offset, string formattedText)
+		{
+			int textOffset = 0;
+			while (textOffset < formattedText.Length) {
+				char ch1 = data.Document.GetCharAt (offset);
+				char ch2 = formattedText[textOffset];
+				if (ch1 == ch2) {
+					textOffset++;
+					offset++;
+					continue;
+				}
+				bool ch1Ws = Char.IsWhiteSpace (ch1);
+				bool ch2Ws = Char.IsWhiteSpace (ch2);
+				
+				if (ch2Ws && !ch1Ws) {
+					data.Insert (offset, ch2.ToString ());
+					
+					textOffset++;
+					offset++;
+					continue;
+				}
+				if (!ch2Ws && ch1Ws) {
+					data.Remove (offset, 1);
+					
+					continue;
+				}
+				if (ch1Ws && ch2Ws) {
+					data.Replace (offset, 1, ch2.ToString ());
+					textOffset++;
+					offset++;
+					continue;
+				}
+				break;
+			}
+		}
+		
 		public static bool InFormat = false;
 		
 		public override bool CanFormat (string mimeType)
@@ -149,6 +198,8 @@ namespace CSharpBinding.Parser
 			return (result / tabSize) * tabSize;
 		}
 
+		
+		
 		bool hasErrors = false;
 		int startIndentLevel = 0;
 		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
