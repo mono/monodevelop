@@ -32,24 +32,34 @@ namespace MonoDevelop.Components
 		{	
 			this.title = label;
 			this.icon = icon;
+			icon.Xpad = 2;
 			
 			EventBox eventBox = new EventBox ();
+			eventBox.BorderWidth = 0;
 			eventBox.VisibleWindow = false;			
 			eventBox.Add (icon);
-			this.PackStart (eventBox, false, true, 2);
+			this.PackStart (eventBox, false, true, 0);
 
 			titleBox = new EventBox ();
 			titleBox.VisibleWindow = false;			
 			titleBox.Add (title);
 			this.PackStart (titleBox, true, true, 0);
 			
+			Gtk.Rc.ParseString ("style \"MonoDevelop.TabLabel.CloseButton\" {\n GtkButton::inner-border = {0,0,0,0}\n }\n");
+			Gtk.Rc.ParseString ("widget \"*.MonoDevelop.TabLabel.CloseButton\" style  \"MonoDevelop.TabLabel.CloseButton\"\n");
 			Button button = new Button ();
-			button.Add (new Gtk.Image (closeImage));
+			button.CanDefault = false;
+			Gtk.Image closeIcon = new Gtk.Image (closeImage);
+			closeIcon.SetPadding (0, 0);
+			button.Image = closeIcon;
 			button.Relief = ReliefStyle.None;
+			button.BorderWidth = 0;
 			button.SetSizeRequest (18, 18);
 			button.Clicked += new EventHandler(ButtonClicked);
-			this.PackStart (button, false, false, 2);
+			button.Name = "MonoDevelop.TabLabel.CloseButton";
+			this.PackStart (button, false, true, 0);
 			this.ClearFlag (WidgetFlags.CanFocus);
+			this.BorderWidth = 0;
 
 			this.ShowAll ();
 		}
