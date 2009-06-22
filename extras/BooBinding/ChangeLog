@@ -1,3 +1,14 @@
+2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BooBinding.addin.xml: Remove invalid icon.
+
+	* BooBindingCompilerServices.boo: Fix bug 324223 - BOO: When
+	  rebuilding external classes, they are not always reloaded
+	  correctly. Patch by Manuel de la Pena.
+
+	* BooLanguageBinding.boo: Use standard icon for boo projects,
+	  since boo-project-icon doesn't exist.
+
 2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BooBinding.sln:
