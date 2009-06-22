@@ -63,6 +63,8 @@ namespace MonoDevelop.Projects
 		string package;
 		SystemPackage cachedPackage;
 		
+		public event EventHandler StatusChanged;
+		
 		[ItemProperty ("Package", DefaultValue="")]
 		internal string packageName {
 			get {
@@ -175,10 +177,10 @@ namespace MonoDevelop.Projects
 		public virtual string ValidationErrorMessage {
 			get {
 				if (ReferenceType == ReferenceType.Gac) {
-					if (notFound)
-						return GettextCatalog.GetString ("Assembly not found");
 					if (!IsExactVersion && SpecificVersion)
 						return GettextCatalog.GetString ("Specified version not found: expected {0}, found {1}", GetVersionNum (StoredReference), GetVersionNum (Reference));
+					if (notFound)
+						return GettextCatalog.GetString ("Assembly not found");
 				} else if (ReferenceType == ReferenceType.Project) {
 					if (ownerProject != null && ownerProject.ParentSolution != null) {
 						DotNetProject p = ownerProject.ParentSolution.FindProjectByName (reference) as DotNetProject;
@@ -277,6 +279,7 @@ namespace MonoDevelop.Projects
 					reference = cref;
 				}
 				cachedPackage = null;
+				OnStatusChanged ();
 			}
 		}
 		
@@ -325,7 +328,7 @@ namespace MonoDevelop.Projects
 				reference = loadedReference;
 				loadedReference = null;
 				UpdateGacReference ();
-			} else if (notFound)
+			} else
 				UpdateGacReference ();
 		}
 		
@@ -345,6 +348,12 @@ namespace MonoDevelop.Projects
 		public override int GetHashCode ()
 		{
 			return reference.GetHashCode ();
+		}
+		
+		protected virtual void OnStatusChanged ()
+		{
+			if (StatusChanged != null)
+				StatusChanged (this, EventArgs.Empty);
 		}
 	}
 	

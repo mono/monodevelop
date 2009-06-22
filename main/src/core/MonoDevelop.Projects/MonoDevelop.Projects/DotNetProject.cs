@@ -256,6 +256,7 @@ namespace MonoDevelop.Projects
 		
 		public DotNetProject ()
 		{
+			Runtime.SystemAssemblyService.DefaultRuntimeChanged += RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
 			projectReferences = new ProjectReferenceCollection ();
 			Items.Bind (projectReferences);
 			if (IsLibraryBasedProjectType)
@@ -326,6 +327,12 @@ namespace MonoDevelop.Projects
 			}
 			
 			this.usePartialTypes = SupportsPartialTypes;
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
 		}
 		
 		public virtual bool SupportsPartialTypes {
@@ -686,6 +693,11 @@ namespace MonoDevelop.Projects
 				return null;
 		}
 
+		void RuntimeSystemAssemblyServiceDefaultRuntimeChanged (object sender, EventArgs e)
+		{
+			UpdateSystemReferences ();
+		}
+		
 		// Make sure that the project references are valid for the target clr version.
 		void UpdateSystemReferences ()
 		{
@@ -698,7 +710,7 @@ namespace MonoDevelop.Projects
 					if (newRef == null) {
 						// re-add the reference. It will be shown as invalid.
 						toDelete.Add (pref);
-						toAdd.Add (new ProjectReference (ReferenceType.Gac, pref.Reference));
+						toAdd.Add (new ProjectReference (ReferenceType.Gac, pref.StoredReference));
 					}
 					else if (newRef != pref.Reference) {
 						toDelete.Add (pref);
