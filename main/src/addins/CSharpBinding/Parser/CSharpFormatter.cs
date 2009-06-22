@@ -68,12 +68,12 @@ namespace CSharpBinding.Parser
 			while (offset < data.Document.Length && data.Document.GetCharAt (offset) != '{') {
 				offset++;
 			}
-			end = data.Document.BracketMatcher.SearchMatchingBracketForward (data.Document, offset, '}', '{');
+			end = data.Document.GetMatchingBracketOffset (offset);
 			if (end < 0) 
 				return ""; 
 
 			result.Append ("class " + member.DeclaringType.Name + " {");
-			result.Append (data.Document.GetTextBetween (start, end));
+			result.Append (data.Document.GetTextBetween (start, end + 1));
 			result.Append ("}");
 
 			return result.ToString ();
@@ -100,18 +100,21 @@ namespace CSharpBinding.Parser
 				;
 			string indent = wrapper.Substring (i, j - i);
 			startIndentLevel = indent.Length - 1;
-			//Console.WriteLine ("startIndentLevel:" + startIndentLevel);
+			
 			int suffixLen = 2;
 			string formattedText = InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
 			
+			if (hasErrors)
+				return;
 			int startLine = member.Location.Line;
 			int endLine = member.Location.Line;
-
+		
 			if (!member.BodyRegion.IsEmpty) 
 				endLine = member.BodyRegion.End.Line + 1; 
 			
 			int startPos = data.Document.LocationToOffset (member.Location.Line - 1, 0);
 			InFormat = true;
+			
 			int len1 = formattedText.IndexOf ('{') + 1;
 			int last = formattedText.LastIndexOf ('}');
 			formattedText = formattedText.Substring (len1, last - len1 - 1);
@@ -162,17 +165,17 @@ namespace CSharpBinding.Parser
 				}
 				bool ch1Ws = Char.IsWhiteSpace (ch1);
 				bool ch2Ws = Char.IsWhiteSpace (ch2);
-				
+
 				if (ch2Ws && !ch1Ws) {
 					data.Insert (offset, ch2.ToString ());
-					
+
 					textOffset++;
 					offset++;
 					continue;
 				}
 				if (!ch2Ws && ch1Ws) {
 					data.Remove (offset, 1);
-					
+
 					continue;
 				}
 				if (ch1Ws && ch2Ws) {
@@ -184,22 +187,20 @@ namespace CSharpBinding.Parser
 				break;
 			}
 		}
-		
+
 		public static bool InFormat = false;
-		
+
 		public override bool CanFormat (string mimeType)
 		{
 			return mimeType == MimeType;
 		}
-		
+
 		static int GetNextTabstop (int currentColumn, int tabSize)
 		{
 			int result = currentColumn + tabSize;
 			return (result / tabSize) * tabSize;
 		}
 
-		
-		
 		bool hasErrors = false;
 		int startIndentLevel = 0;
 		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
@@ -238,13 +239,13 @@ namespace CSharpBinding.Parser
 				//System.Console.WriteLine("set " + option.Name + " to " + cval);
 				info.SetValue (outputVisitor.Options, cval, null);
 			}
-			
+
 			outputVisitor.OutputFormatter.IndentationLevel = startIndentLevel;
 			using (ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (input))) {
 				parser.Parse ();
 				hasErrors = parser.Errors.Count != 0;
-				if (hasErrors)
-					Console.WriteLine (parser.Errors.ErrorOutput);
+				if (hasErrors) 
+					Console.WriteLine (parser.Errors.ErrorOutput); 
 				IList<ISpecial> specials = parser.Lexer.SpecialTracker.RetrieveSpecials ();
 				if (parser.Errors.Count == 0) {
 					using (SpecialNodesInserter.Install (specials, outputVisitor)) {
