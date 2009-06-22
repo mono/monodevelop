@@ -40,10 +40,15 @@ namespace MonoDevelop.Ide.CodeFormatting
 	public class FormatBufferHandler : CommandHandler
 	{
 		
-		protected override void Update (CommandArrayInfo info)
+		protected override void Update (CommandInfo info)
 		{
-		//	if (IdeApp.Workspace.Items.Count == 0)
-		//		info.Enabled = false;
+			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsFile) {
+				string mt = IdeApp.Services.PlatformService.GetMimeTypeForUri (IdeApp.Workbench.ActiveDocument.FileName);
+				IPrettyPrinter printer = TextFileService.GetPrettyPrinter (mt);
+				if (printer != null)
+					return;
+			}
+			info.Enabled = false;
 		}
 		
 		protected override void Run (object tool)

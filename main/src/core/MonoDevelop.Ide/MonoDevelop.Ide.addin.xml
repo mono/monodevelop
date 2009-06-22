@@ -720,7 +720,7 @@
 				
 		<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer"
 				defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
-				_label = "_Format Buffer" />
+				_label = "_Format Document" />
 				
 		</Category>
 		
@@ -1444,6 +1444,8 @@
 			
 			<SeparatorItem id = "Separator4" />
 			<ItemSet id = "Format" _label = "_Format">
+				<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" />
+				<SeparatorItem id ="FormatSeparator" /> 
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
 				<SeparatorItem id = "Separator1" />
@@ -1562,8 +1564,6 @@
 
 		<ItemSet id = "Tools" _label = "_Tools">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager" />
-			<SeparatorItem id ="FormatSeparator" /> 
-			<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" />
 			<SeparatorItem id ="AddinManagerSeparator" /> 
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
 		</ItemSet>

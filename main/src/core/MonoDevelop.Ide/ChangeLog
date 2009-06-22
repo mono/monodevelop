@@ -1,3 +1,12 @@
+2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
+	  Disable the format command for documents which are not
+	  formattable. Fixes bug #514756.
+
+	* MonoDevelop.Ide.addin.xml: Moved Format Buffer command to
+	  Edit/Format menu.
+
 2009-06-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Fixed
