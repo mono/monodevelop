@@ -1285,9 +1285,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				            prettyPrintOptions.PlaceElseOnNewLine);
 				return;
 			}
-			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
+/*			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
 				outputFormatter.Space();
-			}
+			}*/
 			if (statements.Count != 1) {
 				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 			} else {
@@ -1295,18 +1295,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.IndentationLevel++;
 				outputFormatter.Indent ();
 			}
+			
 			foreach (Statement stmt in statements) {
 				TrackVisit(stmt, prettyPrintOptions.StatementBraceStyle);
 			}
+			
 			if (statements.Count == 1) {
 				outputFormatter.IndentationLevel--;
-			}
-			if (statements.Count != 1) {
+			} else {
 				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
 			}
-			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
+/*			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
 				outputFormatter.Space();
-			}
+			}*/
 		}
 		
 		public override object TrackedVisitElseIfSection(ElseIfSection elseIfSection, object data)
