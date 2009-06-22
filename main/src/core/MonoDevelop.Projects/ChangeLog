@@ -1,5 +1,9 @@
 2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/ProjectReference.cs: Fix build.
+
+2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectReference.cs: Use
 	  StoredReference to compare references, since it never
 	  changes, and Reference may change (depending on the current

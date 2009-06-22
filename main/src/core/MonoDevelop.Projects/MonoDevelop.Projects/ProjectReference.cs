@@ -336,7 +336,6 @@ namespace MonoDevelop.Projects
 		
 		internal void ResetReference ()
 		{
-			string ld = StoredReference;
 			cachedPackage = null;
 			if (loadedReference != null) {
 				reference = loadedReference;
