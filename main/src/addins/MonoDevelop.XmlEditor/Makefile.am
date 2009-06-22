@@ -71,6 +71,7 @@ FILES =  \
 	MonoDevelop.XmlEditor/XmlElementPath.cs \
 	MonoDevelop.XmlEditor/XmlFileExtensionNode.cs \
 	MonoDevelop.XmlEditor/XmlFileExtensions.cs \
+	MonoDevelop.XmlEditor/XmlFormatter.cs \
 	MonoDevelop.XmlEditor/XmlNamespace.cs \
 	MonoDevelop.XmlEditor/XmlParser.cs \
 	MonoDevelop.XmlEditor/XmlSchemaAssociation.cs \

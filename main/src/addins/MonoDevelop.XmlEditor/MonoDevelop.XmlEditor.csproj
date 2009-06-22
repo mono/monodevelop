@@ -170,6 +170,7 @@
     <Compile Include="MonoDevelop.Xml.StateEngine\XmlParsedDocument.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlDocumentParser.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\InferredXmlCompletionProvider.cs" />
+    <Compile Include="MonoDevelop.XmlEditor\XmlFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="XmlEditor.glade" />

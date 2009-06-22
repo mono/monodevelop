@@ -1,3 +1,11 @@
+2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.XmlEditor.csproj:
+	* MonoDevelop.XmlEditor.addin.xml:
+	* MonoDevelop.XmlEditor/XmlFormatter.cs: Implemented a simple
+	  XML formatter.
+
 2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs: Fix

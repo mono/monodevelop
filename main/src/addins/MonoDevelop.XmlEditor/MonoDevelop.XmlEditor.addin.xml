@@ -139,4 +139,8 @@
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Class class = "MonoDevelop.XmlEditor.XmlDocumentParser" id = "XmlParser" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/TextPrettyPrinters">
+		<Class class="MonoDevelop.XmlEditor.XmlFormatter" />
+	</Extension>
 </Addin>
