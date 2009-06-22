@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return ++offset;
 		}
 		
-		static string GetWordBeforeCaret (MonoDevelop.Ide.Gui.TextEditor editor)
+		public static string GetWordBeforeCaret (MonoDevelop.Ide.Gui.TextEditor editor)
 		{
 			int offset = editor.CursorPosition;
 			int start  = FindPrevWordStart (editor, offset);
