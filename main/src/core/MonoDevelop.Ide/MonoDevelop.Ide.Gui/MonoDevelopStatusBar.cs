@@ -49,27 +49,28 @@ namespace MonoDevelop.Ide
 		HBox statusBox = new HBox ();
 		Image currentStatusImage;
 		
-		public MonoDevelopStatusBar()
+		public MonoDevelopStatusBar(): base (false, 3)
 		{
-			Spacing = 3;
-			BorderWidth = 1;
+			BorderWidth = 0;
 			
 			progress = new ProgressBar ();
 			progress.PulseStep = 0.3;
 			Requisition req = progress.SizeRequest ();
 			progress.HeightRequest = 1;
 			Alignment pal = new Alignment (0, 0.5f, 1, 1);
-			pal.TopPadding = 2;
-			pal.BottomPadding = 2;
+			pal.TopPadding = 0;
+			pal.BottomPadding = 0;
 			pal.LeftPadding = 2;
 			pal.Add (progress);
 			this.PackStart (pal, false, false, 0);
 			
 			this.PackStart (textStatusBarPanel, true, true, 0);
 			statusBox = new HBox ();
+			statusBox.BorderWidth = 0;
 			statusLabel = new Label ();
 			statusLabel.SetAlignment (0, 0.5f);
 			statusLabel.Wrap = false;
+			statusLabel.SetPadding (0, 0);
 			statusBox.PackEnd (statusLabel, true, true, 0);
 			textStatusBarPanel.ShadowType = ShadowType.None;
 			textStatusBarPanel.Add (statusBox);
@@ -89,6 +90,8 @@ namespace MonoDevelop.Ide
 			int w, h;
 			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);
 			statusLabel.HeightRequest = h;
+			
+			iconStatusBarPanel.BorderWidth = 0;
 			
 			ShowReady ();
 			this.progress.Fraction = 0.0;
@@ -149,6 +152,7 @@ namespace MonoDevelop.Ide
 					statusBox.Remove (currentStatusImage);
 				currentStatusImage = image;
 				if (image != null) {
+					image.SetPadding (0, 0);
 					statusBox.PackStart (image, false, false, 3);
 					image.Show ();
 				}
@@ -166,7 +170,10 @@ namespace MonoDevelop.Ide
 		{
 			DispatchService.AssertGuiThread ();
 			EventBox eventBox = new EventBox ();
-			eventBox.Child = new Gtk.Image (image);
+			eventBox.BorderWidth = 0;
+			Gtk.Image i = new Gtk.Image (image);
+			i.SetPadding (0, 0);
+			eventBox.Child = i;
 			statusBox.PackEnd (eventBox, false, false, 2);
 			statusBox.ReorderChild (eventBox, 0);
 			eventBox.ShowAll ();
@@ -267,7 +274,9 @@ namespace MonoDevelop.Ide
 				get { return icon; }
 				set {
 					icon = value;
-					box.Child = new Gtk.Image (icon);
+					Gtk.Image i = new Gtk.Image (icon);
+					i.SetPadding (0, 0);
+					box.Child = i;
 				}
 			}
 			
@@ -282,6 +291,7 @@ namespace MonoDevelop.Ide
 				images = new Gtk.Image [10];
 				for (int n=0; n<10; n++) {
 					images [n] = new Image (ImageService.MakeTransparent (icon, ((double)(9-n))/10.0));
+					images [n].SetPadding (0, 0);
 					images [n].Show ();
 				}
 			}
@@ -291,7 +301,9 @@ namespace MonoDevelop.Ide
 				box.Remove (box.Child);
 				
 				if (DateTime.Now >= alertEnd && astep == 0) {
-					box.Child = new Gtk.Image (icon);
+					Gtk.Image i = new Gtk.Image (icon);
+					i.SetPadding (0, 0);
+					box.Child = i;
 					images = null;
 					box.Child.Show ();
 					return false;

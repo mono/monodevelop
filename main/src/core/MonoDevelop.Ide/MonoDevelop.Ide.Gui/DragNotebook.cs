@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Gui
 			ButtonPressEvent += new ButtonPressEventHandler (OnButtonPress);
 			ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonRelease);
 			AddEvents ((Int32) (EventMask.AllEventsMask));
+			this.SetProperty ("tab-border", new GLib.Value (0));
 		}
 		
 		Cursor fleurCursor = new Cursor (CursorType.Fleur);
