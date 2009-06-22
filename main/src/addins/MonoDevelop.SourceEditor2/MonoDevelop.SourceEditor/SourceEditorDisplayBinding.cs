@@ -97,8 +97,8 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool CanCreateContentForUri (string fileName)
 		{
-			return true;
+			string mt = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			return IdeApp.Services.PlatformService.GetMimeTypeIsText (mt);
 		}
-		
 	}
 }

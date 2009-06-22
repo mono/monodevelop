@@ -1,3 +1,9 @@
+2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs: The
+	  editor should only open files which are known to be text.
+	  Fixes bug #514761.
+
 2009-06-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/EditActions.cs: Fixed "Bug 514284 -
