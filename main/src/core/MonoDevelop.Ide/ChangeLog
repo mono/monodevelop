@@ -1,3 +1,9 @@
+2009-06-22  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Ide.Gui/DragNotebook.cs:
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:
+	  Reduce unnecessary whitespace.
+
 2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml:
