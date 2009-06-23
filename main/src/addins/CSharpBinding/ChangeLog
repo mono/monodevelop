@@ -1,5 +1,9 @@
 2009-06-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorIndentation.cs: Added null checks.
+
+2009-06-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CSharpFormatter.cs:
 	* Gui/CSharpTextEditorIndentation.cs: Worked on formatter.
 

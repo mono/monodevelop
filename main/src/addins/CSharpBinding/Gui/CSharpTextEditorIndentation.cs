@@ -85,15 +85,15 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		void RunFormatterAt (int offset)
 		{
-			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
-			//	textEditorData.Document.TextReplaced -= TextCut;
+			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null) {
+				//	textEditorData.Document.TextReplaced -= TextCut;
 				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
 				if (dom == null)
 					dom = ProjectDomService.GetFileDom (Document.FileName);
 				DocumentLocation loc = textEditorData.Document.OffsetToLocation (offset);
 				DomLocation location = new DomLocation (loc.Line, loc.Column);
 				CSharpFormatter formatter = new CSharpFormatter (textEditorData, dom, Document.CompilationUnit, Editor, location);
-			//	textEditorData.Document.TextReplaced += TextCut;
+				//	textEditorData.Document.TextReplaced += TextCut;
 			}
 		}
 		void TextEditorDataPaste (int insertionOffset, string text)
@@ -318,16 +318,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 		}
 		void RunFormatter ()
 		{
-			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null) {
 				textEditorData.Paste -= TextEditorDataPaste;
-		//		textEditorData.Document.TextReplaced -= TextCut;
+				//		textEditorData.Document.TextReplaced -= TextCut;
 				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
 				if (dom == null)
 					dom = ProjectDomService.GetFileDom (Document.FileName);
 
 				DomLocation location = new DomLocation (Editor.CursorLine, Editor.CursorColumn);
 				CSharpFormatter formatter = new CSharpFormatter (textEditorData, dom, Document.CompilationUnit, Editor, location);
-		//		textEditorData.Document.TextReplaced += TextCut;
+				//		textEditorData.Document.TextReplaced += TextCut;
 				textEditorData.Paste += TextEditorDataPaste;
 			}
 		}
