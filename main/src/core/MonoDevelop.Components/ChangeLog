@@ -1,3 +1,9 @@
+2009-06-23  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* icons/MonoDevelop.Close.png:
+	* MonoDevelop.Components/TabLabel.cs:
+	  Fix display regression with tab close button.
+
 2009-06-22  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Components/TabLabel.cs:

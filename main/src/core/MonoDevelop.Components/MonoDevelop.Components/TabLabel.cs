@@ -54,7 +54,6 @@ namespace MonoDevelop.Components
 			button.Image = closeIcon;
 			button.Relief = ReliefStyle.None;
 			button.BorderWidth = 0;
-			button.SetSizeRequest (18, 18);
 			button.Clicked += new EventHandler(ButtonClicked);
 			button.Name = "MonoDevelop.TabLabel.CloseButton";
 			this.PackStart (button, false, true, 0);
