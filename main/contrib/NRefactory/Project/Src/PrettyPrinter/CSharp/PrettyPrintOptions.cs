@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		BraceStyle constructorBraceStyle  = BraceStyle.NextLine;
 		BraceStyle destructorBraceStyle   = BraceStyle.NextLine;
 		BraceStyle methodBraceStyle       = BraceStyle.NextLine;
+		BraceStyle anonymousMethodBraceStyle  = BraceStyle.EndOfLine;
 		
 		BraceStyle propertyBraceStyle     = BraceStyle.EndOfLine;
 		bool      allowPropertyGetBlockInline = true;
@@ -124,6 +125,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			set {
 				methodBraceStyle = value;
+			}
+		}
+		
+		public BraceStyle AnonymousMethodBraceStyle {
+			get {
+				return anonymousMethodBraceStyle;
+			}
+			set {
+				anonymousMethodBraceStyle = value;
 			}
 		}
 		

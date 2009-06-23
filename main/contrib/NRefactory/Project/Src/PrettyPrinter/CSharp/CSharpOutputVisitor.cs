@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3856 $</version>
+//     <version>$Revision: 4342 $</version>
 // </file>
 
 using System;
@@ -1048,7 +1048,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.NewLine();
 				}
 			} else {
-				OutputBlock(blockStatement, braceStyle);
+				OutputBlock(blockStatement, braceStyle, useNewLine);
 			}
 		}
 		
@@ -2531,7 +2531,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				}
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
-			OutputBlockAllowInline(anonymousMethodExpression.Body, this.prettyPrintOptions.MethodBraceStyle, false);
+			OutputBlockAllowInline(anonymousMethodExpression.Body, this.prettyPrintOptions.AnonymousMethodBraceStyle, false);
 			return null;
 		}
 		
