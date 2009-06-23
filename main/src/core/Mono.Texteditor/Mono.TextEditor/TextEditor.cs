@@ -844,9 +844,9 @@ namespace Mono.TextEditor
 					if (selection != null && selection.GetSelectionRange (textEditorData).Offset >= offset)
 						selection = new Selection (Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length), Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length + selection.GetSelectionRange (textEditorData).Length));
 					textEditorData.Insert (offset, selection_data.Text);
-					textEditorData.PasteText (offset, selection_data.Text);
 					Caret.Offset = offset + selection_data.Text.Length;
 					MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
+					textEditorData.PasteText (offset, selection_data.Text);
 				}
 				dragOver = false;
 				context = null;

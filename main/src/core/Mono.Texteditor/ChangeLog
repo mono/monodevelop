@@ -1,5 +1,10 @@
 2009-06-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Moved paste text event after
+	  the selection/caret is set.
+
+2009-06-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: dnd now fires a paste text
 	  event.
 
