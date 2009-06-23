@@ -198,16 +198,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				Write (writer, nameTable, genArg);
 			}
 		}
-		
+
 		public static DomParameter ReadParameter (BinaryReader reader, INameDecoder nameTable)
 		{
 			DomParameter result = new DomParameter ();
-			
-			result.Name               = ReadString (reader, nameTable);
-			result.ParameterModifiers = (ParameterModifiers)reader.ReadUInt32();
-			result.ReturnType         = ReadReturnType (reader, nameTable);
-			result.Location           = ReadLocation (reader, nameTable);
-			
+
+			result.Name = ReadString (reader, nameTable);
+			result.ParameterModifiers = (ParameterModifiers)reader.ReadUInt32 ();
+			result.ReturnType = ReadReturnType (reader, nameTable);
+			result.Location = ReadLocation (reader, nameTable);
+			if(reader.ReadBoolean())
+				result.DefaultValue = ReadExpression (reader, nameTable);
 			return result;
 		}
 		
@@ -215,9 +216,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			Debug.Assert (parameter != null);
 			WriteString (parameter.Name, writer, nameTable);
+			
 			writer.Write ((uint)parameter.ParameterModifiers);
 			Write (writer, nameTable, parameter.ReturnType);
 			Write (writer, nameTable, parameter.Location);
+			if(parameter.DefaultValue is CodePrimitiveExpression) {
+				writer.Write (true);
+				Write (writer, nameTable, (CodePrimitiveExpression) parameter.DefaultValue);
+			} else
+				writer.Write (false); 
 		}
 		
 		public static DomProperty ReadProperty (BinaryReader reader, INameDecoder nameTable)
@@ -459,6 +466,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if ((f & 4) != 0)
 				tp.ConstructorRequired = true;
 
+			// Variance 
+
+			tp.Variance = (TypeParameterVariance)reader.ReadByte ();
+
 			// Constraints
 			
 			uint count = ReadUInt (reader, 1000);
@@ -488,7 +499,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (typeParameter.ConstructorRequired)
 				f |= 4;
 			writer.Write (f);
-			
+
+			// Variance 
+
+			writer.Write ((byte)typeParameter.Variance);
+
 			// Constraints
 			
 			writer.Write (typeParameter.Constraints.Count ());
@@ -569,14 +584,29 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			} else {
 				writer.Write (exps.Length);
 				foreach (CodePrimitiveExpression exp in exps) {
-					if (exp.Value == null) {
-						writer.Write ((int) TypeCode.DBNull);
-					} else {
-						writer.Write ((int) Type.GetTypeCode (exp.Value.GetType ()));
-						WriteString (Convert.ToString (exp.Value, CultureInfo.InvariantCulture), writer, nameTable);
-					}
+					Write (writer, nameTable, exp);		
 				}
 			}
+		}
+
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, CodePrimitiveExpression exp)
+		{
+			if(exp.Value == null) {
+				writer.Write ((int)TypeCode.DBNull);
+			}
+			else {
+				writer.Write ((int)Type.GetTypeCode (exp.Value.GetType ()));
+				WriteString (Convert.ToString (exp.Value, CultureInfo.InvariantCulture), writer, nameTable);
+			}
+		}
+
+		public static CodeExpression ReadExpression (BinaryReader reader, INameDecoder nameTable)
+		{
+			TypeCode code = (TypeCode)reader.ReadInt32 ();
+			if(code == TypeCode.DBNull)
+				return new CodePrimitiveExpression (null);
+			else
+				return new CodePrimitiveExpression (Convert.ChangeType (ReadString (reader, nameTable), code, CultureInfo.InvariantCulture));
 		}
 		
 		public static CodeExpression[] ReadExpressionArray (BinaryReader reader, INameDecoder nameTable)
@@ -589,13 +619,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			} else {
 				CodeExpression[] exps = new CodeExpression[count];
 				for (int n=0; n<count; n++) {
-					object value;
-					TypeCode code = (TypeCode) reader.ReadInt32 ();
-					if (code == TypeCode.DBNull)
-						value = null;
-					else
-						value = Convert.ChangeType (ReadString (reader, nameTable), code, CultureInfo.InvariantCulture);
-					exps [n] = new CodePrimitiveExpression (value);
+					exps [n] = ReadExpression (reader, nameTable);
 				}
 				return exps;
 			}

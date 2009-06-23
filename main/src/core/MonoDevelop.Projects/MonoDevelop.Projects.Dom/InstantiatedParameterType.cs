@@ -129,6 +129,14 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
+		public TypeParameterVariance Variance
+		{
+			get
+			{
+				return typeparam.Variance;
+			}
+		}
+
 		#endregion
 	}
 }

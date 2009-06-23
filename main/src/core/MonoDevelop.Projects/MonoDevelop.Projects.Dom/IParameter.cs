@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
@@ -74,5 +75,8 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		CodeExpression DefaultValue {
+			get;
+		}
 	}
 }

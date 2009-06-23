@@ -30,6 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
+	public enum TypeParameterVariance { None, Out, In }
 	public interface ITypeParameter
 	{
 		string Name { get; }
@@ -43,5 +44,7 @@ namespace MonoDevelop.Projects.Dom
 		bool ClassRequired { get; }
 		
 		bool ValueTypeRequired { get; }
+
+		TypeParameterVariance Variance { get; }
 	}
 }

@@ -61,6 +61,10 @@ namespace MonoDevelop.Projects.Dom
 			if ((parameterDefinition.Attributes & ParameterAttributes.Optional) == ParameterAttributes.Optional) 
 				this.ParameterModifiers |= ParameterModifiers.Optional;
 			
+			if ((parameterDefinition.Attributes & ParameterAttributes.HasDefault) == ParameterAttributes.HasDefault) {
+				this.DefaultValue = new System.CodeDom.CodePrimitiveExpression (parameterDefinition.Constant);
+			}
+			
 			if (ReturnType.ArrayDimensions > 0) {
 				foreach (CustomAttribute customAttribute in parameterDefinition.CustomAttributes) {
 					if (customAttribute.Constructor.DeclaringType.FullName == "System.ParamArrayAttribute") 

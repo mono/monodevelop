@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
@@ -34,6 +35,11 @@ namespace MonoDevelop.Projects.Dom
 	public class DomParameter : IParameter
 	{
 		protected List<IAttribute> attributes = null;
+
+		public CodeExpression DefaultValue {
+			get;
+			set;
+		}
 
 		public IMember DeclaringMember {
 			get;

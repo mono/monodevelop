@@ -107,6 +107,21 @@
 	* MonoDevelop.Projects.Dom/Error.cs: Fix minor bug in one of
 	  the constructors that caused it to ignore the errorType.
 
+2009-06-09  Carlo Kok  <ck@remobjects.com>
+	* MonoDevelop.Projects.Dom/ITypeParameter.cs:
+	* MonoDevelop.Projects.Dom/TypeParameter.cs:
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:
+	* MonoDevelop.Projects.Dom/DomCecilType.cs:
+	* MonoDevelop.Projects.Dom/InstantiatedParameterType.cs: Type 
+	  parameter variance support.
+	* MonoDevelop.Projects.Dom/IParameter.cs:
+	* MonoDevelop.Projects.Dom/DomParameter.cs:
+	* MonoDevelop.Projects.Dom/DomCecilParameter.cs: Default 
+	  parameter value support.
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs:
+	  Store generic variance & default parameter values properly
+
 2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicyBag.cs: Fix MS.NET build

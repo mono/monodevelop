@@ -46,6 +46,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public bool ValueTypeRequired { get; set; }
 
+		public TypeParameterVariance Variance { get; set; }
+
 		List<IAttribute> attributes = null;
 		static readonly IAttribute[] emptyAttributes = new IAttribute[0];
 		public IEnumerable<IAttribute> Attributes {
