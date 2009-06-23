@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SystemFile file = (SystemFile) dataObject;
 			label = file.Name;
 			
-			icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.Path, Gtk.IconSize.Menu);
+			icon = DesktopService.GetPixbufForFile (file.Path, Gtk.IconSize.Menu);
 			
 			if (file.ShowTransparent) {
 				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");

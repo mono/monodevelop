@@ -30,6 +30,7 @@ using Gtk;
 using System.Linq;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
@@ -74,7 +75,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			this.mimeType = mimeType;
 			this.policyContainer = policyContainer;
 			this.isExactMimeType = isExactMimeType;
-			mimeTypeScopes = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeInheritanceChain (mimeType);
+			mimeTypeScopes = DesktopService.GetMimeTypeInheritanceChain (mimeType);
 		}
 		
 		void IMimeTypePolicyOptionsPanel.SetParentSection (MimeTypePolicyOptionsSection section)
@@ -236,7 +237,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			box.Spacing = 6;
 			
 			string baseType = mimeTypeScopes.ElementAt (1);
-			baseType = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeDescription (baseType);
+			baseType = DesktopService.GetMimeTypeDescription (baseType);
 			defaultSettingsButton = new CheckButton (GettextCatalog.GetString ("Use default settings from '{0}'", baseType));
 			defaultSettingsButton.Clicked += delegate {
 				if (defaultSettingsButton.Active) {

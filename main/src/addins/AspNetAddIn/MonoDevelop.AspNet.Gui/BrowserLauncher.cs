@@ -44,7 +44,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public static void LaunchDefaultBrowser (string url)
 		{
-			MonoDevelop.Core.Gui.Services.PlatformService.ShowUrl (url);
+			MonoDevelop.Core.Gui.DesktopService.ShowUrl (url);
 		}
 		
 		public static BrowserLauncherOperation LaunchWhenReady (string url)

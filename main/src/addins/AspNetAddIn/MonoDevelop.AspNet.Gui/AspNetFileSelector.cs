@@ -150,7 +150,7 @@ namespace MonoDevelop.AspNet.Gui
 			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
 			ProjectFile pf = (ProjectFile)tree_model.GetValue (iter, 0);
 			Gdk.Pixbuf oldBuf = pixRenderer.Pixbuf;
-			pixRenderer.Pixbuf = IdeApp.Services.PlatformService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu);
+			pixRenderer.Pixbuf = DesktopService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu);
 			if (oldBuf != null)
 				oldBuf.Dispose ();
 		}

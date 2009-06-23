@@ -235,7 +235,7 @@ namespace MonoDevelop.SourceEditor
 			try {
 				TextFile.WriteFile (fileName, Document.Text, encoding);
 				lastSaveTime = File.GetLastWriteTime (fileName);
-				IdeApp.Services.PlatformService.SetFileAttributes (fileName, attributes);
+				DesktopService.SetFileAttributes (fileName, attributes);
 			} finally {
 				isInWrite = false;
 			}
@@ -262,7 +262,7 @@ namespace MonoDevelop.SourceEditor
 				autoSave.RemoveAutoSaveFile ();
 			}
 			
-			attributes = IdeApp.Services.PlatformService.GetFileAttributes (fileName);
+			attributes = DesktopService.GetFileAttributes (fileName);
 			autoSave.FileName = fileName;
 			if (warnOverwrite) {
 				warnOverwrite = false;
@@ -325,11 +325,11 @@ namespace MonoDevelop.SourceEditor
 		void UpdateMimeType (string fileName)
 		{
 			// Look for a mime type for which there is a syntax mode
-			string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
 			if (loadedMimeType != mimeType) {
 				loadedMimeType = mimeType;
 				if (mimeType != null) {
-					foreach (string mt in IdeApp.Services.PlatformService.GetMimeTypeInheritanceChain (loadedMimeType)) {
+					foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
 						if (Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (mt) != null) {
 							Document.MimeType = mt;
 							break;
@@ -1175,7 +1175,7 @@ namespace MonoDevelop.SourceEditor
 			Gnome.Font font =  Gnome.Font.FindClosestFromFullName (fontName);
 			if (font == null) {
 				LoggingService.LogError ("Can't find font: '" + fontName + "', trying default." );
-				font = Gnome.Font.FindClosestFromFullName (IdeApp.Services.PlatformService.DefaultMonospaceFont);
+				font = Gnome.Font.FindClosestFromFullName (DesktopService.DefaultMonospaceFont);
 			}
 			if (font == null) {
 				LoggingService.LogError ("Unable to load font." );
@@ -1274,7 +1274,7 @@ namespace MonoDevelop.SourceEditor
 					item.Description += line;
 				}
 				item.Category = GettextCatalog.GetString ("Clipboard ring");
-				item.Icon = IdeApp.Services.PlatformService.GetPixbufForFile ("test.txt", Gtk.IconSize.Menu);
+				item.Icon = DesktopService.GetPixbufForFile ("test.txt", Gtk.IconSize.Menu);
 				item.Name = text.Length > 16 ? text.Substring (0, 16) + "..." : text;
 				item.Name = item.Name.Replace ("\t", "\\t");
 				item.Name = item.Name.Replace ("\n", "\\n");

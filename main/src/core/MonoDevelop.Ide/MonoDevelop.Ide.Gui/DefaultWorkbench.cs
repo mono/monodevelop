@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.Gui
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
 			
-			if (!MonoDevelop.Core.Gui.Services.PlatformService.SetGlobalMenu (MonoDevelop.Ide.Gui.IdeApp.CommandService, mainMenuPath))
+			if (!DesktopService.SetGlobalMenu (MonoDevelop.Ide.Gui.IdeApp.CommandService, mainMenuPath))
 				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
 			
 			toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.Gui
 			bool changed = false;
 			
 			if (args.PathChanged (mainMenuPath)) {
-				if (MonoDevelop.Core.Gui.Services.PlatformService.SetGlobalMenu (MonoDevelop.Ide.Gui.IdeApp.CommandService, mainMenuPath))
+				if (DesktopService.SetGlobalMenu (MonoDevelop.Ide.Gui.IdeApp.CommandService, mainMenuPath))
 					return;
 				
 				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);

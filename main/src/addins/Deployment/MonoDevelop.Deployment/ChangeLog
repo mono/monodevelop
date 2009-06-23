@@ -1,3 +1,9 @@
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs:
+	* MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs:
+	  Use the new DesktopService instead of PlatformService.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment\DeployFile.cs: Use the new FilePath

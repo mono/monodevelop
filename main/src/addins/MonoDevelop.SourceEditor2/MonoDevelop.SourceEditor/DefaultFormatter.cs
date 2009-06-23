@@ -48,7 +48,7 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
 		{
-			IEnumerable<string> mtypes = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeInheritanceChain (mimeType);
+			IEnumerable<string> mtypes = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			TextStylePolicy currentPolicy = policyParent != null
 					? policyParent.Policies.Get<TextStylePolicy> (mtypes)
 					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (mtypes);

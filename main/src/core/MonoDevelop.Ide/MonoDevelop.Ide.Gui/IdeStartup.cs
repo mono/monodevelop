@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui
 			monitor.Step (1);
 			Runtime.Initialize (true);
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
-			MonoDevelop.Core.Gui.Services.PlatformService.ToString ();
+			DesktopService.Initialize ();
 			monitor.Step (1);
 			monitor.EndTask ();
 			

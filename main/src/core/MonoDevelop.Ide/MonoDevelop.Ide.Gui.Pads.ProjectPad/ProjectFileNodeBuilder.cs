@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				label = "<span foreground='red'>" + label + "</span>";
 			}
 			
-			icon = IdeApp.Services.PlatformService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu);
+			icon = DesktopService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu);
 		}
 		
 		public override object GetParentObject (object dataObject)

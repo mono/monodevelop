@@ -29,6 +29,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Debugger
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.Debugger
 		{
 			view = new ConsoleView ();
 			view.ConsoleInput += OnViewConsoleInput;
-			Pango.FontDescription font = Pango.FontDescription.FromString (IdeApp.Services.PlatformService.DefaultMonospaceFont);
+			Pango.FontDescription font = Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont);
 			font.Size = (font.Size * 8) / 10;
 			view.SetFont (font);
 		}

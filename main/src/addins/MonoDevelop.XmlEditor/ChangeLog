@@ -1,3 +1,9 @@
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor/XmlFormatter.cs:
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Use the new
+	  DesktopService instead of PlatformService.
+
 2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

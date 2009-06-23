@@ -29,7 +29,7 @@ using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using System.Text;
-
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -116,9 +116,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				});
 				return;
 			}
-			object attributes = IdeApp.Services.PlatformService.GetFileAttributes (FileName);
+			object attributes = DesktopService.GetFileAttributes (FileName);
 			File.WriteAllText (FileName, buffer.ToString ());
-			IdeApp.Services.PlatformService.SetFileAttributes (FileName, attributes);
+			DesktopService.SetFileAttributes (FileName, attributes);
 			
 			buffer = null;
 		}

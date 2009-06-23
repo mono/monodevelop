@@ -254,7 +254,7 @@ namespace MonoDevelop.VersionControl.Views
 					actionIcon = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Empty, Gtk.IconSize.Menu);
 				}
 				
-				Gdk.Pixbuf fileIcon = IdeApp.Services.PlatformService.GetPixbufForFile (rp.Path, Gtk.IconSize.Menu);
+				Gdk.Pixbuf fileIcon = DesktopService.GetPixbufForFile (rp.Path, Gtk.IconSize.Menu);
 				changedpathstore.AppendValues (actionIcon, action, fileIcon, rp.Path);
 			}
 		}
@@ -347,7 +347,7 @@ namespace MonoDevelop.VersionControl.Views
 	internal class HistoricalFileView
 	{
 		public static void Show (string name, string file, string text) {
-			string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (file);
+			string mimeType = DesktopService.GetMimeTypeForUri (file);
 			if (mimeType == null || mimeType.Length == 0)
 				mimeType = "text/plain";
 			Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (name, mimeType, text);

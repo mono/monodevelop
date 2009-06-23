@@ -36,6 +36,7 @@ using Gtk;
 using MonoDevelop.Core;
 using Mono.Addins;
 using Mono.Addins.Setup;
+using Mono.Addins.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -123,7 +124,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (args.Event.Button == 1) {
 				HideAlert ();
-				MonoDevelop.Core.Gui.Services.RunAddinManager (IdeApp.Workbench.RootWindow);
+				AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
 			}
 		}
 		
@@ -136,7 +137,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			HideAlert ();
 			
-			Core.Gui.Services.RunAddinManager (IdeApp.Workbench.RootWindow);
+			AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
 		}
 	}
 }

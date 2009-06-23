@@ -82,7 +82,7 @@ namespace CBinding.Parser
 			get {
 				if (!checkedCtagsInstalled) {
 					checkedCtagsInstalled = true;
-					if (IdeApp.Services.PlatformService.Name.Equals ("OSX")) {
+					if (PropertyService.IsMac) {
 						return false;
 					}
 					try {

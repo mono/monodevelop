@@ -31,6 +31,7 @@ using System.Linq;
 using Mono.Addins;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
@@ -99,7 +100,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			// Get the panels for all mime types
 			
 			List<string> types = new List<string> ();
-			types.AddRange (MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeInheritanceChain (mimeType));
+			types.AddRange (DesktopService.GetMimeTypeInheritanceChain (mimeType));
 			
 			panelData.SectionLoaded = true;
 			panels = panelData.Panels;

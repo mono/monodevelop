@@ -216,7 +216,7 @@ namespace MonoDevelop.WelcomePage
 			{
 				//Launch the Uri externally
 				try {
-					IdeApp.Services.PlatformService.ShowUrl (uri);
+					DesktopService.ShowUrl (uri);
 				} catch (Exception) {
 					string msg = String.Format (GettextCatalog.GetString ("Could not open the url {0}"), uri);
 					Gtk.MessageDialog md = new Gtk.MessageDialog

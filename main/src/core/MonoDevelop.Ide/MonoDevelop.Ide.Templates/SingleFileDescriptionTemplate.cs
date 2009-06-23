@@ -235,7 +235,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			string content = CreateContent (language);
 			content = StringParserService.Parse (content, HashtableToStringArray (tags));
-			string mime = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			string mime = DesktopService.GetMimeTypeForUri (fileName);
 			IFormatter formatter = !String.IsNullOrEmpty (mime) ? TextFileService.GetFormatter (mime) : null;
 			if (formatter != null)
 				content = formatter.FormatText (policyParent, mime, content);

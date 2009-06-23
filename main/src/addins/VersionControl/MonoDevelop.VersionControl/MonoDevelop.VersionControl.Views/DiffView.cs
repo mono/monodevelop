@@ -129,7 +129,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 						
 			DiffWidget.Options opts = new DiffWidget.Options();
-			opts.Font = IdeApp.Services.PlatformService.DefaultMonospaceFont;
+			opts.Font = DesktopService.DefaultMonospaceFont;
 			opts.LeftName = "Repository";
 			opts.RightName = "Working Copy";
 			widget = new DiffWidget(diff, opts);

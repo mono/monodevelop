@@ -1,3 +1,10 @@
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	  Use the new DesktopService instead of PlatformService.
+
 2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs\MimeTypePolicyOptionsSection.cs:

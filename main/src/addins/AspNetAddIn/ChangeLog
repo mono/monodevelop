@@ -1,3 +1,10 @@
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AspNet/AspNetToolboxNode.cs:
+	* MonoDevelop.AspNet.Gui/BrowserLauncher.cs:
+	* MonoDevelop.AspNet.Gui/AspNetFileSelector.cs: Use the new
+	  DesktopService instead of PlatformService.
+
 2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/WebTypeManager.cs: Track assembly lookup

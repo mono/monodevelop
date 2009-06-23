@@ -53,10 +53,10 @@ FILES =  \
 	MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs \
 	MonoDevelop.Core.Gui/DefaultPlatformService.cs \
 	MonoDevelop.Core.Gui/DesktopApplication.cs \
+	MonoDevelop.Core.Gui/DesktopService.cs \
 	MonoDevelop.Core.Gui/DispatchService.cs \
 	MonoDevelop.Core.Gui/FreeDispatchAttribute.cs \
 	MonoDevelop.Core.Gui/GLibLogging.cs \
-	MonoDevelop.Core.Gui/GuiService.cs \
 	MonoDevelop.Core.Gui/GuiSyncContext.cs \
 	MonoDevelop.Core.Gui/GuiSyncObject.cs \
 	MonoDevelop.Core.Gui/ImageService.cs \

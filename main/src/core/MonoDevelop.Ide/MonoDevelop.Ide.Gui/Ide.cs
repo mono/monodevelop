@@ -374,9 +374,5 @@ namespace MonoDevelop.Ide.Gui
 		public ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
-		
-		public PlatformService PlatformService {
-			get { return MonoDevelop.Core.Gui.Services.PlatformService; }
-		}
 	}
 }

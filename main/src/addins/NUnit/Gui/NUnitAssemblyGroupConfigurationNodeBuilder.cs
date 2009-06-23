@@ -37,7 +37,6 @@ using MonoDevelop.NUnit.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
-using GuiServices = MonoDevelop.Core.Gui.Services;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.NUnit

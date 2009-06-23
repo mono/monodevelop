@@ -593,11 +593,11 @@ namespace MonoDevelop.Ide.Gui
 					tabLabel.Icon = new Gtk.Image ( content.StockIconId, IconSize.Menu );
 				}
 				else if (content.ContentName != null && content.ContentName.IndexOfAny (new char[] { '*', '+'}) == -1) {
-					tabLabel.Icon.Pixbuf = IdeApp.Services.PlatformService.GetPixbufForFile (content.ContentName, Gtk.IconSize.Menu);
+					tabLabel.Icon.Pixbuf = DesktopService.GetPixbufForFile (content.ContentName, Gtk.IconSize.Menu);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
-				tabLabel.Icon.Pixbuf = IdeApp.Services.PlatformService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu);
+				tabLabel.Icon.Pixbuf = DesktopService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu);
 			}
 
 			if (TitleChanged != null) {

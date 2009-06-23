@@ -352,7 +352,7 @@ namespace MonoDevelop.Ide.Templates
 					while (File.Exists (fn + n + ext))
 						n++;
 					FileService.MoveFile (fn, fn + n + ext);
-					string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fn + n + ext);
+					string mimeType = DesktopService.GetMimeTypeForUri (fn + n + ext);
 					FileService.DeleteFile (fn + n + ext);
 					if (mimeType == null || mimeType == "")
 						mimeType = "text";

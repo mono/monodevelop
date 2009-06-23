@@ -1,5 +1,31 @@
 2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/IdeStartup.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs:
+	* MonoDevelop.Ide.Gui.Pads/FileListItem.cs:
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:
+	* MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide.FindInFiles/FileProvider.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/IncludeNewFilesDialog.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	  Use the new DesktopService instead of PlatformService.
+
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/WorkbenchMemento.cs: Update header. The
 	  file is not derived from SD anymore.
 

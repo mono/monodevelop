@@ -31,6 +31,7 @@ using System.ComponentModel;
 using System.Drawing.Design;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
@@ -121,7 +122,7 @@ namespace MonoDevelop.AspNet
 				return tag;
 			
 			//look up the control prefix
-			string mime = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (path);
+			string mime = DesktopService.GetMimeTypeForUri (path);
 			MonoDevelop.AspNet.Parser.AspNetParsedDocument cu = 
 				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (project, path, mime)
 					as MonoDevelop.AspNet.Parser.AspNetParsedDocument;

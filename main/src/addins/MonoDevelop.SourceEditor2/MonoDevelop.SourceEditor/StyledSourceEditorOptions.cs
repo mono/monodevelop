@@ -58,7 +58,7 @@ namespace MonoDevelop.SourceEditor
 			
 			if (string.IsNullOrEmpty (mimeType))
 				mimeType = "text/plain";
-			this.mimeTypes = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeInheritanceChain (mimeType);
+			this.mimeTypes = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			
 			if (styleParent != null)
 				policyContainer = styleParent.Policies;

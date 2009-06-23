@@ -1,3 +1,10 @@
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/NUnitService.cs:
+	* Gui/NUnitAssemblyGroupNodeBuilder.cs:
+	* Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs: Use the
+	  new DesktopService instead of PlatformService.
+
 2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services\ExternalTestRunner.cs:

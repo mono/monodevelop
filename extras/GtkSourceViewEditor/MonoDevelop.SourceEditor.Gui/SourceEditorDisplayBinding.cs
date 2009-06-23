@@ -49,7 +49,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			if (String.IsNullOrEmpty (mimetype))
 				return false;
-			return IdeApp.Services.PlatformService.GetMimeTypeIsText (mimetype);
+			return DesktopService.GetMimeTypeIsText (mimetype);
 		}
 		
 		public virtual IViewContent CreateContentForFile (string fileName)
@@ -417,7 +417,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			vfsname = vfsname.Replace ("%", "%25");
 			vfsname = vfsname.Replace ("#", "%23");
 			vfsname = vfsname.Replace ("?", "%3F");
-			se.Buffer.LoadFile (fileName, IdeApp.Services.PlatformService.GetMimeTypeForUri (vfsname), encoding);
+			se.Buffer.LoadFile (fileName, DesktopService.GetMimeTypeForUri (vfsname), encoding);
 			ContentName = fileName;
 			lastSaveTime = File.GetLastWriteTime (ContentName);
 			InitializeFormatter ();

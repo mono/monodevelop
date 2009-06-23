@@ -60,11 +60,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				MimeTypePanelData data = new MimeTypePanelData ();
 				OptionsDialogSection sec = new OptionsDialogSection (typeof(MimeTypePolicyOptionsSection));
 				sec.Fill = true;
-				Gdk.Pixbuf icon = MonoDevelop.Core.Gui.Services.PlatformService.GetPixbufForType (mt, Gtk.IconSize.Menu);
+				Gdk.Pixbuf icon = DesktopService.GetPixbufForType (mt, Gtk.IconSize.Menu);
 				sec.Icon = ImageService.GetStockId (icon, Gtk.IconSize.Menu);
 				data.Section = sec;
 				data.MimeType = mt;
-				data.TypeDescription = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeDescription (mt);
+				data.TypeDescription = DesktopService.GetMimeTypeDescription (mt);
 				if (string.IsNullOrEmpty (data.TypeDescription))
 					data.TypeDescription = mt;
 				data.DataObject = DataObject;
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		void LoadPolicyTypeData (MimeTypePanelData data, string mimeType)
 		{
 			List<string> types = new List<string> ();
-			types.AddRange (MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeInheritanceChain (mimeType));
+			types.AddRange (DesktopService.GetMimeTypeInheritanceChain (mimeType));
 			List<IMimeTypePolicyOptionsPanel> panels = new List<IMimeTypePolicyOptionsPanel> ();
 			
 			bool useParentPolicy = false;
@@ -147,8 +147,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			}
 			else if (item is Project) {
 				foreach (ProjectFile pf in ((Project)item).Files) {
-					string mt = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (pf.FilePath);
-					foreach (string mth in MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeInheritanceChain (mt))
+					string mt = DesktopService.GetMimeTypeForUri (pf.FilePath);
+					foreach (string mth in DesktopService.GetMimeTypeInheritanceChain (mt))
 						types.Add (mth);
 				}
 			}
@@ -184,8 +184,18 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			CellRendererComboBox comboCell = new CellRendererComboBox ();
 			comboCell.Changed += OnPolicySelectionChanged;
-			tree.AppendColumn (GettextCatalog.GetString ("Policy"), comboCell, new Gtk.TreeCellDataFunc (OnSetPolicyData));
+			Gtk.TreeViewColumn polCol = tree.AppendColumn (GettextCatalog.GetString ("Policy"), comboCell, new Gtk.TreeCellDataFunc (OnSetPolicyData));
 			
+			tree.Selection.Changed += delegate {
+				Gtk.TreeIter it;
+				tree.Selection.GetSelected (out it);
+				Gtk.TreeViewColumn ccol;
+				Gtk.TreePath path;
+				tree.GetCursor (out path, out ccol);
+				if (ccol == polCol)
+					tree.SetCursor (path, ccol, true);
+			};
+
 			Fill ();
 		}
 		
@@ -245,9 +255,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		void Fill ()
 		{
-			PlatformService pf = MonoDevelop.Core.Gui.Services.PlatformService;
 			foreach (MimeTypePanelData mt in panel.GetMimeTypeData ()) {
-				store.AppendValues (mt, pf.GetPixbufForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
+				store.AppendValues (mt, DesktopService.GetPixbufForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
 			}
 		}
 

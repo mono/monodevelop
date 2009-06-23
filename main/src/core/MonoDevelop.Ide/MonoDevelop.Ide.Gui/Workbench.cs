@@ -293,12 +293,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			List<FileViewer> list = new List<FileViewer> ();
 			
-			string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
 
 			foreach (IDisplayBinding bin in DisplayBindingService.GetBindingsForMimeType (mimeType))
 				list.Add (new FileViewer (bin));
 
-			foreach (DesktopApplication app in IdeApp.Services.PlatformService.GetAllApplications (mimeType))
+			foreach (DesktopApplication app in DesktopService.GetAllApplications (mimeType))
 				if (app.Command != "monodevelop")
 					list.Add (new FileViewer (app));
 				
@@ -684,7 +684,7 @@ namespace MonoDevelop.Ide.Gui
 				if (oFileInfo.DisplayBinding != null) {
 					binding = oFileInfo.DisplayBinding;
 				} else {
-					binding = DisplayBindingService.GetBinding (fileName, IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName));
+					binding = DisplayBindingService.GetBinding (fileName, DesktopService.GetMimeTypeForUri (fileName));
 				}
 				
 				if (binding != null) {
@@ -719,7 +719,7 @@ namespace MonoDevelop.Ide.Gui
 						//if (mimetype != null) {
 						//	mimetype.DefaultAction.Launch ();
 						//} else {
-							IdeApp.Services.PlatformService.ShowUrl ("file://" + fileName);
+							DesktopService.ShowUrl ("file://" + fileName);
 						//}
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error opening file: " + fileName, ex);
@@ -877,7 +877,7 @@ namespace MonoDevelop.Ide.Gui
 				if (binding.CanCreateContentForUri (fileName)) {
 					newContent = binding.CreateContentForUri (fileName);
 				} else {
-					string mimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+					string mimeType = DesktopService.GetMimeTypeForUri (fileName);
 					if (!binding.CanCreateContentForMimeType (mimeType)) {
 						fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 						return;

@@ -468,7 +468,6 @@
     <Compile Include="MonoDevelop.Core.Gui\SyncObject.cs" />
     <Compile Include="MonoDevelop.Core.Gui\RecentOpen.cs" />
     <Compile Include="MonoDevelop.Core.Gui.ProgressMonitoring\BaseProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Core.Gui\GuiService.cs" />
     <Compile Include="MonoDevelop.Core.Gui\IMementoCapable.cs" />
     <Compile Include="MonoDevelop.Core.Gui\PixbufList.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\ErrorDialog.cs" />
@@ -508,6 +507,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\MultiMessageDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs" />
+    <Compile Include="MonoDevelop.Core.Gui\DesktopService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

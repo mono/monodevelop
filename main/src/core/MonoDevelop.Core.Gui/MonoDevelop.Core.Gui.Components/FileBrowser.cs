@@ -169,11 +169,11 @@ namespace MonoDevelop.Core.Gui.Components
 					if (ignoreHidden)
 					{
 						if (!d.Name.StartsWith (".") && NotHidden (d.Name))
-							store.AppendValues (Services.PlatformService.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), Gtk.IconSize.Menu), d.Name);
+							store.AppendValues (DesktopService.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), Gtk.IconSize.Menu), d.Name);
 					}
 					else
 					{
-						store.AppendValues (Services.PlatformService.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), Gtk.IconSize.Menu), d.Name);
+						store.AppendValues (DesktopService.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), Gtk.IconSize.Menu), d.Name);
 					}
 				}
 
@@ -414,7 +414,7 @@ namespace MonoDevelop.Core.Gui.Components
 			performingtask = PerformingTask.CreatingNew;
 			text_render.Editable = true;
 
-			iter = store.AppendValues (Services.PlatformService.GetPixbufForFile (CurrentDir, Gtk.IconSize.Menu), "folder name");
+			iter = store.AppendValues (DesktopService.GetPixbufForFile (CurrentDir, Gtk.IconSize.Menu), "folder name");
 			treepath = tv.Model.GetPath(iter);
 
 			column = tv.GetColumn (0);

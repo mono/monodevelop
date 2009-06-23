@@ -41,7 +41,6 @@ using Mono.Addins;
 using MonoDevelop.Projects;
 using NUnit.Core;
 using MonoDevelop.Ide.Gui;
-using GuiServices = MonoDevelop.Core.Gui.Services;
 
 namespace MonoDevelop.NUnit
 {

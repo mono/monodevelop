@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			string relativePath = FileService.AbsoluteToRelativePath (project.BaseDirectory, fileName);
 			TreeIter iter = GetPath (System.IO.Path.GetDirectoryName (relativePath));
 			object[] values = new object[] {
-				IdeApp.Services.PlatformService.GetPixbufForFile (fileName, IconSize.Menu),
+				DesktopService.GetPixbufForFile (fileName, IconSize.Menu),
 				null,
 				System.IO.Path.GetFileName (fileName),
 				fileName,

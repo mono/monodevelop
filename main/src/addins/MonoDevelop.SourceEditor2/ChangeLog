@@ -1,3 +1,12 @@
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/DefaultFormatter.cs:
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs: Use
+	  the new DesktopService instead of PlatformService.
+
 2009-06-22  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.SourceEditor/DropDownBox.cs:

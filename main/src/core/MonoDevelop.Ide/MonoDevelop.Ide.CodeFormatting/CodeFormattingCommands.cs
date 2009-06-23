@@ -28,7 +28,7 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
-
+using MonoDevelop.Core.Gui;
 
 
 namespace MonoDevelop.Ide.CodeFormatting
@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		protected override void Update (CommandInfo info)
 		{
 			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsFile) {
-				string mt = IdeApp.Services.PlatformService.GetMimeTypeForUri (IdeApp.Workbench.ActiveDocument.FileName);
+				string mt = DesktopService.GetMimeTypeForUri (IdeApp.Workbench.ActiveDocument.FileName);
 				IPrettyPrinter printer = TextFileService.GetPrettyPrinter (mt);
 				if (printer != null)
 					return;
@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return;
-			string mt = IdeApp.Services.PlatformService.GetMimeTypeForUri (doc.FileName);
+			string mt = DesktopService.GetMimeTypeForUri (doc.FileName);
 			IPrettyPrinter printer = TextFileService.GetPrettyPrinter (mt);
 			if (printer == null)
 				return;

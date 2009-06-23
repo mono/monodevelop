@@ -469,7 +469,7 @@ namespace MonoDevelop.XmlEditor
 			
 			if (System.IO.Path.IsPathRooted (fileName)) {
 				string vfsname = fileName.Replace ("%", "%25").Replace ("#", "%23").Replace ("?", "%3F");
-				string mimeType = MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (vfsname);
+				string mimeType = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (vfsname);
 				if (IsMimeTypeHandled (mimeType))
 					return true;
 			}

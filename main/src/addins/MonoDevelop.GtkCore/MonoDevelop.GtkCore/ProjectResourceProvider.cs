@@ -47,7 +47,7 @@ namespace MonoDevelop.GtkCore
 			ArrayList list = new ArrayList ();
 			foreach (ProjectFile file in project.Files) {
 				if (file.BuildAction == BuildAction.EmbeddedResource)
-					list.Add (new Stetic.ResourceInfo (Path.GetFileName (file.Name), file.Name, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (file.Name)));
+					list.Add (new Stetic.ResourceInfo (Path.GetFileName (file.Name), file.Name, MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (file.Name)));
 			}
 			return (Stetic.ResourceInfo[]) list.ToArray (typeof(Stetic.ResourceInfo));
 		}

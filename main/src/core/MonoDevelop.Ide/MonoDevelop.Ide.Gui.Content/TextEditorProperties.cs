@@ -4,6 +4,7 @@ using System.Text;
 using Pango;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Content {
 	public enum LineViewerStyle {
@@ -405,7 +406,7 @@ namespace MonoDevelop.Ide.Gui.Content {
 				switch (s) {
 				case "__default_monospace":
 					try {
-						string fontName = IdeApp.Services.PlatformService.DefaultMonospaceFont;
+						string fontName = DesktopService.DefaultMonospaceFont;
 						return FontDescription.FromString (fontName);
 					} catch (Exception ex) {
 						LoggingService.LogWarning ("Could not load platform's default monospace font.", ex);

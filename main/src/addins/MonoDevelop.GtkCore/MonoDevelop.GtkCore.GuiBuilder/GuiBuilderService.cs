@@ -108,12 +108,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string OnMimeResolve (string url)
 		{
-			return MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (url);
+			return MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (url);
 		}
 		
 		static void OnShowUrl (string url)
 		{
-			MonoDevelop.Core.Gui.Services.PlatformService.ShowUrl (url);
+			MonoDevelop.Core.Gui.DesktopService.ShowUrl (url);
 		}
 		
 		internal static void StoreConfiguration ()

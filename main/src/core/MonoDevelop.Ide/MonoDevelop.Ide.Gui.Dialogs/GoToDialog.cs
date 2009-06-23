@@ -758,7 +758,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		public override Gdk.Pixbuf Icon {
 			get {
-				return IdeApp.Services.PlatformService.GetPixbufForFile (file, IconSize.Menu);
+				return DesktopService.GetPixbufForFile (file, IconSize.Menu);
 			}
 		}
 

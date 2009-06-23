@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Xml;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Deployment.Linux
@@ -130,7 +131,7 @@ namespace MonoDevelop.Deployment.Linux
 			sortedmt.Sort ();
 			
 			foreach (string mt in sortedmt) {
-				string desc = IdeApp.Services.PlatformService.GetMimeTypeDescription (mt);
+				string desc = DesktopService.GetMimeTypeDescription (mt);
 				storeMimeTypes.AppendValues (mt, desc);
 			}
 			
@@ -302,7 +303,7 @@ namespace MonoDevelop.Deployment.Linux
 					if (!entry.MimeTypes.Contains (mt)) {
 						entry.MimeTypes.Add (mt);
 						storeMimeTypes.SetValue (iter, 0, mt);
-						storeMimeTypes.SetValue (iter, 1, IdeApp.Services.PlatformService.GetMimeTypeDescription (mt));
+						storeMimeTypes.SetValue (iter, 1, DesktopService.GetMimeTypeDescription (mt));
 						
 						if (!string.IsNullOrEmpty (oldmt))
 							// It is a modification. Remove the old name.

@@ -70,7 +70,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void AddLastFile (string name, string project)
 		{
-			RecentItem recentItem = new RecentItem (RecentFileStorage.ToUri (name), Services.PlatformService.GetMimeTypeForUri (name), fileGroup);
+			RecentItem recentItem = new RecentItem (RecentFileStorage.ToUri (name), DesktopService.GetMimeTypeForUri (name), fileGroup);
 			recentItem.Private = project != null ? string.Format ("{0} [{1}]", Path.GetFileName (name), project) : Path.GetFileName (name);
 			recentFiles.AddWithLimit (recentItem, fileGroup, ItemLimit);
 			OnRecentFileChange();
@@ -104,7 +104,7 @@ namespace MonoDevelop.Core.Gui
 		}
 		public void AddLastProject (string name, string projectName)
 		{
-			RecentItem recentItem = new RecentItem (RecentFileStorage.ToUri (name), Services.PlatformService.GetMimeTypeForUri (name), projectGroup);
+			RecentItem recentItem = new RecentItem (RecentFileStorage.ToUri (name), DesktopService.GetMimeTypeForUri (name), projectGroup);
 			recentItem.Private = projectName;
 			recentFiles.AddWithLimit (recentItem, projectGroup, ItemLimit);
 			OnRecentProjectChange();

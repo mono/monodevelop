@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide.Commands
 					string label = ((ri.Private == null || ri.Private.Length < 1) ? Path.GetFileName (ri.ToString ()) : ri.Private);
 					CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
 					cmd.Description = GettextCatalog.GetString ("Open {0}", ri.ToString ());
-					Gdk.Pixbuf icon = IdeApp.Services.PlatformService.GetPixbufForFile (ri.ToString(), IconSize.Menu);
+					Gdk.Pixbuf icon = DesktopService.GetPixbufForFile (ri.ToString(), IconSize.Menu);
 					if (icon != null)
 						cmd.Icon = ImageService.GetStockId (icon, IconSize.Menu);
 					info.Add (cmd, ri);

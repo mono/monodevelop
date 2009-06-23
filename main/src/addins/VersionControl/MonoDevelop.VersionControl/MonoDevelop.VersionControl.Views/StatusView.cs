@@ -448,7 +448,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (n.IsDirectory)
 				fileIcon = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
 			else
-				fileIcon = IdeApp.Services.PlatformService.GetPixbufForFile (n.LocalPath, Gtk.IconSize.Menu);
+				fileIcon = DesktopService.GetPixbufForFile (n.LocalPath, Gtk.IconSize.Menu);
 
 			
 			

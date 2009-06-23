@@ -32,6 +32,7 @@ using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
@@ -141,7 +142,7 @@ namespace MonoDevelop.SourceEditor
 			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", false);
 			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
 			this.completeWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
-			this.ControlLeftRightMode =  (ControlLeftRightMode)Enum.Parse (typeof (ControlLeftRightMode), PropertyService.Get ("ControlLeftRightMode", IdeApp.Services.PlatformService.DefaultControlLeftRightBehavior));
+			this.ControlLeftRightMode =  (ControlLeftRightMode)Enum.Parse (typeof (ControlLeftRightMode), PropertyService.Get ("ControlLeftRightMode", DesktopService.DefaultControlLeftRightBehavior));
 		}
 		
 		#region new options
@@ -524,7 +525,7 @@ namespace MonoDevelop.SourceEditor
 		public override string FontName {
 			get {
 				if (EditorFontType == EditorFontType.DefaultMonospace) {
-					string font = IdeApp.Services.PlatformService.DefaultMonospaceFont;
+					string font = DesktopService.DefaultMonospaceFont;
 					if (String.IsNullOrEmpty (font))
 						return DEFAULT_FONT;
 					else

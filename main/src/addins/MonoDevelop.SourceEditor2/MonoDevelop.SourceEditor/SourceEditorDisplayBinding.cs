@@ -79,7 +79,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (String.IsNullOrEmpty (mimetype))
 				return false;
-			return IdeApp.Services.PlatformService.GetMimeTypeIsText (mimetype);
+			return DesktopService.GetMimeTypeIsText (mimetype);
 		}
 
 		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
@@ -97,8 +97,8 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool CanCreateContentForUri (string fileName)
 		{
-			string mt = IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
-			return IdeApp.Services.PlatformService.GetMimeTypeIsText (mt);
+			string mt = DesktopService.GetMimeTypeForUri (fileName);
+			return DesktopService.GetMimeTypeIsText (mt);
 		}
 	}
 }

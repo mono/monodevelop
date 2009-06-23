@@ -46,8 +46,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		{
 			Build ();
 			
-			Pango.FontDescription font = Pango.FontDescription.FromString (
-				MonoDevelop.Core.Gui.Services.PlatformService.DefaultMonospaceFont);
+			Pango.FontDescription font = Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont);
 			textview.ModifyFont (font);
 			textview.WrapMode = WrapMode.None;
 			textview.AcceptsTab = true;

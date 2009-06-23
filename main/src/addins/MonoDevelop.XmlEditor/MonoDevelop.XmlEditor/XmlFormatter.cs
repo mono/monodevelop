@@ -38,16 +38,16 @@ namespace MonoDevelop.XmlEditor
 	{
 		public bool CanFormat (string mimeType)
 		{
-			return Services.PlatformService.GetMimeTypeIsSubtype (mimeType, "application/xml");
+			return DesktopService.GetMimeTypeIsSubtype (mimeType, "application/xml");
 		}
 		
 		public string FormatText (MonoDevelop.Projects.SolutionItem policyParent, string mimeType, string input)
 		{
 			TextStylePolicy policy;
 			if (policyParent != null)
-				policy = policyParent.Policies.Get <TextStylePolicy> (Services.PlatformService.GetMimeTypeInheritanceChain (mimeType));
+				policy = policyParent.Policies.Get <TextStylePolicy> (DesktopService.GetMimeTypeInheritanceChain (mimeType));
 			else
-				policy = PolicyService.GetDefaultPolicy <TextStylePolicy> (Services.PlatformService.GetMimeTypeInheritanceChain (mimeType));
+				policy = PolicyService.GetDefaultPolicy <TextStylePolicy> (DesktopService.GetMimeTypeInheritanceChain (mimeType));
 			
 			XmlTextReader reader = new XmlTextReader (new StringReader (input));
 			reader.WhitespaceHandling = WhitespaceHandling.None;

@@ -384,7 +384,7 @@ namespace MonoDevelop.Ide.Gui
 			if (currentParseFile != null) {
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					// Don't access Document properties from the thread
-					ProjectDomService.Parse (curentParseProject, currentParseFile, IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile));
+					ProjectDomService.Parse (curentParseProject, currentParseFile, DesktopService.GetMimeTypeForUri (currentParseFile));
 				});
 			}
 		}
@@ -461,7 +461,7 @@ namespace MonoDevelop.Ide.Gui
 			if (editor == null)
 				return;
 			editor.TextChanged += OnDocumentChanged;
-			//this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, MonoDevelop.Core.Gui.Services.PlatformService.GetMimeTypeForUri (FileName), TextEditor.Text);
+			//this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, DesktopService.GetMimeTypeForUri (FileName), TextEditor.Text);
 			OnDocumentChanged (this, null);
 
 			// If the new document is a text editor, attach the extensions
@@ -500,7 +500,7 @@ namespace MonoDevelop.Ide.Gui
 			parsing = true;
 			try {
 				string currentParseFile = FileName;
-				string mime = IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile);
+				string mime = DesktopService.GetMimeTypeForUri (currentParseFile);
 				string currentParseText = TextEditor.Text;
 					Project curentParseProject = Project;
 				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, mime, currentParseText);
@@ -523,7 +523,7 @@ namespace MonoDevelop.Ide.Gui
 
 			parsing = true;
 			string currentParseFile = FileName;
-			string mime = IdeApp.Services.PlatformService.GetMimeTypeForUri (currentParseFile);
+			string mime = DesktopService.GetMimeTypeForUri (currentParseFile);
 			
 			GLib.Timeout.Add (ParseDelay, delegate {
 				if (closed)

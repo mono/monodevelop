@@ -31,6 +31,7 @@ using MonoDevelop.Ide.Gui;
 using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using System.Text;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
@@ -277,7 +278,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			CellRendererPixbuf fileNamePixbufRenderer = (CellRendererPixbuf)cell;
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
-			fileNamePixbufRenderer.Pixbuf =IdeApp.Services.PlatformService.GetPixbufForFile (searchResult.FileName, Gtk.IconSize.Menu);
+			fileNamePixbufRenderer.Pixbuf = DesktopService.GetPixbufForFile (searchResult.FileName, Gtk.IconSize.Menu);
 		}
 		
 		Gdk.Color GetColor (Gdk.Color baseColor)
@@ -438,7 +439,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			Mono.TextEditor.Document doc;
 			if (!documents.TryGetValue (result.FileName, out doc)) {
 				doc = new Mono.TextEditor.Document ();
-				doc.MimeType = IdeApp.Services.PlatformService.GetMimeTypeForUri (result.FileName);
+				doc.MimeType = DesktopService.GetMimeTypeForUri (result.FileName);
 				TextReader reader = result.FileProvider.Open ();
 				doc.Text = reader.ReadToEnd ();
 				reader.Close ();

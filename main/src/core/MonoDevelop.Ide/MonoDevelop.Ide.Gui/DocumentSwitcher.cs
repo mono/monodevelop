@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide
 			if (string.IsNullOrEmpty (document.FileName)) 
 				return ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.MiscFiles, iconSize);
 			
-			return IdeApp.Services.PlatformService.GetPixbufForFile (document.FileName, iconSize);
+			return DesktopService.GetPixbufForFile (document.FileName, iconSize);
 		}
 		
 		void ShowSelectedDocument ()

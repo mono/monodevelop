@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Xml;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 
 namespace MonoDevelop.Ide.CodeTemplates
@@ -74,13 +75,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public static IEnumerable<CodeTemplate> GetCodeTemplatesForFile (string fileName)
 		{
-			string mimeType = MonoDevelop.Ide.Gui.IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
 			return GetCodeTemplates (mimeType);
 		}
 		
 		public static void AddCompletionDataForFileName (string fileName, CompletionDataList list)
 		{
-			string mimeType = MonoDevelop.Ide.Gui.IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName);
+			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
 			AddCompletionDataForFileName (mimeType, list);
 		}
 		

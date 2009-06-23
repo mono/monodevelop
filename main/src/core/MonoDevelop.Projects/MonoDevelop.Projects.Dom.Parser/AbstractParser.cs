@@ -84,7 +84,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public virtual bool CanParse (string fileName)
 		{
 			return false;
-//			return CanParseMimeType (IdeApp.Services.PlatformService.GetMimeTypeForUri (fileName));
 		}
 
 		public string[] LexerTags {
