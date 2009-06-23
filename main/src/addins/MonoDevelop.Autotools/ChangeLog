@@ -1,3 +1,22 @@
+2009-06-23  Jérémie Laval  <jeremie.laval@gmail.com>
+	* MonoDevelop.Autotools.csproj:
+	* Makefile.am: Added the new files
+	
+	* Switch.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditor.cs
+	* gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs:
+	* MakefileSwitchEditorWidget.cs:
+	* MakefileSwitchEditor.cs: new switch editor code
+	
+	* gtk-gui/objects.xml:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:
+	* SimpleProjectMakefileHandler.cs:
+	* Handler.cs:
+	* SolutionDeployer.cs:
+	* AutotoolsContext.cs:
+	* TarballBuilderEditorWidget.cs: Added switch editor support code
+
 2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MakefileData.cs: Track assembly lookup APIs.

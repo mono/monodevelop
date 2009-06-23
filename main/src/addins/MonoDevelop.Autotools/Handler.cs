@@ -28,6 +28,10 @@ namespace MonoDevelop.Autotools
 		[ItemProperty ("GenerateAutotools", DefaultValue = true)]
 		bool generateAutotools = true;
 		
+		[ItemProperty ("UserSwitchs")]
+		[ItemProperty ("Switch", ValueType = typeof (Switch), Scope = "*")]
+		List<Switch> switchs = new List<Switch> ();
+		
 		public TarballDeployTarget ()
 		{
 		}
@@ -49,6 +53,7 @@ namespace MonoDevelop.Autotools
 			defaultConfig = target.defaultConfig;
 			generateFiles = target.generateFiles;
 			generateAutotools = target.generateAutotools;
+			switchs = new List<Switch> (target.GetSwitches ());
 		}
 		
 		public bool GenerateFiles {
@@ -137,6 +142,8 @@ namespace MonoDevelop.Autotools
 					return false;
 			
 				SolutionDeployer deployer = new SolutionDeployer (generateAutotools);
+				deployer.AddSwitches (switchs);
+				
 				if (!deployer.Deploy ( ctx, solution, DefaultConfiguration, TargetDir, generateFiles, monitor ))
 					return false;
 				
@@ -173,6 +180,22 @@ namespace MonoDevelop.Autotools
 				return prefix_var + "/include/" + package_var;
 			}
 			return null;
+		}
+		
+		public void AddSwitch (Switch s)
+		{
+			switchs.Add (s);
+			Console.WriteLine (switchs.Count);
+		}
+		
+		public void RemoveSwitch (Switch s)
+		{
+			switchs.RemoveAll ((swit) => s.SwitchName == swit.SwitchName);
+		}
+		
+		public IEnumerable<Switch> GetSwitches ()
+		{
+			return switchs.AsReadOnly ();
 		}
 
 		public override PackageBuilder[] CreateDefaultBuilders ()

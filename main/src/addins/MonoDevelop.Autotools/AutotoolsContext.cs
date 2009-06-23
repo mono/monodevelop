@@ -68,6 +68,17 @@ namespace MonoDevelop.Autotools
 			}
 		}
 		
+		IList<Switch> switches;
+		public IList<Switch> Switches {
+			get {
+				return switches;
+			} 
+			set {
+				switches = value;
+			}
+		}
+		
+		
 		string libdir = "lib";
 		public string LibraryDirectory {
 			get {

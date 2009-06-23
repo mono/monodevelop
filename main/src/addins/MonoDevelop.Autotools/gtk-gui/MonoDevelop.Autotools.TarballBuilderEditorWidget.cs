@@ -49,6 +49,10 @@ namespace MonoDevelop.Autotools {
         
         private Gtk.Label label9;
         
+        private Gtk.Alignment alignment1;
+        
+        private Gtk.Button autofooProperties;
+        
         private Gtk.HBox hbox2;
         
         private Gtk.Label label1;
@@ -218,6 +222,22 @@ namespace MonoDevelop.Autotools {
             w16.Expand = false;
             w16.Fill = false;
             // Container child boxGenerate.Gtk.Box+BoxChild
+            this.alignment1 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment1.Name = "alignment1";
+            this.alignment1.BottomPadding = ((uint)(8));
+            // Container child alignment1.Gtk.Container+ContainerChild
+            this.autofooProperties = new Gtk.Button();
+            this.autofooProperties.CanFocus = true;
+            this.autofooProperties.Name = "autofooProperties";
+            this.autofooProperties.UseUnderline = true;
+            this.autofooProperties.Label = Mono.Unix.Catalog.GetString("Edit configure switches");
+            this.alignment1.Add(this.autofooProperties);
+            this.boxGenerate.Add(this.alignment1);
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.boxGenerate[this.alignment1]));
+            w18.Position = 3;
+            w18.Expand = false;
+            w18.Fill = false;
+            // Container child boxGenerate.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
             this.hbox2.Spacing = 6;
@@ -269,6 +289,7 @@ namespace MonoDevelop.Autotools {
             this.radioGenerate.Clicked += new System.EventHandler(this.OnRadioGenerateClicked);
             this.comboConfigs.Changed += new System.EventHandler(this.OnComboConfigsChanged);
             this.rbAutotools.Toggled += new System.EventHandler(this.OnRbAutotoolsToggled);
+            this.autofooProperties.Clicked += new System.EventHandler(this.OnAutofooPropertiesClicked);
             this.rbSimple.Toggled += new System.EventHandler(this.OnRbSimpleToggled);
         }
     }

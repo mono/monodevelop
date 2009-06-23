@@ -31,6 +31,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs \
 	gtk-gui/MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs \
 	gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs \
+	gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditor.cs \
+	gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs \
 	gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs \
 	Handler.cs \
 	IMakefileHandler.cs \
@@ -46,12 +48,15 @@ FILES =  \
 	MakefileProject.cs \
 	MakefileProjectServiceExtension.cs \
 	MakefileReaderExtension.cs \
+	MakefileSwitchEditor.cs \
+	MakefileSwitchEditorWidget.cs \
 	MakefileVar.cs \
 	PropertyProvider.cs \
 	Set.cs \
 	SimpleProjectMakefileHandler.cs \
 	SolutionDeployer.cs \
 	SolutionMakefileHandler.cs \
+	Switch.cs \
 	TarballBuilderEditorWidget.cs \
 	TemplateEngine.cs
 

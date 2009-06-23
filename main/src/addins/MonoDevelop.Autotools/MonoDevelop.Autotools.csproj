@@ -134,6 +134,11 @@
     <Compile Include="PropertyProvider.cs" />
     <Compile Include="GenerateMakefilesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Autotools.GenerateMakefilesDialog.cs" />
+    <Compile Include="MakefileSwitchEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs" />
+    <Compile Include="MakefileSwitchEditor.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Autotools.MakefileSwitchEditor.cs" />
+    <Compile Include="Switch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

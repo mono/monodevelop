@@ -45,10 +45,17 @@ namespace MonoDevelop.Autotools
 
 		AutotoolsContext context;
 		bool generateAutotools;
+		
+		List<Switch> switchs;
 
 		public SolutionDeployer (bool generateAutotools)
 		{
 			this.generateAutotools = generateAutotools;
+		}
+		
+		public void AddSwitches (IEnumerable<Switch> switches)
+		{
+			switchs = new List<Switch> (switches);
 		}
 
 		public bool HasGeneratedFiles (Solution solution)
@@ -88,6 +95,7 @@ namespace MonoDevelop.Autotools
 				
 				context = new AutotoolsContext ( ctx, solution_dir, configs, mt );
 				context.TargetSolution = solution;
+				context.Switches = switchs;
 				
 				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (solution.RootFolder, mt);
 				if (handler == null)
@@ -298,6 +306,18 @@ namespace MonoDevelop.Autotools
 				config_options.Append ("fi\n");
 			}
 
+			// Add specific user switch
+			foreach (Switch s in switchs) {
+				string name = s.SwitchName.ToLowerInvariant ();
+				
+				config_options.AppendLine (string.Format (@"AC_ARG_ENABLE({0},
+	AC_HELP_STRING([--enable-{0}],
+		[{1}]),
+		enable_{2}=yes, enable_{2}=no)
+AM_CONDITIONAL(ENABLE_{3}, test x$enable_{2} = xyes)", 
+				                       name, s.HelpStr, name.Replace ('-', '_'), name.Replace ('-', '_').ToUpperInvariant ()));
+			}
+			
 			templateEngine.Variables ["CONFIG_OPTIONS"] = config_options.ToString();
 
 			// build compiler checks

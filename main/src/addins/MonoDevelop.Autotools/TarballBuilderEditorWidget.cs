@@ -13,6 +13,8 @@ namespace MonoDevelop.Autotools
 		public TarballBuilderEditorWidget (TarballDeployTarget target)
 		{
 			this.Build();
+			alignment1.Xalign = 0.16f;
+			alignment1.Xscale = 0.04f;
 			
 			this.target = target;
 			SolutionItem targetCombine = target.RootSolutionItem;
@@ -74,6 +76,15 @@ namespace MonoDevelop.Autotools
 		protected virtual void OnRbAutotoolsToggled (object sender, System.EventArgs e)
 		{
 			target.GenerateAutotools = rbAutotools.Active;
+		}
+
+		protected virtual void OnAutofooPropertiesClicked (object sender, System.EventArgs e)
+		{
+			MakefileSwitchEditor editor = new MakefileSwitchEditor (target);
+			editor.TransientFor = this.Toplevel as Gtk.Window;
+			editor.ShowAll ();
+			editor.Run ();
+			editor.Destroy ();
 		}
 	}
 }
