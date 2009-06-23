@@ -120,9 +120,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public string CompiledOutputName {
+		public FilePath CompiledOutputName {
 			get {
-				string fullPath = Path.Combine (OutputDirectory, OutputAssembly);
+				FilePath fullPath = OutputDirectory.Combine (OutputAssembly);
 				if (OutputAssembly.EndsWith (".dll") || OutputAssembly.EndsWith (".exe"))
 					return fullPath;
 				else

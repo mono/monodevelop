@@ -457,14 +457,14 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
-		public string GetOutputFileName (string solutionConfiguration)
+		public FilePath GetOutputFileName (string solutionConfiguration)
 		{
 			return OnGetOutputFileName (GetActiveConfigurationId (solutionConfiguration));
 		}
 		
-		protected virtual string OnGetOutputFileName (string itemConfiguration)
+		protected virtual FilePath OnGetOutputFileName (string itemConfiguration)
 		{
-			return null;
+			return FilePath.Null;
 		}
 		
 		protected internal override bool OnGetNeedsBuilding (string solutionConfiguration)

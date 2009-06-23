@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Xml;
 
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 
@@ -84,7 +85,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
-		public virtual string OutputDirectory {
+		public virtual FilePath OutputDirectory {
 			get { return directory; }
 			set { directory = value; }
 		}

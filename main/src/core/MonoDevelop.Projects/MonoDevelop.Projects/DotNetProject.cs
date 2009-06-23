@@ -515,7 +515,7 @@ namespace MonoDevelop.Projects
 		}
 
 
-		protected override string OnGetOutputFileName (string configuration)
+		protected override FilePath OnGetOutputFileName (string configuration)
 		{
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) GetConfiguration (configuration);
 			if (conf != null)

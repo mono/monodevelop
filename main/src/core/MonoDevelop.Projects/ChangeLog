@@ -1,3 +1,11 @@
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs:
+	* MonoDevelop.Projects/AbstractProjectConfiguration.cs: Use
+	  new FilePath class.
+
 2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectReference.cs: Fix build.
