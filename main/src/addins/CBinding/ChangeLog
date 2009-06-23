@@ -1,3 +1,7 @@
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/CProject.cs: Track api changes.
+
 2009-06-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CTextEditorExtension.cs: Applied patch "Bug 512617 -

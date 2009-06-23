@@ -357,10 +357,10 @@ namespace CBinding
 			}
 		}
 		
-		protected override string OnGetOutputFileName (string configuration)
+		protected override FilePath OnGetOutputFileName (string configuration)
 		{
 			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
-			return Path.Combine (conf.OutputDirectory, conf.CompiledOutputName);
+			return conf.OutputDirectory.Combine (conf.CompiledOutputName);
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
