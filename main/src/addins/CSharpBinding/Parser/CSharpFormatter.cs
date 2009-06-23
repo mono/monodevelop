@@ -85,7 +85,7 @@ namespace CSharpBinding.Parser
 		}
 
 
-		public CSharpFormatter (TextEditorData data, ProjectDom dom, ICompilationUnit unit, MonoDevelop.Ide.Gui.TextEditor editor, DomLocation caretLocation)
+		public static void Format (TextEditorData data, ProjectDom dom, ICompilationUnit unit, MonoDevelop.Ide.Gui.TextEditor editor, DomLocation caretLocation)
 		{
 			IType type = NRefactoryResolver.GetTypeAtCursor (unit, unit.FileName, caretLocation);
 			if (type == null) 
@@ -109,13 +109,15 @@ namespace CSharpBinding.Parser
 					col += GetNextTabstop (col, data.Options.TabSize);
 				}
 			}
-			startIndentLevel = col / data.Options.TabSize - 2;
+			CSharpFormatter formatter = new CSharpFormatter ();
+			formatter.startIndentLevel = col / data.Options.TabSize - 2;
 			
 			int suffixLen = 2;
-			string formattedText = InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
+			string formattedText = formatter.InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
 
-			if (hasErrors) 
-				return; 
+			if (formatter.hasErrors) 
+				return;
+			
 			int startLine = member.Location.Line;
 			int endLine = member.Location.Line;
 
