@@ -39,6 +39,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.DesignerSupport;
