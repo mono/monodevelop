@@ -828,7 +828,7 @@ namespace Mono.TextEditor
 					Caret.PreserveSelection = true;
 					textEditorData.DeleteSelection (selection);
 					Caret.PreserveSelection = false;
-					
+
 					if (this.textEditorData.IsSomethingSelected && selection.GetSelectionRange (textEditorData).Offset <= this.textEditorData.SelectionRange.Offset) {
 						this.textEditorData.SelectionRange = new Segment (this.textEditorData.SelectionRange.Offset - selection.GetSelectionRange (textEditorData).Length, this.textEditorData.SelectionRange.Length);
 						this.textEditorData.SelectionMode = selection.SelectionMode;
@@ -844,11 +844,12 @@ namespace Mono.TextEditor
 					if (selection != null && selection.GetSelectionRange (textEditorData).Offset >= offset)
 						selection = new Selection (Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length), Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length + selection.GetSelectionRange (textEditorData).Length));
 					textEditorData.Insert (offset, selection_data.Text);
+					textEditorData.PasteText (offset, selection_data.Text);
 					Caret.Offset = offset + selection_data.Text.Length;
 					MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
 				}
-				dragOver  = false;
-				context   = null;
+				dragOver = false;
+				context = null;
 			}
 			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
 		}
