@@ -164,11 +164,33 @@ namespace Mono.Debugging.Evaluation
 			ObjectValue[] values = new ObjectValue[expressions.Length];
 			for (int n = 0; n < values.Length; n++) {
 				string exp = expressions[n];
-				values[n] = asyncEvaluationTracker.Run (exp, ObjectValueFlags.Literal, delegate {
-					return GetExpressionValue (ctx, exp, evaluateMethods);
-				});
+				// This is a workaround to a bug in mono 2.0. That mono version fails to compile
+				// an anonymous method here
+				ExpData edata = new ExpData (ctx, exp, evaluateMethods, this);
+				values[n] = asyncEvaluationTracker.Run (exp, ObjectValueFlags.Literal, edata.Run);
 			}
 			return values;
+		}
+		
+		class ExpData
+		{
+			public EvaluationContext<TValue, TType> ctx;
+			public string exp;
+			public bool evaluateMethods;
+			public ObjectValueAdaptor<TValue, TType> adaptor;
+			
+			public ExpData (EvaluationContext<TValue, TType> ctx, string exp, bool evaluateMethods, ObjectValueAdaptor<TValue, TType> adaptor)
+			{
+				this.ctx = ctx;
+				this.exp = exp;
+				this.evaluateMethods = evaluateMethods;
+				this.adaptor = adaptor;
+			}
+			
+			public ObjectValue Run ()
+			{
+				return adaptor.GetExpressionValue (ctx, exp, evaluateMethods);
+			}
 		}
 
 		public virtual ValueReference<TValue, TType> GetIndexerReference (EvaluationContext<TValue, TType> ctx, TValue target, TValue index)
