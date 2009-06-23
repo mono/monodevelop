@@ -106,11 +106,11 @@ namespace CSharpBinding.Parser
 				if (wrapper[j] == ' ') {
 					col++;
 				} else {
-					col += GetNextTabstop (col, data.Options.TabSize);
+					col = GetNextTabstop (col, data.Options.TabSize);
 				}
 			}
 			CSharpFormatter formatter = new CSharpFormatter ();
-			formatter.startIndentLevel = col / data.Options.TabSize - 2;
+			formatter.startIndentLevel = System.Math.Max (0, col / data.Options.TabSize - 1);
 			
 			int suffixLen = 2;
 			string formattedText = formatter.InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
