@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui
 			monitor.Step (1);
 			
 			// register string tag provider (TODO: move to add-in tree :)
-			StringParserService.RegisterStringTagProvider(new MonoDevelop.Ide.Commands.SharpDevelopStringTagProvider());
+			StringParserService.RegisterStringTagProvider (new MonoDevelop.Ide.Commands.DefaultStringTagProvider ());
 			
 			InternalLog.EnableErrorNotification ();
 			

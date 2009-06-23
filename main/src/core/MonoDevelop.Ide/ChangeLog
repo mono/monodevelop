@@ -76,6 +76,10 @@
 2009-06-16  Viktoria Dudka  <viktoriad@remobjects.com>
 	* MonoDevelop.Ide.Commands\WindowCommands.cs: Rewritten from scratch to make it non-GPL.
 
+2009-06-18  Viktoria Dudka  <viktoriad@remobjects.com>
+
+	* MonoDevelop.Ide.Gui/CustomStringTagParser.cs: Rewritten from scratch to make it non-GPL. 
+
 2009-06-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Fixed "Bug 513383
