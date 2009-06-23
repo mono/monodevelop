@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections;
+using System.Text;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -482,6 +483,29 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 			
 			return annotations.ToArray ();
+		}
+		
+		public override string CreatePatch (IEnumerable<DiffInfo> diffs)
+		{
+			StringBuilder patch = new StringBuilder ();
+			
+			if (null != diffs) {
+				foreach (DiffInfo diff in diffs) {
+					string relpath;
+					if (diff.FileName.IsChildPathOf (diff.BasePath))
+						relpath = diff.FileName.ToRelative (diff.BasePath);
+					else if (diff.FileName == diff.BasePath)
+						relpath = diff.FileName.FileName;
+					else
+						relpath = diff.FileName;
+					relpath = relpath.Replace (Path.DirectorySeparatorChar, '/');
+					patch.AppendLine ("Index: " + relpath);
+					patch.AppendLine (new string ('=', 67));
+					patch.AppendLine (diff.Content);
+				}
+			}
+			
+			return patch.ToString ();
 		}
 	}
 }

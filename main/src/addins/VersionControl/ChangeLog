@@ -1,3 +1,9 @@
+2009-06-23  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Repository.cs:
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	  Move patch header tagging into svn addin.
+
 2009-04-17  Mike Kestner  <mkestner@novell.com>
 
 	* *.csproj: don't require specific gtk-sharp version.
