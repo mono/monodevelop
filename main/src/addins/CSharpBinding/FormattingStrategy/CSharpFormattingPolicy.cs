@@ -158,6 +158,12 @@ namespace FormattingStrategy
 		}
 		
 		[ItemProperty]
+		public BraceStyle AnonymousMethodBraceStyle {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
 		public BraceStyle ConstructorBraceStyle {
 			get;
 			set;
@@ -534,7 +540,7 @@ namespace FormattingStrategy
 		}
 		#endregion
 		
-		public CSharpFormattingPolicy()
+		public CSharpFormattingPolicy ()
 		{
 			IndentNamespaceBody = true;
 			IndentClassBody = IndentInterfaceBody = IndentStructBody = IndentEnumBody = true;
@@ -546,6 +552,7 @@ namespace FormattingStrategy
 			NamespaceBraceStyle = BraceStyle.NextLine;
 			ClassBraceStyle = InterfaceBraceStyle = StructBraceStyle = EnumBraceStyle = BraceStyle.NextLine;
 			MethodBraceStyle = ConstructorBraceStyle = DestructorBraceStyle = BraceStyle.NextLine;
+			AnonymousMethodBraceStyle = BraceStyle.EndOfLine;
 
 			PropertyBraceStyle = PropertyGetBraceStyle = PropertySetBraceStyle = BraceStyle.EndOfLine;
 			AllowPropertyGetBlockInline = AllowPropertySetBlockInline = true;
@@ -563,7 +570,7 @@ namespace FormattingStrategy
 			BeforeMethodDeclarationParentheses = true;
 			BeforeConstructorDeclarationParentheses = true;
 			BeforeDelegateDeclarationParentheses = true;
-			
+
 			NewParentheses = true;
 			IfParentheses = true;
 			WhileParentheses = true;

@@ -1,5 +1,11 @@
 2009-06-23  Mike Krüger  <mkrueger@novell.com>
 
+	* FormattingStrategy/CSharpFormattingPolicy.cs:
+	* FormattingStrategy/CSharpFormattingPolicy.xml: Added format
+	  option for anonymous methods.
+
+2009-06-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CSharpFormatter.cs:
 	* Gui/CSharpTextEditorIndentation.cs: Worked on formatter.
 

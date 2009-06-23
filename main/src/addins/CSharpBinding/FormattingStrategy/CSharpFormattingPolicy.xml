@@ -330,6 +330,7 @@ class ClassDeclaration {
 			
 			<OptionCategory _displayName="Method declaration">
 				<Option name="MethodBraceStyle" _displayName="Method declaration"><Example><![CDATA[class ClassDeclaration { void MyMethod () {} }]]></Example></Option>
+				<Option name="AnonymousMethodBraceStyle" _displayName="Anonymous methods"><Example><![CDATA[class ClassDeclaration { void MyMethod () { MyEvent += delegate (object sender, EventArgs e) { if (true) Console.WriteLine ("Hello World"); }; } }]]></Example></Option>
 				<Option name="ConstructorBraceStyle" _displayName="Constructor declaration"><Example><![CDATA[class ClassDeclaration { public ClassDeclaration () {} }]]></Example></Option>
 				<Option name="DestructorBraceStyle" _displayName="Destructor declaration"><Example><![CDATA[class ClassDeclaration { ~ClassDeclaration () {} }]]></Example></Option>
 			</OptionCategory>
