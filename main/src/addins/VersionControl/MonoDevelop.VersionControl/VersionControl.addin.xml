@@ -171,6 +171,7 @@
 		<SeparatorItem id = "CommandSeparator0" />
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.Update" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
+		<CommandItem id = "MonoDevelop.VersionControl.Commands.CreatePatch" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.Log" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
 		<SeparatorItem id = "CommandSeparator1" />
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
