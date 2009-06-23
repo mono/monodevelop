@@ -151,7 +151,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		_assemblies = []
 		if (_proj is not null):
 			assembly = _proj.GetOutputFileName(ProjectService.DefaultConfiguration)
-			if assembly is not null:
+			if not assembly.IsNull:
 				_assemblies.Add(assembly)
 		else:
 			projects = IdeApp.Workspace.GetAllProjects()
@@ -159,7 +159,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 				if entry is null:
 					continue
 				assembly = entry.GetOutputFileName(ProjectService.DefaultConfiguration)
-				if assembly is not null:
+				if not assembly.IsNull:
 					_assemblies.Add(assembly)
 
 		return _assemblies

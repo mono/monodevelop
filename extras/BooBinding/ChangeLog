@@ -1,3 +1,7 @@
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/ShellTextView.boo: Track api changes.
+
 2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BooBinding.addin.xml: Remove invalid icon.
