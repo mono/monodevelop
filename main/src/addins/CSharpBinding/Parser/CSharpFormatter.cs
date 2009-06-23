@@ -68,6 +68,10 @@ namespace CSharpBinding.Parser
 			while (offset < data.Document.Length && data.Document.GetCharAt (offset) != '{') {
 				offset++;
 			}
+			if (data.Caret.Offset < offset) {
+				end = -1;
+				return "";
+			}
 			end = data.Document.GetMatchingBracketOffset (offset);
 			if (end < 0) 
 				return ""; 
@@ -88,20 +92,25 @@ namespace CSharpBinding.Parser
 				return; 
 
 			IMember member = NRefactoryResolver.GetMemberAt (type, caretLocation);
-			if (member == null) 
-				return; 
+			if (member == null)  
+				return;
 			int endPos;
 			string wrapper = CreateWrapperClassForMember (member, data, out endPos);
 			if (string.IsNullOrEmpty (wrapper) || endPos < 0) 
 				return; 
-
+			
 			int i = wrapper.IndexOf ('{') + 1;
 			int j = i;
-			for (; j < wrapper.Length && Char.IsWhiteSpace (wrapper[j]); j++)
-				;
-			string indent = wrapper.Substring (i, j - i);
-			startIndentLevel = indent.Length - 1;
-
+			int col = 0;
+			for (; j < wrapper.Length && (wrapper[j] == ' ' || wrapper[j] == '\t'); j++) {
+				if (wrapper[j] == ' ') {
+					col++;
+				} else {
+					col += GetNextTabstop (col, data.Options.TabSize);
+				}
+			}
+			startIndentLevel = col / data.Options.TabSize - 2;
+			
 			int suffixLen = 2;
 			string formattedText = InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
 
@@ -119,10 +128,13 @@ namespace CSharpBinding.Parser
 			int len1 = formattedText.IndexOf ('{') + 1;
 			int last = formattedText.LastIndexOf ('}');
 			formattedText = formattedText.Substring (len1, last - len1 - 1);
+			
 			if (CanInsertFormattedText (data, startPos - 1, formattedText)) {
 				data.Document.BeginAtomicUndo ();
 				InsertFormattedText (data, startPos - 1, formattedText);
 				data.Document.EndAtomicUndo ();
+			} else {
+				Console.WriteLine ("Can't insert !!!");
 			}
 			InFormat = false;
 		}
@@ -155,6 +167,9 @@ namespace CSharpBinding.Parser
 
 		static void InsertFormattedText (TextEditorData data, int offset, string formattedText)
 		{
+			int caretOffset = data.Caret.Offset;
+			int selAnchor = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Anchor) : -1;
+			int selLead = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Lead) : -1;
 			int textOffset = 0;
 			while (textOffset < formattedText.Length) {
 				char ch1 = data.Document.GetCharAt (offset);
@@ -169,14 +184,24 @@ namespace CSharpBinding.Parser
 
 				if (ch2Ws && !ch1Ws) {
 					data.Insert (offset, ch2.ToString ());
-
+					if (offset < caretOffset)
+						caretOffset++;
+					if (offset < selAnchor)
+						selAnchor++;
+					if (offset < selLead)
+						selLead++;
 					textOffset++;
 					offset++;
 					continue;
 				}
 				if (!ch2Ws && ch1Ws) {
+					if (offset < caretOffset)
+						caretOffset--;
+					if (offset < selAnchor)
+						selAnchor--;
+					if (offset < selLead)
+						selLead--;
 					data.Remove (offset, 1);
-
 					continue;
 				}
 				if (ch1Ws && ch2Ws) {
@@ -187,6 +212,9 @@ namespace CSharpBinding.Parser
 				}
 				break;
 			}
+			data.Caret.Offset = caretOffset;
+			if (selAnchor >= 0)
+				data.MainSelection = new Selection (data.Document.OffsetToLocation (selAnchor), data.Document.OffsetToLocation (selLead));
 		}
 
 		public static bool InFormat = false;

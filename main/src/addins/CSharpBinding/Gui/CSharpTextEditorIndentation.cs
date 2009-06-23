@@ -72,22 +72,35 @@ namespace MonoDevelop.CSharpBinding.Gui
 				textEditorData.VirtualSpaceManager = new IndentVirtualSpaceManager (view.GetTextEditorData (), new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor));
 				textEditorData.Caret.AllowCaretBehindLineEnd = true;
 				textEditorData.Paste += TextEditorDataPaste;
+			//	textEditorData.Document.TextReplaced += TextCut;
 			}
 		}
 
-		void TextEditorDataPaste (int insertionOffset, string text)
+/*		void TextCut (object sender, ReplaceEventArgs e)
 		{
-			if (string.IsNullOrEmpty (text) || text.Length < 2) 
-				return; 
-			
+			if (!string.IsNullOrEmpty (e.Value) || e.Count == 0)
+				return;
+			RunFormatterAt (e.Offset);
+		}*/
+		
+		void RunFormatterAt (int offset)
+		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+			//	textEditorData.Document.TextReplaced -= TextCut;
 				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
-				if (dom == null) 
-					dom = ProjectDomService.GetFileDom (Document.FileName); 
-				DocumentLocation loc = textEditorData.Document.OffsetToLocation (insertionOffset);
+				if (dom == null)
+					dom = ProjectDomService.GetFileDom (Document.FileName);
+				DocumentLocation loc = textEditorData.Document.OffsetToLocation (offset);
 				DomLocation location = new DomLocation (loc.Line, loc.Column);
 				CSharpFormatter formatter = new CSharpFormatter (textEditorData, dom, Document.CompilationUnit, Editor, location);
+			//	textEditorData.Document.TextReplaced += TextCut;
 			}
+		}
+		void TextEditorDataPaste (int insertionOffset, string text)
+		{
+			if (string.IsNullOrEmpty (text) || text.Length < 2)
+				return;
+			RunFormatterAt (insertionOffset);
 		}
 
 		class IndentVirtualSpaceManager : Mono.TextEditor.TextEditorData.IVirtualSpaceManager
@@ -247,71 +260,77 @@ namespace MonoDevelop.CSharpBinding.Gui
 		}
 		
 		//special handling for certain characters just inserted , for comments etc
-	void DoPostInsertionSmartIndent (char charInserted, bool hadSelection, out bool reIndent)
-	{
-		stateTracker.UpdateEngine ();
-		reIndent = false;
-		int cursor = Editor.CursorPosition;
-
-		switch (charInserted) {
-		case '\n':
-			if (stateTracker.Engine.LineNumber > 0) {
-				string previousLine = Editor.GetLineText (stateTracker.Engine.LineNumber - 1);
-				string trimmedPreviousLine = previousLine.TrimStart ();
-				//xml doc comments
-				//check previous line was a doc comment
-				//check there's a following line?
-				if (trimmedPreviousLine.StartsWith ("/// ") && Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber + 1, 1) > -1)				/*  && cursor > 0 && Editor.GetCharAt (cursor - 1) == '\n'*/ {
-					//check that the newline command actually inserted a newline
-					string nextLine = Editor.GetLineText (stateTracker.Engine.LineNumber + 1);
-					if (trimmedPreviousLine.Length > "/// ".Length || nextLine.TrimStart ().StartsWith ("/// ")) {
-						Editor.InsertText (cursor, 						/*GetLineWhiteSpace (previousLine) + */"/// ");
+		void DoPostInsertionSmartIndent (char charInserted, bool hadSelection, out bool reIndent)
+		{
+			stateTracker.UpdateEngine ();
+			reIndent = false;
+			int cursor = Editor.CursorPosition;
+			switch (charInserted) {
+			case ';':
+			case '}':
+				RunFormatter ();
+				break;
+			case '\n':
+				if (stateTracker.Engine.LineNumber > 0) {
+					string previousLine = Editor.GetLineText (stateTracker.Engine.LineNumber - 1);
+					string trimmedPreviousLine = previousLine.TrimStart ();
+					//xml doc comments
+					//check previous line was a doc comment
+					//check there's a following line?
+					if (trimmedPreviousLine.StartsWith ("/// ") && Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber + 1, 1) > -1)					/*  && cursor > 0 && Editor.GetCharAt (cursor - 1) == '\n'*/ {
+						//check that the newline command actually inserted a newline
+						string nextLine = Editor.GetLineText (stateTracker.Engine.LineNumber + 1);
+						if (trimmedPreviousLine.Length > "/// ".Length || nextLine.TrimStart ().StartsWith ("/// ")) {
+							Editor.InsertText (cursor, 							/*GetLineWhiteSpace (previousLine) + */"/// ");
+							return;
+						}
+						//multi-line comments
+					} else if (stateTracker.Engine.IsInsideMultiLineComment) {
+						string commentPrefix = string.Empty;
+						if (trimmedPreviousLine.StartsWith ("* ")) {
+							commentPrefix = "* ";
+						} else if (trimmedPreviousLine.StartsWith ("/**") || trimmedPreviousLine.StartsWith ("/*")) {
+							commentPrefix = " * ";
+						} else if (trimmedPreviousLine.StartsWith ("*")) {
+							commentPrefix = "*";
+						}
+						Editor.InsertText (cursor, 						/*GetLineWhiteSpace (previousLine) +*/commentPrefix);
+						return;
+					} else if (stateTracker.Engine.IsInsideStringLiteral) {
+						int lastLineEndPos = Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber - 1, Editor.GetLineLength (stateTracker.Engine.LineNumber - 1) + 1);
+						int cursorEndPos = cursor + 4;
+						Editor.InsertText (lastLineEndPos, "\" +");
+						if (!trimmedPreviousLine.StartsWith ("\"")) {
+							Editor.InsertText (cursor++ + 3, "\t");
+							cursorEndPos++;
+						}
+						Editor.InsertText (cursor + 3, "\"");
+						Editor.CursorPosition = cursorEndPos;
 						return;
 					}
-					//multi-line comments
-				} else if (stateTracker.Engine.IsInsideMultiLineComment) {
-					string commentPrefix = string.Empty;
-					if (trimmedPreviousLine.StartsWith ("* ")) {
-						commentPrefix = "* ";
-					} else if (trimmedPreviousLine.StartsWith ("/**") || trimmedPreviousLine.StartsWith ("/*")) {
-						commentPrefix = " * ";
-					} else if (trimmedPreviousLine.StartsWith ("*")) {
-						commentPrefix = "*";
-					}
-					Editor.InsertText (cursor, 					/*GetLineWhiteSpace (previousLine) +*/commentPrefix);
-					return;
-				} else if (stateTracker.Engine.IsInsideStringLiteral) {
-					int lastLineEndPos = Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber - 1, Editor.GetLineLength (stateTracker.Engine.LineNumber - 1) + 1);
-					int cursorEndPos = cursor + 4;
-					Editor.InsertText (lastLineEndPos, "\" +");
-					if (!trimmedPreviousLine.StartsWith ("\"")) {
-						Editor.InsertText (cursor++ + 3, "\t");
-						cursorEndPos++;
-					}
-					Editor.InsertText (cursor + 3, "\"");
-					Editor.CursorPosition = cursorEndPos;
-					return;
 				}
-			}
+				RunFormatter ();
 
+				//newline always reindents unless it's had special handling
+				reIndent = true;
+				break;
+			}
+		}
+		void RunFormatter ()
+		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
 				textEditorData.Paste -= TextEditorDataPaste;
-				
+		//		textEditorData.Document.TextReplaced -= TextCut;
 				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
-				if (dom == null) 
-					dom = ProjectDomService.GetFileDom (Document.FileName); 
-				
-				DomLocation location = new DomLocation(Editor.CursorLine, Editor.CursorColumn);
-				CSharpFormatter formatter = new CSharpFormatter(textEditorData, dom, Document.CompilationUnit, Editor, location);
-				
+				if (dom == null)
+					dom = ProjectDomService.GetFileDom (Document.FileName);
+
+				DomLocation location = new DomLocation (Editor.CursorLine, Editor.CursorColumn);
+				CSharpFormatter formatter = new CSharpFormatter (textEditorData, dom, Document.CompilationUnit, Editor, location);
+		//		textEditorData.Document.TextReplaced += TextCut;
 				textEditorData.Paste += TextEditorDataPaste;
 			}
-
-			//newline always reindents unless it's had special handling
-			reIndent = true;
-			break;
 		}
-	}
 		
 		//does re-indenting and cursor positioning
 		void DoReSmartIndent ()
@@ -319,47 +338,39 @@ namespace MonoDevelop.CSharpBinding.Gui
 			string newIndent = string.Empty;
 			int cursor = Editor.CursorPosition;
 			// Get context to the end of the line w/o changing the main engine's state
-			CSharpIndentEngine ctx = (CSharpIndentEngine) stateTracker.Engine.Clone ();
+			CSharpIndentEngine ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
 			string line = Editor.GetLineText (ctx.LineNumber);
-			
+
 			for (int i = ctx.LineOffset; i < line.Length; i++) {
 				ctx.Push (line[i]);
 			}
 			//System.Console.WriteLine("Re-indenting line '{0}'", line);
-			
+
 			// Measure the current indent
 			int nlwsp = 0;
 			while (nlwsp < line.Length && Char.IsWhiteSpace (line[nlwsp]))
 				nlwsp++;
-			
+
 			int pos = Editor.GetPositionFromLineColumn (ctx.LineNumber, 1);
 			string curIndent = line.Substring (0, nlwsp);
-			int offset;
-			
-			if (cursor > pos + curIndent.Length)
-				offset = cursor - (pos + curIndent.Length);
-			else
-				offset = 0;
-			if (!stateTracker.Engine.LineBeganInsideMultiLineComment ||
-			    (nlwsp < line.Length && line[nlwsp] == '*')) {
+			int offset = cursor > pos + curIndent.Length ? cursor - (pos + curIndent.Length) : 0;
+			if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < line.Length && line[nlwsp] == '*')) {
 				// Possibly replace the indent
 				newIndent = ctx.ThisLineIndent;
 				int newIndentLength = newIndent.Length;
 				if (newIndent != curIndent) {
 					Editor.DeleteText (pos, nlwsp);
 					newIndentLength = Editor.InsertText (pos, newIndent);
-					
 					// Engine state is now invalid
 					stateTracker.ResetEngineToPosition (pos);
 				}
-				
 				pos += newIndentLength;
 			} else {
 				pos += curIndent.Length;
 			}
-			
+
 			pos += offset;
-			
+
 			if (pos != Editor.CursorPosition) {
 				Editor.CursorPosition = pos;
 				Editor.Select (pos, pos);
