@@ -22,7 +22,7 @@ namespace MonoDevelop.Deployment.Linux
 			if (entry is DotNetProject) {
 				DotNetProject project = (DotNetProject) entry;
 				boxExe.Visible = (project.CompileTarget == CompileTarget.Exe || project.CompileTarget == CompileTarget.WinExe);
-				boxLibrary.Visible = (project.CompileTarget == CompileTarget.Library || project.GetOutputFileName (ProjectService.DefaultConfiguration).EndsWith (".dll"));
+				boxLibrary.Visible = (project.CompileTarget == CompileTarget.Library || project.GetOutputFileName (ProjectService.DefaultConfiguration).FileName.EndsWith (".dll"));
 			} else {
 				boxExe.Visible = boxLibrary.Visible = false;
 			}

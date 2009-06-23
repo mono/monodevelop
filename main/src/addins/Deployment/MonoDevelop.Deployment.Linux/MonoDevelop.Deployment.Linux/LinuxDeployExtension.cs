@@ -25,7 +25,7 @@ namespace MonoDevelop.Deployment.Linux
 								col.Add (GenerateLaunchScript (ctx, netProject, data, conf));
 							}
 						}
-						if (conf.CompileTarget == CompileTarget.Library || conf.CompiledOutputName.EndsWith (".dll")) {
+						if (conf.CompileTarget == CompileTarget.Library || conf.CompiledOutputName.FileName.EndsWith (".dll")) {
 							if (data.GeneratePcFile) {
 								col.Add (GeneratePcFile (ctx, netProject, data, conf));
 							}
