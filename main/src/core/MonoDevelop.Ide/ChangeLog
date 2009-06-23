@@ -1,3 +1,8 @@
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/WorkbenchMemento.cs: Update header. The
+	  file is not derived from SD anymore.
+
 2009-06-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/ConfigurationComboBox.cs: Use a fixed
