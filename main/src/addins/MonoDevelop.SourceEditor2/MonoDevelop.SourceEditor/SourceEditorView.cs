@@ -1068,7 +1068,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public void ToggleFolding ()
 		{
-			ToggleFoldings (Document.GetStartFoldings (Document.GetLine (TextEditor.Caret.Line)));
+			int lineNumber = TextEditor.LogicalToVisualLocation (TextEditor.Caret.Location).Line;
+			ToggleFoldings (Document.GetStartFoldings (Document.GetLine (lineNumber)));
 		}
 		#endregion
 		
