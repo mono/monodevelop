@@ -176,7 +176,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			bool isSomethingSelected = Editor.SelectionEndPosition - Editor.SelectionStartPosition > 0;
 			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !DoInsertTemplate () && !isSomethingSelected) {
 				int cursor = Editor.CursorPosition;
-				
+
 				if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {
 					// insert normal tab inside @" ... "
 					if (Editor.SelectionEndPosition > 0) {
@@ -196,30 +196,30 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				return false;
 			}
-			
+
 			//do the smart indent
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				//capture some of the current state
 				int oldBufLen = Editor.TextLength;
 				int oldLine = Editor.CursorLine;
 				bool hadSelection = Editor.SelectionEndPosition != Editor.SelectionStartPosition;
-				
+
 				//pass through to the base class, which actually inserts the character
 				//and calls HandleCodeCompletion etc to handles completion
-				
+
 				bool retval = base.KeyPress (key, keyChar, modifier);
-				
+
 				stateTracker.UpdateEngine ();
-				
+
 				//handle inserted characters
 				if (Editor.CursorPosition <= 0)
 					return retval;
-				
+
 				bool reIndent = false;
 				char lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, Editor.GetCharAt (Editor.CursorPosition - 1));
 				if (!(oldLine == Editor.CursorLine && lastCharInserted == '\n') && (oldBufLen != Editor.TextLength || lastCharInserted != '\0'))
 					DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
-				
+
 				//reindent the line after the insertion, if needed
 				//N.B. if the engine says we need to reindent, make sure that it's because a char was 
 				//inserted rather than just updating the stack due to moving around
@@ -227,6 +227,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				bool automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
 				if (reIndent || automaticReindent)
 					DoReSmartIndent ();
+
+				if (lastCharInserted == '\n') {
+					RunFormatter ();
+					stateTracker.UpdateEngine ();
+					DoReSmartIndent ();
+				}
 				
 				stateTracker.UpdateEngine ();
 				
@@ -309,8 +315,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 						return;
 					}
 				}
-				RunFormatter ();
-
 				//newline always reindents unless it's had special handling
 				reIndent = true;
 				break;

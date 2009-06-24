@@ -130,7 +130,11 @@ namespace CSharpBinding.Parser
 			int len1 = formattedText.IndexOf ('{') + 1;
 			int last = formattedText.LastIndexOf ('}');
 			formattedText = formattedText.Substring (len1, last - len1 - 1);
-			
+/*			Console.WriteLine ("----------");
+			Console.WriteLine (wrapper.Replace ("\t", "--->").Replace (" ", "°"));
+			Console.WriteLine ("----------");
+			Console.WriteLine (formattedText.Replace ("\t", "--->").Replace (" ", "°"));
+			Console.WriteLine ("----------");*/
 			if (CanInsertFormattedText (data, startPos - 1, formattedText)) {
 				data.Document.BeginAtomicUndo ();
 				InsertFormattedText (data, startPos - 1, formattedText);
@@ -170,12 +174,17 @@ namespace CSharpBinding.Parser
 		static void InsertFormattedText (TextEditorData data, int offset, string formattedText)
 		{
 			int caretOffset = data.Caret.Offset;
+			DocumentLocation caretLocation = data.Caret.Location;
+
 			int selAnchor = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Anchor) : -1;
 			int selLead = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Lead) : -1;
 			int textOffset = 0;
-			while (textOffset < formattedText.Length) {
+
+			while (textOffset < formattedText.Length && offset < caretOffset) {
 				char ch1 = data.Document.GetCharAt (offset);
 				char ch2 = formattedText[textOffset];
+
+				//				Console.WriteLine (offset + ":" + ch1.ToString () + "/"+ (int)ch1);
 				if (ch1 == ch2) {
 					textOffset++;
 					offset++;
@@ -184,36 +193,58 @@ namespace CSharpBinding.Parser
 				bool ch1Ws = Char.IsWhiteSpace (ch1);
 				bool ch2Ws = Char.IsWhiteSpace (ch2);
 
+
 				if (ch2Ws && !ch1Ws) {
 					data.Insert (offset, ch2.ToString ());
+					//					Console.WriteLine ("insert:" + offset + " - " + ((int)ch2));
 					if (offset < caretOffset)
 						caretOffset++;
 					if (offset < selAnchor)
 						selAnchor++;
 					if (offset < selLead)
 						selLead++;
+					if (ch2 == '\n') {
+						DocumentLocation curLocation = data.Document.OffsetToLocation (offset);
+						if (curLocation.Line == caretLocation.Line) {
+							caretOffset = data.Document.LocationToOffset (curLocation);
+						}
+					}
 					textOffset++;
 					offset++;
 					continue;
 				}
-				if (!ch2Ws && ch1Ws) {
+				if ((!ch2Ws || ch2 == '\n') && ch1Ws) {
 					if (offset < caretOffset)
 						caretOffset--;
 					if (offset < selAnchor)
 						selAnchor--;
 					if (offset < selLead)
 						selLead--;
+
+					//					Console.WriteLine ("remove at " + offset);
 					data.Remove (offset, 1);
 					continue;
 				}
 				if (ch1Ws && ch2Ws) {
+
+					//Console.WriteLine ("replace:" + offset + " - " + ((int)ch1) + "/" + ((int)ch2));
 					data.Replace (offset, 1, ch2.ToString ());
+
+					if (ch2 == '\n') {
+						DocumentLocation curLocation = data.Document.OffsetToLocation (offset);
+						if (curLocation.Line == caretLocation.Line) {
+							caretOffset = data.Document.LocationToOffset (curLocation);
+							break;
+						}
+					}
+					
 					textOffset++;
 					offset++;
 					continue;
 				}
 				break;
 			}
+
 			data.Caret.Offset = caretOffset;
 			if (selAnchor >= 0)
 				data.MainSelection = new Selection (data.Document.OffsetToLocation (selAnchor), data.Document.OffsetToLocation (selLead));
