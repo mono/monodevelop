@@ -42,14 +42,12 @@ namespace Mono.TextEditor
 		static FoldSegment GetOutermostClosedFold (TextEditorData data)
 		{
 			FoldSegment currentFold = null;
-			int  endOffset = -1,
-			     startOffset = int.MaxValue;
+			int endOffset = -1, startOffset = int.MaxValue;
 			IEnumerable<FoldSegment> folds = data.Document.GetFoldingContaining (data.Caret.Line);
-			
+			int lineNumber = data.LogicalToVisualLocation (data.Caret.Location).Line;
 			if (null != folds) {
 				foreach (FoldSegment fold in folds) {
-					if (fold.IsFolded && 
-					    data.Document.OffsetToLineNumber (fold.Offset) == data.Caret.Line &&
+					if (fold.IsFolded && data.Document.OffsetToLineNumber (fold.Offset) == lineNumber && 
 					    fold.Offset <= startOffset && fold.EndOffset >= endOffset) {
 						currentFold = fold;
 						startOffset = fold.Offset;

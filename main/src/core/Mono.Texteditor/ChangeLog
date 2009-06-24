@@ -1,3 +1,9 @@
+2009-06-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/FoldActions.cs: Fixed "Bug 515825 - Toggle
+	  fold does not work if cursor sent to the end of folded
+	  line".
+
 2009-06-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Moved paste text event after
