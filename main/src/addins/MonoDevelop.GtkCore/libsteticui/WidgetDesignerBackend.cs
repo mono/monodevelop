@@ -630,10 +630,24 @@ namespace Stetic
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
-			bool r = base.OnExposeEvent (ev);
-			
-			//this.Style.DarkGC (Gtk.StateType.Normal)
-//			GdkWindow.DrawRectangle (Style.MidGC (Gtk.StateType.Normal), true, 0, 0, 1000, 1000);
+			bool r = true;
+			//base.OnExposeEvent (ev);
+
+			int size = 8;
+			bool square = true;
+			bool startsquare = true;
+			int x1 = 0;
+			int x2 = Allocation.Width;
+			int y1 = 0;
+			int y2 = Allocation.Height;
+			for (int y = y1; y < y2; y += size) {
+				square = startsquare;
+				startsquare = !startsquare;
+				for (int x = x1; x < x2; x += size) {
+					GdkWindow.DrawRectangle (square ? Style.DarkGC (StateType.Normal) : Style.DarkGC (StateType.Active), true, x, y, size, size);
+					square = !square;
+				}
+			}
 			
 			Gdk.Rectangle rect = child.Allocation;
 /*			rect.Inflate (selectionBorder, selectionBorder);

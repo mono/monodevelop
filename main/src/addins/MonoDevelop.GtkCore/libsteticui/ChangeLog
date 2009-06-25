@@ -1,3 +1,8 @@
+2009-06-25  Mike Krüger  <mkrueger@novell.com>
+
+	* WidgetDesignerBackend.cs: Draw checkboard background in the
+	  gui designer instead of monochrome dialog background.
+
 2009-06-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* PluggableWidget.cs: When replacing the child widget (because
