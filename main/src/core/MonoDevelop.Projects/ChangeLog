@@ -1,5 +1,21 @@
 2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.Policies/PolicyBag.cs:
+	* MonoDevelop.Projects.Policies/PolicySet.cs:
+	* MonoDevelop.Projects.Policies/ScopedPolicy.cs:
+	* MonoDevelop.Projects.Policies/PolicyService.cs:
+	* MonoDevelop.Projects.Policies/PolicyContainer.cs:
+	* MonoDevelop.Projects.Policies/PolicyDictionary.cs: Convert
+	  IPolicyContainer into a new PolicyContainer class, which is
+	  now the base class for PolicyBag and PolicySet. Refactored
+	  most of funcitonality from PolicyBag and PolicySet into
+	  PolicyContainer. All this was required due to a bug in the
+	  mono 2.0 compiler.
+
+2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  Added some still unused verification code.
 

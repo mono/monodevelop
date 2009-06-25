@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.Policies
 			switch (args.Change) {
 			case ExtensionChange.Add:
 				PolicySet set = ((PolicySetNode) args.ExtensionNode).Set;
-				set.IsReadOnly = true;
+				set.ReadOnly = true;
 				sets.Add (set);
 				break;
 			case ExtensionChange.Remove:
@@ -386,21 +386,21 @@ namespace MonoDevelop.Projects.Policies
 		public static IEnumerable<PolicySet> GetPolicySets<T> ()
 		{
 			foreach (PolicySet s in sets)
-				if (s.Has<T> ())
+				if (s.DirectHas<T> ())
 					yield return s;
 		}
 		
 		public static IEnumerable<PolicySet> GetPolicySets<T> (string scope)
 		{
 			foreach (PolicySet s in sets)
-				if (s.Has<T> (scope))
+				if (s.DirectHas<T> (scope))
 					yield return s;
 		}
 		
 		public static IEnumerable<PolicySet> GetPolicySets<T> (IEnumerable<string> scopes)
 		{
 			foreach (PolicySet s in sets)
-				if (s.Has<T> (scopes))
+				if (s.DirectHas<T> (scopes))
 					yield return s;
 		}
 		

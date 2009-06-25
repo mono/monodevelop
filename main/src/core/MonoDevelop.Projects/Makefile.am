@@ -183,8 +183,11 @@ FILES =  \
 	MonoDevelop.Projects.Policies/DotNetNamingPolicy.cs \
 	MonoDevelop.Projects.Policies/PolicyBag.cs \
 	MonoDevelop.Projects.Policies/PolicyChangedEventArgs.cs \
+	MonoDevelop.Projects.Policies/PolicyContainer.cs \
+	MonoDevelop.Projects.Policies/PolicyDictionary.cs \
 	MonoDevelop.Projects.Policies/PolicyService.cs \
 	MonoDevelop.Projects.Policies/PolicySet.cs \
+	MonoDevelop.Projects.Policies/ScopedPolicy.cs \
 	MonoDevelop.Projects.Text/CodeFormatDescription.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \
 	MonoDevelop.Projects.Text/IFormatter.cs \

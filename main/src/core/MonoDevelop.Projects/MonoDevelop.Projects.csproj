@@ -319,6 +319,9 @@
     <Compile Include="MonoDevelop.Projects.CodeGeneration\INameValidator.cs" />
     <Compile Include="MonoDevelop.Projects\LanguageBindingService.cs" />
     <Compile Include="MonoDevelop.Projects\CyclicDependencyException.cs" />
+    <Compile Include="MonoDevelop.Projects.Policies\PolicyContainer.cs" />
+    <Compile Include="MonoDevelop.Projects.Policies\ScopedPolicy.cs" />
+    <Compile Include="MonoDevelop.Projects.Policies\PolicyDictionary.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
