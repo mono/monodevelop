@@ -63,23 +63,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			switch (pref.ReferenceType) {
 				case ReferenceType.Project:
 					label = pref.Reference;
+					icon = Context.GetIcon ("md-reference-project");
 					break;
 				case ReferenceType.Assembly:
 					label = Path.GetFileName(pref.Reference);
+					icon = Context.GetIcon ("md-reference-folder");
 					break;
 				case ReferenceType.Gac:
 					label = pref.Reference.Split(',')[0];
+					icon = Context.GetIcon ("md-reference-package");
 					break;
 				default:
 					label = pref.Reference;
+					icon = Context.GetIcon (Stock.Reference);
 					break;
 			}
 
 			if (!pref.IsValid) {
 				label = "<span color='red'>" + label + "</span>";
 				icon = Context.GetIcon ("md-reference-warning");
-			} else
-				icon = Context.GetIcon (Stock.Reference);
+			}
 		}
 		
 		public override bool HasChildNodes (MonoDevelop.Ide.Gui.Components.ITreeBuilder builder, object dataObject)

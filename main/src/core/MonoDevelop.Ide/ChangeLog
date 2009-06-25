@@ -1,5 +1,10 @@
 2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs:
+	  Use new project reference icons.
+
+2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:
 	  Use the new api for accessing user properties of a solution.
 
