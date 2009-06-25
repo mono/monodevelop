@@ -90,7 +90,8 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			string patch = repo.CreatePatch (diffs);
-			MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (string.Format ("{0}.diff", items.BaseLocalPath), "text/x-diff", patch);
+			string filename = string.Format ("{0}.diff", ((string)items.BaseLocalPath.FullPath).TrimEnd (Path.DirectorySeparatorChar));
+			MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (filename, "text/x-diff", patch);
 			return can;
 		}
 		
