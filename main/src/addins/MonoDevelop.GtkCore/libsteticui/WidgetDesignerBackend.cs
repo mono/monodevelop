@@ -631,9 +631,6 @@ namespace Stetic
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
-			bool r = true;
-			//base.OnExposeEvent (ev);
-
 			int size = 8;
 			bool squareColor = true;
 			bool startsquareColor = true;
@@ -650,13 +647,13 @@ namespace Stetic
 				}
 			}
 			
-			Gdk.Rectangle rect = child.Allocation;
-//			rect.Inflate (selectionBorder, selectionBorder);
-			GdkWindow.DrawRectangle (this.Style.BackgroundGC (StateType.Normal), true, rect.X, rect.Y, rect.Width, rect.Height);
+			foreach (Widget cw in Children)
+				PropagateExpose (cw, ev);
 			
+			Gdk.Rectangle rect = child.Allocation;
 			Pixbuf sh = Shadow.AddShadow (rect.Width, rect.Height);
 			GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), sh, 0, 0, rect.X - 5, rect.Y - 5, sh.Width, sh.Height, RgbDither.None, 0, 0); 
-			return r;
+			return true;
 		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey ev)
