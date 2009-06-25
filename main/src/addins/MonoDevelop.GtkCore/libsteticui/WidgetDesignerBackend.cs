@@ -112,14 +112,15 @@ namespace Stetic
 			resizableFixed.SelectionChanged += OnSelectionChanged;
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
+			base.OnDestroyed ();
+			
 			if (preview != null) {
 				if (wrapper != null)
 					wrapper.DetachDesigner (resizableFixed);
 				preview.SizeAllocated -= new Gtk.SizeAllocatedHandler (OnResized);
 				resizableFixed.SelectionChanged -= OnSelectionChanged;
-//				resizableFixed.Destroy ();
 				resizableFixed = null;
 				preview = null;
 				wrapper = null;

@@ -216,8 +216,10 @@ namespace Stetic
 			}
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
+			base.OnDestroyed ();
+			
 			if (disposed)
 				return;
 			

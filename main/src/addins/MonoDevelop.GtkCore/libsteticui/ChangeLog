@@ -1,3 +1,9 @@
+2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WidgetDesigner.cs:
+	* WidgetDesignerBackend.cs: Dispose is not guaranteed to be
+	  called when destroying a widget. Use OnDestroyed instead.
+
 2009-06-25  Mike Krüger  <mkrueger@novell.com>
 
 	* WidgetDesignerBackend.cs: Draw dialog background.
