@@ -77,7 +77,7 @@ namespace MonoDevelop.SourceEditor
 				if (2 < command.Length) { 
 					switch (command[2]) {
 					case 'q':	// :wq
-						editor.View.Save ();
+						editor.View.WorkbenchWindow.Document.Save ();
 						Gtk.Application.Invoke (delegate {
 							editor.View.WorkbenchWindow.CloseWindow (false, true, -1);
 						});
@@ -89,7 +89,7 @@ namespace MonoDevelop.SourceEditor
 						return base.RunExCommand (command);
 					}
 				}
-				else editor.View.Save ();
+				else editor.View.WorkbenchWindow.Document.Save ();
 				return "Saved file.";
 				
 			case 'q':
