@@ -634,25 +634,25 @@ namespace Stetic
 			//base.OnExposeEvent (ev);
 
 			int size = 8;
-			bool square = true;
-			bool startsquare = true;
+			bool squareColor = true;
+			bool startsquareColor = true;
 			int x1 = 0;
 			int x2 = Allocation.Width;
 			int y1 = 0;
 			int y2 = Allocation.Height;
 			for (int y = y1; y < y2; y += size) {
-				square = startsquare;
-				startsquare = !startsquare;
+				squareColor = startsquareColor;
+				startsquareColor = !startsquareColor;
 				for (int x = x1; x < x2; x += size) {
-					GdkWindow.DrawRectangle (square ? Style.DarkGC (StateType.Normal) : Style.DarkGC (StateType.Active), true, x, y, size, size);
-					square = !square;
+					GdkWindow.DrawRectangle (squareColor ? Style.DarkGC (StateType.Normal) : Style.DarkGC (StateType.Active), true, x, y, size, size);
+					squareColor = !squareColor;
 				}
 			}
 			
 			Gdk.Rectangle rect = child.Allocation;
-/*			rect.Inflate (selectionBorder, selectionBorder);
-			GdkWindow.DrawRectangle (Style.BlackGC, false, rect.X, rect.Y, rect.Width, rect.Height);
-*/			
+//			rect.Inflate (selectionBorder, selectionBorder);
+			GdkWindow.DrawRectangle (this.Style.BackgroundGC (StateType.Normal), true, rect.X, rect.Y, rect.Width, rect.Height);
+			
 			Pixbuf sh = Shadow.AddShadow (rect.Width, rect.Height);
 			GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), sh, 0, 0, rect.X - 5, rect.Y - 5, sh.Width, sh.Height, RgbDither.None, 0, 0); 
 			return r;

@@ -1,5 +1,9 @@
 2009-06-25  Mike Krüger  <mkrueger@novell.com>
 
+	* WidgetDesignerBackend.cs: Draw dialog background.
+
+2009-06-25  Mike Krüger  <mkrueger@novell.com>
+
 	* WidgetDesignerBackend.cs: Draw checkboard background in the
 	  gui designer instead of monochrome dialog background.
 
