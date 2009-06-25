@@ -170,6 +170,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public virtual void Read ()
 		{
+			Read (false);
+		}
+		
+		void Read (bool verify)
+		{
 			if (!File.Exists (dataFile)) return;
 			
 			lock (rwlock)
@@ -233,6 +238,29 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, Project);
 				}
 			}
+			
+			if (verify) {
+				// Read all information from the database to ensure everything is in place
+				HashSet<ClassEntry> classes = new HashSet<ClassEntry> ();
+				foreach (ClassEntry ce in rootNamespace.GetAllClasses ()) {
+					classes.Add (ce);
+					try {
+						ReadClass (ce);
+					} catch (Exception ex) {
+						LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' could not be deserialized: " + ex.Message);
+					}
+				}
+/*				foreach (FileEntry fe in files.Values) {
+					foreach (ClassEntry ce in fe.ClassEntries) {
+						if (!classes.Contains (ce))
+							LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' from file '" + fe.FileName + "' not found in main index.");
+						else
+							classes.Remove (ce);
+					}
+				}
+				foreach (ClassEntry ce in classes)
+					LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' not found in file index.");
+*/			}
 			
 			// Update comments if needed...
 			CommentTagSet lastTags = new CommentTagSet (LastValidTaskListTokens);

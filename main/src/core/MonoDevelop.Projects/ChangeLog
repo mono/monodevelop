@@ -1,5 +1,10 @@
 2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Added some still unused verification code.
+
+2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/Solution.cs:
 	* MonoDevelop.Projects/SolutionItem.cs:
 	* MonoDevelop.Projects/WorkspaceItem.cs: Added property bag
