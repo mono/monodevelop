@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 {
 	internal interface IMimeTypePolicyOptionsPanel: IOptionsPanel
 	{
-		void InitializePolicy (IPolicyContainer policyContainer, string mimeType, bool isExactMimeType);
+		void InitializePolicy (PolicyContainer policyContainer, string mimeType, bool isExactMimeType);
 		void SetParentSection (MimeTypePolicyOptionsSection section);
 		
 		string Label { get; set; }
@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		void StorePolicy ();
 		
 		bool HasCustomPolicy { get; }
-		void RemovePolicy (IPolicyContainer bag);
+		void RemovePolicy (PolicyContainer bag);
 		IEnumerable<PolicySet> GetPolicySets ();
 		PolicySet GetMatchingSet ();
 	}
@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		string label;
 		string mimeType;
 		IEnumerable<string> mimeTypeScopes;
-		IPolicyContainer policyContainer;
+		PolicyContainer policyContainer;
 		bool loaded;
 		object cachedPolicy;
 		bool hasCachedPolicy;
@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		Widget panelWidget;
 		bool isExactMimeType;
 		
-		void IMimeTypePolicyOptionsPanel.InitializePolicy (IPolicyContainer policyContainer, string mimeType, bool isExactMimeType)
+		void IMimeTypePolicyOptionsPanel.InitializePolicy (PolicyContainer policyContainer, string mimeType, bool isExactMimeType)
 		{
 			this.mimeType = mimeType;
 			this.policyContainer = policyContainer;
@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		T GetInheritedPolicy (IEnumerable<string> scopes)
 		{
 			foreach (string scope in scopes) {
-				IPolicyContainer currentBag = scope == mimeType ? policyContainer.ParentPolicies : policyContainer;
+				PolicyContainer currentBag = scope == mimeType ? policyContainer.ParentPolicies : policyContainer;
 				while (currentBag != null) {
 					if (currentBag.DirectHas<T> (scope)) {
 						T pol = currentBag.DirectGet<T> (scope);
@@ -164,16 +164,16 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			return PolicyService.GetMatchingSet (pol, mimeTypeScopes);
 		}
 		
-		void IMimeTypePolicyOptionsPanel.RemovePolicy (IPolicyContainer bag)
+		void IMimeTypePolicyOptionsPanel.RemovePolicy (PolicyContainer bag)
 		{
 			bag.Remove<T> (mimeType);
 		}
 		
-		T GetDirectInherited (IPolicyContainer initialContainer)
+		T GetDirectInherited (PolicyContainer initialContainer)
 		{
 			if (initialContainer == policyContainer && !loaded && hasCachedPolicy)
 				return (T)cachedPolicy;
-			IPolicyContainer pc = initialContainer;
+			PolicyContainer pc = initialContainer;
 			while (pc != null) {
 				if (pc.DirectHas<T> (mimeType))
 					return pc.DirectGet<T> (mimeType);
@@ -182,7 +182,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			return PolicyService.GetUserDefaultPolicySet ().Get<T> (mimeType);
 		}
 		
-		void UpdateDefaultSettingsButton (IPolicyContainer initialContainer)
+		void UpdateDefaultSettingsButton (PolicyContainer initialContainer)
 		{
 			if (defaultSettingsButton != null) {
 				T pol = GetDirectInherited (initialContainer);

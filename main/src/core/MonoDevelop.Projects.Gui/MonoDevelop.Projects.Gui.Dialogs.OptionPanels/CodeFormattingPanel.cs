@@ -41,7 +41,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	class CodeFormattingPanel: OptionsPanel
 	{
-		IPolicyContainer policyContainer;
+		PolicyContainer policyContainer;
 		Dictionary<string,MimeTypePanelData> typeSections = new Dictionary<string, MimeTypePanelData> ();
 		
 		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
@@ -81,7 +81,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			return typeSections.Values;
 		}
 		
-		public IPolicyContainer PolicyContainer {
+		public PolicyContainer PolicyContainer {
 			get { return policyContainer; }
 		}
 

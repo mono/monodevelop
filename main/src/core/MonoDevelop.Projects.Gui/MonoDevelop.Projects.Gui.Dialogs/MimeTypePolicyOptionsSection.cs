@@ -242,7 +242,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		public MimeTypePolicyOptionsSection SectionPanel;
 		public List<IMimeTypePolicyOptionsPanel> Panels;
 		public bool SectionLoaded;
-		public IPolicyContainer PolicyContainer;
+		public PolicyContainer PolicyContainer;
 		
 		public void ApplyChanges ()
 		{

@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		ListStore store;
 		PolicyBag bag;
 		PolicySet polSet;
-		IPolicyContainer policyContainer;
+		PolicyContainer policyContainer;
 		bool loading = true;
 		
 		public PolicyOptionsPanel ()
