@@ -1,3 +1,7 @@
+2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* OldChangeLogData.cs: Track api changes.
+
 2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AddLogEntryDialog.cs: Use the new DesktopService instead of
