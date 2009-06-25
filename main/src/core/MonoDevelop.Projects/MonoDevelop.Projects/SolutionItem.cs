@@ -53,6 +53,8 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Policies", IsExternal = true, SkipEmpty = true)]
 		MonoDevelop.Projects.Policies.PolicyBag policies;
 		
+		PropertyBag userProperties;
+		
 		public SolutionItem()
 		{
 			ProjectExtensionUtil.LoadControl (this);
@@ -169,6 +171,23 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		// User properties are only loaded when the project is loaded in the IDE.
+		public PropertyBag UserProperties {
+			get {
+				if (userProperties == null)
+					userProperties = new PropertyBag ();
+				return userProperties; 
+			}
+		}
+		
+		// Initializes the user properties of the item
+		public void LoadUserProperties (PropertyBag properties)
+		{
+			if (userProperties != null)
+				throw new InvalidOperationException ("User properties already loaded.");
+			userProperties = properties;
+		}
+		
 		public SolutionFolder ParentFolder {
 			get {
 				return parentFolder;
@@ -189,6 +208,8 @@ namespace MonoDevelop.Projects
 			}
 			if (handler != null)
 				handler.Dispose ();
+			if (userProperties != null)
+				((IDisposable)userProperties).Dispose ();
 		}
 		
 		public virtual IEnumerable<SolutionItem> GetReferencedItems (string solutionConfiguration)

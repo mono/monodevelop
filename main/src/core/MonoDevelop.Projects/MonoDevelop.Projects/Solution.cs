@@ -187,7 +187,17 @@ namespace MonoDevelop.Projects
 				multiStartupItems = value;
 			}
 		}
-
+		
+		public override PropertyBag UserProperties {
+			get {
+				return RootFolder.UserProperties;
+			}
+		}
+		
+		public override void LoadUserProperties (PropertyBag properties)
+		{
+			RootFolder.LoadUserProperties (properties);
+		}
 		
 		public void CreateDefaultConfigurations ()
 		{

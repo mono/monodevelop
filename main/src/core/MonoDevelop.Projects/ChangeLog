@@ -1,3 +1,13 @@
+2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/Solution.cs:
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/WorkspaceItem.cs: Added property bag
+	  which can be used to store per-user properties.
+
+	* MonoDevelop.Projects/PropertyBag.cs: Implement IDisposable,
+	  which disposes the contained values. Added Remove method.
+
 2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs: Use the

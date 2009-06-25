@@ -35,7 +35,7 @@ using MonoDevelop.Core.Serialization;
 namespace MonoDevelop.Projects
 {
 	[DataItem ("Properties")]
-	public class PropertyBag: ICustomDataItem
+	public class PropertyBag: ICustomDataItem, IDisposable
 	{
 		Dictionary<string,object> properties;
 		DataContext context;
@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects
 					return (T) val;
 				}
 			}
-			return (new T[1])[0];
+			return default (T);
 		}
 		
 		public T GetValue<T> (string name, T defaultValue)
@@ -82,9 +82,26 @@ namespace MonoDevelop.Projects
 			properties [name] = value;
 		}
 		
+		public bool RemoveValue (string name)
+		{
+			return properties.Remove (name);
+		}
+		
 		public bool HasValue (string name)
 		{
 			return properties != null && properties.ContainsKey (name);
+		}
+		
+		void IDisposable.Dispose ()
+		{
+			if (properties != null) {
+				foreach (object ob in properties.Values) {
+					IDisposable disp = ob as IDisposable;
+					if (disp != null)
+						disp.Dispose ();
+				}
+				properties = null;
+			}
 		}
 		
 		object Deserialize (string name, DataNode node, Type type)

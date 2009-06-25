@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects
 		Hashtable extendedProperties;
 		FilePath fileName;
 		int loading;
+		PropertyBag userProperties;
 		
 		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		FilePath baseDirectory;
@@ -59,6 +60,23 @@ namespace MonoDevelop.Projects
 					extendedProperties = new Hashtable ();
 				return extendedProperties;
 			}
+		}
+		
+		// User properties are only loaded when the project is loaded in the IDE.
+		public virtual PropertyBag UserProperties {
+			get {
+				if (userProperties == null)
+					userProperties = new PropertyBag ();
+				return userProperties; 
+			}
+		}
+		
+		// Initializes the user properties of the item
+		public virtual void LoadUserProperties (PropertyBag properties)
+		{
+			if (userProperties != null)
+				throw new InvalidOperationException ("User properties already loaded.");
+			userProperties = properties;
 		}
 		
 		public virtual string Name {
@@ -413,6 +431,8 @@ namespace MonoDevelop.Projects
 						disp.Dispose ();
 				}
 			}
+			if (userProperties != null)
+				((IDisposable)userProperties).Dispose ();
 		}
 		
 		protected virtual void OnNameChanged (WorkspaceItemRenamedEventArgs e)
