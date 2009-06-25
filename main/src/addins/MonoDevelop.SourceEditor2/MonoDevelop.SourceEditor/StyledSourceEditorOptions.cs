@@ -35,7 +35,7 @@ namespace MonoDevelop.SourceEditor
 	
 	internal class StyledSourceEditorOptions : ISourceEditorOptions
 	{
-		IPolicyContainer policyContainer;
+		PolicyContainer policyContainer;
 		EventHandler changed;
 		IEnumerable<string> mimeTypes;
 		TextStylePolicy currentPolicy;
