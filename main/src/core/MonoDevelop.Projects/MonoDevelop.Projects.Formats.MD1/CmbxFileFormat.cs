@@ -260,7 +260,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			
 			try {
 				if (version != "2.0")
-					throw new UnknownProjectVersionException (file, version);
+					throw new MD1UnknownProjectVersion (file, version);
 				ICombineReader combineReader = new CombineReaderV2 (serializer, monitor, typeof(SolutionFolder));
 				return combineReader.ReadCombine (reader);
 			} catch (Exception ex) {

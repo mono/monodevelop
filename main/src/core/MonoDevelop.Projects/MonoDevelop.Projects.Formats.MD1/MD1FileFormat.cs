@@ -36,6 +36,14 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Formats.MD1
 {
+	class MD1UnknownProjectVersion : Exception
+	{
+		public MD1UnknownProjectVersion (string filename, string unsupportedVersion)
+			: base (GettextCatalog.GetString ("The file '{0}' has an unknown format version (version '{1}')'.", filename, unsupportedVersion))
+		{
+		}
+	}
+
 	internal class MD1FileFormat: IFileFormat
 	{
 		public string Name {
@@ -288,7 +296,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				if (combineReader != null)
 					return combineReader.ReadCombine (reader);
 				else
-					throw new UnknownProjectVersionException (file, version);
+					throw new MD1UnknownProjectVersion (file, version);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", file), ex);
 				throw;
@@ -317,7 +325,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 					return projectReader.ReadProject (reader);
 				}
 				else
-					throw new UnknownProjectVersionException (fileName, version);
+					throw new MD1UnknownProjectVersion (fileName, version);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load project: {0}", fileName), ex);
 				throw;

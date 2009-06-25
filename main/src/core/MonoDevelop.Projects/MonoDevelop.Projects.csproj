@@ -119,7 +119,6 @@
     <Compile Include="MonoDevelop.Projects\ProjectConvertTool.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectsServices.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownSolutionItem.cs" />
-    <Compile Include="MonoDevelop.Projects\UnknownProjectVersionException.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFileService.cs" />
     <Compile Include="MonoDevelop.Projects\Workspace.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownConfiguration.cs" />

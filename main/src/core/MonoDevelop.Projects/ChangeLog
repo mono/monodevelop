@@ -18,6 +18,12 @@
 	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs: Use the
 	  new DesktopService instead of PlatformService.
 
+2009-07-23  Carlo Kok  <ck@remobjects.com>
+	* MonoDevelop.Projects/UnknownProjectVersionException.cs: Deleted
+	* MonoDevelop.Projects.Formats.MD1/CmbxFileFormat.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1FileFormat.cs: New 
+	  exception & removed references to the old one.
+
 2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Project.cs:

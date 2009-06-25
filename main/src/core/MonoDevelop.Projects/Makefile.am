@@ -266,7 +266,6 @@ FILES =  \
 	MonoDevelop.Projects/SolutionItemEventArgs.cs \
 	MonoDevelop.Projects/SolutionItemReference.cs \
 	MonoDevelop.Projects/UnknownConfiguration.cs \
-	MonoDevelop.Projects/UnknownProjectVersionException.cs \
 	MonoDevelop.Projects/UnknownSolutionItem.cs \
 	MonoDevelop.Projects/UnknownWorkspaceItem.cs \
 	MonoDevelop.Projects/Workspace.cs \
