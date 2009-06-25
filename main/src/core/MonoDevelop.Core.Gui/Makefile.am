@@ -180,6 +180,9 @@ RES =  \
 	icons/project-gui-32.png \
 	icons/project-library-32.png \
 	icons/project-reference-16.png \
+	icons/project-reference-folder-16.png \
+	icons/project-reference-package-16.png \
+	icons/project-reference-project-16.png \
 	icons/solution-16.png \
 	icons/solution-32.png \
 	icons/solution-folder-closed-16.png \

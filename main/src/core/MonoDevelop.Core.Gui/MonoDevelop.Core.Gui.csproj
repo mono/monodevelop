@@ -454,6 +454,15 @@
     <EmbeddedResource Include="icons\monodevelop-48.png">
       <LogicalName>monodevelop-48.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-reference-folder-16.png">
+      <LogicalName>project-reference-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-reference-package-16.png">
+      <LogicalName>project-reference-package-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-reference-project-16.png">
+      <LogicalName>project-reference-project-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Gui.Components\FileBrowser.cs" />
