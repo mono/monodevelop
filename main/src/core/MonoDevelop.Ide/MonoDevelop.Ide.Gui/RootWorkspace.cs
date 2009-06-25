@@ -203,16 +203,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public PropertyBag GetUserPreferences (WorkspaceItem item)
-		{
-			PropertyBag props;
-			if (userPrefs.TryGetValue (item, out props))
-				return props;
-			props = new PropertyBag ();
-			userPrefs [item] = props;
-			return props;
-		}
-		
 		public AuthorInformation GetAuthorInformation  (SolutionItem item)
 		{
 			if (item != null)
@@ -224,7 +214,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (solution == null)
 				return AuthorInformation.Default;
-			AuthorInformation info = GetUserPreferences (solution).GetValue<AuthorInformation> ("AuthorInfo");
+			AuthorInformation info = solution.UserProperties.GetValue<AuthorInformation> ("AuthorInfo");
 			return info ?? AuthorInformation.Default;
 		}
 		
@@ -670,6 +660,11 @@ namespace MonoDevelop.Ide.Gui
 			} finally {
 				reader.Close ();
 			}
+			
+			// Restore solution item properties
+			
+			if (item is Solution)
+				LoadItemProperties (props, ((Solution)item).RootFolder, "__ItemProps");
 
 			// Restore local configuration data
 			
@@ -704,6 +699,44 @@ namespace MonoDevelop.Ide.Gui
 			}
 		} 
 		
+		void LoadItemProperties (PropertyBag props, SolutionItem item, string path)
+		{
+			PropertyBag info = props.GetValue<PropertyBag> (path);
+			if (info != null) {
+				item.LoadUserProperties (info);
+				props.RemoveValue (path);
+			}
+			
+			SolutionFolder sf = item as SolutionFolder;
+			if (sf != null) {
+				foreach (SolutionItem ci in sf.Items)
+					LoadItemProperties (props, ci, path + "/" + ci.Name);
+			}
+		}
+		
+		void SaveItemProperties (PropertyBag props, SolutionItem item, string path)
+		{
+			if (!item.UserProperties.IsEmpty)
+				props.SetValue (path, item.UserProperties);
+			
+			SolutionFolder sf = item as SolutionFolder;
+			if (sf != null) {
+				foreach (SolutionItem ci in sf.Items)
+					SaveItemProperties (props, ci, path + "/" + ci.Name);
+			}
+		}
+		
+		void CleanItemProperties (PropertyBag props, SolutionItem item, string path)
+		{
+			props.RemoveValue (path);
+			
+			SolutionFolder sf = item as SolutionFolder;
+			if (sf != null) {
+				foreach (SolutionItem ci in sf.Items)
+					CleanItemProperties (props, ci, path + "/" + ci.Name);
+			}
+		}
+		
 		string GetPreferencesFileName (WorkspaceItem item)
 		{
 			return Path.Combine (Path.GetDirectoryName (item.FileName), Path.ChangeExtension (item.FileName, ".userprefs"));
@@ -711,8 +744,13 @@ namespace MonoDevelop.Ide.Gui
 		
 		void SavePreferences (WorkspaceItem item)
 		{
-			PropertyBag props = GetUserPreferences (item);
+			PropertyBag props = item.UserProperties;
 			
+			// Store solution item properties
+			
+			if (item is Solution)
+				SaveItemProperties (props, ((Solution)item).RootFolder, "__ItemProps");
+
 			// Local configuration info
 			
 			WorkspaceUserData data = new WorkspaceUserData ();
@@ -755,6 +793,8 @@ namespace MonoDevelop.Ide.Gui
 				if (writer != null)
 					writer.Close ();
 			}
+			
+			CleanItemProperties (props, ((Solution)item).RootFolder, "__ItemProps");
 		}
 		
 		bool OnRunProjectChecks ()

@@ -39,14 +39,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public override Gtk.Widget CreatePanelWidget ()
 		{
-			AuthorInformation info = IdeApp.Workspace.GetUserPreferences (solution).GetValue<AuthorInformation> ("AuthorInfo");
+			AuthorInformation info = solution.UserProperties.GetValue<AuthorInformation> ("AuthorInfo");
 			return widget = new AuthorInformationPanelWidget (info);
 		}
 
 		public override void ApplyChanges ()
 		{
 			if (solution != null)
-			 	IdeApp.Workspace.GetUserPreferences (solution).SetValue<AuthorInformation> ("AuthorInfo", widget.Get ());
+			 	solution.UserProperties.SetValue<AuthorInformation> ("AuthorInfo", widget.Get ());
 		}
 
 		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)

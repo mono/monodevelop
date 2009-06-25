@@ -1,3 +1,11 @@
+2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:
+	  Use the new api for accessing user properties of a solution.
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Load/Save user
+	  properties for projects and solutions.
+
 2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs:
