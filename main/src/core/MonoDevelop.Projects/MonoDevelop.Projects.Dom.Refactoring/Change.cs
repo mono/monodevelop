@@ -25,7 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Collections.Generic;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Projects.Dom.Refactoring
 {
@@ -64,6 +68,43 @@ namespace MonoDevelop.Projects.Dom.Refactoring
 		public Change ()
 		{
 			this.AffectedTypes = new List<IType> ();
+		}
+		
+		public virtual void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		{
+			if (rctx == null)
+				throw new InvalidOperationException ("Refactory context not available.");
+
+			IEditableTextFile file = rctx.GetFile (FileName);
+			if (file != null) {
+				int position = file.GetPositionFromLineColumn (Location.Line, Location.Column);
+				if (RemovedChars > 0)
+					file.DeleteText (position, RemovedChars);
+				if (!string.IsNullOrEmpty (InsertedText))
+					file.InsertText (position, InsertedText);
+				rctx.Save ();
+			}
+		}
+	}
+	
+	public class RenameFileChange : Change
+	{
+		public string NewName {
+			get;
+			set;
+		}
+		
+		public RenameFileChange (string oldName, string newName)
+		{
+			this.FileName = oldName;
+			this.NewName = newName;
+			this.Description = string.Format (GettextCatalog.GetString ("Rename file '{0}' to '{1}'"), Path.GetFileName (oldName), Path.GetFileName (newName));
+			this.Location = DomLocation.Empty;
+		}
+		
+		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		{
+			FileService.RenameFile (FileName, NewName);
 		}
 	}
 }

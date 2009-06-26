@@ -85,6 +85,10 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Refactorings" name = "Refactorings">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/TextFormatDefinition" name = "Format definitions">
 		<ExtensionNode name="Definition" type="MonoDevelop.Projects.Text.XmlDefinitionCodon"/>
 	</ExtensionPoint>

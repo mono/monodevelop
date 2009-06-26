@@ -26,6 +26,8 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Projects.Dom.Parser;
+
 
 namespace MonoDevelop.Projects.Dom.Refactoring
 {
@@ -41,11 +43,15 @@ namespace MonoDevelop.Projects.Dom.Refactoring
 			set;
 		}
 		
-		public Refactoring()
+		
+		public virtual string GetMenuDescription (ProjectDom dom, IDomVisitable item)
 		{
+			return Name;
 		}
 		
-		public abstract List<Change> PerformChanges ();
-			
+		public abstract bool IsValid (ProjectDom dom, IDomVisitable item);
+		public abstract List<Change> PerformChanges (ProjectDom dom, IDomVisitable item, object properties);
+		
+		public abstract void Run (ProjectDom dom, IDomVisitable item);
 	}
 }

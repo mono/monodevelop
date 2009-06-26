@@ -26,14 +26,33 @@
 
 using System;
 using System.Collections.Generic;
+using Mono.Addins;
+
 
 namespace MonoDevelop.Projects.Dom.Refactoring
 {
 	public static class RefactoringService
 	{
-		public static IEnumerable<Refactoring> GetRefactorings (IDomVisitable item)
+		static List<Refactoring> refactorings = new List<Refactoring>();
+		
+		static RefactoringService ()
 		{
-			return null;
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					refactorings.Add ((Refactoring)args.ExtensionObject);
+					break;
+				case ExtensionChange.Remove:
+					refactorings.Remove ((Refactoring)args.ExtensionObject);
+					break;
+				}
+			});
+		}
+		
+		public static IEnumerable<Refactoring> Refactorings {
+			get {
+				return refactorings;
+			}
 		}
 	}
 }

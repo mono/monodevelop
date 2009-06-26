@@ -1,3 +1,12 @@
+2009-06-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects.Dom.Refactoring/Change.cs:
+	* MonoDevelop.Projects.Dom.Refactoring/Refactoring.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	* MonoDevelop.Projects.Dom.Refactoring/RefactoringService.cs:
+	  Worked on refactoring.
+
 2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:

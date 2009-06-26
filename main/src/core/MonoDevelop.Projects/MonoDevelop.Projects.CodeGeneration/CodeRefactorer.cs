@@ -38,6 +38,8 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Projects.Dom.Refactoring;
+
 
 namespace MonoDevelop.Projects.CodeGeneration
 {
@@ -101,6 +103,34 @@ namespace MonoDevelop.Projects.CodeGeneration
 			IRefactorer gen = GetGeneratorForClass (cls);
 			gen.AddAttribute (gctx, cls, attr);
 			gctx.Save ();
+		}
+		class RenameHandler 
+		{
+			IEnumerable<Change> changes;
+			public RenameHandler (IEnumerable<Change> changes)
+			{
+				this.changes = changes;
+			}
+			public void FileRename (object sender, FileCopyEventArgs args)
+			{
+				foreach (Change change in changes) {
+					if (change is RenameFileChange)
+						continue;
+					if (args.SourceFile == change.FileName)
+						change.FileName = args.TargetFile;
+				}
+			}
+		}
+		
+		public void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, IEnumerable<Change> changes)
+		{
+			RefactorerContext rctx = new RefactorerContext (dom, fileProvider, null);
+			RenameHandler handler = new RenameHandler (changes);
+			FileService.FileRenamed += handler.FileRename;
+			foreach (Change change in changes) {
+				change.PerformChange (monitor, rctx);
+			}
+			FileService.FileRenamed -= handler.FileRename;
 		}
 
 		public IType CreateClass (Project project, string language, string directory, string namspace, CodeTypeDeclaration type)
