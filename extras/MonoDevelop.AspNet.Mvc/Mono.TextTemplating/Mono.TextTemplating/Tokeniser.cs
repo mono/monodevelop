@@ -31,7 +31,6 @@ using System.Diagnostics;
 namespace Mono.TextTemplating
 {
 	
-	//TODO: handle \r, \r\n newlines
 	public class Tokeniser
 	{
 		string content;

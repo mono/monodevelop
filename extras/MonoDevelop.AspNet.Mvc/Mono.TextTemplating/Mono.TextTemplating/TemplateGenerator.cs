@@ -67,6 +67,14 @@ namespace Mono.TextTemplating
 			Refs.Add (typeof (TextTransformation).Assembly.Location);
 		}
 		
+		protected Engine Engine {
+			get {
+				if (engine == null)
+					engine = new Engine ();
+				return engine;
+			}
+		}
+		
 		public bool ProcessTemplate (string inputFile, string outputFile)
 		{
 			if (String.IsNullOrEmpty (inputFile))
@@ -74,28 +82,17 @@ namespace Mono.TextTemplating
 			if (String.IsNullOrEmpty (outputFile))
 				throw new ArgumentNullException ("outputFile");
 			
-			errors.Clear ();
-			encoding = Encoding.UTF8;
-			this.outputFile = outputFile;
-			this.inputFile = inputFile;
-			
-			return ProcessCurrent ();
-		}
-		
-		public bool ProcessCurrent ()
-		{
-			if (engine == null)
-				engine = new Engine ();
-			
 			string content;
 			try {
 				content = File.ReadAllText (inputFile);
 			} catch (IOException ex) {
+				errors.Clear ();
 				AddError ("Could not read input file '" + inputFile + "':\n" + ex.ToString ());
 				return false;
 			}
 			
-			string output = engine.ProcessTemplate (content, this);
+			string output;
+			ProcessTemplate (inputFile, content, ref outputFile, out output);
 			
 			try {
 				if (!errors.HasErrors)
@@ -103,6 +100,19 @@ namespace Mono.TextTemplating
 			} catch (IOException ex) {
 				AddError ("Could not read input file '" + inputFile + "':\n" + ex.ToString ());
 			}
+			
+			return !errors.HasErrors;
+		}
+		
+		public bool ProcessTemplate (string inputFileName, string inputContent, ref string outputFileName, out string outputContent)
+		{
+			errors.Clear ();
+			encoding = Encoding.UTF8;
+			
+			this.outputFile = outputFileName;
+			this.inputFile = inputFileName;
+			outputContent = Engine.ProcessTemplate (inputContent, this);
+			outputFileName = this.outputFile;
 			
 			return !errors.HasErrors;
 		}

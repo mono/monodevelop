@@ -1,3 +1,11 @@
+2009-06-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/TemplateGenerator.cs: Added overload for
+	  Process template that uses input/output strings directly,
+	  avoiding file read/write. Expose engine to subclasses.
+
+	* Mono.TextTemplating/Tokeniser.cs: Remove outdated TODO.
+
 2009-04-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Microsoft.VisualStudio.TextTemplating/ToStringHelper.cs: Use
