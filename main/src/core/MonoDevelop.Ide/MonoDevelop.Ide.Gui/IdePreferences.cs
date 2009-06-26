@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public string DefaultProjectFileFormat {
-			get { return PropertyService.Get ("MonoDevelop.DefaultFileFormat", "MSBuild05"); }
+			get { return PropertyService.Get ("MonoDevelop.DefaultFileFormat", "MSBuild08"); }
 			set { PropertyService.Set ("MonoDevelop.DefaultFileFormat", value); }
 		}
 		

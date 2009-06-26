@@ -1,3 +1,8 @@
+2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/IdePreferences.cs: Changed default
+	  format to VS2008.
+
 2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs:
