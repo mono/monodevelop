@@ -1,5 +1,10 @@
 2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Ide.cs: Upgrade to latest msbuild
+	  version when a new MD version is installed.
+
+2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/IdePreferences.cs: Changed default
 	  format to VS2008.
 

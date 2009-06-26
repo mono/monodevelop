@@ -204,6 +204,7 @@ namespace MonoDevelop.Ide.Gui
 			if (lastVersion != BuildVariables.PackageVersion && !isInitialRun) {
 				isInitialRunAfterUpgrade = true;
 				upgradedFromVersion = lastVersion;
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildVariables.PackageVersion);
 			}
 			
 			// The ide is now initialized
@@ -362,6 +363,9 @@ namespace MonoDevelop.Ide.Gui
 
 		static void OnUpgraded (string previousVersion)
 		{
+			// Upgrade to latest msbuild version
+			if (IdeApp.Preferences.DefaultProjectFileFormat.StartsWith ("MSBuild"))
+				IdeApp.Preferences.DefaultProjectFileFormat = "MSBuild08";
 		}
 	}
 	
