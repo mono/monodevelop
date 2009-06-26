@@ -1,3 +1,10 @@
+2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:
+	* MonoDevelop.Ide.Commands/SearchCommands.cs: If something is
+	  selected in the editor when invoking the search type
+	  command, use the text as initial search text.
+
 2009-06-26  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

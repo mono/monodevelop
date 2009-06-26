@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		protected GoToDialog (bool searchFiles)
+		protected GoToDialog (bool searchFiles, string initialSearchText)
 		{	
 			this.searchFiles = searchFiles;
 			
@@ -109,13 +109,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Build ();
 			SetupTreeView ();
 			matchEntry.GrabFocus ();
-			
 			SearchFiles = searchFiles;
+			
+			if (initialSearchText != null)
+				matchEntry.Text = initialSearchText;
 		}
 		
 	    public static void Run (bool searchFiles)
 		{
-			GoToDialog dialog = new GoToDialog (searchFiles);
+			Run (searchFiles, null);
+		}
+		
+	    public static void Run (bool searchFiles, string initialSearchText)
+		{
+			GoToDialog dialog = new GoToDialog (searchFiles, initialSearchText);
 			try {
 				if ((ResponseType)dialog.Run () == ResponseType.Ok) {
 					IdeApp.Workbench.OpenDocument (dialog.Filename, dialog.FileLine, dialog.FileColumn, true);

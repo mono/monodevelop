@@ -63,7 +63,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			GoToDialog.Run (false);
+			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.TextEditor != null)
+				GoToDialog.Run (false, IdeApp.Workbench.ActiveDocument.TextEditor.SelectedText);
+			else
+				GoToDialog.Run (false);
 		}
 		
 		protected override void Update (CommandInfo info)
