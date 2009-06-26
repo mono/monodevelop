@@ -1,3 +1,10 @@
+2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution/ExternalConsoleLocator.cs: Make
+	  sure gnome-terminal is spawned by MD and not by an existing
+	  terminal process. Fixes bug #494575 - Launch-in-terminal
+	  problem with gnome-terminal.
+
 2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Serialization/XmlDataSerializer.cs: Added
