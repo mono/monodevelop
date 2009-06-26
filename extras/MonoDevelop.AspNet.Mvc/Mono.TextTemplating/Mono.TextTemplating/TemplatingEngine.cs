@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.CodeDom;
@@ -228,18 +229,18 @@ namespace Mono.TextTemplating
 		                                                   TemplateSettings settings)
 		{
 			//prep the compile unit
-			CodeCompileUnit ccu = new CodeCompileUnit ();
-			CodeNamespace namespac = new CodeNamespace (settings.Namespace);
+			var ccu = new CodeCompileUnit ();
+			var namespac = new CodeNamespace (settings.Namespace);
 			ccu.Namespaces.Add (namespac);
 			
-			HashSet<string> imports = new HashSet<string> ();
+			var imports = new HashSet<string> ();
 			imports.UnionWith (settings.Imports);
 			imports.UnionWith (host.StandardImports);
 			foreach (string ns in imports)
 				namespac.Imports.Add (new CodeNamespaceImport (ns));
 			
 			//prep the type
-			CodeTypeDeclaration type = new CodeTypeDeclaration (settings.Name);
+			var type = new CodeTypeDeclaration (settings.Name);
 			if (!String.IsNullOrEmpty (settings.Inherits))
 				type.BaseTypes.Add (new CodeTypeReference (settings.Inherits));
 			else
@@ -247,22 +248,26 @@ namespace Mono.TextTemplating
 			namespac.Types.Add (type);
 			
 			//prep the transform method
-			CodeMemberMethod transformMeth = new CodeMemberMethod ();
-			transformMeth.Name = "TransformText";
-			transformMeth.ReturnType = new CodeTypeReference (typeof (String));
-			transformMeth.Attributes = MemberAttributes.Public | MemberAttributes.Override;
+			var transformMeth = new CodeMemberMethod () {
+				Name = "TransformText",
+				ReturnType = new CodeTypeReference (typeof (String)),
+				Attributes = MemberAttributes.Public | MemberAttributes.Override
+			};
 			
 			//method references that will need to be used multiple times
-			CodeMethodReferenceExpression writeMeth =
-				new CodeMethodReferenceExpression (new CodeThisReferenceExpression (), "Write");
-			CodeMethodReferenceExpression toStringMeth =
-				new CodeMethodReferenceExpression (new CodeTypeReferenceExpression (typeof (ToStringHelper)), "ToStringWithCulture");
+			var writeMeth = new CodeMethodReferenceExpression (new CodeThisReferenceExpression (), "Write");
+			var toStringMeth = new CodeMethodReferenceExpression (new CodeTypeReferenceExpression (typeof (ToStringHelper)), "ToStringWithCulture");
+			bool helperMode = false;
 			
 			//build the code from the segments
 			foreach (TemplateSegment seg in pt.Content) {
 				CodeStatement st = null;
+				var location = new CodeLinePragma (seg.StartLocation.FileName ?? host.TemplateFile, seg.StartLocation.Line);
 				switch (seg.Type) {
 				case SegmentType.Block:
+					if (helperMode)
+						//TODO: are blocks permitted after helpers?
+						throw new ParserException ("Blocks are not permitted after helpers", seg.StartLocation);
 					st = new CodeSnippetStatement (seg.Text);
 					break;
 				case SegmentType.Expression:
@@ -274,16 +279,25 @@ namespace Mono.TextTemplating
 					st = new CodeExpressionStatement (new CodeMethodInvokeExpression (writeMeth, new CodePrimitiveExpression (seg.Text)));
 					break;
 				case SegmentType.Helper:
-					CodeTypeMember mem = new CodeSnippetTypeMember (seg.Text);
-					mem.LinePragma = new CodeLinePragma (host.TemplateFile, seg.StartLocation.Line);
-					type.Members.Add (mem);
+					type.Members.Add (new CodeSnippetTypeMember (seg.Text) { LinePragma = location });
+					helperMode = true;
 					break;
 				default:
 					throw new InvalidOperationException ();
 				}
 				if (st != null) {
-					st.LinePragma = new CodeLinePragma (host.TemplateFile, seg.StartLocation.Line);
-					transformMeth.Statements.Add (st);
+					if (helperMode) {
+						//convert the statement into a snippet member and attach it to the top level type
+						//TODO: is there a way to do this for languages that use indentation for blocks, e.g. python?
+						using (var writer = new StringWriter ()) {
+							settings.Provider.GenerateCodeFromStatement (st, writer, null);
+							type.Members.Add (new CodeSnippetTypeMember (writer.ToString ()) { LinePragma = location });
+						}
+					} else {
+						st.LinePragma = location;
+						transformMeth.Statements.Add (st);
+						continue;
+					}
 				}
 			}
 			
@@ -298,15 +312,18 @@ namespace Mono.TextTemplating
 			
 			//generate the Host property if needed
 			if (settings.HostSpecific) {
-				CodeMemberField hostField = new CodeMemberField (new CodeTypeReference (typeof (ITextTemplatingEngineHost)), "hostValue");
+				var hostField = new CodeMemberField (new CodeTypeReference (typeof (ITextTemplatingEngineHost)), "hostValue");
 				hostField.Attributes = (hostField.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
 				type.Members.Add (hostField);
-				CodeMemberProperty hostProp = new CodeMemberProperty ();
-				hostProp.Name = "Host";
-				hostProp.Attributes = MemberAttributes.Public;
-				hostProp.HasGet = hostProp.HasGet = true;
-				hostProp.Type = hostField.Type;
-				CodeFieldReferenceExpression hostFieldRef = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), "hostValue");
+				
+				var hostProp = new CodeMemberProperty () {
+					Name = "Host",
+					Attributes = MemberAttributes.Public,
+					HasGet = true,
+					HasSet = true,
+					Type = hostField.Type
+				};
+				var hostFieldRef = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), "hostValue");
 				hostProp.SetStatements.Add (new CodeAssignStatement (hostFieldRef, new CodePropertySetValueReferenceExpression ()));
 				hostProp.GetStatements.Add (new CodeMethodReturnStatement (hostFieldRef));
 				type.Members.Add (hostProp);
