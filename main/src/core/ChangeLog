@@ -1,3 +1,7 @@
+2009-06-26  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am: fixed makefile.
+
 2009-03-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
