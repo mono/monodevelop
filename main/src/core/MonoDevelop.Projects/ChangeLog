@@ -1,3 +1,8 @@
+2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectService.cs: Upgrade default
+	  framework to 3.5.
+
 2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

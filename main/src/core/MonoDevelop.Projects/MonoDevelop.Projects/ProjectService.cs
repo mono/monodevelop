@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects
 		}
 
 		public TargetFramework DefaultTargetFramework {
-			get { return Runtime.SystemAssemblyService.GetTargetFramework ("2.0"); }
+			get { return Runtime.SystemAssemblyService.GetTargetFramework ("3.5"); }
 		}
 		
 		public string DefaultFileFormatId {
