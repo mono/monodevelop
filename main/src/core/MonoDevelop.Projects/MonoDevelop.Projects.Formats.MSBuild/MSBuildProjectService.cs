@@ -61,6 +61,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
+		public static string DefaultFormat {
+			get { return "MSBuild08"; }
+		}
+		
 		static MSBuildProjectService ()
 		{
 			Services.ProjectService.DataContextChanged += delegate {

@@ -1,5 +1,11 @@
 2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/IdePreferences.cs: Get the default
+	  msbuild file format from a const property.
+
+2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/Ide.cs: Upgrade to latest msbuild
 	  version when a new MD version is installed.
 

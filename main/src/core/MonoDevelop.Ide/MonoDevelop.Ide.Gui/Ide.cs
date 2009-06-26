@@ -365,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// Upgrade to latest msbuild version
 			if (IdeApp.Preferences.DefaultProjectFileFormat.StartsWith ("MSBuild"))
-				IdeApp.Preferences.DefaultProjectFileFormat = "MSBuild08";
+				IdeApp.Preferences.DefaultProjectFileFormat = MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.DefaultFormat;
 		}
 	}
 	

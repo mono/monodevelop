@@ -1,5 +1,10 @@
 2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	  Get the default msbuild file format from a const property.
+
+2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectService.cs: Upgrade default
 	  framework to 3.5.
 
