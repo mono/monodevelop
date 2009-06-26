@@ -1,5 +1,11 @@
 2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	  Allow dropping files from nautilus/explorer to the project
+	  pad.
+
+2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/Ide.cs:
 	* MonoDevelop.Ide.Gui/IdePreferences.cs: Get the default
 	  msbuild file format from a const property.

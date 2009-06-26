@@ -140,8 +140,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (dataObject is ProjectFile) {
 				ProjectFile file = (ProjectFile) dataObject;
 				return Path.GetDirectoryName (file.Name) != targetPath && file.DependsOnFile == null;
-			} if (dataObject is ProjectFolder) {
+			}
+			else if (dataObject is ProjectFolder) {
 				return ((ProjectFolder)dataObject).Path != targetPath;
+			}
+			else if (dataObject is Gtk.SelectionData) {
+				SelectionData data = (SelectionData) dataObject;
+				if (data.Type == "text/uri-list")
+					return true;
 			}
 			return false;
 		}
@@ -172,14 +178,33 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			else if (dataObject is ProjectFile) {
 				ProjectFile file = (ProjectFile) dataObject;
-				source = file.Name;
+				source = file.FilePath;
 				sourceProject = file.Project;
 				groupedChildren = file.DependentChildren;
 				what = null;
 				ask = false;
-			} else {
+			}
+			else if (dataObject is Gtk.SelectionData) {
+				SelectionData data = (SelectionData) dataObject;
+				if (data.Type != "text/uri-list")
+					return;
+				source = System.Text.Encoding.UTF8.GetString (data.Data);
+				string[] files = source.Split (new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+				for (int n=0; n<files.Length; n++) {
+					Uri uri = new Uri (files[n]);
+					if (uri.Scheme != "file")
+						return;
+					if (Directory.Exists (uri.LocalPath))
+						return;
+					files[n] = uri.LocalPath;
+				}
+				
+				IdeApp.ProjectOperations.AddFilesToProject (targetProject, files, targetPath);
+				projectsToSave.Add (targetProject);
 				return;
 			}
+			else
+				return;
 			
 			if (ask) {
 				string q;
