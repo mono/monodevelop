@@ -1,5 +1,6 @@
 
 DEPS =  \
+	$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
@@ -49,7 +50,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs \
@@ -64,6 +64,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Refactoring.RefactoringPreviewDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Refactoring.RenameItemDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormatterService.cs \
@@ -184,7 +186,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
-	MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs \
@@ -297,6 +298,9 @@ FILES =  \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
+	MonoDevelop.Ide.Refactoring/RefactoringPreviewDialog.cs \
+	MonoDevelop.Ide.Refactoring/Rename.cs \
+	MonoDevelop.Ide.Refactoring/RenameItemDialog.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \

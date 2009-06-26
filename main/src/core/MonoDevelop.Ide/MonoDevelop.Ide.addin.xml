@@ -1330,7 +1330,11 @@
 			<Policies resource="GPL3LicencePolicy.xml" />
 		</PolicySet>
 	</Extension>
-
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Refactorings" name = "Refactorings">
+		<Class id="Rename" class = "MonoDevelop.Ide.Refactoring.Rename" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
 		<FileFilter id = "Combine"
 		            _label = "MonoDevelop Solution Files"

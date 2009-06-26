@@ -33,15 +33,25 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
+using System.Collections.Generic;
+using MonoDevelop.Projects.Dom.Refactoring;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Ide.Gui.Dialogs {
-	public partial class RenameItemDialog : Gtk.Dialog {
+namespace MonoDevelop.Ide.Refactoring
+{
+	public partial class RenameItemDialog : Gtk.Dialog
+	{
+		ProjectDom ctx;
 		IDomVisitable item;
 		string fileName;
-		public RenameItemDialog (ProjectDom ctx, IDomVisitable item)
+		Rename rename;
+		
+		public RenameItemDialog (ProjectDom ctx, IDomVisitable item, Rename rename)
 		{
+			this.ctx  = ctx;
 			this.item = item;
-			
+			this.rename = rename;
+
 			this.Build ();
 
 			if (item is IType) {
@@ -51,8 +61,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					this.renameFileFlag.Active = true;
 				}
 				if (type.ClassType == ClassType.Interface)
-					this.Title = GettextCatalog.GetString ("Rename Interface");
-				else
+					this.Title = GettextCatalog.GetString ("Rename Interface"); else
 					this.Title = GettextCatalog.GetString ("Rename Class");
 				this.fileName = type.CompilationUnit.FileName;
 			} else if (item is IField) {
@@ -74,6 +83,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			} else {
 				this.Title = GettextCatalog.GetString ("Rename Item");
 			}
+			
 			if (item is IMember) {
 				IMember member = (IMember)item;
 				entry.Text = member.Name;
@@ -89,19 +99,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				this.fileName = par.DeclaringMember.DeclaringType.CompilationUnit.FileName;
 			}
 			entry.SelectRegion (0, -1);
-			
-			buttonOk.Sensitive = false;
-			entry.Changed += new EventHandler (OnEntryChanged);
-			entry.Activated += new EventHandler (OnEntryActivated);
-			
-			buttonOk.Clicked += new EventHandler (OnOKClicked);
-			buttonCancel.Clicked += new EventHandler (OnCancelClicked);
-			entry.Changed += delegate {
-				buttonOk.Sensitive = ValidateName ();
-			};
+
+			buttonPreview.Sensitive = buttonOk.Sensitive = false;
+			entry.Changed += OnEntryChanged;
+			entry.Activated += OnEntryActivated;
+
+			buttonOk.Clicked += OnOKClicked;
+			buttonCancel.Clicked += OnCancelClicked;
+			buttonPreview.Clicked += OnPreviewClicked;
+			entry.Changed += delegate { buttonPreview.Sensitive = buttonOk.Sensitive = ValidateName (); };
 			ValidateName ();
 		}
-		
+
 		bool ValidateName ()
 		{
 			INameValidator nameValidator = MonoDevelop.Projects.LanguageBindingService.GetRefactorerForFile (fileName ?? "default.cs");
@@ -122,52 +131,45 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		void OnEntryChanged (object sender, EventArgs e)
 		{
 			// Don't allow the user to click OK unless there is a new name
-			buttonOk.Sensitive = entry.Text.Length > 0;
+			buttonPreview.Sensitive = buttonOk.Sensitive = entry.Text.Length > 0;
 		}
-		
+
 		void OnEntryActivated (object sender, EventArgs e)
 		{
 			if (buttonOk.Sensitive)
 				buttonOk.Click ();
 		}
-		
+
 		void OnCancelClicked (object sender, EventArgs e)
 		{
-			((Widget) this).Destroy ();
+			this.Destroy ();
+		}
+		
+		Rename.RenameProperties Properties {
+			get {
+				return new Rename.RenameProperties () {
+					NewName = entry.Text,
+					RenameFile = renameFileFlag.Active
+				};
+			}
 		}
 		
 		void OnOKClicked (object sender, EventArgs e)
 		{
+			List<Change> changes = rename.PerformChanges (ctx, item, Properties);
 			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-			string name = entry.Text;
-			
-			if (item is IType) {
-				refactorer.RenameClass (monitor, (IType) item, name, RefactoryScope.Solution);
-				if (this.renameFileFlag.Active) {
-					IType cls = ((IType) item);
-					if (cls.IsPublic) {
-						foreach (IType part in cls.Parts) {
-							if (System.IO.Path.GetFileNameWithoutExtension(part.CompilationUnit.FileName) == cls.Name) {
-								string newFileName = System.IO.Path.HasExtension(part.CompilationUnit.FileName) ? name + System.IO.Path.GetExtension(part.CompilationUnit.FileName) : name;
-								newFileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(part.CompilationUnit.FileName), newFileName);
-								FileService.RenameFile(part.CompilationUnit.FileName, newFileName);
-							}
-						}
-						IdeApp.ProjectOperations.Save(IdeApp.ProjectOperations.CurrentSelectedProject);
-					}
-				}
-			} else if (item is IMember) {
-				IMember member = (IMember) item;
-				
-				refactorer.RenameMember (monitor, member.DeclaringType, member, name, RefactoryScope.Solution);
-			} else if (item is LocalVariable) {
-				refactorer.RenameVariable (monitor, (LocalVariable) item, name);
-			} else if (item is IParameter) {
-				refactorer.RenameParameter (monitor, (IParameter) item, name);
-			}
-			
-			((Widget) this).Destroy ();
+			refactorer.AcceptChanges (monitor, ctx, changes);
+			((Widget)this).Destroy ();
 		}
+		
+		void OnPreviewClicked (object sender, EventArgs e)
+		{
+			List<Change> changes = rename.PerformChanges (ctx, item, Properties);
+			((Widget)this).Destroy ();
+			RefactoringPreviewDialog refactoringPreviewDialog = new RefactoringPreviewDialog (ctx, changes);
+			refactoringPreviewDialog.Show ();
+		}
+	
 	}
 }

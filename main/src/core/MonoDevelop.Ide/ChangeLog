@@ -1,3 +1,21 @@
+2009-06-26  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Refactoring:
+	* MonoDevelop.Ide.Refactoring/.svn:
+	* MonoDevelop.Ide.Refactoring/Rename.cs:
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
+	* MonoDevelop.Ide.Refactoring/RenameItemDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Refactoring.RenameItemDialog.cs:
+	* MonoDevelop.Ide.Refactoring/RefactoringPreviewDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Refactoring.RefactoringPreviewDialog.cs:
+	  Worked on refactoring.
+
 2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:

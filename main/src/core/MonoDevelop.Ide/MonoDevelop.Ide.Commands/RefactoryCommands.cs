@@ -334,13 +334,13 @@ namespace MonoDevelop.Ide.Commands
 				realItem = ((InstantiatedType)item).UninstantiatedType;
 			if (realItem is CompoundType) {
 				Document doc = IdeApp.Workbench.ActiveDocument;
-				ITextBuffer editor = doc.GetContent <ITextBuffer> ();
+				ITextBuffer editor = doc.GetContent<ITextBuffer> ();
 				int line, column;
-				editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);				
+				editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
 				((CompoundType)realItem).SetMainPart (doc.FileName, line, column);
 				item = realItem;
 			}
-			
+
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, realItem, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
 			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
@@ -350,7 +350,7 @@ namespace MonoDevelop.Ide.Commands
 			} else {
 				flags |= OutputFlags.IncludeParameters;
 			}
-				
+
 			string itemName = EscapeName (ambience.GetString (item, flags));
 			bool canRename = false;
 			string txt;
@@ -361,33 +361,38 @@ namespace MonoDevelop.Ide.Commands
 					CompoundType ct = (CompoundType)item;
 					foreach (IType part in ct.Parts) {
 						Refactorer partRefactorer = new Refactorer (ctx, pinfo, eclass, part, null);
-						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.CompilationUnit.FileName), part.Location.Line), 
-						                          new RefactoryOperation (partRefactorer.GoToDeclaration));
+						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.CompilationUnit.FileName), part.Location.Line), new RefactoryOperation (partRefactorer.GoToDeclaration));
 					}
 					ciset.CommandInfos.Add (declSet);
 				} else {
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 				}
 			}
-			
+
 			if ((item is IMember || item is LocalVariable || item is IParameter) && !(item is IType))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
-			
+
 			// We can rename local variables (always), method params (always), 
 			// or class/members (if they belong to a project)
 			if ((item is LocalVariable) || (item is IParameter))
-				canRename = true;
-			else if (item is IType)
-				canRename = ((IType) item).SourceProject != null;
-			else if (item is IMember) {
-				IType cls = ((IMember) item).DeclaringType;
+				canRename = true; else if (item is IType)
+				canRename = ((IType)item).SourceProject != null; else if (item is IMember) {
+				IType cls = ((IMember)item).DeclaringType;
 				canRename = cls != null && cls.SourceProject != null;
 			}
-			
-			if (canRename && !(item is IType)) {
-				// Defer adding this item for Classes until later
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
+
+			foreach (var refactoring in MonoDevelop.Projects.Dom.Refactoring.RefactoringService.Refactorings) {
+				if (refactoring.IsValid (ctx, item)) {
+					ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (delegate {
+						refactoring.Run (ctx, item);
+					}));
+				}
 			}
+			
+//			if (canRename && !(item is IType)) {
+//				// Defer adding this item for Classes until later
+//				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
+//			}
 
 			if (item is IType) {
 				IType cls = (IType) item;
@@ -424,8 +429,8 @@ namespace MonoDevelop.Ide.Commands
 				
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
 				
-				if (canRename)
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
+//				if (canRename)
+//					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
 				
 				if (canRename && cls.ClassType == ClassType.Interface && eclass != null) {
 					// An interface is selected, so just need to provide these 2 submenu items
@@ -708,8 +713,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		public void Rename ()
 		{
-			RenameItemDialog dialog = new RenameItemDialog (ctx, item);
-			dialog.Show ();
+		//	RenameItemDialog dialog = new RenameItemDialog (ctx, item);
+		//	dialog.Show ();
 		}
 	}
 }
