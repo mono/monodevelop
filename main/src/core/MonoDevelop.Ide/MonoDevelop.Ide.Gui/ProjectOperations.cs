@@ -995,26 +995,28 @@ namespace MonoDevelop.Ide.Gui
 			return newfilename;
 		}		
 
-		public void TransferFiles (IProgressMonitor monitor, Project sourceProject, string sourcePath, Project targetProject, string targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
+		public void TransferFiles (IProgressMonitor monitor, Project sourceProject, FilePath sourcePath, Project targetProject, FilePath targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
 		{
 			// When transfering directories, targetPath is the directory where the source
-			// directory will be transfered, not including the destination directory name.
+			// directory will be transfered, including the destination directory or file name.
 			// For example, if sourcePath is /a1/a2/a3 and targetPath is /b1/b2, the
-			// new folder will be /b1/b2/a3
+			// new folder or file will be /b1/b2
 			
 			if (targetProject == null)
 				throw new ArgumentNullException ("targetProject");
 
-			if (!targetPath.StartsWith (targetProject.BaseDirectory))
+			if (!targetPath.IsChildPathOf (targetProject.BaseDirectory))
 				throw new ArgumentException ("Invalid project folder: " + targetPath);
 
-			if (sourceProject != null && !sourcePath.StartsWith (sourceProject.BaseDirectory))
+			if (sourceProject != null && !sourcePath.IsChildPathOf (sourceProject.BaseDirectory))
 				throw new ArgumentException ("Invalid project folder: " + sourcePath);
 				
 			if (copyOnlyProjectFiles && sourceProject == null)
 				throw new ArgumentException ("A source project must be specified if copyOnlyProjectFiles is True");
+			
+			bool sourceIsFolder = Directory.Exists (sourcePath);
 
-			bool movingFolder = (removeFromSource && Directory.Exists (sourcePath) && (
+			bool movingFolder = (removeFromSource && sourceIsFolder && (
 					!copyOnlyProjectFiles ||
 					IsDirectoryHierarchyEmpty (sourcePath)));
 
@@ -1056,10 +1058,9 @@ namespace MonoDevelop.Ide.Gui
 			// Ensure that the destination folder is created, even if no files
 			// are copied
 			
-			string newFolder = Path.Combine (targetPath, Path.GetFileName (sourcePath));
 			try {
-				if (Directory.Exists (sourcePath) && !Directory.Exists (newFolder) && !movingFolder)
-					FileService.CreateDirectory (newFolder);
+				if (sourceIsFolder && !Directory.Exists (targetPath) && !movingFolder)
+					FileService.CreateDirectory (targetPath);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not create directory '{0}'.", targetPath), ex);
 				return;
@@ -1079,25 +1080,24 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (movingFolder) {
 				try {
-					FileService.MoveDirectory (sourcePath, newFolder);
+					FileService.MoveDirectory (sourcePath, targetPath);
 				} catch (Exception ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Directory '{0}' could not be moved.", sourcePath), ex);
 					return;
 				}
 			}
 
-			string basePath = Path.GetDirectoryName (sourcePath);
 			monitor.BeginTask (GettextCatalog.GetString ("Copying files..."), filesToMove.Count);
 			
 			foreach (ProjectFile file in filesToMove) {
-				string sourceFile = file.Name;
-				string newFile = targetPath + sourceFile.Substring (basePath.Length);
+				FilePath sourceFile = file.FilePath;
+				FilePath newFile = sourceIsFolder ? targetPath.Combine (sourceFile.ToRelative (sourcePath)) : targetPath;
 				
 				ProjectFile oldProjectFile = oldProjectFiles != null ? oldProjectFiles.GetFile (sourceFile) : null;
 				
 				if (!movingFolder) {
 					try {
-						string fileDir = Path.GetDirectoryName (newFile);
+						FilePath fileDir = newFile.ParentDirectory;
 						if (!Directory.Exists (fileDir))
 							FileService.CreateDirectory (fileDir);
 						if (removeFromSource)

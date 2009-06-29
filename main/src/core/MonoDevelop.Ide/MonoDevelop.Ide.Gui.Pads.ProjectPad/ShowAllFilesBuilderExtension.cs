@@ -326,17 +326,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
 			if (dataObject is SystemFile) {
-				string targetPath = ShowAllFilesBuilderExtension.GetFolderPath (CurrentNode.DataItem);
-				return Path.GetDirectoryName (((SystemFile)dataObject).Path) != targetPath;
+				FilePath targetPath = ShowAllFilesBuilderExtension.GetFolderPath (CurrentNode.DataItem);
+				return ((SystemFile)dataObject).Path.ParentDirectory != targetPath || operation == DragOperation.Copy;
 			}
 			return false;
 		}
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
-			string targetPath = ShowAllFilesBuilderExtension.GetFolderPath (CurrentNode.DataItem);
+			FilePath targetPath = ShowAllFilesBuilderExtension.GetFolderPath (CurrentNode.DataItem);
 			Project targetProject = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
-			string source = ((SystemFile)dataObject).Path;
+			FilePath source = ((SystemFile)dataObject).Path;
+			targetPath = targetPath.Combine (source.FileName);
+			if (targetPath == source)
+				targetPath = FolderCommandHandler.GetTargetCopyName (targetPath, false);
 			
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), Stock.CopyIcon, true))
 			{

@@ -1,3 +1,17 @@
+2009-06-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	  Allow making a copy of a file in the same directory by
+	  appending a 'copy' tag to the target file name. Fixes bug
+	  #442041 - should be able to copy and paste a file within a
+	  directory.
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: TransferFiles now
+	  considers that the target path includes the target directory
+	  or file name. In this way it is possible to make copies of
+	  files or directories in the same folder.
+
 2009-06-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Refactoring/RefactoringPreviewDialog.cs:

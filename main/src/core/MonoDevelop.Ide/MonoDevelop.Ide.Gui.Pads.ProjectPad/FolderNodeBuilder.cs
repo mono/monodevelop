@@ -139,10 +139,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (dataObject is ProjectFile) {
 				ProjectFile file = (ProjectFile) dataObject;
-				return Path.GetDirectoryName (file.Name) != targetPath && file.DependsOnFile == null;
+				return (Path.GetDirectoryName (file.Name) != targetPath || operation == DragOperation.Copy) && file.DependsOnFile == null;
 			}
 			else if (dataObject is ProjectFolder) {
-				return ((ProjectFolder)dataObject).Path != targetPath;
+				return ((ProjectFolder)dataObject).Path != targetPath || operation == DragOperation.Copy;
 			}
 			else if (dataObject is Gtk.SelectionData) {
 				SelectionData data = (SelectionData) dataObject;
@@ -162,8 +162,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void DropNode (Set<SolutionEntityItem> projectsToSave, object dataObject, DragOperation operation)
 		{
-			string targetPath = GetFolderPath (CurrentNode.DataItem);
-			string what, source;
+			FilePath targetPath = GetFolderPath (CurrentNode.DataItem);
+			FilePath source;
+			string what;
 			Project targetProject = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			Project sourceProject;
 			System.Collections.Generic.IEnumerable<ProjectFile> groupedChildren = null;
@@ -188,8 +189,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				SelectionData data = (SelectionData) dataObject;
 				if (data.Type != "text/uri-list")
 					return;
-				source = System.Text.Encoding.UTF8.GetString (data.Data);
-				string[] files = source.Split (new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+				string sources = System.Text.Encoding.UTF8.GetString (data.Data);
+				string[] files = sources.Split (new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 				for (int n=0; n<files.Length; n++) {
 					Uri uri = new Uri (files[n]);
 					if (uri.Scheme != "file")
@@ -205,6 +206,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			else
 				return;
+
+			targetPath = targetPath.Combine (source.FileName);
+			// If copying to the same directory, make a copy with a different name
+			if (targetPath == source)
+				targetPath = GetTargetCopyName (targetPath, dataObject is ProjectFolder);
 			
 			if (ask) {
 				string q;
@@ -212,7 +218,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					if (targetPath == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
-						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, Path.GetFileName (targetPath));
+						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, targetPath.FileName);
 					if (!MessageService.Confirm (q, AlertButton.Move))
 						return;
 				}
@@ -220,7 +226,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					if (targetPath == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
-						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, Path.GetFileName (targetPath));
+						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, targetPath.FileName);
 					if (!MessageService.Confirm (q, AlertButton.Copy))
 						return;
 				}
@@ -286,6 +292,49 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				bool move = operation == DragOperation.Move;
 				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, false);
 			}
+		}
+		
+		internal static FilePath GetTargetCopyName (FilePath path, bool isFolder)
+		{
+			int n=1;
+			// First of all try to find an existing copy tag
+			string fn = path.FileNameWithoutExtension;
+			for (int i=1; i<100; i++) {
+				string copyTag = GetCopyTag (i); 
+				if (fn.EndsWith (copyTag)) {
+					string newfn = fn.Substring (0, fn.Length - copyTag.Length);
+					if (newfn.Trim ().Length > 0) {
+						n = i + 1;
+						path = path.ParentDirectory.Combine (newfn + path.Extension);
+						break;
+					}
+				}
+			}
+			FilePath basePath = path;
+			while ((!isFolder && File.Exists (path)) || (isFolder && Directory.Exists (path))) {
+				string copyTag = GetCopyTag (n);
+				path = basePath.ParentDirectory.Combine (basePath.FileNameWithoutExtension + copyTag + basePath.Extension);
+				n++;
+			}
+			return path;
+		}
+		
+		static string GetCopyTag (int n)
+		{
+			string sc;
+			switch (n) {
+				case 1: sc = GettextCatalog.GetString ("copy"); break;
+				case 2: sc = GettextCatalog.GetString ("another copy"); break;
+				case 3: sc = GettextCatalog.GetString ("3rd copy"); break;
+				case 4: sc = GettextCatalog.GetString ("4th copy"); break;
+				case 5: sc = GettextCatalog.GetString ("5th copy"); break;
+				case 6: sc = GettextCatalog.GetString ("6th copy"); break;
+				case 7: sc = GettextCatalog.GetString ("7th copy"); break;
+				case 8: sc = GettextCatalog.GetString ("8th copy"); break;
+				case 9: sc = GettextCatalog.GetString ("9th copy"); break;
+				default: sc = GettextCatalog.GetString ("copy {0}"); break;
+			}
+			return " (" + string.Format (sc, n) + ")";
 		}
 		
 		[CommandHandler (ProjectCommands.AddFiles)]
