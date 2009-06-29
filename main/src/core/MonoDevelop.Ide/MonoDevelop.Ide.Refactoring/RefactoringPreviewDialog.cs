@@ -36,9 +36,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 
-
-
-
 namespace MonoDevelop.Ide.Refactoring
 {
 	public partial class RefactoringPreviewDialog : Gtk.Dialog
@@ -146,7 +143,10 @@ namespace MonoDevelop.Ide.Refactoring
 				}
 				
 				Diff diff = new Diff (before.ToArray (), after.ToArray (), true, true);
-				cellRendererDiff.InitCell (treeviewPreview, true, diff.ToString (), change.FileName);
+				
+				System.IO.StringWriter w = new System.IO.StringWriter();
+				UnifiedDiff.WriteUnifiedDiff (diff, w, change.FileName, change.FileName, 2);
+				cellRendererDiff.InitCell (treeviewPreview, true, w.ToString (), change.FileName);
 			} catch (Exception e) {
 				Console.WriteLine (e);
 			}
