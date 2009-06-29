@@ -169,13 +169,11 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		private VersionInfo GetDirStatus (Repository repo, FilePath localPath, bool getRemoteStatus)
 		{
-			FilePath parent = localPath.ParentDirectory;
-			
 			// If the directory is not versioned, there is no version info
-			if (!Directory.Exists (GetDirectoryDotSvn (parent)))
+			if (!Directory.Exists (GetDirectoryDotSvn (localPath)))
 				return null;
 				
-			foreach (VersionInfo ent in Status (repo, parent, SvnRevision.Head, false, false, getRemoteStatus)) {
+			foreach (VersionInfo ent in Status (repo, localPath, SvnRevision.Head, false, false, getRemoteStatus)) {
 				if (ent.LocalPath == localPath)
 					return ent;
 			}

@@ -164,7 +164,7 @@ namespace MonoDevelop.VersionControl
 		public virtual bool CanRevert (FilePath localPath)
 		{
 			VersionInfo vinfo = GetVersionInfo (localPath, false);
-			return vinfo != null && vinfo.IsVersioned && vinfo.HasLocalChanges;
+			return vinfo != null && vinfo.IsVersioned && (vinfo.HasLocalChanges || Directory.Exists (localPath));
 		}
 
 		public virtual bool CanLock (FilePath localPath)

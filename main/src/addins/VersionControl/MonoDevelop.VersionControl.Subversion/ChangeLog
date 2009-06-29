@@ -1,3 +1,10 @@
+2009-06-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  Properly detect versioned directories. Allow reverting whole
+	  directories. All this fixes bug #436282 -
+	  solution/project/folders should have 'Revert All' option.
+
 2009-06-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
