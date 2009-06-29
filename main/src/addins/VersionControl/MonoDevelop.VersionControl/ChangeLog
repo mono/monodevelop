@@ -1,3 +1,10 @@
+2009-06-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs: When
+	  double-clicking on a file, open it. Fixes bug #402108 -
+	  Double-click on item in the Review changes dialog should
+	  open the file or show the differences.
+
 2009-06-25  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.VersionControl/CreatePatchCommand.cs: 

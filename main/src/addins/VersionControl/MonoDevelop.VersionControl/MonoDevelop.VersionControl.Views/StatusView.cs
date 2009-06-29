@@ -179,7 +179,7 @@ namespace MonoDevelop.VersionControl.Views
 			scroller.Add(filelist);
 			scroller.HscrollbarPolicy = PolicyType.Automatic;
 			scroller.VscrollbarPolicy = PolicyType.Automatic;
-			filelist.RowActivated += new RowActivatedHandler(OnRowActivated);
+			filelist.RowActivated += OnRowActivated;
 			
 			CellRendererToggle cellToggle = new CellRendererToggle();
 			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
@@ -553,10 +553,9 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		void OnRowActivated (object o, RowActivatedArgs args) {
-			int index = args.Path.Indices [0];
-			VersionInfo node = statuses [index];
-			DiffView.Show (vc, node.LocalPath);
+		void OnRowActivated (object o, RowActivatedArgs args)
+		{
+			OnOpen (null, null);
 		}
 		
 		void OnCommitToggledHandler(object o, ToggledArgs args) {
