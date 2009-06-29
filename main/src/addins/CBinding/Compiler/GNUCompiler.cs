@@ -653,28 +653,29 @@ namespace CBinding
 		private CompilerError CreateErrorFromErrorString (string errorString, TextReader reader)
 		{
 			CompilerError error = new CompilerError ();
+			string warning = GettextCatalog.GetString("warning");
 			
-			Match withColMatch = withColRegex.Match (errorString);
+			Match match = withColRegex.Match (errorString);
 			
-			if (withColMatch.Success)
+			if (match.Success)
 			{
-				error.FileName = withColMatch.Groups["file"].Value;
-				error.Line = int.Parse (withColMatch.Groups["line"].Value);
-				error.Column = int.Parse (withColMatch.Groups["column"].Value);
-				error.IsWarning = withColMatch.Groups["level"].Value.Equals ("warning");
-				error.ErrorText = withColMatch.Groups["message"].Value;
+				error.FileName = match.Groups["file"].Value;
+				error.Line = int.Parse (match.Groups["line"].Value);
+				error.Column = int.Parse (match.Groups["column"].Value);
+				error.IsWarning = match.Groups["level"].Value.Equals (warning, StringComparison.Ordinal);
+				error.ErrorText = match.Groups["message"].Value;
 				
 				return error;
 			}
 			
-			Match noColMatch = noColRegex.Match (errorString);
+			match = noColRegex.Match (errorString);
 			
-			if (noColMatch.Success)
+			if (match.Success)
 			{
-				error.FileName = noColMatch.Groups["file"].Value;
-				error.Line = int.Parse (noColMatch.Groups["line"].Value);
-				error.IsWarning = noColMatch.Groups["level"].Value.Equals ("warning");
-				error.ErrorText = noColMatch.Groups["message"].Value;
+				error.FileName = match.Groups["file"].Value;
+				error.Line = int.Parse (match.Groups["line"].Value);
+				error.IsWarning = match.Groups["level"].Value.Equals (warning, StringComparison.Ordinal);
+				error.ErrorText = match.Groups["message"].Value;
 				
 				// Multi-line error message? attempt to parse it into a single error.
 				if (error.ErrorText.StartsWith ("(") && !error.ErrorText.EndsWith (")"))
