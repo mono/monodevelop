@@ -1,3 +1,17 @@
+2009-06-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* icons/folder-new-16.png:
+	* icons/project-new-16.png:
+	* icons/solution-new-16.png:
+	* icons/workspace-new-16.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* icons/solution-folder-new-16.png:
+	* icons/Icons.16x16.NewCombineIcon.png:
+	* icons/Icons.16x16.NewSolutionIcon.png: Improved icons for
+	  new project, solution, workspace, etc.
+
 2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

@@ -121,6 +121,7 @@ RES =  \
 	icons/file-struct-32.png \
 	icons/file-xml-16.png \
 	icons/file-xml-32.png \
+	icons/folder-new-16.png \
 	icons/GeneralWizardBackground \
 	icons/gnome-fs-regular.png \
 	icons/Icons.16x16.ClearAllBookmarks \
@@ -136,9 +137,7 @@ RES =  \
 	icons/Icons.16x16.GotoNextbookmark \
 	icons/Icons.16x16.GotoPrevbookmark \
 	icons/Icons.16x16.MiscFiles \
-	icons/Icons.16x16.NewCombineIcon.png \
 	icons/Icons.16x16.NewFolderIcon \
-	icons/Icons.16x16.NewSolutionIcon.png \
 	icons/Icons.16x16.OpenFolderBitmap \
 	icons/Icons.16x16.OpenProjectIcon \
 	icons/Icons.16x16.OpenReferenceFolder \
@@ -179,6 +178,7 @@ RES =  \
 	icons/project-console-32.png \
 	icons/project-gui-32.png \
 	icons/project-library-32.png \
+	icons/project-new-16.png \
 	icons/project-reference-16.png \
 	icons/project-reference-folder-16.png \
 	icons/project-reference-package-16.png \
@@ -186,7 +186,9 @@ RES =  \
 	icons/solution-16.png \
 	icons/solution-32.png \
 	icons/solution-folder-closed-16.png \
+	icons/solution-folder-new-16.png \
 	icons/solution-folder-open-16.png \
+	icons/solution-new-16.png \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
 	icons/template-16.png \
@@ -201,6 +203,7 @@ RES =  \
 	icons/web-overlay-32.png \
 	icons/workspace-16.png \
 	icons/workspace-32.png \
+	icons/workspace-new-16.png \
 	MonoDevelop.Core.Gui.addin.xml
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb

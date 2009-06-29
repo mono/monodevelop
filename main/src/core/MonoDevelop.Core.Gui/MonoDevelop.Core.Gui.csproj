@@ -132,12 +132,6 @@
     <EmbeddedResource Include="icons\Icons.16x16.NewFolderIcon">
       <LogicalName>Icons.16x16.NewFolderIcon</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.NewSolutionIcon.png">
-      <LogicalName>Icons.16x16.NewSolutionIcon.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.NewCombineIcon.png">
-      <LogicalName>Icons.16x16.NewCombineIcon.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\Icons.16x16.OpenFolderBitmap">
       <LogicalName>Icons.16x16.OpenFolderBitmap</LogicalName>
     </EmbeddedResource>
@@ -462,6 +456,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-reference-project-16.png">
       <LogicalName>project-reference-project-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-new-16.png">
+      <LogicalName>solution-new-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-new-16.png">
+      <LogicalName>workspace-new-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-new-16.png">
+      <LogicalName>project-new-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-new-16.png">
+      <LogicalName>folder-new-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-folder-new-16.png">
+      <LogicalName>solution-folder-new-16.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
