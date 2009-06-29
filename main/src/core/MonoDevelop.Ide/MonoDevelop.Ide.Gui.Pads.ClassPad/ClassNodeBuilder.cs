@@ -88,29 +88,31 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			ClassData classData = dataObject as ClassData;
 			bool publicOnly = builder.Options ["PublicApiOnly"];
+			bool publicProtectedOnly = builder.Options ["PublicProtectedApiOnly"];
+			publicOnly |= publicProtectedOnly;
 			
 			// Delegates have an Invoke method, which doesn't need to be shown.
 			if (classData.Class.ClassType == ClassType.Delegate)
 				return;
 
 			foreach (IType innerClass in classData.Class.InnerTypes)
-				if (innerClass.IsPublic || !publicOnly)
+				if (innerClass.IsPublic || (innerClass.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (new ClassData (classData.Project, innerClass));
 
 			foreach (IMethod method in classData.Class.Methods)
-				if (method.IsPublic || !publicOnly)
+				if (method.IsPublic || (method.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (method);
 			
 			foreach (IProperty property in classData.Class.Properties)
-				if (property.IsPublic || !publicOnly)
+				if (property.IsPublic || (property.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (property);
 			
 			foreach (IField field in classData.Class.Fields)
-				if (field.IsPublic || !publicOnly)
+				if (field.IsPublic || (field.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (field);
 			
 			foreach (IEvent e in classData.Class.Events)
-				if (e.IsPublic || !publicOnly)
+				if (e.IsPublic || (e.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (e);
 		}
 

@@ -1,6 +1,15 @@
 2009-06-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs: Add
+	  option for showing public+protected members only.
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs:
+	  Removed relief from toolbar buttons.
+
+2009-06-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Implemented New
 	  Workspace command. Improved label of the Close Solution

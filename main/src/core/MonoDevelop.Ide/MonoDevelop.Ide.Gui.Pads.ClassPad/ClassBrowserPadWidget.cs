@@ -67,8 +67,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			this.PackStart (align, false, false, 0);
 			searchEntry = new Entry ();
 			searchBox.PackStart (searchEntry, true, true, 0);
-			buttonSearch = new Button (new Gtk.Image (Gtk.Stock.GoForward, IconSize.Menu));
+			buttonSearch = new Button (new Gtk.Image (Gtk.Stock.Find, IconSize.Menu));
+			buttonSearch.Relief = ReliefStyle.None;
 			buttonCancelSearch = new Button (new Gtk.Image (Gtk.Stock.Stop, IconSize.Menu));
+			buttonCancelSearch.Relief = ReliefStyle.None;
 			searchBox.PackStart (buttonSearch, false, false, 2);
 			searchBox.PackStart (buttonCancelSearch, false, false, 0);
 			
