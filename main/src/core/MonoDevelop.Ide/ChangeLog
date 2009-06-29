@@ -1,3 +1,14 @@
+2009-06-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Implemented New
+	  Workspace command. Improved label of the Close Solution
+	  command. Use improved icons for new project and solution.
+	  All this fixes bug #401403.
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Fix cast exception.
+
 2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:

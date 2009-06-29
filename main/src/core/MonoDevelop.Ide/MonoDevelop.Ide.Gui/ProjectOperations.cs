@@ -454,7 +454,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void NewSolution ()
 		{
+			NewSolution (null);
+		}
+		
+		public void NewSolution (string defaultTemplate)
+		{
 			NewProjectDialog pd = new NewProjectDialog (null, true, null);
+			if (defaultTemplate != null)
+				pd.SelectTemplate (defaultTemplate);
 			pd.Run ();
 			pd.Destroy ();
 		}

@@ -794,7 +794,8 @@ namespace MonoDevelop.Ide.Gui
 					writer.Close ();
 			}
 			
-			CleanItemProperties (props, ((Solution)item).RootFolder, "__ItemProps");
+			if (item is Solution)
+				CleanItemProperties (props, ((Solution)item).RootFolder, "__ItemProps");
 		}
 		
 		bool OnRunProjectChecks ()

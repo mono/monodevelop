@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.Commands
 		Save,
 		SaveAll,
 		NewProject,
+		NewWorkspace,
 		CloseFile,
 		CloseAllFiles,
 		CloseWorkspace,
@@ -152,6 +153,15 @@ namespace MonoDevelop.Ide.Commands
 			IdeApp.ProjectOperations.NewSolution ();
 		}
 	}
+	
+	//MonoDevelop.Ide.Commands.FileCommands.NewWorkspace
+	public class NewWorkspaceHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.ProjectOperations.NewSolution ("MonoDevelop.Workspace");
+		}
+	}
 
 	// MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles
 	public class CloseAllFilesHandler : CommandHandler
@@ -181,10 +191,15 @@ namespace MonoDevelop.Ide.Commands
 		{
 			info.Enabled = IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
 
-			if (info.Enabled && IdeApp.Workspace.Items.Count == 1 && IdeApp.Workspace.Items [0] is Solution) // a project is open, if not only a file is open.
-				info.Text = GettextCatalog.GetString ("C_lose Solution");
-			else
-				info.Text = GettextCatalog.GetString ("C_lose");
+			if (info.Enabled && IdeApp.Workspace.Items.Count == 1) {
+				if (IdeApp.Workspace.Items [0] is Solution)
+					info.Text = GettextCatalog.GetString ("C_lose Solution");
+				else if (IdeApp.Workspace.Items [0] is Workspace)
+					info.Text = GettextCatalog.GetString ("C_lose Workspace");
+				else
+					info.Text = GettextCatalog.GetString ("C_lose Project");
+			} else
+				info.Text = GettextCatalog.GetString ("C_lose All Solutions");
 
 		}
 	}

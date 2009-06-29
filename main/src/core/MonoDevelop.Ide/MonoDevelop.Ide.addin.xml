@@ -332,19 +332,19 @@
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject"
 				_label = "_Add New Project..."
 				_description = "Add a new project to the selected solution"
-				icon  = "md-new-project-icon" />
+				icon  = "md-new-project" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewWorkspace"
 				_label = "_Add New Workspace..."
 				_description = "Add a new child workspace to the selected workspace"
-				icon  = "md-workspace" />
+				icon  = "md-new-workspace" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewSolution"
 				_label = "_Add New Solution..."
 				_description = "Add a new child solution to the selected workspace"
-				icon  = "md-new-solution-icon" />
+				icon  = "md-new-solution" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddSolutionFolder"
 				_label = "Add Solution _Folder" 
 				_description = "Add a new solution folder to the selected solution"
-				icon  = "md-new-folder-icon" />
+				icon  = "md-new-solution-folder" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject"
 				_description = "Add a project to the selected solution"
 				_label = "Add Existing _Project" />
@@ -381,10 +381,10 @@
 				_label = "_Include To Project" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution"
 				defaultHandler = "MonoDevelop.Ide.Commands.BuildSolutionHandler"
-				_label = "_Build Solution"
+				_label = "_Build All"
 				shortcut = "F8"
 				macShortcut = "Meta|B"
-				_description = "Build all projects of the solution"
+				_description = "Build all projects of all solutions"
 				icon  = "md-build-combine" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Build"
 				defaultHandler = "MonoDevelop.Ide.Commands.BuildHandler"
@@ -397,8 +397,8 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.RebuildSolutionHandler"
 				shortcut = "Control|F8"
 				macShortcut="Meta|Control|B"
-				_description = "Rebuild all projects of the solution"
-				_label = "_Rebuild Solution" />
+				_description = "Rebuild all projects of all solutions"
+				_label = "_Rebuild All" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild"
 				defaultHandler = "MonoDevelop.Ide.Commands.RebuildHandler"
 				shortcut = "Control|F7"
@@ -431,8 +431,8 @@
 				_label = "C_lean" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution"
 				defaultHandler = "MonoDevelop.Ide.Commands.CleanSolutionHandler"
-				_description = "Clean all projects of the solution"
-				_label = "_Clean Solution" />
+				_description = "Clean all projects of all solutions"
+				_label = "_Clean All" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference"
 				type="check"
 				_description = "Copy the assembly to the output directory when building the project"
@@ -494,10 +494,15 @@
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" 
 				defaultHandler = "MonoDevelop.Ide.Commands.NewProjectHandler"
 				_label = "_Solution..." 
-				icon = "md-new-project-icon" 
+				icon = "md-new-solution" 
 				_description = "Create a new solution" 
 				macShortcut = "Meta|Shift|N"
 				shortcut = "Control|Shift|N"  />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace" 
+				defaultHandler = "MonoDevelop.Ide.Commands.NewWorkspaceHandler"
+				_label = "_Workspace..." 
+				icon = "md-new-workspace" 
+				_description = "Create a new workspace"/>
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile"
 				_label = "_Close File" 
 				_description = "Close active file"
@@ -1407,6 +1412,7 @@
 			<ItemSet id = "New" _label = "_New">
 				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace" />
 			</ItemSet>
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 
