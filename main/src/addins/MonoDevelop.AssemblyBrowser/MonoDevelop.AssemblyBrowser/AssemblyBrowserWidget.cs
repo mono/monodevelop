@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -223,7 +224,7 @@ namespace MonoDevelop.AssemblyBrowser
 			base.OnDestroyed ();
 		}
 		
-		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		void HandlePropertyChanged(object sender, MonoDevelop.Core.PropertyChangedEventArgs e)
 		{
 			if (e.Key == "ColorScheme")
 				((Mono.TextEditor.TextEditorOptions)this.inspectEditor.Options).ColorScheme = PropertyService.Get ("ColorScheme", "Default");
@@ -346,11 +347,14 @@ namespace MonoDevelop.AssemblyBrowser
 				break;
 			}
 		}
+		System.ComponentModel.BackgroundWorker searchBackgoundWorker = null;
+
 		Thread searchThread = null;
 		public void StartSearch ()
 		{
-			if (searchThread != null)
-				searchThread.Abort ();
+			if (searchBackgoundWorker != null && searchBackgoundWorker.IsBusy)
+				searchBackgoundWorker.CancelAsync ();
+			
 			switch (searchMode) {
 			case SearchMode.Member:
 				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching member..."));
@@ -368,16 +372,23 @@ namespace MonoDevelop.AssemblyBrowser
 			memberListStore.Clear ();
 			typeListStore.Clear ();
 			
-			searchThread = new Thread (StartSearchThread);
-			searchThread.IsBackground = true;
-			searchThread.Priority = ThreadPriority.Lowest;
-			searchThread.Start ();
+			searchBackgoundWorker = new BackgroundWorker ();
+			searchBackgoundWorker.WorkerSupportsCancellation = true;
+			searchBackgoundWorker.WorkerReportsProgress = false;
+			searchBackgoundWorker.DoWork += SearchDoWork;
+			searchBackgoundWorker.RunWorkerCompleted += delegate {
+				searchBackgoundWorker = null;
+			};
+			
+			searchBackgoundWorker.RunWorkerAsync (searchEntry.Text);
 		}
 	
-		void StartSearchThread ()
+		void SearchDoWork (object sender, DoWorkEventArgs e)
 		{
+			BackgroundWorker worker = sender as BackgroundWorker;
 			try {
-				string pattern = searchEntry.Text.ToUpper ();
+				
+				string pattern = e.Argument.ToString ().ToUpper ();
 				int types = 0, curType = 0;
 				foreach (DomCecilCompilationUnit unit in this.definitions) {
 					types += unit.Types.Count;
@@ -387,33 +398,43 @@ namespace MonoDevelop.AssemblyBrowser
 				case SearchMode.Member:
 					foreach (DomCecilCompilationUnit unit in this.definitions) {
 						foreach (IType type in unit.Types) {
+							if (worker.CancellationPending)
+								return;
 							curType++;
-							members.Clear ();
 							foreach (IMember member in type.Members) {
+								if (worker.CancellationPending)
+									return;
 								if (member.Name.ToUpper ().Contains (pattern)) {
 									members.Add (member);
 								}
 							}
-							DispatchService.GuiSyncDispatch (delegate {
-								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-								foreach (MonoDevelop.Projects.Dom.IMember member in members) {
-									memberListStore.AppendValues (ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
-									                              member.Name,
-									                              type.FullName,
-									                              unit.AssemblyDefinition.Name.FullName,
-									                              member);
-								}
-							});
 						}
 					}
+					Gtk.Application.Invoke (delegate {
+						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+						foreach (MonoDevelop.Projects.Dom.IMember member in members) {
+							if (worker.CancellationPending)
+								return;
+							memberListStore.AppendValues (ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+							                              member.Name,
+							                              member.DeclaringType.FullName,
+							                              ((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
+							                              member);
+						}
+					});
 					break;
 				case SearchMode.Disassembler:
-					IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
+					Gtk.Application.Invoke (delegate {
+						IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
+					});
 					foreach (DomCecilCompilationUnit unit in this.definitions) {
 						foreach (IType type in unit.Types) {
+							if (worker.CancellationPending)
+								return;
 							curType++;
-							members.Clear ();
 							foreach (IMethod method in type.Methods) {
+								if (worker.CancellationPending)
+									return;
 								DomCecilMethod domMethod = method as DomCecilMethod;
 								if (domMethod == null)
 									continue;
@@ -421,25 +442,31 @@ namespace MonoDevelop.AssemblyBrowser
 									members.Add (method);
 								}
 							}
-							DispatchService.GuiSyncDispatch (delegate {
-								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-								foreach (MonoDevelop.Projects.Dom.IMember member in members) {
-									memberListStore.AppendValues (ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
-									                              member.Name,
-									                              type.FullName,
-									                              unit.AssemblyDefinition.Name.FullName,
-									                              member);
-								}
-							});
+
 						}
 					}
+					Gtk.Application.Invoke (delegate {
+						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+						foreach (MonoDevelop.Projects.Dom.IMember member in members) {
+							if (worker.CancellationPending)
+								return;
+							memberListStore.AppendValues (ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+							                              member.Name,
+							                              member.DeclaringType.FullName,
+							                              ((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
+							                              member);
+						}
+					});
 					break;
 				case SearchMode.Decompiler:
 					foreach (DomCecilCompilationUnit unit in this.definitions) {
 						foreach (IType type in unit.Types) {
+							if (worker.CancellationPending)
+								return;
 							curType++;
-							members.Clear ();
 							foreach (IMethod method in type.Methods) {
+								if (worker.CancellationPending)
+									return;
 								DomCecilMethod domMethod = method as DomCecilMethod;
 								if (domMethod == null)
 									continue;
@@ -447,44 +474,51 @@ namespace MonoDevelop.AssemblyBrowser
 									members.Add (method);
 								}
 							}
-							DispatchService.GuiSyncDispatch (delegate {
-								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-								foreach (MonoDevelop.Projects.Dom.IMember member in members) {
-									memberListStore.AppendValues (ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
-									                              member.Name,
-									                              type.FullName,
-									                              unit.AssemblyDefinition.Name.FullName,
-									                              member);
-								}
-							});
 						}
 					}
+					Gtk.Application.Invoke (delegate {
+						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+						foreach (MonoDevelop.Projects.Dom.IMember member in members) {
+							if (worker.CancellationPending)
+								return;
+							memberListStore.AppendValues (ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+							                              member.Name,
+							                              member.DeclaringType.FullName,
+							                              ((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
+							                              member);
+						}
+					});
 					break;
 				case SearchMode.Type:
 					foreach (DomCecilCompilationUnit unit in this.definitions) {
 						foreach (IType type in unit.Types) {
-							curType++;
-							DispatchService.GuiSyncDispatch (delegate {
-								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-								if (type.FullName.ToUpper ().IndexOf (pattern) >= 0) {
-									typeListStore.AppendValues (ImageService.GetPixbuf (type.StockIcon, Gtk.IconSize.Menu),
-									                            type.Name,
-									                            type.Namespace,
-									                            unit.AssemblyDefinition.Name.FullName,
-									                            type);
-								}
-							});
+							if (worker.CancellationPending)
+								return;
+							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)
+								members.Add (type);
 						}
 					}
+					Gtk.Application.Invoke (delegate {
+						foreach (IType type in members) {
+							if (worker.CancellationPending)
+								return;
+							typeListStore.AppendValues (ImageService.GetPixbuf (type.StockIcon, Gtk.IconSize.Menu),
+							                            type.Name,
+							                            type.Namespace,
+							                            ((DomCecilCompilationUnit)type.CompilationUnit).AssemblyDefinition.Name.FullName,
+							                            type);
+						}
+					});
+					
 					break;
 				}
 			} finally {
-				DispatchService.GuiSyncDispatch (delegate {
+				Gtk.Application.Invoke (delegate {
 					MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
 				});
-				searchThread = null;
 			}
 		}
+		
 		static bool preformat = false;
 		internal static string FormatText (string text)
 		{

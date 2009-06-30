@@ -1,5 +1,10 @@
 2009-06-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: fixed
+	  "Bug 517032 - Crash when using search in assembly browser".
+
+2009-06-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Fixed
 	  "Bug 512533 - Assembly browser sometimes crashes".
 
