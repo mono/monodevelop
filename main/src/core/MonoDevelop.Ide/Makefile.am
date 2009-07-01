@@ -1,6 +1,5 @@
 
 DEPS =  \
-	$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \

@@ -1,6 +1,13 @@
 2009-07-01  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj: Removed unused references &
+	  corrected gui.stetic.
+
+2009-07-01  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.addin.xml:
 	* MonoDevelop.Ide.Refactoring:
