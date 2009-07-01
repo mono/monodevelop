@@ -381,6 +381,7 @@ src/addins/MonoDevelop.SourceEditor2/Makefile
 src/addins/MonoDevelop.Moonlight/Makefile
 src/addins/MonoDevelop.XmlEditor/Makefile
 src/addins/MonoDevelop.CodeMetrics/Makefile
+src/addins/MonoDevelop.Refactoring/Makefile
 src/addins/MonoDevelop.Debugger/Makefile
 tests/Makefile
 tests/UnitTests/Makefile

@@ -26,4 +26,5 @@ SUBDIRS = \
 	MonoDevelop.AssemblyBrowser \
 	MonoDevelop.Moonlight \
 	MonoDevelop.CodeMetrics \
+	MonoDevelop.Refactoring \
 	WindowsPlatform
