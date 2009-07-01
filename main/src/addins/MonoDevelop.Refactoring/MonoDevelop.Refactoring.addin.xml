@@ -1,0 +1,51 @@
+<Addin
+        id = "Refactoring"
+        namespace = "MonoDevelop"
+        name = "Refactoring Support"
+        author = "Mike Krüger"
+        copyright = "X11"
+        url = "http://www.monodevelop.com/"
+        description = "Provides refactoring support to MonoDevelop"
+        category = "IDE extensions"
+        version = "2.1.0">
+
+	<Runtime>
+		<Import assembly = "MonoDevelop.Refactoring.dll"/>
+	</Runtime>
+
+	<Dependencies>
+		<Addin id="Core" version="2.1.0"/>
+		<Addin id="Core.Gui" version="2.1.0"/>
+		<Addin id="Projects" version="2.1.0"/>
+		<Addin id="Projects.Gui" version="2.1.0"/>
+		<Addin id="Ide" version="2.1.0"/>
+		<Addin id="Components" version="2.1.0"/>
+		<Addin id="DesignerSupport" version="2.1.0"/>
+		<Addin id="Autotools" version="2.1.0"/>
+		<Addin id="Deployment" version="2.1.0"/>
+		<Addin id="SourceEditor2" version="2.1.0"/>
+	</Dependencies>
+	
+	<!-- Extension Points -->
+	
+	<!-- Extensions -->
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Refactorings" name = "Refactorings">
+		<Class id="Rename" class = "MonoDevelop.Refactoring.Rename" />
+	</Extension>
+	
+	<!-- RefactoryCommands -->
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Category _name = "Refactory" id = "Refactory">
+		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations"
+				defaultHandler = "MonoDevelop.Ide.Commands.CurrentRefactoryOperationsHandler"
+				type="array"
+				_label = "Refactory Operations" /> 
+				
+		</Category>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">	
+		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+	</Extension>
+</Addin>
