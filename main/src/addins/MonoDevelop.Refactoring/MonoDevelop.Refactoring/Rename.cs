@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Dom.Refactoring;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
@@ -36,7 +35,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Refactoring
 {
-	public class Rename : MonoDevelop.Projects.Dom.Refactoring.Refactoring
+	public class Rename : Refactoring
 	{
 		public Rename ()
 		{

@@ -3,6 +3,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Refactoring
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Refactoring.dll
 
 DEPS =  \
+	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
@@ -25,7 +26,10 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.RenameItemDialog.cs \
+	MonoDevelop.Refactoring/Change.cs \
+	MonoDevelop.Refactoring/Refactoring.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
+	MonoDevelop.Refactoring/RefactoringService.cs \
 	MonoDevelop.Refactoring/RefactoryCommands.cs \
 	MonoDevelop.Refactoring/Rename.cs \
 	MonoDevelop.Refactoring/RenameItemDialog.cs 

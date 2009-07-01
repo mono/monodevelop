@@ -45,6 +45,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -381,7 +382,7 @@ namespace MonoDevelop.Ide.Commands
 				canRename = cls != null && cls.SourceProject != null;
 			}
 
-			foreach (var refactoring in MonoDevelop.Projects.Dom.Refactoring.RefactoringService.Refactorings) {
+			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (ctx, item)) {
 					ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (delegate {
 						refactoring.Run (ctx, item);

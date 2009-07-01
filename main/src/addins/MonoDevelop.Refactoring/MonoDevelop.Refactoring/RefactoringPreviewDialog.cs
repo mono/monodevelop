@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom.Refactoring;
 using Gtk;
 using Gdk;
 using MonoDevelop.Core.Gui;
@@ -86,9 +85,8 @@ namespace MonoDevelop.Refactoring
 			};
 			
 			buttonOk.Clicked += delegate {
-				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-				refactorer.AcceptChanges (monitor, ctx, changes);
+				RefactoringService.AcceptChanges (monitor, ctx, changes);
 				
 				Destroy ();
 			};

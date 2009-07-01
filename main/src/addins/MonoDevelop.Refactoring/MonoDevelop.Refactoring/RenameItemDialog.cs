@@ -33,7 +33,6 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom.Refactoring;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Refactoring
@@ -156,9 +155,8 @@ namespace MonoDevelop.Refactoring
 		void OnOKClicked (object sender, EventArgs e)
 		{
 			List<Change> changes = rename.PerformChanges (ctx, item, Properties);
-			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-			refactorer.AcceptChanges (monitor, ctx, changes);
+			RefactoringService.AcceptChanges (monitor, ctx, changes);
 			((Widget)this).Destroy ();
 		}
 		

@@ -27,6 +27,9 @@
 	</Dependencies>
 	
 	<!-- Extension Points -->
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Refactorings" name = "Refactorings">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
 	
 	<!-- Extensions -->
 	
