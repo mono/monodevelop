@@ -66,8 +66,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Refactoring.RefactoringPreviewDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Refactoring.RenameItemDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormatterService.cs \
@@ -109,7 +107,6 @@ FILES =  \
 	MonoDevelop.Ide.Commands/HelpCommands.cs \
 	MonoDevelop.Ide.Commands/NavigationCommands.cs \
 	MonoDevelop.Ide.Commands/ProjectCommands.cs \
-	MonoDevelop.Ide.Commands/RefactoryCommands.cs \
 	MonoDevelop.Ide.Commands/SearchCommands.cs \
 	MonoDevelop.Ide.Commands/TextEditorCommands.cs \
 	MonoDevelop.Ide.Commands/ToolsCommands.cs \
@@ -307,9 +304,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
-	MonoDevelop.Ide.Refactoring/RefactoringPreviewDialog.cs \
-	MonoDevelop.Ide.Refactoring/Rename.cs \
-	MonoDevelop.Ide.Refactoring/RenameItemDialog.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \

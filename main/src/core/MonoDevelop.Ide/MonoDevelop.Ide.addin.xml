@@ -888,27 +888,7 @@
 				icon = "gtk-jump-to" />
 		</Category>
 				
-		<!-- RefactoryCommands -->
-		<Category _name = "Refactory" id = "Refactory">
-		
-		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations"
-				defaultHandler = "MonoDevelop.Ide.Commands.CurrentRefactoryOperationsHandler"
-				type="array"
-				_label = "Refactory Operations" /> 
-		<!--
-		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.GotoDefinition"
-				defaultHandler = "MonoDevelop.Ide.Commands.GotoDefinitionHandler"
-				_label = "Go to _definition" 
-				_description = "Go to the definition of the symbol under the caret"
-				shortcut = "F12"
-				icon = "gtk-jump-to" />
-		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.FindReferences"
-				defaultHandler = "MonoDevelop.Ide.Commands.FindReferencesHandler"
-				_label = "Find _references" 
-				_description = "Find all references to the symbol under the caret"
-				shortcut = "Shift|F12" />
-		-->
-		</Category>
+	
 				
 		<!-- TextEditorCommands -->
 		<Category _name = "Text Editor" id = "TextEditor">
@@ -1335,10 +1315,6 @@
 		<PolicySet id="GPLv3License" _name="GPL 3 License">
 			<Policies resource="GPL3LicencePolicy.xml" />
 		</PolicySet>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Refactorings" name = "Refactorings">
-		<Class id="Rename" class = "MonoDevelop.Ide.Refactoring.Rename" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">

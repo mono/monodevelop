@@ -256,7 +256,6 @@
     <Compile Include="MonoDevelop.Ide.Commands\FileCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\HelpCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\ProjectCommands.cs" />
-    <Compile Include="MonoDevelop.Ide.Commands\RefactoryCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\SearchCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\ToolsCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\ViewCommands.cs" />
@@ -547,11 +546,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\AbstractAttachableViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\IBaseDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormattingCommands.cs" />
-    <Compile Include="MonoDevelop.Ide.Refactoring\Rename.cs" />
-    <Compile Include="MonoDevelop.Ide.Refactoring\RefactoringPreviewDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Refactoring\RenameItemDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Refactoring.RenameItemDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Refactoring.RefactoringPreviewDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\CustomExecutionModeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\CustomExecutionModeWidget.cs" />
