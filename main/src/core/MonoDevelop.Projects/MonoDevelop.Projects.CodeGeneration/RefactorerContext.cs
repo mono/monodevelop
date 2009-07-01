@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		static TypeNameResolver defaultResolver = new TypeNameResolver ();
 		ITypeNameResolver typeResolver;
 		
-		internal RefactorerContext (ProjectDom ctx, ITextFileProvider files, IType cls)
+		public RefactorerContext (ProjectDom ctx, ITextFileProvider files, IType cls)
 		{
 			this.files = files;
 			this.ctx = ctx;
@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return null;
 		}
 
-		internal void Save ()
+		public void Save ()
 		{
 			foreach (TextFile file in textFiles) {
 				if (file.Modified)
