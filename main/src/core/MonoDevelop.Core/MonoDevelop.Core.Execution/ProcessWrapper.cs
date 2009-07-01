@@ -132,10 +132,6 @@ namespace MonoDevelop.Core.Execution
 					} catch {
 						// Ignore
 					}
-					if (captureOutputThread != null)
-						captureOutputThread.Abort ();
-					if (captureErrorThread != null)
-						captureErrorThread.Abort ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
