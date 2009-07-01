@@ -579,7 +579,7 @@ namespace MonoDevelop.Projects
 			DotNetExecutionCommand cmd = new DotNetExecutionCommand (configuration.CompiledOutputName);
 			cmd.Arguments = configuration.CommandLineParameters;
 			cmd.WorkingDirectory = Path.GetDirectoryName (configuration.CompiledOutputName);
-			cmd.EnvironmentVariables = configuration.EnvironmentVariables;
+			cmd.EnvironmentVariables = new Dictionary<string,string> (configuration.EnvironmentVariables);
 			cmd.TargetRuntime = TargetRuntime;
 			return cmd;
 		}

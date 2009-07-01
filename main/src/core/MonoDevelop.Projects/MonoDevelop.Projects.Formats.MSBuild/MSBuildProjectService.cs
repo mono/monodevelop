@@ -43,6 +43,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string ItemTypesExtensionPath = "/MonoDevelop/ProjectModel/MSBuildItemTypes";
 		public const string GenericItemGuid = "{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}";
 		public const string FolderTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
+
+		public const string DefaultFormat = "MSBuild08";
 		
 		static DataContext dataContext;
 		
@@ -59,10 +61,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 				return dataContext;
 			}
-		}
-		
-		public static string DefaultFormat {
-			get { return "MSBuild08"; }
 		}
 		
 		static MSBuildProjectService ()

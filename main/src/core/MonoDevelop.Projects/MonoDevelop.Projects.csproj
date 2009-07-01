@@ -143,7 +143,6 @@
     <Compile Include="MonoDevelop.Projects\SolutionItem.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionFolderItemCollection.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItemReference.cs" />
-    <Compile Include="MonoDevelop.Projects\PropertyBag.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\SerlializationMapNode.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1CustomDataItem.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1DotNetProjectHandler.cs" />

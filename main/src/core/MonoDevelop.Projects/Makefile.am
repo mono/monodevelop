@@ -253,7 +253,6 @@ FILES =  \
 	MonoDevelop.Projects/ProjectService.cs \
 	MonoDevelop.Projects/ProjectServiceExtension.cs \
 	MonoDevelop.Projects/ProjectsServices.cs \
-	MonoDevelop.Projects/PropertyBag.cs \
 	MonoDevelop.Projects/SimpleProjectItem.cs \
 	MonoDevelop.Projects/Solution.cs \
 	MonoDevelop.Projects/SolutionConfiguration.cs \
