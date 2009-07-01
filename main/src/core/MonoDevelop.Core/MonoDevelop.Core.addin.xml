@@ -16,6 +16,7 @@
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionModes" name = "Execution modes">
 		<Description>Execution modes such as default, debug, profiler, etc.</Description>
 		<ExtensionNode name="Mode" type="MonoDevelop.Core.AddIns.ExecutionModeNode" />
+		<ExtensionNode name="ModeSet" type="MonoDevelop.Core.AddIns.ExecutionModeSetNode" />
 		<ExtensionNode name="ModeSetType" />
 	</ExtensionPoint>
 

@@ -229,6 +229,16 @@ namespace MonoDevelop.Core
 			}
 		}
 		
+		public static void NotifyFileRemoved (string fileName)
+		{
+			Debug.Assert (!String.IsNullOrEmpty (fileName));
+			try {
+				OnFileRemoved (new FileEventArgs (fileName, false));
+			} catch (Exception ex) {
+				LoggingService.LogError ("File remove notification failed", ex);
+			}
+		}
+		
 		internal static FileSystemExtension GetFileSystemForPath (string path, bool isDirectory)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));

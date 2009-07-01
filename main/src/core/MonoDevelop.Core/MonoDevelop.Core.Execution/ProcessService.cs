@@ -240,9 +240,11 @@ namespace MonoDevelop.Core.Execution
 		public IEnumerable<IExecutionModeSet> GetExecutionModes ()
 		{
 			yield return defaultExecutionModeSet;
-			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/ExecutionModes")) {
-				if (!(node is ExecutionModeNode))
-					yield return (IExecutionModeSet) node.GetInstance (typeof (IExecutionModeSet));
+			foreach (ExtensionNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/ExecutionModes")) {
+				if (node is ExecutionModeSetNode)
+					yield return (ExecutionModeSetNode) node;
+				else if (!(node is ExecutionModeNode))
+					yield return (IExecutionModeSet) ((TypeExtensionNode)node).GetInstance (typeof (IExecutionModeSet));
 			}
 		}
 		

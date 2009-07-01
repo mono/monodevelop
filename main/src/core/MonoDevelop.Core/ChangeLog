@@ -1,3 +1,19 @@
+2009-07-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.addin.xml:
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.AddIns/ExecutionModeSetNode.cs: Added new
+	  ModeSet extension node.
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj: Updated.
+
+	* MonoDevelop.Core/PropertyBag.cs: Moved here from
+	  MonoDevelop.Projects.
+
+	* MonoDevelop.Core/FileService.cs: Added method for notifying
+	  file removals.
+
 2009-06-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/ExternalConsoleLocator.cs: Make

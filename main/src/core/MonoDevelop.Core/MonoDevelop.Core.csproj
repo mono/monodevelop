@@ -171,6 +171,8 @@
     <Compile Include="MonoDevelop.Core.Assemblies\TargetFrameworkBackend.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\MonoFrameworkBackend.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\MsNetFrameworkBackend.cs" />
+    <Compile Include="MonoDevelop.Core\PropertyBag.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\ExecutionModeSetNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -6,6 +6,7 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs \
 	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ExecutionModeNode.cs \
+	MonoDevelop.Core.AddIns/ExecutionModeSetNode.cs \
 	MonoDevelop.Core.AddIns/ITargetRuntimeFactory.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageInstalledCondition.cs \
@@ -116,6 +117,7 @@ FILES =  \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/LoggingService.cs \
 	MonoDevelop.Core/Properties.cs \
+	MonoDevelop.Core/PropertyBag.cs \
 	MonoDevelop.Core/PropertyChangedEventArgs.cs \
 	MonoDevelop.Core/PropertyService.cs \
 	MonoDevelop.Core/Runtime.cs \
