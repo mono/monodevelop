@@ -30,6 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Execution;
 using CustomCommand = MonoDevelop.Projects.CustomCommand;
 
 namespace MonoDevelop.Ide.Commands
@@ -147,18 +148,16 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run (object dataItem)
 		{
-			Run ((IExecutionHandler) dataItem);
+			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (dataItem);
+			Run (h);
 		}
 
 		protected override void Update (CommandArrayInfo info)
 		{
-			foreach (IExecutionModeSet mset in Runtime.ProcessService.GetExecutionModes ()) {
-				foreach (IExecutionMode mode in mset.ExecutionModes) {
-					if (CanRun (mode.ExecutionHandler))
-						info.Add (mode.Name, mode.ExecutionHandler);
-				}
-				info.AddSeparator ();
-			}
+			ExecutionModeCommandService.GenerateExecutionModeCommands (
+			    IdeApp.ProjectOperations.CurrentSelectedProject,
+			    CanRun,
+			    info);
 		}
 
 	}

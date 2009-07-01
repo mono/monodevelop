@@ -664,7 +664,7 @@ namespace MonoDevelop.Ide.Gui
 			// Restore solution item properties
 			
 			if (item is Solution)
-				LoadItemProperties (props, ((Solution)item).RootFolder, "__ItemProps");
+				LoadItemProperties (props, ((Solution)item).RootFolder, "MonoDevelop.Ide.ItemProperties");
 
 			// Restore local configuration data
 			
@@ -710,19 +710,19 @@ namespace MonoDevelop.Ide.Gui
 			SolutionFolder sf = item as SolutionFolder;
 			if (sf != null) {
 				foreach (SolutionItem ci in sf.Items)
-					LoadItemProperties (props, ci, path + "/" + ci.Name);
+					LoadItemProperties (props, ci, path + "." + ci.Name);
 			}
 		}
 		
 		void SaveItemProperties (PropertyBag props, SolutionItem item, string path)
 		{
-			if (!item.UserProperties.IsEmpty)
+			if (!item.UserProperties.IsEmpty && item.ParentFolder != null)
 				props.SetValue (path, item.UserProperties);
 			
 			SolutionFolder sf = item as SolutionFolder;
 			if (sf != null) {
 				foreach (SolutionItem ci in sf.Items)
-					SaveItemProperties (props, ci, path + "/" + ci.Name);
+					SaveItemProperties (props, ci, path + "." + ci.Name);
 			}
 		}
 		
@@ -733,7 +733,7 @@ namespace MonoDevelop.Ide.Gui
 			SolutionFolder sf = item as SolutionFolder;
 			if (sf != null) {
 				foreach (SolutionItem ci in sf.Items)
-					CleanItemProperties (props, ci, path + "/" + ci.Name);
+					CleanItemProperties (props, ci, path + "." + ci.Name);
 			}
 		}
 		
@@ -749,7 +749,7 @@ namespace MonoDevelop.Ide.Gui
 			// Store solution item properties
 			
 			if (item is Solution)
-				SaveItemProperties (props, ((Solution)item).RootFolder, "__ItemProps");
+				SaveItemProperties (props, ((Solution)item).RootFolder, "MonoDevelop.Ide.ItemProperties");
 
 			// Local configuration info
 			
@@ -795,7 +795,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			if (item is Solution)
-				CleanItemProperties (props, ((Solution)item).RootFolder, "__ItemProps");
+				CleanItemProperties (props, ((Solution)item).RootFolder, "MonoDevelop.Ide.ItemProperties");
 		}
 		
 		bool OnRunProjectChecks ()

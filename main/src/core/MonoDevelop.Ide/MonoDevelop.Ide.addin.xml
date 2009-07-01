@@ -1687,4 +1687,10 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionModes">
+		<ModeSet _name="Custom Arguments">
+			<Mode id="MonoDevelop.Ide.Execution.CustomArgsExecutionMode" _name="With Custom Arguments..." class="MonoDevelop.Ide.Execution.CustomArgsExecutionHandler"/>
+		</ModeSet>
+	</Extension>
 </Addin>

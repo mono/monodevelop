@@ -552,6 +552,15 @@
     <Compile Include="MonoDevelop.Ide.Refactoring\RenameItemDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Refactoring.RenameItemDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Refactoring.RefactoringPreviewDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\CustomExecutionModeDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\CustomExecutionModeWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\ParameterizedExecutionHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\ExecutionModeCommandService.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\CustomArgsExecutionMode.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\CommandExecutionContext.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\IExecutionModeEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -575,5 +584,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="MonoDevelop.Ide.CodeFormatting\" />
+    <Folder Include="MonoDevelop.Ide.Execution\" />
   </ItemGroup>
 </Project>

@@ -1,3 +1,23 @@
+2009-07-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Execution:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs:
+	* MonoDevelop.Ide.Execution/IExecutionModeEditor.cs:
+	* MonoDevelop.Ide.Execution/CommandExecutionContext.cs:
+	* MonoDevelop.Ide.Execution/CustomArgsExecutionMode.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeWidget.cs:
+	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:
+	* MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeWidget.cs:
+	  Initial support for parameterized execution modes.
+
 2009-06-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
