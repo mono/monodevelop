@@ -172,14 +172,14 @@ namespace Stetic
 			}
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			frontend.disposed = true;
 			System.Runtime.Remoting.RemotingServices.Disconnect (frontend);
 			if (editSession != null)
 				editSession.Dispose ();
 			editSession = null;
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 		
 		internal override void OnBackendChanged (ApplicationBackend oldBackend)

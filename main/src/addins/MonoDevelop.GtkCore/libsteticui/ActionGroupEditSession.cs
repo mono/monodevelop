@@ -285,8 +285,10 @@ namespace Stetic
 			
 			project.ProjectReloaded -= OnProjectReloaded;
 			
-			if (plug != null)
+			if (plug != null) {
 				plug.Destroy ();
+				plug = null;
+			}
 
 			System.Runtime.Remoting.RemotingServices.Disconnect (this);
 		}

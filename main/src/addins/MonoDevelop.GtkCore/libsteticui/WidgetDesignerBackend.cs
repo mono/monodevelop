@@ -114,8 +114,6 @@ namespace Stetic
 		
 		protected override void OnDestroyed ()
 		{
-			base.OnDestroyed ();
-			
 			if (preview != null) {
 				if (wrapper != null)
 					wrapper.DetachDesigner (resizableFixed);
@@ -125,7 +123,7 @@ namespace Stetic
 				preview = null;
 				wrapper = null;
 			}
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 		
 		public IObjectViewer ObjectViewer {
@@ -234,6 +232,10 @@ namespace Stetic
 //			VisibleWindow = false;
 			selectionBox = new SelectionHandleBox (this);
 			selectionBox.Show ();
+		}
+		
+		public ResizableFixed (IntPtr p): base (p)
+		{
 		}
 		
 		protected override void OnDestroyed ()

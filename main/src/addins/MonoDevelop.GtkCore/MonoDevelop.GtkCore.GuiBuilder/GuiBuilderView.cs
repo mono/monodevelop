@@ -175,6 +175,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (actionsPage != null) {
 				actionsBox.BindField -= OnBindActionField;
 				actionsBox.ModifiedChanged -= OnActionshanged;
+				actionsPage.Destroy ();
 				actionsBox = null;
 				actionsPage = null;
 			}

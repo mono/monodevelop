@@ -218,37 +218,38 @@ namespace Stetic
 		
 		protected override void OnDestroyed ()
 		{
-			base.OnDestroyed ();
-			
-			if (disposed)
-				return;
-			
-			if (project.App.ActiveProject == editedProject)
-				project.App.ActiveProject = null;
-			
-			disposed = true;
-			frontend.disposed = true;
-			editedProject.SignalAdded -= OnSignalAdded;
-			editedProject.SignalRemoved -= OnSignalRemoved;
-			editedProject.SignalChanged -= OnSignalChanged;
-			editedProject.ComponentNameChanged -= OnComponentNameChanged;
-			editedProject.BackendChanged -= OnProjectBackendChanged;
-			editedProject.ComponentTypesChanged -= OnComponentTypesChanged;
-			project.BackendChanged -= OnProjectBackendChanged;
-			
-			if (session != null) {
-				session.Dispose ();
-				session = null;
+			try {
+				if (disposed)
+					return;
+				
+				if (project.App.ActiveProject == editedProject)
+					project.App.ActiveProject = null;
+				
+				disposed = true;
+				frontend.disposed = true;
+				editedProject.SignalAdded -= OnSignalAdded;
+				editedProject.SignalRemoved -= OnSignalRemoved;
+				editedProject.SignalChanged -= OnSignalChanged;
+				editedProject.ComponentNameChanged -= OnComponentNameChanged;
+				editedProject.BackendChanged -= OnProjectBackendChanged;
+				editedProject.ComponentTypesChanged -= OnComponentTypesChanged;
+				project.BackendChanged -= OnProjectBackendChanged;
+				
+				if (session != null) {
+					session.Dispose ();
+					session = null;
+				}
+					
+				if (!autoCommitChanges)
+					editedProject.Dispose ();
+					
+				System.Runtime.Remoting.RemotingServices.Disconnect (frontend);
+				frontend = null;
+				rootWidget = null;
+				selection = null;
+			} finally {
+				base.OnDestroyed ();
 			}
-				
-			if (!autoCommitChanges)
-				editedProject.Dispose ();
-				
-			System.Runtime.Remoting.RemotingServices.Disconnect (frontend);
-			frontend = null;
-			rootWidget = null;
-			selection = null;
-			base.Dispose ();
 		}
 		
 		public void Save ()
