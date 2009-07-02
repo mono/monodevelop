@@ -1,3 +1,8 @@
+2009-07-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NewCSharpExpressionFinder.cs: Fixed "Bug 518547 -
+	  Property initializer completion populates from wrong type".
+
 2009-06-29  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/NRefactoryParser.cs: fixed possible null reference
