@@ -228,17 +228,22 @@ namespace Stetic {
 				else
 					name = name.Replace (".", "");
 			}
+
+			ObjectWrapper ow = CreateWrapper ();
+			ObjectWrapper.Bind (proj, this, ow, ob, !initialize);
+			
+			// Initialize the properties after creating the wrapper, since some properties
+			// may be implemented in the wrapper
 			
 			foreach (ItemGroup group in groups) {
 				foreach (ItemDescriptor item in group) {
 					PropertyDescriptor prop = item as PropertyDescriptor;
-					if (prop != null && prop.InitWithName)
+					if (prop != null && prop.InitWithName) {
 						prop.SetValue (ob, name);
+					}
 				}
 			}
 			
-			ObjectWrapper ow = CreateWrapper ();
-			ObjectWrapper.Bind (proj, this, ow, ob, !initialize);
 			return ob;
 		}
 		
@@ -248,8 +253,15 @@ namespace Stetic {
 			foreach (ItemGroup group in groups) {
 				foreach (ItemDescriptor item in group) {
 					PropertyDescriptor prop = item as PropertyDescriptor;
-					if (prop != null)
-						prop.ResetValue (obj);
+					if (prop != null) {
+						try {
+							prop.ResetValue (obj);
+						} catch (Exception ex) {
+							// Ignore. ResetInstance should never crash since it can
+							// leave a widget half initialized
+							Console.WriteLine (ex);
+						}
+					}
 				}
 			}
 		}

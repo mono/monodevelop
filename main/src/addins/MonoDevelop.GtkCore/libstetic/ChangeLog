@@ -1,3 +1,11 @@
+2009-07-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ClassDescriptor.cs: When creating a widget instance,
+	  initialize the properties after creating the wrapper, since
+	  some properties may be implemented in the wrapper. This
+	  should fix bug #505083 - hbuttonbox1.cs file being created
+	  in gtk-gui causing problems with compilation.
+
 2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
