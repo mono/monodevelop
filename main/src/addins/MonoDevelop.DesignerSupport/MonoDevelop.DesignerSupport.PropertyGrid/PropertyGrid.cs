@@ -280,6 +280,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			}
 		}
 		
+		public bool ShowToolbar {
+			get { return toolbar.Visible; }
+			set { toolbar.Visible = value; }
+		}
+		
 		#region Hel Pane
 		
 		public bool ShowHelp

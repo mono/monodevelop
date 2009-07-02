@@ -1,3 +1,8 @@
+2009-07-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs:
+	  Added property for showing/hiding the toolbar.
+
 2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:
