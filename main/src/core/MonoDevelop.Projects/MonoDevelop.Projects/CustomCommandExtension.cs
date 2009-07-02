@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects
 		{
 			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
-				ExecutionContext localContext = new ExecutionContext (new DefaultExecutionHandlerFactory (), context.ConsoleFactory);
+				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory);
 				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeExecute, localContext, configuration);
 				if (monitor.IsCancelRequested)
 					return;
@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects
 			base.Execute (monitor, entry, context, configuration);
 			
 			if (conf != null && !monitor.IsCancelRequested) {
-				ExecutionContext localContext = new ExecutionContext (new DefaultExecutionHandlerFactory (), context.ConsoleFactory);
+				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory);
 				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterExecute, localContext, configuration);
 			}
 		}
