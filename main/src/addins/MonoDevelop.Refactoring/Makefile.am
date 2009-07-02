@@ -24,8 +24,11 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.RenameItemDialog.cs \
+	MonoDevelop.Refactoring.ExtractMethod/ExtractMethod.cs \
+	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs \
 	MonoDevelop.Refactoring/Change.cs \
 	MonoDevelop.Refactoring/Refactoring.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \

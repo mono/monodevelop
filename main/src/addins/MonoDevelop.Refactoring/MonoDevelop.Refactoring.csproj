@@ -54,9 +54,13 @@
     <Compile Include="MonoDevelop.Refactoring\Refactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethod.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
+    <Folder Include="MonoDevelop.Refactoring.ExtractMethod\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />
