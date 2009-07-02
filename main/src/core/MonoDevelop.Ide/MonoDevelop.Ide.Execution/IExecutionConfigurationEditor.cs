@@ -1,5 +1,5 @@
 // 
-// CustomExecutionModeWidget.cs
+// IExecutionModeEditor.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -25,45 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Ide.Execution;
-using MonoDevelop.Projects;
 
-namespace MonoDevelop.Ide.Gui.Dialogs
+namespace MonoDevelop.Ide.Execution
 {
-	[System.ComponentModel.ToolboxItem(true)]
-	public partial class CustomExecutionModeWidget : Gtk.Bin, IExecutionConfigurationEditor
+	public interface IExecutionConfigurationEditor
 	{
-		List<IExecutionMode> modes;
-		
-		public CustomExecutionModeWidget ()
-		{
-			this.Build ();
-		}
-		
-		#region IExecutionModeEditor implementation
-		public Gtk.Widget Load (CommandExecutionContext ctx, object data)
-		{
-			IExecutionMode curMode = null;
-			if (data != null) {
-				CustomArgsExecutionModeData cdata = (CustomArgsExecutionModeData) data;
-				entryArgs.Text = cdata.Arguments;
-				folderEntry.Path = cdata.WorkingDirectory;
-				envVarList.LoadValues (cdata.EnvironmentVariables);
-			}
-			return this;
-		}
-		
-		public object Save ()
-		{
-			CustomArgsExecutionModeData cdata = new CustomArgsExecutionModeData ();
-			cdata.Arguments = entryArgs.Text;
-			cdata.WorkingDirectory = folderEntry.Path;
-			envVarList.StoreValues (cdata.EnvironmentVariables);
-			return cdata;
-		}
-		#endregion
+		Gtk.Widget Load (CommandExecutionContext ctx, object data);
+		object Save ();
 	}
 }

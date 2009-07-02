@@ -45,34 +45,16 @@ namespace MonoDevelop.Ide.Execution
 		
 		internal IProcessAsyncOperation InternalExecute (CommandExecutionContext ctx, IExecutionMode mode, ExecutionCommand command, IConsole console)
 		{
-			object synch = new object ();
+			CustomExecutionMode cmode = ExecutionModeCommandService.ShowParamtersDialog (ctx, mode, null);
+			if (cmode == null)
+				return new CancelledProcessAsyncOperation ();
 			
-			var done = new System.Threading.ManualResetEvent (false);
-			IProcessAsyncOperation result = new CancelledProcessAsyncOperation ();
-			
-			Gtk.Application.Invoke (delegate {
-				CustomExecutionModeDialog dlg = new CustomExecutionModeDialog ();
-				try {
-					dlg.Initialize (ctx, this, null);
-					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-						object mdata = dlg.GetConfigurationData ();
-						if (dlg.Save && ctx.Project != null)
-							ExecutionModeCommandService.SaveCustomCommand (ctx.Project, mode, dlg.ModeName, mdata);
-						result = Execute (command, console, ctx, mdata);
-					}
-				} finally {
-					dlg.Destroy ();
-					done.Set ();
-				}
-			});
-			
-			done.WaitOne ();
-			return result;
+			return cmode.Execute (command, console, false, false);
 		}
 
 		public abstract IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console, CommandExecutionContext ctx, object configurationData);
 		
-		public abstract IExecutionModeEditor CreateEditor ();
+		public abstract IExecutionConfigurationEditor CreateEditor ();
 	}
 	
 	

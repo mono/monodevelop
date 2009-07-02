@@ -34,22 +34,19 @@ using MonoDevelop.Projects;
 namespace MonoDevelop.Ide.Execution
 {
 	[DataInclude (typeof(CustomArgsExecutionModeData))]
-	class CustomArgsExecutionHandler: ParameterizedExecutionHandler
+	class CustomArgsCustomizer: IExecutionCommandCustomizer
 	{
-		public override bool CanExecute (ExecutionCommand command)
+		public IExecutionConfigurationEditor CreateEditor ()
 		{
-			if (!(command is ProcessExecutionCommand))
-				return false;
-			foreach (IExecutionModeSet mset in Runtime.ProcessService.GetExecutionModes ()) {
-				foreach (IExecutionMode mode in mset.ExecutionModes) {
-					if (mode.ExecutionHandler.CanExecute (command))
-						return true;
-				}
-			}
-			return Runtime.ProcessService.DefaultExecutionHandler.CanExecute (command);
+			return new MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeWidget ();
 		}
-			
-		public override IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console, CommandExecutionContext ctx, object configurationData)
+
+		public bool CanCustomize (ExecutionCommand cmd)
+		{
+			return cmd is ProcessExecutionCommand;
+		}
+		
+		public void Customize (ExecutionCommand command, object configurationData)
 		{
 			CustomArgsExecutionModeData data = (CustomArgsExecutionModeData) configurationData;
 			
@@ -62,18 +59,6 @@ namespace MonoDevelop.Ide.Execution
 				cmd.WorkingDirectory = data.WorkingDirectory;
 			foreach (KeyValuePair<string,string> var in data.EnvironmentVariables)
 				cmd.EnvironmentVariables [var.Key] = var.Value;
-			
-			if (string.IsNullOrEmpty (data.ModeId))
-				return Runtime.ProcessService.DefaultExecutionHandler.Execute (command, console);
-			else {
-				IExecutionMode targetMode = ExecutionModeCommandService.GetExecutionMode (ctx, data.ModeId);
-				return targetMode.ExecutionHandler.Execute (command, console);
-			}
-		}
-		
-		public override IExecutionModeEditor CreateEditor ()
-		{
-			return new MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeWidget ();
 		}
 	}
 	
@@ -83,8 +68,6 @@ namespace MonoDevelop.Ide.Execution
 		public string Arguments { get; set; }
 		[ItemProperty (DefaultValue="")]
 		public string WorkingDirectory { get; set; }
-		[ItemProperty (DefaultValue="")]
-		public string ModeId;
 		[ItemProperty]
 		public Dictionary<string,string> EnvironmentVariables = new Dictionary<string, string> ();
 	}

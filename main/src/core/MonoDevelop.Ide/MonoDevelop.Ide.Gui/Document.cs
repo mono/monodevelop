@@ -319,7 +319,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IAsyncOperation Run ()
 		{
-			return Run (new DefaultExecutionHandlerFactory ());
+			return Run (Runtime.ProcessService.DefaultExecutionHandler);
 		}
 
 		public virtual IAsyncOperation Run (IExecutionHandler handler)
@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public virtual bool CanRun ()
 		{
-			return CanRun (new DefaultExecutionHandlerFactory ());
+			return CanRun (Runtime.ProcessService.DefaultExecutionHandler);
 		}
 		
 		public virtual bool CanRun (IExecutionHandler handler)

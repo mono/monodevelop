@@ -1,3 +1,34 @@
+2009-07-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs:
+	* MonoDevelop.Ide.Execution/CustomExecutionMode.cs:
+	* MonoDevelop.Ide.Execution/IExecutionModeEditor.cs:
+	* MonoDevelop.Ide.Execution/CustomArgsCustomizer.cs:
+	* MonoDevelop.Ide.Execution/CommandExecutionContext.cs:
+	* MonoDevelop.Ide.Execution/CustomArgsExecutionMode.cs:
+	* MonoDevelop.Ide.Gui.Components/ExecutionModeComboBox.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeWidget.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeDialog.cs:
+	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:
+	* MonoDevelop.Ide.Execution/IExecutionCommandCustomizer.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* MonoDevelop.Ide.Execution/IExecutionConfigurationEditor.cs:
+	* MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeManagerDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeManagerDialog.cs:
+	  Finished support for custom execution modes.
+
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Use the shared
+	  default execution handler.
+
 2009-07-02  Viktoria Dudka  <viktoriad@remobjects.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:

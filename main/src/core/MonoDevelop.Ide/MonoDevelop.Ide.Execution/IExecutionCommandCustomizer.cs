@@ -1,5 +1,5 @@
 // 
-// IExecutionModeEditor.cs
+// IExecutionCommandEditor.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -25,13 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core.Execution;
+
 
 namespace MonoDevelop.Ide.Execution
 {
-	public interface IExecutionModeEditor
+	public interface IExecutionCommandCustomizer
 	{
-		Gtk.Widget Control { get; }
-		void Load (CommandExecutionContext ctx, object data);
-		object Save ();
+		bool CanCustomize (ExecutionCommand cmd);
+		void Customize (ExecutionCommand cmd, object data);
+		IExecutionConfigurationEditor CreateEditor ();
 	}
 }

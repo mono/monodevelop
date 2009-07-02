@@ -644,7 +644,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool CanExecute (IBuildTarget entry)
 		{
-			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			ExecutionContext context = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, IdeApp.Workbench.ProgressMonitors);
 			return CanExecute (entry, context);
 		}
 		
@@ -661,7 +661,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IAsyncOperation Execute (IBuildTarget entry)
 		{
-			return Execute (entry, new DefaultExecutionHandlerFactory ());
+			return Execute (entry, Runtime.ProcessService.DefaultExecutionHandler);
 		}
 		
 		public IAsyncOperation Execute (IBuildTarget entry, IExecutionHandler handler)
@@ -730,7 +730,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool CanExecuteFile (string file)
 		{
-			return CanExecuteFile (file, new DefaultExecutionHandlerFactory ());
+			return CanExecuteFile (file, Runtime.ProcessService.DefaultExecutionHandler);
 		}
 		
 		public bool CanExecuteFile (string file, IExecutionHandler handler)

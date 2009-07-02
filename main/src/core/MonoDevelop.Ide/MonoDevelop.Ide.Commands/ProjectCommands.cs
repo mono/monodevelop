@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			Run (new DefaultExecutionHandlerFactory ());
+			Run (Runtime.ProcessService.DefaultExecutionHandler);
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Commands
 				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
 					info.Text = GettextCatalog.GetString ("_Run again");
 			}
-			info.Enabled = CanRun (new DefaultExecutionHandlerFactory ());
+			info.Enabled = CanRun (Runtime.ProcessService.DefaultExecutionHandler);
 		}
 		
 		protected void Run (IExecutionHandler handler)
@@ -149,7 +149,8 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run (object dataItem)
 		{
 			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (dataItem);
-			Run (h);
+			if (h != null)
+				Run (h);
 		}
 
 		protected override void Update (CommandArrayInfo info)

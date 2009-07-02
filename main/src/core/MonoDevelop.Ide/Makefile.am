@@ -39,9 +39,11 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeManagerDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs \
@@ -112,9 +114,11 @@ FILES =  \
 	MonoDevelop.Ide.Commands/ViewCommands.cs \
 	MonoDevelop.Ide.Commands/WindowCommands.cs \
 	MonoDevelop.Ide.Execution/CommandExecutionContext.cs \
-	MonoDevelop.Ide.Execution/CustomArgsExecutionMode.cs \
+	MonoDevelop.Ide.Execution/CustomArgsCustomizer.cs \
+	MonoDevelop.Ide.Execution/CustomExecutionMode.cs \
 	MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs \
-	MonoDevelop.Ide.Execution/IExecutionModeEditor.cs \
+	MonoDevelop.Ide.Execution/IExecutionCommandCustomizer.cs \
+	MonoDevelop.Ide.Execution/IExecutionConfigurationEditor.cs \
 	MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs \
@@ -132,6 +136,7 @@ FILES =  \
 	MonoDevelop.Ide.FindInFiles/SearchResultPad.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs \
 	MonoDevelop.Ide.Gui.Components/DragOperation.cs \
+	MonoDevelop.Ide.Gui.Components/ExecutionModeComboBox.cs \
 	MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs \
@@ -177,6 +182,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeManagerDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeWidget.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs \

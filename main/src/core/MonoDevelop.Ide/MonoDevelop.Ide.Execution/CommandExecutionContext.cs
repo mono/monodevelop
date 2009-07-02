@@ -61,5 +61,30 @@ namespace MonoDevelop.Ide.Execution
 			else
 				return false;
 		}
+		
+		public ExecutionCommand GetTargetCommand ()
+		{
+			if (cmd != null)
+				return cmd;
+			SpyHandler sh = new SpyHandler ();
+			runCheckDelegate (sh);
+			return cmd = sh.Command;
+		}
+		
+		class SpyHandler: IExecutionHandler
+		{
+			public ExecutionCommand Command;
+			
+			public bool CanExecute (ExecutionCommand command)
+			{
+				Command = command;
+				return true;
+			}
+			
+			public IProcessAsyncOperation Execute (MonoDevelop.Core.Execution.ExecutionCommand command, MonoDevelop.Core.Execution.IConsole console)
+			{
+				throw new InvalidOperationException ();
+			}
+		}
 	}
 }
