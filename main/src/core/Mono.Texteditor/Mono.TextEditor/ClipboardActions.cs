@@ -350,24 +350,27 @@ namespace Mono.TextEditor
 			Clipboard clipboard = Clipboard.Get (CopyOperation.PRIMARYCLIPBOARD_ATOM);
 			clipboard.Clear ();
 		}
-		
 		static int PasteFrom (Clipboard clipboard, TextEditorData data, bool preserveSelection, int insertionOffset)
+		{
+			return PasteFrom (clipboard, data, preserveSelection, insertionOffset, false);
+		}
+		static int PasteFrom (Clipboard clipboard, TextEditorData data, bool preserveSelection, int insertionOffset, bool preserveState)
 		{
 			int result = -1;
 			if (!data.CanEdit (data.Document.OffsetToLineNumber (insertionOffset)))
 				return result;
-			clipboard.RequestContents (CopyOperation.MD_ATOM, delegate (Clipboard clp, SelectionData selectionData) {
+			clipboard.RequestContents (CopyOperation.MD_ATOM, delegate(Clipboard clp, SelectionData selectionData) {
 				if (selectionData.Length > 0) {
 					byte[] selBytes = selectionData.Data;
-					
+
 					string text = System.Text.Encoding.UTF8.GetString (selBytes, 1, selBytes.Length - 1);
 					bool pasteBlock = (selBytes[0] & 1) == 1;
-					bool pasteLine  = (selBytes[0] & 2) == 2;
-					
+					bool pasteLine = (selBytes[0] & 2) == 2;
+
 					data.Document.BeginAtomicUndo ();
-					if (preserveSelection && data.IsSomethingSelected) 
+					if (preserveSelection && data.IsSomethingSelected)
 						data.DeleteSelectedText ();
-					
+
 					data.Caret.PreserveSelection = true;
 					if (pasteBlock) {
 						string[] lines = text.Split ('\r');
@@ -390,42 +393,60 @@ namespace Mono.TextEditor
 							}
 							data.Insert (curLine.Offset + lineCol, lines[i]);
 							result += lines[i].Length;
-							data.Caret.Offset = curLine.Offset + lineCol + lines[i].Length;
+							if (!preserveState)
+								data.Caret.Offset = curLine.Offset + lineCol + lines[i].Length;
 						}
 					} else if (pasteLine) {
 						result += text.Length;
 						LineSegment curLine = data.Document.GetLine (data.Caret.Line);
 						data.Insert (curLine.Offset, text + data.EolMarker);
-						data.Caret.Offset += text.Length + data.EolMarker.Length;
+						if (!preserveState)
+							data.Caret.Offset += text.Length + data.EolMarker.Length;
 					}
-	/*				data.MainSelection = new Selection (data.Document.OffsetToLocation (insertionOffset),
+					/*				data.MainSelection = new Selection (data.Document.OffsetToLocation (insertionOffset),
 					                                    data.Caret.Location,
 					                                    lines.Length > 1 ? SelectionMode.Block : SelectionMode.Normal);*/
-					data.ClearSelection ();
+					if (!preserveState)
+						data.ClearSelection ();
 					data.Caret.PreserveSelection = false;
 					data.Document.EndAtomicUndo ();
 				}
 			});
-			
+
 			if (result < 0) {
-				clipboard.RequestText (delegate (Clipboard clp, string text) {
+				clipboard.WaitIsTextAvailable ();
+				clipboard.RequestText (delegate(Clipboard clp, string text) {
+					Console.WriteLine ("PING!");
 					data.Document.BeginAtomicUndo ();
-					if (preserveSelection && data.IsSomethingSelected) 
+					int caretPos = data.Caret.Offset;
+					ISegment selection = data.SelectionRange;
+					if (preserveSelection && data.IsSomethingSelected)
 						data.DeleteSelectedText ();
-					
+
 					data.Caret.PreserveSelection = true;
 					//int oldLine = data.Caret.Line;
 					int textLength = data.Insert (insertionOffset, text);
 					data.PasteText (insertionOffset, text);
 					result = textLength;
-					
-					if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset) 
+
+					if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset)
 						data.SelectionRange.Offset += textLength;
-					if (data.IsSomethingSelected && data.MainSelection.GetAnchorOffset (data) >= insertionOffset) 
+					if (data.IsSomethingSelected && data.MainSelection.GetAnchorOffset (data) >= insertionOffset)
 						data.MainSelection.Anchor = data.Document.OffsetToLocation (data.MainSelection.GetAnchorOffset (data) + textLength);
-					
+
 					data.Caret.PreserveSelection = false;
-					data.Caret.Offset = insertionOffset + textLength;
+					if (!preserveState) {
+						data.Caret.Offset = insertionOffset + textLength;
+					} else {
+						if (caretPos >= insertionOffset)
+							data.Caret.Offset = caretPos + textLength;
+						if (selection != null) {
+							int offset = selection.Offset;
+							if (offset >= insertionOffset)
+								offset += textLength;
+							data.SelectionRange = new Segment (offset, selection.Length);
+						}
+					}
 					data.Document.EndAtomicUndo ();
 				});
 			}
@@ -435,7 +456,7 @@ namespace Mono.TextEditor
 		
 		public static int PasteFromPrimary (TextEditorData data, int insertionOffset)
 		{
-			return PasteFrom (Clipboard.Get (CopyOperation.PRIMARYCLIPBOARD_ATOM), data, false, insertionOffset);
+			return PasteFrom (Clipboard.Get (CopyOperation.PRIMARYCLIPBOARD_ATOM), data, false, insertionOffset, true);
 		}
 		
 		public static void Paste (TextEditorData data)

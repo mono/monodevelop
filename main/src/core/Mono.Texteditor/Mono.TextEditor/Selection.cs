@@ -88,6 +88,11 @@ namespace Mono.TextEditor
 			return data.Document.LocationToOffset (Lead);
 		}
 		
+		public override string ToString ()
+		{
+			return string.Format("[Selection: Anchor={0}, Lead={1}, MinLine={2}, MaxLine={3}, SelectionMode={4}]", Anchor, Lead, MinLine, MaxLine, SelectionMode);
+		}
+		
 		protected virtual void OnChanged ()
 		{
 			if (Changed != null)
