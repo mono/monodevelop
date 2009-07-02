@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.Core.Execution
 {
-	public class DefaultExecutionHandlerFactory: IExecutionHandler
+	class DefaultExecutionHandler: IExecutionHandler
 	{
 		public bool CanExecute (ExecutionCommand command)
 		{

@@ -71,7 +71,7 @@
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\NullAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\NullProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressTracker.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\DefaultExecutionHandlerFactory.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\DefaultExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExternalConsoleFactory.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IConsole.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IConsoleFactory.cs" />
@@ -173,6 +173,7 @@
     <Compile Include="MonoDevelop.Core.Assemblies\MsNetFrameworkBackend.cs" />
     <Compile Include="MonoDevelop.Core\PropertyBag.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\ExecutionModeSetNode.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\DefaultExecutionMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

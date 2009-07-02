@@ -48,6 +48,18 @@ namespace MonoDevelop.Core.Serialization
 			this.serializer = serializer;
 		}
 		
+		public void Serialize (string file, object obj)
+		{
+			Serialize (file, obj, null);
+		}
+		
+		public void Serialize (string file, object obj, Type type)
+		{
+			using (StreamWriter sw = new StreamWriter (file)) {
+				Serialize (sw, obj, type);
+			}
+		}
+		
 		public void Serialize (TextWriter writer, object obj)
 		{
 			Serialize (writer, obj, null);
@@ -71,6 +83,13 @@ namespace MonoDevelop.Core.Serialization
 			XmlConfigurationWriter cw = new XmlConfigurationWriter ();
 			cw.StoreAllInElements = StoreAllInElements;
 			cw.Write (writer, data);
+		}
+		
+		public object Deserialize (string fileName, Type type)
+		{
+			using (StreamReader sr = new StreamReader (fileName)) {
+				return Deserialize (sr, type);
+			}
 		}
 		
 		public object Deserialize (TextReader reader, Type type)

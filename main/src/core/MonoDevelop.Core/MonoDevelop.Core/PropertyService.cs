@@ -46,7 +46,7 @@ namespace MonoDevelop.Core
 			get { return properties; }
 		}
 		
-		public static string EntryAssemblyPath {
+		public static FilePath EntryAssemblyPath {
 			get {
 				if (Assembly.GetEntryAssembly () != null)
 					return Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location);
@@ -54,14 +54,14 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		public static string ConfigPath {
+		public static FilePath ConfigPath {
 			get {
 				string configPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
 				return Path.Combine (configPath, "MonoDevelop");
 			}
 		}
 		
-		public static string DataPath {
+		public static FilePath DataPath {
 			get {
 				string result = System.Configuration.ConfigurationManager.AppSettings ["DataDirectory"];
 				if (String.IsNullOrEmpty (result)) 

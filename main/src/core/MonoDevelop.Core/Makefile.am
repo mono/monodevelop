@@ -30,7 +30,8 @@ FILES =  \
 	MonoDevelop.Core.Collections/Set.cs \
 	MonoDevelop.Core.Execution/AddinDependencyAttribute.cs \
 	MonoDevelop.Core.Execution/BreakpointEventHandler.cs \
-	MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs \
+	MonoDevelop.Core.Execution/DefaultExecutionHandler.cs \
+	MonoDevelop.Core.Execution/DefaultExecutionMode.cs \
 	MonoDevelop.Core.Execution/DotNetExecutionCommand.cs \
 	MonoDevelop.Core.Execution/DotNetExecutionHandler.cs \
 	MonoDevelop.Core.Execution/ExecutionCommand.cs \

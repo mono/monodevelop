@@ -64,8 +64,10 @@ namespace MonoDevelop.Core
 			if (properties != null) {
 				object val;
 				if (properties.TryGetValue (name, out val)) {
-					if (val is DataNode)
+					if (val is DataNode) {
 						val = Deserialize (name, (DataNode) val, typeof(T), ctx ?? context);
+						properties [name] = val;
+					}
 					return (T) val;
 				}
 			}
@@ -82,8 +84,10 @@ namespace MonoDevelop.Core
 			if (properties != null) {
 				object val;
 				if (properties.TryGetValue (name, out val)) {
-					if (val is DataNode)
+					if (val is DataNode) {
 						val = Deserialize (name, (DataNode) val, typeof(T), ctx ?? context);
+						properties [name] = val;
+					}
 					return (T) val;
 				}
 			}

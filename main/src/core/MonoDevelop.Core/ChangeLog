@@ -1,5 +1,26 @@
 2009-07-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.Execution/IExecutionModeSet.cs:
+	* MonoDevelop.Core.Execution/DefaultExecutionMode.cs:
+	* MonoDevelop.Core.Execution/DefaultExecutionHandler.cs:
+	* MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs:
+	  Added method for getting the default execution mode. Made
+	  the DefaultExecutionHandler class internal (use
+	  Runtime.ProcessService.DefaultExecutionHandler instead).
+
+	* MonoDevelop.Core.Serialization/XmlDataSerializer.cs: Added
+	  overloads for serializing directly into a file.
+
+	* MonoDevelop.Core/PropertyBag.cs: When deserializing an
+	  object store it in replacement of the old xml data.
+
+	* MonoDevelop.Core/PropertyService.cs: Use FilePath for paths.
+
+2009-07-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Execution/ProcessWrapper.cs: Don't abort
 	  the output and error capture threads when stopping the
 	  process. The threads will stop by themselves when the

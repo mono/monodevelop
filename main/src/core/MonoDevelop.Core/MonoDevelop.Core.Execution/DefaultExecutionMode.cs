@@ -1,5 +1,5 @@
 // 
-// IExecutionModeSet.cs
+// DefaultExecutionMode.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -25,27 +25,26 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using Mono.Addins;
-using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Execution
 {
-	public interface IExecutionModeSet
-	{
-		string Name { get; }
-		IEnumerable<IExecutionMode> ExecutionModes { get; }
-	}
-	
-	class DefaultExecutionModeSet: IExecutionModeSet
+	class DefaultExecutionMode: IExecutionMode
 	{
 		public string Name {
-			get { return GettextCatalog.GetString ("Default"); }
+			get {
+				return GettextCatalog.GetString ("Default");
+			}
 		}
 		
-		public IEnumerable<IExecutionMode> ExecutionModes {
+		public string Id {
 			get {
-				yield return Runtime.ProcessService.DefaultExecutionMode;
+				return "Default";
+			}
+		}
+		
+		public IExecutionHandler ExecutionHandler {
+			get {
+				return Runtime.ProcessService.DefaultExecutionHandler;
 			}
 		}
 	}

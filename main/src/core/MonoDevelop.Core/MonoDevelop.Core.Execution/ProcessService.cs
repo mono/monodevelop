@@ -52,7 +52,8 @@ namespace MonoDevelop.Core.Execution
 		string remotingChannel = "unix";
 		string unixRemotingFile;
 		DefaultExecutionModeSet defaultExecutionModeSet = new DefaultExecutionModeSet ();
-		DefaultExecutionHandlerFactory defaultExecutionHandler = new DefaultExecutionHandlerFactory ();
+		IExecutionHandler defaultExecutionHandler = new DefaultExecutionHandler ();
+		IExecutionMode defaultExecutionMode = new DefaultExecutionMode ();
 		
 		Dictionary<string, string> environmentVariableOverrides = null;
 		
@@ -252,6 +253,10 @@ namespace MonoDevelop.Core.Execution
 			get {
 				return defaultExecutionHandler;
 			}
+		}
+		
+		public IExecutionMode DefaultExecutionMode {
+			get { return defaultExecutionMode; }
 		}
 		
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
