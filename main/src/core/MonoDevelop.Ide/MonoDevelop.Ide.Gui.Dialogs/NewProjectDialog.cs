@@ -382,7 +382,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				IdeApp.ProjectOperations.Save (newItem);
 			
 			if (openSolution)
-				selectedItem.OpenCreatedCombine();
+				selectedItem.OpenCreatedSolution();
 			Respond (ResponseType.Ok);
 		}
 		
