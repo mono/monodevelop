@@ -1,5 +1,12 @@
 2009-07-02  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs:
+	  Save changes to extract mehtod dialog to ensure that they're
+	  not lost due stetic bugs.
+
+2009-07-02  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Refactoring.csproj:

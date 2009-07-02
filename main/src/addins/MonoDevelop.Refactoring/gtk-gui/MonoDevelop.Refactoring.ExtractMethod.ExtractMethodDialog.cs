@@ -49,14 +49,17 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
         
         private Gtk.Button buttonCancel;
         
+        private Gtk.Button buttonPreview;
+        
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog
             this.Name = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog";
-            this.Title = Mono.Unix.Catalog.GetString("dialog1");
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.Title = Mono.Unix.Catalog.GetString("Extract Method");
+            this.WindowPosition = ((Gtk.WindowPosition)(1));
+            this.BorderWidth = ((uint)(6));
             // Internal child MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
@@ -65,6 +68,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
+            this.vbox2.BorderWidth = ((uint)(6));
             // Container child vbox2.Gtk.Box+BoxChild
             this.table1 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
             this.table1.Name = "table1";
@@ -244,6 +248,17 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
             w20.Expand = false;
             w20.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+            this.buttonPreview = new Gtk.Button();
+            this.buttonPreview.CanFocus = true;
+            this.buttonPreview.Name = "buttonPreview";
+            this.buttonPreview.UseUnderline = true;
+            this.buttonPreview.Label = Mono.Unix.Catalog.GetString("_Preview");
+            this.AddActionWidget(this.buttonPreview, 0);
+            Gtk.ButtonBox.ButtonBoxChild w21 = ((Gtk.ButtonBox.ButtonBoxChild)(w19[this.buttonPreview]));
+            w21.Position = 1;
+            w21.Expand = false;
+            w21.Fill = false;
+            // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
             this.buttonOk.CanFocus = true;
@@ -252,10 +267,10 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w21 = ((Gtk.ButtonBox.ButtonBoxChild)(w19[this.buttonOk]));
-            w21.Position = 1;
-            w21.Expand = false;
-            w21.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w22 = ((Gtk.ButtonBox.ButtonBoxChild)(w19[this.buttonOk]));
+            w22.Position = 2;
+            w22.Expand = false;
+            w22.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
