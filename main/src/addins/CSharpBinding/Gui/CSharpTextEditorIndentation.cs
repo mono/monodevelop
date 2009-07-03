@@ -206,7 +206,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 
 				//pass through to the base class, which actually inserts the character
 				//and calls HandleCodeCompletion etc to handles completion
-
+				DoPreInsertionSmartIndent (key);
 				bool retval = base.KeyPress (key, keyChar, modifier);
 
 				stateTracker.UpdateEngine ();
@@ -265,6 +265,51 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return '\0';
 		}
 		
+		
+		// removes "\s*\+\s*" patterns (used for special behaviour inside strings)
+		void HandleStringConcatinationDeletion (int start, int end)
+		{
+			char ch = Editor.GetCharAt (start);
+			if (ch == '"') {
+				int sgn = Math.Sign (end - start);
+				bool foundPlus = false;
+				for (int i = start + sgn; i != end; i += sgn) {
+					ch = Editor.GetCharAt (i);
+					if (Char.IsWhiteSpace (ch))
+						continue;
+					if (ch == '+') {
+						if (foundPlus)
+							break;
+						foundPlus = true;
+					} else if (ch == '"') {
+						if (!foundPlus)
+							break;
+						if (sgn < 0) {
+							Editor.DeleteText (i, start - i);
+							Editor.CursorPosition = i + 1;
+						} else {
+							Editor.DeleteText (start + sgn, i - start);
+							Editor.CursorPosition = start;
+						}
+						break;
+					} else {
+						break;
+					}
+				}
+			}
+		}
+		void DoPreInsertionSmartIndent (Gdk.Key key)
+		{
+			stateTracker.UpdateEngine ();
+			switch (key) {
+			case Gdk.Key.BackSpace:
+				HandleStringConcatinationDeletion (Editor.CursorPosition - 1, 0);
+				break;
+			case Gdk.Key.Delete:
+				HandleStringConcatinationDeletion (Editor.CursorPosition, Editor.TextLength);
+				break;
+			}
+		}
 		//special handling for certain characters just inserted , for comments etc
 		void DoPostInsertionSmartIndent (char charInserted, bool hadSelection, out bool reIndent)
 		{
