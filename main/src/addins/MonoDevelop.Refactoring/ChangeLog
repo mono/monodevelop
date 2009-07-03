@@ -1,3 +1,22 @@
+2009-07-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/Rename.cs:
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring/Refactoring.cs:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/RefactoringService.cs:
+	* MonoDevelop.Refactoring/INRefactoryASTProvider.cs:
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethod.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs:
+	* gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs:
+	  Worked on refactoring support.
+
 2009-07-02  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:

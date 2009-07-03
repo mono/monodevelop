@@ -17,7 +17,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
         
         private Gtk.Table table1;
         
-        private Gtk.ComboBoxEntry comboboxentryAccessModifiers;
+        private Gtk.ComboBox comboboxModifiers;
         
         private Gtk.Entry entry;
         
@@ -35,9 +35,9 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
         
         private Gtk.VBox vbox3;
         
-        private Gtk.Button button15;
+        private Gtk.Button buttonUp;
         
-        private Gtk.Button button16;
+        private Gtk.Button buttonDown;
         
         private Gtk.CheckButton checkbuttonGenerateComment;
         
@@ -75,10 +75,10 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
             // Container child table1.Gtk.Table+TableChild
-            this.comboboxentryAccessModifiers = Gtk.ComboBoxEntry.NewText();
-            this.comboboxentryAccessModifiers.Name = "comboboxentryAccessModifiers";
-            this.table1.Add(this.comboboxentryAccessModifiers);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table1[this.comboboxentryAccessModifiers]));
+            this.comboboxModifiers = Gtk.ComboBox.NewText();
+            this.comboboxModifiers.Name = "comboboxModifiers";
+            this.table1.Add(this.comboboxModifiers);
+            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table1[this.comboboxModifiers]));
             w2.TopAttach = ((uint)(1));
             w2.BottomAttach = ((uint)(2));
             w2.LeftAttach = ((uint)(1));
@@ -155,24 +155,24 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
             this.vbox3.Name = "vbox3";
             this.vbox3.Spacing = 6;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.button15 = new Gtk.Button();
-            this.button15.CanFocus = true;
-            this.button15.Name = "button15";
-            this.button15.UseUnderline = true;
-            this.button15.Label = Mono.Unix.Catalog.GetString("_Up");
-            this.vbox3.Add(this.button15);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox3[this.button15]));
+            this.buttonUp = new Gtk.Button();
+            this.buttonUp.CanFocus = true;
+            this.buttonUp.Name = "buttonUp";
+            this.buttonUp.UseUnderline = true;
+            this.buttonUp.Label = Mono.Unix.Catalog.GetString("_Up");
+            this.vbox3.Add(this.buttonUp);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox3[this.buttonUp]));
             w10.Position = 0;
             w10.Expand = false;
             w10.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.button16 = new Gtk.Button();
-            this.button16.CanFocus = true;
-            this.button16.Name = "button16";
-            this.button16.UseUnderline = true;
-            this.button16.Label = Mono.Unix.Catalog.GetString("_Down");
-            this.vbox3.Add(this.button16);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox3[this.button16]));
+            this.buttonDown = new Gtk.Button();
+            this.buttonDown.CanFocus = true;
+            this.buttonDown.Name = "buttonDown";
+            this.buttonDown.UseUnderline = true;
+            this.buttonDown.Label = Mono.Unix.Catalog.GetString("_Down");
+            this.vbox3.Add(this.buttonDown);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox3[this.buttonDown]));
             w11.Position = 1;
             w11.Expand = false;
             w11.Fill = false;
@@ -276,7 +276,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
             }
             this.DefaultWidth = 400;
             this.DefaultHeight = 300;
-            this.label1.MnemonicWidget = this.comboboxentryAccessModifiers;
             this.labelNewName.MnemonicWidget = this.entry;
             this.label2.MnemonicWidget = this.treeviewParameters;
             this.Show();

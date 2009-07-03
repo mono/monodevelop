@@ -94,11 +94,11 @@ namespace MonoDevelop.Ide.Commands
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
 				return;
-			
-			ITextBuffer editor = doc.GetContent <ITextBuffer> ();
+
+			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
 			if (editor == null)
 				return;
-			
+
 			bool added = false;
 			int line, column;
 			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Commands
 			ResolveResult resolveResult = GetResolveResult (doc, editor);
 			if (resolveResult is AggregatedResolveResult)
 				resolveResult = ((AggregatedResolveResult)resolveResult).PrimaryResult;
-			
+
 			IDomVisitable item = null;
 			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			if (resolveResult is ParameterResolveResult) {
@@ -134,9 +134,8 @@ namespace MonoDevelop.Ide.Commands
 			string itemName = null;
 			if (item is IMember)
 				itemName = ((IMember)item).Name;
-			
-			if (item != null && eitem != null && 
-			    (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
+
+			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
 				// If this occurs, then @item is either its own enclosing item, in
 				// which case, we don't want to show it twice, or it is the base-class
 				// version of @eitem, in which case we don't want to show the base-class
@@ -144,16 +143,15 @@ namespace MonoDevelop.Ide.Commands
 				item = eitem;
 				eitem = null;
 			}
-			
+
 			IType eclass = null;
-			
+
 			if (item is IType) {
-				if (((IType) item).ClassType == ClassType.Interface)
-					eclass = FindEnclosingClass (ctx, editor.Name, line, column);
-				else
-					eclass = (IType) item;
+				if (((IType)item).ClassType == ClassType.Interface)
+					eclass = FindEnclosingClass (ctx, editor.Name, line, column); else
+					eclass = (IType)item;
 				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
-					item = eitem; 
+					item = eitem;
 					eitem = null;
 				}
 			}
@@ -163,7 +161,7 @@ namespace MonoDevelop.Ide.Commands
 				IReturnType returnType = resolveResult.ResolvedType;
 				if (returnType == null || string.IsNullOrEmpty (returnType.FullName))
 					returnType = new DomReturnType (resolveResult.ResolvedExpression.Expression);
-				
+
 				List<string> namespaces = new List<string> (ctx.ResolvePossibleNamespaces (returnType));
 				foreach (string ns in namespaces) {
 					CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
@@ -175,6 +173,21 @@ namespace MonoDevelop.Ide.Commands
 				}
 				if (namespaces.Count > 0)
 					ainfo.Add (resolveMenu, null);
+			}
+
+			if (editor.SelectionStartPosition - editor.SelectionEndPosition != 0) {
+				CommandInfoSet ciset = new CommandInfoSet ();
+				ciset.Text = GettextCatalog.GetString ("Refactor");
+				foreach (var refactoring in RefactoringService.Refactorings) {
+					if (refactoring.IsValid (ctx, doc, resolveResult)) {
+						ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (delegate { refactoring.Run (ctx, doc, item); }));
+					}
+				}
+				if (ciset.CommandInfos.Count > 0) {
+					ainfo.Add (ciset, null);
+					added = true;
+				}
+				item = null;
 			}
 			
 			while (item != null) {
@@ -333,15 +346,16 @@ namespace MonoDevelop.Ide.Commands
 			IDomVisitable realItem = item;
 			if (item is InstantiatedType)
 				realItem = ((InstantiatedType)item).UninstantiatedType;
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
+			
 			if (realItem is CompoundType) {
-				Document doc = IdeApp.Workbench.ActiveDocument;
-				ITextBuffer editor = doc.GetContent<ITextBuffer> ();
 				int line, column;
 				editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
 				((CompoundType)realItem).SetMainPart (doc.FileName, line, column);
 				item = realItem;
 			}
-
+			
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, realItem, null);
 			CommandInfoSet ciset = new CommandInfoSet ();
 			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
@@ -351,7 +365,7 @@ namespace MonoDevelop.Ide.Commands
 			} else {
 				flags |= OutputFlags.IncludeParameters;
 			}
-
+			
 			string itemName = EscapeName (ambience.GetString (item, flags));
 			bool canRename = false;
 			string txt;
@@ -385,7 +399,7 @@ namespace MonoDevelop.Ide.Commands
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (ctx, item)) {
 					ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (delegate {
-						refactoring.Run (ctx, item);
+						refactoring.Run (ctx, doc, item);
 					}));
 				}
 			}

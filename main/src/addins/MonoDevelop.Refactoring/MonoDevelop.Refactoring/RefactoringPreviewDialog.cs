@@ -34,6 +34,8 @@ using Algorithm.Diff;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
+using Mono.TextEditor;
+
 
 namespace MonoDevelop.Refactoring
 {
@@ -105,7 +107,11 @@ namespace MonoDevelop.Refactoring
 				cellRendererText.Text = "";
 				return;
 			}
-			string text = string.Format (GettextCatalog.GetString ("(Line:{0}, Column:{1})"), change.Location.Line, change.Location.Column);
+			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			doc.Text = System.IO.File.ReadAllText (change.FileName);
+			DocumentLocation loc = doc.OffsetToLocation (change.Offset);
+			
+			string text = string.Format (GettextCatalog.GetString ("(Line:{0}, Column:{1})"), loc.Line, loc.Column);
 			if (treeviewPreview.Selection.IterIsSelected (iter)) {
 				cellRendererText.Text = text;
 			} else {
@@ -136,9 +142,7 @@ namespace MonoDevelop.Refactoring
 					before.Add (doc.GetTextAt (line));
 				}
 				
-				int offset = doc.LocationToOffset (change.Location.Line - 1, change.Location.Column - 1);
-				
-				((Mono.TextEditor.IBuffer)doc).Replace (offset, change.RemovedChars, change.InsertedText);
+				((Mono.TextEditor.IBuffer)doc).Replace (change.Offset, change.RemovedChars, change.InsertedText);
 				
 				List<string> after = new List<string> ();
 				foreach (var line in doc.Lines) {
@@ -169,7 +173,7 @@ namespace MonoDevelop.Refactoring
 			foreach (Change change in changes) {
 				TreeIter iter = GetFile (change);
 				iter = store.AppendValues (iter, ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
-				if (!change.Location.IsEmpty)
+				if (change.Offset >= 0)
 					store.AppendValues (iter, null, null, change, false);
 			}
 		}

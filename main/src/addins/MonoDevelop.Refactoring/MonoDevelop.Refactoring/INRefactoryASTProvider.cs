@@ -1,5 +1,5 @@
 // 
-// Refactoring.cs
+// INRefactoryASTProvider.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,44 +25,23 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.NRefactory;
+using System.IO;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Gui;
+
 
 namespace MonoDevelop.Refactoring
 {
-	public abstract class Refactoring
+	public interface INRefactoryASTProvider
 	{
-		public string Name {
-			get;
-			set;
-		}
+		string OutputNode (ProjectDom dom, INode node);
+		string OutputNode (ProjectDom dom, INode node, string indent);
 		
-		public bool IsBreakingAPI {
-			get;
-			set;
-		}
-		
-		
-		public virtual string GetMenuDescription (ProjectDom dom, IDomVisitable item)
-		{
-			return Name;
-		}
-		
-		public virtual bool IsValid (ProjectDom dom, Document doc, ResolveResult resolveResult)
-		{
-			return false;
-		}
-		
-		public virtual bool IsValid (ProjectDom dom, IDomVisitable item)
-		{
-			return false;
-		}
-		
-		public abstract List<Change> PerformChanges (ProjectDom dom, IDomVisitable item, object properties);
-		
-		public abstract void Run (ProjectDom dom, Document doc, IDomVisitable item);
+		INode ParseText (string text);
+		bool CanGenerateASTFrom (string mimeType);
 	}
+	
+	
 }

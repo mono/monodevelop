@@ -52,7 +52,7 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
-		public DomLocation Location {
+		public int Offset {
 			get;
 			set;
 		}
@@ -79,11 +79,10 @@ namespace MonoDevelop.Refactoring
 
 			IEditableTextFile file = rctx.GetFile (FileName);
 			if (file != null) {
-				int position = file.GetPositionFromLineColumn (Location.Line, Location.Column);
 				if (RemovedChars > 0)
-					file.DeleteText (position, RemovedChars);
+					file.DeleteText (Offset, RemovedChars);
 				if (!string.IsNullOrEmpty (InsertedText))
-					file.InsertText (position, InsertedText);
+					file.InsertText (Offset, InsertedText);
 				rctx.Save ();
 			}
 		}
@@ -101,7 +100,7 @@ namespace MonoDevelop.Refactoring
 			this.FileName = oldName;
 			this.NewName = newName;
 			this.Description = string.Format (GettextCatalog.GetString ("Rename file '{0}' to '{1}'"), Path.GetFileName (oldName), Path.GetFileName (newName));
-			this.Location = DomLocation.Empty;
+			this.Offset = -1;
 		}
 		
 		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)

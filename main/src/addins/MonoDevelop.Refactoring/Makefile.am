@@ -10,7 +10,8 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.dll
+	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/NRefactory.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
@@ -29,7 +30,9 @@ FILES =  \
 	gtk-gui/MonoDevelop.Refactoring.RenameItemDialog.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethod.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs \
+	MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs \
 	MonoDevelop.Refactoring/Change.cs \
+	MonoDevelop.Refactoring/INRefactoryASTProvider.cs \
 	MonoDevelop.Refactoring/Refactoring.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
 	MonoDevelop.Refactoring/RefactoringService.cs \

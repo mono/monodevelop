@@ -32,22 +32,33 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
 
-
 namespace MonoDevelop.Refactoring
 {
 	public static class RefactoringService
 	{
 		static List<Refactoring> refactorings = new List<Refactoring>();
+		static List<INRefactoryASTProvider> astProviders = new List<INRefactoryASTProvider>();
 		
 		static RefactoringService ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
 					refactorings.Add ((Refactoring)args.ExtensionObject);
 					break;
 				case ExtensionChange.Remove:
 					refactorings.Remove ((Refactoring)args.ExtensionObject);
+					break;
+				}
+			});
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ASTProvider", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					astProviders.Add ((INRefactoryASTProvider)args.ExtensionObject);
+					break;
+				case ExtensionChange.Remove:
+					astProviders.Remove ((INRefactoryASTProvider)args.ExtensionObject);
 					break;
 				}
 			});
@@ -77,15 +88,33 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, IEnumerable<Change> changes)
+		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes)
 		{
 			RefactorerContext rctx = new RefactorerContext (dom, MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance, null);
 			RenameHandler handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
-			foreach (Change change in changes) {
-				change.PerformChange (monitor, rctx);
+			for (int i = 0; i < changes.Count; i++) {
+				changes[i].PerformChange (monitor, rctx);
+				for (int j = i + 1; j < changes.Count; j++) {
+					if (changes[i].Offset >= 0 && changes[j].Offset >= 0 && changes[i].FileName == changes[j].FileName && changes[i].Offset < changes[j].Offset) {
+						changes[j].Offset -= changes[i].RemovedChars;
+						if (!string.IsNullOrEmpty (changes[i].InsertedText))
+							changes[j].Offset += changes[i].InsertedText.Length;
+					}
+				}
 			}
 			FileService.FileRenamed -= handler.FileRename;
+		}
+		
+		public static INRefactoryASTProvider GetASTProvider (string mimeType)
+		{
+			foreach (INRefactoryASTProvider provider in astProviders) {
+				Console.WriteLine ("provider:" + provider);
+				if (provider.CanGenerateASTFrom (mimeType)) {
+					return provider;
+				}
+			}
+			return null;
 		}
 	}
 }

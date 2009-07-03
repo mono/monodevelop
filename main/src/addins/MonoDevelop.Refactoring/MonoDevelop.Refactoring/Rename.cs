@@ -32,6 +32,8 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
+
 
 namespace MonoDevelop.Refactoring
 {
@@ -62,7 +64,7 @@ namespace MonoDevelop.Refactoring
 			return GettextCatalog.GetString ("_Rename");
 		}
 		
-		public override void Run (ProjectDom dom, IDomVisitable item)
+		public override void Run (ProjectDom dom, Document document, IDomVisitable item)
 		{
 			RenameItemDialog dialog = new RenameItemDialog (dom, item, this);
 			dialog.Show ();
@@ -93,11 +95,8 @@ namespace MonoDevelop.Refactoring
 				IType cls = (IType)item;
 
 				if (properties.RenameFile) {
-					Console.WriteLine ("RENAME FILE !!");
 					if (cls.IsPublic) {
 						foreach (IType part in cls.Parts) {
-							Console.WriteLine ("part: " + part);
-							Console.WriteLine (System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName)+ "/" + cls.Name);
 							if (System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName) == cls.Name) {
 								string newFileName = System.IO.Path.HasExtension (part.CompilationUnit.FileName) ? properties.NewName + System.IO.Path.GetExtension (part.CompilationUnit.FileName) : properties.NewName;
 								newFileName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (part.CompilationUnit.FileName), newFileName);
@@ -118,14 +117,13 @@ namespace MonoDevelop.Refactoring
 			} else {
 				return null;
 			}
-
 			foreach (MemberReference memberRef in col) {
 				Change change = new Change ();
 				change.FileName = memberRef.FileName;
-				change.Location = new DomLocation (memberRef.Line, memberRef.Column);
+				change.Offset = memberRef.Position;
 				change.RemovedChars = memberRef.Name.Length;
 				change.InsertedText = properties.NewName;
-				change.Description = string.Format ("Replace '{0}' with '{1}'", memberRef.Name, properties.NewName);
+				change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.Name, properties.NewName);
 				result.Add (change);
 			}
 			return result;

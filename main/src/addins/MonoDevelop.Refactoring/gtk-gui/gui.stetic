@@ -308,7 +308,7 @@
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
                 <child>
-                  <widget class="Gtk.ComboBoxEntry" id="comboboxentryAccessModifiers">
+                  <widget class="Gtk.ComboBox" id="comboboxModifiers">
                     <property name="MemberName" />
                     <property name="IsTextCombo">True</property>
                     <property name="Items" translatable="yes" />
@@ -440,7 +440,7 @@
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.Button" id="button15">
+                      <widget class="Gtk.Button" id="buttonUp">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextOnly</property>
@@ -455,7 +455,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Button" id="button16">
+                      <widget class="Gtk.Button" id="buttonDown">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextOnly</property>

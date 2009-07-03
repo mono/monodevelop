@@ -27,14 +27,19 @@
 	</Dependencies>
 	
 	<!-- Extension Points -->
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Refactorings" name = "Refactorings">
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/Refactorings" name = "Refactorings">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/ASTProvider" name = "ASTProviders">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
 	<!-- Extensions -->
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Refactorings" name = "Refactorings">
+	<Extension path = "/MonoDevelop/Refactoring/Refactorings" name = "Refactorings">
 		<Class id="Rename" class = "MonoDevelop.Refactoring.Rename" />
+		<Class id="ExtractMethod" class = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethod" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->
