@@ -51,7 +51,80 @@ namespace MonoDevelop.Ide.Commands
 {
 	public enum RefactoryCommands
 	{
-		CurrentRefactoryOperations
+		CurrentRefactoryOperations,
+		GotoDeclaration
+	}
+	
+	public class GotoDeclarationHandler : CommandHandler
+	{
+		protected override void Run (object data)
+		{
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+				return;
+
+			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
+			if (editor == null)
+				return;
+
+			int line, column;
+			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
+			ProjectDom ctx = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
+			if (ctx == null)
+				return;
+			ResolveResult resolveResult = CurrentRefactoryOperationsHandler.GetResolveResult (doc, editor);
+			if (resolveResult is AggregatedResolveResult)
+				resolveResult = ((AggregatedResolveResult)resolveResult).PrimaryResult;
+
+			IDomVisitable item = null;
+			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
+			if (resolveResult is ParameterResolveResult) {
+				item = ((ParameterResolveResult)resolveResult).Parameter;
+			} else if (resolveResult is LocalVariableResolveResult) {
+				item = ((LocalVariableResolveResult)resolveResult).LocalVariable;
+				//s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, WindowConversionFlags));
+			} else if (resolveResult is MemberResolveResult) {
+				item = ((MemberResolveResult)resolveResult).ResolvedMember;
+				if (item == null && ((MemberResolveResult)resolveResult).ResolvedType != null) {
+					item = ctx.GetType (((MemberResolveResult)resolveResult).ResolvedType);
+				}
+			} else if (resolveResult is MethodResolveResult) {
+				item = ((MethodResolveResult)resolveResult).MostLikelyMethod;
+				if (item == null && ((MethodResolveResult)resolveResult).ResolvedType != null) {
+					item = ctx.GetType (((MethodResolveResult)resolveResult).ResolvedType);
+				}
+			} else if (resolveResult is BaseResolveResult) {
+				item = ctx.GetType (((BaseResolveResult)resolveResult).ResolvedType);
+			} else if (resolveResult is ThisResolveResult) {
+				item = ctx.GetType (((ThisResolveResult)resolveResult).ResolvedType);
+			}
+			string itemName = null;
+			if (item is IMember)
+				itemName = ((IMember)item).Name;
+
+			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
+				// If this occurs, then @item is either its own enclosing item, in
+				// which case, we don't want to show it twice, or it is the base-class
+				// version of @eitem, in which case we don't want to show the base-class
+				// @item, we'd rather show the item the user /actually/ requested, @eitem.
+				item = eitem;
+				eitem = null;
+			}
+			IType eclass = null;
+
+			if (item is IType) {
+				if (((IType)item).ClassType == ClassType.Interface)
+					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
+					eclass = (IType)item;
+				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
+					item = eitem;
+					eitem = null;
+				}
+			}
+			
+			Refactorer refactorer = new Refactorer (ctx, doc.CompilationUnit, eclass, item, null);
+			refactorer.GoToDeclaration ();
+		}
 	}
 	
 	public class CurrentRefactoryOperationsHandler: CommandHandler
@@ -62,7 +135,7 @@ namespace MonoDevelop.Ide.Commands
 			if (del != null)
 				del ();
 		}
-		ResolveResult GetResolveResult (Document doc, ITextBuffer editor)
+		public static ResolveResult GetResolveResult (Document doc, ITextBuffer editor)
 		{
 			ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null)
@@ -322,7 +395,7 @@ namespace MonoDevelop.Ide.Commands
 		// public class Funkadelic : IAwesomeSauce, IRockOn { ...
 		//        ----------------   -------------
 		// finds this ^ if you clicked on this ^
-		IType FindEnclosingClass (ProjectDom ctx, string fileName, int line, int col)
+		internal static IType FindEnclosingClass (ProjectDom ctx, string fileName, int line, int col)
 		{
 			IType klass = null;
 			foreach (IType c in ctx.GetTypes (fileName)) {
@@ -401,7 +474,7 @@ namespace MonoDevelop.Ide.Commands
 					}
 					ciset.CommandInfos.Add (declSet);
 				} else {
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
+					ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration, null), new RefactoryOperation (refactorer.GoToDeclaration));
 				}
 			}
 

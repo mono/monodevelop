@@ -44,7 +44,13 @@
 	
 	<!-- RefactoryCommands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
+	
 		<Category _name = "Refactory" id = "Refactory">
+		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.GotoDeclaration"
+					defaultHandler = "MonoDevelop.Ide.Commands.GotoDeclarationHandler"
+					_label = "_Go to declaration" 
+					shortcut = "Alt|Return"
+					macShortcut = "Meta|Return"/>
 		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations"
 				defaultHandler = "MonoDevelop.Ide.Commands.CurrentRefactoryOperationsHandler"
 				type="array"
