@@ -103,6 +103,12 @@ namespace MonoDevelop.Projects.Dom
 			return GetTypeAt (types, line, column);
 		}
 		
+		public IMember GetMemberAt (int line, int column)
+		{
+			IType type = GetTypeAt (line, column);
+			return type != null ? type.GetMemberAt (line, column) : null;
+		}
+		
 		public virtual void Dispose ()
 		{
 		}

@@ -753,7 +753,7 @@ namespace MonoDevelop.Projects.Dom
 				return DomReturnType.Char;
 			if (returnType.ArrayDimensions > 0)
 				return new DomReturnType (returnType.FullName);
-			
+
 			IType resolvedType = dom.GetType (returnType);
 			if (resolvedType != null) {
 				foreach (IType curType in dom.GetInheritanceTree (resolvedType)) {
@@ -763,13 +763,29 @@ namespace MonoDevelop.Projects.Dom
 					}
 				}
 			}
-			
-			if (returnType.GenericArguments.Count > 0) 
+
+			if (returnType.GenericArguments.Count > 0)
 				return returnType.GenericArguments[0];
-			
+
 			return null;
 		}
-
+		
+		public virtual IMember GetMemberAt (int line, int column)
+		{
+			foreach (IMember member in Members) {
+				if (member.BodyRegion.Contains (line, column)) {
+					if (member is IType) {
+						IMember tm = ((IType)member).GetMemberAt (line, column);
+						if (tm != null)
+							return tm;
+					}
+					return member;
+				} else if (member is IField && ((IField)member).Location.Line == line) {
+					return member;
+				}
+			}
+			return null;
+		}
 		
 		public bool Equals (IType other)
 		{

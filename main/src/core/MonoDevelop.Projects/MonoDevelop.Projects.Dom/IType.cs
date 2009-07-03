@@ -159,6 +159,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		bool HasOverriden (IMember member);
 		bool IsBaseType (IReturnType type);
+		
+		IMember GetMemberAt (int line, int column);
 
 		//// <value>
 		/// MonoDoc Xml documentation.
