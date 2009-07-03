@@ -268,8 +268,7 @@ namespace MonoDevelop.SourceEditor
 			if (key == Gdk.Key.Escape) {
 				bool b;
 				if (extension != null)
-					b = ExtensionKeyPress (key, ch, state);
-				else
+					b = ExtensionKeyPress (key, ch, state); else
 					b = base.OnIMProcessedKeyPressEvent (key, ch, state);
 				if (b) {
 					view.SourceEditorWidget.RemoveSearchWidget ();
@@ -277,54 +276,59 @@ namespace MonoDevelop.SourceEditor
 				}
 				return false;
 			}
-			
-			
+
 			if (Document == null)
 				return true;
-			
+
 			bool inStringOrComment = false;
 			LineSegment line = Document.GetLine (Caret.Line);
 			if (line == null)
 				return true;
+			bool inChar = false;
+			string escape = "\"";
 			Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 			Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
 			foreach (Span span in stack) {
-				if (span.Color == "comment" || span.Color == "literal") {
+				if (span.Color == "string.single" || span.Color == "string.double") {
 					inStringOrComment = true;
+					inChar |= span.Color == "string.single";
+					//escape = span.Escape;
 					break;
 				}
 			}
-			
+
 			Document.BeginAtomicUndo ();
-			
+
 			// insert template when space is typed (currently disabled - it's annoying).
-			bool templateInserted = false; //!inStringOrComment && (key == Gdk.Key.space) && DoInsertTemplate ();
-			bool returnBetweenBraces =
-				key == Gdk.Key.Return
-				&& (state & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) == Gdk.ModifierType.None
-				&& Caret.Offset > 0
-				&& Caret.Offset < Document.Length
-				&& Document.GetCharAt (Caret.Offset - 1) == '{'
-				&& Document.GetCharAt (Caret.Offset)     == '}'
-				&& !inStringOrComment;
+			bool templateInserted = false;
+			//!inStringOrComment && (key == Gdk.Key.space) && DoInsertTemplate ();
+			bool returnBetweenBraces = key == Gdk.Key.Return && (state & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) == Gdk.ModifierType.None && Caret.Offset > 0 && Caret.Offset < Document.Length && Document.GetCharAt (Caret.Offset - 1) == '{' && Document.GetCharAt (Caret.Offset) == '}' && !inStringOrComment;
 			int initialOffset = Caret.Offset;
-			const string openBrackets    = "{[('\"";
+			const string openBrackets = "{[('\"";
 			const string closingBrackets = "}])'\"";
 			int braceIndex = openBrackets.IndexOf ((char)ch);
-			if (Options.AutoInsertMatchingBracket && !inStringOrComment && braceIndex >= 0) {
-				char closingBrace = closingBrackets[braceIndex];
-				char openingBrace = openBrackets[braceIndex];
-				int count = 0;
-				foreach (char curCh in TextWithoutCommentsAndStrings) {
-					if (curCh == openingBrace) {
-						count++;
-					} else if (curCh == closingBrace) {
-						count--;
+			if (Options.AutoInsertMatchingBracket && braceIndex >= 0) {
+				if (!inStringOrComment) {
+					char closingBrace = closingBrackets[braceIndex];
+					char openingBrace = openBrackets[braceIndex];
+					int count = 0;
+					foreach (char curCh in TextWithoutCommentsAndStrings) {
+						if (curCh == openingBrace) {
+							count++;
+						} else if (curCh == closingBrace) {
+							count--;
+						}
 					}
-				}
-				if (count >= 0)  {
-					GetTextEditorData ().EnsureCaretIsNotVirtual ();
-					Insert (Caret.Offset, closingBrace.ToString ());
+					if (count >= 0) {
+						GetTextEditorData ().EnsureCaretIsNotVirtual ();
+						Insert (Caret.Offset, closingBrace.ToString ());
+					}
+				} else {
+					char charBefore = Document.GetCharAt (Caret.Offset - 1);
+					if (!inChar && !(ch == '"' && charBefore == '\\')) {
+						GetTextEditorData ().EnsureCaretIsNotVirtual ();
+						Insert (Caret.Offset, "\"");
+					}
 				}
 			}
 			
