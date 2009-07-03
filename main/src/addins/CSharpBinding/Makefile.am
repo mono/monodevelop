@@ -6,6 +6,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.dll
 PARSE = parse.exe
 
 DEPS =  \
+	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -56,6 +57,7 @@ FILES =  \
 	Gui/ResolveVisitor.cs \
 	Parser/CodeGenerator.cs \
 	Parser/CSharpFormatter.cs \
+	Parser/CSharpNRefactoryASTProvider.cs \
 	Parser/FindMemberAstVisitor.cs \
 	Parser/NRefactoryParser.cs \
 	Project/CSharpCompilerParameters.cs \

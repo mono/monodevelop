@@ -1,3 +1,13 @@
+2009-07-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* Parser/CSharpFormatter.cs:
+	* Parser/CSharpNRefactoryASTProvider.cs: Worked on refactoring
+	  support.
+
 2009-07-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NewCSharpExpressionFinder.cs: Fixed "Bug 518547 -

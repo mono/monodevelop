@@ -84,7 +84,19 @@ namespace CSharpBinding.Parser
 			return result.ToString ();
 		}
 
-
+		public static int GetColumn (string wrapper, int i, int tabSize)
+		{
+			int j = i;
+			int col = 0;
+			for (; j < wrapper.Length && (wrapper[j] == ' ' || wrapper[j] == '\t'); j++) {
+				if (wrapper[j] == ' ') {
+					col++;
+				} else {
+					col = GetNextTabstop (col, tabSize);
+				}
+			}
+			return col;
+		}
 		public static void Format (TextEditorData data, ProjectDom dom, ICompilationUnit unit, MonoDevelop.Ide.Gui.TextEditor editor, DomLocation caretLocation)
 		{
 			IType type = NRefactoryResolver.GetTypeAtCursor (unit, unit.FileName, caretLocation);
@@ -100,15 +112,8 @@ namespace CSharpBinding.Parser
 				return; 
 			
 			int i = wrapper.IndexOf ('{') + 1;
-			int j = i;
-			int col = 0;
-			for (; j < wrapper.Length && (wrapper[j] == ' ' || wrapper[j] == '\t'); j++) {
-				if (wrapper[j] == ' ') {
-					col++;
-				} else {
-					col = GetNextTabstop (col, data.Options.TabSize);
-				}
-			}
+			int col = GetColumn (wrapper, i, data.Options.TabSize);
+			
 			CSharpFormatter formatter = new CSharpFormatter ();
 			formatter.startIndentLevel = System.Math.Max (0, col / data.Options.TabSize - 1);
 			
@@ -263,19 +268,12 @@ namespace CSharpBinding.Parser
 			return (result / tabSize) * tabSize;
 		}
 
-		bool hasErrors = false;
-		int startIndentLevel = 0;
-		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
+		public static void SetFormatOptions (CSharpOutputVisitor outputVisitor, SolutionItem policyParent)
 		{
-			hasErrors = false;
-			if (string.IsNullOrEmpty (input)) 
-				return input; 
-
-			IEnumerable<string> types = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			IEnumerable<string> types = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (MimeType);
 			TextStylePolicy currentPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
 			CSharpFormattingPolicy codePolicy = policyParent != null ? policyParent.Policies.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 
-			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor ();
 			outputVisitor.Options.IndentationChar = currentPolicy.TabsToSpaces ? ' ' : '\t';
 			outputVisitor.Options.TabSize = currentPolicy.TabWidth;
 			outputVisitor.Options.IndentSize = currentPolicy.TabWidth;
@@ -301,7 +299,19 @@ namespace CSharpBinding.Parser
 				//System.Console.WriteLine("set " + option.Name + " to " + cval);
 				info.SetValue (outputVisitor.Options, cval, null);
 			}
-
+		}
+		
+		bool hasErrors = false;
+		int startIndentLevel = 0;
+		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
+		{
+			hasErrors = false;
+			if (string.IsNullOrEmpty (input))
+				return input;
+			
+			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor ();
+			SetFormatOptions (outputVisitor, policyParent);
+			
 			outputVisitor.OutputFormatter.IndentationLevel = startIndentLevel;
 			using (ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (input))) {
 				parser.Parse ();

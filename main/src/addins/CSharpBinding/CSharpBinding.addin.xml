@@ -9,12 +9,13 @@
        version     = "2.1.0">
 	
 	<Dependencies>
-	    <Addin id="Core" version="2.1.0"/>
-	    <Addin id="Core.Gui" version="2.1.0"/>
-    	<Addin id="Projects" version="2.1.0"/>
+		<Addin id="Core" version="2.1.0"/>
+		<Addin id="Core.Gui" version="2.1.0"/>
+		<Addin id="Projects" version="2.1.0"/>
 		<Addin id="Projects.Gui" version="2.1.0"/>
 		<Addin id="Ide" version="2.1.0"/>
 		<Addin id="SourceEditor2" version="2.1.0"/>
+		<Addin id="Refactoring" version="2.1.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -148,6 +149,10 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
 		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "FormattingStrategy.CSharpFormattingPolicyPanel" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Refactoring/ASTProvider">
+		<Class class = "CSharpBinding.Parser.CSharpNRefactoryASTProvider" />
 	</Extension>
 	
 	<Module>
