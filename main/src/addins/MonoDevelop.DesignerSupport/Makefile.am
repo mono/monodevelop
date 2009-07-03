@@ -88,6 +88,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport/BindingService.cs \
 	MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs \
 	MonoDevelop.DesignerSupport/CodeBehind.cs \
+	MonoDevelop.DesignerSupport/CodeBehindWriter.cs \
 	MonoDevelop.DesignerSupport/Commands.cs \
 	MonoDevelop.DesignerSupport/CustomDescriptor.cs \
 	MonoDevelop.DesignerSupport/DesignerSupportService.cs \

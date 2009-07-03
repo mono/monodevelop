@@ -59,10 +59,10 @@
     <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Cairo" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -179,6 +179,7 @@
     <Compile Include="MonoDevelop.DesignerSupport\CodeBehind.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TemplateToolboxNode.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\CodeBehindWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
