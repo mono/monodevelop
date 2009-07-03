@@ -1,3 +1,9 @@
+2009-07-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* prj2make-sharp-lib.csproj: Added MonoDevelop.Refactoring
+	  reference. (otherwise build would break)
+
 2009-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MsPrjHelper.cs: Track assembly lookup APIs.
