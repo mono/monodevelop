@@ -5,6 +5,9 @@ SUBDIRS = \
 	MonoDevelop.DesignerSupport \
 	MonoDevelop.Debugger \
 	Deployment \
+	MonoDevelop.SourceEditor2 \
+	VersionControl \
+	MonoDevelop.Refactoring \
 	MonoDevelop.Autotools \
 	MonoDevelop.Gettext \
 	CSharpBinding \
@@ -15,8 +18,6 @@ SUBDIRS = \
 	prj2make-sharp-lib \
 	WelcomePage \
 	MonoDevelop.GtkCore \
-	MonoDevelop.SourceEditor2 \
-	VersionControl \
 	ChangeLogAddIn \
 	MonoDevelop.XmlEditor \
 	AspNetAddIn \
@@ -26,5 +27,4 @@ SUBDIRS = \
 	MonoDevelop.AssemblyBrowser \
 	MonoDevelop.Moonlight \
 	MonoDevelop.CodeMetrics \
-	MonoDevelop.Refactoring \
 	WindowsPlatform
