@@ -1,6 +1,19 @@
 2009-07-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring/Rename.cs:
+	* MonoDevelop.Refactoring/Refactoring.cs:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/RefactoringService.cs:
+	* MonoDevelop.Refactoring/RefactoringOperation.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethod.cs:
+	  Renamed Refactoring to RefactoringOperation. Fixed command
+	  item creation.
+
+2009-07-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:

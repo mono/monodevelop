@@ -44,7 +44,7 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Refactoring.ExtractMethod
 {
-	public class ExtractMethod : Refactoring
+	public class ExtractMethod : RefactoringOperation
 	{
 		public ExtractMethod ()
 		{

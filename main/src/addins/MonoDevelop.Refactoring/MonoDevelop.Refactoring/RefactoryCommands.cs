@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Commands
 				ciset.Text = GettextCatalog.GetString ("Refactor");
 				foreach (var refactoring in RefactoringService.Refactorings) {
 					if (refactoring.IsValid (ctx, doc, resolveResult)) {
-						ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (delegate { refactoring.Run (ctx, doc, item); }));
+						ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (new RefactoringOperationWrapper (refactoring, ctx, doc, item).Operation));
 					}
 				}
 				if (ciset.CommandInfos.Count > 0) {
@@ -250,6 +250,27 @@ namespace MonoDevelop.Ide.Commands
 			
 			if (added)
 				ainfo.AddSeparator ();
+		}
+		
+		class RefactoringOperationWrapper
+		{
+			RefactoringOperation refactoring;
+			ProjectDom dom;
+			Document doc;
+			IDomVisitable item;
+			
+			public RefactoringOperationWrapper (RefactoringOperation refactoring, ProjectDom dom, Document doc, IDomVisitable item)
+			{
+				this.refactoring = refactoring;
+				this.dom = dom;
+				this.doc = doc;
+				this.item = item;
+			}
+			
+			public void Operation ()
+			{
+				refactoring.Run (dom, doc, item);
+			}
 		}
 		
 		class ResolveNameOperation
@@ -398,9 +419,7 @@ namespace MonoDevelop.Ide.Commands
 
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (ctx, item)) {
-					ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (delegate {
-						refactoring.Run (ctx, doc, item);
-					}));
+					ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (new RefactoringOperationWrapper (refactoring, ctx, doc, item).Operation));
 				}
 			}
 			

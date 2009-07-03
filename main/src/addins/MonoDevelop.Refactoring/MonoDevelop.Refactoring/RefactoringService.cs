@@ -36,7 +36,7 @@ namespace MonoDevelop.Refactoring
 {
 	public static class RefactoringService
 	{
-		static List<Refactoring> refactorings = new List<Refactoring>();
+		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
 		static List<INRefactoryASTProvider> astProviders = new List<INRefactoryASTProvider>();
 		
 		static RefactoringService ()
@@ -44,10 +44,10 @@ namespace MonoDevelop.Refactoring
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					refactorings.Add ((Refactoring)args.ExtensionObject);
+					refactorings.Add ((RefactoringOperation)args.ExtensionObject);
 					break;
 				case ExtensionChange.Remove:
-					refactorings.Remove ((Refactoring)args.ExtensionObject);
+					refactorings.Remove ((RefactoringOperation)args.ExtensionObject);
 					break;
 				}
 			});
@@ -64,7 +64,7 @@ namespace MonoDevelop.Refactoring
 			});
 		}
 		
-		public static IEnumerable<Refactoring> Refactorings {
+		public static IEnumerable<RefactoringOperation> Refactorings {
 			get {
 				return refactorings;
 			}

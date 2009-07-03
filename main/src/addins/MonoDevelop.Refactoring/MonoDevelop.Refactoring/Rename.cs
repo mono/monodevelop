@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Refactoring
 {
-	public class Rename : Refactoring
+	public class Rename : RefactoringOperation
 	{
 		public Rename ()
 		{
@@ -66,6 +66,7 @@ namespace MonoDevelop.Refactoring
 		
 		public override void Run (ProjectDom dom, Document document, IDomVisitable item)
 		{
+			Console.WriteLine ("RENAME !!!!");
 			RenameItemDialog dialog = new RenameItemDialog (dom, item, this);
 			dialog.Show ();
 		}

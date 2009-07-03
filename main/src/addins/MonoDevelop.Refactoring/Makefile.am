@@ -33,7 +33,7 @@ FILES =  \
 	MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs \
 	MonoDevelop.Refactoring/Change.cs \
 	MonoDevelop.Refactoring/INRefactoryASTProvider.cs \
-	MonoDevelop.Refactoring/Refactoring.cs \
+	MonoDevelop.Refactoring/RefactoringOperation.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
 	MonoDevelop.Refactoring/RefactoringService.cs \
 	MonoDevelop.Refactoring/RefactoryCommands.cs \

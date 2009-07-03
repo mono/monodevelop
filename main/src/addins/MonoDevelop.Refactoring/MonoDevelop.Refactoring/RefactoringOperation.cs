@@ -1,5 +1,5 @@
 // 
-// Refactoring.cs
+// RefactoringOperation.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Refactoring
 {
-	public abstract class Refactoring
+	public abstract class RefactoringOperation
 	{
 		public string Name {
 			get;
