@@ -109,18 +109,15 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void EndReplace ()
 		{
 			if (this.document != null) {
-				Gtk.Application.Invoke (delegate {
-					document.TextEditor.EndAtomicUndo ();
-					document = null;
-					buffer = null;
-				});
+				Gtk.Application.Invoke (delegate { document.TextEditor.EndAtomicUndo (); });
 				return;
 			}
-			object attributes = DesktopService.GetFileAttributes (FileName);
-			File.WriteAllText (FileName, buffer.ToString ());
-			DesktopService.SetFileAttributes (FileName, attributes);
-			
-			buffer = null;
+			if (buffer != null) {
+				object attributes = DesktopService.GetFileAttributes (FileName);
+				File.WriteAllText (FileName, buffer.ToString ());
+				DesktopService.SetFileAttributes (FileName, attributes);
+				buffer = null;
+			}
 		}
 	}
 }

@@ -91,12 +91,16 @@ namespace MonoDevelop.Ide.FindInFiles
 					if (IsCanceled)
 						break;
 					SearchedFilesCount++;
+					if (!string.IsNullOrEmpty (replacePattern))
+						provider.BeginReplace ();
 					foreach (SearchResult result in FindAll (provider, pattern, replacePattern, filter)) {
 						if (IsCanceled)
 							break;
 						FoundMatchesCount++;
 						yield return result;
 					}
+					if (!string.IsNullOrEmpty (replacePattern))
+						provider.EndReplace ();
 				}
 			} finally {
 				IsRunning = false;
@@ -128,15 +132,16 @@ namespace MonoDevelop.Ide.FindInFiles
 					if (IsCanceled)
 						break;
 					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, match.Index, match.Length))
-						results.Add (new SearchResult (provider, match.Index, match.Length)); 
+						results.Add (new SearchResult (provider, match.Index, match.Length));
 				}
 			} else {
 				List<Match> matches = new List<Match> ();
 				foreach (Match match in regex.Matches (content))
 					matches.Add (match);
-				provider.BeginReplace ();
+				if (!string.IsNullOrEmpty (replacePattern))
+					provider.BeginReplace ();
 				int delta = 0;
-				for (int i = 0; !IsCanceled && i < matches.Count ; i++) {
+				for (int i = 0; !IsCanceled && i < matches.Count; i++) {
 					Match match = matches[i];
 					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, match.Index, match.Length)) {
 						string replacement = match.Result (replacePattern);
@@ -145,7 +150,8 @@ namespace MonoDevelop.Ide.FindInFiles
 						delta += replacement.Length - match.Length;
 					}
 				}
-				provider.EndReplace ();
+				if (!string.IsNullOrEmpty (replacePattern))
+					provider.EndReplace ();
 			}
 			return results;
 		}
@@ -203,21 +209,22 @@ namespace MonoDevelop.Ide.FindInFiles
 				pattern = pattern.ToUpper ();
 				content = content.ToUpper ();
 			}
-			
+
 			List<SearchResult> results = new List<SearchResult> ();
 			int plen = pattern.Length - 1;
 			int delta = 0;
 			int i = 0, end = content.Length - pattern.Length;
 			while (i <= end) {
 				int j = plen;
-				while (j >= 0 && pattern[j] == content[i + j]) 
+				while (j >= 0 && pattern[j] == content[i + j])
 					j--;
-				
+
 				if (j < 0) {
 					int idx = i;
 					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
 						if (replacePattern != null) {
 							results.Add (new SearchResult (provider, idx + delta, replacePattern.Length));
+							
 							provider.Replace (idx + delta, pattern.Length, replacePattern);
 							delta += replacePattern.Length - pattern.Length;
 						} else {
