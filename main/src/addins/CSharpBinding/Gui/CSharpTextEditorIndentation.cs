@@ -273,7 +273,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (ch == '"') {
 				int sgn = Math.Sign (end - start);
 				bool foundPlus = false;
-				for (int i = start + sgn; i != end; i += sgn) {
+				for (int i = start + sgn; i != end && i >= 0 && i < Editor.TextLength; i += sgn) {
 					ch = Editor.GetCharAt (i);
 					if (Char.IsWhiteSpace (ch))
 						continue;

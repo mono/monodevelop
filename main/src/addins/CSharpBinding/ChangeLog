@@ -1,3 +1,7 @@
+2009-07-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorIndentation.cs: Added range check.
+
 2009-07-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorIndentation.cs: Implemented special
