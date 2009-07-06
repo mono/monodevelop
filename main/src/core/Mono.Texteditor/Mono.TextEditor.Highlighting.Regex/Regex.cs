@@ -5,10 +5,15 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class Regex
 	{
+		public string Pattern {
+			get;
+			private set;
+		}
 		string[] patterns;
 		
 		public Regex (string pattern)
 		{
+			this.Pattern = pattern;
 			this.patterns = pattern.Split ('|');
 		}
 		
