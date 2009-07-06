@@ -55,6 +55,16 @@ Installing
 	(It's possible that you need to install for your locale to be
 	correctly set.)
 
+Packaging for OSX
+-----------------
+
+	To package MonoDevelop for OSX in a convenient MonoDevelop.app
+	file, just do this after MonoDevelop has finished building (with
+	make):
+
+		cd main/build/MacOSX
+		make MonoDevelop.app
+
 Dependencies
 ------------
 
