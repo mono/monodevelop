@@ -1169,12 +1169,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 			// "var o = new " needs special treatment.
 			if (returnType == null && returnTypeUnresolved != null && returnTypeUnresolved.FullName == "var")
 				returnType = returnTypeUnresolved = DomReturnType.Object;
-			
-		//	ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
-			
+
+			//	ExpressionContext.TypeExpressionContext tce = context as ExpressionContext.TypeExpressionContext;
+
 			CompletionDataCollector col = new CompletionDataCollector (Document.CompilationUnit, location);
 			IType type = null;
-			if (returnType != null) 
+			if (returnType != null)
 				type = dom.GetType (returnType);
 			if (type == null)
 				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnTypeUnresolved, null));
@@ -1192,12 +1192,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 				}
 			}
-//				if (tce != null && tce.Type != null) {
-//					result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
-//				} 
-//			else {
-//			}
-			
+			//				if (tce != null && tce.Type != null) {
+			//					result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
+			//				} 
+			//			else {
+			//			}
+
 			if (type == null)
 				return result;
 			HashSet<string> usedNamespaces = new HashSet<string> (GetUsedNamespaces ());
@@ -1207,12 +1207,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 					continue;
 				if ((curType.TypeModifier & TypeModifier.HasOnlyHiddenConstructors) == TypeModifier.HasOnlyHiddenConstructors)
 					continue;
-				if (curType.ConstructorCount > 0) {
-					if (!(curType.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, curType, callingType, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == curType.FullName)))))
-						continue;
-				}
-				
 				if (usedNamespaces.Contains (curType.Namespace)) {
+					if (curType.ConstructorCount > 0) {
+						if (!(curType.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, curType, callingType, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == curType.FullName)))))
+							continue;
+					}
 					col.AddCompletionData (result, curType);
 				} else {
 					string nsName = curType.Namespace;

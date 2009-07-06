@@ -1,5 +1,10 @@
 2009-07-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 518544 - "new"
+	  completion after "var" is almost unusably slow".
+
+2009-07-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NewOverrideCompletionData.cs:
 	* Gui/CSharpTextEditorCompletion.cs: Implemented "Bug 518542 -
 	  Partial method completion".
