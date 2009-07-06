@@ -250,11 +250,13 @@ namespace CSharpBinding.Parser
 				if (lastUsing != null)
 					pos = file.GetPositionFromLineColumn (lastUsing.Region.End.Line, lastUsing.Region.End.Column);
 			}
-			text.AppendLine ();
+			if (pos != 0)
+				text.AppendLine ();
 			text.Append ("using ");
 			text.Append (nsName);
 			text.Append (";");
-			text.AppendLine ();
+			if (pos == 0)
+				text.AppendLine ();
 			file.InsertText (pos, text.ToString ());
 			
 		}
