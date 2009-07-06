@@ -269,6 +269,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		// removes "\s*\+\s*" patterns (used for special behaviour inside strings)
 		void HandleStringConcatinationDeletion (int start, int end)
 		{
+			if (start < 0 || end >= Editor.TextLength)
+				return;
 			char ch = Editor.GetCharAt (start);
 			if (ch == '"') {
 				int sgn = Math.Sign (end - start);
