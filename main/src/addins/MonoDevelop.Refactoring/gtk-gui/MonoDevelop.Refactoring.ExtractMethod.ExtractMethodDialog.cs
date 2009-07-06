@@ -184,8 +184,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
             this.vbox2.Add(this.hbox2);
             Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
             w13.Position = 2;
-            w13.Expand = false;
-            w13.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.checkbuttonGenerateComment = new Gtk.CheckButton();
             this.checkbuttonGenerateComment.CanFocus = true;
@@ -227,8 +225,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
             w1.Add(this.vbox2);
             Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
             w18.Position = 0;
-            w18.Expand = false;
-            w18.Fill = false;
             // Internal child MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.ActionArea
             Gtk.HButtonBox w19 = this.ActionArea;
             w19.Name = "dialog1_ActionArea";
@@ -274,8 +270,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 400;
-            this.DefaultHeight = 300;
+            this.DefaultWidth = 461;
+            this.DefaultHeight = 368;
             this.labelNewName.MnemonicWidget = this.entry;
             this.label2.MnemonicWidget = this.treeviewParameters;
             this.Show();

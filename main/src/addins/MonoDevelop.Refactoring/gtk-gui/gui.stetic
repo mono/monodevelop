@@ -284,7 +284,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog" design-size="400 300">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog" design-size="461 368">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Extract Method</property>
     <property name="WindowPosition">Center</property>
@@ -480,9 +480,7 @@
               </widget>
               <packing>
                 <property name="Position">2</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
+                <property name="AutoSize">False</property>
               </packing>
             </child>
             <child>
@@ -539,9 +537,7 @@
           </widget>
           <packing>
             <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
+            <property name="AutoSize">False</property>
           </packing>
         </child>
       </widget>

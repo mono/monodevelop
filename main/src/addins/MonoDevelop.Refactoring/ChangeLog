@@ -1,3 +1,9 @@
+2009-07-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs:
+	  Fix expand/fill and sizing.
+
 2009-07-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.addin.xml: Bound go to definition to
