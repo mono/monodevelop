@@ -43,11 +43,17 @@ namespace MonoDevelop.CSharpBinding
 		string indent;
 		int    initialOffset;
 		int    declarationBegin;
+		int    targetCaretPositon = -1;
 		bool   insertPrivate;
 		bool   insertSealed;
 		IType  type;
 		ICompilationUnit unit;
-			
+		
+		public bool GenerateBody {
+			get;
+			set;
+		}
+		
 		public NewOverrideCompletionData (MonoDevelop.Ide.Gui.TextEditor editor, int declarationBegin, ICompilationUnit unit, IType type, IMember member) : base (null)
 		{
 			this.editor = editor;
@@ -56,6 +62,7 @@ namespace MonoDevelop.CSharpBinding
 			this.initialOffset = editor.CursorPosition;
 			this.declarationBegin = declarationBegin;
 			this.unit = unit;
+			this.GenerateBody = true;
 			string declarationText = editor.GetText (declarationBegin, initialOffset);
 			insertPrivate = declarationText.Contains ("private");
 			insertSealed  = declarationText.Contains ("sealed");
@@ -75,23 +82,22 @@ namespace MonoDevelop.CSharpBinding
 			} else {
 				sb.Append (mod);
 			}
-			
+
 			if (insertSealed)
 				sb.Append ("sealed ");
-				
+
 			if (member.DeclaringType.ClassType != ClassType.Interface && (member.IsVirtual || member.IsAbstract))
 				sb.Append ("override ");
-				
+
 			if (member is IMethod) {
 				InsertMethod (sb, member as IMethod);
 			} else if (member is IProperty) {
 				InsertProperty (sb, member as IProperty);
 			}
-			
+
 			editor.DeleteText (declarationBegin, editor.CursorPosition - declarationBegin);
 			editor.InsertText (declarationBegin, sb.ToString ());
-			editor.CursorPosition = declarationBegin + sb.Length;
-			
+			editor.CursorPosition = targetCaretPositon < 0 ? declarationBegin + sb.Length : targetCaretPositon;
 		}
 		
 		internal static string GetIndentString (MonoDevelop.Ide.Gui.TextEditor editor, int pos)
@@ -197,9 +203,16 @@ namespace MonoDevelop.CSharpBinding
 			sb.AppendLine ();
 			sb.Append (this.indent);
 			sb.AppendLine ("{");
-			GenerateMethodBody (sb, method);
+			if (GenerateBody) {
+				GenerateMethodBody (sb, method);
+			} else {
+				sb.Append (this.indent);
+				sb.Append (SingleIndent);
+				targetCaretPositon = declarationBegin + sb.Length;
+				sb.AppendLine ();
+			}
 			sb.Append (this.indent);
-			sb.Append ("}"); 
+			sb.Append ("}");
 			sb.AppendLine ();
 			editor.InsertText (editor.CursorPosition, sb.ToString ());
 		}
@@ -258,7 +271,8 @@ namespace MonoDevelop.CSharpBinding
 		{
 			sb.Append (ambience.GetString (property, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName));
 			sb.AppendLine (" {");
-			GeneratePropertyBody (sb, property);
+			if (GenerateBody)
+				GeneratePropertyBody (sb, property);
 			sb.Append (this.indent);
 			sb.Append ("}"); 
 			sb.AppendLine ();
