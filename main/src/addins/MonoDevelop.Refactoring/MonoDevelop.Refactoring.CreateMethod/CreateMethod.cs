@@ -52,28 +52,24 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			Name = "Create Method";
 		}
 		
-		public override bool IsValid (ProjectDom dom, MonoDevelop.Ide.Gui.Document document, ResolveResult resolveResult)
+		public override bool IsValid (RefactoringOptions options)
 		{
-			if (resolveResult == null || resolveResult.ResolvedExpression == null || !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName))
+			if (options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null || !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName))
 				return false;
-			invoke = GetInvocationExpression (document, resolveResult);
+			invoke = GetInvocationExpression (options.Document, options.ResolveResult);
+			
 			return invoke != null;
 		}
-		DomLocation loc ;
+		
 		InvocationExpression invoke;
-		ResolveResult resolveResult;
-		MonoDevelop.Ide.Gui.Document document;
 		
 		InvocationExpression GetInvocationExpression (MonoDevelop.Ide.Gui.Document document, ResolveResult resolveResult)
 		{
-			this.document = document;
-			this.resolveResult = resolveResult;
 			Mono.TextEditor.ITextEditorDataProvider view = document.ActiveView as Mono.TextEditor.ITextEditorDataProvider;
 			if (view == null)
 				return null;
 			
 			TextEditorData data = view.GetTextEditorData ();
-			loc = resolveResult.ResolvedExpression.Region.Start;
 			string expression = resolveResult.ResolvedExpression.Expression;
 			if (!expression.Contains ("(")) {
 				int startPos = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, resolveResult.ResolvedExpression.Region.Start.Column - 1);
@@ -92,23 +88,23 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			return provider != null ? provider.ParseText (expression) as InvocationExpression : null;
 		}
 		
-		public override string GetMenuDescription (ProjectDom dom, IDomVisitable item)
+		public override string GetMenuDescription (RefactoringOptions options)
 		{
 			return GettextCatalog.GetString ("_Create Method");
 		}
 		
-		public override void Run (ProjectDom dom, MonoDevelop.Ide.Gui.Document document, IDomVisitable item)
+		public override void Run (RefactoringOptions options)
 		{
-			List<Change> changes = PerformChanges (dom, null, null);
+			List<Change> changes = PerformChanges (options, null);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Create Method", null);
-			RefactoringService.AcceptChanges (monitor, dom, changes);
+			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
 		}
 		
-		public override List<Change> PerformChanges (ProjectDom dom, IDomVisitable item, object prop)
+		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
 			List<Change> result = new List<Change> ();
-			string mimeType = DesktopService.GetMimeTypeForUri (document.FileName);
-			MonoDevelop.Projects.Dom.Parser.IParser domParser = ProjectDomService.GetParser (document.FileName, mimeType);
+			string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
+			MonoDevelop.Projects.Dom.Parser.IParser domParser = ProjectDomService.GetParser (options.Document.FileName, mimeType);
 			if (domParser == null) {
 				Console.WriteLine ("parser == null");
 				return result;
@@ -123,19 +119,19 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			methodDecl.TypeReference = new TypeReference ("System.Void");
 			methodDecl.TypeReference.IsKeyword = true;
 
-			if (resolveResult.CallingMember.IsStatic)
+			if (options.ResolveResult.CallingMember.IsStatic)
 				methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
 			methodDecl.Body = new BlockStatement ();
 			methodDecl.Body.AddChild (new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null)));
-			insertNewMethod.FileName = document.FileName;
+			insertNewMethod.FileName = options.Document.FileName;
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0}"), methodDecl.Name);
-			insertNewMethod.Offset = document.TextEditor.GetPositionFromLineColumn (resolveResult.CallingMember.BodyRegion.End.Line, resolveResult.CallingMember.BodyRegion.End.Column);
+			insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (options.ResolveResult.CallingMember.BodyRegion.End.Line, options.ResolveResult.CallingMember.BodyRegion.End.Column);
 
-			IResolver resolver = domParser.CreateResolver (dom, document, document.FileName);
+			IResolver resolver = domParser.CreateResolver (options.Dom, options.Document, options.Document.FileName);
 			int i = 0;
 			foreach (Expression expression in invoke.Arguments) {
 				i++;
-				string output = provider.OutputNode (dom, expression);
+				string output = provider.OutputNode (options.Dom, expression);
 
 				string parameterName;
 				if (Char.IsLetter (output[0]) || output[0] == '_') {
@@ -144,14 +140,14 @@ namespace MonoDevelop.Refactoring.CreateMethod
 					parameterName = "par" + i;
 				}
 
-				ResolveResult resolveResult2 = resolver.Resolve (new ExpressionResult (output), loc);
+				ResolveResult resolveResult2 = resolver.Resolve (new ExpressionResult (output), options.ResolveResult.ResolvedExpression.Region.Start);
 				TypeReference typeReference = new TypeReference (resolveResult2.ResolvedType.ToInvariantString ());
 				typeReference.IsKeyword = true;
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, parameterName);
 				methodDecl.Parameters.Add (pde);
 			}
 
-			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (dom, methodDecl, GetIndent (document, resolveResult.CallingMember));
+			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, GetIndent (options.Document, options.ResolveResult.CallingMember));
 			result.Add (insertNewMethod);
 			return result;
 		}
@@ -161,7 +157,6 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			StringBuilder result = new StringBuilder ();
 			for (int i = insertionOffset; i < doc.TextEditor.TextLength; i++) {
 				char ch = doc.TextEditor.GetCharAt (i);
-				Console.WriteLine ("ch:" + ch + " " + ((int)ch));
 				if (ch == ' ' || ch == '\t') {
 					result.Append (ch);
 				} else {

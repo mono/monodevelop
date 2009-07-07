@@ -60,6 +60,7 @@
     <Compile Include="MonoDevelop.Refactoring.ExtractMethod\VariableLookupVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring\INRefactoryASTProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring.CreateMethod\CreateMethod.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

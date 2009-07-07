@@ -247,12 +247,17 @@ namespace MonoDevelop.Ide.Commands
 				if (namespaces.Count > 0)
 					ainfo.Add (resolveMenu, null);
 			}
-
+			RefactoringOptions options = new RefactoringOptions () {
+				Document = doc,
+				Dom = ctx,
+				ResolveResult = resolveResult,
+				SelectedItem = null
+			};
 			CommandInfoSet ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 			foreach (var refactoring in RefactoringService.Refactorings) {
-				if (refactoring.IsValid (ctx, doc, resolveResult)) {
-					ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (new RefactoringOperationWrapper (refactoring, ctx, doc, item).Operation));
+				if (refactoring.IsValid (options)) {
+					ciset.CommandInfos.Add (refactoring.GetMenuDescription (options), new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
 			if (ciset.CommandInfos.Count > 0) {
@@ -326,21 +331,17 @@ namespace MonoDevelop.Ide.Commands
 		class RefactoringOperationWrapper
 		{
 			RefactoringOperation refactoring;
-			ProjectDom dom;
-			Document doc;
-			IDomVisitable item;
+			RefactoringOptions options;
 			
-			public RefactoringOperationWrapper (RefactoringOperation refactoring, ProjectDom dom, Document doc, IDomVisitable item)
+			public RefactoringOperationWrapper (RefactoringOperation refactoring, RefactoringOptions options)
 			{
 				this.refactoring = refactoring;
-				this.dom = dom;
-				this.doc = doc;
-				this.item = item;
+				this.options = options;
 			}
 			
 			public void Operation ()
 			{
-				refactoring.Run (dom, doc, item);
+				refactoring.Run (options);
 			}
 		}
 		
@@ -487,10 +488,16 @@ namespace MonoDevelop.Ide.Commands
 				IType cls = ((IMember)item).DeclaringType;
 				canRename = cls != null && cls.SourceProject != null;
 			}
-
+			
+			RefactoringOptions options = new RefactoringOptions () {
+				Document = doc,
+				Dom = ctx,
+				ResolveResult = null,
+				SelectedItem = item
+			};
 			foreach (var refactoring in RefactoringService.Refactorings) {
-				if (refactoring.IsValid (ctx, item)) {
-					ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (new RefactoringOperationWrapper (refactoring, ctx, doc, item).Operation));
+				if (refactoring.IsValid (options)) {
+					ciset.CommandInfos.Add (refactoring.GetMenuDescription (options), new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
 			

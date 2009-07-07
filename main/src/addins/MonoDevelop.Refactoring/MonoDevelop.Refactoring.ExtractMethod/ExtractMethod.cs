@@ -51,14 +51,16 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			Name = "Extract Method";
 		}
 		
-		public override bool IsValid (ProjectDom dom, Document document, ResolveResult resolveResult)
+		public override bool IsValid (RefactoringOptions options)
 		{
-			var buffer = document.TextEditor;
+			if (options.SelectedItem != null)
+				return false;
+			var buffer = options.Document.TextEditor;
 			if (buffer.SelectionStartPosition - buffer.SelectionEndPosition != 0) {
-				string mimeType = DesktopService.GetMimeTypeForUri (document.FileName);
+				string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
 				if (RefactoringService.GetASTProvider (mimeType) == null)
 					return false;
-				ParsedDocument doc = ProjectDomService.Parse (dom.Project, document.FileName, DesktopService.GetMimeTypeForUri (document.FileName), buffer.Text);
+				ParsedDocument doc = ProjectDomService.Parse (options.Dom.Project, options.Document.FileName, DesktopService.GetMimeTypeForUri (options.Document.FileName), buffer.Text);
 				if (doc != null && doc.CompilationUnit != null) {
 					int line, column;
 					buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out column);
@@ -68,18 +70,18 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			return false;
 		}
 		
-		public override string GetMenuDescription (ProjectDom dom, IDomVisitable item)
+		public override string GetMenuDescription (RefactoringOptions options)
 		{
 			return GettextCatalog.GetString ("_Extract Method");
 		}
 		
-		public override void Run (ProjectDom dom, Document document, IDomVisitable item)
+		public override void Run (RefactoringOptions options)
 		{
-			var buffer = document.TextEditor;
+			var buffer = options.Document.TextEditor;
 			if (buffer.SelectionStartPosition - buffer.SelectionEndPosition == 0)
 				return;
 
-			ParsedDocument doc = ProjectDomService.Parse (dom.Project, document.FileName, DesktopService.GetMimeTypeForUri (document.FileName), buffer.Text);
+			ParsedDocument doc = ProjectDomService.Parse (options.Dom.Project, options.Document.FileName, DesktopService.GetMimeTypeForUri (options.Document.FileName), buffer.Text);
 			if (doc == null || doc.CompilationUnit == null)
 				return;
 
@@ -89,12 +91,12 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			if (member == null)
 				return;
 			ExtractMethodParameters param = new ExtractMethodParameters () {
-				Document = document,
+				Document = options.Document,
 				DeclaringMember = member,
 				Location = new DomLocation (line, column)
 			};
-			Analyze (dom, param, true);
-			ExtractMethodDialog dialog = new ExtractMethodDialog (dom, this, param);
+			Analyze (options.Dom, param, true);
+			ExtractMethodDialog dialog = new ExtractMethodDialog (options, this, param);
 			dialog.Show ();
 		}
 		
@@ -195,7 +197,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			return GetWhitespaces (doc, doc.TextEditor.GetPositionFromLineColumn (member.Location.Line, 1));
 		}
 		
-		public override List<Change> PerformChanges (ProjectDom dom, IDomVisitable item, object prop)
+		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
 			List<Change> result = new List<Change> ();
 			ExtractMethodParameters param = (ExtractMethodParameters)prop;
@@ -206,7 +208,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			replacement.Offset = param.Document.TextEditor.SelectionStartPosition;
 			replacement.RemovedChars = param.Document.TextEditor.SelectionEndPosition - param.Document.TextEditor.SelectionStartPosition;
 
-			INode node = Analyze (dom, param, false);
+			INode node = Analyze (options.Dom, param, false);
 
 			InvocationExpression invocation = new InvocationExpression (new IdentifierExpression (param.Name));
 			foreach (KeyValuePair<string, IReturnType> var in param.Parameters) {
@@ -214,7 +216,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			}
 			string mimeType = DesktopService.GetMimeTypeForUri (param.Document.FileName);
 			INRefactoryASTProvider provider = RefactoringService.GetASTProvider (mimeType);
-			replacement.InsertedText = GetWhitespaces (param.Document, param.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (dom, node is BlockStatement ? (INode)new ExpressionStatement (invocation) : invocation);
+			replacement.InsertedText = GetWhitespaces (param.Document, param.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (options.Dom, node is BlockStatement ? (INode)new ExpressionStatement (invocation) : invocation);
 			result.Add (replacement);
 
 			Change insertNewMethod = new Change ();
@@ -244,7 +246,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				methodDecl.Parameters.Add (pde);
 			}
 
-			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (dom, methodDecl, GetIndent (param.Document, param.DeclaringMember));
+			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, GetIndent (param.Document, param.DeclaringMember));
 			result.Add (insertNewMethod);
 			
 			return result;

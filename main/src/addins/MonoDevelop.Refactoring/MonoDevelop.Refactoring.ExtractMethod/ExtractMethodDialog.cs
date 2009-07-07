@@ -43,11 +43,12 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		ExtractMethod extractMethod;
 		ExtractMethod.ExtractMethodParameters properties;
 		ListStore store;
+		RefactoringOptions options;
 		
-		public ExtractMethodDialog (ProjectDom dom, ExtractMethod extractMethod, ExtractMethod.ExtractMethodParameters properties)
+		public ExtractMethodDialog (RefactoringOptions options, ExtractMethod extractMethod, ExtractMethod.ExtractMethodParameters properties)
 		{
 			this.Build ();
-			this.dom = dom;
+			this.options = options;
 			this.properties = properties;
 			this.extractMethod = extractMethod;
 			
@@ -158,7 +159,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		void OnOKClicked (object sender, EventArgs e)
 		{
 			SetProperties ();
-			List<Change> changes = extractMethod.PerformChanges (dom, null, properties);
+			List<Change> changes = extractMethod.PerformChanges (options, properties);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
 			RefactoringService.AcceptChanges (monitor, dom, changes);
 			((Widget)this).Destroy ();
@@ -167,7 +168,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		void OnPreviewClicked (object sender, EventArgs e)
 		{
 			SetProperties ();
-			List<Change> changes = extractMethod.PerformChanges (dom, null, properties);
+			List<Change> changes = extractMethod.PerformChanges (options, properties);
 			((Widget)this).Destroy ();
 			RefactoringPreviewDialog refactoringPreviewDialog = new RefactoringPreviewDialog (dom, changes);
 			refactoringPreviewDialog.Show ();

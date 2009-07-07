@@ -44,30 +44,29 @@ namespace MonoDevelop.Refactoring
 			Name = "Rename";
 		}
 		
-		public override bool IsValid (ProjectDom dom, IDomVisitable item)
+		public override bool IsValid (RefactoringOptions options)
 		{
-			if (item is LocalVariable || item is IParameter)
+			if (options.SelectedItem is LocalVariable || options.SelectedItem is IParameter)
 				return true;
 
-			if (item is IType)
-				return ((IType)item).SourceProject != null;
+			if (options.SelectedItem is IType)
+				return ((IType)options.SelectedItem).SourceProject != null;
 
-			if (item is IMember) {
-				IType cls = ((IMember)item).DeclaringType;
+			if (options.SelectedItem is IMember) {
+				IType cls = ((IMember)options.SelectedItem).DeclaringType;
 				return cls != null && cls.SourceProject != null;
 			}
 			return false;
 		}
 		
-		public override string GetMenuDescription (ProjectDom dom, IDomVisitable item)
+		public override string GetMenuDescription (RefactoringOptions options)
 		{
 			return GettextCatalog.GetString ("_Rename");
 		}
 		
-		public override void Run (ProjectDom dom, Document document, IDomVisitable item)
+		public override void Run (RefactoringOptions options)
 		{
-			Console.WriteLine ("RENAME !!!!");
-			RenameItemDialog dialog = new RenameItemDialog (dom, item, this);
+			RenameItemDialog dialog = new RenameItemDialog (options, this);
 			dialog.Show ();
 		}
 		
@@ -84,7 +83,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		public override List<Change> PerformChanges (ProjectDom dom, IDomVisitable item, object prop)
+		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
 			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null);
@@ -92,8 +91,8 @@ namespace MonoDevelop.Refactoring
 
 			RenameProperties properties = (RenameProperties)prop;
 			List<Change> result = new List<Change> ();
-			if (item is IType) {
-				IType cls = (IType)item;
+			if (options.SelectedItem is IType) {
+				IType cls = (IType)options.SelectedItem;
 
 				if (properties.RenameFile) {
 					if (cls.IsPublic) {
@@ -108,13 +107,13 @@ namespace MonoDevelop.Refactoring
 				}
 
 				col = refactorer.FindClassReferences (monitor, cls, RefactoryScope.Solution);
-			} else if (item is IMember) {
-				IMember member = (IMember)item;
+			} else if (options.SelectedItem is IMember) {
+				IMember member = (IMember)options.SelectedItem;
 				col = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution);
-			} else if (item is LocalVariable) {
-				col = refactorer.FindVariableReferences (monitor, (LocalVariable)item);
-			} else if (item is IParameter) {
-				col = refactorer.FindParameterReferences (monitor, (IParameter)item);
+			} else if (options.SelectedItem is LocalVariable) {
+				col = refactorer.FindVariableReferences (monitor, (LocalVariable)options.SelectedItem);
+			} else if (options.SelectedItem is IParameter) {
+				col = refactorer.FindParameterReferences (monitor, (IParameter)options.SelectedItem);
 			} else {
 				return null;
 			}

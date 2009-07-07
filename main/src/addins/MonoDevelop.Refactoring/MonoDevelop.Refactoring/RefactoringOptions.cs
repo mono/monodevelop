@@ -1,5 +1,5 @@
 // 
-// RefactoringOperation.cs
+// RefactoringOptions.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -33,31 +33,26 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Refactoring
 {
-	public abstract class RefactoringOperation
+	public class RefactoringOptions
 	{
-		public string Name {
+		public ProjectDom Dom {
 			get;
 			set;
 		}
 		
-		public bool IsBreakingAPI {
+		public Document Document {
 			get;
 			set;
 		}
 		
-		
-		public virtual string GetMenuDescription (RefactoringOptions options)
-		{
-			return Name;
+		public IDomVisitable SelectedItem {
+			get;
+			set;
 		}
 		
-		public virtual bool IsValid (RefactoringOptions options)
-		{
-			return false;
+		public ResolveResult ResolveResult {
+			get;
+			set;
 		}
-		
-		public abstract List<Change> PerformChanges (RefactoringOptions options, object properties);
-		
-		public abstract void Run (RefactoringOptions options);
 	}
 }

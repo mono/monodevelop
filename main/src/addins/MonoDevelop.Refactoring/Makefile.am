@@ -35,6 +35,7 @@ FILES =  \
 	MonoDevelop.Refactoring/Change.cs \
 	MonoDevelop.Refactoring/INRefactoryASTProvider.cs \
 	MonoDevelop.Refactoring/RefactoringOperation.cs \
+	MonoDevelop.Refactoring/RefactoringOptions.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
 	MonoDevelop.Refactoring/RefactoringService.cs \
 	MonoDevelop.Refactoring/RefactoryCommands.cs \

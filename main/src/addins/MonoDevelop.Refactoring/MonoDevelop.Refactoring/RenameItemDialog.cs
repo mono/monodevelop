@@ -40,20 +40,19 @@ namespace MonoDevelop.Refactoring
 	public partial class RenameItemDialog : Gtk.Dialog
 	{
 		ProjectDom ctx;
-		IDomVisitable item;
 		string fileName;
 		Rename rename;
+		RefactoringOptions options;
 		
-		public RenameItemDialog (ProjectDom ctx, IDomVisitable item, Rename rename)
+		public RenameItemDialog (RefactoringOptions options, Rename rename)
 		{
-			this.ctx  = ctx;
-			this.item = item;
+			this.options  = options;
 			this.rename = rename;
 
 			this.Build ();
 
-			if (item is IType) {
-				IType type = (IType)item;
+			if (options.SelectedItem is IType) {
+				IType type = (IType)options.SelectedItem;
 				if (type.IsPublic) {
 					this.renameFileFlag.Visible = true;
 					this.renameFileFlag.Active = true;
@@ -62,37 +61,37 @@ namespace MonoDevelop.Refactoring
 					this.Title = GettextCatalog.GetString ("Rename Interface"); else
 					this.Title = GettextCatalog.GetString ("Rename Class");
 				this.fileName = type.CompilationUnit.FileName;
-			} else if (item is IField) {
+			} else if (options.SelectedItem is IField) {
 				this.Title = GettextCatalog.GetString ("Rename Field");
-			} else if (item is IProperty) {
-				if (((IProperty)item).IsIndexer) {
+			} else if (options.SelectedItem is IProperty) {
+				if (((IProperty)options.SelectedItem).IsIndexer) {
 					this.Title = GettextCatalog.GetString ("Rename Indexer");
 				} else {
 					this.Title = GettextCatalog.GetString ("Rename Property");
 				}
-			} else if (item is IEvent) {
+			} else if (options.SelectedItem is IEvent) {
 				this.Title = GettextCatalog.GetString ("Rename Event");
-			} else if (item is IMethod) {
+			} else if (options.SelectedItem is IMethod) {
 				this.Title = GettextCatalog.GetString ("Rename Method");
-			} else if (item is IParameter) {
+			} else if (options.SelectedItem is IParameter) {
 				this.Title = GettextCatalog.GetString ("Rename Parameter");
-			} else if (item is LocalVariable) {
+			} else if (options.SelectedItem is LocalVariable) {
 				this.Title = GettextCatalog.GetString ("Rename Variable");
 			} else {
 				this.Title = GettextCatalog.GetString ("Rename Item");
 			}
 			
-			if (item is IMember) {
-				IMember member = (IMember)item;
+			if (options.SelectedItem is IMember) {
+				IMember member = (IMember)options.SelectedItem;
 				entry.Text = member.Name;
 				if (!(member is IType) && member.DeclaringType != null)
 					this.fileName = member.DeclaringType.CompilationUnit.FileName;
-			} else if (item is LocalVariable) {
-				LocalVariable lvar = (LocalVariable)item;
+			} else if (options.SelectedItem is LocalVariable) {
+				LocalVariable lvar = (LocalVariable)options.SelectedItem;
 				entry.Text = lvar.Name;
 				this.fileName = lvar.FileName;
 			} else {
-				IParameter par = (IParameter)item;
+				IParameter par = (IParameter)options.SelectedItem;
 				entry.Text = par.Name;
 				this.fileName = par.DeclaringMember.DeclaringType.CompilationUnit.FileName;
 			}
@@ -114,7 +113,7 @@ namespace MonoDevelop.Refactoring
 			INameValidator nameValidator = MonoDevelop.Projects.LanguageBindingService.GetRefactorerForFile (fileName ?? "default.cs");
 			if (nameValidator == null)
 				return true;
-			ValidationResult result = nameValidator.ValidateName (this.item, entry.Text);
+			ValidationResult result = nameValidator.ValidateName (this.options.SelectedItem, entry.Text);
 			if (!result.IsValid) {
 				imageWarning.IconName = Stock.DialogError;
 			} else if (result.HasWarning) {
@@ -154,7 +153,7 @@ namespace MonoDevelop.Refactoring
 		
 		void OnOKClicked (object sender, EventArgs e)
 		{
-			List<Change> changes = rename.PerformChanges (ctx, item, Properties);
+			List<Change> changes = rename.PerformChanges (options, Properties);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
 			RefactoringService.AcceptChanges (monitor, ctx, changes);
 			((Widget)this).Destroy ();
@@ -162,7 +161,7 @@ namespace MonoDevelop.Refactoring
 		
 		void OnPreviewClicked (object sender, EventArgs e)
 		{
-			List<Change> changes = rename.PerformChanges (ctx, item, Properties);
+			List<Change> changes = rename.PerformChanges (options, Properties);
 			((Widget)this).Destroy ();
 			RefactoringPreviewDialog refactoringPreviewDialog = new RefactoringPreviewDialog (ctx, changes);
 			refactoringPreviewDialog.Show ();
