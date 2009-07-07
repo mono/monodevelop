@@ -30,6 +30,7 @@ using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core.Gui;
 
 namespace UnitTests
 {
@@ -48,6 +49,7 @@ namespace UnitTests
 				Runtime.Initialize (true);
 				Gtk.Application.Init ();
 				ProjectDomService.TrackFileChanges = true;
+				DesktopService.Initialize ();
 			}
 		}
 		
