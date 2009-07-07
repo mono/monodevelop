@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 4342 $</version>
+//     <version>$Revision: 4349 $</version>
 // </file>
 
 using System;
@@ -2793,10 +2793,22 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitCollectionInitializerExpression(CollectionInitializerExpression arrayInitializerExpression, object data)
 		{
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.Space();
-			this.AppendCommaSeparatedList(arrayInitializerExpression.CreateExpressions);
-			outputFormatter.Space();
+			outputFormatter.PrintToken (Tokens.OpenCurlyBrace);
+			if (arrayInitializerExpression.CreateExpressions.Count == 1) {
+				outputFormatter.Space ();
+			} else {
+				outputFormatter.IndentationLevel++;
+				outputFormatter.NewLine ();
+				outputFormatter.Indent ();
+			}
+			this.AppendCommaSeparatedList (arrayInitializerExpression.CreateExpressions, true);
+			if (arrayInitializerExpression.CreateExpressions.Count == 1) {
+				outputFormatter.Space ();
+			} else {
+				outputFormatter.IndentationLevel--;
+				outputFormatter.NewLine();
+				outputFormatter.Indent();
+			}
 			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
 			return null;
 		}
@@ -2917,16 +2929,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public void AppendCommaSeparatedList<T>(ICollection<T> list) where T : class, INode
 		{
+			AppendCommaSeparatedList(list, false);
+		}
+		
+		public void AppendCommaSeparatedList<T>(ICollection<T> list, bool alwaysBreakLine) where T : class, INode
+		{
 			if (list != null) {
 				int i = 0;
 				foreach (T node in list) {
 					node.AcceptVisitor(this, null);
 					if (i + 1 < list.Count) {
 						PrintFormattedComma();
-					}
-					if ((i + 1) % 10 == 0) {
-						outputFormatter.NewLine();
-						outputFormatter.Indent();
+						if (alwaysBreakLine || (i + 1) % 10 == 0) {
+							outputFormatter.NewLine();
+							outputFormatter.Indent();
+						}
 					}
 					i++;
 				}

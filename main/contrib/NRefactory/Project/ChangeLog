@@ -1,3 +1,8 @@
+2009-07-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Improved
+	  collection initializer output.
+
 2009-06-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
