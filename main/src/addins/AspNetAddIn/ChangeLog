@@ -1,5 +1,10 @@
 2009-07-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Properly map the
+	  configuration name to a configuration.
+
+2009-07-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Templates/WebForm-Empty.xft.xml:
 	* Templates/WebApplication.xpt.xml:
 	* Templates/MasterPage-Empty.xft.xml:

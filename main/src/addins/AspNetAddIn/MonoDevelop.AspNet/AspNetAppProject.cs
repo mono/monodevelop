@@ -230,7 +230,7 @@ namespace MonoDevelop.AspNet
 		
 		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string config)
 		{
-			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetConfiguration (config);
+			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetActiveConfiguration (config);
 			ExecutionCommand cmd = CreateExecutionCommand (configuration);
 			return context.ExecutionHandler.CanExecute (cmd);
 		}
@@ -239,7 +239,7 @@ namespace MonoDevelop.AspNet
 		{
 			//check XSP is available
 			
-			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetConfiguration (config);
+			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetActiveConfiguration (config);
 			ExecutionCommand cmd = CreateExecutionCommand (configuration);
 			
 			ClrVersion clrVersion = configuration.ClrVersion;
