@@ -1,5 +1,12 @@
 2009-07-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* build/MacOSX/mdtool:
+	* build/MacOSX/monodevelop: Add MD's own pkg-config to
+	  PKG_CONFIG_PATHS. Add Moonlight SDK path -- assume it will
+	  be copied into the .app manually.
+
+2009-07-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* build/MacOSX/Makefile.am: Restore Moonlight addin to the
 	  .app, and purge some junk.
 

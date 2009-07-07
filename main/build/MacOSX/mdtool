@@ -9,6 +9,9 @@ export DYLD_FALLBACK_LIBRARY_PATH=$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib
 # $0 should contain the full path from the root i.e. /Applications/<folder>.app/Contents/MacOS/<script>
 EXE_PATH="${0%%/mdtool}/lib/monodevelop/bin/mdrun.exe"
 
+PKG_CONFIG_PATH="${0%%/mdtool}/lib/pkgconfig:$PKG_CONFIG_PATH"
+export PKG_CONFIG_PATH
+
 # Work around a bug in 'exec' in older versions of macosx
 OSX_VERSION=$(uname -r | cut -f1 -d.)
 if [ $OSX_VERSION -lt 9 ]; then  # If OSX version is 10.4
@@ -19,6 +22,10 @@ fi
 
 ### END MAC-SPECIFIC SETUP
 ### Beyond this, all is from the Linux mdtool.in. Only the values of EXE_PATH and MONO_EXEC differ
+
+## Moonlight SDK
+MOONLIGHT_2_SDK_PATH="${0%%mdtool}/lib/MoonSDK"
+export MOONLIGHT_2_SDK_PATH
 
 # NOTE: remove this for stable releases
 if [ -z "$MD_NO_DEBUG" ]; then
