@@ -28,6 +28,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.RenameItemDialog.cs \
+	MonoDevelop.Refactoring.CreateMethod/CreateMethod.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethod.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs \
 	MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs \

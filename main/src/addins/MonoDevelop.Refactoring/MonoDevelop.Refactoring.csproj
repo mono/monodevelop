@@ -59,10 +59,12 @@
     <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring.ExtractMethod\VariableLookupVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring\INRefactoryASTProvider.cs" />
+    <Compile Include="MonoDevelop.Refactoring.CreateMethod\CreateMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
     <Folder Include="MonoDevelop.Refactoring.ExtractMethod\" />
+    <Folder Include="MonoDevelop.Refactoring.CreateMethod\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />

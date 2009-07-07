@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Commands
 			ResolveResult resolveResult = CurrentRefactoryOperationsHandler.GetResolveResult (doc, editor);
 			if (resolveResult is AggregatedResolveResult)
 				resolveResult = ((AggregatedResolveResult)resolveResult).PrimaryResult;
-
+			
 			IDomVisitable item = null;
 			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			if (resolveResult is ParameterResolveResult) {
@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.Commands
 			ResolveResult resolveResult = GetResolveResult (doc, editor);
 			if (resolveResult is AggregatedResolveResult)
 				resolveResult = ((AggregatedResolveResult)resolveResult).PrimaryResult;
-
+			
 			IDomVisitable item = null;
 			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			if (resolveResult is ParameterResolveResult) {
@@ -248,18 +248,16 @@ namespace MonoDevelop.Ide.Commands
 					ainfo.Add (resolveMenu, null);
 			}
 
-			if (editor.SelectionStartPosition - editor.SelectionEndPosition != 0) {
-				CommandInfoSet ciset = new CommandInfoSet ();
-				ciset.Text = GettextCatalog.GetString ("Refactor");
-				foreach (var refactoring in RefactoringService.Refactorings) {
-					if (refactoring.IsValid (ctx, doc, resolveResult)) {
-						ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (new RefactoringOperationWrapper (refactoring, ctx, doc, item).Operation));
-					}
+			CommandInfoSet ciset = new CommandInfoSet ();
+			ciset.Text = GettextCatalog.GetString ("Refactor");
+			foreach (var refactoring in RefactoringService.Refactorings) {
+				if (refactoring.IsValid (ctx, doc, resolveResult)) {
+					ciset.CommandInfos.Add (refactoring.GetMenuDescription (ctx, item), new RefactoryOperation (new RefactoringOperationWrapper (refactoring, ctx, doc, item).Operation));
 				}
-				if (ciset.CommandInfos.Count > 0) {
-					ainfo.Add (ciset, null);
-					added = true;
-				}
+			}
+			if (ciset.CommandInfos.Count > 0) {
+				ainfo.Add (ciset, null);
+				added = true;
 				item = null;
 			}
 			
