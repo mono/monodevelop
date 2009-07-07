@@ -32,6 +32,7 @@ FILES =  \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethod.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs \
 	MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs \
+	MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariable.cs \
 	MonoDevelop.Refactoring/Change.cs \
 	MonoDevelop.Refactoring/INRefactoryASTProvider.cs \
 	MonoDevelop.Refactoring/RefactoringOperation.cs \

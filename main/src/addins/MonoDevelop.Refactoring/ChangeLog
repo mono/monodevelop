@@ -1,5 +1,24 @@
 2009-07-07  Mike Krüger  <mkrueger@novell.com>
 
+	* ChangeLog:
+	* Makefile.am:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring.IntegrateTemporaryVariable:
+	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariable.cs:
+
+
+2009-07-07  Andrea Krüger  <andrea@icsharpcod.net>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring.IntegrateTemporaryVariable:
+	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariable.cs:
+	  Applied patch from Andrea Krüger: Started
+	  IntegrateTemporaryVarible refactoring.
+
+2009-07-07  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring/Rename.cs:
