@@ -441,7 +441,7 @@ namespace MonoDevelop.CSharpBinding
 			return expr.AcceptVisitor (this, data);
 		}
 		
-		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+		public override object VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			if (memberReferenceExpression == null) {
 				return null;
@@ -453,16 +453,16 @@ namespace MonoDevelop.CSharpBinding
 					result.StaticResolve = true;
 					return result;
 				}
-//				if (memberReferenceExpression.TargetObject is ThisReferenceExpression) {
-//					result = CreateResult (((TypeReferenceExpression)memberReferenceExpression.TargetObject).TypeReference);
-//					result.StaticResolve = true;
-//					return result;
-//				}
+				//				if (memberReferenceExpression.TargetObject is ThisReferenceExpression) {
+				//					result = CreateResult (((TypeReferenceExpression)memberReferenceExpression.TargetObject).TypeReference);
+				//					result.StaticResolve = true;
+				//					return result;
+				//				}
 
-//				return memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
+				//				return memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
 			}
-			result = memberReferenceExpression.TargetObject.AcceptVisitor(this, data) as ResolveResult;
-			
+			result = memberReferenceExpression.TargetObject.AcceptVisitor (this, data) as ResolveResult;
+
 			NamespaceResolveResult namespaceResult = result as NamespaceResolveResult;
 			if (namespaceResult != null) {
 				if (String.IsNullOrEmpty (memberReferenceExpression.MemberName))
@@ -484,11 +484,11 @@ namespace MonoDevelop.CSharpBinding
 				}
 				return null;
 			}
-			
+
 			if (result != null && result.ResolvedType != null) {
 				IType type = resolver.Dom.GetType (result.ResolvedType);
 				if (type != null) {
-					List<IMember> member = new List <IMember> ();
+					List<IMember> member = new List<IMember> ();
 					List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
 					// Inheritance of extension methods is handled in DomType
 					foreach (IMethod method in type.GetExtensionMethods (accessibleExtTypes)) {
@@ -498,10 +498,11 @@ namespace MonoDevelop.CSharpBinding
 					}
 					bool includeProtected = true;
 					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
-						if (curType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface)
+						if (curType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface && type.ClassType != MonoDevelop.Projects.Dom.ClassType.Interface)
 							continue;
-						if (curType.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
+						if (curType.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected)) {
 							member.AddRange (curType.SearchMember (memberReferenceExpression.MemberName, true));
+						}
 					}
 					if (member.Count > 0) {
 						if (member[0] is IMethod) {
