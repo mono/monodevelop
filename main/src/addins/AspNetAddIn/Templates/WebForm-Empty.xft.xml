@@ -20,7 +20,7 @@
 				<![CDATA[<%@ Page Language="${AspNetLanguage}" %>
 ${Doctype}
 <html>
-<head>
+<head runat="server">
 	<title>${Name}</title>
 	<script runat="server">
 	

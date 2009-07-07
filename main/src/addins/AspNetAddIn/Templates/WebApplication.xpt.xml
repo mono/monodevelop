@@ -40,7 +40,7 @@
 						<![CDATA[<%@ Page Language="${AspNetLanguage}" Inherits="${Namespace}.${Name}" %>
 ${Doctype}
 <html>
-<head>
+<head runat="server">
 	<title>${Name}</title>
 </head>
 <body>

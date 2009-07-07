@@ -24,7 +24,7 @@
 				<![CDATA[<%@ Master Language="${AspNetLanguage}"%>
 ${Doctype}
 <html>
-<head>
+<head runat="server">
 	<title>${Name}</title>
 </head>
 <body>
