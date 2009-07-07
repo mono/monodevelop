@@ -51,13 +51,14 @@ MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* 
 	rm -rf  $(ADDINS)/GnomePlatform* \
 	  $(ADDINS)/WindowsPlatform* \
 	  $(ADDINS)/MonoDevelop.GtkCore* \
-	  $(ADDINS)/MonoDevelop.Moonlight* \
 	  $(ADDINS)/VersionControl/MonoDevelop.VersionControl.Subversion* \
 	  $(ADDINS)/MonoDevelop.Gettext/*
 
 # remove stuff we don't need
 	rm -rf $(MACOS)/lib/monodevelop/bin/UnitTests.dll* \
-	  $(MACOS)/lib/monodevelop/bin/TestResult.xml
+	  $(MACOS)/lib/monodevelop/bin/TestResult.xml \
+	  $(MACOS)/lib/monodevelop/bin/addin-db* \
+	  $(MACOS)/lib/monodevelop/bin/repository-cache*
 	
 # touch the directory so that update dependencies work
 	touch MonoDevelop.app	  

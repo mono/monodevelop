@@ -1,5 +1,10 @@
 2009-07-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* build/MacOSX/Makefile.am: Restore Moonlight addin to the
+	  .app, and purge some junk.
+
+2009-07-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* configure.in: Remove unused dep.
 
 2009-07-01  Mike Krüger  <mkrueger@novell.com>
