@@ -93,6 +93,8 @@ namespace CBinding
 			int parameterIndex = 1;
 			
 			while (i++ < cursor) {
+				if (i >= editor.TextLength)
+					break;
 				char ch = editor.GetCharAt (i);
 				if (ch == ',')
 					parameterIndex++;
