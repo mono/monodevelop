@@ -1250,6 +1250,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		static bool ContainsDeclaration (IType type, IMethod method)
 		{
+			return GetDeclaration (type, method) != null;
+		}
+		
+		static IMethod GetDeclaration (IType type, IMethod method)
+		{
 			foreach (IMethod cur in type.Methods) {
 				if (cur.Name == method.Name && cur.Parameters.Count == method.Parameters.Count) {
 					bool equal = true;
@@ -1260,28 +1265,51 @@ namespace MonoDevelop.CSharpBinding.Gui
 						}
 					}
 					if (equal)
-						return true;
+						return cur;
 				}
 			}
-			return false;
+			return null;
 		}
+		
 		CompletionDataList GetPartialCompletionData (ICodeCompletionContext ctx, IType type, string modifiers)
 		{
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 
 			CompoundType partialType = dom.GetType (type.FullName) as CompoundType;
 			if (partialType != null) {
+				List<IMethod> methods = new List<IMethod> ();
+				// gather all partial methods without implementation
 				foreach (IType part in partialType.Parts) {
 					if (part.Location == type.Location && part.CompilationUnit.FileName == type.CompilationUnit.FileName)
 						continue;
 					foreach (IMethod method in part.Methods) {
 						if (method.IsPartial && method.BodyRegion.End.Line == 0 && !ContainsDeclaration (type, method)) {
-							NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, ctx.TriggerOffset, type.CompilationUnit, type, method);
-							data.GenerateBody = false;
-							result.Add (data);
+							methods.Add (method);
 						}
 					}
 				}
+
+				// now filter all methods that are implemented in the compound class
+				foreach (IType part in partialType.Parts) {
+					if (part.Location == type.Location && part.CompilationUnit.FileName == type.CompilationUnit.FileName)
+						continue;
+					for (int i = 0; i < methods.Count; i++) {
+						IMethod curMethod = methods[i];
+						IMethod method = GetDeclaration (part, curMethod);
+						if (method != null && method.BodyRegion.End.Line != 0) {
+							methods.RemoveAt (i);
+							i--;
+							continue;
+						}
+					}
+				}
+
+				foreach (IMethod method in methods) {
+					NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, ctx.TriggerOffset, type.CompilationUnit, type, method);
+					data.GenerateBody = false;
+					result.Add (data);
+				}
+				
 			}
 			return result;
 		}
