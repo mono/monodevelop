@@ -45,27 +45,29 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Refactoring.RenameItemDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoryCommands.cs" />
-    <Compile Include="MonoDevelop.Refactoring\Rename.cs" />
-    <Compile Include="MonoDevelop.Refactoring\RenameItemDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringOperation.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethod.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring.ExtractMethod\VariableLookupVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring\INRefactoryASTProvider.cs" />
-    <Compile Include="MonoDevelop.Refactoring.CreateMethod\CreateMethod.cs" />
+    <Compile Include="MonoDevelop.Refactoring.CreateMethod\CreateMethodCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
+    <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Rename\RenameItemDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
     <Folder Include="MonoDevelop.Refactoring.ExtractMethod\" />
     <Folder Include="MonoDevelop.Refactoring.CreateMethod\" />
+    <Folder Include="MonoDevelop.Refactoring.Rename\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />

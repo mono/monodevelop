@@ -27,21 +27,21 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
-	gtk-gui/MonoDevelop.Refactoring.RenameItemDialog.cs \
-	MonoDevelop.Refactoring.CreateMethod/CreateMethod.cs \
-	MonoDevelop.Refactoring.ExtractMethod/ExtractMethod.cs \
+	gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs \
+	MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs \
+	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs \
 	MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs \
-	MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariable.cs \
+	MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs \
+	MonoDevelop.Refactoring.Rename/RenameItemDialog.cs \
+	MonoDevelop.Refactoring.Rename/RenameRefactoring.cs \
 	MonoDevelop.Refactoring/Change.cs \
 	MonoDevelop.Refactoring/INRefactoryASTProvider.cs \
 	MonoDevelop.Refactoring/RefactoringOperation.cs \
 	MonoDevelop.Refactoring/RefactoringOptions.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
 	MonoDevelop.Refactoring/RefactoringService.cs \
-	MonoDevelop.Refactoring/RefactoryCommands.cs \
-	MonoDevelop.Refactoring/Rename.cs \
-	MonoDevelop.Refactoring/RenameItemDialog.cs 
+	MonoDevelop.Refactoring/RefactoryCommands.cs 
 
 RES =  \
 	gtk-gui/gui.stetic \

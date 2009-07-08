@@ -38,10 +38,10 @@
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings" name = "Refactorings">
-		<Class id="Rename" class = "MonoDevelop.Refactoring.Rename" />
-		<Class id="ExtractMethod" class = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethod" />
-		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariable" />
-		<Class id="CreateMethod" class = "MonoDevelop.Refactoring.CreateMethod.CreateMethod" />
+		<Class id="Rename" class = "MonoDevelop.Refactoring.Rename.RenameRefactoring" />
+		<Class id="ExtractMethod" class = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
+		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
+		<Class id="CreateMethod" class = "MonoDevelop.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->

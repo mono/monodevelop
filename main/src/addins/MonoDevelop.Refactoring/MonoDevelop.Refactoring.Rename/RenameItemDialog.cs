@@ -35,16 +35,15 @@ using MonoDevelop.Projects.CodeGeneration;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.Refactoring.Rename
 {
 	public partial class RenameItemDialog : Gtk.Dialog
 	{
-		ProjectDom ctx;
 		string fileName;
-		Rename rename;
+		RenameRefactoring rename;
 		RefactoringOptions options;
 		
-		public RenameItemDialog (RefactoringOptions options, Rename rename)
+		public RenameItemDialog (RefactoringOptions options, RenameRefactoring rename)
 		{
 			this.options  = options;
 			this.rename = rename;
@@ -142,9 +141,9 @@ namespace MonoDevelop.Refactoring
 			this.Destroy ();
 		}
 		
-		Rename.RenameProperties Properties {
+		RenameRefactoring.RenameProperties Properties {
 			get {
-				return new Rename.RenameProperties () {
+				return new RenameRefactoring.RenameProperties () {
 					NewName = entry.Text,
 					RenameFile = renameFileFlag.Active
 				};
@@ -155,7 +154,7 @@ namespace MonoDevelop.Refactoring
 		{
 			List<Change> changes = rename.PerformChanges (options, Properties);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-			RefactoringService.AcceptChanges (monitor, ctx, changes);
+			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
 			((Widget)this).Destroy ();
 		}
 		
@@ -163,7 +162,7 @@ namespace MonoDevelop.Refactoring
 		{
 			List<Change> changes = rename.PerformChanges (options, Properties);
 			((Widget)this).Destroy ();
-			RefactoringPreviewDialog refactoringPreviewDialog = new RefactoringPreviewDialog (ctx, changes);
+			RefactoringPreviewDialog refactoringPreviewDialog = new RefactoringPreviewDialog (options.Dom, changes);
 			refactoringPreviewDialog.Show ();
 		}
 	}

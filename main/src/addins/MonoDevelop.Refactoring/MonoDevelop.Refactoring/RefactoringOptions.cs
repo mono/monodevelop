@@ -30,6 +30,8 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
+using System.Text;
 
 namespace MonoDevelop.Refactoring
 {
@@ -54,5 +56,54 @@ namespace MonoDevelop.Refactoring
 			get;
 			set;
 		}
+		
+		public Mono.TextEditor.TextEditorData GetTextEditorData ()
+		{
+			Mono.TextEditor.ITextEditorDataProvider view = Document.ActiveView as Mono.TextEditor.ITextEditorDataProvider;
+			if (view == null)
+				return null;
+
+			return view.GetTextEditorData ();
+		}
+		
+		public INRefactoryASTProvider GetASTProvider ()
+		{
+			string mimeType = DesktopService.GetMimeTypeForUri (Document.FileName);
+			return RefactoringService.GetASTProvider (mimeType);
+		}
+		
+		public IResolver GetResolver ()
+		{
+			string mimeType = DesktopService.GetMimeTypeForUri (Document.FileName);
+			MonoDevelop.Projects.Dom.Parser.IParser domParser = ProjectDomService.GetParser (Document.FileName, mimeType);
+			if (domParser == null)
+				return null;
+			return domParser.CreateResolver (Dom, Document, Document.FileName);
+		}
+		
+		public string GetWhitespaces (int insertionOffset)
+		{
+			StringBuilder result = new StringBuilder ();
+			for (int i = insertionOffset; i < Document.TextEditor.TextLength; i++) {
+				char ch = Document.TextEditor.GetCharAt (i);
+				if (ch == ' ' || ch == '\t') {
+					result.Append (ch);
+				} else {
+					break;
+				}
+			}
+			return result.ToString ();
+		}
+		
+		public string GetIndent (IMember member)
+		{
+			return GetWhitespaces (Document.TextEditor.GetPositionFromLineColumn (member.Location.Line, 1));
+		}
+		
+		public ParsedDocument ParseDocument ()
+		{
+			return ProjectDomService.Parse (Dom.Project, Document.FileName, DesktopService.GetMimeTypeForUri (Document.FileName), Document.TextEditor.Text);
+		}
+		
 	}
 }

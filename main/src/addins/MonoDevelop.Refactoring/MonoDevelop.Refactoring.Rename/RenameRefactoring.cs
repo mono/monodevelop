@@ -34,12 +34,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
-
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.Refactoring.Rename
 {
-	public class Rename : RefactoringOperation
+	public class RenameRefactoring : RefactoringOperation
 	{
-		public Rename ()
+		public RenameRefactoring ()
 		{
 			Name = "Rename";
 		}

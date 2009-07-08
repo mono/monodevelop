@@ -31,9 +31,6 @@ using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 
-
-
-
 namespace MonoDevelop.Refactoring.ExtractMethod
 {
 	public class VariableLookupVisitor : AbstractAstVisitor
@@ -74,8 +71,9 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				ExpressionResult expressionResult = new ExpressionResult (identifierExpression.Identifier);
 
 				ResolveResult result = resolver.Resolve (expressionResult, position);
+				
 				// result.ResolvedType == null may be true for namespace names or undeclared variables
-				if (result != null && result.ResolvedType != null)
+				if (result != null && result.ResolvedType != null && !(result is MethodResolveResult) && !(result is NamespaceResolveResult))
 					unknownVariables.Add (new KeyValuePair <string, IReturnType> (identifierExpression.Identifier, result.ResolvedType));
 			}
 			return base.VisitIdentifierExpression (identifierExpression, data);

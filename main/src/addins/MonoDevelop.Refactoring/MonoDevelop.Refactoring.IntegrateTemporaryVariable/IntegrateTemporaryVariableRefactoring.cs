@@ -33,20 +33,16 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Core.Gui;
 
-
 namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 {
-
-
-	public class IntegrateTemporaryVariable : RefactoringOperation
+	public class IntegrateTemporaryVariableRefactoring : RefactoringOperation
 	{
-		
-		public IntegrateTemporaryVariable ()
+		public IntegrateTemporaryVariableRefactoring ()
 		{
 			Name = "Integrate Temporary Variable";
 		}
 		
-		LocalVariableDeclaration GetVariableDeclaration (ProjectDom dom, Document document, IMember member)
+		LocalVariableDeclaration GetVariableDeclaration (RefactoringOptions options)
 		{
 			//			ParsedDocument doc = ProjectDomService.Parse (dom.Project, document.FileName, DesktopService.GetMimeTypeForUri (document.FileName), document.TextEditor.Text);
 			//			if (doc == null || doc.CompilationUnit == null)
@@ -54,24 +50,29 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			//			int line, column;
 			//			document.TextEditor.GetLineColumnFromPosition (document.TextEditor.CursorPosition, out line, out column);
 			//			IMember member = doc.CompilationUnit.GetMemberAt (line, column);
+			if (options.ResolveResult == null)
+				return null;
+			IMember member = options.ResolveResult.CallingMember;
 			if (member == null)
 				return null;
 			//			Console.WriteLine ("!!! Member gefunden: " + member.Name);
-			int start = document.TextEditor.GetPositionFromLineColumn (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
-			int end = document.TextEditor.GetPositionFromLineColumn (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
-			string memberBody = document.TextEditor.GetText (start, end);
-			INRefactoryASTProvider provider = RefactoringService.GetASTProvider (DesktopService.GetMimeTypeForUri (document.FileName));
+			int start = options.Document.TextEditor.GetPositionFromLineColumn (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
+			int end = options.Document.TextEditor.GetPositionFromLineColumn (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
+			string memberBody = options.Document.TextEditor.GetText (start, end);
+			INRefactoryASTProvider provider = options.GetASTProvider ();
+			if (provider == null)
+				return null;
 			INode result = provider.ParseText (memberBody);
 			if (result == null)
 				return null;
-			Location cursorLocation = new Location (document.TextEditor.CursorColumn, document.TextEditor.CursorLine - member.BodyRegion.Start.Line);
+			Location cursorLocation = new Location (options.Document.TextEditor.CursorColumn, options.Document.TextEditor.CursorLine - member.BodyRegion.Start.Line);
 			// relativ to the memberBody
 			Location selectionStartLocation;
 			int l, c;
-			if (document.TextEditor.SelectionStartPosition.Equals (document.TextEditor.CursorPosition)) {
-				document.TextEditor.GetLineColumnFromPosition (document.TextEditor.SelectionEndPosition, out l, out c);
+			if (options.Document.TextEditor.SelectionStartPosition.Equals (options.Document.TextEditor.CursorPosition)) {
+				options.Document.TextEditor.GetLineColumnFromPosition (options.Document.TextEditor.SelectionEndPosition, out l, out c);
 			} else {
-				document.TextEditor.GetLineColumnFromPosition (document.TextEditor.SelectionStartPosition, out l, out c);
+				options.Document.TextEditor.GetLineColumnFromPosition (options.Document.TextEditor.SelectionStartPosition, out l, out c);
 			}
 			selectionStartLocation = new Location (c, l - member.BodyRegion.Start.Line); // relativ to the memberBody
 			INode statementAtCursor = null;
@@ -98,12 +99,11 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			return GetVariableDeclaration (options.Dom, options.Document, options.ResolveResult.CallingMember) != null;
+			return GetVariableDeclaration (options) != null;
 		}
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
-			
 			return null;
 		}
 		

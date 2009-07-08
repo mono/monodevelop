@@ -39,13 +39,12 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 {
 	public partial class ExtractMethodDialog : Gtk.Dialog
 	{
-		ProjectDom dom;
-		ExtractMethod extractMethod;
-		ExtractMethod.ExtractMethodParameters properties;
+		ExtractMethodRefactoring extractMethod;
+		ExtractMethodRefactoring.ExtractMethodParameters properties;
 		ListStore store;
 		RefactoringOptions options;
 		
-		public ExtractMethodDialog (RefactoringOptions options, ExtractMethod extractMethod, ExtractMethod.ExtractMethodParameters properties)
+		public ExtractMethodDialog (RefactoringOptions options, ExtractMethodRefactoring extractMethod, ExtractMethodRefactoring.ExtractMethodParameters properties)
 		{
 			this.Build ();
 			this.options = options;
@@ -161,7 +160,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			SetProperties ();
 			List<Change> changes = extractMethod.PerformChanges (options, properties);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-			RefactoringService.AcceptChanges (monitor, dom, changes);
+			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
 			((Widget)this).Destroy ();
 		}
 		
@@ -170,7 +169,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			SetProperties ();
 			List<Change> changes = extractMethod.PerformChanges (options, properties);
 			((Widget)this).Destroy ();
-			RefactoringPreviewDialog refactoringPreviewDialog = new RefactoringPreviewDialog (dom, changes);
+			RefactoringPreviewDialog refactoringPreviewDialog = new RefactoringPreviewDialog (options.Dom, changes);
 			refactoringPreviewDialog.Show ();
 		}
 	}

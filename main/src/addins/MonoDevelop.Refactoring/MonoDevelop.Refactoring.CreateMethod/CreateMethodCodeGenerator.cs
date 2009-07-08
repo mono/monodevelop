@@ -45,9 +45,9 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring.CreateMethod
 {
-	public class CreateMethod : RefactoringOperation
+	public class CreateMethodCodeGenerator : RefactoringOperation
 	{
-		public CreateMethod ()
+		public CreateMethodCodeGenerator ()
 		{
 			Name = "Create Method";
 		}
@@ -56,24 +56,21 @@ namespace MonoDevelop.Refactoring.CreateMethod
 		{
 			if (options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null || !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName))
 				return false;
-			invoke = GetInvocationExpression (options.Document, options.ResolveResult);
+			invoke = GetInvocationExpression (options);
 			
 			return invoke != null;
 		}
 		
 		InvocationExpression invoke;
 		
-		InvocationExpression GetInvocationExpression (MonoDevelop.Ide.Gui.Document document, ResolveResult resolveResult)
+		InvocationExpression GetInvocationExpression (RefactoringOptions options)
 		{
-			Mono.TextEditor.ITextEditorDataProvider view = document.ActiveView as Mono.TextEditor.ITextEditorDataProvider;
-			if (view == null)
+			TextEditorData data = options.GetTextEditorData ();
+			if (data == null)
 				return null;
-			
-			TextEditorData data = view.GetTextEditorData ();
-			string expression = resolveResult.ResolvedExpression.Expression;
+			string expression = options.ResolveResult.ResolvedExpression.Expression;
 			if (!expression.Contains ("(")) {
-				int startPos = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, resolveResult.ResolvedExpression.Region.Start.Column - 1);
-				StringBuilder methodCall = new StringBuilder ();
+				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line - 1, options.ResolveResult.ResolvedExpression.Region.Start.Column - 1);
 				for (int pos = startPos; pos < data.Document.Length; pos++) {
 					char ch = data.Document.GetCharAt (pos);
 					if (ch == '(') {
@@ -83,8 +80,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 					}
 				}
 			}
-			string mimeType = DesktopService.GetMimeTypeForUri (document.FileName);
-			INRefactoryASTProvider provider = RefactoringService.GetASTProvider (mimeType);
+			INRefactoryASTProvider provider = options.GetASTProvider ();
 			return provider != null ? provider.ParseText (expression) as InvocationExpression : null;
 		}
 		
@@ -103,14 +99,10 @@ namespace MonoDevelop.Refactoring.CreateMethod
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
 			List<Change> result = new List<Change> ();
-			string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
-			MonoDevelop.Projects.Dom.Parser.IParser domParser = ProjectDomService.GetParser (options.Document.FileName, mimeType);
-			if (domParser == null) {
-				Console.WriteLine ("parser == null");
+			IResolver resolver = options.GetResolver ();
+			INRefactoryASTProvider provider = options.GetASTProvider ();
+			if (resolver == null || provider == null)
 				return result;
-			}
-
-			INRefactoryASTProvider provider = RefactoringService.GetASTProvider (mimeType);
 
 			Change insertNewMethod = new Change ();
 
@@ -127,7 +119,6 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0}"), methodDecl.Name);
 			insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (options.ResolveResult.CallingMember.BodyRegion.End.Line, options.ResolveResult.CallingMember.BodyRegion.End.Column);
 
-			IResolver resolver = domParser.CreateResolver (options.Dom, options.Document, options.Document.FileName);
 			int i = 0;
 			foreach (Expression expression in invoke.Arguments) {
 				i++;
@@ -147,28 +138,10 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				methodDecl.Parameters.Add (pde);
 			}
 
-			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, GetIndent (options.Document, options.ResolveResult.CallingMember));
+			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, options.GetIndent (options.ResolveResult.CallingMember));
 			result.Add (insertNewMethod);
 			return result;
 		}
 		
-		static string GetWhitespaces (MonoDevelop.Ide.Gui.Document doc, int insertionOffset)
-		{
-			StringBuilder result = new StringBuilder ();
-			for (int i = insertionOffset; i < doc.TextEditor.TextLength; i++) {
-				char ch = doc.TextEditor.GetCharAt (i);
-				if (ch == ' ' || ch == '\t') {
-					result.Append (ch);
-				} else {
-					break;
-				}
-			}
-			return result.ToString ();
-		}
-		
-		static string GetIndent (MonoDevelop.Ide.Gui.Document doc, IMember member)
-		{
-			return GetWhitespaces (doc, doc.TextEditor.GetPositionFromLineColumn (member.Location.Line, 1));
-		}
 	}
 }
