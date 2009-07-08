@@ -474,7 +474,22 @@ namespace MonoDevelop.CSharpBinding.Gui
 						
 						if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
 							triggerWordLength = 1;
-							return CreateCtrlSpaceCompletionData (completionContext, result);
+							bool autoSelect = true;
+							int cpos;
+							if ((prevCh == ',' || prevCh == '(') && GetParameterCompletionCommandOffset (out cpos)) {
+								ICodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
+								NRefactoryParameterDataProvider provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
+								if (provider != null) {
+									int i = provider.GetCurrentParameterIndex (ctx) - 1;
+									if (i < provider.Methods[0].Parameters.Count) {
+										IType returnType = dom.GetType (provider.Methods[0].Parameters[i].ReturnType);
+										autoSelect = returnType == null || returnType.ClassType != ClassType.Delegate;
+									}
+								}
+							}
+							CompletionDataList dataList = CreateCtrlSpaceCompletionData (completionContext, result);
+							dataList.AutoSelect = autoSelect;
+							return dataList;
 						}
 					}
 				}
@@ -1336,6 +1351,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		CompletionDataList CreateCtrlSpaceCompletionData (ICodeCompletionContext ctx, ExpressionResult expressionResult)
 		{
+		//	Console.WriteLine (Environment.StackTrace);
+		//	Console.WriteLine ("---------");
 			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
 			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
 			                                                                                Editor,

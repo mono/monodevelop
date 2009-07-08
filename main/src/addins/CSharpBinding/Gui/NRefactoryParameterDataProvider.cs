@@ -285,6 +285,16 @@ namespace MonoDevelop.CSharpBinding
 				return methods.Count;
 			}
 		}
+
 		#endregion 
+
+		public List<IMethod> Methods {
+			get {
+				return methods;
+			}
+			set {
+				methods = value;
+			}
+		}
 	}
 }
