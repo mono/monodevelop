@@ -175,6 +175,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			//initialWordLength = 0;
 			this.completionDataList = list;
+			
 			this.completionContext = completionContext;
 			this.closedDelegate = closedDelegate;
 			mutableList = completionDataList as IMutableCompletionDataList;
@@ -205,13 +206,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 				initialWordLength = text.Length + completionWidget.SelectedLength;
 				PartialWord = text; 
 				//if there is only one matching result we take it by default
-				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging)
-				{	
+				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 					UpdateWord ();
 					CompletionWindowManager.HideWindow ();
 				} else {
 					Show ();
 				}
+				this.SelectionDisabled = !list.AutoSelect;
 				return true;
 			}
 			else {
@@ -242,7 +243,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			//which makes completion triggering noticeably more responsive
 			if (!completionDataList.IsSorted)
 				completionDataList.Sort (new DataItemComparer ());
-			
 			DataProvider = this;
 			
 			Reposition (true);
@@ -498,7 +498,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				//don't reset the user-entered word when refilling the list
 				Reset (false);
 				FillList ();
-				if (last != null)
+				if (last != null )
 					SelectEntry (last);
 			}
 		}

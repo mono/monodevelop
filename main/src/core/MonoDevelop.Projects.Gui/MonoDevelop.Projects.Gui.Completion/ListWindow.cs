@@ -148,8 +148,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get { return list.Selection; }
 		}
 		
-		public bool SelectionDisabled {
+		public virtual bool SelectionDisabled {
 			get { return list.SelectionDisabled; }
+			set { list.SelectionDisabled = value; }
 		}
 		
 		public string PartialWord
@@ -269,13 +270,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 				case Gdk.Key.ISO_Level3_Shift:	// AltGr
 					return KeyAction.Process;
 			}
+			
 			char c = (char)(uint)key;
 			if (c == ' ' && (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
 				return KeyAction.CloseWindow | KeyAction.Process;
 			if (System.Char.IsLetterOrDigit (c) || c == '_') {
 				word.Insert (curPos, c);
 				curPos++;
-				UpdateWordSelection ();
+				if (!SelectionDisabled)
+					UpdateWordSelection ();
 				return KeyAction.Process;
 			} else if (System.Char.IsPunctuation (c) || c == ' ' || c == '<') {
 				//punctuation is only accepted if it actually matches an item in the list
@@ -284,7 +287,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				int match = findMatchedEntry (word.ToString (), out hasMismatches);
 				if (match >= 0 && !hasMismatches && c != '<') {
 					curPos++;
-					SelectEntry (match);
+					if (!SelectionDisabled)
+						SelectEntry (match);
 					return KeyAction.Process;
 				} else if (CompleteWithSpaceOrPunctuation) {
 					word.Remove (curPos, 1);

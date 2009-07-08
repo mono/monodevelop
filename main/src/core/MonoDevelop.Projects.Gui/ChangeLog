@@ -1,3 +1,11 @@
+2009-07-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 518548 - Completion is very annoying on lambda
+	  parameters".
+
 2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs:
