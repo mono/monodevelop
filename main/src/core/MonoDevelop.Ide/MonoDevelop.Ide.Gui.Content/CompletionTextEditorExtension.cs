@@ -45,6 +45,11 @@ namespace MonoDevelop.Ide.Gui.Content
 		ICompletionWidget completionWidget;
 		bool autoHideCompletionWindow = true;
 		bool enableCodeCompletion = false;
+		protected ICompletionWidget CompletionWidget {
+			get {
+				return completionWidget;
+			}
+		}
 
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
