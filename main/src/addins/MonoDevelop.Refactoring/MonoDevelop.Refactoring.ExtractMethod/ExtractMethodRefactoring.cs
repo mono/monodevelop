@@ -70,7 +70,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		public override string GetMenuDescription (RefactoringOptions options)
 		{
-			return GettextCatalog.GetString ("_Extract Method");
+			return GettextCatalog.GetString ("_Extract Method...");
 		}
 		
 		public override void Run (RefactoringOptions options)
@@ -254,7 +254,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 
 			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember));
 			result.Add (insertNewMethod);
-			
+
 			return result;
 		}
 	}

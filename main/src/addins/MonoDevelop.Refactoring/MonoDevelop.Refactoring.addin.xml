@@ -43,6 +43,7 @@
 		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
 		<Class id="CreateMethod" class = "MonoDevelop.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
 		<Class id="DeclareLocal" class = "MonoDevelop.Refactoring.DeclareLocal.DeclareLocalCodeGenerator" />
+		<Class id="IntroduceConstant" class = "MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantRefactoring" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->

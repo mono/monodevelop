@@ -26,6 +26,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
+	gtk-gui/MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs \
 	MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs \
@@ -35,6 +36,8 @@ FILES =  \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs \
 	MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs \
 	MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs \
+	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantDialog.cs \
+	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs \
 	MonoDevelop.Refactoring.Rename/RenameItemDialog.cs \
 	MonoDevelop.Refactoring.Rename/RenameRefactoring.cs \
 	MonoDevelop.Refactoring/Change.cs \

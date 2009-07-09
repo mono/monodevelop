@@ -60,7 +60,7 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public override string GetMenuDescription (RefactoringOptions options)
 		{
-			return GettextCatalog.GetString ("_Rename");
+			return GettextCatalog.GetString ("_Rename...");
 		}
 		
 		public override void Run (RefactoringOptions options)
