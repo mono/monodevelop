@@ -37,10 +37,22 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 	{
 		List<KeyValuePair <string, IReturnType>> unknownVariables = new List<KeyValuePair <string, IReturnType>> ();
 		HashSet<string> knownVariables = new HashSet<string> ();
-
+		HashSet<string> changedVariables = new HashSet<string> ();
+		
+		public bool ReferencesMember {
+			get;
+			set;
+		}
+		
 		public List<KeyValuePair <string, IReturnType>> UnknownVariables {
 			get {
 				return unknownVariables;
+			}
+		}
+
+		public HashSet<string> ChangedVariables {
+			get {
+				return changedVariables;
 			}
 		}
 		
@@ -71,12 +83,30 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				ExpressionResult expressionResult = new ExpressionResult (identifierExpression.Identifier);
 
 				ResolveResult result = resolver.Resolve (expressionResult, position);
-				
+				if ((result is MemberResolveResult && ((MemberResolveResult)result).ResolvedMember != null && !((MemberResolveResult)result).ResolvedMember.IsStatic) || (result is MethodResolveResult && ((MethodResolveResult)result).MostLikelyMethod != null && !((MethodResolveResult)result).MostLikelyMethod.IsStatic))
+					ReferencesMember = true;
 				// result.ResolvedType == null may be true for namespace names or undeclared variables
-				if (result != null && result.ResolvedType != null && !(result is MethodResolveResult) && !(result is NamespaceResolveResult))
+				if (result != null && !result.StaticResolve && result.ResolvedType != null && !(result is MethodResolveResult) && !(result is NamespaceResolveResult) && !(result is MemberResolveResult))
 					unknownVariables.Add (new KeyValuePair <string, IReturnType> (identifierExpression.Identifier, result.ResolvedType));
 			}
 			return base.VisitIdentifierExpression (identifierExpression, data);
 		}
+		
+		public override object VisitAssignmentExpression (ICSharpCode.NRefactory.Ast.AssignmentExpression assignmentExpression, object data)
+		{
+			IdentifierExpression left = assignmentExpression.Left as IdentifierExpression;
+			if (left != null)
+				changedVariables.Add (left.Identifier);
+			return base.VisitAssignmentExpression (assignmentExpression, data);
+		}
+		
+		public override object VisitDirectionExpression (ICSharpCode.NRefactory.Ast.DirectionExpression directionExpression, object data)
+		{
+			IdentifierExpression left = directionExpression.Expression as IdentifierExpression;
+			if (left != null)
+				changedVariables.Add (left.Identifier);
+			return base.VisitDirectionExpression (directionExpression, data);
+		}
+
 	}
 }

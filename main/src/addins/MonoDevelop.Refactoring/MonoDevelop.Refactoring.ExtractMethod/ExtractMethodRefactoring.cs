@@ -119,12 +119,22 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				set;
 			}
 			
+			public bool ReferencesMember {
+				get;
+				set;
+			}
+			
 			public DomLocation Location {
 				get;
 				set;
 			}
 			
 			public ICSharpCode.NRefactory.Ast.Modifiers Modifiers {
+				get;
+				set;
+			}
+			
+			public HashSet<string> ChangedVariables {
 				get;
 				set;
 			}
@@ -166,9 +176,11 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					if (resolveResult != null)
 						param.ExpressionType = resolveResult.ResolvedType;
 				}
-				
+
 				foreach (KeyValuePair<string, IReturnType> var in visitor.UnknownVariables)
 					param.Parameters.Add (var);
+				param.ReferencesMember = visitor.ReferencesMember;
+				param.ChangedVariables = visitor.ChangedVariables;
 			}
 			
 			return result;
@@ -189,7 +201,11 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 
 			InvocationExpression invocation = new InvocationExpression (new IdentifierExpression (param.Name));
 			foreach (KeyValuePair<string, IReturnType> var in param.Parameters) {
-				invocation.Arguments.Add (new IdentifierExpression (var.Key));
+				if (param.ChangedVariables.Contains (var.Key)) {
+					invocation.Arguments.Add (new DirectionExpression (FieldDirection.Ref, new IdentifierExpression (var.Key)));
+				} else {
+					invocation.Arguments.Add (new IdentifierExpression (var.Key));
+				}
 			}
 			string mimeType = DesktopService.GetMimeTypeForUri (param.Document.FileName);
 			INRefactoryASTProvider provider = RefactoringService.GetASTProvider (mimeType);
@@ -204,7 +220,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			MethodDeclaration methodDecl = new MethodDeclaration ();
 			methodDecl.Name = param.Name;
 			methodDecl.Modifier = param.Modifiers;
-
+			if (!param.ReferencesMember)
+				methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
 			if (node is BlockStatement) {
 				methodDecl.TypeReference = new TypeReference ("System.Void");
 				methodDecl.TypeReference.IsKeyword = true;
@@ -220,6 +237,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				TypeReference typeReference = new TypeReference (var.Value.ToInvariantString ());
 				typeReference.IsKeyword = true;
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, var.Key);
+				if (param.ChangedVariables.Contains (var.Key))
+					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Ref;
 				methodDecl.Parameters.Add (pde);
 			}
 
