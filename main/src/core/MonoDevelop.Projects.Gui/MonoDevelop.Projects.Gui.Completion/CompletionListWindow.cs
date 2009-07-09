@@ -212,6 +212,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				} else {
 					Show ();
 				}
+				this.AutoSelect = list.AutoSelect;
 				this.SelectionDisabled = !list.AutoSelect;
 				return true;
 			}

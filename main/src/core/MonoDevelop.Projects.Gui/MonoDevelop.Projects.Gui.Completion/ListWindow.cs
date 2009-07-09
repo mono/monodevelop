@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			};
 			vbox.PackStart (box, true, true, 0);
 			Add (vbox);
-			
+			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
 		}
 		protected virtual void DoubleClick ()
@@ -151,6 +151,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public virtual bool SelectionDisabled {
 			get { return list.SelectionDisabled; }
 			set { list.SelectionDisabled = value; }
+		}
+		
+		public bool AutoSelect {
+			get;
+			set;
 		}
 		
 		public string PartialWord
@@ -277,7 +282,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (System.Char.IsLetterOrDigit (c) || c == '_') {
 				word.Insert (curPos, c);
 				curPos++;
-				if (!SelectionDisabled)
+				if (!SelectionDisabled || AutoSelect)
 					UpdateWordSelection ();
 				return KeyAction.Process;
 			} else if (System.Char.IsPunctuation (c) || c == ' ' || c == '<') {
@@ -287,7 +292,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				int match = findMatchedEntry (word.ToString (), out hasMismatches);
 				if (match >= 0 && !hasMismatches && c != '<') {
 					curPos++;
-					if (!SelectionDisabled)
+					if (!SelectionDisabled || AutoSelect)
 						SelectEntry (match);
 					return KeyAction.Process;
 				} else if (CompleteWithSpaceOrPunctuation) {
