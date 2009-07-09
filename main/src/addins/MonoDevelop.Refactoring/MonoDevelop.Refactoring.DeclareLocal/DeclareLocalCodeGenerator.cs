@@ -59,6 +59,8 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
+			if (options.SelectedItem != null)
+				return false;
 			IResolver resolver = options.GetResolver ();
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (resolver == null || provider == null)
