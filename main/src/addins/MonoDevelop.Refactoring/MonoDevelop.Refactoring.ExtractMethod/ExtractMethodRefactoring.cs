@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -198,10 +199,10 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			replacement.RemovedChars = param.Document.TextEditor.SelectionEndPosition - param.Document.TextEditor.SelectionStartPosition;
 
 			INode node = Analyze (options, param, false);
-
+			bool oneChangedVariable = param.ChangedVariables.Count == 1 && node is BlockStatement;
 			InvocationExpression invocation = new InvocationExpression (new IdentifierExpression (param.Name));
 			foreach (KeyValuePair<string, IReturnType> var in param.Parameters) {
-				if (param.ChangedVariables.Contains (var.Key)) {
+				if (!oneChangedVariable && param.ChangedVariables.Contains (var.Key)) {
 					invocation.Arguments.Add (new DirectionExpression (FieldDirection.Ref, new IdentifierExpression (var.Key)));
 				} else {
 					invocation.Arguments.Add (new IdentifierExpression (var.Key));
@@ -209,7 +210,14 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			}
 			string mimeType = DesktopService.GetMimeTypeForUri (param.Document.FileName);
 			INRefactoryASTProvider provider = RefactoringService.GetASTProvider (mimeType);
-			replacement.InsertedText = options.GetWhitespaces (param.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (options.Dom, node is BlockStatement ? (INode)new ExpressionStatement (invocation) : invocation);
+			INode outputNode;
+			if (oneChangedVariable) {
+				outputNode = new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (param.ChangedVariables.First ()), ICSharpCode.NRefactory.Ast.AssignmentOperatorType.Assign, invocation));
+			} else {
+				outputNode = node is BlockStatement ? (INode)new ExpressionStatement (invocation) : invocation;
+			}
+
+			replacement.InsertedText = options.GetWhitespaces (param.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (options.Dom, outputNode);
 			result.Add (replacement);
 
 			Change insertNewMethod = new Change ();
@@ -226,6 +234,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				methodDecl.TypeReference = new TypeReference ("System.Void");
 				methodDecl.TypeReference.IsKeyword = true;
 				methodDecl.Body = (BlockStatement)node;
+				if (oneChangedVariable)
+					methodDecl.Body.AddChild (new ReturnStatement (new IdentifierExpression (param.ChangedVariables.First ())));
 			} else if (node is Expression) {
 				methodDecl.TypeReference = new TypeReference (param.ExpressionType != null ? param.ExpressionType.ToInvariantString () : "System.Void");
 				methodDecl.TypeReference.IsKeyword = true;
@@ -237,7 +247,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				TypeReference typeReference = new TypeReference (var.Value.ToInvariantString ());
 				typeReference.IsKeyword = true;
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, var.Key);
-				if (param.ChangedVariables.Contains (var.Key))
+				if (!oneChangedVariable && param.ChangedVariables.Contains (var.Key))
 					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Ref;
 				methodDecl.Parameters.Add (pde);
 			}
