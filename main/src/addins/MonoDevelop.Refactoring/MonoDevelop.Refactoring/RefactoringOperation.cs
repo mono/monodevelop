@@ -30,6 +30,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Refactoring
 {
@@ -58,6 +59,11 @@ namespace MonoDevelop.Refactoring
 		
 		public abstract List<Change> PerformChanges (RefactoringOptions options, object properties);
 		
-		public abstract void Run (RefactoringOptions options);
+		public virtual void Run (RefactoringOptions options)
+		{
+			List<Change> changes = PerformChanges (options, null);
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Name, null);
+			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+		}
 	}
 }

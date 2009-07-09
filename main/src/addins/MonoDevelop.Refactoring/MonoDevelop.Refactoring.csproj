@@ -62,12 +62,14 @@
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameItemDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
+    <Compile Include="MonoDevelop.Refactoring.DeclareLocal\DeclareLocalCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
     <Folder Include="MonoDevelop.Refactoring.ExtractMethod\" />
     <Folder Include="MonoDevelop.Refactoring.CreateMethod\" />
     <Folder Include="MonoDevelop.Refactoring.Rename\" />
+    <Folder Include="MonoDevelop.Refactoring.DeclareLocal\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />

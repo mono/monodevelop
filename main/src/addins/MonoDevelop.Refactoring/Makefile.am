@@ -29,6 +29,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs \
 	MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs \
+	MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs \
 	MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs \

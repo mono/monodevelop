@@ -263,7 +263,6 @@ namespace MonoDevelop.Ide.Commands
 			if (ciset.CommandInfos.Count > 0) {
 				ainfo.Add (ciset, null);
 				added = true;
-				item = null;
 			}
 			
 			while (item != null) {

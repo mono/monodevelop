@@ -89,13 +89,6 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			return GettextCatalog.GetString ("_Create Method");
 		}
 		
-		public override void Run (RefactoringOptions options)
-		{
-			List<Change> changes = PerformChanges (options, null);
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Create Method", null);
-			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
-		}
-		
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
 			List<Change> result = new List<Change> ();
