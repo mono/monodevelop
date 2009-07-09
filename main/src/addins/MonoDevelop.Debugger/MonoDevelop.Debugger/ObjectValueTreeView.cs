@@ -777,7 +777,7 @@ namespace MonoDevelop.Debugger
 			foreach (CompletionItem it in data.Items)
 				Add (new DebugCompletionData (it));
 		}
-		
+		public bool AutoSelect { get; set; }
 		public string DefaultCompletionString {
 			get {
 				return string.Empty;
