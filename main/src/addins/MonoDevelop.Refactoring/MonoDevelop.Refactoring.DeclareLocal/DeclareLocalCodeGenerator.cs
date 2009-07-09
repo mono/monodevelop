@@ -47,6 +47,11 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 {
 	public class DeclareLocalCodeGenerator : RefactoringOperation
 	{
+		public override string AccelKey {
+			get {
+				return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.RefactoryCommands.DeclareLocal, null).AccelKey.Replace ("dead_circumflex", "^");
+			}
+		}
 		public DeclareLocalCodeGenerator ()
 		{
 			Name = "Declare Local";
@@ -54,11 +59,54 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			if (options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null || !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName))
+			IResolver resolver = options.GetResolver ();
+			INRefactoryASTProvider provider = options.GetASTProvider ();
+			if (resolver == null || provider == null)
+				return false;
+
+			TextEditorData data = options.GetTextEditorData ();
+			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
+			string line = data.Document.GetTextAt (lineSegment);
+			Expression expression = provider.ParseExpression (line);
+			if (expression == null)
 				return false;
 			return true;
 		}
 		
+		public string GetSimpleTypeName (RefactoringOptions options, string fullTypeName)
+		{
+			IType foundType = null;
+
+			string curType = fullTypeName;
+			while (foundType == null) {
+				foundType = options.Dom.GetType (curType);
+				int idx = curType.LastIndexOf ('.');
+				if (idx < 0)
+					break;
+				curType = fullTypeName.Substring (0, idx);
+			}
+
+			if (foundType == null)
+				foundType = new DomType (fullTypeName);
+			if (options.Document.ParsedDocument != null) {
+				foreach (IUsing u in options.Document.ParsedDocument.CompilationUnit.Usings) {
+					foreach (string includedNamespace in u.Namespaces) {
+						if (includedNamespace == foundType.Namespace)
+							return fullTypeName.Substring (includedNamespace.Length + 1);
+					}
+				}
+			}
+			return fullTypeName;
+		}
+		
+		public override void Run (RefactoringOptions options)
+		{
+			base.Run (options);
+			options.Document.TextEditor.Select (selectionStart, selectionEnd);
+		}
+
+		int selectionStart;
+		int selectionEnd;
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
 			List<Change> result = new List<Change> ();
@@ -66,12 +114,29 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (resolver == null || provider == null)
 				return result;
-			string line = options.Document.TextEditor.GetLineText (options.Document.TextEditor.CursorLine);
+			TextEditorData data = options.GetTextEditorData ();
+			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
+			string line = data.Document.GetTextAt (lineSegment);
+			Expression expression = provider.ParseExpression (line);
+			if (expression == null)
+				return result;
+
 			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), DomLocation.Empty);
 			if (!string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)) {
-				
+				Change insert = new Change ();
+				insert.FileName = options.Document.FileName;
+				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
+				insert.Offset = lineSegment.Offset + options.GetWhitespaces (lineSegment.Offset).Length;
+				string varName = "a" + resolveResult.ResolvedType.Name;
+				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (new TypeReference (GetSimpleTypeName (options, resolveResult.ResolvedType.FullName)));
+				varDecl.Variables.Add (new VariableDeclaration (varName, expression));
+				insert.RemovedChars = lineSegment.Offset + lineSegment.EditableLength - insert.Offset;
+				insert.InsertedText = provider.OutputNode (options.Dom, varDecl);
+				result.Add (insert);
+				selectionStart = insert.Offset + insert.InsertedText.IndexOf (varName);
+				selectionEnd = selectionStart + varName.Length;
 			}
-				
+			
 			return result;
 		}
 	}

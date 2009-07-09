@@ -42,6 +42,7 @@
 		<Class id="ExtractMethod" class = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
 		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
 		<Class id="CreateMethod" class = "MonoDevelop.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
+		<Class id="DeclareLocal" class = "MonoDevelop.Refactoring.DeclareLocal.DeclareLocalCodeGenerator" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->
@@ -57,7 +58,10 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.CurrentRefactoryOperationsHandler"
 				type="array"
 				_label = "Refactory Operations" /> 
-				
+		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.DeclareLocal"
+				defaultHandler = "MonoDevelop.Refactoring.DeclareLocal.DeclareLocalHandler"
+				_label = "_Declare Local" 
+				shortcut = "Control+dead_circumflex"/> 
 		</Category>
 	</Extension>
 	

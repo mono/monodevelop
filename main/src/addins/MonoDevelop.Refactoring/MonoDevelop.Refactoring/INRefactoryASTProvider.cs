@@ -40,6 +40,7 @@ namespace MonoDevelop.Refactoring
 		string OutputNode (ProjectDom dom, INode node, string indent);
 		
 		INode ParseText (string text);
+		Expression ParseExpression (string expressionText);
 		bool CanGenerateASTFrom (string mimeType);
 	}
 	

@@ -1,5 +1,5 @@
 // 
-// RefactoringOperation.cs
+// DeclareLocalHandler.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,49 +25,29 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core;
+using MonoDevelop.Projects.Dom.Parser;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.Refactoring.DeclareLocal
 {
-	public abstract class RefactoringOperation
+	public class DeclareLocalHandler : CommandHandler
 	{
-		public string Name {
-			get;
-			set;
-		}
-		
-		public bool IsBreakingAPI {
-			get;
-			set;
-		}
-		
-		public virtual string AccelKey {
-			get {
-				return "";
-			}
-		}
-		public virtual string GetMenuDescription (RefactoringOptions options)
+		protected override void Run (object data)
 		{
-			return Name;
-		}
-		
-		public virtual bool IsValid (RefactoringOptions options)
-		{
-			return false;
-		}
-		
-		public abstract List<Change> PerformChanges (RefactoringOptions options, object properties);
-		
-		public virtual void Run (RefactoringOptions options)
-		{
-			List<Change> changes = PerformChanges (options, null);
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Name, null);
-			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return;
+			ProjectDom dom = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
+			if (dom == null)
+				return;
+			RefactoringOptions options = new RefactoringOptions () {
+				Document = doc,
+				Dom = dom,
+				ResolveResult = null,
+				SelectedItem = null
+			};
+			new DeclareLocalCodeGenerator ().Run (options);
 		}
 	}
 }

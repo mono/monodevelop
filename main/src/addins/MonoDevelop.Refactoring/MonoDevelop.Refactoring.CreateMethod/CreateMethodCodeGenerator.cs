@@ -54,7 +54,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			if (options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null || !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName))
+			if (options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null || options.ResolveResult.ResolvedType == null || !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName))
 				return false;
 			invoke = GetInvocationExpression (options);
 			

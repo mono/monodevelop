@@ -52,7 +52,9 @@ namespace MonoDevelop.Ide.Commands
 	public enum RefactoryCommands
 	{
 		CurrentRefactoryOperations,
-		GotoDeclaration
+		GotoDeclaration,
+		DeclareLocal
+		
 	}
 	
 	public class GotoDeclarationHandler : CommandHandler
@@ -257,7 +259,9 @@ namespace MonoDevelop.Ide.Commands
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (options)) {
-					ciset.CommandInfos.Add (refactoring.GetMenuDescription (options), new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
+					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
+					info.AccelKey = KeyBindingManager.BindingToDisplayLabel (refactoring.AccelKey, true);
+					ciset.CommandInfos.Add (info, new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
 			if (ciset.CommandInfos.Count > 0) {

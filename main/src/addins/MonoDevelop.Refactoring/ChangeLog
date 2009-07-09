@@ -2,6 +2,19 @@
 
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/RefactoringOperation.cs:
+	* MonoDevelop.Refactoring/INRefactoryASTProvider.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalHandler.cs:
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Added declare local code generator.
+
+2009-07-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.DeclareLocal:
 	* MonoDevelop.Refactoring/RefactoryCommands.cs:
 	* MonoDevelop.Refactoring/RefactoringOperation.cs:

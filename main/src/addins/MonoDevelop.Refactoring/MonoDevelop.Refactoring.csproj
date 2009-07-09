@@ -63,6 +63,7 @@
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameItemDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring.DeclareLocal\DeclareLocalCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.Refactoring.DeclareLocal\DeclareLocalHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
