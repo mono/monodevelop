@@ -416,7 +416,6 @@ namespace Mono.TextEditor
 			if (result < 0) {
 				clipboard.WaitIsTextAvailable ();
 				clipboard.RequestText (delegate(Clipboard clp, string text) {
-					Console.WriteLine ("PING!");
 					data.Document.BeginAtomicUndo ();
 					int caretPos = data.Caret.Offset;
 					ISegment selection = data.SelectionRange;

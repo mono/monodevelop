@@ -1,3 +1,7 @@
+2009-07-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/ClipboardActions.cs: Removed debug message.
+
 2009-07-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Remove unused dep.
