@@ -70,7 +70,8 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			Expression expression = provider.ParseExpression (line);
 			if (expression == null)
 				return false;
-			return true;
+			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), DomLocation.Empty);
+			return resolveResult.ResolvedType != null &&  !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName);
 		}
 		
 		public string GetSimpleTypeName (RefactoringOptions options, string fullTypeName)
@@ -122,7 +123,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				return result;
 
 			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), DomLocation.Empty);
-			if (!string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)) {
+			if (resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)) {
 				Change insert = new Change ();
 				insert.FileName = options.Document.FileName;
 				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
@@ -130,7 +131,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				string varName = "a" + resolveResult.ResolvedType.Name;
 				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (new TypeReference (GetSimpleTypeName (options, resolveResult.ResolvedType.FullName)));
 				varDecl.Variables.Add (new VariableDeclaration (varName, expression));
-				insert.RemovedChars = lineSegment.Offset + lineSegment.EditableLength - insert.Offset;
+				insert.RemovedChars = expression.EndLocation.Column - 1;
 				insert.InsertedText = provider.OutputNode (options.Dom, varDecl);
 				result.Add (insert);
 				selectionStart = insert.Offset + insert.InsertedText.IndexOf (varName);
