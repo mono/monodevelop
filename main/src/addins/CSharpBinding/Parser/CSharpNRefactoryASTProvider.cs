@@ -56,6 +56,13 @@ namespace CSharpBinding.Parser
 			node.AcceptVisitor (outputVisitor, null);
 			return outputVisitor.Text;
 		}
+		public Expression ParseExpression (string expressionText)
+		{
+			expressionText = expressionText.Trim ();
+			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expressionText))) {
+				return parser.ParseExpression ();
+			}
+		}
 		
 		public INode ParseText (string text)
 		{
