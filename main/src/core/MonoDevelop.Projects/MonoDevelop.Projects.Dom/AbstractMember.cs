@@ -237,7 +237,7 @@ namespace MonoDevelop.Projects.Dom
 			if (IsPublic || calledType != null && calledType.ClassType == ClassType.Interface)
 				return true;
 			
-			if (this.DeclaringType.ClassType == ClassType.Interface) 
+			if (this.DeclaringType != null && this.DeclaringType.ClassType == ClassType.Interface) 
 				return this.DeclaringType.IsAccessibleFrom (dom, calledType, member, includeProtected);
 			
 			if (IsInternal) {
