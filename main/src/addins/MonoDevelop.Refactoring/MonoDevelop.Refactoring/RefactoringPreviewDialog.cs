@@ -102,14 +102,15 @@ namespace MonoDevelop.Refactoring
 			CellRendererText cellRendererText = (CellRendererText)cell;
 			Change change = store.GetValue (iter, objColumn) as Change;
 			cellRendererText.Visible = (bool)store.GetValue (iter, statusVisibleColumn);
-			
-			if (change == null || change is RenameFileChange) {
+			TextReplaceChange replaceChange = change as TextReplaceChange;
+			if (replaceChange == null) {
 				cellRendererText.Text = "";
 				return;
 			}
+			
 			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
-			doc.Text = System.IO.File.ReadAllText (change.FileName);
-			DocumentLocation loc = doc.OffsetToLocation (change.Offset);
+			doc.Text = System.IO.File.ReadAllText (replaceChange.FileName);
+			DocumentLocation loc = doc.OffsetToLocation (replaceChange.Offset);
 			
 			string text = string.Format (GettextCatalog.GetString ("(Line:{0}, Column:{1})"), loc.Line, loc.Column);
 			if (treeviewPreview.Selection.IterIsSelected (iter)) {
@@ -134,15 +135,18 @@ namespace MonoDevelop.Refactoring
 					cellRendererDiff.InitCell (treeviewPreview, false, "", "");
 					return;
 				}
-				
+				TextReplaceChange replaceChange = change as TextReplaceChange;
+				if (replaceChange == null) 
+					return;
+			
 				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
-				doc.Text = System.IO.File.ReadAllText (change.FileName);
+				doc.Text = System.IO.File.ReadAllText (replaceChange.FileName);
 				List<string> before = new List<string> ();
 				foreach (var line in doc.Lines) {
 					before.Add (doc.GetTextAt (line));
 				}
 				
-				((Mono.TextEditor.IBuffer)doc).Replace (change.Offset, change.RemovedChars, change.InsertedText);
+				((Mono.TextEditor.IBuffer)doc).Replace (replaceChange.Offset, replaceChange.RemovedChars, replaceChange.InsertedText);
 				
 				List<string> after = new List<string> ();
 				foreach (var line in doc.Lines) {
@@ -152,8 +156,8 @@ namespace MonoDevelop.Refactoring
 				Diff diff = new Diff (before.ToArray (), after.ToArray (), true, true);
 				
 				System.IO.StringWriter w = new System.IO.StringWriter();
-				UnifiedDiff.WriteUnifiedDiff (diff, w, change.FileName, change.FileName, 2);
-				cellRendererDiff.InitCell (treeviewPreview, true, w.ToString (), change.FileName);
+				UnifiedDiff.WriteUnifiedDiff (diff, w, replaceChange.FileName, replaceChange.FileName, 2);
+				cellRendererDiff.InitCell (treeviewPreview, true, w.ToString (), replaceChange.FileName);
 			} catch (Exception e) {
 				Console.WriteLine (e);
 			}
@@ -162,9 +166,13 @@ namespace MonoDevelop.Refactoring
 		Dictionary<string, TreeIter> fileDictionary = new Dictionary<string, TreeIter> ();
 		TreeIter GetFile (Change change)
 		{
+			TextReplaceChange replaceChange = change as TextReplaceChange;
+			if (replaceChange == null) 
+				return TreeIter.Zero;
+			
 			TreeIter result;
-			if (!fileDictionary.TryGetValue (change.FileName, out result))
-				fileDictionary[change.FileName] = result = store.AppendValues (DesktopService.GetPixbufForFile (change.FileName, IconSize.Menu), System.IO.Path.GetFileName (change.FileName), null, true);
+			if (!fileDictionary.TryGetValue (replaceChange.FileName, out result))
+				fileDictionary[replaceChange.FileName] = result = store.AppendValues (DesktopService.GetPixbufForFile (replaceChange.FileName, IconSize.Menu), System.IO.Path.GetFileName (replaceChange.FileName), null, true);
 			return result;
 		}
 
@@ -173,7 +181,8 @@ namespace MonoDevelop.Refactoring
 			foreach (Change change in changes) {
 				TreeIter iter = GetFile (change);
 				iter = store.AppendValues (iter, ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
-				if (change.Offset >= 0)
+				TextReplaceChange replaceChange = change as TextReplaceChange;
+				if (replaceChange != null && replaceChange.Offset >= 0)
 					store.AppendValues (iter, null, null, change, false);
 			}
 		}

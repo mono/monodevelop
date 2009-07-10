@@ -1,5 +1,23 @@
 2009-07-10  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring.CreateClass:
+	* MonoDevelop.Refactoring/RefactoringService.cs:
+	* MonoDevelop.Refactoring/RefactoringOptions.cs:
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:
+	* MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs:
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	* MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs:
+	  Worked on refactoring.
+
+2009-07-10  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
 	  Create method code generator now selects the method body.
 

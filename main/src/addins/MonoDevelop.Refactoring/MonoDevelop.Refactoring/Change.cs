@@ -31,23 +31,28 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide.Gui;
 
 
 namespace MonoDevelop.Refactoring
 {
-	public class Change
+	public abstract class Change
 	{
-		public string FileName {
+		public string Description {
 			get;
 			set;
 		}
 		
-		public List<IType> AffectedTypes {
-			get;
-			private set;
+		public Change ()
+		{
 		}
 		
-		public string Description {
+		public abstract void PerformChange (IProgressMonitor monitor, RefactorerContext rctx);
+	}
+	
+	public class TextReplaceChange : Change
+	{
+		public string FileName {
 			get;
 			set;
 		}
@@ -67,12 +72,7 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
-		public Change ()
-		{
-			this.AffectedTypes = new List<IType> ();
-		}
-		
-		public virtual void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
 		{
 			if (rctx == null)
 				throw new InvalidOperationException ("Refactory context not available.");
@@ -88,8 +88,59 @@ namespace MonoDevelop.Refactoring
 		}
 	}
 	
+	public class CreateFileChange : Change
+	{
+		public string FileName {
+			get;
+			set;
+		}
+		
+		public string Content {
+			get;
+			set;
+		}
+		
+		public CreateFileChange (string fileName, string content)
+		{
+			this.FileName = fileName;
+			this.Content = content;
+			this.Description = string.Format (GettextCatalog.GetString ("Create file '{0}'"), Path.GetFileName (fileName));
+		}
+		
+		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		{
+			File.WriteAllText (FileName, Content);
+			rctx.ParserContext.Project.AddFile (FileName);
+			IdeApp.ProjectOperations.Save (rctx.ParserContext.Project);
+		}
+	}
+	
+	public class OpenFileChange : Change
+	{
+		public string FileName {
+			get;
+			set;
+		}
+		
+		public OpenFileChange (string fileName)
+		{
+			this.FileName = fileName;
+			this.Description = string.Format (GettextCatalog.GetString ("Open file '{0}'"), Path.GetFileName (fileName));
+		}
+		
+		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		{
+			IdeApp.OpenFiles (new string[] { FileName });
+		}
+	}
+	
 	public class RenameFileChange : Change
 	{
+		public string OldName {
+			get;
+			set;
+		}
+		
 		public string NewName {
 			get;
 			set;
@@ -97,15 +148,14 @@ namespace MonoDevelop.Refactoring
 		
 		public RenameFileChange (string oldName, string newName)
 		{
-			this.FileName = oldName;
+			this.OldName = oldName;
 			this.NewName = newName;
 			this.Description = string.Format (GettextCatalog.GetString ("Rename file '{0}' to '{1}'"), Path.GetFileName (oldName), Path.GetFileName (newName));
-			this.Offset = -1;
 		}
 		
 		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
 		{
-			FileService.RenameFile (FileName, NewName);
+			FileService.RenameFile (OldName, NewName);
 		}
 	}
 }

@@ -80,10 +80,11 @@ namespace MonoDevelop.Refactoring
 			public void FileRename (object sender, FileCopyEventArgs args)
 			{
 				foreach (Change change in changes) {
-					if (change is RenameFileChange)
+					TextReplaceChange replaceChange = change as TextReplaceChange;
+					if (replaceChange == null)
 						continue;
-					if (args.SourceFile == change.FileName)
-						change.FileName = args.TargetFile;
+					if (args.SourceFile == replaceChange.FileName)
+						replaceChange.FileName = args.TargetFile;
 				}
 			}
 		}
@@ -95,11 +96,17 @@ namespace MonoDevelop.Refactoring
 			FileService.FileRenamed += handler.FileRename;
 			for (int i = 0; i < changes.Count; i++) {
 				changes[i].PerformChange (monitor, rctx);
+				TextReplaceChange replaceChange = changes[i] as TextReplaceChange;
+				if (replaceChange == null)
+					continue;
 				for (int j = i + 1; j < changes.Count; j++) {
-					if (changes[i].Offset >= 0 && changes[j].Offset >= 0 && changes[i].FileName == changes[j].FileName && changes[i].Offset < changes[j].Offset) {
-						changes[j].Offset -= changes[i].RemovedChars;
-						if (!string.IsNullOrEmpty (changes[i].InsertedText))
-							changes[j].Offset += changes[i].InsertedText.Length;
+					TextReplaceChange change = changes[j] as TextReplaceChange;
+					if (change == null)
+						continue;
+					if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName && replaceChange.Offset < change.Offset) {
+						change.Offset -= replaceChange.RemovedChars;
+						if (!string.IsNullOrEmpty (replaceChange.InsertedText))
+							change.Offset += replaceChange.InsertedText.Length;
 					}
 				}
 			}

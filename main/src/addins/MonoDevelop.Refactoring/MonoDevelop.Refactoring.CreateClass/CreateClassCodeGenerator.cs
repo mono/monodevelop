@@ -1,5 +1,5 @@
 // 
-// CreateMethod.cs
+// CreateClassCodeGenerator.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -42,28 +42,32 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using Mono.TextEditor;
+using MonoDevelop.Ide.StandardHeader;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Refactoring.CreateMethod
+
+namespace MonoDevelop.Refactoring.CreateClass
 {
-	public class CreateMethodCodeGenerator : RefactoringOperation
+	public class CreateClassCodeGenerator : RefactoringOperation
 	{
-		public CreateMethodCodeGenerator ()
+		public CreateClassCodeGenerator ()
 		{
-			Name = "Create Method";
+			Name = "Create Class";
 		}
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			if (options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null || options.ResolveResult.ResolvedType == null || !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName))
+			if (options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null)
 				return false;
-			invoke = GetInvocationExpression (options);
-			
-			return invoke != null;
+			if (options.Dom.GetType (options.ResolveResult.ResolvedType) != null)
+				return false;
+			createExpression = GetCreateExpression (options);
+			return createExpression != null;
 		}
 		
-		InvocationExpression invoke;
+		ObjectCreateExpression createExpression;
 		
-		InvocationExpression GetInvocationExpression (RefactoringOptions options)
+		ObjectCreateExpression GetCreateExpression (RefactoringOptions options)
 		{
 			TextEditorData data = options.GetTextEditorData ();
 			if (data == null)
@@ -80,52 +84,59 @@ namespace MonoDevelop.Refactoring.CreateMethod
 					}
 				}
 			}
+			if (!expression.StartsWith ("new ")) {
+				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line - 1, options.ResolveResult.ResolvedExpression.Region.Start.Column - 1);
+				for (int pos = startPos; pos >= 0; pos--) {
+					if (data.Document.GetTextAt (pos, 4) == "new ") {
+						expression = "new " + expression;
+						break;
+					}
+				}
+			}
+			
 			INRefactoryASTProvider provider = options.GetASTProvider ();
-			return provider != null ? provider.ParseText (expression) as InvocationExpression : null;
+			return provider != null ? provider.ParseText (expression) as ObjectCreateExpression : null;
 		}
 		
 		public override string GetMenuDescription (RefactoringOptions options)
 		{
-			return GettextCatalog.GetString ("_Create Method");
+			return GettextCatalog.GetString ("_Create Class");
 		}
 		
 		public override void Run (RefactoringOptions options)
 		{
 			base.Run (options);
-			options.Document.TextEditor.CursorPosition = selectionEnd;
-			options.Document.TextEditor.Select (selectionStart, selectionEnd);
 		}
 		
-		int selectionStart;
-		int selectionEnd;
+		static string GetName (string baseFileName)
+		{
+			int i = 0;
+			while (true && i < 999) {
+				string curFileName = Path.Combine (Path.GetDirectoryName (baseFileName), Path.GetFileNameWithoutExtension (baseFileName) + (i > 0 ? i.ToString () : "") + Path.GetExtension (baseFileName));
+				if (!File.Exists (curFileName))
+					return curFileName;
+				i++;
+			}
+			return baseFileName;
+		}
+		
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
-			List<Change> result = new List<Change> ();
 			IResolver resolver = options.GetResolver ();
+			List<Change> result = new List<Change> ();
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (resolver == null || provider == null)
 				return result;
 
-			TextReplaceChange insertNewMethod = new TextReplaceChange ();
+			TypeDeclaration newType = new TypeDeclaration (ICSharpCode.NRefactory.Ast.Modifiers.None, null);
+			newType.Name = createExpression.CreateType.Type;
 
-			MethodDeclaration methodDecl = new MethodDeclaration ();
-			methodDecl.Name = ((IdentifierExpression)invoke.TargetObject).Identifier;
-			methodDecl.TypeReference = new TypeReference ("System.Void");
-			methodDecl.TypeReference.IsKeyword = true;
-
-			if (options.ResolveResult.CallingMember.IsStatic)
-				methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
-			methodDecl.Body = new BlockStatement ();
-			methodDecl.Body.AddChild (new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null)));
-			insertNewMethod.FileName = options.Document.FileName;
-			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0}"), methodDecl.Name);
-			insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (options.ResolveResult.CallingMember.BodyRegion.End.Line, options.ResolveResult.CallingMember.BodyRegion.End.Column);
-
+			ConstructorDeclaration constructor = new ConstructorDeclaration (newType.Name, ICSharpCode.NRefactory.Ast.Modifiers.Public, null, null);
+			constructor.Body = new BlockStatement ();
 			int i = 0;
-			foreach (Expression expression in invoke.Arguments) {
+			foreach (Expression expression in createExpression.Parameters) {
 				i++;
 				string output = provider.OutputNode (options.Dom, expression);
-
 				string parameterName;
 				if (Char.IsLetter (output[0]) || output[0] == '_') {
 					parameterName = output;
@@ -137,16 +148,22 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				TypeReference typeReference = new TypeReference (resolveResult2.ResolvedType.ToInvariantString ());
 				typeReference.IsKeyword = true;
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, parameterName);
-				methodDecl.Parameters.Add (pde);
+				constructor.Parameters.Add (pde);
 			}
-
-			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, options.GetIndent (options.ResolveResult.CallingMember));
-			result.Add (insertNewMethod);
-			int idx = insertNewMethod.InsertedText.IndexOf ("throw");
-			selectionStart = insertNewMethod.Offset + idx;
-			selectionEnd   = insertNewMethod.Offset + insertNewMethod.InsertedText.IndexOf (';', idx) + 1;
+			INode node = newType;
+			IType curType = options.Document.CompilationUnit.GetTypeAt (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn);
+			if (curType != null && !string.IsNullOrEmpty (curType.Namespace)) {
+				NamespaceDeclaration namespaceDeclaration = new NamespaceDeclaration (curType.Namespace);
+				namespaceDeclaration.Children.Add (newType);
+				node = namespaceDeclaration;
+			}
+			newType.Children.Add (constructor);
+			string fileName = GetName (Path.Combine (Path.GetDirectoryName (options.Document.FileName), newType.Name + Path.GetExtension (options.Document.FileName)));
+			string header = options.Dom.Project is DotNetProject ? StandardHeaderService.GetHeader (options.Dom.Project, ((DotNetProject)options.Dom.Project).LanguageName, fileName, true) + Environment.NewLine : "";
+			CreateFileChange createFile = new CreateFileChange (fileName, header + provider.OutputNode (options.Dom, node));
+			result.Add (createFile);
+			result.Add (new OpenFileChange (fileName));
 			return result;
 		}
-		
 	}
 }

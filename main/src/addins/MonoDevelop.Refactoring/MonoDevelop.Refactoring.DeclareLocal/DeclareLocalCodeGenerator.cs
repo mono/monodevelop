@@ -128,16 +128,16 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			TextEditorData data = options.GetTextEditorData ();
 			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
 			string line = data.Document.GetTextAt (lineSegment);
-			
+
 			Expression expression = provider.ParseExpression (line);
-			
+
 			if (expression == null)
 				return result;
 
 			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
-			
+
 			if (resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)) {
-				Change insert = new Change ();
+				TextReplaceChange insert = new TextReplaceChange ();
 				insert.FileName = options.Document.FileName;
 				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
 				insert.Offset = lineSegment.Offset + options.GetWhitespaces (lineSegment.Offset).Length;

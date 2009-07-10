@@ -117,7 +117,7 @@ namespace MonoDevelop.Refactoring.Rename
 				return null;
 			}
 			foreach (MemberReference memberRef in col) {
-				Change change = new Change ();
+				TextReplaceChange change = new TextReplaceChange ();
 				change.FileName = memberRef.FileName;
 				change.Offset = memberRef.Position;
 				change.RemovedChars = memberRef.Name.Length;

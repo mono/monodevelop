@@ -192,7 +192,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			List<Change> result = new List<Change> ();
 			ExtractMethodParameters param = (ExtractMethodParameters)prop;
 
-			Change replacement = new Change ();
+			TextReplaceChange replacement = new TextReplaceChange ();
 			replacement.Description = string.Format (GettextCatalog.GetString ("Substitute selected statement(s) with call to {0}"), param.Name);
 			replacement.FileName = param.Document.FileName;
 			replacement.Offset = param.Document.TextEditor.SelectionStartPosition;
@@ -220,7 +220,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			replacement.InsertedText = options.GetWhitespaces (param.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (options.Dom, outputNode);
 			result.Add (replacement);
 
-			Change insertNewMethod = new Change ();
+			TextReplaceChange insertNewMethod = new TextReplaceChange ();
 			insertNewMethod.FileName = param.Document.FileName;
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
 			insertNewMethod.Offset = param.Document.TextEditor.GetPositionFromLineColumn (param.DeclaringMember.BodyRegion.End.Line, param.DeclaringMember.BodyRegion.End.Column);

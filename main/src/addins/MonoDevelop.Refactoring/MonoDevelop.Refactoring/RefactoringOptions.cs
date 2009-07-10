@@ -57,6 +57,12 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
+		public string MimeType {
+			get {
+				return DesktopService.GetMimeTypeForUri (Document.FileName);
+			}
+		}
+		
 		public Mono.TextEditor.TextEditorData GetTextEditorData ()
 		{
 			Mono.TextEditor.ITextEditorDataProvider view = Document.ActiveView as Mono.TextEditor.ITextEditorDataProvider;
@@ -68,14 +74,12 @@ namespace MonoDevelop.Refactoring
 		
 		public INRefactoryASTProvider GetASTProvider ()
 		{
-			string mimeType = DesktopService.GetMimeTypeForUri (Document.FileName);
-			return RefactoringService.GetASTProvider (mimeType);
+			return RefactoringService.GetASTProvider (MimeType);
 		}
 		
 		public IResolver GetResolver ()
 		{
-			string mimeType = DesktopService.GetMimeTypeForUri (Document.FileName);
-			MonoDevelop.Projects.Dom.Parser.IParser domParser = ProjectDomService.GetParser (Document.FileName, mimeType);
+			MonoDevelop.Projects.Dom.Parser.IParser domParser = ProjectDomService.GetParser (Document.FileName, MimeType);
 			if (domParser == null)
 				return null;
 			return domParser.CreateResolver (Dom, Document, Document.FileName);

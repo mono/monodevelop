@@ -143,14 +143,14 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			fieldDeclaration.TypeReference = new TypeReference (resolveResult.ResolvedType.ToInvariantString ());
 			fieldDeclaration.TypeReference.IsKeyword = true;
 
-			Change insertConstant = new Change ();
+			TextReplaceChange insertConstant = new TextReplaceChange ();
 			insertConstant.FileName = options.Document.FileName;
 			insertConstant.Description = string.Format (GettextCatalog.GetString ("Generate constant '{0}'"), param.Name);
 			insertConstant.Offset = data.Document.LocationToOffset (curMember.Location.Line - 1, 0);
 			insertConstant.InsertedText = provider.OutputNode (options.Dom, fieldDeclaration, options.GetIndent (curMember)) + Environment.NewLine;
 			result.Add (insertConstant);
 
-			Change replaceConstant = new Change ();
+			TextReplaceChange replaceConstant = new TextReplaceChange ();
 			replaceConstant.FileName = options.Document.FileName;
 			replaceConstant.Description = string.Format (GettextCatalog.GetString ("Replace expression with constant '{0}'"), param.Name);
 			replaceConstant.Offset = start;

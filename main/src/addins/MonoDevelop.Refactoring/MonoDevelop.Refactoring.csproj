@@ -67,6 +67,7 @@
     <Compile Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs" />
+    <Compile Include="MonoDevelop.Refactoring.CreateClass\CreateClassCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -75,6 +76,7 @@
     <Folder Include="MonoDevelop.Refactoring.Rename\" />
     <Folder Include="MonoDevelop.Refactoring.DeclareLocal\" />
     <Folder Include="MonoDevelop.Refactoring.IntroduceConstant\" />
+    <Folder Include="MonoDevelop.Refactoring.CreateClass\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />
