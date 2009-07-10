@@ -68,6 +68,7 @@
     <Compile Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring.CreateClass\CreateClassCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.Refactoring.CreateClass\CreateStructCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

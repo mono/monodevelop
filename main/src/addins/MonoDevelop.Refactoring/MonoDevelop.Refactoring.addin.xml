@@ -45,6 +45,7 @@
 		<Class id="DeclareLocal" class = "MonoDevelop.Refactoring.DeclareLocal.DeclareLocalCodeGenerator" />
 		<Class id="IntroduceConstant" class = "MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantRefactoring" />
 		<Class id="CreateClass" class = "MonoDevelop.Refactoring.CreateClass.CreateClassCodeGenerator" />
+		<Class id="CreateStruct" class = "MonoDevelop.Refactoring.CreateClass.CreateStructCodeGenerator" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->

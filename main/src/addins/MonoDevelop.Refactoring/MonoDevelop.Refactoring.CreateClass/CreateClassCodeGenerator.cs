@@ -130,6 +130,7 @@ namespace MonoDevelop.Refactoring.CreateClass
 
 			TypeDeclaration newType = new TypeDeclaration (ICSharpCode.NRefactory.Ast.Modifiers.None, null);
 			newType.Name = createExpression.CreateType.Type;
+			newType.Type = GetNewTypeType ();
 
 			ConstructorDeclaration constructor = new ConstructorDeclaration (newType.Name, ICSharpCode.NRefactory.Ast.Modifiers.Public, null, null);
 			constructor.Body = new BlockStatement ();
@@ -165,5 +166,11 @@ namespace MonoDevelop.Refactoring.CreateClass
 			result.Add (new OpenFileChange (fileName));
 			return result;
 		}
+
+		protected virtual ICSharpCode.NRefactory.Ast.ClassType GetNewTypeType ()
+		{
+			return ICSharpCode.NRefactory.Ast.ClassType.Class;
+		}
+
 	}
 }

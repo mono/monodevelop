@@ -1,5 +1,14 @@
 2009-07-10  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs:
+	* MonoDevelop.Refactoring.CreateClass/CreateStructCodeGenerator.cs:
+	  Added create struct generator (based on class generator).
+
+2009-07-10  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs:
 	  Applied new patch from andrea.
 
