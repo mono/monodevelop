@@ -72,7 +72,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			INameValidator nameValidator = MonoDevelop.Projects.LanguageBindingService.GetRefactorerForFile (fileName ?? "default.cs");
 			if (nameValidator == null)
 				return true;
-			ValidationResult result = nameValidator.ValidateName (new DomMethod (), entry.Text);
+			ValidationResult result = nameValidator.ValidateName (new DomField (), entry.Text);
 			if (!result.IsValid) {
 				imageWarning.IconName = Stock.DialogError;
 			} else if (result.HasWarning) {

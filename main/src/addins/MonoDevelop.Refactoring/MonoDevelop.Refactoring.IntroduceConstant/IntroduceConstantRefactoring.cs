@@ -29,8 +29,9 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Core;
 using Mono.TextEditor;
-
-
+using Mono.TextEditor.Highlighting;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Refactoring.IntroduceConstant
 {
@@ -51,13 +52,25 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			if (options.ResolveResult == null)
+			TextEditorData data = options.GetTextEditorData ();
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			if (line != null) {
+				Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+				Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (data.Document, data.Document.SyntaxMode, data.Document.SyntaxMode, stack, line.Offset, data.Caret.Offset);
+				foreach (Span span in stack) {
+					if (span.Color == "string.single" || span.Color == "string.double")
+						return options.Document.CompilationUnit.GetMemberAt (data.Caret.Line, data.Caret.Column) != null;
+				}
+			}
+			
+			if (options.ResolveResult == null || options.ResolveResult.CallingMember == null)
 				return false;
+			
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (provider == null)
 				return false;
+			
 			Expression expression = provider.ParseExpression (options.ResolveResult.ResolvedExpression.Expression);
-			Console.WriteLine (expression);
 			return expression is PrimitiveExpression;
 		}
 		
@@ -72,6 +85,23 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			dialog.Show ();
 		}
 		
+		string SearchString (TextEditorData data, char quote, out int start, out int end)
+		{
+			start = data.Caret.Offset;
+			while (start > 0) {
+				if (data.Document.GetCharAt (start) == quote)
+					break;
+				start--;
+			}
+			end = data.Caret.Offset;
+			while (end < data.Document.Length) {
+				if (data.Document.GetCharAt (end) == quote)
+					break;
+				end++;
+			}
+			return data.Document.GetTextBetween (start, end);
+		}
+		
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
 			List<Change> result = new List<Change> ();
@@ -79,30 +109,52 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			if (param == null)
 				return result;
 			TextEditorData data = options.GetTextEditorData ();
-
+			IResolver resolver = options.GetResolver ();
+			IMember curMember = options.Document.CompilationUnit.GetMemberAt (data.Caret.Line, data.Caret.Column);
+			ResolveResult resolveResult = options.ResolveResult;
+			int start = 0;
+			int end = 0;
+			if (resolveResult == null) {
+				LineSegment line = data.Document.GetLine (data.Caret.Line);
+				if (line != null) {
+					Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+					Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (data.Document, data.Document.SyntaxMode, data.Document.SyntaxMode, stack, line.Offset, data.Caret.Offset);
+					foreach (Span span in stack) {
+						if (span.Color == "string.single" || span.Color == "string.double") {
+							resolveResult = resolver.Resolve (new ExpressionResult (SearchString (data, span.Color == "string.single" ? '\'' : '"', out start, out end)), DomLocation.Empty);
+							end++;
+						}
+					}
+				}
+			} else {
+				start = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, resolveResult.ResolvedExpression.Region.Start.Column - 1);
+				end = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.End.Line - 1, resolveResult.ResolvedExpression.Region.End.Column - 1);
+			}
+			if (start == 0 && end == 0)
+				return result;
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 
 			FieldDeclaration fieldDeclaration = new FieldDeclaration (null);
 			VariableDeclaration varDecl = new VariableDeclaration (param.Name);
-			varDecl.Initializer = provider.ParseExpression (options.ResolveResult.ResolvedExpression.Expression);
+			varDecl.Initializer = provider.ParseExpression (resolveResult.ResolvedExpression.Expression);
 			fieldDeclaration.Fields.Add (varDecl);
 			fieldDeclaration.Modifier = param.Modifiers;
 			fieldDeclaration.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Const;
-			fieldDeclaration.TypeReference = new TypeReference (options.ResolveResult.ResolvedType.ToInvariantString ());
+			fieldDeclaration.TypeReference = new TypeReference (resolveResult.ResolvedType.ToInvariantString ());
 			fieldDeclaration.TypeReference.IsKeyword = true;
 
 			Change insertConstant = new Change ();
 			insertConstant.FileName = options.Document.FileName;
 			insertConstant.Description = string.Format (GettextCatalog.GetString ("Generate constant '{0}'"), param.Name);
-			insertConstant.Offset = data.Document.LocationToOffset (options.ResolveResult.CallingMember.Location.Line - 1, 0);
-			insertConstant.InsertedText = provider.OutputNode (options.Dom, fieldDeclaration, options.GetIndent (options.ResolveResult.CallingMember)) + Environment.NewLine;
+			insertConstant.Offset = data.Document.LocationToOffset (curMember.Location.Line - 1, 0);
+			insertConstant.InsertedText = provider.OutputNode (options.Dom, fieldDeclaration, options.GetIndent (curMember)) + Environment.NewLine;
 			result.Add (insertConstant);
-			
+
 			Change replaceConstant = new Change ();
 			replaceConstant.FileName = options.Document.FileName;
 			replaceConstant.Description = string.Format (GettextCatalog.GetString ("Replace expression with constant '{0}'"), param.Name);
-			replaceConstant.Offset = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line - 1, options.ResolveResult.ResolvedExpression.Region.Start.Column - 1);
-			replaceConstant.RemovedChars = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.End.Line - 1, options.ResolveResult.ResolvedExpression.Region.End.Column - 1) - replaceConstant.Offset;
+			replaceConstant.Offset = start;
+			replaceConstant.RemovedChars = end - start;
 			replaceConstant.InsertedText = param.Name;
 			result.Add (replaceConstant);
 
