@@ -75,6 +75,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), DomLocation.Empty);
 			return resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName);
 		}
+		
 		static HashSet<string> builtInTypes = new HashSet<string> (new string[] {
 			"System.Void", "System.Object","System.Boolean","System.Byte", "System.SByte",
 			"System.Char", "System.Enum", "System.Int16", "System.Int32", "System.Int64", 
@@ -111,6 +112,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		public override void Run (RefactoringOptions options)
 		{
 			base.Run (options);
+			options.Document.TextEditor.CursorPosition = selectionEnd;
 			options.Document.TextEditor.Select (selectionStart, selectionEnd);
 		}
 		
@@ -126,11 +128,14 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			TextEditorData data = options.GetTextEditorData ();
 			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
 			string line = data.Document.GetTextAt (lineSegment);
+			
 			Expression expression = provider.ParseExpression (line);
+			
 			if (expression == null)
 				return result;
 
-			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), DomLocation.Empty);
+			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+			
 			if (resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)) {
 				Change insert = new Change ();
 				insert.FileName = options.Document.FileName;
