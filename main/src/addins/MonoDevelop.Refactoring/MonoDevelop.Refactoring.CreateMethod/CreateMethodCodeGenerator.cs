@@ -89,6 +89,15 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			return GettextCatalog.GetString ("_Create Method");
 		}
 		
+		public override void Run (RefactoringOptions options)
+		{
+			base.Run (options);
+			options.Document.TextEditor.CursorPosition = selectionEnd;
+			options.Document.TextEditor.Select (selectionStart, selectionEnd);
+		}
+		
+		int selectionStart;
+		int selectionEnd;
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
 			List<Change> result = new List<Change> ();
@@ -133,6 +142,9 @@ namespace MonoDevelop.Refactoring.CreateMethod
 
 			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, options.GetIndent (options.ResolveResult.CallingMember));
 			result.Add (insertNewMethod);
+			int idx = insertNewMethod.InsertedText.IndexOf ("throw");
+			selectionStart = insertNewMethod.Offset + idx;
+			selectionEnd   = insertNewMethod.Offset + insertNewMethod.InsertedText.IndexOf (';', idx) + 1;
 			return result;
 		}
 		
