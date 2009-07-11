@@ -433,6 +433,7 @@ namespace Mono.TextEditor.Vi
 					RunActions (action, ClipboardActions.Cut);
 					Reset ("-- INSERT --");
 					state = State.Insert;
+					Caret.Mode = CaretMode.Insert;
 				} else {
 					Reset ("Unrecognised motion");
 				}
