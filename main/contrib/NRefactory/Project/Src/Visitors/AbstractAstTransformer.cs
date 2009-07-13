@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 	/// </summary>
 	public abstract class AbstractAstTransformer : IAstVisitor {
 		
-		private Stack<INode> nodeStack = new Stack<INode>();
+		protected Stack<INode> nodeStack = new Stack<INode>();
 		
 		public void ReplaceCurrentNode(INode newNode) {
 			nodeStack.Pop();
