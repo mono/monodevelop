@@ -218,7 +218,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				varGen.FileName = options.Document.FileName;
 				LineSegment line = data.Document.GetLine (Math.Max (0, data.Document.OffsetToLineNumber (data.SelectionRange.Offset) - 1));
 				varGen.Offset = line.Offset + line.EditableLength;
-				varGen.InsertedText = Environment.NewLine + options.GetWhitespaces (options.Document.TextEditor.SelectionStartPosition);
+				varGen.InsertedText = Environment.NewLine + options.GetWhitespaces (line.Offset);
 				foreach (VariableDescriptor var in variablesToGenerate) {
 					TypeReference tr = new TypeReference (var.ReturnType.ToInvariantString ());
 					tr.IsKeyword = true;
@@ -267,8 +267,16 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			replacement.FileName = options.Document.FileName;
 			replacement.Offset = options.Document.TextEditor.SelectionStartPosition;
 			replacement.RemovedChars = options.Document.TextEditor.SelectionEndPosition - options.Document.TextEditor.SelectionStartPosition;
-
+			LineSegment line1 = data.Document.GetLineByOffset (options.Document.TextEditor.SelectionEndPosition);
+			if (options.Document.TextEditor.SelectionEndPosition == line1.Offset) {
+				if (line1.Offset > 0) {
+					LineSegment line2 = data.Document.GetLineByOffset (line1.Offset - 1);
+					replacement.RemovedChars -= line2.DelimiterLength;
+				}
+			}
+			
 			replacement.InsertedText = options.GetWhitespaces (options.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (options.Dom, outputNode);
+			
 			result.Add (replacement);
 
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
@@ -276,6 +284,9 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
 			insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (param.DeclaringMember.BodyRegion.End.Line, param.DeclaringMember.BodyRegion.End.Column);
 
+			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (variablesToGenerate);
+			node.AcceptVisitor (transformer, null);
+			
 			MethodDeclaration methodDecl = new MethodDeclaration ();
 			methodDecl.Name = param.Name;
 			methodDecl.Modifier = param.Modifiers;

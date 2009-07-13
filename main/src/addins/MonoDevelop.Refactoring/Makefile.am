@@ -34,6 +34,7 @@ FILES =  \
 	MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs \
 	MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs \
 	MonoDevelop.Refactoring.DeclareLocal/DeclareLocalHandler.cs \
+	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodAstTransformer.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs \
 	MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs \

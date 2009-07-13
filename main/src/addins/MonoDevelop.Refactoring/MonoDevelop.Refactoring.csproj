@@ -70,6 +70,7 @@
     <Compile Include="MonoDevelop.Refactoring.CreateClass\CreateClassCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring.CreateClass\CreateStructCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodAstTransformer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
