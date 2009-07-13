@@ -66,14 +66,13 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (resolver == null || provider == null)
 				return false;
-
 			TextEditorData data = options.GetTextEditorData ();
 			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
 			string line = data.Document.GetTextAt (lineSegment);
 			Expression expression = provider.ParseExpression (line);
 			if (expression == null)
 				return false;
-			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), DomLocation.Empty);
+			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
 			return resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName);
 		}
 		

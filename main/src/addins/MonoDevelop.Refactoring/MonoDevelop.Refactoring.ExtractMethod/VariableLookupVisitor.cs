@@ -100,6 +100,21 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			return base.VisitAssignmentExpression (assignmentExpression, data);
 		}
 		
+		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
+		{
+			switch (unaryOperatorExpression.Op) {
+			case UnaryOperatorType.Increment:
+			case UnaryOperatorType.Decrement:
+			case UnaryOperatorType.PostIncrement:
+			case UnaryOperatorType.PostDecrement:
+				IdentifierExpression left = unaryOperatorExpression.Expression as IdentifierExpression;
+				if (left != null)
+					changedVariables.Add (left.Identifier);
+				break;
+			}
+			return base.VisitUnaryOperatorExpression (unaryOperatorExpression, data);
+		}
+
 		public override object VisitDirectionExpression (ICSharpCode.NRefactory.Ast.DirectionExpression directionExpression, object data)
 		{
 			IdentifierExpression left = directionExpression.Expression as IdentifierExpression;
