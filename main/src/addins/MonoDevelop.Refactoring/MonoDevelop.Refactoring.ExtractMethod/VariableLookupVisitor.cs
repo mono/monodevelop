@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Ast;
@@ -33,11 +34,42 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Refactoring.ExtractMethod
 {
+	public class VariableDescriptor 
+	{
+		public string Name {
+			get;
+			set;
+		}
+		
+		public bool GetsChanged {
+			get;
+			set;
+		}
+		
+		public bool IsDefined {
+			get;
+			set;
+		}
+		public IReturnType ReturnType {
+			get;
+			set;
+		}
+		public VariableDescriptor (string name)
+		{
+			this.Name = name;
+			this.GetsChanged = this.IsDefined = false;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format("[VariableDescriptor: Name={0}, GetsChanged={1}, IsDefined={2}, ReturnType={3}]", Name, GetsChanged, IsDefined, ReturnType);
+		}
+	}
+	
 	public class VariableLookupVisitor : AbstractAstVisitor
 	{
 		List<KeyValuePair <string, IReturnType>> unknownVariables = new List<KeyValuePair <string, IReturnType>> ();
-		HashSet<string> knownVariables = new HashSet<string> ();
-		HashSet<string> changedVariables = new HashSet<string> ();
+		Dictionary<string, VariableDescriptor> variables = new Dictionary<string, VariableDescriptor> ();
 		
 		public bool ReferencesMember {
 			get;
@@ -50,9 +82,15 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			}
 		}
 
-		public HashSet<string> ChangedVariables {
+		public Dictionary<string, VariableDescriptor> Variables {
 			get {
-				return changedVariables;
+				return variables;
+			}
+		}
+		
+		public List<VariableDescriptor> VariableList {
+			get {
+				return new List<VariableDescriptor> (variables.Values);
 			}
 		}
 		
@@ -64,28 +102,51 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			this.position = position;
 		}
 		
+		static IReturnType ConvertTypeReference (TypeReference typeRef)
+		{
+			if (typeRef == null)
+				return null;
+			DomReturnType result = new DomReturnType (typeRef.SystemType ?? typeRef.Type);
+			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
+				result.AddTypeParameter (ConvertTypeReference (genericArgument));
+			}
+			result.PointerNestingLevel = typeRef.PointerNestingLevel;
+			if (typeRef.IsArrayType) {
+				result.ArrayDimensions = typeRef.RankSpecifier.Length;
+				for (int i = 0; i < typeRef.RankSpecifier.Length; i++) {
+					result.SetDimension (i, typeRef.RankSpecifier[i]);
+				}
+			}
+			return result;
+		}
+		
 		public override object VisitLocalVariableDeclaration (LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			foreach (VariableDeclaration varDecl in localVariableDeclaration.Variables) {
-				knownVariables.Add (varDecl.Name);
+				variables[varDecl.Name] = new VariableDescriptor (varDecl.Name) {
+					IsDefined = true, 
+					ReturnType = ConvertTypeReference (localVariableDeclaration.TypeReference)
+				};
+				Console.WriteLine ("declare:" + varDecl.Name);
+				
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
 		
 		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
 		{
-			if (!knownVariables.Contains (identifierExpression.Identifier)) {
-				foreach (var v in unknownVariables) {
-					if (v.Key == identifierExpression.Identifier) {
-						return null;
-					}
-				}
+			if (!variables.ContainsKey (identifierExpression.Identifier)) {
+
 				ExpressionResult expressionResult = new ExpressionResult (identifierExpression.Identifier);
 
 				ResolveResult result = resolver.Resolve (expressionResult, position);
 				if ((result is MemberResolveResult && ((MemberResolveResult)result).ResolvedMember != null && !((MemberResolveResult)result).ResolvedMember.IsStatic) || (result is MethodResolveResult && ((MethodResolveResult)result).MostLikelyMethod != null && !((MethodResolveResult)result).MostLikelyMethod.IsStatic))
 					ReferencesMember = true;
 				// result.ResolvedType == null may be true for namespace names or undeclared variables
+				if (!result.StaticResolve) {
+					variables[identifierExpression.Identifier] = new VariableDescriptor (identifierExpression.Identifier);
+					variables[identifierExpression.Identifier].ReturnType = result.ResolvedType;
+				}
 				if (result != null && !result.StaticResolve && result.ResolvedType != null && !(result is MethodResolveResult) && !(result is NamespaceResolveResult) && !(result is MemberResolveResult))
 					unknownVariables.Add (new KeyValuePair <string, IReturnType> (identifierExpression.Identifier, result.ResolvedType));
 			}
@@ -94,33 +155,38 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		public override object VisitAssignmentExpression (ICSharpCode.NRefactory.Ast.AssignmentExpression assignmentExpression, object data)
 		{
+			object result = base.VisitAssignmentExpression (assignmentExpression, data);
 			IdentifierExpression left = assignmentExpression.Left as IdentifierExpression;
-			if (left != null)
-				changedVariables.Add (left.Identifier);
-			return base.VisitAssignmentExpression (assignmentExpression, data);
+			if (left != null && variables.ContainsKey (left.Identifier))
+				variables[left.Identifier].GetsChanged = true;
+			return result;
 		}
 		
 		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
+			object result = base.VisitUnaryOperatorExpression (unaryOperatorExpression, data);
 			switch (unaryOperatorExpression.Op) {
 			case UnaryOperatorType.Increment:
 			case UnaryOperatorType.Decrement:
 			case UnaryOperatorType.PostIncrement:
 			case UnaryOperatorType.PostDecrement:
 				IdentifierExpression left = unaryOperatorExpression.Expression as IdentifierExpression;
-				if (left != null)
-					changedVariables.Add (left.Identifier);
+				if (left != null && variables.ContainsKey (left.Identifier))
+					variables[left.Identifier].GetsChanged = true;
 				break;
 			}
-			return base.VisitUnaryOperatorExpression (unaryOperatorExpression, data);
+			return result;
 		}
 
 		public override object VisitDirectionExpression (ICSharpCode.NRefactory.Ast.DirectionExpression directionExpression, object data)
 		{
+			object result = base.VisitDirectionExpression (directionExpression, data);
+			
 			IdentifierExpression left = directionExpression.Expression as IdentifierExpression;
-			if (left != null)
-				changedVariables.Add (left.Identifier);
-			return base.VisitDirectionExpression (directionExpression, data);
+			if (left != null && variables.ContainsKey (left.Identifier))
+				variables[left.Identifier].GetsChanged = true;
+			
+			return result;
 		}
 
 	}

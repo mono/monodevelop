@@ -69,7 +69,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				foreach (TreePath path in treeviewParameters.Selection.GetSelectedRows ()) {
 					int index = Int32.Parse (path.ToString ());
 					if (index > 0) {
-						KeyValuePair<string, IReturnType> tmp = properties.Parameters [index - 1];
+						VariableDescriptor tmp = properties.Parameters [index - 1];
 						properties.Parameters [index - 1] = properties.Parameters [index];
 						properties.Parameters [index] = tmp;
 						indices.Add (index - 1);
@@ -83,7 +83,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				foreach (TreePath path in treeviewParameters.Selection.GetSelectedRows ()) {
 					int index = Int32.Parse (path.ToString ());
 					if (index + 1 < properties.Parameters.Count) {
-						KeyValuePair<string, IReturnType> tmp = properties.Parameters [index + 1];
+						VariableDescriptor tmp = properties.Parameters [index + 1];
 						properties.Parameters [index + 1] = properties.Parameters [index];
 						properties.Parameters [index] = tmp;
 						indices.Add (index + 1);
@@ -104,8 +104,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		void FillStore ()
 		{
 			store.Clear ();
-			foreach (KeyValuePair<string, IReturnType> var in properties.Parameters) {
-				store.AppendValues (var.Value != null ? var.Value.ToInvariantString () : "<null>" , var.Key);
+			foreach (VariableDescriptor var in properties.Parameters) {
+				store.AppendValues (var.ReturnType != null ? var.ReturnType.ToInvariantString () : "<null>" , var.Name);
 			}
 		}
 		
