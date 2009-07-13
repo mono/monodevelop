@@ -38,6 +38,12 @@ namespace MonoDevelop.Refactoring.Rename
 {
 	public class RenameRefactoring : RefactoringOperation
 	{
+		public override string AccelKey {
+			get {
+				return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename, null).AccelKey.Replace ("dead_circumflex", "^");
+			}
+		}
+		
 		public RenameRefactoring ()
 		{
 			Name = "Rename";
@@ -60,7 +66,7 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public override string GetMenuDescription (RefactoringOptions options)
 		{
-			return GettextCatalog.GetString ("_Rename...");
+			return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename, null).Text;
 		}
 		
 		public override void Run (RefactoringOptions options)

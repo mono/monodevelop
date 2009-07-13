@@ -52,16 +52,21 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 	
 		<Category _name = "Refactory" id = "Refactory">
-		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.GotoDeclaration"
-					defaultHandler = "MonoDevelop.Ide.Commands.GotoDeclarationHandler"
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
+					defaultHandler = "MonoDevelop.Refactoring.GotoDeclarationHandler"
 					_label = "_Go to declaration" 
 					shortcut = "F12"
 					macShortcut = "F12"/>
-		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations"
-				defaultHandler = "MonoDevelop.Ide.Commands.CurrentRefactoryOperationsHandler"
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Rename"
+					defaultHandler = "MonoDevelop.Refactoring.Rename.RenameHandler"
+					_label = "_Rename..." 
+					shortcut = "F2"
+					macShortcut = "F2"/>
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"
+				defaultHandler = "MonoDevelop.Refactoring.CurrentRefactoryOperationsHandler"
 				type="array"
 				_label = "Refactory Operations" /> 
-		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.DeclareLocal"
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.DeclareLocal"
 				defaultHandler = "MonoDevelop.Refactoring.DeclareLocal.DeclareLocalHandler"
 				_label = "_Declare Local" 
 				shortcut = "Control+dead_circumflex"/> 
@@ -69,6 +74,6 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">	
-		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 	</Extension>
 </Addin>

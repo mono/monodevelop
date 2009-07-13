@@ -49,9 +49,10 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 	{
 		public override string AccelKey {
 			get {
-				return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.RefactoryCommands.DeclareLocal, null).AccelKey.Replace ("dead_circumflex", "^");
+				return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.DeclareLocal, null).AccelKey.Replace ("dead_circumflex", "^");
 			}
 		}
+		
 		public DeclareLocalCodeGenerator ()
 		{
 			Name = "Declare Local";

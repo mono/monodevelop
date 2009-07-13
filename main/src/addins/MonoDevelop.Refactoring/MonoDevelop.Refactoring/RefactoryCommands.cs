@@ -47,18 +47,20 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.Ide.Commands
+namespace MonoDevelop.Refactoring
 {
 	public enum RefactoryCommands
 	{
 		CurrentRefactoryOperations,
 		GotoDeclaration,
-		DeclareLocal
+		DeclareLocal,
+		Rename
 		
 	}
 	
 	public class GotoDeclarationHandler : CommandHandler
 	{
+		
 		protected override void Run (object data)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
@@ -74,32 +76,11 @@ namespace MonoDevelop.Ide.Commands
 			ProjectDom ctx = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
 			if (ctx == null)
 				return;
-			ResolveResult resolveResult = CurrentRefactoryOperationsHandler.GetResolveResult (doc, editor);
-			if (resolveResult is AggregatedResolveResult)
-				resolveResult = ((AggregatedResolveResult)resolveResult).PrimaryResult;
-			
-			IDomVisitable item = null;
+			ResolveResult resolveResult;
+			IDomVisitable item;
+			CurrentRefactoryOperationsHandler.GetItem (ctx, doc, editor, out resolveResult, out item);
 			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
-			if (resolveResult is ParameterResolveResult) {
-				item = ((ParameterResolveResult)resolveResult).Parameter;
-			} else if (resolveResult is LocalVariableResolveResult) {
-				item = ((LocalVariableResolveResult)resolveResult).LocalVariable;
-				//s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, WindowConversionFlags));
-			} else if (resolveResult is MemberResolveResult) {
-				item = ((MemberResolveResult)resolveResult).ResolvedMember;
-				if (item == null && ((MemberResolveResult)resolveResult).ResolvedType != null) {
-					item = ctx.GetType (((MemberResolveResult)resolveResult).ResolvedType);
-				}
-			} else if (resolveResult is MethodResolveResult) {
-				item = ((MethodResolveResult)resolveResult).MostLikelyMethod;
-				if (item == null && ((MethodResolveResult)resolveResult).ResolvedType != null) {
-					item = ctx.GetType (((MethodResolveResult)resolveResult).ResolvedType);
-				}
-			} else if (resolveResult is BaseResolveResult) {
-				item = ctx.GetType (((BaseResolveResult)resolveResult).ResolvedType);
-			} else if (resolveResult is ThisResolveResult) {
-				item = ctx.GetType (((ThisResolveResult)resolveResult).ResolvedType);
-			}
+			
 			string itemName = null;
 			if (item is IMember)
 				itemName = ((IMember)item).Name;
@@ -139,7 +120,7 @@ namespace MonoDevelop.Ide.Commands
 		}
 		public static ResolveResult GetResolveResult (Document doc, ITextBuffer editor)
 		{
-			ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
+			ITextEditorResolver textEditorResolver = doc.GetContent<ITextEditorResolver> ();
 			if (textEditorResolver != null)
 				return textEditorResolver.GetLanguageItem (editor.CursorPosition);
 			/* Fallback (currently not needed)
@@ -164,28 +145,13 @@ namespace MonoDevelop.Ide.Commands
 			return null;
 		}
 		
-		protected override void Update (CommandArrayInfo ainfo)
+		public static void GetItem (ProjectDom ctx, Document doc, ITextBuffer editor, out ResolveResult resolveResult, out IDomVisitable item)
 		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
-				return;
-
-			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
-			if (editor == null)
-				return;
-
-			bool added = false;
-			int line, column;
-			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-			ProjectDom ctx = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
-			if (ctx == null)
-				return;
-			ResolveResult resolveResult = GetResolveResult (doc, editor);
+			resolveResult = GetResolveResult (doc, editor);
 			if (resolveResult is AggregatedResolveResult)
 				resolveResult = ((AggregatedResolveResult)resolveResult).PrimaryResult;
 			
-			IDomVisitable item = null;
-			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
+			item = null;
 			if (resolveResult is ParameterResolveResult) {
 				item = ((ParameterResolveResult)resolveResult).Parameter;
 			} else if (resolveResult is LocalVariableResolveResult) {
@@ -206,6 +172,29 @@ namespace MonoDevelop.Ide.Commands
 			} else if (resolveResult is ThisResolveResult) {
 				item = ctx.GetType (((ThisResolveResult)resolveResult).ResolvedType);
 			}
+		}
+		
+		protected override void Update (CommandArrayInfo ainfo)
+		{
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+				return;
+
+			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
+			if (editor == null)
+				return;
+
+			bool added = false;
+			int line, column;
+			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
+			ProjectDom ctx = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
+			if (ctx == null)
+				return;
+			ResolveResult resolveResult;
+			IDomVisitable item;
+			GetItem (ctx, doc, editor, out resolveResult, out item);
+			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
+			
 			string itemName = null;
 			if (item is IMember)
 				itemName = ((IMember)item).Name;
@@ -500,7 +489,9 @@ namespace MonoDevelop.Ide.Commands
 			};
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (options)) {
-					ciset.CommandInfos.Add (refactoring.GetMenuDescription (options), new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
+					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
+					info.AccelKey = KeyBindingManager.BindingToDisplayLabel (refactoring.AccelKey, true);
+					ciset.CommandInfos.Add (info, new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
 			
@@ -818,7 +809,7 @@ namespace MonoDevelop.Ide.Commands
 				editor.BeginAtomicUndo ();
 			
 			try {
-				OverridesImplementsDialog dialog = new MonoDevelop.Ide.OverridesImplementsDialog ((IType)item);
+				MonoDevelop.Ide.OverridesImplementsDialog dialog = new MonoDevelop.Ide.OverridesImplementsDialog ((IType)item);
 				dialog.Run ();
 			} finally {
 				if (editor != null)
