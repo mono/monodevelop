@@ -62,15 +62,18 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 						return options.Document.CompilationUnit.GetMemberAt (data.Caret.Line, data.Caret.Column) != null;
 				}
 			}
-			
-			if (options.ResolveResult == null || options.ResolveResult.CallingMember == null)
-				return false;
-			
+
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (provider == null)
 				return false;
+			string expressionText = null;
+			if (options.ResolveResult != null)
+				expressionText = options.ResolveResult.ResolvedExpression.Expression;
 			
-			Expression expression = provider.ParseExpression (options.ResolveResult.ResolvedExpression.Expression);
+			if (string.IsNullOrEmpty (expressionText)) 
+				expressionText = data.Document.GetTextAt (data.Caret.Offset, 1);
+
+			Expression expression = provider.ParseExpression (expressionText);
 			return expression is PrimitiveExpression;
 		}
 		
@@ -102,6 +105,27 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			return data.Document.GetTextBetween (start, end);
 		}
 		
+		string SearchNumber (TextEditorData data, out int start, out int end)
+		{
+			start = data.Caret.Offset;
+			while (start > 0) {
+				char ch = data.Document.GetCharAt (start);
+				if (!(Char.IsNumber (ch) || ch == '.' || Char.ToUpper (ch) == 'E' || ch == '+' || ch == '-')) {
+					start++;
+					break;
+				}
+				start--;
+			}
+			end = data.Caret.Offset;
+			while (end < data.Document.Length) {
+				char ch = data.Document.GetCharAt (end);
+				if (!(Char.IsNumber (ch) || ch == '.' || Char.ToUpper (ch) == 'E' || ch == '+' || ch == '-'))
+					break;
+				end++;
+			}
+			return data.Document.GetTextBetween (start, end);
+		}
+		
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
 			List<Change> result = new List<Change> ();
@@ -125,6 +149,9 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 							end++;
 						}
 					}
+				}
+				if (end == 0) {
+					resolveResult = resolver.Resolve (new ExpressionResult (SearchNumber (data, out start, out end)), DomLocation.Empty);
 				}
 			} else {
 				start = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, resolveResult.ResolvedExpression.Region.Start.Column - 1);
