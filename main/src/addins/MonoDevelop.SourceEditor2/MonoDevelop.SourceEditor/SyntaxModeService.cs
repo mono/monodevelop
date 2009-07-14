@@ -35,12 +35,12 @@ namespace MonoDevelop.SourceEditor
 	{
 		static SyntaxModeService ()
 		{
-			Console.WriteLine ("SETUP SMS");
+//			Console.WriteLine ("SETUP SMS");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/CustomModes", delegate(object sender, ExtensionNodeEventArgs args) {
 				SyntaxModeCodon syntaxModeCodon = (SyntaxModeCodon)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					Console.WriteLine ("INstall:" + syntaxModeCodon.MimeTypes);
+//					Console.WriteLine ("INstall:" + syntaxModeCodon.MimeTypes);
 					Mono.TextEditor.Highlighting.SyntaxModeService.InstallSyntaxMode (syntaxModeCodon.MimeTypes, syntaxModeCodon.SyntaxMode);
 					break;
 				}
