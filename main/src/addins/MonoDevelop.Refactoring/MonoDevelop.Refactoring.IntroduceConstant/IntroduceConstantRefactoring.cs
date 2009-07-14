@@ -69,9 +69,11 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			string expressionText = null;
 			if (options.ResolveResult != null)
 				expressionText = options.ResolveResult.ResolvedExpression.Expression;
-			
-			if (string.IsNullOrEmpty (expressionText)) 
-				expressionText = data.Document.GetTextAt (data.Caret.Offset, 1);
+
+			if (string.IsNullOrEmpty (expressionText)) {
+				int start, end;
+				expressionText = SearchNumber (data, out start, out end);
+			}
 
 			Expression expression = provider.ParseExpression (expressionText);
 			return expression is PrimitiveExpression;
