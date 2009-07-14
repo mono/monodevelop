@@ -76,5 +76,15 @@ namespace CSharpBinding.Parser
 				return parser.ParseExpression ();
 			}
 		}
+		
+		public CompilationUnit ParseFile (string content)
+		{
+			content = content.Trim ();
+			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (content))) {
+				parser.Parse ();
+				return parser.CompilationUnit;
+			}
+		}
+		
 	}
 }
