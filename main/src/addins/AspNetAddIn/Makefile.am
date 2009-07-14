@@ -6,6 +6,7 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
@@ -109,6 +110,7 @@ FILES =  \
 	MonoDevelop.AspNet/AspNetExecutionHandler.cs \
 	MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs \
 	MonoDevelop.AspNet/AspNetParserService.cs \
+	MonoDevelop.AspNet/AspNetSyntaxMode.cs \
 	MonoDevelop.AspNet/AspNetToolboxLoader.cs \
 	MonoDevelop.AspNet/AspNetToolboxNode.cs \
 	MonoDevelop.AspNet/AspNetToolboxProvider.cs \

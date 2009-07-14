@@ -23,6 +23,7 @@
 		<Addin id="DesignerSupport" version="2.1.0"/>
 		<Addin id="Deployment" version="2.1.0"/>
 		<Addin id="XmlEditor" version="2.1.0" />
+		<Addin id="SourceEditor2" version="2.1.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -190,6 +191,10 @@
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
+		<SyntaxMode mimeTypes="application/x-aspx" class="MonoDevelop.AspNet.AspNetSyntaxMode"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
