@@ -33,6 +33,8 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using Mono.TextEditor;
+using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -69,10 +71,58 @@ namespace MonoDevelop.Refactoring.Rename
 			return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename, null).Text;
 		}
 		
+		Mono.TextEditor.TextEditor GetEditor (Gtk.Widget widget)
+		{
+			if (widget is Mono.TextEditor.TextEditor)
+				return (Mono.TextEditor.TextEditor)widget;
+			Gtk.Container container = widget as Gtk.Container;
+			if (container != null) {
+				foreach (var child in container.Children) {
+					Mono.TextEditor.TextEditor editor = GetEditor (child);
+					if (editor != null)
+						return editor;
+				}
+			}
+			return null;
+		}
+		
 		public override void Run (RefactoringOptions options)
 		{
-			RenameItemDialog dialog = new RenameItemDialog (options, this);
-			dialog.Show ();
+			if (options.SelectedItem is LocalVariable || options.SelectedItem is IParameter) {
+				MemberReferenceCollection col = GetReferences (options);
+				if (col == null)
+					return;
+				TextEditorData data = options.GetTextEditorData ();
+
+				Mono.TextEditor.TextEditor editor = GetEditor (options.Document.ActiveView.Control);
+				if (editor == null) {
+					RenameItemDialog dialog = new RenameItemDialog (options, this);
+					dialog.Show ();
+					return;
+				}
+
+				Console.WriteLine (options.Document.ActiveView.Control);
+				List<TextLink> links = new List<TextLink> ();
+				TextLink link = new TextLink ("name");
+				int baseOffset = Int32.MaxValue;
+				foreach (MemberReference r in col) {
+					baseOffset = Math.Min (baseOffset, data.Document.LocationToOffset (r.Line - 1, r.Column - 1));
+				}
+				foreach (MemberReference r in col) {
+					link.AddLink (new Segment (data.Document.LocationToOffset (r.Line - 1, r.Column - 1) - baseOffset, r.Name.Length));
+				}
+				
+				links.Add (link);
+				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
+				if (tle.ShouldStartTextLinkMode) {
+					tle.OldMode = data.CurrentMode;
+					tle.StartMode ();
+					data.CurrentMode = tle;
+				}
+			} else {
+				RenameItemDialog dialog = new RenameItemDialog (options, this);
+				dialog.Show ();
+			}
 		}
 		
 		public class RenameProperties
@@ -90,38 +140,26 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
-			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null);
-			MemberReferenceCollection col = null;
-
 			RenameProperties properties = (RenameProperties)prop;
 			List<Change> result = new List<Change> ();
-			if (options.SelectedItem is IType) {
-				IType cls = (IType)options.SelectedItem;
 
-				if (properties.RenameFile) {
-					if (cls.IsPublic) {
-						foreach (IType part in cls.Parts) {
-							if (System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName) == cls.Name) {
-								string newFileName = System.IO.Path.HasExtension (part.CompilationUnit.FileName) ? properties.NewName + System.IO.Path.GetExtension (part.CompilationUnit.FileName) : properties.NewName;
-								newFileName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (part.CompilationUnit.FileName), newFileName);
-								result.Add (new RenameFileChange (part.CompilationUnit.FileName, newFileName));
-							}
+			MemberReferenceCollection col = GetReferences (options);
+			if (col == null)
+				return result;
+
+			if (properties.RenameFile && options.SelectedItem is IType) {
+				IType cls = (IType)options.SelectedItem;
+				if (cls.IsPublic) {
+					foreach (IType part in cls.Parts) {
+						if (System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName) == cls.Name) {
+							string newFileName = System.IO.Path.HasExtension (part.CompilationUnit.FileName) ? properties.NewName + System.IO.Path.GetExtension (part.CompilationUnit.FileName) : properties.NewName;
+							newFileName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (part.CompilationUnit.FileName), newFileName);
+							result.Add (new RenameFileChange (part.CompilationUnit.FileName, newFileName));
 						}
 					}
 				}
-
-				col = refactorer.FindClassReferences (monitor, cls, RefactoryScope.Solution);
-			} else if (options.SelectedItem is IMember) {
-				IMember member = (IMember)options.SelectedItem;
-				col = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution);
-			} else if (options.SelectedItem is LocalVariable) {
-				col = refactorer.FindVariableReferences (monitor, (LocalVariable)options.SelectedItem);
-			} else if (options.SelectedItem is IParameter) {
-				col = refactorer.FindParameterReferences (monitor, (IParameter)options.SelectedItem);
-			} else {
-				return null;
 			}
+			
 			foreach (MemberReference memberRef in col) {
 				TextReplaceChange change = new TextReplaceChange ();
 				change.FileName = memberRef.FileName;
@@ -132,6 +170,24 @@ namespace MonoDevelop.Refactoring.Rename
 				result.Add (change);
 			}
 			return result;
+		}
+		
+		MemberReferenceCollection GetReferences (RefactoringOptions options)
+		{
+			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null);
+			if (options.SelectedItem is IType) {
+				IType cls = (IType)options.SelectedItem;
+				return refactorer.FindClassReferences (monitor, cls, RefactoryScope.Solution);
+			} else if (options.SelectedItem is IMember) {
+				IMember member = (IMember)options.SelectedItem;
+				return refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution);
+			} else if (options.SelectedItem is LocalVariable) {
+				return refactorer.FindVariableReferences (monitor, (LocalVariable)options.SelectedItem);
+			} else if (options.SelectedItem is IParameter) {
+				return refactorer.FindParameterReferences (monitor, (IParameter)options.SelectedItem);
+			}
+			return null;
 		}
 	}
 }
