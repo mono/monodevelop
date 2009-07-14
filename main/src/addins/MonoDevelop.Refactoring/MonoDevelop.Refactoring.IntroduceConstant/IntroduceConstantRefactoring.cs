@@ -125,7 +125,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 					break;
 				end++;
 			}
-			return data.Document.GetTextBetween (start, end);
+			return start < end ? data.Document.GetTextBetween (start, end) : "";
 		}
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)

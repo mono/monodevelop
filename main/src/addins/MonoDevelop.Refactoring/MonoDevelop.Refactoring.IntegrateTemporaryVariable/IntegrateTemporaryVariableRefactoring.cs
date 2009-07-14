@@ -62,7 +62,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		LocalVariableDeclaration GetVariableDeclaration (RefactoringOptions options)
 		{
 			if (!(options.SelectedItem is LocalVariable)) {
-				Console.WriteLine ("!!! Item is not LocalVariable");
+//				Console.WriteLine ("!!! Item is not LocalVariable");
 				return null;
 			}
 			LocalVariable var = (LocalVariable)options.SelectedItem;
@@ -75,14 +75,6 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				return null;
 			Location cursorLocation = new Location (options.Document.TextEditor.CursorColumn, options.Document.TextEditor.CursorLine - var.DeclaringMember.BodyRegion.Start.Line);
 			// relativ to the memberBody
-			Location selectionStartLocation;
-			int l, c;
-			if (options.Document.TextEditor.SelectionStartPosition.Equals (options.Document.TextEditor.CursorPosition)) {
-				options.Document.TextEditor.GetLineColumnFromPosition (options.Document.TextEditor.SelectionEndPosition, out l, out c);
-			} else {
-				options.Document.TextEditor.GetLineColumnFromPosition (options.Document.TextEditor.SelectionStartPosition, out l, out c);
-			}
-			selectionStartLocation = new Location (c, l - var.DeclaringMember.BodyRegion.Start.Line); // relativ to the memberBody
 			INode statementAtCursor = null;
 //			Console.WriteLine ("!!! Suche Variablendeklaration an Position: " + cursorLocation.ToString ());
 			while (result is BlockStatement) {
@@ -91,10 +83,6 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 					if (child.StartLocation <= cursorLocation && child.EndLocation >= cursorLocation) {
 						statementAtCursor = child;
 //						Console.WriteLine ("!!! Gefunden, Typ: " + statementAtCursor.GetType ().ToString ());
-						if (child.StartLocation > selectionStartLocation || child.EndLocation < selectionStartLocation) {
-//							Console.WriteLine ("!!!SelectionStart ausserhalb");
-							return null;
-						}
 						break;
 					}
 				}
@@ -108,10 +96,14 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-//			Console.WriteLine ("!!! IsValid?");
-			if (GetVariableDeclaration (options)  != null) {
-//				Console.WriteLine("Yes, is Valid");
-				return true;
+			Console.WriteLine ("!!! IsValid?");
+			LocalVariableDeclaration d = GetVariableDeclaration (options);
+			if (d != null) {
+				if (d.GetVariableDeclaration (((LocalVariable)options.SelectedItem).Name) != null) {
+					Console.WriteLine ("Yes, is Valid: " + ((LocalVariable)options.SelectedItem).Name);
+					return true;
+				}
+				Console.WriteLine ("VariablenDeclaration of another variable");
 			}
 			return false;
 		}
@@ -122,36 +114,43 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			INode memberNode = GetMemberBodyNode (options);
 			List<Change> changes = new List<Change> ();
 			try {
+				//				Console.WriteLine ("AcceptVisitor");
+				//				Console.WriteLine ("Start: " + memberNode.StartLocation.ToString () + " - End: " + memberNode.EndLocation.ToString ());
 				memberNode.AcceptVisitor (new IntegrateTemporaryVariableVisitor (), new IntegrateTemporaryVariableVisitorOptions (changes, options, declaration));
-			} catch (IntegrateTemporaryVariableException) {
-				return null;
+				//				Console.WriteLine ("AcceptVisitor done");
+			} catch (IntegrateTemporaryVariableException e) {
+				//				Console.WriteLine ("Exception catched");
+				MessageService.ShowError ("Could not perform integration : ", e.Message);
+				return new List<Change>();
 			}
-			return null;
+//			Console.WriteLine ("Changes calculated");
+			return changes;
 		}
 		
 		public override void Run (RefactoringOptions options)
 		{
+			List<Change> changes = PerformChanges (options, null);
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null);
+			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+//			Console.WriteLine ("Changes accepted");
 		}
 		
 		class IntegrateTemporaryVariableVisitor : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
 		{
-			public override object VisitAssignmentExpression (AssignmentExpression assignmentExpression, object data)
+			bool IsPrimary (Expression e)
 			{
-				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
-				if (assignmentExpression.Left is IdentifierExpression && ((IdentifierExpression)assignmentExpression.Left).Identifier == options.GetName ())
-					throw new IntegrateTemporaryVariableAssignmentException ();
-				assignmentExpression.Left.AcceptVisitor(this, data);
-				return assignmentExpression.Right.AcceptVisitor(this, data);
-			}
-			bool MustParantizeForUnary (Expression e)
-			{
+				if (e is IdentifierExpression || e is ParenthesizedExpression || e is PrimitiveExpression) {
+//					if (e is PrimitiveExpression)
+//						Console.WriteLine ("PrimitiveExpression: " + ((PrimitiveExpression)e).StringValue);
+					return true;
+				}
 				if (e is InvocationExpression || e is CastExpression || e is MemberReferenceExpression)
 					return true;
 				return false;
 			}
-			bool MustParantizeForBinary (Expression e)
+			bool IsUnary (Expression e)
 			{
-				if (MustParantizeForUnary (e)) {
+				if (IsPrimary (e)) {
 					return true;
 				}
 				if (e is CastExpression) {
@@ -161,182 +160,308 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			}
 			bool IsExpressionToReplace (Expression e, IntegrateTemporaryVariableVisitorOptions o)
 			{
-				if (!(e is IdentifierExpression))
-					return false;
-				if (((IdentifierExpression)e).Identifier == o.GetName ())
-					return true;
-				return false;
+//				Console.WriteLine ("Checking Replace: " + e.ToString() + " - " + o.GetName());
+				return (e is IdentifierExpression) && (((IdentifierExpression)e).Identifier == o.GetName ());
 			}
 			
-			Change ReplaceExpression (Expression eToReplace, Expression eReplaceWith, IntegrateTemporaryVariableVisitorOptions options)
+			Change ReplaceExpression (Expression toReplace, Expression replaceWith, IntegrateTemporaryVariableVisitorOptions options)
 			{
+//				Console.WriteLine ("Replace");
 				TextReplaceChange change = new TextReplaceChange ();
-				change.Description = string.Format (GettextCatalog.GetString ("Substitute variable {0} with the Initializeexpression"), options.GetName());
+				change.Description = string.Format (GettextCatalog.GetString ("Substitute variable {0} with the Initializeexpression"), options.GetName ());
 				change.FileName = options.Options.Document.FileName;
 
-				change.Offset = options.Options.Document.TextEditor.GetPositionFromLineColumn (eToReplace.StartLocation.Line, eToReplace.StartLocation.Column);
+				change.Offset = options.Options.Document.TextEditor.GetPositionFromLineColumn (toReplace.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, toReplace.StartLocation.Column);
 				change.RemovedChars = options.GetName ().Length;
 
 				INRefactoryASTProvider provider = options.Options.GetASTProvider ();
-				change.InsertedText = options.Options.GetWhitespaces (change.Offset) + provider.OutputNode (options.Options.Dom, eReplaceWith);
+				change.InsertedText = provider.OutputNode (options.Options.Dom, replaceWith);
 
+//				Console.WriteLine ("Replace done");
 				return change;
 			}
 			
-			public override object VisitAddHandlerStatement (AddHandlerStatement statement, object data)
+			public override object VisitLocalVariableDeclaration (LocalVariableDeclaration localVariableDeclaration, object data)
 			{
-				if (IsExpressionToReplace (((AddHandlerStatement)statement).EventExpression, (IntegrateTemporaryVariableVisitorOptions)data)) {
-					throw new IntegrateTemporaryVariableNotImplementedException ();
-				} else {
-					((AddHandlerStatement)statement).EventExpression.AcceptVisitor (this, data);
+//				Console.WriteLine ("LocalVariableDeclaration: " + localVariableDeclaration.StartLocation.ToString () + " - " + localVariableDeclaration.EndLocation.ToString ());
+				localVariableDeclaration.TypeReference.AcceptVisitor (this, data);
+				foreach (VariableDeclaration o in localVariableDeclaration.Variables) {
+					if (o.Name == ((IntegrateTemporaryVariableVisitorOptions)data).GetName ()) {
+						IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+						if (localVariableDeclaration.Variables.Count == 1) {
+							TextReplaceChange change = new TextReplaceChange ();
+							change.Description = string.Format (GettextCatalog.GetString ("Deleting local variable declaration {0}"), options.GetName ());
+							change.FileName = options.Options.Document.FileName;
+
+							change.Offset = options.Options.Document.TextEditor.GetPositionFromLineColumn (localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.StartLocation.Column);
+							int end = options.Options.Document.TextEditor.GetPositionFromLineColumn (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.EndLocation.Column);
+
+							change.RemovedChars = end - change.Offset;
+							change.InsertedText = "";
+							((IntegrateTemporaryVariableVisitorOptions)data).Changes.Add (change);
+						} else {
+							TextReplaceChange change = new TextReplaceChange ();
+							change.Description = string.Format (GettextCatalog.GetString ("Deleting local variable declaration {0}"), options.GetName ());
+							change.FileName = options.Options.Document.FileName;
+
+							change.Offset = options.Options.Document.TextEditor.GetPositionFromLineColumn (localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.StartLocation.Column);
+							int end = options.Options.Document.TextEditor.GetPositionFromLineColumn (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.EndLocation.Column);
+
+							change.RemovedChars = end - change.Offset;
+							localVariableDeclaration.Variables.Remove (options.Declaration.GetVariableDeclaration (options.GetName ()));
+							INRefactoryASTProvider provider = options.Options.GetASTProvider ();
+							change.InsertedText = options.Options.GetWhitespaces (change.Offset) + provider.OutputNode (options.Options.Dom, localVariableDeclaration);
+							((IntegrateTemporaryVariableVisitorOptions)data).Changes.Add (change);
+						}
+					} else {
+						o.AcceptVisitor (this, data);
+					}
 				}
-				if (IsExpressionToReplace (((AddHandlerStatement)statement).HandlerExpression, (IntegrateTemporaryVariableVisitorOptions)data)) {
-					throw new IntegrateTemporaryVariableNotImplementedException ();
-				} else {
-					return ((AddHandlerStatement)statement).HandlerExpression.AcceptVisitor(this, data);
-				}
+				return null;
 			}
+			public override object VisitAssignmentExpression (AssignmentExpression assignmentExpression, object data)
+			{
+//				Console.WriteLine ("AssignmentExpression");
+				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+//				Console.WriteLine (assignmentExpression.ToString ());
+				if (IsExpressionToReplace (assignmentExpression.Left, (IntegrateTemporaryVariableVisitorOptions)data)) {
+//					Console.WriteLine ("Assignment Left");
+					throw new IntegrateTemporaryVariableAssignmentException ();
+				} else {
+//					Console.WriteLine ("Assignment not to replace");
+					assignmentExpression.Left.AcceptVisitor (this, data);
+				}
+				if (IsExpressionToReplace (assignmentExpression.Right, (IntegrateTemporaryVariableVisitorOptions)data)) {
+					options.Changes.Add (ReplaceExpression (assignmentExpression.Right, options.GetInitializer (), options));
+					return null;
+				} else
+					return assignmentExpression.Right.AcceptVisitor (this, data);
+			}
+			
+			// ExpressionStatement, LockStatement can not be the parent of an IdentifierExpression
 			
 			public override object VisitAddressOfExpression (AddressOfExpression expression, object data)
 			{
+//				Console.WriteLine ("AddressOfExpression");
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
-				if (IsExpressionToReplace (expression, (IntegrateTemporaryVariableVisitorOptions)data)) {
-					options.Changes.Add (ReplaceExpression (expression.Expression, options.Declaration.GetVariableDeclaration (options.GetName ()).Initializer, options));
-					return null;
+				if (IsExpressionToReplace (expression.Expression, options)) {
+					// in this Case the integration is not valid
+					throw new IntegrateTemporaryVariableAddressOfException ();
 				} else {
 					return base.VisitAddressOfExpression (expression, data);
 				}
 			}
+			public override object VisitCastExpression (CastExpression expression, object data)
+			{
+//				Console.WriteLine ("CastExpression");
+				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+				if (IsExpressionToReplace (expression.Expression, (IntegrateTemporaryVariableVisitorOptions)data)) {
+					if (IsPrimary (options.GetInitializer ()))
+						options.Changes.Add (ReplaceExpression (expression.Expression, options.GetInitializer (), options));
+					else
+						options.Changes.Add (ReplaceExpression (expression.Expression, new ParenthesizedExpression (options.GetInitializer ()), options));
+					return null;
+				} else {
+					return base.VisitCastExpression (expression, data);
+				}
+			}
+			bool IsMultiplicativ (BinaryOperatorType t) 
+			{
+				return t == BinaryOperatorType.Divide || t == BinaryOperatorType.Multiply || t == BinaryOperatorType.Modulus;
+			}
+			bool IsAdditivOrHigher (BinaryOperatorType t)
+			{
+				return IsMultiplicativ(t) || t == BinaryOperatorType.Add || t == BinaryOperatorType.Subtract;
+			}
+			bool IsShiftOrHigher (BinaryOperatorType t)
+			{
+				return IsAdditivOrHigher(t) || t == BinaryOperatorType.ShiftLeft || t == BinaryOperatorType.ShiftRight;
+			}
+			public override object VisitTypeOfIsExpression (TypeOfIsExpression stmt, object data)
+			{
+				Console.WriteLine ("TypeOfIsExpression");
+				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+				if (IsExpressionToReplace (stmt.Expression, options)) {
+					if (IsUnary (options.GetInitializer ()) || (options.GetInitializer () is BinaryOperatorExpression && IsShiftOrHigher (((BinaryOperatorExpression)options.GetInitializer ()).Op)))
+						options.Changes.Add (ReplaceExpression (stmt.Expression, options.GetInitializer (), options)); else
+						options.Changes.Add (ReplaceExpression (stmt.Expression, new ParenthesizedExpression (options.GetInitializer ()), options));
+					return null;
+				} else {
+					return base.VisitTypeOfIsExpression (stmt, data);
+				}
+			}
+			public override object VisitUnaryOperatorExpression (UnaryOperatorExpression expression, object data)
+			{
+				Console.WriteLine ("UnaryOperatorExpression");
+				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+				if (IsExpressionToReplace (expression.Expression, options)) {
+					if (IsUnary (options.GetInitializer ()))
+						options.Changes.Add (ReplaceExpression (expression.Expression, options.GetInitializer (), options)); else
+						options.Changes.Add (ReplaceExpression (expression.Expression, new ParenthesizedExpression (options.GetInitializer ()), options));
+					return null;
+				} else {
+					return base.VisitUnaryOperatorExpression (expression, data);
+				}
+			}
+			public override object VisitBinaryOperatorExpression (BinaryOperatorExpression expression, object data) // there are too much Parenthisiz
+			{
+				Console.WriteLine ("BinaryOperatorExpression");
+				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+				if (IsExpressionToReplace (expression.Left, (IntegrateTemporaryVariableVisitorOptions)data))
+					if (IsUnary (options.GetInitializer ()))
+						options.Changes.Add (ReplaceExpression (expression.Left, options.GetInitializer (), options)); else
+						options.Changes.Add (ReplaceExpression (expression.Left, new ParenthesizedExpression (options.GetInitializer ()), options));
+				else
+					expression.Left.AcceptVisitor(this, data);
+				Console.WriteLine("LeftSide done");
+				if (IsExpressionToReplace (expression.Right, (IntegrateTemporaryVariableVisitorOptions)data)) {
+					if (IsUnary (options.GetInitializer ()))
+						options.Changes.Add (ReplaceExpression (expression.Right, options.GetInitializer (), options)); else
+						options.Changes.Add (ReplaceExpression (expression.Right, new ParenthesizedExpression (options.GetInitializer ()), options));
+					return null;
+				} else
+					return expression.Right.AcceptVisitor(this, data);
+			}
+			public override object VisitConditionalExpression (ConditionalExpression expression, object data)
+			{
+				Console.WriteLine ("ConditionalExpression");
+				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+				if (IsExpressionToReplace (expression.Condition, (IntegrateTemporaryVariableVisitorOptions)data))
+					if (IsUnary (options.GetInitializer ()))
+						options.Changes.Add (ReplaceExpression (expression.Condition, options.GetInitializer (), options)); else
+						options.Changes.Add (ReplaceExpression (expression.Condition, new ParenthesizedExpression (options.GetInitializer ()), options)); else
+					expression.Condition.AcceptVisitor (this, data);
+				if (IsExpressionToReplace (expression.TrueExpression, (IntegrateTemporaryVariableVisitorOptions)data))
+					if (!(options.GetInitializer () is AssignmentExpression || options.GetInitializer () is ConditionalExpression))
+						options.Changes.Add (ReplaceExpression (expression.TrueExpression, options.GetInitializer (), options)); else
+						options.Changes.Add (ReplaceExpression (expression.TrueExpression, new ParenthesizedExpression (options.GetInitializer ()), options)); else
+					expression.TrueExpression.AcceptVisitor (this, data);
+				if (IsExpressionToReplace (expression.FalseExpression, (IntegrateTemporaryVariableVisitorOptions)data)) {
+					if (!(options.GetInitializer () is AssignmentExpression || options.GetInitializer () is ConditionalExpression))
+						options.Changes.Add (ReplaceExpression (expression.FalseExpression, options.GetInitializer (), options)); else
+						options.Changes.Add (ReplaceExpression (expression.FalseExpression, new ParenthesizedExpression (options.GetInitializer ()), options));
+					return null;
+				} else
+					return expression.FalseExpression.AcceptVisitor(this, data);
+			}
+			
+			public override object VisitIndexerExpression (IndexerExpression e, object data)
+			{
+				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+				if (IsExpressionToReplace (e.TargetObject, options)) {
+					if (IsUnary (options.GetInitializer ()))
+						options.Changes.Add (ReplaceExpression (e.TargetObject, options.GetInitializer (), options)); else
+						options.Changes.Add (ReplaceExpression (e.TargetObject, new ParenthesizedExpression (options.GetInitializer ()), options));
+				} else
+					e.TargetObject.AcceptVisitor (this, data);
+				
+				foreach (Expression o in e.Indexes) {
+					o.AcceptVisitor(this, data);
+				}
+				return null;
+			}
+			
+			public override object VisitInvocationExpression (InvocationExpression e, object data)
+			{
+				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+				if (IsExpressionToReplace (e.TargetObject, options)) {
+					if (IsUnary (options.GetInitializer ()))
+						options.Changes.Add (ReplaceExpression (e.TargetObject, options.GetInitializer (), options)); else
+						options.Changes.Add (ReplaceExpression (e.TargetObject, new ParenthesizedExpression (options.GetInitializer ()), options));
+				} else
+					e.TargetObject.AcceptVisitor (this, data);
+
+				foreach (Expression o in e.Arguments) {
+					o.AcceptVisitor (this, data);
+				}
+				return null;
+			}
+			public override object VisitMemberReferenceExpression (MemberReferenceExpression e, object data)
+			{
+				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+				if (IsExpressionToReplace (e.TargetObject, options)) {
+					if (IsUnary (options.GetInitializer ()))
+						options.Changes.Add (ReplaceExpression (e.TargetObject, options.GetInitializer (), options)); else
+						options.Changes.Add (ReplaceExpression (e.TargetObject, new ParenthesizedExpression (options.GetInitializer ()), options));
+					return null;
+				} else
+					return e.TargetObject.AcceptVisitor (this, data);
+			}
 			
 			public override object VisitIdentifierExpression (IdentifierExpression e, object data)
 			{
+				Console.WriteLine ("IdentifierExpression");
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (!(e.Identifier == options.GetName ())) {
 					return data;
 				}
-				if (e.Parent is BinaryOperatorExpression) {
-					Expression initializer = options.Declaration.GetVariableDeclaration (options.GetName ()).Initializer;
-					if (MustParantizeForBinary (initializer)) {
-
-					} else {
-
-					}
-				} else if (e.Parent is UnaryOperatorExpression) {
-					Expression initializer = options.Declaration.GetVariableDeclaration (options.GetName ()).Initializer;
-					if (MustParantizeForUnary (initializer)) {
-
-					} else {
-
-					}
-				} else if (e.Parent is AddressOfExpression) {
-
-				} else if (e.Parent is AssignmentExpression) {
-
-				} else if (e.Parent is CaseLabel) {
-
-				} else if (e.Parent is CastExpression) {
-
+				// if sometimes Paranthesis are needed, there is an own Visitor for the Parent
+				// here are all Cases left, where no Parent Visitor ist written
+				// somtimes because the Syntax ist not clear (add them if you know the Syntax)
+				// or because no Paranthesis are needet (because different Chars are used to separate the expression)
+				// or because the integration is not valid in this case
+				if (e.Parent is CaseLabel) {
+					throw new IntegrateTemporaryVariableNotImplementedException ();
+				} else if (e.Parent is AddHandlerStatement) {
+					throw new IntegrateTemporaryVariableNotImplementedException ();
+				} else if (e.Parent is RemoveHandlerStatement) {
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is CatchClause) {
-
-				} else if (e.Parent is CheckedExpression) {
-
-				} else if (e.Parent is CollectionInitializerExpression) {
-
-				} else if (e.Parent is ConditionalExpression) {
-
-				} else if (e.Parent is ConstructorInitializer) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is DirectionExpression) {
 					if (((DirectionExpression)e.Parent).FieldDirection == FieldDirection.Out || ((DirectionExpression)e.Parent).FieldDirection == FieldDirection.Ref)
 						throw new IntegrateTemporaryVariableDirectionException ();
-
 				} else if (e.Parent is DoLoopStatement) {
-
-				} else if (e.Parent is ElseIfSection) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is EraseStatement) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is ErrorStatement) {
-
+					// VB
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is EventDeclaration) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is ExpressionRangeVariable) {
-
-				} else if (e.Parent is ExpressionStatement) {
-
-				} else if (e.Parent is ForeachStatement) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is ForNextStatement) {
-
-				} else if (e.Parent is ForStatement) {
-
-				} else if (e.Parent is GotoCaseStatement) {
-
-				} else if (e.Parent is IfElseStatement) {
-
-				} else if (e.Parent is IndexerExpression) {
-
-				} else if (e.Parent is InvocationExpression) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is LambdaExpression) {
-
-				} else if (e.Parent is LockStatement) {
-
-				} else if (e.Parent is MemberReferenceExpression) {
-
-				} else if (e.Parent is NamedArgumentExpression) {
-
-				} else if (e.Parent is ObjectCreateExpression) {
-
-				} else if (e.Parent is ParameterDeclarationExpression) {
-
-				} else if (e.Parent is ParenthesizedExpression) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is PointerReferenceExpression) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is QueryExpressionFromOrJoinClause) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is QueryExpressionGroupClause) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is QueryExpressionJoinClause) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is QueryExpressionJoinConditionVB) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is QueryExpressionLetClause) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is QueryExpressionOrdering) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is QueryExpressionPartitionVBClause) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is QueryExpressionSelectClause) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is QueryExpressionWhereClause) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is RaiseEventStatement) {
-
-				} else if (e.Parent is RemoveHandlerStatement) {
-
-				} else if (e.Parent is ReturnStatement) {
-
+					throw new IntegrateTemporaryVariableNotImplementedException ();
 				} else if (e.Parent is StackAllocExpression) {
-
-				} else if (e.Parent is SwitchStatement) {
-
-				} else if (e.Parent is ThrowStatement) {
-
-				} else if (e.Parent is TypeOfIsExpression) {
-
-				} else if (e.Parent is UncheckedExpression) {
-
-				} else if (e.Parent is VariableDeclaration) {
-
-				} else if (e.Parent is WithStatement) {
-					
-				} 
+					throw new IntegrateTemporaryVariableNotImplementedException ();
+				}
+				// ConstructorInitializer, WithStatement, ParameterDeclarationExpression, CollectionInitializerExpression, ParenthesizedExpression, 
+				// ElseIfSection, IfElseStatement, ForeachStatement, ForStatement, Indexes of the IndexerExpression, Arguments of the InvocationExpression,
+				// NamedArgumentExpression, ObjectCreateExpression, VariableDeclaration (if the Initializer is the IdentifierExpression, this is handled here)
+				// ThrowStatement, SwitchStatement, ReturnStatement, GotoCaseStatement, CheckedExpression, UncheckedExpression
+				options.Changes.Add (ReplaceExpression (e, options.GetInitializer (), options));
 				return data;
 			}
 		}
 		class IntegrateTemporaryVariableException : System.Exception
+		{}
+		class IntegrateTemporaryVariableAddressOfException : IntegrateTemporaryVariableException
 		{}
 		class IntegrateTemporaryVariableAssignmentException : IntegrateTemporaryVariableException
 		{}
@@ -361,6 +486,10 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			public LocalVariableDeclaration Declaration {
 				get;
 				set;
+			}
+			public Expression GetInitializer ()
+			{
+				return Declaration.GetVariableDeclaration (GetName ()).Initializer;
 			}
 			public string GetName ()
 			{
