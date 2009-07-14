@@ -50,17 +50,17 @@ namespace Mono.TextEditor.Highlighting
 		
 		public Regex Begin {
 			get;
-			private set;
+			protected set;
 		}
 		
 		public Regex Exit {
 			get;
-			private set;
+			protected set;
 		}
 		
 		public Regex End {
 			get;
-			private set;
+			protected set;
 		}
 
 		public string Color {

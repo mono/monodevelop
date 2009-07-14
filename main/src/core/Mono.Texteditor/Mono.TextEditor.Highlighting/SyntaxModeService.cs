@@ -121,7 +121,7 @@ namespace Mono.TextEditor.Highlighting
 		public static SyntaxMode GetSyntaxMode (string mimeType)
 		{
 			if (syntaxModes.ContainsKey (mimeType))
-				return syntaxModes [mimeType];
+				return syntaxModes[mimeType];
 			if (syntaxModeLookup.ContainsKey (mimeType)) {
 				LoadSyntaxMode (mimeType);
 				syntaxModeLookup.Remove (mimeType);
