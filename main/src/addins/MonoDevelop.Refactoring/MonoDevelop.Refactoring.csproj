@@ -71,6 +71,8 @@
     <Compile Include="MonoDevelop.Refactoring.CreateClass\CreateStructCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodAstTransformer.cs" />
+    <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\MoveTypeToFileRefactoring.cs" />
+    <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\TypeFilterTransformer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -80,6 +82,7 @@
     <Folder Include="MonoDevelop.Refactoring.DeclareLocal\" />
     <Folder Include="MonoDevelop.Refactoring.IntroduceConstant\" />
     <Folder Include="MonoDevelop.Refactoring.CreateClass\" />
+    <Folder Include="MonoDevelop.Refactoring.MoveTypeToFile\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />

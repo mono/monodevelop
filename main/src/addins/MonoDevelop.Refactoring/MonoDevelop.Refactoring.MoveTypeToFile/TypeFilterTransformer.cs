@@ -1,5 +1,5 @@
 // 
-// INRefactoryASTProvider.cs
+// TypeFilterTransformer.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,26 +25,30 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.NRefactory;
-using System.IO;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.Visitors;
 
-
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.Refactoring.MoveTypeToFile
 {
-	public interface INRefactoryASTProvider
+	public class TypeFilterTransformer : AbstractAstTransformer
 	{
-		string OutputNode (ProjectDom dom, INode node);
-		string OutputNode (ProjectDom dom, INode node, string indent);
+		string fullName;
+		public ICSharpCode.NRefactory.Ast.TypeDeclaration TypeDeclaration {
+			get;
+			set;
+		}
+		public TypeFilterTransformer (string fullName)
+		{
+			this.fullName = fullName;
+		}
 		
-		INode ParseText (string text);
-		Expression ParseExpression (string expressionText);
-		CompilationUnit ParseFile (string content);
-		
-		bool CanGenerateASTFrom (string mimeType);
+		public override object VisitTypeDeclaration (ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration, object data)
+		{
+			if (typeDeclaration.Name != fullName) {
+				RemoveCurrentNode ();
+				return null;
+			}
+			TypeDeclaration = typeDeclaration;
+			return base.VisitTypeDeclaration (typeDeclaration, data);
+		}
 	}
-	
-	
 }
