@@ -1,3 +1,8 @@
+2009-07-14  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextLinkEditMode.cs: It's no longer needed
+	  to provide a list provider for text link edit mode.
+
 2009-07-11  Matt Enright  <awickedshimmy@gmail.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Reset insertion cursor.

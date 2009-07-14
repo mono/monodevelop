@@ -103,23 +103,23 @@ namespace Mono.TextEditor
 		#region IListDataProvider implementation
 		public string GetText (int n)
 		{
-			return Values.GetText (n);
+			return Values != null ? Values.GetText (n) : "";
 		}
 		
 		public string this [int n] {
 			get {
-				return Values[n];
+				return Values != null ? Values[n] : "";
 			}
 		}
 		
 		public Gdk.Pixbuf GetIcon (int n)
 		{
-			return Values.GetIcon (n);
+			return Values != null ? Values.GetIcon (n) : null;
 		}
 		
 		public int Count {
 			get {
-				return Values.Count;
+				return Values != null ? Values.Count : 0;
 			}
 		}
 		#endregion
