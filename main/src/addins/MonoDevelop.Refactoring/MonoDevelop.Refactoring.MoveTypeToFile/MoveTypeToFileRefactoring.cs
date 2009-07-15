@@ -48,7 +48,8 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 		public override bool IsValid (RefactoringOptions options)
 		{
 			IType type = options.SelectedItem as IType;
-			if (type == null || File.Exists (GetCorrectFileName (type)))
+			string fileName = GetCorrectFileName (type);
+			if (type == null || string.IsNullOrEmpty (fileName) || File.Exists (fileName))
 				return false;
 			return Path.GetFileNameWithoutExtension (type.CompilationUnit.FileName) != type.Name;
 		}
@@ -96,6 +97,8 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 
 		static string GetCorrectFileName (MonoDevelop.Projects.Dom.IType type)
 		{
+			if (type == null || type.CompilationUnit == null || string.IsNullOrEmpty (type.CompilationUnit.FileName))
+				return null;
 			return Path.Combine (Path.GetDirectoryName (type.CompilationUnit.FileName), type.Name + Path.GetExtension (type.CompilationUnit.FileName));
 		}
 	}
