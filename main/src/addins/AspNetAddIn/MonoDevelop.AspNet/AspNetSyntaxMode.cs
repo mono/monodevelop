@@ -30,11 +30,10 @@ using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
 using Mono.TextEditor;
 using System.Xml;
+using System.Text;
 
 namespace MonoDevelop.AspNet
 {
-
-
 	public class AspNetSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{
 		SyntaxMode charpMode;
@@ -63,6 +62,7 @@ namespace MonoDevelop.AspNet
 		{
 			public ASPNetSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack) : base (doc, mode, line, spanStack)
 			{}
+			
 			class CSharpSpan : Span
 			{
 				public CSharpSpan ()
@@ -73,6 +73,17 @@ namespace MonoDevelop.AspNet
 					Color = "";
 				}
 			}
+			class CodeDeclarationSpan : Span
+			{
+				public CodeDeclarationSpan (string language)
+				{
+					Rule = "mode:" + language;
+					Begin = new Regex ("<%");
+					End = new Regex ("<%");
+					Color = "";
+				}
+			}
+			
 			protected override void ScanSpan (ref int i)
 			{
 				if (i + 3 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetCharAt (i + 2) != '@') {
@@ -82,11 +93,82 @@ namespace MonoDevelop.AspNet
 					OnFoundSpanBegin (span, i, 0);
 					return;
 				}
+
+
+				
 				base.ScanSpan (ref i);
+			}
+			
+			static string GetMimeForLanguage (string language)
+			{
+				switch (language) {
+				case "C#":
+					return "text/x-csharp";
+				case "VB":
+					return "text/x-vb";
+				case "JScript.NET":
+					return "application/javascript";
+				}
+				return null;
 			}
 			
 			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, int i)
 			{
+				if (doc.GetCharAt (i) == '>') {
+					int j = i;
+					while (j > 0 && doc.GetCharAt (j) != '<')
+						j--;
+
+					if (j + 7 < doc.Length && doc.GetTextAt (j, 7) == "<script") {
+						StringBuilder langBuilder = new StringBuilder ();
+						j += 7;
+						while (j < doc.Length && doc.GetCharAt (j) != '>') {
+							if (j + 8 < doc.Length && doc.GetTextAt (j, 8) == "language") {
+								j += 8;
+								bool inString = false;
+								while (j < doc.Length) {
+									char ch = doc.GetCharAt (j);
+									if (ch == '"' || ch == '\'') {
+										if (inString)
+											break;
+										inString = true;
+										j++;
+										continue;
+									}
+									if (inString)
+										langBuilder.Append (ch);
+									j++;
+								}
+								break;
+							}
+							j++;
+						}
+						string mime = GetMimeForLanguage (langBuilder.ToString ());
+						if (mime != null) {
+							bool result = base.ScanSpanEnd (cur, i);
+							CodeDeclarationSpan span = new CodeDeclarationSpan (mime);
+							spanStack.Push (span);
+							ruleStack.Push (GetRule (span));
+							OnFoundSpanBegin (span, i + 1, 0);
+							return result;
+						}
+					}
+				}
+				
+				if (spanStack.Any (s => s is CodeDeclarationSpan) && i + 9 < doc.Length && doc.GetTextAt (i, 9) == "</script>") {
+					while (!(spanStack.Peek () is CodeDeclarationSpan)) {
+						OnFoundSpanEnd (spanStack.Peek (), i, 0);
+						spanStack.Pop ();
+						if (ruleStack.Count > 1)
+							ruleStack.Pop ();
+					}
+					cur = spanStack.Peek ();
+					OnFoundSpanEnd (cur, i, 0);
+					spanStack.Pop ();
+					if (ruleStack.Count > 1)
+						ruleStack.Pop ();
+				}
+				
 				if (spanStack.Any (s => s is CSharpSpan) && i + 2 < doc.Length && doc.GetTextAt (i, 2) == "%>") {
 					while (!(spanStack.Peek () is CSharpSpan)) {
 						OnFoundSpanEnd (spanStack.Peek (), i, 0);
