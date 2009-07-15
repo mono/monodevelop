@@ -1,3 +1,9 @@
+2009-07-15  Mike Krüger  <mkrueger@novell.com>
+
+	* SyntaxModes/CSharpSyntaxMode.xml: Applied "[PATCH] New
+	  keywords for C#3: var, select, etc (including all LINQ
+	  keywords)".
+
 2009-07-14  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/Span.cs:

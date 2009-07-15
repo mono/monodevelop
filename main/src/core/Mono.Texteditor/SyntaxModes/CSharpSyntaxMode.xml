@@ -101,6 +101,13 @@
 		<Word>__arglist</Word>
 		<Word>__makeref</Word>
 		<Word>__reftype</Word>
+		<Word>by</Word>
+		<Word>descending</Word>
+		<Word>from</Word>
+		<Word>group</Word>
+		<Word>into</Word>
+		<Word>orderby</Word>
+		<Word>select</Word>
 	</Keywords>
 	
 	<Keywords color = "keyword.exceptions">
@@ -152,6 +159,7 @@
 		<Word>ulong</Word>
 		<Word>object</Word>
 		<Word>string</Word>
+		<Word>var</Word>
 	</Keywords>
 	
 	<Keywords color = "constant.language.void">
