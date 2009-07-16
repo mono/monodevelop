@@ -414,14 +414,16 @@ namespace MonoDevelop.Ide.Gui.Content
 				completionWidget.CompletionContextChanged += OnCompletionContextChanged;
 		}
 
-		bool disposed;
+		bool disposed = false;
 		public override void Dispose ()
 		{
 			if (!disposed) {
-				disposed = false;
+				disposed = true;
 				PropertyService.PropertyChanged -= OnPropertyUpdated;
-				base.Dispose ();
+				if (completionWidget != null)
+					completionWidget.CompletionContextChanged -= OnCompletionContextChanged;
 			}
+			base.Dispose ();
 		}
 
 		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
