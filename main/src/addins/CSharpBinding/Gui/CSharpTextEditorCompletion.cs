@@ -153,7 +153,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 		try {
-			if (dom == null || Document.CompilationUnit == null)
+			if (dom == null /*|| Document.CompilationUnit == null*/)
 				return null;
 			if (completionChar != '#' && stateTracker.Engine.IsInsidePreprocessorDirective)
 				return null;
@@ -172,7 +172,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				int idx = result.Expression.LastIndexOf ('.');
 				if (idx > 0)
 					result.Expression = result.Expression.Substring (0, idx);
-				
 				NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom,
 				                                                                                Document.CompilationUnit,
 				                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
@@ -969,11 +968,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 					// Check if the name prefix is a type/namespace alias, in which case
 					// we don't have to show full names
 					prefixIsAlias = false;
-					foreach (IUsing u in unit.Usings) {
-						foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
-							if (alias.Key == namePrefix || alias.Key + "::" == namePrefix) {
-								prefixIsAlias = true;
-								break;
+					if (unit != null) {
+						foreach (IUsing u in unit.Usings) {
+							foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+								if (alias.Key == namePrefix || alias.Key + "::" == namePrefix) {
+									prefixIsAlias = true;
+									break;
+								}
 							}
 						}
 					}
@@ -998,10 +999,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				this.FullyQualify = false;
 				
 				// Get a list of all namespaces in scope
-				foreach (IUsing u in unit.Usings) {
-					if (!u.IsFromNamespace || u.Region.Contains (location)) {
-						foreach (string ns in u.Namespaces)
-							namespacesInScope.Add (ns);
+				if (unit != null) {
+					foreach (IUsing u in unit.Usings) {
+						if (!u.IsFromNamespace || u.Region.Contains (location)) {
+							foreach (string ns in u.Namespaces)
+								namespacesInScope.Add (ns);
+						}
 					}
 				}
 			}
