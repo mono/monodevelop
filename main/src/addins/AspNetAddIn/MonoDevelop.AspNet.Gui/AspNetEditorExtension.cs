@@ -105,24 +105,28 @@ namespace MonoDevelop.AspNet.Gui
 				}
 				return null;
 			}
-			
+
 			//non-xml tag completion
 			if (currentChar == '<' && !(Tracker.Engine.CurrentState is S.XmlFreeState) ) {
 				CompletionDataList list = new CompletionDataList ();
 				AddAspBeginExpressions (list, AspDocument);
 				return list;
 			}
-			
+
 			//simple completion for ASP.NET expressions
 			if (Tracker.Engine.CurrentState is AspNetExpressionState
-			    && ((previousChar == ' ' && char.IsLetter (currentChar))
-			        || (currentChar == ' ' && forced)))
+			/*    && ((previousChar == ' ' && char.IsLetter (currentChar))
+			        || (currentChar == ' ' && forced))*/)
 			{
-				AspNetExpression expr = Tracker.Engine.Nodes.Peek () as AspNetExpression;
+				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion completion = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument);
+				ICompletionDataList result = completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
+				completion.Dispose ();
+				return result;
+/*				AspNetExpression expr = Tracker.Engine.Nodes.Peek () as AspNetExpression;
 				CompletionDataList list = HandleExpressionCompletion (expr);
 				if (list != null && !forced)
 					triggerWordLength = 1;
-				return list;
+				return list;*/
 			}
 			
 			if (AspCU == null || AspCU.PageInfo.DocType == null) {
@@ -136,6 +140,16 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
+		}
+		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
+		{
+			if (Tracker.Engine.CurrentState is AspNetExpressionState) {
+				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion completion = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument);
+				IParameterDataProvider pdp = completion.HandleParameterCompletion (completionContext, completionChar);
+				completion.Dispose ();
+				return pdp;
+			}
+			return base.HandleParameterCompletion (completionContext, completionChar);
 		}
 		
 		protected override void GetElementCompletions (CompletionDataList list)
@@ -346,7 +360,6 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			if (!(expr is AspNetDataBindingExpression || expr is AspNetRenderExpression))
 				return null;
-			
 			IType codeBehindClass;
 			ProjectDom projectDatabase;
 			GetCodeBehind (AspCU, out codeBehindClass, out projectDatabase);

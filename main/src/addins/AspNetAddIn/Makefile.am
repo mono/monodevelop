@@ -2,6 +2,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.AspNet
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.AspNet.dll
 
 DEPS =  \
+	$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
