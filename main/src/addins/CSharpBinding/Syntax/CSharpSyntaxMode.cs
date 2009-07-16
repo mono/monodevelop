@@ -154,7 +154,7 @@ namespace MonoDevelop.CSharpBinding
 					if (project != null) {
 						CSharpCompilerParameters cparams = ((DotNetProjectConfiguration)project.GetActiveConfiguration (project.ParentSolution.DefaultConfigurationId)).CompilationParameters as CSharpCompilerParameters;
 						if (cparams != null) {
-							string[] syms = cparams.DefineSymbols.Split (';');
+							string[] syms = cparams.DefineSymbols.Split (';', ',');
 							foreach (string s in syms) {
 								string ss = s.Trim ();
 								if (ss.Length > 0 && !symbols.Contains (ss))
