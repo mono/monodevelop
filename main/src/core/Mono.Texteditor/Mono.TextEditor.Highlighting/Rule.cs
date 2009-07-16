@@ -134,7 +134,7 @@ namespace Mono.TextEditor.Highlighting
 		public Rule (SyntaxMode mode)
 		{
 			this.mode = mode;
-			this.Delimiter = "&()<>{}[]~!@%^*-+=|\\#/:;\"' ,\t.?";
+			this.Delimiter = "&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?";
 		}
 		
 		public virtual Rule GetRule (string name)
