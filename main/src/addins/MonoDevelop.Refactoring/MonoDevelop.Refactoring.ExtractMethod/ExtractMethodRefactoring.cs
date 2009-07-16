@@ -76,26 +76,36 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		public override void Run (RefactoringOptions options)
 		{
-			var buffer = options.Document.TextEditor;
-			if (buffer.SelectionStartPosition - buffer.SelectionEndPosition == 0)
+			ExtractMethodParameters param = CreateParameters (options);
+			if (param == null)
 				return;
+			ExtractMethodDialog dialog = new ExtractMethodDialog (options, this, param);
+			dialog.Show ();
+		}
+		
+		public ExtractMethodParameters CreateParameters (RefactoringOptions options)
+		{
+			var buffer = options.Document.TextEditor;
+			
+			if (buffer.SelectionStartPosition - buffer.SelectionEndPosition == 0)
+				return null;
 
 			ParsedDocument doc = options.ParseDocument ();
 			if (doc == null || doc.CompilationUnit == null)
-				return;
+				return null;
 
 			int line, column;
 			buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out column);
 			IMember member = doc.CompilationUnit.GetMemberAt (line, column);
 			if (member == null)
-				return;
+				return null;
+			
 			ExtractMethodParameters param = new ExtractMethodParameters () {
 				DeclaringMember = member,
 				Location = new DomLocation (line, column)
 			};
 			Analyze (options, param, true);
-			ExtractMethodDialog dialog = new ExtractMethodDialog (options, this, param);
-			dialog.Show ();
+			return param;
 		}
 		
 		public class ExtractMethodParameters 

@@ -91,7 +91,12 @@ namespace MonoDevelop.Refactoring
 		
 		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes)
 		{
-			RefactorerContext rctx = new RefactorerContext (dom, MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance, null);
+			AcceptChanges (monitor, dom, changes, MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance);
+		}
+		
+		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
+		{
+			RefactorerContext rctx = new RefactorerContext (dom, fileProvider, null);
 			RenameHandler handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
 			for (int i = 0; i < changes.Count; i++) {
@@ -116,7 +121,6 @@ namespace MonoDevelop.Refactoring
 		public static INRefactoryASTProvider GetASTProvider (string mimeType)
 		{
 			foreach (INRefactoryASTProvider provider in astProviders) {
-				Console.WriteLine ("provider:" + provider);
 				if (provider.CanGenerateASTFrom (mimeType)) {
 					return provider;
 				}

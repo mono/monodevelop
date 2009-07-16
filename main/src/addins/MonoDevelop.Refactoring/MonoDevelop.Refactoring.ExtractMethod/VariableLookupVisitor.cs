@@ -127,8 +127,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					IsDefined = true, 
 					ReturnType = ConvertTypeReference (localVariableDeclaration.TypeReference)
 				};
-				Console.WriteLine ("declare:" + varDecl.Name);
-				
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
