@@ -1,6 +1,11 @@
 2009-07-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* Mono.TextEditor.csproj: Added removed gtk-dotnet reference.
+
+2009-07-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Mono.TextEditor.Highlighting/Rule.cs: Added ruby syntax
 	  highlighting from 
