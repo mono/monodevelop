@@ -34,12 +34,20 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
-	public class TestViewContent : AbstractViewContent, IEditableTextBuffer
+	public class TestViewContent : AbstractViewContent, IEditableTextBuffer, Mono.TextEditor.ITextEditorDataProvider
 	{
+		TextEditorData data;
+		
 		public override Gtk.Widget Control {
 			get {
 				return null;
 			}
+		}
+		
+		public TestViewContent ()
+		{
+			document = new Mono.TextEditor.Document ();
+			data = new TextEditorData (document);
 		}
 		
 		public override void Load(string fileName)
@@ -58,7 +66,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			}
 		}
 		
-		Mono.TextEditor.Document document = new Mono.TextEditor.Document ();
+		Mono.TextEditor.Document document;
 		public string Text {
 			get {
 				return document.Text;
@@ -117,12 +125,27 @@ namespace MonoDevelop.CSharpBinding.Tests
 			}
 		}
 
-		public int SelectionStartPosition { get { return 0; } }
-		public int SelectionEndPosition { get { return 0; } }
+		public int SelectionStartPosition { 
+			get {
+				if (!data.IsSomethingSelected)
+					return data.Caret.Offset;
+				return data.SelectionRange.Offset;
+			}
+		}
+		
+		public int SelectionEndPosition { 
+			get {
+				if (!data.IsSomethingSelected)
+					return data.Caret.Offset;
+				return data.SelectionRange.EndOffset;
+			}
+		}
 		
 		public void Select (int startPosition, int endPosition)
 		{
+			data.SelectionRange = new Segment (startPosition, endPosition - startPosition);
 		}
+		
 		public void ShowPosition (int position)
 		{
 		}
@@ -156,6 +179,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 		{
 		}
 		
+		public TextEditorData GetTextEditorData ()
+		{
+			return data;
+		}
 		public event EventHandler CaretPositionSet;
 		public event EventHandler<TextChangedEventArgs> TextChanged;
 	}

@@ -1,3 +1,12 @@
+2009-07-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* MonoDevelop.Refactoring:
+	* MonoDevelop.CSharpBinding/TestViewContent.cs:
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs: Added first
+	  refactoring unit test for extract method.
+
 2009-07-07  Mike Krüger  <mkrueger@novell.com>
 
 	* TestBase.cs: Fixed unit tests.

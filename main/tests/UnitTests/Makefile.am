@@ -15,6 +15,7 @@ REFS =  \
 	-r:../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
+	-r:../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	-r:../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
 	-r:../../build/bin/Mono.TextEditor.dll \
 	-r:../../build/bin/MonoDevelop.Components.dll \
@@ -72,6 +73,7 @@ FILES =  \
 	MonoDevelop.Projects/TestProjectsChecks.cs \
 	MonoDevelop.Projects/TextFormatterTests.cs \
 	MonoDevelop.Projects/WorkspaceTests.cs \
+	MonoDevelop.Refactoring/ExtractMethodTests.cs \
 	MonoDevelop.Xml.StateEngine/AspNetParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/HtmlParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/ParsingTests.cs \
