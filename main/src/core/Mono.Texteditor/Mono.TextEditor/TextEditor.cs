@@ -1050,7 +1050,7 @@ namespace Mono.TextEditor
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
 			this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize / 2;
 			int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
-			if (this.textEditorData.HAdjustment.Value > caretX) {
+			if (this.textEditorData.HAdjustment.Value >= caretX) {
 				this.textEditorData.HAdjustment.Value = caretX ;
 			} else if (this.textEditorData.HAdjustment.Value + this.textEditorData.HAdjustment.PageSize - 60 < caretX + xMargin) {
 				this.textEditorData.HAdjustment.Value = caretX - this.textEditorData.HAdjustment.PageSize + 60 + xMargin;
