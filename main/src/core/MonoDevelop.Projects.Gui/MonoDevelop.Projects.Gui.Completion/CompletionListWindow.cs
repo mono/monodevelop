@@ -186,7 +186,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (mutableList.IsChanging)
 					OnCompletionDataChanging (null, null);
 			}
-			
+
 			this.completionWidget = completionWidget;
 
 			if (FillList ()) {
@@ -194,7 +194,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
-				
+
 				if (text.Length == 0) {
 					text = completionDataList.DefaultCompletionString;
 					SelectEntry (text);
@@ -215,6 +215,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 					Show ();
 					List.FilterWords ();
 					ResetSizes ();
+					if (List.Selection > (int)(scrollbar.Adjustment.Value + scrollbar.Adjustment.PageSize)) {
+						scrollbar.Adjustment.Value = List.Page = List.Selection;
+					}
 				}
 				this.AutoSelect = list.AutoSelect;
 				this.SelectionDisabled = !list.AutoSelect;
