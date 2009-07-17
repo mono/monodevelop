@@ -129,11 +129,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public bool PreProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier, out KeyAction ka)
 		{
-			 ka = ProcessKey (key, modifier);
-			
+			ka = ProcessKey (key, modifier);
+
 			if ((ka & KeyAction.CloseWindow) != 0)
 				CompletionWindowManager.HideWindow ();
-			
+
 			if ((ka & KeyAction.Ignore) != 0)
 				return true;
 
@@ -143,18 +143,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 					// Makes an exception for Mod1Mask (usually alt), shift, control, meta and super
 					// This prevents the window from closing if the num/scroll/caps lock are active
 					// FIXME: modifier mappings depend on X server settings
-					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask 
-						& ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask 
-					        | META_MASK | SUPER_MASK)
-					))) != 0) {
+					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask & ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | META_MASK | SUPER_MASK)))) != 0) {
 						CompletionWindowManager.HideWindow ();
 						return false;
 					}
-					
+
 					if (declarationviewwindow.Multiple) {
 						if (key == Gdk.Key.Left)
-							declarationviewwindow.OverloadLeft ();
-						else
+							declarationviewwindow.OverloadLeft (); else
 							declarationviewwindow.OverloadRight ();
 						UpdateDeclarationView ();
 					}
@@ -163,27 +159,30 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			return false;
 		}
-		
-		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget,
-		                              ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
+		public override void SelectEntry (string s)
+		{
+			base.SelectEntry (s);
+			UpdateDeclarationView ();
+		}
+
+		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
 		{
 			if (mutableList != null) {
 				mutableList.Changing -= OnCompletionDataChanging;
 				mutableList.Changed -= OnCompletionDataChanged;
 				HideFooter ();
 			}
-			
 			//initialWordLength = 0;
 			this.completionDataList = list;
-			
+
 			this.completionContext = completionContext;
 			this.closedDelegate = closedDelegate;
 			mutableList = completionDataList as IMutableCompletionDataList;
-			
+
 			if (mutableList != null) {
 				mutableList.Changing += OnCompletionDataChanging;
 				mutableList.Changed += OnCompletionDataChanged;
-			
+
 				if (mutableList.IsChanging)
 					OnCompletionDataChanging (null, null);
 			}
@@ -192,28 +191,34 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			if (FillList ()) {
 				Reset (true);
-				
+
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
+				
 				if (text.Length == 0) {
 					text = completionDataList.DefaultCompletionString;
 					SelectEntry (text);
 					initialWordLength = completionWidget.SelectedLength;
 					Show ();
+
 					return true;
 				}
-				
+
 				initialWordLength = text.Length + completionWidget.SelectedLength;
-				PartialWord = text; 
+				PartialWord = text;
+				SelectEntry (PartialWord);
 				//if there is only one matching result we take it by default
 				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 					UpdateWord ();
 					CompletionWindowManager.HideWindow ();
 				} else {
 					Show ();
+					List.FilterWords ();
+					ResetSizes ();
 				}
 				this.AutoSelect = list.AutoSelect;
 				this.SelectionDisabled = !list.AutoSelect;
+				
 				return true;
 			}
 			else {
@@ -288,7 +293,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			if (Selection == -1 || SelectionDisabled)
 				return;
-			
+
 			ICompletionData item = currentData ?? completionDataList[Selection];
 			if (item == null)
 				return;
@@ -298,6 +303,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				ac.InsertCompletionText (completionWidget, completionContext);
 				return;
 			}
+			
 			string partialWord = PartialWord;
 			int partialWordLength = partialWord != null ? partialWord.Length : 0;
 			int replaceLen = completionContext.TriggerWordLength + partialWordLength - initialWordLength;
@@ -354,13 +360,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (completionDataList == null || List.Selection >= completionDataList.Count || List.Selection == -1)
 				return;
 
-			if (List.GdkWindow == null) return;
+			if (List.GdkWindow == null)
+				return;
 			Gdk.Rectangle rect = List.GetRowArea (List.Selection);
 			int listpos_x = 0, listpos_y = 0;
 			while (listpos_x == 0 || listpos_y == 0)
 				GetPosition (out listpos_x, out listpos_y);
 			int vert = listpos_y + rect.Y;
-			
+
 			int lvWidth = 0, lvHeight = 0;
 			while (lvWidth == 0)
 				this.GdkWindow.GetSize (out lvWidth, out lvHeight);
@@ -370,10 +377,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 				vert = listpos_y;
 			}
 
-			ICompletionData data = completionDataList[List.Selection];
+			// no selection, try to find a selection
+			if (List.SelectionIndex < 0 || List.SelectionIndex >= completionDataList.Count) {
+				List.CompletionString = PartialWord;
+				bool hasMismatches;
+				List.Selection = findMatchedEntry (List.CompletionString, out hasMismatches);
+			}
+			// no success, hide declaration view
+			if (List.SelectionIndex < 0 || List.SelectionIndex >= completionDataList.Count) {
+				declarationviewwindow.Hide ();
+				return;
+			}
+			ICompletionData data = completionDataList[List.SelectionIndex];
 			IOverloadedCompletionData overloadedData = data as IOverloadedCompletionData;
-			
-			IList<ICompletionData> overloads; 
+
+			IList<ICompletionData> overloads;
 			if (overloadedData != null) {
 				overloads = new List<ICompletionData> (overloadedData.GetOverloadedData ());
 			} else {

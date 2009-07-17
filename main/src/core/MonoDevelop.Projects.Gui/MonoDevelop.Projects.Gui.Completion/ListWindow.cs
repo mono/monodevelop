@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 	internal class ListWindow: Gtk.Window
 	{
-		VScrollbar scrollbar;
+		internal VScrollbar scrollbar;
 		ListWidget list;
 		IListDataProvider provider;
 		Widget footer;
@@ -79,8 +79,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public new void Show ()
 		{
+			list.filteredItems.Clear ();
 			this.ShowAll ();
-			ResetSizes ();
 		}
 		
 		public void ShowFooter (Widget w)
@@ -114,18 +114,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		void ResetSizes ()
+		protected void ResetSizes ()
 		{
 			scrollbar.Adjustment.Lower = 0;
-			scrollbar.Adjustment.Upper = Math.Max(0, provider.ItemCount - list.VisibleRows);
+			scrollbar.Adjustment.Upper = Math.Max (0, list.filteredItems.Count - list.VisibleRows);
 			scrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
 			scrollbar.Adjustment.StepIncrement = 1;
-			
-			if (list.VisibleRows >= provider.ItemCount) {
-				this.scrollbar.Hide();
-			}
 
-			this.Resize(this.list.WidthRequest, this.list.HeightRequest);
+			if (list.VisibleRows >= list.filteredItems.Count) {
+				this.scrollbar.Hide ();
+			} else {
+				this.scrollbar.Show ();
+			}
+			list.CalcVisibleRows ();
+			this.Resize (this.list.WidthRequest, this.list.HeightRequest);
 		}
 		
 		public IListDataProvider DataProvider
@@ -134,11 +136,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set { provider = value; }
 		}
 		
-		public string CompleteWord
-		{
-			get { 
-				if (list.Selection != -1 && !SelectionDisabled)
-					return provider.GetCompletionText (list.Selection);
+		public string CompleteWord {
+			get {
+				if (list.SelectionIndex != -1 && !SelectionDisabled)
+					return provider.GetCompletionText (list.SelectionIndex);
 				else
 					return null;
 			}
@@ -199,86 +200,87 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public KeyAction ProcessKey (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			switch (key)
-			{
-				case Gdk.Key.Up:
-					if (list.SelectionDisabled)
-						list.SelectionDisabled = false;
-					else
-						list.Selection --;
-					return KeyAction.Ignore;
-					
-				case Gdk.Key.Down:
-					if (list.SelectionDisabled)
-						list.SelectionDisabled = false;
-					else
-						list.Selection ++;
-					return KeyAction.Ignore;
-					
-				case Gdk.Key.Page_Up:
-					list.Selection -= list.VisibleRows - 1;
-					return KeyAction.Ignore;
-					
-				case Gdk.Key.Page_Down:
-					list.Selection += list.VisibleRows - 1;
-					return KeyAction.Ignore;
-					
-				case Gdk.Key.Left:
-					//if (curPos == 0) return KeyAction.CloseWindow | KeyAction.Process;
-					//curPos--;
-					return KeyAction.Process;
-					
-				case Gdk.Key.BackSpace:
-					if (curPos == 0 || (modifier & Gdk.ModifierType.ControlMask) != 0)
-						return KeyAction.CloseWindow | KeyAction.Process;
-					curPos--;
-					word.Remove (curPos, 1);
-					UpdateWordSelection ();
-					return KeyAction.Process;
-					
-				case Gdk.Key.Right:
-					//if (curPos == word.Length) return KeyAction.CloseWindow | KeyAction.Process;
-					//curPos++;
-					return KeyAction.Process;
-				
-				case Gdk.Key.Caps_Lock:
-				case Gdk.Key.Num_Lock:
-				case Gdk.Key.Scroll_Lock:
-					return KeyAction.Ignore;
-					
-				case Gdk.Key.Tab:
-					//tab always completes current item even if selection is disabled
-					if (list.SelectionDisabled)
-						list.SelectionDisabled = false;
-					goto case Gdk.Key.Return;
-				
-				case Gdk.Key.Return:
-				case Gdk.Key.ISO_Enter:
-				case Gdk.Key.Key_3270_Enter:
-				case Gdk.Key.KP_Enter:
-					return (list.SelectionDisabled? KeyAction.Process : (KeyAction.Complete | KeyAction.Ignore))
-						| KeyAction.CloseWindow;
-				
-				case Gdk.Key.Escape:
-					return KeyAction.CloseWindow | KeyAction.Ignore;
-				
-				case Gdk.Key.Home:
-				case Gdk.Key.End:
+			switch (key) {
+			case Gdk.Key.Up:
+				if (list.SelectionDisabled)
+					list.SelectionDisabled = false; else
+					list.Selection--;
+				return KeyAction.Ignore;
+
+			case Gdk.Key.Down:
+				if (list.SelectionDisabled)
+					list.SelectionDisabled = false; else
+					list.Selection++;
+				return KeyAction.Ignore;
+
+			case Gdk.Key.Page_Up:
+				list.Selection -= list.VisibleRows - 1;
+				return KeyAction.Ignore;
+
+			case Gdk.Key.Page_Down:
+				list.Selection += list.VisibleRows - 1;
+				return KeyAction.Ignore;
+
+			case Gdk.Key.Left:
+				//if (curPos == 0) return KeyAction.CloseWindow | KeyAction.Process;
+				//curPos--;
+				return KeyAction.Process;
+
+			case Gdk.Key.BackSpace:
+				if (curPos == 0 || (modifier & Gdk.ModifierType.ControlMask) != 0)
 					return KeyAction.CloseWindow | KeyAction.Process;
-					
-				case Gdk.Key.Control_L:
-				case Gdk.Key.Control_R:
-				case Gdk.Key.Alt_L:
-				case Gdk.Key.Alt_R:
-				case Gdk.Key.Shift_L:
-				case Gdk.Key.Shift_R:
-				case Gdk.Key.ISO_Level3_Shift:	// AltGr
-					return KeyAction.Process;
+				curPos--;
+				word.Remove (curPos, 1);
+				UpdateWordSelection ();
+				return KeyAction.Process;
+
+			case Gdk.Key.Right:
+				//if (curPos == word.Length) return KeyAction.CloseWindow | KeyAction.Process;
+				//curPos++;
+				return KeyAction.Process;
+
+			case Gdk.Key.Caps_Lock:
+			case Gdk.Key.Num_Lock:
+			case Gdk.Key.Scroll_Lock:
+				return KeyAction.Ignore;
+
+			case Gdk.Key.Tab:
+				//tab always completes current item even if selection is disabled
+				if (list.SelectionDisabled)
+					list.SelectionDisabled = false;
+				goto case Gdk.Key.Return;
+
+			case Gdk.Key.Return:
+			case Gdk.Key.ISO_Enter:
+			case Gdk.Key.Key_3270_Enter:
+			case Gdk.Key.KP_Enter:
+				return (list.SelectionDisabled ? KeyAction.Process : (KeyAction.Complete | KeyAction.Ignore)) | KeyAction.CloseWindow;
+
+			case Gdk.Key.Escape:
+				return KeyAction.CloseWindow | KeyAction.Ignore;
+
+			case Gdk.Key.Home:
+			case Gdk.Key.End:
+				return KeyAction.CloseWindow | KeyAction.Process;
+
+			case Gdk.Key.Control_L:
+			case Gdk.Key.Control_R:
+			case Gdk.Key.Alt_L:
+			case Gdk.Key.Alt_R:
+			case Gdk.Key.Shift_L:
+			case Gdk.Key.Shift_R:
+			case Gdk.Key.ISO_Level3_Shift:
+				// AltGr
+				return KeyAction.Process;
 			}
-			
+
 			char c = (char)(uint)key;
+			if (key == Gdk.Key.Hebrew_switch)
+				return KeyAction.Process;
+			
 			if (c == ' ' && (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
 				return KeyAction.CloseWindow | KeyAction.Process;
+
 			if (System.Char.IsLetterOrDigit (c) || c == '_') {
 				word.Insert (curPos, c);
 				curPos++;
@@ -290,6 +292,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				word.Insert (curPos, c);
 				bool hasMismatches;
 				int match = findMatchedEntry (word.ToString (), out hasMismatches);
+				
 				if (match >= 0 && !hasMismatches && c != '<') {
 					curPos++;
 					if (!SelectionDisabled || AutoSelect)
@@ -313,64 +316,61 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		//note: finds the full match, or the best partial match
 		//returns -1 if there is no match at all
-		int findMatchedEntry (string s, out bool hasMismatches)
+		protected int findMatchedEntry (string s, out bool hasMismatches)
 		{
-			int max = (provider == null ? 0 : provider.ItemCount);
-			string sLower = s.ToLower ();
-			
-/* Disable for now. See bug #385043
+			// Search for exact matches.
+			for (int i = 0; i < list.filteredItems.Count; i++) {
+				string txt = provider.GetText (list.filteredItems[i]);
+				if (txt == s) {
+					hasMismatches = false;
+					return i;
+				}
+			}
+
+			// Search for history matches.
 			string historyWord = null;
-			for (int i = wordHistory.Count - 1; i >= 0 ; i--) {
+			for (int i = wordHistory.Count - 1; i >= 0; i--) {
 				string word = wordHistory[i];
-				if (word.StartsWith (sLower)) {
+				if (ListWidget.Matches (s, word)) {
 					historyWord = word;
 					break;
 				}
 			}
-			
+
 			if (historyWord != null) {
-				for (int n=0; n<max; n++) {
-					string txt = provider.GetText (n);
-					if (txt.ToLower () == historyWord) {
+				for (int n = 0; n < list.filteredItems.Count; n++) {
+					string txt = provider.GetText (list.filteredItems[n]);
+					if (txt == historyWord) {
 						hasMismatches = false;
 						return n;
 					}
 				}
 			}
-			*/
-			int bestMatch = -1;
-			int bestMatchLength = 0;
-			for (int n=0; n<max; n++) 
-			{
-				string txt = provider.GetText (n);
-				
-				if (txt.StartsWith (s)) {
+
+			// default - first word in filtered list
+			hasMismatches = true;
+			for (int n = 0; n < list.filteredItems.Count; n++) {
+				string txt = provider.GetText (list.filteredItems[n]);
+				if (ListWidget.Matches (s, txt)) {
 					hasMismatches = false;
 					return n;
-				} else {
-					//try to match as many characters at the beginning of the words as possible
-					int matchLength = 0;
-					int minLength = Math.Min (sLower.Length, txt.Length);
-					while (matchLength < minLength && char.ToLower (txt[matchLength]) == sLower [matchLength]) {
-						matchLength++;
-					}
-					if (matchLength > bestMatchLength) {
-						bestMatchLength = matchLength;
-						bestMatch = n;
-					}
 				}
 			}
-			hasMismatches = (bestMatch > -1) && (bestMatchLength != s.Length);
-			return bestMatch;
+			
+			return -1;
 		}
+		
 		List<string> wordHistory = new List<string> ();
 		const int maxHistoryLength = 500;
 		protected void AddWordToHistory (string word)
 		{
-			if (!wordHistory.Contains (word.ToLower ())) {
-				wordHistory.Add (word.ToLower ());
+			if (!wordHistory.Contains (word)) {
+				wordHistory.Add (word);
 				while (wordHistory.Count > maxHistoryLength)
 					wordHistory.RemoveAt (0);
+			} else {
+				wordHistory.Remove (word);
+				wordHistory.Add (word);
 			}
 		}
 		
@@ -383,8 +383,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public void SelectEntry (string s)
+		public virtual void SelectEntry (string s)
 		{
+			list.CompletionString = s;
 			//when the list is empty, disable the selection or users get annoyed by it accepting
 			//the top entry automatically
 			if (string.IsNullOrEmpty (s)) {
@@ -392,12 +393,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 				list.SelectionDisabled = true;
 				return;
 			}
-				
+
 			bool hasMismatches;
 			int n = findMatchedEntry (s, out hasMismatches);
 			SelectEntry (n);
 			if (hasMismatches)
 				list.SelectionDisabled = true;
+			if (IsRealized)
+				ResetSizes ();
 		}
 		
 		void OnScrollChanged (object o, EventArgs args)
@@ -431,7 +434,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.GetSize (out winWidth, out winHeight);
 			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth-1, winHeight-1);
 			return false;
-		}		
+		}
 		
 		public int TextOffset {
 			get { return list.TextOffset + (int) this.BorderWidth; }
@@ -454,7 +457,19 @@ namespace MonoDevelop.Projects.Gui.Completion
 		bool disableSelection;
 
 		public event EventHandler SelectionChanged;
-				
+		
+		string completionString;
+		public string CompletionString {
+			get {
+				return completionString;
+			}
+			set {
+				completionString = value;
+				FilterWords ();
+				QueueDraw ();
+			}
+		}
+		
 		public ListWidget (ListWindow win)
 		{
 			this.win = win;
@@ -467,10 +482,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 				selection = -1;
 				return;
 			}
-			
+
 			if (win.DataProvider.ItemCount == 0)
-				selection = -1;
-			else
+				selection = -1; else
 				selection = 0;
 
 			page = 0;
@@ -481,18 +495,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			if (SelectionChanged != null) SelectionChanged (this, EventArgs.Empty);
 		}
-		
-		public int Selection
-		{
+		public int SelectionIndex {
+			get {
+				if (Selection < 0 || filteredItems.Count <= Selection)
+					return -1;
+				return filteredItems[Selection];
+			}
+		}
+		public int Selection {
 			get {
 				return selection;
 			}
-			
+
 			set {
 				if (value < 0)
 					value = 0;
-				if (value >= win.DataProvider.ItemCount)
-					value = win.DataProvider.ItemCount - 1;
+				if (value >= filteredItems.Count)
+					value = filteredItems.Count - 1;
 				
 				if (value != selection) 
 				{
@@ -581,7 +600,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			base.OnExposeEvent (args);
 			DrawList ();
-	  		return true;
+			return true;
 		}
 		
 		public int TextOffset {
@@ -593,69 +612,160 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return iconWidth + margin + padding + 2;
 			}
 		}
+		internal List<int> filteredItems = new List<int> ();
+		public static bool Matches (string filter, string text)
+		{
+			if (string.IsNullOrEmpty (filter))
+				return true;
+			if (string.IsNullOrEmpty (text))
+				return false;
 
+			bool wasMatch = false;
+			int j = 0;
+			for (int i = 0; i < text.Length && j < filter.Length; i++) {
+				char ch1 = text[i];
+				char ch2 = filter[j];
+				if (char.ToUpper (ch1) == char.ToUpper (ch2)) {
+					j++;
+					wasMatch = true;
+					continue;
+				}
+				if (wasMatch && char.IsUpper (ch2)) {
+					wasMatch = false;
+					bool match = false;
+					for (; i < text.Length; i++) {
+						if (ch2 == text[i]) {
+							i--;
+							match = true;
+							break;
+						}
+					}
+					if (match)
+						continue;
+				}
+				break;
+			}
+			
+			return j == filter.Length;
+		}
+		
+		public void FilterWords ()
+		{
+			win.scrollbar.Value = 0;
+			filteredItems.Clear ();
+			for (int n = 0; n < win.DataProvider.ItemCount; n++) {
+				if (Matches (CompletionString, win.DataProvider.GetText (n)))
+					filteredItems.Add (n);
+			}
+		}
+		
 		void DrawList ()
 		{
 			int winWidth, winHeight;
 			this.GdkWindow.GetSize (out winWidth, out winHeight);
-			
+
 			int ypos = margin;
-			int lineWidth = winWidth - margin*2;
+			int lineWidth = winWidth - margin * 2;
 			int xpos = margin + padding;
-				
+
+
+			if (filteredItems.Count == 0) {
+				Gdk.GC gc = new Gdk.GC (GdkWindow);
+				gc.RgbFgColor = new Gdk.Color (0xFF, 0xBC, 0xC1);
+				this.GdkWindow.DrawRectangle (gc, true, 0, 0, Allocation.Width, Allocation.Height);
+				gc.Dispose ();
+				layout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("No suggestions"));
+				int width, height;
+				layout.GetPixelSize (out width, out height);
+				this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), (Allocation.Width - width) / 2, (Allocation.Height - height) / 2, layout);
+				return;
+			}
 			int n = 0;
-			while (ypos < winHeight - margin && (page + n) < win.DataProvider.ItemCount)
-			{
-				bool hasMarkup = win.DataProvider.HasMarkup (page + n);
-				
-				if (hasMarkup)
-					layout.SetMarkup (win.DataProvider.GetMarkup (page + n) ?? "&lt;null&gt;");
-				else
-					layout.SetText (win.DataProvider.GetText (page + n) ?? "<null>");
-				
-				Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
+			while (ypos < winHeight - margin && (page + n) < filteredItems.Count) {
+				//	Pango.Layout layout = new Pango.Layout (PangoContext);
+				bool hasMarkup = win.DataProvider.HasMarkup (filteredItems[page + n]);
+
+				if (hasMarkup) {
+					layout.SetMarkup (win.DataProvider.GetMarkup (filteredItems[page + n]) ?? "&lt;null&gt;");
+				} else {
+					layout.SetText (win.DataProvider.GetText (filteredItems[page + n]) ?? "<null>");
+				}
+				string text = win.DataProvider.GetText (filteredItems[page + n]);
+				if ((disableSelection || page + n != selection) && !string.IsNullOrEmpty (text) && !string.IsNullOrEmpty (CompletionString)) {
+					Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
+					int j = 0;
+					for (int i = 0; i < text.Length && j < CompletionString.Length; i++) {
+						char ch1 = text[i];
+						char ch2 = CompletionString[j];
+						if (char.ToUpper (ch1) == char.ToUpper (ch2)) {
+							Pango.AttrForeground fg = new Pango.AttrForeground (0, 0, ushort.MaxValue);
+							fg.StartIndex = (uint)i;
+							fg.EndIndex = (uint)(i + 1);
+							attrList.Insert (fg);
+							j++;
+							continue;
+						}
+						if (char.IsUpper (ch2)) {
+							bool match = false;
+							for (; i < text.Length; i++) {
+								if (ch2 == text[i]) {
+									i--;
+									match = true;
+									break;
+								}
+							}
+							if (match)
+								continue;
+						}
+						break;
+					}
+					if (j == CompletionString.Length) {
+						layout.Attributes = attrList;
+					} else {
+						attrList.Dispose ();
+					}
+				}
+
+				Gdk.Pixbuf icon = win.DataProvider.GetIcon (filteredItems[page + n]);
 				int iconHeight, iconWidth;
-				
+
 				if (icon != null) {
 					iconWidth = icon.Width;
 					iconHeight = icon.Height;
 				} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
 					iconHeight = iconWidth = 24;
 				}
-				
+
 				int wi, he, typos, iypos;
 				layout.GetPixelSize (out wi, out he);
 				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
-				
+
 				if (page + n == selection) {
 					if (!disableSelection) {
-						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected),
-						                              true, margin, ypos, lineWidth, he + padding);
-						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected),
-							                           xpos + iconWidth + 2, typos, layout);
+						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
+						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);
+					} else {
+						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), false, margin, ypos, lineWidth, he + padding);
+						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
 					}
-					else {
-						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected),
-						                              false, margin, ypos, lineWidth, he + padding);
-						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), 
-						                           xpos + iconWidth + 2, typos, layout);
-					}
-				}
-				else
-					this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal),
-					                           xpos + iconWidth + 2, typos, layout);
-				
+				} else
+					this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
+
 				if (icon != null)
-					this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0,
-					                           xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
-				
+					this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 
+					0);
+
 				ypos += rowHeight;
 				n++;
-				
+
 				//reset the markup or it carries over to the next SetText
 				if (hasMarkup)
 					layout.SetMarkup (string.Empty);
+				if (layout.Attributes != null) {
+					layout.Attributes.Dispose ();
+					layout.Attributes = null;
+				}
 			}
 		}
 		
@@ -682,25 +792,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		void CalcVisibleRows ()
+		public void CalcVisibleRows ()
 		{
+			if (layout == null)
+				return;
 			int winHeight = 200;
 			int lvWidth, lvHeight;
 			int rowWidth;
-			
+
 			this.GetSizeRequest (out lvWidth, out lvHeight);
 
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight += padding;
 			visibleRows = (winHeight + padding - margin * 2) / rowHeight;
-			
-			int newHeight;
 
-			if (this.win.DataProvider.ItemCount > this.visibleRows)
-				newHeight = (rowHeight * visibleRows) + margin * 2;
-			else
-				newHeight = (rowHeight * this.win.DataProvider.ItemCount) + margin * 2;
-			
+			int newHeight = (rowHeight * Math.Max (1, Math.Min (visibleRows, filteredItems.Count))) + margin * 2;
 			if (lvWidth != listWidth || lvHeight != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
 		} 
