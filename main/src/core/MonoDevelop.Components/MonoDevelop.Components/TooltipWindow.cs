@@ -39,7 +39,7 @@ namespace MonoDevelop.Components
 		bool nudgeHorizontal = false;
 		WindowTransparencyDecorator decorator;
 		
-		public TooltipWindow () : base (Gtk.WindowType.Popup)
+		public TooltipWindow () : base(Gtk.WindowType.Popup)
 		{
 			this.SkipPagerHint = true;
 			this.SkipTaskbarHint = true;
@@ -48,6 +48,7 @@ namespace MonoDevelop.Components
 			this.TypeHint = TooltipTypeHint;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
+			this.Title = "tooltip"; // fixes the annoying '** Message: ATK_ROLE_TOOLTIP object found, but doesn't look like a tooltip.** Message: ATK_ROLE_TOOLTIP object found, but doesn't look like a tooltip.'
 			
 			//fake widget name for stupid theme engines
 			if (Gtk.Global.CheckVersion (2, 12, 0) == null)
