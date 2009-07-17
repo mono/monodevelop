@@ -1,5 +1,12 @@
 2009-07-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: On first
+	  load parse info is updated before showing the document (to
+	  prevent folding update flicker).
+
+2009-07-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Auto
 	  insert bracket feature no longer closes code completion
 	  window too early (which caused that the code completion

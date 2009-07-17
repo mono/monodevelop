@@ -47,6 +47,7 @@ using MonoDevelop.Core.Gui;
 
 using Document = Mono.TextEditor.Document;
 using Services = MonoDevelop.Projects.Services;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -202,7 +203,6 @@ namespace MonoDevelop.SourceEditor
 			UpdateLineCol ();
 			ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 //			this.IsClassBrowserVisible = this.widget.TextEditor.Options.EnableQuickFinder;
-
 		}
 
 		public void InformLoad ()
@@ -386,6 +386,7 @@ namespace MonoDevelop.SourceEditor
 						parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this);
 						parseInformationUpdaterWorkerThread.Start ();
 					}
+					
 				}
 			}
 		}
@@ -395,6 +396,12 @@ namespace MonoDevelop.SourceEditor
 			if (parseInformationUpdaterWorkerThread != null) {
 				parseInformationUpdaterWorkerThread.Stop ();
 				parseInformationUpdaterWorkerThread = null;
+			}
+		}
+		public void WaitForParseInformationUpdaterWorkerThread ()
+		{
+			while (parseInformationUpdaterWorkerThread != null && !parseInformationUpdaterWorkerThread.IsStopped) {
+				Thread.Sleep (50);
 			}
 		}
 		
