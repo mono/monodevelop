@@ -1,3 +1,9 @@
+2009-07-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs:
+	  Added insanity check for caret offset (it may be after the
+	  document).
+
 2009-07-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoringService.cs:
