@@ -1,5 +1,13 @@
 2009-07-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs:
+	  Declare local is now more carefully looking at the
+	  expression the show up is requested. Removed some debug
+	  messages.
+
+2009-07-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs:
 	  Added insanity check for caret offset (it may be after the
 	  document).

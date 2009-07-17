@@ -70,10 +70,12 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
 			string line = data.Document.GetTextAt (lineSegment);
 			Expression expression = provider.ParseExpression (line);
-			if (expression == null)
+			BlockStatement block = provider.ParseText (line) as BlockStatement;
+			if (expression == null || (block != null && block.Children[0] is LocalVariableDeclaration))
 				return false;
+			
 			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
-			return resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName);
+			return resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName) && resolveResult.ResolvedType.FullName != DomReturnType.Void.FullName;
 		}
 		
 		static HashSet<string> builtInTypes = new HashSet<string> (new string[] {
