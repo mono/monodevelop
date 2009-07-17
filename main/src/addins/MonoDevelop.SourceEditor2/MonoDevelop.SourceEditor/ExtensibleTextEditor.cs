@@ -101,6 +101,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			};
 			Document.TextReplaced += delegate(object sender, ReplaceEventArgs args) {
+
 				for (int i = 0; i < skipChars.Count; i++) {
 					SkipChar sc = skipChars[i];
 					if (args.Offset < sc.Start || args.Offset > sc.Offset) {
@@ -110,15 +111,15 @@ namespace MonoDevelop.SourceEditor
 					}
 					if (args.Offset <= sc.Offset) {
 						sc.Offset -= args.Count;
-						if (!string.IsNullOrEmpty (args.Value))
+						if (!string.IsNullOrEmpty (args.Value)) {
 							sc.Offset += args.Value.Length;
+						}
 					}
 				}
 				
 				if (extension != null) {
 					try {
-						extension.TextChanged (args.Offset, 
-						    args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
+						extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
 					} catch (Exception ex) {
 						ReportExtensionError (ex);
 					}
@@ -338,6 +339,34 @@ namespace MonoDevelop.SourceEditor
 			const string closingBrackets = "}])'\"";
 			int braceIndex = openBrackets.IndexOf ((char)ch);
 			SkipChar skipChar = skipChars.Find (sc => sc.Char == (char)ch && sc.Offset == Caret.Offset);
+
+			// special handling for escape chars inside ' and "
+			if (Caret.Offset > 0) {
+				char charBefore = Document.GetCharAt (Caret.Offset - 1);
+				if (inStringOrComment && (ch == '"' || (inChar && ch == '\'')) && charBefore == '\\')
+					skipChar = null;
+			}
+			//Console.WriteLine (Caret.Offset + "/" + insOff);
+			if (skipChar != null) {
+				Caret.Offset++;
+				skipChars.Remove (skipChar);
+			} else {
+				if (extension != null) {
+					if (ExtensionKeyPress (key, ch, state))
+						result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+					if (returnBetweenBraces) {
+						Caret.Offset = initialOffset;
+						ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
+					}
+				} else {
+					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+					if (returnBetweenBraces) {
+						Caret.Offset = initialOffset;
+						base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
+					}
+				}
+			}
+
 			if (skipChar == null && Options.AutoInsertMatchingBracket && braceIndex >= 0) {
 				if (!inStringOrComment) {
 					char closingBrace = closingBrackets[braceIndex];
@@ -363,32 +392,6 @@ namespace MonoDevelop.SourceEditor
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
 						Insert (Caret.Offset, "\"");
 						SetInsertionChar (Caret.Offset, '"');
-					}
-				}
-			}
-			// special handling for escape chars inside ' and "
-			if (Caret.Offset > 0) {
-				char charBefore = Document.GetCharAt (Caret.Offset - 1);
-				if (inStringOrComment && (ch == '"' || (inChar && ch == '\'')) && charBefore == '\\') 
-					skipChar = null;
-			}
-			//Console.WriteLine (Caret.Offset + "/" + insOff);
-			if (skipChar != null) {
-				Caret.Offset++;
-				skipChars.Remove (skipChar);
-			} else {
-				if (extension != null) {
-					if (ExtensionKeyPress (key, ch, state))
-						result = base.OnIMProcessedKeyPressEvent (key, ch, state);
-					if (returnBetweenBraces) {
-						Caret.Offset = initialOffset;
-						ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
-					}
-				} else {
-					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
-					if (returnBetweenBraces) {
-						Caret.Offset = initialOffset;
-						base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
 					}
 				}
 			}
