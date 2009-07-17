@@ -38,7 +38,6 @@ namespace CSharpBinding.Parser
 	{
 		public bool CanGenerateASTFrom (string mimeType)
 		{
-			Console.WriteLine ("MIME TYPE:" + mimeType);
 			return mimeType == CSharpFormatter.MimeType;
 		}
 
