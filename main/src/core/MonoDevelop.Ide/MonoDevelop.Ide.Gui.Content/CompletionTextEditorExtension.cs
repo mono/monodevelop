@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			KeyAction ka = KeyAction.None;
 			if (currentCompletionContext != null) {
 				autoHideCompletionWindow = false;
-				if (CompletionWindowManager.PreProcessKeyEvent (key, modifier, out ka)) {
+				if (CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier, out ka)) {
 					CompletionWindowManager.PostProcessKeyEvent (ka);
 					autoHideCompletionWindow = true;
 					return false;
