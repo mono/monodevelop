@@ -611,7 +611,7 @@ namespace MonoDevelop.Debugger
 			
 			if (currentCompletionData != null) {
 				KeyAction ka;
-				bool ret = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, args.Event.State, out ka);
+				bool ret = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State, out ka);
 				CompletionWindowManager.PostProcessKeyEvent (ka);
 				args.RetVal = ret;
 			}
