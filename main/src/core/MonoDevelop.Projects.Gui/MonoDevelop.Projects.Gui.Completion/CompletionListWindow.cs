@@ -62,13 +62,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public static bool PreProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier, out KeyAction ka)
+		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyAction ka)
 		{
 			if (wnd == null || !wnd.Visible) {
 				ka = KeyAction.None;
 				return false;
 			}
-			return wnd.PreProcessKeyEvent (key, modifier, out ka);
+			return wnd.PreProcessKeyEvent (key, keyChar, modifier, out ka);
 		}
 		
 		
@@ -127,9 +127,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 				UpdateWord ();
 		}
 		
-		public bool PreProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier, out KeyAction ka)
+		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyAction ka)
 		{
-			ka = ProcessKey (key, modifier);
+			ka = ProcessKey (key, keyChar, modifier);
 
 			if ((ka & KeyAction.CloseWindow) != 0)
 				CompletionWindowManager.HideWindow ();

@@ -1,3 +1,10 @@
+2009-07-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Optimized/improved the abbreviation algorithm. Changed the
+	  process key, the keyChar is now given as parameter.
+
 2009-07-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:

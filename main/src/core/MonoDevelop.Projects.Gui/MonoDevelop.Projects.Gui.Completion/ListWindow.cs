@@ -198,7 +198,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public KeyAction ProcessKey (Gdk.Key key, Gdk.ModifierType modifier)
+		public KeyAction ProcessKey (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			switch (key) {
 			case Gdk.Key.Up:
@@ -274,26 +274,25 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return KeyAction.Process;
 			}
 
-			char c = (char)(uint)key;
-			if (key == Gdk.Key.Hebrew_switch)
+			if (keyChar == '\0')
 				return KeyAction.Process;
 			
-			if (c == ' ' && (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			if (keyChar == ' ' && (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
 				return KeyAction.CloseWindow | KeyAction.Process;
 
-			if (System.Char.IsLetterOrDigit (c) || c == '_') {
-				word.Insert (curPos, c);
+			if (System.Char.IsLetterOrDigit (keyChar) || keyChar == '_') {
+				word.Insert (curPos, keyChar);
 				curPos++;
 				if (!SelectionDisabled || AutoSelect)
 					UpdateWordSelection ();
 				return KeyAction.Process;
-			} else if (System.Char.IsPunctuation (c) || c == ' ' || c == '<') {
+			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
 				//punctuation is only accepted if it actually matches an item in the list
-				word.Insert (curPos, c);
+				word.Insert (curPos, keyChar);
 				bool hasMismatches;
 				int match = findMatchedEntry (word.ToString (), out hasMismatches);
 				
-				if (match >= 0 && !hasMismatches && c != '<') {
+				if (match >= 0 && !hasMismatches && keyChar != '<') {
 					curPos++;
 					if (!SelectionDisabled || AutoSelect)
 						SelectEntry (match);
@@ -613,24 +612,26 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		internal List<int> filteredItems = new List<int> ();
-		public static bool Matches (string filter, string text)
+		
+		static int[] Match (string filterText, string text)
 		{
-			if (string.IsNullOrEmpty (filter))
-				return true;
+			if (string.IsNullOrEmpty (filterText))
+				return new int[0];
 			if (string.IsNullOrEmpty (text))
-				return false;
-
+				return null;
+			List<int> matchIndices = new List<int> ();
 			bool wasMatch = false;
 			int j = 0;
-			for (int i = 0; i < text.Length && j < filter.Length; i++) {
-				char ch1 = text[i];
-				char ch2 = filter[j];
-				if (char.ToUpper (ch1) == char.ToUpper (ch2)) {
+			for (int i = 0; i < text.Length && j < filterText.Length; i++) {
+				char ch1 = char.ToUpper (text[i]);
+				char ch2 = char.ToUpper (filterText[j]);
+				if (ch1 == ch2) {
 					j++;
+					matchIndices.Add (i);
 					wasMatch = true;
 					continue;
 				}
-				if (wasMatch && char.IsUpper (ch2)) {
+				if (wasMatch) {
 					wasMatch = false;
 					bool match = false;
 					for (; i < text.Length; i++) {
@@ -646,7 +647,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 				break;
 			}
 			
-			return j == filter.Length;
+			return j == filterText.Length ? matchIndices.ToArray () : null;
+		}
+		
+		public static bool Matches (string filterText, string text)
+		{
+			return Match (filterText, text) != null;
 		}
 		
 		public void FilterWords ()
@@ -692,43 +698,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 				}
 				string text = win.DataProvider.GetText (filteredItems[page + n]);
 				if ((disableSelection || page + n != selection) && !string.IsNullOrEmpty (text) && !string.IsNullOrEmpty (CompletionString)) {
-					Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
-					int j = 0;
-					for (int i = 0; i < text.Length && j < CompletionString.Length; i++) {
-						char ch1 = text[i];
-						char ch2 = CompletionString[j];
-						if (char.ToUpper (ch1) == char.ToUpper (ch2)) {
+					int[] matchIndices =  Match (CompletionString, text);
+					if (matchIndices != null) {
+						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
+						for (int i = 0; i < matchIndices.Length; i++) {
+							int idx = matchIndices[i];
 							Pango.AttrForeground fg = new Pango.AttrForeground (0, 0, ushort.MaxValue);
-							fg.StartIndex = (uint)i;
-							fg.EndIndex = (uint)(i + 1);
+							fg.StartIndex = (uint)idx;
+							fg.EndIndex = (uint)(idx + 1);
 							attrList.Insert (fg);
-							j++;
-							continue;
 						}
-						if (char.IsUpper (ch2)) {
-							bool match = false;
-							for (; i < text.Length; i++) {
-								if (ch2 == text[i]) {
-									i--;
-									match = true;
-									break;
-								}
-							}
-							if (match)
-								continue;
-						}
-						break;
-					}
-					if (j == CompletionString.Length) {
 						layout.Attributes = attrList;
-					} else {
-						attrList.Dispose ();
 					}
 				}
-
+				
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (filteredItems[page + n]);
 				int iconHeight, iconWidth;
-
+				
 				if (icon != null) {
 					iconWidth = icon.Width;
 					iconHeight = icon.Height;
@@ -809,7 +795,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int newHeight = (rowHeight * Math.Max (1, Math.Min (visibleRows, filteredItems.Count))) + margin * 2;
 			if (lvWidth != listWidth || lvHeight != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
-		} 
+		}
 
 		protected override void OnRealized ()
 		{
