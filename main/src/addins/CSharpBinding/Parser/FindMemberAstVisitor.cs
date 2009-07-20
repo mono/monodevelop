@@ -399,9 +399,8 @@ namespace MonoDevelop.CSharpBinding
 			if (idExp.Identifier == searchedMemberName) {
 				int line = idExp.StartLocation.Y;
 				int col = idExp.StartLocation.X;
-				
 				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line, col));
-				
+				Console.WriteLine (line + ":" + result);
 				if (searchedMember is IType) {
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
 					if (item == null || item is IType && ((IType) item).FullName == ((IType)searchedMember).FullName) {
@@ -476,7 +475,6 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
-			
 			return base.VisitMemberReferenceExpression (fieldExp, data);
 		}
 		
@@ -512,8 +510,9 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			invokeExp.Arguments.ForEach (o => o.AcceptVisitor(this, data));
-			return null;
+			return base.VisitInvocationExpression (invokeExp, data);
 		}
+		
 		Stack<string> namespaceStack = new Stack<string> ();
 		public override object VisitNamespaceDeclaration (ICSharpCode.NRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
 		{
