@@ -73,7 +73,12 @@ namespace MonoDevelop.Debugger
 				DebuggingService.Resume ();
 				return;
 			}
-
+		
+			if (!DebuggingService.IsDebuggingSupported && !IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+				MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
+				IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
+			} 
+			
 			if (!IdeApp.Preferences.BuildBeforeExecuting) {
 				if (IdeApp.Workspace.IsOpen)
 					ExecuteWorkspace ();
@@ -132,7 +137,7 @@ namespace MonoDevelop.Debugger
 			// If there are no debugger installed, this command will not debug, it will
 			// just run, so the label has to be changed accordingly.
 			if (!DebuggingService.IsDebuggingSupported) {
-				info.Text = GettextCatalog.GetString ("_Run");
+				info.Text = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted ? GettextCatalog.GetString ("_Run") : GettextCatalog.GetString ("_Run again");
 				info.Icon = "gtk-execute";
 			}
 
@@ -140,7 +145,7 @@ namespace MonoDevelop.Debugger
 				bool canExecute = IdeApp.ProjectOperations.CanDebug (IdeApp.Workspace) ||
 					 (!DebuggingService.IsDebuggingSupported && IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace));
 
-				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted &&
+				info.Enabled = (IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted || !DebuggingService.IsDebuggingSupported) &&
 					canExecute &&
 					!(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace);
 			} else {
