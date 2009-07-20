@@ -1,5 +1,11 @@
 2009-07-20  Mike Krüger  <mkrueger@novell.com>
 
+	* FormattingStrategy/CSharpFormattingPolicy.cs:
+	* FormattingStrategy/CSharpFormattingPolicy.xml: Added brace
+	  forcement pretty print options.
+
+2009-07-20  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 523334 - Find
 	  references misses a field inside a property".
 

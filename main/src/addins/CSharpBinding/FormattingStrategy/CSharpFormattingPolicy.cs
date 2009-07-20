@@ -39,6 +39,13 @@ namespace FormattingStrategy
 		NextLineShifted2
 	}
 	
+	public enum BraceForcement {
+		DoNotChange,
+		RemoveBraces,
+		AddBraces,
+		RemoveBracesForSingleLine
+	}
+	
 	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
 		public CSharpFormattingPolicy Clone ()
@@ -237,6 +244,37 @@ namespace FormattingStrategy
 		
 		[ItemProperty]
 		public BraceStyle StatementBraceStyle {
+			get;
+			set;
+		}
+		#endregion
+		
+		#region Force Braces
+		public BraceForcement IfElseBraceForcement {
+			get;
+			set;
+		}
+		
+		public BraceForcement ForBraceForcement {
+			get;
+			set;
+		}
+		
+		public BraceForcement ForEachBraceForcement {
+			get;
+			set;
+		}
+		
+		public BraceForcement WhileBraceForcement {
+			get;
+			set;
+		}
+		public BraceForcement UsingBraceForcement {
+			get;
+			set;
+		}
+		
+		public BraceForcement FixedBraceForcement {
 			get;
 			set;
 		}
