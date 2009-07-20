@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 3856 $</version>
+//     <version>$Revision: 4349 $</version>
 // </file>
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
@@ -13,6 +13,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		NextLine,
 		NextLineShifted,
 		NextLineShifted2
+	}
+	
+	public enum BraceForcement {
+		DoNotChange,
+		RemoveBraces,
+		AddBraces,
+		RemoveBracesForSingleLine
 	}
 	
 	/// <summary>
@@ -220,6 +227,68 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			set {
 				allowEventRemoveBlockInline = value;
+			}
+		}
+		#endregion
+		
+		#region Force Braces
+		BraceForcement ifElseBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement IfElseBraceForcement {
+			get {
+				return ifElseBraceForcement;
+			}
+			set {
+				ifElseBraceForcement = value;
+			}
+		}
+		
+		BraceForcement forBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement ForBraceForcement {
+			get {
+				return forBraceForcement;
+			}
+			set {
+				forBraceForcement = value;
+			}
+		}
+		
+		BraceForcement foreachBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement ForEachBraceForcement {
+			get {
+				return foreachBraceForcement;
+			}
+			set {
+				foreachBraceForcement = value;
+			}
+		}
+		
+		BraceForcement whileBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement WhileBraceForcement {
+			get {
+				return whileBraceForcement;
+			}
+			set {
+				whileBraceForcement = value;
+			}
+		}
+		
+		BraceForcement usingBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement UsingBraceForcement {
+			get {
+				return usingBraceForcement;
+			}
+			set {
+				usingBraceForcement = value;
+			}
+		}
+		
+		BraceForcement fixedBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement FixedBraceForcement {
+			get {
+				return fixedBraceForcement;
+			}
+			set {
+				fixedBraceForcement = value;
 			}
 		}
 		#endregion
