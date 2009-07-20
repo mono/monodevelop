@@ -241,6 +241,8 @@ namespace MonoDevelop.Projects.Text
 		public CodeFormatType GetCodeFormatType (object settings, CodeFormatOption option)
 		{
 			PropertyInfo info = settings.GetType ().GetProperty (option.Name);
+			if (info == null)
+				throw new System.InvalidOperationException (option.Name + " not found in " + settings);
 			if (info.PropertyType == typeof (bool))
 				return codeFormatTypeBool;
 			return types.FirstOrDefault (t => t.Name == info.PropertyType.Name);
