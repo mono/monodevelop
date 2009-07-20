@@ -639,6 +639,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (solution != null) {
 				foreach (Project p in solution.GetAllProjects ()) {
 					ProjectDom ctx = ProjectDomService.GetProjectDom (p);
+					if (ctx == null)
+						continue;
 					foreach (IType cls in ctx.Types) {
 						if (IsSubclass (ctx, baseClass, cls))
 							list.Add (cls);
@@ -646,9 +648,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 				}
 			} else {
 				ProjectDom ctx = GetParserContext (baseClass);
-				foreach (IType cls in ctx.Types) {
-					if (IsSubclass (ctx, baseClass, cls))
-						list.Add (cls);
+				if (ctx != null) {
+					foreach (IType cls in ctx.Types) {
+						if (IsSubclass (ctx, baseClass, cls))
+							list.Add (cls);
+					}
 				}
 			}
 			return (IType[]) list.ToArray (typeof(IType));
