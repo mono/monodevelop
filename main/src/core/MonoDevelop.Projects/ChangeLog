@@ -1,5 +1,11 @@
 2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/CustomCommand.cs: Added missing null
+	  check. Fixes bug #521694 - Empty project custom command
+	  breaks build/run cycle.
+
+2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
 	  Added try/catch for IsWellFormadUriString, since old mono
 	  versions may crash there. Fixes bug #520451 - MD SVN can not

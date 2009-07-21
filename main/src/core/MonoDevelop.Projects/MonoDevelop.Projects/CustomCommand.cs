@@ -150,6 +150,9 @@ namespace MonoDevelop.Projects
 				};
 			}
 			
+			if (string.IsNullOrEmpty (command))
+				return;
+			
 			int i = command.IndexOf (' ');
 			string exe;
 			string args = string.Empty;
