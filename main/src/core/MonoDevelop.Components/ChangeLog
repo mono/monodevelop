@@ -2,6 +2,13 @@
 
 	* Makefile.am:
 	* gtk-gui/objects.xml:
+	* MonoDevelop.Components.csproj: Put objects.xml back. There
+	  are still some issue with reflection-only stetic.
+
+2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/objects.xml:
 	* MonoDevelop.Components.csproj:
 	* MonoDevelop.Components.PropertyGrid:
 	* MonoDevelop.Components.PropertyGrid.Editors:

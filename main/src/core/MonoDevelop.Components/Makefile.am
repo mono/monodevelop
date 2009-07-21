@@ -141,6 +141,7 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
 	icons/MonoDevelop.Close.png \
 	icons/MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp \
 	icons/MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp \
