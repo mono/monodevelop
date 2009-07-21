@@ -2238,7 +2238,7 @@
 	       description="The action is controlled by a radio button" />
     </enum>
 
-    <enum type="Pango.EllipsizeMode, pango-sharp, Version=2.6.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+    <enum type="Pango.EllipsizeMode, pango-sharp">
 	<value name="None" label="None"
 	       description="No ellipsization" />
 	<value name="Start" label="Start"
