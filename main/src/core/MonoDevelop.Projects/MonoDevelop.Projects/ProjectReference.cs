@@ -195,7 +195,7 @@ namespace MonoDevelop.Projects
 					}
 				} else if (ReferenceType == ReferenceType.Assembly) {
 					if (!File.Exists (reference))
-						GettextCatalog.GetString ("File not found");
+						return GettextCatalog.GetString ("File not found");
 				}
 				return string.Empty;
 			}
@@ -361,6 +361,11 @@ namespace MonoDevelop.Projects
 		public override int GetHashCode ()
 		{
 			return StoredReference.GetHashCode ();
+		}
+		
+		internal void NotifyStatusChanged ()
+		{
+			OnStatusChanged ();
 		}
 		
 		protected virtual void OnStatusChanged ()

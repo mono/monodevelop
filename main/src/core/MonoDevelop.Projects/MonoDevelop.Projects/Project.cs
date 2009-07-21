@@ -531,7 +531,7 @@ namespace MonoDevelop.Projects
 			else return finfo.LastWriteTime;
 		}
 
-		void OnFileChanged (object source, FileEventArgs e)
+		internal virtual void OnFileChanged (object source, FileEventArgs e)
 		{
 			ProjectFile file = GetProjectFile (e.FileName);
 			if (file != null) {

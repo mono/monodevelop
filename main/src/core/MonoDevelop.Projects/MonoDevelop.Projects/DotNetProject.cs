@@ -261,6 +261,7 @@ namespace MonoDevelop.Projects
 			Items.Bind (projectReferences);
 			if (IsLibraryBasedProjectType)
 				CompileTarget = CompileTarget.Library;
+			FileService.FileRemoved += OnFileRemoved;
 		}
 		
 		public DotNetProject (string languageName): this ()
@@ -333,6 +334,7 @@ namespace MonoDevelop.Projects
 		{
 			base.Dispose ();
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
+			FileService.FileRemoved -= OnFileRemoved;
 		}
 		
 		public virtual bool SupportsPartialTypes {
@@ -351,6 +353,28 @@ namespace MonoDevelop.Projects
 				return new string [] {"AnyCPU"};
 			}
 		}
+		
+		void CheckReferenceChange (string updatedFile)
+		{
+			foreach (ProjectReference pr in References) {
+				if (pr.ReferenceType == ReferenceType.Assembly) {
+					if (updatedFile == Path.GetFullPath (pr.Reference))
+						pr.NotifyStatusChanged ();
+				}
+			}
+		}
+		
+		void OnFileRemoved (object o, FileEventArgs args)
+		{
+			CheckReferenceChange (args.FileName);
+		}
+		
+		internal override void OnFileChanged (object source, MonoDevelop.Core.FileEventArgs e)
+		{
+			base.OnFileChanged (source, e);
+			CheckReferenceChange (e.FileName);
+		}
+
 		
 		internal void RenameReferences (string oldName, string newName)
 		{
