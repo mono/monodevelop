@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Commands
 
 					case "PROJECTDIR":
 						if((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.Project != null))
-							return IdeApp.Workbench.ActiveDocument.Project.FileName.ParentDirectory.FileName;
+							return IdeApp.Workbench.ActiveDocument.Project.FileName.ParentDirectory.FullPath;
 						return String.Empty;
 
 					case "PROJECTFILENAME":
@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Commands
 					case "SOLUTIONDIR":
 					case "COMBINEDIR":
 						if(IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null)
-							return IdeApp.ProjectOperations.CurrentSelectedSolutionItem.ParentSolution.FileName.ParentDirectory.FileName;
+							return IdeApp.ProjectOperations.CurrentSelectedSolutionItem.ParentSolution.FileName.ParentDirectory.FullPath;
 						return String.Empty;
 
 					case "SOLUTIONFILE":
