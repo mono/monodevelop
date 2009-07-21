@@ -103,7 +103,12 @@ namespace MonoDevelop.Projects
 		
 		public bool CanExecute (ExecutionContext context, string configuration)
 		{
-			ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (command);
+			string exe = command;
+			int i = exe.IndexOf (' ');
+			if (i != -1)
+				exe = command.Substring (0, i);
+			
+			ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
 			return context == null || context.ExecutionHandler.CanExecute (cmd);
 		}
 		

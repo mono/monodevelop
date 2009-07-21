@@ -1,5 +1,11 @@
 2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/CustomCommand.cs: Strip the command
+	  arguments when checking if the execution context supports
+	  the command.
+
+2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/Project.cs:
 	* MonoDevelop.Projects/DotNetProject.cs:
 	* MonoDevelop.Projects/ProjectReference.cs: When an assembly
