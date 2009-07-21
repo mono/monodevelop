@@ -1,5 +1,11 @@
 2009-07-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed bug
+	  that caused the size of the code completion window to be
+	  wrong.
+
+2009-07-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Projects.Gui.csproj:
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:

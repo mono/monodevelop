@@ -396,6 +396,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (string.IsNullOrEmpty (s)) {
 				list.Selection = 0;
 				list.SelectionDisabled = true;
+				if (IsRealized)
+					ResetSizes ();
 				return;
 			}
 
@@ -627,7 +629,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int result = 0;
 			for (int i = 0; i < indices.Length; i++) {
 				int idx = indices[i];
-				if (filterText[idx] == text[idx])
+				if (idx < filterText.Length && idx < text.Length && filterText[idx] == text[idx])
 					result++;
 			}
 			return result;
