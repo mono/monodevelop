@@ -149,6 +149,7 @@
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\MimeTypePolicyOptionsSection.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\MimeTypePolicyOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Extensions\MimeTypeOptionsPanelNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Gui.Completion\CompletionWindowManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -36,57 +36,6 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public class CompletionWindowManager
-	{
-		static CompletionListWindow wnd;
-		
-		static CompletionWindowManager ()
-		{
-		}
-		
-		public static bool ShowWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget,
-		                               ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
-		{
-			if (wnd == null) 
-				wnd = new CompletionListWindow ();
-			try {
-				if (!wnd.ShowListWindow (firstChar, list,  completionWidget, completionContext, closedDelegate)) {
-					if (list is IDisposable)
-						((IDisposable)list).Dispose ();
-					return false;
-				}
-				return true;
-			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-				return false;
-			}
-		}
-		
-		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyAction ka)
-		{
-			if (wnd == null || !wnd.Visible) {
-				ka = KeyAction.None;
-				return false;
-			}
-			return wnd.PreProcessKeyEvent (key, keyChar, modifier, out ka);
-		}
-		
-		
-		public static void PostProcessKeyEvent (KeyAction ka)
-		{
-			if (wnd == null)
-				return;
-			wnd.PostProcessKeyEvent (ka);
-		}
-		
-		public static void HideWindow ()
-		{
-			if (wnd == null)
-				return;
-			wnd.HideWindow ();
-		}
-	}
-	
 	internal class CompletionListWindow : ListWindow, IListDataProvider
 	{
 		const Gdk.ModifierType META_MASK = (Gdk.ModifierType) 0x10000000; //FIXME GTK+ 2.12: Gdk.ModifierType.MetaMask;
@@ -384,7 +333,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (List.SelectionIndex < 0 || List.SelectionIndex >= completionDataList.Count) {
 				List.CompletionString = PartialWord;
 				bool hasMismatches;
-				List.Selection = findMatchedEntry (List.CompletionString, out hasMismatches);
+				List.Selection = FindMatchedEntry (List.CompletionString, out hasMismatches);
 			}
 			// no success, hide declaration view
 			if (List.SelectionIndex < 0 || List.SelectionIndex >= completionDataList.Count) {

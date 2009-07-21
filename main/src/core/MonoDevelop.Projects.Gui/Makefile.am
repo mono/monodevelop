@@ -41,6 +41,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Completion/CompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs \
+	MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs \
 	MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/ICompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs \

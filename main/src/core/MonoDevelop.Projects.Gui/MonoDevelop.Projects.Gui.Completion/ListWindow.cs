@@ -29,6 +29,7 @@ using Gtk;
 using Gdk;
 using Pango;
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 
@@ -290,7 +291,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
 				bool hasMismatches;
-				int match = findMatchedEntry (word.ToString (), out hasMismatches);
+				int match = FindMatchedEntry (word.ToString (), out hasMismatches);
 				
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
 					curPos++;
@@ -315,7 +316,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		//note: finds the full match, or the best partial match
 		//returns -1 if there is no match at all
-		protected int findMatchedEntry (string s, out bool hasMismatches)
+		protected int FindMatchedEntry (string s, out bool hasMismatches)
 		{
 			// Search for exact matches.
 			for (int i = 0; i < list.filteredItems.Count; i++) {
@@ -325,7 +326,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return i;
 				}
 			}
-
+			
+			// default - word with highest match rating in the list.
+			hasMismatches = true;
+			int idx = -1;
+			int curRating = -1;
+			for (int n = 0; n < list.filteredItems.Count; n++) {
+				string txt = provider.GetText (list.filteredItems[n]);
+				int rating = ListWidget.MatchRating (s, txt);
+				if (curRating < rating) {
+					curRating = rating;
+					idx = n;
+				}
+			}
+			
 			// Search for history matches.
 			string historyWord = null;
 			for (int i = wordHistory.Count - 1; i >= 0; i--) {
@@ -340,23 +354,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 				for (int n = 0; n < list.filteredItems.Count; n++) {
 					string txt = provider.GetText (list.filteredItems[n]);
 					if (txt == historyWord) {
-						hasMismatches = false;
-						return n;
+						if (curRating <= ListWidget.MatchRating (s, txt)) {
+							hasMismatches = false;
+							return n;
+						}
+						break;
 					}
 				}
 			}
-
-			// default - first word in filtered list
-			hasMismatches = true;
-			for (int n = 0; n < list.filteredItems.Count; n++) {
-				string txt = provider.GetText (list.filteredItems[n]);
-				if (ListWidget.Matches (s, txt)) {
-					hasMismatches = false;
-					return n;
-				}
-			}
-			
-			return -1;
+			return idx;
 		}
 		
 		List<string> wordHistory = new List<string> ();
@@ -394,7 +400,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 
 			bool hasMismatches;
-			int n = findMatchedEntry (s, out hasMismatches);
+			int n = FindMatchedEntry (s, out hasMismatches);
 			SelectEntry (n);
 			if (hasMismatches)
 				list.SelectionDisabled = true;
@@ -612,6 +618,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		internal List<int> filteredItems = new List<int> ();
+		
+		public static int MatchRating (string filterText, string text)
+		{
+			int[] indices = Match (filterText, text);
+			if (indices == null)
+				return -1;
+			int result = 0;
+			for (int i = 0; i < indices.Length; i++) {
+				int idx = indices[i];
+				if (filterText[idx] == text[idx])
+					result++;
+			}
+			return result;
+		}
 		
 		static int[] Match (string filterText, string text)
 		{
