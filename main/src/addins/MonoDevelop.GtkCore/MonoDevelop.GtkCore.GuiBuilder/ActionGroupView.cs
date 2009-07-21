@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.DesignerSupport.PropertyGrid;
+using MonoDevelop.DesignerSupport;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {

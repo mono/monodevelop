@@ -1,3 +1,10 @@
+2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDocumentOutline.cs:
+	  Track api changes.
+
 2009-07-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: No more

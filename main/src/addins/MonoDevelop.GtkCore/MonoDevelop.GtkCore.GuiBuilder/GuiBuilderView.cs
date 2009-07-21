@@ -41,7 +41,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.DesignerSupport.Toolbox; 
-using MonoDevelop.DesignerSupport.PropertyGrid;
+using MonoDevelop.DesignerSupport;
 using MonoDevelop.Deployment;
 
 using Gtk;
