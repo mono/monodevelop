@@ -59,64 +59,26 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			return provider.ParseText (memberBody);
 		}
 
-		LocalVariableDeclaration GetVariableDeclaration (RefactoringOptions options)
-		{
-			if (!(options.SelectedItem is LocalVariable)) {
-//				Console.WriteLine ("!!! Item is not LocalVariable");
-				return null;
-			}
-			LocalVariable var = (LocalVariable)options.SelectedItem;
-//			Console.WriteLine ("!!! Item = " + var.ToString ());
-//			Console.WriteLine ("!!! VarName = " + var.Name);
-//			Console.WriteLine ("!!! Member = " + var.DeclaringMember.ToString ());
-
-			INode result = GetMemberBodyNode (options);
-			if (result == null)
-				return null;
-			Location cursorLocation = new Location (options.Document.TextEditor.CursorColumn, options.Document.TextEditor.CursorLine - var.DeclaringMember.BodyRegion.Start.Line);
-			// relativ to the memberBody
-			INode statementAtCursor = null;
-//			Console.WriteLine ("!!! Suche Variablendeklaration an Position: " + cursorLocation.ToString ());
-			while (result is BlockStatement) {
-				foreach (Statement child in result.Children) {
-//					Console.WriteLine ("!!! child an: " + child.StartLocation.ToString () + " --- " + child.EndLocation.ToString ());
-					if (child.StartLocation <= cursorLocation && child.EndLocation >= cursorLocation) {
-						statementAtCursor = child;
-//						Console.WriteLine ("!!! Gefunden, Typ: " + statementAtCursor.GetType ().ToString ());
-						break;
-					}
-				}
-				result = statementAtCursor;
-			}
-			if (statementAtCursor is LocalVariableDeclaration)
-				return (LocalVariableDeclaration)statementAtCursor;
-			return null;
-		}
-
-		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			Console.WriteLine ("!!! IsValid?");
-			LocalVariableDeclaration d = GetVariableDeclaration (options);
-			if (d != null) {
-				if (d.GetVariableDeclaration (((LocalVariable)options.SelectedItem).Name) != null) {
-					Console.WriteLine ("Yes, is Valid: " + ((LocalVariable)options.SelectedItem).Name);
-					return true;
-				}
-				Console.WriteLine ("VariablenDeclaration of another variable");
+			if (!(options.SelectedItem is LocalVariable)) {
+				//				Console.WriteLine ("!!! Item is not LocalVariable");
+				return false;
 			}
-			return false;
+			INode result = GetMemberBodyNode (options);
+			if (result == null)
+				return false;
+			return true;
 		}
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
-			LocalVariableDeclaration declaration = GetVariableDeclaration (options);
 			INode memberNode = GetMemberBodyNode (options);
 			List<Change> changes = new List<Change> ();
 			try {
 				//				Console.WriteLine ("AcceptVisitor");
 				//				Console.WriteLine ("Start: " + memberNode.StartLocation.ToString () + " - End: " + memberNode.EndLocation.ToString ());
-				memberNode.AcceptVisitor (new IntegrateTemporaryVariableVisitor (), new IntegrateTemporaryVariableVisitorOptions (changes, options, declaration));
+				memberNode.AcceptVisitor (new IntegrateTemporaryVariableVisitor (), new IntegrateTemporaryVariableVisitorOptions (changes, options));
 				//				Console.WriteLine ("AcceptVisitor done");
 			} catch (IntegrateTemporaryVariableException e) {
 				//				Console.WriteLine ("Exception catched");
@@ -183,11 +145,12 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			
 			public override object VisitLocalVariableDeclaration (LocalVariableDeclaration localVariableDeclaration, object data)
 			{
-//				Console.WriteLine ("LocalVariableDeclaration: " + localVariableDeclaration.StartLocation.ToString () + " - " + localVariableDeclaration.EndLocation.ToString ());
+				//				Console.WriteLine ("LocalVariableDeclaration: " + localVariableDeclaration.StartLocation.ToString () + " - " + localVariableDeclaration.EndLocation.ToString ());
 				localVariableDeclaration.TypeReference.AcceptVisitor (this, data);
 				foreach (VariableDeclaration o in localVariableDeclaration.Variables) {
 					if (o.Name == ((IntegrateTemporaryVariableVisitorOptions)data).GetName ()) {
 						IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
+						options.Initializer = localVariableDeclaration.GetVariableDeclaration(((LocalVariable)options.Options.SelectedItem).Name).Initializer;
 						if (localVariableDeclaration.Variables.Count == 1) {
 							TextReplaceChange change = new TextReplaceChange ();
 							change.Description = string.Format (GettextCatalog.GetString ("Deleting local variable declaration {0}"), options.GetName ());
@@ -208,7 +171,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 							int end = options.Options.Document.TextEditor.GetPositionFromLineColumn (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.EndLocation.Column);
 
 							change.RemovedChars = end - change.Offset;
-							localVariableDeclaration.Variables.Remove (options.Declaration.GetVariableDeclaration (options.GetName ()));
+							localVariableDeclaration.Variables.Remove (localVariableDeclaration.GetVariableDeclaration (options.GetName ()));
 							INRefactoryASTProvider provider = options.Options.GetASTProvider ();
 							change.InsertedText = options.Options.GetWhitespaces (change.Offset) + provider.OutputNode (options.Options.Dom, localVariableDeclaration);
 							((IntegrateTemporaryVariableVisitorOptions)data).Changes.Add (change);
@@ -232,7 +195,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 					assignmentExpression.Left.AcceptVisitor (this, data);
 				}
 				if (IsExpressionToReplace (assignmentExpression.Right, (IntegrateTemporaryVariableVisitorOptions)data)) {
-					options.Changes.Add (ReplaceExpression (assignmentExpression.Right, options.GetInitializer (), options));
+					options.Changes.Add (ReplaceExpression (assignmentExpression.Right, options.Initializer, options));
 					return null;
 				} else
 					return assignmentExpression.Right.AcceptVisitor (this, data);
@@ -253,13 +216,13 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			}
 			public override object VisitCastExpression (CastExpression expression, object data)
 			{
-//				Console.WriteLine ("CastExpression");
+				//				Console.WriteLine ("CastExpression");
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (IsExpressionToReplace (expression.Expression, (IntegrateTemporaryVariableVisitorOptions)data)) {
-					if (IsPrimary (options.GetInitializer ()))
-						options.Changes.Add (ReplaceExpression (expression.Expression, options.GetInitializer (), options));
+					if (IsPrimary (options.Initializer))
+						options.Changes.Add (ReplaceExpression (expression.Expression, options.Initializer, options));
 					else
-						options.Changes.Add (ReplaceExpression (expression.Expression, new ParenthesizedExpression (options.GetInitializer ()), options));
+						options.Changes.Add (ReplaceExpression (expression.Expression, new ParenthesizedExpression (options.Initializer), options));
 					return null;
 				} else {
 					return base.VisitCastExpression (expression, data);
@@ -282,9 +245,9 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				Console.WriteLine ("TypeOfIsExpression");
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (IsExpressionToReplace (stmt.Expression, options)) {
-					if (IsUnary (options.GetInitializer ()) || (options.GetInitializer () is BinaryOperatorExpression && IsShiftOrHigher (((BinaryOperatorExpression)options.GetInitializer ()).Op)))
-						options.Changes.Add (ReplaceExpression (stmt.Expression, options.GetInitializer (), options)); else
-						options.Changes.Add (ReplaceExpression (stmt.Expression, new ParenthesizedExpression (options.GetInitializer ()), options));
+					if (IsUnary (options.Initializer) || (options.Initializer is BinaryOperatorExpression && IsShiftOrHigher (((BinaryOperatorExpression)options.Initializer).Op)))
+						options.Changes.Add (ReplaceExpression (stmt.Expression, options.Initializer, options)); else
+						options.Changes.Add (ReplaceExpression (stmt.Expression, new ParenthesizedExpression (options.Initializer), options));
 					return null;
 				} else {
 					return base.VisitTypeOfIsExpression (stmt, data);
@@ -295,9 +258,9 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				Console.WriteLine ("UnaryOperatorExpression");
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (IsExpressionToReplace (expression.Expression, options)) {
-					if (IsUnary (options.GetInitializer ()))
-						options.Changes.Add (ReplaceExpression (expression.Expression, options.GetInitializer (), options)); else
-						options.Changes.Add (ReplaceExpression (expression.Expression, new ParenthesizedExpression (options.GetInitializer ()), options));
+					if (IsUnary (options.Initializer))
+						options.Changes.Add (ReplaceExpression (expression.Expression, options.Initializer, options)); else
+						options.Changes.Add (ReplaceExpression (expression.Expression, new ParenthesizedExpression (options.Initializer), options));
 					return null;
 				} else {
 					return base.VisitUnaryOperatorExpression (expression, data);
@@ -308,16 +271,16 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				Console.WriteLine ("BinaryOperatorExpression");
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (IsExpressionToReplace (expression.Left, (IntegrateTemporaryVariableVisitorOptions)data))
-					if (IsUnary (options.GetInitializer ()))
-						options.Changes.Add (ReplaceExpression (expression.Left, options.GetInitializer (), options)); else
-						options.Changes.Add (ReplaceExpression (expression.Left, new ParenthesizedExpression (options.GetInitializer ()), options));
+					if (IsUnary (options.Initializer))
+						options.Changes.Add (ReplaceExpression (expression.Left, options.Initializer, options)); else
+						options.Changes.Add (ReplaceExpression (expression.Left, new ParenthesizedExpression (options.Initializer), options));
 				else
 					expression.Left.AcceptVisitor(this, data);
 				Console.WriteLine("LeftSide done");
 				if (IsExpressionToReplace (expression.Right, (IntegrateTemporaryVariableVisitorOptions)data)) {
-					if (IsUnary (options.GetInitializer ()))
-						options.Changes.Add (ReplaceExpression (expression.Right, options.GetInitializer (), options)); else
-						options.Changes.Add (ReplaceExpression (expression.Right, new ParenthesizedExpression (options.GetInitializer ()), options));
+					if (IsUnary (options.Initializer))
+						options.Changes.Add (ReplaceExpression (expression.Right, options.Initializer, options)); else
+						options.Changes.Add (ReplaceExpression (expression.Right, new ParenthesizedExpression (options.Initializer), options));
 					return null;
 				} else
 					return expression.Right.AcceptVisitor(this, data);
@@ -327,19 +290,19 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				Console.WriteLine ("ConditionalExpression");
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (IsExpressionToReplace (expression.Condition, (IntegrateTemporaryVariableVisitorOptions)data))
-					if (IsUnary (options.GetInitializer ()))
-						options.Changes.Add (ReplaceExpression (expression.Condition, options.GetInitializer (), options)); else
-						options.Changes.Add (ReplaceExpression (expression.Condition, new ParenthesizedExpression (options.GetInitializer ()), options)); else
+					if (IsUnary (options.Initializer))
+						options.Changes.Add (ReplaceExpression (expression.Condition, options.Initializer, options)); else
+						options.Changes.Add (ReplaceExpression (expression.Condition, new ParenthesizedExpression (options.Initializer), options)); else
 					expression.Condition.AcceptVisitor (this, data);
 				if (IsExpressionToReplace (expression.TrueExpression, (IntegrateTemporaryVariableVisitorOptions)data))
-					if (!(options.GetInitializer () is AssignmentExpression || options.GetInitializer () is ConditionalExpression))
-						options.Changes.Add (ReplaceExpression (expression.TrueExpression, options.GetInitializer (), options)); else
-						options.Changes.Add (ReplaceExpression (expression.TrueExpression, new ParenthesizedExpression (options.GetInitializer ()), options)); else
+					if (!(options.Initializer is AssignmentExpression || options.Initializer is ConditionalExpression))
+						options.Changes.Add (ReplaceExpression (expression.TrueExpression, options.Initializer, options)); else
+						options.Changes.Add (ReplaceExpression (expression.TrueExpression, new ParenthesizedExpression (options.Initializer), options)); else
 					expression.TrueExpression.AcceptVisitor (this, data);
 				if (IsExpressionToReplace (expression.FalseExpression, (IntegrateTemporaryVariableVisitorOptions)data)) {
-					if (!(options.GetInitializer () is AssignmentExpression || options.GetInitializer () is ConditionalExpression))
-						options.Changes.Add (ReplaceExpression (expression.FalseExpression, options.GetInitializer (), options)); else
-						options.Changes.Add (ReplaceExpression (expression.FalseExpression, new ParenthesizedExpression (options.GetInitializer ()), options));
+					if (!(options.Initializer is AssignmentExpression || options.Initializer is ConditionalExpression))
+						options.Changes.Add (ReplaceExpression (expression.FalseExpression, options.Initializer, options)); else
+						options.Changes.Add (ReplaceExpression (expression.FalseExpression, new ParenthesizedExpression (options.Initializer), options));
 					return null;
 				} else
 					return expression.FalseExpression.AcceptVisitor(this, data);
@@ -349,9 +312,9 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			{
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (IsExpressionToReplace (e.TargetObject, options)) {
-					if (IsUnary (options.GetInitializer ()))
-						options.Changes.Add (ReplaceExpression (e.TargetObject, options.GetInitializer (), options)); else
-						options.Changes.Add (ReplaceExpression (e.TargetObject, new ParenthesizedExpression (options.GetInitializer ()), options));
+					if (IsUnary (options.Initializer))
+						options.Changes.Add (ReplaceExpression (e.TargetObject, options.Initializer, options)); else
+						options.Changes.Add (ReplaceExpression (e.TargetObject, new ParenthesizedExpression (options.Initializer), options));
 				} else
 					e.TargetObject.AcceptVisitor (this, data);
 				
@@ -365,9 +328,9 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			{
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (IsExpressionToReplace (e.TargetObject, options)) {
-					if (IsUnary (options.GetInitializer ()))
-						options.Changes.Add (ReplaceExpression (e.TargetObject, options.GetInitializer (), options)); else
-						options.Changes.Add (ReplaceExpression (e.TargetObject, new ParenthesizedExpression (options.GetInitializer ()), options));
+					if (IsUnary (options.Initializer))
+						options.Changes.Add (ReplaceExpression (e.TargetObject, options.Initializer, options)); else
+						options.Changes.Add (ReplaceExpression (e.TargetObject, new ParenthesizedExpression (options.Initializer), options));
 				} else
 					e.TargetObject.AcceptVisitor (this, data);
 
@@ -380,9 +343,9 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			{
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (IsExpressionToReplace (e.TargetObject, options)) {
-					if (IsUnary (options.GetInitializer ()))
-						options.Changes.Add (ReplaceExpression (e.TargetObject, options.GetInitializer (), options)); else
-						options.Changes.Add (ReplaceExpression (e.TargetObject, new ParenthesizedExpression (options.GetInitializer ()), options));
+					if (IsUnary (options.Initializer))
+						options.Changes.Add (ReplaceExpression (e.TargetObject, options.Initializer, options)); else
+						options.Changes.Add (ReplaceExpression (e.TargetObject, new ParenthesizedExpression (options.Initializer), options));
 					return null;
 				} else
 					return e.TargetObject.AcceptVisitor (this, data);
@@ -455,7 +418,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				// ElseIfSection, IfElseStatement, ForeachStatement, ForStatement, Indexes of the IndexerExpression, Arguments of the InvocationExpression,
 				// NamedArgumentExpression, ObjectCreateExpression, VariableDeclaration (if the Initializer is the IdentifierExpression, this is handled here)
 				// ThrowStatement, SwitchStatement, ReturnStatement, GotoCaseStatement, CheckedExpression, UncheckedExpression
-				options.Changes.Add (ReplaceExpression (e, options.GetInitializer (), options));
+				options.Changes.Add (ReplaceExpression (e, options.Initializer, options));
 				return data;
 			}
 		}
@@ -483,23 +446,19 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				get;
 				set;
 			}
-			public LocalVariableDeclaration Declaration {
+			public Expression Initializer
+			{
 				get;
 				set;
-			}
-			public Expression GetInitializer ()
-			{
-				return Declaration.GetVariableDeclaration (GetName ()).Initializer;
 			}
 			public string GetName ()
 			{
 				return ((LocalVariable)Options.SelectedItem).Name;
 			}
-			public IntegrateTemporaryVariableVisitorOptions (List<Change> changes, RefactoringOptions options, LocalVariableDeclaration declaration)
+			public IntegrateTemporaryVariableVisitorOptions (List<Change> changes, RefactoringOptions options)
 			{
 				Changes = changes;
 				Options = options;
-				Declaration = declaration;
 			}
 		}
 	}

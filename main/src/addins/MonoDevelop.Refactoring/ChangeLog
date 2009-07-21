@@ -1,6 +1,11 @@
 2009-07-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs:
+	  checked in newest integrate temporary variable.
+
+2009-07-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs:
 	  Checked in latest refactoring from andrea.
 
 2009-07-17  Mike Krüger  <mkrueger@novell.com>
