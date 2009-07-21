@@ -46,7 +46,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			comboboxScope.Active = 3;
 			comboboxentryPath.Entry.Text = directory;
 			writeScope = false;
-			
 		}
 		
 		ComboBoxEntry comboboxentryReplace;
@@ -130,6 +129,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			}
 			comboboxentryFind.Entry.SelectRegion (0, comboboxentryFind.ActiveText.Length);
+			buttonStop.Visible = false;
 		}
 		
 		Label labelPath;
