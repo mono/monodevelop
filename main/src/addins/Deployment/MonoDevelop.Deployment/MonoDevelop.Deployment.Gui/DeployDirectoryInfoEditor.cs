@@ -1,7 +1,7 @@
 
 using System;
 using System.ComponentModel;
-using MonoDevelop.DesignerSupport.PropertyGrid;
+using MonoDevelop.Components.PropertyGrid;
 using Gtk;
 using Gdk;
 

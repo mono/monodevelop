@@ -3,7 +3,7 @@ using System;
 
 namespace MonoDevelop.Deployment
 {
-	[System.ComponentModel.Editor (typeof(DeployDirectoryInfoEditor), typeof(MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditorCell))]
+	[System.ComponentModel.Editor (typeof(DeployDirectoryInfoEditor), typeof(MonoDevelop.Components.PropertyGrid.PropertyEditorCell))]
 	public class DeployDirectoryInfo
 	{
 		string id;
