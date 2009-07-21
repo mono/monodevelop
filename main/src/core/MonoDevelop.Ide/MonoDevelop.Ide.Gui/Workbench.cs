@@ -860,10 +860,8 @@ namespace MonoDevelop.Ide.Gui
 					foreach (FilePath file in files) {
 						try {
 							FileInfo fi = new FileInfo (file);
-							if (fi.Exists) {
-								FileData fd = new FileData (file, fi.LastWriteTime);
-								fileStatus.Add (fd);
-							}
+							FileData fd = new FileData (file, fi.Exists ? fi.LastWriteTime : DateTime.MinValue);
+							fileStatus.Add (fd);
 						} catch {
 							// Ignore
 						}
@@ -887,7 +885,7 @@ namespace MonoDevelop.Ide.Gui
 							if (fi.Exists) {
 								if (fi.LastWriteTime != fd.Time)
 									FileService.NotifyFileChanged (fd.File);
-							} else {
+							} else if (fd.Time != DateTime.MinValue) {
 								FileService.NotifyFileRemoved (fd.File);
 							}
 						} catch {

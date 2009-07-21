@@ -1,5 +1,10 @@
 2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs: Notify file creations when
+	  focusing MD.
+
+2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/Workbench.cs: Keep track of file changes
 	  when MD loses/gains the focus.
 
