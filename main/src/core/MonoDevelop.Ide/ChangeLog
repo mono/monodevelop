@@ -1,3 +1,8 @@
+2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Keep track of file changes
+	  when MD loses/gains the focus.
+
 2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

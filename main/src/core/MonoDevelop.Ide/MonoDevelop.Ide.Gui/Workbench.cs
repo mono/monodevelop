@@ -32,6 +32,7 @@ using System.IO;
 using System.Xml;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
@@ -81,6 +82,13 @@ namespace MonoDevelop.Ide.Gui
 				FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (IdeApp.Workbench.RecentOpen.InformFileRenamed));
 				IdeApp.Workspace.StoringUserPreferences += OnStoringWorkspaceUserPreferences;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadingWorkspaceUserPreferences;
+				
+				IdeApp.CommandService.ApplicationFocusOut += delegate(object o, EventArgs args) {
+					SaveFileStatus ();
+				};
+				IdeApp.CommandService.ApplicationFocusIn += delegate(object o, EventArgs args) {
+					CheckFileStatus ();
+				};
 				
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
@@ -834,8 +842,86 @@ namespace MonoDevelop.Ide.Gui
 		{
 			workbench.ResetToolbars ();
 		}
+		
+		List<FileData> fileStatus;
+		object fileStatusLock = new object ();
+		
+		internal void SaveFileStatus ()
+		{
+			fileStatus = new List<FileData> ();
+			
+//			DateTime t = DateTime.Now;
+			List<FilePath> files = new List<FilePath> (GetKnownFiles ());
+//			Console.WriteLine ("SaveFileStatus(0) " + (DateTime.Now - t).TotalMilliseconds + "ms " + files.Count);
+			
+			ThreadPool.QueueUserWorkItem (delegate {
+//				t = DateTime.Now;
+				lock (fileStatusLock) {
+					foreach (FilePath file in files) {
+						try {
+							FileInfo fi = new FileInfo (file);
+							if (fi.Exists) {
+								FileData fd = new FileData (file, fi.LastWriteTime);
+								fileStatus.Add (fd);
+							}
+						} catch {
+							// Ignore
+						}
+					}
+				}
+//				Console.WriteLine ("SaveFileStatus " + (DateTime.Now - t).TotalMilliseconds + "ms " + fileStatus.Count);
+			});
+		}
+		
+		internal void CheckFileStatus ()
+		{
+			if (fileStatus == null)
+				return;
+			
+			ThreadPool.QueueUserWorkItem (delegate {
+				lock (fileStatusLock) {
+//					DateTime t = DateTime.Now;
+					foreach (FileData fd in fileStatus) {
+						try {
+							FileInfo fi = new FileInfo (fd.File);
+							if (fi.Exists) {
+								if (fi.LastWriteTime != fd.Time)
+									FileService.NotifyFileChanged (fd.File);
+							} else {
+								FileService.NotifyFileRemoved (fd.File);
+							}
+						} catch {
+							// Ignore
+						}
+					}
+//					Console.WriteLine ("CheckFileStatus " + (DateTime.Now - t).TotalMilliseconds + "ms " + fileStatus.Count);
+					fileStatus = null;
+				}
+			});
+		}
+		
+		IEnumerable<FilePath> GetKnownFiles ()
+		{
+			foreach (WorkspaceItem item in IdeApp.Workspace.Items) {
+				foreach (FilePath file in item.GetItemFiles (true))
+					yield return file;
+			}
+		}
+		
+		struct FileData
+		{
+			public FileData (FilePath file, DateTime time)
+			{
+				this.File = file;
+				this.Time = time;
+			}
+			
+			public FilePath File;
+			public DateTime Time;
+		}
 	}
 	
+
 	class FileInformation
 	{
 		public IProgressMonitor ProgressMonitor;
