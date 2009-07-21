@@ -123,9 +123,40 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					return "File is not part of a project";
 				}
+				break;
+			case 'c':
+				// Error manipulation
+				if (3 == command.Length) {
+					switch (command[2]) {
+					case 'n':
+						// :cn - jump to next error
+						IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.ViewCommands.ShowNext);
+						return string.Empty;
+					case 'N':
+					case 'p':
+						// :c[pN] - jump to previous error
+						IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious);
+						return string.Empty;
+					}
+				}
+				break;
 			}
 			
 			return base.RunExCommand (command);
+		}
+		
+		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
+		{
+			if (0 != (Gdk.ModifierType.ControlMask & modifier)) {
+				switch (key) {
+				case Gdk.Key.bracketright:
+					// ctrl-] => Go to declaration	
+					IdeApp.CommandService.DispatchCommand (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration);
+					return;
+				}
+			}// ctrl+key		
+			
+			base.HandleKeypress (key, unicodeKey, modifier);
 		}
 	}
 }
