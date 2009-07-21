@@ -50,6 +50,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeNewFilesDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersPreview.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
@@ -119,6 +121,8 @@ FILES =  \
 	MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs \
 	MonoDevelop.Ide.Execution/IExecutionCommandCustomizer.cs \
 	MonoDevelop.Ide.Execution/IExecutionConfigurationEditor.cs \
+	MonoDevelop.Ide.Execution/MonoExecutionCustomizer.cs \
+	MonoDevelop.Ide.Execution/MonoExecutionParameters.cs \
 	MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs \
@@ -192,6 +196,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/IncludeNewFilesDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersPreview.cs \
+	MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersWidget.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs \

@@ -1,5 +1,21 @@
 2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:
+	* MonoDevelop.Ide.Execution/MonoExecutionCustomizer.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersWidget.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersPreview.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersPreview.cs:
+	  Added Mono Options customizer.
+
+2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* options/KeyBindingSchemeVisualStudio.xml: Set correct
 	  shortcuts for folding commands. Fixes bug #522255 - Key
 	  shortcuts for code folding have inconsistent behaviour under

@@ -1676,6 +1676,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ExecutionCommandEditors">
-		<Customizer id="MonoDevelop.Ide.Execution.CustomArgsCustomizer" _name="Custom Arguments" class="MonoDevelop.Ide.Execution.CustomArgsCustomizer" />
+		<Customizer id="MonoDevelop.Ide.Execution.CustomArgsCustomizer" _name="Arguments" />
+		<Customizer id="MonoDevelop.Ide.Execution.MonoExecutionCustomizer" _name="Mono Options" />
 	</Extension>
 </Addin>

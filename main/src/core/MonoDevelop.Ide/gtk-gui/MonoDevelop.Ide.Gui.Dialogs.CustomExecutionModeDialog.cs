@@ -243,7 +243,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 655;
-            this.DefaultHeight = 454;
+            this.DefaultHeight = 525;
             this.boxName.Hide();
             this.checkPrompt.Hide();
             this.Show();

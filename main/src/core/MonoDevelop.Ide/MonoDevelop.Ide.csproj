@@ -557,6 +557,12 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\IExecutionCommandCustomizer.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\CustomExecutionMode.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\MonoExecutionParameters.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\MonoExecutionParametersWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\MonoExecutionCustomizer.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\MonoExecutionParametersPreview.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersPreview.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
