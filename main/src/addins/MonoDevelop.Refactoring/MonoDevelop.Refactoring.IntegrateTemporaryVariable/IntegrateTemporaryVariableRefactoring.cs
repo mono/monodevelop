@@ -96,11 +96,14 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
+			Console.WriteLine ("!!! IsValid?");
 			LocalVariableDeclaration d = GetVariableDeclaration (options);
 			if (d != null) {
 				if (d.GetVariableDeclaration (((LocalVariable)options.SelectedItem).Name) != null) {
+					Console.WriteLine ("Yes, is Valid: " + ((LocalVariable)options.SelectedItem).Name);
 					return true;
 				}
+				Console.WriteLine ("VariablenDeclaration of another variable");
 			}
 			return false;
 		}
