@@ -142,7 +142,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdrun", "src\tools\mdrun\md
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}"
 	ProjectSection(MonoDevelopProperties) = preProject
-		BaseDirectory = .
+		BaseDirectory = tests
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}"
@@ -153,6 +153,7 @@ Global
 		Release|Any CPU = Release|Any CPU
 		DebugWin32|x86 = DebugWin32|x86
 		DebugMac|Any CPU = DebugMac|Any CPU
+		DebugWin32|Any CPU = DebugWin32|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{00E87426-F1BD-4B55-9B3E-7267EE93E002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -205,10 +206,10 @@ Global
 		{0F57E572-2359-4BAF-B302-6478C2E42FA2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{100568FC-F4E8-439B-94AD-41D11724E45B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{100568FC-F4E8-439B-94AD-41D11724E45B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{100568FC-F4E8-439B-94AD-41D11724E45B}.DebugMac|Any CPU.ActiveCfg = DebugMac|Any CPU
-		{100568FC-F4E8-439B-94AD-41D11724E45B}.DebugMac|Any CPU.Build.0 = DebugMac|Any CPU
-		{100568FC-F4E8-439B-94AD-41D11724E45B}.DebugWin32|x86.ActiveCfg = DebugWin32|x86
-		{100568FC-F4E8-439B-94AD-41D11724E45B}.DebugWin32|x86.Build.0 = DebugWin32|x86
+		{100568FC-F4E8-439B-94AD-41D11724E45B}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{100568FC-F4E8-439B-94AD-41D11724E45B}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{100568FC-F4E8-439B-94AD-41D11724E45B}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
+		{100568FC-F4E8-439B-94AD-41D11724E45B}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{100568FC-F4E8-439B-94AD-41D11724E45B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{100568FC-F4E8-439B-94AD-41D11724E45B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -301,6 +302,8 @@ Global
 		{3344D566-484B-4AEC-BBCF-86BC484D14B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3344D566-484B-4AEC-BBCF-86BC484D14B0}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{3344D566-484B-4AEC-BBCF-86BC484D14B0}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{3344D566-484B-4AEC-BBCF-86BC484D14B0}.DebugWin32|Any CPU.ActiveCfg = DebugWin32|Any CPU
+		{3344D566-484B-4AEC-BBCF-86BC484D14B0}.DebugWin32|Any CPU.Build.0 = DebugWin32|Any CPU
 		{3344D566-484B-4AEC-BBCF-86BC484D14B0}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
 		{3344D566-484B-4AEC-BBCF-86BC484D14B0}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{3344D566-484B-4AEC-BBCF-86BC484D14B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -345,6 +348,8 @@ Global
 		{659B0888-3956-4040-BDB1-B45F6D64E7FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{659B0888-3956-4040-BDB1-B45F6D64E7FA}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{659B0888-3956-4040-BDB1-B45F6D64E7FA}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{659B0888-3956-4040-BDB1-B45F6D64E7FA}.DebugWin32|Any CPU.ActiveCfg = DebugWin32|Any CPU
+		{659B0888-3956-4040-BDB1-B45F6D64E7FA}.DebugWin32|Any CPU.Build.0 = DebugWin32|Any CPU
 		{659B0888-3956-4040-BDB1-B45F6D64E7FA}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
 		{659B0888-3956-4040-BDB1-B45F6D64E7FA}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{659B0888-3956-4040-BDB1-B45F6D64E7FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -353,6 +358,8 @@ Global
 		{71193761-C294-42BD-98C9-A4CC15577701}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71193761-C294-42BD-98C9-A4CC15577701}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{71193761-C294-42BD-98C9-A4CC15577701}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{71193761-C294-42BD-98C9-A4CC15577701}.DebugWin32|Any CPU.ActiveCfg = DebugWin32|Any CPU
+		{71193761-C294-42BD-98C9-A4CC15577701}.DebugWin32|Any CPU.Build.0 = DebugWin32|Any CPU
 		{71193761-C294-42BD-98C9-A4CC15577701}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
 		{71193761-C294-42BD-98C9-A4CC15577701}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{71193761-C294-42BD-98C9-A4CC15577701}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -673,6 +680,15 @@ Global
 		$0.ChangeLogPolicy = $5
 		$5.UpdateMode = ProjectRoot
 		$5.inheritsSet = Mono
+		$0.TextStylePolicy = $6
+		$6.TabWidth = 4
+		$6.inheritsSet = Mono
+		$6.inheritsScope = text/plain
+		$6.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $7
+		$7.inheritsSet = Mono
+		$7.inheritsScope = text/x-csharp
+		$7.scope = text/x-csharp
 		MakePkgConfig = False
 		MakeLibPC = True
 	EndGlobalSection

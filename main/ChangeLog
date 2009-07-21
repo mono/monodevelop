@@ -1,3 +1,7 @@
+2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.sln: Fix configuration mappings for MD.Refactoring.
+
 2009-07-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* build/MacOSX/mdtool:
