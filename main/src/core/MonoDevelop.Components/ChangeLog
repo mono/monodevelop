@@ -1,3 +1,44 @@
+2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components.PropertyGrid:
+	* MonoDevelop.Components.PropertyGrid.Editors:
+	* MonoDevelop.Components.PropertyGrid/PropertyGrid.cs:
+	* MonoDevelop.Components.PropertyGrid/EditorManager.cs:
+	* MonoDevelop.Components.PropertyGrid/PropertyGridTree.cs:
+	* icons/MonoDevelop.Components.PropertyGrid.SortByCat.png:
+	* MonoDevelop.Components.PropertyGrid.Editors/IntRange.cs:
+	* MonoDevelop.Components.PropertyGrid/EventPropertyTab.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/FloatRange.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/TextEditor.cs:
+	* MonoDevelop.Components.PropertyGrid/PropertyEditorCell.cs:
+	* MonoDevelop.Components.PropertyGrid/DefaultPropertyTab.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/EventEditor.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/DefaultEditor.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/DateTimeEditor.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/TimeSpanEditor.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/FlagsEditorCell.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/ColorEditorCell.cs:
+	* icons/MonoDevelop.Components.PropertyGrid.EventPropertyTab.svg:
+	* icons/MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp:
+	* MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/TextEditorDialog.cs:
+	* icons/MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp:
+	* icons/MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.svg:
+	* MonoDevelop.Components.PropertyGrid.Editors/BooleanEditorCell.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/CharPropertyEditor.cs:
+	* MonoDevelop.Components.PropertyGrid/PropertyEditorTypeAttribute.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/FlagsSelectorDialog.cs:
+	* MonoDevelop.Components.PropertyGrid/PropertyValueChangedEventArgs.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/EnumerationEditorCell.cs:
+	* MonoDevelop.Components.PropertyGrid/SurrogateUITypeEditorAttribute.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/ExpandableObjectEditor.cs:
+	* MonoDevelop.Components.PropertyGrid/PropertyValueChangedEventHandler.cs:
+	  Moved property grid here, so it can be reused by core
+	  add-ins.
+
 2009-07-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components/TooltipWindow.cs: Fixed the annoying

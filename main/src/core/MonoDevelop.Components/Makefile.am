@@ -11,6 +11,7 @@ REFS =  \
 	-r:System \
 	-r:System.Core \
 	-r:System.Drawing \
+	-r:System.Windows.Forms \
 	-r:System.Xml
 
 FILES =  \
@@ -90,6 +91,32 @@ FILES =  \
 	MonoDevelop.Components.DockToolbars/FloatingPosition.cs \
 	MonoDevelop.Components.DockToolbars/IDockBar.cs \
 	MonoDevelop.Components.DockToolbars/PlaceholderWindow.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/BooleanEditorCell.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/CharPropertyEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/ColorEditorCell.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/DateTimeEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/DefaultEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/EnumerationEditorCell.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/EventEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/ExpandableObjectEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/FlagsEditorCell.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/FlagsSelectorDialog.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/FloatRange.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/IntRange.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/TextEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/TextEditorDialog.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/TimeSpanEditor.cs \
+	MonoDevelop.Components.PropertyGrid/DefaultPropertyTab.cs \
+	MonoDevelop.Components.PropertyGrid/EditorManager.cs \
+	MonoDevelop.Components.PropertyGrid/EventPropertyTab.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyEditorCell.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyEditorTypeAttribute.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyGrid.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyGridTree.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyValueChangedEventArgs.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyValueChangedEventHandler.cs \
+	MonoDevelop.Components.PropertyGrid/SurrogateUITypeEditorAttribute.cs \
 	MonoDevelop.Components/BaseFileEntry.cs \
 	MonoDevelop.Components/CellRendererComboBox.cs \
 	MonoDevelop.Components/ConsoleView.cs \
@@ -114,8 +141,10 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	icons/MonoDevelop.Close.png \
+	icons/MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp \
+	icons/MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp \
+	icons/MonoDevelop.Components.PropertyGrid.SortByCat.png \
 	MonoDevelop.Components.addin.xml
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb

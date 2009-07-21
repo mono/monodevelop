@@ -62,6 +62,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -77,10 +78,16 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\objects.xml">
-      <LogicalName>objects.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.addin.xml" />
+    <EmbeddedResource Include="icons\MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp">
+      <LogicalName>MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp">
+      <LogicalName>MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\MonoDevelop.Components.PropertyGrid.SortByCat.png">
+      <LogicalName>MonoDevelop.Components.PropertyGrid.SortByCat.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Components.Commands\ActionCommand.cs" />
@@ -180,6 +187,32 @@
     <Compile Include="MonoDevelop.Components\TooltipWindow.cs" />
     <Compile Include="MonoDevelop.Components\WindowTransparencyDecorator.cs" />
     <Compile Include="MonoDevelop.Components\ConsoleView.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\DefaultPropertyTab.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\EditorManager.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\EventPropertyTab.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyEditorCell.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyEditorTypeAttribute.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyGrid.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyGridTree.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyValueChangedEventArgs.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyValueChangedEventHandler.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\SurrogateUITypeEditorAttribute.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\CharPropertyEditor.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\CollectionEditor.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\ColorEditorCell.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\DateTimeEditor.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\DefaultEditor.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\EnumerationEditorCell.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\EventEditor.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\ExpandableObjectEditor.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FlagsEditorCell.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FlagsSelectorDialog.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FloatRange.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\IntRange.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\TextEditor.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\TextEditorDialog.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\TimeSpanEditor.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\BooleanEditorCell.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
