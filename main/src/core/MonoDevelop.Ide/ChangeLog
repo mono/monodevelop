@@ -1,5 +1,12 @@
 2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* options/KeyBindingSchemeVisualStudio.xml: Set correct
+	  shortcuts for folding commands. Fixes bug #522255 - Key
+	  shortcuts for code folding have inconsistent behaviour under
+	  "Visual Studio" Key Bindings.
+
+2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs: Return
 	  the correct path for the ProjectDir and SolutionDir
 	  variables. Patch by Federico Di Gregorio. Fixes bug #521864
