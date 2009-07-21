@@ -366,7 +366,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		bool IsValidFile (string path)
 		{
 			// If it is an absolute uri, it's not a valid file
-			return !Uri.IsWellFormedUriString (path, UriKind.Absolute);
+			try {
+				return !Uri.IsWellFormedUriString (path, UriKind.Absolute);
+			} catch {
+				// Old mono versions may crash in IsWellFormedUriString if the path
+				// is not an uri.
+				return true;
+			}
 		}
 		
 		class ConfigData
