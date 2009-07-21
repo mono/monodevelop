@@ -57,6 +57,11 @@ namespace MonoDevelop.Components.Commands
 		bool enableToolbarUpdate;
 		int guiLock;
 		
+		// Fields used to keep track of the application focus
+		bool appHasFocus;
+		Gtk.Window lastFocused;
+		DateTime focusCheckDelayTimeout = DateTime.MinValue;
+		
 		internal static readonly object CommandRouteTerminator = new object ();
 		
 		internal bool handlerFoundInMulticast;
@@ -924,12 +929,27 @@ namespace MonoDevelop.Components.Commands
 		{
 			Gtk.Window[] wins = Gtk.Window.ListToplevels ();
 			
+			bool hasFocus = false;
+			bool lastFocusedExists = lastFocused == null;
+			Gtk.Window newFocused = null;
 			foreach (Gtk.Window w in wins) {
-				if (w.IsActive && w.Visible && w.Type == Gtk.WindowType.Toplevel && !(w is Gtk.Dialog)) {
-					win = w;
-					break;
+				if (w.Visible) {
+					if (w.HasToplevelFocus) {
+						hasFocus = true;
+						newFocused = w;
+					}
+					if (w.IsActive && w.Type == Gtk.WindowType.Toplevel && !(w is Gtk.Dialog)) {
+						win = w;
+						break;
+					}
+					if (lastFocused == w) {
+						lastFocusedExists = true;
+					}
 				}
 			}
+			
+			lastFocused = newFocused;
+			UpdateAppFocusStatus (hasFocus, lastFocusedExists);
 			
 			if (win != null) {
 				RegisterTopWindow (win);
@@ -979,6 +999,31 @@ namespace MonoDevelop.Components.Commands
 				
 		}
 		
+		void UpdateAppFocusStatus (bool hasFocus, bool lastFocusedExists)
+		{
+			if (hasFocus != appHasFocus) {
+				// The last focused window has been destroyed. Wait a few ms since another app's window
+				// may gain focus again
+				DateTime now = DateTime.Now;
+				if (now < focusCheckDelayTimeout)
+					return;
+				if (!hasFocus && !lastFocusedExists) {
+					focusCheckDelayTimeout = now.AddMilliseconds (100);
+					return;
+				}
+				focusCheckDelayTimeout = DateTime.MinValue;
+				
+				appHasFocus = hasFocus;
+				if (appHasFocus) {
+					if (ApplicationFocusIn != null)
+						ApplicationFocusIn (this, EventArgs.Empty);
+				} else {
+					if (ApplicationFocusOut != null)
+						ApplicationFocusOut (this, EventArgs.Empty);
+				}
+			}
+		}
+		
 		public void ReportError (object commandId, string message, Exception ex)
 		{
 			if (CommandError != null) {
@@ -990,6 +1035,8 @@ namespace MonoDevelop.Components.Commands
 		public event CommandErrorHandler CommandError;
 		public event EventHandler<CommandSelectedEventArgs> CommandSelected;
 		public event EventHandler CommandDeselected;
+		public event EventHandler ApplicationFocusIn; // Fired when the application gets the focus
+		public event EventHandler ApplicationFocusOut;  // Fired when the application loses the focus
 	}
 	
 	internal class HandlerTypeInfo
