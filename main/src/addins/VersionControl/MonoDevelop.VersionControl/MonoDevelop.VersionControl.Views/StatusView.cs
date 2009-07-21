@@ -234,7 +234,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			colRemote.Visible = false;
 
-			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(Gdk.Pixbuf), typeof(bool), typeof (Gdk.Pixbuf), typeof(string), typeof(bool));
+			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string[]), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(Gdk.Pixbuf), typeof(bool), typeof (Gdk.Pixbuf), typeof(string), typeof(bool));
 			filelist.Model = filestore;
 			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			
@@ -452,9 +452,9 @@ namespace MonoDevelop.VersionControl.Views
 
 			
 			
-			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, commit, false, n.LocalPath.ToString (), true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
+			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath).Split ('\n'), rstatus, commit, false, n.LocalPath.ToString (), true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
 			if (!n.IsDirectory)
-				filestore.AppendValues (it, statusicon, "", "", "", false, true, n.LocalPath.ToString (), false, false, fileIcon, false, null, null, false);
+				filestore.AppendValues (it, statusicon, "", new string[0], "", false, true, n.LocalPath.ToString (), false, false, fileIcon, false, null, null, false);
 			return it;
 		}
 		
@@ -918,7 +918,7 @@ namespace MonoDevelop.VersionControl.Views
 			t.IsBackground = true;
 			t.Start ();
 		}
-		
+		static int bla = 0;
 		void SetFileDiff (TreeIter iter, string file, bool remote)
 		{
 			// If diff information is already loaded, just look for the
@@ -929,8 +929,8 @@ namespace MonoDevelop.VersionControl.Views
 				FillDiffInfo (iter, file, ddata);
 				return;
 			}
-			
-			filestore.SetValue (iter, ColPath, GettextCatalog.GetString ("Loading data..."));
+
+			filestore.SetValue (iter, ColPath, new string[] { GettextCatalog.GetString ("Loading data...") });
 			
 			if (ddata.diffRunning)
 				return;
@@ -944,16 +944,19 @@ namespace MonoDevelop.VersionControl.Views
 			if (ddata.difs != null) {
 				foreach (DiffInfo di in ddata.difs) {
 					if (di.FileName == file) {
-						filestore.SetValue (iter, ColPath, di.Content);
+						filestore.SetValue (iter, ColPath, di.Content.Split ('\n'));
 						return;
 					}
 				}
 			}
-			filestore.SetValue (iter, ColPath, GettextCatalog.GetString ("No differences found"));
+			filestore.SetValue (iter, ColPath, new string[] { GettextCatalog.GetString ("No differences found") });
 		}
 		
 		void FillDifs (DiffData ddata)
 		{
+			if (disposed)
+				return;
+
 			diffRenderer.Reset ();
 
 			if (ddata.diffException != null) {
@@ -981,13 +984,13 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			if (disposed)
 				return;
-			CellRendererDiff rc = (CellRendererDiff) cell;
-			string text = (string) filestore.GetValue (iter, ColPath);
-			string path = (string) filestore.GetValue (iter, ColFullPath);
+			CellRendererDiff rc = (CellRendererDiff)cell;
+			string[] lines = (string[])filestore.GetValue (iter, ColPath);
+			string path = (string)filestore.GetValue (iter, ColFullPath);
 			if (filestore.IterDepth (iter) == 0) {
-				rc.InitCell (filelist, false, text, path);
+				rc.InitCell (filelist, false, lines, path);
 			} else {
-				rc.InitCell (filelist, true, text, path);
+				rc.InitCell (filelist, true, lines, path);
 			}
 		}
 		

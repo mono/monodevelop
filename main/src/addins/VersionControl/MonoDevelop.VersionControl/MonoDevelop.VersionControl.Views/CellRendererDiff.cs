@@ -15,7 +15,6 @@ namespace MonoDevelop.VersionControl.Views
 		Pango.FontDescription font;
 		bool diffMode;
 		int width, height, lineHeight;
-		string[] lines;
 
 		public CellRendererDiff()
 		{
@@ -45,16 +44,16 @@ namespace MonoDevelop.VersionControl.Views
 		public void Reset ()
 		{
 		}
-		
-		public void InitCell (Widget container, bool diffMode, string text, string path)
+		string[] lines;
+		public void InitCell (Widget container, bool diffMode, string[] lines, string path)
 		{
 			if (isDisposed)
 				return;
+			this.lines = lines;
 			this.diffMode = diffMode;
 			
 			if (diffMode) {
-				if (text.Length > 0) {
-					lines = text.Split ('\n');
+				if (lines != null && lines.Length > 0) {
 					int maxlen = -1;
 					int maxlin = -1;
 					for (int n=0; n<lines.Length; n++) {
@@ -73,7 +72,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			else {
 				DisposeLayout ();
-				layout = CreateLayout (container, text);
+				layout = CreateLayout (container, string.Join (Environment.NewLine, lines));
 				layout.GetPixelSize (out width, out height);
 			}
 		}

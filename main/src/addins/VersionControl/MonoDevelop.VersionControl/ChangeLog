@@ -1,3 +1,10 @@
+2009-07-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	* MonoDevelop.VersionControl.Views/CellRendererDiff.cs: Fixed
+	  "Bug 470436 - Crash when using the mouse wheel to scroll
+	  very fast on the diff viewer".
+
 2009-06-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl/Repository.cs: Properly detect
