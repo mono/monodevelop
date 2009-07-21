@@ -205,10 +205,10 @@ namespace MonoDevelop.Components.Docking
 			// Remove spare tab strips
 			for (int n = notebooks.Count - 1; n >= tabbedGroups.Count; n--) {
 				TabStrip ts = notebooks [n];
+				notebooks.RemoveAt (n);
 				ts.Clear ();
 				ts.Unparent ();
 				ts.Destroy ();
-				notebooks.RemoveAt (n);
 			}
 				
 			// Add widgets to the container

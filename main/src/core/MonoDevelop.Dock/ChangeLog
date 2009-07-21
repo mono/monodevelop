@@ -1,5 +1,11 @@
 2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* DockContainer.cs: Fix potential crash. The notebook list
+	  might be navigated after unparenting the child, so the child
+	  must be removed first.
+
+2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* DockItem.cs:
 	* DockFrame.cs:
 	* DockItemContainer.cs: Fix some size allocation warnings,
