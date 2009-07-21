@@ -28,7 +28,6 @@
 using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.DesignerSupport.PropertyGrid;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {

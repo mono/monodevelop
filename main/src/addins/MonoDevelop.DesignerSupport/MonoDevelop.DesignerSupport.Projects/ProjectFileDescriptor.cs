@@ -100,7 +100,7 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 		
-		[MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors.StandardValuesSeparator ("--")]
+		[MonoDevelop.Components.PropertyGrid.PropertyEditors.StandardValuesSeparator ("--")]
 		class BuildActionStringsConverter : StandardStringsConverter
 		{
 			public override System.Collections.ICollection GetStandardStrings (ITypeDescriptorContext context)

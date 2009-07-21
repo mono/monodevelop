@@ -37,7 +37,6 @@ using System.Collections;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.DesignerSupport.PropertyGrid;
 using Mono.Addins;
 
 namespace MonoDevelop.DesignerSupport

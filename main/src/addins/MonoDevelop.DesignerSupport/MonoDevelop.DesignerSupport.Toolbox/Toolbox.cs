@@ -42,7 +42,7 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public class Toolbox : VBox, MonoDevelop.DesignerSupport.PropertyGrid.IPropertyPadProvider
+	public class Toolbox : VBox, IPropertyPadProvider
 	{
 		ToolboxService toolboxService;
 		
@@ -266,21 +266,21 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		#region IPropertyPadProvider
 		
-		object MonoDevelop.DesignerSupport.PropertyGrid.IPropertyPadProvider.GetActiveComponent ()
+		object IPropertyPadProvider.GetActiveComponent ()
 		{
 			return selectedNode;
 		}
 
-		object MonoDevelop.DesignerSupport.PropertyGrid.IPropertyPadProvider.GetProvider ()
+		object IPropertyPadProvider.GetProvider ()
 		{
 			return selectedNode;
 		}
 
-		void MonoDevelop.DesignerSupport.PropertyGrid.IPropertyPadProvider.OnEndEditing (object obj)
+		void IPropertyPadProvider.OnEndEditing (object obj)
 		{
 		}
 
-		void MonoDevelop.DesignerSupport.PropertyGrid.IPropertyPadProvider.OnChanged (object obj)
+		void IPropertyPadProvider.OnChanged (object obj)
 		{
 		}
 		

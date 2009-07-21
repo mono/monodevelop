@@ -1,5 +1,5 @@
 //
-// TextEditorDialog.cs
+// PropertyPadVisitor.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,48 +27,32 @@
 //
 
 using System;
-using System.ComponentModel;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
+namespace MonoDevelop.DesignerSupport
 {
-	public class TextEditorDialog: IDisposable
+	class PropertyPadVisitor: ICommandTargetVisitor
 	{
-		Gtk.TextView textview;
-		Gtk.Dialog dialog;
-		
-		public TextEditorDialog ()
+		public bool Visit (object ob)
 		{
-			Gtk.ScrolledWindow sc = new Gtk.ScrolledWindow ();
-			sc.HscrollbarPolicy = Gtk.PolicyType.Automatic;
-			sc.VscrollbarPolicy = Gtk.PolicyType.Automatic;
-			sc.ShadowType = Gtk.ShadowType.In;
-			sc.BorderWidth = 6;
-			
-			textview = new Gtk.TextView ();
-			sc.Add (textview);
-			
-			dialog = new Gtk.Dialog ();
-			dialog.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
-			dialog.AddButton (Gtk.Stock.Ok, Gtk.ResponseType.Ok);
-			dialog.VBox.Add (sc);
-		}
-		
-		public string Text {
-			get { return textview.Buffer.Text; }
-			set { textview.Buffer.Text = value; }
-		}
-		
-		public int Run ()
-		{
-			dialog.DefaultWidth = 500;
-			dialog.DefaultHeight = 400;
-			dialog.ShowAll ();
-			return dialog.Run ();
-		}
-		
-		public void Dispose ()
-		{
-			dialog.Destroy ();
+			if (ob == null) {
+				DesignerSupport.Service.ReSetPad ();
+				return true;
+			}
+			else if (ob is PropertyPad) {
+				// Don't change the property grid selection when the focus is inside the property grid itself
+				return true;
+			}
+			else if (ob is IPropertyPadProvider) {
+				DesignerSupport.Service.SetPadContent ((IPropertyPadProvider)ob);
+				return true;
+			}
+			else if (ob is ICustomPropertyPadProvider) {
+				DesignerSupport.Service.SetPadContent ((ICustomPropertyPadProvider)ob);
+				return true;
+			}
+			else
+				return false;
 		}
 	}
 }

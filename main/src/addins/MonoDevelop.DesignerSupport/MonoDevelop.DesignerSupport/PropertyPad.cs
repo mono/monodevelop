@@ -35,7 +35,7 @@ using System;
 using MonoDevelop.Ide.Gui;
 
 using MonoDevelop.DesignerSupport;
-using pg = MonoDevelop.DesignerSupport.PropertyGrid;
+using pg = MonoDevelop.Components.PropertyGrid;
 
 namespace MonoDevelop.DesignerSupport
 {

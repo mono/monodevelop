@@ -37,34 +37,6 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs \
 	MonoDevelop.DesignerSupport.Projects/SolutionItemPropertyProvider.cs \
 	MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CharPropertyEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditorCell.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/DateTimeEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/DefaultEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumerationEditorCell.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/ExpandableObjectEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsEditorCell.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsSelectorDialog.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/FloatRange.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/IntRange.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditorDialog.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/TimeSpanEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/IPropertyPadProvider.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorCell.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorTypeAttribute.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyPadVisitor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventArgs.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventHandler.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/SurrogateUITypeEditorAttribute.cs \
 	MonoDevelop.DesignerSupport.Toolbox/CecilToolboxItemLoader.cs \
 	MonoDevelop.DesignerSupport.Toolbox/CecilTypeResolver.cs \
 	MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs \
@@ -95,10 +67,12 @@ FILES =  \
 	MonoDevelop.DesignerSupport/DocumentOutlinePad.cs \
 	MonoDevelop.DesignerSupport/ErrorInFileException.cs \
 	MonoDevelop.DesignerSupport/IOutlinedDocument.cs \
+	MonoDevelop.DesignerSupport/IPropertyPadProvider.cs \
 	MonoDevelop.DesignerSupport/IPropertyProvider.cs \
 	MonoDevelop.DesignerSupport/MemberExistsException.cs \
 	MonoDevelop.DesignerSupport/OpenDocumentFileProvider.cs \
 	MonoDevelop.DesignerSupport/PropertyPad.cs \
+	MonoDevelop.DesignerSupport/PropertyPadVisitor.cs \
 	MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs \
 	MonoDevelop.DesignerSupport/ToolboxPad.cs \
 	MonoDevelop.DesignerSupport/ToolboxService.cs \
@@ -109,9 +83,6 @@ RES =  \
 	gtk-gui/gui.stetic \
 	icons/group-by-category.png \
 	icons/md-design-listboxtoggle.png \
-	icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp \
-	icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp \
-	icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png \
 	icons/pad-document-outline-16.png \
 	icons/properties-pad-16.png \
 	icons/toolbox-pad-16.png \

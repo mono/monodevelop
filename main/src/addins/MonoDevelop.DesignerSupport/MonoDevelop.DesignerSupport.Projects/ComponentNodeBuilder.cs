@@ -4,7 +4,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.DesignerSupport.PropertyGrid;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.DesignerSupport.Projects

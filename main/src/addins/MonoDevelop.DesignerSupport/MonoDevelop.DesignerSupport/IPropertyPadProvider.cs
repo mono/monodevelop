@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.DesignerSupport.PropertyGrid
+namespace MonoDevelop.DesignerSupport
 {
 	// The property pad service looks for objects implementing IPropertyPadProvider
 	// and ICustomPropertyPadProvider in the active command route. 

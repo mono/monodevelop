@@ -102,16 +102,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\DefaultPropertyTab.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\EditorManager.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\EventPropertyTab.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\PropertyEditorTypeAttribute.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\PropertyValueChangedEventHandler.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\SurrogateUITypeEditorAttribute.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\CollectionEditor.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\DefaultEditor.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\EventEditor.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\ExpandableObjectEditor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ItemToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TextToolboxNode.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\Toolbox.cs" />
@@ -132,41 +122,16 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\IToolboxProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxList.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TypeReference.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\IPropertyPadProvider.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\PropertyPadVisitor.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\PropertyGrid.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\PropertyEditorCell.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\EnumerationEditorCell.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\FlagsEditorCell.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\FlagsSelectorDialog.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\BooleanEditorCell.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\ColorEditorCell.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\TextEditor.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\TextEditorDialog.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\IntRange.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\FloatRange.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\PropertyGridTree.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid\PropertyValueChangedEventArgs.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\DateTimeEditor.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\TimeSpanEditor.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.PropertyGrid.Editors\CharPropertyEditor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\IPropertyProvider.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Projects\ComponentNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectItemPropertyProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\CustomDescriptor.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ComponentSelectorDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxConfiguration.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\Commands.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Projects\PropertyPadTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\OpenDocumentFileProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\ErrorInFileException.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\TypeNotFoundException.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectReferenceDescriptor.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectFileDescriptor.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Projects\SolutionItemPropertyProvider.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Projects\SolutionItemDescriptor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxWidget.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\DocumentOutlinePad.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\IOutlinedDocument.cs" />
@@ -174,24 +139,24 @@
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\CodeTemplateToolboxProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\CecilToolboxItemLoader.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\CecilTypeResolver.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport.Projects\WorkspaceItemDescriptor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\CodeBehind.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\TemplateToolboxNode.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\PropertyPadVisitor.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\ComponentNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectFileDescriptor.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectItemPropertyProvider.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\ProjectReferenceDescriptor.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\PropertyPadTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\SolutionItemDescriptor.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\SolutionItemPropertyProvider.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport.Projects\WorkspaceItemDescriptor.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\IPropertyPadProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\CodeBehindWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
-    <EmbeddedResource Include="icons\MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp">
-      <LogicalName>MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp">
-      <LogicalName>MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png">
-      <LogicalName>MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\group-by-category.png">
       <LogicalName>group-by-category.png</LogicalName>
     </EmbeddedResource>
