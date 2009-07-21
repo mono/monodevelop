@@ -716,6 +716,11 @@
 				icon = "gtk-zoom-100" 
 				shortcut = "Control|0"
 				_description = "Resets zoom to default" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument"
+				defaultHandler = "MonoDevelop.Ide.Commands.FocusCurrentDocumentHandler"
+				_label = "_Focus Document"
+				shortcut = "Alt|C"
+				_description = "Focus current document" />
 		</Category>
 		
 		<!-- ToolCommands -->
@@ -1490,6 +1495,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" />
 			<SeparatorItem id = "ViewItemsSeparator4" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 		</ItemSet>
 		

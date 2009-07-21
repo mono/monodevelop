@@ -57,7 +57,8 @@ namespace MonoDevelop.Ide.Commands
 		ShowPrevious,
 		ZoomIn,
 		ZoomOut,
-		ZoomReset
+		ZoomReset,
+		FocusCurrentDocument
 	}
 
 	// MonoDevelop.Ide.Commands.ViewCommands.ViewList
@@ -272,6 +273,19 @@ namespace MonoDevelop.Ide.Commands
 		{
 			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> ();
 			zoom.ZoomReset ();
+		}
+	}
+	
+	public class FocusCurrentDocumentHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.TextEditor != null;
+		}
+
+		protected override void Run ()
+		{
+			IdeApp.Workbench.ActiveDocument.TextEditor.JumpTo (IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine, IdeApp.Workbench.ActiveDocument.TextEditor.CursorColumn);
 		}
 	}
 }
