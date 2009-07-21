@@ -354,8 +354,10 @@ namespace MonoDevelop.Components.Docking
 		internal void SetAutoHideMode (Gtk.PositionType pos, int size)
 		{
 			ResetMode ();
-			if (widget != null)
+			if (widget != null) {
+				widget.Hide (); // Avoids size allocation warning
 				widget.Unparent ();
+			}
 			dockBarItem = frame.BarDock (pos, this, size);
 			if (widget != null)
 				widget.UpdateBehavior ();

@@ -444,6 +444,8 @@ namespace MonoDevelop.Components.Docking
 			w.Parent = this;
 			w.X = x;
 			w.Y = y;
+			Requisition r = w.SizeRequest ();
+			w.Allocation = new Gdk.Rectangle (Allocation.X + x, Allocation.Y + y, r.Width, r.Height);
 			topLevels.Add (w);
 		}
 		

@@ -310,7 +310,8 @@ namespace MonoDevelop.Components.Docking
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			allocation.Inflate (-1, -1);
+			if (allocation.Width > 1 && allocation.Height > 1)
+				allocation.Inflate (-1, -1);
 			child.Allocation = allocation;
 		}
 
@@ -319,16 +320,6 @@ namespace MonoDevelop.Components.Docking
 			bool res = base.OnExposeEvent (evnt);
 			Gdk.Rectangle rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width - 1, Allocation.Height - 1);
 			GdkWindow.DrawRectangle (Style.DarkGC (Gtk.StateType.Normal), false, rect);
-/*			DockGroupItem dit = frame.Container.FindDockGroupItem (item.Id);
-			if (dit != null && dit.ParentGroup != null && dit.ParentGroup.Type == DockGroupType.Tabbed && dit.ParentGroup.TabStrip != null && dit.ParentGroup.TabStrip.Visible) {
-				rect = dit.ParentGroup.TabStrip.GetTabArea (dit.ParentGroup.TabStrip.CurrentTab);
-				int sx, sy;
-				GdkWindow.GetRootOrigin (out sx, out sy);
-				rect.X -= sx;
-				rect.Y -= sy;
-				GdkWindow.DrawLine (Style.LightGC (Gtk.StateType.Active), rect.X + 1, Allocation.Bottom - 1, rect.Right - 1, Allocation.Bottom - 1);
-			}
-*/
 			return res;
 		}
 	}

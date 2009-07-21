@@ -1,3 +1,10 @@
+2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockItem.cs:
+	* DockFrame.cs:
+	* DockItemContainer.cs: Fix some size allocation warnings,
+	  caused by negative widths.
+
 2009-06-19  Mike Krüger  <mkrueger@novell.com>
 
 	* AssemblyInfo.cs: Commented out empty assembly key file
