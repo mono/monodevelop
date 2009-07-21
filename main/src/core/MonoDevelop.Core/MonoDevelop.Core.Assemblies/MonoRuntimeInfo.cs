@@ -247,6 +247,7 @@ namespace MonoDevelop.Core.Assemblies
 				string[] suffixes = new string [] {
 					Path.Combine ("lib", "pkgconfig"),
 					Path.Combine ("lib64", "pkgconfig"),
+					Path.Combine ("libdata", "pkgconfig"),
 					Path.Combine ("share", "pkgconfig"),
 				};
 				foreach (string prefix in systemPrefixes)
