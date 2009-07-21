@@ -1,5 +1,12 @@
 2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Execution/DotNetExecutionCommand.cs:
+	* MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs:
+	  Add support for custom runtime arguments in the
+	  DotNetExecutionCommand.
+
+2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Add the
 	  libdata directory to the list of searched path so that
 	  monodevelop behaves correctly on FreeBSD. Patch by Romain

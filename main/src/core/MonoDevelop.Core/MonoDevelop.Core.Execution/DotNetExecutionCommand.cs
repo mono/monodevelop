@@ -59,5 +59,7 @@ namespace MonoDevelop.Core.Execution
 		public TargetRuntime TargetRuntime { get; set; }
 		
 		public bool DebugMode { get; set; }
+		
+		public string RuntimeArguments { get; set; }
 	}
 }

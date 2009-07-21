@@ -48,7 +48,9 @@ namespace MonoDevelop.Core.Execution
 		{
 			DotNetExecutionCommand dotcmd = (DotNetExecutionCommand) command;
 			
-			string args = string.Format ("--debug \"{0}\" {1}", dotcmd.Command, dotcmd.Arguments);
+			string runtimeArgs = string.IsNullOrEmpty (dotcmd.RuntimeArguments) ? "--debug" : dotcmd.RuntimeArguments;
+			
+			string args = string.Format ("{2} \"{0}\" {1}", dotcmd.Command, dotcmd.Arguments, runtimeArgs);
 			NativeExecutionCommand cmd = new NativeExecutionCommand (monoPath, args, dotcmd.WorkingDirectory, dotcmd.EnvironmentVariables);
 			
 			return base.Execute (cmd, console);
