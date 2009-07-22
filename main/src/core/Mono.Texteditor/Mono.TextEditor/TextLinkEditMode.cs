@@ -130,6 +130,7 @@ namespace Mono.TextEditor
 		List<TextLink> links;
 		int baseOffset;
 		int endOffset;
+		int undoDepth = -1;
 		bool resetCaret = true;
 		
 		public EditMode OldMode {
@@ -200,13 +201,12 @@ namespace Mono.TextEditor
 		public void StartMode ()
 		{
 			foreach (TextLink link in links) {
-				link.CurrentText = Editor.Document.GetTextAt (link.PrimaryLink.Offset + baseOffset, 
-				                                              link.PrimaryLink.Length);
+				link.CurrentText = Editor.Document.GetTextAt (link.PrimaryLink.Offset + baseOffset, link.PrimaryLink.Length);
 				foreach (ISegment segment in link.Links) {
 					LineSegment line = Editor.Document.GetLineByOffset (baseOffset + segment.Offset);
-					if (line.GetMarker (typeof (TextLinkMarker)) != null)
+					if (line.GetMarker (typeof(TextLinkMarker)) != null)
 						continue;
-					TextLinkMarker marker = (TextLinkMarker)line.GetMarker (typeof (TextLinkMarker));
+					TextLinkMarker marker = (TextLinkMarker)line.GetMarker (typeof(TextLinkMarker));
 					if (marker == null) {
 						marker = new TextLinkMarker (this);
 						marker.BaseOffset = baseOffset;
@@ -219,8 +219,9 @@ namespace Mono.TextEditor
 			Editor.Document.TextReplaced += UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged += HandlePositionChanged;
 			this.UpdateTextLinks ();
-			this.HandlePositionChanged(null, null);
+			this.HandlePositionChanged (null, null);
 			Editor.Document.CommitUpdateAll ();
+			this.undoDepth = Editor.Document.GetCurrentUndoDepth ();
 		}
 		
 		void Setlink (TextLink link)
@@ -239,7 +240,7 @@ namespace Mono.TextEditor
 			foreach (TextLink link in links) {
 				foreach (ISegment segment in link.Links) {
 					LineSegment line = Editor.Document.GetLineByOffset (baseOffset + segment.Offset);
-					line.RemoveMarker (typeof (TextLinkMarker));
+					line.RemoveMarker (typeof(TextLinkMarker));
 				}
 			}
 			if (resetCaret)
@@ -249,6 +250,8 @@ namespace Mono.TextEditor
 			Editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged -= HandlePositionChanged;
 			this.Editor.TooltipProviders.Remove (tooltipProvider);
+			if (undoDepth >= 0)
+				Editor.Document.StackUndoToDepth (undoDepth);
 		}
 		
 		bool wasReplaced = false;

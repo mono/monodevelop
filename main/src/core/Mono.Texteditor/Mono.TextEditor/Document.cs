@@ -585,6 +585,20 @@ namespace Mono.TextEditor
 			undoStack.Push (keyUndo);
 		}
 		
+		public int GetCurrentUndoDepth ()
+		{
+			return undoStack.Count;
+		}
+		
+		public void StackUndoToDepth (int depth)
+		{
+			AtomicUndoOperation atomicUndo = new AtomicUndoOperation ();
+			while (undoStack.Count > depth) {
+				atomicUndo.Operations.Insert (0, undoStack.Pop ());
+			}
+			undoStack.Push (atomicUndo);
+		}
+		
 		public void MergeUndoOperations (int number)
 		{
 			number = System.Math.Min (number, undoStack.Count);

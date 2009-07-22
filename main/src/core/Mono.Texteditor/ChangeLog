@@ -1,5 +1,11 @@
 2009-07-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs: Text link edits are now
+	  atomic.
+
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: Fixed "Bug 523905 -
 	  Inline variable rename unnecessarily dirties document".
 
