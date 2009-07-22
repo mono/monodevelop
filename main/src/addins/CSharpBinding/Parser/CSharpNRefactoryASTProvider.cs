@@ -59,7 +59,12 @@ namespace CSharpBinding.Parser
 		{
 			expressionText = expressionText.Trim ();
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expressionText))) {
-				return parser.ParseExpression ();
+				Expression result;
+				try {
+					result = parser.ParseExpression ();
+				} catch (Exception) {
+				}
+				return result;
 			}
 		}
 		
@@ -68,7 +73,11 @@ namespace CSharpBinding.Parser
 			text = text.Trim ();
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (text))) {
 				if (text.EndsWith (";") || text.EndsWith ("}")) {
-					BlockStatement block = parser.ParseBlock ();
+					BlockStatement block;
+					try {
+						block = parser.ParseBlock ();
+					} catch (Exception) {
+					}
 					if (block != null)
 						return block;
 				}
@@ -80,7 +89,10 @@ namespace CSharpBinding.Parser
 		{
 			content = content.Trim ();
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (content))) {
-				parser.Parse ();
+				try {
+					parser.Parse ();
+				} catch (Exception) {
+				}
 				return parser.CompilationUnit;
 			}
 		}
