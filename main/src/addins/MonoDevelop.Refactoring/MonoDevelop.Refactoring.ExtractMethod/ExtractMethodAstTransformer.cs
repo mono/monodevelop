@@ -80,7 +80,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			if (variablesToGenerate.Any (v => v.Name == variableDeclaration.Name)) {
 				RemoveCurrentNode ();
 				if (variableDeclaration.Initializer != null) {
-					BlockStatement block = blocks.Peek ();
+				//	BlockStatement block = blocks.Peek ();
 					curStatementList.Peek ().Add (new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (variableDeclaration.Name), AssignmentOperatorType.Assign, variableDeclaration.Initializer)));
 				}
 				

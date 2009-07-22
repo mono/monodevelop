@@ -73,6 +73,8 @@
     <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodAstTransformer.cs" />
     <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\MoveTypeToFileRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\TypeFilterTransformer.cs" />
+    <Compile Include="MonoDevelop.Refactoring\GotoDeclarationHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

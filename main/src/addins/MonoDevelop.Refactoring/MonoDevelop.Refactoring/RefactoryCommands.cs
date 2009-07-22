@@ -53,61 +53,10 @@ namespace MonoDevelop.Refactoring
 	{
 		CurrentRefactoryOperations,
 		GotoDeclaration,
+		FindReferences,
 		DeclareLocal,
 		Rename
 		
-	}
-	
-	public class GotoDeclarationHandler : CommandHandler
-	{
-		
-		protected override void Run (object data)
-		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
-				return;
-
-			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
-			if (editor == null)
-				return;
-
-			int line, column;
-			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-			ProjectDom ctx = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
-			if (ctx == null)
-				return;
-			ResolveResult resolveResult;
-			IDomVisitable item;
-			CurrentRefactoryOperationsHandler.GetItem (ctx, doc, editor, out resolveResult, out item);
-			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
-			
-			string itemName = null;
-			if (item is IMember)
-				itemName = ((IMember)item).Name;
-
-			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
-				// If this occurs, then @item is either its own enclosing item, in
-				// which case, we don't want to show it twice, or it is the base-class
-				// version of @eitem, in which case we don't want to show the base-class
-				// @item, we'd rather show the item the user /actually/ requested, @eitem.
-				item = eitem;
-				eitem = null;
-			}
-			IType eclass = null;
-
-			if (item is IType) {
-				if (((IType)item).ClassType == ClassType.Interface)
-					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
-					eclass = (IType)item;
-				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
-					item = eitem;
-					eitem = null;
-				}
-			}
-			
-			Refactorer refactorer = new Refactorer (ctx, doc.CompilationUnit, eclass, item, null);
-			refactorer.GoToDeclaration ();
-		}
 	}
 	
 	public class CurrentRefactoryOperationsHandler: CommandHandler
@@ -470,8 +419,8 @@ namespace MonoDevelop.Refactoring
 			}
 
 			if ((item is IMember || item is LocalVariable || item is IParameter) && !(item is IType))
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
-
+				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences, null), new RefactoryOperation (refactorer.FindReferences));
+			
 			// We can rename local variables (always), method params (always), 
 			// or class/members (if they belong to a project)
 			if ((item is LocalVariable) || (item is IParameter))
@@ -533,7 +482,7 @@ namespace MonoDevelop.Refactoring
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
 				}
 				
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
+				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences, null), new RefactoryOperation (refactorer.FindReferences));
 				
 //				if (canRename)
 //					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));

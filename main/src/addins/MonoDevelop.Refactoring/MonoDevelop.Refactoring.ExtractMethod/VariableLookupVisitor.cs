@@ -106,7 +106,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		{
 			if (typeRef == null)
 				return null;
-			DomReturnType result = new DomReturnType (typeRef.SystemType ?? typeRef.Type);
+			DomReturnType result = new DomReturnType (typeRef.Type);
 			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
 				result.AddTypeParameter (ConvertTypeReference (genericArgument));
 			}

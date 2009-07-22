@@ -253,7 +253,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			foreach (VariableDescriptor var in variablesToGenerate) {
 				invocation.Arguments.Add (new DirectionExpression (FieldDirection.Out, new IdentifierExpression (var.Name)));
 			}
-			string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
+		//	string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
 			TypeReference returnType = new TypeReference ("System.Void");
 
 			INode outputNode;

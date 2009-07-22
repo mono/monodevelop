@@ -58,6 +58,11 @@
 					_label = "_Go to declaration" 
 					shortcut = "F12"
 					macShortcut = "F12"/>
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"
+					defaultHandler = "MonoDevelop.Refactoring.FindReferencesHandler"
+					_label = "_Find references" 
+					shortcut = "Shift|F12"
+					macShortcut = "Shift|F12"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Rename"
 					defaultHandler = "MonoDevelop.Refactoring.Rename.RenameHandler"
 					_label = "_Rename..." 

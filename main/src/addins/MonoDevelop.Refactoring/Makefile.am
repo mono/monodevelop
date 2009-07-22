@@ -47,6 +47,8 @@ FILES =  \
 	MonoDevelop.Refactoring.Rename/RenameItemDialog.cs \
 	MonoDevelop.Refactoring.Rename/RenameRefactoring.cs \
 	MonoDevelop.Refactoring/Change.cs \
+	MonoDevelop.Refactoring/FindReferencesHandler.cs \
+	MonoDevelop.Refactoring/GotoDeclarationHandler.cs \
 	MonoDevelop.Refactoring/INRefactoryASTProvider.cs \
 	MonoDevelop.Refactoring/RefactoringOperation.cs \
 	MonoDevelop.Refactoring/RefactoringOptions.cs \
