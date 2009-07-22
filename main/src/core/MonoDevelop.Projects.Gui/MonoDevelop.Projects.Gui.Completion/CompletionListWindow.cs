@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (Selection == -1 || SelectionDisabled)
 				return;
 
-			ICompletionData item = currentData ?? completionDataList[Selection];
+			ICompletionData item = currentData ?? (completionDataList != null ? completionDataList[Selection] : null);
 			if (item == null)
 				return;
 			string word = item.CompletionText;
