@@ -212,8 +212,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		static double Brightness (Gdk.Color c)
 		{
 			double r = c.Red / (double)ushort.MaxValue;
-			double g = c.Red / (double)ushort.MaxValue;
-			double b = c.Red / (double)ushort.MaxValue;
+			double g = c.Green / (double)ushort.MaxValue;
+			double b = c.Blue / (double)ushort.MaxValue;
 			return Math.Sqrt (r * .241 + g * .691 + b * .068) / 1000.0;
 		}
 		
@@ -222,11 +222,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			double b1 = Brightness (color);
 			double b2 = Brightness (Style.Base (StateType.Normal));
 			double delta = Math.Abs (b1 - b2);
-			if (delta < 0.0001) {
+			if (delta < 1e-4) {
 				HslColor color1 = color;
-				if (color1.L + 0.5 > 1.0) {
-					color1.L -= 0.5;
-				} else {
+				color1.L -= 0.5;
+				if (Math.Abs (Brightness (color1) - b2) < delta) {
+					color1 = color;
 					color1.L += 0.5;
 				}
 				return color1;
@@ -249,6 +249,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 				offset = idx + 7;
 				string colorStr = markup.Substring (idx, 7);
+				
 				Gdk.Color color = Gdk.Color.Zero;
 				if (Gdk.Color.Parse (colorStr, ref color)) {
 					colorStr = SyntaxMode.ColorToPangoMarkup (AdjustColor (color));
