@@ -34,8 +34,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void Run ()
 		{
 			FindInFilesDialog findInFilesDialog = new FindInFilesDialog (false);
-			findInFilesDialog.Run ();
-			findInFilesDialog.Destroy ();
+			findInFilesDialog.Show ();
 		}
 	}
 	
@@ -44,8 +43,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void Run()
 		{
 			FindInFilesDialog findInFilesDialog = new FindInFilesDialog (true);
-			findInFilesDialog.Run ();
-			findInFilesDialog.Destroy ();
+			findInFilesDialog.Show ();
 		}
 	}
 }

@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			buttonReplace.Clicked += HandleReplaceClicked;
 			buttonSearch.Clicked += HandleSearchClicked;
-			
+			buttonClose.Clicked += ButtonCloseClicked;
 			ListStore scopeStore = new ListStore (typeof(string));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Whole solution"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Current project"));
@@ -130,8 +130,20 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			comboboxentryFind.Entry.SelectRegion (0, comboboxentryFind.ActiveText.Length);
 			buttonStop.Visible = false;
+			Hidden += delegate {
+				Destroy ();
+			};
 		}
-		
+		public override void Destroy ()
+		{
+			base.Destroy ();
+		}
+
+		void ButtonCloseClicked (object sender, EventArgs e)
+		{
+			Hide (); // Hide destroys the dialog
+		}
+
 		Label labelPath;
 		ComboBoxEntry comboboxentryPath;
 		HBox          hboxPath;
@@ -352,8 +364,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public static void FindInPath (string path)
 		{
 			FindInFilesDialog findInFilesDialog = new FindInFilesDialog (false, path);
-			findInFilesDialog.Run ();
-			findInFilesDialog.Destroy ();
+			findInFilesDialog.Show ();
 		}
 		
 		Scope GetScope ()
@@ -387,11 +398,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		void HandleReplaceClicked (object sender, EventArgs e)
 		{
 			SearchReplace (comboboxentryReplace.Entry.Text);
+			Hide ();
 		}
 		
 		void HandleSearchClicked (object sender, EventArgs e)
 		{
 			SearchReplace (null);
+			Hide ();
 		}
 		
 		void SearchReplace (string replacePattern) 

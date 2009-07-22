@@ -1,3 +1,9 @@
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/Commands.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Fixed 'Bug
+	  523851 - Find in Files dialog should not be modal'.
+
 2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:
