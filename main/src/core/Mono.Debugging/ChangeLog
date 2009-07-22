@@ -1,5 +1,11 @@
 2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Evaluation/Backtrace.cs: Remove unused file.
+
+2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Evaluation/Backtrace.cs:
 	* Mono.Debugging.Evaluation/RawViewSource.cs:
 	* Mono.Debugging.Evaluation/ValueReference.cs:

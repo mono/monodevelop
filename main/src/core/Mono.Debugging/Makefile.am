@@ -45,7 +45,6 @@ FILES =  \
 	Mono.Debugging.Evaluation/ArrayValueReference.cs \
 	Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs \
 	Mono.Debugging.Evaluation/AsyncOperationManager.cs \
-	Mono.Debugging.Evaluation/Backtrace.cs \
 	Mono.Debugging.Evaluation/EvaluationContext.cs \
 	Mono.Debugging.Evaluation/ExpressionEvaluator.cs \
 	Mono.Debugging.Evaluation/FilteredMembersSource.cs \
