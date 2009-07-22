@@ -327,7 +327,7 @@ namespace MonoDevelop.Core.Assemblies
 			return assemblyPathToPackage.ContainsKey (path) ? assemblyPathToPackage [path] : null;
 		}
 		
-		internal static string NormalizeAsmName (string name)
+		public static string NormalizeAsmName (string name)
 		{
 			int i = name.ToLower ().IndexOf (", publickeytoken=null");
 			if (i != -1)
