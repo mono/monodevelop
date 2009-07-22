@@ -74,6 +74,8 @@ namespace MonoDevelop.Core.Assemblies
 						DefaultRuntime = CurrentRuntime = runtime;
 				}
 			}
+			if (CurrentRuntime == null)
+				LoggingService.LogFatalError ("Could not create runtime info for current runtime");
 		}
 		
 		public TargetRuntime DefaultRuntime {
