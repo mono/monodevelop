@@ -126,8 +126,10 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public override IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions)
 		{
-			foreach (string file in Directory.GetFiles (path, filterOptions.FileMask, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)) {
-				yield return new FileProvider (file);
+			foreach (string fileMask in filterOptions.FileMask.Split (',', ';')) {
+				foreach (string file in Directory.GetFiles (path, fileMask, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)) {
+					yield return new FileProvider (file);
+				}
 			}
 		}
 		
