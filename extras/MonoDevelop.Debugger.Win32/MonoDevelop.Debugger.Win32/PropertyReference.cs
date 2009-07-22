@@ -33,7 +33,7 @@ using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	class PropertyReference: ValueReference<CorValRef, CorType>
+	class PropertyReference: ValueReference
 	{
 		PropertyInfo prop;
 		CorValRef thisobj;
@@ -43,12 +43,12 @@ namespace MonoDevelop.Debugger.Win32
 		CorValRef.ValueLoader loader;
 		CorValRef cachedValue;
 
-		public PropertyReference (EvaluationContext<CorValRef, CorType> ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType)
+		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType)
 			: this (ctx, prop, thisobj, declaringType, null)
 		{
 		}
 
-		public PropertyReference (EvaluationContext<CorValRef, CorType> ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType, CorValRef index)
+		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType, CorValRef index)
 			: base (ctx)
 		{
 			this.prop = prop;
@@ -58,19 +58,19 @@ namespace MonoDevelop.Debugger.Win32
 			this.index = index;
 
 			loader = delegate {
-				return Value.Val;
+				return ((CorValRef)Value).Val;
 			};
 		}
 		
-		public override CorType Type {
+		public override object Type {
 			get {
 				if (!prop.CanRead)
 					return null;
-				return Value.Val.ExactType;
+				return ((CorValRef)Value).Val.ExactType;
 			}
 		}
 		
-		public override CorValRef Value {
+		public override object Value {
 			get {
 				if (cachedValue != null && cachedValue.IsValid)
 					return cachedValue;
@@ -86,7 +86,8 @@ namespace MonoDevelop.Debugger.Win32
 			set {
 				CorEvaluationContext ctx = (CorEvaluationContext) Context;
 				CorFunction func = module.GetFunctionFromToken (prop.GetSetMethod ().MetadataToken);
-				CorValue[] args = index == null ? new CorValue[] { value.Val } : new CorValue[] { index.Val, value.Val };
+				CorValRef val = (CorValRef) value;
+				CorValue[] args = index == null ? new CorValue[] { val.Val } : new CorValue[] { index.Val, val.Val };
 				ctx.RuntimeInvoke (func, declaringType.TypeParameters, thisobj != null ? thisobj.Val : null, args);
 			}
 		}

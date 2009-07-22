@@ -33,15 +33,14 @@ using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	public class FieldReference: ValueReference<CorValRef, CorType>
+	public class FieldReference: ValueReference
 	{
 		CorType type;
 		FieldInfo field;
 		CorValRef thisobj;
-		CorValRef lastValue;
 		CorValRef.ValueLoader loader;
 
-		public FieldReference (EvaluationContext<CorValRef, CorType> ctx, CorValRef thisobj, CorType type, FieldInfo field)
+		public FieldReference (EvaluationContext ctx, CorValRef thisobj, CorType type, FieldInfo field)
 			: base (ctx)
 		{
 			this.thisobj = thisobj;
@@ -51,13 +50,13 @@ namespace MonoDevelop.Debugger.Win32
 				this.thisobj = thisobj;
 
 			loader = delegate {
-				return Value.Val;
+				return ((CorValRef)Value).Val;
 			};
 		}
 		
-		public override CorType Type {
+		public override object Type {
 			get {
-				return Value.Val.ExactType;
+				return ((CorValRef)Value).Val.ExactType;
 			}
 		}
 
@@ -70,7 +69,7 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		public override CorValRef Value {
+		public override object Value {
 			get {
 				CorEvaluationContext ctx = (CorEvaluationContext) Context;
 				if (thisobj != null && !field.IsStatic) {
@@ -88,7 +87,7 @@ namespace MonoDevelop.Debugger.Win32
 				}
 			}
 			set {
-				Value.SetValue (Context, value);
+				((CorValRef)Value).SetValue (Context, (CorValRef) value);
 				if (thisobj != null) {
 					CorObjectValue cob = CorObjectAdaptor.GetRealObject (thisobj) as CorObjectValue;
 					if (cob != null && cob.IsValueClass)

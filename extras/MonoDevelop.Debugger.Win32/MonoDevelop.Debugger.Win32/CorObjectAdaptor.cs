@@ -44,35 +44,37 @@ using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	public class CorObjectAdaptor: ObjectValueAdaptor<CorValRef, CorType>
+	public class CorObjectAdaptor: ObjectValueAdaptor
 	{
-		public override bool IsPrimitive (EvaluationContext<CorValRef, CorType> ctx, CorValRef val)
+		public override bool IsPrimitive (EvaluationContext ctx, object val)
 		{
 			return GetRealObject (val) is CorGenericValue;
 		}
 
-		public override bool IsArray (EvaluationContext<CorValRef, CorType> ctx, CorValRef val)
+		public override bool IsArray (EvaluationContext ctx, object val)
 		{
 			return GetRealObject (val) is CorArrayValue;
 		}
 
-		public override bool IsClassInstance (EvaluationContext<CorValRef, CorType> ctx, CorValRef val)
+		public override bool IsClassInstance (EvaluationContext ctx, object val)
 		{
 			return GetRealObject (val) is CorObjectValue;
 		}
 
-		public override bool IsNull (EvaluationContext<CorValRef, CorType> ctx, CorValRef val)
+		public override bool IsNull (EvaluationContext ctx, object gval)
 		{
+			CorValRef val = (CorValRef) gval;
 			return val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue) val.Val).IsNull);
 		}
 
-		public override bool IsClass (CorType type)
+		public override bool IsClass (object type)
 		{
-			return type.Class != null;
+			return ((CorType)type).Class != null;
 		}
 
-		public override string GetTypeName (EvaluationContext<CorValRef, CorType> ctx, CorType type)
+		public override string GetTypeName (EvaluationContext ctx, object gtype)
 		{
+			CorType type = (CorType) gtype;
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			Type t;
 			if (CorMetadataImport.CoreTypes.TryGetValue (type.Type, out t))
@@ -95,17 +97,18 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		public override CorType GetValueType (EvaluationContext<CorValRef, CorType> ctx, CorValRef val)
+		public override object GetValueType (EvaluationContext ctx, object val)
 		{
 			return GetRealObject (val).ExactType;
 		}
 
-		public override CorType[] GetTypeArgs (EvaluationContext<CorValRef, CorType> ctx, CorType type)
+		public override object[] GetTypeArgs (EvaluationContext ctx, object type)
 		{
-			return type.TypeParameters;
+			CorType[] types = ((CorType)type).TypeParameters;
+			return CastArray<object> (types);
 		}
 
-		IEnumerable<Type> GetAllTypes (EvaluationContext<CorValRef, CorType> gctx)
+		IEnumerable<Type> GetAllTypes (EvaluationContext gctx)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			foreach (CorModule mod in ctx.Session.GetModules ()) {
@@ -117,8 +120,10 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		public override CorType GetType (EvaluationContext<CorValRef, CorType> gctx, string name, CorType[] typeArgs)
+		public override object GetType (EvaluationContext gctx, string name, object[] gtypeArgs)
 		{
+			CorType[] typeArgs = CastArray<CorType> (gtypeArgs);
+
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			foreach (CorModule mod in ctx.Session.GetModules ()) {
 				CorMetadataImport mi = ctx.Session.GetMetadataForModule (mod.Name);
@@ -133,8 +138,20 @@ namespace MonoDevelop.Debugger.Win32
 			return null;
 		}
 
-		public override CorValRef RuntimeInvoke (EvaluationContext<CorValRef, CorType> gctx, CorType targetType, CorValRef target, string methodName, CorType[] argTypes, CorValRef[] argValues)
+		T[] CastArray<T> (object[] array)
 		{
+			T[] ret = new T[array.Length];
+			Array.Copy (array, ret, array.Length);
+			return ret;
+		}
+
+		public override object RuntimeInvoke (EvaluationContext gctx, object gtargetType, object gtarget, string methodName, object[] gargTypes, object[] gargValues)
+		{
+			CorType targetType = (CorType) gtargetType;
+			CorValRef target = (CorValRef) gtarget;
+			CorType[] argTypes = CastArray<CorType> (gargTypes);
+			CorValRef[] argValues = CastArray<CorValRef> (gargValues);
+
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			Type type = targetType.Class.GetTypeInfo (ctx.Session);
 			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic;
@@ -171,7 +188,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		}
 
-		public override string[] GetImportedNamespaces (EvaluationContext<CorValRef, CorType> ctx)
+		public override string[] GetImportedNamespaces (EvaluationContext ctx)
 		{
 			Set<string> list = new Set<string> ();
 			foreach (Type t in GetAllTypes (ctx)) {
@@ -182,7 +199,7 @@ namespace MonoDevelop.Debugger.Win32
 			return arr;
 		}
 
-		public override void GetNamespaceContents (EvaluationContext<CorValRef, CorType> ctx, string namspace, out string[] childNamespaces, out string[] childTypes)
+		public override void GetNamespaceContents (EvaluationContext ctx, string namspace, out string[] childNamespaces, out string[] childTypes)
 		{
 			Set<string> nss = new Set<string> ();
 			List<string> types = new List<string> ();
@@ -199,9 +216,9 @@ namespace MonoDevelop.Debugger.Win32
 			childTypes = types.ToArray ();
 		}
 
-		public override CorValRef TryCast (EvaluationContext<CorValRef, CorType> ctx, CorValRef val, CorType type)
+		public override object TryCast (EvaluationContext ctx, object val, object type)
 		{
-			CorType ctype = GetValueType (ctx, val);
+			CorType ctype = (CorType) GetValueType (ctx, val);
 			string tname = GetTypeName (ctx, type);
 			while (ctype != null) {
 				if (GetTypeName (ctx, ctype) == tname)
@@ -211,12 +228,12 @@ namespace MonoDevelop.Debugger.Win32
 			return null;
 		}
 
-		public bool IsEnum (EvaluationContext<CorValRef, CorType> ctx, CorType targetType)
+		public bool IsEnum (EvaluationContext ctx, CorType targetType)
 		{
 			return targetType.Type == CorElementType.ELEMENT_TYPE_VALUETYPE && GetTypeName (ctx, targetType.Base) == "System.Enum";
 		}
 
-		public override CorValRef CreateValue (EvaluationContext<CorValRef, CorType> gctx, object value)
+		public override object CreateValue (EvaluationContext gctx, object value)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			if (value is string) {
@@ -236,14 +253,15 @@ namespace MonoDevelop.Debugger.Win32
 			throw new NotSupportedException ();
 		}
 
-		public override CorValRef CreateValue (EvaluationContext<CorValRef, CorType> ctx, CorType type, params CorValRef[] args)
+		public override object CreateValue (EvaluationContext ctx, object type, params object[] gargs)
 		{
+			CorValRef[] args = CastArray<CorValRef> (gargs);
 			return new CorValRef (delegate {
-				return CreateCorValue (ctx, type, args);
+				return CreateCorValue (ctx, (CorType) type, args);
 			});
 		}
 
-		public CorValue CreateCorValue (EvaluationContext<CorValRef, CorType> ctx, CorType type, params CorValRef[] args)
+		public CorValue CreateCorValue (EvaluationContext ctx, CorType type, params CorValRef[] args)
 		{
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			CorValue[] vargs = new CorValue [args.Length];
@@ -268,26 +286,26 @@ namespace MonoDevelop.Debugger.Win32
 			return cctx.RuntimeInvoke (func, type.TypeParameters, null, vargs);
 		}
 
-		public override CorValRef CreateNullValue (EvaluationContext<CorValRef, CorType> gctx, CorType type)
+		public override object CreateNullValue (EvaluationContext gctx, object type)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
-			return new CorValRef (ctx.Eval.CreateValueForType (type));
+			return new CorValRef (ctx.Eval.CreateValueForType ((CorType)type));
 		}
 
-		public override ICollectionAdaptor<CorValRef, CorType> CreateArrayAdaptor (EvaluationContext<CorValRef, CorType> ctx, CorValRef arr)
+		public override ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr)
 		{
 			if (GetRealObject (arr) is CorArrayValue)
-				return new ArrayAdaptor (ctx, arr);
+				return new ArrayAdaptor (ctx, (CorValRef) arr);
 			else
 				return null;
 		}
 
-		public static CorValue GetRealObject (CorValRef objr)
+		public static CorValue GetRealObject (object objr)
 		{
-			if (objr == null || objr.Val == null)
+			if (objr == null || ((CorValRef)objr).Val == null)
 				return null;
 
-			return GetRealObject (objr.Val);
+			return GetRealObject (((CorValRef)objr).Val);
 		}
 
 		public static CorValue GetRealObject (CorValue obj)
@@ -343,7 +361,7 @@ namespace MonoDevelop.Debugger.Win32
 			return obj;
 		}
 
-		protected override ObjectValue CreateObjectValueImpl (EvaluationContext<CorValRef, CorType> ctx, IObjectValueSource source, ObjectPath path, CorValRef obj, ObjectValueFlags flags)
+		protected override ObjectValue CreateObjectValueImpl (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
 		{
 			CorValue robj = GetRealObject (obj);
 
@@ -371,7 +389,7 @@ namespace MonoDevelop.Debugger.Win32
 			return ObjectValue.CreateError (path.LastName, "Unknown value type: " + GetValueTypeName (ctx, obj), flags);
 		}
 
-		public override CorType GetEnclosingType (EvaluationContext<CorValRef, CorType> gctx)
+		public override object GetEnclosingType (EvaluationContext gctx)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			if (ctx.Frame.FrameType != CorFrameType.ILFrame || ctx.Frame.Function == null)
@@ -384,8 +402,11 @@ namespace MonoDevelop.Debugger.Win32
 			return cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, tpars.ToArray ());
 		}
 
-		public override IEnumerable<ValueReference<CorValRef, CorType>> GetMembers (EvaluationContext<CorValRef, CorType> ctx, CorType t, CorValRef val, BindingFlags bindingFlags)
+		public override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object tt, object gval, BindingFlags bindingFlags)
 		{
+			CorType t = (CorType) tt;
+			CorValRef val = (CorValRef) gval;
+
 			if (val != null)
 				t = GetRealObject (val).ExactType;
 
@@ -443,7 +464,7 @@ namespace MonoDevelop.Debugger.Win32
 			return sb.ToString ();
 		}
 
-		public override object TargetObjectToObject (EvaluationContext<CorValRef, CorType> ctx, CorValRef objr)
+		public override object TargetObjectToObject (EvaluationContext ctx, object objr)
 		{
 			CorValue obj = GetRealObject (objr);
 
@@ -475,11 +496,11 @@ namespace MonoDevelop.Debugger.Win32
 					MetadataType rt = co.ExactType.Class.GetTypeInfo (cctx.Session) as MetadataType;
 					bool isFlags = rt != null && rt.ReallyIsFlagsEnum;
 					string enumName = GetTypeName (ctx, co.ExactType);
-					ValueReference<CorValRef, CorType> val = GetMember (ctx, objr, "value__");
+					ValueReference val = GetMember (ctx, objr, "value__");
 					ulong nval = (ulong) Convert.ChangeType (val.ObjectValue, typeof(ulong));
 					ulong remainingFlags = nval;
 					string flags = null;
-					foreach (ValueReference<CorValRef, CorType> evals in GetMembers (ctx, co.ExactType, null, BindingFlags.Public | BindingFlags.Static)) {
+					foreach (ValueReference evals in GetMembers (ctx, co.ExactType, null, BindingFlags.Public | BindingFlags.Static)) {
 						ulong nev = (ulong) Convert.ChangeType (evals.ObjectValue, typeof (ulong));
 						if (nval == nev)
 							return new LiteralExp (enumName + "." + evals.Name);
@@ -515,9 +536,9 @@ namespace MonoDevelop.Debugger.Win32
 				}
 
 				// Try using a collection adaptor
-				ICollectionAdaptor<CorValRef, CorType> col = CreateArrayAdaptor (ctx, objr);
+				ICollectionAdaptor col = CreateArrayAdaptor (ctx, objr);
 				if (col != null)
-					return new LiteralExp (ArrayElementGroup<CorValRef, CorType>.GetArrayDescription (col.GetDimensions ()));
+					return new LiteralExp (ArrayElementGroup.GetArrayDescription (col.GetDimensions ()));
 
 				// Return the type name
 				if (tdata.TypeDisplayString != null)
@@ -533,7 +554,7 @@ namespace MonoDevelop.Debugger.Win32
 			return new LiteralExp ("?");
 		}
 
-		public override ValueReference<CorValRef, CorType> GetThisReference (EvaluationContext<CorValRef, CorType> gctx)
+		public override ValueReference GetThisReference (EvaluationContext gctx)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			if (ctx.Frame.FrameType != CorFrameType.ILFrame || ctx.Frame.Function == null)
@@ -550,7 +571,7 @@ namespace MonoDevelop.Debugger.Win32
 			return new VariableReference (ctx, vref, "this", ObjectValueFlags.Variable | ObjectValueFlags.ReadOnly);
 		}
 
-		public override IEnumerable<ValueReference<CorValRef, CorType>> GetParameters (EvaluationContext<CorValRef, CorType> gctx)
+		public override IEnumerable<ValueReference> GetParameters (EvaluationContext gctx)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			if (ctx.Frame.FrameType == CorFrameType.ILFrame && ctx.Frame.Function != null) {
@@ -583,7 +604,7 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		public override IEnumerable<ValueReference<CorValRef, CorType>> GetLocalVariables (EvaluationContext<CorValRef, CorType> ctx)
+		public override IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
 		{
 			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
 			uint offset;
@@ -592,7 +613,7 @@ namespace MonoDevelop.Debugger.Win32
 			return GetLocals (wctx, null, (int) offset, false);
 		}
 
-		IEnumerable<ValueReference<CorValRef, CorType>> GetLocals (CorEvaluationContext ctx, ISymbolScope scope, int offset, bool showHidden)
+		IEnumerable<ValueReference> GetLocals (CorEvaluationContext ctx, ISymbolScope scope, int offset, bool showHidden)
 		{
 			if (scope == null) {
 				ISymbolMethod met = ctx.Frame.Function.GetSymbolMethod (ctx.Session);
@@ -631,8 +652,9 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext<CorValRef, CorType> ctx, CorType type)
+		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext ctx, object gtype)
 		{
+			CorType type = (CorType) gtype;
 			TypeDisplayData td = null;
 
 			CorEvaluationContext wctx = (CorEvaluationContext) ctx;

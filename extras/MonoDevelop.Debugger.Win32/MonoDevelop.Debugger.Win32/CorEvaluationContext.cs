@@ -7,7 +7,7 @@ using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	public class CorEvaluationContext: EvaluationContext<CorValRef, CorType>
+	public class CorEvaluationContext: EvaluationContext
 	{
 		CorEval corEval;
 		CorFrame frame;
@@ -78,7 +78,7 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		public override void CopyFrom (EvaluationContext<CorValRef, CorType> ctx)
+		public override void CopyFrom (EvaluationContext ctx)
 		{
 			base.CopyFrom (ctx);
 			frame = ((CorEvaluationContext) ctx).frame;

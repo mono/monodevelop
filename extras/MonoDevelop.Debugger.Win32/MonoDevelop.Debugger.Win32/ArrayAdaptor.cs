@@ -32,12 +32,12 @@ using Mono.Debugging.Evaluation;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	class ArrayAdaptor: ICollectionAdaptor<CorValRef, CorType>
+	class ArrayAdaptor: ICollectionAdaptor
 	{
 		CorValRef obj;
-		EvaluationContext<CorValRef, CorType> ctx;
+		EvaluationContext ctx;
 
-		public ArrayAdaptor (EvaluationContext<CorValRef, CorType> ctx, CorValRef obj)
+		public ArrayAdaptor (EvaluationContext ctx, CorValRef obj)
 		{
 			this.obj = obj;
 			this.ctx = ctx;
@@ -52,7 +52,7 @@ namespace MonoDevelop.Debugger.Win32
 				return new int[0];
 		}
 		
-		public CorValRef GetElement (int[] indices)
+		public object GetElement (int[] indices)
 		{
 			return new CorValRef (delegate {
 				CorArrayValue array = CorObjectAdaptor.GetRealObject (obj) as CorArrayValue;
@@ -63,23 +63,23 @@ namespace MonoDevelop.Debugger.Win32
 			});
 		}
 		
-		public void SetElement (int[] indices, CorValRef val)
+		public void SetElement (int[] indices, object val)
 		{
-			CorValRef it = GetElement (indices);
-			it.SetValue (ctx, val);
+			CorValRef it = (CorValRef) GetElement (indices);
+			it.SetValue (ctx, (CorValRef) val);
 		}
 		
-		public CorType ElementType {
+		public object ElementType {
 			get {
 				return obj.Val.ExactType;
 			}
 		}
 
-		public ObjectValue CreateElementValue (ArrayElementGroup<CorValRef, CorType> grp, ObjectPath path, int[] indices)
+		public ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices)
 		{
 			CorArrayValue array = CorObjectAdaptor.GetRealObject (obj) as CorArrayValue;
 			if (array != null) {
-				CorValRef elem = GetElement (indices);
+				CorValRef elem = (CorValRef) GetElement (indices);
 				return ctx.Adapter.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);
 			}
 			else

@@ -33,13 +33,13 @@ using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	public class VariableReference: ValueReference<CorValRef,CorType>
+	public class VariableReference: ValueReference
 	{
 		CorValRef var;
 		DC.ObjectValueFlags flags;
 		string name;
 
-		public VariableReference (EvaluationContext<CorValRef, CorType> ctx, CorValRef var, string name, DC.ObjectValueFlags flags)
+		public VariableReference (EvaluationContext ctx, CorValRef var, string name, DC.ObjectValueFlags flags)
 			: base (ctx)
 		{
 			this.flags = flags;
@@ -47,12 +47,12 @@ namespace MonoDevelop.Debugger.Win32
 			this.name = name;
 		}
 		
-		public override CorValRef Value {
+		public override object Value {
 			get {
 				return var;
 			}
 			set {
-				var.SetValue (Context, value);
+				var.SetValue (Context, (CorValRef) value);
 			}
 		}
 		
@@ -62,7 +62,7 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 		
-		public override CorType Type {
+		public override object Type {
 			get {
 				return var.Val.ExactType;
 			}

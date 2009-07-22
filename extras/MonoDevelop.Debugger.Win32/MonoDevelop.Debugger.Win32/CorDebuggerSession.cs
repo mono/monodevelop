@@ -37,7 +37,7 @@ namespace MonoDevelop.Debugger.Win32
 		
 
 		public CorObjectAdaptor ObjectAdapter;
-		public ExpressionEvaluator<CorValRef, CorType> Evaluator;
+		public ExpressionEvaluator Evaluator;
 
 		class DocInfo
 		{
@@ -59,7 +59,7 @@ namespace MonoDevelop.Debugger.Win32
 			modules = new Dictionary<string, ModuleInfo> (StringComparer.CurrentCultureIgnoreCase);
 
 			ObjectAdapter = new CorObjectAdaptor ();
-			Evaluator = new NRefactoryEvaluator<CorValRef, CorType> ();
+			Evaluator = new NRefactoryEvaluator ();
 		}
 
 		public new IDebuggerSessionFrontend Frontend {
@@ -346,7 +346,7 @@ namespace MonoDevelop.Debugger.Win32
 			return new ProcessInfo[] { GetPocess (process) };
 		}
 
-		protected override Backtrace OnGetThreadBacktrace (int processId, int threadId)
+		protected override Mono.Debugging.Client.Backtrace OnGetThreadBacktrace (int processId, int threadId)
 		{
 			foreach (CorThread t in process.Threads) {
 				if (t.Id == threadId) {
@@ -709,8 +709,8 @@ namespace MonoDevelop.Debugger.Win32
 			ctx.Thread = thread;
 			ctx.Frame = thread.ActiveFrame;
 
-			LiteralValueReference<CorValRef, CorType> val = new LiteralValueReference<CorValRef, CorType> (ctx, "", new CorValRef (to));
-			ValueReference<CorValRef, CorType> prop = val.GetChild ("Name");
+			LiteralValueReference val = new LiteralValueReference (ctx, "", new CorValRef (to));
+			ValueReference prop = val.GetChild ("Name");
 			if (prop != null)
 				return prop.ObjectValue as string;
 			else
@@ -775,11 +775,11 @@ namespace MonoDevelop.Debugger.Win32
 				return null;
 		}
 
-		public static void SetValue (this CorValRef thisVal, EvaluationContext<CorValRef, CorType> ctx, CorValRef val)
+		public static void SetValue (this CorValRef thisVal, EvaluationContext ctx, CorValRef val)
 		{
 			CorObjectAdaptor actx = (CorObjectAdaptor) ctx.Adapter;
 			if (actx.IsEnum (ctx, thisVal.Val.ExactType) && !actx.IsEnum (ctx, val.Val.ExactType)) {
-				ValueReference<CorValRef, CorType> vr = actx.GetMember (ctx, thisVal, "value__");
+				ValueReference vr = actx.GetMember (ctx, thisVal, "value__");
 				vr.Value = val;
 				// Required to make sure that var returns an up-to-date value object
 				thisVal.IsValid = false;

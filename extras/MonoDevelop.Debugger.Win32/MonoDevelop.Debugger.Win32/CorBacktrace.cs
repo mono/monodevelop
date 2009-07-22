@@ -185,7 +185,7 @@ namespace MonoDevelop.Debugger.Win32
 		public ObjectValue GetThisReference (int frameIndex, int timeout)
 		{
 			CorEvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			ValueReference<CorValRef, CorType> var = ctx.Adapter.GetThisReference (ctx);
+			ValueReference var = ctx.Adapter.GetThisReference (ctx);
 			if (var != null)
 				return var.CreateObjectValue ();
 			else
