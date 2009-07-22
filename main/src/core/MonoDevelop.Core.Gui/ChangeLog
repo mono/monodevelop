@@ -1,3 +1,8 @@
+2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/AlertDialog.cs: Make sure the label is
+	  always aligned to the left.
+
 2009-06-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

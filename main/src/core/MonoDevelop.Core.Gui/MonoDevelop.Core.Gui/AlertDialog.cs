@@ -53,8 +53,8 @@ namespace MonoDevelop.Core.Gui
 		void Init ()
 		{
 			VBox.PackStart (hbox);
-			hbox.PackStart (image);
-			hbox.PackStart (label);
+			hbox.PackStart (image, false, false, 0);
+			hbox.PackStart (label, true, true, 0);
 				
 			// Table 3.1
 			this.Title        = "";
@@ -78,6 +78,7 @@ namespace MonoDevelop.Core.Gui
 			this.label.UseMarkup = true;
 			this.label.Wrap      = true;
 			this.label.Yalign    = 0.00f;
+			this.label.Xalign    = 0.00f;
 		}
 		
 		public AlertDialog (string icon, string primaryText, string secondaryText, AlertButton[] buttons)
