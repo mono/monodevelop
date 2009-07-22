@@ -1,3 +1,8 @@
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug
+	  518391 - Exception when save a file into vfat partition".
+
 2009-07-21  Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.SourceEditor/IdeViMode.cs: 

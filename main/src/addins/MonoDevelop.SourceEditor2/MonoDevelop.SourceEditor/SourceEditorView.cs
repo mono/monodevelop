@@ -213,14 +213,14 @@ namespace MonoDevelop.SourceEditor
 		{
 			autoSave.FileName = fileName;
 			autoSave.RemoveAutoSaveFile ();
-		
+
 			if (ContentName != fileName) {
 				if (!FileService.RequestFileEdit (fileName))
 					return;
 				writeAllowed = true;
 				writeAccessChecked = true;
 			}
-			
+
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
 					if (MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?", fileName), MonoDevelop.Core.Gui.AlertButton.Cancel, MonoDevelop.Core.Gui.AlertButton.OverwriteFile) != MonoDevelop.Core.Gui.AlertButton.OverwriteFile)
@@ -230,12 +230,17 @@ namespace MonoDevelop.SourceEditor
 				widget.RemoveMessageBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
-			
+
 			isInWrite = true;
 			try {
 				TextFile.WriteFile (fileName, Document.Text, encoding);
 				lastSaveTime = File.GetLastWriteTime (fileName);
-				DesktopService.SetFileAttributes (fileName, attributes);
+				try {
+					if (attributes != null)
+						DesktopService.SetFileAttributes (fileName, attributes);
+				} catch (Exception e) {
+					LoggingService.LogError ("Can't set file attributes", e);
+				}
 			} finally {
 				isInWrite = false;
 			}
@@ -261,8 +266,11 @@ namespace MonoDevelop.SourceEditor
 			if (autoSave.FileName == fileName) {
 				autoSave.RemoveAutoSaveFile ();
 			}
-			
-			attributes = DesktopService.GetFileAttributes (fileName);
+			try {
+				attributes = DesktopService.GetFileAttributes (fileName);
+			} catch (Exception e) {
+				LoggingService.LogWarning ("Can't get file attributes", e);
+			}
 			autoSave.FileName = fileName;
 			if (warnOverwrite) {
 				warnOverwrite = false;
