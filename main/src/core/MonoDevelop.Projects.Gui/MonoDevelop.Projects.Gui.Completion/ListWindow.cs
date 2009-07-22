@@ -119,15 +119,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		protected void ResetSizes ()
 		{
 			if (list.filteredItems.Count == 0) {
-				this.list.Hide ();
-				this.scrollbar.Hide ();
-				this.Resize (1, 1);
-				this.Move (Screen.Width - 1, Screen.Height - 1);
-				return;
+				Hide ();
 			} else {
-				Move (curXPos, curYPos);
-				this.list.Show ();
-				this.scrollbar.Show ();
+				if (!Visible)
+					Show ();
 			}
 
 			scrollbar.Adjustment.Lower = 0;

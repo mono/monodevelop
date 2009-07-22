@@ -58,23 +58,26 @@ namespace MonoDevelop.Projects.Gui.Completion
 		}
 		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyAction ka)
 		{
-			if (wnd == null || !wnd.Visible) {
+			if (wnd == null /*|| !wnd.Visible*/) {
 				ka = KeyAction.None;
 				return false;
 			}
 			return wnd.PreProcessKeyEvent (key, keyChar, modifier, out ka);
 		}
+		
 		public static void PostProcessKeyEvent (KeyAction ka)
 		{
 			if (wnd == null)
 				return;
 			wnd.PostProcessKeyEvent (ka);
 		}
+		
 		public static void HideWindow ()
 		{
 			if (wnd == null)
 				return;
-			wnd.HideWindow ();
+			wnd.Destroy ();
+			wnd = null;
 		}
 	}
 }
