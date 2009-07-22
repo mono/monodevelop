@@ -165,7 +165,9 @@ namespace MonoDevelop.Core
 			DataCollection data = new DataCollection ();
 			foreach (KeyValuePair<string,object> entry in properties) {
 				DataNode val;
-				if (entry.Value is XmlElement) {
+				if (entry.Value == null)
+					continue;
+				else if (entry.Value is XmlElement) {
 					DataItem xit = new DataItem ();
 					XmlConfigurationReader sr = new XmlConfigurationReader ();
 					xit.ItemData.Add (sr.Read ((XmlElement)entry.Value));
