@@ -535,8 +535,11 @@ namespace MonoDevelop.SourceEditor
 			
 			// To resolve method overloads the full expression must be parsed.
 			// ex.: Overload (1)/ Overload("one") - parsing "Overload" gives just a MethodResolveResult
-			if (this.resolveResult is MethodResolveResult) 
-				this.resolveResult = resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? this.resolveResult;
+			if (this.resolveResult is MethodResolveResult && ((MethodResolveResult)resolveResult).Methods.Count > 1) {
+				ResolveResult possibleResult = resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? this.resolveResult;
+				if (possibleResult is MethodResolveResult)
+					this.resolveResult = possibleResult;
+			}
 			
 			return this.resolveResult;
 		}

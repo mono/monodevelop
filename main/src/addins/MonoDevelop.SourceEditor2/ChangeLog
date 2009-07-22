@@ -1,5 +1,11 @@
 2009-07-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed "Bug
+	  523853 - Delegate not recognised by refactoring tools
+	  (doesn't offer Go To Declaration)".
+
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug
 	  518391 - Exception when save a file into vfat partition".
 
