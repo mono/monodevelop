@@ -42,6 +42,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ConfirmProjectDeleteDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeManagerDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeWidget.cs \
@@ -185,6 +186,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/ConfirmProjectDeleteDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeManagerDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeWidget.cs \

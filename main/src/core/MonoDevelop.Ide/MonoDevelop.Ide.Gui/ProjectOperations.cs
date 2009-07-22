@@ -640,8 +640,61 @@ namespace MonoDevelop.Ide.Gui
 					selDialog.Hide ();
 			}
 		}
-
 		
+		public void RemoveSolutionItem (SolutionItem item)
+		{
+			string question = GettextCatalog.GetString ("Do you really want to remove project '{0}' from '{1}'?", item.Name, item.ParentFolder.Name);
+			string secondaryText = GettextCatalog.GetString ("The Delete option physically removes the project files from disc.");
+			
+			SolutionEntityItem prj = item as SolutionEntityItem;
+			if (prj == null) {
+				if (MessageService.Confirm (question, AlertButton.Remove))
+					RemoveItemFromSolution (prj);
+				return;
+			}
+			
+			AlertButton result = MessageService.AskQuestion (question, secondaryText,
+			                                                 AlertButton.Delete, AlertButton.Cancel, AlertButton.Remove);
+			if (result == AlertButton.Delete) {
+				ConfirmProjectDeleteDialog dlg = new ConfirmProjectDeleteDialog (prj);
+				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+					
+					// Remove the project before removing the files to avoid unnecessary events
+					RemoveItemFromSolution (prj);
+					
+					List<FilePath> files = dlg.GetFilesToDelete ();
+					dlg.Destroy ();
+					using (IProgressMonitor monitor = new MonoDevelop.Core.Gui.ProgressMonitoring.MessageDialogProgressMonitor (true)) {
+						monitor.BeginTask (GettextCatalog.GetString ("Deleting Files..."), files.Count);
+						foreach (FilePath file in files) {
+							try {
+								if (Directory.Exists (file))
+									FileService.DeleteDirectory (file);
+								else
+									FileService.DeleteFile (file);
+							} catch (Exception ex) {
+								monitor.ReportError (GettextCatalog.GetString ("The file or directory '{0}' could not be deleted.", file), ex);
+							}
+							monitor.Step (1);
+						}
+						monitor.EndTask ();
+					}
+				} else
+					dlg.Destroy ();
+			}
+			else if (result != AlertButton.Cancel) {
+				RemoveItemFromSolution (prj);
+			}
+		}
+		
+		void RemoveItemFromSolution (SolutionItem prj)
+		{
+			Solution sol = prj.ParentSolution;
+			prj.ParentFolder.Items.Remove (prj);
+			prj.Dispose ();
+			IdeApp.ProjectOperations.Save (sol);
+		}
+
 		public bool CanExecute (IBuildTarget entry)
 		{
 			ExecutionContext context = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, IdeApp.Workbench.ProgressMonitors);

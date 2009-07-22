@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					                                     Path.GetFileName (files[0].Name), files[0].Project.Name);
 				else
 					question = GettextCatalog.GetString ("Are you sure you want to remove the selected files from the project?");
-				secondaryText = GettextCatalog.GetString ("Delete physically removes the file from disc.");
+				secondaryText = GettextCatalog.GetString ("The Delete option physically removes the file from disc.");
 			}
 			
 			AlertButton result = MessageService.AskQuestion (question, secondaryText,

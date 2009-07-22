@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -37,6 +38,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -334,14 +336,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void DeleteItem ()
 		{
 			Project prj = CurrentNode.DataItem as Project;
-			bool yes = MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove project '{0}' from '{1}'?", prj.Name, prj.ParentFolder.Name), AlertButton.Remove);
-
-			if (yes) {
-				Solution sol = prj.ParentSolution;
-				prj.ParentFolder.Items.Remove (prj);
-				prj.Dispose ();
-				IdeApp.ProjectOperations.Save (sol);
-			}
+			IdeApp.ProjectOperations.RemoveSolutionItem (prj);
 		}
 		
 		[CommandHandler (ProjectCommands.AddReference)]
