@@ -589,6 +589,28 @@ namespace MonoDevelop.Refactoring
 		
 		public void GoToDeclaration ()
 		{
+			if (item is CompoundType) {
+				CompoundType compoundType = (CompoundType)item;
+				monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
+				using (monitor) {
+					foreach (IType part in compoundType.Parts) {
+						FileProvider provider = new FileProvider (part.CompilationUnit.FileName);
+						Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+						System.IO.TextReader textReader = provider.Open ();
+						doc.Text = textReader.ReadToEnd ();
+						textReader.Close ();
+						int position = doc.LocationToOffset (part.Location.Line - 1, part.Location.Column - 1);
+						while (position + part.Name.Length < doc.Length) {
+							if (doc.GetTextAt (position, part.Name.Length) == part.Name)
+								break;
+							position++;
+						}
+						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length));
+					}
+				}
+				
+				return;
+			}
 			IdeApp.ProjectOperations.JumpToDeclaration (item);
 		}
 		
@@ -611,21 +633,19 @@ namespace MonoDevelop.Refactoring
 				} else if (item is IParameter) {
 					references = refactorer.FindParameterReferences (monitor, (IParameter)item);
 				} else if (item is IMember) {
-					IMember member = (IMember) item;
-					
+					IMember member = (IMember)item;
+
 					// private is filled only in keyword case
 					if (member.IsPrivate || (!member.IsProtectedOrInternal && !member.IsPublic)) {
 						// look in project to be partial classes safe
-						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
-						                                              RefactoryScope.Project);
+						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Project);
 					} else {
 						// for all other types look in solution because
 						// internal members can be used in friend assemblies
-						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
-						                                              RefactoryScope.Solution);
+						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution);
 					}
 				}
-				
+
 				if (references != null) {
 					foreach (MemberReference mref in references) {
 						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));
