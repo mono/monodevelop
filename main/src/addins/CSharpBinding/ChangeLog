@@ -1,3 +1,8 @@
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Syntax/CSharpSyntaxMode.cs: Correctly copying syntax mode
+	  properties.
+
 2009-07-20  Mike Krüger  <mkrueger@novell.com>
 
 	* FormattingStrategy/CSharpFormattingPolicy.cs:

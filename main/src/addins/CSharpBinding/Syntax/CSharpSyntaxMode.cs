@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharpBinding
 	{
 		public CSharpSyntaxMode ()
 		{
-			ResourceXmlProvider provider = new ResourceXmlProvider (typeof (IXmlProvider).Assembly, "CSharpSyntaxMode.xml");
+			ResourceXmlProvider provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, "CSharpSyntaxMode.xml");
 			using (XmlReader reader = provider.Open ()) {
 				SyntaxMode baseMode = SyntaxMode.Read (reader);
 				this.rules = new List<Rule> (baseMode.Rules);
@@ -53,7 +53,9 @@ namespace MonoDevelop.CSharpBinding
 				this.prevMarker = baseMode.PrevMarker;
 				this.SemanticRules = new List<SemanticRule> (baseMode.SemanticRules);
 				this.table = baseMode.Table;
+				this.properties = baseMode.Properties;
 			}
+			
 			AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
 			AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
 			AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
