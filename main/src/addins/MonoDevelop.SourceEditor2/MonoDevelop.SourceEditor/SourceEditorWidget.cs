@@ -1149,20 +1149,73 @@ namespace MonoDevelop.SourceEditor
 		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
 		protected void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
 		{
-			string fileName = this.view.IsUntitled ? this.view.UntitledName : this.view.ContentName;
-			ILanguageBinding binding = LanguageBindingService.GetBindingPerFileName (fileName);
-			info.Visible = binding != null && !String.IsNullOrEmpty (binding.SingleLineCommentTag);
+			List<string> lineComments;
+			if (Document.SyntaxMode.Properties.TryGetValue ("LineComment", out lineComments)) {
+				info.Visible = lineComments.Count > 0;
+			} else {
+				List<string> blockStarts;
+				List<string> blockEnds;
+				if (Document.SyntaxMode.Properties.TryGetValue ("BlockCommentStart", out blockStarts) && Document.SyntaxMode.Properties.TryGetValue ("BlockCommentEnd", out blockEnds)) {
+					info.Visible = blockStarts.Count > 0 && blockEnds.Count > 0;
+				}
+			}
+		}
+		
+		void ToggleCodeCommentWithBlockComments ()
+		{
+
+			List<string> blockStarts;
+			if (!Document.SyntaxMode.Properties.TryGetValue ("BlockCommentStart", out blockStarts) || blockStarts.Count == 0)
+				return;
+
+			List<string> blockEnds;
+			if (!Document.SyntaxMode.Properties.TryGetValue ("BlockCommentEnd", out blockEnds) || blockEnds.Count == 0)
+				return;
+
+			string blockStart = blockStarts[0];
+			string blockEnd = blockEnds[0];
+
+			Document.BeginAtomicUndo ();
+			LineSegment startLine;
+			LineSegment endLine;
+
+			if (TextEditor.IsSomethingSelected) {
+				startLine = Document.GetLineByOffset (textEditor.SelectionRange.Offset);
+				endLine = Document.GetLineByOffset (textEditor.SelectionRange.EndOffset);
+			} else {
+				startLine = endLine = Document.GetLine (textEditor.Caret.Line);
+			}
+			string startLineText = Document.GetTextAt (startLine.Offset, startLine.EditableLength);
+			string endLineText = Document.GetTextAt (endLine.Offset, endLine.EditableLength);
+			if (startLineText.StartsWith (blockStart) && endLineText.EndsWith (blockEnd)) {
+				textEditor.Remove (endLine.Offset + endLine.EditableLength - blockEnd.Length, blockEnd.Length);
+				textEditor.Remove (startLine.Offset, blockStart.Length);
+				if (TextEditor.IsSomethingSelected) {
+					TextEditor.SelectionAnchor -= blockEnd.Length;
+				}
+			} else {
+				textEditor.Insert (endLine.Offset + endLine.EditableLength, blockEnd);
+				textEditor.Insert (startLine.Offset, blockStart);
+				if (TextEditor.IsSomethingSelected) {
+					TextEditor.SelectionAnchor += blockEnd.Length;
+				}
+				
+			}
+			
+			Document.EndAtomicUndo ();
 		}
 		
 		[CommandHandler (EditCommands.ToggleCodeComment)]
 		public void ToggleCodeComment ()
 		{
 			bool comment = false;
-			string fileName = this.view.IsUntitled ? this.view.UntitledName : this.view.ContentName;
-			ILanguageBinding binding = LanguageBindingService.GetBindingPerFileName (fileName);
-			if (binding == null || String.IsNullOrEmpty (binding.SingleLineCommentTag))
+			List<string> lineComments;
+			if (!Document.SyntaxMode.Properties.TryGetValue ("LineComment", out lineComments) || lineComments.Count == 0) {
+				ToggleCodeCommentWithBlockComments ();
 				return;
-			string commentTag = binding.SingleLineCommentTag;
+			}
+			string commentTag = lineComments[0];
+			
 			foreach (LineSegment line in this.textEditor.SelectedLines) {
 				string text = Document.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
@@ -1200,7 +1253,7 @@ namespace MonoDevelop.SourceEditor
 					if (anchorColumn != 0) {
 						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + commentTag.Length));
 					} else {
-						TextEditor.SelectionAnchor = anchorLine.Offset;
+//						TextEditor.SelectionAnchor = anchorLine.Offset;
 					}
 				}
 			}
