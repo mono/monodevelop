@@ -4,7 +4,6 @@ ASSEMBLY = $(top_builddir)/build/bin/Mono.TextEditor.dll
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-pkg:gtk-dotnet-2.0 \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \

@@ -1,3 +1,8 @@
+2009-07-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj: Remove unused ref.
+
 2009-07-17  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/ISearchEngine.cs: Fixed search & replace bug
