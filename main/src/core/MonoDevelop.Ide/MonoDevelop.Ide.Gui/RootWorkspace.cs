@@ -663,6 +663,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			// Restore solution item properties
 			
+			item.LoadUserProperties (props);
+			
 			if (item is Solution)
 				LoadItemProperties (props, ((Solution)item).RootFolder, "MonoDevelop.Ide.ItemProperties");
 

@@ -1,5 +1,13 @@
 2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:
+	  Save preferences after changing author info.
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Set the preferences
+	  for the root workspace item after loading.
+
+2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/Workbench.cs: Notify file creations when
 	  focusing MD.
 

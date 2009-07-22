@@ -45,8 +45,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		public override void ApplyChanges ()
 		{
-			if (solution != null)
-			 	solution.UserProperties.SetValue<AuthorInformation> ("AuthorInfo", widget.Get ());
+			if (solution != null) {
+				AuthorInformation ainfo = widget.Get ();
+				if (ainfo != null)
+					solution.UserProperties.SetValue<AuthorInformation> ("AuthorInfo", ainfo);
+				else
+					solution.UserProperties.RemoveValue ("AuthorInfo");
+				IdeApp.Workspace.SavePreferences ();
+			}
 		}
 
 		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
