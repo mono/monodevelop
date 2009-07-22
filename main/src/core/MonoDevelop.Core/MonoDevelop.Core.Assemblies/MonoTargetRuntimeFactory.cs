@@ -43,6 +43,8 @@ namespace MonoDevelop.Core.Assemblies
 			LoadRuntimes ();
 		}
 		
+		const string MAC_FRAMEWORK_DIR = "/Library/Frameworks/Mono.framework/Versions";
+
 		public IEnumerable<TargetRuntime> CreateRuntimes ()
 		{
 			MonoRuntimeInfo currentRuntime = MonoRuntimeInfo.FromCurrentRuntime ();
@@ -57,7 +59,9 @@ namespace MonoDevelop.Core.Assemblies
 						yield return new MonoTargetRuntime (info);
 				}
 			} else if (PropertyService.IsMac) {
-				foreach (string dir in Directory.GetDirectories ("/Library/Frameworks/Mono.framework/Versions")) {
+				if (!Directory.Exists (MAC_FRAMEWORK_DIR))
+					yield break;
+				foreach (string dir in Directory.GetDirectories (MAC_FRAMEWORK_DIR)) {
 					if (dir.EndsWith ("/Current") || currentRuntime.Prefix == dir)
 						continue;
 					MonoRuntimeInfo info = new MonoRuntimeInfo (dir);
