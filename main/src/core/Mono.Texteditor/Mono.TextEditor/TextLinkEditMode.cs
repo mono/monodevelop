@@ -310,6 +310,7 @@ namespace Mono.TextEditor
 			}
 			int caretOffset = Editor.Caret.Offset - baseOffset;
 			TextLink link = links.Find (l => l.Links.Any (s => s.Offset <= caretOffset && caretOffset <= s.EndOffset));
+			
 			switch (key) {
 			case Gdk.Key.BackSpace:
 				if (link != null && caretOffset == link.PrimaryLink.Offset)
@@ -392,7 +393,8 @@ namespace Mono.TextEditor
 		{
 			for (int i = link.Links.Count - 1; i >= 0; i--) {
 				Segment s = link.Links[i];
-				Editor.Replace (s.Offset + baseOffset, s.Length, link.CurrentText);
+				if (Editor.Document.GetTextAt (s.Offset + baseOffset, s.Length) != link.CurrentText)
+					Editor.Replace (s.Offset + baseOffset, s.Length, link.CurrentText);
 				s.Length = link.CurrentText.Length;
 			}
 		}
