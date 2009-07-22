@@ -59,7 +59,7 @@ namespace CSharpBinding.Parser
 		{
 			expressionText = expressionText.Trim ();
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (expressionText))) {
-				Expression result;
+				Expression result = null;
 				try {
 					result = parser.ParseExpression ();
 				} catch (Exception) {
@@ -73,7 +73,7 @@ namespace CSharpBinding.Parser
 			text = text.Trim ();
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (text))) {
 				if (text.EndsWith (";") || text.EndsWith ("}")) {
-					BlockStatement block;
+					BlockStatement block = null ;
 					try {
 						block = parser.ParseBlock ();
 					} catch (Exception) {

@@ -1,5 +1,9 @@
 2009-07-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/CSharpNRefactoryASTProvider.cs: fixed build.
+
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CSharpNRefactoryASTProvider.cs: handled possible
 	  parser exceptions.
 
