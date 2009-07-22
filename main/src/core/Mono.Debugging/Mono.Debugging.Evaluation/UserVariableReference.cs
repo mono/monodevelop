@@ -29,14 +29,12 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class UserVariableReference<TValue,TType>: ValueReference<TValue,TType>
-		where TValue: class
-		where TType: class
+	public class UserVariableReference: ValueReference
 	{
 		string name;
-		TValue currentValue;
+		object currentValue;
 		
-		public UserVariableReference (EvaluationContext<TValue,TType> ctx, string name): base (ctx)
+		public UserVariableReference (EvaluationContext ctx, string name): base (ctx)
 		{
 			this.name = name;
 		}
@@ -47,7 +45,7 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 		
-		public override TValue Value {
+		public override object Value {
 			get {
 				if (currentValue != null)
 					return currentValue;
@@ -59,7 +57,7 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		public override TType Type {
+		public override object Type {
 			get {
 				return Context.Adapter.GetValueType (Context, Value);
 			}

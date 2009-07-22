@@ -31,21 +31,19 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class ArrayValueReference<TValue, TType>: ValueReference<TValue, TType>
-		where TValue: class
-		where TType: class
+	public class ArrayValueReference: ValueReference
 	{
 		int[] indices;
-		ICollectionAdaptor<TValue, TType> adaptor;
+		ICollectionAdaptor adaptor;
 
-		public ArrayValueReference (EvaluationContext<TValue,TType> ctx, TValue arr, int[] indices)
+		public ArrayValueReference (EvaluationContext ctx, object arr, int[] indices)
 			: base (ctx)
 		{
 			this.indices = indices;
 			adaptor = ctx.Adapter.CreateArrayAdaptor (ctx, arr);
 		}
 
-		public override TValue Value {
+		public override object Value {
 			get {
 				return adaptor.GetElement (indices);
 			}
@@ -67,7 +65,7 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 		
-		public override TType Type {
+		public override object Type {
 			get {
 				return adaptor.ElementType;
 			}

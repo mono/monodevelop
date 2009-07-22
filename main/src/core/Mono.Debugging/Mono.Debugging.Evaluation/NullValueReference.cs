@@ -30,21 +30,19 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class NullValueReference<TValue, TType>: ValueReference<TValue, TType>
-		where TValue: class
-		where TType: class
+	public class NullValueReference: ValueReference
 	{
-		TType type;
-		TValue obj;
+		object type;
+		object obj;
 		bool valueCreated;
 
-		public NullValueReference (EvaluationContext<TValue, TType> ctx, TType type)
+		public NullValueReference (EvaluationContext ctx, object type)
 			: base (ctx)
 		{
 			this.type = type;
 		}
 	
-		public override TValue Value {
+		public override object Value {
 			get {
 				if (!valueCreated) {
 					valueCreated = true;
@@ -57,7 +55,7 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 		
-		public override TType Type {
+		public override object Type {
 			get {
 				return type;
 			}
@@ -87,7 +85,7 @@ namespace Mono.Debugging.Evaluation
 			return Mono.Debugging.Client.ObjectValue.CreateObject (null, new ObjectPath (Name), tn, "null", Flags, null);
 		}
 
-		public override ValueReference<TValue, TType> GetChild (string name)
+		public override ValueReference GetChild (string name)
 		{
 			return null;
 		}

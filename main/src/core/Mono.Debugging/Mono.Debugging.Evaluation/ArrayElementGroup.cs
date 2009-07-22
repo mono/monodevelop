@@ -33,30 +33,28 @@ using Mono.Debugging.Backend;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class ArrayElementGroup<TValue, TType>: RemoteFrameObject, IObjectValueSource
-		where TValue: class
-		where TType: class
+	public class ArrayElementGroup: RemoteFrameObject, IObjectValueSource
 	{
-		EvaluationContext<TValue, TType> ctx;
+		EvaluationContext ctx;
 		int[] baseIndices;
 		int firstIndex;
 		int lastIndex;
 		int[] bounds;
-		ICollectionAdaptor<TValue, TType> array;
+		ICollectionAdaptor array;
 		
 		const int MaxChildCount = 150;
 
-		public ArrayElementGroup (EvaluationContext<TValue, TType> ctx, ICollectionAdaptor<TValue, TType> array)
+		public ArrayElementGroup (EvaluationContext ctx, ICollectionAdaptor array)
 			: this (ctx, array, new int [0])
 		{
 		}
 
-		public ArrayElementGroup (EvaluationContext<TValue, TType> ctx, ICollectionAdaptor<TValue, TType> array, int[] baseIndices)
+		public ArrayElementGroup (EvaluationContext ctx, ICollectionAdaptor array, int[] baseIndices)
 			: this (ctx, array, baseIndices, 0, -1)
 		{
 		}
 
-		public ArrayElementGroup (EvaluationContext<TValue, TType> ctx, ICollectionAdaptor<TValue, TType> array, int[] baseIndices, int firstIndex, int lastIndex)
+		public ArrayElementGroup (EvaluationContext ctx, ICollectionAdaptor array, int[] baseIndices, int firstIndex, int lastIndex)
 		{
 			this.array = array;
 			this.ctx = ctx;
@@ -102,7 +100,7 @@ namespace Mono.Debugging.Evaluation
 			if (path.Length > 1) {
 				// Looking for children of an array element
 				int[] idx = StringToIndices (path [1]);
-				TValue obj = array.GetElement (idx);
+				object obj = array.GetElement (idx);
 				return ctx.Adapter.GetObjectValueChildren (ctx, obj, firstItemIndex, count);
 			}
 			
@@ -186,7 +184,7 @@ namespace Mono.Debugging.Evaluation
 					if (index > upperBound)
 						val = ObjectValue.CreateUnknown ("");
 					else {
-						ArrayElementGroup<TValue, TType> grp = new ArrayElementGroup<TValue, TType> (ctx, array, curIndex);
+						ArrayElementGroup grp = new ArrayElementGroup (ctx, array, curIndex);
 						val = grp.CreateObjectValue ();
 					}
 					list.Add (val);
@@ -201,10 +199,14 @@ namespace Mono.Debugging.Evaluation
 					div = 100;
 				
 				// Create the child groups
-				int i = 0;
+				int i = initalIndex + firstItemIndex;
+				len += i;
 				List<ObjectValue> list = new List<ObjectValue> ();
 				while (i < len) {
-					ArrayElementGroup<TValue, TType> grp = new ArrayElementGroup<TValue, TType> (ctx, array, baseIndices, i, i + div - 1);
+					int end = i + div - 1;
+					if (end > len)
+						end = len - 1;
+					ArrayElementGroup grp = new ArrayElementGroup (ctx, array, baseIndices, i, end);
 					list.Add (grp.CreateObjectValue ());
 					i += div;
 				}
@@ -254,12 +256,12 @@ namespace Mono.Debugging.Evaluation
 			
 			int[] idx = StringToIndices (path [1]);
 			
-			TValue val;
+			object val;
 			try {
-				EvaluationOptions<TType> ops = new EvaluationOptions<TType> ();
+				EvaluationOptions ops = new EvaluationOptions ();
 				ops.ExpectedType = array.ElementType;
 				ops.CanEvaluateMethods = true;
-				ValueReference<TValue, TType> var = ctx.Evaluator.Evaluate (ctx, value, ops);
+				ValueReference var = ctx.Evaluator.Evaluate (ctx, value, ops);
 				val = var.Value;
 				val = ctx.Adapter.Cast (ctx, val, array.ElementType);
 				array.SetElement (idx, val);

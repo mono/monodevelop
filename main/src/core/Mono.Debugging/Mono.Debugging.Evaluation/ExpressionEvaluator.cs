@@ -30,32 +30,30 @@ using System.Text;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class ExpressionEvaluator<TValue, TType>
-		where TValue: class
-		where TType: class
+	public class ExpressionEvaluator
 	{
-		public virtual ValueReference<TValue, TType> Evaluate (EvaluationContext<TValue, TType> ctx, string exp, EvaluationOptions<TType> options)
+		public virtual ValueReference Evaluate (EvaluationContext ctx, string exp, EvaluationOptions options)
 		{
-			foreach (ValueReference<TValue, TType> var in ctx.Adapter.GetLocalVariables (ctx))
+			foreach (ValueReference var in ctx.Adapter.GetLocalVariables (ctx))
 				if (var.Name == exp)
 					return var;
 
-			foreach (ValueReference<TValue, TType> var in ctx.Adapter.GetParameters (ctx))
+			foreach (ValueReference var in ctx.Adapter.GetParameters (ctx))
 				if (var.Name == exp)
 					return var;
 
-			ValueReference<TValue, TType> thisVar = ctx.Adapter.GetThisReference (ctx);
+			ValueReference thisVar = ctx.Adapter.GetThisReference (ctx);
 			if (thisVar != null) {
 				if (thisVar.Name == exp)
 					return thisVar;
-				foreach (ValueReference<TValue, TType> cv in thisVar.GetChildReferences ())
+				foreach (ValueReference cv in thisVar.GetChildReferences ())
 					if (cv.Name == exp)
 						return cv;
 			}
 			throw new EvaluatorException ("Invalid Expression: '{0}'", exp);
 		}
 
-		public string TargetObjectToString (EvaluationContext<TValue, TType> ctx, TValue obj)
+		public string TargetObjectToString (EvaluationContext ctx, object obj)
 		{
 			object res = ctx.Adapter.TargetObjectToObject (ctx, obj);
 			if (res == null)
@@ -64,7 +62,7 @@ namespace Mono.Debugging.Evaluation
 				return res.ToString ();
 		}
 
-		public string TargetObjectToExpression (EvaluationContext<TValue, TType> ctx, TValue obj)
+		public string TargetObjectToExpression (EvaluationContext ctx, object obj)
 		{
 			return ToExpression (ctx.Adapter.TargetObjectToObject (ctx, obj));
 		}
@@ -125,11 +123,11 @@ namespace Mono.Debugging.Evaluation
 
 	}
 	
-	public class EvaluationOptions<TType>
+	public class EvaluationOptions
 	{
 		bool canEvaluateMethods;
 
-		public TType ExpectedType { get; set; }
+		public object ExpectedType { get; set; }
 		
 		public bool CanEvaluateMethods {
 			get { return canEvaluateMethods; }

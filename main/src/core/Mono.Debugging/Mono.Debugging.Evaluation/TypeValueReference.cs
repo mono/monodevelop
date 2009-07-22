@@ -32,14 +32,12 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class TypeValueReference<TValue, TType>: ValueReference<TValue, TType>
-		where TValue: class
-		where TType: class
+	public class TypeValueReference: ValueReference
 	{
-		TType type;
+		object type;
 		string name;
 
-		public TypeValueReference (EvaluationContext<TValue, TType> ctx, TType type)
+		public TypeValueReference (EvaluationContext ctx, object type)
 			: base (ctx)
 		{
 			this.type = type;
@@ -49,7 +47,7 @@ namespace Mono.Debugging.Evaluation
 				this.name = name.Substring (i + 1);
 		}
 		
-		public override TValue Value {
+		public override object Value {
 			get {
 				throw new NotSupportedException ();
 			}
@@ -59,7 +57,7 @@ namespace Mono.Debugging.Evaluation
 		}
 
 		
-		public override TType Type {
+		public override object Type {
 			get {
 				return type;
 			}
@@ -90,9 +88,9 @@ namespace Mono.Debugging.Evaluation
 			return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "<type>", Name, Flags, null);
 		}
 
-		public override ValueReference<TValue, TType> GetChild (string name)
+		public override ValueReference GetChild (string name)
 		{
-			foreach (ValueReference<TValue, TType> val in Context.Adapter.GetMembers (Context, type, null)) {
+			foreach (ValueReference val in Context.Adapter.GetMembers (Context, type, null)) {
 				if (val.Name == name)
 					return val;
 			}
@@ -103,9 +101,9 @@ namespace Mono.Debugging.Evaluation
 		{
 			try {
 				List<ObjectValue> list = new List<ObjectValue> ();
-				foreach (ValueReference<TValue, TType> val in Context.Adapter.GetMembers (Context, type, null, BindingFlags.Public | BindingFlags.Static))
+				foreach (ValueReference val in Context.Adapter.GetMembers (Context, type, null, BindingFlags.Public | BindingFlags.Static))
 					list.Add (val.CreateObjectValue ());
-				list.Add (FilteredMembersSource<TValue, TType>.CreateNode (Context, type, null, BindingFlags.NonPublic | BindingFlags.Static));
+				list.Add (FilteredMembersSource.CreateNode (Context, type, null, BindingFlags.NonPublic | BindingFlags.Static));
 				return list.ToArray ();
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
@@ -114,14 +112,14 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		public override IEnumerable<ValueReference<TValue, TType>> GetChildReferences ( )
+		public override IEnumerable<ValueReference> GetChildReferences ( )
 		{
 			try {
 				return Context.Adapter.GetMembers (Context, type, null, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				Context.WriteDebuggerOutput (ex.Message);
-				return new ValueReference<TValue, TType>[0];
+				return new ValueReference[0];
 			}
 		}
 	}

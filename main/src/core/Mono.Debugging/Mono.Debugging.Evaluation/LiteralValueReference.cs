@@ -30,32 +30,36 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class LiteralValueReference<TValue, TType>: ValueReference<TValue, TType>
-		where TValue: class
-		where TType: class
+	public class LiteralValueReference: ValueReference
 	{
 		string name;
-		TValue value;
-		TType type;
+		object value;
+		object type;
 		object objValue;
 		bool objLiteral;
 		bool objCreated;
 
-		public LiteralValueReference (EvaluationContext<TValue, TType> ctx, string name, TValue value)
-			: base (ctx)
+		LiteralValueReference (EvaluationContext ctx): base (ctx)
 		{
-			this.name = name;
-			this.value = value;
-			this.type = ctx.Adapter.GetValueType (ctx, value);
-			objCreated = true;
 		}
 
-		public LiteralValueReference (EvaluationContext<TValue, TType> ctx, string name, object value)
-			: base (ctx)
+		public static LiteralValueReference CreateTargetObjectLiteral (EvaluationContext ctx, string name, object value)
 		{
-			this.name = name;
-			this.objValue = value;
-			objLiteral = true;
+			LiteralValueReference val = new LiteralValueReference (ctx);
+			val.name = name;
+			val.value = value;
+			val.type = ctx.Adapter.GetValueType (ctx, value);
+			val.objCreated = true;
+			return val;
+		}
+		
+		public static LiteralValueReference CreateObjectLiteral (EvaluationContext ctx, string name, object value)
+		{
+			LiteralValueReference val = new LiteralValueReference (ctx);
+			val.name = name;
+			val.objValue = value;
+			val.objLiteral = true;
+			return val;
 		}
 		
 		public override object ObjectValue {
@@ -67,7 +71,7 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		public override TValue Value {
+		public override object Value {
 			get {
 				if (!objCreated && objLiteral) {
 					objCreated = true;
@@ -87,7 +91,7 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 		
-		public override TType Type {
+		public override object Type {
 			get {
 				if (!objCreated && objLiteral)
 					type = Context.Adapter.GetValueType (Context, Value);

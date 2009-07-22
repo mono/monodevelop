@@ -31,22 +31,20 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class RawViewSource<TValue, TType>: RemoteFrameObject, IObjectValueSource
-		where TValue: class
-		where TType: class
+	public class RawViewSource: RemoteFrameObject, IObjectValueSource
 	{
-		TValue obj;
-		EvaluationContext<TValue, TType> ctx;
+		object obj;
+		EvaluationContext ctx;
 
-		public RawViewSource (EvaluationContext<TValue, TType> ctx, TValue obj)
+		public RawViewSource (EvaluationContext ctx, object obj)
 		{
 			this.ctx = ctx;
 			this.obj = obj;
 		}
 
-		public static ObjectValue CreateRawView (EvaluationContext<TValue, TType> ctx, TValue obj)
+		public static ObjectValue CreateRawView (EvaluationContext ctx, object obj)
 		{
-			RawViewSource<TValue, TType> src = new RawViewSource<TValue, TType> (ctx, obj);
+			RawViewSource src = new RawViewSource (ctx, obj);
 			src.Connect ();
 			return ObjectValue.CreateObject (src, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.ReadOnly, null);
 		}

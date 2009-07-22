@@ -33,15 +33,13 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class NamespaceValueReference<TValue, TType>: ValueReference<TValue, TType>
-		where TValue: class
-		where TType: class
+	public class NamespaceValueReference: ValueReference
 	{
 		string name;
 		string namspace;
 		string[] namespaces;
 
-		public NamespaceValueReference (EvaluationContext<TValue, TType> ctx, string name)
+		public NamespaceValueReference (EvaluationContext ctx, string name)
 			: base (ctx)
 		{
 			this.namspace = name;
@@ -52,7 +50,7 @@ namespace Mono.Debugging.Evaluation
 				this.name = namspace;
 		}
 
-		public override TValue Value {
+		public override object Value {
 			get {
 				throw new NotSupportedException();
 			}
@@ -62,7 +60,7 @@ namespace Mono.Debugging.Evaluation
 		}
 
 		
-		public override TType Type {
+		public override object Type {
 			get {
 				throw new NotSupportedException();
 			}
@@ -89,20 +87,20 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		public override ValueReference<TValue, TType> GetChild (string name)
+		public override ValueReference GetChild (string name)
 		{
 			string newNs = namspace + "." + name;
 			
-			TType t = Context.Adapter.GetType (Context, newNs);
+			object t = Context.Adapter.GetType (Context, newNs);
 			if (t != null)
-				return new TypeValueReference<TValue, TType> (Context, t);
+				return new TypeValueReference (Context, t);
 
 			if (namespaces == null)
 				namespaces = Context.Adapter.GetImportedNamespaces (Context);
 			
 			foreach (string ns in namespaces) {
 				if (ns == newNs || ns.StartsWith (newNs + "."))
-					return new NamespaceValueReference<TValue, TType> (Context, newNs);
+					return new NamespaceValueReference (Context, newNs);
 			}
 			return null;
 		}
@@ -110,13 +108,13 @@ namespace Mono.Debugging.Evaluation
 		public override ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
 			List<ObjectValue> obs = new List<ObjectValue> ();
-			foreach (ValueReference<TValue, TType> val in GetChildReferences ()) {
+			foreach (ValueReference val in GetChildReferences ()) {
 				obs.Add (val.CreateObjectValue ());
 			}
 			return obs.ToArray ();
 		}
 
-		public override IEnumerable<ValueReference<TValue, TType>> GetChildReferences ( )
+		public override IEnumerable<ValueReference> GetChildReferences ( )
 		{
 			// Child types
 
@@ -126,14 +124,14 @@ namespace Mono.Debugging.Evaluation
 			Context.Adapter.GetNamespaceContents (Context, namspace, out childNamespaces, out childTypes);
 
 			foreach (string typeName in childTypes) {
-				TType tt = Context.Adapter.GetType (Context, typeName);
+				object tt = Context.Adapter.GetType (Context, typeName);
 				if (tt != null)
-					yield return new TypeValueReference<TValue, TType> (Context, tt);
+					yield return new TypeValueReference (Context, tt);
 			}
 			
 			// Child namespaces
 			foreach (string ns in childNamespaces)
-				yield return new NamespaceValueReference<TValue, TType> (Context, ns);
+				yield return new NamespaceValueReference (Context, ns);
 		}
 
 		protected override Mono.Debugging.Client.ObjectValue OnCreateObjectValue ()

@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace Mono.Debugging.Evaluation
 {
-	public abstract class ObjectValueAdaptor<TValue, TType> where TValue:class where TType: class
+	public abstract class ObjectValueAdaptor
 	{
 		static Dictionary<string, TypeDisplayData> typeDisplayData = new Dictionary<string, TypeDisplayData> ();
 
@@ -20,9 +20,9 @@ namespace Mono.Debugging.Evaluation
 		AsyncEvaluationTracker asyncEvaluationTracker = new AsyncEvaluationTracker ();
 		AsyncOperationManager asyncOperationManager = new AsyncOperationManager ();
 
-//		public abstract TValue GetRealObject (EvaluationContext<TValue, TType> ctx, TValue obj);
+//		public abstract object GetRealObject (EvaluationContext ctx, object obj);
 
-		public ObjectValue CreateObjectValue (EvaluationContext<TValue, TType> ctx, IObjectValueSource source, ObjectPath path, TValue obj, ObjectValueFlags flags)
+		public ObjectValue CreateObjectValue (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
 		{
 			try {
 				return CreateObjectValueImpl (ctx, source, path, obj, flags);
@@ -33,68 +33,68 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		public abstract ICollectionAdaptor<TValue,TType> CreateArrayAdaptor (EvaluationContext<TValue, TType> ctx, TValue arr);
+		public abstract ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr);
 
-		public abstract bool IsNull (EvaluationContext<TValue, TType> ctx, TValue val);
-		public abstract bool IsPrimitive (EvaluationContext<TValue, TType> ctx, TValue val);
-		public abstract bool IsClassInstance (EvaluationContext<TValue, TType> ctx, TValue val);
-		public abstract bool IsArray (EvaluationContext<TValue, TType> ctx, TValue val);
-		public abstract bool IsClass (TType type);
-		public abstract TValue TryCast (EvaluationContext<TValue, TType> ctx, TValue val, TType type);
+		public abstract bool IsNull (EvaluationContext ctx, object val);
+		public abstract bool IsPrimitive (EvaluationContext ctx, object val);
+		public abstract bool IsClassInstance (EvaluationContext ctx, object val);
+		public abstract bool IsArray (EvaluationContext ctx, object val);
+		public abstract bool IsClass (object type);
+		public abstract object TryCast (EvaluationContext ctx, object val, object type);
 
-		public abstract TType GetValueType (EvaluationContext<TValue, TType> ctx, TValue val);
-		public abstract string GetTypeName (EvaluationContext<TValue, TType> ctx, TType val);
-		public abstract TType[] GetTypeArgs (EvaluationContext<TValue, TType> ctx, TType type);
+		public abstract object GetValueType (EvaluationContext ctx, object val);
+		public abstract string GetTypeName (EvaluationContext ctx, object val);
+		public abstract object[] GetTypeArgs (EvaluationContext ctx, object type);
 
-		public TType GetType (EvaluationContext<TValue, TType> ctx, string name)
+		public object GetType (EvaluationContext ctx, string name)
 		{
 			return GetType (ctx, name, null);
 		}
 
-		public abstract TType GetType (EvaluationContext<TValue, TType> ctx, string name, TType[] typeArgs);
+		public abstract object GetType (EvaluationContext ctx, string name, object[] typeArgs);
 
-		public virtual string GetValueTypeName (EvaluationContext<TValue, TType> ctx, TValue val)
+		public virtual string GetValueTypeName (EvaluationContext ctx, object val)
 		{
 			return GetTypeName (ctx, GetValueType (ctx, val));
 		}
 
-		public virtual TValue CreateTypeObject (EvaluationContext<TValue, TType> ctx, TType type)
+		public virtual object CreateTypeObject (EvaluationContext ctx, object type)
 		{
-			return default (TValue);
+			return default (object);
 		}
 
-		public abstract TValue CreateValue (EvaluationContext<TValue, TType> ctx, object value);
+		public abstract object CreateValue (EvaluationContext ctx, object value);
 
-		public abstract TValue CreateValue (EvaluationContext<TValue, TType> ctx, TType type, params TValue[] args);
+		public abstract object CreateValue (EvaluationContext ctx, object type, params object[] args);
 
-		public abstract TValue CreateNullValue (EvaluationContext<TValue, TType> ctx, TType type);
+		public abstract object CreateNullValue (EvaluationContext ctx, object type);
 
-		public virtual TValue GetBaseValue (EvaluationContext<TValue, TType> ctx, TValue val)
+		public virtual object GetBaseValue (EvaluationContext ctx, object val)
 		{
 			return val;
 		}
 
-		public virtual string[] GetImportedNamespaces (EvaluationContext<TValue, TType> ctx)
+		public virtual string[] GetImportedNamespaces (EvaluationContext ctx)
 		{
 			return new string[0];
 		}
 
-		public virtual void GetNamespaceContents (EvaluationContext<TValue, TType> ctx, string namspace, out string[] childNamespaces, out string[] childTypes)
+		public virtual void GetNamespaceContents (EvaluationContext ctx, string namspace, out string[] childNamespaces, out string[] childTypes)
 		{
 			childTypes = childNamespaces = new string[0];
 		}
 
-		protected abstract ObjectValue CreateObjectValueImpl (EvaluationContext<TValue, TType> ctx, IObjectValueSource source, ObjectPath path, TValue obj, ObjectValueFlags flags);
+		protected abstract ObjectValue CreateObjectValueImpl (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags);
 
-		public ObjectValue[] GetObjectValueChildren (EvaluationContext<TValue, TType> ctx, TValue obj, int firstItemIndex, int count)
+		public ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, object obj, int firstItemIndex, int count)
 		{
 			return GetObjectValueChildren (ctx, obj, firstItemIndex, count, true);
 		}
 
-		public virtual ObjectValue[] GetObjectValueChildren (EvaluationContext<TValue, TType> ctx, TValue obj, int firstItemIndex, int count, bool dereferenceProxy)
+		public virtual ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, object obj, int firstItemIndex, int count, bool dereferenceProxy)
 		{
 			if (IsArray (ctx, obj)) {
-				ArrayElementGroup<TValue, TType> agroup = new ArrayElementGroup<TValue, TType> (ctx, CreateArrayAdaptor (ctx, obj));
+				ArrayElementGroup agroup = new ArrayElementGroup (ctx, CreateArrayAdaptor (ctx, obj));
 				return agroup.GetChildren ();
 			}
 
@@ -102,7 +102,7 @@ namespace Mono.Debugging.Evaluation
 				return new ObjectValue[0];
 
 			// If there is a proxy, it has to show the members of the proxy
-			TValue proxy = dereferenceProxy ? GetProxyObject (ctx, obj) : obj;
+			object proxy = dereferenceProxy ? GetProxyObject (ctx, obj) : obj;
 
 			TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, proxy));
 			bool showRawView = tdata.IsProxyType && dereferenceProxy;
@@ -112,17 +112,17 @@ namespace Mono.Debugging.Evaluation
 
 			// Load all members to a list before creating the object values,
 			// to avoid problems with objects being invalidated due to evaluations in the target,
-			List<ValueReference<TValue, TType>> list = new List<ValueReference<TValue, TType>> ();
+			List<ValueReference> list = new List<ValueReference> ();
 			list.AddRange (GetMembers (ctx, GetValueType (ctx, proxy), proxy, access));
 
-			foreach (ValueReference<TValue, TType> val in list) {
+			foreach (ValueReference val in list) {
 				try {
 					DebuggerBrowsableState state = tdata.GetMemberBrowsableState (val.Name);
 					if (state == DebuggerBrowsableState.Never)
 						continue;
 
 					if (state == DebuggerBrowsableState.RootHidden && dereferenceProxy) {
-						TValue ob = val.Value;
+						object ob = val.Value;
 						if (ob != null) {
 							values.AddRange (GetObjectValueChildren (ctx, ob, -1, -1));
 							showRawView = true;
@@ -140,26 +140,26 @@ namespace Mono.Debugging.Evaluation
 			}
 
 			if (showRawView) {
-				values.Add (RawViewSource<TValue, TType>.CreateRawView (ctx, obj));
+				values.Add (RawViewSource.CreateRawView (ctx, obj));
 			}
 			else {
-				ICollectionAdaptor<TValue, TType> col = CreateArrayAdaptor (ctx, proxy);
+				ICollectionAdaptor col = CreateArrayAdaptor (ctx, proxy);
 				if (col != null) {
-					ArrayElementGroup<TValue, TType> agroup = new ArrayElementGroup<TValue, TType> (ctx, col);
+					ArrayElementGroup agroup = new ArrayElementGroup (ctx, col);
 					ObjectValue val = ObjectValue.CreateObject (null, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.ReadOnly, values.ToArray ());
 					values = new List<ObjectValue> ();
 					values.Add (val);
 					values.AddRange (agroup.GetChildren ());
 				}
 				else {
-					values.Add (FilteredMembersSource<TValue, TType>.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public));
-					values.Add (FilteredMembersSource<TValue, TType>.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic));
+					values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public));
+					values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic));
 				}
 			}
 			return values.ToArray ();
 		}
 
-		public ObjectValue[] GetExpressionValuesAsync (EvaluationContext<TValue, TType> ctx, string[] expressions, bool evaluateMethods, int timeout)
+		public ObjectValue[] GetExpressionValuesAsync (EvaluationContext ctx, string[] expressions, bool evaluateMethods, int timeout)
 		{
 			ObjectValue[] values = new ObjectValue[expressions.Length];
 			for (int n = 0; n < values.Length; n++) {
@@ -174,12 +174,12 @@ namespace Mono.Debugging.Evaluation
 		
 		class ExpData
 		{
-			public EvaluationContext<TValue, TType> ctx;
+			public EvaluationContext ctx;
 			public string exp;
 			public bool evaluateMethods;
-			public ObjectValueAdaptor<TValue, TType> adaptor;
+			public ObjectValueAdaptor adaptor;
 			
-			public ExpData (EvaluationContext<TValue, TType> ctx, string exp, bool evaluateMethods, ObjectValueAdaptor<TValue, TType> adaptor)
+			public ExpData (EvaluationContext ctx, string exp, bool evaluateMethods, ObjectValueAdaptor adaptor)
 			{
 				this.ctx = ctx;
 				this.exp = exp;
@@ -193,50 +193,50 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		public virtual ValueReference<TValue, TType> GetIndexerReference (EvaluationContext<TValue, TType> ctx, TValue target, TValue index)
+		public virtual ValueReference GetIndexerReference (EvaluationContext ctx, object target, object index)
 		{
 			return null;
 		}
 
-		public virtual ValueReference<TValue, TType> GetLocalVariable (EvaluationContext<TValue, TType> ctx, string name)
+		public virtual ValueReference GetLocalVariable (EvaluationContext ctx, string name)
 		{
-			foreach (ValueReference<TValue, TType> var in GetLocalVariables (ctx)) {
+			foreach (ValueReference var in GetLocalVariables (ctx)) {
 				if (var.Name == name)
 					return var;
 			}
 			return null;
 		}
 
-		public virtual ValueReference<TValue, TType> GetParameter (EvaluationContext<TValue, TType> ctx, string name)
+		public virtual ValueReference GetParameter (EvaluationContext ctx, string name)
 		{
-			foreach (ValueReference<TValue, TType> var in GetParameters (ctx)) {
+			foreach (ValueReference var in GetParameters (ctx)) {
 				if (var.Name == name)
 					return var;
 			}
 			return null;
 		}
 
-		public virtual IEnumerable<ValueReference<TValue, TType>> GetLocalVariables (EvaluationContext<TValue, TType> ctx)
+		public virtual IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
 		{
 			yield break;
 		}
 
-		public virtual IEnumerable<ValueReference<TValue, TType>> GetParameters (EvaluationContext<TValue, TType> ctx)
+		public virtual IEnumerable<ValueReference> GetParameters (EvaluationContext ctx)
 		{
 			yield break;
 		}
 
-		public virtual ValueReference<TValue, TType> GetThisReference (EvaluationContext<TValue, TType> ctx)
+		public virtual ValueReference GetThisReference (EvaluationContext ctx)
 		{
 			return null;
 		}
 
-		public virtual TType GetEnclosingType (EvaluationContext<TValue, TType> ctx)
+		public virtual object GetEnclosingType (EvaluationContext ctx)
 		{
 			return null;
 		}
 
-		public virtual CompletionData GetExpressionCompletionData (EvaluationContext<TValue, TType> ctx, string exp)
+		public virtual CompletionData GetExpressionCompletionData (EvaluationContext ctx, string exp)
 		{
 			int i;
 
@@ -244,12 +244,12 @@ namespace Mono.Debugging.Evaluation
 				exp = exp.Substring (0, exp.Length - 1);
 				i = 0;
 				while (i < exp.Length) {
-					ValueReference<TValue,TType> vr = null;
+					ValueReference vr = null;
 					try {
 						vr = ctx.Evaluator.Evaluate (ctx, exp.Substring (i), null);
 						if (vr != null) {
 							CompletionData data = new CompletionData ();
-							foreach (ValueReference<TValue,TType> cv in vr.GetChildReferences ())
+							foreach (ValueReference cv in vr.GetChildReferences ())
 								data.Items.Add (new CompletionItem (cv.Name, cv.Flags));
 							data.ExpressionLenght = 0;
 							return data;
@@ -278,26 +278,26 @@ namespace Mono.Debugging.Evaluation
 				
 				// Local variables
 				
-				foreach (ValueReference<TValue,TType> vc in ctx.Adapter.GetLocalVariables (ctx))
+				foreach (ValueReference vc in ctx.Adapter.GetLocalVariables (ctx))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
 				// Parameters
 				
-				foreach (ValueReference<TValue,TType> vc in ctx.Adapter.GetParameters (ctx))
+				foreach (ValueReference vc in ctx.Adapter.GetParameters (ctx))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
 				// Members
 				
-				ValueReference<TValue,TType> thisobj = ctx.Adapter.GetThisReference (ctx);
+				ValueReference thisobj = ctx.Adapter.GetThisReference (ctx);
 				
 				if (thisobj != null)
 					data.Items.Add (new CompletionItem ("this", ObjectValueFlags.Field | ObjectValueFlags.ReadOnly));
 
-				TType type = ctx.Adapter.GetEnclosingType (ctx);
+				object type = ctx.Adapter.GetEnclosingType (ctx);
 				
-				foreach (ValueReference<TValue,TType> vc in ctx.Adapter.GetMembers (ctx, type, thisobj != null ? thisobj.Value : null))
+				foreach (ValueReference vc in ctx.Adapter.GetMembers (ctx, type, thisobj != null ? thisobj.Value : null))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
@@ -307,45 +307,45 @@ namespace Mono.Debugging.Evaluation
 			return null;
 		}
 		
-		public IEnumerable<ValueReference<TValue, TType>> GetMembers (EvaluationContext<TValue, TType> ctx, TType t, TValue co)
+		public IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co)
 		{
 			return GetMembers (ctx, t, co, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
 		}
 
-		public ValueReference<TValue, TType> GetMember (EvaluationContext<TValue, TType> ctx, TValue co, string name)
+		public ValueReference GetMember (EvaluationContext ctx, object co, string name)
 		{
 			return GetMember (ctx, GetValueType (ctx, co), co, name);
 		}
 
-		public virtual ValueReference<TValue, TType> GetMember (EvaluationContext<TValue, TType> ctx, TType t, TValue co, string name)
+		public virtual ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
 		{
-			foreach (ValueReference<TValue, TType> var in GetMembers (ctx, t, co))
+			foreach (ValueReference var in GetMembers (ctx, t, co))
 				if (var.Name == name)
 					return var;
 			return null;
 		}
 
-		public abstract IEnumerable<ValueReference<TValue, TType>> GetMembers (EvaluationContext<TValue, TType> ctx, TType t, TValue co, BindingFlags bindingFlags);
+		public abstract IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags);
 
-		public abstract object TargetObjectToObject (EvaluationContext<TValue, TType> ctx, TValue obj);
+		public abstract object TargetObjectToObject (EvaluationContext ctx, object obj);
 
-		public virtual TValue Cast (EvaluationContext<TValue, TType> ctx, TValue obj, TType targetType)
+		public virtual object Cast (EvaluationContext ctx, object obj, object targetType)
 		{
 			return obj;
 		}
 
-		public virtual string CallToString (EvaluationContext<TValue, TType> ctx, TValue obj)
+		public virtual string CallToString (EvaluationContext ctx, object obj)
 		{
 			return "";
 		}
 
-		public TValue GetProxyObject (EvaluationContext<TValue, TType> ctx, TValue obj)
+		public object GetProxyObject (EvaluationContext ctx, object obj)
 		{
 			TypeDisplayData data = GetTypeDisplayData (ctx, GetValueType (ctx, obj));
 			if (string.IsNullOrEmpty (data.ProxyType))
 				return obj;
 
-			TType[] typeArgs = null;
+			object[] typeArgs = null;
 
 			int i = data.ProxyType.IndexOf ('`');
 			if (i != -1) {
@@ -355,7 +355,7 @@ namespace Mono.Debugging.Evaluation
 					return obj;
 			}
 			
-			TType ttype = GetType (ctx, data.ProxyType, typeArgs);
+			object ttype = GetType (ctx, data.ProxyType, typeArgs);
 			if (ttype == null) {
 				i = data.ProxyType.IndexOf (',');
 				if (i != -1)
@@ -364,11 +364,11 @@ namespace Mono.Debugging.Evaluation
 			if (ttype == null)
 				throw new EvaluatorException ("Unknown type '{0}'", data.ProxyType);
 
-			TValue val = CreateValue (ctx, ttype, obj);
+			object val = CreateValue (ctx, ttype, obj);
 			return val ?? obj;
 		}
 
-		public TypeDisplayData GetTypeDisplayData (EvaluationContext<TValue, TType> ctx, TType type)
+		public TypeDisplayData GetTypeDisplayData (EvaluationContext ctx, object type)
 		{
 			if (!IsClass (type))
 				return TypeDisplayData.Default;
@@ -391,12 +391,12 @@ namespace Mono.Debugging.Evaluation
 			return td;
 		}
 
-		protected virtual TypeDisplayData OnGetTypeDisplayData (EvaluationContext<TValue, TType> ctx, TType type)
+		protected virtual TypeDisplayData OnGetTypeDisplayData (EvaluationContext ctx, object type)
 		{
 			return null;
 		}
 
-		public string EvaluateDisplayString (EvaluationContext<TValue, TType> ctx, TValue obj, string exp)
+		public string EvaluateDisplayString (EvaluationContext ctx, object obj, string exp)
 		{
 			StringBuilder sb = new StringBuilder ();
 			int last = 0;
@@ -411,8 +411,8 @@ namespace Mono.Debugging.Evaluation
 				if (mem.Length == 0)
 					return exp;
 
-				ValueReference<TValue, TType> member = GetMember (ctx, GetValueType (ctx, obj), obj, mem);
-				TValue val = member.Value;
+				ValueReference member = GetMember (ctx, GetValueType (ctx, obj), obj, mem);
+				object val = member.Value;
 				sb.Append (ctx.Evaluator.TargetObjectToString (ctx, val));
 				last = j + 1;
 				i = exp.IndexOf ("{", last);
@@ -438,12 +438,12 @@ namespace Mono.Debugging.Evaluation
 			asyncEvaluationTracker.WaitForStopped ();
 		}
 
-		ObjectValue GetExpressionValue (EvaluationContext<TValue, TType> ctx, string exp, bool evaluateMethods)
+		ObjectValue GetExpressionValue (EvaluationContext ctx, string exp, bool evaluateMethods)
 		{
 			try {
-				EvaluationOptions<TType> ops = new EvaluationOptions<TType> ();
+				EvaluationOptions ops = new EvaluationOptions ();
 				ops.CanEvaluateMethods = evaluateMethods;
-				ValueReference<TValue, TType> var = ctx.Evaluator.Evaluate (ctx, exp, ops);
+				ValueReference var = ctx.Evaluator.Evaluate (ctx, exp, ops);
 				if (var != null) {
 					return var.CreateObjectValue ();
 				}
@@ -462,7 +462,7 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		public virtual TValue RuntimeInvoke (EvaluationContext<TValue, TType> ctx, TType targetType, TValue target, string methodName, TType[] argTypes, TValue[] argValues)
+		public virtual object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			return null;
 		}

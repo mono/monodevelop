@@ -1,3 +1,24 @@
+2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/Backtrace.cs:
+	* Mono.Debugging.Evaluation/RawViewSource.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/ArrayElementGroup.cs:
+	* Mono.Debugging.Evaluation/EvaluationContext.cs:
+	* Mono.Debugging.Evaluation/TypeValueReference.cs:
+	* Mono.Debugging.Evaluation/ICollectionAdaptor.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/NullValueReference.cs:
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs:
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs:
+	* Mono.Debugging.Evaluation/ArrayValueReference.cs:
+	* Mono.Debugging.Evaluation/LiteralValueReference.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs:
+	* Mono.Debugging.Evaluation/UserVariableReference.cs:
+	* Mono.Debugging.Evaluation/NamespaceValueReference.cs: Get
+	  rid of generic classes because they are causing a lot of
+	  trouble in mono.
+
 2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Workaround

@@ -29,12 +29,10 @@ using System;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class EvaluationContext<TValue, TType>
-		where TValue: class
-		where TType: class
+	public class EvaluationContext
 	{
-		public ExpressionEvaluator<TValue, TType> Evaluator { get; set; }
-		public ObjectValueAdaptor<TValue, TType> Adapter { get; set; }
+		public ExpressionEvaluator Evaluator { get; set; }
+		public ObjectValueAdaptor Adapter { get; set; }
 
 		public virtual void WriteDebuggerError (Exception ex)
 		{
@@ -54,14 +52,14 @@ namespace Mono.Debugging.Evaluation
 		{
 		}
 
-		public EvaluationContext<TValue, TType> Clone ( )
+		public EvaluationContext Clone ( )
 		{
-			EvaluationContext<TValue, TType> clone = (EvaluationContext<TValue, TType>) MemberwiseClone ();
+			EvaluationContext clone = (EvaluationContext) MemberwiseClone ();
 			clone.CopyFrom (this);
 			return clone;
 		}
 
-		public virtual void CopyFrom (EvaluationContext<TValue, TType> ctx)
+		public virtual void CopyFrom (EvaluationContext ctx)
 		{
 			Timeout = ctx.Timeout;
 			Evaluator = ctx.Evaluator;

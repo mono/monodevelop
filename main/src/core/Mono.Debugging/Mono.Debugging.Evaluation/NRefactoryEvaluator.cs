@@ -37,13 +37,11 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class NRefactoryEvaluator<TValue, TType>: ExpressionEvaluator<TValue, TType>
-		where TValue: class
-		where TType: class
+	public class NRefactoryEvaluator: ExpressionEvaluator
 	{
-		Dictionary<string,ValueReference<TValue, TType>> userVariables = new Dictionary<string, ValueReference<TValue, TType>> ();
+		Dictionary<string,ValueReference> userVariables = new Dictionary<string, ValueReference> ();
 		
-		public override ValueReference<TValue, TType> Evaluate (EvaluationContext<TValue, TType> ctx, string exp, EvaluationOptions<TType> options)
+		public override ValueReference Evaluate (EvaluationContext ctx, string exp, EvaluationOptions options)
 		{
 			if (exp.StartsWith ("var ")) {
 				exp = exp.Substring (4).Trim (' ','\t');
@@ -62,28 +60,26 @@ namespace Mono.Debugging.Evaluation
 					}
 				}
 				if (!string.IsNullOrEmpty (var))
-					userVariables [var] = new UserVariableReference<TValue,TType> (ctx, var);
+					userVariables [var] = new UserVariableReference (ctx, var);
 				if (exp == null)
 					return null;
 			}
 			StringReader codeStream = new StringReader (exp);
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
-			EvaluatorVisitor<TValue, TType> ev = new EvaluatorVisitor<TValue, TType> (ctx, exp, options, userVariables);
-			return (ValueReference<TValue, TType>) expObj.AcceptVisitor (ev, null);
+			EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, options, userVariables);
+			return (ValueReference) expObj.AcceptVisitor (ev, null);
 		}
 	}
 
-	class EvaluatorVisitor<TValue, TType>: AbstractAstVisitor
-		where TValue: class
-		where TType: class
+	class EvaluatorVisitor: AbstractAstVisitor
 	{
-		EvaluationContext<TValue, TType> ctx;
+		EvaluationContext ctx;
 		string name;
-		EvaluationOptions<TType> options;
-		Dictionary<string,ValueReference<TValue, TType>> userVariables;
+		EvaluationOptions options;
+		Dictionary<string,ValueReference> userVariables;
 
-		public EvaluatorVisitor (EvaluationContext<TValue, TType> ctx, string name, EvaluationOptions<TType> options, Dictionary<string,ValueReference<TValue, TType>> userVariables)
+		public EvaluatorVisitor (EvaluationContext ctx, string name, EvaluationOptions options, Dictionary<string,ValueReference> userVariables)
 		{
 			this.ctx = ctx;
 			this.name = name;
@@ -93,7 +89,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
-			ValueReference<TValue, TType> vref = (ValueReference<TValue, TType>) unaryOperatorExpression.Expression.AcceptVisitor (this, null);
+			ValueReference vref = (ValueReference) unaryOperatorExpression.Expression.AcceptVisitor (this, null);
 			object val = vref.ObjectValue;
 			
 			switch (unaryOperatorExpression.Op) {
@@ -118,14 +114,14 @@ namespace Mono.Debugging.Evaluation
 					throw CreateNotSupportedError ();
 			}
 			
-			return new LiteralValueReference<TValue, TType> (ctx, name, val);
+			return LiteralValueReference.CreateObjectLiteral (ctx, name, val);
 		}
 		
 		public override object VisitTypeReference (ICSharpCode.NRefactory.Ast.TypeReference typeReference, object data)
 		{
-			TType type = ctx.Adapter.GetType (ctx, typeReference.Type);
+			object type = ctx.Adapter.GetType (ctx, typeReference.Type);
 			if (type != null)
-				return new TypeValueReference<TValue, TType> (ctx, type);
+				return new TypeValueReference (ctx, type);
 			else
 				throw CreateParseError ("Unknown type: " + typeReference.Type);
 		}
@@ -137,17 +133,17 @@ namespace Mono.Debugging.Evaluation
 
 		public override object VisitTypeOfExpression (ICSharpCode.NRefactory.Ast.TypeOfExpression typeOfExpression, object data)
 		{
-			TType type = ctx.Adapter.GetType (ctx, typeOfExpression.TypeReference.Type);
-			TValue ob = ctx.Adapter.CreateTypeObject (ctx, type);
+			object type = ctx.Adapter.GetType (ctx, typeOfExpression.TypeReference.Type);
+			object ob = ctx.Adapter.CreateTypeObject (ctx, type);
 			if (ob != null)
-				return new LiteralValueReference<TValue, TType> (ctx, typeOfExpression.TypeReference.Type, ob);
+				return LiteralValueReference.CreateTargetObjectLiteral (ctx, typeOfExpression.TypeReference.Type, ob);
 			else
 				throw CreateNotSupportedError ();
 		}
 		
 		public override object VisitThisReferenceExpression (ICSharpCode.NRefactory.Ast.ThisReferenceExpression thisReferenceExpression, object data)
 		{
-			ValueReference<TValue, TType> val = ctx.Adapter.GetThisReference (ctx);
+			ValueReference val = ctx.Adapter.GetThisReference (ctx);
 			if (val != null)
 				return val;
 			else
@@ -157,11 +153,11 @@ namespace Mono.Debugging.Evaluation
 		public override object VisitPrimitiveExpression (ICSharpCode.NRefactory.Ast.PrimitiveExpression primitiveExpression, object data)
 		{
 			if (primitiveExpression.Value != null)
-				return new LiteralValueReference<TValue, TType> (ctx, name, primitiveExpression.Value);
+				return LiteralValueReference.CreateObjectLiteral (ctx, name, primitiveExpression.Value);
 			else if (options.ExpectedType != null)
-				return new NullValueReference<TValue, TType> (ctx, options.ExpectedType);
+				return new NullValueReference (ctx, options.ExpectedType);
 			else
-				return new NullValueReference<TValue, TType> (ctx, ctx.Adapter.GetType (ctx, "System.Object"));
+				return new NullValueReference (ctx, ctx.Adapter.GetType (ctx, "System.Object"));
 		}
 		
 		public override object VisitParenthesizedExpression (ICSharpCode.NRefactory.Ast.ParenthesizedExpression parenthesizedExpression, object data)
@@ -179,12 +175,12 @@ namespace Mono.Debugging.Evaluation
 			if (!options.CanEvaluateMethods)
 				throw CreateNotSupportedError ();
 
-			ValueReference<TValue, TType> target = null;
+			ValueReference target = null;
 			string methodName;
 			
 			if (invocationExpression.TargetObject is MemberReferenceExpression) {
 				MemberReferenceExpression field = (MemberReferenceExpression)invocationExpression.TargetObject;
-				target = (ValueReference<TValue, TType>) field.TargetObject.AcceptVisitor (this, data);
+				target = (ValueReference) field.TargetObject.AcceptVisitor (this, data);
 				methodName = field.MemberName;
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				IdentifierExpression exp = (IdentifierExpression) invocationExpression.TargetObject;
@@ -194,23 +190,23 @@ namespace Mono.Debugging.Evaluation
 			else
 				throw CreateNotSupportedError ();
 
-			TType[] argtypes = new TType[invocationExpression.Arguments.Count];
-			TValue[] args = new TValue[invocationExpression.Arguments.Count];
+			object[] argtypes = new object[invocationExpression.Arguments.Count];
+			object[] args = new object[invocationExpression.Arguments.Count];
 			for (int n=0; n<args.Length; n++) {
 				Expression exp = invocationExpression.Arguments [n];
-				ValueReference<TValue, TType> vref = (ValueReference<TValue, TType>) exp.AcceptVisitor (this, data);
+				ValueReference vref = (ValueReference) exp.AcceptVisitor (this, data);
 				args [n] = vref.Value;
 				argtypes [n] = ctx.Adapter.GetValueType (ctx, args [n]);
 			}
 			
-			TType vtype = target != null ? target.Type : default (TType);
-			TValue vtarget = (target is TypeValueReference<TValue, TType>) ? null : target.Value;
+			object vtype = target != null ? target.Type : default (object);
+			object vtarget = (target is TypeValueReference) ? null : target.Value;
 
-			TValue res = ctx.Adapter.RuntimeInvoke (ctx, vtype, vtarget, methodName, argtypes, args);
+			object res = ctx.Adapter.RuntimeInvoke (ctx, vtype, vtarget, methodName, argtypes, args);
 			if (res != null)
-				return new LiteralValueReference<TValue, TType> (ctx, name, res);
+				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, res);
 			else
-				return new LiteralValueReference<TValue, TType> (ctx, name, new LiteralExp ("No return value."));
+				return LiteralValueReference.CreateObjectLiteral (ctx, name, new LiteralExp ("No return value."));
 		}
 		
 		public override object VisitInnerClassTypeReference (ICSharpCode.NRefactory.Ast.InnerClassTypeReference innerClassTypeReference, object data)
@@ -220,18 +216,18 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitIndexerExpression (ICSharpCode.NRefactory.Ast.IndexerExpression indexerExpression, object data)
 		{
-			ValueReference<TValue, TType> val = (ValueReference<TValue, TType>) indexerExpression.TargetObject.AcceptVisitor (this, data);
+			ValueReference val = (ValueReference) indexerExpression.TargetObject.AcceptVisitor (this, data);
 			if (ctx.Adapter.IsArray (ctx, val.Value)) {
 				int[] indexes = new int [indexerExpression.Indexes.Count];
 				for (int n=0; n<indexes.Length; n++) {
-					ValueReference<TValue, TType> vi = (ValueReference<TValue, TType>) indexerExpression.Indexes[n].AcceptVisitor (this, data);
+					ValueReference vi = (ValueReference) indexerExpression.Indexes[n].AcceptVisitor (this, data);
 					indexes [n] = (int) Convert.ChangeType (vi.ObjectValue, typeof(int));
 				}
-				return new ArrayValueReference<TValue, TType> (ctx, val.Value, indexes);
+				return new ArrayValueReference (ctx, val.Value, indexes);
 			}
 			
 			if (indexerExpression.Indexes.Count == 1) {
-				ValueReference<TValue, TType> vi = (ValueReference<TValue, TType>) indexerExpression.Indexes[0].AcceptVisitor (this, data);
+				ValueReference vi = (ValueReference) indexerExpression.Indexes[0].AcceptVisitor (this, data);
 				vi = ctx.Adapter.GetIndexerReference (ctx, val.Value, vi.Value);
 				if (vi != null)
 					return vi;
@@ -246,13 +242,13 @@ namespace Mono.Debugging.Evaluation
 			
 			// Look in user defined variables
 			
-			ValueReference<TValue,TType> userVar;
+			ValueReference userVar;
 			if (userVariables.TryGetValue (name, out userVar))
 				return userVar;
 				
 			// Look in variables
 
-			ValueReference<TValue, TType> var = ctx.Adapter.GetLocalVariable (ctx, name);
+			ValueReference var = ctx.Adapter.GetLocalVariable (ctx, name);
 			if (var != null)
 				return var;
 
@@ -264,8 +260,8 @@ namespace Mono.Debugging.Evaluation
 			
 			// Look in fields and properties
 
-			ValueReference<TValue, TType> thisobj = ctx.Adapter.GetThisReference (ctx);
-			TType thistype = ctx.Adapter.GetEnclosingType (ctx);
+			ValueReference thisobj = ctx.Adapter.GetThisReference (ctx);
+			object thistype = ctx.Adapter.GetEnclosingType (ctx);
 
 			var = ctx.Adapter.GetMember (ctx, thistype, thisobj != null ? thisobj.Value : null, name);
 			if (var != null)
@@ -273,16 +269,16 @@ namespace Mono.Debugging.Evaluation
 
 			// Look in types
 			
-			TType vtype = ctx.Adapter.GetType (ctx, name);
+			object vtype = ctx.Adapter.GetType (ctx, name);
 			if (vtype != null)
-				return new TypeValueReference<TValue, TType> (ctx, vtype);
+				return new TypeValueReference (ctx, vtype);
 
 			string[] namespaces = ctx.Adapter.GetImportedNamespaces (ctx);
 			if (namespaces.Length > 0) {
 				// Look in namespaces
 				foreach (string ns in namespaces) {
 					if (ns == name || ns.StartsWith (name + "."))
-						return new NamespaceValueReference<TValue, TType> (ctx, name);
+						return new NamespaceValueReference (ctx, name);
 				}
 			}
 
@@ -291,8 +287,8 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			ValueReference<TValue, TType> vref = (ValueReference<TValue, TType>) memberReferenceExpression.TargetObject.AcceptVisitor (this, data);
-			ValueReference<TValue, TType> ch = vref.GetChild (memberReferenceExpression.MemberName);
+			ValueReference vref = (ValueReference) memberReferenceExpression.TargetObject.AcceptVisitor (this, data);
+			ValueReference ch = vref.GetChild (memberReferenceExpression.MemberName);
 			if (ch == null)
 				throw CreateParseError ("Unknown member: {0}", memberReferenceExpression.MemberName);
 			return ch;
@@ -300,7 +296,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitConditionalExpression (ICSharpCode.NRefactory.Ast.ConditionalExpression conditionalExpression, object data)
 		{
-			ValueReference<TValue, TType> vc = (ValueReference<TValue, TType>) conditionalExpression.Condition.AcceptVisitor (this, data);
+			ValueReference vc = (ValueReference) conditionalExpression.Condition.AcceptVisitor (this, data);
 			bool cond = (bool) vc.ObjectValue;
 			if (cond)
 				return conditionalExpression.TrueExpression.AcceptVisitor (this, data);
@@ -315,14 +311,14 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitCastExpression (ICSharpCode.NRefactory.Ast.CastExpression castExpression, object data)
 		{
-			ValueReference<TValue, TType> val = (ValueReference<TValue, TType>) castExpression.Expression.AcceptVisitor (this, data);
-			TypeValueReference<TValue, TType> type = castExpression.CastTo.AcceptVisitor (this, data) as TypeValueReference<TValue, TType>;
+			ValueReference val = (ValueReference) castExpression.Expression.AcceptVisitor (this, data);
+			TypeValueReference type = castExpression.CastTo.AcceptVisitor (this, data) as TypeValueReference;
 			if (type == null)
 				throw CreateParseError ("Invalid cast type.");
-			TValue ob = ctx.Adapter.TryCast (ctx, val.Value, type.Type);
+			object ob = ctx.Adapter.TryCast (ctx, val.Value, type.Type);
 			if (ob == null) {
 				if (castExpression.CastType == CastType.TryCast)
-					return new NullValueReference<TValue, TType> (ctx, type.Type);
+					return new NullValueReference (ctx, type.Type);
 				else
 					throw CreateParseError ("Invalid cast.");
 			}
@@ -331,11 +327,11 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitBinaryOperatorExpression (ICSharpCode.NRefactory.Ast.BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
-			ValueReference<TValue,TType> left = (ValueReference<TValue,TType>) binaryOperatorExpression.Left.AcceptVisitor (this, data);
+			ValueReference left = (ValueReference) binaryOperatorExpression.Left.AcceptVisitor (this, data);
 			return EvaluateBinaryOperatorExpression (left, binaryOperatorExpression.Right, binaryOperatorExpression.Op, data);
 		}
 		
-		object EvaluateBinaryOperatorExpression (ValueReference<TValue, TType> left, ICSharpCode.NRefactory.Ast.Expression rightExp, BinaryOperatorType oper, object data)
+		object EvaluateBinaryOperatorExpression (ValueReference left, ICSharpCode.NRefactory.Ast.Expression rightExp, BinaryOperatorType oper, object data)
 		{
 			// Shortcut ops
 			
@@ -352,7 +348,7 @@ namespace Mono.Debugging.Evaluation
 				}
 			}
 
-			ValueReference<TValue, TType> right = (ValueReference<TValue, TType>) rightExp.AcceptVisitor (this, data);
+			ValueReference right = (ValueReference) rightExp.AcceptVisitor (this, data);
 			object val1 = left.ObjectValue;
 			object val2 = right.ObjectValue;
 
@@ -362,22 +358,22 @@ namespace Mono.Debugging.Evaluation
 						val1 = left.CallToString ();
 					if (!(val2 is string))
 						val2 = right.CallToString ();
-					return new LiteralValueReference<TValue, TType> (ctx, name, (string) val1 + (string) val2);
+					return LiteralValueReference.CreateObjectLiteral (ctx, name, (string) val1 + (string) val2);
 				}
 			}
 			
 			if ((oper == BinaryOperatorType.ExclusiveOr) && (val1 is bool) && !(val2 is bool))
-				return new LiteralValueReference<TValue, TType> (ctx, name, (bool)val1 ^ (bool)val2);
+				return LiteralValueReference.CreateObjectLiteral (ctx, name, (bool)val1 ^ (bool)val2);
 			
 			switch (oper) {
 				case BinaryOperatorType.Equality:
-					return new LiteralValueReference<TValue, TType> (ctx, name, val1.Equals (val2));
+					return LiteralValueReference.CreateObjectLiteral (ctx, name, val1.Equals (val2));
 				case BinaryOperatorType.InEquality:
-					return new LiteralValueReference<TValue, TType> (ctx, name, !val1.Equals (val2));
+					return LiteralValueReference.CreateObjectLiteral (ctx, name, !val1.Equals (val2));
 				case BinaryOperatorType.ReferenceEquality:
-					return new LiteralValueReference<TValue, TType> (ctx, name, val1 == val2);
+					return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 == val2);
 				case BinaryOperatorType.ReferenceInequality:
-					return new LiteralValueReference<TValue, TType> (ctx, name, val1 != val2);
+					return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 != val2);
 				case BinaryOperatorType.Concat:
 					throw CreateParseError ("Invalid binary operator.");
 			}
@@ -408,7 +404,7 @@ namespace Mono.Debugging.Evaluation
 			
 			if (!(res is bool))
 				res = (long) Convert.ChangeType (res, GetCommonType (v1, v2));
-			return new LiteralValueReference<TValue, TType> (ctx, name, res);
+			return LiteralValueReference.CreateObjectLiteral (ctx, name, res);
 		}
 		
 		Type GetCommonType (object v1, object v2)
@@ -432,12 +428,12 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitBaseReferenceExpression (ICSharpCode.NRefactory.Ast.BaseReferenceExpression baseReferenceExpression, object data)
 		{
-			ValueReference<TValue, TType> thisobj = ctx.Adapter.GetThisReference (ctx);
+			ValueReference thisobj = ctx.Adapter.GetThisReference (ctx);
 			if (thisobj != null) {
-				TValue baseob = ctx.Adapter.GetBaseValue (ctx, thisobj.Value);
+				object baseob = ctx.Adapter.GetBaseValue (ctx, thisobj.Value);
 				if (baseob == null)
 					throw CreateParseError ("'base' reference not available.");
-				return new LiteralValueReference<TValue, TType> (ctx, name, baseob);
+				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, baseob);
 			}
 			else
 				throw CreateParseError ("'base' reference not available in static methods.");
@@ -448,10 +444,10 @@ namespace Mono.Debugging.Evaluation
 			if (!options.CanEvaluateMethods)
 				throw CreateNotSupportedError ();
 			
-			ValueReference<TValue,TType> left = (ValueReference<TValue,TType>) assignmentExpression.Left.AcceptVisitor (this, data);
+			ValueReference left = (ValueReference) assignmentExpression.Left.AcceptVisitor (this, data);
 			
 			if (assignmentExpression.Op == AssignmentOperatorType.Assign) {
-				ValueReference<TValue,TType> right = (ValueReference<TValue,TType>) assignmentExpression.Right.AcceptVisitor (this, data);
+				ValueReference right = (ValueReference) assignmentExpression.Right.AcceptVisitor (this, data);
 				left.Value = right.Value;
 			} else {
 				BinaryOperatorType bop = BinaryOperatorType.None;
@@ -470,7 +466,7 @@ namespace Mono.Debugging.Evaluation
 					case AssignmentOperatorType.ShiftRight: bop = BinaryOperatorType.ShiftRight; break;
 					case AssignmentOperatorType.Subtract: bop = BinaryOperatorType.Subtract; break;
 				}
-				ValueReference<TValue,TType> val = (ValueReference<TValue,TType>) EvaluateBinaryOperatorExpression (left, assignmentExpression.Right, bop, data);
+				ValueReference val = (ValueReference) EvaluateBinaryOperatorExpression (left, assignmentExpression.Right, bop, data);
 				left.Value = val.Value;
 			}
 			return left;

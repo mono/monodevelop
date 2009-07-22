@@ -36,11 +36,9 @@ using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Evaluation
 {
-	public abstract class Backtrace<TValue,TType>: RemoteFrameObject, IBacktrace
-		where TValue: class
-		where TType: class
+	public abstract class Backtrace: RemoteFrameObject, IBacktrace
 	{
-		protected abstract EvaluationContext<TValue,TType> GetEvaluationContext (int frameIndex, int timeout);
+		protected abstract EvaluationContext GetEvaluationContext (int frameIndex, int timeout);
 	
 		#region IBacktrace Members
 
@@ -66,32 +64,32 @@ namespace Mono.Debugging.Evaluation
 
 		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeout)
 		{
-			EvaluationContext<TValue,TType> ctx = GetEvaluationContext (frameIndex, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
 			return ctx.Adapter.GetExpressionValuesAsync (ctx, expressions, evaluateMethods, timeout);
 		}
 
 		public ObjectValue[] GetLocalVariables (int frameIndex, int timeout)
 		{
-			EvaluationContext<TValue,TType> ctx = GetEvaluationContext (frameIndex, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
 			List<ObjectValue> list = new List<ObjectValue> ();
-			foreach (ValueReference<TValue,TType> var in ctx.Adapter.GetLocalVariables (ctx))
+			foreach (ValueReference var in ctx.Adapter.GetLocalVariables (ctx))
 				list.Add (var.CreateObjectValue (true));
 			return list.ToArray ();
 		}
 
 		public ObjectValue[] GetParameters (int frameIndex, int timeout)
 		{
-			EvaluationContext<TValue,TType> ctx = GetEvaluationContext (frameIndex, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
 			List<ObjectValue> vars = new List<ObjectValue> ();
-			foreach (ValueReference<TValue,TType> var in ctx.Adapter.GetParameters (ctx))
+			foreach (ValueReference var in ctx.Adapter.GetParameters (ctx))
 				vars.Add (var.CreateObjectValue (true));
 			return vars.ToArray ();
 		}
 
 		public ObjectValue GetThisReference (int frameIndex, int timeout)
 		{
-			EvaluationContext<TValue,TType> ctx = GetEvaluationContext (frameIndex, timeout);
-			ValueReference<TValue, TType> var = ctx.Adapter.GetThisReference (ctx);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			ValueReference var = ctx.Adapter.GetThisReference (ctx);
 			if (var != null)
 				return var.CreateObjectValue ();
 			else
@@ -100,19 +98,19 @@ namespace Mono.Debugging.Evaluation
 
 		public virtual CompletionData GetExpressionCompletionData (int frameIndex, string exp)
 		{
-			EvaluationContext<TValue,TType> ctx = GetEvaluationContext (frameIndex, 400);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, 400);
 			int i;
 
 			if (exp [exp.Length - 1] == '.') {
 				exp = exp.Substring (0, exp.Length - 1);
 				i = 0;
 				while (i < exp.Length) {
-					ValueReference<TValue,TType> vr = null;
+					ValueReference vr = null;
 					try {
 						vr = ctx.Evaluator.Evaluate (ctx, exp.Substring (i), null);
 						if (vr != null) {
 							CompletionData data = new CompletionData ();
-							foreach (ValueReference<TValue,TType> cv in vr.GetChildReferences ())
+							foreach (ValueReference cv in vr.GetChildReferences ())
 								data.Items.Add (new CompletionItem (cv.Name, cv.Flags));
 							data.ExpressionLenght = 0;
 							return data;
@@ -141,26 +139,26 @@ namespace Mono.Debugging.Evaluation
 				
 				// Local variables
 				
-				foreach (ValueReference<TValue,TType> vc in ctx.Adapter.GetLocalVariables (ctx))
+				foreach (ValueReference vc in ctx.Adapter.GetLocalVariables (ctx))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
 				// Parameters
 				
-				foreach (ValueReference<TValue,TType> vc in ctx.Adapter.GetParameters (ctx))
+				foreach (ValueReference vc in ctx.Adapter.GetParameters (ctx))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
 				// Members
 				
-				ValueReference<TValue,TType> thisobj = ctx.Adapter.GetThisReference (ctx);
+				ValueReference thisobj = ctx.Adapter.GetThisReference (ctx);
 				
 				if (thisobj != null)
 					data.Items.Add (new CompletionItem ("this", ObjectValueFlags.Field | ObjectValueFlags.ReadOnly));
 
-				TType type = ctx.Adapter.GetEnclosingType (ctx);
+				object type = ctx.Adapter.GetEnclosingType (ctx);
 				
-				foreach (ValueReference<TValue,TType> vc in ctx.Adapter.GetMembers (ctx, type, thisobj != null ? thisobj.Value : null))
+				foreach (ValueReference vc in ctx.Adapter.GetMembers (ctx, type, thisobj != null ? thisobj.Value : null))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,16 +8,14 @@ using Mono.Debugging.Backend;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class FilteredMembersSource<TValue, TType>: RemoteFrameObject, IObjectValueSource
-		where TValue: class
-		where TType: class
+	public class FilteredMembersSource: RemoteFrameObject, IObjectValueSource
 	{
-		TValue obj;
-		TType type;
-		EvaluationContext<TValue, TType> ctx;
+		object obj;
+		object type;
+		EvaluationContext ctx;
 		BindingFlags bindingFlags;
 
-		public FilteredMembersSource (EvaluationContext<TValue, TType> ctx, TType type, TValue obj, BindingFlags bindingFlags)
+		public FilteredMembersSource (EvaluationContext ctx, object type, object obj, BindingFlags bindingFlags)
 		{
 			this.ctx = ctx;
 			this.obj = obj;
@@ -25,9 +23,9 @@ namespace Mono.Debugging.Evaluation
 			this.bindingFlags = bindingFlags;
 		}
 
-		public static ObjectValue CreateNode (EvaluationContext<TValue, TType> ctx, TType type, TValue obj, BindingFlags bindingFlags)
+		public static ObjectValue CreateNode (EvaluationContext ctx, object type, object obj, BindingFlags bindingFlags)
 		{
-			FilteredMembersSource<TValue, TType> src = new FilteredMembersSource<TValue, TType> (ctx, type, obj, bindingFlags);
+			FilteredMembersSource src = new FilteredMembersSource (ctx, type, obj, bindingFlags);
 			src.Connect ();
 			string label;
 			if ((bindingFlags & BindingFlags.NonPublic) != 0)
@@ -40,7 +38,7 @@ namespace Mono.Debugging.Evaluation
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
 			List<ObjectValue> list = new List<ObjectValue> ();
-			foreach (ValueReference<TValue, TType> val in ctx.Adapter.GetMembers (ctx, type, obj, bindingFlags)) {
+			foreach (ValueReference val in ctx.Adapter.GetMembers (ctx, type, obj, bindingFlags)) {
 				list.Add (val.CreateObjectValue ());
 			}
 			if ((bindingFlags & BindingFlags.NonPublic) == 0) {

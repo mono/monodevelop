@@ -30,14 +30,12 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public interface ICollectionAdaptor<TValue, TType>
-		where TValue: class
-		where TType: class
+	public interface ICollectionAdaptor
 	{
 		int[] GetDimensions ();
-		TValue GetElement (int[] indices);
-		TType ElementType { get; }
-		void SetElement (int[] indices, TValue val);
-		ObjectValue CreateElementValue (ArrayElementGroup<TValue, TType> grp, ObjectPath path, int[] indices);
+		object GetElement (int[] indices);
+		object ElementType { get; }
+		void SetElement (int[] indices, object val);
+		ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices);
 	}
 }
