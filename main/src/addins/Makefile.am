@@ -5,9 +5,9 @@ SUBDIRS = \
 	MonoDevelop.DesignerSupport \
 	MonoDevelop.Debugger \
 	Deployment \
+	MonoDevelop.Refactoring \
 	MonoDevelop.SourceEditor2 \
 	VersionControl \
-	MonoDevelop.Refactoring \
 	MonoDevelop.Autotools \
 	MonoDevelop.Gettext \
 	CSharpBinding \
