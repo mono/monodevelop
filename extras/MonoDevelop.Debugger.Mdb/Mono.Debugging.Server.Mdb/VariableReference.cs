@@ -29,6 +29,7 @@ using System;
 using Mono.Debugger.Languages;
 using Mono.Debugger;
 using DC = Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 
 namespace DebuggerServer
 {
@@ -45,13 +46,15 @@ namespace DebuggerServer
 				flags |= DC.ObjectValueFlags.ReadOnly;
 		}
 		
-		public override TargetObject Value {
+		public override object Value {
 			get {
-				TargetObject val = var.GetObject (Context.Frame);
-				return ObjectUtil.GetRealObject (Context, val);
+				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
+				TargetObject val = var.GetObject (ctx.Frame);
+				return ctx.GetRealObject (val);
 			}
 			set {
-				var.SetObject (Context.Frame, value);
+				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
+				var.SetObject (ctx.Frame, (TargetObject) value);
 			}
 		}
 		
@@ -61,7 +64,7 @@ namespace DebuggerServer
 			}
 		}
 		
-		public override TargetType Type {
+		public override object Type {
 			get {
 				return var.Type;
 			}

@@ -1,3 +1,39 @@
+2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Util.cs:
+	* Makefile:
+	* Convert.cs:
+	* ObjectUtil.cs:
+	* ArrayAdaptor.cs:
+	* RawViewSource.cs:
+	* FieldReference.cs:
+	* TimedEvaluator.cs:
+	* DebuggerServer.cs:
+	* ValueReference.cs:
+	* TimeOutException.cs:
+	* BacktraceWrapper.cs:
+	* EvaluationContext.cs:
+	* PropertyReference.cs:
+	* VariableReference.cs:
+	* RemoteFrameObject.cs:
+	* CollectionAdaptor.cs:
+	* ArrayElementGroup.cs:
+	* TypeValueReference.cs:
+	* NullValueReference.cs:
+	* ICollectionAdaptor.cs:
+	* ArrayValueReference.cs:
+	* NRefactoryEvaluator.cs:
+	* ExpressionEvaluator.cs:
+	* RuntimeInvokeManager.cs:
+	* IndexerValueReference.cs:
+	* UserVariableReference.cs:
+	* LiteralValueReference.cs:
+	* MdbObjectValueAdaptor.cs:
+	* AsyncEvaluationTracker.cs:
+	* NamespaceValueReference.cs:
+	* Mono.Debugging.Server.Mdb.csproj: Use the new expression
+	  evaluation api, shared with the win32 debugger.
+
 2009-06-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MdbAdaptor-2-4-2.cs: Track api changes.

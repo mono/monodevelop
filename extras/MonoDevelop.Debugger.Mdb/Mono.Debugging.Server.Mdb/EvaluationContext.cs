@@ -27,14 +27,15 @@
 
 using System;
 using Mono.Debugger;
+using Mono.Debugger.Languages;
+using Mono.Debugging.Evaluation;
 
 namespace DebuggerServer
 {
-	public class EvaluationContext
+	public class MdbEvaluationContext: EvaluationContext
 	{
 		Thread thread;
 		StackFrame frame;
-		int timeout;
 		
 		public Thread Thread {
 			get {
@@ -48,17 +49,36 @@ namespace DebuggerServer
 			}
 		}
 
-		public int Timeout {
-			get {
-				return timeout;
-			}
-		}
-		
-		public EvaluationContext (Thread thread, StackFrame frame, int timeout)
+		public MdbEvaluationContext (Thread thread, StackFrame frame, int timeout)
 		{
+			Evaluator = Server.Instance.Evaluator;
+			Adapter = Server.Instance.MdbObjectValueAdaptor;
 			this.thread = thread;
 			this.frame = frame;
-			this.timeout = timeout;
+			Timeout = timeout;
+		}
+		
+		public TargetObject GetRealObject (object ob)
+		{
+			return ObjectUtil.GetRealObject (this, (TargetObject) ob);
+		}
+		
+		public override void CopyFrom (Mono.Debugging.Evaluation.EvaluationContext gctx)
+		{
+			base.CopyFrom (gctx);
+			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
+			thread = ctx.thread;
+			frame = ctx.frame;
+		}
+
+		public override void WriteDebuggerError (System.Exception ex)
+		{
+			Server.Instance.WriteDebuggerError (ex);
+		}
+
+		public override void WriteDebuggerOutput (string message, params object[] values)
+		{
+			Server.Instance.WriteDebuggerOutput (message, values);
 		}
 	}
 }

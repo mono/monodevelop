@@ -14,6 +14,7 @@ using DL = Mono.Debugging.Client;
 using DB = Mono.Debugging.Backend;
 
 using Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 using Mono.Debugging.Backend.Mdb;
 
 namespace DebuggerServer
@@ -32,7 +33,7 @@ namespace DebuggerServer
 		List<ST.WaitCallback> eventQueue = new List<ST.WaitCallback> ();
 		bool initializing;
 		bool running;
-		ExpressionEvaluator evaluator = new NRefactoryEvaluator ();
+		NRefactoryEvaluator evaluator = new NRefactoryEvaluator ();
 		MD.Thread activeThread;
 		Dictionary<int,BreakEvent> events = new Dictionary<int,BreakEvent> ();
 		Dictionary<int,string> lastConditionValue = new Dictionary<int,string> ();
@@ -41,9 +42,8 @@ namespace DebuggerServer
 		Dictionary<int, ST.WaitCallback> breakUpdates = new Dictionary<int,ST.WaitCallback> ();
 		bool breakUpdateEventsQueued;
 		
-		AsyncEvaluationTracker asyncEvaluationTracker;
-		RuntimeInvokeManager invokeManager;
-
+		MdbObjectValueAdaptor mdbObjectValueAdaptor;
+		
 		public const int DefaultAsyncSwitchTimeout = 60;
 		public const int DefaultEvaluationTimeout = 1000;
 		public const int DefaultChildEvaluationTimeout = 5000;
@@ -53,6 +53,7 @@ namespace DebuggerServer
 		public DebuggerServer (IDebuggerController dc)
 		{
 			this.controller = dc;
+			mdbObjectValueAdaptor = new MdbObjectValueAdaptor ();
 			MarshalByRefObject mbr = (MarshalByRefObject)controller;
 			ILease lease = mbr.GetLifetimeService() as ILease;
 			lease.Register(this);
@@ -61,9 +62,6 @@ namespace DebuggerServer
 			ST.Thread t = new ST.Thread ((ST.ThreadStart)EventDispatcher);
 			t.IsBackground = true;
 			t.Start ();
-
-			invokeManager = new RuntimeInvokeManager ();
-			asyncEvaluationTracker = new AsyncEvaluationTracker ();
 		}
 		
 		public override object InitializeLifetimeService ()
@@ -71,16 +69,14 @@ namespace DebuggerServer
 			return null;
 		}
 		
-		public ExpressionEvaluator Evaluator {
+		public MdbObjectValueAdaptor MdbObjectValueAdaptor {
+			get { return mdbObjectValueAdaptor; }
+		}
+		
+		public Mono.Debugging.Evaluation.ExpressionEvaluator Evaluator {
 			get { return evaluator; }
 		}
 
-		public AsyncEvaluationTracker AsyncEvaluationTracker {
-			get {
-				return asyncEvaluationTracker;
-			}
-		}
-		
 		public MdbAdaptor MdbAdaptor {
 			get { return mdbAdaptor; }
 		}
@@ -293,7 +289,7 @@ namespace DebuggerServer
 						                    
 			if (bp != null && !running && activeThread.CurrentFrame != null && !string.IsNullOrEmpty (bp.ConditionExpression) && bp.BreakIfConditionChanges) {
 				// Initial expression evaluation
-				EvaluationContext ctx = new EvaluationContext (activeThread, activeThread.CurrentFrame, -1);
+				MdbEvaluationContext ctx = new MdbEvaluationContext (activeThread, activeThread.CurrentFrame, -1);
 				ML.TargetObject ob = EvaluateExp (ctx, bp.ConditionExpression);
 				if (ob != null)
 					lastConditionValue [ev.Index] = evaluator.TargetObjectToExpression (ctx, ob);
@@ -356,7 +352,7 @@ namespace DebuggerServer
 				return false;
 			}
 
-			EvaluationContext ctx = new EvaluationContext (frame.Thread, frame, -1);
+			MdbEvaluationContext ctx = new MdbEvaluationContext (frame.Thread, frame, -1);
 			DL.Breakpoint bp = be as DL.Breakpoint;
 			if (bp != null && !string.IsNullOrEmpty (bp.ConditionExpression)) {
 				ML.TargetObject val = EvaluateExp (ctx, bp.ConditionExpression);
@@ -407,7 +403,7 @@ namespace DebuggerServer
 				EvaluationOptions ops = new EvaluationOptions ();
 				ops.CanEvaluateMethods = true;
 				var = (ValueReference) Server.Instance.Evaluator.Evaluate (ctx, exp, ops);
-				return var.Value;
+				return (ML.TargetObject) var.Value;
 			} catch {
 				return null;
 			}
@@ -574,11 +570,13 @@ namespace DebuggerServer
 				Console.WriteLine (ex);
 		}
 		
-		public ML.TargetObject RuntimeInvoke (EvaluationContext ctx, ML.TargetFunctionType function,
+		public ML.TargetObject RuntimeInvoke (MdbEvaluationContext ctx, ML.TargetFunctionType function,
 							  ML.TargetStructObject object_argument,
 							  params ML.TargetObject[] param_objects)
 		{
-			return invokeManager.Invoke (ctx, function, object_argument, param_objects);
+			MethodCall mc = new MethodCall (ctx, function, object_argument, param_objects);
+			ctx.Adapter.AsyncExecute (mc, ctx.Timeout);
+			return mc.ReturnValue;
 		}
 
 		DL.Backtrace CreateBacktrace (MD.Thread thread)
@@ -799,8 +797,8 @@ namespace DebuggerServer
 				}
 
 				if ((args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception) && (args.Data is TargetAddress)) {
-					EvaluationContext ctx = new EvaluationContext (args.Frame.Thread, args.Frame, -1);
-					targetArgs.Exception = new LiteralValueReference (ctx, "Exception", args.Frame.ExceptionObject).CreateObjectValue ();
+					MdbEvaluationContext ctx = new MdbEvaluationContext (args.Frame.Thread, args.Frame, -1);
+					targetArgs.Exception = LiteralValueReference.CreateTargetObjectLiteral (ctx, "Exception", args.Frame.ExceptionObject).CreateObjectValue ();
 				}
 
 				running = false;
@@ -828,16 +826,14 @@ namespace DebuggerServer
 
 		public void CancelRuntimeInvokes ()
 		{
-			asyncEvaluationTracker.Stop ();
-			invokeManager.AbortAll ();
-			asyncEvaluationTracker.WaitForStopped ();
+			mdbObjectValueAdaptor.CancelAsyncOperations ();
 		}
 		
-		public void WaitRuntimeInvokes ()
+/*		public void WaitRuntimeInvokes ()
 		{
 			invokeManager.WaitForAll ();
 		}
-		
+*/		
 		private void OnProcessCreatedEvent (MD.Debugger debugger, MD.Process process)
 		{
 			WriteDebuggerOutput (string.Format ("Process {0} created.\n", process.ID));

@@ -6,6 +6,7 @@ using MD = Mono.Debugger;
 using DL = Mono.Debugging.Client;
 
 using Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 using Mono.Debugging.Backend;
 using Mono.Debugger.Languages;
 
@@ -71,186 +72,13 @@ namespace DebuggerServer
 			return list.ToArray ();
 		}
 
-		EvaluationContext GetEvaluationContext (int frameIndex, int timeout)
+		protected EvaluationContext GetEvaluationContext (int frameIndex, int timeout)
 		{
 			CheckDisposed ();
 			if (timeout == -1)
 				timeout = DebuggerServer.DefaultEvaluationTimeout;
 			MD.StackFrame frame = frames [frameIndex];
-			return new EvaluationContext (frame.Thread, frame, timeout);
-		}
-		
-		public ObjectValue[] GetLocalVariables (int frameIndex, int timeout)
-		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			List<ObjectValue> vars = new List<ObjectValue> ();
-			foreach (VariableReference vref in Util.GetLocalVariables (ctx))
-				vars.Add (vref.CreateObjectValue (true));
-			return vars.ToArray ();
-		}
-		
-		public ObjectValue[] GetParameters (int frameIndex, int timeout)
-		{
-			try {
-				EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-				List<ObjectValue> vars = new List<ObjectValue> ();
-				foreach (VariableReference vref in Util.GetParameters (ctx)) {
-					vars.Add (vref.CreateObjectValue (true));
-				}
-				return vars.ToArray ();
-			} catch {
-				return new ObjectValue [0];
-			}
-		}
-		
-		public ObjectValue GetThisReference (int frameIndex, int timeout)
-		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			if (ctx.Frame.Method != null && ctx.Frame.Method.HasThis) {
-				ObjectValueFlags flags = ObjectValueFlags.Field | ObjectValueFlags.ReadOnly;
-				TargetVariable var = ctx.Frame.Method.GetThis (ctx.Thread);
-				VariableReference vref = new VariableReference (ctx, var, flags);
-				return vref.CreateObjectValue ();
-			}
-			else
-				return null;
-		}
-		
-		public ObjectValue[] GetAllLocals (int frameIndex, int timeout)
-		{
-			DateTime tt = DateTime.Now;
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			
-			List<ObjectValue> locals = new List<ObjectValue> ();
-			
-			// 'This' reference, or a reference to the type if the method is static
-			
-			ObjectValue val = GetThisReference (frameIndex, timeout);
-			if (val != null)
-				locals.Add (val);
-			else if (ctx.Frame.Method != null) {
-				TargetType t = ctx.Frame.Method.GetDeclaringType (ctx.Thread);
-				if (t != null) {
-					ValueReference vr = new TypeValueReference (ctx, t);
-					locals.Add (vr.CreateObjectValue (true));
-				}
-			}
-			
-			// Parameters
-			locals.AddRange (GetParameters (frameIndex, timeout));
-			
-			// Local variables
-			locals.AddRange (GetLocalVariables (frameIndex, timeout));
-			Console.WriteLine ("pp server GetAllLocals: " + (DateTime.Now - tt).TotalMilliseconds);
-			return locals.ToArray ();
-		}
-		
-		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeout)
-		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			ObjectValue[] values = new ObjectValue [expressions.Length];
-			for (int n=0; n<values.Length; n++) {
-				string exp = expressions[n];
-				values[n] = Server.Instance.AsyncEvaluationTracker.Run (exp, ObjectValueFlags.Literal, delegate {
-					return GetExpressionValue (ctx, exp, evaluateMethods);
-				});
-			}
-			return values;
-		}
-		
-		ObjectValue GetExpressionValue (EvaluationContext ctx, string exp, bool evaluateMethods)
-		{
-			try {
-				EvaluationOptions ops = new EvaluationOptions ();
-				ops.CanEvaluateMethods = evaluateMethods;
-				ValueReference var = (ValueReference) Server.Instance.Evaluator.Evaluate (ctx, exp, ops);
-				if (var != null)
-					return var.CreateObjectValue ();
-				else
-					return ObjectValue.CreateUnknown (exp);
-			} catch (NotSupportedExpressionException ex) {
-				return ObjectValue.CreateNotSupported (exp, ex.Message, ObjectValueFlags.None);
-			} catch (EvaluatorException ex) {
-				return ObjectValue.CreateError (exp, ex.Message, ObjectValueFlags.None);
-			} catch (Exception ex) {
-				Server.Instance.WriteDebuggerError (ex);
-				return ObjectValue.CreateUnknown (exp);
-			}
-		}
-		
-		public CompletionData GetExpressionCompletionData (int frameIndex, string exp)
-		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, -1);
-			int i;
-
-			if (exp [exp.Length - 1] == '.') {
-				exp = exp.Substring (0, exp.Length - 1);
-				i = 0;
-				while (i < exp.Length) {
-					ValueReference vr = null;
-					try {
-						vr = Server.Instance.Evaluator.Evaluate (ctx, exp.Substring (i), null);
-						if (vr != null) {
-							DL.CompletionData data = new DL.CompletionData ();
-							foreach (ValueReference cv in vr.GetChildReferences ())
-								data.Items.Add (new CompletionItem (cv.Name, cv.Flags));
-							data.ExpressionLenght = 0;
-							return data;
-						}
-					} catch (Exception ex) {
-						Console.WriteLine (ex);
-					}
-					i++;
-				}
-				return null;
-			}
-			
-			i = exp.Length - 1;
-			bool lastWastLetter = false;
-			while (i >= 0) {
-				char c = exp [i--];
-				if (!char.IsLetterOrDigit (c) && c != '_')
-					break;
-				lastWastLetter = !char.IsDigit (c);
-			}
-			if (lastWastLetter) {
-				string partialWord = exp.Substring (i+1);
-				
-				DL.CompletionData data = new DL.CompletionData ();
-				data.ExpressionLenght = partialWord.Length;
-				
-				// Local variables
-				
-				foreach (ValueReference vc in Util.GetLocalVariables (ctx))
-					if (vc.Name.StartsWith (partialWord))
-						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
-				
-				// Parameters
-				
-				foreach (ValueReference vc in Util.GetParameters (ctx))
-					if (vc.Name.StartsWith (partialWord))
-						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
-				
-				// Members
-				
-				TargetStructObject thisobj = null;
-				
-				if (ctx.Frame.Method.HasThis) {
-					TargetObject ob = ctx.Frame.Method.GetThis (ctx.Thread).GetObject (ctx.Frame);
-					thisobj = ObjectUtil.GetRealObject (ctx, ob) as TargetStructObject;
-					data.Items.Add (new CompletionItem ("this", DL.ObjectValueFlags.Field | DL.ObjectValueFlags.ReadOnly));
-				}
-				
-				TargetStructType type = ctx.Frame.Method.GetDeclaringType (ctx.Thread);
-				
-				foreach (ValueReference vc in Util.GetMembers (ctx, type, thisobj))
-					if (vc.Name.StartsWith (partialWord))
-						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
-				
-				if (data.Items.Count > 0)
-					return data;
-			}
-			return null;
+			return new MdbEvaluationContext (frame.Thread, frame, timeout);
 		}
 	
 		public AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)
@@ -273,6 +101,60 @@ namespace DebuggerServer
 		{
 			if (disposed)
 				throw new InvalidOperationException ("Invalid stack frame");
+		}
+		
+		public ObjectValue[] GetAllLocals (int frameIndex, int timeout)
+		{
+			List<ObjectValue> locals = new List<ObjectValue> ();
+
+			ObjectValue thisObj = GetThisReference (frameIndex, timeout);
+			if (thisObj != null)
+				locals.Add (thisObj);
+
+			locals.AddRange (GetLocalVariables (frameIndex, timeout));
+			locals.AddRange (GetParameters (frameIndex, timeout));
+
+			return locals.ToArray ();
+		}
+
+		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeout)
+		{
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			return ctx.Adapter.GetExpressionValuesAsync (ctx, expressions, evaluateMethods, timeout);
+		}
+
+		public ObjectValue[] GetLocalVariables (int frameIndex, int timeout)
+		{
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			List<ObjectValue> list = new List<ObjectValue> ();
+			foreach (ValueReference var in ctx.Adapter.GetLocalVariables (ctx))
+				list.Add (var.CreateObjectValue (true));
+			return list.ToArray ();
+		}
+
+		public ObjectValue[] GetParameters (int frameIndex, int timeout)
+		{
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			List<ObjectValue> vars = new List<ObjectValue> ();
+			foreach (ValueReference var in ctx.Adapter.GetParameters (ctx))
+				vars.Add (var.CreateObjectValue (true));
+			return vars.ToArray ();
+		}
+
+		public ObjectValue GetThisReference (int frameIndex, int timeout)
+		{
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			ValueReference var = ctx.Adapter.GetThisReference (ctx);
+			if (var != null)
+				return var.CreateObjectValue ();
+			else
+				return null;
+		}
+		
+		public virtual CompletionData GetExpressionCompletionData (int frameIndex, string exp)
+		{
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, 400);
+			return ctx.Adapter.GetExpressionCompletionData (ctx, exp);
 		}
 	}
 	

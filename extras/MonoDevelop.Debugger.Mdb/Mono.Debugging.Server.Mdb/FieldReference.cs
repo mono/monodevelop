@@ -29,6 +29,7 @@ using System;
 using Mono.Debugger.Languages;
 using Mono.Debugger;
 using Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 
 namespace DebuggerServer
 {
@@ -46,22 +47,24 @@ namespace DebuggerServer
 				this.thisobj = thisobj;
 		}
 		
-		public override TargetType Type {
+		public override object Type {
 			get {
 				return field.Type;
 			}
 		}
 		
-		public override TargetObject Value {
+		public override object Value {
 			get {
+				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
 				if (field.HasConstValue)
-					return Context.Frame.Language.CreateInstance (Context.Thread, field.ConstValue);
-				TargetClass cls = type.GetClass (Context.Thread);
-				return ObjectUtil.GetRealObject (Context, cls.GetField (Context.Thread, thisobj, field));
+					return ctx.Frame.Language.CreateInstance (ctx.Thread, field.ConstValue);
+				TargetClass cls = type.GetClass (ctx.Thread);
+				return ObjectUtil.GetRealObject (ctx, cls.GetField (ctx.Thread, thisobj, field));
 			}
 			set {
-				TargetClass cls = type.GetClass (Context.Thread);
-				cls.SetField (Context.Thread, thisobj, field, value);
+				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
+				TargetClass cls = type.GetClass (ctx.Thread);
+				cls.SetField (ctx.Thread, thisobj, field, (TargetObject) value);
 			}
 		}
 		

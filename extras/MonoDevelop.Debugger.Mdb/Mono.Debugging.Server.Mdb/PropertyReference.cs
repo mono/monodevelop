@@ -29,6 +29,7 @@ using System;
 using Mono.Debugger.Languages;
 using Mono.Debugger;
 using Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 
 namespace DebuggerServer
 {
@@ -44,18 +45,20 @@ namespace DebuggerServer
 				this.thisobj = thisobj;
 		}
 		
-		public override TargetType Type {
+		public override object Type {
 			get {
 				return prop.Type;
 			}
 		}
 		
-		public override TargetObject Value {
+		public override object Value {
 			get {
-				return ObjectUtil.GetRealObject (Context, Server.Instance.RuntimeInvoke (Context, prop.Getter, thisobj, new TargetObject[0]));
+				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
+				return ctx.GetRealObject (Server.Instance.RuntimeInvoke (ctx, prop.Getter, thisobj, new TargetObject[0]));
 			}
 			set {
-				Server.Instance.RuntimeInvoke (Context, prop.Setter, thisobj, new TargetObject[] { value });
+				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
+				Server.Instance.RuntimeInvoke (ctx, prop.Setter, thisobj, new TargetObject[] { (TargetObject) value });
 			}
 		}
 		

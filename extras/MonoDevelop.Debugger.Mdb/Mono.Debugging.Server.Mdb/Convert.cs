@@ -162,7 +162,7 @@ namespace DebuggerServer
 			}
 		}
 
-		static TargetObject ImplicitFundamentalConversion (EvaluationContext ctx,
+		static TargetObject ImplicitFundamentalConversion (MdbEvaluationContext ctx,
 								   TargetFundamentalObject obj,
 								   TargetFundamentalType type)
 		{
@@ -181,7 +181,7 @@ namespace DebuggerServer
 			return type.Language.CreateInstance (ctx.Thread, new_value);
 		}
 
-		public static TargetObject ExplicitFundamentalConversion (EvaluationContext ctx,
+		public static TargetObject ExplicitFundamentalConversion (MdbEvaluationContext ctx,
 									  TargetFundamentalObject obj,
 									  TargetFundamentalType type)
 		{
@@ -203,7 +203,7 @@ namespace DebuggerServer
 			}
 		}
 
-		static bool ImplicitReferenceConversionExists (EvaluationContext ctx,
+		static bool ImplicitReferenceConversionExists (MdbEvaluationContext ctx,
 							       TargetStructType source,
 							       TargetStructType target)
 		{
@@ -217,7 +217,7 @@ namespace DebuggerServer
 			return ImplicitReferenceConversionExists (ctx, parent_type, target);
 		}
 
-		static TargetObject ImplicitReferenceConversion (EvaluationContext ctx,
+		static TargetObject ImplicitReferenceConversion (MdbEvaluationContext ctx,
 								 TargetClassObject obj,
 								 TargetClassType type)
 		{
@@ -234,7 +234,7 @@ namespace DebuggerServer
 				return null;
 		}
 
-		public static bool ImplicitConversionExists (EvaluationContext ctx,
+		public static bool ImplicitConversionExists (MdbEvaluationContext ctx,
 							     TargetType source, TargetType target)
 		{
 			if (source.Equals (target))
@@ -277,7 +277,7 @@ namespace DebuggerServer
 			return false;
 		}
 
-		public static TargetObject ImplicitConversion (EvaluationContext ctx,
+		public static TargetObject ImplicitConversion (MdbEvaluationContext ctx,
 							       TargetObject obj, TargetType type)
 		{
 			if (obj.Type.Equals (type))
@@ -324,7 +324,7 @@ namespace DebuggerServer
 			return null;
 		}
 
-		public static TargetObject ImplicitConversionRequired (EvaluationContext ctx,
+		public static TargetObject ImplicitConversionRequired (MdbEvaluationContext ctx,
 								       TargetObject obj, TargetType type)
 		{
 			TargetObject new_obj = ImplicitConversion (ctx, obj, type);
@@ -356,7 +356,7 @@ namespace DebuggerServer
 			throw new Exception (string.Format ("Type `{0}' is not a struct or class.", type.Name));
 		}
 
-		public static TargetClassObject ToClassObject (EvaluationContext ctx, TargetObject obj)
+		public static TargetClassObject ToClassObject (MdbEvaluationContext ctx, TargetObject obj)
 		{
 			TargetClassObject cobj = obj as TargetClassObject;
 			if (cobj != null)
@@ -373,7 +373,7 @@ namespace DebuggerServer
 			return null;
 		}
 
-		public static TargetStructObject ToStructObject (EvaluationContext ctx, TargetObject obj)
+		public static TargetStructObject ToStructObject (MdbEvaluationContext ctx, TargetObject obj)
 		{
 			TargetStructObject sobj = obj as TargetStructObject;
 			if (sobj != null)
@@ -390,7 +390,7 @@ namespace DebuggerServer
 			return null;
 		}
 		
-		public static TargetObject Cast (EvaluationContext ctx, TargetObject obj, TargetType targetType)
+		public static TargetObject Cast (MdbEvaluationContext ctx, TargetObject obj, TargetType targetType)
 		{
 			obj = ObjectUtil.GetRealObject (ctx, obj);
 			
@@ -427,12 +427,12 @@ namespace DebuggerServer
 			return TryCast (ctx, source, ctype);
 		}
 		
-		static TargetObject BoxValue (EvaluationContext ctx, TargetObject fobj)
+		static TargetObject BoxValue (MdbEvaluationContext ctx, TargetObject fobj)
 		{
 			return ctx.Frame.Language.CreateBoxedObject (ctx.Thread, fobj);
 		}
 		
-		static TargetStructObject TryParentCast (EvaluationContext ctx, TargetStructObject source, TargetStructType source_type, TargetStructType target_type)
+		static TargetStructObject TryParentCast (MdbEvaluationContext ctx, TargetStructObject source, TargetStructType source_type, TargetStructType target_type)
 		{
 			if (source_type == target_type)
 				return source;
@@ -448,7 +448,7 @@ namespace DebuggerServer
 			return source.GetParentObject (ctx.Thread) as TargetClassObject;
 		}
 
-		static TargetStructObject TryCurrentCast (EvaluationContext ctx, TargetClassObject source, TargetClassType target_type)
+		static TargetStructObject TryCurrentCast (MdbEvaluationContext ctx, TargetClassObject source, TargetClassType target_type)
 		{
 			TargetStructObject current = source.GetCurrentObject (ctx.Thread);
 			if (current == null)
@@ -457,7 +457,7 @@ namespace DebuggerServer
 			return TryParentCast (ctx, current, current.Type, target_type);
 		}
 
-		public static TargetObject TryCast (EvaluationContext ctx, TargetObject source, TargetClassType target_type)
+		public static TargetObject TryCast (MdbEvaluationContext ctx, TargetObject source, TargetClassType target_type)
 		{
 			if (source.Type == target_type)
 				return source;
@@ -473,7 +473,7 @@ namespace DebuggerServer
 			return TryCurrentCast (ctx, sobj, target_type);
 		}
 
-		static bool TryParentCast (EvaluationContext ctx, TargetStructType source_type, TargetStructType target_type)
+		static bool TryParentCast (MdbEvaluationContext ctx, TargetStructType source_type, TargetStructType target_type)
 		{
 			if (source_type == target_type)
 				return true;
@@ -485,7 +485,7 @@ namespace DebuggerServer
 			return TryParentCast (ctx, parent_type, target_type);
 		}
 
-		public static bool TryCast (EvaluationContext ctx, TargetType source, TargetClassType target_type)
+		public static bool TryCast (MdbEvaluationContext ctx, TargetType source, TargetClassType target_type)
 		{
 			if (source == target_type)
 				return true;

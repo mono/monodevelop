@@ -45,37 +45,18 @@ DEBUGGERSERVER_EXE_MDB = $(BUILD_DIR)/DebuggerServer.exe.mdb
 
 FILES =  \
 	ArrayAdaptor.cs \
-	ArrayElementGroup.cs \
-	ArrayValueReference.cs \
 	AssemblyInfo.cs \
-	AsyncEvaluationTracker.cs \
 	BacktraceWrapper.cs \
-	CollectionAdaptor.cs \
 	Convert.cs \
 	DebuggerServer.cs \
 	EvaluationContext.cs \
-	ExpressionEvaluator.cs \
 	FieldReference.cs \
-	ICollectionAdaptor.cs \
 	IndexerValueReference.cs \
-	LiteralValueReference.cs \
 	MdbAdaptor.cs \
 	MdbAdaptorFactory.cs \
-	NamespaceValueReference.cs \
-	NRefactoryEvaluator.cs \
-	NullValueReference.cs \
-	ObjectUtil.cs \
+	MdbObjectValueAdaptor.cs \
 	PropertyReference.cs \
-	RawViewSource.cs \
-	RemoteFrameObject.cs \
-	RuntimeInvokeManager.cs \
 	Server.cs \
-	TimedEvaluator.cs \
-	TimeOutException.cs \
-	TypeValueReference.cs \
-	UserVariableReference.cs \
-	Util.cs \
-	ValueReference.cs \
 	VariableReference.cs 
 
 DATA_FILES = 

@@ -137,35 +137,16 @@
     <Compile Include="DebuggerServer.cs" />
     <Compile Include="BacktraceWrapper.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Util.cs" />
     <Compile Include="PropertyReference.cs" />
     <Compile Include="FieldReference.cs" />
-    <Compile Include="ValueReference.cs" />
     <Compile Include="VariableReference.cs" />
-    <Compile Include="ArrayValueReference.cs" />
-    <Compile Include="LiteralValueReference.cs" />
-    <Compile Include="NRefactoryEvaluator.cs" />
     <Compile Include="Convert.cs" />
-    <Compile Include="TypeValueReference.cs" />
-    <Compile Include="NullValueReference.cs" />
-    <Compile Include="NamespaceValueReference.cs" />
-    <Compile Include="ExpressionEvaluator.cs" />
-    <Compile Include="ArrayElementGroup.cs" />
-    <Compile Include="RemoteFrameObject.cs" />
     <Compile Include="ArrayAdaptor.cs" />
-    <Compile Include="ICollectionAdaptor.cs" />
-    <Compile Include="CollectionAdaptor.cs" />
     <Compile Include="IndexerValueReference.cs" />
-    <Compile Include="ObjectUtil.cs" />
-    <Compile Include="RawViewSource.cs" />
-    <Compile Include="TimedEvaluator.cs" />
-    <Compile Include="AsyncEvaluationTracker.cs" />
     <Compile Include="EvaluationContext.cs" />
-    <Compile Include="TimeOutException.cs" />
-    <Compile Include="RuntimeInvokeManager.cs" />
     <Compile Include="MdbAdaptor.cs" />
     <Compile Include="MdbAdaptorFactory.cs" />
-    <Compile Include="UserVariableReference.cs" />
+    <Compile Include="MdbObjectValueAdaptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

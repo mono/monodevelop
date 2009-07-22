@@ -29,36 +29,46 @@ using System;
 using Mono.Debugger;
 using Mono.Debugger.Languages;
 using Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 
 namespace DebuggerServer
 {
 	class ArrayAdaptor: ICollectionAdaptor
 	{
 		TargetArrayObject array;
-		EvaluationContext ctx;
+		MdbEvaluationContext ctx;
 		
-		public ArrayAdaptor (EvaluationContext ctx, TargetArrayObject array)
+		public ArrayAdaptor (MdbEvaluationContext ctx, TargetArrayObject array)
 		{
 			this.ctx = ctx;
 			this.array = array;
 		}
 		
-		public TargetArrayBounds GetBounds ()
+		public int[] GetDimensions ()
 		{
-			return array.GetArrayBounds (ctx.Thread);
+			TargetArrayBounds bounds = array.GetArrayBounds (ctx.Thread);
+			if (bounds.IsMultiDimensional) {
+				int[] dims = new int [bounds.LowerBounds.Length];
+				for (int n=0; n<bounds.Rank; n++)
+					dims [n] = bounds.UpperBounds [n] - bounds.LowerBounds [n] + 1;
+				return dims;
+			} else if (!bounds.IsUnbound)
+				return new int[] { bounds.Length };
+			else
+				return new int [0];
 		}
 		
-		public TargetObject GetElement (int[] indices)
+		public object GetElement (int[] indices)
 		{
 			return array.GetElement (ctx.Thread, indices);
 		}
 		
-		public void SetElement (int[] indices, TargetObject val)
+		public void SetElement (int[] indices, object val)
 		{
-			array.SetElement (ctx.Thread, indices, val);
+			array.SetElement (ctx.Thread, indices, (TargetObject) val);
 		}
 		
-		public TargetType ElementType {
+		public object ElementType {
 			get {
 				return array.Type.ElementType;
 			}
@@ -67,7 +77,7 @@ namespace DebuggerServer
 		public ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices)
 		{
 			TargetObject elem = array.GetElement (ctx.Thread, indices);
-			return Util.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);
+			return ctx.Adapter.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);
 		}
 	}
 }

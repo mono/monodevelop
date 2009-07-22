@@ -26,10 +26,12 @@
 //
 
 using System;
+using System.Reflection;
 using Mono.Debugger;
 using Mono.Debugger.Languages;
 using Mono.Debugging.Client;
 using System.Collections.Generic;
+using Mono.Debugging.Evaluation;
 
 namespace DebuggerServer
 {
@@ -46,14 +48,14 @@ namespace DebuggerServer
 			this.index = index;
 		}
 		
-		public static IndexerValueReference CreateIndexerValueReference (EvaluationContext ctx, TargetObject target, TargetObject index)
+		public static IndexerValueReference CreateIndexerValueReference (MdbEvaluationContext ctx, TargetObject target, TargetObject index)
 		{
 			TargetStructObject sob = target as TargetStructObject;
 			if (sob == null)
 				return null;
 			
 			TargetPropertyInfo indexerProp = null;
-			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (ctx, target.Type, false, false, true, true, ReqMemberAccess.All)) {
+			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (ctx, target.Type, false, true, true, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)) {
 				if (mem.Member.IsStatic)
 					continue;
 				if (mem.Member is TargetPropertyInfo) {
@@ -70,19 +72,21 @@ namespace DebuggerServer
 				return null;
 		}
 		
-		public override TargetObject Value {
+		public override object Value {
 			get {
-				return ObjectUtil.GetRealObject (Context, Server.Instance.RuntimeInvoke (Context, indexer.Getter, target, new TargetObject [] {index}));
+				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
+				return ObjectUtil.GetRealObject (ctx, Server.Instance.RuntimeInvoke (ctx, indexer.Getter, target, new TargetObject [] {index}));
 			}
 			set {
-				TargetObject cindex = TargetObjectConvert.Cast (Context, index, indexer.Setter.ParameterTypes [0]);
-				TargetObject cvalue = TargetObjectConvert.Cast (Context, value, indexer.Setter.ParameterTypes [1]);
-				Server.Instance.RuntimeInvoke (Context, indexer.Setter, target, new TargetObject [] {cindex, cvalue});
+				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
+				TargetObject cindex = TargetObjectConvert.Cast (ctx, index, indexer.Setter.ParameterTypes [0]);
+				TargetObject cvalue = TargetObjectConvert.Cast (ctx, (TargetObject) value, indexer.Setter.ParameterTypes [1]);
+				Server.Instance.RuntimeInvoke (ctx, indexer.Setter, target, new TargetObject [] {cindex, cvalue});
 			}
 		}
 
 		
-		public override Mono.Debugger.Languages.TargetType Type {
+		public override object Type {
 			get {
 				if (indexer.CanRead)
 					return indexer.Getter.ReturnType;
