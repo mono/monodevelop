@@ -212,24 +212,24 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			int x = completionContext.TriggerXCoord - TextOffset;
 			int y = completionContext.TriggerYCoord;
-			
+
 			int w, h;
 			GetSize (out w, out h);
-			
+
 			if (!force && previousHeight != h && previousWidth != w)
 				return;
-			
+
 			previousHeight = h;
 			previousWidth = w;
-			
+
 			if ((x + w) > Screen.Width)
 				x = Screen.Width - w;
-			
-			if ((y + h) > Screen.Height)
-			{
+
+			if ((y + h) > Screen.Height) {
 				y = y - completionContext.TriggerTextHeight - h;
 			}
-			
+			curXPos = x;
+			curYPos = y;
 			Move (x, y);
 		}
 		

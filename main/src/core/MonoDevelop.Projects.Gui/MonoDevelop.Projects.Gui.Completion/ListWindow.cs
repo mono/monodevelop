@@ -50,10 +50,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		StringBuilder word;
 		int curPos;
 		
-		public ListWindow (): base (Gtk.WindowType.Popup)
+		public ListWindow () : base(Gtk.WindowType.Popup)
 		{
 			vbox = new VBox ();
-			
+
 			HBox box = new HBox ();
 			list = new ListWidget (this);
 			list.SelectionChanged += new EventHandler (OnSelectionChanged);
@@ -73,6 +73,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
 		}
+		
 		protected virtual void DoubleClick ()
 		{
 			
@@ -114,9 +115,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 				ResetSizes ();
 			}
 		}
-		
+		protected int curXPos, curYPos;
 		protected void ResetSizes ()
 		{
+			if (list.filteredItems.Count == 0) {
+				this.list.Hide ();
+				this.scrollbar.Hide ();
+				this.Resize (1, 1);
+				this.Move (Screen.Width - 1, Screen.Height - 1);
+				return;
+			} else {
+				Move (curXPos, curYPos);
+				this.list.Show ();
+				this.scrollbar.Show ();
+			}
+
 			scrollbar.Adjustment.Lower = 0;
 			scrollbar.Adjustment.Upper = Math.Max (0, list.filteredItems.Count - list.VisibleRows);
 			scrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
@@ -326,7 +339,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return i;
 				}
 			}
-			
+
 			// default - word with highest match rating in the list.
 			hasMismatches = true;
 			int idx = -1;
@@ -337,9 +350,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (curRating < rating) {
 					curRating = rating;
 					idx = n;
+					hasMismatches = false;
 				}
 			}
-			
+
 			// Search for history matches.
 			string historyWord = null;
 			for (int i = wordHistory.Count - 1; i >= 0; i--) {
@@ -549,10 +563,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public bool SelectionDisabled
-		{
+		public bool SelectionDisabled {
 			get { return disableSelection; }
-			
+
 			set {
 				disableSelection = value; 
 				this.QueueDraw ();
@@ -748,7 +761,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				layout.GetPixelSize (out wi, out he);
 				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
-
+				
 				if (page + n == selection) {
 					if (!disableSelection) {
 						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
