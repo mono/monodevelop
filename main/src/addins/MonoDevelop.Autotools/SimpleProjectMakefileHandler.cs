@@ -378,10 +378,12 @@ namespace MonoDevelop.Autotools
 					conf_vars.Append (configSection.BuildVariablesBuilder.ToString ());
 					conf_vars.Append ("\n");
 					
-					foreach (Switch s in ctx.Switches) {				
-						conf_vars.AppendLine (string.Format (@"if ENABLE_{0}
+					if (ctx.Switches != null) {
+						foreach (Switch s in ctx.Switches) {
+							conf_vars.AppendLine (string.Format (@"if ENABLE_{0}
 ASSEMBLY_COMPILER_FLAGS += -define:{1}
 endif", s.SwitchName.Replace ('-', '_').ToUpperInvariant (), s.Define));
+						}
 					}
 
 					foreach (KeyValuePair<string, DeployFileData> pair in allDeployVars) {

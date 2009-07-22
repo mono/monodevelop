@@ -1,3 +1,7 @@
+2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SimpleProjectMakefileHandler.cs: Fix nullref.
+
 2009-06-23  Jérémie Laval  <jeremie.laval@gmail.com>
 	* MonoDevelop.Autotools.csproj:
 	* Makefile.am: Added the new files
