@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			if (provider.OverloadCount == 0)
 				return;
-
+			
 			// There can be several method parameter lists open at the same time, so
 			// they have to be queued. The last one of queue is the one being shown
 			// in the information window.

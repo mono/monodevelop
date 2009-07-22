@@ -152,7 +152,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					SelectEntry (text);
 					initialWordLength = completionWidget.SelectedLength;
 					Show ();
-
+					ResetSizes ();
 					return true;
 				}
 
@@ -165,7 +165,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 					CompletionWindowManager.HideWindow ();
 				} else {
 					Show ();
-					List.FilterWords ();
 					ResetSizes ();
 					if (List.Selection > (int)(scrollbar.Adjustment.Value + scrollbar.Adjustment.PageSize)) {
 						scrollbar.Adjustment.Value = List.Page = List.Selection;

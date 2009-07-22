@@ -1,5 +1,12 @@
 2009-07-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Fixed sizing bug.
+
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
 	  Worked on code completion.

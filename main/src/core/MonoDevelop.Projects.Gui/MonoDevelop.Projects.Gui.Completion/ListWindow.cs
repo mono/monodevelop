@@ -116,26 +116,27 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		protected int curXPos, curYPos;
+		
 		protected void ResetSizes ()
 		{
+			list.FilterWords ();
 			if (list.filteredItems.Count == 0) {
 				Hide ();
 			} else {
 				if (!Visible)
 					Show ();
 			}
-
+			
 			scrollbar.Adjustment.Lower = 0;
 			scrollbar.Adjustment.Upper = Math.Max (0, list.filteredItems.Count - list.VisibleRows);
 			scrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
 			scrollbar.Adjustment.StepIncrement = 1;
-
-			if (list.VisibleRows >= list.filteredItems.Count) {
+			
+			if (scrollbar.Adjustment.Upper == 0) {
 				this.scrollbar.Hide ();
 			} else {
 				this.scrollbar.Show ();
 			}
-			list.CalcVisibleRows ();
 			this.Resize (this.list.WidthRequest, this.list.HeightRequest);
 		}
 		
@@ -693,6 +694,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (Matches (CompletionString, win.DataProvider.GetText (n)))
 					filteredItems.Add (n);
 			}
+			CalcVisibleRows ();
 		}
 		
 		void DrawList ()
@@ -808,7 +810,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public void CalcVisibleRows ()
+		void CalcVisibleRows ()
 		{
 			if (layout == null)
 				return;
@@ -823,6 +825,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			visibleRows = (winHeight + padding - margin * 2) / rowHeight;
 
 			int newHeight = (rowHeight * Math.Max (1, Math.Min (visibleRows, filteredItems.Count))) + margin * 2;
+			
 			if (lvWidth != listWidth || lvHeight != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
 		}
