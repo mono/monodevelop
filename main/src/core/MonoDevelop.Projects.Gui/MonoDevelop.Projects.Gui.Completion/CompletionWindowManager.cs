@@ -48,6 +48,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext, closedDelegate)) {
 					if (list is IDisposable)
 						((IDisposable)list).Dispose ();
+					wnd.Destroy ();
+					wnd = null;
 					return false;
 				}
 				return true;

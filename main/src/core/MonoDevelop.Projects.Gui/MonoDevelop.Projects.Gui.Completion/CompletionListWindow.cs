@@ -80,6 +80,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			ka = ProcessKey (key, keyChar, modifier);
 
+			if ((ka & KeyAction.Complete) != 0)
+				UpdateWord ();
+			
 			if ((ka & KeyAction.CloseWindow) != 0)
 				CompletionWindowManager.HideWindow ();
 
@@ -264,11 +267,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			completionWidget.SetCompletionText (completionContext, pword, word);
 		}
 		
-		public void HideWindow ()
+		public override void Destroy ()
 		{
-			base.Hide ();
 			if (declarationviewwindow != null) {
-				declarationviewwindow.Hide ();
+				declarationviewwindow.Destroy ();
+				declarationviewwindow = null;
 			}
 			
 			if (mutableList != null) {
@@ -276,18 +279,19 @@ namespace MonoDevelop.Projects.Gui.Completion
 				mutableList.Changed -= OnCompletionDataChanged;
 				mutableList = null;
 			}
-			
+
 			if (completionDataList != null) {
 				if (completionDataList is IDisposable) {
 					((IDisposable)completionDataList).Dispose ();
 				}
 				completionDataList = null;
 			}
-			
+
 			if (closedDelegate != null) {
 				closedDelegate ();
 				closedDelegate = null;
 			}
+			base.Destroy ();
 		}
 		
 		void ListSizeChanged (object obj, SizeAllocatedArgs args)
