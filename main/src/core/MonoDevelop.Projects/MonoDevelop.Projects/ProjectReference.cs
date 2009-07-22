@@ -204,8 +204,9 @@ namespace MonoDevelop.Projects
 		public bool IsExactVersion {
 			get {
 				if (ReferenceType == ReferenceType.Gac) {
-					if (StoredReference != Reference && !Reference.StartsWith (StoredReference + ","))
-						return false;
+					string r1 = MonoDevelop.Core.Assemblies.TargetRuntime.NormalizeAsmName (StoredReference);
+					string r2 = MonoDevelop.Core.Assemblies.TargetRuntime.NormalizeAsmName (Reference);
+					return r1 == r2;
 				}
 				return true;
 			}

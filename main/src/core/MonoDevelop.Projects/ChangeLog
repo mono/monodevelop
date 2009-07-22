@@ -1,5 +1,14 @@
 2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/ProjectReference.cs: When checking if a
+	  reference is the exact version, compare only the name and
+	  version, and ignore other fields such as
+	  processorArchitecure. Fixes bug #429257 -
+	  processorArchitecture present in referenced assembly name
+	  breaks build.
+
+2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/CustomCommand.cs: Strip the command
 	  arguments when checking if the execution context supports
 	  the command.
