@@ -1,3 +1,9 @@
+2009-07-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: Fixed
+	  "Bug 524313 - Wrong caret position when exiting local rename
+	  link mode".
+
 2009-07-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoryCommands.cs: Fixed "Bug

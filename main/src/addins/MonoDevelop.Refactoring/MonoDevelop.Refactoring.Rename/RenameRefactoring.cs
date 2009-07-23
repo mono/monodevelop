@@ -111,9 +111,10 @@ namespace MonoDevelop.Refactoring.Rename
 				foreach (MemberReference r in col) {
 					link.AddLink (new Segment (data.Document.LocationToOffset (r.Line - 1, r.Column - 1) - baseOffset, r.Name.Length));
 				}
-				
+
 				links.Add (link);
 				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
+				tle.SetCaretPosition = false;
 				if (tle.ShouldStartTextLinkMode) {
 					tle.OldMode = data.CurrentMode;
 					tle.StartMode ();
