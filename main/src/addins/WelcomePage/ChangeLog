@@ -1,5 +1,9 @@
 2009-07-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* WelcomePageFallbackWidget.cs: Fix file access issue.
+
+2009-07-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* WelcomePageFallbackWidget.cs: Fixed missing welcome page
 	  when start up path contains cyrillic letters. Based on a
 	  patch by Aleksei VK.

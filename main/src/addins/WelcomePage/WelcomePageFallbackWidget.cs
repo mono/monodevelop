@@ -106,7 +106,7 @@ namespace MonoDevelop.WelcomePage
 			linkClickedEventHandler = new EventHandler (HandleLink);
 
 			string bgPath = AddinManager.CurrentAddin.GetFilePath ("mono-bg.png");
-			using (FileStream fst = new FileStream (bgPath, FileMode.Open)) {
+			using (FileStream fst = new FileStream (bgPath, FileMode.Open, FileAccess.Read)) {
 				bgPixbuf = new Gdk.Pixbuf (fst);
 			}
 			
