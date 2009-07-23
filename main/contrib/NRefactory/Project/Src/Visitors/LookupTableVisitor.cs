@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 3662 $</version>
+//     <version>$Revision: 4482 $</version>
 // </file>
 
 using System;
@@ -296,7 +296,7 @@ namespace ICSharpCode.NRefactory.Visitors
 						if (catchClause.TypeReference != null && catchClause.VariableName != null) {
 							AddVariable(catchClause.TypeReference,
 							            catchClause.VariableName,
-							            catchClause.StatementBlock.StartLocation,
+							            catchClause.StartLocation,
 							            catchClause.StatementBlock.EndLocation,
 							            false, false, null, null, false);
 						}
