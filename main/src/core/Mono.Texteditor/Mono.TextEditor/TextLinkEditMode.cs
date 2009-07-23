@@ -173,10 +173,10 @@ namespace Mono.TextEditor
 		}
 		
 		TextLink closedLink = null;
-		void HandlePositionChanged(object sender, DocumentLocationEventArgs e)
+		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
 			int caretOffset = Editor.Caret.Offset - baseOffset;
-			TextLink link = links.Find (l => l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
+			TextLink link = links.Find (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
 			if (link != null && link.Count > 0 && link.IsEditable) {
 				if (window != null && window.DataProvider != link) {
 					DestroyWindow ();
@@ -201,7 +201,8 @@ namespace Mono.TextEditor
 		public void StartMode ()
 		{
 			foreach (TextLink link in links) {
-				link.CurrentText = Editor.Document.GetTextAt (link.PrimaryLink.Offset + baseOffset, link.PrimaryLink.Length);
+				if (link.PrimaryLink != null)
+					link.CurrentText = Editor.Document.GetTextAt (link.PrimaryLink.Offset + baseOffset, link.PrimaryLink.Length);
 				foreach (ISegment segment in link.Links) {
 					LineSegment line = Editor.Document.GetLineByOffset (baseOffset + segment.Offset);
 					if (line.GetMarker (typeof(TextLinkMarker)) != null)
@@ -226,7 +227,9 @@ namespace Mono.TextEditor
 		
 		void Setlink (TextLink link)
 		{
-			Editor.Caret.Offset    = baseOffset + link.PrimaryLink.Offset;
+			if (link.PrimaryLink == null)
+				return;
+			Editor.Caret.Offset = baseOffset + link.PrimaryLink.Offset;
 			Editor.ScrollToCaret ();
 			Editor.Caret.Offset    = baseOffset + link.PrimaryLink.EndOffset;
 			Editor.MainSelection = new Selection (Editor.Document.OffsetToLocation (baseOffset + link.PrimaryLink.Offset),
@@ -382,12 +385,12 @@ namespace Mono.TextEditor
 					l.Values = l.GetStringFunc (GetStringCallback);
 					//Console.WriteLine ("Call function for " + l.Name + " res:" + String.Join (",", l.Values));
 				}
-				
+
 				if (!l.IsEditable && l.Values.Count > 0) {
 					l.CurrentText = (string)l.Values[l.Values.Count - 1];
 				} else {
-					l.CurrentText = Editor.Document.GetTextAt (l.PrimaryLink.Offset + baseOffset, 
-					                                           l.PrimaryLink.Length);
+					if (l.PrimaryLink != null)
+						l.CurrentText = Editor.Document.GetTextAt (l.PrimaryLink.Offset + baseOffset, l.PrimaryLink.Length);
 				}
 				UpdateLinkText (l);
 			}
