@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
 			if (entry.LoadError.Length > 0)
-				treeBuilder.AddChild (new TreeViewItem (entry.LoadError));
+				treeBuilder.AddChild (new TreeViewItem (GLib.Markup.EscapeText (entry.LoadError)));
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
