@@ -276,32 +276,13 @@ namespace CSharpBinding
 		
 		static string GetCompilerName (TargetRuntime runtime, TargetFramework fx)
 		{
-			// The following regex foo gets the index of the
-			// last match of lib/lib32/lib64 and uses
-			// the text before that as the 'prefix' in order
-			// to find the right mcs to use.
-			
-			if (runtime is MonoTargetRuntime) {
-				string mcs;
-				switch (fx.ClrVersion) {
-				case ClrVersion.Net_1_1:
-					mcs = "mcs";
-					break;
-				case ClrVersion.Net_2_0:
-					mcs = "gmcs";
-					break;
-				case ClrVersion.Clr_2_1:
-					mcs = "smcs";
-					break;
-				default:
-					string message = "Cannot handle unknown runtime version ClrVersion.'" + fx.ClrVersion.ToString () + "'.";
-					LoggingService.LogError (message);
-					throw new Exception (message);
-				}
-				return runtime.GetToolPath (fx, mcs);
-				
-			} else {
-				return runtime.GetToolPath (fx, "csc.exe");
+			string csc = runtime.GetToolPath (fx, "csc");
+			if (csc != null)
+				return csc;
+			else {
+				string message = GettextCatalog.GetString ("C# compiler not found for {0}.", fx.Name);
+				LoggingService.LogError (message);
+				throw new Exception (message);
 			}
 		}
 		
