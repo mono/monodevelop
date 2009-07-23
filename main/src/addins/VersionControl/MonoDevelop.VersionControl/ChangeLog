@@ -1,3 +1,10 @@
+2009-07-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	* MonoDevelop.VersionControl.Views/CellRendererDiff.cs: The
+	  status view now supports double clicking on a line of a diff
+	  to jump to that line in the modified file.
+
 2009-07-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Views/StatusView.cs:

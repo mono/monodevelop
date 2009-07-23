@@ -180,6 +180,7 @@ namespace MonoDevelop.VersionControl.Views
 			scroller.HscrollbarPolicy = PolicyType.Automatic;
 			scroller.VscrollbarPolicy = PolicyType.Automatic;
 			filelist.RowActivated += OnRowActivated;
+			filelist.DiffLineActivated += OnDiffLineActivated;
 			
 			CellRendererToggle cellToggle = new CellRendererToggle();
 			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
@@ -558,6 +559,11 @@ namespace MonoDevelop.VersionControl.Views
 			OnOpen (null, null);
 		}
 		
+		void OnDiffLineActivated (object o, EventArgs a)
+		{
+			OnOpen (null, null);
+		}
+		
 		void OnCommitToggledHandler(object o, ToggledArgs args) {
 			TreeIter pos;
 			if (!filestore.GetIterFromString (out pos, args.Path))
@@ -777,8 +783,13 @@ namespace MonoDevelop.VersionControl.Views
 			string[] files = GetCurrentFiles ();
 			if (files.Length == 0)
 				return;
-			else if (files.Length == 1)
-				IdeApp.Workbench.OpenDocument (files [0], true);
+			else if (files.Length == 1) {
+				TreePath[] rows = filelist.Selection.GetSelectedRows ();
+				int line = -1;
+				if (rows.Length == 1 && rows [0].Depth == 2)
+					line = diffRenderer.GetSelectedLine (rows[0]);
+				IdeApp.Workbench.OpenDocument (files [0], line, 0, true);
+			}
 			else {
 				AlertButton openAll = new AlertButton (GettextCatalog.GetString ("_Open All")); 
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Do you want to open all {0} files?", files.Length), AlertButton.Cancel, openAll) == openAll) {
@@ -986,7 +997,7 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			CellRendererDiff rc = (CellRendererDiff)cell;
 			string[] lines = (string[])filestore.GetValue (iter, ColPath);
-			string path = (string)filestore.GetValue (iter, ColFullPath);
+			TreePath path = filestore.GetPath (iter);
 			if (filestore.IterDepth (iter) == 0) {
 				rc.InitCell (filelist, false, lines, path);
 			} else {
@@ -1030,6 +1041,25 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
 		{
+			bool keepPos = false;
+			double vpos = 0;
+			
+			TreePath path, cpath;
+			GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path);
+			
+			TreeViewColumn col;
+			GetCursor (out cpath, out col);
+			
+			if (path != null && path.Depth == 2) {
+				vpos = Vadjustment.Value;
+				keepPos = true;
+				if (Selection.PathIsSelected (path) && Selection.GetSelectedRows ().Length == 1 && evnt.Button == 1) {
+					if (evnt.Type == Gdk.EventType.TwoButtonPress && DiffLineActivated != null)
+						DiffLineActivated (this, EventArgs.Empty);
+					return true;
+				}
+			}
+			
 			bool res = true;
 			bool withModifider = (evnt.State & Gdk.ModifierType.ShiftMask) != 0 || (evnt.State & Gdk.ModifierType.ControlMask) != 0;
 			if (!IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y) || (Selection.GetSelectedRows ().Length <= 1) || withModifider || evnt.Button != 3)
@@ -1039,9 +1069,11 @@ namespace MonoDevelop.VersionControl.Views
 				if (ShowContextMenu != null)
 					ShowContextMenu (this, EventArgs.Empty);
 			}
+			if (keepPos)
+				Vadjustment.Value = vpos;
 			return res;
 		}
-
+		
 		bool IsClickedNodeSelected (int x, int y)
 		{
 			Gtk.TreePath path;
@@ -1057,7 +1089,27 @@ namespace MonoDevelop.VersionControl.Views
 				ShowContextMenu (this, EventArgs.Empty);
 			return true;
 		}
+		
+		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
+		{
+			TreePath path;
+			GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path);
+
+			// Diff cells need to be redrawn so they can show the updated selected line
+			if (path != null && path.Depth == 2)
+				QueueDraw ();
+			
+			return base.OnMotionNotifyEvent (evnt);
+		}
+		
+		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
+		{
+			QueueDraw ();
+			return base.OnScrollEvent (evnt);
+		}
+
 
 		public event EventHandler ShowContextMenu;
+		public event EventHandler DiffLineActivated;
 	}
 }

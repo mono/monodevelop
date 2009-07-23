@@ -15,6 +15,10 @@ namespace MonoDevelop.VersionControl.Views
 		Pango.FontDescription font;
 		bool diffMode;
 		int width, height, lineHeight;
+		string[] lines;		
+		int selectedLine = -1;
+		TreePath selctedPath;
+		TreePath path;
 
 		public CellRendererDiff()
 		{
@@ -44,13 +48,14 @@ namespace MonoDevelop.VersionControl.Views
 		public void Reset ()
 		{
 		}
-		string[] lines;
-		public void InitCell (Widget container, bool diffMode, string[] lines, string path)
+
+		public void InitCell (Widget container, bool diffMode, string[] lines, TreePath path)
 		{
 			if (isDisposed)
 				return;
 			this.lines = lines;
 			this.diffMode = diffMode;
+			this.path = path;
 			
 			if (diffMode) {
 				if (lines != null && lines.Length > 0) {
@@ -95,8 +100,18 @@ namespace MonoDevelop.VersionControl.Views
 			if (isDisposed)
 				return;
 			if (diffMode) {
+				
+				if (path.Equals (selctedPath)) {
+					selectedLine = -1;
+					selctedPath = null;
+				}
+				
 				int w, maxy;
 				window.GetSize (out w, out maxy);
+				
+				Gdk.ModifierType mask;
+				int px, py;
+				((Gdk.Window)window).GetPointer (out px, out py, out mask);
 				
 				int recty = cell_area.Y;
 				int recth = cell_area.Height - 1;
@@ -121,22 +136,43 @@ namespace MonoDevelop.VersionControl.Views
 				infoGC.RgbFgColor = new Color (0xa5, 0x2a, 0x2a);
 				
 				int y = cell_area.Y + 2;
+				int cline = 1;
+				bool inHeader = true;
 				
 				for (int n=0; n<lines.Length; n++, y += lineHeight) {
-					if (y + lineHeight < 0)
-						continue;
-					if (y > maxy)
-						break;
+					
 					string line = lines [n];
 					if (line.Length == 0)
 						continue;
 					
+					char tag = line [0];
+
+					// Keep track of the real file line
+					int thisLine = cline;
+					if (tag == '@') {
+						int l = ParseCurrentLine (line);
+						if (l != -1) cline = thisLine = l;
+						inHeader = false;
+					} else if (tag != '-' && !inHeader)
+						cline++;
+					
+					if (y + lineHeight < 0)
+						continue;
+					if (y > maxy)
+						break;
+					
 					Gdk.GC gc;
-					switch (line[0]) {
-					case '-': gc = removedGC; break;
-					case '+': gc = addedGC; break;
-					case '@': gc = infoGC; break;
-					default: gc = normalGC; break;
+					switch (tag) {
+						case '-': gc = removedGC; break;
+						case '+': gc = addedGC; break;
+						case '@': gc = infoGC; break;
+						default: gc = normalGC; break;
+					}
+
+					if (px >= cell_area.X && px <= cell_area.Right && py >= y && py < y + lineHeight) {
+						window.DrawRectangle (widget.Style.BaseGC (Gtk.StateType.Prelight), true, cell_area.X, y, cell_area.Width - 1, lineHeight);
+						selectedLine = thisLine;
+						selctedPath = path;
 					}
 					
 					layout.SetText (line);
@@ -172,7 +208,26 @@ namespace MonoDevelop.VersionControl.Views
 			else
 				return StateType.Normal;
 		}
-	
 		
-}
+		int ParseCurrentLine (string line)
+		{
+			int i = line.IndexOf ('+');
+			if (i == -1) return -1;
+			i++;
+			int j = line.IndexOf (',', i);
+			if (j == -1) return -1;
+			int cline;
+			if (!int.TryParse (line.Substring (i, j - i), out cline))
+			    return -1;
+			return cline;
+		}
+		
+		public int GetSelectedLine (TreePath cpath)
+		{
+			if (cpath.Equals (selctedPath))
+				return selectedLine;
+			else
+				return -1;
+		}
+	}
 }
