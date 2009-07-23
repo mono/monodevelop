@@ -55,6 +55,8 @@ namespace MonoDevelop.Core.Assemblies
 					toolName = "gmcs";
 				else if (framework.ClrVersion == ClrVersion.Clr_2_1)
 					toolName = "smcs";
+				else if (framework.ClrVersion == ClrVersion.Net_4_0)
+					toolName = "dmcs";
 			}
 			else if (toolName == "resgen") {
 				if (framework.ClrVersion == ClrVersion.Net_1_1)

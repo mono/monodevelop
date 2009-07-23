@@ -1,5 +1,6 @@
 <TargetFramework id="4.0" _name="Mono / .NET 4.0" clrVersion="Net_4_0" CompatibleWithFramework="3.5">
 <Assemblies>
+  <Assembly name="System" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Activities" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Activities.Core.Design" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Activities.Design.Base" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
@@ -83,7 +84,6 @@
   <Assembly name="Microsoft.Build.Utilities" />
   <Assembly name="Microsoft.VisualBasic.Compatibility.Data" version="10.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="Microsoft.VisualBasic.Compatibility" version="10.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
-  <Assembly name="System" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="mscorlib" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="ICSharpCode.SharpZipLib" />
   <Assembly name="Accessibility" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
