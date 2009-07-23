@@ -380,7 +380,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			IMethod method = searchedMember as IMethod;
 			if (method != null && method.IsConstructor) {
-				ResolveResult resolveResult = resolver.ResolveExpression (objectCreateExpression, new DomLocation (objectCreateExpression.StartLocation.Y, objectCreateExpression.StartLocation.X));
+				ResolveResult resolveResult = resolver.ResolveExpression (objectCreateExpression, new DomLocation (objectCreateExpression.StartLocation.Y - 1, objectCreateExpression.StartLocation.X - 1));
 				if (resolveResult != null && resolveResult.ResolvedType != null) {
 					IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
 					int pCount = objectCreateExpression.Parameters != null ? objectCreateExpression.Parameters.Count : 0;
@@ -394,12 +394,29 @@ namespace MonoDevelop.CSharpBinding
 			return base.VisitObjectCreateExpression (objectCreateExpression, data);
 		}
 		
+		public override object VisitTryCatchStatement (TryCatchStatement tryCatchStatement, object data)
+		{
+			if (searchedMember is LocalVariable) {
+				foreach (CatchClause catchClause in tryCatchStatement.CatchClauses) {
+					if (catchClause == null)
+						continue;
+
+					if (catchClause.TypeReference != null && catchClause.VariableName == searchedMemberName) {
+						int line, col;
+						SearchText (searchedMemberName, catchClause.StartLocation.Line, catchClause.StartLocation.Column, out line, out col);
+						AddUniqueReference (line, col, searchedMemberName);
+					}
+				}
+			}
+			return base.VisitTryCatchStatement(tryCatchStatement, data);
+		}
+		
 		public override object VisitIdentifierExpression (IdentifierExpression idExp, object data)
 		{
 			if (idExp.Identifier == searchedMemberName) {
 				int line = idExp.StartLocation.Y;
 				int col = idExp.StartLocation.X;
-				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line, col));
+				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line -  1, col - 1));
 				
 				if (searchedMember is IType) {
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
@@ -441,7 +458,7 @@ namespace MonoDevelop.CSharpBinding
 				int line = typeReference.StartLocation.Y;
 				int col  = typeReference.StartLocation.X;
 				ExpressionResult res = new ExpressionResult ("new " + typeReference.ToString () + "()");
-				ResolveResult resolveResult = resolver.Resolve (res, new DomLocation (line, col));
+				ResolveResult resolveResult = resolver.Resolve (res, new DomLocation (line - 1, col - 1));
 				
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				IType resolvedType = cls != null ? resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, cls, resolver.CallingType)) : null;
@@ -454,7 +471,7 @@ namespace MonoDevelop.CSharpBinding
 		public override object VisitMemberReferenceExpression (MemberReferenceExpression fieldExp, object data)
 		{
 			if (!(searchedMember is IParameter) && fieldExp.MemberName == searchedMemberName) {
-				ResolveResult resolveResult= resolver.ResolveExpression (fieldExp, new DomLocation (fieldExp.EndLocation.Y, fieldExp.EndLocation.X));
+				ResolveResult resolveResult= resolver.ResolveExpression (fieldExp, new DomLocation (fieldExp.EndLocation.Y - 1, fieldExp.EndLocation.X - 1));
 				MemberResolveResult mrr = resolveResult as MemberResolveResult;
 				if (mrr != null) {
 					if (mrr.ResolvedMember.Location == searchedMemberLocation && mrr.ResolvedMember.DeclaringType.FullName == ((IMember)searchedMember).DeclaringType.FullName) {
@@ -492,7 +509,7 @@ namespace MonoDevelop.CSharpBinding
 			if (searchedMember is IMethod) {
 				IMethod method = (IMethod)searchedMember;
 				if (MightBeInvocation (invokeExp.TargetObject, method) && invokeExp.Arguments.Count == method.Parameters.Count) {
-					ResolveResult resolveResult = resolver.ResolveExpression (invokeExp, new DomLocation (invokeExp.StartLocation.Y, invokeExp.StartLocation.X));
+					ResolveResult resolveResult = resolver.ResolveExpression (invokeExp, new DomLocation (invokeExp.StartLocation.Y - 1, invokeExp.StartLocation.X - 1));
 					IMethod resolvedMethod = null;
 					if (resolveResult is MethodResolveResult) {
 						MethodResolveResult mrr = (MethodResolveResult)resolveResult;

@@ -1,5 +1,10 @@
 2009-07-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 524318 - Cannot
+	  rename caught exception declarations".
+
+2009-07-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Syntax/CSharpSyntaxMode.cs:
 	* Parser/FindMemberAstVisitor.cs:
 	* Syntax/HighlightPropertiesSemanticRule.cs: Removed debug
