@@ -1,5 +1,10 @@
 2009-07-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Rewriten.
+	  Patch by Viktoria Dudka.
+
+2009-07-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:
 	  Properly escape error text, since it may contain markup
 	  chars.
