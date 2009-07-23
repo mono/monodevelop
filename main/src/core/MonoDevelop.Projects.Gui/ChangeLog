@@ -1,3 +1,10 @@
+2009-07-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Add missing collection length check. Fixes bug #513867 -
+	  ArgumentOutOfRangeException when closing solution properties
+	  dialog.
+
 2009-07-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:

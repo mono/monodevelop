@@ -164,7 +164,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			sol.MultiStartupItems.Clear ();
 			
 			if (sol.SingleStartup) {
-				if (comboItems.Active != -1)
+				if (comboItems.Active != -1 && startupItems.Count > 0)
 					sol.StartupItem = startupItems [comboItems.Active];
 				else
 					sol.StartupItem = null;
