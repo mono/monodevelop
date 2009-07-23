@@ -400,7 +400,7 @@ namespace MonoDevelop.CSharpBinding
 				int line = idExp.StartLocation.Y;
 				int col = idExp.StartLocation.X;
 				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line, col));
-				Console.WriteLine (line + ":" + result);
+				
 				if (searchedMember is IType) {
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
 					if (item == null || item is IType && ((IType) item).FullName == ((IType)searchedMember).FullName) {

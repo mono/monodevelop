@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharpBinding
 					}
 					
 					IMember item = GetLanguageItem (doc, i);
-					Console.WriteLine ("item" + item);
+					
 					if (item is IField) {
 						int propertyLength = item.Name.Length;
 						

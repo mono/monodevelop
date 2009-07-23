@@ -275,7 +275,7 @@ namespace MonoDevelop.CSharpBinding
 								previousResult |= ((ElseIfBlockSpan)span).IsValid;
 							}
 						}
-						Console.WriteLine ("prev:" + previousResult);
+						
 						result = !previousResult;
 					}
 					
