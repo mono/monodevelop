@@ -161,15 +161,21 @@ namespace Mono.TextEditor
 			set;
 		}
 		
+		public bool SetCaretPosition {
+			get;
+			set;
+		}
+		
 		TextLinkTooltipProvider tooltipProvider;
 		public TextLinkEditMode (TextEditor Editor, int baseOffset, List<TextLink> links)
 		{
 			this.Editor = Editor;
-			this.links  = links;
+			this.links = links;
 			this.baseOffset = baseOffset;
 			this.endOffset = Editor.Caret.Offset;
 			tooltipProvider = new TextLinkTooltipProvider (this);
 			this.Editor.TooltipProviders.Insert (0, tooltipProvider);
+			this.SetCaretPosition = true;
 		}
 		
 		TextLink closedLink = null;
@@ -246,7 +252,7 @@ namespace Mono.TextEditor
 					line.RemoveMarker (typeof(TextLinkMarker));
 				}
 			}
-			if (resetCaret)
+			if (SetCaretPosition && resetCaret)
 				Editor.Caret.Offset = endOffset;
 			Editor.CurrentMode = OldMode;
 			Editor.Document.CommitUpdateAll ();

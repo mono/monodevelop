@@ -1,5 +1,10 @@
 2009-07-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs: Fixed "Bug 524313 -
+	  Wrong caret position when exiting local rename link mode".
+
+2009-07-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: Added some null checks.
 
 2009-07-22  Mike Krüger  <mkrueger@novell.com>
