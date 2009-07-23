@@ -55,6 +55,7 @@ namespace MonoDevelop.WelcomePage
 			scroller = new ScrolledWindow ();
 			widget = new WelcomePageFallbackWidget (this);
 			scroller.AddWithViewport (widget);
+			scroller.ShadowType = ShadowType.None;
 			scroller.Show ();
 		}
 		
@@ -103,9 +104,11 @@ namespace MonoDevelop.WelcomePage
 			linkHoverLeaveEventHandler = new Gtk.LeaveNotifyEventHandler (handleHoverLeave);
 			linkHoverEnterEventHandler = new Gtk.EnterNotifyEventHandler (handleHoverEnter);
 			linkClickedEventHandler = new EventHandler (HandleLink);
-			
+
 			string bgPath = AddinManager.CurrentAddin.GetFilePath ("mono-bg.png");
-			bgPixbuf = new Gdk.Pixbuf (bgPath);
+			using (FileStream fst = new FileStream (bgPath, FileMode.Open)) {
+				bgPixbuf = new Gdk.Pixbuf (fst);
+			}
 			
 			alignment1.SetPadding ((uint) (logoOffset + 70 + logoOffset), 0, (uint) logoOffset, 0);
 			ModifyBg (StateType.Normal, Style.White);
