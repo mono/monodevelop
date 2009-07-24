@@ -152,7 +152,7 @@ namespace Mono.TextEditor
 		
 		public bool ShouldStartTextLinkMode {
 			get {
-				return links.Any (l => l.IsEditable);
+				return !(Editor.CurrentMode is TextLinkEditMode) && links.Any (l => l.IsEditable);
 			}
 		}
 		

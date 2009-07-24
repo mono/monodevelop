@@ -129,7 +129,6 @@ namespace Mono.TextEditor
 		@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 		to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 		if (@from < to) {
-			Console.WriteLine ("draw " + @from + " to " + to);
 			using (Gdk.GC gc = new Gdk.GC(win)) {
 				gc.RgbFgColor = selected ? editor.ColorStyle.Selection.Color : editor.ColorStyle.GetChunkStyle (style).Color;
 				win.DrawLine (gc, @from, y + editor.LineHeight - 1, to, y + editor.LineHeight - 1);

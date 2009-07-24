@@ -592,6 +592,8 @@ namespace Mono.TextEditor
 		
 		public void StackUndoToDepth (int depth)
 		{
+			if (undoStack.Count == depth)
+				return;
 			AtomicUndoOperation atomicUndo = new AtomicUndoOperation ();
 			while (undoStack.Count > depth) {
 				atomicUndo.Operations.Insert (0, undoStack.Pop ());
