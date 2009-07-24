@@ -35,7 +35,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects;
-using MonoDevelop.DesignerSupport.PropertyGrid;
+using MonoDevelop.DesignerSupport;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Profiling
