@@ -1,5 +1,14 @@
 2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: When
+	  creating a project, make sure that the GAC references added
+	  to the project actually exist. If they don't, use the
+	  closest installed version. Fixes bug #483981 - [Regression]
+	  C# Library projects have a bad reference to the System
+	  library.
+
+2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
