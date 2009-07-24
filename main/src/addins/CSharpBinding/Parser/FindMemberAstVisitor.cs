@@ -244,7 +244,7 @@ namespace MonoDevelop.CSharpBinding
 			line = column = -1;
 			while (position + searchedMemberName.Length < file.Length) {
 				if ((position == 0 || !IsIdentifierPart (file.GetCharAt (position - 1))) && 
-				    (position == file.Length - 1 || !IsIdentifierPart (file.GetCharAt (position + 1))) &&
+				    (position + searchedMemberName.Length >= file.Length  || !IsIdentifierPart (file.GetCharAt (position + searchedMemberName.Length))) &&
 				    file.GetText (position, position + searchedMemberName.Length) == searchedMemberName) {
 					file.GetLineColumnFromPosition (position, out line, out column);
 					return true;
@@ -415,7 +415,18 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
-			return base.VisitTryCatchStatement(tryCatchStatement, data);
+			return base.VisitTryCatchStatement (tryCatchStatement, data);
+		}
+		
+		public override object VisitForeachStatement(ForeachStatement foreachStatement, object data)
+		{
+			if (searchedMember is LocalVariable && foreachStatement.VariableName == searchedMemberName && searchedMemberLocation.Line == foreachStatement.StartLocation.Line - 1 && searchedMemberLocation.Column == foreachStatement.StartLocation.Column - 1) {
+				int line, col;
+				SearchText (searchedMemberName, foreachStatement.StartLocation.Line, foreachStatement.StartLocation.Column, out line, out col);
+				AddUniqueReference (line, col, searchedMemberName);
+			}
+			
+			return base.VisitForeachStatement (foreachStatement, data);
 		}
 		
 		public override object VisitIdentifierExpression (IdentifierExpression idExp, object data)

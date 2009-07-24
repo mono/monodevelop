@@ -1,5 +1,12 @@
 2009-07-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NRefactoryResolver.cs:
+	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 524877 -
+	  Incomplete rename with on variable declared in foreach
+	  statements".
+
+2009-07-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 524873 -
 	  Parameter renaming problem when type contains parameter
 	  name".
