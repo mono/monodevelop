@@ -309,14 +309,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void RenameItem (string newName)
 		{
-			if (!FileService.IsValidFileName(newName)) {
-				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
-				return;
-			}
-			
 			Project project = (Project) CurrentNode.DataItem;
-			project.Name = newName;
-			IdeApp.Workspace.Save();
+			IdeApp.ProjectOperations.RenameItem (project, newName);
 		}
 		
 		public override void ActivateItem ()

@@ -184,14 +184,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	{
 		public override void RenameItem (string newName)
 		{
-			if (newName.IndexOfAny (new char [] { '\'', '(', ')', '"', '{', '}', '|' } ) != -1) {
-				MessageService.ShowError (GettextCatalog.GetString ("Solution name may not contain any of the following characters: {0}", "', (, ), \", {, }, |"));
-				return;
-			}
-			
 			Solution sol = (Solution) CurrentNode.DataItem;
-			sol.Name = newName;
-			IdeApp.Workspace.Save();
+			IdeApp.ProjectOperations.RenameItem (sol, newName);
 		}
 		
 		public override DragOperation CanDragNode ()

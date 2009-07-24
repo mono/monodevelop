@@ -255,16 +255,17 @@ namespace MonoDevelop.Ide.Gui
 					handler.Open (member.HelpUrl);
 			}
 		}
-//		string GetClassFileName (IType cls)
-//		{
-//			if (cls.CompilationUnit.FileName != null)
-//				return cls.CompilationUnit.FileName;
-///*			if (cls.DeclaredIn is IType)
-//				return GetClassFileName ((IType) cls.DeclaredIn);
-//			else*/
-//				return null;
-//		}
-
+		
+		public void RenameItem (IWorkspaceFileObject item, string newName)
+		{
+			ProjectOptionsDialog.RenameItem (item, newName);
+			if (item is SolutionItem) {
+				Save (((SolutionItem)item).ParentSolution);
+			} else {
+				IdeApp.Workspace.Save ();
+				IdeApp.Workspace.SavePreferences ();
+			}
+		}
 		
 		public void Export (IWorkspaceObject item)
 		{
@@ -412,6 +413,7 @@ namespace MonoDevelop.Ide.Gui
 							}
 						}
 						Save (selectedProject);
+						IdeApp.Workspace.SavePreferences ();
 					}
 				} finally {
 					optionsDialog.Destroy ();
@@ -424,8 +426,10 @@ namespace MonoDevelop.Ide.Gui
 				try {
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
-					if (optionsDialog.Run () == (int) Gtk.ResponseType.Ok)
-						IdeApp.Workspace.Save ();
+					if (optionsDialog.Run () == (int) Gtk.ResponseType.Ok) {
+						Save (solution);
+						IdeApp.Workspace.SavePreferences (solution);
+					}
 				} finally {
 					optionsDialog.Destroy ();
 				}
@@ -445,6 +449,7 @@ namespace MonoDevelop.Ide.Gui
 							if (si.ParentSolution != null)
 								Save (si.ParentSolution);
 						}
+						IdeApp.Workspace.SavePreferences ();
 					}
 				} finally {
 					optionsDialog.Destroy ();

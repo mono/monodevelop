@@ -744,7 +744,7 @@ namespace MonoDevelop.Ide.Gui
 			return Path.Combine (Path.GetDirectoryName (item.FileName), Path.ChangeExtension (item.FileName, ".userprefs"));
 		}
 		
-		void SavePreferences (WorkspaceItem item)
+		public void SavePreferences (WorkspaceItem item)
 		{
 			PropertyBag props = item.UserProperties;
 			

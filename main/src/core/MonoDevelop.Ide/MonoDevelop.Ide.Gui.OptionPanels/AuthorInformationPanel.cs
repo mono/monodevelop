@@ -51,7 +51,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					solution.UserProperties.SetValue<AuthorInformation> ("AuthorInfo", ainfo);
 				else
 					solution.UserProperties.RemoveValue ("AuthorInfo");
-				IdeApp.Workspace.SavePreferences ();
 			}
 		}
 
