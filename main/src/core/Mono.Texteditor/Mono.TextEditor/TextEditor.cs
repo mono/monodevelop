@@ -320,12 +320,8 @@ namespace Mono.TextEditor
 			textViewMargin.Initialize ();
 			this.Realized += OptionsChanged;
 			
-			string data = "1 1 1 1" +
-			               "       c None" +
-			               " ";
-			Gdk.Color col = Gdk.Color.Zero;
-			using (Pixmap inv = Pixmap.CreateFromData (GdkWindow, data, 1, 1, 1, col, col)) {
-				invisibleCursor = new Cursor (inv, inv, col, col, 1, 1);
+			using (Pixmap inv = new Pixmap (null, 1, 1, 1)) {
+				invisibleCursor = new Cursor (inv, inv, Gdk.Color.Zero, Gdk.Color.Zero, 0, 0);
 			}
 		}
 		
