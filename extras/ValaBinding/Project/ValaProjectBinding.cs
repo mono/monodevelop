@@ -56,7 +56,7 @@ namespace MonoDevelop.ValaBinding
 		{
 			ProjectCreateInformation info = new ProjectCreateInformation ();
 			info.ProjectName = Path.GetFileNameWithoutExtension (sourceFile);
-			info.CombinePath = Path.GetDirectoryName (sourceFile);
+			info.SolutionPath = Path.GetDirectoryName (sourceFile);
 			info.ProjectBasePath = Path.GetDirectoryName (sourceFile);
 			
 			string language = "Vala";
