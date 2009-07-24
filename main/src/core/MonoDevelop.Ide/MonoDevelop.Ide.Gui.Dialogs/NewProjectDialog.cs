@@ -218,7 +218,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			foreach (ProjectTemplate template in ProjectTemplate.ProjectTemplates) {
 				// When creating a project (not a solution) hide solutions that don't have at least one project
-				if (!newSolution && template.CombineDescriptor.EntryDescriptors.Length == 0)
+				if (!newSolution && template.SolutionDescriptor.EntryDescriptors.Length == 0)
 					continue;
 				TemplateItem titem = new TemplateItem(template);
 				Category cat = GetCategory(titem.Template.Category);
@@ -450,10 +450,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		ProjectCreateInformation CreateProjectCreateInformation ()
 		{
 			ProjectCreateInformation cinfo = new ProjectCreateInformation ();
-			cinfo.CombinePath     = SolutionLocation;
+			cinfo.SolutionPath     = SolutionLocation;
 			cinfo.ProjectBasePath = ProjectLocation;
 			cinfo.ProjectName     = txt_name.Text;
-			cinfo.CombineName     = CreateSolutionDirectory ? txt_subdirectory.Text : txt_name.Text;
+			cinfo.SolutionName     = CreateSolutionDirectory ? txt_subdirectory.Text : txt_name.Text;
 			return cinfo;
 		}
 
@@ -464,7 +464,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				ProjectTemplate ptemplate = (ProjectTemplate) TemplateView.CurrentlySelected;
 				lbl_template_descr.Text = StringParserService.Parse (ptemplate.Description);
 				
-				if (ptemplate.CombineDescriptor.EntryDescriptors.Length == 0) {
+				if (ptemplate.SolutionDescriptor.EntryDescriptors.Length == 0) {
 					txt_subdirectory.Sensitive = false;
 					chk_combine_directory.Sensitive = false;
 					lbl_subdirectory.Sensitive = false;

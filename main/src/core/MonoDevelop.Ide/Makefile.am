@@ -329,7 +329,6 @@ FILES =  \
 	MonoDevelop.Ide.Templates/ClrVersionFileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs \
-	MonoDevelop.Ide.Templates/CombineDescriptor.cs \
 	MonoDevelop.Ide.Templates/DirectoryTemplate.cs \
 	MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/FileTemplate.cs \
@@ -344,6 +343,7 @@ FILES =  \
 	MonoDevelop.Ide.Templates/ProjectTemplate.cs \
 	MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs \
+	MonoDevelop.Ide.Templates/SolutionDescriptor.cs \
 	MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
 	MonoDevelop.Ide/Services.cs

@@ -274,12 +274,12 @@
     <Compile Include="MonoDevelop.Ide.Templates\FileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FileTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\INewFileCreator.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\CombineDescriptor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectDescriptor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TextFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\CodeDomFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\SingleFileDescriptionTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\SolutionDescriptor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ResourceFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AbstractBaseViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AbstractPadContent.cs" />

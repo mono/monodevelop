@@ -59,8 +59,8 @@ namespace MonoDevelop.Ide.Templates
 		private string createdSolutionName;
 		private ProjectCreateInformation createdProjectInformation = null;
 
-		private CombineDescriptor solutionDescriptor = null;
-		public CombineDescriptor CombineDescriptor
+		private SolutionDescriptor solutionDescriptor = null;
+		public SolutionDescriptor SolutionDescriptor
 		{
 			get { return solutionDescriptor; }
 		}
@@ -198,7 +198,7 @@ namespace MonoDevelop.Ide.Templates
 				throw new InvalidOperationException ("Combine element not found");
 			}
 			else {
-				solutionDescriptor = CombineDescriptor.CreateCombineDescriptor (xmlDocument.DocumentElement ["Combine"]);
+				solutionDescriptor = SolutionDescriptor.CreateSolutionDescriptor (xmlDocument.DocumentElement ["Combine"]);
 			}
 
 			if (xmlDocument.DocumentElement ["Actions"] != null) {
