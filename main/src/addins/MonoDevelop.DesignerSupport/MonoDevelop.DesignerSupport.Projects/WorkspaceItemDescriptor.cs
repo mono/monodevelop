@@ -28,6 +28,7 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
@@ -45,7 +46,9 @@ namespace MonoDevelop.DesignerSupport.Projects
 		[LocalizedDescription ("Name of the item.")]
 		public string Name {
 			get { return item.Name; }
-			set { item.Name = value; }
+			set {
+				IdeApp.ProjectOperations.RenameItem (item, value);
+			}
 		}
 		
 		[LocalizedCategory ("Misc")]

@@ -28,6 +28,7 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
@@ -45,7 +46,12 @@ namespace MonoDevelop.DesignerSupport.Projects
 		[LocalizedDescription ("Name of the solution item.")]
 		public string Name {
 			get { return entry.Name; }
-			set { entry.Name = value; }
+			set {
+				if (entry is IWorkspaceFileObject)
+					IdeApp.ProjectOperations.RenameItem ((IWorkspaceFileObject)entry, value);
+				else
+					entry.Name = value; 
+			}
 		}
 		
 		[LocalizedCategory ("Misc")]
