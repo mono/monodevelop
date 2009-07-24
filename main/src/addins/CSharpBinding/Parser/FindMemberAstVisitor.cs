@@ -100,6 +100,7 @@ namespace MonoDevelop.CSharpBinding
 			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (file.Text));
 			parser.Lexer.EvaluateConditionalCompilation = true;
 			parser.Parse ();
+			resolver.SetupParsedCompilationUnit (parser.CompilationUnit);
 			VisitCompilationUnit (parser.CompilationUnit, null);
 			
 			List<HashSet<string>> usedIdentifiers = GetUsedDefineCombinations (parser);
@@ -109,6 +110,7 @@ namespace MonoDevelop.CSharpBinding
 					parser.Lexer.ConditionalCompilationSymbols.Add (define, true);
 				parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (file.Text));
 				parser.Parse ();
+				
 				VisitCompilationUnit (parser.CompilationUnit, null);
 			}
 		}
@@ -335,7 +337,9 @@ namespace MonoDevelop.CSharpBinding
 				}
 				if (parent != null &&
 				    parent.StartLocation.Line == searchedVariable.DeclaringMember.Location.Line && 
-				    parent.StartLocation.Column == searchedVariable.DeclaringMember.Location.Column) {
+				    parent.StartLocation.Column == searchedVariable.DeclaringMember.Location.Column &&
+				    searchedVariable.Region.Start.Line  == localVariableDeclaration.StartLocation.Line - 1 && 
+				    searchedVariable.Region.Start.Column  == localVariableDeclaration.StartLocation.Column - 1) {
 					foreach (VariableDeclaration decl in localVariableDeclaration.Variables) {
 						if (decl.Name == searchedMemberName) 
 							AddUniqueReference (decl.StartLocation.Y, decl.StartLocation.X, searchedMemberName);
@@ -407,8 +411,9 @@ namespace MonoDevelop.CSharpBinding
 				foreach (CatchClause catchClause in tryCatchStatement.CatchClauses) {
 					if (catchClause == null)
 						continue;
-
-					if (catchClause.TypeReference != null && catchClause.VariableName == searchedMemberName) {
+					LocalVariable searchedVariable = (LocalVariable)searchedMember;
+					
+					if (catchClause.TypeReference != null && catchClause.VariableName == searchedMemberName && searchedVariable.Region.Start.Line == catchClause.StartLocation.Line - 1 && searchedVariable.Region.Start.Column == catchClause.StartLocation.Column - 1) {
 						int line, col;
 						SearchText (searchedMemberName, catchClause.StartLocation.Line, catchClause.StartLocation.Column, out line, out col);
 						AddUniqueReference (line, col, searchedMemberName);
@@ -434,8 +439,8 @@ namespace MonoDevelop.CSharpBinding
 			if (idExp.Identifier == searchedMemberName) {
 				int line = idExp.StartLocation.Y;
 				int col = idExp.StartLocation.X;
-				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line -  1, col - 1));
-				
+				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line - 1, col - 1));
+//				Console.WriteLine ("result:" + result);
 				if (searchedMember is IType) {
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
 					if (item == null || item is IType && ((IType) item).FullName == ((IType)searchedMember).FullName) {
@@ -445,7 +450,9 @@ namespace MonoDevelop.CSharpBinding
 				} else if (searchedMember is LocalVariable && result is LocalVariableResolveResult) {
 					LocalVariable avar = searchedMember as LocalVariable;
 					LocalVariable var = ((LocalVariableResolveResult)result).LocalVariable;
+					
 					if (var != null && avar.DeclaringMember.FullName == var.DeclaringMember.FullName) {
+//						Console.WriteLine (avar.Region.Start.Line + "---" +  var.Region.Start.Line);
 						if (Math.Abs (avar.Region.Start.Line - var.Region.Start.Line) <= 1)
 							AddUniqueReference (line, col, idExp.Identifier);
 					}

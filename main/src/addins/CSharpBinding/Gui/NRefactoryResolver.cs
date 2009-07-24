@@ -189,7 +189,7 @@ namespace MonoDevelop.CSharpBinding
 		int lookupVariableLine = 0;
 		internal void SetupParsedCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit unit)
 		{
-			lookupVariableLine = 0;
+			lookupVariableLine = -1; // all compilation unit lines are 1 based
 			memberCompilationUnit = unit;
 			lookupTableVisitor.VisitCompilationUnit (unit, null);
 			setupLookupTableVisitor = true;
@@ -686,65 +686,70 @@ namespace MonoDevelop.CSharpBinding
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = null;
+//					Console.WriteLine ("--- RP:" + this.resolvePosition + "/" + pair.Value.Count);
 					foreach (LocalLookupVariable v2 in pair.Value) {
-						if (new DomLocation (lookupVariableLine + v2.StartPos.Line, v2.StartPos.Column) > this.resolvePosition || (!v2.EndPos.IsEmpty && new DomLocation (lookupVariableLine + v2.EndPos.Line, v2.EndPos.Column) < this.resolvePosition))
+						DomLocation varStartPos = new DomLocation (lookupVariableLine + v2.StartPos.Line, v2.StartPos.Column - 1);
+						DomLocation varEndPos   = new DomLocation (lookupVariableLine + v2.EndPos.Line, v2.EndPos.Column - 1);
+//						Console.WriteLine (v2.Name + ":" + varStartPos + " <> " + varEndPos);
+						if (varStartPos > this.resolvePosition || (!v2.EndPos.IsEmpty && varEndPos < this.resolvePosition))
 							continue;
 						var = v2;
 					}
-					if (var != null) {
-						IReturnType varType = null;
-						IReturnType varTypeUnresolved = null;
-						if (var.IsQueryContinuation) {
-							QueryExpression query = var.Initializer as QueryExpression;
-							
-							QueryExpressionGroupClause grouBy = query.SelectOrGroupClause as QueryExpressionGroupClause;
-							DomLocation old = resolvePosition;
-							try {
-								resolvePosition = new DomLocation (lookupVariableLine + grouBy.Projection.StartLocation.Line,
-								                                   grouBy.Projection.StartLocation.Column);
-								ResolveResult initializerResolve = visitor.Resolve (grouBy.Projection);
-								ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
-								DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] { 
-								GetEnumerationMember (initializerResolve.ResolvedType), groupByResolve.ResolvedType}));
-							varTypeUnresolved = varType = resolved;
-							} finally {
-								resolvePosition = old;
+//					Console.WriteLine ("var:" + var);
+					if (var == null)
+						continue;
+					IReturnType varType = null;
+					IReturnType varTypeUnresolved = null;
+					if (var.IsQueryContinuation) {
+						QueryExpression query = var.Initializer as QueryExpression;
+						
+						QueryExpressionGroupClause grouBy = query.SelectOrGroupClause as QueryExpressionGroupClause;
+						DomLocation old = resolvePosition;
+						try {
+							resolvePosition = new DomLocation (lookupVariableLine + grouBy.Projection.StartLocation.Line,
+							                                   grouBy.Projection.StartLocation.Column);
+							ResolveResult initializerResolve = visitor.Resolve (grouBy.Projection);
+							ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
+							DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] { 
+							GetEnumerationMember (initializerResolve.ResolvedType), groupByResolve.ResolvedType}));
+						varTypeUnresolved = varType = resolved;
+						} finally {
+							resolvePosition = old;
+						}
+						
+					} else if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
+						if (var.ParentLambdaExpression != null) {
+							ResolveResult lambdaResolve = ResolveLambda (visitor, var.ParentLambdaExpression);
+							if (lambdaResolve != null) {
+								varType           = lambdaResolve.ResolvedType;
+								varTypeUnresolved = lambdaResolve.UnresolvedType;
+							} else {
+								varType = varTypeUnresolved = DomReturnType.Void;
 							}
-							
-						} else if ((var.TypeRef == null || var.TypeRef.Type == "var" || var.TypeRef.IsNull)) {
-							if (var.ParentLambdaExpression != null) {
-								ResolveResult lambdaResolve = ResolveLambda (visitor, var.ParentLambdaExpression);
-								if (lambdaResolve != null) {
-									varType           = lambdaResolve.ResolvedType;
-									varTypeUnresolved = lambdaResolve.UnresolvedType;
-								} else {
-									varType = varTypeUnresolved = DomReturnType.Void;
-								}
-							}
-							if (var.Initializer != null) {
-								ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
-								varType           = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.ResolvedType)   : initializerResolve.ResolvedType;
-								varTypeUnresolved = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
+						}
+						if (var.Initializer != null) {
+							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
+							varType           = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.ResolvedType)   : initializerResolve.ResolvedType;
+							varTypeUnresolved = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
 //								Console.WriteLine ("resolved type:" + initializerResolve.ResolvedType + " is loop : " + var.IsLoopVariable);
 //								Console.WriteLine (varType);
 //								Console.WriteLine ("----------");
-							}
-						} else { 
-							varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 						}
-						//Console.WriteLine ("-----");
-						//Console.WriteLine (varType);
-						varType = ResolveType (varType);
-						result = new LocalVariableResolveResult (
-							new LocalVariable (CallingMember, identifier, varType,
-								new DomRegion (lookupVariableLine + var.StartPos.Line - 1, var.StartPos.Column - 1, 
-								               lookupVariableLine + var.StartPos.Line - 1, var.EndPos.Column - 1)),
-								var.IsLoopVariable);
-						
-						result.ResolvedType = varType;
-						result.UnresolvedType = varTypeUnresolved;
-						goto end;
+					} else { 
+						varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 					}
+					//Console.WriteLine ("-----");
+					//Console.WriteLine (varType);
+					varType = ResolveType (varType);
+					result = new LocalVariableResolveResult (
+						new LocalVariable (CallingMember, identifier, varType,
+							new DomRegion (lookupVariableLine + var.StartPos.Line - 1, var.StartPos.Column - 1, 
+							               lookupVariableLine + var.StartPos.Line - 1, var.EndPos.Column - 1)),
+							var.IsLoopVariable);
+					
+					result.ResolvedType = varType;
+					result.UnresolvedType = varTypeUnresolved;
+					goto end;
 				}
 			}
 			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, this.CallingType, identifier));

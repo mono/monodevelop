@@ -1,6 +1,12 @@
 2009-07-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:
+	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 524879 - Rename
+	  on variable in "using" leaks into other scopes".
+
+2009-07-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
 	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 524877 -
 	  Incomplete rename with on variable declared in foreach
 	  statements".
