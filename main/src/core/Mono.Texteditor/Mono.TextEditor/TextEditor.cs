@@ -1203,6 +1203,7 @@ namespace Mono.TextEditor
 
 			int startY = startLine * this.LineHeight - reminder;
 			int curY = startY;
+			
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				LineSegment line = Document.GetLine (logicalLineNumber);

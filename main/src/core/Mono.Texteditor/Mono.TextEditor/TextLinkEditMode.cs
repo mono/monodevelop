@@ -438,7 +438,7 @@ namespace Mono.TextEditor
 		public Gtk.Window CreateTooltipWindow (TextEditor Editor, Gdk.ModifierType modifierState, object item)
 		{
 			TextLink link = item as TextLink;
-			if (link == null)
+			if (link == null || string.IsNullOrEmpty (link.Tooltip))
 				return null;
 			
 			TooltipWindow window = new TooltipWindow ();
@@ -548,8 +548,7 @@ namespace Mono.TextEditor
 					start < segment.EndOffset && segment.EndOffset < end;
 		}
 		
-	public bool DrawBackground (TextEditor Editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg
-	)
+	public bool DrawBackground (TextEditor Editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
 	{
 		int caretOffset = Editor.Caret.Offset - BaseOffset;
 
@@ -588,8 +587,11 @@ namespace Mono.TextEditor
 							int x2 = startXPos + x_pos2 - 1;
 							int y2 = y + Editor.LineHeight - 1;
 
-							if (!selected) 
-								win.DrawRectangle (fillGc, true, x1, y, x2 - x1, y2); 
+							if (!selected) {
+						//		Console.WriteLine ("Draw BG at " + y + "//" + Editor.GetTextEditorData ().VAdjustment.Value);
+						//		Console.WriteLine (Environment.StackTrace);
+								win.DrawRectangle (fillGc, true, x1, y, x2 - x1, Editor.LineHeight); 
+							}
 
 							win.DrawLine (rectangleGc, x1, y, x2, y);
 							win.DrawLine (rectangleGc, x1, y2, x2, y2);

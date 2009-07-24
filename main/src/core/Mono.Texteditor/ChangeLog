@@ -1,5 +1,13 @@
 2009-07-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor.PopupWindow/TooltipWindow.cs: Fixed "Bug
+	  524871 - Redraw issues in link mode". Fixed some tooltip
+	  issues.
+
+2009-07-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextMarker.cs:
 	* Mono.TextEditor/TextLinkEditMode.cs: Fixed "Bug 524870 - F2
 	  rename can be activated multiple times".

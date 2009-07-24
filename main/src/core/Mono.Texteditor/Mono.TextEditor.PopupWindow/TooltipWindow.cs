@@ -73,6 +73,7 @@ namespace Mono.TextEditor.PopupWindow
 			label.BreakOnCamelCasing = true;
 			label.BreakOnPunctuation = true;
 			this.BorderWidth = 3;
+			this.Title = "tooltip";
 			Add (label);
 			
 			EnableTransparencyControl = true;
