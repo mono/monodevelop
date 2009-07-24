@@ -1,3 +1,10 @@
+2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProjectBinding.cs: Track api
+	  changes.
+
+	* MonoDevelop.Projects/ProjectCreateInformation.cs: Rewritten.
+
 2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectReference.cs: When checking if a
