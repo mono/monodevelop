@@ -1,3 +1,12 @@
+2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	  When changing the name of a project, rename the project
+	  file.
+
+	* gtk-gui/objects.xml: Flush.
+
 2009-07-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:

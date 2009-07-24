@@ -26,11 +26,13 @@
 //
 
 using System;
+using System.IO;
 using System.Collections;
 using System.ComponentModel;
 
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui.Dialogs;
@@ -45,6 +47,61 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 		public ProjectOptionsDialog (Gtk.Window parentWindow, SolutionEntityItem project) : base (parentWindow, project)
 		{
 			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
+		}
+		
+		public static void RenameItem (IWorkspaceFileObject item, string newName)
+		{
+			if (newName == item.Name)
+				return;
+			
+			if (!FileService.IsValidFileName (newName)) {
+				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
+				return;
+			}
+			
+			FilePath oldFile = item.FileName;
+			string oldName = item.Name;
+			
+			try {
+				item.Name = newName;
+				item.NeedsReload = false;
+				if (oldFile != item.FileName) {
+					// File name changed, rename the project file
+					if (!RenameItemFile (oldFile, item.FileName)) {
+						item.Name = oldName;
+						item.NeedsReload = false;
+						return;
+					}
+				}
+				else if (oldFile.FileNameWithoutExtension == oldName) {
+					FilePath newFile = oldFile.ParentDirectory.Combine (newName + oldFile.Extension);
+					if (newFile != oldFile) {
+						if (!RenameItemFile (oldFile, newFile)) {
+							item.Name = oldName;
+							item.NeedsReload = false;
+							return;
+						}
+						item.FileName = newFile;
+					}
+				}
+			} catch (Exception ex) {
+				item.Name = oldName;
+				MessageService.ShowException (ex, GettextCatalog.GetString ("The project could not be renamed."));
+				return;
+			}
+			item.NeedsReload = false;
+		}
+		
+		static bool RenameItemFile (FilePath oldFile, FilePath newFile)
+		{
+			if (File.Exists (newFile)) {
+				string msg = GettextCatalog.GetString ("The file '{0}' already exist. Do you want to replace it?", newFile.FileName);
+				if (!MessageService.Confirm (msg, AlertButton.Replace))
+				    return false;
+				FileService.DeleteFile (newFile);
+			}
+			FileService.RenameFile (oldFile, newFile.FileName);
+			return true;
 		}
 	}
 }

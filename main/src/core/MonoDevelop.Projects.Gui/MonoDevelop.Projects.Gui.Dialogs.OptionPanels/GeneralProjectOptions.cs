@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core.Gui.Dialogs;
 
 using Gtk;
 
@@ -35,7 +36,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		public override Widget CreatePanelWidget()
 		{
-			return widget = new GeneralProjectOptionsWidget (ConfiguredProject);
+			return widget = new GeneralProjectOptionsWidget (ConfiguredProject, ParentDialog);
 		}
 		
 		public override void ApplyChanges()
@@ -47,12 +48,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	partial class GeneralProjectOptionsWidget : Gtk.Bin
 	{
 		Project project;
+		OptionsDialog dialog;
 
-		public GeneralProjectOptionsWidget (Project project)
+		public GeneralProjectOptionsWidget (Project project, OptionsDialog dialog)
 		{
 			Build ();
 			
 			this.project = project;
+			this.dialog = dialog;
 			
 			nameLabel.UseUnderline = true;
 			
@@ -96,9 +99,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				autoInsertNewFilesCheckButton.Active = false;
 		}
 		
-		public void  Store ()
+		public void Store ()
 		{
-			project.Name = projectNameEntry.Text;
+			if (projectNameEntry.Text != project.Name) {
+				ProjectOptionsDialog.RenameItem (project, projectNameEntry.Text);
+				if (project.ParentSolution != null)
+					dialog.ModifiedObjects.Add (project.ParentSolution);
+			}
+			
 			project.Description = projectDescriptionTextView.Buffer.Text;
 			if (project is DotNetProject) 
 				((DotNetProject)project).DefaultNamespace = projectDefaultNamespaceEntry.Text;
