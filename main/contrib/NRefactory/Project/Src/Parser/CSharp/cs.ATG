@@ -387,7 +387,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	"{"
 	ClassBody
 	"}"
-	[ ";" ]                         (. newType.EndLocation = t.Location; 
+	[ ";" ]                         (. newType.EndLocation = t.EndLocation; 
 	                                   compilationUnit.BlockEnd();
 	                                .)
 | /*--- struct declaration: */  (. m.Check(Modifiers.StructsInterfacesEnumsDelegates); .)
@@ -411,7 +411,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	
 	(. newType.BodyStartLocation = t.EndLocation; .)
 	StructBody
-	[ ";" ]                          (. newType.EndLocation = t.Location; 
+	[ ";" ]                          (. newType.EndLocation = t.EndLocation; 
 	                                    compilationUnit.BlockEnd();
 	                                 .)
 | /*--- interface declaration: */ 
@@ -434,7 +434,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	
 	(. newType.BodyStartLocation = t.EndLocation; .)
 	InterfaceBody
-	[ ";" ]                          (. newType.EndLocation = t.Location; 
+	[ ";" ]                          (. newType.EndLocation = t.EndLocation; 
 	                                    compilationUnit.BlockEnd();
 	                                 .)
 | /*--- enumeration declaration: */
@@ -449,7 +449,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	]
 	(. newType.BodyStartLocation = t.EndLocation; .)
 	EnumBody 
-	[ ";" ]                          (. newType.EndLocation = t.Location; 
+	[ ";" ]                          (. newType.EndLocation = t.EndLocation; 
 	                                    compilationUnit.BlockEnd();
 	                                 .)
 | /*--- delegate declaration: */
@@ -471,7 +471,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	/* .NET 2.0 */
 	{ TypeParameterConstraintsClause<templates> }
 	
-	";"                              (. delegateDeclr.EndLocation = t.Location;
+	";"                              (. delegateDeclr.EndLocation = t.EndLocation;
 	                                    compilationUnit.AddChild(delegateDeclr);
 	                                 .)
 	)
@@ -1721,22 +1721,30 @@ CatchClauses<out List<CatchClause> catchClauses>
 	"catch" (. string identifier;
 	           Statement stmt;
 	           TypeReference typeRef;
+	           Location startPos = t.Location;
+	           CatchClause catchClause = null;
 	        .)
 	/*--- general catch clause (as only catch clause) */
 	(
-		Block<out stmt> (. catchClauses.Add(new CatchClause(stmt)); .)
+		Block<out stmt> (. catchClause = new CatchClause(stmt);  .)
 		/*--- specific catch clause */
 		| "(" ClassType<out typeRef, false> (. identifier = null; .)
 			[ Identifier (. identifier = t.val; .) ]
 		   ")" Block<out stmt> 
-		   (. catchClauses.Add(new CatchClause(typeRef, identifier, stmt)); .)
+		   (. catchClause = new CatchClause(typeRef, identifier, stmt); .)
 		{ IF (IsTypedCatch()) "catch" "(" ClassType<out typeRef, false> (. identifier = null; .)
 			[ Identifier (. identifier = t.val; .) ]
 		   ")" Block<out stmt>
-		   (. catchClauses.Add(new CatchClause(typeRef, identifier, stmt)); .) }
+		   (. catchClause = new CatchClause(typeRef, identifier, stmt); .) }
 		/*--- general catch clause (after specific catch clauses, optional) */
-		[ "catch" Block<out stmt> (. catchClauses.Add(new CatchClause(stmt)); .) ]
-	)
+		[ "catch" Block<out stmt> (. catchClause = new CatchClause(stmt); .) ]
+	) (. 
+		if (catchClause != null) {
+			catchClause.StartLocation = startPos;
+			catchClause.EndLocation = t.Location;
+			catchClauses.Add(catchClause);
+		}
+	.)
 .
 
 GotoStatement<out Statement stmt>
