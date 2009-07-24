@@ -233,12 +233,19 @@ namespace MonoDevelop.CSharpBinding
 			       node.StartLocation.Column == this.searchedMemberLocation.Column;
 		}
 		
+		static bool IsIdentifierPart (char ch)
+		{
+			return Char.IsLetterOrDigit (ch) || ch == '_';
+		}
+		
 		bool SearchText (string text, int startLine, int startColumn, out int line, out int column)
 		{
 			int position = file.GetPositionFromLineColumn (startLine, startColumn);
 			line = column = -1;
 			while (position + searchedMemberName.Length < file.Length) {
-				if (file.GetText (position, position + searchedMemberName.Length) == searchedMemberName) {
+				if ((position == 0 || !IsIdentifierPart (file.GetCharAt (position - 1))) && 
+				    (position == file.Length - 1 || !IsIdentifierPart (file.GetCharAt (position + 1))) &&
+				    file.GetText (position, position + searchedMemberName.Length) == searchedMemberName) {
 					file.GetLineColumnFromPosition (position, out line, out column);
 					return true;
 				}
