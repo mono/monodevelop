@@ -1,5 +1,10 @@
 2009-07-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Src/Visitors/LookupTableVisitor.cs: Lookup table visitor
+	  resets now on parse.
+
+2009-07-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Src/Parser/CSharp/cs.ATG:
 	* Src/Parser/CSharp/Parser.cs: Catch clauses have now set
 	  their correct positions.

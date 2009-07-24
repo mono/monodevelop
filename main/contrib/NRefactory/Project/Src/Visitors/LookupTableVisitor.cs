@@ -69,6 +69,12 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 		}
 		
+		public override object VisitCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit, object data)
+		{
+			variables.Clear ();
+			return base.VisitCompilationUnit (compilationUnit, data);
+		}
+		
 		public void AddVariable(TypeReference typeRef, string name,
 		                        Location startPos, Location endPos, bool isConst,
 		                        bool isLoopVariable, Expression initializer,
