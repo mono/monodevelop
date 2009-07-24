@@ -113,6 +113,13 @@ namespace MonoDevelop.Projects
 			UpdateGacReference ();
 		}
 		
+		public static ProjectReference RenameReference (ProjectReference pref, string newReference)
+		{
+			ProjectReference newRef = (ProjectReference) pref.MemberwiseClone ();
+			newRef.reference = newReference;
+			return newRef;
+		}
+		
 		public Project OwnerProject {
 			get { return ownerProject; }
 		}

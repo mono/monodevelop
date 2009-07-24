@@ -378,19 +378,18 @@ namespace MonoDevelop.Projects
 		
 		internal void RenameReferences (string oldName, string newName)
 		{
-			ArrayList toBeRemoved = new ArrayList();
+			ArrayList toBeRenamed = new ArrayList();
 
 			foreach (ProjectReference refInfo in this.References) {
 				if (refInfo.ReferenceType == ReferenceType.Project) {
-					if (refInfo.Reference == oldName) {
-						toBeRemoved.Add(refInfo);
-					}
+					if (refInfo.Reference == oldName)
+						toBeRenamed.Add(refInfo);
 				}
 			}
 			
-			foreach (ProjectReference pr in toBeRemoved) {
+			foreach (ProjectReference pr in toBeRenamed) {
 				this.References.Remove(pr);
-				ProjectReference prNew = new ProjectReference (ReferenceType.Project, newName);
+				ProjectReference prNew = ProjectReference.RenameReference (pr, newName);
 				this.References.Add(prNew);
 			}
 		}

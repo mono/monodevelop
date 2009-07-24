@@ -1,5 +1,13 @@
 2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/ProjectReference.cs: Properly rename
+	  project references when a project is renamed.
+
+	* MonoDevelop.Projects/IWorkspaceObject.cs: Added new methods.
+
+2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/DotNetProjectBinding.cs: Track api
 	  changes.
 

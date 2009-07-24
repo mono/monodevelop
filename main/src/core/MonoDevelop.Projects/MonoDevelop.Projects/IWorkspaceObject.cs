@@ -46,5 +46,7 @@ namespace MonoDevelop.Projects
 		FileFormat FileFormat { get; }
 		void ConvertToFormat (FileFormat format, bool convertChildren);
 		List<FilePath> GetItemFiles (bool includeReferencedFiles);
+		new FilePath FileName { get; set; }
+		bool NeedsReload { get; set; }
 	}
 }
