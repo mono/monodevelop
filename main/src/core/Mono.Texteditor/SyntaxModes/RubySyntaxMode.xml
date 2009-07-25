@@ -50,9 +50,6 @@
 	<!-- :symbol -->
 	<Match color = "string">(^|[^\w\d:]):[\w\d]+</Match>
 
-	<!-- CONSTant -->
-	<Match color = "constant.language">(^|[^\w\d])(?-i)[A-Z][\w\d]*</Match>
-
 	<!-- @@class_variable -->
 	<Match color = "keyword.modifier">(^|[^@\w\d])@@\w[\w\d]*</Match>
 
@@ -62,6 +59,9 @@
 	<!-- $global_variable -->
 	<Match color = "keyword.jump">(^|[^\$\w\d])\$\w[\w\d]*</Match>
 	
+	<!-- CONSTant -->
+	<Match color = "constant.language">(^|[^\w\d])(?-i)[A-Z][\w\d]*</Match>
+
 	<Keywords color = "keyword.access">
 		<Word>self</Word>
 		<Word>super</Word>
