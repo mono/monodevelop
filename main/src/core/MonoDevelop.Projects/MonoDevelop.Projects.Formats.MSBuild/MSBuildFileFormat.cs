@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
@@ -57,6 +58,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get {
 				return "MSBuild";
 			}
+		}
+		
+		public bool SupportsFramework (TargetFramework fx)
+		{
+			return ((IList)frameworkVersions).Contains (fx.Id) || 
+				(!string.IsNullOrEmpty (fx.SubsetOfFramework) && ((IList)frameworkVersions).Contains (fx.SubsetOfFramework));
 		}
 
 		public FilePath GetValidFormatName (object obj, FilePath fileName)
@@ -87,13 +94,38 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public bool CanWriteFile (object obj)
 		{
-			if (slnFileFormat.CanWriteFile (obj, this))
+			if (slnFileFormat.CanWriteFile (obj, this)) {
+				Solution sol = (Solution) obj;
+				foreach (SolutionEntityItem si in sol.GetAllSolutionItems<SolutionEntityItem> ())
+					if (!CanWriteFile (si))
+						return false;
 				return true;
+			}
 			else if (obj is SolutionEntityItem) {
+				DotNetProject p = obj as DotNetProject;
+				if (p != null && !SupportsFramework (p.TargetFramework))
+					return false;
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
 				return node != null;
 			} else
 				return false;
+		}
+
+		public virtual IEnumerable<string> GetCompatibilityWarnings (object obj)
+		{
+			if (obj is Solution) {
+				List<string> msg = new List<string> ();
+				foreach (SolutionEntityItem si in ((Solution)obj).GetAllSolutionItems<SolutionEntityItem> ()) {
+					IEnumerable<string> ws = GetCompatibilityWarnings (si);
+					if (ws != null)
+						msg.AddRange (ws);
+				}
+				return msg;
+			}
+			DotNetProject prj = obj as DotNetProject;
+			if (!((IList)frameworkVersions).Contains (prj.TargetFramework.Id))
+				return new string[] { GettextCatalog.GetString ("The project '{0}' is being saved using the file format '{1}', but this version of Visual Studio does not support the framework that the project is targetting ({2})", prj.Name, productDescription, prj.TargetFramework.Name) };
+			return null;
 		}
 
 		public void WriteFile (FilePath file, object obj, MonoDevelop.Core.IProgressMonitor monitor)
@@ -197,13 +229,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// Ignore
 			}
 			return string.Empty;
-		}
-
-		public virtual IEnumerable<string> GetCompatibilityWarnings (object obj)
-		{
-			DotNetProject prj = obj as DotNetProject;
-			if (!((IList)frameworkVersions).Contains (prj.TargetFramework.Id))
-				yield return GettextCatalog.GetString ("The project '{0}' is being saved using the file format '{1}', but this version of Visual Studio does not support the framework that the project is targetting ({2})", prj.Name, productDescription, prj.TargetFramework.Name);
 		}
 	}
 	

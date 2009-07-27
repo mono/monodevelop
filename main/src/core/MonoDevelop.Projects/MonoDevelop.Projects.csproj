@@ -138,7 +138,6 @@
     <Compile Include="MonoDevelop.Projects\ItemConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\ItemConfigurationCollection.cs" />
     <Compile Include="MonoDevelop.Projects\IConfigurationTarget.cs" />
-    <Compile Include="MonoDevelop.Projects\SolutionItemCollection.cs" />
     <Compile Include="MonoDevelop.Projects\ItemCollection.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItem.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionFolderItemCollection.cs" />

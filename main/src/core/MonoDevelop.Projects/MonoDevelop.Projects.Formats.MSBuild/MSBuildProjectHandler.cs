@@ -986,6 +986,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		string FindClosestSupportedVersion (string version)
 		{
+			TargetFramework sfx = Runtime.SystemAssemblyService.GetTargetFramework (version);
+			if (!string.IsNullOrEmpty (sfx.SubsetOfFramework) && ((IList)TargetFormat.FrameworkVersions).Contains (sfx.SubsetOfFramework))
+				return sfx.SubsetOfFramework;
+			
 			foreach (string supv in TargetFormat.FrameworkVersions) {
 				TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (supv);
 				if (fx.IsCompatibleWithFramework (version))

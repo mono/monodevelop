@@ -216,26 +216,20 @@ namespace MonoDevelop.Projects
 					suggestion = Services.ProjectService.DefaultTargetFramework;
 			}
 
-			ClrVersion[] versions = SupportedClrVersions;
-			if (versions != null && versions.Length > 0) {
-				foreach (ClrVersion v in versions) {
-					if (v == suggestion.ClrVersion)
-						return suggestion;
+			if (SupportsFramework (suggestion))
+				return suggestion;
+			    
+			TargetFramework oneSupported = null;
+			foreach (TargetFramework f in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+				if (SupportsFramework (f)) {
+					if (TargetRuntime.IsInstalled (f))
+						return f;
+					else if (oneSupported == null)
+						oneSupported = f;
 				}
-				TargetFramework oneSupported = null;
-				foreach (ClrVersion v in versions) {
-					foreach (TargetFramework f in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-						if (f.ClrVersion == v) {
-							if (TargetRuntime.IsInstalled (f))
-								return f;
-							else if (oneSupported == null)
-								oneSupported = f;
-						}
-					}
-				}
-				if (oneSupported != null)
-					return oneSupported;
 			}
+			if (oneSupported != null)
+				return oneSupported;
 			
 			return null;
 		}

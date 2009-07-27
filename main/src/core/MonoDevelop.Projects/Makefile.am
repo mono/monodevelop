@@ -259,7 +259,6 @@ FILES =  \
 	MonoDevelop.Projects/SolutionFolder.cs \
 	MonoDevelop.Projects/SolutionFolderItemCollection.cs \
 	MonoDevelop.Projects/SolutionItem.cs \
-	MonoDevelop.Projects/SolutionItemCollection.cs \
 	MonoDevelop.Projects/SolutionItemConfiguration.cs \
 	MonoDevelop.Projects/SolutionItemConfigurationCollection.cs \
 	MonoDevelop.Projects/SolutionItemEventArgs.cs \

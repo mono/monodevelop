@@ -60,6 +60,15 @@ namespace MonoDevelop.Projects
 			return res ?? new string [0];
 		}
 		
+		public bool CanWrite (object obj)
+		{
+			return format.CanWriteFile (obj);
+		}
+		
+		public bool SupportsMixedFormats {
+			get { return format.SupportsMixedFormats; }
+		}
+		
 		internal IFileFormat Format {
 			get { return format; }
 		}
