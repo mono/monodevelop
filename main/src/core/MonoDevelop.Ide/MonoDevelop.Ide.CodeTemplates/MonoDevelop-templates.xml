@@ -234,7 +234,7 @@ break;
 		</Variables>
 		<Code><![CDATA[
 [$SystemSerializable$]
-public sealed class $name$Exception : $SystemException$
+public class $name$Exception : $SystemException$
 {
 	/// <summary>
 	/// Initializes a new instance of the <see cref="T:$name$Exception"/> class
