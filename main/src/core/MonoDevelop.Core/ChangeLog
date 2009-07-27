@@ -1,3 +1,12 @@
+2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.addin.xml: Change order of frameworks, to
+	  give more priority to most recent frameworks.
+
+	* MonoDevelop.Core.Assemblies/TargetFramework.cs:
+	  SubsetOfFramework is not public, required by the MSBuild
+	  handler.
+
 2009-07-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* frameworks/framework_NET_4_0.xml:

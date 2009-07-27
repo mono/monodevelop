@@ -130,7 +130,7 @@ namespace MonoDevelop.Core.Assemblies
 		internal string CompatibleWithFramework { get; set; }
 		
 		[ItemProperty]
-		internal string SubsetOfFramework { get; set; }
+		public string SubsetOfFramework { get; set; }
 		
 		[ItemProperty]
 		[ItemProperty ("Assembly", Scope="*")]
