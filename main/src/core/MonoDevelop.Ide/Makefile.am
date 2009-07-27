@@ -56,6 +56,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs \
@@ -206,6 +207,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/SelectFileFormatDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs \

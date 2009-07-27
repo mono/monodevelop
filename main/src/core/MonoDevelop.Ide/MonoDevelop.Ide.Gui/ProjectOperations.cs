@@ -292,28 +292,20 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Save (IEnumerable<SolutionEntityItem> entries)
 		{
-			int count = 0;
-			IEnumerator<SolutionEntityItem> e = entries.GetEnumerator ();
-			while (e.MoveNext ())
-				count++;
-			
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
-			try {
-				monitor.BeginTask (null, count);
-				foreach (SolutionEntityItem entry in entries) {
-					entry.Save (monitor);
-					monitor.Step (1);
-				}
-				monitor.ReportSuccess (GettextCatalog.GetString ("Project saved."));
-			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
-			} finally {
-				monitor.Dispose ();
-			}
+			List<IWorkspaceFileObject> items = new List<IWorkspaceFileObject> ();
+			foreach (IWorkspaceFileObject it in entries)
+				items.Add (it);
+			Save (items);
 		}
 		
 		public void Save (SolutionEntityItem entry)
 		{
+			if (!entry.FileFormat.CanWrite (entry)) {
+				IWorkspaceFileObject itemContainer = GetContainer (entry);
+				if (SelectValidFileFormat (itemContainer))
+					Save (itemContainer);
+				return;
+			}
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
 				entry.Save (monitor);
@@ -327,6 +319,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Save (Solution item)
 		{
+			if (!item.FileFormat.CanWrite (item)) {
+				if (!SelectValidFileFormat (item))
+					return;
+			}
+			
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
 				item.Save (monitor);
@@ -340,6 +337,38 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Save (IEnumerable<IWorkspaceFileObject> items)
 		{
+			// Verify that the file format for each item is still valid
+			
+			HashSet<IWorkspaceFileObject> fixedItems = new HashSet<IWorkspaceFileObject> ();
+			HashSet<IWorkspaceFileObject> failedItems = new HashSet<IWorkspaceFileObject> ();
+			
+			foreach (IWorkspaceFileObject entry in items) {
+				IWorkspaceFileObject itemContainer = GetContainer (entry);
+				if (fixedItems.Contains (itemContainer) || failedItems.Contains (itemContainer))
+					continue;
+				if (!entry.FileFormat.CanWrite (entry)) {
+					// Can't save the project using this format. Try to find a valid format for the whole solution
+					if (SelectValidFileFormat (itemContainer))
+						fixedItems.Add (itemContainer);
+					else
+						failedItems.Add (itemContainer);
+				}
+			}
+			if (fixedItems.Count > 0)
+				Save (fixedItems);
+			
+			if (failedItems.Count > 0 || fixedItems.Count > 0) {
+				// Some file format changes were required, and some items were saved.
+				// Get a list of items not yet saved.
+				List<IWorkspaceFileObject> notSavedEntries = new List<IWorkspaceFileObject> ();
+				foreach (IWorkspaceFileObject entry in items) {
+					IWorkspaceFileObject itemContainer = GetContainer (entry);
+					if (!fixedItems.Contains (itemContainer) && !failedItems.Contains (itemContainer))
+						notSavedEntries.Add (entry);
+				}
+				items = notSavedEntries;
+			}
+			
 			int count = 0;
 			IEnumerator<IWorkspaceFileObject> e = items.GetEnumerator ();
 			while (e.MoveNext ())
@@ -368,6 +397,13 @@ namespace MonoDevelop.Ide.Gui
 			else if (item is Solution)
 				Save ((Solution)item);
 			
+			if (!item.FileFormat.CanWrite (item)) {
+				IWorkspaceFileObject ci = GetContainer (item);
+				if (SelectValidFileFormat (ci))
+					Save (ci);
+				return;
+			}
+			
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
 				item.Save (monitor);
@@ -376,6 +412,29 @@ namespace MonoDevelop.Ide.Gui
 				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
 			} finally {
 				monitor.Dispose ();
+			}
+		}
+
+		IWorkspaceFileObject GetContainer (IWorkspaceFileObject item)
+		{
+			SolutionEntityItem si = item as SolutionEntityItem;
+			if (si != null && si.ParentSolution != null && !si.ParentSolution.FileFormat.SupportsMixedFormats)
+				return si.ParentSolution;
+			else
+				return item;
+		}
+		
+		bool SelectValidFileFormat (IWorkspaceFileObject item)
+		{
+			SelectFileFormatDialog dlg = new SelectFileFormatDialog (item);
+			try {
+				if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Format != null) {
+					item.ConvertToFormat (dlg.Format, true);
+					return true;
+				}
+				return false;
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 		
