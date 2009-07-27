@@ -548,6 +548,13 @@ namespace MonoDevelop.Core.Assemblies
 			if (assemblyFullNameToAsm.ContainsKey (assemblyName))
 				return assemblyName;
 
+			// Look in assemblies of the framework. Done here since later steps look in the gac
+			// without taking into account the framework.
+			foreach (SystemAssembly sa in GetAssemblies (fx)) {
+				if (sa.Package.IsGacPackage && sa.Name == assemblyName)
+					return sa.FullName;
+			}
+
 			if (File.Exists (assemblyName))
 				return SystemAssemblyService.GetAssemblyName (assemblyName);
 

@@ -1,5 +1,16 @@
 2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: In
+	  GetAssemblyFullName, look for a matching name in the list of
+	  assemblies of the provided framework. Only if that fails,
+	  look for the assembly in the gac. It avoids returning
+	  assemblies which belong to another framework.
+
+	* MonoDevelop.Core.Assemblies/TargetFramework.cs: Implement
+	  ToString.
+
+2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.addin.xml: Change order of frameworks, to
 	  give more priority to most recent frameworks.
 

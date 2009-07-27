@@ -143,6 +143,12 @@ namespace MonoDevelop.Core.Assemblies
 			get;
 			set;
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format("[TargetFramework: Name={0}, Id={1}, ClrVersion={2}, SubsetOfFramework={3}]", Name, Id, ClrVersion, SubsetOfFramework);
+		}
+
 	}
 	
 	class AssemblyInfo
