@@ -1,3 +1,11 @@
+2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:
+	  Properly support moving items between solution folders of
+	  the same solution (the ItemAddedToSolution is not fired
+	  anymore in this case).
+
 2009-07-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:

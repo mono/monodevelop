@@ -43,10 +43,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	public class SolutionFolderNodeBuilder: TypeNodeBuilder
 	{
 		SolutionItemRenamedEventHandler combineNameChanged;
+		SolutionItemChangeEventHandler combineEntryAdded;
+		SolutionItemChangeEventHandler combineEntryRemoved;
 		
 		public SolutionFolderNodeBuilder ()
 		{
 			combineNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnCombineRenamed));
+			combineEntryAdded = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryAdded));
+			combineEntryRemoved = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryRemoved));
 		}
 
 		public override Type NodeDataType {
@@ -103,20 +107,42 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		public override void OnNodeAdded (object dataObject)
 		{
-			SolutionFolder combine = (SolutionFolder) dataObject;
-			combine.NameChanged += combineNameChanged;
+			SolutionFolder folder = (SolutionFolder) dataObject;
+			folder.NameChanged += combineNameChanged;
+			folder.ItemAdded += combineEntryAdded;
+			folder.ItemRemoved += combineEntryRemoved;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			SolutionFolder combine = (SolutionFolder) dataObject;
-			combine.NameChanged -= combineNameChanged;
+			SolutionFolder folder = (SolutionFolder) dataObject;
+			folder.NameChanged -= combineNameChanged;
+			folder.ItemAdded -= combineEntryAdded;
+			folder.ItemRemoved -= combineEntryRemoved;
 		}
 		
 		void OnCombineRenamed (object sender, SolutionItemRenamedEventArgs e)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) tb.Update ();
+		}
+		
+		void OnEntryAdded (object sender, SolutionItemEventArgs e)
+		{
+			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem.ParentFolder);
+			if (tb != null) {
+				tb.AddChild (e.SolutionItem, true);
+				tb.Expanded = true;
+			}
+		}
+
+		void OnEntryRemoved (object sender, SolutionItemEventArgs e)
+		{
+			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
+			if (tb != null) {
+				ITreeBuilder tbs = Context.GetTreeBuilder (e.SolutionItem);
+				tb.Remove ();
+			}
 		}
 	}
 	
@@ -151,8 +177,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SolutionItem it = (SolutionItem) dataObject;
 			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to move the item '{0}' to the solution folder '{1}'?", it.Name, folder.Name), AlertButton.Move))
 				return;
-			
-			it.ParentFolder.Items.Remove (it);
+
+			// If the items belongs to another folder, it will be automatically removed from it
 			folder.Items.Add (it);
 			IdeApp.ProjectOperations.Save (folder.ParentSolution);
 		}

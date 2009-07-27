@@ -42,27 +42,29 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class SolutionNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemEventHandler combineEntryAdded;
-		SolutionItemEventHandler combineEntryRemoved;
+		SolutionItemEventHandler globalItemAddedRemoved;
+		SolutionItemChangeEventHandler combineEntryAdded;
+		SolutionItemChangeEventHandler combineEntryRemoved;
 		EventHandler<WorkspaceItemRenamedEventArgs> combineNameChanged;
 		EventHandler startupChanged;
 		
 		public SolutionNodeBuilder ()
 		{
-			combineEntryAdded = (SolutionItemEventHandler) DispatchService.GuiDispatch (new SolutionItemEventHandler (OnEntryAdded));
-			combineEntryRemoved = (SolutionItemEventHandler) DispatchService.GuiDispatch (new SolutionItemEventHandler (OnEntryRemoved));
+			globalItemAddedRemoved = (SolutionItemEventHandler) DispatchService.GuiDispatch (new SolutionItemEventHandler (OnSolutionItemAddedRemoved));
+			combineEntryAdded = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryAdded));
+			combineEntryRemoved = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryRemoved));
 			combineNameChanged = (EventHandler<WorkspaceItemRenamedEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemRenamedEventArgs> (OnCombineRenamed));
 			startupChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStartupChanged));
 			
-			IdeApp.Workspace.ItemAddedToSolution += combineEntryAdded;
-			IdeApp.Workspace.ItemRemovedFromSolution += combineEntryRemoved;
+			IdeApp.Workspace.ItemAddedToSolution += globalItemAddedRemoved;
+			IdeApp.Workspace.ItemRemovedFromSolution += globalItemAddedRemoved;
 		}
 		
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			IdeApp.Workspace.ItemAddedToSolution -= combineEntryAdded;
-			IdeApp.Workspace.ItemRemovedFromSolution -= combineEntryRemoved;
+			IdeApp.Workspace.ItemAddedToSolution -= globalItemAddedRemoved;
+			IdeApp.Workspace.ItemRemovedFromSolution -= globalItemAddedRemoved;
 		}
 
 
@@ -129,6 +131,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Solution solution = (Solution) dataObject;
 			solution.NameChanged += combineNameChanged;
 			solution.StartupItemChanged += startupChanged;
+			solution.RootFolder.ItemAdded += combineEntryAdded;
+			solution.RootFolder.ItemRemoved += combineEntryRemoved;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
@@ -136,6 +140,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Solution solution = (Solution) dataObject;
 			solution.NameChanged -= combineNameChanged;
 			solution.StartupItemChanged -= startupChanged;
+			solution.RootFolder.ItemAdded -= combineEntryAdded;
+			solution.RootFolder.ItemRemoved -= combineEntryRemoved;
 		}
 		
 		void OnStartupChanged (object sender, EventArgs args)
@@ -147,16 +153,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		
+		void OnSolutionItemAddedRemoved (object sender, SolutionItemEventArgs e)
+		{
+			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem.ParentSolution);
+			if (tb != null)
+				tb.Update ();	// Update the entry count
+		}
+
 		void OnEntryAdded (object sender, SolutionItemEventArgs e)
 		{
-			ITreeBuilder tb;
-			if (e.SolutionItem.ParentFolder.IsRoot)
-				tb = Context.GetTreeBuilder (e.SolutionItem.ParentSolution);
-			else
-				tb = Context.GetTreeBuilder (e.SolutionItem.ParentFolder);
-			
+			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem.ParentSolution);
 			if (tb != null) {
-				tb.Update ();	// Update the entry count
 				tb.AddChild (e.SolutionItem, true);
 				tb.Expanded = true;
 			}
@@ -167,8 +174,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) {
 				ITreeBuilder tbs = Context.GetTreeBuilder (e.SolutionItem);
-				if (tbs.MoveToParent ())
-					tbs.Update (); // Update the entry count
 				tb.Remove ();
 			}
 		}
@@ -200,6 +205,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
+			Solution sol = CurrentNode.DataItem as Solution;
+			SolutionItem it = (SolutionItem) dataObject;
+			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to move the item '{0}' to the root node of the solution?", it.Name), AlertButton.Move))
+				return;
+
+			// If the items belongs to another folder, it will be automatically removed from it
+			sol.RootFolder.Items.Add (it);
+			IdeApp.ProjectOperations.Save (sol);
 		}
 			
 		public override void ActivateMultipleItems ()
