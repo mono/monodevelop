@@ -1110,28 +1110,6 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
-		// maps "System" -> full name
-		// for assemblies from the GAC (SystemPackage.IsCorePackage)
-		// GetAssemblyNameForVersion should be used to get the exact assembly name
-		// for a ClrVersion
-		static Dictionary<string, string> corePackageAssemblyNames;
-		public static Dictionary<string, string> CorePackageAssemblyNames {
-			get {
-				if (corePackageAssemblyNames == null) {
-					corePackageAssemblyNames = new Dictionary<string, string> ();
-					TargetRuntime runtime = GetMonoRuntime ();
-					foreach (SystemPackage pkg in runtime.GetPackages ()) {
-						if (pkg.IsCorePackage) {
-							foreach (SystemAssembly asm in pkg.Assemblies)
-								corePackageAssemblyNames [asm.Name] = asm.FullName;
-						}
-					}
-				}
-
-				return corePackageAssemblyNames;
-			}
-		}
-
 		ProjectReference ParseReferenceAsGac (string rname, DotNetProject project)
 		{
 			string aname = rname;
@@ -1139,13 +1117,7 @@ namespace MonoDevelop.Autotools
 				//-r:Mono.Posix.dll
 				aname = rname.Substring (0, rname.Length - 4);
 
-			string fullname;
-			if (!CorePackageAssemblyNames.TryGetValue (aname, out fullname)) {
-				fullname = targetRuntime.GetAssemblyFullName (aname, project.TargetFramework);
-
-				//fullname can be null
-				CorePackageAssemblyNames [aname] = fullname;
-			}
+			string fullname = targetRuntime.GetAssemblyFullName (aname, project.TargetFramework);
 			if (fullname == null)
 				return null;
 

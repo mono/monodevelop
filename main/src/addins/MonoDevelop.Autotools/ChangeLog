@@ -1,5 +1,13 @@
 2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MakefileData.cs:
+	* MakefileOptionPanelWidget.cs: Removed
+	  CorePackageAssemblyNames because it doesn't really support
+	  multiple frameworks. The GetAssemblyFullName method already
+	  does the job of converting assembly names to full names.
+
+2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SolutionDeployer.cs: Fix nullref.
 
 2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>

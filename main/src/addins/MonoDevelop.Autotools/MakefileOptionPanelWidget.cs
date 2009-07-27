@@ -2,6 +2,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Assemblies;
 
 using System;
 using System.Collections.Generic;
@@ -951,20 +952,27 @@ namespace MonoDevelop.Autotools
 			if (prefix.Length > 0)
 				return true;
 
+			DotNetProject dnp = data.OwnerProject as DotNetProject;
+			if (dnp == null)
+				return false;
+			
 			// 'core' here simply means any assemblies in the gac
-			bool has_core_or_pkgref = false;
 			foreach (string file in list) {
-				if (MakefileData.CorePackageAssemblyNames.ContainsKey (file) || IsPkgRef (file)) {
-					has_core_or_pkgref = true;
-					continue;
+				string fullName = dnp.TargetRuntime.GetAssemblyFullName (file, dnp.TargetFramework);
+				if (fullName != null) {
+					SystemAssembly asm = dnp.TargetRuntime.GetAssemblyFromFullName (fullName, null, dnp.TargetFramework);
+					if (asm != null && asm.Package.IsGacPackage)
+						return true;
 				}
+				if (IsPkgRef (file))
+					return true;
 
 				// invalid if any entry isn't one of core/variable/dll/pkgrefs
 				if (!IsVariable (file) && !IsDll (file))
 					return false;
 			}
 
-			return has_core_or_pkgref;
+			return false;
 		}
 
 		bool CheckRes (List<string> list, out string prefix)
