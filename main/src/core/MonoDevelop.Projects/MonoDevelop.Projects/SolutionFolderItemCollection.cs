@@ -53,8 +53,24 @@ namespace MonoDevelop.Projects
 		protected override void OnItemAdded (SolutionItem item)
 		{
 			if (parentFolder != null) {
+				// If the item belongs to another solution, remove it from there.
+				// If it belongs to the same solution, just move the item, avoiding
+				// the global item added/removed events.
+				if (item.ParentFolder != null && item.ParentSolution != null) {
+					if (item.ParentSolution != parentFolder.ParentSolution)
+						item.ParentFolder.Items.Remove (item);
+					else {
+						SolutionFolder oldFolder = item.ParentFolder;
+						item.ParentFolder = null;
+						oldFolder.Items.InternalRemove (item);
+						oldFolder.NotifyItemRemoved (item, false);
+						item.ParentFolder = parentFolder;
+						parentFolder.NotifyItemAdded (item, false);
+						return;
+					}
+				}
 				item.ParentFolder = parentFolder;
-				parentFolder.NotifyItemAdded (item);
+				parentFolder.NotifyItemAdded (item, true);
 			}
 		}
 		
@@ -62,8 +78,18 @@ namespace MonoDevelop.Projects
 		{
 			if (parentFolder != null) {
 				item.ParentFolder = null;
-				parentFolder.NotifyItemRemoved (item);
+				parentFolder.NotifyItemRemoved (item, true);
 			}
+		}
+		
+		internal void InternalAdd (SolutionItem item)
+		{
+			Items.Add (item);
+		}
+		
+		internal void InternalRemove (SolutionItem item)
+		{
+			Items.Remove (item);
 		}
 	}
 }

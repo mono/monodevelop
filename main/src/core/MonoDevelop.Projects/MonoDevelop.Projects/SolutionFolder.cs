@@ -258,12 +258,12 @@ namespace MonoDevelop.Projects
 				return sitem;
 		}
 		
-		internal void NotifyItemAdded (SolutionItem item)
+		internal void NotifyItemAdded (SolutionItem item, bool newToSolution)
 		{
 			ConnectChildEntryEvents (item);
 
 			NotifyModified ("Items");
-			OnItemAdded (new SolutionItemChangeEventArgs (item, false));
+			OnItemAdded (new SolutionItemChangeEventArgs (item, false), newToSolution);
 		}
 		
 		void ConnectChildEntryEvents (SolutionItem item)
@@ -340,11 +340,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal void NotifyItemRemoved (SolutionItem item)
+		internal void NotifyItemRemoved (SolutionItem item, bool removedFromSolution)
 		{
 			DisconnectChildEntryEvents (item);
 			NotifyModified ("Items");
-			OnItemRemoved (new SolutionItemChangeEventArgs (item, false));
+			OnItemRemoved (new SolutionItemChangeEventArgs (item, false), removedFromSolution);
 		}
 		
 		void DisconnectChildEntryEvents (SolutionItem entry)
@@ -702,40 +702,48 @@ namespace MonoDevelop.Projects
 			OnItemSaved (e);
 		}
 		
-		internal void NotifyItemAddedToFolder (object sender, SolutionItemChangeEventArgs e)
+		internal void NotifyItemAddedToFolder (object sender, SolutionItemChangeEventArgs e, bool newToSolution)
 		{
 			if (DescendantItemAdded != null)
 				DescendantItemAdded (sender, e);
 			if (ParentFolder != null)
-				ParentFolder.NotifyItemAddedToFolder (sender, e);
-			else if (ParentSolution != null)
+				ParentFolder.NotifyItemAddedToFolder (sender, e, newToSolution);
+			else if (ParentSolution != null && newToSolution)
 				ParentSolution.OnSolutionItemAdded (e);
 		}
 		
-		internal void NotifyItemRemovedFromFolder (object sender, SolutionItemChangeEventArgs e)
+		internal void NotifyItemRemovedFromFolder (object sender, SolutionItemChangeEventArgs e, bool removedFromSolution)
 		{
 			if (DescendantItemRemoved != null)
 				DescendantItemRemoved (sender, e);
 			if (ParentFolder != null)
-				ParentFolder.NotifyItemRemovedFromFolder (sender, e);
-			else if (ParentSolution != null)
+				ParentFolder.NotifyItemRemovedFromFolder (sender, e, removedFromSolution);
+			else if (ParentSolution != null && removedFromSolution)
 				ParentSolution.OnSolutionItemRemoved (e);
+		}
+		
+		void OnItemAdded (SolutionItemChangeEventArgs e, bool newToSolution)
+		{
+			OnItemAdded (e);
+			NotifyItemAddedToFolder (this, e, newToSolution);
 		}
 		
 		protected virtual void OnItemAdded (SolutionItemChangeEventArgs e)
 		{
-			if (ItemAdded != null) {
+			if (ItemAdded != null)
 				ItemAdded (this, e);
-			}
-			NotifyItemAddedToFolder (this, e);
+		}
+		
+		void OnItemRemoved (SolutionItemChangeEventArgs e, bool removedFromSolution)
+		{
+			OnItemRemoved (e);
+			NotifyItemRemovedFromFolder (this, e, removedFromSolution);
 		}
 		
 		protected virtual void OnItemRemoved (SolutionItemChangeEventArgs e)
 		{
-			if (ItemRemoved != null) {
+			if (ItemRemoved != null)
 				ItemRemoved (this, e);
-			}
-			NotifyItemRemovedFromFolder (this, e);
 		}
 		
 		protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
