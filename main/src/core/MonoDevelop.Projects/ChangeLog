@@ -1,5 +1,10 @@
 2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/ProjectService.cs: Allow setting the
+	  default framework.
+
+2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
 	  Revert change that is causing a regression.
 

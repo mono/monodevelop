@@ -50,6 +50,9 @@ namespace MonoDevelop.Projects
 		
 		FileFormatManager formatManager = new FileFormatManager ();
 		FileFormat defaultFormat;
+		TargetFramework defaultTargetFramework;
+		
+		public const string DefaultTargetFrameworkId = "3.5";
 		
 		public const string BuildTarget = "Build";
 		public const string CleanTarget = "Clean";
@@ -88,7 +91,14 @@ namespace MonoDevelop.Projects
 		}
 
 		public TargetFramework DefaultTargetFramework {
-			get { return Runtime.SystemAssemblyService.GetTargetFramework ("3.5"); }
+			get {
+				if (defaultTargetFramework == null)
+					defaultTargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (DefaultTargetFrameworkId); 
+				return defaultTargetFramework;
+			}
+			set {
+				defaultTargetFramework = value;
+			}
 		}
 		
 		public string DefaultFileFormatId {
