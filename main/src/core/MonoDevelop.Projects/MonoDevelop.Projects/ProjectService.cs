@@ -125,17 +125,17 @@ namespace MonoDevelop.Projects
 		public SolutionEntityItem ReadSolutionItem (IProgressMonitor monitor, string file)
 		{
 			file = GetTargetFile (file);
-			return extensionChain.LoadSolutionItem (monitor, file, delegate {
+			SolutionEntityItem loadedItem = extensionChain.LoadSolutionItem (monitor, file, delegate {
 				FileFormat format;
 				SolutionEntityItem item = ReadFile (monitor, file, typeof(SolutionEntityItem), out format) as SolutionEntityItem;
-				if (item != null) {
+				if (item != null)
 					item.FileFormat = format;
-					item.NeedsReload = false;
-				}
 				else
 					throw new InvalidOperationException ("Invalid file format: " + file);
 				return item;
 			});
+			loadedItem.NeedsReload = false;
+			return loadedItem;
 		}
 		
 		public SolutionItem ReadSolutionItem (IProgressMonitor monitor, SolutionItemReference reference)
