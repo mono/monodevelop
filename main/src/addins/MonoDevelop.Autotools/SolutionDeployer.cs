@@ -307,15 +307,17 @@ namespace MonoDevelop.Autotools
 			}
 
 			// Add specific user switch
-			foreach (Switch s in switchs) {
-				string name = s.SwitchName.ToLowerInvariant ();
-				
-				config_options.AppendLine (string.Format (@"AC_ARG_ENABLE({0},
+			if (switchs != null) {
+				foreach (Switch s in switchs) {
+					string name = s.SwitchName.ToLowerInvariant ();
+					
+					config_options.AppendLine (string.Format (@"AC_ARG_ENABLE({0},
 	AC_HELP_STRING([--enable-{0}],
 		[{1}]),
 		enable_{2}=yes, enable_{2}=no)
 AM_CONDITIONAL(ENABLE_{3}, test x$enable_{2} = xyes)", 
 				                       name, s.HelpStr, name.Replace ('-', '_'), name.Replace ('-', '_').ToUpperInvariant ()));
+				}
 			}
 			
 			templateEngine.Variables ["CONFIG_OPTIONS"] = config_options.ToString();

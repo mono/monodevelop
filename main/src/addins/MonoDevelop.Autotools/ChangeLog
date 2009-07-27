@@ -1,3 +1,7 @@
+2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SolutionDeployer.cs: Fix nullref.
+
 2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SimpleProjectMakefileHandler.cs: Fix nullref.
