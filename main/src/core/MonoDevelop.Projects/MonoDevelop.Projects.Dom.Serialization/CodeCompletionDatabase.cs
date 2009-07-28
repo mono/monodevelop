@@ -276,11 +276,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			
 			try {
-				return new FileStream (dataFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Write);
+				return new FileStream (dataFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
 			}
 			catch (IOException) {
 			}
-
+			
 			// The file is locked, so it can be opened. The solution is to make
 			// a copy of the file and opend the copy. The copy will later be discarded,
 			// and this is not a problem because if the main file is locked it means
