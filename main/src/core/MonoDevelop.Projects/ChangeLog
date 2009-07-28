@@ -1,5 +1,10 @@
 2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
+	  Added missing null check.
+
+2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization\CodeCompletionDatabase.cs:
 	  Use FileShare.Read when opening a pidb file. This is
 	  required since the file has to be copied if it is already

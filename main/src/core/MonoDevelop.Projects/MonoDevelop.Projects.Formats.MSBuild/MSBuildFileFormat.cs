@@ -125,7 +125,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return msg;
 			}
 			DotNetProject prj = obj as DotNetProject;
-			if (!((IList)frameworkVersions).Contains (prj.TargetFramework.Id))
+			if (prj != null && !((IList)frameworkVersions).Contains (prj.TargetFramework.Id))
 				return new string[] { GettextCatalog.GetString ("The project '{0}' is being saved using the file format '{1}', but this version of Visual Studio does not support the framework that the project is targetting ({2})", prj.Name, productDescription, prj.TargetFramework.Name) };
 			return null;
 		}
