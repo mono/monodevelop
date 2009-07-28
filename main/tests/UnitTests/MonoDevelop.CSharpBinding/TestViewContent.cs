@@ -48,6 +48,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		{
 			document = new Mono.TextEditor.Document ();
 			data = new TextEditorData (document);
+			Name = "";
 		}
 		
 		public override void Load(string fileName)
@@ -55,9 +56,8 @@ namespace MonoDevelop.CSharpBinding.Tests
 		}
 		
 		public FilePath Name { 
-			get {
-				return "";
-			}
+			get;
+			set;
 		}
 		
 		public int LineCount {

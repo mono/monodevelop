@@ -84,6 +84,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			dom.Add (parsedDocument.CompilationUnit);
 			
 			TestViewContent testViewContent = new TestViewContent ();
+			testViewContent.Name = "a.cs";
 			testViewContent.Text = testText.ToString ();
 		//	RefactorerContext ctx = new RefactorerContext (dom, new DumbTextFileProvider(testViewContent), null);
 			NRefactoryResolver resolver = new NRefactoryResolver (dom, 
