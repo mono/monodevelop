@@ -86,6 +86,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				var parsedExpr = parser.ParseExpression ();
 				if (parsedExpr == null)
 					return false;
+				
 				var visitor = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor ();
 				parsedExpr.AcceptVisitor (visitor, null);
 				return Strip (expr) == Strip (visitor.Text);

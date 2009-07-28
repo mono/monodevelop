@@ -29,6 +29,7 @@ using System;
 using System.Text;
 
 using CSharpBinding.FormattingStrategy.Properties;
+using MonoDevelop.Core;
 
 namespace CSharpBinding.FormattingStrategy {
 	public partial class CSharpIndentEngine : ICloneable {
@@ -137,8 +138,11 @@ namespace CSharpBinding.FormattingStrategy {
 							sp--;
 						}
 					}
-					
-					indentBuilder.Append (' ', nSpaces - n);
+					if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+						indentBuilder.Append ('\t');
+					} else {
+						indentBuilder.Append (' ', nSpaces - n);
+					}
 				} else if (inside == Inside.MultiLineComment) {
 					if (size > 0) {
 						indentBuilder.Append (stack[sp].indent);

@@ -1,3 +1,11 @@
+2009-07-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/CSharpFormatter.cs:
+	* Gui/NewCSharpExpressionFinder.cs:
+	* Gui/CSharpTextEditorIndentation.cs:
+	* FormattingStrategy/CSharpIndentEngineStack.cs: Worked on "on
+	  the fly" code formatting.
+
 2009-07-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/NRefactoryResolver.cs:

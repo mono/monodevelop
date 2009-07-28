@@ -231,7 +231,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (lastCharInserted == '\n') {
 					RunFormatter ();
 					stateTracker.UpdateEngine ();
-					DoReSmartIndent ();
+//					DoReSmartIndent ();
 				}
 				
 				stateTracker.UpdateEngine ();
@@ -427,6 +427,5 @@ namespace MonoDevelop.CSharpBinding.Gui
 				Editor.Select (pos, pos);
 			}
 		}
-	
 	}
 }
