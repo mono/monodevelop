@@ -43,7 +43,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.DesignerSupport;
-using MonoDevelop.DesignerSupport.PropertyGrid;
+using MonoDevelop.Components.PropertyGrid;
 using AspNetEdit.Editor;
 
 namespace AspNetEdit.Integration
