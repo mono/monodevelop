@@ -11,4 +11,13 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.Projects.Gui.ProjectFileEntry" palette-category="General" allow-children="false" base-type="Gtk.HBox">
+    <itemgroups>
+      <itemgroup label="ProjectFileEntry Properties">
+        <property name="DialogTitle" />
+        <property name="DefaultFilter" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
 </objects>

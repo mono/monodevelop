@@ -1,6 +1,14 @@
 2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui/ProjectFileEntry.cs: Add a simple
+	  widget for picking a file from a project.
+
+2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Projects.Gui.csproj:
 	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:

@@ -86,6 +86,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs \
 	MonoDevelop.Projects.Gui.Extensions/MimeTypeOptionsPanelNode.cs \
+	MonoDevelop.Projects.Gui/ProjectFileEntry.cs \
 	MonoDevelop.Projects.Gui/ProjectsGuiServices.cs
 
 RES =  \
