@@ -78,7 +78,6 @@ namespace MonoDevelop.CSharpBinding.Tests
 			doc.ParsedDocument = new NRefactoryParser ().Parse (null, sev.ContentName, parsedText);
 			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
 			
-			int triggerWordLength = 1;
 			CodeCompletionContext ctx = new CodeCompletionContext ();
 			ctx.TriggerOffset = sev.CursorPosition;
 			int line, column;

@@ -1,5 +1,14 @@
 2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/MSBuildTests.cs: Added test for bug
+	  480813 - Referenced project with spaces/special characters
+	  isn't saved or built properly
+
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: Fix
+	  warning.
+
+2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* TestBase.cs: Set 2.0 as default target framework for the
 	  tests.
 

@@ -174,5 +174,20 @@ namespace MonoDevelop.Projects
 			string savedFile = Path.Combine (p.BaseDirectory, "TestConfigurationMergingSaved.csproj");
 			Assert.AreEqual (Util.GetXmlFileInfoset (savedFile), Util.GetXmlFileInfoset (p.FileName));
 		}
+		
+		[Test]
+		public void ProjectReferenceWithSpace ()
+		{
+			string solFile = Util.GetSampleProject ("project-ref-with-spaces", "project-ref-with-spaces.sln");
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			Assert.IsNotNull (sol);
+			Assert.AreEqual (2, sol.Items.Count);
+
+			DotNetProject p = sol.FindProjectByName ("project-ref-with-spaces") as DotNetProject;
+			Assert.IsNotNull (p);
+			
+			Assert.AreEqual (1, p.References.Count);
+			Assert.AreEqual ("some - library", p.References[0].Reference);
+		}
 	}
 }
