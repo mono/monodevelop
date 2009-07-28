@@ -1,5 +1,12 @@
 2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
+	  Re-enabled check for supported frameworks when checking if
+	  msbuild can write a project.
+
+2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectService.cs: In ReadSolutionItem
 	  reset the NeedsReload flag after going through the whole
 	  extension chain.

@@ -99,7 +99,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected bool Loading {
+		public bool Loading {
 			get { return loading > 0; }
 		}
 		

@@ -102,10 +102,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return true;
 			}
 			else if (obj is SolutionEntityItem) {
-/*				DotNetProject p = obj as DotNetProject;
-				if (p != null && !SupportsFramework (p.TargetFramework))
+				DotNetProject p = obj as DotNetProject;
+				// Check the framework only if the project is not loading, since otherwise the
+				// project may not yet have the framework info set.
+				if (p != null && !p.Loading && !SupportsFramework (p.TargetFramework))
 					return false;
-*/				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
+				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
 				return node != null;
 			} else
 				return false;
