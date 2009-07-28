@@ -849,13 +849,13 @@
 				_label = "F_ind in Files..." 
 				icon = "md-find-in-files" 
 				shortcut = "Control|Shift|F"
-				macShortcut = "Meta|Shift|F" />
+				macShortcut = "Meta|Shift|F"
 				_description = "Search for text in all files of a directory" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles"
 				defaultHandler = "MonoDevelop.Ide.FindInFiles.ReplaceInFilesHandler"
 				_label = "R_eplace in Files..." 
 				icon = "md-replace-in-files" 
-				shortcut = "Control|Shift|H" />
+				shortcut = "Control|Shift|H"
 				_description = "Search for and replace text in all files of a directory" />
 		
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"

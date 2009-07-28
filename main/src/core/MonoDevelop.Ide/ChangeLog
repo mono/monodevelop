@@ -1,3 +1,8 @@
+2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: Fix XML tags so that
+	  search/replace in files commands have descriptions.
+
 2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Reformatted.
