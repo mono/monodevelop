@@ -499,7 +499,7 @@ namespace MonoDevelop.CSharpBinding
 				ResolveResult resolveResult= resolver.ResolveExpression (fieldExp, new DomLocation (fieldExp.EndLocation.Y - 1, fieldExp.EndLocation.X - 1));
 				MemberResolveResult mrr = resolveResult as MemberResolveResult;
 				if (mrr != null) {
-					if (mrr.ResolvedMember.Location == searchedMemberLocation && mrr.ResolvedMember.DeclaringType.FullName == ((IMember)searchedMember).DeclaringType.FullName) {
+					if (mrr.ResolvedMember != null && mrr.ResolvedMember.Location == searchedMemberLocation && mrr.ResolvedMember.DeclaringType.FullName == ((IMember)searchedMember).DeclaringType.FullName) {
 						int line, column;
 						if (SearchText (searchedMemberName, fieldExp.StartLocation.Line, fieldExp.StartLocation.Column, out line, out column))
 							AddUniqueReference (line, column, searchedMemberName);
