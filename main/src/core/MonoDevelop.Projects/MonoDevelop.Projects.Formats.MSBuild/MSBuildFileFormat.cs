@@ -240,7 +240,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string toolsVersion = "2.0";
 		const string slnVersion = "9.00";
 		const string productComment = "Visual Studio 2005";
-		static string[] frameworkVersions = { "2.0" };
+		static string[] frameworkVersions = { "2.0", "3.0", "3.5" };
 		
 		public MSBuildFileFormatVS05 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions)
 		{
