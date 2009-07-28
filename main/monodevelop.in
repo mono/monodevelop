@@ -24,8 +24,12 @@ find_libgtkembedmoz ()
 	MOZDIR=$MOZILLA_FIVE_HOME
 	if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
 	
-	MOZDIR=$(grep -h GRE_PATH= /etc/gre.d/*.conf 2>/dev/null | cut -d '"' -f 2 -d = | head -n 1) #"
-	if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+       ALLMOZDIRS=$(grep -h GRE_PATH= /etc/gre.d/*.conf 2>/dev/null | cut -d '"' -f 2 -d = )
+       if [ -n "$ALLMOZDIRS" ] ; then
+               for MOZDIR in $ALLMOZDIRS ; do
+                       if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
+               done
+       fi
 	
 	mozilla_script=$(which mozilla 2> /dev/null)
 	firefox_script=$(which firefox 2> /dev/null)
