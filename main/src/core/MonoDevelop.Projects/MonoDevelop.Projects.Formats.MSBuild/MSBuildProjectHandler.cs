@@ -337,11 +337,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return pref;
 				}
 				else if (buildItem.Name == "ProjectReference" && dotNetProject != null) {
-					string name = buildItem.GetMetadata ("Name");
-					// The name of the project is the first word of the string (it may contain other stuff).
-					int i = name.IndexOf (' ');
-					if (i != -1)
-						name = name.Substring (0, i);
+					// Get the project name from the path, since the Name attribute may other stuff other than the name
+					string path = MSBuildProjectService.FromMSBuildPath (project.ItemDirectory, buildItem.Include);
+					string name = Path.GetFileNameWithoutExtension (path);
 					ProjectReference pref = new ProjectReference (ReferenceType.Project, name);
 					pref.LocalCopy = !buildItem.GetMetadataIsFalse ("Private");
 					pref.Condition = buildItem.Condition;

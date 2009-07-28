@@ -1,5 +1,13 @@
 2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Get the project name of a project reference from the path,
+	  since the Name attribute may other stuff other than the
+	  name.
+
+
+2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/SolutionItem.cs:
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
 	  Re-enabled check for supported frameworks when checking if
