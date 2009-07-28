@@ -430,7 +430,18 @@ namespace MonoDevelop.Projects.Dom
 			}
 			return false;
 		}
-		
+
+		public override bool IsAccessibleFrom (MonoDevelop.Projects.Dom.Parser.ProjectDom dom, IType calledType, IMember member, bool includeProtected)
+		{
+			if (calledType != null) {
+				foreach (IType baseType in dom.GetInheritanceTree (calledType)) {
+					if (baseType.FullName == calledType.FullName) 
+						return true;
+				}
+			}
+			return base.IsAccessibleFrom (dom, calledType, member, includeProtected);
+		}
+
 		public static DomType CreateDelegate (ICompilationUnit compilationUnit, string name, DomLocation location, IReturnType type, List<IParameter> parameters)
 		{
 			DomType result = new DomType ();
