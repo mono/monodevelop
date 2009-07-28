@@ -1,4 +1,4 @@
-﻿// ProjectDescriptor.cs
+// ProjectDescriptor.cs
 //
 // Author:
 //   Viktoria Dudka (viktoriad@remobjects.com)
@@ -45,59 +45,57 @@ using System.Xml;
 
 namespace MonoDevelop.Ide.Templates
 {
-	internal class ProjectDescriptor: ISolutionItemDescriptor
+	internal class ProjectDescriptor : ISolutionItemDescriptor
 	{
-        private string name;
-        private string type;
+		private string name;
+		private string type;
 
-        private List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate> ();
-        private List<SingleFileDescriptionTemplate> resources = new List<SingleFileDescriptionTemplate> ();
-        private List<ProjectReference> references = new List<ProjectReference> ();
+		private List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate> ();
+		private List<SingleFileDescriptionTemplate> resources = new List<SingleFileDescriptionTemplate> ();
+		private List<ProjectReference> references = new List<ProjectReference> ();
 
-        private XmlElement projectOptions = null;
+		private XmlElement projectOptions = null;
 
 
-        protected ProjectDescriptor()
-        {
-        }
+		protected ProjectDescriptor ()
+		{
+		}
 
-        public static ProjectDescriptor CreateProjectDescriptor(XmlElement xmlElement)
-        {
-            ProjectDescriptor projectDescriptor = new ProjectDescriptor ();
+		public static ProjectDescriptor CreateProjectDescriptor (XmlElement xmlElement)
+		{
+			ProjectDescriptor projectDescriptor = new ProjectDescriptor ();
 
-            projectDescriptor.name = xmlElement.GetAttribute ("name");
+			projectDescriptor.name = xmlElement.GetAttribute ("name");
 
-            projectDescriptor.type = xmlElement.GetAttribute ("type");
-            if (String.IsNullOrEmpty(projectDescriptor.type))
-                projectDescriptor.type = "DotNet";
+			projectDescriptor.type = xmlElement.GetAttribute ("type");
+			if (String.IsNullOrEmpty (projectDescriptor.type))
+				projectDescriptor.type = "DotNet";
 
-            if (xmlElement["Files"] != null) {
-                foreach (XmlNode xmlNode in xmlElement["Files"].ChildNodes)
-                    if (xmlNode is XmlElement)
-                        projectDescriptor.files.Add (FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode));
-            }
+			if (xmlElement["Files"] != null) {
+				foreach (XmlNode xmlNode in xmlElement["Files"].ChildNodes)
+					if (xmlNode is XmlElement)
+						projectDescriptor.files.Add (FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode));
+			}
 
-            if (xmlElement["Resources"] != null) {
-                foreach (XmlNode xmlNode in xmlElement["Resources"].ChildNodes) {
-                    if (xmlNode is XmlElement) {
-                        FileDescriptionTemplate fileTemplate = FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode);
-                        if (fileTemplate is SingleFileDescriptionTemplate)
-                            projectDescriptor.resources.Add ((SingleFileDescriptionTemplate)fileTemplate);
-                        else
-                            MessageService.ShowError (GettextCatalog.GetString ("Only single-file templates allowed to generate resource files"));
-                    }
+			if (xmlElement["Resources"] != null) {
+				foreach (XmlNode xmlNode in xmlElement["Resources"].ChildNodes) {
+					if (xmlNode is XmlElement) {
+						FileDescriptionTemplate fileTemplate = FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode);
+						if (fileTemplate is SingleFileDescriptionTemplate)
+							projectDescriptor.resources.Add ((SingleFileDescriptionTemplate)fileTemplate); else
+							MessageService.ShowError (GettextCatalog.GetString ("Only single-file templates allowed to generate resource files"));
+					}
 
-                }
-            }
+				}
+			}
 
-            if (xmlElement["References"] != null) {
-                foreach (XmlNode xmlNode in xmlElement["References"].ChildNodes) {
-                    XmlElement elem = (XmlElement)xmlNode;
-                    ProjectReference projectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof (ReferenceType), elem.GetAttribute ("type")), elem.GetAttribute ("refto"));
+			if (xmlElement["References"] != null) {
+				foreach (XmlNode xmlNode in xmlElement["References"].ChildNodes) {
+					XmlElement elem = (XmlElement)xmlNode;
+					ProjectReference projectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), elem.GetAttribute ("type")), elem.GetAttribute ("refto"));
 					string specificVersion = elem.GetAttribute ("SpecificVersion");
 					if (!string.IsNullOrEmpty (specificVersion))
-						projectReference.SpecificVersion = bool.Parse (specificVersion);
-					else {
+						projectReference.SpecificVersion = bool.Parse (specificVersion); else {
 						// If SpecificVersion is not specified, then make sure the reference is
 						// valid for the default runtime
 						if (projectReference.ReferenceType == ReferenceType.Gac) {
@@ -106,76 +104,77 @@ namespace MonoDevelop.Ide.Templates
 								projectReference = new ProjectReference (ReferenceType.Gac, newRef);
 						}
 					}
-					
-                    projectDescriptor.references.Add (projectReference);
-                }
-            }
 
-            projectDescriptor.projectOptions = xmlElement ["Options"];
-            if (projectDescriptor.projectOptions == null)
-                projectDescriptor.projectOptions = xmlElement.OwnerDocument.CreateElement("Options");
+					projectDescriptor.references.Add (projectReference);
+				}
+			}
 
-            return projectDescriptor;
-        }
+			projectDescriptor.projectOptions = xmlElement["Options"];
+			if (projectDescriptor.projectOptions == null)
+				projectDescriptor.projectOptions = xmlElement.OwnerDocument.CreateElement ("Options");
 
-        public SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
-        {
-            if ((projectOptions.Attributes["language"] == null) || String.IsNullOrEmpty (projectOptions.Attributes["language"].Value))
-                projectOptions.SetAttribute ("language", defaultLanguage);
+			return projectDescriptor;
+		}
 
-            Project project = Services.ProjectService.CreateProject (type, projectCreateInformation, projectOptions);
-            return project;
-        }
+		public SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		{
+			if ((projectOptions.Attributes["language"] == null) || String.IsNullOrEmpty (projectOptions.Attributes["language"].Value))
+				projectOptions.SetAttribute ("language", defaultLanguage);
 
-        public void InitializeItem (SolutionItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
-        {
-            MonoDevelop.Projects.Project project = item as MonoDevelop.Projects.Project;
+			Project project = Services.ProjectService.CreateProject (type, projectCreateInformation, projectOptions);
+			return project;
+		}
 
-            if (project == null) {
+		public void InitializeItem (SolutionItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
+		{
+			MonoDevelop.Projects.Project project = item as MonoDevelop.Projects.Project;
+
+			if (project == null) {
 				MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type: {0}", type));
-                return;
-            }
-			
-            project.Name = StringParserService.Parse (name, new string[,] { { "ProjectName", projectCreateInformation.ProjectName } });
-            project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, project.Name);
+				return;
+			}
+
+			project.Name = StringParserService.Parse (name, new string[,] { {
+				"ProjectName",
+				projectCreateInformation.ProjectName
+			} });
+			project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, project.Name);
 
 			if (project is DotNetProject) {
 				if (policyParent.ParentSolution != null && !policyParent.ParentSolution.FileFormat.CanWrite (item))
 					TryFixingFramework (policyParent.ParentSolution.FileFormat, (DotNetProject)project);
-				
-                foreach (ProjectReference projectReference in references)
-                    ((DotNetProject)project).References.Add (projectReference);
-            }
 
-            foreach (SingleFileDescriptionTemplate resourceTemplate in resources) {
-                try {
-                    ProjectFile projectFile = new ProjectFile (resourceTemplate.SaveFile (policyParent, project, defaultLanguage, project.BaseDirectory, null));
-                    projectFile.BuildAction = BuildAction.EmbeddedResource;
-                    project.Files.Add (projectFile);
-                }
-                catch (Exception ex) {
-                    MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", resourceTemplate.Name));
-                    LoggingService.LogError (GettextCatalog.GetString ("File {0} could not be written.", resourceTemplate.Name), ex);
-                }
-            }
+				foreach (ProjectReference projectReference in references)
+					((DotNetProject)project).References.Add (projectReference);
+			}
+
+			foreach (SingleFileDescriptionTemplate resourceTemplate in resources) {
+				try {
+					ProjectFile projectFile = new ProjectFile (resourceTemplate.SaveFile (policyParent, project, defaultLanguage, project.BaseDirectory, null));
+					projectFile.BuildAction = BuildAction.EmbeddedResource;
+					project.Files.Add (projectFile);
+				} catch (Exception ex) {
+					MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", resourceTemplate.Name));
+					LoggingService.LogError (GettextCatalog.GetString ("File {0} could not be written.", resourceTemplate.Name), ex);
+				}
+			}
 
 
-            foreach (FileDescriptionTemplate fileTemplate in files) {
-                try {
-                    fileTemplate.AddToProject (policyParent, project, defaultLanguage, project.BaseDirectory, null);
-                }
-                catch (Exception ex) {
-                    MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name));
-                    LoggingService.LogError (GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name), ex);
-                }
-            }
-        }
-		
+			foreach (FileDescriptionTemplate fileTemplate in files) {
+				try {
+					fileTemplate.AddToProject (policyParent, project, defaultLanguage, project.BaseDirectory, null);
+				} catch (Exception ex) {
+					MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name));
+					LoggingService.LogError (GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name), ex);
+				}
+			}
+		}
+
 		public void TryFixingFramework (FileFormat format, DotNetProject item)
 		{
 			// If the solution format can't write this project it may be due to an unsupported
 			// framework. Try finding a compatible framework.
-			
+
 			TargetFramework curFx = item.TargetFramework;
 			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
 				item.TargetFramework = fx;

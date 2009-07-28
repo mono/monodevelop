@@ -1,5 +1,10 @@
 2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Reformatted.
+	  It was using spaces instead of tabs for indenting.
+
+2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: If the new
 	  project can't be written using the current solution format,
 	  try to change the target framework.
