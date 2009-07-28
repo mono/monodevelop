@@ -150,6 +150,8 @@
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\MimeTypePolicyOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Extensions\MimeTypeOptionsPanelNode.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Completion\CompletionWindowManager.cs" />
+    <Compile Include="MonoDevelop.Projects.Gui.Dialogs\ProjectFileSelectorDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

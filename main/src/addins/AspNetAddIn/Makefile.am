@@ -38,7 +38,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs \
 	gtk-gui/MonoDevelop.AspNet.Deployment.WebTargetEditor.cs \
 	gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs \
-	gtk-gui/MonoDevelop.AspNet.Gui.AspNetFileSelector.cs \
 	gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs \
 	MonoDevelop.AspNet.Completion/SimpleLists.cs \
 	MonoDevelop.AspNet.Deployment/AspNetDeployServiceExtension.cs \
@@ -55,7 +54,6 @@ FILES =  \
 	MonoDevelop.AspNet.Gui/AspNetConfigurationPanel.cs \
 	MonoDevelop.AspNet.Gui/AspNetConfigurationPanelWidget.cs \
 	MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs \
-	MonoDevelop.AspNet.Gui/AspNetFileSelector.cs \
 	MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/BrowserLauncher.cs \
 	MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs \

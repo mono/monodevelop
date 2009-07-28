@@ -56,7 +56,7 @@ namespace MonoDevelop.AspNet
 			ProjectFile masterPage = null;
 			string masterContent = "";
 			
-			using (AspNetFileSelector dialog = new AspNetFileSelector (aspProj, null, "*.master")) {
+			using (var dialog = new MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog (aspProj, null, "*.master")) {
 				dialog.Title = GettextCatalog.GetString ("Select a Master Page...");
 				int response = MonoDevelop.Core.Gui.MessageService.ShowCustomDialog (dialog);
 				if (response == (int)Gtk.ResponseType.Ok)

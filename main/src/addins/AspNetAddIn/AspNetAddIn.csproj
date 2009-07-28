@@ -306,8 +306,6 @@
     <Compile Include="MonoDevelop.AspNet\ProjectRegisteredControls.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\ContentPlaceHolderVisitor.cs" />
     <Compile Include="MonoDevelop.AspNet\MasterContentFileDescriptionTemplate.cs" />
-    <Compile Include="MonoDevelop.AspNet.Gui\AspNetFileSelector.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.AspNet.Gui.AspNetFileSelector.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetExecutionCommand.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetExecutionHandler.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetSyntaxMode.cs" />

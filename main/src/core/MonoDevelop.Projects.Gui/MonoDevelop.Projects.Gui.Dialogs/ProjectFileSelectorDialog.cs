@@ -1,5 +1,5 @@
 // 
-// AspNetFileSelector.cs
+// ProjectFileSelectorDialog.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -30,29 +30,27 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.AspNet.Gui
+namespace MonoDevelop.Projects.Gui.Dialogs
 {
 	
-	
-	public partial class AspNetFileSelector : Gtk.Dialog
+	public partial class ProjectFileSelectorDialog : Gtk.Dialog
 	{
 		List<string> filters;
 		string defaultFilterName;
 		string defaultFilterPattern;
-		AspNetAppProject project;
+		Project project;
 		TreeStore dirStore = new TreeStore (typeof (string));
 		ListStore fileStore = new ListStore (typeof (ProjectFile));
 		
 		Gdk.Pixbuf projBuf, dirOpenBuf, dirClosedBuf;
 		
-		public AspNetFileSelector (AspNetAppProject project)
+		public ProjectFileSelectorDialog (Project project)
 			: this (project, GettextCatalog.GetString ("All files"), "*")
 		{
 		}
 		
-		public AspNetFileSelector (AspNetAppProject project, string defaultFilterName, string defaultFilterPattern)
+		public ProjectFileSelectorDialog (Project project, string defaultFilterName, string defaultFilterPattern)
 		{
 			
 			this.project = project;

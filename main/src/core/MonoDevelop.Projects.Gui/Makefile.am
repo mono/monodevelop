@@ -36,6 +36,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs \
 	MonoDevelop.Projects.Gui.Completion/BaseMemberCompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionData.cs \
@@ -81,6 +82,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs \
+	MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs \
 	MonoDevelop.Projects.Gui.Extensions/MimeTypeOptionsPanelNode.cs \

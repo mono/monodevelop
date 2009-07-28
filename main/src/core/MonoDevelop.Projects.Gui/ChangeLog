@@ -1,3 +1,13 @@
+2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog.cs:
+	  Move AspNetFileSelector to
+	  MonoDevelop.Project.Gui.Dialogs.ProjectFileSelectorDialog.
+
 2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:

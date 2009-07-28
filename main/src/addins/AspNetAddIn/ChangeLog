@@ -1,3 +1,14 @@
+2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* AspNetAddIn.csproj:
+	* MonoDevelop.AspNet.Gui/AspNetFileSelector.cs:
+	* gtk-gui/MonoDevelop.AspNet.Gui.AspNetFileSelector.cs:
+	* MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs:
+	  Move AspNetFileSelector to
+	  MonoDevelop.Project.Gui.Dialogs.ProjectFileSelectorDialog.
+
 2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProjectBinding.cs: Track api
