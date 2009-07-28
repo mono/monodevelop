@@ -851,7 +851,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				
 				if (AllowReload (projects)) {
-					using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true)) {
+					using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
 						// Root folders never need to reload
 						entry.ParentFolder.ReloadItem (m, entry);
 					}

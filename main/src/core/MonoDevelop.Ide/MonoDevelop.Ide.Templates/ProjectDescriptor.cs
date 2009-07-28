@@ -29,6 +29,7 @@
 using System;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using Mono.Addins;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
@@ -131,14 +132,17 @@ namespace MonoDevelop.Ide.Templates
             MonoDevelop.Projects.Project project = item as MonoDevelop.Projects.Project;
 
             if (project == null) {
-                MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type: {0}", type));
+				MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type: {0}", type));
                 return;
             }
-
+			
             project.Name = StringParserService.Parse (name, new string[,] { { "ProjectName", projectCreateInformation.ProjectName } });
             project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, project.Name);
 
-            if (project is DotNetProject) {
+			if (project is DotNetProject) {
+				if (policyParent.ParentSolution != null && !policyParent.ParentSolution.FileFormat.CanWrite (item))
+					TryFixingFramework (policyParent.ParentSolution.FileFormat, (DotNetProject)project);
+				
                 foreach (ProjectReference projectReference in references)
                     ((DotNetProject)project).References.Add (projectReference);
             }
@@ -166,5 +170,19 @@ namespace MonoDevelop.Ide.Templates
                 }
             }
         }
+		
+		public void TryFixingFramework (FileFormat format, DotNetProject item)
+		{
+			// If the solution format can't write this project it may be due to an unsupported
+			// framework. Try finding a compatible framework.
+			
+			TargetFramework curFx = item.TargetFramework;
+			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+				item.TargetFramework = fx;
+				if (format.CanWrite (item))
+					return;
+			}
+			item.TargetFramework = curFx;
+		}
 	}
 }
