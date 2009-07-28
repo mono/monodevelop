@@ -107,8 +107,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// project may not yet have the framework info set.
 				if (p != null && !p.Loading && !SupportsFramework (p.TargetFramework))
 					return false;
-				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
-				return node != null;
+				
+				// This file format can write all types of projects. If there isn't a handler for a project,
+				// it will use a generic handler.
+				return true;
 			} else
 				return false;
 		}

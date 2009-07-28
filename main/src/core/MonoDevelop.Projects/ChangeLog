@@ -1,6 +1,14 @@
 2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
+	  The MSBuild file format can write all types of projects. If
+	  there isn't a handler for a project, will use a generic
+	  handler.
+
+
+2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
 	  Added missing null check.
 
 2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
