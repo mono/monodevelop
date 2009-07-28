@@ -114,18 +114,18 @@
 	</Extension>
 	  
 	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
-		<FileFormat id = "MD1" 
-			class = "MonoDevelop.Projects.Formats.MD1.MD1FileFormat"
-			name = "MonoDevelop 1.0"/>
-		<FileFormat id = "MSBuild05" 
-			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS05"
-			name = "MSBuild (Visual Studio 2005)" />
 		<FileFormat id = "MSBuild08" 
 			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS08"
 			name = "MSBuild (Visual Studio 2008)" />
+		<FileFormat id = "MSBuild05" 
+			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS05"
+			name = "MSBuild (Visual Studio 2005)" />
 		<FileFormat id = "MSBuild10" 
 			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS10"
 			name = "MSBuild (Visual Studio 2010)" />
+		<FileFormat id = "MD1" 
+			class = "MonoDevelop.Projects.Formats.MD1.MD1FileFormat"
+			name = "MonoDevelop 1.0"/>
 	</Extension>
 	  
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">

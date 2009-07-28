@@ -1,3 +1,13 @@
+2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  When reading a VS 2005 project, if no framework is
+	  specified, use 2.0 as default.
+
+	* MonoDevelop.Projects.addin.xml: Change order of file
+	  formats, so the most recent formats are shown first in the
+	  lists and combos.
+
 2009-07-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: Fixed IsAccessible for

@@ -288,10 +288,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Final initializations
 
-			string fx = Item.ExtendedProperties ["InternalTargetFrameworkVersion"] as string;
-			if (fx != null && dotNetProject != null) {
-				dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (fx);
-				Item.ExtendedProperties.Remove ("InternalTargetFrameworkVersion");
+			if (dotNetProject != null) {
+				string fx = Item.ExtendedProperties ["InternalTargetFrameworkVersion"] as string;
+				if (fx != null) {
+					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (fx);
+					Item.ExtendedProperties.Remove ("InternalTargetFrameworkVersion");
+				} else if (dotNetProject.FileFormat.Id == "MSBuild05") {
+					// If no framework is specified, the default for VS2005 is 2.0.
+					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
+				}
 			}
 			
 			Item.NeedsReload = false;
