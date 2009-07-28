@@ -169,7 +169,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			fieldDeclaration.Fields.Add (varDecl);
 			fieldDeclaration.Modifier = param.Modifiers;
 			fieldDeclaration.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Const;
-			fieldDeclaration.TypeReference = new TypeReference (resolveResult.ResolvedType.ToInvariantString ());
+			fieldDeclaration.TypeReference = resolveResult.ResolvedType.ConvertToTypeReference ();
 			fieldDeclaration.TypeReference.IsKeyword = true;
 
 			TextReplaceChange insertConstant = new TextReplaceChange ();

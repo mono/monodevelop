@@ -230,8 +230,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				varGen.Offset = line.Offset + line.EditableLength;
 				varGen.InsertedText = Environment.NewLine + options.GetWhitespaces (line.Offset);
 				foreach (VariableDescriptor var in variablesToGenerate) {
-					TypeReference tr = new TypeReference (var.ReturnType.ToInvariantString ());
-					tr.IsKeyword = true;
+					TypeReference tr = var.ReturnType.ConvertToTypeReference ();
 					varGen.InsertedText += provider.OutputNode (options.Dom, new LocalVariableDeclaration (new VariableDeclaration (var.Name, null, tr)));
 				}
 				result.Add (varGen);
