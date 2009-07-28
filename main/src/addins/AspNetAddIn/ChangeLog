@@ -1,5 +1,11 @@
 2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Gui/AspNetConfigurationPanel.cs:
+	* MonoDevelop.AspNet.Gui/AspNetConfigurationPanelWidget.cs:
+	  Remove unnecessary field.
+
+2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* AspNetAddIn.csproj:

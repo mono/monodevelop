@@ -12,10 +12,8 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNet.Gui
 {	
-	public partial class AspNetConfigurationPanelWidget : Gtk.Bin
+	partial class AspNetConfigurationPanelWidget : Gtk.Bin
 	{
-		AspNetAppProjectConfiguration configuration;
-		
 		public AspNetConfigurationPanelWidget ()
 		{
 			this.Build();
@@ -23,11 +21,10 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public void Load (AspNetAppProjectConfiguration configuration)
 		{
-			this.configuration = configuration;
 			disableCodeBehindGeneration.Active = configuration.DisableCodeBehindGeneration;
 		}
 		
-		public void Store ()
+		public void Store (AspNetAppProjectConfiguration configuration)
 		{				
 			configuration.DisableCodeBehindGeneration = disableCodeBehindGeneration.Active;
 		}

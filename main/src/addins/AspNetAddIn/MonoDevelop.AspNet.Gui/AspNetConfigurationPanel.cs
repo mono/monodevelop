@@ -38,7 +38,7 @@ using MonoDevelop.Core;
 namespace MonoDevelop.AspNet.Gui
 {
 	
-	public class AspNetConfigurationPanel : MultiConfigItemOptionsPanel
+	class AspNetConfigurationPanel : MultiConfigItemOptionsPanel
 	{		
 		AspNetConfigurationPanelWidget panel;
 		
@@ -54,7 +54,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public override void ApplyChanges ()
 		{
-			panel.Store ();
+			panel.Store ((AspNetAppProjectConfiguration) CurrentConfiguration);
 		}
 	}
 }
