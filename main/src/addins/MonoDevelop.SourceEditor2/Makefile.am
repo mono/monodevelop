@@ -58,13 +58,14 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
+	$(top_builddir)/build/bin/NRefactory.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	$(MONO_CAIRO_LIBS) \
 	$(MONO_ADDINS_LIBS) \
+	$(MONO_CAIRO_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
