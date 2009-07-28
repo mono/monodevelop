@@ -1,5 +1,13 @@
 2009-07-28  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs:
+	* Gui/NRefactoryResolver.cs:
+	* Syntax/CSharpSyntaxMode.cs:
+	* Gui/NewCSharpExpressionFinder.cs: Fixed failing LINQ unit
+	  tests.
+
+2009-07-28  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CSharpFormatter.cs:
 	* Gui/NewCSharpExpressionFinder.cs:
 	* Gui/CSharpTextEditorIndentation.cs:

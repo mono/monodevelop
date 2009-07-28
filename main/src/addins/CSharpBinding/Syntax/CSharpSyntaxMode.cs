@@ -267,7 +267,6 @@ namespace MonoDevelop.CSharpBinding
 					if (result) {
 						bool previousResult = false;
 						foreach (Span span in spanStack.ToArray ().Reverse ()) {
-							Console.WriteLine (span);
 							if (span is IfBlockSpan) {
 								previousResult = ((IfBlockSpan)span).IsValid;
 							}

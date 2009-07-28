@@ -101,7 +101,6 @@ namespace MonoDevelop.CSharpBinding.Gui
 				if (documentToCursor.Substring (i, 4) == "new ") {
 					bool skip = false;
 					for (int j2 = i; j2 < documentToCursor.Length; j2++) {
-						Console.WriteLine (documentToCursor[j2]);
 						if (documentToCursor[j2] == '{')
 							break;
 						if (documentToCursor[j2] == ',') {

@@ -34,6 +34,7 @@ using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -629,7 +630,8 @@ namespace MonoDevelop.CSharpBinding
 				TypeReference typeRef = new TypeReference ("System.Func");
 				typeRef.GenericTypes.Add (TypeReference.Null);
 				ResolveResult result = resolver.ResolveExpression (selectLambdaExpr, resolver.ResolvePosition);
-				typeRef.GenericTypes.Add (new TypeReference (result.ResolvedType.ToInvariantString ()));
+				
+				typeRef.GenericTypes.Add (result.ResolvedType.ConvertToTypeReference ());
 				
 				ObjectCreateExpression createExpression = new ObjectCreateExpression (typeRef, new List<Expression> (new Expression [] {
 					null,
