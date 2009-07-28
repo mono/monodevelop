@@ -1,3 +1,8 @@
+2009-07-28  Daniel Newton  <djpnewton@gmail.com>
+
+	* MonoDevelop.Core.Execution/ProcessService.cs: Quoted temp
+	  file argument in call to DotNetExecutionCommand.
+
 2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: In

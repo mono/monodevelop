@@ -110,7 +110,8 @@ namespace MonoDevelop.Core.Execution
 					ProcessHostConsole cons = new ProcessHostConsole ();
 					tmpFile = Path.GetTempFileName ();
 					File.WriteAllText (tmpFile, chId + "\n" + sref + "\n");
-					DotNetExecutionCommand cmd = new DotNetExecutionCommand (location, id + " " + tmpFile, AppDomain.CurrentDomain.BaseDirectory);
+					string arguments = string.Format("{0} \"{1}\"", id, tmpFile);
+					DotNetExecutionCommand cmd = new DotNetExecutionCommand(location, arguments, AppDomain.CurrentDomain.BaseDirectory);
 					cmd.DebugMode = isDebugMode;
 					process = executionHandlerFactory.Execute (cmd, cons);
 					
