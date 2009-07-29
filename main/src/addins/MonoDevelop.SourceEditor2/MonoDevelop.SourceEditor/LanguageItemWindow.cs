@@ -60,6 +60,21 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (member == null)
 				return null;
+			if (!string.IsNullOrEmpty (member.Documentation)) {
+				int idx1 = member.Documentation.IndexOf ("<summary>");
+				int idx2 = member.Documentation.IndexOf ("</summary>");
+				string result;
+				if (idx2 >= 0 && idx1 >= 0) {
+					result = member.Documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
+				} else if (idx1 >= 0) {
+					result = member.Documentation.Substring (idx1 + "<summary>".Length);
+				} else if (idx2 >= 0) {
+					result = member.Documentation.Substring (0, idx2 - 1);
+				} else {
+					result = member.Documentation;
+				}
+				return result;
+			}
 			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
 			if (node != null) {
 				string innerXml = (node["summary"].InnerXml ?? "").Trim ();
