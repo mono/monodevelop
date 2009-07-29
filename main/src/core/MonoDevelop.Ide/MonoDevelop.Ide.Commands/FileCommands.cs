@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Commands
 			// Have to make sure that the FileSelectordialog is not a top level window, else it throws MissingMethodException errors deep in GTK.
 			if (viewer == null) { 
 				if(Services.ProjectService.IsWorkspaceItemFile (filename) || Services.ProjectService.IsSolutionItemFile (filename)) {
-					IdeApp.Workspace.OpenWorkspaceItem (filename);
+					IdeApp.Workspace.OpenWorkspaceItem (filename, dlg.CloseCurrentWorkspace);
 				}
 				else
 					IdeApp.Workbench.OpenDocument (filename);
