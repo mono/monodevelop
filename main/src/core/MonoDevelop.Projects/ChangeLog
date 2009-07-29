@@ -1,3 +1,10 @@
+2009-07-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Added
+	  the functionalaty to search inside xml documentation.
+
 2009-07-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:

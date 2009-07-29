@@ -117,7 +117,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			try {
 				MemberReferenceCollection refs = new MemberReferenceCollection ();
-				Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
+				Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs, false).Refactor));
 				refs.RenameAll (newName);
 				
 				RefactorerContext gctx = GetGeneratorContext (cls);
@@ -139,10 +139,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		public MemberReferenceCollection FindClassReferences (IProgressMonitor monitor, IType cls, RefactoryScope scope)
+		public MemberReferenceCollection FindClassReferences (IProgressMonitor monitor, IType cls, RefactoryScope scope, bool includeXmlComment)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
+			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs, includeXmlComment).Refactor));
 			return refs;
 		}
 		
@@ -153,10 +153,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return refs;
 		}
 		
-		public MemberReferenceCollection FindParameterReferences (IProgressMonitor monitor, IParameter param)
+		public MemberReferenceCollection FindParameterReferences (IProgressMonitor monitor, IParameter param, bool includeXmlComment)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs).Refactor));
+			Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs, includeXmlComment).Refactor));
 			return refs;
 		}
 		
@@ -482,7 +482,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			try {
 				MemberReferenceCollection refs = new MemberReferenceCollection ();
-				Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
+				Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs, false).Refactor));
 				refs.RenameAll (newName);
 				
 				RefactorerContext gctx = GetGeneratorContext (cls);
@@ -522,10 +522,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return InnerRenameMember (monitor, cls, member, newName, scope);
 		}
 		
-		public MemberReferenceCollection FindMemberReferences (IProgressMonitor monitor, IType cls, IMember member, RefactoryScope scope)
+		public MemberReferenceCollection FindMemberReferences (IProgressMonitor monitor, IType cls, IMember member, RefactoryScope scope, bool includeXmlComment)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
+			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs, includeXmlComment).Refactor));
 			return refs;
 		}
 		
@@ -566,7 +566,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			try {
 				MemberReferenceCollection refs = new MemberReferenceCollection ();
-				Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs).Refactor));
+				Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs, false).Refactor));
 				refs.RenameAll (newName);
 				
 				IMember member = param.DeclaringMember;
@@ -592,7 +592,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				scope = RefactoryScope.Solution;
 			
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, field, refs).Refactor));
+			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, field, refs, false).Refactor));
 			
 			if (!updateInternalRefs) {
 				ArrayList list = new ArrayList ();
@@ -805,17 +805,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 	{
 		MemberReferenceCollection references;
 		IType cls;
+		bool includeXmlComment;
 		
-		public RefactorFindClassReferences (IType cls, MemberReferenceCollection references)
+		public RefactorFindClassReferences (IType cls, MemberReferenceCollection references, bool includeXmlComment)
 		{
 			this.cls = cls;
 			this.references = references;
+			this.includeXmlComment = includeXmlComment;
 		}
 		
 		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
 			try {
-				IEnumerable<MemberReference> refs = r.FindClassReferences (rctx, fileName, cls);
+				IEnumerable<MemberReference> refs = r.FindClassReferences (rctx, fileName, cls, includeXmlComment);
 				if (refs != null)
 					references.AddRange (refs);
 			} catch (Exception ex) {
@@ -829,18 +831,20 @@ namespace MonoDevelop.Projects.CodeGeneration
 		IType cls;
 		MemberReferenceCollection references;
 		IMember member;
+		bool includeXmlComment;
 		
-		public RefactorFindMemberReferences (IType cls, IMember member, MemberReferenceCollection references)
+		public RefactorFindMemberReferences (IType cls, IMember member, MemberReferenceCollection references, bool includeXmlComment)
 		{
 			this.cls = cls;
 			this.references = references;
 			this.member = member;
+			this.includeXmlComment = includeXmlComment;
 		}
 		
 		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
 			try {
-				IEnumerable<MemberReference> refs = r.FindMemberReferences (rctx, fileName, cls, member);
+				IEnumerable<MemberReference> refs = r.FindMemberReferences (rctx, fileName, cls, member, includeXmlComment);
 				if (refs != null)
 					references.AddRange (refs);
 			} catch (Exception ex) {
@@ -876,17 +880,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 	{
 		MemberReferenceCollection references;
 		IParameter param;
+		bool includeXmlComment;
 		
-		public RefactorFindParameterReferences (IParameter param, MemberReferenceCollection references)
+		public RefactorFindParameterReferences (IParameter param, MemberReferenceCollection references, bool includeXmlComment)
 		{
 			this.references = references;
 			this.param = param;
+			this.includeXmlComment = includeXmlComment;
 		}
 		
 		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
 			try {
-				IEnumerable<MemberReference> refs = r.FindParameterReferences (rctx, fileName, param);
+				IEnumerable<MemberReference> refs = r.FindParameterReferences (rctx, fileName, param, includeXmlComment);
 				if (refs != null)
 					references.AddRange (refs);
 			} catch (Exception ex) {

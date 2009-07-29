@@ -100,7 +100,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		public virtual IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string file, IType cls)
+		public virtual IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string file, IType cls, bool includeXmlComment)
 		{
 			return null;
 		}
@@ -527,16 +527,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return FindGeneratedMember (ctx, file, cls, memberInfo, member.Location.Line);
 		}
 		
-		public virtual IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
+		public virtual IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member, bool includeXmlComment)
 		{
 			if (member is IField)
-				return FindFieldReferences (ctx, fileName, cls, (IField) member);
+				return FindFieldReferences (ctx, fileName, cls, (IField) member, includeXmlComment);
 			else if (member is IMethod)
-				return FindMethodReferences (ctx, fileName, cls, (IMethod) member);
+				return FindMethodReferences (ctx, fileName, cls, (IMethod) member, includeXmlComment);
 			else if (member is IProperty)
-				return FindPropertyReferences (ctx, fileName, cls, (IProperty) member);
+				return FindPropertyReferences (ctx, fileName, cls, (IProperty) member, includeXmlComment);
 			else if (member is IEvent)
-				return FindEventReferences (ctx, fileName, cls, (IEvent) member);
+				return FindEventReferences (ctx, fileName, cls, (IEvent) member, includeXmlComment);
 			else
 				return null;
 		}
@@ -620,7 +620,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		protected virtual IEnumerable<MemberReference> FindMethodReferences (RefactorerContext ctx, string fileName, IType cls, IMethod method)
+		protected virtual IEnumerable<MemberReference> FindMethodReferences (RefactorerContext ctx, string fileName, IType cls, IMethod method, bool includeXmlComment)
 		{
 			return null;
 		}
@@ -633,7 +633,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		protected virtual IEnumerable<MemberReference> FindFieldReferences (RefactorerContext ctx, string fileName, IType cls, IField field)
+		protected virtual IEnumerable<MemberReference> FindFieldReferences (RefactorerContext ctx, string fileName, IType cls, IField field, bool includeXmlComment)
 		{
 			return null;
 		}
@@ -646,7 +646,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		protected virtual IEnumerable<MemberReference> FindPropertyReferences (RefactorerContext ctx, string fileName, IType cls, IProperty property)
+		protected virtual IEnumerable<MemberReference> FindPropertyReferences (RefactorerContext ctx, string fileName, IType cls, IProperty property, bool includeXmlComment)
 		{
 			return null;
 		}
@@ -658,7 +658,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		protected virtual IEnumerable<MemberReference> FindEventReferences (RefactorerContext ctx, string fileName, IType cls, IEvent evnt)
+		protected virtual IEnumerable<MemberReference> FindEventReferences (RefactorerContext ctx, string fileName, IType cls, IEvent evnt, bool includeXmlComment)
 		{
 			return null;
 		}
@@ -740,7 +740,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return true;
 		}
 
-		public virtual IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
+		public virtual IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param, bool includeXmlComment)
 		{
 			return null;
 		}

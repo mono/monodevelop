@@ -44,7 +44,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		IType CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type);
 		IType RenameClass (RefactorerContext ctx, IType cls, string newName);
-		IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string fileName, IType cls);
+		IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string fileName, IType cls, bool includeXmlComment);
 		
 		IMember AddMember (RefactorerContext ctx, IType cls, CodeTypeMember memberInfo);
 		IMember ImplementMember (RefactorerContext ctx, IType cls, IMember member, IReturnType privateImplementationType);
@@ -62,13 +62,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 		void RemoveMember (RefactorerContext ctx, IType cls, IMember member);
 		IMember RenameMember (RefactorerContext ctx, IType cls, IMember member, string newName);
 		IMember ReplaceMember (RefactorerContext ctx, IType cls, IMember oldMember, CodeTypeMember memberInfo);
-		IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member);
+		IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member, bool includeXmlComment);
 		
 		bool RenameVariable (RefactorerContext ctx, LocalVariable var, string newName);
 		IEnumerable<MemberReference> FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var);
 		
 		bool RenameParameter (RefactorerContext ctx, IParameter param, string newName);
-		IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param);
+		IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param, bool includeXmlComment);
 		
 		IMember EncapsulateField (RefactorerContext ctx, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter);
 		
