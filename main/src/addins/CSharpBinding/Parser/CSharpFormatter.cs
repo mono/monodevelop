@@ -179,7 +179,7 @@ namespace CSharpBinding.Parser
 					if (offset < caretOffset)
 						caretOffset++;
 					textOffset++;
-					offset++;
+	//				offset++;
 					continue;
 				}
 				if ((!ch2Ws || ch2 == '\n') && ch1Ws) {

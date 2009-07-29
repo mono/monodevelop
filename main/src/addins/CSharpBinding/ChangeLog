@@ -1,5 +1,9 @@
 2009-07-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/CSharpFormatter.cs: Fixed bug in code formatter.
+
+2009-07-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/FindMemberAstVisitor.cs: Implemented search in xml
 	  comments for members/types.
 
