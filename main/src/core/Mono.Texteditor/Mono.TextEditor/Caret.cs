@@ -241,16 +241,7 @@ namespace Mono.TextEditor
 		
 		protected virtual void OnPositionChanged (DocumentLocationEventArgs args)
 		{
-			bool needUpdate = false;
-			foreach (FoldSegment fold in this.document.GetFoldingsFromOffset (this.Offset)) {
-				needUpdate |= fold.IsFolded;
-				fold.IsFolded = false;
-			}
-			if (needUpdate) {
-				document.RequestUpdate (new UpdateAll ());
-				document.CommitDocumentUpdate ();
-			}
-				
+			document.EnsureOffsetIsUnfolded (this.Offset);
 			if (PositionChanged != null) 
 				PositionChanged (this, args);
 		}

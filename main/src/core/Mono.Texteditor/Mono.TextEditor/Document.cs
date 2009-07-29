@@ -1046,6 +1046,19 @@ namespace Mono.TextEditor
 		{
 			return OffsetToLineNumber(segment.EndLine.Offset) - OffsetToLineNumber(segment.StartLine.Offset);
 		}
+		
+		public void EnsureOffsetIsUnfolded (int offset)
+		{
+			bool needUpdate = false;
+			foreach (FoldSegment fold in GetFoldingsFromOffset (offset)) {
+				needUpdate |= fold.IsFolded;
+				fold.IsFolded = false;
+			}
+			if (needUpdate) {
+				RequestUpdate (new UpdateAll ());
+				CommitDocumentUpdate ();
+			}
+		}
 		#endregion
 		
 
