@@ -15,10 +15,10 @@ else
 	MDTOOL=mdtool
 endif
 
-all:
+all: update-reg
 	$(MDTOOL) build -c:$(conf)
 
-clean:
+clean: update-reg
 	$(MDTOOL) build -t:Clean -c:$(conf)
 
 install: all
@@ -27,3 +27,10 @@ install: all
 
 uninstall:
 	rm -rf "$(installdir)"
+
+ifeq ($(strip $(ISLOCAL)),)
+update-reg:
+	$(MDTOOL) setup reg-update
+else
+	update-reg:
+endif
