@@ -1,3 +1,10 @@
+2009-07-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Worked on
+	  search&replace dialog. After a discussion in the monodevelop
+	  mailing list most users said it should stay open after a
+	  search.
+
 2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Fix XML tags so that

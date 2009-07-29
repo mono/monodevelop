@@ -109,6 +109,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonReplace.Clicked += HandleReplaceClicked;
 			buttonSearch.Clicked += HandleSearchClicked;
 			buttonClose.Clicked += ButtonCloseClicked;
+			buttonStop.Clicked += ButtonStopClicked;
 			ListStore scopeStore = new ListStore (typeof(string));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Whole solution"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Current project"));
@@ -129,11 +130,13 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			}
 			comboboxentryFind.Entry.SelectRegion (0, comboboxentryFind.ActiveText.Length);
-			buttonStop.Visible = false;
+	//		buttonStop.Visible = false;
 			Hidden += delegate {
 				Destroy ();
 			};
+			UpdateStopButton ();
 		}
+
 		public override void Destroy ()
 		{
 			base.Destroy ();
@@ -398,13 +401,28 @@ namespace MonoDevelop.Ide.FindInFiles
 		void HandleReplaceClicked (object sender, EventArgs e)
 		{
 			SearchReplace (comboboxentryReplace.Entry.Text);
-			Hide ();
+//			Hide ();
 		}
 		
 		void HandleSearchClicked (object sender, EventArgs e)
 		{
 			SearchReplace (null);
-			Hide ();
+//			Hide ();
+		}
+		List<ISearchProgressMonitor> searchesInProgress = new List<ISearchProgressMonitor> ();
+		void UpdateStopButton ()
+		{
+			buttonStop.Sensitive = searchesInProgress.Count > 0;
+		}
+		
+		void ButtonStopClicked (object sender, EventArgs e)
+		{
+			lock (searchesInProgress) {
+				if (searchesInProgress.Count == 0)
+					return;
+				ISearchProgressMonitor monitor = searchesInProgress[searchesInProgress.Count - 1];
+				monitor.AsyncOperation.Cancel ();
+			}
 		}
 		
 		void SearchReplace (string replacePattern) 
@@ -417,7 +435,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			ISearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
 			searchMonitor.CancelRequested += (MonitorHandler) DispatchService.GuiDispatch (new MonitorHandler (OnCancelRequested));
-			
+			lock (searchesInProgress)
+				searchesInProgress.Add (searchMonitor);
+			UpdateStopButton ();
 			find                  = new FindReplace ();
 			Scope         scope   = GetScope ();
 			string        pattern = comboboxentryFind.Entry.Text;
@@ -439,6 +459,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				string errorMessage = null;
 				try {
 					foreach (SearchResult result in find.FindAll (scope, pattern, replacePattern, options)) {
+						if (searchMonitor.IsCancelRequested)
+							return;
 						searchMonitor.ReportResult (result);
 					}
 				} catch (Exception ex) {
@@ -463,6 +485,9 @@ namespace MonoDevelop.Ide.FindInFiles
 					searchMonitor.Log.WriteLine (message);
 					searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
 					searchMonitor.Dispose ();
+					lock (searchesInProgress)
+						searchesInProgress.Remove (searchMonitor);
+					UpdateStopButton ();
 				});
 			});
 		}
