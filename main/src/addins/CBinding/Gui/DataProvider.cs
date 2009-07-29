@@ -107,7 +107,7 @@ namespace CBinding
 		
 		// Returns the markup to use to represent the specified method overload
 		// in the parameter information window.
-		public string GetMethodMarkup (int overload, string[] parameterMarkup)
+		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			Function function = functions[overload];
 			string paramTxt = string.Join (", ", parameterMarkup);
