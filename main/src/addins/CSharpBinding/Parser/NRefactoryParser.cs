@@ -37,6 +37,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using ICSharpCode.NRefactory.Visitors;
 using CSharpBinding;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -231,7 +232,7 @@ namespace MonoDevelop.CSharpBinding
 				foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in parser.Lexer.TagComments) {
 					result.Add (new Tag (tagComment.Tag, tagComment.CommentText, new DomRegion (tagComment.StartPosition.Y, tagComment.StartPosition.X, tagComment.EndPosition.Y, tagComment.EndPosition.X)));
 				}
-				ConversionVisitior visitor = new ConversionVisitior (result);
+				ConversionVisitior visitor = new ConversionVisitior (result, parser.Lexer.SpecialTracker.CurrentSpecials);
 				visitor.VisitCompilationUnit (parser.CompilationUnit, null);
 				LastUnit = parser.CompilationUnit;
 				return result;
@@ -241,12 +242,33 @@ namespace MonoDevelop.CSharpBinding
 		class ConversionVisitior : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
 		{
 			MonoDevelop.Projects.Dom.ParsedDocument result;
-
-			public ConversionVisitior (MonoDevelop.Projects.Dom.ParsedDocument result)
+			int lastSpecial = 0;
+			List<ISpecial> specials;
+			
+			public ConversionVisitior (MonoDevelop.Projects.Dom.ParsedDocument result, List<ISpecial> specials)
 			{
+				this.specials = specials;
 				this.result = result;
 			}
 
+			string RetrieveDocumentation (int upToLine)
+			{
+				StringBuilder result = null;
+				while (lastSpecial < specials.Count) {
+					ISpecial cur = specials[lastSpecial];
+					if (cur.StartPosition.Line >= upToLine)
+						break;
+					ICSharpCode.NRefactory.Comment comment = cur as ICSharpCode.NRefactory.Comment;
+					if (comment != null && comment.CommentType == ICSharpCode.NRefactory.CommentType.Documentation) {
+						if (result == null)
+							result = new StringBuilder ();
+						result.Append (comment.CommentText);
+					}
+					lastSpecial++;
+				}
+				return result == null ? null : result.ToString ();
+			}
+			
 			static DomRegion ConvertRegion (ICSharpCode.NRefactory.Location start, ICSharpCode.NRefactory.Location end)
 			{
 				return new DomRegion (start.Line, start.Column, end.Line, end.Column);
@@ -356,12 +378,13 @@ namespace MonoDevelop.CSharpBinding
 				namespaceStack.Pop ();
 				return null;
 			}
-
+			
 			Stack<DomType> typeStack = new Stack<DomType> ();
 			public override object VisitTypeDeclaration (ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration, object data)
 			{
 				DomType newType = new DomType ();
 				newType.Name = typeDeclaration.Name;
+				newType.Documentation = RetrieveDocumentation (typeDeclaration.StartLocation.Line);
 				newType.Location = ConvertLocation (typeDeclaration.StartLocation);
 				newType.ClassType = ConvertClassType (typeDeclaration.Type);
 				DomRegion region = ConvertRegion (typeDeclaration.BodyStartLocation, typeDeclaration.EndLocation);
@@ -468,6 +491,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				List<IParameter> parameter = ConvertParameterList (null, delegateDeclaration.Parameters);
 				DomType delegateType = DomType.CreateDelegate (result.CompilationUnit, delegateDeclaration.Name, ConvertLocation (delegateDeclaration.StartLocation), ConvertReturnType (delegateDeclaration.ReturnType), parameter);
+				delegateType.Documentation = RetrieveDocumentation (delegateDeclaration.StartLocation.Line);
 				delegateType.Location = ConvertLocation (delegateDeclaration.StartLocation);
 				delegateType.Modifiers = ConvertModifiers (delegateDeclaration.Modifier);
 				AddAttributes (delegateType, delegateDeclaration.Attributes);
@@ -484,6 +508,7 @@ namespace MonoDevelop.CSharpBinding
 			public override object VisitConstructorDeclaration (ICSharpCode.NRefactory.Ast.ConstructorDeclaration constructorDeclaration, object data)
 			{
 				DomMethod constructor = new DomMethod ();
+				constructor.Documentation = RetrieveDocumentation (constructorDeclaration.StartLocation.Line);
 				constructor.Name = ".ctor";
 				constructor.MethodModifier |= MethodModifier.IsConstructor;
 				constructor.Location = ConvertLocation (constructorDeclaration.StartLocation);
@@ -501,6 +526,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomMethod method = new DomMethod ();
 				method.Name = methodDeclaration.Name;
+				method.Documentation = RetrieveDocumentation (methodDeclaration.StartLocation.Line);
 				method.Location = ConvertLocation (methodDeclaration.StartLocation);
 				method.BodyRegion = ConvertRegion (methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new ICSharpCode.NRefactory.Location (-1, -1));
 				method.Modifiers = ConvertModifiers (methodDeclaration.Modifier);
@@ -527,7 +553,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomMethod destructor = new DomMethod ();
 				destructor.Name = ".dtor";
-
+				destructor.Documentation = RetrieveDocumentation (destructorDeclaration.StartLocation.Line);
 				destructor.Location = ConvertLocation (destructorDeclaration.StartLocation);
 				destructor.BodyRegion = ConvertRegion (destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : new ICSharpCode.NRefactory.Location (-1, -1));
 				destructor.Modifiers = ConvertModifiers (destructorDeclaration.Modifier);
@@ -612,6 +638,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomMethod method = new DomMethod ();
 				method.Name = GetOperatorName (operatorDeclaration);
+				method.Documentation = RetrieveDocumentation (operatorDeclaration.StartLocation.Line);
 				method.Location = ConvertLocation (operatorDeclaration.StartLocation);
 				method.BodyRegion = ConvertRegion (operatorDeclaration.EndLocation, operatorDeclaration.Body != null ? operatorDeclaration.Body.EndLocation : new ICSharpCode.NRefactory.Location (-1, -1));
 				method.Modifiers = ConvertModifiers (operatorDeclaration.Modifier) | Modifiers.SpecialName;
@@ -638,6 +665,7 @@ namespace MonoDevelop.CSharpBinding
 				foreach (ICSharpCode.NRefactory.Ast.VariableDeclaration varDecl in fieldDeclaration.Fields) {
 					DomField field = new DomField ();
 					field.Name = varDecl.Name;
+					field.Documentation = RetrieveDocumentation (fieldDeclaration.StartLocation.Line);
 					field.Location = ConvertLocation (fieldDeclaration.StartLocation);
 					field.Modifiers = ConvertModifiers (fieldDeclaration.Modifier);
 					if (typeStack.Peek ().ClassType == ClassType.Enum) {
@@ -664,6 +692,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomProperty property = new DomProperty ();
 				property.Name = propertyDeclaration.Name;
+				property.Documentation = RetrieveDocumentation (propertyDeclaration.StartLocation.Line);
 				property.Location = ConvertLocation (propertyDeclaration.StartLocation);
 				property.BodyRegion = ConvertRegion (propertyDeclaration.EndLocation, propertyDeclaration.BodyEnd);
 				property.Modifiers = ConvertModifiers (propertyDeclaration.Modifier);
@@ -687,6 +716,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomProperty indexer = new DomProperty ();
 				indexer.Name = "this";
+				indexer.Documentation = RetrieveDocumentation (indexerDeclaration.StartLocation.Line);
 				indexer.PropertyModifier |= PropertyModifier.IsIndexer;
 				indexer.Location = ConvertLocation (indexerDeclaration.StartLocation);
 				indexer.BodyRegion = ConvertRegion (indexerDeclaration.EndLocation, indexerDeclaration.BodyEnd);
@@ -714,6 +744,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomEvent evt = new DomEvent ();
 				evt.Name = eventDeclaration.Name;
+				evt.Documentation = RetrieveDocumentation (eventDeclaration.StartLocation.Line);
 				evt.Location = ConvertLocation (eventDeclaration.StartLocation);
 				evt.Modifiers = ConvertModifiers (eventDeclaration.Modifier);
 				evt.ReturnType = ConvertReturnType (eventDeclaration.TypeReference);

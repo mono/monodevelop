@@ -1,5 +1,12 @@
 2009-07-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/NRefactoryParser.cs:
+	* Gui/MemberCompletionData.cs: Custom xml documentation is now
+	  used (Bug 525260 - Custom documentation not shown in code
+	  completion.).
+
+2009-07-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CSharpFormatter.cs: Fixed bug in code formatter.
 
 2009-07-29  Mike Krüger  <mkrueger@novell.com>

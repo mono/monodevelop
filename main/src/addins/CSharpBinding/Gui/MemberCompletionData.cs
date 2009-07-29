@@ -115,27 +115,32 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (descriptionCreated)
 				return;
-			
+
 			StringBuilder sb = new StringBuilder ();
-			
+
 			descriptionCreated = true;
 			if (Member is IMethod && ((IMethod)Member).WasExtended)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
 			sb.Append (ambience.GetString (Member,
 				OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup
-				| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
-			
+					| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
+
 			if (Member is IMember) {
 				if ((Member as IMember).IsObsolete) {
 					sb.AppendLine ();
 					sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 				}
-				XmlNode node = (Member as IMember).GetMonodocDocumentation ();
-				if (node != null) {
-					node = node.SelectSingleNode ("summary");
+				if (!string.IsNullOrEmpty ((Member as IMember).Documentation)) {
+					sb.AppendLine ();
+					sb.Append (GetDocumentation ((Member as IMember).Documentation));
+				} else {
+					XmlNode node = (Member as IMember).GetMonodocDocumentation ();
 					if (node != null) {
-						sb.AppendLine ();
-						sb.Append (GetDocumentation (node.InnerXml));
+						node = node.SelectSingleNode ("summary");
+						if (node != null) {
+							sb.AppendLine ();
+							sb.Append (GetDocumentation (node.InnerXml));
+						}
 					}
 				}
 			}
@@ -155,6 +160,7 @@ namespace MonoDevelop.CSharpBinding
 			
 			return cref;
 		}
+		
 		public static string GetDocumentation (string doc)
 		{
 			System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
@@ -191,6 +197,7 @@ namespace MonoDevelop.CSharpBinding
 							ret.Append (xml["name"]);
 							break;
 						case "param":
+							ret.AppendLine();
 							ret.Append (xml["name"].Trim() + ": ");
 							break;
 						case "value":
