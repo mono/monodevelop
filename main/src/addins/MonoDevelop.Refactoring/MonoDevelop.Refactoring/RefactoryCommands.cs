@@ -627,22 +627,22 @@ namespace MonoDevelop.Refactoring
 			using (monitor) {
 				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				if (item is IType) {
-					references = refactorer.FindClassReferences (monitor, (IType)item, RefactoryScope.Solution);
+					references = refactorer.FindClassReferences (monitor, (IType)item, RefactoryScope.Solution, true);
 				} else if (item is LocalVariable) {
 					references = refactorer.FindVariableReferences (monitor, (LocalVariable)item);
 				} else if (item is IParameter) {
-					references = refactorer.FindParameterReferences (monitor, (IParameter)item);
+					references = refactorer.FindParameterReferences (monitor, (IParameter)item, true);
 				} else if (item is IMember) {
 					IMember member = (IMember)item;
 
 					// private is filled only in keyword case
 					if (member.IsPrivate || (!member.IsProtectedOrInternal && !member.IsPublic)) {
 						// look in project to be partial classes safe
-						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Project);
+						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Project, true);
 					} else {
 						// for all other types look in solution because
 						// internal members can be used in friend assemblies
-						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution);
+						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution, true);
 					}
 				}
 

@@ -101,7 +101,7 @@ namespace MonoDevelop.Refactoring.Rename
 					return;
 				}
 
-				Console.WriteLine (options.Document.ActiveView.Control);
+				
 				List<TextLink> links = new List<TextLink> ();
 				TextLink link = new TextLink ("name");
 				int baseOffset = Int32.MaxValue;
@@ -179,14 +179,14 @@ namespace MonoDevelop.Refactoring.Rename
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null);
 			if (options.SelectedItem is IType) {
 				IType cls = (IType)options.SelectedItem;
-				return refactorer.FindClassReferences (monitor, cls, RefactoryScope.Solution);
+				return refactorer.FindClassReferences (monitor, cls, RefactoryScope.Solution, true);
 			} else if (options.SelectedItem is IMember) {
 				IMember member = (IMember)options.SelectedItem;
-				return refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution);
+				return refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution, true);
 			} else if (options.SelectedItem is LocalVariable) {
 				return refactorer.FindVariableReferences (monitor, (LocalVariable)options.SelectedItem);
 			} else if (options.SelectedItem is IParameter) {
-				return refactorer.FindParameterReferences (monitor, (IParameter)options.SelectedItem);
+				return refactorer.FindParameterReferences (monitor, (IParameter)options.SelectedItem, true);
 			}
 			return null;
 		}
