@@ -78,7 +78,6 @@ namespace MonoDevelop.AspNet.Mvc.Gui {
             this.BorderWidth = ((uint)(6));
             this.Resizable = false;
             this.AllowGrow = false;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

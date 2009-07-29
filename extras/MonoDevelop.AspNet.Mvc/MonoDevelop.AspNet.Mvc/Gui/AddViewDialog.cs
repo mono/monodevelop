@@ -156,7 +156,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		protected virtual void ShowMasterSelectionDialog (object sender, System.EventArgs e)
 		{
 			//MonoDevelop.AspNet.Gui.
-			using (AspNetFileSelector dialog = new AspNetFileSelector (project, null, "*.master")) {
+			using (var dialog = new MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog (project, null, "*.master")) {
 				dialog.Title = MonoDevelop.Core.GettextCatalog.GetString ("Select a Master Page...");
 				dialog.Modal = true;
 				dialog.TransientFor = this;
