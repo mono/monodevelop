@@ -331,12 +331,13 @@ namespace CSharpBinding.Parser
 				r.SetContext (ctx);
 			}
 		}
-		public override IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string fileName, IType cls)
+		public override IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string fileName, IType cls, bool includeXmlComment)
 		{
 			IEditableTextFile file = ctx.GetFile (fileName);
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, cls.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, file, cls);
+			visitor.IncludeXmlDocumentation = includeXmlComment;
 			visitor.RunVisitor ();
 			SetContext (visitor.FoundReferences, ctx);
 			return visitor.FoundReferences;
@@ -562,7 +563,7 @@ namespace CSharpBinding.Parser
 			return new DomRegion (lineBegin, colBegin, lineEnd, colEnd);
 		}
 		static NRefactoryParser parser = new NRefactoryParser ();
-		public override IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member)
+		public override IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member, bool includeXmlComment)
 		{
 			ParsedDocument parsedDocument = parser.Parse (cls.SourceProjectDom, fileName);
 			
@@ -570,6 +571,7 @@ namespace CSharpBinding.Parser
 			resolver.SetupParsedCompilationUnit (parser.LastUnit);
 			resolver.CallingMember = member;
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, ctx.GetFile (fileName), member);
+			visitor.IncludeXmlDocumentation = includeXmlComment;
 			visitor.RunVisitor ();
 			SetContext (visitor.FoundReferences, ctx);
 			return visitor.FoundReferences;
@@ -588,15 +590,14 @@ namespace CSharpBinding.Parser
 			return visitor.FoundReferences;
 		}
 		
-		public override IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
+		public override IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param, bool includeXmlComment)
 		{
-//			System.Console.WriteLine("Find parameter references !!!");
-			//IMember member = param.DeclaringMember;
 			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, param.DeclaringMember.DeclaringType.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, fileName);
 			
 			resolver.CallingMember = param.DeclaringMember;
 			
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, ctx.GetFile (fileName), param);
+			visitor.IncludeXmlDocumentation = includeXmlComment;
 			visitor.RunVisitor ();
 			SetContext (visitor.FoundReferences, ctx);
 			return visitor.FoundReferences;

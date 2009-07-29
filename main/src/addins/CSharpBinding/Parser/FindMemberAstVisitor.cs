@@ -27,8 +27,10 @@
 //
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects.Dom;
@@ -63,11 +65,16 @@ namespace MonoDevelop.CSharpBinding
 		
 		Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration> ();
 		
+		public bool IncludeXmlDocumentation {
+			get;
+			set;
+		}
 		public FindMemberAstVisitor (NRefactoryResolver resolver, IEditableTextFile file, IDomVisitable searchedMember)
 		{
 			this.file           = file;
 			this.resolver       = resolver;
 			this.searchedMember = searchedMember;
+			this.IncludeXmlDocumentation = false;
 			if (searchedMember is IMethod) {
 				IMethod method = (IMethod)searchedMember;
 				this.searchedMemberName     = method.IsConstructor ? method.DeclaringType.Name : method.Name;
@@ -91,6 +98,8 @@ namespace MonoDevelop.CSharpBinding
 					this.searchedMemberFile     = ((LocalVariable)searchedMember).CompilationUnit.FileName;
 			}
 		}
+		static readonly Regex paramRegex    = new Regex ("\\<param\\s+name\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
+		static readonly Regex paramRefRegex = new Regex ("\\<paramref\\s+name\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
 
 		public void RunVisitor ()
 		{
@@ -112,6 +121,29 @@ namespace MonoDevelop.CSharpBinding
 				parser.Parse ();
 				
 				VisitCompilationUnit (parser.CompilationUnit, null);
+			}
+			if (IncludeXmlDocumentation && searchedMember is IParameter) {
+				
+				IParameter parameter = (IParameter)searchedMember;
+				var docComments = from ICSharpCode.NRefactory.Comment cmt in 
+					(from ISpecial s in parser.Lexer.SpecialTracker.CurrentSpecials 
+					where s is ICSharpCode.NRefactory.Comment && s.StartPosition.Line <= parameter.DeclaringMember.Location.Line
+					select s) 
+					select cmt;
+				
+				ICSharpCode.NRefactory.Comment lastComment = null;
+				foreach (ICSharpCode.NRefactory.Comment curComment in docComments.Reverse ()) {
+					if (lastComment != null && Math.Abs (lastComment.StartPosition.Line - curComment.StartPosition.Line) > 1)
+						break;
+					// Concat doesn't work on MatchCollections
+					foreach (var matchCol in new [] { paramRegex.Matches (curComment.CommentText), paramRefRegex.Matches (curComment.CommentText) }) {
+						foreach (Match match in matchCol) {
+							if (match.Groups[1].Value == searchedMemberName) 
+								AddUniqueReference (curComment.StartPosition.Line, curComment.StartPosition.Column + match.Groups[1].Index, searchedMemberName);
+						}
+					}
+					lastComment = curComment;
+				}
 			}
 		}
 

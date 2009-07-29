@@ -1,3 +1,9 @@
+2009-07-29  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/CodeGenerator.cs:
+	* Parser/FindMemberAstVisitor.cs: Implmented search in xml
+	  documentation (currently this works only for parameters).
+
 2009-07-28  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/FindMemberAstVisitor.cs: Fixed possible null
