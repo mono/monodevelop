@@ -293,7 +293,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (fx != null) {
 					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (fx);
 					Item.ExtendedProperties.Remove ("InternalTargetFrameworkVersion");
-				} else if (dotNetProject.FileFormat.Id == "MSBuild05") {
+//FIXME: this is a hack around bug #526176
+				} else if (dotNetProject.ParentSolution != null && dotNetProject.FileFormat.Id == "MSBuild05") {
 					// If no framework is specified, the default for VS2005 is 2.0.
 					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
 				}
