@@ -44,14 +44,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string slnVersion;
 		string productDescription;
 		string[] frameworkVersions;
+		IList compatibleFrameworkVersions;
 		
-		public MSBuildFileFormat (string productVersion, string toolsVersion, string slnVersion, string productDescription, string[] frameworkVersions)
+		public MSBuildFileFormat (string productVersion, string toolsVersion, string slnVersion, string productDescription, string[] frameworkVersions, string[] compatibleFrameworkVersions)
 		{
 			this.productVersion = productVersion;
 			this.toolsVersion = toolsVersion;
 			this.slnVersion = slnVersion;
 			this.productDescription = productDescription;
 			this.frameworkVersions = frameworkVersions;
+			this.compatibleFrameworkVersions = compatibleFrameworkVersions;
 		}
 		
 		public string Name {
@@ -60,9 +62,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		public bool SupportsFramework (TargetFramework fx)
+		bool SupportsFramework (TargetFramework fx)
 		{
 			return ((IList)frameworkVersions).Contains (fx.Id) || 
+				(compatibleFrameworkVersions != null && compatibleFrameworkVersions.Contains (fx.Id)) ||
 				(!string.IsNullOrEmpty (fx.SubsetOfFramework) && ((IList)frameworkVersions).Contains (fx.SubsetOfFramework));
 		}
 
@@ -242,9 +245,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string toolsVersion = "2.0";
 		const string slnVersion = "9.00";
 		const string productComment = "Visual Studio 2005";
-		static string[] frameworkVersions = { "2.0", "3.0", "3.5" };
+		static string[] frameworkVersions = { "2.0" };
+		static string[] compatibleFrameworkVersions = { "3.0", "3.5" };
 		
-		public MSBuildFileFormatVS05 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions)
+		public MSBuildFileFormatVS05 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, compatibleFrameworkVersions)
 		{
 		}
 	}
@@ -257,7 +261,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string productComment = "Visual Studio 2008";
 		static string[] frameworkVersions = { "2.0", "3.0", "3.5" };
 		
-		public MSBuildFileFormatVS08 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions)
+		public MSBuildFileFormatVS08 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, null)
 		{
 		}
 	}
@@ -270,7 +274,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string productComment = "Visual Studio 2010";
 		static string[] frameworkVersions = { "2.0", "3.0", "3.5", "4.0" };
 		
-		public MSBuildFileFormatVS10 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions)
+		public MSBuildFileFormatVS10 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, null)
 		{
 		}
 	}

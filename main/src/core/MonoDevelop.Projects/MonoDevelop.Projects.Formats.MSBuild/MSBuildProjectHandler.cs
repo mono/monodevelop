@@ -206,7 +206,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			DotNetProject dotNetProject = Item as DotNetProject;
 			
 			string assemblyName = null;
-			string frameworkVersion = "2.0";
+			string frameworkVersion = null;
 			
 			// Read all items
 			
@@ -287,15 +287,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ser.Deserialize (Item, globalData);
 
 			// Final initializations
-
-			if (dotNetProject != null) {
+			
+			if (dotNetProject != null && string.IsNullOrEmpty (frameworkVersion)) {
 				string fx = Item.ExtendedProperties ["InternalTargetFrameworkVersion"] as string;
 				if (fx != null) {
 					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (fx);
 					Item.ExtendedProperties.Remove ("InternalTargetFrameworkVersion");
-//FIXME: this is a hack around bug #526176
-				} else if (dotNetProject.ParentSolution != null && dotNetProject.FileFormat.Id == "MSBuild05") {
-					// If no framework is specified, the default for VS2005 is 2.0.
+				} else {
+					// If no framework is specified, it means the format is VS2005, so the default framework is 2.0.
 					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
 				}
 			}
