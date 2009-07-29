@@ -36,6 +36,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
 using CSharpBinding.FormattingStrategy;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -172,9 +173,8 @@ namespace MonoDevelop.CSharpBinding
 			
 			if (i > cursor)
 				return -1;
-			if (i == cursor)
-				return 0;
-			
+			if (i == cursor) 
+				return 1; // parameters are 1 based
 			CSharpIndentEngine engine = new CSharpIndentEngine ();
 			int index = memberStart + 1;
 			do {
@@ -213,12 +213,12 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public string GetMethodMarkup (int overload, string[] parameterMarkup)
+		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
-			string name = (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) : methods[overload].Name));
+			string name = (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics) : methods[overload].Name));
 			StringBuilder parameters = new StringBuilder ();
 			int curLen = 0;
-			
+
 			foreach (string parameter in parameterMarkup) {
 				if (parameters.Length > 0)
 					parameters.Append (", ");
@@ -243,20 +243,37 @@ namespace MonoDevelop.CSharpBinding
 			sb.Append ("</b> (");
 			sb.Append (parameters.ToString ());
 			sb.Append (")");
-			
+
 			if (methods[overload].IsObsolete) {
 				sb.AppendLine ();
 				sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 			}
-			XmlNode node = methods[overload].GetMonodocDocumentation ();
-			if (node != null) {
-				node = node.SelectSingleNode ("summary");
-				if (node != null) {
-					sb.AppendLine ();
-					sb.Append (MemberCompletionData.GetDocumentation (node.InnerXml));
+			IParameter curParameter = currentParameter >= 0 && currentParameter < methods[overload].Parameters.Count ? methods[overload].Parameters[currentParameter] : null;
+
+			if (curParameter != null) {
+				string docText = null;
+				if (!string.IsNullOrEmpty (methods[overload].Documentation)) {
+					docText = methods[overload].Documentation;
+				} else {
+					XmlNode node = methods[overload].GetMonodocDocumentation ();
+					if (node != null) {
+						node = node.SelectSingleNode ("summary");
+						if (node != null)
+							docText = node.InnerXml;
+					}
+				}
+				if (!string.IsNullOrEmpty (docText)) {
+					Regex paramRegex = new Regex ("\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>(.*)\\</param\\>", RegexOptions.Compiled);
+					Match match = paramRegex.Match (docText);
+					if (match.Success) {
+						sb.AppendLine ();
+						string text = match.Groups[1].Value;
+						if (text.IndexOf ("</param>") > 0)
+							text = text.Substring (0, text.IndexOf ("</param>"));
+						sb.Append (MemberCompletionData.GetDocumentation (text));
+					}
 				}
 			}
-			
 			return sb.ToString ();
 		}
 		
@@ -264,9 +281,10 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (!this.staticResolve && methods[overload].IsExtension)
 				paramIndex++;
-			
+
 			if (methods[overload].Parameters == null || paramIndex < 0 || paramIndex >= methods[overload].Parameters.Count)
 				return "";
+			
 			return ambience.GetString (methods[overload].Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
 		}
 		

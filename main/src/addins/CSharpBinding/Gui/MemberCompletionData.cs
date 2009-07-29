@@ -237,6 +237,7 @@ namespace MonoDevelop.CSharpBinding
 				LoggingService.LogError (ex.ToString ());
 				return doc;
 			}
+			
 			return ret.ToString ();
 		}
 

@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharpBinding
 			return depth == 0 ? -1 : index;
 		}
 		
-		public string GetMethodMarkup (int overload, string[] parameterMarkup)
+		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			string name = ambience.GetString (types[overload], OutputFlags.UseFullName | OutputFlags.IncludeMarkup);
 			StringBuilder parameters = new StringBuilder ();

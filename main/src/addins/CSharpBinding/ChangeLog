@@ -1,5 +1,13 @@
 2009-07-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/MemberCompletionData.cs:
+	* Parser/FindMemberAstVisitor.cs:
+	* Gui/NRefactoryParameterDataProvider.cs:
+	* Gui/NRefactoryTemplateParameterDataProvider.cs: Handled
+	  parameter documentation.
+
+2009-07-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/NRefactoryParser.cs:
 	* Gui/MemberCompletionData.cs: Custom xml documentation is now
 	  used (Bug 525260 - Custom documentation not shown in code

@@ -71,31 +71,31 @@ namespace MonoDevelop.CSharpBinding
 		}
 		public FindMemberAstVisitor (NRefactoryResolver resolver, IEditableTextFile file, IDomVisitable searchedMember)
 		{
-			this.file           = file;
-			this.resolver       = resolver;
+			this.file = file;
+			this.resolver = resolver;
 			this.searchedMember = searchedMember;
 			this.IncludeXmlDocumentation = false;
 			if (searchedMember is IMethod) {
 				IMethod method = (IMethod)searchedMember;
-				this.searchedMemberName     = method.IsConstructor ? method.DeclaringType.Name : method.Name;
+				this.searchedMemberName = method.IsConstructor ? method.DeclaringType.Name : method.Name;
 				this.searchedMemberLocation = method.Location;
 				if (method.DeclaringType != null && method.DeclaringType.CompilationUnit != null)
-					this.searchedMemberFile     = method.DeclaringType.CompilationUnit.FileName;
+					this.searchedMemberFile = method.DeclaringType.CompilationUnit.FileName;
 			} else if (searchedMember is IMember) {
-				this.searchedMemberName     = ((IMember)searchedMember).Name;
+				this.searchedMemberName = ((IMember)searchedMember).Name;
 				this.searchedMemberLocation = ((IMember)searchedMember).Location;
 				if (((IMember)searchedMember).DeclaringType != null && ((IMember)searchedMember).DeclaringType.CompilationUnit != null)
-					this.searchedMemberFile     = ((IMember)searchedMember).DeclaringType.CompilationUnit.FileName;
+					this.searchedMemberFile = ((IMember)searchedMember).DeclaringType.CompilationUnit.FileName;
 			} else if (searchedMember is IParameter) {
-				this.searchedMemberName     = ((IParameter)searchedMember).Name;
+				this.searchedMemberName = ((IParameter)searchedMember).Name;
 				this.searchedMemberLocation = ((IParameter)searchedMember).Location;
 				if (((IParameter)searchedMember).DeclaringMember.DeclaringType.CompilationUnit != null)
-					this.searchedMemberFile     = ((IParameter)searchedMember).DeclaringMember.DeclaringType.CompilationUnit.FileName;
+					this.searchedMemberFile = ((IParameter)searchedMember).DeclaringMember.DeclaringType.CompilationUnit.FileName;
 			} else if (searchedMember != null) {
-				this.searchedMemberName     = ((LocalVariable)searchedMember).Name;
+				this.searchedMemberName = ((LocalVariable)searchedMember).Name;
 				this.searchedMemberLocation = ((LocalVariable)searchedMember).Region.Start;
 				if (((LocalVariable)searchedMember).CompilationUnit != null)
-					this.searchedMemberFile     = ((LocalVariable)searchedMember).CompilationUnit.FileName;
+					this.searchedMemberFile = ((LocalVariable)searchedMember).CompilationUnit.FileName;
 			}
 		}
 		static readonly Regex paramRegex    = new Regex ("\\<param\\s+name\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
