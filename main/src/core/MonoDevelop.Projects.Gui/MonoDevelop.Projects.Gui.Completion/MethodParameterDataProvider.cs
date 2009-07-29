@@ -104,7 +104,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public abstract int GetCurrentParameterIndex (ICodeCompletionContext ctx);
 		
-		public virtual string GetMethodMarkup (int overload, string[] parameters)
+		public virtual string GetMethodMarkup (int overload, string[] parameters, int currentParameter)
 		{
 			return methodName + " (" + string.Join (", ", parameters)  + ")";
 		}

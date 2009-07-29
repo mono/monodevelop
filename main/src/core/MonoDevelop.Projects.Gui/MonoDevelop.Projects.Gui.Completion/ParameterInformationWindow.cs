@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					txt = "<u><span foreground='darkblue'>" + txt + "</span></u>";
 				paramText [n] = txt;
 			}
-			string text = provider.GetMethodMarkup (overload, paramText);
+			string text = provider.GetMethodMarkup (overload, paramText, currentParam);
 
 			desc.Markup = text;
 			if (provider.OverloadCount > 1) {

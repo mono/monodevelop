@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		// Returns the markup to use to represent the specified method overload
 		// in the parameter information window.
-		string GetMethodMarkup (int overload, string[] parameterMarkup);
+		string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter);
 		
 		// Returns the text to use to represent the specified parameter
 		string GetParameterMarkup (int overload, int paramIndex);

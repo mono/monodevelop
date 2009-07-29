@@ -1,3 +1,10 @@
+2009-07-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs:
+	  Handled parameter documentation.
+
 2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
