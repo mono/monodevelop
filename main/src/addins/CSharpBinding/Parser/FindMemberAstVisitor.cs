@@ -101,6 +101,9 @@ namespace MonoDevelop.CSharpBinding
 		static readonly Regex paramRegex    = new Regex ("\\<param\\s+name\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
 		static readonly Regex paramRefRegex = new Regex ("\\<paramref\\s+name\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
 
+		static readonly Regex seeRegex       = new Regex ("\\<see\\s+cref\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
+		static readonly Regex seeAlsoRegRegex = new Regex ("\\<seealso\\s+cref\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
+
 		public void RunVisitor ()
 		{
 			if (searchedMember == null)
@@ -122,27 +125,48 @@ namespace MonoDevelop.CSharpBinding
 				
 				VisitCompilationUnit (parser.CompilationUnit, null);
 			}
-			if (IncludeXmlDocumentation && searchedMember is IParameter) {
-				
-				IParameter parameter = (IParameter)searchedMember;
-				var docComments = from ICSharpCode.NRefactory.Comment cmt in 
-					(from ISpecial s in parser.Lexer.SpecialTracker.CurrentSpecials 
-					where s is ICSharpCode.NRefactory.Comment && s.StartPosition.Line <= parameter.DeclaringMember.Location.Line
-					select s) 
-					select cmt;
-				
-				ICSharpCode.NRefactory.Comment lastComment = null;
-				foreach (ICSharpCode.NRefactory.Comment curComment in docComments.Reverse ()) {
-					if (lastComment != null && Math.Abs (lastComment.StartPosition.Line - curComment.StartPosition.Line) > 1)
-						break;
-					// Concat doesn't work on MatchCollections
-					foreach (var matchCol in new [] { paramRegex.Matches (curComment.CommentText), paramRefRegex.Matches (curComment.CommentText) }) {
-						foreach (Match match in matchCol) {
-							if (match.Groups[1].Value == searchedMemberName) 
-								AddUniqueReference (curComment.StartPosition.Line, curComment.StartPosition.Column + match.Groups[1].Index, searchedMemberName);
+			if (IncludeXmlDocumentation) {
+				if (searchedMember is IParameter) {
+					IParameter parameter = (IParameter)searchedMember;
+					var docComments = from ICSharpCode.NRefactory.Comment cmt in 
+						(from ISpecial s in parser.Lexer.SpecialTracker.CurrentSpecials 
+						where s is ICSharpCode.NRefactory.Comment && s.StartPosition.Line <= parameter.DeclaringMember.Location.Line
+						select s) 
+						select cmt;
+					
+					ICSharpCode.NRefactory.Comment lastComment = null;
+					foreach (ICSharpCode.NRefactory.Comment curComment in docComments.Reverse ()) {
+						if (lastComment != null && Math.Abs (lastComment.StartPosition.Line - curComment.StartPosition.Line) > 1)
+							break;
+						// Concat doesn't work on MatchCollections
+						foreach (var matchCol in new [] { paramRegex.Matches (curComment.CommentText), paramRefRegex.Matches (curComment.CommentText) }) {
+							foreach (Match match in matchCol) {
+								if (match.Groups[1].Value == searchedMemberName) 
+									AddUniqueReference (curComment.StartPosition.Line, curComment.StartPosition.Column + match.Groups[1].Index, searchedMemberName);
+							}
 						}
+						lastComment = curComment;
 					}
-					lastComment = curComment;
+				} else if (searchedMember is IMember) {
+					IMember member = (IMember)searchedMember;
+						var docComments = from ICSharpCode.NRefactory.Comment cmt in 
+						(from ISpecial s in parser.Lexer.SpecialTracker.CurrentSpecials 
+						where s is ICSharpCode.NRefactory.Comment
+						select s) 
+						select cmt;
+					
+					string fullName = member.FullName;
+					
+					foreach (ICSharpCode.NRefactory.Comment curComment in docComments) {
+						// Concat doesn't work on MatchCollections
+						foreach (var matchCol in new [] { seeRegex.Matches (curComment.CommentText), seeAlsoRegRegex.Matches (curComment.CommentText) }) {
+							foreach (Match match in matchCol) {
+								if (match.Groups[1].Value.StartsWith (fullName)) 
+									AddUniqueReference (curComment.StartPosition.Line, curComment.StartPosition.Column + match.Groups[1].Index + fullName.Length - searchedMemberName.Length, searchedMemberName);
+							}
+						}
+						
+					}
 				}
 			}
 		}
