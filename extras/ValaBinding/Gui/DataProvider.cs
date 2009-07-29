@@ -149,7 +149,7 @@ namespace MonoDevelop.ValaBinding
 		
 		// Returns the markup to use to represent the specified method overload
 		// in the parameter information window.
-		public string GetMethodMarkup (int overload, string[] parameterMarkup)
+		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			string paramTxt = string.Join (", ", parameterMarkup);
 			Function function = functions[overload];
