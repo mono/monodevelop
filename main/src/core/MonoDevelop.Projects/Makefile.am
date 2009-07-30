@@ -10,11 +10,14 @@ DEPS =  \
 REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODOC_LIBS) \
+	-r:Microsoft.Build.Framework \
+	-r:Microsoft.Build.Utilities \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
 	-r:System.Data \
 	-r:System.Drawing \
+	-r:System.Runtime.Remoting \
 	-r:System.Xml
 
 FILES =  \
@@ -175,6 +178,8 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs \
+	MonoDevelop.Projects.Formats.MSBuild/RemoteLogger.cs \
+	MonoDevelop.Projects.Formats.MSBuild/RemoteLoggerController.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnData.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs \
 	MonoDevelop.Projects.Policies/DotNetNamingPolicy.cs \

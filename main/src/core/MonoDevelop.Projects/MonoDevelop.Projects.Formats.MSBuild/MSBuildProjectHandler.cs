@@ -31,12 +31,15 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Remoting;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -77,14 +80,69 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (import != null && import.Trim().Length > 0)
 				this.targetImports.AddRange (import.Split (':'));
 		}
-
+		
 		public override BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
-			if (Item is DotNetProject) {
-				MD1DotNetProjectHandler handler = new MD1DotNetProjectHandler ((DotNetProject)Item);
-				return handler.RunTarget (monitor, target, configuration);
-			} else
-				return null;
+			if (PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false)) {
+				SolutionEntityItem item = Item as SolutionEntityItem;
+				if (item != null) {
+					TargetRuntime runtime = null;
+					TargetFramework fx = null;
+					if (item is DotNetProject) {
+						runtime = ((DotNetProject)item).TargetRuntime;
+						fx = ((DotNetProject)item).TargetFramework;
+					}
+					else {
+						runtime = Runtime.SystemAssemblyService.DefaultRuntime;
+						fx = Services.ProjectService.DefaultTargetFramework;
+					}
+					
+					string xbuild = runtime.GetToolPath (fx, "msbuild");
+					string file = item.FileName;
+					
+					char chId = Runtime.ProcessService.RegisterRemotingChannel () [0];
+					
+					RemoteLoggerController controller = new RemoteLoggerController (Item.ItemDirectory);
+					
+					BinaryFormatter bf = new BinaryFormatter ();
+					ObjRef oref = RemotingServices.Marshal (controller);
+					MemoryStream ms = new MemoryStream ();
+					bf.Serialize (ms, oref);
+					string sref = chId + Convert.ToBase64String (ms.ToArray ());
+
+					string conf, plat;
+					int i = configuration.IndexOf ('|');
+					if (i != -1) {
+						conf = configuration.Substring (0, i);
+						plat = configuration.Substring (i+1);
+					} else {
+						conf = configuration;
+						plat = null;
+					}
+					
+					string args = "/target:" + target;
+					args += " \"/property:Configuration=" + conf + "\"";
+					if (plat != null)
+						args += " \"/property:Platform=" + plat + "\"";
+					args += " \"/logger:MonoDevelop.Projects.Formats.MSBuild.RemoteLogger," + GetType ().Assembly.Location + ";" + sref + "\"";
+					args += " \"" + file + "\"";
+					
+					try {
+						ProcessWrapper pw = Runtime.ProcessService.StartProcess (xbuild, args, null, monitor.Log, monitor.Log, null);
+						pw.WaitForOutput ();
+					} finally {
+						System.Runtime.Remoting.RemotingServices.Disconnect (controller);
+					}
+					return controller.BuildResult;
+				}
+			}
+			else {
+				if (Item is DotNetProject) {
+					MD1DotNetProjectHandler handler = new MD1DotNetProjectHandler ((DotNetProject)Item);
+					return handler.RunTarget (monitor, target, configuration);
+				}
+			}
+			return null;
 		}
 		
 		public string GetDefaultResourceId (ProjectFile file)

@@ -46,6 +46,9 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Microsoft.Build.Utilities" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -317,6 +320,8 @@
     <Compile Include="MonoDevelop.Projects.Policies\PolicyContainer.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\ScopedPolicy.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyDictionary.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteLogger.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteLoggerController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
