@@ -97,7 +97,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 
 		static string GetCorrectFileName (MonoDevelop.Projects.Dom.IType type)
 		{
-			if (type == null || type.CompilationUnit == null || string.IsNullOrEmpty (type.CompilationUnit.FileName))
+			if (type == null || type.CompilationUnit == null || type.SourceProject == null || string.IsNullOrEmpty (type.CompilationUnit.FileName))
 				return null;
 			return Path.Combine (Path.GetDirectoryName (type.CompilationUnit.FileName), type.Name + Path.GetExtension (type.CompilationUnit.FileName));
 		}
