@@ -55,59 +55,14 @@ namespace MonoDevelop.SourceEditor
 			set;
 		}
 		
-		
-		static string GetDocumentation (IMember member)
-		{
-			if (member == null)
-				return null;
-			if (!string.IsNullOrEmpty (member.Documentation)) {
-				int idx1 = member.Documentation.IndexOf ("<summary>");
-				int idx2 = member.Documentation.IndexOf ("</summary>");
-				string result;
-				if (idx2 >= 0 && idx1 >= 0) {
-					result = member.Documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
-				} else if (idx1 >= 0) {
-					result = member.Documentation.Substring (idx1 + "<summary>".Length);
-				} else if (idx2 >= 0) {
-					result = member.Documentation.Substring (0, idx2 - 1);
-				} else {
-					result = member.Documentation;
-				}
-				return result;
-			}
-			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
-			if (node != null) {
-				string innerXml = (node["summary"].InnerXml ?? "").Trim ();
-				StringBuilder sb = new StringBuilder ();
-				bool wasWhiteSpace = false;
-				for (int i = 0; i < innerXml.Length; i++) {
-					char ch = innerXml[i];
-					switch (ch) {
-					case '\n':
-					case '\r':
-						break;
-					default:
-						bool isWhiteSpace = Char.IsWhiteSpace (ch);
-						if (isWhiteSpace && wasWhiteSpace)
-							continue;
-						wasWhiteSpace = isWhiteSpace;
-						sb.Append (ch);
-						break;
-					}
-				}
-				return sb.ToString ();
-			}
-			return member.Documentation;
-		}
-		
 		public LanguageItemWindow (ProjectDom dom, Gdk.ModifierType modifierState, Ambience ambience, ResolveResult result, string errorInformations, ICompilationUnit unit)
 		{
 			settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
 			if ((Gdk.ModifierType.ShiftMask & modifierState) == Gdk.ModifierType.ShiftMask) {
-				settings.EmitNameCallback = delegate (IDomVisitable domVisitable, ref string outString) {
+				settings.EmitNameCallback = delegate(IDomVisitable domVisitable, ref string outString) {
 					// crop used namespaces.
 					if (unit != null) {
-						
+
 						int len = 0;
 						foreach (IUsing u in unit.Usings) {
 							foreach (string ns in u.Namespaces) {
@@ -127,18 +82,18 @@ namespace MonoDevelop.SourceEditor
 									count++;
 							}
 						}
-						
+
 						if (len > 0 && count == 1)
 							outString = newName;
 					}
 				};
 			}
-			
+
 			// Approximate value for usual case
-			StringBuilder s = new StringBuilder(150);
+			StringBuilder s = new StringBuilder (150);
 			string doc = null;
 			if (result != null) {
-				if (result is AggregatedResolveResult) 
+				if (result is AggregatedResolveResult)
 					result = ((AggregatedResolveResult)result).PrimaryResult;
 				if (result is ParameterResolveResult) {
 					s.Append ("<small><i>");
@@ -163,7 +118,7 @@ namespace MonoDevelop.SourceEditor
 								s.Append (typeStr);
 								s.Append ("</i></small>\n");
 								s.Append (ambience.GetString (type, settings));
-								doc = GetDocumentation (type);
+								doc = AmbienceService.GetDocumentationSummary (type);
 							}
 						}
 					} else {
@@ -175,9 +130,9 @@ namespace MonoDevelop.SourceEditor
 							s.Append ("<small><i>");
 							s.Append (propertyStr);
 							s.Append ("</i></small>\n");
-						} 
+						}
 						s.Append (ambience.GetString (member, settings));
-						doc = GetDocumentation (member);
+						doc = AmbienceService.GetDocumentationSummary (member);
 					}
 				} else if (result is NamespaceResolveResult) {
 					s.Append ("<small><i>");
@@ -194,16 +149,16 @@ namespace MonoDevelop.SourceEditor
 						int overloadCount = mrr.Methods.Count - 1;
 						s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
 					}
-					
-					doc = GetDocumentation (((MethodResolveResult)result).MostLikelyMethod);
+
+					doc = AmbienceService.GetDocumentationSummary (((MethodResolveResult)result).MostLikelyMethod);
 				} else {
 					s.Append (ambience.GetString (result.ResolvedType, settings));
 				}
-				
-				
+
+
 				if (!string.IsNullOrEmpty (doc)) {
 					s.Append ("\n<small>");
-					s.Append (GetDocumentation (doc));
+					s.Append (AmbienceService.GetDocumentationMarkup (doc));
 					s.Append ("</small>");
 				}
 			}
@@ -241,52 +196,6 @@ namespace MonoDevelop.SourceEditor
 			return l.RealWidth;
 		}
 		
-		public static string GetDocumentation (string doc)
-		{
-			System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
-			XmlTextReader xml   = new XmlTextReader(reader);
-			StringBuilder ret   = new StringBuilder(70);
-			try {
-				xml.Read();
-				do {
-					if (xml.NodeType == XmlNodeType.Element) {
-						string elname = xml.Name.ToLower();
-						if (elname == "remarks") {
-							ret.Append("Remarks:\n");
-						// skip <example>-nodes
-						} else if (elname == "example") {
-							xml.Skip();
-							xml.Skip();
-						} else if (elname == "exception") {
-							ret.Append("Exception: " + GetCref(xml["cref"]) + ":\n");
-						} else if (elname == "returns") {
-							ret.Append("Returns: ");
-						} else if (elname == "see") {
-							ret.Append(GetCref(xml["cref"]) + xml["langword"]);
-						} else if (elname == "seealso") {
-							ret.Append("See also: " + GetCref(xml["cref"]) + xml["langword"]);
-						} else if (elname == "paramref") {
-							ret.Append(xml["name"]);
-						} else if (elname == "param") {
-							ret.Append(xml["name"].Trim() + ": ");
-						} else if (elname == "value") {
-							ret.Append("Value: ");
-						}
-					} else if (xml.NodeType == XmlNodeType.EndElement) {
-						string elname = xml.Name.ToLower();
-						if (elname == "para" || elname == "param") {
-							ret.Append("\n");
-						}
-					} else if (xml.NodeType == XmlNodeType.Text) {
-						ret.Append(xml.Value);
-					}
-				} while (xml.Read ());
-			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-				return doc;
-			}
-			return ret.ToString ();
-		}
 		
 		static string GetCref (string cref)
 		{
