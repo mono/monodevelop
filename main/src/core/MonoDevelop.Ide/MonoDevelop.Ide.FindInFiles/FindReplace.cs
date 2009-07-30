@@ -131,13 +131,23 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (Match match in regex.Matches (content)) {
 					if (IsCanceled)
 						break;
-					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, match.Index, match.Length))
-						results.Add (new SearchResult (provider, match.Index, match.Length));
+					if (provider.SelectionStartPosition > -1 && match.Index < provider.SelectionStartPosition)
+						continue;
+					if (provider.SelectionEndPosition > -1 && match.Index + match.Length > provider.SelectionEndPosition)
+						continue;
+					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt(content, match.Index, match.Length))
+						results.Add(new SearchResult(provider, match.Index, match.Length));
 				}
 			} else {
 				List<Match> matches = new List<Match> ();
-				foreach (Match match in regex.Matches (content))
-					matches.Add (match);
+				foreach (Match match in regex.Matches(content))
+				{
+					if (provider.SelectionStartPosition > -1 && match.Index < provider.SelectionStartPosition)
+						continue;
+					if (provider.SelectionEndPosition > -1 && match.Index + match.Length > provider.SelectionEndPosition)
+						continue;
+					matches.Add(match);
+				}
 				if (!string.IsNullOrEmpty (replacePattern))
 					provider.BeginReplace ();
 				int delta = 0;
@@ -214,6 +224,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			int plen = pattern.Length - 1;
 			int delta = 0;
 			int i = 0, end = content.Length - pattern.Length;
+			if (provider.SelectionStartPosition > -1)
+				i = provider.SelectionStartPosition;
+			if (provider.SelectionEndPosition > -1)
+				end = provider.SelectionEndPosition - pattern.Length;
 			while (i <= end) {
 				int j = plen;
 				while (j >= 0 && pattern[j] == content[i + j])

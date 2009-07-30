@@ -1,3 +1,14 @@
+2009-07-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/Scope.cs:
+	* MonoDevelop.Ide.FindInFiles/FindReplace.cs:
+	* MonoDevelop.Ide.FindInFiles/FileProvider.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Applied
+	  search&replace patch from Daniel Newton
+	  <djpnewton@gmail.com> with slight modifications.
+
+	* ChangeLog: 
+
 2009-07-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Worked on
@@ -50,6 +61,15 @@
 	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
 	  Changed exception template to fix a compiler warning.
 	  (protected member in sealed class)
+
+2009-07-29  Daniel Newton  <djpnewton@gmail.com>
+
+	* MonoDevelop.Ide.FindInFiles/FileProvider.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	* MonoDevelop.Ide.FindInFiles/FindReplace.cs:
+	* MonoDevelop.Ide.FindInFiles/Scope.cs:
+	  Added current document and current selection to search 
+	  and replace options.
 
 2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
 

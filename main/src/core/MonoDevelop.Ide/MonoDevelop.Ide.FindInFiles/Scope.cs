@@ -39,7 +39,49 @@ namespace MonoDevelop.Ide.FindInFiles
 		public abstract IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions);
 		public abstract string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern);
 	}
-	
+
+	public class DocumentScope : Scope
+	{
+		public DocumentScope()
+		{
+		}
+
+		public override IEnumerable<FileProvider> GetFiles(FilterOptions filterOptions)
+		{
+			yield return new FileProvider(IdeApp.Workbench.ActiveDocument.FileName);
+		}
+
+		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
+		{
+			if (string.IsNullOrEmpty(replacePattern))
+				return GettextCatalog.GetString("Looking for '{0}' in current document", pattern);
+			return GettextCatalog.GetString("Replacing '{0}' in current document", pattern);
+		}
+
+	}
+
+	public class SelectionScope : Scope
+	{
+		public SelectionScope()
+		{
+		}
+
+		public override IEnumerable<FileProvider> GetFiles(FilterOptions filterOptions)
+		{
+			yield return new FileProvider(IdeApp.Workbench.ActiveDocument.FileName, null,
+				IdeApp.Workbench.ActiveDocument.TextEditor.SelectionStartPosition,
+				IdeApp.Workbench.ActiveDocument.TextEditor.SelectionEndPosition);
+		}
+
+		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
+		{
+			if (string.IsNullOrEmpty(replacePattern))
+				return GettextCatalog.GetString("Looking for '{0}' in current selection", pattern);
+			return GettextCatalog.GetString("Replacing '{0}' in current selection", pattern);
+		}
+
+	}
+
 	public class WholeSolutionScope : Scope
 	{
 		public override IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions)

@@ -44,15 +44,33 @@ namespace MonoDevelop.Ide.FindInFiles
 			get;
 			set;
 		}
-		
-		public FileProvider (string fileName) : this (fileName, null)
+
+		public int SelectionStartPosition
+		{
+			get;
+			set;
+		}
+
+		public int SelectionEndPosition
+		{
+			get;
+			set;
+		}
+
+		public FileProvider(string fileName) : this(fileName, null)
 		{
 		}
-		
-		public FileProvider (string fileName, Project project)
+
+		public FileProvider(string fileName, Project project) : this(fileName, project, -1, -1)
+		{
+		}
+
+		public FileProvider(string fileName, Project project, int selectionStartPostion, int selectionEndPosition)
 		{
 			this.FileName = fileName;
-			this.Project  = project;
+			this.Project = project;
+			this.SelectionStartPosition = selectionStartPostion;
+			this.SelectionEndPosition = selectionEndPosition;
 		}
 		
 		string content = null;
