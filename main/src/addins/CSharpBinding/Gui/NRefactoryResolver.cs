@@ -416,8 +416,8 @@ namespace MonoDevelop.CSharpBinding
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			ResolveResult result;
 //			System.Console.WriteLine("expressionResult:" + expressionResult);
-			
-			if (expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
+
+			if (unit != null && expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
 				string attributeName = MonoDevelop.CSharpBinding.Gui.NewCSharpExpressionFinder.FindAttributeName (editor, unit, unit.FileName);
 				if (attributeName != null) {
 					IType type = dom.SearchType (new SearchTypeRequest (unit, new DomReturnType (attributeName + "Attribute"), CallingType));
