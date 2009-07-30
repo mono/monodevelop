@@ -62,9 +62,14 @@ namespace MonoDevelop.XmlEditor
 			}
 			settings.NewLineChars = policy.GetEolMarker ();
 			
-			XmlWriter xmlWriter = XmlTextWriter.Create (indentedXmlWriter, settings);
-			xmlWriter.WriteNode (reader, false);
-			xmlWriter.Flush ();
+			try {
+				XmlWriter xmlWriter = XmlTextWriter.Create (indentedXmlWriter, settings);
+				xmlWriter.WriteNode (reader, false);
+				xmlWriter.Flush ();
+			} catch {
+				// Ignore malfored xml
+				return input;
+			}
 
 			return indentedXmlWriter.ToString ();
 		}

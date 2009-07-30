@@ -1,3 +1,8 @@
+2009-07-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor/XmlFormatter.cs: Don't crash when
+	  trying to format malformed xml.
+
 2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.XmlEditor/XmlFormatter.cs:
