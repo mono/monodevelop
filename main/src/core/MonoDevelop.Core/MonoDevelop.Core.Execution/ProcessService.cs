@@ -368,7 +368,7 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		internal string RegisterRemotingChannel ()
+		public string RegisterRemotingChannel ()
 		{
 			if (remotingChannel == "tcp") {
 				IChannel ch = ChannelServices.GetChannel ("tcp");

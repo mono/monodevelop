@@ -64,6 +64,9 @@ namespace MonoDevelop.Core.Assemblies
 				else if (framework.ClrVersion == ClrVersion.Net_2_0)
 					toolName = "resgen2";
 			}
+			else if (toolName == "msbuild")
+				toolName = "xbuild";
+			
 			return base.GetToolPath (toolName);
 		}
 		
