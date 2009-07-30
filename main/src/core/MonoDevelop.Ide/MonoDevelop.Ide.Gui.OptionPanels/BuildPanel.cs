@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			showOutputCheckBox.Active = IdeApp.Preferences.ShowOutputPadWhenBuildStarts;
 			runWithWarningsCheckBox.Active = IdeApp.Preferences.RunWithWarnings;
 			buildBeforeRunCheckBox.Active = IdeApp.Preferences.BuildBeforeExecuting;
+			checkXBuild.Active = IdeApp.Preferences.BuildWithMSBuild;
 		}
 		
 		public void Store ()
@@ -68,6 +69,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			IdeApp.Preferences.ShowOutputPadWhenBuildStarts = showOutputCheckBox.Active;
 			IdeApp.Preferences.RunWithWarnings = runWithWarningsCheckBox.Active;
 			IdeApp.Preferences.BuildBeforeExecuting = buildBeforeRunCheckBox.Active;
+			IdeApp.Preferences.BuildWithMSBuild = checkXBuild.Active;
 			
 			if (saveChangesRadioButton.Active)
 				IdeApp.Preferences.BeforeBuildSaveAction = BeforeCompileAction.SaveAllFiles;

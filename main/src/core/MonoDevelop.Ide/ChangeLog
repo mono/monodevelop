@@ -1,3 +1,12 @@
+2009-07-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui/IdePreferences.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:
+	  Added an option to enable building with xbuild.
+
 2009-07-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/Scope.cs:

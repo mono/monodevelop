@@ -2102,7 +2102,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget" design-size="334 226">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget" design-size="471 266">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -2172,15 +2172,32 @@
           </packing>
         </child>
         <child>
+          <widget class="Gtk.CheckButton" id="checkXBuild">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Compile projects using MSBuild / XBuild
+(this is an experimental feature and may not work for some projects)</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">4</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.Label" id="buildAndRunOptionsLabel">
             <property name="MemberName" />
             <property name="Xalign">0</property>
             <property name="Yalign">0</property>
-            <property name="LabelProp" translatable="yes">&lt;b&gt;File Save Options&lt;/b&gt;</property>
+            <property name="LabelProp" translatable="yes">&lt;b&gt;File Save Options Before Building&lt;/b&gt;</property>
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
-            <property name="Position">4</property>
+            <property name="Position">5</property>
             <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -2267,7 +2284,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">5</property>
+            <property name="Position">6</property>
             <property name="AutoSize">False</property>
           </packing>
         </child>

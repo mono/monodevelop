@@ -150,6 +150,11 @@ namespace MonoDevelop.Ide.Gui
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.ToolbarSize", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.ToolbarSize", value); }
 		}
+
+		public bool BuildWithMSBuild {
+			get { return PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false); }
+			set { PropertyService.Set ("MonoDevelop.Ide.BuildWithMSBuild", value); }
+		}
 	}
 	
 	public enum BeforeCompileAction {
