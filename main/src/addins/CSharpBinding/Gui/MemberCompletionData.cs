@@ -130,116 +130,15 @@ namespace MonoDevelop.CSharpBinding
 					sb.AppendLine ();
 					sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 				}
-				if (!string.IsNullOrEmpty ((Member as IMember).Documentation)) {
+				string docMarkup = AmbienceService.GetSummaryMarkup (Member as IMember);
+				if (!string.IsNullOrEmpty (docMarkup)) {
 					sb.AppendLine ();
-					sb.Append (GetDocumentation ((Member as IMember).Documentation));
-				} else {
-					XmlNode node = (Member as IMember).GetMonodocDocumentation ();
-					if (node != null) {
-						node = node.SelectSingleNode ("summary");
-						if (node != null) {
-							sb.AppendLine ();
-							sb.Append (GetDocumentation (node.InnerXml));
-						}
-					}
+					sb.Append (docMarkup);
 				}
 			}
 			description = sb.ToString ();
 		}
 		
-		static string GetCref (string cref)
-		{
-			if (cref == null)
-				return "";
-			
-			if (cref.Length < 2)
-				return cref;
-			
-			if (cref.Substring(1, 1) == ":")
-				return cref.Substring (2, cref.Length - 2);
-			
-			return cref;
-		}
-		
-		public static string GetDocumentation (string doc)
-		{
-			System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
-			XmlTextReader xml   = new XmlTextReader(reader);
-			StringBuilder ret   = new StringBuilder(70);
-			int lastLinePos = -1;
-			
-			try {
-				xml.Read();
-				do {
-					if (xml.NodeType == XmlNodeType.Element) {
-						switch (xml.Name.ToLower()) {
-						case "remarks":
-							ret.Append("Remarks:\n");
-							break;
-						// skip <example>-nodes
-						case "example":
-							xml.Skip();
-							xml.Skip();
-							break;
-						case "exception":
-							ret.Append ("Exception: " + GetCref (xml["cref"]) + ":\n");
-							break;
-						case "returns":
-							ret.Append ("Returns: ");
-							break;
-						case "see":
-							ret.Append (GetCref (xml["cref"]) + xml["langword"]);
-							break;
-						case "seealso":
-							ret.Append ("See also: " + GetCref (xml["cref"]) + xml["langword"]);
-							break;
-						case "paramref":
-							ret.Append (xml["name"]);
-							break;
-						case "param":
-							ret.AppendLine();
-							ret.Append (xml["name"].Trim() + ": ");
-							break;
-						case "value":
-							ret.Append ("Value: ");
-							break;
-						case "para":
-							continue; // Keep new line flag
-						}
-						lastLinePos = -1;
-					} else if (xml.NodeType == XmlNodeType.EndElement) {
-						string elname = xml.Name.ToLower();
-						if (elname == "para" || elname == "param") {
-							if (lastLinePos == -1)
-								lastLinePos = ret.Length;
-							ret.Append("<span size=\"2000\">\n\n</span>");
-						}
-					} else if (xml.NodeType == XmlNodeType.Text) {
-						string txt = xml.Value.Replace ("\r","").Replace ("\n"," ");
-						if (lastLinePos != -1)
-							txt = txt.TrimStart (' ');
-						
-						// Remove duplcate spaces.
-						int len;
-						do {
-							len = txt.Length;
-							txt = txt.Replace ("  ", " ");
-						} while (len != txt.Length);
-						
-						txt = GLib.Markup.EscapeText (txt);
-						ret.Append(txt);
-						lastLinePos = -1;
-					}
-				} while (xml.Read ());
-				if (lastLinePos != -1)
-					ret.Remove (lastLinePos, ret.Length - lastLinePos);
-			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-				return doc;
-			}
-			
-			return ret.ToString ();
-		}
 
 		#region IOverloadedCompletionData implementation 
 		

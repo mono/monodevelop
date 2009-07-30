@@ -191,28 +191,6 @@ namespace MonoDevelop.CSharpBinding
 			return engine.StackDepth == 0 ? -1 : index;
 		}
 		
-		void GeneratePango (StringBuilder sb, XmlNode node)
-		{
-			if (node == null)
-				return;
-			if (node is XmlText) {
-				sb.Append (node.InnerText);
-			} else if (node is XmlElement) {
-				XmlElement el = node as XmlElement;
-				switch (el.Name) {
-					case "see":
-					case "seealso":
-						sb.Append ("<span foreground=\"blue\" underline=\"single\">");
-						sb.Append (el.GetAttribute ("cref"));
-						sb.Append ("</span> ");
-						break;
-				}
-			}
-			foreach (XmlNode child in node.ChildNodes) {
-				GeneratePango (sb, child);
-			}
-		}
-		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			string name = (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics) : methods[overload].Name));
@@ -251,28 +229,22 @@ namespace MonoDevelop.CSharpBinding
 			IParameter curParameter = currentParameter >= 0 && currentParameter < methods[overload].Parameters.Count ? methods[overload].Parameters[currentParameter] : null;
 
 			if (curParameter != null) {
-				string docText = null;
-				if (!string.IsNullOrEmpty (methods[overload].Documentation)) {
-					docText = methods[overload].Documentation;
-				} else {
-					XmlNode node = methods[overload].GetMonodocDocumentation ();
-					if (node != null) {
-						node = node.SelectSingleNode ("summary");
-						if (node != null)
-							docText = node.InnerXml;
-					}
-				}
+				string docText = AmbienceService.GetDocumentation (methods[overload]);
+
 				if (!string.IsNullOrEmpty (docText)) {
-					Regex paramRegex = new Regex ("\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>(.*)\\</param\\>", RegexOptions.Compiled);
+					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
 					Match match = paramRegex.Match (docText);
 					if (match.Success) {
 						sb.AppendLine ();
 						string text = match.Groups[1].Value;
-						if (text.IndexOf ("</param>") > 0)
-							text = text.Substring (0, text.IndexOf ("</param>"));
-						sb.Append (MemberCompletionData.GetDocumentation (text));
+						text = "<summary>" + AmbienceService.GetDocumentationSummary (methods[overload]) + "</summary>" + text;
+						sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
+							HighlightParameter = curParameter.Name
+								}));
 					}
 				}
+			} else {
+				sb.Append (AmbienceService.GetSummaryMarkup (methods[overload]));
 			}
 			return sb.ToString ();
 		}
