@@ -42,11 +42,11 @@ namespace MonoDevelop.Projects.Gui
 		public ProjectFileEntry ()
 		{
 			entry = new Entry ();
-			PackEnd (entry, true, true, 4);
+			PackStart (entry, true, true, 4);
 			
 			button = new Button () { Label = "..." };
 			button.Clicked += ButtonClicked;
-			PackEnd (button, false, false, 4);
+			PackStart (button, false, false, 0);
 			
 			ShowAll ();
 		}
@@ -61,14 +61,25 @@ namespace MonoDevelop.Projects.Gui
 		public string DialogTitle { get; set; }
 		public string DefaultFilter { get; set; }
 		
+		public bool EntryIsEditable {
+			get { return entry.IsEditable; }
+			set { entry.IsEditable = value; }
+		}
+		
 		public FilePath SelectedFile {
 			get {
 				CheckProject ();
+				string txt = entry.Text;
+				if (String.IsNullOrEmpty (txt))
+					return FilePath.Null;
 				return new FilePath (entry.Text).ToAbsolute (Project.BaseDirectory);
 			}
 			set {
 				CheckProject ();
-				entry.Text = value.ToRelative (Project.BaseDirectory);
+				if (!value.IsNullOrEmpty)
+					entry.Text = value.ToRelative (Project.BaseDirectory);
+				else
+					entry.Text = "";
 			}
 		}
 		
@@ -77,7 +88,7 @@ namespace MonoDevelop.Projects.Gui
 			CheckProject ();
 			
 			using (var dialog = new MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog (Project, null, DefaultFilter)) {
-				if (DialogTitle !=null)
+				if (DialogTitle != null)
 					dialog.Title = DialogTitle;
 				int response = MonoDevelop.Core.Gui.MessageService.ShowCustomDialog (dialog);
 				if (response == (int)Gtk.ResponseType.Ok && dialog.SelectedFile != null) {

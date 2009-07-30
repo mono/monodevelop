@@ -16,6 +16,7 @@
       <itemgroup label="ProjectFileEntry Properties">
         <property name="DialogTitle" />
         <property name="DefaultFilter" />
+        <property name="EntryIsEditable" />
       </itemgroup>
     </itemgroups>
     <signals />
