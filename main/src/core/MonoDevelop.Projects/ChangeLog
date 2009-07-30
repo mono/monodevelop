@@ -1,3 +1,8 @@
+2009-07-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: Worked
+	  on formatting xml documentation.
+
 2009-07-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
