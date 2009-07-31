@@ -1,3 +1,8 @@
+2009-07-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Limit compatible
+	  fx to prevent conflict with iPhone. 
+
 2009-06-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Remove

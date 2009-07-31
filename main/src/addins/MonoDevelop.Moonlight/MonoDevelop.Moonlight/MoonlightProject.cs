@@ -117,6 +117,11 @@ namespace MonoDevelop.Moonlight
 			}
 		}
 		
+		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
+		{
+			return framework.Id == "2.1";
+		}
+		
 		public override string ProjectType {
 			get { return "Moonlight"; }
 		}
