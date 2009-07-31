@@ -1,3 +1,8 @@
+2009-07-31  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Worked on selection
+	  drawing/fixed a possible array out of range exception.
+
 2009-07-29  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Caret.cs:

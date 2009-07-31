@@ -677,10 +677,15 @@ namespace Mono.TextEditor
 		
 		static uint TranslateToUTF8Index (string text, uint textIndex, ref uint curIndex, ref uint byteIndex)
 		{
+			char[] charArray = text.ToCharArray ();
+			
 			if (textIndex < curIndex) {
-				byteIndex = (uint)Encoding.UTF8.GetByteCount (text.ToCharArray (), 0, (int)textIndex);
+				byteIndex = (uint)Encoding.UTF8.GetByteCount (charArray, 0, (int)textIndex);
 			} else {
-				byteIndex += (uint)Encoding.UTF8.GetByteCount (text.ToCharArray (), (int)curIndex, (int)(textIndex - curIndex));
+				int count = System.Math.Min ((int)(textIndex - curIndex), charArray.Length - (int)curIndex);
+				
+				if (count > 0)
+					byteIndex += (uint)Encoding.UTF8.GetByteCount (charArray, (int)curIndex, count);
 			}
 			curIndex = textIndex;
 			return byteIndex;
@@ -713,14 +718,6 @@ namespace Mono.TextEditor
 				
 				int startOffset = offset, endOffset = offset + length;
 				uint curIndex = 0, byteIndex = 0;
-				HandleSelection (selectionStart, selectionEnd, startOffset, endOffset, null, delegate (int start, int end) {
-					Pango.AttrBackground attrBackground = new Pango.AttrBackground (this.ColorStyle.Selection.BackgroundColor.Red,
-					                                                                this.ColorStyle.Selection.BackgroundColor.Green,
-					                                                                this.ColorStyle.Selection.BackgroundColor.Blue);
-					attrBackground.StartIndex = TranslateToUTF8Index (lineText, (uint)(start - startOffset), ref curIndex, ref byteIndex);
-					attrBackground.EndIndex   = TranslateToUTF8Index (lineText, (uint)(end - startOffset), ref curIndex, ref byteIndex);
-					attributes.Insert (attrBackground);
-				});
 				
 				ISegment firstSearch;
 				int o = offset;
@@ -763,6 +760,7 @@ namespace Mono.TextEditor
 						}
 						
 						HandleSelection (selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate (int start, int end) {
+							
 							Pango.AttrForeground foreGround = new Pango.AttrForeground  (chunkStyle.Color.Red,
 							                                                             chunkStyle.Color.Green,
 							                                                             chunkStyle.Color.Blue);
@@ -787,6 +785,14 @@ namespace Mono.TextEditor
 							selectedForeground.StartIndex = TranslateToUTF8Index (lineText, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							selectedForeground.EndIndex   = TranslateToUTF8Index (lineText, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							attributes.Insert (selectedForeground);
+							
+							Pango.AttrBackground attrBackground = new Pango.AttrBackground (this.ColorStyle.Selection.BackgroundColor.Red,
+							                                                                this.ColorStyle.Selection.BackgroundColor.Green,
+							                                                                this.ColorStyle.Selection.BackgroundColor.Blue);
+							attrBackground.StartIndex = selectedForeground.StartIndex;
+							attrBackground.EndIndex   = selectedForeground.EndIndex;
+							attributes.Insert (attrBackground);
+							
 						});
 						
 						if (chunkStyle.Bold) {
