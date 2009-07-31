@@ -11,7 +11,7 @@
 namespace MonoDevelop.AspNet.Gui {
     
     
-    public partial class AspNetConfigurationPanelWidget {
+    internal partial class AspNetConfigurationPanelWidget {
         
         private Gtk.VBox vbox1;
         
