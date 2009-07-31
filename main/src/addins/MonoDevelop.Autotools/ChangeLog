@@ -1,5 +1,11 @@
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:
+	  Fix layout of Edit Switches button.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic: Flush.
 
 2009-07-27  Lluis Sanchez Gual  <lluis@novell.com>

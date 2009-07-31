@@ -1475,7 +1475,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Autotools.TarballBuilderEditorWidget" design-size="620 367">
+  <widget class="Gtk.Bin" id="MonoDevelop.Autotools.TarballBuilderEditorWidget" design-size="620 307">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
@@ -1564,7 +1564,6 @@
                   <widget class="Gtk.Label" id="label4">
                     <property name="MemberName" />
                     <property name="WidthRequest">24</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1613,7 +1612,6 @@
                   <widget class="Gtk.Label" id="label5">
                     <property name="MemberName" />
                     <property name="WidthRequest">24</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1650,7 +1648,6 @@
                   <widget class="Gtk.Label" id="label8">
                     <property name="MemberName" />
                     <property name="WidthRequest">24</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1697,28 +1694,6 @@ Generates a Makefile structure based on Autotools, with the standard targets and
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Alignment" id="alignment1">
-                <property name="MemberName" />
-                <property name="BottomPadding">8</property>
-                <child>
-                  <widget class="Gtk.Button" id="autofooProperties">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextOnly</property>
-                    <property name="Label" translatable="yes">Edit configure switches</property>
-                    <property name="UseUnderline">True</property>
-                    <signal name="Clicked" handler="OnAutofooPropertiesClicked" />
-                  </widget>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">3</property>
-                <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
               <widget class="Gtk.HBox" id="hbox2">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
@@ -1726,7 +1701,6 @@ Generates a Makefile structure based on Autotools, with the standard targets and
                   <widget class="Gtk.Label" id="label1">
                     <property name="MemberName" />
                     <property name="WidthRequest">24</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1768,6 +1742,42 @@ Generates set of Makefiles with the most common targets, and a configuration scr
               <packing>
                 <property name="Position">3</property>
                 <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Alignment" id="alignment1">
+                <property name="MemberName" />
+                <property name="LeftPadding">24</property>
+                <property name="TopPadding">8</property>
+                <property name="BottomPadding">8</property>
+                <child>
+                  <widget class="Gtk.HBox" id="hbox4">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Button" id="autofooProperties">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Type">TextOnly</property>
+                        <property name="Label" translatable="yes">Edit configure switches</property>
+                        <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnAutofooPropertiesClicked" />
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">4</property>
+                <property name="AutoSize">False</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
               </packing>

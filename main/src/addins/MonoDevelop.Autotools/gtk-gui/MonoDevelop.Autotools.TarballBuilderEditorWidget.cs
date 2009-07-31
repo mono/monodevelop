@@ -49,10 +49,6 @@ namespace MonoDevelop.Autotools {
         
         private Gtk.Label label9;
         
-        private Gtk.Alignment alignment1;
-        
-        private Gtk.Button autofooProperties;
-        
         private Gtk.HBox hbox2;
         
         private Gtk.Label label1;
@@ -60,6 +56,12 @@ namespace MonoDevelop.Autotools {
         private Gtk.RadioButton rbSimple;
         
         private Gtk.Label label7;
+        
+        private Gtk.Alignment alignment1;
+        
+        private Gtk.HBox hbox4;
+        
+        private Gtk.Button autofooProperties;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -200,7 +202,6 @@ namespace MonoDevelop.Autotools {
             this.rbAutotools = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Autotools based"));
             this.rbAutotools.CanFocus = true;
             this.rbAutotools.Name = "rbAutotools";
-            this.rbAutotools.Active = true;
             this.rbAutotools.DrawIndicator = true;
             this.rbAutotools.UseUnderline = true;
             this.rbAutotools.Group = new GLib.SList(System.IntPtr.Zero);
@@ -221,22 +222,6 @@ namespace MonoDevelop.Autotools {
             w16.Position = 2;
             w16.Expand = false;
             w16.Fill = false;
-            // Container child boxGenerate.Gtk.Box+BoxChild
-            this.alignment1 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
-            this.alignment1.Name = "alignment1";
-            this.alignment1.BottomPadding = ((uint)(8));
-            // Container child alignment1.Gtk.Container+ContainerChild
-            this.autofooProperties = new Gtk.Button();
-            this.autofooProperties.CanFocus = true;
-            this.autofooProperties.Name = "autofooProperties";
-            this.autofooProperties.UseUnderline = true;
-            this.autofooProperties.Label = Mono.Unix.Catalog.GetString("Edit configure switches");
-            this.alignment1.Add(this.autofooProperties);
-            this.boxGenerate.Add(this.alignment1);
-            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.boxGenerate[this.alignment1]));
-            w18.Position = 3;
-            w18.Expand = false;
-            w18.Fill = false;
             // Container child boxGenerate.Gtk.Box+BoxChild
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
@@ -274,11 +259,38 @@ namespace MonoDevelop.Autotools {
             w20.Position = 3;
             w20.Expand = false;
             w20.Fill = false;
-            this.vbox2.Add(this.boxGenerate);
-            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox2[this.boxGenerate]));
-            w21.Position = 3;
+            // Container child boxGenerate.Gtk.Box+BoxChild
+            this.alignment1 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment1.Name = "alignment1";
+            this.alignment1.LeftPadding = ((uint)(24));
+            this.alignment1.TopPadding = ((uint)(8));
+            this.alignment1.BottomPadding = ((uint)(8));
+            // Container child alignment1.Gtk.Container+ContainerChild
+            this.hbox4 = new Gtk.HBox();
+            this.hbox4.Name = "hbox4";
+            this.hbox4.Spacing = 6;
+            // Container child hbox4.Gtk.Box+BoxChild
+            this.autofooProperties = new Gtk.Button();
+            this.autofooProperties.CanFocus = true;
+            this.autofooProperties.Name = "autofooProperties";
+            this.autofooProperties.UseUnderline = true;
+            this.autofooProperties.Label = Mono.Unix.Catalog.GetString("Edit configure switches");
+            this.hbox4.Add(this.autofooProperties);
+            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.hbox4[this.autofooProperties]));
+            w21.Position = 0;
             w21.Expand = false;
             w21.Fill = false;
+            this.alignment1.Add(this.hbox4);
+            this.boxGenerate.Add(this.alignment1);
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.boxGenerate[this.alignment1]));
+            w23.Position = 4;
+            w23.Expand = false;
+            w23.Fill = false;
+            this.vbox2.Add(this.boxGenerate);
+            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox2[this.boxGenerate]));
+            w24.Position = 3;
+            w24.Expand = false;
+            w24.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
@@ -289,8 +301,8 @@ namespace MonoDevelop.Autotools {
             this.radioGenerate.Clicked += new System.EventHandler(this.OnRadioGenerateClicked);
             this.comboConfigs.Changed += new System.EventHandler(this.OnComboConfigsChanged);
             this.rbAutotools.Toggled += new System.EventHandler(this.OnRbAutotoolsToggled);
-            this.autofooProperties.Clicked += new System.EventHandler(this.OnAutofooPropertiesClicked);
             this.rbSimple.Toggled += new System.EventHandler(this.OnRbSimpleToggled);
+            this.autofooProperties.Clicked += new System.EventHandler(this.OnAutofooPropertiesClicked);
         }
     }
 }
