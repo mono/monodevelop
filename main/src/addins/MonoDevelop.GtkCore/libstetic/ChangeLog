@@ -1,5 +1,9 @@
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* wrapper/objects.xml: Fix invalid xml.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* wrapper/objects.xml: Fix some default values.
 
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
