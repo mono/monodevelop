@@ -377,7 +377,7 @@ namespace MonoDevelop.NUnit
 			public void Cancel ()
 			{
 				LocalMonitor.Canceled = true;
-				Runtime.ProcessService.DisposeExternalProcessObject (Runner, 100);
+				Runner.Dispose ();
 				ClearRunningStatus (Test);
 			}
 			
