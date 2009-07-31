@@ -304,6 +304,7 @@ namespace OSXIntegration
 				if (!ci.Visible) {
 					data.Attributes |= MenuItemAttributes.Hidden;
 				} else {
+					data.Attributes &= ~MenuItemAttributes.Hidden;
 					data.CFText = CoreFoundation.CreateString (GetCleanCommandText (ci));
 					
 					//disable also when MD main window doesn't have toplevel focus, or commands will be 
