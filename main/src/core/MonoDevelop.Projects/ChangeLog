@@ -1,5 +1,10 @@
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
+	  Preserve empty lines at the end of the file.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj:
 	* MonoDevelop.Projects.Formats.MSBuild/RemoteProjectBuilder.cs:

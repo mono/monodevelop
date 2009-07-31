@@ -41,7 +41,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
 		static XmlNamespaceManager manager;
 		
-		bool useCrLf;
+		bool endsWithEmptyLine;
+		string newLine = "\r";
 		
 		internal static XmlNamespaceManager XmlNamespaceManager {
 			get {
@@ -62,9 +63,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public void Load (string file)
 		{
-			doc = new XmlDocument ();
-			doc.PreserveWhitespace = false;
-			doc.Load (file);
+			string xml = File.ReadAllText (file);
+			LoadXml (xml);
 		}
 		
 		public void LoadXml (string xml)
@@ -72,19 +72,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			doc = new XmlDocument ();
 			doc.PreserveWhitespace = false;
 			doc.LoadXml (xml);
-			useCrLf = CountNewLines ("\r\n", xml) > (CountNewLines ("\n", xml) / 2);
+			newLine = CountNewLines ("\r\n", xml) > (CountNewLines ("\n", xml) / 2) ? "\r\n" : "\n";
+			if (xml.EndsWith (newLine))
+				endsWithEmptyLine = true;
 		}
 		
 		public void Save (string file)
 		{
-			StreamWriter sw = new StreamWriter (file);
-			if (useCrLf)
-				sw.NewLine = "\r\n";
-			else
-				sw.NewLine = "\n";
-			using (sw) {
-				doc.Save (sw);
-			}
+			StringWriter sw = new StringWriter ();
+			sw.NewLine = newLine;
+			doc.Save (sw);
+			string txt = sw.ToString ();
+			if (endsWithEmptyLine && !txt.EndsWith (newLine))
+				txt += newLine;
+			File.WriteAllText (file, txt);
 		}
 		
 		int CountNewLines (string nl, string text)
