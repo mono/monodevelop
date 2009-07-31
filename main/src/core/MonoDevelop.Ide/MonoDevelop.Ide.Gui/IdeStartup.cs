@@ -151,23 +151,6 @@ namespace MonoDevelop.Ide.Gui
 
 			CheckFileWatcher ();
 			
-			if (options.ipc_tcp) {
-				Runtime.ProcessService.ExternalProcessRemotingChannel = "tcp";
-				// Remoting check
-				try {
-					Dns.GetHostEntry (Dns.GetHostName ());
-				} catch {
-					using (ErrorDialog dialog = new ErrorDialog (null)) {
-						if (monitor is SplashScreenForm)
-							SplashScreenForm.SplashScreen.Hide ();
-						dialog.Message = GettextCatalog.GetString ("MonoDevelop failed to start. Local hostname cannot be resolved.");
-						dialog.AddDetails (GettextCatalog.GetString ("Your network may be misconfigured. Make sure the hostname of your system is added to the /etc/hosts file."), true);
-						dialog.Run ();
-					}
-					return 1;
-				}
-			}
-
 			Exception error = null;
 			int reportedFailures = 0;
 			
