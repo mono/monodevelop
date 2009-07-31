@@ -27,10 +27,11 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.Remoting;
-using System.Runtime.Remoting.Channels.Tcp;
+using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
@@ -57,6 +58,7 @@ namespace MonoDevelop.Core.Execution
 		ManualResetEvent exitRequestEvent = new ManualResetEvent (false);
 		ManualResetEvent exitedEvent = new ManualResetEvent (false);
 		
+		List<object> remoteObjects = new List<object> ();
 
 		static ProcessHostController ( )
 		{
@@ -91,7 +93,7 @@ namespace MonoDevelop.Core.Execution
 				starting = true;
 				exitRequestEvent.Reset ();
 				
-				string chId = Runtime.ProcessService.RegisterRemotingChannel ();
+				RemotingService.RegisterRemotingChannel ();
 				
 				BinaryFormatter bf = new BinaryFormatter ();
 				ObjRef oref = RemotingServices.Marshal (this);
@@ -109,7 +111,7 @@ namespace MonoDevelop.Core.Execution
 					
 					ProcessHostConsole cons = new ProcessHostConsole ();
 					tmpFile = Path.GetTempFileName ();
-					File.WriteAllText (tmpFile, chId + "\n" + sref + "\n");
+					File.WriteAllText (tmpFile, sref + "\n");
 					string arguments = string.Format("{0} \"{1}\"", id, tmpFile);
 					DotNetExecutionCommand cmd = new DotNetExecutionCommand(location, arguments, AppDomain.CurrentDomain.BaseDirectory);
 					cmd.DebugMode = isDebugMode;
@@ -140,7 +142,13 @@ namespace MonoDevelop.Core.Execution
 		void ProcessExited (IAsyncOperation oper)
 		{
 			lock (this) {
-				Runtime.ProcessService.UnregisterHostInstance (this, null);
+
+				// Remove all callbacks from existing objects
+				foreach (object ob in remoteObjects)
+					RemotingService.UnregisterMethodCallback (ob, "Dispose");
+				
+				remoteObjects.Clear ();
+				
 				exitedEvent.Set ();
 				if (oper != process) return;
 
@@ -152,7 +160,7 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public RemoteProcessObject CreateInstance (Type type, string[] addins)
+		public object CreateInstance (Type type, string[] addins)
 		{
 			lock (this) {
 				references++;
@@ -169,8 +177,9 @@ namespace MonoDevelop.Core.Execution
 				// Before creating the instance, load the add-ins on which it depends
 				if (addins != null && addins.Length > 0)
 					processHost.LoadAddins (addins);
-				RemoteProcessObject obj = processHost.CreateInstance (type);
-				Runtime.ProcessService.RegisterHostInstance (this, obj);
+				object obj = processHost.CreateInstance (type);
+				RemotingService.RegisterMethodCallback (obj, "Dispose", RemoteProcessObjectDisposing, null);
+				remoteObjects.Add (obj);
 				return obj;
 			} catch {
 				ReleaseInstance (null);
@@ -178,7 +187,7 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public RemoteProcessObject CreateInstance (string assemblyPath, string typeName, string[] addins)
+		public object CreateInstance (string assemblyPath, string typeName, string[] addins)
 		{
 			lock (this) {
 				references++;
@@ -195,8 +204,9 @@ namespace MonoDevelop.Core.Execution
 				// Before creating the instance, load the add-ins on which it depends
 				if (addins != null && addins.Length > 0)
 					processHost.LoadAddins (addins);
-				RemoteProcessObject obj = processHost.CreateInstance (assemblyPath, typeName);
-				Runtime.ProcessService.RegisterHostInstance (this, obj);
+				object obj = processHost.CreateInstance (assemblyPath, typeName);
+				RemotingService.RegisterMethodCallback (obj, "Dispose", RemoteProcessObjectDisposing, null);
+				remoteObjects.Add (obj);
 				return obj;
 			} catch {
 				ReleaseInstance (null);
@@ -204,19 +214,35 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public void ReleaseInstance (RemoteProcessObject proc)
+		IMethodReturnMessage RemoteProcessObjectDisposing (object obj, IMethodCallMessage msg)
 		{
-			ReleaseInstance (proc, 2000);
+			ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					processHost.DisposeObject ((IDisposable)obj);
+				} catch {
+				}
+				ReleaseInstance (obj);
+			});
+			return new ReturnMessage (null, null, 0, msg.LogicalCallContext, msg);
 		}
 		
-		public void ReleaseInstance (RemoteProcessObject proc, int shutdownTimeout)
+		public void ReleaseInstance (object obj)
+		{
+			ReleaseInstance (obj, 2000);
+		}
+		
+		public void ReleaseInstance (object proc, int shutdownTimeout)
 		{
 			if (processHost == null) return;
-
-			if (proc != null)
-				Runtime.ProcessService.UnregisterHostInstance (this, proc);
 			
 			lock (this) {
+				for (int n=0; n<remoteObjects.Count; n++) {
+					if (remoteObjects [n] == proc) {
+						remoteObjects.RemoveAt (n);
+						break;
+					}
+				}
+				
 				references--;
 				if (references == 0) {
 					lastReleaseTime = DateTime.Now;

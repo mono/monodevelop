@@ -33,8 +33,9 @@ namespace MonoDevelop.Core.Execution
 	public interface IProcessHost
 	{
 		void LoadAddins (string[] addinIds);
-		RemoteProcessObject CreateInstance (Type type);
-		RemoteProcessObject CreateInstance (string fullTypeName);
-		RemoteProcessObject CreateInstance (string assemblyPath, string typeName);
+		IDisposable CreateInstance (Type type);
+		IDisposable CreateInstance (string fullTypeName);
+		IDisposable CreateInstance (string assemblyPath, string typeName);
+		void DisposeObject (IDisposable obj);
 	}
 }

@@ -32,6 +32,5 @@ namespace MonoDevelop.Core.Execution
 	{
 		void RegisterHost (IProcessHost processHost);
 		void WaitForExit ();
-		void ReleaseInstance (RemoteProcessObject proc);
 	}
 }

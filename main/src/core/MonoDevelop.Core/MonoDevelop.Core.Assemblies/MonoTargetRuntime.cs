@@ -122,6 +122,13 @@ namespace MonoDevelop.Core.Assemblies
 			return execHandler;
 		}
 		
+		protected override void ConvertAssemblyProcessStartInfo (System.Diagnostics.ProcessStartInfo pinfo)
+		{
+			pinfo.Arguments = "\"" + pinfo.FileName + "\" " + pinfo.Arguments;
+			pinfo.FileName = Path.Combine (Path.Combine (MonoRuntimeInfo.Prefix, "bin"), "mono");
+		}
+
+		
 		protected override IEnumerable<string> GetGacDirectories ()
 		{
 			yield return Path.Combine (monoDir, "gac");
@@ -130,6 +137,12 @@ namespace MonoDevelop.Core.Assemblies
 			if (environmentVariables.TryGetValue ("MONO_GAC_PREFIX", out gacs)) {
 				foreach (string path in gacs.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries))
 					yield return path;
+			}
+		}
+		
+		public override string MSBuildBinPath {
+			get {
+				return Path.Combine (monoDir, "2.0");
 			}
 		}
 		

@@ -1,3 +1,28 @@
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.Execution/IProcessHost.cs:
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.Execution/RemotingService.cs:
+	* MonoDevelop.Core.Execution/RemoteProcessObject.cs:
+	* MonoDevelop.Core.Execution/ProcessHostController.cs:
+	* MonoDevelop.Core.Execution/DisposerFormatterSink.cs:
+	* MonoDevelop.Core.Execution/IProcessHostController.cs:
+	  Changed the way MD comunicates with external processes. Now
+	  we are always using the IcpChannel, which is available in
+	  Linux and Windows. Also improved the way remote objects are
+	  disposed. A Dispose call on the object is now always
+	  guaranteed to succeed, even if the remote process has
+	  crashed.
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs: Added
+	  ExecuteAssembly method, which runs an assembly using a
+	  specific runtime environment. Also added MSBuildBinPath
+	  property to get the msbuild bin path for the runtime.
+
 2009-07-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/ProcessService.cs:

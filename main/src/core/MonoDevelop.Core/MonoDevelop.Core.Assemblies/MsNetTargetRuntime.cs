@@ -89,6 +89,13 @@ namespace MonoDevelop.Core.Assemblies
 			foldersKey.Close ();
 		}
 		
+		public override string MSBuildBinPath {
+			get {
+				return null;
+			}
+		}
+
+		
 		void AddPackage (string name, string version, string folder)
 		{
 			SystemPackageInfo pinfo = new SystemPackageInfo ();

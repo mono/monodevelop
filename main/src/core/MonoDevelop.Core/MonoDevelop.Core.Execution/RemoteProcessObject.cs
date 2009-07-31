@@ -32,29 +32,15 @@ namespace MonoDevelop.Core.Execution
 {
 	public class RemoteProcessObject: MarshalByRefObject, IDisposable
 	{
-		IProcessHostController controller;
-		
-		protected RemoteProcessObject ()
-		{
-		}
-		
-		public void Attach (IProcessHostController controller)
-		{
-			this.controller = controller;
-		}
-		
 		public virtual void Dispose ()
 		{
-			if (controller != null) {
-				controller.ReleaseInstance (this);
-				controller = null;
-				GC.SuppressFinalize (this);
-			}
+			System.Runtime.Remoting.RemotingServices.Disconnect (this);
 		}
 		
-		~RemoteProcessObject ()
+		public override object InitializeLifetimeService ()
 		{
-			Dispose ();
+			// Keep the object in memory until explicitly released
+			return null;
 		}
 	}
 }

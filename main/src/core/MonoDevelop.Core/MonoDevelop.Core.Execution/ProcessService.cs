@@ -33,10 +33,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Collections;
 using System.Diagnostics;
-using Mono.Remoting.Channels.Unix;
-using System.Runtime.Remoting;
-using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Tcp;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core;
@@ -45,12 +41,10 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.Execution
 {
-	public class ProcessService : IDisposable
+	public class ProcessService
 	{
 		ProcessHostController externalProcess;
 		List<ExtensionNode> executionHandlers;
-		string remotingChannel = "unix";
-		string unixRemotingFile;
 		DefaultExecutionModeSet defaultExecutionModeSet = new DefaultExecutionModeSet ();
 		IExecutionHandler defaultExecutionHandler = new DefaultExecutionHandler ();
 		IExecutionMode defaultExecutionMode = new DefaultExecutionMode ();
@@ -79,9 +73,6 @@ namespace MonoDevelop.Core.Execution
 		
 		internal ProcessService ()
 		{
-			if (PlatformID.Unix != Environment.OSVersion.Platform) {
-				remotingChannel = "tcp";
-			}
 		}
 		
 		public ProcessWrapper StartProcess (string command, string arguments, string workingDirectory, EventHandler exited) 
@@ -280,64 +271,43 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public RemoteProcessObject CreateExternalProcessObject (Type type)
+		public IDisposable CreateExternalProcessObject (Type type)
 		{
 			return CreateExternalProcessObject (type, true);
 		}
 		
-		public RemoteProcessObject CreateExternalProcessObject (Type type, bool shared)
+		void CheckRemoteType (Type type)
 		{
-			ProcessHostController hc = GetHost (type.ToString(), shared, null);
-			RemoteProcessObject ob = hc.CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type));
-			return ob;
+			if (!typeof(IDisposable).IsAssignableFrom (type))
+				throw new ArgumentException ("The remote object type must implement IDisposable", "type");
 		}
 		
-		public RemoteProcessObject CreateExternalProcessObject (Type type, TargetRuntime runtime)
+		public IDisposable CreateExternalProcessObject (Type type, bool shared)
+		{
+			CheckRemoteType (type);
+			ProcessHostController hc = GetHost (type.ToString(), shared, null);
+			return (IDisposable) hc.CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type));
+		}
+		
+		public IDisposable CreateExternalProcessObject (Type type, TargetRuntime runtime)
 		{
 			return CreateExternalProcessObject (type, runtime.GetExecutionHandler ());
 		}
 		
-		public RemoteProcessObject CreateExternalProcessObject (Type type, IExecutionHandler executionHandler)
+		public IDisposable CreateExternalProcessObject (Type type, IExecutionHandler executionHandler)
 		{
-			return GetHost (type.ToString(), false, executionHandler).CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type));
+			CheckRemoteType (type);
+			return (IDisposable) GetHost (type.ToString(), false, executionHandler).CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type));
 		}
 		
-		public RemoteProcessObject CreateExternalProcessObject (string assemblyPath, string typeName, bool shared, params string[] requiredAddins)
+		public IDisposable CreateExternalProcessObject (string assemblyPath, string typeName, bool shared, params string[] requiredAddins)
 		{
-			return GetHost (typeName, shared, null).CreateInstance (assemblyPath, typeName, requiredAddins);
+			return (IDisposable) GetHost (typeName, shared, null).CreateInstance (assemblyPath, typeName, requiredAddins);
 		}
 		
-		public RemoteProcessObject CreateExternalProcessObject (string assemblyPath, string typeName, IExecutionHandler executionHandler, params string[] requiredAddins)
+		public IDisposable CreateExternalProcessObject (string assemblyPath, string typeName, IExecutionHandler executionHandler, params string[] requiredAddins)
 		{
-			return GetHost (typeName, false, executionHandler).CreateInstance (assemblyPath, typeName, requiredAddins);
-		}
-		
-		public void DisposeExternalProcessObject (RemoteProcessObject obj, int timeout)
-		{
-			foreach (KeyValuePair<RemoteProcessObject,ProcessHostController> ob in runningObjects) {
-				if (ob.Key == obj) {
-					ob.Value.ReleaseInstance (obj, timeout);
-					return;
-				}
-			}
-		}
-
-		// WARNING: don't use a hastable here since remote objects won't work as keys
-		List<KeyValuePair<RemoteProcessObject,ProcessHostController>> runningObjects = new List<KeyValuePair<RemoteProcessObject, ProcessHostController>> ();
-		
-		internal void RegisterHostInstance (ProcessHostController hc, RemoteProcessObject obj)
-		{
-			runningObjects.Add (new KeyValuePair<RemoteProcessObject,ProcessHostController> (obj, hc));
-		}
-		
-		internal void UnregisterHostInstance (ProcessHostController hc, RemoteProcessObject obj)
-		{
-			for (int n=0; n<runningObjects.Count; n++) {
-				if ((obj != null && runningObjects[n].Key == obj) || (obj == null && runningObjects[n].Value == hc)) {
-					runningObjects.RemoveAt (n--);
-					return;
-				}
-			}
+			return (IDisposable) GetHost (typeName, false, executionHandler).CreateInstance (assemblyPath, typeName, requiredAddins);
 		}
 		
 		public bool IsValidForRemoteHosting (IExecutionHandler handler)
@@ -359,43 +329,9 @@ namespace MonoDevelop.Core.Execution
 				return null;
 		}
 		
-		public string ExternalProcessRemotingChannel {
-			get { return remotingChannel; }
-			set { 
-				if (value != "tcp" && value != "unix")
-					throw new InvalidOperationException ("Channel not supported: " + value);
-				remotingChannel = value; 
-			}
-		}
-		
-		public string RegisterRemotingChannel ()
+		internal void Dispose ()
 		{
-			if (remotingChannel == "tcp") {
-				IChannel ch = ChannelServices.GetChannel ("tcp");
-				if (ch == null) {
-					IDictionary dict = new Hashtable ();
-					BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
-					BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
-
-					dict ["port"] = 0;
-					serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
-
-					ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
-				}
-			} else {
-				IChannel ch = ChannelServices.GetChannel ("unix");
-				if (ch == null) {
-					unixRemotingFile = Path.GetTempFileName ();
-					ChannelServices.RegisterChannel (new UnixChannel (unixRemotingFile), false);
-				}
-			}
-			return remotingChannel;
-		}
-		
-		public virtual void Dispose ()
-		{
-			if (unixRemotingFile != null)
-				File.Delete (unixRemotingFile);
+			RemotingService.Dispose ();
 		}
 		
 		public class ExecutionModeReference

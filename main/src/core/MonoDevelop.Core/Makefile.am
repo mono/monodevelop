@@ -32,6 +32,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/BreakpointEventHandler.cs \
 	MonoDevelop.Core.Execution/DefaultExecutionHandler.cs \
 	MonoDevelop.Core.Execution/DefaultExecutionMode.cs \
+	MonoDevelop.Core.Execution/DisposerFormatterSink.cs \
 	MonoDevelop.Core.Execution/DotNetExecutionCommand.cs \
 	MonoDevelop.Core.Execution/DotNetExecutionHandler.cs \
 	MonoDevelop.Core.Execution/ExecutionCommand.cs \
@@ -57,6 +58,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/ProcessService.cs \
 	MonoDevelop.Core.Execution/ProcessWrapper.cs \
 	MonoDevelop.Core.Execution/RemoteProcessObject.cs \
+	MonoDevelop.Core.Execution/RemotingService.cs \
 	MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs \
 	MonoDevelop.Core.FileSystem/FileSystemExtension.cs \
 	MonoDevelop.Core.Logging/ConsoleCrayon.cs \

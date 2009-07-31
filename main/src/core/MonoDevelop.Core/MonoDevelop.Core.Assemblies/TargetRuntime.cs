@@ -95,6 +95,47 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public abstract IExecutionHandler GetExecutionHandler ();
 		
+		public virtual Process ExecuteAssembly (ProcessStartInfo pinfo, TargetFramework fx)
+		{
+			// Make a copy of the ProcessStartInfo because we are going to modify it
+			
+			ProcessStartInfo cp = new ProcessStartInfo ();
+			cp.Arguments = pinfo.Arguments;
+			cp.CreateNoWindow = pinfo.CreateNoWindow;
+			cp.Domain = pinfo.Domain;
+			cp.ErrorDialog = pinfo.ErrorDialog;
+			cp.ErrorDialogParentHandle = pinfo.ErrorDialogParentHandle;
+			cp.FileName = pinfo.FileName;
+			cp.LoadUserProfile = pinfo.LoadUserProfile;
+			cp.Password = pinfo.Password;
+			cp.UseShellExecute = pinfo.UseShellExecute;
+			cp.RedirectStandardError = pinfo.RedirectStandardError;
+			cp.RedirectStandardInput = pinfo.RedirectStandardInput;
+			cp.RedirectStandardOutput = pinfo.RedirectStandardOutput;
+			cp.StandardErrorEncoding = pinfo.StandardErrorEncoding;
+			cp.StandardOutputEncoding = pinfo.StandardOutputEncoding;
+			cp.UserName = pinfo.UserName;
+			cp.Verb = pinfo.Verb;
+			cp.WindowStyle = pinfo.WindowStyle;
+			cp.WorkingDirectory = pinfo.WorkingDirectory;
+			
+			foreach (string key in pinfo.EnvironmentVariables.Keys)
+				cp.EnvironmentVariables [key] = pinfo.EnvironmentVariables [key];
+			
+			// Set the runtime env vars
+			
+			foreach (KeyValuePair<string,string> evar in GetToolsEnvironmentVariables (fx))
+				cp.EnvironmentVariables [evar.Key] = evar.Value;
+			
+			ConvertAssemblyProcessStartInfo (pinfo);
+			Console.WriteLine ("pp pi:" + pinfo.FileName + " " + pinfo.Arguments);
+			return Process.Start (pinfo);
+		}
+		
+		protected virtual void ConvertAssemblyProcessStartInfo (ProcessStartInfo pinfo)
+		{
+		}
+		
 		protected TargetFrameworkBackend GetBackend (TargetFramework fx)
 		{
 			if (frameworkBackends == null)
@@ -146,6 +187,8 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return GetBackend (fx).GetToolsPaths ();
 		}
+		
+		public abstract string MSBuildBinPath { get; }
 		
 		public SystemPackage RegisterPackage (SystemPackageInfo pinfo, params string[] assemblyFiles)
 		{
