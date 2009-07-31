@@ -60,14 +60,14 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
 	$(top_builddir)/build/AddIns/VersionControl/DiffWidget.dll \
+	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	$(top_builddir)/build/bin/Mono.Debugging.dll
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \

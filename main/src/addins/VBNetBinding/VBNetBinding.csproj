@@ -91,7 +91,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="NRefactory, Version=1.9.2.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="NRefactory, Version=2.1.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\build\bin\NRefactory.dll</HintPath>
       <Private>False</Private>
