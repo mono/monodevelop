@@ -1,5 +1,11 @@
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:
+	  Flush.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs:
 	  Use the new api for removing projects from a solution.
 

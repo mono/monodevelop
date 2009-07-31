@@ -110,7 +110,6 @@ namespace MonoDevelop.Deployment.Gui {
             // Container child hbox1.Gtk.Box+BoxChild
             this.comboZip = Gtk.ComboBox.NewText();
             this.comboZip.Name = "comboZip";
-            this.comboZip.Active = 0;
             this.hbox1.Add(this.comboZip);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.comboZip]));
             w6.Position = 1;
