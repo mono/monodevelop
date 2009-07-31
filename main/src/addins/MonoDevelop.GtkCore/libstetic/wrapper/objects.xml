@@ -659,7 +659,7 @@
 			  min="1" />
 		<property name="HelpButton" label="Help Button"
 			  description="Whether or not to display a 'Help' button" />
-		<property name="HasSeparator" />
+		<property name="HasSeparator" default="true"/>
 	    </itemgroup>
 	</itemgroups>
 	<signals>
