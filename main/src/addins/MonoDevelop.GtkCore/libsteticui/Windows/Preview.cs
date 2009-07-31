@@ -20,6 +20,8 @@ namespace Stetic.Windows
 
 		public static Preview Create (TopLevelWindow window)
 		{
+			if (System.IO.Path.DirectorySeparatorChar != '\\')
+				return null;
 			try {
 				Preview p = new Preview ();
 				p.Add (window);
