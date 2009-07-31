@@ -77,10 +77,17 @@ namespace MonoDevelop.Projects.Gui
 			set {
 				CheckProject ();
 				if (!value.IsNullOrEmpty)
-					entry.Text = value.ToRelative (Project.BaseDirectory);
+					entry.Text = RealEmpty (value.ToRelative (Project.BaseDirectory));
 				else
 					entry.Text = "";
 			}
+		}
+		
+		static FilePath RealEmpty (FilePath filePath)
+		{
+			if (filePath.ToString () == ".")
+				return FilePath.Empty;
+			return filePath;
 		}
 		
 		void ButtonClicked (object sender, EventArgs e)
