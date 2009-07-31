@@ -41,7 +41,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox {
             this.Name = "MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog";
             this.Title = Mono.Unix.Catalog.GetString("Toolbox Item Selector");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

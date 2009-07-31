@@ -35,7 +35,6 @@ namespace MonoDevelop.AspNet.Deployment {
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
             this.BorderWidth = ((uint)(9));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

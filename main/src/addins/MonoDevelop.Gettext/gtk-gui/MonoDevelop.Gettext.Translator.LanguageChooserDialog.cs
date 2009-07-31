@@ -71,7 +71,6 @@ namespace MonoDevelop.Gettext.Translator {
             this.AllowGrow = false;
             this.Gravity = ((Gdk.Gravity)(5));
             this.SkipTaskbarHint = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Gettext.Translator.LanguageChooserDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

@@ -36,7 +36,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.Name = "MonoDevelop.Deployment.Gui.InstallDialog";
             this.Title = Mono.Unix.Catalog.GetString("Install Project");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Deployment.Gui.InstallDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

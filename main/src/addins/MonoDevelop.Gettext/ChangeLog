@@ -1,5 +1,11 @@
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:
+	* gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs:
+	  Flush.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:
 	  Use the new api from removing projects from a solution.
 

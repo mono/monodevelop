@@ -99,7 +99,6 @@ namespace MonoDevelop.Deployment {
             this.BorderWidth = ((uint)(6));
             this.Resizable = false;
             this.AllowGrow = false;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Deployment.FileReplaceDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

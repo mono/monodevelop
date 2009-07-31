@@ -32,7 +32,6 @@ namespace MonoDevelop.Deployment.Linux {
             this.Name = "MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog";
             this.Title = Mono.Unix.Catalog.GetString("Menu Category Selection");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

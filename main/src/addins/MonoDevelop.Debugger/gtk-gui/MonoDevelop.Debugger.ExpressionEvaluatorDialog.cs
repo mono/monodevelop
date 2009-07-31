@@ -34,7 +34,6 @@ namespace MonoDevelop.Debugger {
             this.Title = Mono.Unix.Catalog.GetString("Expression Evaluator");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Debugger.ExpressionEvaluatorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

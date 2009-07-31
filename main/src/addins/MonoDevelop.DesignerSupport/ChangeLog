@@ -1,5 +1,10 @@
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs:
+	  Flush.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs: Track
 	  api changes.
 

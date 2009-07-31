@@ -126,7 +126,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.Name = "MonoDevelop.Deployment.Gui.DeployDialog";
             this.Title = Mono.Unix.Catalog.GetString("Create Package");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Deployment.Gui.DeployDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
