@@ -1,5 +1,11 @@
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/SolutionFolder.cs: When reloading an
+	  item, make sure parent add/remove events are sent tot he
+	  parent solution.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
 	  Preserve empty lines at the end of the file.
 
