@@ -1,5 +1,9 @@
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Metacity/Preview.cs: Remove debug code.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Windows/Preview.cs: Dont try to create a Win32 preview
 	  window when not running on Windows.
 

@@ -70,7 +70,6 @@ namespace Stetic.Metacity {
 			base.Add (window);
 
 			Title = window.Title ?? string.Empty;
-			Console.WriteLine ("pp tt:" + (window.Title ?? string.Empty));
 			window.PropertyChanged += OnWindowPropChange;
 			Destroyed += delegate {
 				window.PropertyChanged -= OnWindowPropChange;
