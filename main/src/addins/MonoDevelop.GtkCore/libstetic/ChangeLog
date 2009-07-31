@@ -1,5 +1,9 @@
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* wrapper/objects.xml: Fix some default values.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* wrapper/objects.xml: Make sure the default value for
 	  HasSeparator is true.
 

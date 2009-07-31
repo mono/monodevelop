@@ -188,8 +188,8 @@
 		<property name="DefaultHeight" min="-1"/>
 	    </itemgroup>
 	    <itemgroup label="Miscellaneous Window Properties" name="Misc">
-		<property name="AcceptFocus" defaule="true"/>
-		<property name="Decorated" defaule="true"/>
+		<property name="AcceptFocus" default="true"/>
+		<property name="Decorated" default="true"/>
 		<property name="DestroyWithParent" default="false"/>
 		<property name="Gravity" default="NorthWest"/>
 		<property name="Role" />
@@ -631,7 +631,7 @@
 			  editor="Stetic.Editor.StringArray">
 		    <disabled-if name="IsTextCombo" value="false" />
 		</property>
-		<property name="Active" min="-1"/>
+		<property name="Active" min="-1" default=-1"/>
 		<property name="HasFrame" gtk-version="2.6"/>
 		<property name="AddTearoffs" gtk-version="2.6"/>
 		<property name="FocusOnClick" gtk-version="2.6"/>
