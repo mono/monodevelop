@@ -40,20 +40,30 @@
     <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Data" />
     <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>

@@ -1,3 +1,8 @@
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Database.Query.csproj: Disabled 'require
+	  specific version' flags.
+
 2009-05-27 Luciano N. Callero <lnc19@hotmail.com>
 	* icons/Icons.16x16.Database.Functions.png: New Icon for Functions.
 	* Makefile.am: Add new image embeed as a resource.

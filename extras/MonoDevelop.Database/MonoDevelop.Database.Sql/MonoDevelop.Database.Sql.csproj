@@ -39,24 +39,31 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
