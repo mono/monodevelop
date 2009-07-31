@@ -97,11 +97,63 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
 			int pos = -1;
+
+			// create a table with all opening brackets
+			Dictionary<int, int> brackets = new Dictionary<int, int> ();
+			Stack<int> bracketStack = new Stack<int> ();
+			for (int i = 0; i < documentToCursor.Length; i++) {
+				char ch = documentToCursor[i];
+				switch (ch) {
+				case '/':
+					if (i + 1 < documentToCursor.Length) {
+						if (documentToCursor[i + 1] == '/') {
+							while (i < documentToCursor.Length) {
+								if (documentToCursor[i] == '\n')
+									break;
+								i++;
+							}
+						} else if (documentToCursor[i + 1] == '*') {
+							while (i + 1 < documentToCursor.Length) {
+								if (documentToCursor[i] == '*' && documentToCursor[i + 1] == '/')
+									break;
+								i++;
+							}
+						}
+					}
+					break;
+				case '(':
+				case '{':
+				case '[':
+					bracketStack.Push (i);
+					break;
+				case ')':
+				case '}':
+				case ']':
+					if (bracketStack.Count > 0)
+						brackets[i] = bracketStack.Pop ();
+					break;
+				}
+			}
+
 			for (int i = documentToCursor.Length - 5; i >= 0; i--) {
+				if (documentToCursor[i] == ')' || documentToCursor[i] == '}' || documentToCursor[i] == ']') {
+					int newPos;
+					if (brackets.TryGetValue (i, out newPos)) {
+						// we've had a  Property = new Name (), expression, now search for the '='
+						// otherwise the "new Name" would be falsly taken as object initializer
+						i = newPos; 
+						while (i >= 0) {
+							if (documentToCursor[i] == '=')
+								break;
+							i--;
+						}
+						continue;
+					}
+				}
 				if (documentToCursor.Substring (i, 4) == "new ") {
 					bool skip = false;
 					for (int j2 = i; j2 < documentToCursor.Length; j2++) {
-						if (documentToCursor[j2] == '{')
+						if (documentToCursor[j2] == '{') 
 							break;
 						if (documentToCursor[j2] == ',') {
 							skip = true;
@@ -111,15 +163,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 					
 					if (skip)
 						continue;
-					
+
 					int j = i + 4;
-					while (j < documentToCursor.Length && Char.IsWhiteSpace (documentToCursor[j])) 
+					while (j < documentToCursor.Length && Char.IsWhiteSpace (documentToCursor[j]))
 						j++;
 					int start = j;
-					while (j < documentToCursor.Length && (Char.IsLetterOrDigit (documentToCursor[j]) || documentToCursor[j] == '_')) 
+					while (j < documentToCursor.Length && (Char.IsLetterOrDigit (documentToCursor[j]) || documentToCursor[j] == '_'))
 						j++;
-					
+
 					ExpressionResult firstExprs = FindExpression (documentToCursor, j);
+					
 					if (firstExprs.Expression != null) {
 						IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
 						if (unresolvedReturnType != null) {
