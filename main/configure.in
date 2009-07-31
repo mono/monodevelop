@@ -330,6 +330,7 @@ src/core/Mono.Texteditor/Makefile
 src/core/Mono.Debugging/Makefile
 src/core/MonoDevelop.Core/Makefile
 src/core/MonoDevelop.Core.Gui/Makefile
+src/core/MonoDevelop.Projects.Formats.MSBuild/Makefile
 src/core/MonoDevelop.Projects/Makefile
 src/core/MonoDevelop.Projects.Gui/Makefile
 src/core/MonoDevelop.Ide/Makefile
