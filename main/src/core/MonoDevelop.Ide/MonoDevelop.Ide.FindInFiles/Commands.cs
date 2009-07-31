@@ -33,17 +33,15 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		protected override void Run ()
 		{
-			FindInFilesDialog findInFilesDialog = new FindInFilesDialog (false);
-			findInFilesDialog.Show ();
+			FindInFilesDialog.ShowFind ();
 		}
 	}
 	
 	class ReplaceInFilesHandler : CommandHandler
 	{
-		protected override void Run()
+		protected override void Run ()
 		{
-			FindInFilesDialog findInFilesDialog = new FindInFilesDialog (true);
-			findInFilesDialog.Show ();
+			FindInFilesDialog.ShowReplace ();
 		}
 	}
 }

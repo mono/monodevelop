@@ -48,16 +48,16 @@ namespace MonoDevelop.Ide.FindInFiles
 		const int ScopeCurrentDocument = 4;
 		const int ScopeSelection       = 5;
 		
-		public FindInFilesDialog (bool showReplace, string directory) : this(showReplace)
+		FindInFilesDialog (bool showReplace, string directory) : this(showReplace)
 		{
-			comboboxScope.Active = ScopeWholeSolution;
+			comboboxScope.Active = ScopeDirectories;
 			comboboxentryPath.Entry.Text = directory;
 			writeScope = false;
 		}
 
 		ComboBoxEntry comboboxentryReplace;
 		Label labelReplace;
-		public FindInFilesDialog (bool showReplace)
+		FindInFilesDialog (bool showReplace)
 		{
 			this.showReplace = showReplace;
 			this.Build ();
@@ -383,11 +383,36 @@ namespace MonoDevelop.Ide.FindInFiles
 			StorePoperties ();
 			base.OnDestroyed ();
 		}
-
+		
+		static FindInFilesDialog currentFindDialog = null;
+		static bool IsCurrentDialogClosed {
+			get {
+				return currentFindDialog == null || !currentFindDialog.Visible;
+			}
+		}
+		
+		public static void ShowFind ()
+		{
+			if (!IsCurrentDialogClosed)
+				return;
+			currentFindDialog = new FindInFilesDialog (false);
+			currentFindDialog.Show ();
+		}
+		
+		public static void ShowReplace ()
+		{
+			if (!IsCurrentDialogClosed)
+				return;
+			currentFindDialog = new FindInFilesDialog (true);
+			currentFindDialog.Show ();
+		}
+		
 		public static void FindInPath (string path)
 		{
-			FindInFilesDialog findInFilesDialog = new FindInFilesDialog (false, path);
-			findInFilesDialog.Show ();
+			if (!IsCurrentDialogClosed)
+				return;
+			currentFindDialog = new FindInFilesDialog (false, path);
+			currentFindDialog.Show ();
 		}
 				
 		Scope GetScope ()

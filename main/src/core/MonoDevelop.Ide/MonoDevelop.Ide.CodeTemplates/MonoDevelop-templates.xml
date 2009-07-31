@@ -323,7 +323,7 @@ public class $name$Exception : $SystemException$
 				<_ToolTip>Property name</_ToolTip>
 			</Variable>
 		</Variables>
-		<Code><![CDATA[public $type$ $name$  {
+		<Code><![CDATA[public $type$ $name$ {
 	get;
 	set;
 }]]></Code>
