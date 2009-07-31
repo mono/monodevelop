@@ -118,16 +118,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				TranslationProject project = CurrentNode.DataItem as TranslationProject;
 				if (project == null)
 					return;
-				
-				bool yes = MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString (
-					"Do you really want to remove the translations from solution {0}?", project.ParentFolder.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
-
-				if (yes) {
-					Solution sol = project.ParentSolution;
-					project.ParentFolder.Items.Remove (project);
-					project.Dispose ();
-					IdeApp.ProjectOperations.Save (sol);
-				}
+				IdeApp.ProjectOperations.RemoveSolutionItem (project);
 			}
 					
 			[CommandHandler (MonoDevelop.Ide.Commands.ProjectCommands.Options)]
