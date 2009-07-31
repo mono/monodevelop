@@ -134,18 +134,22 @@ namespace MonoDevelop.CSharpBinding.Gui
 					break;
 				}
 			}
-
+			bool foundCurlyBrace = false;
 			for (int i = documentToCursor.Length - 5; i >= 0; i--) {
+				if (documentToCursor[i] == '{')
+					foundCurlyBrace = true;
 				if (documentToCursor[i] == ')' || documentToCursor[i] == '}' || documentToCursor[i] == ']') {
 					int newPos;
 					if (brackets.TryGetValue (i, out newPos)) {
+						i = newPos;
 						// we've had a  Property = new Name (), expression, now search for the '='
 						// otherwise the "new Name" would be falsly taken as object initializer
-						i = newPos; 
-						while (i >= 0) {
-							if (documentToCursor[i] == '=')
-								break;
-							i--;
+						if (!foundCurlyBrace) {
+							while (i >= 0) {
+								if (documentToCursor[i] == '=')
+									break;
+								i--;
+							}
 						}
 						continue;
 					}
