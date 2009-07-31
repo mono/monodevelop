@@ -1,0 +1,4 @@
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Add missing file.
+
