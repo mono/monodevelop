@@ -1774,6 +1774,49 @@ public class Program
 			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 		}
 		
+			
+		/// <summary>
+		/// Bug 526667 - wrong code completion in object initialisation (new O() {...};)
+		/// </summary>
+		[Test()]
+		public void TestBug526667 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+using System;
+using System.Collections.Generic;
+
+public class O
+{
+	public string X {
+		get;
+		set;
+	}
+	public string Y {
+		get;
+		set;
+	}
+	public List<string> Z {
+		get;
+		set;
+	}
+
+	public static O A ()
+	{
+		return new O {
+			X = ""x"",
+			Z = new List<string> (new string[] {
+				""abc"",
+				""def""
+			})
+			$, $
+		};
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Y"), "property 'Y' not found.");
+		}
 		
 	}
 }
