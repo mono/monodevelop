@@ -42,19 +42,27 @@ namespace MonoDevelop.Projects.Gui.Completion
 		Gtk.Arrow goNext;
 		HBox mainBox;
 		
-		public ParameterInformationWindow()
+		public ParameterInformationWindow ()
 		{
 			desc = new Gtk.Label ("");
 			desc.Xalign = 0;
 			count = new Gtk.Label ("");
-			
+
 			mainBox = new HBox (false, 2);
 			mainBox.BorderWidth = 3;
+
+			HBox arrowHBox = new HBox ();
+
 			goPrev = new Gtk.Arrow (Gtk.ArrowType.Up, ShadowType.None);
-			mainBox.PackStart (goPrev, false, false, 2);
-			mainBox.PackStart (count, false, false, 2);
+			arrowHBox.PackStart (goPrev, false, false, 0);
+			arrowHBox.PackStart (count, false, false, 0);
 			goNext = new Gtk.Arrow (Gtk.ArrowType.Down, ShadowType.None);
-			mainBox.PackStart (goNext, false, false, 2);
+			arrowHBox.PackStart (goNext, false, false, 0);
+
+			VBox vBox = new VBox ();
+			vBox.PackStart (arrowHBox, false, false, 0);
+			
+			mainBox.PackStart (vBox, false, false, 0);
 			mainBox.PackStart (desc, true, true, 0);
 			mainBox.ShowAll ();
 			this.Add (mainBox);

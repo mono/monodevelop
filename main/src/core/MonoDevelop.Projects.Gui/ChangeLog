@@ -1,3 +1,13 @@
+2009-07-31  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	  Fixed possible null reference exception/removed some
+	  duplicate code.
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	  In parameter info window the count message is now always on
+	  top.
+
 2009-07-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/objects.xml:

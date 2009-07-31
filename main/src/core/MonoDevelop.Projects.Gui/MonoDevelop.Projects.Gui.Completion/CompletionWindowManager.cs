@@ -48,8 +48,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext, closedDelegate)) {
 					if (list is IDisposable)
 						((IDisposable)list).Dispose ();
-					wnd.Destroy ();
-					wnd = null;
+					DestroyWindow ();
 					return false;
 				}
 				return true;
@@ -58,6 +57,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return false;
 			}
 		}
+		
+		static void DestroyWindow ()
+		{
+			if (wnd != null) {
+				wnd.Destroy ();
+				wnd = null;
+			}
+		}
+		
 		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyAction ka)
 		{
 			if (wnd == null /*|| !wnd.Visible*/) {
@@ -76,10 +84,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public static void HideWindow ()
 		{
-			if (wnd == null)
-				return;
-			wnd.Destroy ();
-			wnd = null;
+			DestroyWindow ();
 		}
 	}
 }
