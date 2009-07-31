@@ -5,11 +5,13 @@ CONFIG = MonoDevelop.Projects.dll.config
 DEPS =  \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Core.dll
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Formats.MSBuild.exe
 
 REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODOC_LIBS) \
+	-r:Microsoft.Build.Engine \
 	-r:Microsoft.Build.Framework \
 	-r:Microsoft.Build.Utilities \
 	-r:Mono.Posix \
@@ -170,7 +172,6 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionRelationalExpression.cs \
 	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionTokenizer.cs \
 	MonoDevelop.Projects.Formats.MSBuild.Conditions/ExpressionParseException.cs \
-	MonoDevelop.Projects.Formats.MSBuild.Conditions/InvalidProjectFileException.cs \
 	MonoDevelop.Projects.Formats.MSBuild.Conditions/Token.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildHandler.cs \
@@ -180,6 +181,7 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs \
 	MonoDevelop.Projects.Formats.MSBuild/RemoteLogger.cs \
 	MonoDevelop.Projects.Formats.MSBuild/RemoteLoggerController.cs \
+	MonoDevelop.Projects.Formats.MSBuild/RemoteProjectBuilder.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnData.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs \
 	MonoDevelop.Projects.Policies/DotNetNamingPolicy.cs \

@@ -31,8 +31,6 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Remoting;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
@@ -50,6 +48,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		IResourceHandler customResourceHandler;
 		List<string> subtypeGuids = new List<string> ();
 		const string Unspecified = null;
+		RemoteProjectBuilder projectBuilder;
 		
 		SolutionEntityItem EntityItem {
 			get { return (SolutionEntityItem) Item; }
@@ -79,7 +78,34 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (import != null && import.Trim().Length > 0)
 				this.targetImports.AddRange (import.Split (':'));
+			
+			Runtime.SystemAssemblyService.DefaultRuntimeChanged += delegate {
+				// If the default runtime changes, the project builder for this project may change
+				// so it has to be created again.
+				if (projectBuilder != null) {
+					MSBuildProjectService.ReleaseProjectBuilder (projectBuilder);
+					projectBuilder = null;
+				}
+			};
 		}
+		
+		RemoteProjectBuilder ProjectBuilder {
+			get {
+				if (projectBuilder == null)
+					projectBuilder = MSBuildProjectService.GetProjectBuilder (((DotNetProject)Item).TargetRuntime);
+				return projectBuilder;
+			}
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (projectBuilder != null) {
+				MSBuildProjectService.ReleaseProjectBuilder (projectBuilder);
+				projectBuilder = null;
+			}
+		}
+
 		
 		public override BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
@@ -87,29 +113,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SolutionEntityItem item = Item as SolutionEntityItem;
 				if (item != null) {
 					TargetRuntime runtime = null;
-					TargetFramework fx = null;
-					if (item is DotNetProject) {
+					if (item is DotNetProject)
 						runtime = ((DotNetProject)item).TargetRuntime;
-						fx = ((DotNetProject)item).TargetFramework;
-					}
-					else {
-						runtime = Runtime.SystemAssemblyService.DefaultRuntime;
-						fx = Services.ProjectService.DefaultTargetFramework;
-					}
+					else 
+						runtime = Runtime.SystemAssemblyService.CurrentRuntime;
 					
-					string xbuild = runtime.GetToolPath (fx, "msbuild");
-					string file = item.FileName;
-					
-					char chId = Runtime.ProcessService.RegisterRemotingChannel () [0];
-					
-					RemoteLoggerController controller = new RemoteLoggerController (Item.ItemDirectory);
-					
-					BinaryFormatter bf = new BinaryFormatter ();
-					ObjRef oref = RemotingServices.Marshal (controller);
-					MemoryStream ms = new MemoryStream ();
-					bf.Serialize (ms, oref);
-					string sref = chId + Convert.ToBase64String (ms.ToArray ());
-
 					string conf, plat;
 					int i = configuration.IndexOf ('|');
 					if (i != -1) {
@@ -119,21 +127,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						conf = configuration;
 						plat = null;
 					}
+				
+					LogWriter logWriter = new LogWriter (monitor.Log);
+					MSBuildResult[] results = ProjectBuilder.RunTarget (item.FileName, target, conf, plat, runtime.MSBuildBinPath, logWriter);
+					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
-					string args = "/target:" + target;
-					args += " \"/property:Configuration=" + conf + "\"";
-					if (plat != null)
-						args += " \"/property:Platform=" + plat + "\"";
-					args += " \"/logger:MonoDevelop.Projects.Formats.MSBuild.RemoteLogger," + GetType ().Assembly.Location + ";" + sref + "\"";
-					args += " \"" + file + "\"";
-					
-					try {
-						ProcessWrapper pw = Runtime.ProcessService.StartProcess (xbuild, args, null, monitor.Log, monitor.Log, null);
-						pw.WaitForOutput ();
-					} finally {
-						System.Runtime.Remoting.RemotingServices.Disconnect (controller);
+					BuildResult br = new BuildResult ();
+					foreach (MSBuildResult res in results) {
+						if (res.IsWarning)
+							br.AddWarning (res.File, res.Line, res.Column, res.Code, res.Message);
+						else
+							br.AddError (res.File, res.Line, res.Column, res.Code, res.Message);
 					}
-					return controller.BuildResult;
+					return br;
 				}
 			}
 			else {

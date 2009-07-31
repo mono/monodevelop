@@ -26,15 +26,18 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Globalization;
+using System.Runtime.Serialization.Formatters.Binary;
 using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -47,6 +50,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public const string DefaultFormat = "MSBuild08";
 		
 		static DataContext dataContext;
+		
+		static Dictionary<TargetRuntime,RemoteProjectBuilder> builders = new Dictionary<TargetRuntime, RemoteProjectBuilder> ();
 		
 		public static DataContext DataContext {
 			get {
@@ -301,6 +306,95 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			only_filename = fname.Substring (0, culture_dot);
 			extn = fname.Substring (last_dot + 1);
 			return true;
+		}
+		
+		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime)
+		{
+			lock (builders) {
+				RemoteProjectBuilder builder;
+				if (builders.TryGetValue (runtime, out builder)) {
+					builder.ReferenceCount++;
+					return builder;
+				}
+				
+				if (runtime.IsRunning) {
+					builder = new RemoteProjectBuilder (null, new ProjectBuilder ());
+				}
+				else {
+					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
+					TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
+					string exe = typeof(ProjectBuilder).Assembly.Location;
+					ProcessStartInfo pinfo = new ProcessStartInfo (exe);
+					foreach (KeyValuePair<string,string> evar in runtime.GetToolsEnvironmentVariables (fx))
+						pinfo.EnvironmentVariables [evar.Key] = evar.Value;
+					pinfo.UseShellExecute = false;
+					pinfo.RedirectStandardError = true;
+					
+					Process p = null;
+					try {
+						p = runtime.ExecuteAssembly (pinfo, fx);
+						string sref = p.StandardError.ReadLine ();
+						byte[] data = Convert.FromBase64String (sref);
+						MemoryStream ms = new MemoryStream (data);
+						BinaryFormatter bf = new BinaryFormatter ();
+						builder = new RemoteProjectBuilder (p, (ProjectBuilder) bf.Deserialize (ms));
+					} catch {
+						if (p != null) {
+							try {
+								p.Kill ();
+							} catch { }
+						}
+						throw;
+					}
+				}
+				builders [runtime] = builder;
+				builder.ReferenceCount = 1;
+				return builder;
+			}
+		}
+
+		public static void ReleaseProjectBuilder (RemoteProjectBuilder builder)
+		{
+			lock (builders) {
+				if (builder.ReferenceCount > 0) {
+					if (--builder.ReferenceCount == 0) {
+						builder.ReleaseTime = DateTime.Now.AddSeconds (3);
+						ScheduleProjectBuilderCleanup (builder.ReleaseTime.AddMilliseconds (500));
+					}
+				}
+			}
+		}
+		
+		static DateTime nextCleanup = DateTime.MinValue;
+		
+		static void ScheduleProjectBuilderCleanup (DateTime cleanupTime)
+		{
+			lock (builders) {
+				if (cleanupTime < nextCleanup)
+					return;
+				nextCleanup = cleanupTime;
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					DateTime tnow = DateTime.Now;
+					while (tnow < nextCleanup) {
+						System.Threading.Thread.Sleep ((int)(nextCleanup - tnow).TotalMilliseconds);
+						CleanProjectBuilders ();
+						tnow = DateTime.Now;
+					}
+				});
+			}
+		}
+		
+		static void CleanProjectBuilders ()
+		{
+			lock (builders) {
+				DateTime tnow = DateTime.Now;
+				foreach (KeyValuePair<TargetRuntime,RemoteProjectBuilder> val in builders) {
+					if (val.Value.ReferenceCount == 0 && val.Value.ReleaseTime <= tnow) {
+						builders.Remove (val.Key);
+						val.Value.Dispose ();
+					}
+				}
+			}
 		}
 
 		static Dictionary<string, string> cultureNamesTable;

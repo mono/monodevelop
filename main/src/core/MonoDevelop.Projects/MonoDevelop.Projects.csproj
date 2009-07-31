@@ -49,6 +49,7 @@
     <Reference Include="Microsoft.Build.Utilities" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -64,6 +65,11 @@
     <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Mono.Cecil.Mdb.csproj">
       <Project>{201F7AC0-D2D5-4F51-85A8-17475DADBED3}</Project>
       <Name>Mono.Cecil.Mdb</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
+      <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
+      <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -274,7 +280,6 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionRelationalExpression.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionTokenizer.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ExpressionParseException.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\Token.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\DomMemberDecorator.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Output\DocumentationService.cs" />
@@ -322,8 +327,10 @@
     <Compile Include="MonoDevelop.Projects.Policies\PolicyDictionary.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteLogger.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteLoggerController.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteProjectBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
   </ItemGroup>
