@@ -1,3 +1,8 @@
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs: Track
+	  api changes.
+
 2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:

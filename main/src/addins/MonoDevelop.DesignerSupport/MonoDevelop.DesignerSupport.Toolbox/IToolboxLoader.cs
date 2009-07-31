@@ -74,7 +74,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					eloader.Ping ();
 				} catch {
 					// The remote process is dead. Try creating a new one.
-					Runtime.ProcessService.DisposeExternalProcessObject (eloader, 1);
+					eloader.Dispose (); // Calling Dispose is always safe
 					externalLoaders.Remove (runtime);
 					return CreateExternalLoader<T> (runtime);
 				}
