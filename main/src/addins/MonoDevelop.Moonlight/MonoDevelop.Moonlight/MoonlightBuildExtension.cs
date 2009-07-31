@@ -195,7 +195,7 @@ namespace MonoDevelop.Moonlight
 			MoonlightProject proj = item as MoonlightProject;
 			DotNetProjectConfiguration conf = null;
 			if (proj != null)
-				conf = proj.GetActiveConfiguration (configuration) as DotNetProjectConfiguration;
+				conf = proj.GetConfiguration (configuration) as DotNetProjectConfiguration;
 			
 			base.Clean (monitor, item, configuration);
 			
@@ -242,7 +242,7 @@ namespace MonoDevelop.Moonlight
 			MoonlightProject proj = item as MoonlightProject;
 			DotNetProjectConfiguration conf = null;
 			if (proj != null)
-				conf = proj.GetActiveConfiguration (configuration) as DotNetProjectConfiguration;
+				conf = proj.GetConfiguration (configuration) as DotNetProjectConfiguration;
 			if (conf == null)
 				return base.GetNeedsBuilding (item, configuration);
 			
@@ -304,7 +304,7 @@ namespace MonoDevelop.Moonlight
 			MoonlightProject proj = item as MoonlightProject;
 			DotNetProjectConfiguration conf = null;
 			if (proj != null)
-				conf = proj.GetActiveConfiguration (configuration) as DotNetProjectConfiguration;
+				conf = proj.GetConfiguration (configuration) as DotNetProjectConfiguration;
 			if (conf == null)
 				return base.Build (monitor, item, configuration);
 			
