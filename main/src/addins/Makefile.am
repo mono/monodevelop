@@ -5,6 +5,7 @@ SUBDIRS = \
 	MonoDevelop.DesignerSupport \
 	MonoDevelop.Debugger \
 	Deployment \
+	VersionControl/Diff \
 	MonoDevelop.Refactoring \
 	MonoDevelop.SourceEditor2 \
 	VersionControl \
