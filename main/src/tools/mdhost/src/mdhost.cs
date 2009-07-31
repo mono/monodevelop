@@ -33,7 +33,7 @@ using MonoDevelop.Core.Execution;
 using System.IO;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Tcp;
+using System.Runtime.Remoting.Channels.Ipc;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting.Lifetime;
 using System.Reflection;
@@ -58,7 +58,6 @@ public class MonoDevelopProcessHost
 			} else
 				input = Console.In;
 			
-			string channel = input.ReadLine ();
 			string sref = input.ReadLine ();
 			
 			if (tmpFile != null) {
@@ -69,24 +68,7 @@ public class MonoDevelopProcessHost
 				}
 			}
 			
-			string unixPath = null;
-			if (channel == "unix") {
-				unixPath = System.IO.Path.GetTempFileName ();
-				Hashtable props = new Hashtable ();
-				props ["path"] = unixPath;
-				props ["name"] = "__internal_unix";
-				ChannelServices.RegisterChannel (new UnixChannel (props, null, null), false);
-			} else {
-				Hashtable props = new Hashtable ();
-				props ["port"] = 0;
-				props ["name"] = "__internal_tcp";
-				BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
-				BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
-
-				serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
-
-				ChannelServices.RegisterChannel (new TcpChannel (props, clientProvider, serverProvider), false);
-			}
+			string unixPath = RegisterRemotingChannel ();
 			
 			byte[] data = Convert.FromBase64String (sref);
 			MemoryStream ms = new MemoryStream (data);
@@ -114,6 +96,18 @@ public class MonoDevelopProcessHost
 		
 		return 0;
 	}
+		
+	static string RegisterRemotingChannel ()
+	{
+		IDictionary dict = new Hashtable ();
+		BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
+		BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
+		string unixRemotingFile = Path.GetTempFileName ();
+		dict ["portName"] = Path.GetFileName (unixRemotingFile);
+		serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
+		ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
+		return unixRemotingFile;
+	}
 }
 
 public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
@@ -128,11 +122,9 @@ public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
 		lease.Register (this);
 	}
 	
-	public RemoteProcessObject CreateInstance (Type type)
+	public IDisposable CreateInstance (Type type)
 	{
-		RemoteProcessObject proc = (RemoteProcessObject) Activator.CreateInstance (type);
-		proc.Attach (controller);
-		return proc;
+		return (IDisposable) Activator.CreateInstance (type);
 	}
 	
 	public void LoadAddins (string[] addinIds)
@@ -142,7 +134,7 @@ public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
 			AddinManager.LoadAddin (null, ad);
 	}
 	
-	public RemoteProcessObject CreateInstance (string fullTypeName)
+	public IDisposable CreateInstance (string fullTypeName)
 	{
 		try {
 			Type t = Type.GetType (fullTypeName);
@@ -153,13 +145,19 @@ public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
 		}
 	}
 	
-	public RemoteProcessObject CreateInstance (string assemblyPath, string typeName)
+	public IDisposable CreateInstance (string assemblyPath, string typeName)
 	{
 		Assembly asm = Assembly.LoadFrom (assemblyPath);
 		Type t = asm.GetType (typeName);
 		if (t == null) throw new InvalidOperationException ("Type not found: " + typeName);
 		return CreateInstance (t);
 	}
+	
+	public void DisposeObject (IDisposable obj)
+	{
+		obj.Dispose ();
+	}
+
 		
 	public TimeSpan Renewal (ILease lease)
 	{
