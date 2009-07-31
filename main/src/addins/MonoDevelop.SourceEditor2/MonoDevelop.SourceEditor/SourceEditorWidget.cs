@@ -520,12 +520,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (splitContainer == null)
 				return;
-			
+
 			splitContainer.Remove (mainsw);
 			if (this.textEditor == lastActiveEditor) {
 				secondsw.Destroy ();
-				secondsw           = null;
+				secondsw = null;
 				splittedTextEditor = null;
+
 			} else {
 				this.mainsw.Destroy ();
 				this.mainsw = secondsw;
@@ -537,6 +538,7 @@ namespace MonoDevelop.SourceEditor
 			splitContainer.Destroy ();
 			splitContainer = null;
 			
+			RecreateMainSw ();
 			this.PackStart (mainsw, true, true, 0);
 			this.ShowAll ();
 		}
@@ -552,18 +554,20 @@ namespace MonoDevelop.SourceEditor
 		ScrolledWindow secondsw;
 		public void Split (bool vSplit)
 		{
- 			if (splitContainer != null) 
+			if (splitContainer != null)
 				Unsplit ();
-			
+
 			this.Remove (this.mainsw);
 			
+			RecreateMainSw ();
+
 			this.splitContainer = vSplit ? (Gtk.Paned)new VPaned () : (Gtk.Paned)new HPaned ();
-			
+
 			splitContainer.Add1 (mainsw);
-			
+
 			this.splitContainer.ButtonPressEvent += delegate(object sender, ButtonPressEventArgs args) {
 				if (args.Event.Type == Gdk.EventType.TwoButtonPress && args.RetVal == null) {
-					Unsplit (); 
+					Unsplit ();
 				}
 			};
 			secondsw = new ScrolledWindow ();
@@ -578,14 +582,29 @@ namespace MonoDevelop.SourceEditor
 				this.UpdateLineCol ();
 			};
 			this.splittedTextEditor.Caret.PositionChanged += CaretPositionChanged;
-			
+
 			secondsw.Child = splittedTextEditor;
 			splitContainer.Add2 (secondsw);
 			this.PackStart (splitContainer, true, true, 0);
-			this.splitContainer.Position = (vSplit ? this.Allocation.Height : this.Allocation.Width) / 2;
+			this.splitContainer.Position = (vSplit ? this.Allocation.Height : this.Allocation.Width) / 2 - 1;
 			this.ShowAll ();
-			
 		}
+
+		void RecreateMainSw ()
+		{
+			// destroy old scrolled window to work around Bug 526721 - When splitting window vertically, the slider under left split is not shown unitl window is resized
+			
+			this.mainsw.Remove (textEditor);
+			textEditor.Unparent ();
+			this.mainsw.Destroy ();
+			this.mainsw.Child = null;
+			this.mainsw = new ScrolledWindow ();
+			this.mainsw.ShadowType = ShadowType.In;
+			this.mainsw.ButtonPressEvent += PrepareEvent;
+			this.mainsw.Child = textEditor;
+		}
+
+		
 //		void SplitContainerSizeRequested (object sender, SizeRequestedArgs args)
 //		{
 //			this.splitContainer.SizeRequested -= SplitContainerSizeRequested;
