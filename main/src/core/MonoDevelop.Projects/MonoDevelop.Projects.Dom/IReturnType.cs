@@ -107,6 +107,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		string ToInvariantString ();
 		int GetDimension (int arrayDimension);
+		int[] GetDimensions ();
 		string DecoratedFullName {
 			get;
 		}

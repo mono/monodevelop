@@ -675,8 +675,14 @@ namespace MonoDevelop.Projects.Dom
 				
 				IReturnType res;
 				if (typeTable.TryGetValue (copyFrom.DecoratedFullName, out res)) {
-					if (type.ArrayDimensions == 0 && type.GenericArguments.Count == 0)
-						return res;
+					if (type.GenericArguments.Count == 0) {
+						if (type.ArrayDimensions == 0 && type.PointerNestingLevel == 0)
+							return res;
+						DomReturnType copy = (DomReturnType)base.Visit (res, typeToInstantiate);
+						copy.PointerNestingLevel = type.PointerNestingLevel;
+						copy.SetDimensions (type.GetDimensions ());
+						return copy;
+					}
 				}
 				return base.Visit (type, typeToInstantiate);
 			}

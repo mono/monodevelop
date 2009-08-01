@@ -168,9 +168,7 @@ namespace MonoDevelop.Projects.Dom
 			DomReturnType rt = new DomReturnType (type.Namespace, parts);
 			rt.PointerNestingLevel = type.PointerNestingLevel;
 			rt.IsNullable = type.IsNullable;
-			rt.ArrayDimensions = type.ArrayDimensions;
-			for (int n=0; n<type.ArrayDimensions; n++)
-				rt.SetDimension (n, type.GetDimension (n));
+			rt.SetDimensions (type.GetDimensions ());
 			rt.Type = type.Type; // for anonymous types
 			return rt;
 		}

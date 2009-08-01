@@ -148,6 +148,8 @@ namespace MonoDevelop.Projects.Dom
 					if (argTypes.TryGetValue (type.FullName, out res)) {
 						DomReturnType rt = new DomReturnType (res);
 						rt.Parts.Add (new ReturnTypePart (type.FullName, null));
+						rt.PointerNestingLevel = type.PointerNestingLevel;
+						rt.SetDimensions (type.GetDimensions ());
 						return rt;
 					}
 				}
