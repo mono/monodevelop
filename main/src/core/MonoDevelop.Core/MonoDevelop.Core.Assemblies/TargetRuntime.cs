@@ -392,21 +392,43 @@ namespace MonoDevelop.Core.Assemblies
 			if (fasm != null)
 				return fullname;
 			
-			// Try to find a newer version of the same assembly.
+			// Try to find a newer version of the same assembly
+			
+			if (fx == null) {
+				foreach (SystemAssembly asm in FindNewerAssembliesSameName (fullname))
+					if (package == null || asm.Package.Name == package)
+						return asm.FullName;
+				return null;
+			}
+			
+			string bestMatch = null;
+			foreach (SystemAssembly asm in FindNewerAssembliesSameName (fullname)) {
+				if (fx.Id == asm.Package.TargetFramework) {
+					if (package == null || asm.Package.Name == package)
+						return asm.FullName;
+				}
+				if (fx.IsCompatibleWithFramework (asm.Package.TargetFramework)) {
+					if (package != null && asm.Package.Name == package)
+						return asm.FullName;
+					bestMatch = asm.FullName;
+				}
+			}
+			return bestMatch;
+		}
+		
+		IEnumerable<SystemAssembly> FindNewerAssembliesSameName (string fullname)
+		{
 			AssemblyName reqName = ParseAssemblyName (fullname);
 			foreach (KeyValuePair<string,SystemAssembly> pair in assemblyFullNameToAsm) {
 				AssemblyName foundName = ParseAssemblyName (pair.Key);
 				if (reqName.Name == foundName.Name && (reqName.Version == null || reqName.Version.CompareTo (foundName.Version) < 0)) {
 					SystemAssembly asm = pair.Value;
 					while (asm != null) {
-						if (package == null || asm.Package.Name == package)
-							return asm.FullName;
+						yield return asm;
 						asm = asm.NextSameName;
 					}
 				}
 			}
-			
-			return null;
 		}
 	
 		public string GetAssemblyLocation (string assemblyName, TargetFramework fx)
