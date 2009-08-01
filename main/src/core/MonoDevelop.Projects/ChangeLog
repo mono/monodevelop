@@ -1,5 +1,11 @@
 2009-07-31  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	  Resolve corlib name for the current runtime version. Fixes
+	  errors with Moonlight and iPhone addins.
+
+2009-07-31  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects/ProjectReference.cs: Don't try to
 	  resolve assemblies before project (and hence target
 	  framework) is set.
