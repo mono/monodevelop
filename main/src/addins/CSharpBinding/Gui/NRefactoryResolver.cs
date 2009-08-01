@@ -142,6 +142,7 @@ namespace MonoDevelop.CSharpBinding
 			foreach (IMember member in type.Members) {
 				if (!(member is IMethod || member is IProperty || member is IEvent))
 					continue;
+//				Console.WriteLine (member.Location.Line  + " --- " + location.Line);
 				if (member.Location.Line == location.Line || member.BodyRegion.Contains (location)) {
 					return member;
 				}
@@ -691,7 +692,7 @@ namespace MonoDevelop.CSharpBinding
 			if (resultTable.TryGetValue (identifier, out result))
 				return result;
 			resultTable[identifier] = result;
-//			Console.WriteLine ("Resolve id:" + identifier);
+			
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = null;
@@ -761,6 +762,30 @@ namespace MonoDevelop.CSharpBinding
 					goto end;
 				}
 			}
+			
+			if (this.callingMember != null) {
+				if (identifier == "value" && this.callingMember is IProperty) {
+					result = new MemberResolveResult (this.callingMember);
+					result.UnresolvedType = ((IProperty)this.callingMember).ReturnType;
+					result.ResolvedType = ResolveType (((IProperty)this.callingMember).ReturnType);
+					goto end;
+				}
+				if (this.callingMember is IMethod || this.callingMember is IProperty) {
+					ReadOnlyCollection<IParameter> prms = this.callingMember is IMethod
+						? ((IMethod)this.callingMember).Parameters
+						: ((IProperty)this.callingMember).Parameters;
+					if (prms != null) {
+						foreach (IParameter para in prms) {
+							if (para.Name == identifier) {
+								result = new ParameterResolveResult (para);
+								result.UnresolvedType = para.ReturnType;
+								result.ResolvedType = ResolveType (para.ReturnType);
+								goto end;
+							}
+						}
+					}
+				}
+			}
 			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, this.CallingType, identifier));
 			if (this.callingType != null && dom != null) {
 				List<IMember> members = new List <IMember> ();
@@ -805,29 +830,7 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 			
-			if (this.callingMember != null) {
-				if (identifier == "value" && this.callingMember is IProperty) {
-					result = new MemberResolveResult (this.callingMember);
-					result.UnresolvedType = ((IProperty)this.callingMember).ReturnType;
-					result.ResolvedType = ResolveType (((IProperty)this.callingMember).ReturnType);
-					goto end;
-				}
-				if (this.callingMember is IMethod || this.callingMember is IProperty) {
-					ReadOnlyCollection<IParameter> prms = this.callingMember is IMethod
-						? ((IMethod)this.callingMember).Parameters
-						: ((IProperty)this.callingMember).Parameters;
-					if (prms != null) {
-						foreach (IParameter para in prms) {
-							if (para.Name == identifier) {
-								result = new ParameterResolveResult (para);
-								result.UnresolvedType = para.ReturnType;
-								result.ResolvedType = ResolveType (para.ReturnType);
-								goto end;
-							}
-						}
-					}
-				}
-			}
+		
 			
 			
 			if (searchedType != null) {
