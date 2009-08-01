@@ -273,17 +273,15 @@ namespace MonoDevelop.Projects
 		
 		void UpdateGacReference ()
 		{
-			if (referenceType == ReferenceType.Gac) {
+			if (referenceType == ReferenceType.Gac && ownerProject != null) {
 				notFound = false;
-				string cref = TargetRuntime.FindInstalledAssembly (reference, package, ownerProject != null? ownerProject.TargetFramework : null);
-				if (ownerProject != null) {
-					if (cref == null)
-						cref = reference;
-					cref = TargetRuntime.GetAssemblyNameForVersion (cref, package, ownerProject.TargetFramework);
-					notFound = (cref == null);
-				}
+				string cref = TargetRuntime.FindInstalledAssembly (reference, package, ownerProject.TargetFramework);
+				if (cref == null)
+					cref = reference;
+				cref = TargetRuntime.GetAssemblyNameForVersion (cref, package, ownerProject.TargetFramework);
+				notFound = (cref == null);
 				if (cref != null && cref != reference) {
-					SystemAssembly asm = TargetRuntime.GetAssemblyFromFullName (cref, package, ownerProject != null? ownerProject.TargetFramework : null);
+					SystemAssembly asm = TargetRuntime.GetAssemblyFromFullName (cref, package, ownerProject.TargetFramework);
 					bool isFrameworkAssembly = asm != null && asm.Package.IsFrameworkPackage;
 					if (loadedReference == null && !isFrameworkAssembly) {
 						loadedReference = reference;

@@ -1,3 +1,9 @@
+2009-07-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/ProjectReference.cs: Don't try to
+	  resolve assemblies before project (and hence target
+	  framework) is set.
+
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionFolder.cs: When reloading an
