@@ -79,9 +79,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		static void RunMainLoop ()
 		{
-			while (Gtk.Application.EventsPending()) {
-				Gtk.Application.RunIteration (false);
-			}
+			MonoDevelop.Core.Gui.DispatchService.RunPendingEvents ();
 		}
 		
 		void IProgressMonitor.BeginTask (string name, int totalWork)

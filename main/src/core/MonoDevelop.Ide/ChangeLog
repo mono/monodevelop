@@ -1,5 +1,12 @@
 2009-08-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Instead of
+	  looping on Application.EventsPending, use
+	  DispatchService.RunPendingvents which limits the number of
+	  iterations.
+
+2009-08-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Rewritten.
 	  Patch by Viktoria Dudka.
 
