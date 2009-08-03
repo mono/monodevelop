@@ -1,3 +1,8 @@
+2009-08-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: fixed
+	  bug in GetDocumentation method.
+
 2009-08-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:

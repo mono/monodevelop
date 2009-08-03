@@ -170,7 +170,7 @@ namespace MonoDevelop.Projects.Dom.Output
 				return member.Documentation;
 			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
 			if (node != null)
-				return (node["summary"].InnerXml ?? "").Trim ();
+				return (node.InnerXml ?? "").Trim ();
 			return null;
 		}
 		
