@@ -567,7 +567,7 @@ namespace MonoDevelop.Ide.Gui
 			if (doc != null) return doc;
 			doc = new Document (window);
 			window.Closing += new WorkbenchWindowEventHandler (OnWindowClosing);
-			window.Closed += new EventHandler (OnWindowClosed);
+			window.Closed += OnWindowClosed;
 			documents.Add (doc);
 			
 			doc.OnDocumentAttached ();
@@ -621,7 +621,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		void OnWindowClosed (object sender, EventArgs args)
+		void OnWindowClosed (object sender, WorkbenchWindowEventArgs args)
 		{
 			IWorkbenchWindow window = (IWorkbenchWindow) sender;
 			documents.Remove (FindDocument (window)); 

@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Is called after the window closes.
 		/// </summary>
-		event EventHandler Closed;
+		event WorkbenchWindowEventHandler Closed;
 		
 		event ActiveViewContentEventHandler ActiveViewContentChanged;
 	}
@@ -109,14 +109,20 @@ namespace MonoDevelop.Ide.Gui
 	public class WorkbenchWindowEventArgs: System.ComponentModel.CancelEventArgs
 	{
 		bool forced;
+		bool wasActive;
 		
-		public WorkbenchWindowEventArgs (bool forced)
+		public WorkbenchWindowEventArgs (bool forced, bool wasActive)
 		{
 			this.forced = forced;
+			this.wasActive = wasActive;
 		}
 		
 		public bool Forced {
 			get { return forced; }
+		}
+		
+		public bool WasActive {
+			get { return wasActive; }
 		}
 	}
 	

@@ -672,7 +672,7 @@ namespace MonoDevelop.Ide.Gui
 			return false;
 		}
 		
-		public void CloseWindowEvent (object sender, EventArgs e)
+		public void CloseWindowEvent (object sender, WorkbenchWindowEventArgs e)
 		{
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow) sender;
 			
@@ -681,7 +681,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (f.ViewContent != null) {
 				((IWorkbench)wbWindow).CloseContent (f.ViewContent);
-				if (!SelectLastActiveWindow (f))
+				if (e.WasActive && !SelectLastActiveWindow (f))
 					ActiveMdiChanged(this, null);
 			}
 		}
@@ -704,7 +704,7 @@ namespace MonoDevelop.Ide.Gui
 			tabLabel.ClearFlag (WidgetFlags.CanFocus);
 			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (workbench, content, tabControl, tabLabel);
 
-			sdiWorkspaceWindow.Closed += new EventHandler (CloseWindowEvent);
+			sdiWorkspaceWindow.Closed += CloseWindowEvent;
 			tabControl.InsertPage (sdiWorkspaceWindow, tabLabel, -1);
 			
 			tabLabel.Show ();

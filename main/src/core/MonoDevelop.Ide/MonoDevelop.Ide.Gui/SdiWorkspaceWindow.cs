@@ -265,7 +265,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool CloseWindow (bool force, bool fromMenu, int pageNum)
 		{
-			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force);
+			bool wasActive = workbench.WorkbenchLayout.ActiveWorkbenchwindow == this;
+			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force, wasActive);
 			args.Cancel = false;
 			OnClosing (args);
 			if (args.Cancel)
@@ -299,7 +300,7 @@ namespace MonoDevelop.Ide.Gui
 			this.separatorItem = null;
 			DetachFromPathedDocument ();
 
-			OnClosed (null);
+			OnClosed (args);
 			
 			this.content = null;
 			this.subViewNotebook = null;
@@ -612,7 +613,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		protected virtual void OnClosed (EventArgs e)
+		protected virtual void OnClosed (WorkbenchWindowEventArgs e)
 		{
 			if (Closed != null) {
 				Closed (this, e);
@@ -626,7 +627,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public event EventHandler TitleChanged;
-		public event EventHandler Closed;
+		public event WorkbenchWindowEventHandler Closed;
 		public event WorkbenchWindowEventHandler Closing;
 		public event ActiveViewContentEventHandler ActiveViewContentChanged;
 	}
