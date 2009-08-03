@@ -32,19 +32,45 @@ namespace MonoDevelop.Core.Assemblies
 {
 	public class MonoFrameworkBackend: TargetFrameworkBackend<MonoTargetRuntime>
 	{
-		public override string GetFrameworkFolder ()
+		public override IEnumerable<string> GetFrameworkFolders ()
 		{
 			string subdir;
 			switch (framework.Id) {
 				case "1.1":
 					subdir = "1.0"; break;
+				case "3.0":
+					// WFC is installed in the 2.0 directory. Others (olive) in 3.0.
+					yield return Path.Combine (targetRuntime.MonoDirectory, "2.0");
+					yield return Path.Combine (targetRuntime.MonoDirectory, "3.0");
+					yield break;
 				case "3.5":
 					subdir = "2.0"; break;
 				default:
 					subdir = framework.Id; break;
 			}
-			return Path.Combine (targetRuntime.MonoDirectory, subdir);
+			yield return Path.Combine (targetRuntime.MonoDirectory, subdir);
 		}
+		
+		public override bool IsInstalled {
+			get {
+				if (framework.Id == "3.0") {
+					// This is a special case. The WCF assemblies are installed in the 2.0 directory.
+					// There are other 3.0 assemblies which belong to the olive package (WCF doesn't)
+					// and which are installed in the 3.0 directory. We consider 3.0 to be installed
+					// if any of those assemblies are installed.
+					if (base.IsInstalled)
+						return true;
+					string dir = Path.Combine (targetRuntime.MonoDirectory, "2.0");
+					if (Directory.Exists (dir)) {
+						string firstAsm = Path.Combine (dir, "System.ServiceModel.dll");
+						return File.Exists (firstAsm);
+					}
+					return false;
+				}
+				return base.IsInstalled;
+			}
+		}
+		 
 		
 		public override string GetToolPath (string toolName)
 		{
@@ -70,11 +96,10 @@ namespace MonoDevelop.Core.Assemblies
 			return base.GetToolPath (toolName);
 		}
 		
-		public override SystemPackageInfo GetFrameworkPackageInfo ()
+		public override SystemPackageInfo GetFrameworkPackageInfo (string packageName)
 		{
-			SystemPackageInfo info = base.GetFrameworkPackageInfo ();
-			if (framework.Id == "3.0") {
-				info.Name = "olive";
+			SystemPackageInfo info = base.GetFrameworkPackageInfo (packageName);
+			if (framework.Id == "3.0" && packageName == "olive") {
 				info.IsCorePackage = false;
 			} else {
 				info.Name = "mono";

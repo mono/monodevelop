@@ -167,9 +167,9 @@ namespace MonoDevelop.Core.Assemblies
 			return assemblyFullNameToAsm.Keys;
 		}
 		
-		internal protected virtual string GetFrameworkFolder (TargetFramework fx)
+		internal protected virtual IEnumerable<string> GetFrameworkFolders (TargetFramework fx)
 		{
-			return GetBackend (fx).GetFrameworkFolder ();
+			return GetBackend (fx).GetFrameworkFolders ();
 		}
 		
 		//environment variables that should be set when running tools in this environment
@@ -249,9 +249,19 @@ namespace MonoDevelop.Core.Assemblies
 		public IEnumerable<SystemPackage> GetPackages (TargetFramework fx)
 		{
 			foreach (SystemPackage pkg in packages) {
-				if (pkg.IsCorePackage) {
-					if (pkg.TargetFramework == fx.BaseCoreFramework || pkg.TargetFramework == fx.Id)
+				if (pkg.TargetFramework == fx.Id) {
+					yield return pkg;
+				}
+				else if (pkg.IsBaseCorePackage) {
+					if (pkg.TargetFramework == fx.BaseCoreFramework)
 						yield return pkg;
+				}
+				else if (pkg.IsFrameworkPackage) {
+					if (fx.IsCompatibleWithFramework (pkg.TargetFramework)) {
+						TargetFramework packageFx = Runtime.SystemAssemblyService.GetTargetFramework (pkg.TargetFramework);
+						if (packageFx.BaseCoreFramework == fx.BaseCoreFramework)
+							yield return pkg;
+					}
 				}
 				else if (fx.IsCompatibleWithFramework (pkg.TargetFramework))
 					yield return pkg;
@@ -688,13 +698,15 @@ namespace MonoDevelop.Core.Assemblies
 				// Read the assembly versions
 				foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
 					if (IsInstalled (fx)) {
-						string dir = GetFrameworkFolder (fx);
+						IEnumerable<string> dirs = GetFrameworkFolders (fx);
 						foreach (AssemblyInfo assembly in fx.Assemblies) {
-							string file = Path.Combine (dir, assembly.Name) + ".dll";
-							if (File.Exists (file)) {
-								if ((assembly.Version == null || SystemAssemblyService.UpdateExpandedFrameworksFile) && IsRunning) {
-									System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
-									assembly.Update (aname);
+							foreach (string dir in dirs) {
+								string file = Path.Combine (dir, assembly.Name) + ".dll";
+								if (File.Exists (file)) {
+									if ((assembly.Version == null || SystemAssemblyService.UpdateExpandedFrameworksFile) && IsRunning) {
+										System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
+										assembly.Update (aname);
+									}
 								}
 							}
 						}
@@ -721,38 +733,50 @@ namespace MonoDevelop.Core.Assemblies
 
 		void RegisterSystemAssemblies (TargetFramework fx)
 		{
-			SystemPackage package = new SystemPackage (this);
-			List<SystemAssembly> list = new List<SystemAssembly> ();
+			Dictionary<string,List<SystemAssembly>> assemblies = new Dictionary<string, List<SystemAssembly>> ();
+			Dictionary<string,SystemPackage> packs = new Dictionary<string, SystemPackage> ();
 			
-			string dir = GetFrameworkFolder (fx);
-			if (!Directory.Exists(dir))
-				return;
+			IEnumerable<string> dirs = GetFrameworkFolders (fx);
 
 			foreach (AssemblyInfo assembly in fx.Assemblies) {
-				string file = Path.Combine (dir, assembly.Name) + ".dll";
-				if (File.Exists (file)) {
-					if ((assembly.Version == null || SystemAssemblyService.UpdateExpandedFrameworksFile) && IsRunning) {
-						try {
-							System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
-							assembly.Update (aname);
-						} catch {
-							// If something goes wrong when getting the name, just ignore the assembly
+				foreach (string dir in dirs) {
+					string file = Path.Combine (dir, assembly.Name) + ".dll";
+					if (File.Exists (file)) {
+						if ((assembly.Version == null || SystemAssemblyService.UpdateExpandedFrameworksFile) && IsRunning) {
+							try {
+								System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
+								assembly.Update (aname);
+							} catch {
+								// If something goes wrong when getting the name, just ignore the assembly
+							}
 						}
+						string pkg = assembly.Package ?? string.Empty;
+						SystemPackage package;
+						if (!packs.TryGetValue (pkg, out package)) {
+							packs [pkg] = package = new SystemPackage (this);
+							assemblies [pkg] = new List<SystemAssembly> ();
+						}
+						List<SystemAssembly> list = assemblies [pkg];
+						list.Add (AddAssembly (file, assembly, package));
+						break;
 					}
-					list.Add (AddAssembly (file, assembly, package));
 				}
 			}
 			
-			SystemPackageInfo info = GetFrameworkPackageInfo (fx);
-			if (!info.IsCorePackage)
-				corePackages.Add (info.Name);
-			package.Initialize (info, list.ToArray (), false);
-			packages.Add (package);
+			foreach (string pkg in packs.Keys) {
+				SystemPackage package = packs [pkg];
+				List<SystemAssembly> list = assemblies [pkg];
+				SystemPackageInfo info = GetFrameworkPackageInfo (fx, pkg);
+				if (!info.IsCorePackage)
+					corePackages.Add (info.Name);
+				package.Initialize (info, list.ToArray (), false);
+				packages.Add (package);
+			}
 		}
 		
-		protected virtual SystemPackageInfo GetFrameworkPackageInfo (TargetFramework fx)
+		protected virtual SystemPackageInfo GetFrameworkPackageInfo (TargetFramework fx, string packageName)
 		{
-			return GetBackend (fx).GetFrameworkPackageInfo ();
+			return GetBackend (fx).GetFrameworkPackageInfo (packageName);
 		}
 
 

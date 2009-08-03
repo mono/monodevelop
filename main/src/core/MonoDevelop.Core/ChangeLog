@@ -1,3 +1,18 @@
+2009-08-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks/framework_NET_3_0.xml:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/SystemPackage.cs:
+	* MonoDevelop.Core.Assemblies/TargetFramework.cs:
+	* MonoDevelop.Core.Assemblies/MonoFrameworkBackend.cs:
+	* MonoDevelop.Core.Assemblies/MsNetFrameworkBackend.cs:
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs:
+	* MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs:
+	  Changed a bit the object model to support the new assembly
+	  organization of the 3.0 framework. WFC is not part of mono,
+	  while there are other 3.0 assemblies provided by the olive
+	  package.
+
 2009-08-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:

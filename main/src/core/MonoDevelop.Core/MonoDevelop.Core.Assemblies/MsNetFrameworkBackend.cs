@@ -33,20 +33,21 @@ namespace MonoDevelop.Core.Assemblies
 {
 	public class MsNetFrameworkBackend: TargetFrameworkBackend<MsNetTargetRuntime>
 	{
-		public override string GetFrameworkFolder ()
+		public override IEnumerable<string> GetFrameworkFolders ()
 		{
 			switch (framework.Id) {
 				case "1.1":
-				case "2.0": return targetRuntime.RootDirectory.Combine (GetClrVersion (framework.ClrVersion));
+				case "2.0":
+					yield return targetRuntime.RootDirectory.Combine (GetClrVersion (framework.ClrVersion));
+					break;
 			}
 
 			RegistryKey fxFolderKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\v" + framework.Id, false);
 			if (fxFolderKey != null) {
 				string folder = fxFolderKey.GetValue ("All Assemblies In") as string;
 				fxFolderKey.Close ();
-				return folder;
+				yield return folder;
 			}
-			return "";
 		}
 		
 		public override Dictionary<string, string> GetToolsEnvironmentVariables ()

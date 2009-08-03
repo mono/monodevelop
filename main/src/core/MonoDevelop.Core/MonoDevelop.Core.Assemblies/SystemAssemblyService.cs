@@ -232,6 +232,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (fx.RelationsBuilt)
 				return;
 			
+			fx.BaseCoreFramework = fx.Id;
 			fx.ExtendedFrameworks.Add (fx.Id);
 			fx.CompatibleFrameworks.Add (fx.Id);
 			
@@ -248,7 +249,6 @@ namespace MonoDevelop.Core.Assemblies
 					fx.Assemblies = allAsm.ToArray ();
 				}
 				fx.CompatibleFrameworks.AddRange (compatFx.CompatibleFrameworks);
-				fx.BaseCoreFramework = fx.Id;
 			}
 			else if (!string.IsNullOrEmpty (fx.ExtendsFramework)) {
 				TargetFramework compatFx = GetTargetFramework (fx.ExtendsFramework);

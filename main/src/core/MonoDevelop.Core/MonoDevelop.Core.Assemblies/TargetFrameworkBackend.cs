@@ -45,16 +45,18 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public virtual bool IsInstalled {
 			get {
-				string dir = runtime.GetFrameworkFolder (framework);
-				if (!string.IsNullOrEmpty (dir) && Directory.Exists (dir)) {
-					string firstAsm = Path.Combine (dir, framework.Assemblies [0].Name) + ".dll";
-					return File.Exists (firstAsm);
+				foreach (string dir in runtime.GetFrameworkFolders (framework)) {
+					if (Directory.Exists (dir)) {
+						string firstAsm = Path.Combine (dir, framework.Assemblies [0].Name) + ".dll";
+						if (File.Exists (firstAsm))
+							return true;
+					}
 				}
 				return false;
 			}
 		}
 		
-		public abstract string GetFrameworkFolder ();
+		public abstract IEnumerable<string> GetFrameworkFolders ();
 		
 		public virtual Dictionary<string, string> GetToolsEnvironmentVariables ()
 		{
@@ -90,16 +92,17 @@ namespace MonoDevelop.Core.Assemblies
 			yield break;
 		}
 		
-		public virtual SystemPackageInfo GetFrameworkPackageInfo ()
+		public virtual SystemPackageInfo GetFrameworkPackageInfo (string packageName)
 		{
 			SystemPackageInfo info = new SystemPackageInfo ();
-			info.Name = runtime.DisplayRuntimeName;
-			info.Description = framework.Name;
+			info.Name = string.IsNullOrEmpty (packageName) ? runtime.DisplayRuntimeName : packageName;
+			info.Description = string.IsNullOrEmpty (packageName) ? framework.Name : packageName;
 			info.IsFrameworkPackage = true;
 			info.IsCorePackage = true;
 			info.IsGacPackage = true;
 			info.Version = framework.Id;
 			info.TargetFramework = framework.Id;
+			info.IsBaseCorePackage = framework.Id == framework.BaseCoreFramework;
 			return info;
 		}
 	}
@@ -127,7 +130,7 @@ namespace MonoDevelop.Core.Assemblies
 			return false;
 		}
 		
-		public override string GetFrameworkFolder ()
+		public override IEnumerable<string> GetFrameworkFolders ()
 		{
 			return null;
 		}

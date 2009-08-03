@@ -162,6 +162,9 @@ namespace MonoDevelop.Core.Assemblies
 		[ItemProperty ("publicKeyToken", DefaultValue="null")]
 		public string PublicKeyToken;
 		
+		[ItemProperty ("package")]
+		public string Package;
+		
 		public void UpdateFromFile (string file)
 		{
 			Update (SystemAssemblyService.GetAssemblyNameObj (file));

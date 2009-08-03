@@ -60,6 +60,7 @@ namespace MonoDevelop.Core.Assemblies
 			this.gacPackage = info.IsGacPackage;
 			IsFrameworkPackage = info.IsFrameworkPackage;
 			IsCorePackage = info.IsCorePackage;
+			IsBaseCorePackage = info.IsBaseCorePackage;
 
 			SystemAssembly last = null;
 			foreach (SystemAssembly asm in assemblies) {
@@ -102,6 +103,8 @@ namespace MonoDevelop.Core.Assemblies
 			get { return targetFramework ?? "1.1"; }
 		}
 		
+		internal string BaseTargetFramework { get; set; }
+		
 		// The package is part of the core mono SDK
 		public bool IsCorePackage {
 			get;
@@ -119,6 +122,9 @@ namespace MonoDevelop.Core.Assemblies
 			get;
 			internal set;
 		}
+		
+		// The package contains an mscorlib
+		internal bool IsBaseCorePackage { get; set; }
 		
 		public IEnumerable<SystemAssembly> Assemblies {	
 			get {
@@ -159,6 +165,9 @@ namespace MonoDevelop.Core.Assemblies
 		// The package is part of the core mono SDK
 		[ItemProperty (DefaultValue=false)]
 		public bool IsCorePackage { get; set; }
+		
+		// The package contains an mscorlib
+		internal bool IsBaseCorePackage { get; set; }
 		
 		// The package is part of the mono SDK (unlike IsCorePackage, it may be provided by a non-core package)
 		[ItemProperty (DefaultValue=false)]
