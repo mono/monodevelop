@@ -27,30 +27,50 @@
 //
 
 using System;
+using System.IO;
 using System.Collections.Generic;
+using System.Xml;
 using MonoDevelop.Projects.Dom;
 using Mono.Cecil;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
 	public class DomCecilCompilationUnit : CompilationUnit
 	{
 		AssemblyDefinition assemblyDefinition;
-		
+		Dictionary<string, string> xmlDocumentation = null;
 		public AssemblyDefinition AssemblyDefinition {
 			get {
 				return assemblyDefinition;
 			}
 		}
+//		
+//		public DomCecilCompilationUnit (AssemblyDefinition assemblyDefinition) : this (true, true, assemblyDefinition)
+//		{
+//		}
 		
-		public DomCecilCompilationUnit (AssemblyDefinition assemblyDefinition) : this (true, true, assemblyDefinition)
-		{
-		}
-		
-		public DomCecilCompilationUnit (bool keepDefinitions, bool loadInternals, AssemblyDefinition assemblyDefinition) : base (assemblyDefinition.Name.FullName)
+		public DomCecilCompilationUnit (bool keepDefinitions, string xmlFileName, bool loadInternals, AssemblyDefinition assemblyDefinition) : base (assemblyDefinition.Name.FullName)
 		{
 			if (keepDefinitions)
 				this.assemblyDefinition = assemblyDefinition;
+			if (xmlFileName != null && File.Exists (xmlFileName)) {
+				xmlDocumentation = new Dictionary<string, string> ();
+				try {
+					using (XmlReader reader = new XmlTextReader (xmlFileName)) {
+						while (reader.Read ()) {
+							if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "member") {
+								string memberName = reader.GetAttribute ("name");
+								string innerXml   = reader.ReadInnerXml ();
+								xmlDocumentation[memberName] = innerXml.Trim ();
+							}
+						}
+					}
+				} catch (Exception e) {
+					LoggingService.LogWarning ("Can't load xml documentation: " + e.Message);
+					xmlDocumentation = null;
+				}
+			}
 			foreach (ModuleDefinition moduleDefinition in assemblyDefinition.Modules) {
 				AddModuleDefinition (keepDefinitions, loadInternals, moduleDefinition);
 			}
@@ -76,12 +96,19 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return Load (fileName, true, true);
 		}
-		
 		public static DomCecilCompilationUnit Load (string fileName, bool keepDefinitions, bool loadInternals)
+		{
+			return Load (fileName, true, true, false);
+		}
+		
+		public static DomCecilCompilationUnit Load (string fileName, bool keepDefinitions, bool loadInternals, bool loadXmlDocumentation)
 		{
 			if (String.IsNullOrEmpty (fileName))
 				return null;
-			DomCecilCompilationUnit result = new DomCecilCompilationUnit (keepDefinitions, loadInternals, AssemblyFactory.GetAssembly (fileName));
+			string xmlFileName = null;
+			if (loadXmlDocumentation)
+				xmlFileName = System.IO.Path.ChangeExtension (fileName, ".xml");
+			DomCecilCompilationUnit result = new DomCecilCompilationUnit (keepDefinitions, xmlFileName, loadInternals, AssemblyFactory.GetAssembly (fileName));
 			result.fileName = fileName;
 			return result;
 		}
@@ -98,7 +125,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		void AddModuleDefinition (bool keepDefinitions, bool loadInternal, ModuleDefinition moduleDefinition)
 		{
-			InstantiatedParamResolver resolver = new InstantiatedParamResolver ();
+			InstantiatedParamResolver resolver = new InstantiatedParamResolver (xmlDocumentation);
 			foreach (TypeDefinition type in moduleDefinition.Types) {
 				// filter nested types, they're handled in DomCecilType.
 				if ((type.Attributes & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic ||
@@ -119,26 +146,37 @@ namespace MonoDevelop.Projects.Dom
 		
 		class InstantiatedParamResolver: CopyDomVisitor<object>
 		{
+			Dictionary<string, string> xmlDocumentation;
 			Dictionary<string, IType> argTypes;
 			
+			public InstantiatedParamResolver (Dictionary<string, string> xmlDocumentation)
+			{
+				this.xmlDocumentation = xmlDocumentation;
+			}
+			void AddDocumentation (IMember member)
+			{
+				if (xmlDocumentation == null || member == null)
+					return;
+				string doc;
+				if (xmlDocumentation.TryGetValue (member.HelpUrl, out doc))
+					member.Documentation = doc;
+			}
+				
 			public override IDomVisitable Visit (IType type, object data)
 			{
 				if (type.TypeParameters.Count > 0) {
 					var oldTypes = argTypes;
-					if (oldTypes != null)
-						argTypes = new Dictionary<string, IType> (oldTypes);
-					else
-						argTypes = new Dictionary<string, IType> ();
-					
+					argTypes = oldTypes != null ? new Dictionary<string, IType> (oldTypes) : new Dictionary<string, IType> ();
 					foreach (TypeParameter p in type.TypeParameters)
-						argTypes [p.Name] = type;
-					
-					IDomVisitable res = base.Visit (type, data);
+						argTypes[p.Name] = type;
 					argTypes = oldTypes;
-					return res;
-				} else
-					return base.Visit (type, data);
-				
+				}
+				IType result = (IType)base.Visit (type, data);
+				AddDocumentation (result);
+				foreach (IMember member in result.Members) {
+					AddDocumentation (member);
+				}
+				return result;
 			}
 			
 			public override IDomVisitable Visit (IReturnType type, object data)

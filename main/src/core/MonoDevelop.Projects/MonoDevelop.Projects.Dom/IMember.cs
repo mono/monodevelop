@@ -54,6 +54,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		IType DeclaringType {
 			get;
+			set;
 		}
 		
 		IEnumerable<IReturnType> ExplicitInterfaces {
@@ -66,6 +67,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		string Documentation {
 			get;
+			set;
 		}
 		
 		DomLocation Location {

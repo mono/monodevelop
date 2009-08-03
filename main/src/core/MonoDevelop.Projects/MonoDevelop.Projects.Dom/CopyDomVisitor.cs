@@ -82,22 +82,24 @@ namespace MonoDevelop.Projects.Dom
 			DomType result = CreateInstance (type, data);
 			Visit (type, result, data);
 			result.CompilationUnit = type.CompilationUnit;
-			result.Namespace     = type.Namespace;
-			result.ClassType     = type.ClassType;
+			result.Namespace = type.Namespace;
+			result.ClassType = type.ClassType;
 			result.SourceProjectDom = type.SourceProjectDom;
-			result.TypeModifier  = type.TypeModifier;
-			
+			result.TypeModifier = type.TypeModifier;
+
 			foreach (ITypeParameter param in type.TypeParameters)
-				result.AddTypeParameter ((TypeParameter) Visit (param, data));
-			
+				result.AddTypeParameter ((TypeParameter)Visit (param, data));
+
 			if (type.BaseType != null)
-				result.BaseType = (IReturnType) type.BaseType.AcceptVisitor (this, data);
-			
+				result.BaseType = (IReturnType)type.BaseType.AcceptVisitor (this, data);
+
 			foreach (IReturnType iface in type.ImplementedInterfaces)
-				result.AddInterfaceImplementation ((IReturnType) iface.AcceptVisitor (this, data));
-			
-			foreach (IMember member in type.Members)
-				result.Add ((IMember) member.AcceptVisitor (this, data));
+				result.AddInterfaceImplementation ((IReturnType)iface.AcceptVisitor (this, data));
+
+			foreach (IMember member in type.Members) {
+				result.Add ((IMember)member.AcceptVisitor (this, data));
+				member.DeclaringType = result;
+			}
 			
 			return result;
 		}

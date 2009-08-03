@@ -210,7 +210,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						}
 					}
 				} else {
-					ICompilationUnit ainfo = DomCecilCompilationUnit.Load (fileName, false, false);
+					DomCecilCompilationUnit ainfo = DomCecilCompilationUnit.Load (fileName, false, false, true);
 					
 					UpdateTypeInformation (ainfo.Types, fileName);
 					

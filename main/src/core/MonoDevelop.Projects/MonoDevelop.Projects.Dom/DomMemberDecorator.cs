@@ -73,6 +73,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return member.DeclaringType;
 			}
+			set {
+				member.DeclaringType = value;
+			}
 		}
 		
 		public virtual IEnumerable<IReturnType> ExplicitInterfaces {
@@ -91,6 +94,11 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return member.Documentation;
 			}
+
+			set {
+				member.Documentation  = value;
+			}
+			
 		}
 		
 		public virtual DomLocation Location {

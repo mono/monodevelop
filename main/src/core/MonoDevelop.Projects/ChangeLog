@@ -1,5 +1,17 @@
 2009-08-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/IMember.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
+	* MonoDevelop.Projects.Dom/DomMemberDecorator.cs:
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs:
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Load xml documentation for referenced assemblies (doc need
+	  to have the same full path with ".xml" extension instead of
+	  ".dll")
+
+2009-08-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: fixed
 	  bug in GetDocumentation method.
 

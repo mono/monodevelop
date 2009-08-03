@@ -112,8 +112,10 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				StringBuilder result = new StringBuilder ();
 				if (this.IsConstructor) {
-					result.Append ("C:");
-					result.Append (DeclaringType.FullName);
+					result.Append ("M:");
+					if (DeclaringType != null)
+						result.Append (DeclaringType.FullName);
+					result.Append (".#ctor");
 				} else {
 					result.Append ("M:");
 					result.Append (FullName);
