@@ -1,5 +1,12 @@
 2009-08-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NewOverrideCompletionData.cs:
+	* FormattingStrategy/CSharpIndentEngine.cs: Fixed "Bug 507668
+	  - Wrong smart-indentation behavior in monodevelop solution
+	  itself".
+
+2009-08-03  Mike Krüger  <mkrueger@novell.com>
+
 	* FormattingStrategy/CSharpIndentEngine.cs: fixed "Bug 527151
 	  – smart indent: indents "too much" after "new O () { ... }"
 	  object initialisation without trailing ','".

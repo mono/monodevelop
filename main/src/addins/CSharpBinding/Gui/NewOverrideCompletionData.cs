@@ -104,7 +104,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			string ch = editor.GetText (pos - 1, pos);
 			int nwpos = pos;
-			while (ch.Length > 0 && ch != "\n") {
+			while (ch.Length > 0 && ch != "\n" && ch != "\r") {
 				if (ch[0] != ' ' && ch[0] != '\t')
 					nwpos = pos;
 				pos--;

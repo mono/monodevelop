@@ -56,6 +56,8 @@ namespace CSharpBinding.FormattingStrategy {
 		int lastNonLwsp;
 		int wordStart;
 		
+		char lastChar;
+		
 		// previous char in the line
 		char pc;
 		
@@ -180,25 +182,25 @@ namespace CSharpBinding.FormattingStrategy {
 		public void Reset ()
 		{
 			stack.Reset ();
-			
+
 			linebuf.Length = 0;
-			
+
 			keyword = String.Empty;
 			curIndent = String.Empty;
-			
+
 			needsReindent = false;
 			popVerbatim = false;
 			canBeLabel = true;
 			isEscaped = false;
-			
+
 			firstNonLwsp = -1;
 			lastNonLwsp = -1;
 			wordStart = -1;
-			
+
 			prc = '\0';
 			pc = '\0';
 			rc = '\0';
-			
+			lastChar = '\0';
 			curLineNr = 1;
 			cursor = 0;
 		}
@@ -761,7 +763,7 @@ namespace CSharpBinding.FormattingStrategy {
 								/* not escaped... error!! but what can we do,
 				 * eh? allow folding across multiple lines I
 				 * guess... */
-break;
+				break;
 			case Inside.CharLiteral:
 				/* this is an error... what to do? guess we'll
 				 * just pretend it never happened */
@@ -828,7 +830,7 @@ break;
 
 				break;
 			}
-
+			
 			linebuf.Length = 0;
 			
 			beganInside = stack.PeekInside (0);
@@ -890,7 +892,7 @@ break;
 				}
 			}
 			
-//			Console.WriteLine ("Pushing '{0}'; wordStart = {1}; keyword = {2}", c, wordStart, keyword);
+			//Console.WriteLine ("Pushing '{0}'/#{3}; wordStart = {1}; keyword = {2}", c, wordStart, keyword, (int)c);
 			
 			switch (c) {
 			case '#':
@@ -935,8 +937,17 @@ break;
 			case '}':
 				PushCloseBrace (inside);
 				break;
-			case '\n':
+			case '\r':
 				PushNewLine (inside);
+				lastChar = c;
+				return;
+			case '\n':
+				if (lastChar == '\r') {
+					cursor++;
+				} else {
+					PushNewLine (inside);
+				}
+				lastChar = c;
 				return;
 			default:
 				break;
@@ -982,6 +993,7 @@ break;
 			linebuf.Append (c);
 			
 			cursor++;
+			lastChar = c;
 		}
 		
 		public void Debug ()
