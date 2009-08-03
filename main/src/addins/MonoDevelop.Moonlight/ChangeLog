@@ -1,3 +1,8 @@
+2009-08-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Moonlight/SilverlightFrameworkBackend.cs: Track
+	  api changes.
+
 2009-07-31  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Don't

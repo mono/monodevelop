@@ -41,18 +41,18 @@ namespace MonoDevelop.Moonlight
 				yield return path;
 		}
 		
-		public override string GetFrameworkFolder ()
+		public override IEnumerable<string> GetFrameworkFolders ()
 		{
 			string moonSDKPath;
 			if (targetRuntime.EnvironmentVariables.TryGetValue ("MOONLIGHT_2_SDK_PATH", out moonSDKPath))
-				return moonSDKPath;
-			else
-				return base.GetFrameworkFolder ();
+				yield return moonSDKPath;
+			else foreach (string f in base.GetFrameworkFolders ())
+				yield return f;
 		}
 		
-		public override SystemPackageInfo GetFrameworkPackageInfo ()
+		public override SystemPackageInfo GetFrameworkPackageInfo (string packageName)
 		{
-			SystemPackageInfo info = base.GetFrameworkPackageInfo ();
+			SystemPackageInfo info = base.GetFrameworkPackageInfo (packageName);
 			info.Name = "moonlight";
 			return info;
 		}
