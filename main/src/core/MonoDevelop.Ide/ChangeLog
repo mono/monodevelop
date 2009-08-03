@@ -1,5 +1,10 @@
 2009-08-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Rewritten.
+	  Patch by Viktoria Dudka.
+
+2009-08-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/Workbench.cs:
 	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs:
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:

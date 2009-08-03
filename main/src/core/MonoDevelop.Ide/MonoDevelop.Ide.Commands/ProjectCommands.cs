@@ -1,35 +1,50 @@
-//  ProjectCommands.cs
+// ProjectCommands.cs
 //
-//  This file was derived from a file from #Develop. 
+// Author:
+//   Mike Krüger (mkrueger@novell.com)
+//   Lluis Sanchez Gual (lluis@novell.com)
+//   Michael Hutchinson (mhutchinson@novell.com)
+//   Ankit Jain (jankit@novell.com)
+//   Marek Sieradzki  <marek.sieradzki@gmail.com>
+//   Viktoria Dudka (viktoriad@remobjects.com)
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
-// 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Copyright (c) 2009
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+//
+
 
 using System;
-using System.IO;
 using System.Threading;
-using System.Diagnostics;
+using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.ProgressMonitoring;
-using MonoDevelop.Projects;
-using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui;
+using Mono.Addins;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core.Gui;
+using System.IO;
+using Gtk;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Execution;
 using CustomCommand = MonoDevelop.Projects.CustomCommand;
 
@@ -38,8 +53,8 @@ namespace MonoDevelop.Ide.Commands
 	public enum ProjectCommands
 	{
 		AddNewProject,
-		AddNewSolution,
 		AddNewWorkspace,
+		AddNewSolution,
 		AddSolutionFolder,
 		AddProject,
 		AddItem,
@@ -50,288 +65,305 @@ namespace MonoDevelop.Ide.Commands
 		AddFiles,
 		NewFolder,
 		IncludeToProject,
-		Build,
 		BuildSolution,
-		Rebuild,
+		Build,
 		RebuildSolution,
+		Rebuild,
 		SetAsStartupProject,
-		GenerateMakefiles,
-		RunEntry,
 		Run,
 		RunWithList,
-		IncludeInBuild,
-		IncludeInDeploy,
-		Deploy,
-		ConfigurationSelector,
-		Stop,
+		RunEntry,
 		Clean,
 		CleanSolution,
 		LocalCopyReference,
-		DeployTargetList,
-		ConfigureDeployTargets,
+		Stop,
+		ConfigurationSelector,
 		CustomCommandList,
 		Reload,
 		ExportProject,
 		SpecificAssemblyVersion
 	}
-	
-	internal class RunHandler: CommandHandler
+
+	internal class SolutionItemOptionsHandler : CommandHandler
 	{
-		Document doc;
-		
-		protected override void Run ()
-		{
-			Run (Runtime.ProcessService.DefaultExecutionHandler);
-		}
-		
 		protected override void Update (CommandInfo info)
 		{
-			info.Text = GettextCatalog.GetString ("_Run");
-			if (IdeApp.Workspace.IsOpen) {
-				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
-					info.Text = GettextCatalog.GetString ("_Run again");
-			}
-			info.Enabled = CanRun (Runtime.ProcessService.DefaultExecutionHandler);
+			if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget == null)
+				info.Enabled = false;
 		}
-		
-		protected void Run (IExecutionHandler handler)
+
+		protected override void Run ()
 		{
-			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
-				StopHandler.StopBuildOperations ();
-				IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
-			} 
+			IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+		}
+	}
+
+	internal class EditReferencesHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (!(IdeApp.ProjectOperations.CurrentSelectedProject is DotNetProject)) {
+				info.Enabled = false;
+				info.Bypass = true;
+			}
+			else
+				info.Bypass = false;
+		}
+
+		protected override void Run ()
+		{
+			//Edit references
+			DotNetProject p = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			if (IdeApp.ProjectOperations.AddReferenceToProject (p))
+                IdeApp.ProjectOperations.Save (p);
+
+		}
+	}
+
+	internal class BuildSolutionHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = ((IdeApp.Workspace.IsOpen) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
+		}
+
+		protected override void Run ()
+		{
+			//Build solution
+			IdeApp.ProjectOperations.Build (IdeApp.Workspace);
+		}
+	}
+
+	internal class BuildHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
 			if (IdeApp.Workspace.IsOpen) {
-				if (IdeApp.Preferences.BuildBeforeExecuting) {
-					IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
-					op.Completed += delegate { ExecuteCombine (op, handler); };
-				} else
-					IdeApp.ProjectOperations.Execute (IdeApp.Workspace, handler);
-			} else {
-				doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null) {
-					if (IdeApp.Preferences.BuildBeforeExecuting) {
-						IAsyncOperation op = doc.Build ();
-						op.Completed += delegate { ExecuteFile (op, doc, handler); };
-					} else {
-						doc.Run (handler);
-					}
+				IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+				info.Enabled = ((buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
+				if (buildTarget != null) {
+					info.Text = GettextCatalog.GetString ("B_uild {0}", buildTarget.Name);
+					if (buildTarget is SolutionFolder)
+						info.Description = GettextCatalog.GetString ("Build solution {0}", buildTarget.Name);
+					else if (buildTarget is Project)
+						info.Description = GettextCatalog.GetString ("Build project {0}", buildTarget.Name);
+					else
+						info.Description = GettextCatalog.GetString ("Build {0}", buildTarget.Name);
+				}
+			}
+			else {
+				info.Enabled = ((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.IsBuildTarget) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
+				if (IdeApp.Workbench.ActiveDocument != null) {
+					info.Text = GettextCatalog.GetString ("B_uild {0}", Path.GetFileName (IdeApp.Workbench.ActiveDocument.Name));
+                    info.Description = GettextCatalog.GetString ("Build {0}", Path.GetFileName (IdeApp.Workbench.ActiveDocument.Name));
 				}
 			}
 		}
-		
-		protected bool CanRun (IExecutionHandler handler)
+
+		protected override void Run ()
 		{
-			if (IdeApp.Workspace.IsOpen)
-				return !(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace) && IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace, handler);
-			else
-				return IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.CanRun (handler);
-		}
-		
-		void ExecuteCombine (IAsyncOperation op, IExecutionHandler handler)
-		{
-			if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
-				return;
-			if (op.Success)
-				IdeApp.ProjectOperations.Execute (IdeApp.Workspace, handler);
-		}
-		
-		void ExecuteFile (IAsyncOperation op, Document doc, IExecutionHandler handler)
-		{
-			if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
-				return;
-			if (op.Success)
-				doc.Run (handler);
+			if (IdeApp.Workspace.IsOpen) {
+                IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+			}
+			else {
+				IdeApp.Workbench.ActiveDocument.Save ();
+				IdeApp.Workbench.ActiveDocument.Build ();
+			}
 		}
 	}
-	
-	internal class RunWithHandler: RunHandler
+
+	internal class RebuildSolutionHandler : CommandHandler
 	{
-		protected override void Run (object dataItem)
+		protected override void Update (CommandInfo info)
 		{
-			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (dataItem);
-			if (h != null)
-				Run (h);
+			info.Enabled = ((IdeApp.Workspace.IsOpen) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
 		}
 
+		protected override void Run ()
+		{
+			//Build solution
+			IdeApp.ProjectOperations.Rebuild (IdeApp.Workspace);
+		}
+	}
+
+	internal class RebuildHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workspace.IsOpen) {
+				IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+				info.Enabled = ((buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
+				if (buildTarget != null) {
+					info.Text = GettextCatalog.GetString ("R_ebuild {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
+					info.Description = GettextCatalog.GetString ("Rebuild {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
+				}
+			}
+			else {
+				info.Enabled = ((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.IsBuildTarget) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
+				if (IdeApp.Workbench.ActiveDocument != null) {
+					info.Text = GettextCatalog.GetString ("R_ebuild {0}", IdeApp.Workbench.ActiveDocument.FileName);
+					info.Description = GettextCatalog.GetString ("Rebuild {0}", IdeApp.Workbench.ActiveDocument.FileName);
+				}
+			}
+		}
+
+		protected override void Run ()
+		{
+			if (IdeApp.Workspace.IsOpen) {
+				IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+			}
+			else {
+				IdeApp.Workbench.ActiveDocument.Save ();
+				IdeApp.Workbench.ActiveDocument.Rebuild ();
+			}
+		}
+	}
+
+	internal class RunHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if ((IdeApp.Workspace.IsOpen) && (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted))
+				info.Text = GettextCatalog.GetString ("_Run again");
+			else
+				info.Text = GettextCatalog.GetString ("_Run");
+
+			info.Enabled = CanRun (Runtime.ProcessService.DefaultExecutionHandler);
+		}
+		
+		public static bool CanRun (IExecutionHandler executionHandler)
+		{
+            if (IdeApp.Workspace.IsOpen)
+                return (IdeApp.ProjectOperations.CanExecute (IdeApp.Workspace, executionHandler)) && !(IdeApp.ProjectOperations.CurrentSelectedItem is Workspace);
+            else
+                return (IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.CanRun (executionHandler));
+		}
+
+        public static void RunMethod (IExecutionHandler executionHandler)
+        {
+            if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+                StopHandler.StopBuildOperations ();
+                IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
+            }
+
+            if (!IdeApp.Workspace.IsOpen) {
+                if (!IdeApp.Preferences.BuildBeforeExecuting)
+                    IdeApp.Workbench.ActiveDocument.Run (executionHandler);
+                else {
+                    IAsyncOperation asyncOperation = IdeApp.Workbench.ActiveDocument.Build ();
+                    asyncOperation.Completed += delegate {
+                        if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
+                            IdeApp.Workbench.ActiveDocument.Run (executionHandler);
+                    };
+                }
+            }
+            else {
+                if (!IdeApp.Preferences.BuildBeforeExecuting)
+                    IdeApp.ProjectOperations.Execute (IdeApp.Workspace, executionHandler);
+                else {
+                    IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (IdeApp.Workspace);
+                    asyncOperation.Completed += delegate {
+                        if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
+                            IdeApp.ProjectOperations.Execute (IdeApp.Workspace, executionHandler);
+                    };
+                }
+
+            }
+        }
+
+		protected override void Run ()
+		{
+            RunMethod (Runtime.ProcessService.DefaultExecutionHandler);
+		}
+
+	}
+
+	internal class RunWithHandler : CommandHandler
+	{
 		protected override void Update (CommandArrayInfo info)
 		{
 			ExecutionModeCommandService.GenerateExecutionModeCommands (
 			    IdeApp.ProjectOperations.CurrentSelectedProject,
-			    CanRun,
+			    RunHandler.CanRun,
 			    info);
 		}
 
+		protected override void Run (object dataItem)
+		{
+			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (dataItem);
+			if (h != null)
+				RunHandler.RunMethod (h);
+		}
 	}
-	
-	internal class RunEntryHandler: CommandHandler
+
+	internal class RunEntryHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			info.Enabled = ((buildTarget != null) && (!(buildTarget is Workspace)) && IdeApp.ProjectOperations.CanExecute (buildTarget) && IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted);
+		}
+
 		protected override void Run ()
 		{
-			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			if (IdeApp.Preferences.BuildBeforeExecuting) {
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
-				op.Completed += delegate {
-					if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
-						return;
-					if (op.Success)
-						IdeApp.ProjectOperations.Execute (entry);
+			if (!IdeApp.Preferences.BuildBeforeExecuting)
+				IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+			else {
+				IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+				asyncOperation.Completed += delegate
+				{
+					if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
+                        IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
 				};
-			} else
-				IdeApp.ProjectOperations.Execute (entry);
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			info.Enabled = target != null &&
-					!(target is Workspace) && IdeApp.ProjectOperations.CanExecute (target) &&
-					IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
-		}
-	}
-	
-	internal class BuildHandler: CommandHandler
-	{
-		protected override void Run ()
-		{
-			if (IdeApp.Workspace.IsOpen) {
-				if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null)
-					IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
-			}
-			else if (IdeApp.Workbench.ActiveDocument != null) {
-				IdeApp.Workbench.ActiveDocument.Save ();
-				IdeApp.Workbench.ActiveDocument.Build ();
-			}
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			if (IdeApp.Workspace.IsOpen) {
-				IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-				if (entry != null) {
-					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-					info.Text = GettextCatalog.GetString ("B_uild {0}", entry.Name);
-					if (entry is SolutionFolder)
-						info.Description = GettextCatalog.GetString ("Build solution {0}", entry.Name);
-					else if (entry is Project)
-						info.Description = GettextCatalog.GetString ("Build project {0}", entry.Name);
-					else
-						info.Description = GettextCatalog.GetString ("Build {0}", entry.Name);;
-				} else {
-					info.Enabled = false;
-				}
-			} else {
-				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget) {
-					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.Name);
-					info.Text = GettextCatalog.GetString ("B_uild {0}", file);
-					info.Description = GettextCatalog.GetString ("Build {0}", file);
-				} else {
-					info.Enabled = false;
-				}
 			}
 		}
 	}
-	
-	
-	internal class RebuildHandler: CommandHandler
+
+	internal class CleanHandler : CommandHandler
 	{
-		protected override void Run ()
+		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.Workspace.IsOpen) {
-				if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null)
-					IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
-			}
-			else if (IdeApp.Workbench.ActiveDocument != null) {
-				IdeApp.Workbench.ActiveDocument.Save ();
-				IdeApp.Workbench.ActiveDocument.Build ();
+			if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget == null)
+				info.Enabled = false;
+			else {
+				info.Text = GettextCatalog.GetString ("C_lean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
+				info.Description = GettextCatalog.GetString ("Clean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
 			}
 		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			if (IdeApp.Workspace.IsOpen) {
-				IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-				if (entry != null) {
-					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-					info.Text = GettextCatalog.GetString ("R_ebuild {0}", entry.Name);
-					info.Description = GettextCatalog.GetString ("Rebuild {0}", entry.Name);
-				} else {
-					info.Enabled = false;
-				}
-			} else {
-				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget) {
-					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.Name);
-					info.Text = GettextCatalog.GetString ("R_ebuild {0}", file);
-					info.Description = GettextCatalog.GetString ("Rebuild {0}", file);
-				} else {
-					info.Enabled = false;
-				}
-			}
-		}
-	}
-	
-	internal class BuildSolutionHandler: CommandHandler
-	{
-		protected override void Run ()
-		{
-			IdeApp.ProjectOperations.Build (IdeApp.Workspace);
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted &&
-							(IdeApp.Workspace.IsOpen);
-		}
-	}
-	
-	internal class RebuildSolutionHandler: CommandHandler
-	{
-		protected override void Run ()
-		{
-			IdeApp.ProjectOperations.Rebuild (IdeApp.Workspace);
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted &&
-							(IdeApp.Workspace.IsOpen);
-		}
-	}
-	
-	internal class CleanSolutionHandler: CommandHandler
-	{
-		protected override void Run ()
-		{
-			IdeApp.ProjectOperations.Clean (IdeApp.Workspace);
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = IdeApp.Workspace.IsOpen;
-		}
-	}
-	
-	internal class CleanHandler: CommandHandler
-	{
+
 		protected override void Run ()
 		{
 			IdeApp.ProjectOperations.Clean (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
 		}
-		
+	}
+
+	internal class CleanSolutionHandler : CommandHandler
+	{
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null) {
-				info.Text = GettextCatalog.GetString ("C_lean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
-				info.Description = GettextCatalog.GetString ("Clean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
-			} else {
+			if (!IdeApp.Workspace.IsOpen)
 				info.Enabled = false;
-			}
+		}
+
+		protected override void Run ()
+		{
+			IdeApp.ProjectOperations.Clean (IdeApp.Workspace);
 		}
 	}
-	
-	public class StopHandler: CommandHandler
+
+	public class StopHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			if ((IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) && (IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted))
+				info.Enabled = false;
+		}
+
+		protected override void Run ()
+		{
+			StopBuildOperations ();
+		}
+		
 		public static void StopBuildOperations ()
 		{
 			if (!IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted)
@@ -339,53 +371,10 @@ namespace MonoDevelop.Ide.Commands
 			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
 				IdeApp.ProjectOperations.CurrentRunOperation.Cancel ();
 		}
-		
-		protected override void Run ()
-		{
-			StopBuildOperations ();
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = !IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted ||
-							!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
-		}
 	}
-	
-	internal class SolutionItemOptionsHandler: CommandHandler
+
+	internal class CustomCommandListHandler : CommandHandler
 	{
-		protected override void Run ()
-		{
-			IBuildTarget ce = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			if (ce != null)
-				IdeApp.ProjectOperations.ShowOptions (ce);
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null;
-		}
-	}
-	
-	internal class CustomCommandListHandler: CommandHandler
-	{
-		protected override void Run (object c)
-		{
-			IWorkspaceObject ce = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			CustomCommand cmd = (CustomCommand) c;
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
-			
-			Thread t = new Thread (
-				delegate () {
-					using (monitor) {
-						cmd.Execute (monitor, ce, IdeApp.Workspace.ActiveConfiguration);
-					}
-				}
-			);
-			t.IsBackground = true;
-			t.Start ();
-		}
-		
 		protected override void Update (CommandArrayInfo info)
 		{
 			IConfigurationTarget ce = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as IConfigurationTarget;
@@ -398,35 +387,36 @@ namespace MonoDevelop.Ide.Commands
 				}
 			}
 		}
-	}
-	
-	internal class ExportProjectHandler: CommandHandler
-	{
-		protected override void Run ()
+
+		protected override void Run (object dataItem)
 		{
-			IWorkspaceObject ce = IdeApp.ProjectOperations.CurrentSelectedItem as IWorkspaceObject;
-			IdeApp.ProjectOperations.Export (ce, null);
+			IWorkspaceObject ce = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			CustomCommand cmd = (CustomCommand) dataItem;
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			
+			Thread t = new Thread (
+				delegate () {
+					using (monitor) {
+						cmd.Execute (monitor, ce, IdeApp.Workspace.ActiveConfiguration);
+					}
+				}
+			);
+			t.IsBackground = true;
+			t.Start ();
 		}
-		
+	}
+
+	internal class ExportProjectHandler : CommandHandler
+	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedItem is WorkspaceItem || IdeApp.ProjectOperations.CurrentSelectedItem is SolutionEntityItem;
+			if (!(IdeApp.ProjectOperations.CurrentSelectedItem is WorkspaceItem) && !(IdeApp.ProjectOperations.CurrentSelectedItem is SolutionEntityItem))
+				info.Enabled = false;
 		}
 
-	}
-	
-	internal class EditReferencesHandler: CommandHandler
-	{
 		protected override void Run ()
 		{
-			DotNetProject p = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
-			if (p != null && IdeApp.ProjectOperations.AddReferenceToProject (p))
-				IdeApp.ProjectOperations.Save (p);
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Bypass = !(info.Enabled = IdeApp.ProjectOperations.CurrentSelectedProject is DotNetProject);
+			IdeApp.ProjectOperations.Export (((IWorkspaceObject)IdeApp.ProjectOperations.CurrentSelectedItem), null);
 		}
 	}
 }
