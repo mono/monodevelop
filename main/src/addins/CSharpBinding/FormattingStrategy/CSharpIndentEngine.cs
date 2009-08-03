@@ -685,29 +685,38 @@ namespace CSharpBinding.FormattingStrategy {
 		{
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
-			
+
 			if (inside != Inside.Block && inside != Inside.Case) {
+				if (stack.PeekInside (0) == Inside.FoldedStatement) {
+					while (stack.PeekInside (0) == Inside.FoldedStatement) {
+						stack.Pop ();
+					}
+					curIndent = stack.PeekIndent (0);
+					keyword = stack.PeekKeyword (0);
+					inside = stack.PeekInside (0);
+				}
 				//Console.WriteLine ("can't pop a '{' if we ain't got one?");
-				return;
+				if (inside != Inside.Block && inside != Inside.Case)
+					return;
 			}
-			
+
 			if (inside == Inside.Case) {
 				curIndent = stack.PeekIndent (1);
 				keyword = stack.PeekKeyword (0);
 				inside = stack.PeekInside (1);
 				stack.Pop ();
 			}
-			
+
 			// pop this block off the stack
 			keyword = stack.PeekKeyword (0);
 			if (keyword != "case" && keyword != "default")
 				keyword = String.Empty;
-			
+
 			stack.Pop ();
-			
+
 			while (stack.PeekInside (0) == Inside.FoldedStatement)
 				stack.Pop ();
-			
+
 			if (firstNonLwsp == -1) {
 				needsReindent = true;
 				TrimIndent ();
@@ -716,7 +725,7 @@ namespace CSharpBinding.FormattingStrategy {
 		
 		void PushNewLine (Inside inside)
 		{
-		 top:
+			top:
 			switch (inside) {
 			case Inside.PreProcessor:
 				// pop the preprocesor state unless the eoln is escaped
@@ -733,7 +742,7 @@ namespace CSharpBinding.FormattingStrategy {
 				// pop the line comment
 				keyword = stack.PeekKeyword (0);
 				stack.Pop ();
-				
+
 				inside = stack.PeekInside (0);
 				goto top;
 			case Inside.VerbatimString:
@@ -748,11 +757,11 @@ namespace CSharpBinding.FormattingStrategy {
 					 * handle this? */
 					break;
 				}
-				
-				/* not escaped... error!! but what can we do,
+
+								/* not escaped... error!! but what can we do,
 				 * eh? allow folding across multiple lines I
 				 * guess... */
-				break;
+break;
 			case Inside.CharLiteral:
 				/* this is an error... what to do? guess we'll
 				 * just pretend it never happened */
@@ -771,10 +780,10 @@ namespace CSharpBinding.FormattingStrategy {
 					break;
 				case ':':
 					canBeLabel = canBeLabel && inside != Inside.FoldedStatement;
-					
-					if ((keyword == "default" || keyword == "case") || canBeLabel) 
+
+					if ((keyword == "default" || keyword == "case") || canBeLabel)
 						break;
-					
+
 					PushFoldedStatement ();
 					break;
 				case '[':
@@ -803,23 +812,23 @@ namespace CSharpBinding.FormattingStrategy {
 						// is this right? I don't remember why I did this...
 						break;
 					}
-					
+
 					if (inside == Inside.Block) {
 						if (stack.PeekKeyword (0) == "struct" ||
-						    stack.PeekKeyword (0) == "enum" ||
-						    stack.PeekKeyword (0) == "=") {
+							stack.PeekKeyword (0) == "enum" ||
+								stack.PeekKeyword (0) == "=") {
 							// just variable/value declarations
 							break;
 						}
 					}
-					
+
 					PushFoldedStatement ();
 					break;
 				}
-				
+
 				break;
 			}
-			
+
 			linebuf.Length = 0;
 			
 			beganInside = stack.PeekInside (0);
@@ -881,7 +890,7 @@ namespace CSharpBinding.FormattingStrategy {
 				}
 			}
 			
-			//Console.WriteLine ("Pushing '{0}'; wordStart = {1}; keyword = {2}", c, wordStart, keyword);
+//			Console.WriteLine ("Pushing '{0}'; wordStart = {1}; keyword = {2}", c, wordStart, keyword);
 			
 			switch (c) {
 			case '#':
