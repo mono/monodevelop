@@ -67,7 +67,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			if (provider == null)
 				return false;
 			string expressionText = null;
-			if (options.ResolveResult != null)
+			if (options.ResolveResult != null && options.ResolveResult.ResolvedExpression != null)
 				expressionText = options.ResolveResult.ResolvedExpression.Expression;
 
 			if (string.IsNullOrEmpty (expressionText)) {
