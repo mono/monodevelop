@@ -191,8 +191,9 @@ namespace MonoDevelop.Core.Assemblies
 			IEnumerable<string> paths = GetUnfilteredPkgConfigDirs (pkgConfigPaths, pkgConfigLibdirs, new string [] { prefix });
 			paths = NormaliseAndFilterPaths (paths, Environment.CurrentDirectory);
 			
-			//NOTE: we use PKG_CONFIG_LIBDIR so that pkgconfig has the exact set of paths MD is using
-			envVars ["PKG_CONFIG_PATH"] = envVars ["PKG_CONFIG_LIBDIR"] = String.Join (Path.PathSeparator.ToString (), System.Linq.Enumerable.ToArray (paths));
+			//NOTE: we set PKG_CONFIG_LIBDIR so that pkgconfig has the exact set of paths MD is using
+			envVars ["PKG_CONFIG_PATH"] = String.Join (Path.PathSeparator.ToString (), System.Linq.Enumerable.ToArray (paths));
+			envVars ["PKG_CONFIG_LIBDIR"] = "";
 		}
 		
 		#region Path utilities

@@ -151,7 +151,7 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		public string PkgConfigPath {
-			get { return environmentVariables ["PKG_CONFIG_LIBDIR"]; }
+			get { return environmentVariables ["PKG_CONFIG_PATH"]; }
 		}
 		
 		public IEnumerable<string> GetAllPkgConfigFiles ()
@@ -372,6 +372,7 @@ namespace MonoDevelop.Core.Assemblies
 			psi.RedirectStandardOutput = true;
 			psi.UseShellExecute = false;
 			psi.EnvironmentVariables["PKG_CONFIG_PATH"] = PkgConfigPath;
+			psi.EnvironmentVariables["PKG_CONFIG_LIBDIR"] = "";
 			
 			psi.Arguments = arguments;
 			Process p = new Process ();
