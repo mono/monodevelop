@@ -346,27 +346,7 @@ namespace MonoDevelop.SourceEditor
 				if (inStringOrComment && (ch == '"' || (inChar && ch == '\'')) && charBefore == '\\')
 					skipChar = null;
 			}
-			//Console.WriteLine (Caret.Offset + "/" + insOff);
-			if (skipChar != null) {
-				Caret.Offset++;
-				skipChars.Remove (skipChar);
-			} else {
-				if (extension != null) {
-					if (ExtensionKeyPress (key, ch, state))
-						result = base.OnIMProcessedKeyPressEvent (key, ch, state);
-					if (returnBetweenBraces) {
-						Caret.Offset = initialOffset;
-						ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
-					}
-				} else {
-					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
-					if (returnBetweenBraces) {
-						Caret.Offset = initialOffset;
-						base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
-					}
-				}
-			}
-
+			
 			if (skipChar == null && Options.AutoInsertMatchingBracket && braceIndex >= 0) {
 				if (!inStringOrComment) {
 					char closingBrace = closingBrackets[braceIndex];
@@ -395,6 +375,29 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
+			
+			//Console.WriteLine (Caret.Offset + "/" + insOff);
+			if (skipChar != null) {
+				Caret.Offset++;
+				skipChars.Remove (skipChar);
+			} else {
+				if (extension != null) {
+					if (ExtensionKeyPress (key, ch, state))
+						result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+					if (returnBetweenBraces) {
+						Caret.Offset = initialOffset;
+						ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
+					}
+				} else {
+					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+					if (returnBetweenBraces) {
+						Caret.Offset = initialOffset;
+						base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
+					}
+				}
+			}
+
+			
 			
 			if (templateInserted) {
 				Document.EndAtomicUndo ();

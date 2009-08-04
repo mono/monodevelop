@@ -1,3 +1,8 @@
+2009-08-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: bracket
+	  auto insertion no longer closes parameter help window.
+
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Flush.
