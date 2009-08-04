@@ -1,6 +1,7 @@
 using System;
 using System.Xml;
 using System.CodeDom;
+using System.Runtime.InteropServices;
 
 namespace Stetic.Wrapper {
 
@@ -12,6 +13,10 @@ namespace Stetic.Wrapper {
 			// Make sure all children are created, so the mouse events can be
 			// bound and the widget can be selected.
 			c.EnsureStyle ();
+			try {
+				FixSensitivity (c);
+			} catch {
+			}
 			return c;
 		}
 		
@@ -103,5 +108,15 @@ namespace Stetic.Wrapper {
 			if (reader.Format == FileFormat.Glade && items.Length > 0)
 				IsTextCombo = true;
 		}
+		
+		internal static void FixSensitivity (Gtk.ComboBox c)
+		{
+			// Since gtk+ 2.14, empty combos are disabled by default
+			// This method disables this behavior
+			gtk_combo_box_set_button_sensitivity (c.Handle, 1);
+		}
+		
+		[DllImport("libgtk-win32-2.0-0.dll")]
+		extern static void gtk_combo_box_set_button_sensitivity (IntPtr combo, int mode);
 	}
 }

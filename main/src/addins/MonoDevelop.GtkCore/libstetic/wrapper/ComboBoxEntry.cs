@@ -11,6 +11,10 @@ namespace Stetic.Wrapper {
 			// Make sure all children are created, so the mouse events can be
 			// bound and the widget can be selected.
 			c.EnsureStyle ();
+			try {
+				FixSensitivity (c);
+			} catch {
+			}
 			return c;
 		}
 		
