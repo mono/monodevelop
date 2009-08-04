@@ -35,6 +35,7 @@ namespace MonoDevelop.Projects
 	public class SolutionItemEventArgs : EventArgs
 	{
 		SolutionItem entry;
+		Solution solution;
 		
 		public SolutionItem SolutionItem {
 			get {
@@ -42,8 +43,20 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public Solution Solution {
+			get {
+				return solution ?? entry.ParentSolution;
+			}
+		}
+		
 		public SolutionItemEventArgs (SolutionItem entry)
 		{
+			this.entry = entry;
+		}
+		
+		public SolutionItemEventArgs (SolutionItem entry, Solution solution)
+		{
+			this.solution = solution;
 			this.entry = entry;
 		}
 	}
@@ -54,7 +67,7 @@ namespace MonoDevelop.Projects
 	{
 		bool reloading;
 		
-		public SolutionItemChangeEventArgs (SolutionItem item, bool reloading): base (item)
+		public SolutionItemChangeEventArgs (SolutionItem item, Solution parentSolution, bool reloading): base (item, parentSolution)
 		{
 			this.reloading = reloading;
 		}

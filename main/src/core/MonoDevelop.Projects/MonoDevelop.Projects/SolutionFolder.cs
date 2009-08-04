@@ -248,8 +248,8 @@ namespace MonoDevelop.Projects
 				ConnectChildEntryEvents (newItem);
 	
 				NotifyModified ("Items");
-				OnItemRemoved (new SolutionItemChangeEventArgs (item, true), true);
-				OnItemAdded (new SolutionItemChangeEventArgs (newItem, true), true);
+				OnItemRemoved (new SolutionItemChangeEventArgs (item, ParentSolution, true), true);
+				OnItemAdded (new SolutionItemChangeEventArgs (newItem, ParentSolution, true), true);
 				
 				item.Dispose ();
 				return newItem;
@@ -263,7 +263,7 @@ namespace MonoDevelop.Projects
 			ConnectChildEntryEvents (item);
 
 			NotifyModified ("Items");
-			OnItemAdded (new SolutionItemChangeEventArgs (item, false), newToSolution);
+			OnItemAdded (new SolutionItemChangeEventArgs (item, ParentSolution, false), newToSolution);
 		}
 		
 		void ConnectChildEntryEvents (SolutionItem item)
@@ -344,7 +344,7 @@ namespace MonoDevelop.Projects
 		{
 			DisconnectChildEntryEvents (item);
 			NotifyModified ("Items");
-			OnItemRemoved (new SolutionItemChangeEventArgs (item, false), removedFromSolution);
+			OnItemRemoved (new SolutionItemChangeEventArgs (item, ParentSolution, false), removedFromSolution);
 		}
 		
 		void DisconnectChildEntryEvents (SolutionItem entry)
