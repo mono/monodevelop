@@ -1,5 +1,11 @@
 2009-08-04  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs:
+	  Only look for local variables or parameters when extracting
+	  a method.
+
+2009-08-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:

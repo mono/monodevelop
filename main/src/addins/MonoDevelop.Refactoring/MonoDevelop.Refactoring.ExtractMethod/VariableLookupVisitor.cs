@@ -138,6 +138,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				ExpressionResult expressionResult = new ExpressionResult (identifierExpression.Identifier);
 
 				ResolveResult result = resolver.Resolve (expressionResult, position);
+				if (!(result is LocalVariableResolveResult || result is ParameterResolveResult))
+					return base.VisitIdentifierExpression (identifierExpression, data);
 				if ((result is MemberResolveResult && ((MemberResolveResult)result).ResolvedMember != null && !((MemberResolveResult)result).ResolvedMember.IsStatic) || (result is MethodResolveResult && ((MethodResolveResult)result).MostLikelyMethod != null && !((MethodResolveResult)result).MostLikelyMethod.IsStatic))
 					ReferencesMember = true;
 				// result.ResolvedType == null may be true for namespace names or undeclared variables
