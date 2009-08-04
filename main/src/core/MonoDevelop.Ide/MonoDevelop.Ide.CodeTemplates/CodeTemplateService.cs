@@ -58,8 +58,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			try {
 				templates = LoadTemplates () ?? new List<CodeTemplate> ();
-				Console.WriteLine ("#Templates:" + templates.Count);
-				
 			} catch (Exception e) {
 				LoggingService.LogError ("CodeTemplateService: Exception while loading templates.", e);
 			}

@@ -1,5 +1,11 @@
 2009-08-04  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs:
+	  Removed debug messages.
+
+2009-08-04  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Took back the on
 	  demand change.
 

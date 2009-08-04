@@ -925,7 +925,7 @@ namespace MonoDevelop.Ide.Gui
 //				Mono.Profiler.RuntimeControls.EnableProfiler ();
 				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Load (item);
 //				Mono.Profiler.RuntimeControls.DisableProfiler ();
-				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
+//				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}
