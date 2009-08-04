@@ -1075,20 +1075,20 @@ namespace MonoDevelop.Ide.Gui
 		
 		void NotifyItemRemovedFromSolution (object sender, SolutionItemEventArgs args)
 		{
-			NotifyItemRemovedFromSolutionRec (sender, args.SolutionItem);
+			NotifyItemRemovedFromSolutionRec (sender, args.SolutionItem, args.Solution);
 		}
 		
-		void NotifyItemRemovedFromSolutionRec (object sender, SolutionItem e)
+		void NotifyItemRemovedFromSolutionRec (object sender, SolutionItem e, Solution sol)
 		{
 			if (e == IdeApp.ProjectOperations.CurrentSelectedSolutionItem)
 				IdeApp.ProjectOperations.CurrentSelectedSolutionItem = null;
 				
 			if (e is SolutionFolder) {
 				foreach (SolutionItem ce in ((SolutionFolder)e).Items)
-					NotifyItemRemovedFromSolutionRec (sender, ce);
+					NotifyItemRemovedFromSolutionRec (sender, ce, sol);
 			}
 			if (ItemRemovedFromSolution != null)
-				ItemRemovedFromSolution (sender, new SolutionItemEventArgs (e));
+				ItemRemovedFromSolution (sender, new SolutionItemEventArgs (e, sol));
 		}
 		
 		void NotifyDescendantItemAdded (object s, WorkspaceItemEventArgs args)

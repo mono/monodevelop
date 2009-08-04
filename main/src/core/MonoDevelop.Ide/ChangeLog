@@ -1,3 +1,15 @@
+2009-08-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
+	  When updating the solution node due to the removal of an
+	  item, use the solution object provided in the args, since
+	  the ParentSolution property of the item will return null.
+	  Fixes bug #527406 - Deletion of project fails.
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Don't allow
+	  public creation of status bars.
+
 2009-08-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Error list pad is

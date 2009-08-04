@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide
 		HBox statusBox = new HBox ();
 		Image currentStatusImage;
 		
-		public MonoDevelopStatusBar(): base (false, 3)
+		internal MonoDevelopStatusBar(): base (false, 3)
 		{
 			BorderWidth = 0;
 			

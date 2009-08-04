@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnSolutionItemAddedRemoved (object sender, SolutionItemEventArgs e)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem.ParentSolution);
+			ITreeBuilder tb = Context.GetTreeBuilder (e.Solution);
 			if (tb != null)
 				tb.Update ();	// Update the entry count
 		}
