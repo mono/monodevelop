@@ -244,6 +244,7 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			} else {
+				sb.AppendLine ();
 				sb.Append (AmbienceService.GetSummaryMarkup (methods[overload]));
 			}
 			return sb.ToString ();
