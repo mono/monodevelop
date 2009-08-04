@@ -368,7 +368,7 @@ namespace MonoDevelop.Projects.Dom
 		public override System.Xml.XmlNode GetMonodocDocumentation ()
 		{
 			if (DeclaringType.HelpXml != null) {
-				System.Xml.XmlNodeList nodes = DeclaringType.HelpXml.SelectNodes ("/Type/Members/Member[@MemberName='" + Name + "']");
+				System.Xml.XmlNodeList nodes = DeclaringType.HelpXml.SelectNodes ("/Type/Members/Member[@MemberName='" + (IsConstructor ? ".ctor" : Name) + "']");
 				XmlNode node = nodes.Count == 1 ? nodes[0] : FindMatch (nodes);
 				if (node != null) {
 					System.Xml.XmlNode result = node.SelectSingleNode ("Docs");
