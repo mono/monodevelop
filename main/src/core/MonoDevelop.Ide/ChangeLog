@@ -1,3 +1,8 @@
+2009-08-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Took back the on
+	  demand change.
+
 2009-08-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs:

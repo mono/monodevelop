@@ -441,14 +441,8 @@ namespace MonoDevelop.Ide.Gui
 				if (newContent is Widget) {
 					pcontent = newContent.Control;
 				} else {
-					PadCommandRouterContainer crc = new PadCommandRouterContainer (window, null, newContent, true);
+					PadCommandRouterContainer crc = new PadCommandRouterContainer (window, newContent.Control, newContent, true);
 					crc.Show ();
-					crc.Realized += delegate {
-						if (crc.Children.Length == 0) {
-							crc.Add (newContent.Control);
-							crc.Show ();
-						}
-					};
 					pcontent = crc;
 				}
 				
