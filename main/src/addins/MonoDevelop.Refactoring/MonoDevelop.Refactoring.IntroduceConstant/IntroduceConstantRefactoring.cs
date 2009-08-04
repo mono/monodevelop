@@ -54,7 +54,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 		{
 			TextEditorData data = options.GetTextEditorData ();
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			if (line != null) {
+			if (!data.IsSomethingSelected && line != null) {
 				Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 				Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (data.Document, data.Document.SyntaxMode, data.Document.SyntaxMode, stack, line.Offset, data.Caret.Offset);
 				foreach (Span span in stack) {
@@ -90,21 +90,25 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			dialog.Show ();
 		}
 		
-		string SearchString (TextEditorData data, char quote, out int start, out int end)
+		public static string SearchString (TextEditorData data, char quote, out int start, out int end)
 		{
-			start = data.Caret.Offset;
+			if (data.IsSomethingSelected) {
+				start = data.SelectionRange.Offset;
+				end = data.SelectionRange.EndOffset;
+			} else {
+				start = end = data.Caret.Offset;
+			}
 			while (start > 0) {
 				if (data.Document.GetCharAt (start) == quote)
 					break;
 				start--;
 			}
-			end = data.Caret.Offset;
 			while (end < data.Document.Length) {
 				if (data.Document.GetCharAt (end) == quote)
 					break;
 				end++;
 			}
-			return data.Document.GetTextBetween (start, end);
+			return data.Document.GetTextBetween (start, end + 1);
 		}
 		
 		string SearchNumber (TextEditorData data, out int start, out int end)

@@ -1,3 +1,14 @@
+2009-08-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring.IntroduceFormatItem:
+	* MonoDevelop.Refactoring/RefactoringOptions.cs:
+	* MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs:
+	* MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs:
+	  Added introduce format item refactoring.
+
 2009-08-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs:

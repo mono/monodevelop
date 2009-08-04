@@ -76,6 +76,7 @@
     <Compile Include="MonoDevelop.Refactoring\GotoDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\HelperMethods.cs" />
+    <Compile Include="MonoDevelop.Refactoring.IntroduceFormatItem\IntroduceFormatItemRefactoring.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -86,6 +87,7 @@
     <Folder Include="MonoDevelop.Refactoring.IntroduceConstant\" />
     <Folder Include="MonoDevelop.Refactoring.CreateClass\" />
     <Folder Include="MonoDevelop.Refactoring.MoveTypeToFile\" />
+    <Folder Include="MonoDevelop.Refactoring.IntroduceFormatItem\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />

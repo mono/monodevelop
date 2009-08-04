@@ -47,6 +47,7 @@
 		<Class id="CreateClass" class = "MonoDevelop.Refactoring.CreateClass.CreateClassCodeGenerator" />
 		<Class id="CreateStruct" class = "MonoDevelop.Refactoring.CreateClass.CreateStructCodeGenerator" />
 		<Class id="MoveTypeToFile" class = "MonoDevelop.Refactoring.MoveTypeToFile.MoveTypeToFileRefactoring" />
+		<Class id="IntroduceFormatItem" class = "MonoDevelop.Refactoring.IntroduceFormat.IntroduceFormatItemRefactoring" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->
@@ -76,6 +77,7 @@
 				defaultHandler = "MonoDevelop.Refactoring.DeclareLocal.DeclareLocalHandler"
 				_label = "_Declare Local" 
 				shortcut = "Control+dead_circumflex"/> 
+		
 		</Category>
 	</Extension>
 	

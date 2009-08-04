@@ -79,10 +79,15 @@ namespace MonoDevelop.Refactoring
 		
 		public IResolver GetResolver ()
 		{
-			MonoDevelop.Projects.Dom.Parser.IParser domParser = ProjectDomService.GetParser (Document.FileName, MimeType);
+			MonoDevelop.Projects.Dom.Parser.IParser domParser = GetParser ();
 			if (domParser == null)
 				return null;
 			return domParser.CreateResolver (Dom, Document, Document.FileName);
+		}
+		
+		public MonoDevelop.Projects.Dom.Parser.IParser GetParser ()
+		{
+			return ProjectDomService.GetParser (Document.FileName, MimeType);
 		}
 		
 		public string GetWhitespaces (int insertionOffset)
