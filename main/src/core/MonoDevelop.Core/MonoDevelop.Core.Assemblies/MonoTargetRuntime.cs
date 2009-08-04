@@ -182,7 +182,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			// Don't register the package twice
 			string pname = Path.GetFileNameWithoutExtension (pcfile);
-			if (GetPackage (pname) != null || IsCorePackage (pname))
+			if (GetPackageInternal (pname) != null || IsCorePackage (pname))
 				return;
 
 			SystemPackageInfo pinfo;

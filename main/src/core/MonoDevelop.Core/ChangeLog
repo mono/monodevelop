@@ -1,3 +1,11 @@
+2009-08-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.AddIns/PackageInstalledCondition.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	  Fix a race in the target runtime background initialization
+	  that particularly affected machines with many cores and fast I/O.
+
 2009-08-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* frameworks/framework_NET_3_0.xml:

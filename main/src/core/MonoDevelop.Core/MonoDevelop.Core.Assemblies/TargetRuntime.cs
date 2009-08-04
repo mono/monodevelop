@@ -362,12 +362,28 @@ namespace MonoDevelop.Core.Assemblies
 
 		public SystemPackage GetPackage (string name)
 		{
+			Initialize ();
+			return GetPackageInternal (name);
+		}
+		
+		//safe to be called from the background initialization thread
+		internal protected SystemPackage GetPackageInternal (string name)
+		{
 			SystemPackage res;
 			packagesHash.TryGetValue (name, out res);
 			return res;
 		}
 
 		public SystemPackage GetPackage (string name, string version)
+		{
+			Initialize ();
+			foreach (SystemPackage p in packages)
+				if (p.Name == name && p.Version == version)
+					return p;
+			return null;
+		}
+
+		internal SystemPackage GetPackageInternal (string name, string version)
 		{
 			foreach (SystemPackage p in packages)
 				if (p.Name == name && p.Version == version)
@@ -377,6 +393,7 @@ namespace MonoDevelop.Core.Assemblies
 
 		public SystemPackage GetPackageFromPath (string path)
 		{
+			Initialize ();
 			return assemblyPathToPackage.ContainsKey (path) ? assemblyPathToPackage [path] : null;
 		}
 		
@@ -643,8 +660,9 @@ namespace MonoDevelop.Core.Assemblies
 		void Initialize ()
 		{
 			lock (initLock) {
-				while (!initialized)
+				while (!initialized) {
 					Monitor.Wait (initLock);
+				}
 			}
 		}
 		
@@ -677,7 +695,7 @@ namespace MonoDevelop.Core.Assemblies
 			SystemPackageInfo pi = node.GetPackageInfo ();
 			
 			if (args.Change == ExtensionChange.Add) {
-				if (GetPackage (pi.Name, pi.Version) == null)
+				if (GetPackageInternal (pi.Name, pi.Version) == null)
 					RegisterPackage (pi, node.Assemblies);
 			}
 			else {
