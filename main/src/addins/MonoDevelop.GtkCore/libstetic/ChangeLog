@@ -1,5 +1,11 @@
 2009-08-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* wrapper/Notebook.cs: Fix issue with adding a widget with
+	  ShowScrollbars=true to a notebook. Fixes bug 526434 -
+	  Notebook Tab Labels Revert Back to "Page 1".
+
+2009-08-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* wrapper/ComboBox.cs:
 	* wrapper/ComboBoxEntry.cs: Changed the sensitivity mode to
 	  'always on'. Since gtk+ 2.14, empty combos are disabled by

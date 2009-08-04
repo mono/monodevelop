@@ -150,7 +150,11 @@ namespace Stetic.Wrapper {
 			} else {
 				Gtk.Widget tab = notebook.GetTabLabel (oldChild);
 				int current = notebook.CurrentPage;
+				int oldPageNum = ((Gtk.Notebook.NotebookChild)notebook [oldChild]).Position;
 				base.ReplaceChild (oldChild, newChild);
+				// Get the widget again because it may have changed (for example, if it is a text view
+				// and has the ShowScrollbars option set.
+				newChild = notebook.GetNthPage (oldPageNum);
 				notebook.CurrentPage = current;
 				notebook.SetTabLabel (newChild, tab);
 				Widget ww = Widget.Lookup (tab);
