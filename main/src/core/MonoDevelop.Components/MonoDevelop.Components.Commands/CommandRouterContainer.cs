@@ -37,7 +37,8 @@ namespace MonoDevelop.Components.Commands
 		
 		public CommandRouterContainer (Gtk.Widget child, object target, bool continueToParent)
 		{
-			PackStart (child, true, true, 0);
+			if (child != null)
+				PackStart (child, true, true, 0);
 			delegated = target;
 			if (continueToParent)
 				endTarget = Parent;
