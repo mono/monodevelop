@@ -199,8 +199,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 		
+		static char[] specialCharacters = new char [] {'%', '$', '@', '(', ')', '\'', ';', '?', '*' };
+		
+		public static string EscapeString (string str)
+		{
+			int i = str.IndexOfAny (specialCharacters);
+			while (i != -1) {
+				str = str.Substring (0, i) + '%' + ((int) str [i]).ToString ("X") + str.Substring (i + 1);
+				i = str.IndexOfAny (specialCharacters, i + 3);
+			}
+			return str;
+		}
+		
+		public static string UnscapeString (string str)
+		{
+			int i = str.IndexOf ('%');
+			while (i != -1 && i < str.Length - 2) {
+				int c;
+				if (int.TryParse (str.Substring (i+1, 2), NumberStyles.HexNumber, null, out c))
+					str = str.Substring (0, i) + (char) c + str.Substring (i + 3);
+				i = str.IndexOf ('%', i + 1);
+			}
+			return str;
+		}
+		
 		public static string ToMSBuildPath (string baseDirectory, string absPath)
 		{
+			absPath = EscapeString (absPath);
 			return FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (
 			         baseDirectory, absPath)).Replace ('/', '\\');
 		}
@@ -214,13 +239,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string path = relPath;
 			if (Path.DirectorySeparatorChar != '\\')
 				path = path.Replace ("\\", "/");
+			
+			path = UnscapeString (path);
 
 			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':')
 				return null;
 			
 			if (basePath != null)
 				path = Path.Combine (basePath, path);
-
+			
 			if (System.IO.File.Exists (path) || System.IO.Directory.Exists (path)){
 				return Path.GetFullPath (path);
 			}

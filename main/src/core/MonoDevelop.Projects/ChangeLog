@@ -1,5 +1,11 @@
 2009-08-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	  Escape/unscape special character when writing/reading file
+	  names. Fixes bug #526353.
+
+2009-08-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/SolutionFolder.cs:
 	* MonoDevelop.Projects/SolutionItemEventArgs.cs: When firing
 	  the ItemRemoved event, provide the parent solution in the
