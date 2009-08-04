@@ -432,16 +432,23 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CreatePadContent (bool force, PadCodon padCodon, PadWindow window, DockItem item)
 		{
+
 			if (force || item.Content == null) {
 				IPadContent newContent = padCodon.PadContent;
 				newContent.Initialize (window);
-			
+
 				Gtk.Widget pcontent;
 				if (newContent is Widget) {
 					pcontent = newContent.Control;
 				} else {
-					PadCommandRouterContainer crc = new PadCommandRouterContainer (window, newContent.Control, newContent, true);
+					PadCommandRouterContainer crc = new PadCommandRouterContainer (window, null, newContent, true);
 					crc.Show ();
+					crc.Realized += delegate {
+						if (crc.Children.Length == 0) {
+							crc.Add (newContent.Control);
+							crc.Show ();
+						}
+					};
 					pcontent = crc;
 				}
 				

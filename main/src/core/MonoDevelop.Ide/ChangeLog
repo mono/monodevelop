@@ -1,3 +1,12 @@
+2009-08-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Error list pad is
+	  now created on demand (it locked monodevelop on load
+	  sometimes).
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Pads are now
+	  created on demand.
+
 2009-08-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Instead of

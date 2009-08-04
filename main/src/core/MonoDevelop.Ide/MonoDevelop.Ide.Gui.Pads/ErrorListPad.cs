@@ -86,6 +86,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public Gtk.Widget Control {
 			get {
+				if (control == null)
+					CreateControl ();
 				return control;
 			}
 		}
@@ -100,6 +102,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		}
 
 		public ErrorListPad ()
+		{
+		}
+		
+		void CreateControl ()
 		{
 			control = new VBox ();
 
@@ -156,7 +162,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTaskTypes);
 			filter = new TreeModelFilter (store, null);
-            filter.VisibleFunc = filterFunct;
+			filter.VisibleFunc = filterFunct;
 			
 			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (filter);
 			view.RulesHint = true;
@@ -169,7 +175,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sw = new Gtk.ScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
 			sw.Add (view);
-			
 			Services.TaskService.TaskRemoved      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (ShowResults));
 			Services.TaskService.TaskAdded        += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
 			Services.TaskService.TaskChanged      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskChanged));
@@ -177,8 +182,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
 			
-			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
-						
+			view.RowActivated += new RowActivatedHandler (OnRowActivated);
+			
 			iconWarning = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu, "");
 			iconError = sw.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu, "");
 			iconInfo = sw.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
@@ -198,7 +203,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			control.FocusChain = new Gtk.Widget [] { sw };
 		}
-		
 		void LoadColumnsVisibility ()
 		{
 			string columns = (string)PropertyService.Get ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
