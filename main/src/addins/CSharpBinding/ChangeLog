@@ -1,5 +1,10 @@
 2009-08-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Syntax/CSharpSyntaxMode.cs: fixed "Bug 527655 - Preprocessor
+	  disabled code still makes "if" coloured".
+
+2009-08-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryParameterDataProvider.cs: Added new line for
 	  parameterless methods summary documentation.
 

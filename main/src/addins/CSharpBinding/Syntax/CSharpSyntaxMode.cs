@@ -79,8 +79,8 @@ namespace MonoDevelop.CSharpBinding
 				this.IsValid = isValid;
 				TagColor = "text.preprocessor";
 				if (!isValid) {
-					Color    = "comment.block";
-					Rule     = "text.preprocessor";
+					Color = "comment.block";
+					Rule = "String";
 				} else {
 					Color = "text";
 					Rule = "<root>";
@@ -105,8 +105,8 @@ namespace MonoDevelop.CSharpBinding
 				this.IsValid = isValid;
 				TagColor = "text.preprocessor";
 				if (!isValid) {
-					Color    = "comment.block";
-					Rule     = "text.preprocessor";
+					Color = "comment.block";
+					Rule = "String";
 				} else {
 					Color = "text";
 					Rule = "<root>";
@@ -131,14 +131,15 @@ namespace MonoDevelop.CSharpBinding
 				this.IsValid = isValid;
 				TagColor = "text.preprocessor";
 				if (!isValid) {
-					Color    = "comment.block";
-					Rule     = "text.preprocessor";
+					Color = "comment.block";
+					Rule = "String";
 				} else {
 					Color = "text";
-					Rule  = "<root>";
+					Rule = "<root>";
 				}
 				StopAtEol = false;
 			}
+			
 			public override string ToString ()
 			{
 				return string.Format("[ElseBlockSpan: IsValid={0}, Color={1}, Rule={2}]", IsValid, Color, Rule);
