@@ -1,6 +1,13 @@
 2009-08-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	  Don't dispose pixbufs from the icon service, as Dispose
+	  calls g_free, but these pixpuf are used in other places.
+	  Instead let the finalizer queue a g_unref.
+
+2009-08-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
 	  Better pixbuf disposal.
 
 2009-08-04  Michael Hutchinson  <mhutchinson@novell.com>

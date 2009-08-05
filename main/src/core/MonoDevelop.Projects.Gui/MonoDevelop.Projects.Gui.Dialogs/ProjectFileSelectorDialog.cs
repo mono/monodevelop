@@ -41,9 +41,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		string defaultFilterPattern;
 		Project project;
 		TreeStore dirStore = new TreeStore (typeof (string));
-		ListStore fileStore = new ListStore (typeof (ProjectFile));
+		ListStore fileStore = new ListStore (typeof (ProjectFile), typeof (Gdk.Pixbuf));
 		
-		Gdk.Pixbuf projBuf, dirOpenBuf, dirClosedBuf, oldBuf;
+		// NOTE: these should not be disposed, since they come from the icon scheme, and must instead be unref'd
+		// and the only way to unref is to let the finalizer handle it.
+		Gdk.Pixbuf projBuf, dirOpenBuf, dirClosedBuf;
 		
 		public ProjectFileSelectorDialog (Project project)
 			: this (project, GettextCatalog.GetString ("All files"), "*")
@@ -81,7 +83,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			fileCol.Title = GettextCatalog.GetString ("Files");
 			fileCol.PackStart (filePixRenderer, false);
 			fileCol.PackStart (txtRenderer, true);
-			fileCol.SetCellDataFunc (filePixRenderer, new TreeCellDataFunc (PixFileDataFunc));
+			fileCol.AddAttribute (filePixRenderer, "pixbuf", 1);
 			fileCol.SetCellDataFunc (txtRenderer, new TreeCellDataFunc (TxtFileDataFunc));
 			fileList.Model = fileStore;
 			fileList.AppendColumn (fileCol);
@@ -141,15 +143,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			
 			int lastSlash = dirname.LastIndexOf (System.IO.Path.DirectorySeparatorChar);
 			txtRenderer.Text = lastSlash < 0? dirname : dirname.Substring (lastSlash + 1); 
-		}
-		
-		void PixFileDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
-		{
-			if (oldBuf != null)
-				oldBuf.Dispose ();
-			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
-			ProjectFile pf = (ProjectFile)tree_model.GetValue (iter, 0);
-			pixRenderer.Pixbuf = oldBuf = DesktopService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu);
 		}
 		
 		void TxtFileDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
@@ -212,7 +205,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 					continue;
 				
 				if (regex.IsMatch (pf.FilePath.FileName))
-					fileStore.AppendValues (pf);
+					fileStore.AppendValues (pf, DesktopService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu));
 			}
 			
 			UpdateSensitivity (null, null);
@@ -225,20 +218,5 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			buttonOk.Sensitive = selected;
 			SelectedFile = selected? (ProjectFile) fileStore.GetValue (iter, 0) : null;
 		}
-		
-		protected override void OnDestroyed ()
-		{
-			if (projBuf != null)
-				projBuf.Dispose ();
-			if (dirClosedBuf != null)
-				dirClosedBuf.Dispose ();
-			if (dirOpenBuf != null)
-				dirOpenBuf.Dispose ();
-			if (oldBuf != null)
-				oldBuf.Dispose ();
-			dirClosedBuf = dirOpenBuf = projBuf = oldBuf = null;
-			base.OnDestroyed ();
-		}
-
 	}
 }
