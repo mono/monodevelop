@@ -1,3 +1,8 @@
+2009-08-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj: Use Mono.Cairo 2.0.
+
 2009-08-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: bracket
