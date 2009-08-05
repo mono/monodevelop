@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Execution
 				info.AddSeparator ();
 			}
 			info.AddSeparator ();
-			info.Add (GettextCatalog.GetString ("Custom Mode Manager..."), new CommandItem (ctx, null));
+			info.Add (GettextCatalog.GetString ("Edit Custom Modes..."), new CommandItem (ctx, null));
 		}
 		
 		public static IExecutionHandler GetExecutionModeForCommand (object data)

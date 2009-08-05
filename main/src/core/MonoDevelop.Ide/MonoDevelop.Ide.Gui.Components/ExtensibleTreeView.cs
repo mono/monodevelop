@@ -1275,7 +1275,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			object currentIt = nodeHash [dataObject];
 			if (currentIt is Gtk.TreeIter[]) {
 				Gtk.TreeIter[] arr = (Gtk.TreeIter[]) currentIt;
-				int i = Array.IndexOf (arr, iter);
+				Gtk.TreePath path = store.GetPath (iter);
+				int i = -1;
+				for (int n=0; n<arr.Length; n++) {
+					if (path.Equals (store.GetPath (arr [n]))) {
+						i = n;
+						break;
+					}
+				}
 				if (arr.Length > 2) {
 					Gtk.TreeIter[] newArr = new Gtk.TreeIter[arr.Length - 1];
 					Array.Copy (arr, 0, newArr, 0, i);
@@ -1848,6 +1855,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public bool Equals (Gtk.TreeIter x, Gtk.TreeIter y)
 		{
+			if (!store.IterIsValid (x) || !store.IterIsValid (y))
+				return false;
 			Gtk.TreePath px = store.GetPath (x);
 			Gtk.TreePath py = store.GetPath (y);
 			if (px == null || py == null)
@@ -1857,6 +1866,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public int GetHashCode (Gtk.TreeIter obj)
 		{
+			if (!store.IterIsValid (obj))
+				return 0;
 			Gtk.TreePath p = store.GetPath (obj);
 			if (p == null)
 				return 0;

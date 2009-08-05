@@ -1,5 +1,13 @@
 2009-08-05  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Execution\ExecutionModeCommandService.cs:
+	  Improve command label.
+
+	* MonoDevelop.Ide.Gui.Components\ExtensibleTreeView.cs: Fix
+	  TreeIter comparison issues.
+
+2009-08-05  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Don't
 	  disconnect the model from the list while searching, so
 	  matches are shown as they are found.
