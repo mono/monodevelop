@@ -41,8 +41,9 @@ namespace MonoDevelop.Projects.Gui
 		
 		public ProjectFileEntry ()
 		{
+			Spacing = 4;
 			entry = new Entry ();
-			PackStart (entry, true, true, 4);
+			PackStart (entry, true, true, 0);
 			
 			button = new Button () { Label = "..." };
 			button.Clicked += ButtonClicked;
