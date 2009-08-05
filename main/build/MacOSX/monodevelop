@@ -6,10 +6,12 @@
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
 export DYLD_FALLBACK_LIBRARY_PATH=$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib
 
-# $0 should contain the full path from the root i.e. /Applications/<folder>.app/Contents/MacOS/<script>
-EXE_PATH="${0%%/monodevelop}/lib/monodevelop/bin/MonoDevelop.exe"
+DIR=$(cd $(dirname "$0"); pwd)
 
-PKG_CONFIG_PATH="${0%%/monodevelop}/lib/pkgconfig:$PKG_CONFIG_PATH"
+# $0 should contain the full path from the root i.e. /Applications/<folder>.app/Contents/MacOS/<script>
+EXE_PATH="$DIR/lib/monodevelop/bin/MonoDevelop.exe"
+
+PKG_CONFIG_PATH="$DIR/lib/pkgconfig:$PKG_CONFIG_PATH"
 export PKG_CONFIG_PATH
 
 # Work around a bug in 'exec' in older versions of macosx
@@ -45,14 +47,20 @@ then
 	exit 1
 fi
 
+## use an app-specific registry if possible
+#if [ -w "$DIR" ]; then
+#	export MONO_ADDINS_REGISTRY="$DIR"
+#fi
+
+## Moonlight SDK
+if [ -d "$DIR/lib/MoonSDK" ]; then
+        export MOONLIGHT_2_SDK_PATH="$DIR/lib/MoonSDK"
+fi
+
 #### END MAC-SPECIFIC SETUP
 #### Beyond this, all is from the Linux monodevelop.in. Only the values of EXE_PATH and MONO_EXEC differ
 
 _MD_REDIRECT_LOG="${MD_REDIRECT_LOG:-${XDG_CONFIG_HOME:-$HOME/.config}/MonoDevelop/log}"
-
-## Moonlight SDK
-MOONLIGHT_2_SDK_PATH="${0%%monodevelop}/lib/MoonSDK"
-export MOONLIGHT_2_SDK_PATH
 
 # NOTE: remove this for stable releases
 if [ -z "$MD_NO_DEBUG" ]; then
