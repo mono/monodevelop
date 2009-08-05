@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Commands
 			}
 			else {
 				info.Enabled = ((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.IsBuildTarget) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
-				if (IdeApp.Workbench.ActiveDocument != null) {
+				if (info.Enabled) {
 					info.Text = GettextCatalog.GetString ("R_ebuild {0}", IdeApp.Workbench.ActiveDocument.FileName);
 					info.Description = GettextCatalog.GetString ("Rebuild {0}", IdeApp.Workbench.ActiveDocument.FileName);
 				}

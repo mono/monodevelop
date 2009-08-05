@@ -1,3 +1,20 @@
+2009-08-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Don't
+	  disconnect the model from the list while searching, so
+	  matches are shown as they are found.
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultPad.cs: Remove
+	  unused attribute.
+
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Fix nullref
+	  when the active document is not buildable.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs:
+	  Adjust padding of the message label in the search results
+	  pad.
+
 2009-08-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs:

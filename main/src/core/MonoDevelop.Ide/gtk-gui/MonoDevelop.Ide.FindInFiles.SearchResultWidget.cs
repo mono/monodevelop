@@ -53,7 +53,6 @@ namespace MonoDevelop.Ide.FindInFiles {
             // Container child hbox1.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
-            this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hpaned1 = new Gtk.HPaned();
             this.hpaned1.CanFocus = true;
@@ -62,7 +61,6 @@ namespace MonoDevelop.Ide.FindInFiles {
             // Container child hpaned1.Gtk.Paned+PanedChild
             this.GtkScrolledWindow = new Gtk.ScrolledWindow();
             this.GtkScrolledWindow.Name = "GtkScrolledWindow";
-            this.GtkScrolledWindow.ShadowType = ((Gtk.ShadowType)(1));
             // Container child GtkScrolledWindow.Gtk.Container+ContainerChild
             this.treeviewSearchResults = new Gtk.TreeView();
             this.treeviewSearchResults.CanFocus = true;
@@ -90,11 +88,13 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.labelStatus = new Gtk.Label();
             this.labelStatus.Name = "labelStatus";
             this.labelStatus.Xalign = 0F;
+            this.labelStatus.LabelProp = Mono.Unix.Catalog.GetString("Cerca");
             this.vbox2.Add(this.labelStatus);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.labelStatus]));
             w8.Position = 1;
             w8.Expand = false;
             w8.Fill = false;
+            w8.Padding = ((uint)(3));
             this.hbox1.Add(this.vbox2);
             Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
             w9.Position = 0;

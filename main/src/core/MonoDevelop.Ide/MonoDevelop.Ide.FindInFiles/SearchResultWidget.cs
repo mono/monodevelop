@@ -173,13 +173,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			Reset ();
 			buttonStop.Sensitive = true;
-			treeviewSearchResults.Model = null;
+	//		treeviewSearchResults.Model = null;
 		}
 		
 		public void EndProgress ()
 		{
 			buttonStop.Sensitive = false;
-			treeviewSearchResults.Model = store;
+	//		treeviewSearchResults.Model = store;
 		}
 		
 		public void Reset ()

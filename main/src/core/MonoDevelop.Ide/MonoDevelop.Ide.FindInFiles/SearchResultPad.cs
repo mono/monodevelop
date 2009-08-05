@@ -88,7 +88,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.InstanceNum = instanceNum;
 		}
 		
-		[AsyncDispatch]
 		public void ReportResult (SearchResult result)
 		{
 			widget.Add (result);

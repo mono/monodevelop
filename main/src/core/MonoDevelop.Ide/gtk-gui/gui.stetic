@@ -6676,7 +6676,6 @@ Large</property>
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
-            <property name="Spacing">6</property>
             <child>
               <widget class="Gtk.HPaned" id="hpaned1">
                 <property name="MemberName" />
@@ -6685,7 +6684,6 @@ Large</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                     <property name="MemberName" />
-                    <property name="ShadowType">In</property>
                     <child>
                       <widget class="Gtk.TreeView" id="treeviewSearchResults">
                         <property name="MemberName" />
@@ -6729,6 +6727,7 @@ Large</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
+                <property name="Padding">3</property>
               </packing>
             </child>
           </widget>
