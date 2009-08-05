@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		TreeStore dirStore = new TreeStore (typeof (string));
 		ListStore fileStore = new ListStore (typeof (ProjectFile));
 		
-		Gdk.Pixbuf projBuf, dirOpenBuf, dirClosedBuf;
+		Gdk.Pixbuf projBuf, dirOpenBuf, dirClosedBuf, oldBuf;
 		
 		public ProjectFileSelectorDialog (Project project)
 			: this (project, GettextCatalog.GetString ("All files"), "*")
@@ -145,12 +145,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		
 		void PixFileDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
 		{
-			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
-			ProjectFile pf = (ProjectFile)tree_model.GetValue (iter, 0);
-			Gdk.Pixbuf oldBuf = pixRenderer.Pixbuf;
-			pixRenderer.Pixbuf = DesktopService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu);
 			if (oldBuf != null)
 				oldBuf.Dispose ();
+			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
+			ProjectFile pf = (ProjectFile)tree_model.GetValue (iter, 0);
+			pixRenderer.Pixbuf = oldBuf = DesktopService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu);
 		}
 		
 		void TxtFileDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
@@ -235,7 +234,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				dirClosedBuf.Dispose ();
 			if (dirOpenBuf != null)
 				dirOpenBuf.Dispose ();
-			dirClosedBuf = dirOpenBuf = projBuf = null;
+			if (oldBuf != null)
+				oldBuf.Dispose ();
+			dirClosedBuf = dirOpenBuf = projBuf = oldBuf = null;
 			base.OnDestroyed ();
 		}
 
