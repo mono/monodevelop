@@ -119,21 +119,23 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly IReturnType Int32;
 		public static readonly IReturnType String;
 		public static readonly IReturnType Char;
+		public static readonly IReturnType Bool;
 		
 		static DomReturnType ()
 		{
 			// Initialization is done here instead of using field initializers to
 			// ensure that the returnTypeCache dictionary us properly initialized
 			// when calling GetSharedReturnType.
-			
+
 			returnTypeCache = new Dictionary<string, IReturnType> ();
-			
-			Void      = GetSharedReturnType ("System.Void");
-			String    = GetSharedReturnType ("System.String");
-			Char      = GetSharedReturnType ("System.Char");
-			Object    = GetSharedReturnType ("System.Object");
+
+			Void = GetSharedReturnType ("System.Void");
+			String = GetSharedReturnType ("System.String");
+			Char = GetSharedReturnType ("System.Char");
+			Object = GetSharedReturnType ("System.Object");
 			Exception = GetSharedReturnType ("System.Exception");
 			Int32 = GetSharedReturnType ("System.Int32");
+			Bool = GetSharedReturnType ("System.Boolean");
 		}
 
 		public List<IReturnTypePart> Parts {
