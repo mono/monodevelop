@@ -1,0 +1,20 @@
+2009-07-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile: Rebuild addin registry before using mdtool.
+
+2009-07-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* md-build-integration.diff: Add a diff for patching into the
+	  MD build.
+
+2009-06-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.sln: Updated.
+
+2009-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure, Makefile:
+	  Add makefiles so can be integrated to MD build.
+	
+	* README: Add some notes about building the addin.
+

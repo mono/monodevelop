@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Template originator="Michael Hutchinson"
+          created="2009/06/08">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Empty MonoTouch Project</_Name>
+		<_Category>iPhone</_Category>
+		<Icon>md-project-iphone</Icon>
+		<LanguageName>*</LanguageName>
+		<_Description>Creates an empty MonoTouch project for iPhone and iPod Touch.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = "." type = "IPhone">
+			<Options />
+			<References>
+				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="monotouch" />
+			</References>
+			<Files>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
