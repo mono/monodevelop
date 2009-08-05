@@ -202,9 +202,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			pattern = "^" + pattern + "$";
 			System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex (pattern);
 
-			FilePath dir = GetSelectedDirectory ();
+			string dir = GetSelectedDirectory ().ToString ();
 			foreach (ProjectFile pf in project.Files) {
-				if (pf.Subtype == Subtype.Directory || !pf.FilePath.IsChildPathOf (dir))
+				string pathStr = pf.FilePath.ToString ();
+				if (pf.Subtype == Subtype.Directory || !pathStr.StartsWith (dir))
+					continue;
+				
+				int split = pathStr.LastIndexOf (System.IO.Path.DirectorySeparatorChar);
+				if (split != dir.Length)
 					continue;
 				
 				if (regex.IsMatch (pf.FilePath.FileName))

@@ -1,3 +1,9 @@
+2009-08-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	  Fix directory listing that regressed during FilePath
+	  changes.
+
 2009-07-31  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui/ProjectFileEntry.cs: Actually empty
