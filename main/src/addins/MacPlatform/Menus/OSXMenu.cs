@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using MonoDevelop.Components.Commands;
 using OSXIntegration.Framework;
+using System.Text;
 
 namespace OSXIntegration
 {
@@ -345,13 +346,55 @@ namespace OSXIntegration
 			}
 		}
 		
-		//FIXME: remove markup
 		static string GetCleanCommandText (CommandInfo ci)
 		{
-			if (ci.Text == null)
+			string txt = ci.Text;
+			if (txt == null)
 				return "";
 			
-			return ci.Text.Replace ("_", "");
+			if (!ci.UseMarkup)
+				return txt.Replace ("_", "");
+			
+			//strip GMarkup
+			//FIXME: markup stripping could be done better
+			StringBuilder sb = new StringBuilder ();
+			for (int i = 0; i < txt.Length; i++) {
+				char ch = txt[i];
+				if (ch == '<') {
+					while (++i < txt.Length && txt[i] != '>');
+				} else if (ch == '&') {
+					int j = i;
+					while (++i < txt.Length && txt[i] != ';');
+					int len = i - j - 1;
+					if (len > 0) {
+						string entityName = txt.Substring (j + 1, i - j - 1);
+						switch (entityName) {
+						case "quot":
+							sb.Append ('"');
+							break;
+						case "amp":
+							sb.Append ('&');
+							break;
+						case "apos":
+							sb.Append ('\'');
+							break;
+						case "lt":
+							sb.Append ('<');
+							break;
+						case "gt":
+							sb.Append ('>');
+							break;
+						default:
+							MonoDevelop.Core.LoggingService.LogWarning ("Could not de-markup entity '{0}'", entityName);
+							break;
+						}
+					}
+				} else if (ch != '_') {
+					sb.Append (ch);
+				}
+			}
+			
+			return sb.ToString ();
 		}
 		
 		#region App menu
