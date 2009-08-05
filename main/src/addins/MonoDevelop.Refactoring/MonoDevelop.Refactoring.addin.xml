@@ -31,13 +31,17 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeGenerators" name = "Code Generators">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/ASTProvider" name = "ASTProviders">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
 	<!-- Extensions -->
 	
-	<Extension path = "/MonoDevelop/Refactoring/Refactorings" name = "Refactorings">
+	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
 		<Class id="Rename" class = "MonoDevelop.Refactoring.Rename.RenameRefactoring" />
 		<Class id="ExtractMethod" class = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
 		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
@@ -48,6 +52,16 @@
 		<Class id="CreateStruct" class = "MonoDevelop.Refactoring.CreateClass.CreateStructCodeGenerator" />
 		<Class id="MoveTypeToFile" class = "MonoDevelop.Refactoring.MoveTypeToFile.MoveTypeToFileRefactoring" />
 		<Class id="IntroduceFormatItem" class = "MonoDevelop.Refactoring.IntroduceFormat.IntroduceFormatItemRefactoring" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
+		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.PropertyGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.EventMethodGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->
@@ -78,6 +92,10 @@
 				_label = "_Declare Local" 
 				shortcut = "Control+dead_circumflex"/> 
 		
+		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
+				defaultHandler = "MonoDevelop.CodeGeneration.ShowCodeGenerationWindowHandler"
+				_label = "S_how Code Generation Window" 
+				shortcut = "Alt|Insert" />
 		</Category>
 	</Extension>
 	

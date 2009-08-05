@@ -1,3 +1,27 @@
+2009-08-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.CodeGeneration:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.CodeGeneration/ICodeGenerator.cs:
+	* MonoDevelop.Refactoring/RefactoringOptions.cs:
+	* MonoDevelop.Refactoring/RefactoringService.cs:
+	* MonoDevelop.CodeGeneration/ToStringGenerator.cs:
+	* MonoDevelop.CodeGeneration/PropertyGenerator.cs:
+	* MonoDevelop.CodeGeneration/WriteLineGenerator.cs:
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:
+	* MonoDevelop.CodeGeneration/EventMethodGenerator.cs:
+	* MonoDevelop.CodeGeneration/CodeGenerationOptions.cs:
+	* MonoDevelop.CodeGeneration/CodeGenerationCommands.cs:
+	* MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/ReadonlyPropertyGenerator.cs:
+	* gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs:
+	* MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs:
+	  Worked on code generation popup feature.
+
 2009-08-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs:

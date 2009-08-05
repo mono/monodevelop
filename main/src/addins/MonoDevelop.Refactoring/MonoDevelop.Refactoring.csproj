@@ -77,6 +77,18 @@
     <Compile Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\HelperMethods.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntroduceFormatItem\IntroduceFormatItemRefactoring.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\GenerateCodeWindow.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CodeGeneration.GenerateCodeWindow.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\CodeGenerationCommands.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\ICodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\CreateConstructorGenerator.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\PropertyGenerator.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\ReadonlyPropertyGenerator.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\CodeGenerationOptions.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\ToStringGenerator.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\EventMethodGenerator.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\EqualityMembersGenerator.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\WriteLineGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -88,6 +100,7 @@
     <Folder Include="MonoDevelop.Refactoring.CreateClass\" />
     <Folder Include="MonoDevelop.Refactoring.MoveTypeToFile\" />
     <Folder Include="MonoDevelop.Refactoring.IntroduceFormatItem\" />
+    <Folder Include="MonoDevelop.CodeGeneration\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />
@@ -140,6 +153,10 @@
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
+      <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
+      <Name>MonoDevelop.Projects.Gui</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

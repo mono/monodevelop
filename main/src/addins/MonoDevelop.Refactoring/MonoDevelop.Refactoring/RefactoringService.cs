@@ -31,6 +31,7 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.CodeGeneration;
 
 namespace MonoDevelop.Refactoring
 {
@@ -38,6 +39,7 @@ namespace MonoDevelop.Refactoring
 	{
 		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
 		static List<INRefactoryASTProvider> astProviders = new List<INRefactoryASTProvider>();
+		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
 		
 		static RefactoringService ()
 		{
@@ -62,11 +64,28 @@ namespace MonoDevelop.Refactoring
 					break;
 				}
 			});
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeGenerators", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					codeGenerators.Add ((ICodeGenerator)args.ExtensionObject);
+					break;
+				case ExtensionChange.Remove:
+					codeGenerators.Remove ((ICodeGenerator)args.ExtensionObject);
+					break;
+				}
+			});
 		}
 		
 		public static IEnumerable<RefactoringOperation> Refactorings {
 			get {
 				return refactorings;
+			}
+		}
+		
+		public static IEnumerable<ICodeGenerator> CodeGenerators {
+			get {
+				return codeGenerators;
 			}
 		}
 		

@@ -366,6 +366,8 @@ namespace MonoDevelop.Refactoring
 		
 		static string FormatFileName (string fileName)
 		{
+			if (fileName == null)
+				return null;
 			char[] seperators = { System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar };
 			int idx = fileName.LastIndexOfAny (seperators);
 			if (idx > 0) 

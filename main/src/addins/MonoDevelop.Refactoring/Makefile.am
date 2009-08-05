@@ -11,6 +11,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	$(top_builddir)/build/bin/NRefactory.dll
 
 REFS =  \
@@ -25,10 +26,22 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs \
 	gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs \
+	MonoDevelop.CodeGeneration/CodeGenerationCommands.cs \
+	MonoDevelop.CodeGeneration/CodeGenerationOptions.cs \
+	MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs \
+	MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs \
+	MonoDevelop.CodeGeneration/EventMethodGenerator.cs \
+	MonoDevelop.CodeGeneration/GenerateCodeWindow.cs \
+	MonoDevelop.CodeGeneration/ICodeGenerator.cs \
+	MonoDevelop.CodeGeneration/PropertyGenerator.cs \
+	MonoDevelop.CodeGeneration/ReadonlyPropertyGenerator.cs \
+	MonoDevelop.CodeGeneration/ToStringGenerator.cs \
+	MonoDevelop.CodeGeneration/WriteLineGenerator.cs \
 	MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs \
 	MonoDevelop.Refactoring.CreateClass/CreateStructCodeGenerator.cs \
 	MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs \

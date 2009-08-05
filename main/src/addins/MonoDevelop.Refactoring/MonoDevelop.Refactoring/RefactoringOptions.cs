@@ -90,11 +90,11 @@ namespace MonoDevelop.Refactoring
 			return ProjectDomService.GetParser (Document.FileName, MimeType);
 		}
 		
-		public string GetWhitespaces (int insertionOffset)
+		public static string GetWhitespaces (Document document, int insertionOffset)
 		{
 			StringBuilder result = new StringBuilder ();
-			for (int i = insertionOffset; i < Document.TextEditor.TextLength; i++) {
-				char ch = Document.TextEditor.GetCharAt (i);
+			for (int i = insertionOffset; i < document.TextEditor.TextLength; i++) {
+				char ch = document.TextEditor.GetCharAt (i);
 				if (ch == ' ' || ch == '\t') {
 					result.Append (ch);
 				} else {
@@ -103,10 +103,18 @@ namespace MonoDevelop.Refactoring
 			}
 			return result.ToString ();
 		}
+		public static string GetIndent (Document document, IMember member)
+		{
+			return GetWhitespaces (document, document.TextEditor.GetPositionFromLineColumn (member.Location.Line, 1));
+		}
+		public string GetWhitespaces (int insertionOffset)
+		{
+			return GetWhitespaces (Document, insertionOffset);
+		}
 		
 		public string GetIndent (IMember member)
 		{
-			return GetWhitespaces (Document.TextEditor.GetPositionFromLineColumn (member.Location.Line, 1));
+			return GetIndent (Document, member);
 		}
 		
 		public ParsedDocument ParseDocument ()
