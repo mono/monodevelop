@@ -1,3 +1,9 @@
+2009-08-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/SolutionConfiguration.cs: Updated
+	  license. Those files were rewritten long time ago.
+
 2009-08-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
