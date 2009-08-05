@@ -1,0 +1,3 @@
+main --disable-subversion --disable-update-mimedb --disable-update-desktopdb --disable-gnomeplatform --enable-macplatform
+extras/MonoDevelop.AspNet.Mvc
+extras/MonoDevelop.IPhone
