@@ -193,7 +193,7 @@ RES =  \
 	icons/solution-folder-new-16.png \
 	icons/solution-folder-open-16.png \
 	icons/solution-new-16.png \
-	icons/sort-namespace-16.png,icons.sort-namespace-16.png \
+	icons/sort-namespace-16.png \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
 	icons/template-16.png \
