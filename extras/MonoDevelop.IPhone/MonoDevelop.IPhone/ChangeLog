@@ -1,3 +1,7 @@
+2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Quote filenames passed to ibtool.
+
 2009-08-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/IPhoneOptionsPanel.cs: Fix the assignment of values
