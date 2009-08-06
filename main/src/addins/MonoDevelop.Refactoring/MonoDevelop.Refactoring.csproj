@@ -90,6 +90,7 @@
     <Compile Include="MonoDevelop.CodeGeneration\EqualityMembersGenerator.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\WriteLineGenerator.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\AbstractGenerateAction.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\OverrideMembersGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

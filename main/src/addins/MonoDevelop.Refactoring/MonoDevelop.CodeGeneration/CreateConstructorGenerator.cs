@@ -59,7 +59,7 @@ namespace MonoDevelop.CodeGeneration
 		public string GenerateDescription {
 			get {
 				return GettextCatalog.GetString ("Select members to be initialized by the constructor.");
-					}
+			}
 		}
 		
 		public bool IsValid (CodeGenerationOptions options)

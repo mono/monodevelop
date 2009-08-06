@@ -39,6 +39,7 @@ FILES =  \
 	MonoDevelop.CodeGeneration/EventMethodGenerator.cs \
 	MonoDevelop.CodeGeneration/GenerateCodeWindow.cs \
 	MonoDevelop.CodeGeneration/ICodeGenerator.cs \
+	MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs \
 	MonoDevelop.CodeGeneration/PropertyGenerator.cs \
 	MonoDevelop.CodeGeneration/ReadonlyPropertyGenerator.cs \
 	MonoDevelop.CodeGeneration/ToStringGenerator.cs \
