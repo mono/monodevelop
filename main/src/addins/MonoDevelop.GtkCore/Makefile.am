@@ -58,6 +58,7 @@ FILES =  \
 	MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs \
 	MonoDevelop.GtkCore.NodeBuilders/WindowsFolder.cs \
 	MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs \
+	MonoDevelop.GtkCore/Counters.cs \
 	MonoDevelop.GtkCore/GtkCoreService.cs \
 	MonoDevelop.GtkCore/GtkDesignInfo.cs \
 	MonoDevelop.GtkCore/ObjectsDocument.cs \

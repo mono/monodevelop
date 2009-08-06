@@ -1,3 +1,11 @@
+2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.GtkCore.csproj:
+	* MonoDevelop.GtkCore/Counters.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Added
+	  some performance counters.
+
 2009-07-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:

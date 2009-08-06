@@ -50,6 +50,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderProject
 	{
+		internal object MemoryProbe = Counters.GuiProjectsInMemory.CreateMemoryProbe ();
+		
 		ArrayList formInfos;
 		Stetic.Project gproject;
 		DotNetProject project;
@@ -73,6 +75,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			this.fileName = fileName;
 			this.project = project;
+			Counters.GuiProjectsLoaded++;
 		}
 		
 		void Load ()
@@ -96,6 +99,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				hasError = true;
 			}
 
+			Counters.SteticProjectsLoaded++;
 			gproject.ResourceProvider = GtkDesignInfo.FromProject (project).ResourceProvider;
 			gproject.WidgetAdded += OnAddWidget;
 			gproject.WidgetRemoved += OnRemoveWidget;
@@ -124,6 +128,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (gproject == null)
 				return;
 
+			Counters.SteticProjectsLoaded--;
+			
 			if (Unloaded != null)
 				Unloaded (this, EventArgs.Empty);
 			if (formInfos != null) {
@@ -230,6 +236,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void Dispose ()
 		{
+			if (disposed)
+				return;
+			Counters.GuiProjectsLoaded--;
 			disposed = true;
 			if (watcher != null)
 				watcher.Dispose ();
