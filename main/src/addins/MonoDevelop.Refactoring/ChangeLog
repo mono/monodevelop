@@ -1,5 +1,16 @@
 2009-08-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CodeGeneration/ToStringGenerator.cs:
+	* MonoDevelop.CodeGeneration/PropertyGenerator.cs:
+	* MonoDevelop.CodeGeneration/WriteLineGenerator.cs:
+	* MonoDevelop.CodeGeneration/EventMethodGenerator.cs:
+	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs:
+	  Check IsSpecialName flag.
+
+2009-08-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:

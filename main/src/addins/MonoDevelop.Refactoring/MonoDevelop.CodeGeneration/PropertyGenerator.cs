@@ -91,6 +91,8 @@ namespace MonoDevelop.CodeGeneration
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
 				foreach (IField field in Options.EnclosingType.Fields) {
+					if (field.IsSpecialName)
+						continue;
 					List<IMember> list = Options.EnclosingType.SearchMember (CreatePropertyName (field), true);
 					if (list == null || list.Count == 0)
 						yield return field;

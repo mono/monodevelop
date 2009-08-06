@@ -83,6 +83,8 @@ namespace MonoDevelop.CodeGeneration
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
 				foreach (IEvent e in Options.EnclosingType.Events) {
+					if (e.IsSpecialName)
+						continue;
 					IType type = Options.Dom.SearchType (new SearchTypeRequest (Options.Document.ParsedDocument.CompilationUnit, e.ReturnType, Options.EnclosingType));
 					if (type == null)
 						continue;

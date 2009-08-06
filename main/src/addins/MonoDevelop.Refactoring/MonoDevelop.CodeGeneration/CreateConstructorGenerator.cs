@@ -86,10 +86,14 @@ namespace MonoDevelop.CodeGeneration
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
 				foreach (IField field in Options.EnclosingType.Fields) {
+					if (field.IsSpecialName)
+						continue;
 					yield return field;
 				}
-				
+
 				foreach (IProperty property in Options.EnclosingType.Properties) {
+					if (property.IsSpecialName)
+						continue;
 					if (property.GetRegion.Start.Line != property.GetRegion.End.Line || property.GetRegion.End.Column - property.GetRegion.Start.Column != 4)
 						continue;
 					yield return property;

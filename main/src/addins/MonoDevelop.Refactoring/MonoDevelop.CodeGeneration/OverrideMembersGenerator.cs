@@ -90,6 +90,8 @@ namespace MonoDevelop.CodeGeneration
 					if (type.Equals (Options.EnclosingType))
 						continue;
 					foreach (IMember member in type.Members) {
+						if (member.IsSpecialName)
+							continue;
 						if (type.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface || member.IsAbstract || member.IsVirtual || member.IsOverride) {
 							string id = AmbienceService.DefaultAmbience.GetString (member, OutputFlags.ClassBrowserEntries);
 							if (memberName.Contains (id))
