@@ -72,94 +72,37 @@ namespace MonoDevelop.CodeGeneration
 			return createEventMethod;
 		}
 		
-		class CreateEventMethod : IGenerateAction
+		class CreateEventMethod : AbstractGenerateAction
 		{
-			CodeGenerationOptions options;
-			TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
-			
-			public CreateEventMethod (CodeGenerationOptions options)
+			public CreateEventMethod (CodeGenerationOptions options) : base (options)
 			{
-				this.options = options;
 			}
 			
-			public void Initialize (Gtk.TreeView treeView)
+			protected override IEnumerable<IMember> GetValidMembers ()
 			{
-				TreeViewColumn column = new TreeViewColumn ();
-
-				CellRendererToggle toggleRenderer = new CellRendererToggle ();
-				toggleRenderer.Toggled += ToggleRendererToggled;
-				column.PackStart (toggleRenderer, false);
-				column.AddAttribute (toggleRenderer, "active", 0);
-
-				CellRendererPixbuf pixbufRenderer = new CellRendererPixbuf ();
-				column.PackStart (pixbufRenderer, false);
-				column.AddAttribute (pixbufRenderer, "pixbuf", 1);
-
-				CellRendererText textRenderer = new CellRendererText ();
-				column.PackStart (textRenderer, true);
-				column.AddAttribute (textRenderer, "text", 2);
-				column.Expand = true;
-
-				treeView.AppendColumn (column);
-
-				foreach (IEvent e in options.EnclosingType.Events) {
-					IType type = options.Dom.SearchType (new SearchTypeRequest (options.Document.ParsedDocument.CompilationUnit, e.ReturnType, options.EnclosingType));
+				if (Options.EnclosingType == null || Options.EnclosingMember != null)
+					yield break;
+				foreach (IEvent e in Options.EnclosingType.Events) {
+					IType type = Options.Dom.SearchType (new SearchTypeRequest (Options.Document.ParsedDocument.CompilationUnit, e.ReturnType, Options.EnclosingType));
 					if (type == null)
 						continue;
 					IMethod invokeMethod = type.Methods.FirstOrDefault ();
 					if (invokeMethod == null)
 						continue;
-					store.AppendValues (false, ImageService.GetPixbuf (e.StockIcon, IconSize.Menu), e.Name, e);
+					yield return e;
 				}
-				treeView.Model = store;
 			}
 			
-			public bool IsValid ()
+			protected override IEnumerable<INode> GenerateCode (List<IMember> includedMembers)
 			{
-				if (options.EnclosingType == null || options.EnclosingMember != null)
-					return false;
-				foreach (IEvent e in options.EnclosingType.Events) {
-					IType type = options.Dom.SearchType (new SearchTypeRequest (options.Document.ParsedDocument.CompilationUnit, e.ReturnType, options.EnclosingType));
-					if (type == null)
-						continue;
-					IMethod invokeMethod = type.Methods.FirstOrDefault ();
-					if (invokeMethod == null)
-						continue;
-					List<IMember> list = options.EnclosingType.SearchMember ("On" + e.Name, true);
-					if (list != null && list.Count > 0)
-						continue;
-					return true;
-				}
-
-				return false;
-			}
-			
-			public void GenerateCode ()
-			{
-				TreeIter iter;
-				if (!store.GetIterFirst (out iter))
-					return;
-
-				List<IMember> includedMembers = new List<IMember> ();
-				do {
-					bool include = (bool)store.GetValue (iter, 0);
-					if (include)
-						includedMembers.Add ((IMember)store.GetValue (iter, 3));
-				} while (store.IterNext (ref iter));
-
-				INRefactoryASTProvider astProvider = options.GetASTProvider ();
-				if (astProvider == null)
-					return;
-
-				StringBuilder output = new StringBuilder ();
 				foreach (IMember member in includedMembers) {
 					MethodDeclaration methodDeclaration = new MethodDeclaration ();
 					methodDeclaration.Name = "On" + member.Name;
 					methodDeclaration.TypeReference = DomReturnType.Void.ConvertToTypeReference ();
 					methodDeclaration.Modifier = ICSharpCode.NRefactory.Ast.Modifiers.Protected | ICSharpCode.NRefactory.Ast.Modifiers.Virtual;
 					methodDeclaration.Body = new BlockStatement ();
-					
-					IType type = options.Dom.SearchType (new SearchTypeRequest (options.Document.ParsedDocument.CompilationUnit, member.ReturnType, options.EnclosingType));
+
+					IType type = Options.Dom.SearchType (new SearchTypeRequest (Options.Document.ParsedDocument.CompilationUnit, member.ReturnType, Options.EnclosingType));
 					IMethod invokeMethod = type.Methods.First ();
 
 					methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (invokeMethod.Parameters[1].ReturnType.ConvertToTypeReference (), invokeMethod.Parameters[1].Name));
@@ -170,18 +113,7 @@ namespace MonoDevelop.CodeGeneration
 					arguments.Add (new IdentifierExpression (invokeMethod.Parameters[1].Name));
 					ifStatement.TrueStatement.Add (new ExpressionStatement (new InvocationExpression (new IdentifierExpression (member.Name), arguments)));
 					methodDeclaration.Body.AddChild (ifStatement);
-					output.Append (astProvider.OutputNode (options.Dom, methodDeclaration, RefactoringOptions.GetIndent (options.Document, options.EnclosingType) + "\t"));
-				}
-				
-				options.Document.TextEditor.InsertText (options.Document.TextEditor.GetPositionFromLineColumn (options.Document.TextEditor.CursorLine, 1), output.ToString ());
-			}
-			
-			void ToggleRendererToggled (object o, ToggledArgs args)
-			{
-				Gtk.TreeIter iter;
-				if (store.GetIterFromString (out iter, args.Path)) {
-					bool active = (bool)store.GetValue (iter, 0);
-					store.SetValue (iter, 0, !active);
+					yield return methodDeclaration;
 				}
 			}
 		}

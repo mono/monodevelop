@@ -60,81 +60,38 @@ namespace MonoDevelop.CodeGeneration
 		
 		public bool IsValid (CodeGenerationOptions options)
 		{
-			return new CreateToString (options).IsValid ();
+			return new CreateWriteLine (options).IsValid ();
 		}
 		
 		public IGenerateAction InitalizeSelection (CodeGenerationOptions options, Gtk.TreeView treeView)
 		{
-			CreateToString createToString = new CreateToString (options);
+			CreateWriteLine createToString = new CreateWriteLine (options);
 			createToString.Initialize (treeView);
 			return createToString;
 		}
 		
-		class CreateToString : IGenerateAction
+		class CreateWriteLine : AbstractGenerateAction
 		{
-			CodeGenerationOptions options;
-			TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
-			
-			public CreateToString (CodeGenerationOptions options)
+			public CreateWriteLine (CodeGenerationOptions options) : base (options)
 			{
-				this.options = options;
 			}
 			
-			public void Initialize (Gtk.TreeView treeView)
+			protected override IEnumerable<IMember> GetValidMembers ()
 			{
-				TreeViewColumn column = new TreeViewColumn ();
-
-				CellRendererToggle toggleRenderer = new CellRendererToggle ();
-				toggleRenderer.Toggled += ToggleRendererToggled;
-				column.PackStart (toggleRenderer, false);
-				column.AddAttribute (toggleRenderer, "active", 0);
-
-				CellRendererPixbuf pixbufRenderer = new CellRendererPixbuf ();
-				column.PackStart (pixbufRenderer, false);
-				column.AddAttribute (pixbufRenderer, "pixbuf", 1);
-
-				CellRendererText textRenderer = new CellRendererText ();
-				column.PackStart (textRenderer, true);
-				column.AddAttribute (textRenderer, "text", 2);
-				column.Expand = true;
+				if (Options.EnclosingType == null || Options.EnclosingMember == null)
+					yield break;
+				foreach (IField field in Options.EnclosingType.Fields) {
+					yield return field;
+				}
 				
-				treeView.AppendColumn (column);
-
-				foreach (IField field in options.EnclosingType.Fields) {
-					store.AppendValues (false, ImageService.GetPixbuf (field.StockIcon, IconSize.Menu), field.Name, field);
+				foreach (IProperty property in Options.EnclosingType.Properties) {
+					if (property.HasGet)
+						yield return property;
 				}
-
-				foreach (IProperty property in options.EnclosingType.Properties) {
-					if (!property.HasGet)
-						continue;
-					store.AppendValues (false, ImageService.GetPixbuf (property.StockIcon, IconSize.Menu), property.Name, property);
-				}
-				treeView.Model = store;
 			}
 			
-			public bool IsValid ()
+			protected override IEnumerable<INode> GenerateCode (List<IMember> includedMembers)
 			{
-				if (options.EnclosingType == null || options.EnclosingMember == null)
-					return false;
-				return options.EnclosingType.FieldCount > 0 || options.EnclosingType.PropertyCount > 0;
-			}
-			
-			public void GenerateCode ()
-			{
-				TreeIter iter;
-				if (!store.GetIterFirst (out iter))
-					return;
-				List<IMember> includedMembers = new List<IMember> ();
-				do {
-					bool include = (bool)store.GetValue (iter, 0);
-					if (include)
-						includedMembers.Add ((IMember)store.GetValue (iter, 3));
-				} while (store.IterNext (ref iter));
-
-				INRefactoryASTProvider astProvider = options.GetASTProvider ();
-				if (astProvider == null)
-					return;
-
 				StringBuilder format = new StringBuilder ();
 				int i = 0;
 				foreach (IMember member in includedMembers) {
@@ -151,18 +108,7 @@ namespace MonoDevelop.CodeGeneration
 				foreach (IMember member in includedMembers) {
 					invocationExpression.Arguments.Add (new IdentifierExpression (member.Name));
 				}
-				
-				string output = astProvider.OutputNode (options.Dom, new ExpressionStatement (invocationExpression));
-				options.Document.TextEditor.InsertText (options.Document.TextEditor.CursorPosition, output);
-			}
-			
-			void ToggleRendererToggled (object o, ToggledArgs args)
-			{
-				Gtk.TreeIter iter;
-				if (store.GetIterFromString (out iter, args.Path)) {
-					bool active = (bool)store.GetValue (iter, 0);
-					store.SetValue (iter, 0, !active);
-				}
+				yield return invocationExpression;
 			}
 		}
 	}

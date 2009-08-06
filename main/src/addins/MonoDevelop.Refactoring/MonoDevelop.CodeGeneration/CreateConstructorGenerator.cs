@@ -75,61 +75,25 @@ namespace MonoDevelop.CodeGeneration
 			return createConstructor;
 		}
 		
-		class CreateConstructor : IGenerateAction
+		class CreateConstructor : AbstractGenerateAction
 		{
-			CodeGenerationOptions options;
-			TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
-			
-			public CreateConstructor (CodeGenerationOptions options)
+			public CreateConstructor (CodeGenerationOptions options) : base (options)
 			{
-				this.options = options;
 			}
 			
-			public void Initialize (Gtk.TreeView treeView)
+			protected override IEnumerable<IMember> GetValidMembers ()
 			{
-				TreeViewColumn column = new TreeViewColumn ();
-
-				CellRendererToggle toggleRenderer = new CellRendererToggle ();
-				toggleRenderer.Toggled += ToggleRendererToggled;
-				column.PackStart (toggleRenderer, false);
-				column.AddAttribute (toggleRenderer, "active", 0);
-
-				CellRendererPixbuf pixbufRenderer = new CellRendererPixbuf ();
-				column.PackStart (pixbufRenderer, false);
-				column.AddAttribute (pixbufRenderer, "pixbuf", 1);
-
-				CellRendererText textRenderer = new CellRendererText ();
-				column.PackStart (textRenderer, true);
-				column.AddAttribute (textRenderer, "text", 2);
-				column.Expand = true;
+				if (Options.EnclosingType == null || Options.EnclosingMember != null)
+					yield break;
+				foreach (IField field in Options.EnclosingType.Fields) {
+					yield return field;
+				}
 				
-				treeView.AppendColumn (column);
-
-				foreach (IField field in options.EnclosingType.Fields) {
-					store.AppendValues (false, ImageService.GetPixbuf (field.StockIcon, IconSize.Menu), field.Name, field);
-				}
-
-				foreach (IProperty property in options.EnclosingType.Properties) {
+				foreach (IProperty property in Options.EnclosingType.Properties) {
 					if (property.GetRegion.Start.Line != property.GetRegion.End.Line || property.GetRegion.End.Column - property.GetRegion.Start.Column != 4)
 						continue;
-					store.AppendValues (false, ImageService.GetPixbuf (property.StockIcon, IconSize.Menu), property.Name, property);
+					yield return property;
 				}
-				treeView.Model = store;
-			}
-			
-			public bool IsValid ()
-			{
-				if (options.EnclosingType == null || options.EnclosingMember != null)
-					return false;
-				if (options.EnclosingType.FieldCount > 0)
-					return true;
-
-				foreach (IProperty property in options.EnclosingType.Properties) {
-					if (property.GetRegion.Start.Line != property.GetRegion.End.Line || property.GetRegion.End.Column - property.GetRegion.Start.Column != 4)
-						continue;
-					return true;
-				}
-				return false;
 			}
 			
 			static string CreateParameterName (IMember member)
@@ -139,46 +103,21 @@ namespace MonoDevelop.CodeGeneration
 				return member.Name;
 			}
 			
-			public void GenerateCode ()
+			protected override IEnumerable<INode> GenerateCode (List<IMember> includedMembers)
 			{
-				TreeIter iter;
-				if (!store.GetIterFirst (out iter))
-					return;
-				List<IMember> includedMembers = new List<IMember> ();
-				do {
-					bool include = (bool)store.GetValue (iter, 0);
-					if (include)
-						includedMembers.Add ((IMember)store.GetValue (iter, 3));
-				} while (store.IterNext (ref iter));
-
-				INRefactoryASTProvider astProvider = options.GetASTProvider ();
-				if (astProvider == null)
-					return;
-
 				List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression> ();
 				foreach (IMember member in includedMembers) {
 					parameters.Add (new ParameterDeclarationExpression (member.ReturnType.ConvertToTypeReference (), CreateParameterName (member)));
 				}
 
-				ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration (options.EnclosingType.Name, ICSharpCode.NRefactory.Ast.Modifiers.Public, parameters, null, null);
+				ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration (Options.EnclosingType.Name, ICSharpCode.NRefactory.Ast.Modifiers.Public, parameters, null, null);
 				constructorDeclaration.Body = new BlockStatement ();
 				foreach (IMember member in includedMembers) {
 					MemberReferenceExpression memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
 					AssignmentExpression assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
 					constructorDeclaration.Body.AddChild (new ExpressionStatement (assign));
 				}
-				string output = astProvider.OutputNode (options.Dom, constructorDeclaration, RefactoringOptions.GetIndent (options.Document, options.EnclosingType) + "\t");
-				options.Document.TextEditor.InsertText (options.Document.TextEditor.GetPositionFromLineColumn (options.Document.TextEditor.CursorLine, 1), output);
-				
-			}
-			
-			void ToggleRendererToggled (object o, ToggledArgs args)
-			{
-				Gtk.TreeIter iter;
-				if (store.GetIterFromString (out iter, args.Path)) {
-					bool active = (bool)store.GetValue (iter, 0);
-					store.SetValue (iter, 0, !active);
-				}
+				yield return constructorDeclaration;
 			}
 		}
 	}

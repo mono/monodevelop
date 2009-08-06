@@ -31,6 +31,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs \
+	MonoDevelop.CodeGeneration/AbstractGenerateAction.cs \
 	MonoDevelop.CodeGeneration/CodeGenerationCommands.cs \
 	MonoDevelop.CodeGeneration/CodeGenerationOptions.cs \
 	MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs \
