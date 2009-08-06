@@ -3,6 +3,19 @@
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/HelperMethods.cs:
+	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
+	* MonoDevelop.Refactoring.RefactorImports/SortImportsRefactoring.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RefactorImportsHandler.cs:
+	* MonoDevelop.Refactoring.RefactorImports/FindTypeReferencesVisitor.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs:
+	  Added remove unused usings & sort usings command.
+
+2009-08-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
 	* MonoDevelop.Refactoring.RefactorImports:
 	* MonoDevelop.Refactoring/RefactoryCommands.cs:
 	* MonoDevelop.Refactoring.Rename/RenameHandler.cs:

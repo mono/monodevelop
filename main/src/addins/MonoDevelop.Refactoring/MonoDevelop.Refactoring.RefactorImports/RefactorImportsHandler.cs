@@ -58,7 +58,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			Console.WriteLine ("Sort unused imports");
+			new SortImportsRefactoring ().Run (options);
 		}
 	}
 	
@@ -66,7 +66,8 @@ namespace MonoDevelop.Refactoring.RefactorImports
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			Console.WriteLine ("Sort & Remove unused imports");
+			new RemoveUnusedImportsRefactoring ().Run (options);
+			new SortImportsRefactoring ().Run (options);
 		}
 	}
 }

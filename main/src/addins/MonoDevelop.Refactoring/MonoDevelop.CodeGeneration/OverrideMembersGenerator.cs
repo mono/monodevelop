@@ -87,14 +87,11 @@ namespace MonoDevelop.CodeGeneration
 					yield break;
 				HashSet<string> memberName = new HashSet<string> ();
 				foreach (IType type in Options.Dom.GetInheritanceTree (Options.EnclosingType)) {
-					Console.WriteLine (type);
 					if (type.Equals (Options.EnclosingType))
 						continue;
 					foreach (IMember member in type.Members) {
-						Console.WriteLine (member);
 						if (type.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface || member.IsAbstract || member.IsVirtual || member.IsOverride) {
 							string id = AmbienceService.DefaultAmbience.GetString (member, OutputFlags.ClassBrowserEntries);
-							Console.WriteLine (id);
 							if (memberName.Contains (id))
 								continue;
 							memberName.Add (id);

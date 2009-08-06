@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Refactoring
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.Refactoring
 			result.IsKeyword = true;
 			result.PointerNestingLevel = returnType.PointerNestingLevel;
 			if (returnType.ArrayDimensions > 0) {
-				int[] rankSpecfier = new int [returnType.ArrayDimensions];
+				int[] rankSpecfier = new int[returnType.ArrayDimensions];
 				for (int i = 0; i < returnType.ArrayDimensions; i++) {
 					rankSpecfier[i] = returnType.GetDimension (i);
 				}
@@ -50,5 +51,24 @@ namespace MonoDevelop.Refactoring
 			}
 			return result;
 		}
+		
+		public static IReturnType ConvertToReturnType (this TypeReference typeRef)
+		{
+			if (typeRef == null)
+				return null;
+			DomReturnType result = new DomReturnType (typeRef.Type);
+			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
+				result.AddTypeParameter (ConvertToReturnType (genericArgument));
+			}
+			result.PointerNestingLevel = typeRef.PointerNestingLevel;
+			if (typeRef.IsArrayType) {
+				result.ArrayDimensions = typeRef.RankSpecifier.Length;
+				for (int i = 0; i < typeRef.RankSpecifier.Length; i++) {
+					result.SetDimension (i, typeRef.RankSpecifier[i]);
+				}
+			}
+			return result;
+		}
 	}
+	
 }

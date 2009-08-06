@@ -94,6 +94,8 @@
     <Compile Include="MonoDevelop.Refactoring\AbstractRefactoringCommandHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring.RefactorImports\RemoveUnusedImportsRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.RefactorImports\RefactorImportsHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring.RefactorImports\FindTypeReferencesVisitor.cs" />
+    <Compile Include="MonoDevelop.Refactoring.RefactorImports\SortImportsRefactoring.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

@@ -59,8 +59,10 @@ FILES =  \
 	MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs \
 	MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs \
 	MonoDevelop.Refactoring.MoveTypeToFile/TypeFilterTransformer.cs \
+	MonoDevelop.Refactoring.RefactorImports/FindTypeReferencesVisitor.cs \
 	MonoDevelop.Refactoring.RefactorImports/RefactorImportsHandler.cs \
 	MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs \
+	MonoDevelop.Refactoring.RefactorImports/SortImportsRefactoring.cs \
 	MonoDevelop.Refactoring.Rename/RenameHandler.cs \
 	MonoDevelop.Refactoring.Rename/RenameItemDialog.cs \
 	MonoDevelop.Refactoring.Rename/RenameRefactoring.cs \
