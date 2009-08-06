@@ -27,7 +27,7 @@
 //
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using Gdk;
 
 namespace MonoDevelop.Components.Chart
@@ -35,10 +35,13 @@ namespace MonoDevelop.Components.Chart
 	public class Serie
 	{
 		string title;
-		ArrayList dataArray = new ArrayList ();
+		List<Data> dataArray = new List<Data> ();
 		bool visible = true;
 		internal BasicChart Owner;
-		Color color;
+		Cairo.Color color;
+		bool extendBoundingValues;
+		DisplayMode mode;
+		double initialValue;
 		
 		public Serie ()
 		{
@@ -66,13 +69,25 @@ namespace MonoDevelop.Components.Chart
 			set { title = value; OnSerieChanged (); }
 		}
 		
-		internal ArrayList Data {
-			get { return dataArray; }
-		}
-		
 		public bool Visible {
 			get { return visible; }
 			set { visible = value; OnSerieChanged (); }
+		}
+		
+		public bool ExtendBoundingValues {
+			get { return extendBoundingValues; }
+			set { extendBoundingValues = value; OnSerieChanged (); }
+		}
+		
+		// Initial value to use when ExtendBoundingValues is set to true
+		public double InitialValue {
+			get { return initialValue; }
+			set { initialValue = value; OnSerieChanged (); }
+		}
+		
+		public DisplayMode DisplayMode {
+			get { return mode; }
+			set { mode = value; OnSerieChanged (); }
 		}
 		
 		public bool HasData {
@@ -85,7 +100,7 @@ namespace MonoDevelop.Components.Chart
 				Owner.OnSerieChanged ();
 		}
 		
-		public Color Color {
+		public Cairo.Color Color {
 			get { return color; }
 			set { color = value; OnSerieChanged (); }
 		}
@@ -100,6 +115,34 @@ namespace MonoDevelop.Components.Chart
 				if (v < min) min = v;
 			}
 		}
+		
+		internal IEnumerable<Data> GetData (double startX, double endX)
+		{
+			if (dataArray.Count == 0)
+				yield break;
+			
+			if (extendBoundingValues) {
+				Data dfirst = dataArray [0];
+				if (dfirst.X > startX)
+					yield return new Data (startX, initialValue);
+			}
+			
+			foreach (Data d in dataArray)
+				yield return d;
+			
+			if (extendBoundingValues) {
+				Data dlast = dataArray [dataArray.Count - 1];
+				if (dlast.X < endX)
+					yield return new Data (endX, dlast.Y);
+			}
+		}
+	}
+	
+	public enum DisplayMode
+	{
+		Line,
+		BlockLine,
+		Bar
 	}
 
 	internal class Data

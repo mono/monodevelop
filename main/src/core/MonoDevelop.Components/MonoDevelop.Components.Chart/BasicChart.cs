@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Gtk;
 using Gdk;
 
@@ -100,6 +101,10 @@ namespace MonoDevelop.Components.Chart
 		
 		public ChartCursor SelectionEnd {
 			get { return selectionEnd; }
+		}
+		
+		public ChartCursor ActiveCursor {
+			get { return activeCursor; }
 		}
 		
 		public bool ReverseXAxis {
@@ -324,6 +329,8 @@ namespace MonoDevelop.Components.Chart
 			Gdk.Window win = GdkWindow;
 			int rwidth, rheight;
 			
+			Cairo.Context ctx = CairoHelper.Create (win);
+			
 			win.GetSize (out rwidth, out rheight);
 			
 			if (autoStartY || autoEndY) {
@@ -424,7 +431,7 @@ namespace MonoDevelop.Components.Chart
 			// Draw values
 			foreach (Serie serie in series)
 				if (serie.Visible)
-					DrawSerie (serie);
+					DrawSerie (ctx, serie);
 
 			// Draw cursors
 			foreach (ChartCursor cursor in cursors)
@@ -434,7 +441,8 @@ namespace MonoDevelop.Components.Chart
 			foreach (ChartCursor cursor in cursors)
 				if (cursor.ShowValueLabel)
 					DrawCursorLabel (cursor);
-				
+			
+			((IDisposable)ctx).Dispose ();
 			return true;
 		}
 		
@@ -645,23 +653,40 @@ namespace MonoDevelop.Components.Chart
 			return max;
 		}
 		
-		void DrawSerie (Serie serie)
+		void DrawSerie (Cairo.Context ctx, Serie serie)
 		{
-			int lastx = int.MinValue;
-			int lasty = 0;
+			ctx.NewPath ();
+			ctx.Rectangle (left, top, width + 1, height + 1);
+			ctx.Clip ();
 			
-			Gdk.GC gc = new Gdk.GC (GdkWindow);
-	   		gc.RgbFgColor = serie.Color;
-			gc.ClipRectangle = new Rectangle (left, top, width + 1, height + 1);
+			ctx.NewPath ();
+			ctx.Color = serie.Color;
+			ctx.LineWidth = 3;
 			
-			foreach (Data d in serie.Data) {
+			bool first = true;
+			bool blockMode = serie.DisplayMode == DisplayMode.BlockLine;
+			
+			int lastY = 0;
+			
+			foreach (Data d in serie.GetData (startX, endX)) {
 				int x, y;
 				GetPoint (d.X, d.Y, out x, out y);
-				if (lastx != int.MinValue)
-					GdkWindow.DrawLine (gc, lastx, lasty, x, y);
-				lastx = x;
-				lasty = y;
+				if (first) {
+					ctx.MoveTo (x, y);
+					lastY = y;
+					first = false;
+				} else {
+					if (blockMode) {
+						if (lastY != y)
+							ctx.LineTo (x, lastY);
+						ctx.LineTo (x, y);
+					} else
+						ctx.LineTo (x, y);
+				}
+				lastY = y;
 			}
+			
+			ctx.Stroke ();
 		}
 		
 		void DrawCursor (ChartCursor cursor)

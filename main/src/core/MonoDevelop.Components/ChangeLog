@@ -1,3 +1,12 @@
+2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components.Chart/Serie.cs:
+	* MonoDevelop.Components.Chart/BasicChart.cs: Some
+	  improvements in the chart widget. Use cairo to render the
+	  lines. Added a new display mode for series.
+
 2009-08-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandRouterContainer.cs:
