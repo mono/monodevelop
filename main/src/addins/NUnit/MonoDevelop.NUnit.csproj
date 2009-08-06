@@ -72,6 +72,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\nunit.util.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

@@ -90,14 +90,14 @@ namespace MonoDevelop.NUnit
 			StartY = 0;
 			
 			serieFailed = new Serie ("Failed tests");
-			serieFailed.Color = new Color (255, 0, 0);
+			serieFailed.Color = new Cairo.Color (1, 0, 0);
 			serieSuccess = new Serie ("Successful tests");
-			serieSuccess.Color = new Color (0, 164, 0);
+			serieSuccess.Color = new Cairo.Color (0, 0.65, 0);
 			serieIgnored = new Serie ("Ignored tests");
-			serieIgnored.Color = new Color (206, 206, 0);
+			serieIgnored.Color = new Cairo.Color (0.8, 0.8, 0);
 			
 			serieTime = new Serie ("Time");
-			serieTime.Color = new Color (0, 0, 255);
+			serieTime.Color = new Cairo.Color (0, 0, 1);
 			
 			UpdateMode ();
 			

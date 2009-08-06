@@ -20,6 +20,7 @@ REFS =  \
 	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.core.interfaces.dll \
 	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.framework.dll \
 	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.util.dll \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml

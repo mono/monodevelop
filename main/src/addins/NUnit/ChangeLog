@@ -1,3 +1,10 @@
+2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Gui/TestChart.cs:
+	* MonoDevelop.NUnit.csproj: Track api changes in the chart
+	  widget.
+
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/NUnitAssemblyTestSuite.cs: Track api changes.
