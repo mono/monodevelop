@@ -1,5 +1,5 @@
 // 
-// DeclareLocalHandler.cs
+// RemoveUnusedUsingsRefactoring.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,17 +25,25 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
+using System.Collections.Generic;
 
-namespace MonoDevelop.Refactoring.DeclareLocal
+namespace MonoDevelop.Refactoring.RefactorImports
 {
-	public class DeclareLocalHandler : AbstractRefactoringCommandHandler
+	public class RemoveUnusedImportsRefactoring : RefactoringOperation
 	{
-		protected override void Run (RefactoringOptions options)
+		public RemoveUnusedImportsRefactoring ()
 		{
-			new DeclareLocalCodeGenerator ().Run (options);
+			Name = "Remove unused imports";
+		}
+		
+		public override bool IsValid (RefactoringOptions options)
+		{
+			return true;
+		}
+		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
+		{
+			List<Change> result = new List<Change> ();
+			return result;
 		}
 	}
 }

@@ -97,10 +97,29 @@
 				defaultHandler = "MonoDevelop.CodeGeneration.ShowCodeGenerationWindowHandler"
 				_label = "S_how Code Generation Window" 
 				shortcut = "Alt|Insert" />
+		
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveUnusedImports"
+					defaultHandler = "MonoDevelop.Refactoring.RefactorImports.RemoveUnusedImportsHandler"
+					icon = "md-remove-namespace"
+					_label = "_Remove unused usings"/>
+		
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.SortImports"
+					defaultHandler = "MonoDevelop.Refactoring.RefactorImports.SortImportsHandler"
+					icon = "md-sort-namespace"
+					_label = "_Sort usings"/>
+					
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveSortImports"
+					defaultHandler = "MonoDevelop.Refactoring.RefactorImports.RemoveSortImportsHandler"
+					_label = "R_emove and Sort usings"/>
 		</Category>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">	
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+<!--		<ItemSet id = "OrganizeUsings" _label = "_Organize Usings">
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveUnusedImports"/>
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.SortImports"/>
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveSortImports"/>
+		</ItemSet>-->
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 	</Extension>
 </Addin>

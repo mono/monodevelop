@@ -91,6 +91,9 @@
     <Compile Include="MonoDevelop.CodeGeneration\WriteLineGenerator.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\AbstractGenerateAction.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\OverrideMembersGenerator.cs" />
+    <Compile Include="MonoDevelop.Refactoring\AbstractRefactoringCommandHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring.RefactorImports\RemoveUnusedImportsRefactoring.cs" />
+    <Compile Include="MonoDevelop.Refactoring.RefactorImports\RefactorImportsHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -103,6 +106,7 @@
     <Folder Include="MonoDevelop.Refactoring.MoveTypeToFile\" />
     <Folder Include="MonoDevelop.Refactoring.IntroduceFormatItem\" />
     <Folder Include="MonoDevelop.CodeGeneration\" />
+    <Folder Include="MonoDevelop.Refactoring.RefactorImports\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />

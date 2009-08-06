@@ -33,33 +33,10 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Refactoring.Rename
 {
-	public class RenameHandler: CommandHandler
+	public class RenameHandler : AbstractRefactoringCommandHandler
 	{
-		protected override void Run (object data)
+		protected override void Run (RefactoringOptions options)
 		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null)
-				return;
-			
-			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
-			if (editor == null)
-				return;
-			
-			ProjectDom dom = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
-			if (dom == null)
-				return;
-			
-			ResolveResult result;
-			IDomVisitable item;
-			CurrentRefactoryOperationsHandler.GetItem (dom, doc, editor, out result, out item);
-			if (item == null)
-				return;
-			RefactoringOptions options = new RefactoringOptions () {
-				Document = doc,
-				Dom = dom,
-				ResolveResult = null,
-				SelectedItem = item
-			};
 			new RenameRefactoring ().Run (options);
 		}
 	}

@@ -124,8 +124,6 @@ namespace MonoDevelop.CodeGeneration
 			BorderBox messageArea = new BorderBox ();
 			messageArea.Add (vbox1);
 			this.Add (messageArea);
-			this.ShowAll ();
-			
 		}
 
 		void TreeviewGenerateActionsSelectionChanged (object sender, EventArgs e)
@@ -163,7 +161,7 @@ namespace MonoDevelop.CodeGeneration
 			if (generateActionsStore.GetIterFirst (out iter))
 				treeviewGenerateActions.Selection.SelectIter (iter);
 			treeviewGenerateActions.GrabFocus ();
-			Show ();
+			this.ShowAll ();
 		}
 		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)

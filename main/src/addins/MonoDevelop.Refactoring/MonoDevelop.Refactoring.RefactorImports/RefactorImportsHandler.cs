@@ -1,5 +1,5 @@
 // 
-// DeclareLocalHandler.cs
+// ImportsHandler.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,17 +25,48 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
+using System.Collections.Generic;
+using System.Text;
+using System.CodeDom;
+using System.Threading;
 
-namespace MonoDevelop.Refactoring.DeclareLocal
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.CodeGeneration;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Refactoring;
+
+namespace MonoDevelop.Refactoring.RefactorImports
 {
-	public class DeclareLocalHandler : AbstractRefactoringCommandHandler
+	public class RemoveUnusedImportsHandler: AbstractRefactoringCommandHandler
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			new DeclareLocalCodeGenerator ().Run (options);
+			new RemoveUnusedImportsRefactoring ().Run (options);
+		}
+	}
+	
+	public class SortImportsHandler: AbstractRefactoringCommandHandler
+	{
+		protected override void Run (RefactoringOptions options)
+		{
+			Console.WriteLine ("Sort unused imports");
+		}
+	}
+	
+	public class RemoveSortImportsHandler: AbstractRefactoringCommandHandler
+	{
+		protected override void Run (RefactoringOptions options)
+		{
+			Console.WriteLine ("Sort & Remove unused imports");
 		}
 	}
 }

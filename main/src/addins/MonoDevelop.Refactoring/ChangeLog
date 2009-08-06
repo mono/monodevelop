@@ -3,6 +3,22 @@
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring.RefactorImports:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring.Rename/RenameHandler.cs:
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalHandler.cs:
+	* MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RefactorImportsHandler.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs:
+	  Worked on code generation/refactoring.
+
+2009-08-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
 	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
 	* MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs:
 	* MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs:

@@ -1,5 +1,5 @@
 // 
-// DeclareLocalHandler.cs
+// AbstractRefactoringCommandHandler.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -28,14 +28,40 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Dom;
 
-namespace MonoDevelop.Refactoring.DeclareLocal
+namespace MonoDevelop.Refactoring
 {
-	public class DeclareLocalHandler : AbstractRefactoringCommandHandler
+	public abstract class AbstractRefactoringCommandHandler : CommandHandler
 	{
-		protected override void Run (RefactoringOptions options)
+		protected abstract void Run (RefactoringOptions options);
+		
+		protected override void Run (object data)
 		{
-			new DeclareLocalCodeGenerator ().Run (options);
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return;
+			
+			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
+			if (editor == null)
+				return;
+			
+			ProjectDom dom = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
+			if (dom == null)
+				return;
+			
+			ResolveResult result;
+			IDomVisitable item;
+			CurrentRefactoryOperationsHandler.GetItem (dom, doc, editor, out result, out item);
+			
+			RefactoringOptions options = new RefactoringOptions () {
+				Document = doc,
+				Dom = dom,
+				ResolveResult = null,
+				SelectedItem = item
+			};
+			Run (options);
 		}
 	}
 }

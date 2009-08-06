@@ -33,11 +33,10 @@ using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects.Dom.Output;
 
 namespace MonoDevelop.CodeGeneration
 {
-
-
 	public abstract class AbstractGenerateAction : IGenerateAction
 	{
 		TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
@@ -77,9 +76,9 @@ namespace MonoDevelop.CodeGeneration
 			column.Expand = true;
 
 			treeView.AppendColumn (column);
-			
+			Ambience ambience = AmbienceService.GetAmbienceForFile (options.Document.FileName);
 			foreach (IMember member in GetValidMembers ()) {
-				Store.AppendValues (false, ImageService.GetPixbuf (member.StockIcon, IconSize.Menu), member.Name, member);
+				Store.AppendValues (false, ImageService.GetPixbuf (member.StockIcon, IconSize.Menu), ambience.GetString (member, OutputFlags.ClassBrowserEntries), member);
 			}
 			
 			treeView.Model = store;
