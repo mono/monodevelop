@@ -36,7 +36,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="System.Drawing" />
     <Reference Include="Mono.Posix" />
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
@@ -69,6 +68,8 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib" />
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -526,6 +527,8 @@
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\MultiMessageDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs" />
     <Compile Include="MonoDevelop.Core.Gui\DesktopService.cs" />
+    <Compile Include="MonoDevelop.Core.Gui.Dialogs\InstrumentationViewerDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Dialogs.InstrumentationViewerDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

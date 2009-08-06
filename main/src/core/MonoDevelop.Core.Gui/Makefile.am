@@ -13,6 +13,7 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	-r:ICSharpCode.SharpZipLib \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -22,6 +23,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Dialogs.InstrumentationViewerDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs \
@@ -32,6 +34,7 @@ FILES =  \
 	MonoDevelop.Core.Gui.Components/FileBrowser.cs \
 	MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs \
 	MonoDevelop.Core.Gui.Dialogs/ErrorDialog.cs \
+	MonoDevelop.Core.Gui.Dialogs/InstrumentationViewerDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/IOptionsPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/MultiMessageDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs \

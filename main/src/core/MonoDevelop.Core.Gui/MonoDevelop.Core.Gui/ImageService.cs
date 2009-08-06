@@ -125,23 +125,48 @@ namespace MonoDevelop.Core.Gui
 			int w, h;
 			if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h))
 				w = h = 22;
-			Gdk.Pixbuf result = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, w, h);
-			uint color;
-			if (!TryParseColor (name, out color))
-				color = 0xFFFFFF00;
-			result.Fill (color);
-			return result;
+			Gdk.Pixbuf p = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, w, h);
+			uint colour;
+			if (!TryParseColourFromHex (name, false, out colour))
+				//if lookup fails, make it transparent
+				colour = 0xFFFFFF00;
+			p.Fill (colour);
+			return p;
 		}
 		
-		static bool TryParseColor (string colorString, out uint val)
+		static bool TryParseColourFromHex (string str, bool alpha, out uint val)
 		{
-			Gdk.Color color = new Gdk.Color ();
-			if (Gdk.Color.Parse (colorString, ref color))  {
-				val = color.Pixel;
-				return true;
+			val = 0x00000000;
+			if (str.Length != (alpha? 9 : 7))
+				return false;
+			
+			for (int stringIndex = 1; stringIndex < str.Length; stringIndex++) {
+				uint bits;
+				switch (str[stringIndex]) {
+				case '0': bits = 0; break;
+				case '1': bits = 1; break;
+				case '2': bits = 2; break;
+				case '3': bits = 3; break;
+				case '4': bits = 4; break;
+				case '5': bits = 5; break;
+				case '6': bits = 6; break;
+				case '7': bits = 7; break;
+				case '8': bits = 8; break;
+				case '9': bits = 9; break;
+				case 'A': case 'a': bits = 10; break;
+				case 'B': case 'b': bits = 11; break;
+				case 'C': case 'c': bits = 12; break;
+				case 'D': case 'd': bits = 13; break;
+				case 'E': case 'e': bits = 14; break;
+				case 'F': case 'f': bits = 15; break;
+				default: return false;
+				}
+				
+				val = (val << 4) | bits;
 			}
-			val = 0;
-			return false;
+			if (!alpha)
+				val = (val << 8) | 0xFF;
+			return true;
 		}
 		
 		public static Gtk.Image GetImage (string name, Gtk.IconSize size)

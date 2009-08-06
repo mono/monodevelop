@@ -1,3 +1,16 @@
+2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.Dialogs/InstrumentationViewerDialog.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.InstrumentationViewerDialog.cs:
+	  Implemented instrumentation viewer.
+
+	* MonoDevelop.Core.Gui/ImageService.cs: Fixed TryParseColor.
+	  The new implementation didn't work (Gdk.Color.Parse doesn't
+	  set the Pixel property).
+
 2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/MessageService.cs: Add new stock alert
