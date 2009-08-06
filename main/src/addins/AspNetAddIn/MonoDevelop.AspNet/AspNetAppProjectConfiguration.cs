@@ -51,5 +51,12 @@ namespace MonoDevelop.AspNet
 			get { return disableCodeBehindGeneration; }
 			set { disableCodeBehindGeneration = value; }
 		}
+		
+		public override void CopyFrom (ItemConfiguration configuration)
+		{
+			var cfg = (AspNetAppProjectConfiguration) configuration;
+			base.CopyFrom (configuration);
+			disableCodeBehindGeneration = cfg.disableCodeBehindGeneration;
+		}
 	}
 }

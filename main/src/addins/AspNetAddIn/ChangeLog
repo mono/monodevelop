@@ -1,3 +1,9 @@
+2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs:
+	  Override and implement CopyFrom. Should allow the config
+	  editing panel to store values.
+
 2009-08-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AspNetAddIn.csproj: Don't local copy assemblies.
