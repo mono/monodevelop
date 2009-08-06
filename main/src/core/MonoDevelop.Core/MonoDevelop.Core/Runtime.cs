@@ -55,6 +55,8 @@ namespace MonoDevelop.Core
 				return;
 			initialized = true;
 			
+			SetupInstrumentation ();
+			
 			AddinManager.AddinLoadError += OnLoadError;
 			AddinManager.AddinLoaded += OnLoad;
 			AddinManager.AddinUnloaded += OnUnload;
@@ -81,6 +83,14 @@ namespace MonoDevelop.Core
 
 			systemAssemblyService = new SystemAssemblyService ();
 			systemAssemblyService.Initialize ();
+		}
+		
+		static void SetupInstrumentation ()
+		{
+			InstrumentationService.Enabled = PropertyService.Get ("MonoDevelop.EnableInstrumentation", false);
+			PropertyService.AddPropertyHandler ("MonoDevelop.EnableInstrumentation", delegate {
+				InstrumentationService.Enabled = PropertyService.Get ("MonoDevelop.EnableInstrumentation", false);
+			});
 		}
 		
 		static void OnLoadError (object s, AddinErrorEventArgs args)

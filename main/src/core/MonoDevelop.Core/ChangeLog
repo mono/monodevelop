@@ -1,5 +1,10 @@
 2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core/Runtime.cs: Added configuration option for
+	  enabling/disabling instrumentation.
+
+2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.csproj:
 	* MonoDevelop.Core/Runtime.cs:
