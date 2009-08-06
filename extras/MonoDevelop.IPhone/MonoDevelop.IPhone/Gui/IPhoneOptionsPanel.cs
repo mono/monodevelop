@@ -59,7 +59,7 @@ namespace MonoDevelop.IPhone.Gui
 		
 		public void Load (IPhoneProject proj)
 		{
-			displayNameEntry.Text = proj.BundleDevelopmentRegion ?? "";
+			devRegionEntry.Text = proj.BundleDevelopmentRegion ?? "";
 			bundleIdEntry.Text = proj.BundleIdentifier ?? "";
 			displayNameEntry.Text = proj.BundleDisplayName ?? "";
 			
@@ -78,8 +78,8 @@ namespace MonoDevelop.IPhone.Gui
 		
 		public void Store (IPhoneProject proj)
 		{
-			proj.BundleDevelopmentRegion = NullIfEmpty (displayNameEntry.Text);
-			proj.BundleIdentifier = NullIfEmpty (displayNameEntry.Text);
+			proj.BundleDevelopmentRegion = NullIfEmpty (devRegionEntry.Text);
+			proj.BundleIdentifier = NullIfEmpty (bundleIdEntry.Text);
 			proj.BundleDisplayName = NullIfEmpty (displayNameEntry.Text);
 			proj.MainNibFile = NullIfEmpty (mainNibPicker.SelectedFile);
 			proj.BundleIcon = NullIfEmpty (appIconPicker.SelectedFile);

@@ -35,14 +35,8 @@ using System.Diagnostics;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 
-
-
-
-
-
 namespace MonoDevelop.IPhone
 {
-	
 	
 	public class IPhoneProject : DotNetProject
 	{
@@ -58,7 +52,7 @@ namespace MonoDevelop.IPhone
 		[ItemProperty ("BundleDevelopmentRegion")]
 		string bundleDevelopmentRegion;
 		
-		[ItemProperty ("BundleIndentifier")]
+		[ItemProperty ("BundleIdentifier")]
 		string bundleIdentifier;
 		
 		[ItemProperty ("BundleDisplayName")]

@@ -73,6 +73,7 @@ namespace MonoDevelop.IPhone.Gui {
             // Container child table1.Gtk.Table+TableChild
             this.appIconPicker = new MonoDevelop.Projects.Gui.ProjectFileEntry();
             this.appIconPicker.Name = "appIconPicker";
+            this.appIconPicker.EntryIsEditable = false;
             this.table1.Add(this.appIconPicker);
             Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table1[this.appIconPicker]));
             w2.TopAttach = ((uint)(2));
@@ -181,6 +182,7 @@ namespace MonoDevelop.IPhone.Gui {
             // Container child table1.Gtk.Table+TableChild
             this.mainNibPicker = new MonoDevelop.Projects.Gui.ProjectFileEntry();
             this.mainNibPicker.Name = "mainNibPicker";
+            this.mainNibPicker.EntryIsEditable = false;
             this.table1.Add(this.mainNibPicker);
             Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table1[this.mainNibPicker]));
             w11.TopAttach = ((uint)(3));

@@ -1,5 +1,16 @@
 2009-08-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/IPhoneOptionsPanel.cs: Fix the assignment of values
+	  between GUI and project properties.
+
+	* IPhoneProject.cs: Fix typo in serialized property name.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs:
+	  Updated.
+
+2009-08-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: If no project is selected, deploy to the
 	  startup project.
 

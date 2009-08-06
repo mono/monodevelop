@@ -48,6 +48,7 @@
                 <child>
                   <widget class="MonoDevelop.Projects.Gui.ProjectFileEntry" id="appIconPicker">
                     <property name="MemberName" />
+                    <property name="EntryIsEditable">False</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
@@ -237,6 +238,7 @@
                 <child>
                   <widget class="MonoDevelop.Projects.Gui.ProjectFileEntry" id="mainNibPicker">
                     <property name="MemberName" />
+                    <property name="EntryIsEditable">False</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">3</property>
