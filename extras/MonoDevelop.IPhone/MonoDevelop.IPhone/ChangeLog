@@ -1,5 +1,11 @@
 2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProjectConfiguration.cs: Override and implement
+	  CopyFrom. Should allow the config editing panel to store
+	  values.
+
+2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Quote filenames passed to ibtool.
 
 2009-08-05  Michael Hutchinson  <mhutchinson@novell.com>

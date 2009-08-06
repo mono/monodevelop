@@ -67,5 +67,13 @@ namespace MonoDevelop.IPhone
 		
 		[ItemProperty ("ExtraMtouchArgs")]
 		public string ExtraMtouchArgs { get; set; }
+		
+		public override void CopyFrom (ItemConfiguration configuration)
+		{
+			var cfg = (IPhoneProjectConfiguration) configuration;
+			base.CopyFrom (configuration);
+			ExtraMtouchArgs = cfg.ExtraMtouchArgs;
+		}
+		
 	}
 }
