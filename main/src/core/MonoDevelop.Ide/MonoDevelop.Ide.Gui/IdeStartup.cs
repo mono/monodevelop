@@ -62,6 +62,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int Run (string[] args)
 		{
+			Counters.Initialization++;
 			SetupExceptionManager ();
 			
 			try {
@@ -208,6 +209,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			initialized = true;
 			MessageService.RootWindow = IdeApp.Workbench.RootWindow;
+			Counters.Initialization--;
 			IdeApp.Run ();
 			
 			// unloading services

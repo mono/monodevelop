@@ -45,7 +45,8 @@ namespace MonoDevelop.Ide.Commands
 	public enum ToolCommands
 	{
 		AddinManager,
-		ToolList
+		ToolList,
+		InstrumentationViewer
 	}
 
 	internal class AddinManagerHandler : CommandHandler
@@ -127,6 +128,20 @@ namespace MonoDevelop.Ide.Commands
 				progressMonitor.Dispose ();
 			}
 
+		}
+	}
+
+	internal class InstrumentationViewerHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			InstrumentationViewerDialog dlg = new InstrumentationViewerDialog ();
+			dlg.Show ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled;
 		}
 	}
 }

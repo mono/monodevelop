@@ -740,6 +740,10 @@
 				defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
 				_label = "_Format Document" />
 				
+		<Command id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer"
+				defaultHandler = "MonoDevelop.Ide.Commands.InstrumentationViewerHandler"
+				_label = "Instrumentation Monitor" />
+				
 		</Category>
 		
 		
@@ -1273,7 +1277,9 @@
 
 		<Section id = "VersionControl" _label = "Version Control" />
 
-		<Section id = "Other" _label = "Other" />
+		<Section id = "Other" _label = "Other">
+			<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" />
+		</Section>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
@@ -1568,6 +1574,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager" />
 			<SeparatorItem id ="AddinManagerSeparator" /> 
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
 		</ItemSet>
 
 		<ItemSet id = "Window" _label = "_Window">

@@ -1,3 +1,25 @@
+2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide/Services.cs:
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/IdeStartup.cs:
+	* MonoDevelop.Ide.Codons/PadCodon.cs:
+	* MonoDevelop.Ide.Gui/IdePreferences.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/MaintenanceOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanelWidget.cs:
+	  Add support for the instrumentation service. Added a new
+	  command for showing the viewer. Added an options panel for
+	  enabling it. Added some counters.
+
+	* gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs:
+	  Flush.
+
 2009-08-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Execution\ExecutionModeCommandService.cs:

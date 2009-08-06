@@ -552,6 +552,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			foreach (List<PadCodon> pads in padCollections.Values) 
 				pads.Remove (content);
+			
+			Counters.PadsLoaded--;
 		}
 		
 		public bool IsVisible (PadCodon padContent)

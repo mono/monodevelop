@@ -128,6 +128,7 @@ namespace MonoDevelop.Ide.Codons
 		
 		protected virtual IPadContent CreatePad ()
 		{
+			Counters.PadsLoaded++;
 			return (IPadContent) Addin.CreateInstance (className, true);
 		}
 		

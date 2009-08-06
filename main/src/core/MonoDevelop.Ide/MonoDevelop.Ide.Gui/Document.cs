@@ -51,6 +51,8 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class Document
 	{
+		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
+		
 		IWorkbenchWindow window;
 		TextEditorExtension editorExtension;
 		bool editorChecked;
@@ -101,6 +103,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document (IWorkbenchWindow window)
 		{
+			Counters.OpenDocuments++;
 			LastTimeActive = DateTime.Now;
 			this.window = window;
 			window.Closed += OnClosed;
@@ -387,6 +390,7 @@ namespace MonoDevelop.Ide.Gui
 					ProjectDomService.Parse (curentParseProject, currentParseFile, DesktopService.GetMimeTypeForUri (currentParseFile));
 				});
 			}
+			Counters.OpenDocuments--;
 		}
 #region document tasks
 		List<Task> tasks = new List<Task> ();

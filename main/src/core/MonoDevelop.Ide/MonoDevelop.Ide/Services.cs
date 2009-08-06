@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Gui;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide
 {
@@ -52,6 +53,14 @@ namespace MonoDevelop.Ide
 		public static ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}
+	}
+	
+	internal static class Counters
+	{
+		internal static Counter Initialization = InstrumentationService.CreateCounter ("IDE Initialization", "IDE");
+		internal static Counter OpenDocuments = InstrumentationService.CreateCounter ("Open Documents", "IDE");
+		internal static Counter DocumentsInMemory = InstrumentationService.CreateCounter ("Documents in Memory", "IDE");
+		internal static Counter PadsLoaded = InstrumentationService.CreateCounter ("Pads Loaded", "IDE");
 	}
 }
 

@@ -155,6 +155,16 @@ namespace MonoDevelop.Ide.Gui
 			get { return PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false); }
 			set { PropertyService.Set ("MonoDevelop.Ide.BuildWithMSBuild", value); }
 		}
+
+		public bool EnableInstrumentation {
+			get { return PropertyService.Get ("MonoDevelop.EnableInstrumentation", false); }
+			set { PropertyService.Set ("MonoDevelop.EnableInstrumentation", value); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> EnableInstrumentationChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.EnableInstrumentation", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.EnableInstrumentation", value); }
+		}
 	}
 	
 	public enum BeforeCompileAction {

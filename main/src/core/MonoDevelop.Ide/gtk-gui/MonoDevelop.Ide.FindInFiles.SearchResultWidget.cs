@@ -88,7 +88,6 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.labelStatus = new Gtk.Label();
             this.labelStatus.Name = "labelStatus";
             this.labelStatus.Xalign = 0F;
-            this.labelStatus.LabelProp = Mono.Unix.Catalog.GetString("Cerca");
             this.vbox2.Add(this.labelStatus);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.labelStatus]));
             w8.Position = 1;
