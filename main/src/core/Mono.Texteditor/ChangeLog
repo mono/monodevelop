@@ -1,3 +1,7 @@
+2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SyntaxModes/XmlSyntaxMode.xml: Fix BlockCommentEnd value.
+
 2009-08-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Worked on coordinate
