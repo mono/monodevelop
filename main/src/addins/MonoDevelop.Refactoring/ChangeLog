@@ -1,5 +1,11 @@
 2009-08-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.RefactorImports/SortImportsRefactoring.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs:
+	  Fixed bug with namespaces.
+
+2009-08-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CodeGeneration/ToStringGenerator.cs:
 	* MonoDevelop.CodeGeneration/PropertyGenerator.cs:
 	* MonoDevelop.CodeGeneration/WriteLineGenerator.cs:

@@ -66,6 +66,8 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			Mono.TextEditor.TextEditorData textEditorData = options.GetTextEditorData ();
 			int minOffset = int.MaxValue;
 			foreach (IUsing u in compilationUnit.Usings) {
+				if (u.IsFromNamespace)
+					continue;
 				int offset = textEditorData.Document.LocationToOffset (u.Region.Start.Line - 1, u.Region.Start.Column - 1);
 				TextReplaceChange change = new TextReplaceChange () {
 					FileName = options.Document.FileName,

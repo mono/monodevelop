@@ -53,6 +53,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			visitor.VisitCompilationUnit (unit, null);
 
 			ProjectDom dom = options.Dom;
+			
 			ICompilationUnit compilationUnit = options.ParseDocument ().CompilationUnit;
 			HashSet<string> usedUsings = new HashSet<string> ();
 			foreach (TypeReference r in visitor.PossibleTypeReferences) {
@@ -65,6 +66,8 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			}
 			Mono.TextEditor.TextEditorData textEditorData = options.GetTextEditorData ();
 			foreach (IUsing u in compilationUnit.Usings) {
+				if (u.IsFromNamespace)
+					continue;
 				if (!u.Aliases.Any () && u.Namespaces.All (name => !usedUsings.Contains (name))) {
 					TextReplaceChange change = new TextReplaceChange ();
 					change.FileName = options.Document.FileName;
