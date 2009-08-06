@@ -42,13 +42,13 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Configuration" />
-    <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -176,6 +176,10 @@
     <Compile Include="MonoDevelop.Core.Execution\DefaultExecutionMode.cs" />
     <Compile Include="MonoDevelop.Core.Execution\DisposerFormatterSink.cs" />
     <Compile Include="MonoDevelop.Core.Execution\RemotingService.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\InstrumentationService.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\Counter.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\CounterCategory.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\MemoryProbe.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -219,6 +223,7 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Core.Assemblies\" />
     <Folder Include="frameworks\" />
+    <Folder Include="MonoDevelop.Core.Instrumentation\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">

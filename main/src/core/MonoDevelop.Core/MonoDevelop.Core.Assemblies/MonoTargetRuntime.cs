@@ -199,6 +199,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		SystemPackageInfo GetPackageInfo (string pcfile, string pname)
 		{
+			Counters.PcFilesParsed++;
 			SystemPackageInfo pinfo = new SystemPackageInfo ();
 			pinfo.Name = pname;
 			List<string> fullassemblies = null;

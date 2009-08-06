@@ -37,6 +37,7 @@ using System.Diagnostics;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Instrumentation;
 using Mono.Addins;
 
 namespace MonoDevelop.Core.Execution
@@ -141,6 +142,7 @@ namespace MonoDevelop.Core.Execution
 			// instead we use another thread to monitor I/O and wait for exit
 			// p.EnableRaisingEvents = true;
 			
+			Counters.ProcessesStarted++;
 			p.Start ();
 			return p;
 		}
@@ -193,6 +195,7 @@ namespace MonoDevelop.Core.Execution
 				psi.CreateNoWindow = true;
 				p.StartInfo = psi;
 				ProcessEnvironmentVariableOverrides (p.StartInfo);
+				Counters.ProcessesStarted++;
 				p.Start();
 				return p;
 			} else {

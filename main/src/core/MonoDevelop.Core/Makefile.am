@@ -61,6 +61,10 @@ FILES =  \
 	MonoDevelop.Core.Execution/RemotingService.cs \
 	MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs \
 	MonoDevelop.Core.FileSystem/FileSystemExtension.cs \
+	MonoDevelop.Core.Instrumentation/Counter.cs \
+	MonoDevelop.Core.Instrumentation/CounterCategory.cs \
+	MonoDevelop.Core.Instrumentation/InstrumentationService.cs \
+	MonoDevelop.Core.Instrumentation/MemoryProbe.cs \
 	MonoDevelop.Core.Logging/ConsoleCrayon.cs \
 	MonoDevelop.Core.Logging/ConsoleLogger.cs \
 	MonoDevelop.Core.Logging/FileLogger.cs \

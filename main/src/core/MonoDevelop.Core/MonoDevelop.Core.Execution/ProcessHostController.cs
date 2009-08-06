@@ -116,6 +116,7 @@ namespace MonoDevelop.Core.Execution
 					DotNetExecutionCommand cmd = new DotNetExecutionCommand(location, arguments, AppDomain.CurrentDomain.BaseDirectory);
 					cmd.DebugMode = isDebugMode;
 					process = executionHandlerFactory.Execute (cmd, cons);
+					Counters.ExternalHostProcesses++;
 					
 					process.Completed += ProcessExited;
 					
@@ -143,6 +144,8 @@ namespace MonoDevelop.Core.Execution
 		{
 			lock (this) {
 
+				Counters.ExternalHostProcesses--;
+				
 				// Remove all callbacks from existing objects
 				foreach (object ob in remoteObjects)
 					RemotingService.UnregisterMethodCallback (ob, "Dispose");
@@ -180,6 +183,7 @@ namespace MonoDevelop.Core.Execution
 				object obj = processHost.CreateInstance (type);
 				RemotingService.RegisterMethodCallback (obj, "Dispose", RemoteProcessObjectDisposing, null);
 				remoteObjects.Add (obj);
+				Counters.ExternalObjects++;
 				return obj;
 			} catch {
 				ReleaseInstance (null);
@@ -207,6 +211,7 @@ namespace MonoDevelop.Core.Execution
 				object obj = processHost.CreateInstance (assemblyPath, typeName);
 				RemotingService.RegisterMethodCallback (obj, "Dispose", RemoteProcessObjectDisposing, null);
 				remoteObjects.Add (obj);
+				Counters.ExternalObjects++;
 				return obj;
 			} catch {
 				ReleaseInstance (null);
@@ -233,7 +238,9 @@ namespace MonoDevelop.Core.Execution
 		
 		public void ReleaseInstance (object proc, int shutdownTimeout)
 		{
-			if (processHost == null) return;
+			Counters.ExternalObjects--;
+			if (processHost == null)
+				return;
 			
 			lock (this) {
 				for (int n=0; n<remoteObjects.Count; n++) {

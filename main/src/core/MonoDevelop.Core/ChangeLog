@@ -1,3 +1,19 @@
+2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core/Runtime.cs:
+	* MonoDevelop.Core.Instrumentation:
+	* MonoDevelop.Core.Instrumentation/Counter.cs:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.Instrumentation/MemoryProbe.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Execution/ProcessHostController.cs:
+	* MonoDevelop.Core.Instrumentation/CounterCategory.cs:
+	* MonoDevelop.Core.Instrumentation/InstrumentationService.cs:
+	  Implemented basic instrumentation support.
+
 2009-08-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.AddIns/PackageInstalledCondition.cs:

@@ -37,6 +37,7 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;
 using Mono.Addins.Setup;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Core
 {
@@ -91,11 +92,13 @@ namespace MonoDevelop.Core
 		static void OnLoad (object s, AddinEventArgs args)
 		{
 			LoggingService.LogInfo ("Add-in loaded: " + args.AddinId);
+			Counters.AddinsLoaded++;
 		}
 		
 		static void OnUnload (object s, AddinEventArgs args)
 		{
 			LoggingService.LogInfo ("Add-in unloaded: " + args.AddinId);
+			Counters.AddinsLoaded--;
 		}
 		
 		internal static bool Initialized {
@@ -225,5 +228,17 @@ namespace MonoDevelop.Core
 	public interface IApplication
 	{
 		int Run (string[] arguments);
+	}
+	
+	internal static class Counters
+	{
+		public static Counter AddinsLoaded = InstrumentationService.CreateCounter ("Add-ins loaded", "Add-in Engine");
+		
+		public static Counter ProcessesStarted = InstrumentationService.CreateCounter ("Processes Started", "Process Service");
+		public static Counter ExternalObjects = InstrumentationService.CreateCounter ("External Objects", "Process Service");
+		public static Counter ExternalHostProcesses = InstrumentationService.CreateCounter ("External Processes Hosting Objects", "Process Service");
+		
+		public static Counter TargetRuntimesLoading = InstrumentationService.CreateCounter ("Target Runtimes Loading", "Assembly Service");
+		public static Counter PcFilesParsed = InstrumentationService.CreateCounter (".pc Files Parsed", "Assembly Service");
 	}
 }

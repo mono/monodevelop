@@ -670,12 +670,14 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			lock (initLock) {
 				try {
+					Counters.TargetRuntimesLoading++;
 					RunInitialization ();
 				} catch (Exception ex) {
 					LoggingService.LogFatalError ("Unhandled exception in SystemAssemblyService background initialisation thread.", ex);
 				} finally {
 					Monitor.PulseAll (initLock);
 					initialized = true;
+					Counters.TargetRuntimesLoading--;
 				}
 			}
 		}
