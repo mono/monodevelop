@@ -1,3 +1,11 @@
+2009-08-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* icons/sort-namespace-16.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* icons/remove-namespace-16.png:
+	* MonoDevelop.Core.Gui.addin.xml: Added some icons.
+
 2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

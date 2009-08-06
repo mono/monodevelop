@@ -186,12 +186,14 @@ RES =  \
 	icons/project-reference-folder-16.png \
 	icons/project-reference-package-16.png \
 	icons/project-reference-project-16.png \
+	icons/remove-namespace-16.png \
 	icons/solution-16.png \
 	icons/solution-32.png \
 	icons/solution-folder-closed-16.png \
 	icons/solution-folder-new-16.png \
 	icons/solution-folder-open-16.png \
 	icons/solution-new-16.png \
+	icons/sort-namespace-16.png,icons.sort-namespace-16.png \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
 	icons/template-16.png \

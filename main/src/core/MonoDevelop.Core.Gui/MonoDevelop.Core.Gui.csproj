@@ -473,6 +473,10 @@
     <EmbeddedResource Include="icons\solution-folder-new-16.png">
       <LogicalName>solution-folder-new-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-namespace-16.png">
+      <LogicalName>remove-namespace-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\sort-namespace-16.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Gui.Components\FileBrowser.cs" />
