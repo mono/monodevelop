@@ -1,5 +1,10 @@
 2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* CodeBehindGenerator.cs: Map MK interface type prefix to
+	  MapKit namespace.
+
+2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProject.cs: Better handling of output paths when
 	  creating configurations.
 

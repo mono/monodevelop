@@ -113,7 +113,7 @@ namespace MonoDevelop.IPhone
 						} else if (obj is UnknownIBObject) {
 							var cls = ((UnknownIBObject)obj).Class;
 							if (cls != "IBUICustomObject")
-								baseType = GetTypeName (cls).BaseType;
+								baseType = GetTypeName (cls);
 						}
 						type.Comments.Add (new CodeCommentStatement (String.Format ("Base type probably should be {0} or subclass", baseType))); 
 					}
@@ -145,7 +145,9 @@ namespace MonoDevelop.IPhone
 					CodeTypeReference senderType = null;
 					foreach (IBCocoaTouchEventConnection ev in actionGroup) {
 						var sender = ResolveIfReference (ev.Source) as UnknownIBObject;
-						var newType = sender != null? GetTypeName (sender.Class) : new CodeTypeReference ("MonoTouch.Foundation.NSObject");
+						var newType = sender != null
+							? new CodeTypeReference (GetTypeName (sender.Class))
+							: new CodeTypeReference ("MonoTouch.Foundation.NSObject");
 						if (senderType == null) {
 							senderType = newType;
 							continue;
@@ -184,7 +186,7 @@ namespace MonoDevelop.IPhone
 					//destination is widget, so get type
 					var widget = outlet.Destination.Reference as UnknownIBObject;
 					if (widget != null)
-						outletType = GetTypeName (widget.Class);
+						outletType = new CodeTypeReference (GetTypeName (widget.Class));
 					else
 						outletType = new CodeTypeReference ("System.Object");
 					
@@ -265,16 +267,18 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
-		static CodeTypeReference GetTypeName (string ibType)
+		static string GetTypeName (string ibType)
 		{
-			string name;
-			if (ibType.StartsWith ("NS"))
-				name = "MonoTouch.Foundation." + ibType;
-			else if (ibType.StartsWith ("IB") && ibType.Length > 2)
-				name = "MonoTouch.UIKit." + ibType.Substring (2);
-			else
-				name = "MonoTouch.Foundation.NSObject";
-			return new CodeTypeReference (name);
+			if (ibType.StartsWith ("NS")) {
+				return "MonoTouch.Foundation." + ibType;
+			} else if (ibType.StartsWith ("IB") && ibType.Length > 2) {
+				string name = ibType.Substring (2);
+				if (name.StartsWith ("UI"))
+					return "MonoTouch.UIKit." + name;
+				if (name.StartsWith ("MK"))
+					return "MonoTouch.MapKit." + name;
+			}
+			return "MonoTouch.Foundation.NSObject";
 		}
 		
 		public static CodeMemberProperty CreateOutletProperty (string name, CodeTypeReference typeRef)
