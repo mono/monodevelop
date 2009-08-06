@@ -2,6 +2,7 @@
 // ProjectDomService.cs
 //
 // Author:
+//   Lluis Sanchez <lluis@novell.com>
 //   Mike Krüger <mkrueger@novell.com>
 //
 // Copyright (C) 2008 Novell, Inc (http://www.novell.com)
@@ -952,7 +953,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 					fileContent = sr.ReadToEnd();
 				}
 			}
-			
+
+			Counters.FilesParsed++;
 			parserOutput = parser.Parse (dom, fileName, fileContent);
 			
 /*			ParseInformation parseInformation = GetCachedParseInformation (fileName);

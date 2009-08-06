@@ -38,6 +38,7 @@ namespace MonoDevelop.Projects
 {
 	public class Solution: WorkspaceItem, IConfigurationTarget
 	{
+		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();
 		SolutionFolder rootFolder;
 		string defaultConfiguration;
 		
@@ -63,6 +64,7 @@ namespace MonoDevelop.Projects
 		
 		public Solution ()
 		{
+			Counters.SolutionsLoaded++;
 			configurations = new SolutionConfigurationCollection (this);
 		}
 		
@@ -389,6 +391,7 @@ namespace MonoDevelop.Projects
 		{
 			base.Dispose ();
 			RootFolder.Dispose ();
+			Counters.SolutionsLoaded--;
 		}
 
 

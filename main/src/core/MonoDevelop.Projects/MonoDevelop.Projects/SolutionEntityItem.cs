@@ -46,6 +46,8 @@ namespace MonoDevelop.Projects
 	[DataItem (FallbackType = typeof(UnknownSolutionItem))]
 	public abstract class SolutionEntityItem : SolutionItem, IConfigurationTarget, IWorkspaceFileObject
 	{
+		internal object MemoryProbe = Counters.ItemsInMemory.CreateMemoryProbe ();
+			
 		ProjectItemCollection items;
 		
 		SolutionItemEventArgs thisItemArgs;
@@ -73,7 +75,15 @@ namespace MonoDevelop.Projects
 			configurations = new SolutionItemConfigurationCollection (this);
 			configurations.ConfigurationAdded += new ConfigurationEventHandler (OnConfigurationAddedToCollection);
 			configurations.ConfigurationRemoved += new ConfigurationEventHandler (OnConfigurationRemovedFromCollection);
+			Counters.ItemsLoaded++;
 		}
+		
+		public override void Dispose ()
+		{
+			Counters.ItemsLoaded--;
+			base.Dispose ();
+		}
+
 		
 		internal override void SetItemHandler (ISolutionItemHandler handler)
 		{

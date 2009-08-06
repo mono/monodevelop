@@ -82,6 +82,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public SerializationCodeCompletionDatabase (ParserDatabase pdb, bool handlesCommentTags)
 		{
+			Counters.LiveDatabases++;
 			this.handlesCommentTags = handlesCommentTags;
 			
 			rootNamespace = new NamespaceEntry (null, null);
@@ -107,6 +108,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (handlesCommentTags)
 				ProjectDomService.SpecialCommentTagsChanged -= OnSpecialTagsChanged;
 			disposed = true;
+			Counters.LiveDatabases--;
 		}
 
 		~SerializationCodeCompletionDatabase ()
@@ -323,6 +325,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			lock (rwlock)
 			{
 				if (!modified) return;
+
+				Counters.DatabasesWritten++;
 				
 				modified = false;
 				headers["Version"] = FORMAT_VERSION;
@@ -471,8 +475,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			Write ();
 			
 			foreach (ClassEntry ce in GetAllClasses ()) {
-				if (ce.LastGetTime < currentGetTime - MIN_ACTIVE_COUNT)
+				if (ce.LastGetTime < currentGetTime - MIN_ACTIVE_COUNT) {
 					ce.Class = null;
+					Counters.LiveTypeObjects--;
+				}
 			}
 		}
 		
@@ -484,6 +490,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				DomType cls = DomPersistence.ReadType (datareader, pdb.DefaultNameDecoder);
 				cls.SourceProjectDom = SourceProjectDom;
 				cls.Resolved = true;
+				Counters.LiveTypeObjects++;
 				return cls;
 			}
 		}

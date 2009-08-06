@@ -63,6 +63,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public AssemblyCodeCompletionDatabase (TargetRuntime runtime, TargetFramework fx, string assemblyFile, ParserDatabase pdb, bool isTempDatabase): base (pdb, false)
 		{
+			Counters.LiveAssemblyDatabases++;
 			this.runtime = runtime;
 			this.fx = fx;
 			this.assemblyFile = assemblyFile;
@@ -124,6 +125,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				}
 			}
 		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			Counters.LiveAssemblyDatabases--;
+		}
+
 		
 		public override void Write ()
 		{

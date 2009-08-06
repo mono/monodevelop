@@ -42,6 +42,7 @@ using Mono.Addins;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects.Extensions;
 using Mono.Unix;
 
@@ -742,4 +743,19 @@ namespace MonoDevelop.Projects
 			return callback (monitor, item, buildData);
 		}
 	}	
+	
+	internal static class Counters
+	{
+		public static Counter ItemsInMemory = InstrumentationService.CreateCounter ("Projects in Memory", "Project Model");
+		public static Counter ItemsLoaded = InstrumentationService.CreateCounter ("Projects Loaded", "Project Model");
+		public static Counter SolutionsInMemory = InstrumentationService.CreateCounter ("Solutions in Memory", "Project Model");
+		public static Counter SolutionsLoaded = InstrumentationService.CreateCounter ("Solutions Loaded", "Project Model");
+		
+		public static Counter FilesParsed = InstrumentationService.CreateCounter ("Files Parsed", "Parser Service");
+		public static Counter LiveTypeObjects = InstrumentationService.CreateCounter ("Live Type Objects", "Parser Service");
+		public static Counter LiveDatabases = InstrumentationService.CreateCounter ("Parser Databases", "Parser Service");
+		public static Counter LiveAssemblyDatabases = InstrumentationService.CreateCounter ("Assembly Databases", "Parser Service");
+		public static Counter LiveProjectDatabases = InstrumentationService.CreateCounter ("Project Databases", "Parser Service");
+		public static Counter DatabasesWritten = InstrumentationService.CreateCounter ("Parser Databases Written", "Parser Service");
+	}
 }

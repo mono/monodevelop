@@ -48,6 +48,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase pdb): base (pdb, true)
 		{
+			Counters.LiveProjectDatabases++;
 			this.project = project;
 			SetLocation (project.BaseDirectory, project.Name);
 			
@@ -70,6 +71,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override void Dispose ()
 		{
+			Counters.LiveProjectDatabases--;
 			base.Dispose ();
 			project.FileChangedInProject -= new ProjectFileEventHandler (OnFileChanged);
 			project.FileAddedToProject -= new ProjectFileEventHandler (OnFileAdded);
