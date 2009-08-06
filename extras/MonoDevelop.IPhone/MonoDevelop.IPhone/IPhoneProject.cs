@@ -146,8 +146,9 @@ namespace MonoDevelop.IPhone
 				this.mainNibFile = mainNibNode.InnerText;	
 			}
 			
+			FilePath binPath = (info != null)? info.BinPath : new FilePath ("bin");
+			
 			int confCount = Configurations.Count;
-			FilePath binPath = new FilePath (".").Combine ("bin");
 			for (int i = 0; i < confCount; i++) {
 				var conf = (IPhoneProjectConfiguration)Configurations[i];
 				conf.Platform = PLAT_SIM;
@@ -178,6 +179,15 @@ namespace MonoDevelop.IPhone
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			var conf = new IPhoneProjectConfiguration (name);
+			
+			var dir = new FilePath ("bin");
+			if (!String.IsNullOrEmpty (conf.Platform))
+				dir.Combine (conf.Platform);
+			dir.Combine (conf.Name);
+			
+			conf.OutputDirectory = BaseDirectory.IsNullOrEmpty? dir : BaseDirectory.Combine (dir);
+			conf.OutputAssembly = Name;
+			
 			if (LanguageBinding != null)
 				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
 			return conf;

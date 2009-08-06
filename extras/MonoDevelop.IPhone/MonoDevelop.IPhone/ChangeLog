@@ -1,5 +1,10 @@
 2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs: Better handling of output paths when
+	  creating configurations.
+
+2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProjectConfiguration.cs: Override and implement
 	  CopyFrom. Should allow the config editing panel to store
 	  values.
