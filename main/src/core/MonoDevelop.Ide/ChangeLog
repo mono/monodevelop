@@ -1,5 +1,16 @@
 2009-08-07  Viktoria Dudka  <viktoriad@remobjects.com>
 
+	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs: Rewritten from scratch
+	  to make it non-GPL. 
+	* MonoDevelop.Ide.Gui/IPadContent.cs: Rewritten from scratch
+	  to make it non-GPL. 
+	* MonoDevelop.Ide.Gui/IBaseViewContent.cs: Rewritten from scratch
+	  to make it non-GPL. 
+	* MonoDevelop.Ide.Gui/IViewContent.cs: Rewritten from scratch
+	  to make it non-GPL. 
+
+2009-08-07  Viktoria Dudka  <viktoriad@remobjects.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs: Rewritten from scratch
 	* MonoDevelop.Ide.Gui/TipOfTheDayStartupHandler.cs: Deleted
 	* MonoDevelop.Ide.addin.xml: moved auto-start to a different location

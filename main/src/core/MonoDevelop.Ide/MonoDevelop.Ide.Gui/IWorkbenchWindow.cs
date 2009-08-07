@@ -1,145 +1,90 @@
-//  IWorkbenchWindow.cs
+﻿// IWorkbenchWindow.cs
 //
-//  This file was derived from a file from #Develop. 
+// Author:
+//   Viktoria Dudka (viktoriad@remobjects.com)
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
-// 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Copyright (c) 2009 RemObjects Software
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+//
 
 using System;
-using System.Collections;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Gui
 {
-	/// <summary>
-	/// The IWorkbenchWindow is the basic interface to a window which
-	/// shows a view (represented by the IViewContent object).
-	/// </summary>
 	public interface IWorkbenchWindow
 	{
-		/// <summary>
-		/// The window title.
-		/// </summary>
-		string Title {
-			get;
-			set;
-		}
-		
-		string DocumentType {
-			get;
-			set;
-		}
+        IViewContent ViewContent { get; }
+        IBaseViewContent ActiveViewContent { get; set; }
+        Document Document { get; set; }
+        string DocumentType { get; set; }
+        string Title { get; set; }
+        bool ShowNotification { get; set; }
 
-		bool ShowNotification {
-			get;
-			set;
-		}
-		
-		/// <summary>
-		/// The current view content which is shown inside this window.
-		/// </summary>
-		IViewContent ViewContent {
-			get;
-		}
-		
-		/// <summary>
-		/// returns null if no sub view contents are attached.
-		/// </summary>
-		ArrayList SubViewContents {
-			get;
-		}
-		
-		IBaseViewContent ActiveViewContent {
-			get;
-			set;
-		}
-		
-		Document Document {
-			get;
-			set;
-		}
-		
-		/// <summary>
-		/// Closes the window, if force == true it closes the window
-		/// without ask, even the content is dirty.
-		/// </summary>
-		bool CloseWindow(bool force, bool fromMenu, int pageNum);
-		
-		/// <summary>
-		/// Brings this window to front and sets the user focus to this
-		/// window.
-		/// </summary>
-		void SelectWindow();
-		
-		void SwitchView(int viewNumber);
-		void AttachViewContent (IAttachableViewContent subViewContent);
-		
-		/// <summary>
-		/// Is called when the title of this window has changed.
-		/// </summary>
-		event EventHandler TitleChanged;
-		
-		/// <summary>
-		/// Is called after the window closes.
-		/// </summary>
-		event WorkbenchWindowEventHandler Closing;
-		
-		/// <summary>
-		/// Is called after the window closes.
-		/// </summary>
-		event WorkbenchWindowEventHandler Closed;
-		
-		event ActiveViewContentEventHandler ActiveViewContentChanged;
+        void AttachViewContent (IAttachableViewContent subViewContent);
+        void SwitchView (int index);
+
+        bool CloseWindow (bool force, bool fromMenu, int pageNum);
+        void SelectWindow ();
+
+        event WorkbenchWindowEventHandler Closed;
+        event WorkbenchWindowEventHandler Closing;
+        event ActiveViewContentEventHandler ActiveViewContentChanged;
+
 	}
-	
-	public delegate void WorkbenchWindowEventHandler (object sender, WorkbenchWindowEventArgs args);
-	
-	public class WorkbenchWindowEventArgs: System.ComponentModel.CancelEventArgs
-	{
-		bool forced;
-		bool wasActive;
-		
-		public WorkbenchWindowEventArgs (bool forced, bool wasActive)
-		{
-			this.forced = forced;
-			this.wasActive = wasActive;
-		}
-		
-		public bool Forced {
-			get { return forced; }
-		}
-		
-		public bool WasActive {
-			get { return wasActive; }
-		}
-	}
-	
-		
-	public delegate void ActiveViewContentEventHandler (object sender, ActiveViewContentEventArgs args);
-	
-	public class ActiveViewContentEventArgs: System.EventArgs
-	{
-		IBaseViewContent content;
-		
-		public ActiveViewContentEventArgs (IBaseViewContent content)
-		{
-			this.content = content;
-		}
-		
-		public IBaseViewContent Content {
-			get { return content; }
-		}
-	}
+
+    public delegate void WorkbenchWindowEventHandler (object o, WorkbenchWindowEventArgs e);
+    public class WorkbenchWindowEventArgs : CancelEventArgs
+    {
+        private bool forced;
+        public bool Forced
+        {
+            get { return forced; }
+        }
+
+        private bool wasActive;
+        public bool WasActive
+        {
+            get { return wasActive; }
+        }
+
+        public WorkbenchWindowEventArgs (bool forced, bool wasActive)
+        {
+            this.forced = forced;
+            this.wasActive = wasActive;
+        }
+    }
+
+    public delegate void ActiveViewContentEventHandler (object o, ActiveViewContentEventArgs e);
+    public class ActiveViewContentEventArgs: EventArgs
+    {
+        private IBaseViewContent content = null;
+        public IBaseViewContent Content
+        {
+            get { return content; }
+        }
+
+        public ActiveViewContentEventArgs (IBaseViewContent content)
+        {
+            this.content = content;
+        }
+    }
 }
