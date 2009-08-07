@@ -772,6 +772,12 @@ namespace MonoDevelop.Projects
 		
 		protected override void OnEndLoad ()
 		{
+			// The resource handler policy may have changed after loading, so reset any
+			// previously allocated resource handler
+			resourceHandler = null;
+			
+			// Just after loading, the resource Ids are using the file format's policy.
+			// They have to be converted to the new policy
 			IResourceHandler handler = ItemHandler as IResourceHandler;
 			if (handler != null)
 				MigrateResourceIds (handler, ResourceHandler);

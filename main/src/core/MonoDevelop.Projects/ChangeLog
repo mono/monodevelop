@@ -1,5 +1,11 @@
 2009-08-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/DotNetProject.cs: After loading a
+	  project, reset any previously allocated resource handler,
+	  since the naming policy may have changed. Fixes bug #481898.
+
+2009-08-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectService.cs:
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
 	  Fix type counters.
