@@ -1,3 +1,9 @@
+2009-08-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug
+	  529009 - When open documents are restored, scroll
+	  positioning is bad".
+
 2009-08-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

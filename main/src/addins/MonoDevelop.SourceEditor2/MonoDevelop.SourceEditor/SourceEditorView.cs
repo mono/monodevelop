@@ -626,20 +626,45 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		class SetCaret 
+		{
+			SourceEditorView view;
+			int line, column;
+			
+			public SetCaret (SourceEditorView view, int line, int column)
+			{
+				this.view = view;
+				this.line = line;
+				this.column = column;
+			}
+			
+			public void Run (object sender, ExposeEventArgs e)
+			{
+				if (view.isDisposed)
+					return;
+				line = Math.Min (line, view.Document.LineCount);
+
+				view.widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
+
+				view.widget.TextEditor.GrabFocus ();
+				view.widget.TextEditor.CenterToCaret ();
+				view.OnCaretPositionSet (EventArgs.Empty);
+				view.widget.ExposeEvent -= Run;
+			}
+			
+		}
+		
 		public void SetCaretTo (int line, int column)
 		{
-			GLib.Timeout.Add (20,  delegate {
-				if (this.isDisposed)
+			if (widget.Allocation.Width <= 1) {
+				SetCaret setCaret = new SetCaret (this, line, column);
+				widget.ExposeEvent += setCaret.Run;
+			} else {
+				GLib.Timeout.Add (20, delegate {
+					new SetCaret (this, line, column).Run (null, null);
 					return false;
-				line = Math.Min (line, Document.LineCount);
-				
-				widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
-				
-				widget.TextEditor.GrabFocus ();
-				widget.TextEditor.CenterToCaret ();
-				OnCaretPositionSet (EventArgs.Empty);
-				return false;
-			});
+				});
+			}
 		}
 		
 		public void Redo()
