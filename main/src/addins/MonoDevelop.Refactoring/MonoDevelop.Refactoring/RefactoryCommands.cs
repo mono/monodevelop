@@ -571,7 +571,7 @@ namespace MonoDevelop.Refactoring
 		delegate void RefactoryOperation ();
 	}
 	
-	class Refactorer
+	public class Refactorer
 	{
 		MemberReferenceCollection references;
 		ISearchProgressMonitor monitor;
