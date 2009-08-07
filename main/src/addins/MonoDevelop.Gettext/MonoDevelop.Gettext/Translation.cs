@@ -94,7 +94,7 @@ namespace MonoDevelop.Gettext
 				Directory.CreateDirectory (moDirectory);
 			
 			ProcessWrapper process = Runtime.ProcessService.StartProcess ("msgfmt",
-		                                     PoFile + " -o " + moFileName,
+		                                     "\"" + PoFile + "\" -o \"" + moFileName + "\"",
 		                                     parentProject.BaseDirectory,
 		                                     monitor.Log,
 		                                     monitor.Log,

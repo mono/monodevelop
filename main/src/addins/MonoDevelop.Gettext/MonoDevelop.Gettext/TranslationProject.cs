@@ -303,7 +303,7 @@ namespace MonoDevelop.Gettext
 				monitor.BeginTask (GettextCatalog.GetString ("Updating {0}", translation.PoFile), 1);
 				try {
 					Runtime.ProcessService.StartProcess ("msgmerge",
-					                                     " -U " + poFileName + " -v " + Path.Combine (this.BaseDirectory, "messages.po"),
+					                                     " -U \"" + poFileName + "\" -v \"" + Path.Combine (this.BaseDirectory, "messages.po") + "\"",
 					                                     this.BaseDirectory,
 					                                     monitor.Log,
 					                                     monitor.Log,
