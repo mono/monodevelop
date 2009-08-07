@@ -80,6 +80,13 @@
 		         type = "array"/> 
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
+		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.DynamicAbbrev"
+				defaultHandler = "MonoDevelop.SourceEditor.DynamicAbbrevHandler"
+				_label = "Dynamic abbrev"
+				shortcut = "Alt|space" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding 
 			id = "NewText2"

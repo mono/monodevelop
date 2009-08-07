@@ -1,5 +1,14 @@
 2009-08-07  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor.addin.xml:
+	* MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs:
+	* MonoDevelop.SourceEditor/SourceEditorCommands.cs: Added
+	  dynamic abbrev command (default: alt+space).
+
+2009-08-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug
 	  529009 - When open documents are restored, scroll
 	  positioning is bad".

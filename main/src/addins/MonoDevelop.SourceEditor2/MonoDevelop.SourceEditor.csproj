@@ -175,6 +175,7 @@
     <Compile Include="MonoDevelop.SourceEditor\AutoSave.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SyntaxModeCodon.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SyntaxModeService.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\DynamicAbbrevHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
