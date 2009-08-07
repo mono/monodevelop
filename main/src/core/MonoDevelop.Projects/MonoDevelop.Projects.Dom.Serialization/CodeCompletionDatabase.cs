@@ -99,6 +99,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			if (disposed)
 				return;
+			
+			Clear ();
+			
 			if (dataFileStream != null)
 				dataFileStream.Close ();
 			if (tempDataFile != null) {
@@ -181,11 +184,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			lock (rwlock)
 			{
-				rootNamespace = new NamespaceEntry (null, null);
-				files = new Hashtable ();
-				references = new ArrayList ();
-				headers = new Hashtable ();
-				unresolvedSubclassTable = new Hashtable ();
+				Clear ();
 			
 				CloseReader ();
 
@@ -233,13 +232,19 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						LoggingService.LogError ("PIDB file '{0}' could not be loaded: '{1}'. The file will be recreated.", dataFile, ex);
 				}
 			}
-
+			
 			// Notify read comments
 			foreach (FileEntry fe in files.Values) {
 				if (! fe.IsAssembly && fe.CommentTasks != null) {
 					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, Project);
 				}
 			}
+			
+			int totalEntries = 0;
+			IEnumerator<ClassEntry> ecls = rootNamespace.GetAllClasses ().GetEnumerator ();
+			while (ecls.MoveNext ())
+				totalEntries++;
+			Counters.TypeIndexEntries.Inc (totalEntries);
 			
 			if (verify) {
 				// Read all information from the database to ensure everything is in place
@@ -511,10 +516,22 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public void Clear ()
 		{
+			int tcl = 0;
+			int tce = 0;
+			foreach (ClassEntry ce in GetAllClasses ()) {
+				tce++;
+				if (ce.Class != null)
+					tcl++;
+			}
+			
+			Counters.TypeIndexEntries.Dec (tce);
+			Counters.LiveTypeObjects.Dec (tcl);
+			
 			rootNamespace = new NamespaceEntry (null, null);
 			files = new Hashtable ();
 			references = new ArrayList ();
 			headers = new Hashtable ();
+			unresolvedSubclassTable = new Hashtable ();
 		}
 		
 		public IType GetClass (string typeName, IList<IReturnType> genericArguments, bool caseSensitive)
@@ -865,17 +882,24 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				FileEntry fe = files [fileName] as FileEntry;
 				if (fe == null) return;
 				
+				int te=0, tc=0;
+				
 				foreach (ClassEntry ce in fe.ClassEntries) {
 					if (ce.Class == null) ce.Class = ReadClass (ce);
+					tc++;
 					IType c = CompoundType.RemoveFile (ce.Class, fileName);
 					if (c == null) {
 						classInfo.Removed.Add (ce.Class);
 						RemoveSubclassReferences (ce);
 						UnresolveSubclasses (ce);
 						ce.NamespaceRef.Remove (ce);
+						te++;
 					} else
 						ce.Class = c;
 				}
+				
+				Counters.LiveTypeObjects.Dec (tc);
+				Counters.TypeIndexEntries.Dec (te);
 				
 				files.Remove (fileName);
 				modified = true;
@@ -957,6 +981,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 								res.Modified.Add (removed);
 							} else {
 								// It's not a compoudnd class. Remove it.
+								Counters.LiveTypeObjects--;
+								Counters.TypeIndexEntries--;
 								RemoveSubclassReferences (ce);
 								UnresolveSubclasses (ce);
 								res.Removed.Add (c);
@@ -990,6 +1016,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							newNss[n].Add (ce);
 							res.Added.Add (c);
 							ResolveSubclasses (ce);
+							Counters.LiveTypeObjects++;
+							Counters.TypeIndexEntries++;
 						}
 						AddSubclassReferences (ce);
 						newFileClasses.Add (ce);

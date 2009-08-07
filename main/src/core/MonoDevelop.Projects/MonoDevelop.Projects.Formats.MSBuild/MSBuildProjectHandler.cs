@@ -79,14 +79,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (import != null && import.Trim().Length > 0)
 				this.targetImports.AddRange (import.Split (':'));
 			
-			Runtime.SystemAssemblyService.DefaultRuntimeChanged += delegate {
-				// If the default runtime changes, the project builder for this project may change
-				// so it has to be created again.
-				if (projectBuilder != null) {
-					MSBuildProjectService.ReleaseProjectBuilder (projectBuilder);
-					projectBuilder = null;
-				}
-			};
+			Runtime.SystemAssemblyService.DefaultRuntimeChanged += OnDefaultRuntimeChanged;
+		}
+		
+		void OnDefaultRuntimeChanged (object o, EventArgs args)
+		{
+			// If the default runtime changes, the project builder for this project may change
+			// so it has to be created again.
+			if (projectBuilder != null) {
+				MSBuildProjectService.ReleaseProjectBuilder (projectBuilder);
+				projectBuilder = null;
+			}
 		}
 		
 		RemoteProjectBuilder ProjectBuilder {
@@ -104,6 +107,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				MSBuildProjectService.ReleaseProjectBuilder (projectBuilder);
 				projectBuilder = null;
 			}
+			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= OnDefaultRuntimeChanged;
 		}
 
 		

@@ -752,6 +752,7 @@ namespace MonoDevelop.Projects
 		public static Counter SolutionsLoaded = InstrumentationService.CreateCounter ("Solutions Loaded", "Project Model");
 		
 		public static Counter FilesParsed = InstrumentationService.CreateCounter ("Files Parsed", "Parser Service");
+		public static Counter TypeIndexEntries = InstrumentationService.CreateCounter ("Type Index Entries", "Parser Service");
 		public static Counter LiveTypeObjects = InstrumentationService.CreateCounter ("Live Type Objects", "Parser Service");
 		public static Counter LiveDatabases = InstrumentationService.CreateCounter ("Parser Databases", "Parser Service");
 		public static Counter LiveAssemblyDatabases = InstrumentationService.CreateCounter ("Assembly Databases", "Parser Service");
