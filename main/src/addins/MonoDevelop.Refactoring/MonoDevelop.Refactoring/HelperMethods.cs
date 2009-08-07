@@ -33,6 +33,11 @@ namespace MonoDevelop.Refactoring
 {
 	public static class HelperMethods
 	{
+		public static bool IsIdentifierPart (this char ch)
+		{
+			return Char.IsLetterOrDigit (ch) || ch == '_';
+		}
+		
 		public static TypeReference ConvertToTypeReference (this MonoDevelop.Projects.Dom.IReturnType returnType)
 		{
 			List<TypeReference> genericTypes = new List<TypeReference> ();
