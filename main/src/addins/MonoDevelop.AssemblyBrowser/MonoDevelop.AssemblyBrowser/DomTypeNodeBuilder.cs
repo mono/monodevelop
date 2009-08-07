@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -46,6 +47,10 @@ namespace MonoDevelop.AssemblyBrowser
 	{
 		public override Type NodeDataType {
 			get { return typeof(IType); }
+		}
+		
+		public override string ContextMenuAddinPath {
+			get { return "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu"; }
 		}
 		
 /*		AssemblyBrowserWidget widget;

@@ -13,15 +13,23 @@
 	</Runtime>
 	
 	<Dependencies>
-	    <Addin id="Core" version="2.1.0"/>
+		<Addin id="Core" version="2.1.0"/>
 		<Addin id="Ide" version="2.1.0"/>
+		<Addin id="Refactoring" version="2.1.0"/>
 	</Dependencies>
 	
 	<!-- Extension points -->
+	<ExtensionPoint path = "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
 	
 	<!-- Extensions -->
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id = "AssemblyBrowser" insertbefore ="NewText2" supportedformats = ".NET Assemblies" class = "MonoDevelop.AssemblyBrowser.DisplayBinding" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu">
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />
 	</Extension>
 	
 </Addin>

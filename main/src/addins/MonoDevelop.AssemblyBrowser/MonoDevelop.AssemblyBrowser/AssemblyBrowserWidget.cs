@@ -207,7 +207,10 @@ namespace MonoDevelop.AssemblyBrowser
 				treeView.GrabFocus ();
 			};
 		}
-		
+		public MonoDevelop.Projects.Dom.IMember ActiveMember  {
+			get;
+			set;
+		}	
 		protected override void OnDestroyed ()
 		{
 			if (memberListStore != null) {
@@ -882,6 +885,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (currentItem != null)
 					navigationBackwardHistory.Push (currentItem);
 				currentItem = treeView.GetSelectedNode ();
+				ActiveMember = currentItem.DataItem as IMember;
 				navigationForwardHistory.Clear ();
 			}
 			UpdateNavigationActions ();

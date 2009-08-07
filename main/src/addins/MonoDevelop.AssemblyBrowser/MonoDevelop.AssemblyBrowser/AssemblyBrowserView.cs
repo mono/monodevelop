@@ -31,6 +31,9 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
 using Mono.Cecil;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -81,6 +84,17 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		#endregion 
 		
-
+		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindReferences)]
+		public void FindReferences ()
+		{
+			IMember member = widget.ActiveMember;
+			if (member == null)
+				return;
+			ProjectDom dom = ProjectDomService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
+			if (dom == null)
+				return;
+			Refactorer refactorer = new Refactorer (dom, null, null, member, null);
+			refactorer.FindReferences ();
+		}
 	}
 }
