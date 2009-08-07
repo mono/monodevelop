@@ -144,7 +144,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 					} else {
 						FileService.RenameFile (oldPath, newName);
-						IdeApp.Workspace.Save ();
+						if (file.Project != null)
+							IdeApp.ProjectOperations.Save (file.Project);
 					}
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));

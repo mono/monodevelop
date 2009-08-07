@@ -1,5 +1,11 @@
 2009-08-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	  When renaming a file, save only the project containing the
+	  file, not the whole workspace.
+
+2009-08-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Updated license.
 	  Most of the file has been rewritten, and the remaining
