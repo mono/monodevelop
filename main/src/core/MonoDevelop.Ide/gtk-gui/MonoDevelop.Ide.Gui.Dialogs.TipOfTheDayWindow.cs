@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Widget MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow";
             this.Title = "Tip of the Day";
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.BorderWidth = ((uint)(6));
             // Container child MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.Gtk.Container+ContainerChild
             this.vbox2 = new Gtk.VBox();
@@ -119,6 +119,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w7.Fill = false;
             // Container child hbox5.Gtk.Box+BoxChild
             this.hbuttonbox1 = new Gtk.HButtonBox();
+            this.hbuttonbox1.Name = "hbuttonbox1";
             this.hbuttonbox1.Spacing = 10;
             this.hbuttonbox1.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child hbuttonbox1.Gtk.ButtonBox+ButtonBoxChild

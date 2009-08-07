@@ -209,7 +209,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class = "MonoDevelop.Ide.Gui.AddinUpdateHandler"/>
-		<Class class = "MonoDevelop.Ide.Gui.TipOfTheDayStartupHandler"/>
+		<Class class = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayStartup"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">

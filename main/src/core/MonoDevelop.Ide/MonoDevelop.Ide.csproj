@@ -358,7 +358,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\ProgressMonitors.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IdeStartup.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AddinUpdateHandler.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\TipOfTheDayStartupHandler.cs" />
     <Compile Include="MonoDevelop.Ide\Services.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\TasksOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\FileViewer.cs" />

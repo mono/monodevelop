@@ -1963,7 +1963,7 @@
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title">Tip of the Day</property>
-    <property name="WindowPosition">CenterOnParent</property>
+    <property name="WindowPosition">Center</property>
     <property name="BorderWidth">6</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
