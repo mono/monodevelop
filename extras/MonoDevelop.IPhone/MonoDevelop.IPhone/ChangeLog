@@ -1,5 +1,11 @@
 2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* CodeBehindGenerator.cs: Use TrimEnd instead of Substring for
+	  action names, in the C# code generation path. Also switch
+	  from Trim to TrimEnd in the CodeDOM path.
+
+2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* CodeBehindGenerator.cs: Map MK interface type prefix to
 	  MapKit namespace.
 

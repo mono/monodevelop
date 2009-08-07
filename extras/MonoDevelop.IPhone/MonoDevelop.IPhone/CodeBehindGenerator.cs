@@ -313,12 +313,12 @@ namespace MonoDevelop.IPhone
 				isPartial = true;
 				return new CodeSnippetTypeMember (
 					String.Format ("[MonoTouch.Foundation.Export(\"{0}\")]partial void {1} ({2} sender);\n",
-					               name, provider.CreateValidIdentifier (name.Substring (0, name.Length - 1)), senderType.BaseType));
+					               name, provider.CreateValidIdentifier (name.TrimEnd (':')), senderType.BaseType));
 			}
 			
 			isPartial = false;
 			var meth = new CodeMemberMethod () {
-				Name = name.Trim (':'),
+				Name = name.TrimEnd (':'),
 				ReturnType = new CodeTypeReference ("partial void"),
 			};
 			meth.Parameters.Add (
