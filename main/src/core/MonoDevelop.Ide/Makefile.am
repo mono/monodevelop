@@ -378,6 +378,7 @@ RES =  \
 	MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/GPL3LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/LGPL2-1LicencePolicy.xml \
+	MonoDevelop.Ide.StandardHeader/LGPL3LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/MITX11LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/NewBSDLicencePolicy.xml \
 	options/KeyBindingSchemeEmacs.xml \

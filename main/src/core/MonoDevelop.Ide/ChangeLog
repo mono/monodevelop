@@ -1,3 +1,15 @@
+2009-08-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.StandardHeader/GPL3LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/LGPL3LicencePolicy.xml:
+	* MonoDevelop.Ide.StandardHeader/LGPL2-1LicencePolicy.xml:
+	  Added author name to gpl licences. Added LGPL 3. Fixed LGPL
+	  2.
+
 2009-08-07  Viktoria Dudka  <viktoriad@remobjects.com>
 
 	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs: Rewritten from scratch

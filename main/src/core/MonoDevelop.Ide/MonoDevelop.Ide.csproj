@@ -245,6 +245,9 @@
     <EmbeddedResource Include="MonoDevelop.Ide.CodeFormatting\VisualStudioTextStylePolicy.xml">
       <LogicalName>VisualStudioTextStylePolicy.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.StandardHeader\LGPL3LicencePolicy.xml">
+      <LogicalName>LGPL3LicencePolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
