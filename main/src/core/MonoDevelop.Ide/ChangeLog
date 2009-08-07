@@ -1,5 +1,12 @@
 2009-08-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Updated license.
+	  Most of the file has been rewritten, and the remaining
+	  original code is licensed as LGPL in SD2.
+
+2009-08-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.addin.xml:
