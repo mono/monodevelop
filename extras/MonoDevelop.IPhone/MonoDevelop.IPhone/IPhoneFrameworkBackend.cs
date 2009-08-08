@@ -72,6 +72,7 @@ namespace MonoDevelop.IPhone
 		public override SystemPackageInfo GetFrameworkPackageInfo (string packageName)
 		{
 			SystemPackageInfo info = base.GetFrameworkPackageInfo ("mono-iphone");
+			info.Name = "mono-iphone";
 			return info;
 		}
 		
