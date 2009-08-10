@@ -1,3 +1,13 @@
+2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies\TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies\MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies\MsNetTargetRuntime.cs: The
+	  target framework is required to get the msbuild path.
+
+	* MonoDevelop.Core\Runtime.cs: Made initialization code more
+	  robust.
+
 2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/Runtime.cs: Added configuration option for

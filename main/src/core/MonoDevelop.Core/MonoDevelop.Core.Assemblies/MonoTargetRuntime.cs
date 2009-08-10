@@ -140,10 +140,9 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
-		public override string MSBuildBinPath {
-			get {
-				return Path.Combine (monoDir, "2.0");
-			}
+		public override string GetMSBuildBinPath (TargetFramework fx)
+		{
+			return Path.Combine (monoDir, "2.0");
 		}
 		
 		public IEnumerable<string> PkgConfigDirs {

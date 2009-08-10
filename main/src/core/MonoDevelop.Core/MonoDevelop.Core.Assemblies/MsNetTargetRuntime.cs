@@ -89,12 +89,16 @@ namespace MonoDevelop.Core.Assemblies
 			foldersKey.Close ();
 		}
 		
-		public override string MSBuildBinPath {
-			get {
-				return null;
+		public override string GetMSBuildBinPath (TargetFramework fx)
+		{
+			RegistryKey msb = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\" + fx.Id, false);
+			if (msb != null) {
+				string path = msb.GetValue ("MSBuildToolsPath") as string;
+				if (path != null)
+					return path;
 			}
+			return rootDir.Combine ("v2.0.50727");
 		}
-
 		
 		void AddPackage (string name, string version, string folder)
 		{

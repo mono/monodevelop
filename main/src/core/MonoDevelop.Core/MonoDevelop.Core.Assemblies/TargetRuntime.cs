@@ -188,7 +188,7 @@ namespace MonoDevelop.Core.Assemblies
 			return GetBackend (fx).GetToolsPaths ();
 		}
 		
-		public abstract string MSBuildBinPath { get; }
+		public abstract string GetMSBuildBinPath (TargetFramework fx);
 		
 		public SystemPackage RegisterPackage (SystemPackageInfo pinfo, params string[] assemblyFiles)
 		{

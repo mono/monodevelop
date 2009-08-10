@@ -53,7 +53,6 @@ namespace MonoDevelop.Core
 		{
 			if (initialized)
 				return;
-			initialized = true;
 			
 			SetupInstrumentation ();
 			
@@ -61,28 +60,40 @@ namespace MonoDevelop.Core
 			AddinManager.AddinLoaded += OnLoad;
 			AddinManager.AddinUnloaded += OnUnload;
 			
-			AddinManager.Initialize (MonoDevelop.Core.PropertyService.ConfigPath);
-			AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
+			try {
 			
-			if (updateAddinRegistry)
-				AddinManager.Registry.Update (null);
-			setupService = new SetupService (AddinManager.Registry);
-			
-			string prefix = string.Empty;
-			if (PropertyService.IsWindows)
-				prefix = "win-";
-
-			string mainRep = "http://go-mono.com/md/" + prefix + AddinManager.CurrentAddin.Version + "/main.mrep";
-			
-			AddinRepository[] repos = setupService.Repositories.GetRepositories ();
-			foreach (AddinRepository rep in repos) {
-				if (rep.Url.StartsWith ("http://go-mono.com/md/") && rep.Url != mainRep)
-					setupService.Repositories.RemoveRepository (rep.Url);
+				AddinManager.Initialize (MonoDevelop.Core.PropertyService.ConfigPath);
+				AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
+				
+				if (updateAddinRegistry)
+					AddinManager.Registry.Update (null);
+				setupService = new SetupService (AddinManager.Registry);
+				
+				string prefix = string.Empty;
+				if (PropertyService.IsWindows)
+					prefix = "win-";
+	
+				string mainRep = "http://go-mono.com/md/" + prefix + AddinManager.CurrentAddin.Version + "/main.mrep";
+				
+				AddinRepository[] repos = setupService.Repositories.GetRepositories ();
+				foreach (AddinRepository rep in repos) {
+					if (rep.Url.StartsWith ("http://go-mono.com/md/") && rep.Url != mainRep)
+						setupService.Repositories.RemoveRepository (rep.Url);
+				}
+				setupService.Repositories.RegisterRepository (null, mainRep, false);
+	
+				systemAssemblyService = new SystemAssemblyService ();
+				systemAssemblyService.Initialize ();
+				
+				initialized = true;
+				
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				AddinManager.Shutdown ();
+				AddinManager.AddinLoadError -= OnLoadError;
+				AddinManager.AddinLoaded -= OnLoad;
+				AddinManager.AddinUnloaded -= OnUnload;
 			}
-			setupService.Repositories.RegisterRepository (null, mainRep, false);
-
-			systemAssemblyService = new SystemAssemblyService ();
-			systemAssemblyService.Initialize ();
 		}
 		
 		static void SetupInstrumentation ()
