@@ -84,7 +84,7 @@
     <Compile Include="MonoDevelop.Projects\SolutionItemEventArgs.cs" />
     <Compile Include="MonoDevelop.Projects\CombineEntryRenamedEventArgs.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItemConfiguration.cs" />
-    <Compile Include="MonoDevelop.Projects\AbstractProjectConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectBinding.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\Project.cs" />

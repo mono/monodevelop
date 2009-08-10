@@ -205,7 +205,6 @@ FILES =  \
 	MonoDevelop.Projects.Text/TextFormatter.cs \
 	MonoDevelop.Projects.Text/XmlDefinitionCodon.cs \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
-	MonoDevelop.Projects/AbstractProjectConfiguration.cs \
 	MonoDevelop.Projects/BuildAction.cs \
 	MonoDevelop.Projects/BuildEventHandler.cs \
 	MonoDevelop.Projects/BuildResult.cs \
@@ -241,6 +240,7 @@ FILES =  \
 	MonoDevelop.Projects/IWorkspaceObject.cs \
 	MonoDevelop.Projects/LanguageBindingService.cs \
 	MonoDevelop.Projects/Project.cs \
+	MonoDevelop.Projects/ProjectConfiguration.cs \
 	MonoDevelop.Projects/ProjectConvertTool.cs \
 	MonoDevelop.Projects/ProjectCreateInformation.cs \
 	MonoDevelop.Projects/ProjectEventArgs.cs \
