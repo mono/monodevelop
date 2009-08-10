@@ -1,5 +1,9 @@
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* md1format.xml: Updated field names for ProjectConfiguration.
+
+2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectHandler.cs:
 	  Track api changes.
 
