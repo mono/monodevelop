@@ -1,5 +1,12 @@
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/AbstractPadContent.cs:
+	* MonoDevelop.Ide.Gui/AbstractViewContent.cs:
+	* MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs: Rewritten.
+	  Patch by Viktoria Dudka.
+
+2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Original #D code
 	  in this file was relicensed to LGPL in #D 2.0.
 
