@@ -1,3 +1,7 @@
+2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AspNetAddIn.csproj: Don't local-copy project references.
+
 2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs:
