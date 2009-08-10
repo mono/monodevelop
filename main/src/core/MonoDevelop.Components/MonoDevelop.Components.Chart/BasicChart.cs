@@ -530,7 +530,7 @@ namespace MonoDevelop.Components.Chart
 				}
 
 				if (isX) {
-					if (Math.Abs (px - lastPos) < minTickStep || px < left || px > left + width)
+					if (Math.Abs ((long)px - (long)lastPos) < minTickStep || px < left || px > left + width)
 						continue;
 					lastPos = px;
 					
@@ -561,7 +561,7 @@ namespace MonoDevelop.Components.Chart
 					}
 				}
 				else {
-					if (Math.Abs (lastPos - py) < minTickStep || py < top || py > top + height)
+					if (Math.Abs ((long)lastPos - (long)py) < minTickStep || py < top || py > top + height)
 						continue;
 					lastPos = py;
 					

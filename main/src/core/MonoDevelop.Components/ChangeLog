@@ -1,3 +1,8 @@
+2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Chart\BasicChart.cs: Handle some
+	  arithmetic overflow cases.
+
 2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
