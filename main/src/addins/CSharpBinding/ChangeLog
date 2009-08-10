@@ -1,3 +1,8 @@
+2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBinding.csproj: Don't make local copies of project
+	  references.
+
 2009-08-04  Mike Krüger  <mkrueger@novell.com>
 
 	* Syntax/CSharpSyntaxMode.cs: fixed "Bug 527655 - Preprocessor
