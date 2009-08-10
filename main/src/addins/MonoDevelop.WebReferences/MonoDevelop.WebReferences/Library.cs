@@ -164,7 +164,11 @@ namespace MonoDevelop.WebReferences
 		/// <returns>A string containing the base path for web references.</returns>
 		public static FilePath GetWebReferencePath (Project project)
 		{
-			return project.BaseDirectory.Combine ("WebReferences");
+			FilePath fp = project.BaseDirectory.Combine ("WebReferences");
+			if (Directory.Exists (fp))
+				return fp;
+			else
+				return project.BaseDirectory.Combine ("Web References");
 		}
 		
 		/// <summary>Checks whether or not the current project does contain any web references.</summary>

@@ -38,6 +38,8 @@ namespace MonoDevelop.WebReferences
 					case "System.Web.Services.Discovery.DiscoveryDocumentReference":
 						type = typeof(System.Web.Services.Discovery.DiscoveryDocumentReference);
 						break;
+					default:
+						continue;
 				}
 				
 				DiscoveryReference dr = (DiscoveryReference) Activator.CreateInstance(type);
