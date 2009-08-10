@@ -167,6 +167,7 @@ namespace MonoDevelop.Core.Gui
 		{
 			GenericMessageContainer smc = new GenericMessageContainer (cb, false);
 			Thread t = new Thread (new ThreadStart (smc.Run));
+			t.SetApartmentState (ApartmentState.STA);
 			t.IsBackground = true;
 			t.Start ();
 		}
@@ -175,6 +176,7 @@ namespace MonoDevelop.Core.Gui
 		{
 			StatefulMessageContainer smc = new StatefulMessageContainer (cb, state, false);
 			Thread t = new Thread (new ThreadStart (smc.Run));
+			t.SetApartmentState (ApartmentState.STA);
 			t.IsBackground = true;
 			t.Start ();
 		}
@@ -270,7 +272,7 @@ namespace MonoDevelop.Core.Gui
 			if (DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
 		}
 
-		public virtual void Run ()
+		public virtual void Run ( )
 		{
 			try {
 				callback ();
@@ -308,8 +310,8 @@ namespace MonoDevelop.Core.Gui
 			this.isSynchronous = isSynchronous;
 			if (DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
 		}
-		
-		public override void Run ()
+
+		public override void Run ( )
 		{
 			try {
 				callback (data);
