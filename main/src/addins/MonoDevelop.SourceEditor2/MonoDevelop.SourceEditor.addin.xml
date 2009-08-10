@@ -84,7 +84,7 @@
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.DynamicAbbrev"
 				defaultHandler = "MonoDevelop.SourceEditor.DynamicAbbrevHandler"
 				_label = "Dynamic abbrev"
-				shortcut = "Alt|space" />
+				shortcut = "Alt|/" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
