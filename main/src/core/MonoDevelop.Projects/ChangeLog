@@ -1,3 +1,8 @@
+2009-08-10  Viktoria Dudka  <viktoriad@remobjects.com>
+
+	* MonoDevelop.Projects/IDotNetLanguageBinding.cs: Rewrittent from
+	  scratch to make it NON-GPL.
+
 2009-08-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: After loading a
