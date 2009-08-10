@@ -415,7 +415,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			lock (builders) {
 				DateTime tnow = DateTime.Now;
-				foreach (KeyValuePair<TargetRuntime,RemoteProjectBuilder> val in builders) {
+				foreach (KeyValuePair<TargetRuntime,RemoteProjectBuilder> val in new Dictionary<TargetRuntime,RemoteProjectBuilder> (builders)) {
 					if (val.Value.ReferenceCount == 0 && val.Value.ReleaseTime <= tnow) {
 						builders.Remove (val.Key);
 						val.Value.Dispose ();

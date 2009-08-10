@@ -1,3 +1,11 @@
+2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectHandler.cs:
+	  Track api changes.
+
+	* MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectService.cs:
+	  Properly dispose project builders.
+
 2009-08-07  Viktoria Dudka  <viktoriad@remobjects.com>
 
 	* MonoDevelop.Projects/ProjectConfiguration.cs: Rewritten from scratch

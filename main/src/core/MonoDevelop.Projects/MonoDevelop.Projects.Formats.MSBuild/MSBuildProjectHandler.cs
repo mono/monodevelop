@@ -117,10 +117,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SolutionEntityItem item = Item as SolutionEntityItem;
 				if (item != null) {
 					TargetRuntime runtime = null;
-					if (item is DotNetProject)
-						runtime = ((DotNetProject)item).TargetRuntime;
-					else 
+					TargetFramework fx;
+					if (item is DotNetProject) {
+						runtime = ((DotNetProject) item).TargetRuntime;
+						fx = ((DotNetProject) item).TargetFramework;
+					}
+					else {
 						runtime = Runtime.SystemAssemblyService.CurrentRuntime;
+						fx = Services.ProjectService.DefaultTargetFramework;
+					}
 					
 					string conf, plat;
 					int i = configuration.IndexOf ('|');
@@ -133,7 +138,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 				
 					LogWriter logWriter = new LogWriter (monitor.Log);
-					MSBuildResult[] results = ProjectBuilder.RunTarget (item.FileName, target, conf, plat, runtime.MSBuildBinPath, logWriter);
+					MSBuildResult[] results = ProjectBuilder.RunTarget (item.FileName, target, conf, plat, runtime.GetMSBuildBinPath (fx), logWriter);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
 					BuildResult br = new BuildResult ();
