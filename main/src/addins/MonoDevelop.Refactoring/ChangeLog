@@ -1,3 +1,8 @@
+2009-08-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  Fix out of bounds error when matching bracket is not found.
+
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Refactoring.csproj: Don't make local copies of
