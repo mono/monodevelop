@@ -44,7 +44,6 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Gettext.Editor;
-using MonoDevelop.Ide.Tasks;
 using Mono.TextEditor;
 
 namespace MonoDevelop.Gettext
@@ -1208,7 +1207,7 @@ namespace MonoDevelop.Gettext
 				if (!CompareTasks (tasks, widget.currentTasks)) {
 					widget.ClearTasks ();
 					widget.currentTasks = tasks;
-					IdeApp.Services.Errors.AddRange (tasks);
+					TaskService.Errors.AddRange (tasks);
 				}
 				Stop ();
 			}

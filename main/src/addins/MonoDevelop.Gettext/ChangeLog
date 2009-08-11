@@ -1,5 +1,10 @@
 2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Fix build
+	  error.
+
+2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Gettext.Editor\POEditorWidget.cs: Track api
 	  changes.
 
