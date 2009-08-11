@@ -48,6 +48,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Hashtable tasks = new Hashtable ();
 //		IPadWindow window;
 		bool initializeLocation = true;
+		int errorCount;
+		int warningCount;
+		int infoCount;
 
 		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
@@ -175,9 +178,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sw = new Gtk.ScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
 			sw.Add (view);
-			Services.TaskService.TaskRemoved      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (ShowResults));
-			Services.TaskService.TaskAdded        += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
-			Services.TaskService.TaskChanged      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskChanged));
+			TaskService.Errors.TasksRemoved      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (ShowResults));
+			TaskService.Errors.TasksAdded        += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
+			TaskService.Errors.TasksChanged      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskChanged));
 			
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
@@ -197,7 +200,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			CreateMenu ();
 
 			// Load existing tasks
-			foreach (Task t in Services.TaskService.Tasks) {
+			foreach (Task t in TaskService.Errors) {
 				AddTask (t);
 			}
 
@@ -389,8 +392,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		bool GetSelectedErrorReference (out string reference)
 		{
 			Task task = SelectedTask;
-			if (task != null && !String.IsNullOrEmpty (task.ErrorNumber)) {
-				reference = task.ErrorNumber;
+			if (task != null && !String.IsNullOrEmpty (task.Code)) {
+				reference = task.Code;
 				return true;
 			}
 			reference = null;
@@ -485,9 +488,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 				Task task = store.GetValue (iter, (int)Columns.Task) as Task;
 				if (task == null)
 					return true;
-				if (task.TaskType == TaskType.Error && errorBtn.Active) canShow = true;
-				else if (task.TaskType == TaskType.Warning && warnBtn.Active) canShow = true;
-				else if (task.TaskType == TaskType.Comment && msgBtn.Active) canShow = true;
+				if (task.Severity == TaskSeverity.Error && errorBtn.Active) canShow = true;
+				else if (task.Severity == TaskSeverity.Warning && warnBtn.Active) canShow = true;
+				else if (task.Severity == TaskSeverity.Information && msgBtn.Active) canShow = true;
 			} catch {
 				//Not yet fully added
 				return false;
@@ -500,12 +503,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Clear();
 
-			foreach (Task t in Services.TaskService.Tasks)
+			foreach (Task t in TaskService.Errors)
 				AddTask (t);
 		}
 
 		private void Clear()
 		{
+			errorCount = warningCount = infoCount = 0;
 			store.Clear ();
 			tasks.Clear ();
 			UpdateErrorsNum ();
@@ -562,43 +566,29 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void AddTaskInternal (Task t)
 		{
-			if (t.TaskType == TaskType.Comment) 
-				return;
-				
 			if (tasks.Contains (t)) return;
 			
-			switch (t.TaskType) {
-				case TaskType.Error:
+			Gdk.Pixbuf stock;
+			
+			switch (t.Severity) {
+				case TaskSeverity.Error:
+					stock = iconError;
+					errorCount++;
 					UpdateErrorsNum ();
 					break; 
-				case TaskType.Warning:
+				case TaskSeverity.Warning:
+					stock = iconWarning;
+					warningCount++;
 					UpdateWarningsNum ();	
 					break;
 				default:
+					stock = iconInfo;
+					infoCount++;
 					UpdateMessagesNum ();
 					break;
 			}
 		
 			tasks [t] = t;
-			
-			Gdk.Pixbuf stock;
-			switch (t.TaskType) {
-				case TaskType.Warning:
-					stock = iconWarning;
-					break;
-				case TaskType.Error:
-					stock = iconError;
-					break;
-				case TaskType.Comment:
-					stock = iconInfo;
-					break;
-				case TaskType.SearchResult:
-					stock = iconQuestion;
-					break;
-				default:
-					stock = null;
-					break;
-			}
 			
 			string tmpPath = t.FileName;
 			if (t.WorkspaceObject != null)
@@ -619,8 +609,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 				catch (Exception) { }
 			}	
 			string project;
-			if (t.OwnerItem is SolutionItem)
-				project = ((SolutionItem)t.OwnerItem).Name;
+			if (t.WorkspaceObject is SolutionItem)
+				project = t.WorkspaceObject.Name;
 			else
 				project = string.Empty;
 			
@@ -639,17 +629,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void UpdateErrorsNum () 
 		{
-			errorBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", IdeApp.Services.TaskService.ErrorsCount), IdeApp.Services.TaskService.ErrorsCount);
+			errorBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errorCount), errorCount);
 		}
 
 		void UpdateWarningsNum ()
 		{
-			warnBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", IdeApp.Services.TaskService.WarningsCount), IdeApp.Services.TaskService.WarningsCount); 
+			warnBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warningCount), warningCount); 
 		}
 
 		void UpdateMessagesNum ()
 		{
-			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", IdeApp.Services.TaskService.MessagesCount), IdeApp.Services.TaskService.MessagesCount);
+			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
 		}
 
 		private void ItemToggled (object o, ToggledArgs args)
@@ -689,7 +679,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			else if (task1 == null) return -1;
 			else if (task2 == null) return 1;
 
-			int compare = ((int)task1.TaskType).CompareTo ((int)task2.TaskType);
+			int compare = ((int)task1.Severity).CompareTo ((int)task2.Severity);
 			if (compare != 0)
 				return compare;
 
@@ -806,10 +796,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			if (t == null)
 				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("No more errors or warnings"));
-			else if (t.TaskType == TaskType.Error)
-				IdeApp.Workbench.StatusBar.ShowError (t.ErrorNumber + " - " + t.Description);
-			else if (t.TaskType == TaskType.Warning)
-				IdeApp.Workbench.StatusBar.ShowError (t.ErrorNumber + " - " + t.Description);
+			else if (t.Severity == TaskSeverity.Error)
+				IdeApp.Workbench.StatusBar.ShowError (t.Code + " - " + t.Description);
+			else if (t.Severity == TaskSeverity.Warning)
+				IdeApp.Workbench.StatusBar.ShowError (t.Code + " - " + t.Description);
 			else
 				IdeApp.Workbench.StatusBar.ShowMessage (t.Description);
 		}

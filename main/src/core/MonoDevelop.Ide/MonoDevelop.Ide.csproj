@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-16"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -365,7 +365,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\TasksOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\FileViewer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\TaskListPad.cs" />
-    <Compile Include="MonoDevelop.Ide.Tasks\UserTask.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\CodeTranslationFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SelectEncodingsDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FileSelectorDialog.cs" />
@@ -571,6 +570,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\MaintenanceOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Tasks\TaskStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

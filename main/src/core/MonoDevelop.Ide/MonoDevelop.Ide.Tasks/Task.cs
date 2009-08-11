@@ -1,22 +1,29 @@
-//  Task.cs
-//
-//  This file was derived from a file from #Develop. 
-//
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
 // 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
+// Task.cs
 //  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Author:
+//       Lluis Sanchez Gual <lluis@novell.com>
+// 
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 
 using System;
 using System.Collections;
@@ -27,64 +34,130 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	public enum TaskType {
-		Error,
-		Warning,
-		Message,
-		SearchResult,
-		Comment
-	}
-	
-	public class Task 
+	public class Task
 	{
+		[ItemProperty]
+		FilePath file;
+		
+		[ItemProperty (DefaultValue = 0)]
+		int line;
+		
+		[ItemProperty (DefaultValue = 0)]
+		int column;
+		
+		[ItemProperty (DefaultValue = "")]
+		string description = string.Empty;
+		
+		[ItemProperty (DefaultValue = "")]
+		string code = string.Empty;
+		
+		[ItemProperty (DefaultValue = TaskPriority.Normal)]
 		TaskPriority priority = TaskPriority.Normal;
-		string   description;
-		FilePath fileName;
-		TaskType type;
-		int      line;
-		int      column;
-
-		int      savedLine = -1;
 		
-		string errorNumber;
+		[ItemProperty (DefaultValue = TaskSeverity.Information)]
+		TaskSeverity severity = TaskSeverity.Information;
+		
+		[ItemProperty (DefaultValue = false)]
+		bool completed;
+		
 		object owner;
-		
-		public override string ToString ()
+		IWorkspaceObject parentObject;
+		internal int SavedLine;
+
+		public Task (FilePath file, string description, int column, int line, TaskSeverity severity)
+			: this (file, description, column, line, severity, TaskPriority.Normal, null, null)
 		{
-			return String.Format ("[Task:File={0}, Line={1}, Column={2}, Type={3}, Priority={4}, Description={5}]",
-			                     fileName,
-			                     line,
-			                     column,
-			                     type,
-			                     Enum.GetName (typeof (TaskPriority), priority),
-			                     description);
+		}
+
+		public Task (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority)
+			: this (file, description, column, line, severity, priority, null, null)
+		{
 		}
 		
-		public IWorkspaceObject WorkspaceObject {
+		public Task (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, IWorkspaceObject parent)
+			: this (file, description, column, line, severity, priority, parent, null)
+		{
+		}
+		
+		public Task (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, IWorkspaceObject parent, object owner)
+		{
+			this.file = file;
+			this.description = description;
+			this.column = column;
+			this.line = line;
+			this.severity = severity;
+			this.priority = priority;
+			this.owner = owner;
+			this.parentObject = parent;
+		}
+		
+		public Task ()
+		{
+			
+		}
+		
+		public Task (BuildError error)
+			: this (error, null)
+		{
+		}
+		
+		public Task (BuildError error, object owner)
+		{
+			parentObject = error.SourceTarget;
+			file = error.FileName;
+			description = error.ErrorText;
+			column = error.Column;
+			line = error.Line;
+			if (!string.IsNullOrEmpty (error.ErrorNumber))
+				description += " (" + error.ErrorNumber + ")";
+			if (error.IsWarning)
+				severity = error.ErrorNumber == "COMMENT" ? TaskSeverity.Information : TaskSeverity.Warning;
+			else
+				severity = TaskSeverity.Error;
+			priority = TaskPriority.Normal;
+			code = error.ErrorNumber;
+		}
+		
+		public int Column {
 			get {
-				return owner as IWorkspaceObject;
+				return column;
 			}
 		}
 		
-		public TaskPriority Priority
-		{
-			get { return priority; }
-			set { priority = value; }
-		}
-		
-		/// <value>
-		/// Used for temporarly line changes (e.g. editing a file) to set back to a default
-		/// value when not saving the file and reverting the changes.
-		/// </value>
-		internal int SavedLine {
+		public bool Completed {
 			get {
-				return savedLine;
+				return completed;
 			}
 			set {
-				this.savedLine = value;
+				completed = value;
+			}
+		}
+									
+		public string Description {
+			get {
+				return description;
+			}
+			set {
+				description = value;
+			}
+		}
+		
+		public string Code {
+			get {
+				return code;
+			}
+		}
+		
+		public FilePath FileName {
+			get {
+				return file;
+			}
+			internal set {
+				file = value;
 			}
 		}
 		
@@ -92,122 +165,87 @@ namespace MonoDevelop.Ide.Tasks
 			get {
 				return line;
 			}
-			set {
-				this.line = value;
+			internal set {
+				line = value;
 			}
 		}
 		
-		public int Column {
-			get {
-				return column;
-			}
-			set {
-				this.column = value;
-			}
-		}
-		
-		public string Description {
-			get {
-				return description;
-			}
-		}
-		
-		public FilePath FileName {
-			get {
-				return fileName;
-			}
-			set {
-				fileName = !value.IsNullOrEmpty ? value.FullPath : value;
-			}
-		}
-		
-		public TaskType TaskType {
-			get {
-				return type;
-			}
-		}
-
-		public string ErrorNumber {
-			get {
-				return errorNumber;
-			}
-		}
-
-		public object OwnerItem {
+		public object Owner {
 			get {
 				return owner;
 			}
-			set {
+			internal set {
 				owner = value;
 			}
 		}
 		
-//		public Task (string fileName, string description, int column, int line)
-//		{
-//			if (fileName != null)
-//				type = TaskType.SearchResult;
-//			else
-//				type = TaskType.Comment;
-//			this.fileName    = fileName;
-//			this.description = description.Trim();
-//			this.column      = column;
-//			this.line        = line;
-//		}
-		
-		public Task (FilePath fileName, string description, int column, int line, TaskType type, Project project)
-			: this (fileName, description, column, line, type)
-		{
-			owner = project;
+		public IWorkspaceObject WorkspaceObject {
+			get {
+				return parentObject;
+			}
+			set {
+				if (parentObject != null)
+					throw new InvalidOperationException ("Owner already set");
+				parentObject = value;
+			}
 		}
 		
-		public Task (FilePath fileName, string description, int column, int line, TaskType type, Project project, TaskPriority priority)
-			: this (fileName, description, column, line, type, priority)
-		{
-			owner = project;
+		public TaskPriority Priority {
+			get {
+				return priority;
+			}
+			set {
+				priority = value;
+			}
 		}
 		
-		public Task (FilePath fileName, string description, int column, int line, TaskType type, TaskPriority priority)
-			: this (fileName, description, column, line, type)
-		{
-			this.priority = priority;
+		public TaskSeverity Severity {
+			get {
+				return severity;
+			}
 		}
-		
-		public Task (FilePath fileName, string description, int column, int line, TaskType type)
-		{
-			this.type        = type;
-			this.description = description.Trim();
-			this.column      = column;
-			this.line        = line;
-			FileName    = fileName;
-		}
-		
-		public Task (BuildError error)
-		{
-			owner = error.SourceTarget;
-			type        = error.IsWarning ? error.ErrorNumber == "COMMENT" ? TaskType.Message : TaskType.Warning : TaskType.Error;
-			column      = error.Column;
-			line        = error.Line;
-			description = error.ErrorText;
-			if (error.ErrorNumber != String.Empty && error.ErrorNumber != null)
-				description += "(" + error.ErrorNumber + ")";
-			FileName    = error.FileName;
-			errorNumber = error.ErrorNumber;
-		}
+				
 		
 		public virtual void JumpToPosition()
 		{
-			if (!fileName.IsNullOrEmpty) {
-				IdeApp.Workbench.OpenDocument (fileName, Math.Max (1, line), Math.Max (1, column), true);
-			} else if (owner != null) {
+			if (!file.IsNullOrEmpty) {
+				IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), Math.Max (1, column), true);
+			} else if (parentObject != null) {
 				Pad pad = IdeApp.Workbench.GetPad<ProjectSolutionPad> ();
 				ProjectSolutionPad spad = pad.Content as ProjectSolutionPad;
-				ITreeNavigator nav = spad.TreeView.GetNodeAtObject (owner, true);
+				ITreeNavigator nav = spad.TreeView.GetNodeAtObject (parentObject, true);
 				if (nav != null) {
 					nav.ExpandToNode ();
 					nav.Selected = true;
 					nav.Expanded = true;
 				}
 			}
+		}
+		
+		public bool BelongsToItem (IWorkspaceObject item, bool checkHierarchy)
+		{
+			if (!checkHierarchy)
+				return item == parentObject;
+			
+			IWorkspaceObject cit = parentObject;
+			do {
+				if (cit == item)
+					return true;
+				if (cit is SolutionItem) {
+					SolutionItem si = (SolutionItem) cit;
+					if (si.ParentFolder != null)
+						cit = si.ParentFolder;
+					else
+						cit = si.ParentSolution;
+				}
+				else if (cit is WorkspaceItem) {
+					cit = ((WorkspaceItem)cit).ParentWorkspace;
+				}
+				else
+					cit = null;
+			} while (cit != null);
+			
+			return false;
 		}
 	}
 }

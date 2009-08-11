@@ -418,10 +418,7 @@ namespace MonoDevelop.Ide.Gui
 		void ClearTasks ()
 		{
 			lock (lockObj) {
-				foreach (Task task in tasks) {
-					IdeApp.Services.TaskService.Remove (task);
-				}
-				tasks.Clear ();
+				TaskService.Errors.ClearByOwner (this);
 			}
 		}
 		

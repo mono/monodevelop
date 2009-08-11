@@ -1,3 +1,20 @@
+2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui\Ide.cs:
+	* MonoDevelop.Ide\Services.cs:
+	* MonoDevelop.Ide.Tasks\Task.cs:
+	* MonoDevelop.Ide.Gui\Document.cs:
+	* MonoDevelop.Ide.Tasks\UserTask.cs:
+	* MonoDevelop.Ide.Tasks\TaskStore.cs:
+	* MonoDevelop.Ide.Tasks\TaskService.cs:
+	* MonoDevelop.Ide.Tasks\UserTasksView.cs:
+	* MonoDevelop.Ide.Gui\ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Pads\ErrorListPad.cs:
+	* MonoDevelop.Ide.Tasks\CommentTasksView.cs: Reimplemented the
+	  task service. It should now be more efficient.
+
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/AbstractPadContent.cs:

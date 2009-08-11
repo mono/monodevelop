@@ -40,16 +40,6 @@ namespace MonoDevelop.Ide
 {
 	internal class Services
 	{
-		static TaskService taskService;
-		
-		public static TaskService TaskService {
-			get {
-				if (taskService == null)
-					taskService = new TaskService ();
-				return taskService;
-			}
-		}
-		
 		public static ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}

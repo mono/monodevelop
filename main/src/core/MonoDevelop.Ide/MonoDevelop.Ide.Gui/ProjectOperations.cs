@@ -964,7 +964,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void BeginBuild (IProgressMonitor monitor)
 		{
-			Services.TaskService.ClearExceptCommentTasks ();
+			TaskService.Errors.ClearByOwner (this);
 			if (StartBuild != null)
 				StartBuild (this, new BuildEventArgs (monitor, true));
 		}
@@ -980,10 +980,12 @@ namespace MonoDevelop.Ide.Gui
 					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
 					
 					tasks = new Task [result.Errors.Count];
-					for (int n=0; n<tasks.Length; n++)
+					for (int n=0; n<tasks.Length; n++) {
 						tasks [n] = new Task (result.Errors [n]);
+						tasks [n].Owner = this;
+					}
 
-					Services.TaskService.AddRange (tasks);
+					TaskService.Errors.AddRange (tasks);
 					
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
 					string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);

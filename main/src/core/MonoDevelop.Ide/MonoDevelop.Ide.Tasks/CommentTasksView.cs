@@ -37,6 +37,9 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -56,16 +59,32 @@ namespace MonoDevelop.Ide.Tasks
 
 		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
-		Hashtable tasks = new Hashtable ();
 
 		Gdk.Color highPrioColor, normalPrioColor, lowPrioColor;
 
 		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
 		Clipboard clipboard;
+		
+		TaskStore comments = new TaskStore ();
+		Dictionary<string, TaskPriority> priorities = new Dictionary<string, TaskPriority> ();
 
 		public CommentTasksView ()
 		{
+		}
+		
+		void CreateView ()
+		{
+			if (view != null)
+				return;
+			
+			ReloadPriorities ();
+			
+			ProjectDomService.CommentTasksChanged += OnCommentTasksChanged;
+			ProjectDomService.SpecialCommentTagsChanged += OnCommentTagsChanged;
+			IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
+			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+			
 			highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
 			normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
 			lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
@@ -110,15 +129,15 @@ namespace MonoDevelop.Ide.Tasks
 
 			LoadColumnsVisibility ();
 
-			Services.TaskService.TaskAdded += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskAdded));
-			Services.TaskService.TaskRemoved += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskRemoved));
+			comments.TasksAdded += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskAdded));
+			comments.TasksRemoved += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskRemoved));
 
 			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));
 
 			CreateMenu ();
 			
 			// Initialize with existing tags.
-			foreach (Task t in Services.TaskService.CommentTasks) 
+			foreach (Task t in comments) 
 				AddGeneratedTask (t);
 		}
 
@@ -146,53 +165,127 @@ namespace MonoDevelop.Ide.Tasks
 			                                view.Columns[(int)Columns.Path].Visible);
 			PropertyService.Set ("Monodevelop.CommentTasksColumns", columns);
 		}
+		
+		void OnWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
+		{
+			comments.BeginTaskUpdates ();
+			try {
+				Solution sol = e.Item as Solution;
+				if (sol != null) {
+					// Load all tags that are stored in pidb files
+					foreach (Project p in sol.GetAllProjects ()) {
+						ProjectDom pContext = ProjectDomService.GetProjectDom (p);
+						if (pContext == null)
+							continue;
+						foreach (ProjectFile file in p.Files) {
+							IList<Tag> tags = pContext.GetSpecialComments (file.Name);
+							if (tags !=null)
+								UpdateCommentTags (sol, file.Name, tags);
+						}
+					}
+				}
+			}
+			finally {
+				comments.EndTaskUpdates ();
+			}
+		}
+		
+		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
+		{
+			comments.RemoveItemTasks (e.Item, true);
+		}		
 
+		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
+		{
+			if (e.Project != null)
+				UpdateCommentTags (e.Project, e.FileName, e.TagComments);
+		}
+		
+		void OnCommentTagsChanged (object sender, EventArgs e)
+		{
+			ReloadPriorities ();
+		}
+		
+		void UpdateCommentTags (IWorkspaceObject wob, FilePath fileName, IEnumerable<Tag> tagComments)
+		{
+			if (fileName == FilePath.Null)
+				return;
+			
+			fileName = fileName.FullPath;
+			
+			List<Task> newTasks = new List<Task> ();
+			if (tagComments != null) {  
+				foreach (Tag tag in tagComments) {
+					if (!priorities.ContainsKey (tag.Key))
+						continue;
+					Task t = new Task (fileName,
+					                      tag.Key + tag.Text,
+					                      tag.Region.Start.Column - 1,
+					                      tag.Region.Start.Line,
+					                      TaskSeverity.Information, 
+					                      priorities[tag.Key],
+					                      wob);
+					newTasks.Add (t);
+				}
+			}
+			
+			List<Task> oldTasks = new List<Task> (comments.GetFileTasks (fileName));
+
+			for (int i = 0; i < newTasks.Count; ++i) {
+				for (int j = 0; j < oldTasks.Count; ++j) {
+					if (oldTasks[j] != null &&
+					    newTasks[i].Line == oldTasks[j].Line &&
+					    newTasks[i].Column == oldTasks[j].Column &&
+					    newTasks[i].Description == oldTasks[j].Description &&
+					    newTasks[i].Priority == oldTasks[j].Priority)
+					{
+						newTasks.RemoveAt (i);
+						oldTasks.RemoveAt (j);
+						i--;
+						break;
+					}
+				}
+			}
+			
+			comments.BeginTaskUpdates ();
+			try {
+				comments.AddRange (newTasks);
+				comments.RemoveRange (oldTasks);
+			} finally {
+				comments.EndTaskUpdates ();
+			}
+		}
+		
+		void ReloadPriorities ()
+		{
+			priorities.Clear ();
+			foreach (CommentTag tag in ProjectDomService.SpecialCommentTags)
+				priorities.Add (tag.Tag, (TaskPriority) tag.Priority);
+		}		
+		
 		void GeneratedTaskAdded (object sender, TaskEventArgs e)
 		{
-			foreach (Task t in e.Tasks) {
-				if (t.TaskType == TaskType.Comment)
-					AddGeneratedTask (t);
-			}
+			foreach (Task t in e.Tasks)
+				AddGeneratedTask (t);
 		}
 
 		void AddGeneratedTask (Task t)
 		{
-			if (tasks.Contains (t)) return;
-
-			tasks [t] = t;
-
-			string tmpPath = t.FileName;
+			FilePath tmpPath = t.FileName;
 			if (t.WorkspaceObject != null)
-				tmpPath = FileService.AbsoluteToRelativePath (t.WorkspaceObject.BaseDirectory, t.FileName);
+				tmpPath = tmpPath.ToRelative (t.WorkspaceObject.BaseDirectory);
 
-			string fileName = tmpPath;
-			string path     = tmpPath;
-
-			try {
-				fileName = Path.GetFileName (tmpPath);
-			} catch (Exception) {}
-
-			try {
-				path = Path.GetDirectoryName (tmpPath);
-			} catch (Exception) {}
-
-			store.AppendValues (t.Line, t.Description, fileName, path, t, GetColorByPriority (t.Priority), (int)Pango.Weight.Bold);
+			store.AppendValues (t.Line, t.Description, tmpPath.FileName, tmpPath.ParentDirectory.FileName, t, GetColorByPriority (t.Priority), (int)Pango.Weight.Bold);
 		}
 
 		void GeneratedTaskRemoved (object sender, TaskEventArgs e)
 		{
-			foreach (Task t in e.Tasks) {
-				if (t.TaskType == TaskType.Comment)
-					RemoveGeneratedTask (t);
-			}
+			foreach (Task t in e.Tasks)
+				RemoveGeneratedTask (t);
 		}
 
 		void RemoveGeneratedTask (Task t)
 		{
-			if (!tasks.Contains (t)) return;
-
-			tasks[t] = null;
-			
 			TreeIter iter = FindTask (store, t);
 			if (!iter.Equals (TreeIter.Zero))
 				store.Remove (ref iter);
@@ -201,17 +294,16 @@ namespace MonoDevelop.Ide.Tasks
 		static TreeIter FindTask (ListStore store, Task task)
 		{
 			TreeIter iter;
-			store.GetIterFirst (out iter);
-			Task t = store.GetValue (iter, (int)Columns.Task) as Task;
-			if (t != null && t == task) {
-				return iter;
-			}
-			while (store.IterNext (ref iter)) {
-				t = store.GetValue (iter, (int)Columns.Task) as Task;
-				if (t != null && t == task) {
+			if (!store.GetIterFirst (out iter))
+				return TreeIter.Zero;
+			
+			do {
+				Task t = store.GetValue (iter, (int)Columns.Task) as Task;
+				if (t == task)
 					return iter;
-				}
 			}
+			while (store.IterNext (ref iter));
+			
 			return TreeIter.Zero;
 		}
 
@@ -362,7 +454,7 @@ namespace MonoDevelop.Ide.Tasks
 							doc.TextEditor.JumpTo (task.Line, task.Column);
 							line = line.Substring (0, index);
 							doc.TextEditor.ReplaceLine (task.Line, line);
-							IdeApp.Services.TaskService.Remove (task);
+							comments.Remove (task);
 						}
 					}
 				}
@@ -470,8 +562,16 @@ namespace MonoDevelop.Ide.Tasks
 		}
 		
 		#region ITaskListView members
-		TreeView ITaskListView.Content { get { return view; } }
-		ToolItem[] ITaskListView.ToolBarItems { get { return null; } }
+		TreeView ITaskListView.Content {
+			get {
+				CreateView ();
+				return view; 
+			} 
+		}
+		
+		ToolItem[] ITaskListView.ToolBarItems {
+			get { return null; } 
+		}
 		#endregion
 	}
 }

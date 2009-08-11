@@ -371,10 +371,6 @@ namespace MonoDevelop.Ide.Gui
 	
 	public class IdeServices
 	{
-		public TaskService TaskService {
-			get { return MonoDevelop.Ide.Services.TaskService; }
-		}
-	
 		public ProjectService ProjectService {
 			get { return MonoDevelop.Projects.Services.ProjectService; }
 		}

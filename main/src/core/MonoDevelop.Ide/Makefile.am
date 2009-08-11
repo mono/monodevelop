@@ -327,7 +327,7 @@ FILES =  \
 	MonoDevelop.Ide.Tasks/Task.cs \
 	MonoDevelop.Ide.Tasks/TaskPriority.cs \
 	MonoDevelop.Ide.Tasks/TaskService.cs \
-	MonoDevelop.Ide.Tasks/UserTask.cs \
+	MonoDevelop.Ide.Tasks/TaskStore.cs \
 	MonoDevelop.Ide.Tasks/UserTasksView.cs \
 	MonoDevelop.Ide.Templates/ClrVersionFileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs \
