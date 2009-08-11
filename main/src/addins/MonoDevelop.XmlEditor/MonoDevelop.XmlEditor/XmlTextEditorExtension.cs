@@ -26,6 +26,7 @@ using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.XmlEditor.Completion;
 using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.XmlEditor
 {
@@ -556,7 +557,7 @@ namespace MonoDevelop.XmlEditor
 		[CommandHandler (Commands.Format)]
 		public void FormatCommand ()
 		{
-			MonoDevelop.Ide.Gui.IdeApp.Services.TaskService.ClearExceptCommentTasks ();
+			TaskService.Errors.Clear ();
 			
 			using (IProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
 				bool selection = (Editor.SelectionEndPosition - Editor.SelectionStartPosition) > 0;
@@ -604,7 +605,7 @@ namespace MonoDevelop.XmlEditor
 		public void CreateSchemaCommand ()
 		{
 			try {
-				MonoDevelop.Ide.Gui.IdeApp.Services.TaskService.ClearExceptCommentTasks ();
+				TaskService.Errors.Clear ();
 				string xml = Editor.Text;
 				using (IProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
 					XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, FileName);
@@ -671,7 +672,7 @@ namespace MonoDevelop.XmlEditor
 		[CommandHandler (Commands.Validate)]
 		public void ValidateCommand ()
 		{
-			MonoDevelop.Ide.Gui.IdeApp.Services.TaskService.ClearExceptCommentTasks ();
+			TaskService.Errors.Clear ();
 			using (IProgressMonitor monitor = XmlEditorService.GetMonitor()) {
 				if (IsSchema)
 					XmlEditorService.ValidateSchema (monitor, Editor.Text, FileName);

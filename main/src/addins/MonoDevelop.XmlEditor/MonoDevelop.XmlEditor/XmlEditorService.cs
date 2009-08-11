@@ -29,7 +29,7 @@ namespace MonoDevelop.XmlEditor
 	public static class XmlEditorService
 	{
 		#region Task management
-		public static void AddTask(string fileName, string message, int column, int line, TaskType taskType)
+		public static void AddTask(string fileName, string message, int column, int line, TaskSeverity taskType)
 		{
 			// HACK: Use a compiler error since we cannot add an error
 			// task otherwise (task type property is read-only and
@@ -43,7 +43,7 @@ namespace MonoDevelop.XmlEditor
 			
 			//Task task = new Task(fileName, message, column, line);
 			Task task = new Task (error);
-			IdeApp.Services.TaskService.Add(task);
+			TaskService.Errors.Add(task);
 		}
 		#endregion
 		
@@ -228,13 +228,13 @@ namespace MonoDevelop.XmlEditor
 				doc.LoadXml (xml);
 			} catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error);
 				error = true;
 			}
 			
 			if (error) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
-				IdeApp.Services.TaskService.ShowErrors ();
+				TaskService.ShowErrors ();
 			} else {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("XML is valid."));
 			}
@@ -264,9 +264,9 @@ namespace MonoDevelop.XmlEditor
 			ValidationEventHandler validationHandler = delegate (object sender, System.Xml.Schema.ValidationEventArgs args) {
 				if (args.Severity == XmlSeverityType.Warning) {
 					monitor.Log.WriteLine (args.Message);
-					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber,TaskType.Warning);
+					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber,TaskSeverity.Warning);
 				} else {
-					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber,TaskType.Error);
+					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber,TaskSeverity.Error);
 					monitor.Log.WriteLine (args.Message);
 					error = true;
 				}	
@@ -284,12 +284,12 @@ namespace MonoDevelop.XmlEditor
 				
 			} catch (XmlSchemaException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
 				error = true;
 			}
 			catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
 				error = true;
 			}
 			finally {
@@ -300,7 +300,7 @@ namespace MonoDevelop.XmlEditor
 			
 			if (error) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
-				IdeApp.Services.TaskService.ShowErrors ();
+				TaskService.ShowErrors ();
 			} else {
 				monitor.Log.WriteLine  (GettextCatalog.GetString ("XML is valid."));
 			}
@@ -330,25 +330,25 @@ namespace MonoDevelop.XmlEditor
 						error = true;
 					}
 					AddTask (fileName, args.Message, args.Exception.LinePosition, args.Exception.LineNumber,
-					    (args.Severity == XmlSeverityType.Warning)? TaskType.Warning : TaskType.Error);
+					    (args.Severity == XmlSeverityType.Warning)? TaskSeverity.Warning : TaskSeverity.Error);
 				};
 				schema = XmlSchema.Read (xmlReader, callback);
 				schema.Compile (callback);
 			} 
 			catch (XmlSchemaException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
 				error = true;
 			}
 			catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
 				error = true;
 			}
 			
 			if (error) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
-				IdeApp.Services.TaskService.ShowErrors ();
+				TaskService.ShowErrors ();
 			} else {
 				monitor.Log.WriteLine  (GettextCatalog.GetString ("Schema is valid."));
 			}
@@ -371,20 +371,20 @@ namespace MonoDevelop.XmlEditor
 				error = false;
 			} catch (XsltCompileException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
 			}
 			catch (XsltException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
 			}
 			catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskType.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
 			}
 			
 			if (error) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Validation failed."));
-				IdeApp.Services.TaskService.ShowErrors ();
+				TaskService.ShowErrors ();
 			} else {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Stylesheet is valid."));
 			}

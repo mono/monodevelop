@@ -1,3 +1,9 @@
+2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor/XmlEditorService.cs:
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Track api
+	  changes.
+
 2009-07-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.XmlEditor/XmlFormatter.cs: Don't crash when
