@@ -41,6 +41,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Gettext.Editor;
 using MonoDevelop.Ide.Tasks;
@@ -1022,7 +1023,7 @@ namespace MonoDevelop.Gettext
 			
 			public TranslationTask (POEditorWidget widget, CatalogEntry entry, string description) : base (widget.poFileName,
 			                                                                           description, 0, 0,
-			                                                                           TaskType.Error)
+			                                                                           TaskSeverity.Error, TaskPriority.Normal, null, widget)
 			{
 				this.widget = widget;
 				this.entry  = entry;
@@ -1036,11 +1037,9 @@ namespace MonoDevelop.Gettext
 		
 		void ClearTasks ()
 		{
-			IdeApp.Services.TaskService.ClearExceptCommentTasks ();
-			/*foreach (TranslationTask task in tasks) {
-				IdeApp.Services.TaskService.Remove (task);
-			}*/
+			TaskService.Errors.ClearByOwner (this);
 		}
+		
 		static bool CompareTasks (List<Task> list1, List<Task> list2)
 		{
 			if (list1.Count != list2.Count)
@@ -1209,7 +1208,7 @@ namespace MonoDevelop.Gettext
 				if (!CompareTasks (tasks, widget.currentTasks)) {
 					widget.ClearTasks ();
 					widget.currentTasks = tasks;
-					IdeApp.Services.TaskService.AddRange (tasks);
+					IdeApp.Services.Errors.AddRange (tasks);
 				}
 				Stop ();
 			}
