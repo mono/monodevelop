@@ -65,6 +65,15 @@ namespace MonoDevelop.Ide.Tasks
 		public static TaskStore UserTasks {
 			get { return userTasks; }
 		}
+		
+		public static void ShowErrors ()
+		{
+			Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
+			if (errorsPad != null) {
+				errorsPad.Visible = true;
+				errorsPad.BringToFront ();
+			}
+		}
 			
 		static void OnWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
 		{

@@ -28,17 +28,14 @@
 
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Gui.Components;
 

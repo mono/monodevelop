@@ -1,5 +1,12 @@
 2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Tasks/TaskService.cs: Add ShowErrors method.
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	  Remove unused usings.
+
+2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.Gui\Ide.cs:
