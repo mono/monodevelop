@@ -1,3 +1,7 @@
+2009-08-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* TextTemplatingService.cs: Track task service API.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.TextTemplating.addin.xml: Bump MD version.

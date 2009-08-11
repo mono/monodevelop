@@ -44,14 +44,12 @@ namespace MonoDevelop.TextTemplating
 			if (errors.Count == 0)
 				return;
 			
-			Pad errPad = IdeApp.Workbench.GetPad<ErrorListPad> ();
-			ErrorListPad errPadContent = (ErrorListPad) errPad.Content;
-			IdeApp.Services.TaskService.ClearExceptCommentTasks ();
+			TaskService.Errors.Clear ();
 			foreach (System.CodeDom.Compiler.CompilerError err in errors) {
-					errPadContent.AddTask (new Task (err.FileName, err.ErrorText, err.Column, err.Line,
-					                                 err.IsWarning? TaskType.Warning : TaskType.Error));
+					TaskService.Errors.Add (new Task (err.FileName, err.ErrorText, err.Column, err.Line,
+					                                    err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error));
 			}
-			errPad.BringToFront ();
+			TaskService.ShowErrors ();
 		}
 	}
 }
