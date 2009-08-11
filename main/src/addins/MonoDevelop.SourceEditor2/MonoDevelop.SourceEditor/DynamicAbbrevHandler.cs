@@ -58,7 +58,7 @@ namespace MonoDevelop.SourceEditor
 			SourceEditorView view = IdeApp.Workbench.ActiveDocument.GetContent<SourceEditorView> ();
 			if (view == null)
 				return;
-			
+
 			string abbrevWord;
 			int offset;
 			int startOffset;
@@ -146,7 +146,7 @@ namespace MonoDevelop.SourceEditor
 		static string GetWordBeforeCaret (MonoDevelop.SourceEditor.ExtensibleTextEditor editor)
 		{
 			int startOffset = editor.Caret.Offset;
-			int offset = startOffset;
+			int offset = startOffset - 1;
 			while (offset > 0) {
 				char ch = editor.Document.GetCharAt (offset);
 				if (!ch.IsIdentifierPart ()) {
