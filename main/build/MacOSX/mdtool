@@ -6,7 +6,7 @@
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
 export DYLD_FALLBACK_LIBRARY_PATH=$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib
 
-DIR=$(cd $(dirname "$0"); pwd)
+DIR=$(cd "$(dirname "$0")"; pwd)
 
 EXE_PATH="$DIR/lib/monodevelop/bin/mdrun.exe"
 
