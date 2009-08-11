@@ -89,6 +89,7 @@
     </Reference>
     <Reference Include="MonoDevelop.DesignerSupport, Version=2.1.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop-core-addins</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -137,9 +138,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="CodeTemplates\AddView\Empty.tt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="System.Web.Mvc.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

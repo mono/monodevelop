@@ -20,7 +20,6 @@
 		<Import file = "Templates/WebConfigApp.xft.xml"/>
 		<Import file = "Templates/WebConfigViews.xft.xml"/>
 		<Import file = "CodeTemplates/AddView/Empty.tt" />
-		<Import assembly = "System.Web.Mvc.dll" />
 	</Runtime>
 	
 	<Dependencies>
@@ -96,13 +95,5 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id="AspMvcFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.Mvc.Gui.FolderNodeBuilderExtension"/>
-	</Extension>
-	
-	<Extension path="/MonoDevelop/Core/SupportPackages">
-		<Condition id="PackageNotInstalled" name="system.web.mvc" version="1.0.0.0">
-			<Package name="system.web.mvc" version="1.0.0.0" targetFramework="3.5">
-				<Assembly file="System.Web.Mvc.dll" />
-			</Package>
-		</Condition>
 	</Extension>
 </Addin>
