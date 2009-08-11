@@ -87,8 +87,15 @@ namespace MonoDevelop.Projects
 			
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			monitor.IgnoreLogMessages = true;
-			SolutionEntityItem entry = Services.ProjectService.ReadSolutionItem (monitor, projectFile);
-			FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
+			
+			
+			object item;
+			if (Services.ProjectService.IsWorkspaceItemFile (projectFile))
+				item = Services.ProjectService.ReadWorkspaceItem (monitor, projectFile);
+			else
+				item = Services.ProjectService.ReadSolutionItem (monitor, projectFile);
+			
+			FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (item);
 			
 			if (formats.Length == 0) {
 				Console.WriteLine ("Can't convert file to any format: " + projectFile);

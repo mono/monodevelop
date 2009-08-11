@@ -1,3 +1,8 @@
+2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectConvertTool.cs: Allow converting
+	  solutions.
+
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* md1format.xml: Updated field names for ProjectConfiguration.
