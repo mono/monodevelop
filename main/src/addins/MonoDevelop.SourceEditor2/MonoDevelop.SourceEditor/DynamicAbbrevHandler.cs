@@ -67,7 +67,7 @@ namespace MonoDevelop.SourceEditor
 				abbrevWord = lastAbbrev;
 				offset = lastStartOffset;
 			} else {
-				abbrevWord = view.TextEditor.GetWordBeforeCaret ();
+				abbrevWord = GetWordBeforeCaret (view.TextEditor);
 				lastAbbrev = abbrevWord;
 				offset = view.TextEditor.Caret.Offset - abbrevWord.Length - 1;
 				lastInsertPos = lastTriggerOffset = offset + 1;
@@ -141,6 +141,23 @@ namespace MonoDevelop.SourceEditor
 				ReplaceWord (view, foundWords[index]);
 				break;
 			}
+		}
+
+		static string GetWordBeforeCaret (MonoDevelop.SourceEditor.ExtensibleTextEditor editor)
+		{
+			int startOffset = editor.Caret.Offset;
+			int offset = startOffset;
+			while (offset > 0) {
+				char ch = editor.Document.GetCharAt (offset);
+				if (!ch.IsIdentifierPart ()) {
+					offset++;
+					break;
+				}
+				offset--;
+			}
+			if (offset >= startOffset)
+				return "";
+			return editor.Document.GetTextBetween (offset, startOffset);
 		}
 		
 		static void ReplaceWord (MonoDevelop.SourceEditor.SourceEditorView view, string curWord)
