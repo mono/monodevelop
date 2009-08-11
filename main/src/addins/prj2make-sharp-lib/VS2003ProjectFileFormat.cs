@@ -114,47 +114,59 @@ namespace MonoDevelop.Prj2Make
 
 		public object ReadProjectFile (FilePath fileName, IProgressMonitor monitor)
 		{
-			TargetConvert choice = IdeApp.IsInitialized ? GuiHelper.QueryProjectConversion (fileName) : TargetConvert.None;
-			if (choice == TargetConvert.None)
-				throw new InvalidOperationException ("VS2003 projects are not supported natively.");
+			if (IdeApp.IsInitialized) {
+				TargetConvert choice = GuiHelper.QueryProjectConversion (fileName);
+				if (choice == TargetConvert.None)
+					throw new InvalidOperationException ("VS2003 projects are not supported natively.");
+	
+				DotNetProject project = ImportCsproj (fileName);
+				project.FileName = fileName;
+	
+				if (choice == TargetConvert.MonoDevelop) {
+					project.FileFormat = IdeApp.Services.ProjectService.FileFormats.GetFileFormat ("MD1");
+				} else if (choice == TargetConvert.VisualStudio) {
+					project.FileFormat = IdeApp.Services.ProjectService.FileFormats.GetFileFormat ("MSBuild05");
+				}
 
-			DotNetProject project = ImportCsproj (fileName);
-			project.FileName = fileName;
-			
-			if (choice == TargetConvert.MonoDevelop) {
-				project.FileFormat = IdeApp.Services.ProjectService.FileFormats.GetFileFormat ("MD1");
-			} else if (choice == TargetConvert.VisualStudio) {
-				project.FileFormat = IdeApp.Services.ProjectService.FileFormats.GetFileFormat ("MSBuild05");
+				project.Save (monitor);
+				return project;
 			}
-
-			project.Save (monitor);
-			return project;
+			else {
+				DotNetProject project = ImportCsproj (fileName);
+				project.FileName = fileName;
+				return project;
+			}
 		}
 
 		public object ReadSolutionFile (FilePath fileName, IProgressMonitor monitor)
 		{
-			TargetConvert choice = IdeApp.IsInitialized ? GuiHelper.QuerySolutionConversion (fileName) : TargetConvert.None;
-			if (choice == TargetConvert.None)
-				throw new InvalidOperationException ("VS2003 solutions are not supported natively.");
+			if (IdeApp.IsInitialized) {
+				TargetConvert choice = GuiHelper.QuerySolutionConversion (fileName);
+				if (choice == TargetConvert.None)
+					throw new InvalidOperationException ("VS2003 solutions are not supported natively.");
 			
-			Solution solution = ImportSln (fileName);
+				Solution solution = ImportSln (fileName);
 			
-			if (choice == TargetConvert.MonoDevelop) {
-				solution.ConvertToFormat (IdeApp.Services.ProjectService.FileFormats.GetFileFormat ("MD1"), true);
-			} else if (choice == TargetConvert.VisualStudio) {
-				solution.ConvertToFormat (IdeApp.Services.ProjectService.FileFormats.GetFileFormat ("MSBuild05"), true);
+				if (choice == TargetConvert.MonoDevelop) {
+					solution.ConvertToFormat (IdeApp.Services.ProjectService.FileFormats.GetFileFormat ("MD1"), true);
+				} else if (choice == TargetConvert.VisualStudio) {
+					solution.ConvertToFormat (IdeApp.Services.ProjectService.FileFormats.GetFileFormat ("MSBuild05"), true);
+				}
+			
+				solution.Save (monitor);
+				return solution;
 			}
-			
-			solution.Save (monitor);
-			return solution;
+			else
+				return ImportSln (fileName);
 		}
 
 		internal DotNetProject ImportCsproj (FilePath fileName)
 		{
 			DotNetProject project = null;
 			SlnMaker slnmaker = new SlnMaker ();
-			try { 
-				using (IProgressMonitor m = GuiHelper.CreateProgressMonitor ()) {
+			try {
+				IProgressMonitor m = IdeApp.IsInitialized ? GuiHelper.CreateProgressMonitor () : new ConsoleProgressMonitor ();
+				using (m) {
 					project = slnmaker.CreatePrjxFromCsproj (fileName, m);
 				}
 			} catch (Exception e) {
@@ -180,7 +192,7 @@ namespace MonoDevelop.Prj2Make
 		{
 			SlnMaker slnmaker = new SlnMaker ();
 			Solution solution = null;
-			IProgressMonitor m = GuiHelper.CreateProgressMonitor ();
+			IProgressMonitor m = IdeApp.IsInitialized ? GuiHelper.CreateProgressMonitor () : new ConsoleProgressMonitor ();
 
 			try { 
 				solution = slnmaker.MsSlnToCmbxHelper (fileName, m);

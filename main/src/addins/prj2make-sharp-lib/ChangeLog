@@ -1,3 +1,8 @@
+2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* VS2003ProjectFileFormat.cs: Add support for reading vs2003
+	  projects and solutions when not running in the IDE.
+
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* prj2make-sharp-lib.csproj: Don't make local copies of
