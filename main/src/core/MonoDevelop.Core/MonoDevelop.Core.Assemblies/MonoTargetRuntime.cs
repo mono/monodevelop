@@ -164,14 +164,12 @@ namespace MonoDevelop.Core.Assemblies
 		
 		protected override void OnInitialize ()
 		{
-			foreach (string pcdir in PkgConfigDirs) {
-				foreach (string pcfile in Directory.GetFiles (pcdir, "*.pc")) {
-					try {
-						ParsePCFile (pcfile);
-					}
-					catch (Exception ex) {
-						LoggingService.LogError ("Could not parse file '" + pcfile + "'", ex);
-					}
+			foreach (string pcfile in GetAllPkgConfigFiles ()) {
+				try {
+					ParsePCFile (pcfile);
+				}
+				catch (Exception ex) {
+					LoggingService.LogError ("Could not parse file '" + pcfile + "'", ex);
 				}
 			}
 			pcFileCache.Save ();
