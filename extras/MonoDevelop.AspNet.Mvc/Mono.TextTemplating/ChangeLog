@@ -1,3 +1,15 @@
+2009-08-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating.csproj:
+	* Mono.TextTemplating/ParsedTemplate.cs:
+	* Mono.TextTemplating/CompiledTemplate.cs:
+	* Mono.TextTemplating/TemplatingEngine.cs:
+	* Mono.TextTemplating/TemplateGenerator.cs:
+	* Mono.TextTemplating/IExtendedTextTemplatingEngineHost.cs:
+	  Add support for caching compiled templates, and a couple of
+	  bugfixes. Patch from Nathan Baulch
+	  (nathan.baulch@gmail.com).
+
 2009-06-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating/TemplatingEngine.cs: Handle expressions

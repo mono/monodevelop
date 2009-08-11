@@ -43,6 +43,8 @@
     <Compile Include="Microsoft.VisualStudio.TextTemplating\RequiresProvidesDirectiveProcessor.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\TextTransformation.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\ToStringHelper.cs" />
+    <Compile Include="Mono.TextTemplating\CompiledTemplate.cs" />
+    <Compile Include="Mono.TextTemplating\IExtendedTextTemplatingEngineHost.cs" />
     <Compile Include="Mono.TextTemplating\ParsedTemplate.cs" />
     <Compile Include="Mono.TextTemplating\Tokeniser.cs" />
     <Compile Include="AssemblyInfo.cs" />

@@ -26,11 +26,11 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using Microsoft.CSharp;
 using Microsoft.VisualStudio.TextTemplating;
 
 namespace Mono.TextTemplating
@@ -40,6 +40,11 @@ namespace Mono.TextTemplating
 	{
 		
 		public string ProcessTemplate (string content, ITextTemplatingEngineHost host)
+		{
+			return CompileTemplate (content, host).Process ();
+		}
+
+		public CompiledTemplate CompileTemplate (string content, ITextTemplatingEngineHost host)
 		{
 			ParsedTemplate pt = ParsedTemplate.FromText (content, host);
 			if (pt.Errors.HasErrors) {
@@ -73,14 +78,7 @@ namespace Mono.TextTemplating
 				host.SetOutputEncoding (settings.Encoding, true);
 			}
 			
-			string output = "";
-			try {
-				output = Run (results, settings.Namespace + "." + settings.Name, host, settings.Culture);
-			} catch (Exception ex) {
-				pt.LogError ("Error running transform: " + ex.ToString ());
-			}
-			host.LogErrors (pt.Errors);
-			return output;
+			return new CompiledTemplate (pt, host, results, settings);
 		}
 		
 		public static System.Reflection.Assembly GenerateCode (ITextTemplatingEngineHost host, ParsedTemplate pt, 
@@ -162,7 +160,7 @@ namespace Mono.TextTemplating
 					if (namespac == null)
 						pt.LogError ("Missing namespace attribute in import directive", dt.StartLocation);
 					else
-						settings.Assemblies.Add (namespac);
+						settings.Imports.Add (namespac);
 					break;
 					
 				case "output":
@@ -192,10 +190,15 @@ namespace Mono.TextTemplating
 				return settings;
 			}
 			
-			//FIXME: handle versions correctly: C# VB C#v3.5 VBv3.5
-			if (language == "C#v3.5")
-				language = "C#";
-			settings.Provider = System.CodeDom.Compiler.CodeDomProvider.CreateProvider (language);
+			if (language == "C#v3.5") {
+				Dictionary<string, string> providerOptions = new Dictionary<string, string> ();
+				providerOptions.Add ("CompilerVersion", "v3.5");
+				settings.Provider = new CSharpCodeProvider (providerOptions);
+			}
+			else {
+				settings.Provider = CodeDomProvider.CreateProvider (language);
+			}
+			
 			if (settings.Provider == null) {
 				pt.LogError ("A provider could not be found for the language '" + language + "'");
 				return settings;
@@ -335,7 +338,15 @@ namespace Mono.TextTemplating
 		public static string Run (System.Reflection.Assembly assem, string type, ITextTemplatingEngineHost host, System.Globalization.CultureInfo culture)
 		{
 			Type transformType = assem.GetType (type);
-			TextTransformation tt = (TextTransformation)Activator.CreateInstance (transformType);
+			TextTransformation tt;
+
+			IExtendedTextTemplatingEngineHost extendedHost = host as IExtendedTextTemplatingEngineHost;
+			if (extendedHost != null) {
+				tt = extendedHost.CreateInstance (transformType);
+			}
+			else {
+				tt = (TextTransformation) Activator.CreateInstance (transformType);
+			}
 			
 			//set the host property if it exists
 			System.Reflection.PropertyInfo hostProp = transformType.GetProperty ("Host", typeof (ITextTemplatingEngineHost));

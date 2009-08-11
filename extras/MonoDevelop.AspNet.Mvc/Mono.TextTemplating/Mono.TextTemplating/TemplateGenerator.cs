@@ -67,6 +67,27 @@ namespace Mono.TextTemplating
 			Refs.Add (typeof (TextTransformation).Assembly.Location);
 		}
 		
+		public CompiledTemplate CompileTemplate (string content)
+		{
+			if (String.IsNullOrEmpty (content))
+				throw new ArgumentNullException ("content");
+
+			errors.Clear ();
+			encoding = Encoding.UTF8;
+			
+			AppDomain appdomain = ProvideTemplatingAppDomain (content);
+			TemplatingEngine engine;
+			if (appdomain != null) {
+				engine = (TemplatingEngine)
+				appdomain.CreateInstanceAndUnwrap (typeof (TemplatingEngine).Assembly.FullName,
+				                                   typeof (TemplatingEngine).FullName);
+			} else {
+				engine = new TemplatingEngine ();
+			}
+
+			return engine.CompileTemplate (content, this);
+		}
+		
 		protected Engine Engine {
 			get {
 				if (engine == null)
@@ -137,6 +158,12 @@ namespace Mono.TextTemplating
 			return null;
 		}
 		
+		protected virtual string ResolveAssemblyReference (string assemblyReference)
+		{
+			//FIXME: implement
+			return assemblyReference;
+		}
+		
 		#endregion
 		
 		#region Explicit ITextTemplatingEngineHost implementation
@@ -177,8 +204,7 @@ namespace Mono.TextTemplating
 		
 		string ITextTemplatingEngineHost.ResolveAssemblyReference (string assemblyReference)
 		{
-			//FIXME: implement
-			return assemblyReference;
+			return ResolveAssemblyReference (assemblyReference);
 		}
 		
 		Type ITextTemplatingEngineHost.ResolveDirectiveProcessor (string processorName)

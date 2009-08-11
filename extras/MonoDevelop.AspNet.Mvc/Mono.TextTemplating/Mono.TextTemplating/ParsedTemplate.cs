@@ -28,7 +28,6 @@ using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Microsoft.VisualStudio.TextTemplating;
 
 namespace Mono.TextTemplating
@@ -188,9 +187,9 @@ namespace Mono.TextTemplating
 			if (location.FileName != null) {
 				err.Line = location.Line;
 				err.Column = location.Column;
-				err.FileName = location.FileName;
+				err.FileName = location.FileName ?? string.Empty;
 			} else {
-				err.FileName = rootFileName;
+				err.FileName = rootFileName ?? string.Empty;
 			}
 			err.IsWarning = isWarning;
 			errors.Add (err);
