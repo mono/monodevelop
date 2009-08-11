@@ -58,7 +58,7 @@ namespace MonoDevelop.SourceEditor
 			SourceEditorView view = IdeApp.Workbench.ActiveDocument.GetContent<SourceEditorView> ();
 			if (view == null)
 				return;
-
+			
 			string abbrevWord;
 			int offset;
 			int startOffset;
@@ -123,13 +123,13 @@ namespace MonoDevelop.SourceEditor
 						if (IsMatchAt (otherView, i, abbrevWord)) {
 							int endOffset = SearchEndPos (i, otherView);
 							string curWord = otherView.TextEditor.Document.GetTextBetween (i, endOffset);
-							if (foundWords.Contains (curWord)) 
+							if (foundWords.Contains (curWord))
 								continue;
 							foundWords.Add (curWord);
 						}
 					}
 				}
-				curState = AbbrevState.SearchForward;
+				curState = AbbrevState.CycleThroughFoundWords;
 				goto case AbbrevState.CycleThroughFoundWords;
 			case AbbrevState.CycleThroughFoundWords:
 				int index = foundWords.IndexOf (view.TextEditor.Document.GetTextAt (lastInsertPos, view.TextEditor.Caret.Offset - lastInsertPos));
@@ -141,7 +141,6 @@ namespace MonoDevelop.SourceEditor
 				ReplaceWord (view, foundWords[index]);
 				break;
 			}
-			
 		}
 		
 		static void ReplaceWord (MonoDevelop.SourceEditor.SourceEditorView view, string curWord)

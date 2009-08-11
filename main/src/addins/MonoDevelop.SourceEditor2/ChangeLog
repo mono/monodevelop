@@ -1,3 +1,8 @@
+2009-08-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs: fixed typo
+	  in dynamic abbrev that caused a bug.
+
 2009-08-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor.addin.xml: Changed dynamic abbrev
