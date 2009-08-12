@@ -1,3 +1,7 @@
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.csproj: Set correct encoding.
+
 2009-08-12  Christian Hergert  <chris@dronelabs.com>
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Make sure the open
