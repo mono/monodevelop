@@ -17,27 +17,74 @@ namespace MonoDevelop.AddinAuthoring
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class AddinFeatureWidget : Gtk.Bin
 	{
-		StringCollection paths = new StringCollection ();
 		bool loading;
 		bool idSet;
 		bool nsSet;
+		bool isRoot;
 		
 		public AddinFeatureWidget ()
 		{
 			this.Build();
 		}
 		
-		public void Load (DotNetProject project, bool showNameEntry)
+		public void Load (Solution solution, DotNetProject project, bool forOptionsPanel)
 		{
-			if (!showNameEntry) {
-				((Gtk.Container)tableNames.Parent).Remove (tableNames);
-				((Gtk.Container)labelAddinInfo.Parent).Remove (labelAddinInfo);
-				((Gtk.Container)checkRoot.Parent).Remove (checkRoot);
-			}
-			
 			AddinData data = AddinData.GetAddinData (project);
-			if (data != null) {
-				regSelector.RegistryPath = data.RegistryPath;
+			if (data != null && !forOptionsPanel) {
+				boxLibraryType.Visible = false;
+				AddinDescription desc = data.CachedAddinManifest;
+				if (project.CompileTarget != CompileTarget.Library || desc.IsRoot || solution.HasAddinRoot ()) {
+					boxRepo.Visible = false;
+					hseparator.Visible = false;
+					isRoot = true;
+				}
+				else {
+					if (solution.HasAddinRoot ())
+						boxRepo.Visible = false;
+					else {
+						RegistryInfo app = solution.GetAddinData().ExternalRegistryInfo;
+						if (app != null) {
+							regSelector.RegistryInfo = app;
+							regSelector.Sensitive = false;
+						}
+					}
+					isRoot = false;
+				}
+				entryName.Text = project.Name;
+				entryId.Text = project.Name;
+			} else {
+				if (project.CompileTarget != CompileTarget.Library) {
+					labelExtensibleApp.Visible = data == null;
+					boxRepo.Visible = false;
+					boxLibraryType.Visible = false;
+					hseparator.Visible = false;
+					isRoot = true;
+				}
+				else {
+					labelExtensibleApp.Visible = false;
+					if (data != null && data.CachedAddinManifest != null && data.CachedAddinManifest.IsRoot)
+						radiobuttonLibrary.Active = true;
+					else
+						radiobuttonAddin.Active = true;
+					isRoot = radiobuttonLibrary.Active;
+					if (solution.HasAddinRoot ())
+						boxRepo.Visible = false;
+				}
+				if (data != null) {
+					((Gtk.Container)tableNames.Parent).Remove (tableNames);
+					((Gtk.Container)labelAddinInfo.Parent).Remove (labelAddinInfo);
+				} else {
+					entryName.Text = project.Name;
+					entryId.Text = project.Name;
+				}
+			}
+			if (project.CompileTarget == CompileTarget.Library) {
+				if (radiobuttonLibrary.Active)
+					labelAddinInfo.Text = AddinManager.CurrentLocalizer.GetString ("Library information:");
+				else
+					labelAddinInfo.Text = AddinManager.CurrentLocalizer.GetString ("Add-in information:");
+			} else {
+				labelAddinInfo.Text = AddinManager.CurrentLocalizer.GetString ("Application information:");
 			}
 			
 			UpdateControls ();
@@ -66,18 +113,19 @@ namespace MonoDevelop.AddinAuthoring
 		
 		void UpdateControls ()
 		{
+			boxRepo.Sensitive = !isRoot;
 		}
 
-		public string RegistryPath {
-			get { return regSelector.RegistryPath; }
+		public RegistryInfo RegistryInfo {
+			get { return isRoot ? null : regSelector.RegistryInfo; }
 		}
 		
-		public string StartupPath {
-			get { return regSelector.StartupPath; }
+		public bool HasRegistryInfo {
+			get { return boxRepo.Visible && boxRepo.Sensitive; }
 		}
 		
 		public bool IsRoot {
-			get { return checkRoot.Active; }
+			get { return isRoot; }
 		}
 		
 		public string AddinName {
@@ -94,8 +142,8 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public string Validate ()
 		{
-			if (RegistryPath.Length == 0)
-				return AddinManager.CurrentLocalizer.GetString ("Please select the location of the add-in registry");
+			if (!isRoot && RegistryInfo == null && boxRepo.Visible)
+				return AddinManager.CurrentLocalizer.GetString ("Please select the application to be extended by this add-in.");
 			else
 				return null;
 		}
@@ -136,7 +184,8 @@ namespace MonoDevelop.AddinAuthoring
 
 		protected virtual void OnRegSelectorChanged (object sender, System.EventArgs e)
 		{
-			AddinRegistry reg = new AddinRegistry (regSelector.RegistryPath);
+			RegistryInfo ri = regSelector.RegistryInfo;
+			AddinRegistry reg = new AddinRegistry (ri.RegistryPath, ri.ApplicationPath);
 			Hashtable names = new Hashtable ();
 			foreach (Addin ad in reg.GetAddinRoots ()) {
 				if (ad.Namespace.Length > 0)
@@ -167,16 +216,22 @@ namespace MonoDevelop.AddinAuthoring
 			if (!loading)
 				nsSet = true;
 		}
+
+		protected virtual void OnRadiobuttonLibraryToggled (object sender, System.EventArgs e)
+		{
+			isRoot = radiobuttonLibrary.Active;
+			UpdateControls ();
+		}
 	}
 	
 	public class AddinFeature: ISolutionItemFeature
 	{
 		public string Title {
-			get { return AddinManager.CurrentLocalizer.GetString ("Add-in Support"); }
+			get { return AddinManager.CurrentLocalizer.GetString ("Extensibility"); }
 		}
 		
 		public string Description {
-			get { return AddinManager.CurrentLocalizer.GetString ("Add-in Support"); }
+			get { return AddinManager.CurrentLocalizer.GetString ("Support of extensibility with add-ins"); }
 		}
 		
 		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
@@ -184,10 +239,10 @@ namespace MonoDevelop.AddinAuthoring
 			return entry is DotNetProject;
 		}
 
-		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
+		public Widget CreateFeatureEditor (SolutionFolder parentFolder, SolutionItem entry)
 		{
 			AddinFeatureWidget w = new AddinFeatureWidget ();
-			w.Load ((DotNetProject)entry, true);
+			w.Load (parentFolder.ParentSolution, (DotNetProject)entry, false);
 			return w;
 		}
 		
@@ -207,15 +262,17 @@ namespace MonoDevelop.AddinAuthoring
 			AddinFeatureWidget editor = (AddinFeatureWidget) ed;
 			AddinData data = AddinData.EnableAddinAuthoringSupport ((DotNetProject) entry);
 			
-			data.AddinRegistry = new AddinRegistry (editor.RegistryPath);
-			
+			DotNetProject project = (DotNetProject) entry;
+			if (editor.HasRegistryInfo)
+				project.ParentSolution.GetAddinData().ExternalRegistryInfo = editor.RegistryInfo;
+
 			AddinDescription desc = data.LoadAddinManifest ();
 			if (editor.AddinId.Length > 0)
 				desc.LocalId = editor.AddinId;
 			if (editor.AddinName.Length > 0)
 				desc.Name = editor.AddinName;
 			desc.Namespace = editor.AddinNamespace;
-			desc.IsRoot = editor.IsRoot;
+			desc.IsRoot = project.CompileTarget != CompileTarget.Library || editor.IsRoot;
 			desc.Version = "1.0";
 			desc.Save ();
 			data.NotifyChanged ();

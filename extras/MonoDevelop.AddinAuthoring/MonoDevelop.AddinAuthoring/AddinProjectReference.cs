@@ -30,12 +30,14 @@ using System.IO;
 using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.AddinAuthoring
 {
+	[DataItem ("AddinReference")]
 	public class AddinProjectReference: ProjectReference 
 	{
-		AddinProjectReference ()
+		public AddinProjectReference ()
 		{
 		}
 		

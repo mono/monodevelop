@@ -34,7 +34,6 @@ namespace MonoDevelop.AddinAuthoring {
             this.Title = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Select Node Set");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.AddinAuthoring.SelectNodeSetDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
@@ -70,7 +69,10 @@ namespace MonoDevelop.AddinAuthoring {
             w4.Expand = false;
             w4.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.nodeseteditor = null;
+            this.nodeseteditor = new MonoDevelop.AddinAuthoring.NodeSetEditorWidget();
+            this.nodeseteditor.Events = ((Gdk.EventMask)(256));
+            this.nodeseteditor.Name = "nodeseteditor";
+            this.nodeseteditor.AllowEditing = false;
             this.vbox3.Add(this.nodeseteditor);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox3[this.nodeseteditor]));
             w5.Position = 1;

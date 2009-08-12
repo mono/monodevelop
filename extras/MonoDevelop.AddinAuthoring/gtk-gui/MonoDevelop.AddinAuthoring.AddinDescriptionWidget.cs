@@ -388,7 +388,9 @@ namespace MonoDevelop.AddinAuthoring {
             this.notebook.SetTabLabel(this.vbox3, this.label5);
             this.label5.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
-            this.extensionPointsEditor = null;
+            this.extensionPointsEditor = new MonoDevelop.AddinAuthoring.ExtensionPointsEditorWidget();
+            this.extensionPointsEditor.Events = ((Gdk.EventMask)(256));
+            this.extensionPointsEditor.Name = "extensionPointsEditor";
             this.notebook.Add(this.extensionPointsEditor);
             Gtk.Notebook.NotebookChild w29 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.extensionPointsEditor]));
             w29.Position = 1;
@@ -404,7 +406,9 @@ namespace MonoDevelop.AddinAuthoring {
             this.hbox5.Spacing = 6;
             this.hbox5.BorderWidth = ((uint)(6));
             // Container child hbox5.Gtk.Box+BoxChild
-            this.extensionEditor = null;
+            this.extensionEditor = new MonoDevelop.AddinAuthoring.ExtensionEditorWidget();
+            this.extensionEditor.Events = ((Gdk.EventMask)(256));
+            this.extensionEditor.Name = "extensionEditor";
             this.hbox5.Add(this.extensionEditor);
             Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.hbox5[this.extensionEditor]));
             w30.Position = 0;

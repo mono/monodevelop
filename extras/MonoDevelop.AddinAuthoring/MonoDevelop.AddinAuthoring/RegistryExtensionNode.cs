@@ -32,17 +32,21 @@ using MonoDevelop.Core.Serialization;
 namespace MonoDevelop.AddinAuthoring
 {
 	[DataItem ("AddinRegistry")]
-	public class RegistryExtensionNode: ExtensionNode
+	public class RegistryInfo: ExtensionNode
 	{
 		[ItemProperty]
 		[NodeAttribute ("name", Required=true)]
 		string name;
 		
 		[ItemProperty]
-		[NodeAttribute ("path", Required=true)]
-		string path;
+		[NodeAttribute ("appPath", Required=true)]
+		string appPath;
 		
-		public string Name {
+		[ItemProperty]
+		[NodeAttribute ("regPath", Required=true)]
+		string regPath;
+		
+		public string ApplicationName {
 			get {
 				return name;
 			}
@@ -51,12 +55,21 @@ namespace MonoDevelop.AddinAuthoring
 			}
 		}
 
-		public string RegistryPath {
+		public string ApplicationPath {
 			get {
-				return AddinAuthoringService.NormalizeUserPath (path);
+				return appPath;
 			}
 			set {
-				path = value;
+				appPath = value != null ? AddinAuthoringService.NormalizeUserPath (value) : null;
+			}
+		}
+
+		public string RegistryPath {
+			get {
+				return regPath;
+			}
+			set {
+				regPath = value != null ? AddinAuthoringService.NormalizeRegistryPath (value) : null;
 			}
 		}
 	}

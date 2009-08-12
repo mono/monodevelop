@@ -110,28 +110,28 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public static string GetRegistryName (string regPath)
 		{
-			foreach (RegistryExtensionNode node in GetRegistries ()) {
+			foreach (RegistryInfo node in GetRegistries ()) {
 				if (Path.GetFullPath (node.RegistryPath) == Path.GetFullPath (regPath))
-					return node.Name;
+					return node.ApplicationName;
 			}
 			return regPath;
 		}
 		
-		public static IEnumerable<RegistryExtensionNode> GetRegistries ()
+		public static IEnumerable<RegistryInfo> GetRegistries ()
 		{
-			foreach (RegistryExtensionNode node in AddinManager.GetExtensionNodes ("MonoDevelop/AddinAuthoring/AddinRegistries"))
+			foreach (RegistryInfo node in AddinManager.GetExtensionNodes ("MonoDevelop/AddinAuthoring/AddinRegistries"))
 				yield return node;
-			foreach (RegistryExtensionNode node in config.Registries)
+			foreach (RegistryInfo node in config.Registries)
 				yield return node;
 		}
 		
-		public static void AddCustomRegistry (RegistryExtensionNode reg)
+		public static void AddCustomRegistry (RegistryInfo reg)
 		{
 			config.Registries.Add (reg);
 			SaveConfig ();
 		}
 		
-		public static void RemoveCustomRegistry (RegistryExtensionNode reg)
+		public static void RemoveCustomRegistry (RegistryInfo reg)
 		{
 			config.Registries.Remove (reg);
 			SaveConfig ();
@@ -145,6 +145,17 @@ namespace MonoDevelop.AddinAuthoring
 			}
 			else
 				return path;
+		}
+		
+		internal static string NormalizeRegistryPath (string path)
+		{
+			FilePath fp = Path.GetFullPath (path);
+			foreach (Environment.SpecialFolder sf in Enum.GetValues (typeof(Environment.SpecialFolder))) {
+				FilePath folderPath = Environment.GetFolderPath (sf);
+				if (fp.IsChildPathOf (folderPath))
+					return "[" + sf.ToString () + "]" + Path.DirectorySeparatorChar + fp.ToRelative (folderPath);
+			}
+			return fp;
 		}
 		
 		internal static void AddReferences (AddinData data, object[] addins)
@@ -163,7 +174,7 @@ namespace MonoDevelop.AddinAuthoring
 			
 			try {
 				desc.Save ();
-				data.NotifyChanged ();
+				data.NotifyChanged (true);
 			} finally {
 				if (view != null)
 					view.EndInternalUpdate ();
@@ -186,7 +197,7 @@ namespace MonoDevelop.AddinAuthoring
 			
 			try {
 				desc.Save ();
-				data.NotifyChanged ();
+				data.NotifyChanged (true);
 			} finally {
 				if (view != null)
 					view.EndInternalUpdate ();
@@ -224,14 +235,54 @@ namespace MonoDevelop.AddinAuthoring
 				}
 			}
 		}
+		
+		public static AddinData GetAddinData (this DotNetProject p)
+		{
+			return AddinData.GetAddinData (p);
+		}
+		
+		public static SolutionAddinData GetAddinData (this Solution sol)
+		{
+			SolutionAddinData data = sol.ExtendedProperties ["MonoDevelop.AddinAuthoring"] as SolutionAddinData;
+			if (data == null) {
+				data = new SolutionAddinData (sol);
+				sol.ExtendedProperties ["MonoDevelop.AddinAuthoring"] = data;
+			}
+			return data;
+		}
+		
+		public static AddinRegistry GetAddinRegistry (this Solution sol)
+		{
+			return sol.GetAddinData ().Registry;
+		}
+		
+		public static bool HasAddinRoot (this Solution sol)
+		{
+			foreach (DotNetProject dnp in sol.GetAllSolutionItems<DotNetProject> ()) {
+				AddinData data = AddinData.GetAddinData (dnp);
+				if (data != null && data.IsRoot)
+					return true;
+			}
+			return false;
+		}
+		
+		public static string GetAddinApplication (this Solution sol)
+		{
+			foreach (DotNetProject dnp in sol.GetAllSolutionItems<DotNetProject> ()) {
+				AddinData data = AddinData.GetAddinData (dnp);
+				if (data != null && data.ExtendedApplication != null)
+					return data.ExtendedApplication;
+			}
+			return null;
+		}
 	}
 	
 	class AddinAuthoringServiceConfig
 	{
-		List<RegistryExtensionNode> registries = new List<RegistryExtensionNode> ();
+		List<RegistryInfo> registries = new List<RegistryInfo> ();
 		
 		[ItemProperty]
-		public List<RegistryExtensionNode> Registries {
+		public List<RegistryInfo> Registries {
 			get { return registries; }
 		}
 	}

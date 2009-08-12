@@ -73,7 +73,6 @@ namespace MonoDevelop.AddinAuthoring {
             this.Name = "MonoDevelop.AddinAuthoring.NewExtensionPointDialog";
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.AddinAuthoring.NewExtensionPointDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
@@ -183,7 +182,6 @@ namespace MonoDevelop.AddinAuthoring {
             this.radioTypeExtension = new Gtk.RadioButton(Mono.Addins.AddinManager.CurrentLocalizer.GetString("Type extension point"));
             this.radioTypeExtension.CanFocus = true;
             this.radioTypeExtension.Name = "radioTypeExtension";
-            this.radioTypeExtension.Active = true;
             this.radioTypeExtension.DrawIndicator = true;
             this.radioTypeExtension.UseUnderline = true;
             this.radioTypeExtension.Group = new GLib.SList(System.IntPtr.Zero);
@@ -233,7 +231,11 @@ namespace MonoDevelop.AddinAuthoring {
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
             // Container child table1.Gtk.Table+TableChild
-            this.baseTypeSelector = null;
+            this.baseTypeSelector = new MonoDevelop.AddinAuthoring.TypeSelector();
+            this.baseTypeSelector.Events = ((Gdk.EventMask)(256));
+            this.baseTypeSelector.Name = "baseTypeSelector";
+            this.baseTypeSelector.AllowCreate = false;
+            this.baseTypeSelector.AllowCreateInterface = false;
             this.table1.Add(this.baseTypeSelector);
             Gtk.Table.TableChild w15 = ((Gtk.Table.TableChild)(this.table1[this.baseTypeSelector]));
             w15.TopAttach = ((uint)(1));
@@ -304,7 +306,10 @@ namespace MonoDevelop.AddinAuthoring {
             this.notebook.SetTabLabel(this.table1, this.label9);
             this.label9.ShowAll();
             // Container child notebook.Gtk.Notebook+NotebookChild
-            this.nodeseteditorwidget = null;
+            this.nodeseteditorwidget = new MonoDevelop.AddinAuthoring.NodeSetEditorWidget();
+            this.nodeseteditorwidget.Events = ((Gdk.EventMask)(256));
+            this.nodeseteditorwidget.Name = "nodeseteditorwidget";
+            this.nodeseteditorwidget.AllowEditing = true;
             this.notebook.Add(this.nodeseteditorwidget);
             Gtk.Notebook.NotebookChild w22 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.nodeseteditorwidget]));
             w22.Position = 1;

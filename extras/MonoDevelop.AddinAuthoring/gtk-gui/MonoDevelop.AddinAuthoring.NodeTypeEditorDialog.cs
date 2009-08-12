@@ -42,7 +42,6 @@ namespace MonoDevelop.AddinAuthoring {
             this.Title = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Extension Node Type");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.AddinAuthoring.NodeTypeEditorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
@@ -54,7 +53,11 @@ namespace MonoDevelop.AddinAuthoring {
             this.table1.ColumnSpacing = ((uint)(6));
             this.table1.BorderWidth = ((uint)(9));
             // Container child table1.Gtk.Table+TableChild
-            this.baseType = null;
+            this.baseType = new MonoDevelop.AddinAuthoring.TypeSelector();
+            this.baseType.Events = ((Gdk.EventMask)(256));
+            this.baseType.Name = "baseType";
+            this.baseType.AllowCreate = false;
+            this.baseType.AllowCreateInterface = false;
             this.table1.Add(this.baseType);
             Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table1[this.baseType]));
             w2.TopAttach = ((uint)(2));
@@ -131,7 +134,11 @@ namespace MonoDevelop.AddinAuthoring {
             w8.XOptions = ((Gtk.AttachOptions)(4));
             w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.nodeType = null;
+            this.nodeType = new MonoDevelop.AddinAuthoring.TypeSelector();
+            this.nodeType.Events = ((Gdk.EventMask)(256));
+            this.nodeType.Name = "nodeType";
+            this.nodeType.AllowCreate = false;
+            this.nodeType.AllowCreateInterface = false;
             this.table1.Add(this.nodeType);
             Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table1[this.nodeType]));
             w9.LeftAttach = ((uint)(1));
@@ -180,6 +187,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.DefaultWidth = 543;
             this.DefaultHeight = 251;
             this.Show();
+            this.nodeType.Changed += new System.EventHandler(this.OnNodeTypeChanged);
             this.entryName.Changed += new System.EventHandler(this.OnEntryNameChanged);
             this.buttonOk.Clicked += new System.EventHandler(this.OnButtonOkClicked);
         }

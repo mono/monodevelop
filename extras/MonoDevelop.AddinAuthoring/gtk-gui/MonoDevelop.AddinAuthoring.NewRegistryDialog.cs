@@ -17,7 +17,7 @@ namespace MonoDevelop.AddinAuthoring {
         
         private Gtk.Entry entryName;
         
-        private MonoDevelop.Components.FolderEntry entryPath;
+        private MonoDevelop.Components.FolderEntry entryRegPath;
         
         private Gtk.Label label1;
         
@@ -33,7 +33,8 @@ namespace MonoDevelop.AddinAuthoring {
             this.Name = "MonoDevelop.AddinAuthoring.NewRegistryDialog";
             this.Title = Mono.Addins.AddinManager.CurrentLocalizer.GetString("New Registry");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
+            this.DefaultWidth = 0;
+            this.DefaultHeight = 0;
             // Internal child MonoDevelop.AddinAuthoring.NewRegistryDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
@@ -56,10 +57,10 @@ namespace MonoDevelop.AddinAuthoring {
             w2.RightAttach = ((uint)(2));
             w2.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
-            this.entryPath = new MonoDevelop.Components.FolderEntry();
-            this.entryPath.Name = "entryPath";
-            this.table1.Add(this.entryPath);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table1[this.entryPath]));
+            this.entryRegPath = new MonoDevelop.Components.FolderEntry();
+            this.entryRegPath.Name = "entryRegPath";
+            this.table1.Add(this.entryRegPath);
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table1[this.entryRegPath]));
             w3.TopAttach = ((uint)(1));
             w3.BottomAttach = ((uint)(2));
             w3.LeftAttach = ((uint)(1));
@@ -70,7 +71,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
-            this.label1.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Name:");
+            this.label1.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Application Name:");
             this.table1.Add(this.label1);
             Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.label1]));
             w4.XOptions = ((Gtk.AttachOptions)(4));
@@ -79,7 +80,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
             this.label2.Xalign = 0F;
-            this.label2.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Path:");
+            this.label2.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Registry Path:");
             this.table1.Add(this.label2);
             Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.label2]));
             w5.TopAttach = ((uint)(1));
@@ -125,8 +126,6 @@ namespace MonoDevelop.AddinAuthoring {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 494;
-            this.DefaultHeight = 163;
             this.Show();
         }
     }

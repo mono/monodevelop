@@ -1,3 +1,54 @@
+2009-08-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* templates/AddinProject.xpt.xml:
+	* MonoDevelop.AddinAuthoring.mdp:
+	* MonoDevelop.AddinAuthoring.sln:
+	* MonoDevelop.AddinAuthoring.mds:
+	* MonoDevelop.AddinAuthoring.make:
+	* MonoDevelop.AddinAuthoring.csproj:
+	* MonoDevelop.AddinAuthoring.addin.xml:
+	* MonoDevelop.AddinAuthoring/AddinData.cs:
+	* MonoDevelop.AddinAuthoring.CodeCompletion:
+	* templates/ExtensibleLibraryProject.xpt.xml:
+	* MonoDevelop.AddinAuthoring/TypeCellEditor.cs:
+	* MonoDevelop.AddinAuthoring/ExtensionDomain.cs:
+	* MonoDevelop.AddinAuthoring/NodeEditorWidget.cs:
+	* templates/ExtensibleApplicationProject.xpt.xml:
+	* MonoDevelop.AddinAuthoring/RegistrySelector.cs:
+	* MonoDevelop.AddinAuthoring/NewRegistryDialog.cs:
+	* MonoDevelop.AddinAuthoring/SolutionAddinData.cs:
+	* MonoDevelop.AddinAuthoring/AddinFeatureWidget.cs:
+	* MonoDevelop.AddinAuthoring/AddinDescriptionView.cs:
+	* MonoDevelop.AddinAuthoring/RegistryExtensionNode.cs:
+	* MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs:
+	* MonoDevelop.AddinAuthoring/AddinProjectReference.cs:
+	* MonoDevelop.AddinAuthoring/AddinAuthoringService.cs:
+	* MonoDevelop.AddinAuthoring/AddinOptionPanelWidget.cs:
+	* MonoDevelop.AddinAuthoring/SelectRepositoryDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.NewRegistryDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.AddinFeatureWidget.cs:
+	* MonoDevelop.AddinAuthoring.CodeCompletion/AddinParser.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.NodeSetEditorDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.SelectNodeSetDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.NodeTypeEditorDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.ExtensionEditorWidget.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.AddinOptionPanelWidget.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.AddinDescriptionWidget.cs:
+	* MonoDevelop.AddinAuthoring/AddinDescriptionDisplayBinding.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.SelectRepositoryDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.ExtensionSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.NewExtensionPointDialog.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/ReferenceNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.CodeCompletion/BaseXmlEditorExtension.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.CodeCompletion/CodeCompletionExtension.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/ReferencesFolderNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	Work in progress.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AddinAuthoring/AddinData.cs: Track api changes.

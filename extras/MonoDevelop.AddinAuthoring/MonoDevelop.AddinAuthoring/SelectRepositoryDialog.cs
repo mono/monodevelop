@@ -13,44 +13,44 @@ namespace MonoDevelop.AddinAuthoring
 		TreeStore store;
 		TreeViewState state;
 		
-		public SelectRepositoryDialog (string regPath, string startPath)
+		public SelectRepositoryDialog (RegistryInfo selection)
 		{
 			this.Build();
 			
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(RegistryExtensionNode));
-			tree.AppendColumn ("", new CellRendererText (), "text", 2);
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(string), typeof(RegistryInfo));
+			tree.AppendColumn ("", new CellRendererText (), "text", 3);
 			tree.Model = store;
 			state = new TreeViewState (tree, 0);
 			
-			Fill (regPath, startPath);
+			Fill (selection);
 			
 			tree.Selection.Changed += delegate {
 				UpdateButtons ();
 			};
 		}
 		
-		void Fill (string regPath, string startPath)
+		void Fill (RegistryInfo selection)
 		{
 			state.Save ();
 			store.Clear ();
 			
 			TreeIter selIter = TreeIter.Zero;
 			
-			foreach (RegistryExtensionNode reg in AddinAuthoringService.GetRegistries ()) {
+			foreach (RegistryInfo reg in AddinAuthoringService.GetRegistries ()) {
 				string[] startupFolders = AddinRegistry.GetRegisteredStartupFolders (reg.RegistryPath);
 				if (startupFolders.Length == 0) {
-					store.AppendValues (reg.RegistryPath, reg.RegistryPath, reg.Name, reg);
+					store.AppendValues (reg.RegistryPath, reg.RegistryPath, reg.ApplicationName, reg.ApplicationName, reg);
 				}
 				else if (startupFolders.Length == 1) {
-					TreeIter it = store.AppendValues (reg.RegistryPath, startupFolders [0], reg.Name, reg);
-					if (reg.RegistryPath == regPath)
+					TreeIter it = store.AppendValues (reg.RegistryPath, startupFolders [0], reg.ApplicationName, reg.ApplicationName, reg);
+					if (reg.RegistryPath == selection.RegistryPath)
 						selIter = it;
 				}
 				else {
-					TreeIter it = store.AppendValues (reg.RegistryPath, null, reg.Name, reg);
+					TreeIter it = store.AppendValues (reg.RegistryPath, null, reg.ApplicationName, reg.ApplicationName, reg);
 					foreach (string sf in startupFolders) {
-						TreeIter fit = store.AppendValues (it, reg.RegistryPath, sf, sf, reg);
-						if (reg.RegistryPath == regPath && sf == startPath)
+						TreeIter fit = store.AppendValues (it, reg.RegistryPath, sf, sf, reg.ApplicationName, reg);
+						if (reg.RegistryPath == selection.RegistryPath && sf == selection.ApplicationPath)
 							selIter = fit;
 					}
 				}
@@ -66,21 +66,19 @@ namespace MonoDevelop.AddinAuthoring
 			UpdateButtons ();
 		}
 		
-		public string RegistryPath {
+		public RegistryInfo RegistryInfo {
 			get {
 				TreeIter it;
-				if (tree.Selection.GetSelected (out it))
-					return (string) store.GetValue (it, 0);
-				else
-					return null;
-			}
-		}
-		
-		public string StartupPath {
-			get {
-				TreeIter it;
-				if (tree.Selection.GetSelected (out it))
-					return (string) store.GetValue (it, 1);
+				if (tree.Selection.GetSelected (out it)) {
+					RegistryInfo info = new RegistryInfo ();
+					info.ApplicationName = (string) store.GetValue (it, 2);
+					info.RegistryPath = (string) store.GetValue (it, 0);
+					info.ApplicationPath = (string) store.GetValue (it, 1);
+					if (info.ApplicationPath == null)
+						return null;
+					else
+						return info;
+				}
 				else
 					return null;
 			}
@@ -88,18 +86,18 @@ namespace MonoDevelop.AddinAuthoring
 		
 		void UpdateButtons ()
 		{
-			buttonOk.Sensitive = RegistryPath != null && StartupPath != null;
+			buttonOk.Sensitive = RegistryInfo != null;
 		}
 
 		protected virtual void OnButtonAddClicked (object sender, System.EventArgs e)
 		{
-			NewRegistryDialog dlg = new NewRegistryDialog ();
+			NewRegistryDialog dlg = new NewRegistryDialog (null);
 			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-				RegistryExtensionNode reg = new RegistryExtensionNode ();
-				reg.Name = dlg.RegistryName;
+				RegistryInfo reg = new RegistryInfo ();
+				reg.ApplicationName = dlg.ApplicationName;
 				reg.RegistryPath = dlg.RegistryPath;
 				AddinAuthoringService.AddCustomRegistry (reg);
-				Fill (null, null);
+				Fill (null);
 			}
 			dlg.Destroy ();
 		}
@@ -110,9 +108,9 @@ namespace MonoDevelop.AddinAuthoring
 			if (MessageService.Confirm (q, AlertButton.Remove)) {
 				TreeIter it;
 				tree.Selection.GetSelected (out it);
-				RegistryExtensionNode reg = (RegistryExtensionNode) store.GetValue (it, 3);
+				RegistryInfo reg = (RegistryInfo) store.GetValue (it, 3);
 				AddinAuthoringService.RemoveCustomRegistry (reg);
-				Fill (null, null);
+				Fill (null);
 			}
 		}
 	}

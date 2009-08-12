@@ -35,8 +35,7 @@ namespace MonoDevelop.AddinAuthoring
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class RegistrySelector : Gtk.Bin
 	{
-		string registryPath;
-		string startupPath;
+		RegistryInfo regInfo;
 		
 		public event EventHandler Changed;
 		
@@ -45,33 +44,20 @@ namespace MonoDevelop.AddinAuthoring
 			this.Build();
 		}
 		
-		public string RegistryPath {
-			get {
-				return registryPath; 
-			}
+		public RegistryInfo RegistryInfo {
+			get { return regInfo; }
 			set {
-				registryPath = value;
-				UpdateLabel ();
-			}
-		}
-
-		public string StartupPath {
-			get {
-				return startupPath;
-			}
-			set {
-				startupPath = value;
+				regInfo = value;
 				UpdateLabel ();
 			}
 		}
 
 		protected virtual void OnButtonBrowseClicked (object sender, System.EventArgs e)
 		{
-			SelectRepositoryDialog dlg = new SelectRepositoryDialog (registryPath, startupPath);
+			SelectRepositoryDialog dlg = new SelectRepositoryDialog (RegistryInfo);
 			dlg.TransientFor = this.Toplevel as Gtk.Window;
 			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-				registryPath = dlg.RegistryPath;
-				startupPath = dlg.StartupPath;
+				regInfo = dlg.RegistryInfo;
 				UpdateLabel ();
 				if (Changed != null)
 					Changed (this, EventArgs.Empty);
@@ -81,8 +67,8 @@ namespace MonoDevelop.AddinAuthoring
 		
 		void UpdateLabel ()
 		{
-			if (registryPath != null)
-				label.Text = AddinAuthoringService.GetRegistryName (registryPath);
+			if (regInfo != null)
+				label.Text = regInfo.ApplicationName;
 			else
 				label.Text = AddinManager.CurrentLocalizer.GetString ("(No selection)");
 		}

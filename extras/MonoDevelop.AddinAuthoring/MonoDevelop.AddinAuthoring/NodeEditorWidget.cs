@@ -1,11 +1,15 @@
 
 using System;
+using System.ComponentModel;
 using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
 using Gtk;
 using Mono.Addins;
 using Mono.Addins.Description;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Components.PropertyGrid;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -17,6 +21,7 @@ namespace MonoDevelop.AddinAuthoring
 		ComboBox insAfterCombo;
 		Gtk.Tooltips tips;
 		DotNetProject project;
+		PropertyGrid grid;
 		
 		Hashtable atts = new Hashtable ();
 		
@@ -24,8 +29,8 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			this.node = node;
 			this.project = project;
-			Spacing = 6;
 			tips = new Tooltips ();
+			Spacing = 0;
 			
 			// Header
 			
@@ -37,49 +42,51 @@ namespace MonoDevelop.AddinAuthoring
 				txt += "\n" + GLib.Markup.EscapeText (ntype.Description);
 			label.Markup = txt;
 			label.Xalign = 0f;
-			PackStart (label, false, false, 0);
+			PackStart (label, false, false, 6);
 			PackStart (new HSeparator (), false, false, 0);
 			
 			// Attributes
 			
-			Table table = new Table ((uint) ntype.Attributes.Count + 1, 2, false);
-			table.RowSpacing = 6;
-			table.ColumnSpacing = 6;
+			grid = new PropertyGrid ();
+			grid.CurrentObject = new NodeWrapper (project, reg, ntype, parentAddinDescription, parentPath, node);
 			
-			uint r = 1;
-			AddAttribute (table, "id", "System.String", AddinManager.CurrentLocalizer.GetString ("Identifier of the extension node"), false, 0);
-			Console.WriteLine ("pp: " + ntype.TypeName + " " + ntype.Attributes.Count);
+			PackStart (grid, true, true, 0);
+			
+			ShowAll ();
+			
+			grid.ShowHelp = true;
+			grid.ShowToolbar = false;
+			
+		}
+		
+		public void Save ()
+		{
+			grid.CurrentObject = null;
+		}
+	}
+	
+	class NodeWrapper: CustomTypeDescriptor
+	{
+		PropertyDescriptorCollection properties;
+		
+		public NodeWrapper (DotNetProject project, AddinRegistry reg, ExtensionNodeType ntype, AddinDescription parentAddinDescription, string parentPath, ExtensionNodeDescription node)
+		{
+			List<PropertyDescriptor> props = new List<PropertyDescriptor> ();
+			
+			string mainCategory = AddinManager.CurrentLocalizer.GetString ("Node Attributes");
+
+			PropertyDescriptor prop = new MyPropertyDescriptor ("id", typeof(String), AddinManager.CurrentLocalizer.GetString ("Identifier of the extension node"), mainCategory, node);
+			props.Add (prop);
+			
 			foreach (NodeTypeAttribute att in ntype.Attributes) {
-				AddAttribute (table, att.Name, att.Type, att.Description, att.Required, r);
-				r++;
+				Type pt = Type.GetType (att.Type);
+				if (pt == null)
+					pt = typeof(string);
+				prop = new MyPropertyDescriptor (att.Name, pt, att.Description, mainCategory, node);
+				props.Add (prop);
 			}
-			PackStart (table, false, false, 0);
-			PackStart (new HSeparator (), false, false, 0);
 			
-			// Insert before/after combos
-			
-			table = new Table (2, 2, false);
-			table.RowSpacing = 6;
-			table.ColumnSpacing = 6;
-			
-			label = new Label (AddinManager.CurrentLocalizer.GetString ("Insert before:"));
-			label.Xalign = 0f;
-			table.Attach (label, 0, 1, 0, 1, AttachOptions.Shrink|AttachOptions.Fill, AttachOptions.Shrink, 0, 0);
-			label = new Label (AddinManager.CurrentLocalizer.GetString ("Insert after:"));
-			label.Xalign = 0f;
-			table.Attach (label, 0, 1, 1, 2, AttachOptions.Shrink|AttachOptions.Fill, AttachOptions.Shrink, 0, 0);
-			
-			insBeforeCombo = ComboBox.NewText ();
-			insBeforeCombo.AppendText (AddinManager.CurrentLocalizer.GetString ("(None)"));
-			insBeforeCombo.Active = 0;
-			table.Attach (insBeforeCombo, 1, 2, 0, 1);
-			
-			insAfterCombo = ComboBox.NewText ();
-			insAfterCombo.AppendText (AddinManager.CurrentLocalizer.GetString ("(None)"));
-			insAfterCombo.Active = 0;
-			table.Attach (insAfterCombo, 1, 2, 1, 2);
-			
-			int n = 1;
+/*			int n = 1;
 			foreach (ExtensionNodeDescription en in AddinData.GetExtensionNodes (reg, parentAddinDescription, parentPath)) {
 				if (en.Id.Length > 0) {
 					insBeforeCombo.AppendText (en.Id);
@@ -91,72 +98,119 @@ namespace MonoDevelop.AddinAuthoring
 				}
 				n++;
 			}
+			*/
 			
-			PackStart (table, false, false, 0);
+			prop = new MyPropertyDescriptor ("insertBefore", typeof(String), AddinManager.CurrentLocalizer.GetString ("Insert Before"), AddinManager.CurrentLocalizer.GetString ("Placement"), node);
+			props.Add (prop);
 			
-			ShowAll ();
+			prop = new MyPropertyDescriptor ("insertAfter", typeof(String), AddinManager.CurrentLocalizer.GetString ("Insert After"), AddinManager.CurrentLocalizer.GetString ("Placement"), node);
+			props.Add (prop);
+			
+			properties = new PropertyDescriptorCollection (props.ToArray ());
 		}
 		
-		void AddAttribute (Table table, string name, string type, string desc, bool required, uint r)
+		public override PropertyDescriptorCollection GetProperties ()
 		{
-			Label label = new Label ();
-			if (required)
-				label.Markup = "<b>" + name + ":" + "</b>";
-			else
-				label.Text = name + ":";
+			return properties;
+		}
+	}
+	
+	class MyPropertyDescriptor: PropertyDescriptor
+	{
+		string name;
+		Type type;
+		string desc;
+		ExtensionNodeDescription node;
+		string category;
+		Type editorType;
+		
+		public MyPropertyDescriptor (string name, Type type, string desc, string category, ExtensionNodeDescription node): base (name, new Attribute [0])
+		{
+			if (type == typeof(Type)) {
+				type = typeof(string);
+				editorType = typeof(TypeCellEditor);
+			}
 			
-			label.Xalign = 0f;
-			EventBox box = new EventBox ();
-			box.Add (label);
-			table.Attach (box, 0, 1, r, r + 1, AttachOptions.Shrink|AttachOptions.Fill, AttachOptions.Shrink, 0, 0);
-			
-			Widget w = CreateWidget (type, node.GetAttribute (name));
-			table.Attach (w, 1, 2, r, r + 1);
-			atts [w] = name;
-			
-			if (desc.Length > 0) {
-				tips.SetTip (box, desc, desc);
-				tips.SetTip (w, desc, desc);
+			this.name = name;
+			this.type = type;
+			this.node = node;
+			this.desc = desc;
+			this.category = category;
+		}
+		
+		protected override void FillAttributes (System.Collections.IList attributeList)
+		{
+			base.FillAttributes (attributeList);
+			if (desc != null)
+				attributeList.Add (new DescriptionAttribute (desc));
+			if (category != null)
+				attributeList.Add (new CategoryAttribute (category));
+			if (editorType != null)
+				attributeList.Add (new EditorAttribute (editorType, typeof(PropertyEditorCell)));
+		}
+				                   
+		
+		public override Type ComponentType {
+			get {
+				return typeof(NodeWrapper);
 			}
 		}
 		
-		Gtk.Widget CreateWidget (string type, string value)
-		{
-			switch (type)
-			{
-			case "System.Boolean":
-				CheckButton bt = new CheckButton ();
-				bt.Active = value.ToLower () == "true";
-				return bt;
-			case "System.Type":
-				return new TypeSelector (project, value);
+		public override bool IsReadOnly {
+			get {
+				return false;
 			}
-			return new Entry (value);
 		}
 		
-		string GetValue (Gtk.Widget w)
-		{
-			if (w is CheckButton)
-				return ((CheckButton)w).Active.ToString ();
-			if (w is TypeSelector)
-				return ((TypeSelector)w).TypeName;
-			return ((Entry)w).Text;
+		public override Type PropertyType {
+			get {
+				return type;
+			}
 		}
 		
-		public void Save ()
+		public override bool CanResetValue (object component)
 		{
-			foreach (DictionaryEntry e in atts)
-				node.SetAttribute ((string) e.Value, GetValue ((Widget)e.Key));
-			
-			if (insBeforeCombo.Active != 0)
-				node.InsertBefore = insBeforeCombo.ActiveText;
+			return false;
+		}
+
+		public override object GetValue (object component)
+		{
+			string sval;
+			if (name == "insertBefore")
+				sval = node.InsertBefore;
+			else if (name == "insertAfter")
+				sval = node.InsertAfter;
+			else if (name == "id")
+				sval = node.Id;
 			else
-				node.InsertBefore = string.Empty;
-			
-			if (insAfterCombo.Active != 0)
-				node.InsertAfter = insAfterCombo.ActiveText;
+				sval = node.GetAttribute (name);
+			try {
+				return Convert.ChangeType (sval, type);
+			} catch {
+				return Activator.CreateInstance (type);
+			}
+		}
+
+		public override void SetValue (object component, object value)
+		{
+			string sval = Convert.ToString (value, CultureInfo.InvariantCulture);
+			if (name == "insertBefore")
+				node.InsertBefore = sval;
+			else if (name == "insertAfter")
+				node.InsertAfter = sval;
+			else if (name == "id")
+				node.Id = sval;
 			else
-				node.InsertAfter = string.Empty;
+				node.SetAttribute (name, sval);
+		}
+
+		public override void ResetValue (object component)
+		{
+		}
+
+		public override bool ShouldSerializeValue (object component)
+		{
+			return true;
 		}
 	}
 }

@@ -26,6 +26,7 @@ namespace MonoDevelop.AddinAuthoring
 		Gdk.Pixbuf pixLocalAddin;
 		Gdk.Pixbuf pixExtensionPoint;
 		Gdk.Pixbuf pixExtensionNode;
+		Gtk.Widget currentEditor;
 		
 		const int ColLabel = 0;
 		const int ColAddin = 1;
@@ -64,7 +65,6 @@ namespace MonoDevelop.AddinAuthoring
 			tree.Model = store;
 			tree.HeadersVisible = false;
 			
-			tree.RowActivated += OnActivated;
 			tree.Selection.Changed += OnSelectionChanged;
 			
 			IdeApp.ProjectOperations.EndBuild += OnEndBuild;
@@ -229,25 +229,17 @@ namespace MonoDevelop.AddinAuthoring
 			ExtensionNodeDescription newNode = new ExtensionNodeDescription (nt.NodeName);
 			string ppath = ext != null ? ext.Path : node.GetParentPath () + "/" + node.Id;
 			
-			NodeEditorDialog dlg = new NodeEditorDialog (data.Project, data.AddinRegistry, nt, adesc, ppath, newNode);
-			try {
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					dlg.Save ();
-					if (ext != null) {
-						if (ext.Parent == null)
-							adesc.MainModule.Extensions.Add (ext);
-						ext.ExtensionNodes.Add (newNode);
-					}
-					else
-						node.ChildNodes.Add (newNode);
-					TreeIter nit = AddNode (it, newNode);
-					tree.ExpandRow (store.GetPath (it), false);
-					tree.Selection.SelectIter (nit);
-					NotifyChanged ();
-				}
-			} finally {
-				dlg.Destroy ();
+			if (ext != null) {
+				if (ext.Parent == null)
+					adesc.MainModule.Extensions.Add (ext);
+				ext.ExtensionNodes.Add (newNode);
 			}
+			else
+				node.ChildNodes.Add (newNode);
+			TreeIter nit = AddNode (it, newNode);
+			tree.ExpandRow (store.GetPath (it), false);
+			tree.Selection.SelectIter (nit);
+			NotifyChanged ();
 		}
 		
 		void AddExtension (Extension ext, ArrayList deps)
@@ -281,26 +273,20 @@ namespace MonoDevelop.AddinAuthoring
 			spath = spath.Trim ('/').Replace ("/", " / ");
 			TreeIter ait = AddAddin (extep.ParentAddinDescription);
 			string name;
-			if (extep.Name.Length > 0 && extep.Description.Length > 0) {
-				name = "<b>" + GLib.Markup.EscapeText (extep.Name) + "</b>";
-				if (spath.Length > 0)
-					name += " / " + GLib.Markup.EscapeText (spath);
-				name += "\n<small>" + GLib.Markup.EscapeText (extep.Description) + "</small>";
-			}
-			else if (extep.Name.Length > 0) {
-				name = "<b>" + GLib.Markup.EscapeText (extep.Name) + "</b>";
+			if (extep.Name.Length > 0) {
+				name = GLib.Markup.EscapeText (extep.Name);
 				if (spath.Length > 0)
 					name += " / " + GLib.Markup.EscapeText (spath);
 			}
 			else if (extep.Description.Length > 0) {
-				name = "<b>" + GLib.Markup.EscapeText (extep.Description) + "</b>";
+				name = GLib.Markup.EscapeText (extep.Description);
 				if (spath.Length > 0)
 					name += " / " + GLib.Markup.EscapeText (spath);
 			}
 			else
-				name = "<b>" + GLib.Markup.EscapeText (extep.Path) + "</b>";
+				name = GLib.Markup.EscapeText (extep.Path);
 			
-			return store.AppendValues (ait, name, null, ext, null, pixExtensionPoint, false, extep);
+			return store.AppendValues (ait, name, null, ext, null, pixExtensionPoint, true, extep);
 		}
 		
 		TreeIter AddAddin (AddinDescription adesc)
@@ -324,9 +310,10 @@ namespace MonoDevelop.AddinAuthoring
 		
 		TreeIter AddNode (TreeIter it, ExtensionNodeDescription node)
 		{
-			string txt = "<b><span foreground='#204a87'>" + GLib.Markup.EscapeText (node.NodeName) + "</span></b> ";
+			string txt = GLib.Markup.EscapeText (node.NodeName) + " (<i>";
 			foreach (NodeAttribute at in node.Attributes)
-				txt += "<b>" + at.Name + "</b>=\"" + GLib.Markup.EscapeText (at.Value) + "\"  ";
+				txt += at.Name + "=\"" + GLib.Markup.EscapeText (at.Value) + "\"  ";
+			txt += "</i>)";
 			it = store.AppendValues (it, txt, null, null, node, pixExtensionNode, true, null);
 			
 			foreach (ExtensionNodeDescription cnode in node.ChildNodes)
@@ -385,9 +372,11 @@ namespace MonoDevelop.AddinAuthoring
 			if (!tree.Selection.GetSelected (out iter)) {
 				addNodeButton.Sensitive = false;
 				buttonRemove.Sensitive = false;
-				buttonProperties.Sensitive = false;
+				DisposeEditor ();
 				return;
 			}
+			
+			DisposeEditor ();
 			
 			ExtensionNodeDescription node = store.GetValue (iter, ColNode) as ExtensionNodeDescription;
 			if (node == null) {
@@ -395,48 +384,36 @@ namespace MonoDevelop.AddinAuthoring
 				if (ep != null) {
 					addNodeButton.Sensitive = true;
 					buttonRemove.Sensitive = false;
-					buttonProperties.Sensitive = false;
 				} else {
 					addNodeButton.Sensitive = false;
 					buttonRemove.Sensitive = false;
-					buttonProperties.Sensitive = false;
 				}
 				return;
 			}
-			ExtensionNodeTypeCollection types = GetAllowedChildTypes (iter);
-			addNodeButton.Sensitive = types != null && types.Count > 0;
-			buttonRemove.Sensitive = true;
-			buttonProperties.Sensitive = true;
-		}
-		
-		void OnActivated (object s, Gtk.RowActivatedArgs args)
-		{
-			ShowProperties ();			
-		}
-		
-		void ShowProperties ()
-		{
-			TreeIter iter;
-			if (!tree.Selection.GetSelected (out iter))
-				return;
-			
-			ExtensionNodeDescription node = store.GetValue (iter, ColNode) as ExtensionNodeDescription;
-			if (node == null)
-				return;
 			
 			ExtensionNodeType nt = node.GetNodeType ();
 			if (nt == null)
 				return;
 			
-			NodeEditorDialog dlg = new NodeEditorDialog (data.Project, data.AddinRegistry, nt, adesc, node.GetParentPath(), node);
-			try {
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					dlg.Save ();
-					Fill ();
-					NotifyChanged ();
-				}
-			} finally {
-				dlg.Destroy ();
+			NodeEditorWidget editor = new NodeEditorWidget (data.Project, data.AddinRegistry, nt, adesc, node.GetParentPath(), node);
+			editorBox.AddWithViewport (editor);
+			editor.Show ();
+			editor.BorderWidth = 3;
+			currentEditor = editor;
+			
+			ExtensionNodeTypeCollection types = GetAllowedChildTypes (iter);
+			addNodeButton.Sensitive = types != null && types.Count > 0;
+			buttonRemove.Sensitive = true;
+		}
+		
+		void DisposeEditor ()
+		{
+			if (currentEditor != null) {
+				if (currentEditor is NodeEditorWidget)
+					((NodeEditorWidget)currentEditor).Save ();
+				editorBox.Remove (currentEditor);
+				currentEditor.Destroy ();
+				currentEditor = null;
 			}
 		}
 		
@@ -454,11 +431,6 @@ namespace MonoDevelop.AddinAuthoring
 		protected virtual void OnButtonRemoveClicked(object sender, System.EventArgs e)
 		{
 			DeleteSelection ();
-		}
-
-		protected virtual void OnButtonPropertiesClicked (object sender, System.EventArgs e)
-		{
-			ShowProperties ();
 		}
 
 		protected virtual void OnAddNodeButtonPressed (object sender, System.EventArgs e)

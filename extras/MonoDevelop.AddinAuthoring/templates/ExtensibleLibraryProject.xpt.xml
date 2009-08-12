@@ -3,9 +3,9 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Add-in</_Name>
+		<_Name>Extensible Library</_Name>
 		<_Category>Add-ins</_Category>
-		<_Description>Creates an add-in</_Description>
+		<_Description>Creates a library which can be extended by add-ins</_Description>
 		<LanguageName>*</LanguageName>
 	</TemplateConfiguration>
 	
@@ -27,7 +27,7 @@
 				<Reference type="Gac" SpecificVersion="false" refto="Mono.Addins, Version=0.1.0.0, Culture=neutral" />
 			</References>
 			<Files>
-				<Addin id="${ProjectName}" name="${ProjectName}" isroot="false" version="1.0">
+				<Addin id="${ProjectName}" name="${ProjectName}" isroot="true" version="1.0">
 				</Addin>
 				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />

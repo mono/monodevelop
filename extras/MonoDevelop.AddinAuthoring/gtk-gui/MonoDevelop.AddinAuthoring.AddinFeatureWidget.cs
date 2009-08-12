@@ -15,15 +15,31 @@ namespace MonoDevelop.AddinAuthoring {
         
         private Gtk.VBox vbox2;
         
+        private Gtk.VBox boxLibraryType;
+        
+        private Gtk.Label labelExtensibleApp;
+        
+        private Gtk.Label label2;
+        
+        private Gtk.Alignment alignment1;
+        
+        private Gtk.VBox vbox3;
+        
+        private Gtk.RadioButton radiobuttonLibrary;
+        
+        private Gtk.RadioButton radiobuttonAddin;
+        
         private Gtk.HBox boxRepo;
         
         private Gtk.Label label3;
         
         private MonoDevelop.AddinAuthoring.RegistrySelector regSelector;
         
-        private Gtk.CheckButton checkRoot;
+        private Gtk.HSeparator hseparator;
         
         private Gtk.Label labelAddinInfo;
+        
+        private Gtk.Alignment alignment3;
         
         private Gtk.Table tableNames;
         
@@ -32,8 +48,6 @@ namespace MonoDevelop.AddinAuthoring {
         private Gtk.Entry entryId;
         
         private Gtk.Entry entryName;
-        
-        private Gtk.Label label10;
         
         private Gtk.Label label7;
         
@@ -51,6 +65,73 @@ namespace MonoDevelop.AddinAuthoring {
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
+            this.boxLibraryType = new Gtk.VBox();
+            this.boxLibraryType.Name = "boxLibraryType";
+            this.boxLibraryType.Spacing = 6;
+            // Container child boxLibraryType.Gtk.Box+BoxChild
+            this.labelExtensibleApp = new Gtk.Label();
+            this.labelExtensibleApp.Name = "labelExtensibleApp";
+            this.labelExtensibleApp.Xalign = 0F;
+            this.labelExtensibleApp.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Allow the application to be extended by add-ins.");
+            this.boxLibraryType.Add(this.labelExtensibleApp);
+            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.boxLibraryType[this.labelExtensibleApp]));
+            w1.Position = 0;
+            w1.Expand = false;
+            w1.Fill = false;
+            // Container child boxLibraryType.Gtk.Box+BoxChild
+            this.label2 = new Gtk.Label();
+            this.label2.Name = "label2";
+            this.label2.Xalign = 0F;
+            this.label2.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Which kind of library you want to create?");
+            this.boxLibraryType.Add(this.label2);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.boxLibraryType[this.label2]));
+            w2.Position = 1;
+            w2.Expand = false;
+            w2.Fill = false;
+            // Container child boxLibraryType.Gtk.Box+BoxChild
+            this.alignment1 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment1.Name = "alignment1";
+            this.alignment1.LeftPadding = ((uint)(12));
+            // Container child alignment1.Gtk.Container+ContainerChild
+            this.vbox3 = new Gtk.VBox();
+            this.vbox3.Name = "vbox3";
+            this.vbox3.Spacing = 6;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.radiobuttonLibrary = new Gtk.RadioButton(Mono.Addins.AddinManager.CurrentLocalizer.GetString("A library which can be extended by add-ins"));
+            this.radiobuttonLibrary.CanFocus = true;
+            this.radiobuttonLibrary.Name = "radiobuttonLibrary";
+            this.radiobuttonLibrary.DrawIndicator = true;
+            this.radiobuttonLibrary.UseUnderline = true;
+            this.radiobuttonLibrary.Group = new GLib.SList(System.IntPtr.Zero);
+            this.vbox3.Add(this.radiobuttonLibrary);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox3[this.radiobuttonLibrary]));
+            w3.Position = 0;
+            w3.Expand = false;
+            w3.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.radiobuttonAddin = new Gtk.RadioButton(Mono.Addins.AddinManager.CurrentLocalizer.GetString("An Add-in"));
+            this.radiobuttonAddin.CanFocus = true;
+            this.radiobuttonAddin.Name = "radiobuttonAddin";
+            this.radiobuttonAddin.DrawIndicator = true;
+            this.radiobuttonAddin.UseUnderline = true;
+            this.radiobuttonAddin.Group = this.radiobuttonLibrary.Group;
+            this.vbox3.Add(this.radiobuttonAddin);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox3[this.radiobuttonAddin]));
+            w4.Position = 1;
+            w4.Expand = false;
+            w4.Fill = false;
+            this.alignment1.Add(this.vbox3);
+            this.boxLibraryType.Add(this.alignment1);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.boxLibraryType[this.alignment1]));
+            w6.Position = 2;
+            w6.Expand = false;
+            w6.Fill = false;
+            this.vbox2.Add(this.boxLibraryType);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox2[this.boxLibraryType]));
+            w7.Position = 0;
+            w7.Expand = false;
+            w7.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
             this.boxRepo = new Gtk.HBox();
             this.boxRepo.Name = "boxRepo";
             this.boxRepo.Spacing = 6;
@@ -58,46 +139,48 @@ namespace MonoDevelop.AddinAuthoring {
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
-            this.label3.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Add-in repository:");
+            this.label3.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Extended Application:");
             this.boxRepo.Add(this.label3);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.boxRepo[this.label3]));
-            w1.Position = 0;
-            w1.Expand = false;
-            w1.Fill = false;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.boxRepo[this.label3]));
+            w8.Position = 0;
+            w8.Expand = false;
+            w8.Fill = false;
             // Container child boxRepo.Gtk.Box+BoxChild
-            this.regSelector = null;
+            this.regSelector = new MonoDevelop.AddinAuthoring.RegistrySelector();
+            this.regSelector.Events = ((Gdk.EventMask)(256));
+            this.regSelector.Name = "regSelector";
             this.boxRepo.Add(this.regSelector);
-            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.boxRepo[this.regSelector]));
-            w2.Position = 1;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.boxRepo[this.regSelector]));
+            w9.Position = 1;
             this.vbox2.Add(this.boxRepo);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.boxRepo]));
-            w3.Position = 0;
-            w3.Expand = false;
-            w3.Fill = false;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox2[this.boxRepo]));
+            w10.Position = 1;
+            w10.Expand = false;
+            w10.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.checkRoot = new Gtk.CheckButton();
-            this.checkRoot.CanFocus = true;
-            this.checkRoot.Name = "checkRoot";
-            this.checkRoot.Label = Mono.Addins.AddinManager.CurrentLocalizer.GetString("This project is an add-in root");
-            this.checkRoot.DrawIndicator = true;
-            this.checkRoot.UseUnderline = true;
-            this.vbox2.Add(this.checkRoot);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.checkRoot]));
-            w4.Position = 1;
-            w4.Expand = false;
-            w4.Fill = false;
+            this.hseparator = new Gtk.HSeparator();
+            this.hseparator.Name = "hseparator";
+            this.vbox2.Add(this.hseparator);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.hseparator]));
+            w11.Position = 2;
+            w11.Expand = false;
+            w11.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.labelAddinInfo = new Gtk.Label();
             this.labelAddinInfo.Name = "labelAddinInfo";
             this.labelAddinInfo.Xalign = 0F;
-            this.labelAddinInfo.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Add-in information:");
+            this.labelAddinInfo.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Add-in module information:");
             this.vbox2.Add(this.labelAddinInfo);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.labelAddinInfo]));
-            w5.Position = 2;
-            w5.Expand = false;
-            w5.Fill = false;
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox2[this.labelAddinInfo]));
+            w12.Position = 3;
+            w12.Expand = false;
+            w12.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.tableNames = new Gtk.Table(((uint)(3)), ((uint)(3)), false);
+            this.alignment3 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment3.Name = "alignment3";
+            this.alignment3.LeftPadding = ((uint)(24));
+            // Container child alignment3.Gtk.Container+ContainerChild
+            this.tableNames = new Gtk.Table(((uint)(3)), ((uint)(2)), false);
             this.tableNames.Name = "tableNames";
             this.tableNames.RowSpacing = ((uint)(6));
             this.tableNames.ColumnSpacing = ((uint)(6));
@@ -105,12 +188,12 @@ namespace MonoDevelop.AddinAuthoring {
             this.comboNs = Gtk.ComboBoxEntry.NewText();
             this.comboNs.Name = "comboNs";
             this.tableNames.Add(this.comboNs);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.tableNames[this.comboNs]));
-            w6.TopAttach = ((uint)(1));
-            w6.BottomAttach = ((uint)(2));
-            w6.LeftAttach = ((uint)(2));
-            w6.RightAttach = ((uint)(3));
-            w6.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w13 = ((Gtk.Table.TableChild)(this.tableNames[this.comboNs]));
+            w13.TopAttach = ((uint)(1));
+            w13.BottomAttach = ((uint)(2));
+            w13.LeftAttach = ((uint)(1));
+            w13.RightAttach = ((uint)(2));
+            w13.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableNames.Gtk.Table+TableChild
             this.entryId = new Gtk.Entry();
             this.entryId.CanFocus = true;
@@ -118,13 +201,13 @@ namespace MonoDevelop.AddinAuthoring {
             this.entryId.IsEditable = true;
             this.entryId.InvisibleChar = '●';
             this.tableNames.Add(this.entryId);
-            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.tableNames[this.entryId]));
-            w7.TopAttach = ((uint)(2));
-            w7.BottomAttach = ((uint)(3));
-            w7.LeftAttach = ((uint)(2));
-            w7.RightAttach = ((uint)(3));
-            w7.XOptions = ((Gtk.AttachOptions)(4));
-            w7.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.tableNames[this.entryId]));
+            w14.TopAttach = ((uint)(2));
+            w14.BottomAttach = ((uint)(3));
+            w14.LeftAttach = ((uint)(1));
+            w14.RightAttach = ((uint)(2));
+            w14.XOptions = ((Gtk.AttachOptions)(4));
+            w14.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableNames.Gtk.Table+TableChild
             this.entryName = new Gtk.Entry();
             this.entryName.CanFocus = true;
@@ -132,66 +215,56 @@ namespace MonoDevelop.AddinAuthoring {
             this.entryName.IsEditable = true;
             this.entryName.InvisibleChar = '●';
             this.tableNames.Add(this.entryName);
-            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.tableNames[this.entryName]));
-            w8.LeftAttach = ((uint)(2));
-            w8.RightAttach = ((uint)(3));
-            w8.XOptions = ((Gtk.AttachOptions)(4));
-            w8.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child tableNames.Gtk.Table+TableChild
-            this.label10 = new Gtk.Label();
-            this.label10.WidthRequest = 24;
-            this.label10.Name = "label10";
-            this.tableNames.Add(this.label10);
-            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.tableNames[this.label10]));
-            w9.XOptions = ((Gtk.AttachOptions)(4));
-            w9.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w15 = ((Gtk.Table.TableChild)(this.tableNames[this.entryName]));
+            w15.LeftAttach = ((uint)(1));
+            w15.RightAttach = ((uint)(2));
+            w15.XOptions = ((Gtk.AttachOptions)(4));
+            w15.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableNames.Gtk.Table+TableChild
             this.label7 = new Gtk.Label();
             this.label7.Name = "label7";
             this.label7.Xalign = 0F;
             this.label7.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Namespace:");
             this.tableNames.Add(this.label7);
-            Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.tableNames[this.label7]));
-            w10.TopAttach = ((uint)(1));
-            w10.BottomAttach = ((uint)(2));
-            w10.LeftAttach = ((uint)(1));
-            w10.RightAttach = ((uint)(2));
-            w10.XOptions = ((Gtk.AttachOptions)(4));
-            w10.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w16 = ((Gtk.Table.TableChild)(this.tableNames[this.label7]));
+            w16.TopAttach = ((uint)(1));
+            w16.BottomAttach = ((uint)(2));
+            w16.XOptions = ((Gtk.AttachOptions)(4));
+            w16.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableNames.Gtk.Table+TableChild
             this.label9 = new Gtk.Label();
             this.label9.Name = "label9";
             this.label9.Xalign = 0F;
             this.label9.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Identifier:");
             this.tableNames.Add(this.label9);
-            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.tableNames[this.label9]));
-            w11.TopAttach = ((uint)(2));
-            w11.BottomAttach = ((uint)(3));
-            w11.LeftAttach = ((uint)(1));
-            w11.RightAttach = ((uint)(2));
-            w11.XOptions = ((Gtk.AttachOptions)(4));
-            w11.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w17 = ((Gtk.Table.TableChild)(this.tableNames[this.label9]));
+            w17.TopAttach = ((uint)(2));
+            w17.BottomAttach = ((uint)(3));
+            w17.XOptions = ((Gtk.AttachOptions)(4));
+            w17.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableNames.Gtk.Table+TableChild
             this.labelName = new Gtk.Label();
             this.labelName.Name = "labelName";
             this.labelName.Xalign = 0F;
             this.labelName.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Display name:");
             this.tableNames.Add(this.labelName);
-            Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.tableNames[this.labelName]));
-            w12.LeftAttach = ((uint)(1));
-            w12.RightAttach = ((uint)(2));
-            w12.XOptions = ((Gtk.AttachOptions)(4));
-            w12.YOptions = ((Gtk.AttachOptions)(4));
-            this.vbox2.Add(this.tableNames);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.tableNames]));
-            w13.Position = 3;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.Table.TableChild w18 = ((Gtk.Table.TableChild)(this.tableNames[this.labelName]));
+            w18.XOptions = ((Gtk.AttachOptions)(4));
+            w18.YOptions = ((Gtk.AttachOptions)(4));
+            this.alignment3.Add(this.tableNames);
+            this.vbox2.Add(this.alignment3);
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.vbox2[this.alignment3]));
+            w20.Position = 4;
+            w20.Expand = false;
+            w20.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.labelExtensibleApp.Hide();
             this.Show();
+            this.radiobuttonLibrary.Toggled += new System.EventHandler(this.OnRadiobuttonLibraryToggled);
+            this.regSelector.Changed += new System.EventHandler(this.OnRegSelectorChanged);
             this.entryName.Changed += new System.EventHandler(this.OnEntryNameChanged);
             this.entryId.Changed += new System.EventHandler(this.OnEntryIdChanged);
             this.comboNs.Changed += new System.EventHandler(this.OnComboNsChanged);

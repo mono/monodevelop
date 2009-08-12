@@ -31,15 +31,15 @@ namespace MonoDevelop.AddinAuthoring {
         
         private Gtk.Button buttonRemove;
         
-        private Gtk.VSeparator vseparator2;
-        
-        private Gtk.Button buttonProperties;
-        
         private Gtk.HBox hbox4;
+        
+        private Gtk.HPaned hpaned1;
         
         private Gtk.ScrolledWindow scrolledwindow6;
         
         private Gtk.TreeView tree;
+        
+        private Gtk.ScrolledWindow editorBox;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -150,51 +150,21 @@ namespace MonoDevelop.AddinAuthoring {
             w23.Position = 2;
             w23.Expand = false;
             w23.Fill = false;
-            // Container child hbox1.Gtk.Box+BoxChild
-            this.vseparator2 = new Gtk.VSeparator();
-            this.vseparator2.Name = "vseparator2";
-            this.hbox1.Add(this.vseparator2);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.hbox1[this.vseparator2]));
-            w24.Position = 3;
+            this.vbox2.Add(this.hbox1);
+            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+            w24.Position = 0;
             w24.Expand = false;
             w24.Fill = false;
-            // Container child hbox1.Gtk.Box+BoxChild
-            this.buttonProperties = new Gtk.Button();
-            this.buttonProperties.CanFocus = true;
-            this.buttonProperties.Name = "buttonProperties";
-            this.buttonProperties.UseUnderline = true;
-            this.buttonProperties.Relief = ((Gtk.ReliefStyle)(2));
-            // Container child buttonProperties.Gtk.Container+ContainerChild
-            Gtk.Alignment w25 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w26 = new Gtk.HBox();
-            w26.Spacing = 2;
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w27 = new Gtk.Image();
-            w27.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-edit", Gtk.IconSize.Menu, 16);
-            w26.Add(w27);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w29 = new Gtk.Label();
-            w29.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Properties");
-            w29.UseUnderline = true;
-            w26.Add(w29);
-            w25.Add(w26);
-            this.buttonProperties.Add(w25);
-            this.hbox1.Add(this.buttonProperties);
-            Gtk.Box.BoxChild w33 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonProperties]));
-            w33.Position = 4;
-            w33.Expand = false;
-            w33.Fill = false;
-            this.vbox2.Add(this.hbox1);
-            Gtk.Box.BoxChild w34 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-            w34.Position = 0;
-            w34.Expand = false;
-            w34.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbox4 = new Gtk.HBox();
             this.hbox4.Name = "hbox4";
             this.hbox4.Spacing = 6;
             // Container child hbox4.Gtk.Box+BoxChild
+            this.hpaned1 = new Gtk.HPaned();
+            this.hpaned1.CanFocus = true;
+            this.hpaned1.Name = "hpaned1";
+            this.hpaned1.Position = 411;
+            // Container child hpaned1.Gtk.Paned+PanedChild
             this.scrolledwindow6 = new Gtk.ScrolledWindow();
             this.scrolledwindow6.CanFocus = true;
             this.scrolledwindow6.Name = "scrolledwindow6";
@@ -204,12 +174,21 @@ namespace MonoDevelop.AddinAuthoring {
             this.tree.CanFocus = true;
             this.tree.Name = "tree";
             this.scrolledwindow6.Add(this.tree);
-            this.hbox4.Add(this.scrolledwindow6);
-            Gtk.Box.BoxChild w36 = ((Gtk.Box.BoxChild)(this.hbox4[this.scrolledwindow6]));
-            w36.Position = 0;
+            this.hpaned1.Add(this.scrolledwindow6);
+            Gtk.Paned.PanedChild w26 = ((Gtk.Paned.PanedChild)(this.hpaned1[this.scrolledwindow6]));
+            w26.Resize = false;
+            // Container child hpaned1.Gtk.Paned+PanedChild
+            this.editorBox = new Gtk.ScrolledWindow();
+            this.editorBox.CanFocus = true;
+            this.editorBox.Name = "editorBox";
+            this.editorBox.HscrollbarPolicy = ((Gtk.PolicyType)(2));
+            this.hpaned1.Add(this.editorBox);
+            this.hbox4.Add(this.hpaned1);
+            Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.hbox4[this.hpaned1]));
+            w28.Position = 0;
             this.vbox2.Add(this.hbox4);
-            Gtk.Box.BoxChild w37 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox4]));
-            w37.Position = 1;
+            Gtk.Box.BoxChild w29 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox4]));
+            w29.Position = 1;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
@@ -218,7 +197,6 @@ namespace MonoDevelop.AddinAuthoring {
             this.buttonAdd.Clicked += new System.EventHandler(this.OnButtonAddClicked);
             this.addNodeButton.Pressed += new System.EventHandler(this.OnAddNodeButtonPressed);
             this.buttonRemove.Clicked += new System.EventHandler(this.OnButtonRemoveClicked);
-            this.buttonProperties.Clicked += new System.EventHandler(this.OnButtonPropertiesClicked);
             this.tree.PopupMenu += new Gtk.PopupMenuHandler(this.OnTreePopupMenu);
             this.tree.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler(this.OnTreeButtonReleaseEvent);
         }

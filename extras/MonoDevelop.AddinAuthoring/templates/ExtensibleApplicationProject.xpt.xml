@@ -3,9 +3,9 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Add-in</_Name>
+		<_Name>Extensible Application</_Name>
 		<_Category>Add-ins</_Category>
-		<_Description>Creates an add-in</_Description>
+		<_Description>Creates an application which can be extended by add-ins</_Description>
 		<LanguageName>*</LanguageName>
 	</TemplateConfiguration>
 	
@@ -20,16 +20,29 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = ".">
-			<Options Target = "Library" />
-			
 			<References>
 				<Reference type="Gac" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 				<Reference type="Gac" SpecificVersion="false" refto="Mono.Addins, Version=0.1.0.0, Culture=neutral" />
 			</References>
 			<Files>
-				<Addin id="${ProjectName}" name="${ProjectName}" isroot="false" version="1.0">
+				<Addin id="${ProjectName}" name="${ProjectName}" isroot="true" version="1.0">
 				</Addin>
-				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
+				<File name="Main.cs" AddStandardHeader="True">
+<![CDATA[using System;
+using Mono.Addins;
+
+namespace ${Namespace}
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			AddinManager.Initialize (".");
+			AddinManager.Registry.Update (null);
+		}
+	}
+}]]>
+				</File>
 				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
 			</Files>
 		</Project>

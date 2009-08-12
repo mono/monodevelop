@@ -32,7 +32,6 @@ namespace MonoDevelop.AddinAuthoring {
             this.Name = "MonoDevelop.AddinAuthoring.ExtensionSelectorDialog";
             this.Title = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Extension Selector");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.AddinAuthoring.ExtensionSelectorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

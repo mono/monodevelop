@@ -18,7 +18,7 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			this.Build();
 			this.project = project;
-			optionsWidget.Load (project, false);
+			optionsWidget.Load (project.ParentSolution, project, true);
 			
 			AddinData data = AddinData.GetAddinData (project);
 			if (data != null)

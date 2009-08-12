@@ -22,7 +22,6 @@ namespace MonoDevelop.AddinAuthoring {
             // Widget MonoDevelop.AddinAuthoring.NodeSetEditorDialog
             this.Name = "MonoDevelop.AddinAuthoring.NodeSetEditorDialog";
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.AddinAuthoring.NodeSetEditorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

@@ -44,16 +44,17 @@ namespace MonoDevelop.AddinAuthoring
 	{
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(ProjectFolder).IsAssignableFrom (dataType) ||
+			return typeof(DotNetProject).IsAssignableFrom (dataType);
+/*			return typeof(ProjectFolder).IsAssignableFrom (dataType) ||
 					typeof(ProjectFile).IsAssignableFrom (dataType) ||
 					typeof(DotNetProject).IsAssignableFrom (dataType);
-		}
+*/		}
 		
 		public override Type CommandHandlerType {
 			get { return typeof(AddinFolderCommandHandler); }
 		}
 		
-		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
+/*		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			if (dataObject is DotNetProject) {
 				AddinData data = AddinData.GetAddinData ((DotNetProject)dataObject);
@@ -61,7 +62,7 @@ namespace MonoDevelop.AddinAuthoring
 					builder.AddChild (data);
 			}
 		}
-		
+*/		
 		public override void OnNodeAdded (object dataObject)
 		{
 			if (dataObject is DotNetProject) {

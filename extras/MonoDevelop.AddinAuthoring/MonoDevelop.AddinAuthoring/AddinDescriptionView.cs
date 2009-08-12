@@ -75,7 +75,7 @@ namespace MonoDevelop.AddinAuthoring
 			descWidget.Save ();
 			adesc.Save ();
 			IsDirty = false;
-			data.NotifyChanged ();
+			data.NotifyChanged (true);
 		}
 		
 		internal void BeginInternalUpdate ()

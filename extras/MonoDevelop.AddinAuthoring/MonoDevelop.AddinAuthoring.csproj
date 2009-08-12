@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-16"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3614523B-7789-4475-9A99-D71727E8C627}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <ApplicationIcon>.</ApplicationIcon>
+    <AssemblyName>MonoDevelop.AddinAuthoring</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>build</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <AssemblyKeyFile>.</AssemblyKeyFile>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ProjectFolderNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\AddinFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinData.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinDescriptionView.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinDescriptionWidget.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinFileDescriptionTemplate.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinOptionPanelWidget.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinProjectExtension.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\Commands.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionEditorWidget.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionSelectorDialog.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\SelectRepositoryDialog.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\CellRendererExtension.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinFeatureWidget.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\NodeEditorWidget.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\RegistryExtensionNode.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinAuthoringService.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\RegistrySelector.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\NewExtensionPointDialog.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\TypeSelector.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\NodeSetEditorWidget.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\NodeSetEditorDialog.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\NodeTypeEditorDialog.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\SelectNodeSetDialog.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\AddinHeaderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ExtensionPointsNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ExtensionsNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionPointsEditorWidget.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ReferencesFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\AddinReferenceNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinDescriptionDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinProjectReference.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\NewRegistryDialog.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.CodeCompletion\CodeCompletionExtension.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.AddinOptionPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.AddinDescriptionWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.SelectRepositoryDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.ExtensionSelectorDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.ExtensionEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.AddinFeatureWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.RegistrySelector.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.NewExtensionPointDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.TypeSelector.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.NodeSetEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.NodeSetEditorDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.NodeTypeEditorDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.SelectNodeSetDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.ExtensionPointsEditorWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.NewRegistryDialog.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\SolutionAddinData.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionDomain.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ReferenceNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\TypeCellEditor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.AddinAuthoring.addin.xml" />
+    <EmbeddedResource Include="templates\AddinProject.xpt.xml">
+      <LogicalName>AddinProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="flare.png" />
+    <EmbeddedResource Include="extension-node-type.png" />
+    <EmbeddedResource Include="extension-point.png" />
+    <EmbeddedResource Include="extension-node-set.png" />
+    <EmbeddedResource Include="templates\ExtensibleApplicationProject.xpt.xml">
+      <LogicalName>ExtensibleApplicationProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\ExtensibleLibraryProject.xpt.xml">
+      <LogicalName>ExtensibleLibraryProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Posix" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="Mono.Addins.Setup, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="MonoDevelop.Core.Gui, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Projects, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Projects.Gui, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="NRefactory, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.VersionControl, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.NUnit, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.XmlEditor, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Gettext, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Deployment, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Deployment.Linux, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.GtkCore, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.DesignerSupport, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.VBNetBinding, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.CSharpBinding, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.SourceEditor2, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="MonoDevelop.Core, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Components, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.AspNet, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.CBinding, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Autotools, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="MonoDevelop.Refactoring, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <GtkDesignInfo gettextClass="Mono.Addins.AddinManager.CurrentLocalizer" />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="MonoDevelop.AddinAuthoring.make" SyncReferences="true" RelativeConfigureInPath="../../">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RESOURCES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFERENCES" />
+          <AsmRefVar Sync="true" Name="REFERENCES" />
+          <ProjectRefVar Sync="true" Name="REFERENCES" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

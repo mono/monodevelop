@@ -40,7 +40,8 @@ namespace MonoDevelop.AddinAuthoring {
             this.Name = "MonoDevelop.AddinAuthoring.SelectRepositoryDialog";
             this.Title = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Select Add-in Registry");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
+            this.DefaultWidth = 0;
+            this.DefaultHeight = 0;
             // Internal child MonoDevelop.AddinAuthoring.SelectRepositoryDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
@@ -152,8 +153,6 @@ namespace MonoDevelop.AddinAuthoring {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 575;
-            this.DefaultHeight = 398;
             this.Show();
             this.buttonAdd.Clicked += new System.EventHandler(this.OnButtonAddClicked);
             this.buttonRemove.Clicked += new System.EventHandler(this.OnButtonRemoveClicked);

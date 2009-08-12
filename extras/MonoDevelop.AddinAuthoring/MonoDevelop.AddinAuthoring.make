@@ -59,12 +59,14 @@ FILES =  \
 	gtk-gui/MonoDevelop.AddinAuthoring.SelectNodeSetDialog.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.SelectRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.TypeSelector.cs \
+	MonoDevelop.AddinAuthoring.CodeCompletion/CodeCompletionExtension.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/AddinFolderNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/AddinHeaderNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionPointsNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionsNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/ReferenceNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/ReferencesFolderNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring/AddinAuthoringService.cs \
 	MonoDevelop.AddinAuthoring/AddinData.cs \
@@ -78,12 +80,12 @@ FILES =  \
 	MonoDevelop.AddinAuthoring/AddinProjectReference.cs \
 	MonoDevelop.AddinAuthoring/CellRendererExtension.cs \
 	MonoDevelop.AddinAuthoring/Commands.cs \
+	MonoDevelop.AddinAuthoring/ExtensionDomain.cs \
 	MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/ExtensionPointsEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/ExtensionSelectorDialog.cs \
 	MonoDevelop.AddinAuthoring/NewExtensionPointDialog.cs \
 	MonoDevelop.AddinAuthoring/NewRegistryDialog.cs \
-	MonoDevelop.AddinAuthoring/NodeEditorDialog.cs \
 	MonoDevelop.AddinAuthoring/NodeEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/NodeSetEditorDialog.cs \
 	MonoDevelop.AddinAuthoring/NodeSetEditorWidget.cs \
@@ -92,6 +94,8 @@ FILES =  \
 	MonoDevelop.AddinAuthoring/RegistrySelector.cs \
 	MonoDevelop.AddinAuthoring/SelectNodeSetDialog.cs \
 	MonoDevelop.AddinAuthoring/SelectRepositoryDialog.cs \
+	MonoDevelop.AddinAuthoring/SolutionAddinData.cs \
+	MonoDevelop.AddinAuthoring/TypeCellEditor.cs \
 	MonoDevelop.AddinAuthoring/TypeSelector.cs 
 
 DATA_FILES = 
@@ -102,21 +106,24 @@ RESOURCES =  \
 	extension-point.png \
 	flare.png \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	MonoDevelop.AddinAuthoring.addin.xml \
-	templates/AddinProject.xpt.xml 
+	templates/AddinProject.xpt.xml \
+	templates/ExtensibleApplicationProject.xpt.xml \
+	templates/ExtensibleLibraryProject.xpt.xml 
 
 EXTRAS = \
 	monodevelop.addinauthoring.pc.in 
 
 REFERENCES =  \
-	System \
 	Mono.Posix \
-	System.Xml \
-	-pkg:monodevelop \
+	-pkg:gtk-sharp-2.0 \
 	-pkg:mono-addins \
 	-pkg:mono-addins-setup \
-	-pkg:gtk-sharp-2.0
+	-pkg:monodevelop \
+	-pkg:monodevelop-core-addins \
+	System \
+	System.Core \
+	System.Xml
 
 DLL_REFERENCES = 
 
