@@ -1,3 +1,8 @@
+2009-08-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* CBinding.addin.xml: Set appropriate extension point for
+	  editor context menu command. Fixes #508838.
+
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/CBinding.PackageDetails.cs: Flush.

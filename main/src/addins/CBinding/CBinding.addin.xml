@@ -17,6 +17,7 @@
 		<Addin id = "Components" version = "2.1.0"/>
 		<Addin id = "Deployment" version = "2.1.0"/>
 		<Addin id = "Deployment.Linux" version = "2.1.0"/>
+		<Addin id = "SourceEditor2" version = "2.1.0" />
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -185,12 +186,9 @@
 		<CommandItem id = "CBinding.CProjectCommands.SwapSourceHeader" />
 	</Extension>	
 	
-	<!-- FIXME: find correct extension point. -->
-	<!-- Wrong extension point
-	<Extension path="/MonoDevelop/Ide/SourceEditor/ContextMenu">
+	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<CommandItem id = "CBinding.CProjectCommands.SwapSourceHeader" />
 	</Extension>	
-	-->
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class id = "ExtraSteps" class = "CBinding.CProjectServiceExtension"/>
