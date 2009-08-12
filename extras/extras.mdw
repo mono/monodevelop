@@ -1,6 +1,6 @@
 <WorkspaceItem name="extras" ctype="Workspace">
   <Items>
-    <Item>MonoDevelop.AddinAuthoring/MonoDevelop.AddinAuthoring.mds</Item>
+    <Item>MonoDevelop.AddinAuthoring/MonoDevelop.AddinAuthoring.sln</Item>
     <Item>MonoDevelop.Profiling/MonoDevelop.Profiling.mds</Item>
     <Item>ValaBinding/ValaBinding.sln</Item>
     <Item>PyBinding/PyBinding.sln</Item>
