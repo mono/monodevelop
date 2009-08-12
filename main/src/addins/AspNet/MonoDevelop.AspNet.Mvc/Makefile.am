@@ -73,13 +73,13 @@ assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 install-data-hook:
 	for F in $(DATA_FILES); do \
-		mkdir -p "$(assemblydir)/$$(dirname $$F)/"; \
-		$(INSTALL) -c -m 0644 $(srcdir)/$$F "$(assemblydir)/$$(dirname $$F)/"; \
+		mkdir -p "$(DESTDIR)$(assemblydir)/$$(dirname $$F)/"; \
+		$(INSTALL) -c -m 0644 $(srcdir)/$$F "$(DESTDIR)$(assemblydir)/$$(dirname $$F)/"; \
 	done
 
 uninstall-hook:
 	for F in $(DATA_FILES); do \
-		rm -f "$(assemblydir)/$$F"; \
+		rm -f "$(DESTDIR)$(assemblydir)/$$F"; \
 	done
 
 
