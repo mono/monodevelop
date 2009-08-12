@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
+using Mono.PkgConfig;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -139,55 +140,49 @@ namespace MonoDevelop.Core.Assemblies
 	
 	public class SystemPackageInfo
 	{
+		internal Dictionary<string,string> CustomData;
+		
 		public SystemPackageInfo ()
 		{
 			IsGacPackage = true;
 		}
 
-		[ItemProperty]
+		public SystemPackageInfo (PackageInfo info)
+		{
+			Name = info.Name;
+			IsGacPackage = info.IsGacPackage;
+			Version = info.Version;
+			Description = info.Description;
+			TargetFramework = info.GetData ("targetFramework");
+			CustomData = info.CustomData;
+			Assemblies = new List<AssemblyInfo> ();
+			if (info.IsValidPackage) {
+				foreach (PackageAssemblyInfo asm in info.Assemblies)
+					Assemblies.Add (new AssemblyInfo (asm));
+			}
+		}
+
 		public string Name { get; set; }
 		
-		[ItemProperty (DefaultValue=null)]
 		public string GacRoot { get; set; }
 		
-		[ItemProperty (DefaultValue=true)]
 		public bool IsGacPackage { get; set; }
 		
-		[ItemProperty]
 		public string Version { get; set; }
 		
-		[ItemProperty (DefaultValue=null)]
 		public string Description { get; set; }
 		
-		[ItemProperty (DefaultValue=null)]
 		public string TargetFramework { get; set; }
 		
 		// The package is part of the core mono SDK
-		[ItemProperty (DefaultValue=false)]
 		public bool IsCorePackage { get; set; }
 		
 		// The package contains an mscorlib
 		internal bool IsBaseCorePackage { get; set; }
 		
 		// The package is part of the mono SDK (unlike IsCorePackage, it may be provided by a non-core package)
-		[ItemProperty (DefaultValue=false)]
 		public bool IsFrameworkPackage { get; set; }
 		
-		[ExpandedCollection]
-		[ItemProperty ("Assembly")]
-		internal List<PackageAssemblyInfo> Assemblies { get; set; }
-		
-		[ItemProperty]
-		internal DateTime LastWriteTime { get; set; }
-		
-		internal bool IsValidPackage {
-			get { return Assemblies != null && Assemblies.Count > 0; }
-		}
-	}
-	
-	class PackageAssemblyInfo: AssemblyInfo
-	{
-		[ItemProperty]
-		public string File { get; set; }
+		internal List<AssemblyInfo> Assemblies { get; set; }
 	}
 }

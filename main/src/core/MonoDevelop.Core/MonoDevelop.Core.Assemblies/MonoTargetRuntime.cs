@@ -38,18 +38,18 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
+using Mono.PkgConfig;
 
 namespace MonoDevelop.Core.Assemblies
 {
 	public class MonoTargetRuntime: TargetRuntime
 	{
-		bool reportedPkgConfigNotFound = false;
 		string monoVersion;
 		string monoDir;
 		MonoPlatformExecutionHandler execHandler;
 		Dictionary<string,string> environmentVariables;
 		
-		static PcFileCache pcFileCache = new PcFileCache ();
+		internal static PcFileCache PcFileCache = new PcFileCache (new PcFileCacheContext ());
 		
 		MonoRuntimeInfo monoRuntimeInfo;
 		
@@ -172,7 +172,7 @@ namespace MonoDevelop.Core.Assemblies
 					LoggingService.LogError ("Could not parse file '" + pcfile + "'", ex);
 				}
 			}
-			pcFileCache.Save ();
+			PcFileCache.Save ();
 		}
 
 		private void ParsePCFile (string pcfile)
@@ -182,224 +182,11 @@ namespace MonoDevelop.Core.Assemblies
 			if (GetPackageInternal (pname) != null || IsCorePackage (pname))
 				return;
 
-			SystemPackageInfo pinfo;
-			lock (pcFileCache.SyncRoot) {
-				pinfo = pcFileCache.GetPackageInfo (pcfile);
-				if (pinfo == null) {
-					pinfo = GetPackageInfo (pcfile, pname);
-					pcFileCache.StorePackageInfo (pcfile, pinfo);
-				}
-			}
+			PackageInfo pinfo = PcFileCache.GetPackageInfo (pcfile);
 			if (pinfo.IsValidPackage)
-				RegisterPackage (pinfo, false, pinfo.Assemblies.ToArray ());
+				RegisterPackage (new SystemPackageInfo (pinfo), false, pinfo.Assemblies.ToArray ());
 		}
-		
-		SystemPackageInfo GetPackageInfo (string pcfile, string pname)
-		{
-			Counters.PcFilesParsed++;
-			SystemPackageInfo pinfo = new SystemPackageInfo ();
-			pinfo.Name = pname;
-			List<string> fullassemblies = null;
-			bool gacPackageSet = false;
-			
-			using (StreamReader reader = new StreamReader (pcfile)) {
-				string line;
-				while ((line = reader.ReadLine ()) != null) {
-					int i = line.IndexOf (':');
-					int j = line.IndexOf ('=');
-					i = Math.Min (i != -1 ? i : int.MaxValue, j != -1 ? j : int.MaxValue);
-					if (i == int.MaxValue)
-						continue;
-					string var = line.ToLower ().Substring (0, i).Trim ();
-					string value = line.Substring (i+1).Trim ();
-					if (var == "libs" && value.IndexOf (".dll") != -1 && fullassemblies == null) {
-						if (value.IndexOf ("-lib:") != -1 || value.IndexOf ("/lib:") != -1) {
-							fullassemblies = GetAssembliesWithLibInfo (value, pcfile);
-						} else {
-							fullassemblies = GetAssembliesWithoutLibInfo (value, pcfile);
-						}
-					}
-					else if (var == "libraries") {
-						fullassemblies = GetAssembliesFromLibrariesVar (value, pcfile);
-					}
-					else if (var == "version") {
-						pinfo.Version = value;
-					}
-					else if (var == "description") {
-						pinfo.Description = value;
-					}
-					else if (var == "gacpackage") {
-						value = value.ToLower ();
-						pinfo.IsGacPackage = value == "yes" || value == "true";
-						gacPackageSet = true;
-					}
-				}
-			}
-	
-			if (fullassemblies == null)
-				return pinfo;
-			
-			string pcDir = Path.GetDirectoryName (pcfile);
-			string monoPrefix = Path.GetDirectoryName (Path.GetDirectoryName (pcDir));
-			monoPrefix = Path.GetFullPath (monoPrefix + Path.DirectorySeparatorChar + "lib" + Path.DirectorySeparatorChar + "mono" + Path.DirectorySeparatorChar);
 
-			TargetFramework commonFramework = null;
-			bool inconsistentFrameworks = false;
-			
-			List<PackageAssemblyInfo> list = new List<PackageAssemblyInfo> ();
-			foreach (string assembly in fullassemblies) {
-				string asm;
-				if (Path.IsPathRooted (assembly))
-					asm = Path.GetFullPath (assembly);
-				else {
-					if (Path.GetDirectoryName (assembly).Length == 0) {
-						asm = assembly;
-					} else {
-						asm = Path.GetFullPath (Path.Combine (pcDir, assembly));
-					}
-				}
-				if (File.Exists (asm)) {
-					PackageAssemblyInfo pi = new PackageAssemblyInfo ();
-					pi.File = asm;
-					pi.UpdateFromFile (pi.File);
-					string targetFramework = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (this, pi.File);
-					list.Add (pi);
-					if (!gacPackageSet && !asm.StartsWith (monoPrefix) && Path.IsPathRooted (asm)) {
-						// Assembly installed outside $(prefix)/lib/mono. It is most likely not a gac package.
-						gacPackageSet = true;
-						pinfo.IsGacPackage = false;
-					}
-					if (commonFramework == null) {
-						commonFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFramework);
-						if (commonFramework == null)
-							inconsistentFrameworks = true;
-					}
-					else if (targetFramework != null) {
-						TargetFramework newfx = Runtime.SystemAssemblyService.GetTargetFramework (targetFramework);
-						if (newfx == null)
-							inconsistentFrameworks = true;
-						else {
-							if (newfx.IsCompatibleWithFramework (commonFramework.Id))
-								commonFramework = newfx;
-							else if (!commonFramework.IsCompatibleWithFramework (newfx.Id))
-								inconsistentFrameworks = true;
-						}
-					}
-				}
-				if (inconsistentFrameworks)
-					break;
-			}
-			if (inconsistentFrameworks) {
-				LoggingService.LogError ("Inconsistent target frameworks found in " + pcfile);
-				return pinfo;
-			}
-			if (commonFramework != null)
-				pinfo.TargetFramework = commonFramework.Id;
-			
-			pinfo.Assemblies = list;
-			return pinfo;
-		}
-		
-	
-		private List<string> GetAssembliesWithLibInfo (string line, string file)
-		{
-			List<string> references = new List<string> ();
-			List<string> libdirs = new List<string> ();
-			List<string> retval = new List<string> ();
-			foreach (string piece in line.Split (' ')) {
-				if (piece.ToLower ().Trim ().StartsWith ("/r:") || piece.ToLower ().Trim ().StartsWith ("-r:")) {
-					references.Add (ProcessPiece (piece.Substring (3).Trim (), file));
-				} else if (piece.ToLower ().Trim ().StartsWith ("/lib:") || piece.ToLower ().Trim ().StartsWith ("-lib:")) {
-					libdirs.Add (ProcessPiece (piece.Substring (5).Trim (), file));
-				}
-			}
-	
-			foreach (string refrnc in references) {
-				foreach (string libdir in libdirs) {
-					if (File.Exists (libdir + Path.DirectorySeparatorChar + refrnc)) {
-						retval.Add (libdir + Path.DirectorySeparatorChar + refrnc);
-					}
-				}
-			}
-	
-			return retval;
-		}
-		
-		List<string> GetAssembliesFromLibrariesVar (string line, string file)
-		{
-			List<string> references = new List<string> ();
-			foreach (string reference in line.Split (' ')) {
-				if (!string.IsNullOrEmpty (reference))
-					references.Add (ProcessPiece (reference, file));
-			}
-			return references;
-		}
-	
-		private List<string> GetAssembliesWithoutLibInfo (string line, string file)
-		{
-			List<string> references = new List<string> ();
-			foreach (string reference in line.Split (' ')) {
-				if (reference.ToLower ().Trim ().StartsWith ("/r:") || reference.ToLower ().Trim ().StartsWith ("-r:")) {
-					string final_ref = reference.Substring (3).Trim ();
-					references.Add (ProcessPiece (final_ref, file));
-				}
-			}
-			return references;
-		}
-	
-		private string ProcessPiece (string piece, string pcfile)
-		{
-			int start = piece.IndexOf ("${");
-			if (start == -1)
-				return piece;
-	
-			int end = piece.IndexOf ("}");
-			if (end == -1)
-				return piece;
-	
-			string variable = piece.Substring (start + 2, end - start - 2);
-			string interp = GetVariableFromPkgConfig (variable, Path.GetFileNameWithoutExtension (pcfile));
-			return ProcessPiece (piece.Replace ("${" + variable + "}", interp), pcfile);
-		}
-		
-		public string RunPkgConfigCommand (string arguments)
-		{
-			if (reportedPkgConfigNotFound)
-				return string.Empty;
-			ProcessStartInfo psi = new ProcessStartInfo ("pkg-config");
-			psi.RedirectStandardOutput = true;
-			psi.UseShellExecute = false;
-			psi.EnvironmentVariables["PKG_CONFIG_PATH"] = PkgConfigPath;
-			psi.EnvironmentVariables["PKG_CONFIG_LIBDIR"] = "";
-			
-			psi.Arguments = arguments;
-			Process p = new Process ();
-			p.StartInfo = psi;
-			string ret = string.Empty;
-			try {
-				p.Start ();
-				ret = p.StandardOutput.ReadToEnd ().Trim ();
-				p.WaitForExit ();
-			} catch (System.ComponentModel.Win32Exception) {
-				LoggingService.LogError ("Could not run pkg-config to locate system assemblies and development packages.");
-				reportedPkgConfigNotFound = true;
-			} catch (Exception ex) {
-				LoggingService.LogError ("Could not run pkg-config to locate system assemblies and development packages.", ex);
-				reportedPkgConfigNotFound = true;
-			}
-			
-			return ret ?? string.Empty;
-		}
-	
-		public string GetVariableFromPkgConfig (string var, string pcfile)
-		{
-			return RunPkgConfigCommand (String.Format ("--variable={0} {1}", var, pcfile));
-		}
-		
-		public string GetLibsFromPkgConfig (string pcfile)
-		{
-			return RunPkgConfigCommand (String.Format ("--libs {0}", pcfile));
-		}
 		
 		public static TargetRuntime RegisterRuntime (MonoRuntimeInfo info)
 		{
@@ -409,6 +196,53 @@ namespace MonoDevelop.Core.Assemblies
 		public static void UnregisterRuntime (MonoTargetRuntime runtime)
 		{
 			MonoTargetRuntimeFactory.UnregisterRuntime (runtime);
+		}
+	}
+	
+	class PcFileCacheContext: Mono.PkgConfig.IPcFileCacheContext
+	{
+		public void ReportError (string message, System.Exception ex)
+		{
+			LoggingService.LogError (message, ex);
+		}
+		
+		public bool IsCustomDataComplete (string pcfile, PackageInfo pkg)
+		{
+			return pkg.GetData ("targetFramework") != null;
+		}
+		
+		public void StoreCustomData (PcFile pcfile, PackageInfo pinfo)
+		{
+			TargetFramework commonFramework = null;
+			bool inconsistentFrameworks = false;
+			
+			foreach (PackageAssemblyInfo pi in pinfo.Assemblies) {
+				string targetFramework = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (Runtime.SystemAssemblyService.CurrentRuntime, pi.File);
+				if (commonFramework == null) {
+					commonFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFramework);
+					if (commonFramework == null)
+						inconsistentFrameworks = true;
+				}
+				else if (targetFramework != null) {
+					TargetFramework newfx = Runtime.SystemAssemblyService.GetTargetFramework (targetFramework);
+					if (newfx == null)
+						inconsistentFrameworks = true;
+					else {
+						if (newfx.IsCompatibleWithFramework (commonFramework.Id))
+							commonFramework = newfx;
+						else if (!commonFramework.IsCompatibleWithFramework (newfx.Id))
+							inconsistentFrameworks = true;
+					}
+				}
+				if (inconsistentFrameworks)
+					break;
+			}
+			if (inconsistentFrameworks)
+				LoggingService.LogError ("Inconsistent target frameworks found in " + pcfile);
+			if (commonFramework != null)
+				pinfo.SetData ("targetFramework", commonFramework.Id);
+			else
+				pinfo.SetData ("targetFramework", "Unknown");
 		}
 	}
 }

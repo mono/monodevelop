@@ -172,24 +172,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		void SetupPkgconfigPaths (string pkgConfigPath, string pkgConfigLibdir)
 		{
-			char[] sep = new char[] { Path.PathSeparator };
-			
-			string[] pkgConfigPaths = null;
-			if (!String.IsNullOrEmpty (pkgConfigPath)) {
-				pkgConfigPaths = pkgConfigPath.Split (sep, StringSplitOptions.RemoveEmptyEntries);
-				if (pkgConfigPaths.Length == 0)
-					pkgConfigPaths = null;
-			}
-			
-			string[] pkgConfigLibdirs = null;
-			if (!String.IsNullOrEmpty (pkgConfigLibdir)) {
-				pkgConfigLibdirs = pkgConfigLibdir.Split (sep, StringSplitOptions.RemoveEmptyEntries);
-				if (pkgConfigLibdirs.Length == 0)
-					pkgConfigLibdirs = null;
-			}
-			
-			IEnumerable<string> paths = GetUnfilteredPkgConfigDirs (pkgConfigPaths, pkgConfigLibdirs, new string [] { prefix });
-			paths = NormaliseAndFilterPaths (paths, Environment.CurrentDirectory);
+			IEnumerable<string> paths = MonoTargetRuntime.PcFileCache.GetPkgconfigPaths (prefix, pkgConfigPath, pkgConfigLibdir);
 			
 			//NOTE: we set PKG_CONFIG_LIBDIR so that pkgconfig has the exact set of paths MD is using
 			envVars ["PKG_CONFIG_PATH"] = String.Join (Path.PathSeparator.ToString (), System.Linq.Enumerable.ToArray (paths));
@@ -212,49 +195,6 @@ namespace MonoDevelop.Core.Assemblies
 			return null;
 		}
 		
-		static IEnumerable<string> NormaliseAndFilterPaths (IEnumerable<string> paths, string workingDirectory)
-		{
-			HashSet<string> filtered = new HashSet<string> ();
-			foreach (string p in paths) {
-				string path = p;
-				if (!Path.IsPathRooted (path))
-					path = Path.Combine (workingDirectory, path);
-				path = Path.GetFullPath (path);
-				if (!filtered.Add (path))
-					continue;
-				try {
-					if (!Directory.Exists (path))
-						continue;
-				} catch (IOException ex) {
-					LoggingService.LogError ("Error checking for directory '" + path + "'.", ex);
-				}
-				yield return path;
-			}
-		}
-		
 		#endregion
-		
-		static IEnumerable<string> GetUnfilteredPkgConfigDirs (IEnumerable<string> pkgConfigPaths, IEnumerable<string> pkgConfigLibdirs, IEnumerable<string> systemPrefixes)
-		{
-			if (pkgConfigPaths != null) {
-				foreach (string dir in pkgConfigPaths)
-					yield return dir;
-			}
-			
-			if (pkgConfigLibdirs != null) {
-				foreach (string dir in pkgConfigLibdirs)
-					yield return dir;
-			} else if (systemPrefixes != null) {
-				string[] suffixes = new string [] {
-					Path.Combine ("lib", "pkgconfig"),
-					Path.Combine ("lib64", "pkgconfig"),
-					Path.Combine ("libdata", "pkgconfig"),
-					Path.Combine ("share", "pkgconfig"),
-				};
-				foreach (string prefix in systemPrefixes)
-					foreach (string suffix in suffixes)
-						yield return Path.Combine (prefix, suffix);
-			}
-		}
 	}
 }

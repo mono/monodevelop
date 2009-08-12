@@ -31,6 +31,7 @@ using MonoDevelop.Core.Serialization;
 using System.Reflection;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
+using Mono.PkgConfig;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -164,6 +165,17 @@ namespace MonoDevelop.Core.Assemblies
 		
 		[ItemProperty ("package")]
 		public string Package;
+		
+		public AssemblyInfo ()
+		{
+		}
+		
+		public AssemblyInfo (PackageAssemblyInfo info)
+		{
+			Name = info.Name;
+			Version = info.Version;
+			PublicKeyToken = info.PublicKeyToken;
+		}
 		
 		public void UpdateFromFile (string file)
 		{

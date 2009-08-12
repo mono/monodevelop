@@ -38,6 +38,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
+using Mono.PkgConfig;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -217,7 +218,7 @@ namespace MonoDevelop.Core.Assemblies
 			SystemPackage p = new SystemPackage (this);
 			List<SystemAssembly> asms = new List<SystemAssembly> ();
 			foreach (PackageAssemblyInfo asm in assemblyFiles)
-				asms.Add (AddAssembly (asm.File, asm, p));
+				asms.Add (AddAssembly (asm.File, new AssemblyInfo (asm), p));
 			p.Initialize (pinfo, asms, isInternal);
 			packages.Add (p);
 			packagesHash [pinfo.Name] = p;

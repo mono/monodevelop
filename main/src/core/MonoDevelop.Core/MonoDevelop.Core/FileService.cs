@@ -396,6 +396,11 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileEventArgs> FileCreated;
 		static void OnFileCreated (FileEventArgs args)
 		{
+			if (args.IsDirectory)
+				Counters.DirectoriesCreated++;
+			else
+				Counters.FilesCreated++;
+			
 			if (FileCreated != null) 
 				FileCreated (null, args);
 		}
@@ -403,6 +408,11 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;
 		static void OnFileRenamed (FileCopyEventArgs args)
 		{
+			if (args.IsDirectory)
+				Counters.DirectoriesRenamed++;
+			else
+				Counters.FilesRenamed++;
+			
 			if (FileRenamed != null) 
 				FileRenamed (null, args);
 		}
@@ -410,6 +420,11 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileEventArgs> FileRemoved;
 		static void OnFileRemoved (FileEventArgs args)
 		{
+			if (args.IsDirectory)
+				Counters.DirectoriesRemoved++;
+			else
+				Counters.FilesRemoved++;
+			
 			if (FileRemoved != null) 
 				FileRemoved (null, args);
 		}
@@ -417,6 +432,8 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileEventArgs> FileChanged;
 		static void OnFileChanged (FileEventArgs args)
 		{
+			Counters.FileChangeNotifications++;
+			
 			if (FileChanged != null) 
 				FileChanged (null, args);
 		}

@@ -1,3 +1,17 @@
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/SystemPackage.cs:
+	* MonoDevelop.Core.Assemblies/TargetFramework.cs:
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Moved all
+	  related to parsing .pc files to PcFileCache. This class is
+	  now isolated from MD and can be reused for xbuild.
+
+	* MonoDevelop.Core/Runtime.cs:
+	* MonoDevelop.Core/FileService.cs: Added some counters.
+
 2009-08-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs: Remove
