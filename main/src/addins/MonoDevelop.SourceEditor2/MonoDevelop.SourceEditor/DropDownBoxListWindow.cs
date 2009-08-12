@@ -186,9 +186,18 @@ namespace MonoDevelop.SourceEditor
 			public ListWidget (DropDownBoxListWindow win)
 			{
 				this.win = win;
-				this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask;
+				this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 				layout = new Pango.Layout (this.PangoContext);
 			}
+			
+			protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
+			{
+			
+				selection = -1;
+				QueueDraw ();
+				return base.OnLeaveNotifyEvent (evnt);
+			}
+	
 			
 			protected override void OnDestroyed ()
 			{
@@ -321,19 +330,19 @@ namespace MonoDevelop.SourceEditor
 			{
 				int winWidth, winHeight;
 				this.GdkWindow.GetSize (out winWidth, out winHeight);
-				
+
 				int ypos = margin;
-				int lineWidth = winWidth - margin*2;
+				int lineWidth = winWidth - margin * 2;
 				int xpos = margin + padding;
-					
+
 				int n = 0;
 				while (ypos < winHeight - margin && (page + n) < win.DataProvider.IconCount) {
 					layout.SetText (win.DataProvider.GetText (page + n) ?? "<null>");
-					
+
 					Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
-					int iconHeight = icon != null? icon.Height : 24;
-					int iconWidth = icon != null? icon.Width : 24;
-					
+					int iconHeight = icon != null ? icon.Height : 24;
+					int iconWidth = icon != null ? icon.Width : 24;
+
 					int wi, he, typos, iypos;
 					layout.GetPixelSize (out wi, out he);
 					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
