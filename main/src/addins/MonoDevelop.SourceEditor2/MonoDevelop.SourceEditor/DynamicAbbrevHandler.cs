@@ -58,11 +58,11 @@ namespace MonoDevelop.SourceEditor
 			SourceEditorView view = IdeApp.Workbench.ActiveDocument.GetContent<SourceEditorView> ();
 			if (view == null)
 				return;
-
+			
 			string abbrevWord;
 			int offset;
 			int startOffset;
-
+			
 			if (lastView == view && view.TextEditor.Caret.Offset == lastTriggerOffset) {
 				abbrevWord = lastAbbrev;
 				offset = lastStartOffset;
@@ -72,9 +72,10 @@ namespace MonoDevelop.SourceEditor
 				offset = view.TextEditor.Caret.Offset - abbrevWord.Length - 1;
 				lastInsertPos = lastTriggerOffset = offset + 1;
 				foundWords.Clear ();
+				foundWords.Add (abbrevWord);
 				curState = AbbrevState.SearchBackward;
 			}
-
+			
 			lastView = view;
 			switch (curState) {
 			case AbbrevState.SearchBackward:

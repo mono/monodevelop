@@ -1,3 +1,8 @@
+2009-08-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs: Added
+	  abbrev word to the foundWords list.
+
 2009-08-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs: fixed bug
