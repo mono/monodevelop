@@ -71,8 +71,17 @@ check: all
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet.Mvc
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-deploydir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet.Mvc/
-deploy_DATA = $(DATA_FILES)
+install-data-hook:
+	for F in $(DATA_FILES); do \
+		mkdir -p "$(assemblydir)/$$(dirname $$F)/"; \
+		$(INSTALL) -c -m 0644 $(srcdir)/$$F "$(assemblydir)/$$(dirname $$F)/"; \
+	done
+
+uninstall-hook:
+	for F in $(DATA_FILES); do \
+		rm -f "$(assemblydir)/$$F"; \
+	done
+
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)
