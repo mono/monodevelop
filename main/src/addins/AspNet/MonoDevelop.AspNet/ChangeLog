@@ -1,3 +1,8 @@
+2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.csproj: Include the ASP.NET MVC and
+	  TextTemplating addins in the main solution and build.
+
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AspNetAddIn.csproj: Don't local-copy project references.

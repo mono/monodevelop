@@ -1,5 +1,11 @@
 2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* TextTemplating: Include the ASP.NET MVC and TextTemplating
+	  addins in the main solution and build.
+
+2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am, AspNetAddin, AspNet: Move ASP.NET into a 
 	  subdirectory and rename, in preparation for adding the MVC addin.
 

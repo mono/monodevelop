@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<Template originator="Michael Hutchinson"
+          created="2009/02/17"
+          lastModified="2009/02/17">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>ASP.NET MVC View Page</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET MVC</_Category>
+		<LanguageName>*</LanguageName>
+		<ProjectType>AspNetMvc</ProjectType>
+		<_Description>Creates an MVC View page.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<AspNetFile name="${Name}.aspx">
+			<FileText>
+				<![CDATA[<%@ Page Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewPage" %>
+${Doctype}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+	<title></title>
+</head>
+<body>
+	<div>
+		
+	<div>
+</body>
+</html>]]>
+			</FileText>
+		</AspNetFile>
+	</TemplateFiles>
+</Template>
