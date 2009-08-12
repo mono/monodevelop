@@ -38,9 +38,20 @@ RES =  \
 	gtk-gui/gui.stetic \
 	MonoDevelop.AspNet.Mvc.addin.xml
 
-DATA_FILES = 
+DATA_FILES = \
+	Templates/Controller.xft.xml \
+	Templates/ViewPage.xft.xml \
+	Templates/ViewContentPage.xft.xml \
+	Templates/UserControl.xft.xml \
+	Templates/ViewMasterPage.xft.xml \
+	Templates/Project.xpt.xml \
+	Templates/EmptyProject.xpt.xml \
+	Templates/GlobalAsax.xft.xml \
+	Templates/WebConfigApp.xft.xml \
+	Templates/WebConfigViews.xft.xml \
+	CodeTemplates/AddView/Empty.tt
 
-DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/Schemas/, $(notdir $(DATA_FILES)))
+DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
@@ -51,17 +62,17 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
-$(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
-	mkdir -p $(ADDIN_BUILD)/Schemas
-	cp $(srcdir)/$(subst $(ADDIN_BUILD),,$@) $@
+$(DATA_FILE_BUILD): $(ADDIN_BUILD)/% : $(srcdir)/%
+	mkdir -p $(dir $@)
+	cp $^ $@
 
 check: all
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet.Mvc
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-schemadir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet.Mvc/Schemas
-schema_DATA = $(DATA_FILES)
+deploydir = $(MD_ADDIN_DIR)/MonoDevelop.AspNet.Mvc/
+deploy_DATA = $(DATA_FILES)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)

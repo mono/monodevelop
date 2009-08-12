@@ -1,5 +1,10 @@
 2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.AspNet.Mvc.csproj: Add the data files.
+
+2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Mvc.csproj: Don't local-copy project
 	  refs.
 
