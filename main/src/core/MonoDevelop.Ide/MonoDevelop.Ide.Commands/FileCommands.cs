@@ -82,6 +82,7 @@ namespace MonoDevelop.Ide.Commands
 			string filename;
 			FileViewer viewer;
 			try {
+				dlg.TransientFor = IdeApp.Workbench.RootWindow;
 				if(((ResponseType)dlg.Run ()) == ResponseType.Ok) {
 					filename = dlg.Filename;
 					viewer = dlg.SelectedViewer;
