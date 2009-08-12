@@ -34,72 +34,72 @@
     </Execution>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
       <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
       <Name>MonoDevelop.Components</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
       <Project>{659B0888-3956-4040-BDB1-B45F6D64E7FA}</Project>
       <Name>MonoDevelop.Core.Gui</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
       <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
       <Name>MonoDevelop.Projects</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+    <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Deployment\MonoDevelop.Deployment\MonoDevelop.Deployment.csproj">
+    <ProjectReference Include="..\..\Deployment\MonoDevelop.Deployment\MonoDevelop.Deployment.csproj">
       <Project>{9BC670A8-1851-40EC-9685-279F4C98433D}</Project>
       <Name>MonoDevelop.Deployment</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Deployment\MonoDevelop.Deployment.Linux\MonoDevelop.Deployment.Linux.csproj">
+    <ProjectReference Include="..\..\Deployment\MonoDevelop.Deployment.Linux\MonoDevelop.Deployment.Linux.csproj">
       <Project>{BA9020AD-A2D1-47C8-9A7C-756162C38296}</Project>
       <Name>MonoDevelop.Deployment.Linux</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
       <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
       <Name>MonoDevelop.Projects.Gui</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.csproj">
+    <ProjectReference Include="..\..\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.csproj">
       <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
       <Name>MonoDevelop.XmlEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+    <ProjectReference Include="..\..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
       <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\CSharpBinding\CSharpBinding.csproj">
+    <ProjectReference Include="..\..\CSharpBinding\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
       <Name>CSharpBinding</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+    <ProjectReference Include="..\..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
+    <ProjectReference Include="..\..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
       <Private>False</Private>
@@ -113,27 +113,15 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Configuration" />
-    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.AspNet.addin.xml" />
@@ -340,7 +328,7 @@
     <MonoDevelop>
       <Properties>
         <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" />
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar Sync="true" Name="DATA_FILES" />
           <ResourcesVar Sync="true" Name="RES" />

@@ -1,3 +1,8 @@
+2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Main.sln:
+	* configure.in: Track moving & renaming ASP.NET addin.
+
 2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* mdtool.in: Properly quote the provided arguments.

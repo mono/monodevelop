@@ -21,7 +21,7 @@ SUBDIRS = \
 	MonoDevelop.GtkCore \
 	ChangeLogAddIn \
 	MonoDevelop.XmlEditor \
-	AspNetAddIn \
+	AspNet/MonoDevelop.AspNet \
 	MonoDevelop.WebReferences \
 	MonoDevelop.RegexToolkit \
 	CBinding \

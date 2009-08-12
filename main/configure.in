@@ -362,7 +362,7 @@ src/addins/ChangeLogAddIn/Makefile
 src/addins/MonoDevelop.GtkCore/Makefile
 src/addins/MonoDevelop.GtkCore/libstetic/Makefile
 src/addins/MonoDevelop.GtkCore/libsteticui/Makefile
-src/addins/AspNetAddIn/Makefile
+src/addins/AspNet/MonoDevelop.AspNet/Makefile
 src/addins/MonoDevelop.Autotools/Makefile
 src/addins/MonoDevelop.DesignerSupport/Makefile
 src/addins/MonoDevelop.WebReferences/Makefile
