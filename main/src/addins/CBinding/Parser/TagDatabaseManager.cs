@@ -409,8 +409,7 @@ namespace CBinding.Parser
 				}
 			}			
 			
-			if (FileUpdated != null)
-				FileUpdated (new ClassPadEventArgs (project));
+			OnFileUpdated (new ClassPadEventArgs (project));
 			
 			if (PropertyService.Get<bool> ("CBinding.ParseSystemTags", true))
 				UpdateSystemTags (project, filename, system_headers);
@@ -682,6 +681,22 @@ namespace CBinding.Parser
 			}
 		}
 		
+		/// <summary>
+		/// Remove a file's parse information from the database.
+		/// </summary>
+		/// <param name="project">
+		/// A <see cref="Project"/>: The project to which the file belongs.
+		/// </param>
+		/// <param name="filename">
+		/// A <see cref="System.String"/>: The file.
+		/// </param>
+		public void RemoveFileInfo(Project project, string filename)
+		{
+			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
+			info.RemoveFileInfo(filename);
+			OnFileUpdated(new ClassPadEventArgs (project));
+		}
+		
 		private static string[] diff (string[] a1, string[] a2)
 		{
 			List<string> res = new List<string> ();
@@ -693,6 +708,14 @@ namespace CBinding.Parser
 			}
 			
 			return res.ToArray ();
+		}
+		
+		/// <summary>
+		/// Wrapper method for the FileUpdated event.
+		/// </summary>
+		void OnFileUpdated (ClassPadEventArgs args)
+		{
+			if (null != FileUpdated){ FileUpdated(args); }
 		}
 		
 		private class ProjectFilePair

@@ -1,5 +1,12 @@
 2009-08-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Project/CProject.cs:
+	* Parser/TagDatabaseManager.cs:
+	* Parser/ProjectInformation.cs: Remove info from parse db when
+	  a file is removed from the project. Fixes #398632.
+
+2009-08-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Compiler/GNUCompiler.cs: Be more helpful on unparsable
 	  compiler/linker failure. Fixes #487964.
 

@@ -431,6 +431,14 @@ namespace CBinding
 			TagDatabaseManager.Instance.UpdateFileTags (this, e.ProjectFile.Name);
 		}
 		
+		protected override void OnFileRemovedFromProject (ProjectFileEventArgs e)
+		{
+			base.OnFileRemovedFromProject (e);
+			
+			TagDatabaseManager.Instance.RemoveFileInfo (this, e.ProjectFile.Name);
+		}
+
+		
 		private static void OnEntryAddedToCombine (object sender, SolutionItemEventArgs e)
 		{
 			CProject p = e.SolutionItem as CProject;
