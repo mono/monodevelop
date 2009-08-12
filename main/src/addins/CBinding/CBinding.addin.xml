@@ -34,7 +34,7 @@
 			id = "CPP"
 			insertbefore = "AllFiles"
 			_label = "C++ Files"
-			extensions = "*.cpp,*.h,*.hpp,*.cxx"/>
+			extensions = "*.cpp,*.h,*.hpp,*.cxx,*.cc,*.hh,*.hxx"/>
 		<FileFilter
 			id = "C"
 			insertbefore = "AllFiles"
@@ -72,10 +72,14 @@
 		</MimeType>-->
 		<MimeType id="text/x-c++src" icon="md-cpp-file" isText="true">
 			<File pattern="*.cpp" />
+			<File pattern="*.cc" />
+			<File pattern="*.cxx" />
 		</MimeType>
 		<MimeType id="text/x-c++hdr" icon="md-h-file" isText="true">
 			<File pattern="*.h" />
 			<File pattern="*.hpp" />
+			<File pattern="*.hh" />
+			<File pattern="*.hxx" />
 		</MimeType>
 	</Extension>
 	
@@ -90,7 +94,7 @@
 		    class = "CBinding.CLanguageBinding"/>
 		<LanguageBinding
 			id = "CPP"
-		    supportedextensions = ".cpp,.cxx,.h,.hpp"
+			supportedextensions = ".cpp,.cxx,.cc,.h,.hpp,.hh,.hxx"
 		    class = "CBinding.CppLanguageBinding"/>
     </Extension>
     
