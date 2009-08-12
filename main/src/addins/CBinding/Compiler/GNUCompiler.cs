@@ -384,6 +384,7 @@ namespace CBinding
 			
 			ParseCompilerOutput (errorOutput, cr);
 			ParseLinkerOutput (errorOutput, cr);
+			CheckReturnCode (exitCode, cr);
 		}
 		
 		private void MakeStaticLibrary (Project project,
@@ -408,6 +409,7 @@ namespace CBinding
 			
 			ParseCompilerOutput (errorOutput, cr);
 			ParseLinkerOutput (errorOutput, cr);
+			CheckReturnCode (exitCode, cr);
 		}
 		
 		private void MakeSharedLibrary(Project project,
@@ -460,6 +462,7 @@ namespace CBinding
 			
 			ParseCompilerOutput (errorOutput, cr);
 			ParseLinkerOutput (errorOutput, cr);
+			CheckReturnCode (exitCode, cr);
 		}
 		
 		int ExecuteCommand (string command, string args, string baseDirectory, IProgressMonitor monitor, out string errorOutput)
@@ -540,6 +543,7 @@ namespace CBinding
 			int exitCode = ExecuteCommand ((use_ccache ? "ccache" : compilerCommand), compiler_args, configuration.OutputDirectory, monitor, out errorOutput);
 			
 			ParseCompilerOutput (errorOutput, cr);
+			CheckReturnCode (exitCode, cr);
 			return exitCode == 0;
 		}
 		
@@ -759,6 +763,26 @@ namespace CBinding
 				return true;
 			} catch {
 				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Checks a compilation return code, 
+		/// and adds an error result if the compiler results
+		/// show no errors.
+		/// </summary>
+		/// <param name="returnCode">
+		/// A <see cref="System.Int32"/>: A process return code
+		/// </param>
+		/// <param name="cr">
+		/// A <see cref="CompilerResults"/>: The return code from a compilation run
+		/// </param>
+		void CheckReturnCode (int returnCode, CompilerResults cr)
+		{
+			cr.NativeCompilerReturnValue = returnCode;
+			if (0 != returnCode && 0 == cr.Errors.Count) { 
+				cr.Errors.Add (new CompilerError (string.Empty, 0, 0, string.Empty,
+				                                  GettextCatalog.GetString ("Build failed - check build output for details")));
 			}
 		}
 	}

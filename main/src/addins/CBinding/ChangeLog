@@ -1,5 +1,10 @@
 2009-08-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Compiler/GNUCompiler.cs: Be more helpful on unparsable
+	  compiler/linker failure. Fixes #487964.
+
+2009-08-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* CBinding.addin.xml: Make supported file extensions more
 	  comprehensive and consistent.
 
