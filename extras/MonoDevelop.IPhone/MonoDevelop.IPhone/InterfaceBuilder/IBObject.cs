@@ -65,6 +65,22 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 		public static object Deserialize (XElement element, Dictionary<string, Func<IBObject>> constructors, IReferenceResolver resolver)
 		{
 			var idAtt = element.Attribute ("id");
+			object val = DeserializeInner (element, constructors, resolver);
+			if (idAtt != null) {
+				int id = Int32.Parse (idAtt.Value);
+				var ib = val as IBObject;
+				if (ib != null) {
+					ib.Id = id;
+					resolver.Add (ib);
+				} else {
+					resolver.Add (id, val);
+				}
+			}
+			return val;
+		}
+		
+		static object DeserializeInner (XElement element, Dictionary<string, Func<IBObject>> constructors, IReferenceResolver resolver)
+		{
 			switch (element.Name.ToString ()) {
 			case "int":
 				return Int32.Parse (element.Value);
@@ -78,9 +94,9 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 					switch (typeAtt.Value) {
 					case "base64-UTF8":
 						//FIXME: figure out the encoding they're using. why do we have to remove the last char to make it decode?
-						int last = element.Value.Length - 1;
-						if (last < 0) last = 0;
-						return Encoding.UTF8.GetString (Convert.FromBase64String (element.Value.Substring (0, last)));
+						string s = element.Value.Replace ("\n", "").Replace ("\r", "");
+						int last = (s.Length / 4 ) * 4;
+						return Encoding.UTF8.GetString (Convert.FromBase64String (s.Substring (0, last)));
 					default:
 						throw new Exception (String.Format ("Unknown string encoding type {0}", typeAtt.Value));
 					}
@@ -89,10 +105,7 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 			case "bool":
 				return element.Value == "YES";
 			case "boolean":
-				var boolean = element.Attribute ("value").Value == "YES";
-				if (idAtt != null)
-					resolver.Add (Int32.Parse (idAtt.Value), boolean);
-				return boolean;
+				return element.Attribute ("value").Value == "YES";
 			case "double":
 				return Double.Parse (element.Value);
 			case "float":
@@ -121,11 +134,6 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 					obj = constructor ();
 				else
 					obj = new UnknownIBObject (className);
-				
-				if (idAtt != null) {
-					obj.Id = Int32.Parse (idAtt.Value);
-					resolver.Add (obj);
-				}
 				obj.DeserializeContents (element.Elements (), constructors, resolver);
 				return obj;
 			default:
