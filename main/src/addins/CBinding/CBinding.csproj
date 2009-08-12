@@ -294,6 +294,7 @@
     <Compile Include="Gui\PackageDetails.cs" />
     <Compile Include="gtk-gui\CBinding.PackageDetails.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Parser\CDocumentParser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

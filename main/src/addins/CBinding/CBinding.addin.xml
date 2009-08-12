@@ -233,4 +233,8 @@
 		</Extension>
 	</Module>
 -->
+	
+	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
+		<Class class = "CBinding.Parser.CDocumentParser" id = "CDocumentParser" />
+	</Extension>
 </Addin>

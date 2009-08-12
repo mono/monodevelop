@@ -67,6 +67,7 @@ FILES =  \
 	Navigation/UnionNodeBuilder.cs \
 	Navigation/VariableNodeBuilder.cs \
 	Parser/Class.cs \
+	Parser/CDocumentParser.cs \
 	Parser/Enumeration.cs \
 	Parser/Enumerator.cs \
 	Parser/Function.cs \

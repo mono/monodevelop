@@ -1,5 +1,14 @@
 2009-08-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* CBinding.addin.xml: 
+	* Makefile.am: 
+	* Parser/CDocumentParser.cs: 
+	* CBinding.csproj: 
+	  Allows the quickfinder and folds list to be populated 
+	  from the existing ctags database. Fixes #513382.
+
+2009-08-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Project/CProject.cs:
 	* Parser/TagDatabaseManager.cs:
 	* Parser/ProjectInformation.cs: Remove info from parse db when
