@@ -78,7 +78,9 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 					switch (typeAtt.Value) {
 					case "base64-UTF8":
 						//FIXME: figure out the encoding they're using. why do we have to remove the last char to make it decode?
-						return Encoding.UTF8.GetString (Convert.FromBase64String (element.Value.Substring (0, element.Value.Length - 1)));
+						int last = element.Value.Length - 1;
+						if (last < 0) last = 0;
+						return Encoding.UTF8.GetString (Convert.FromBase64String (element.Value.Substring (0, last)));
 					default:
 						throw new Exception (String.Format ("Unknown string encoding type {0}", typeAtt.Value));
 					}
