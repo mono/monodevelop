@@ -1,3 +1,8 @@
+2009-08-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs: Make
+	  GetAssemblyForVersion work properly again.
+
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Libraries list

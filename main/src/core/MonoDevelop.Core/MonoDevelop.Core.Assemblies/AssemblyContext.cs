@@ -365,11 +365,15 @@ namespace MonoDevelop.Core.Assemblies
 			Initialize ();
 
 			fullName = NormalizeAsmName (fullName);
-			SystemAssembly asm = GetAssemblyFromFullName (fullName, packageName, fx);
+			
+			//get the SystemAssembly for the current fullname, NOT the new target fx
+			//in order to be able to check whether it's a framework assembly
+			SystemAssembly asm = GetAssemblyFromFullName (fullName, packageName, null);
 
 			if (asm == null)
 				return null;
 			
+			//if the asm isn't a framework asm, we don't upgrade it automatically
 			if (!asm.Package.IsFrameworkPackage) {
 				// Return null if the package is not compatible with the requested version
 				if (fx.IsCompatibleWithFramework (asm.Package.TargetFramework))
@@ -380,13 +384,17 @@ namespace MonoDevelop.Core.Assemblies
 			if (fx.IsExtensionOfFramework (asm.Package.TargetFramework))
 				return asm;
 
-			// We have to find a core package which contains whits assembly
+			// We have to find the assembly with the same name in the target fx
 			string fname = Path.GetFileName ((string) asm.Location);
 			
 			foreach (KeyValuePair<string, SystemAssembly> pair in assemblyFullNameToAsm) {
-				SystemPackage rpack = pair.Value.Package;
-				if (rpack.IsFrameworkPackage && fx.IsExtensionOfFramework (rpack.TargetFramework) && Path.GetFileName (pair.Value.Location) == fname)
-					return pair.Value;
+				SystemAssembly fxAsm = pair.Value;
+				do {
+					SystemPackage rpack = fxAsm.Package;
+					if (rpack.IsFrameworkPackage && fx.IsExtensionOfFramework (rpack.TargetFramework) && Path.GetFileName (fxAsm.Location) == fname)
+						return fxAsm;
+					fxAsm = fxAsm.NextSameName;
+				} while (fxAsm != null);
 			}
 			return null;
 		}
