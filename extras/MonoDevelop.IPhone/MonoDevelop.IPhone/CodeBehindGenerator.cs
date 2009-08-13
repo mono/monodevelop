@@ -59,10 +59,15 @@ namespace MonoDevelop.IPhone
 			var typeRecords = new Dictionary<int,List<IBConnectionRecord>> ();
 			foreach (var record in connectionRecords.Values.OfType<IBConnectionRecord> ()) {
 				//get the type this member belongs in
-				var ev = record.Connection as IBCocoaTouchEventConnection;
+				var ev = record.Connection as IBActionConnection;
+				var outlet = record.Connection as IBOutletConnection;
+				if (outlet == null && ev == null) {
+					//not a recognised connection type. probably a desktop xib
+					continue;
+				}
 				int? typeIndex = ((IBObject)(ev != null
 					? ev.Destination.Reference
-					: record.Connection.Source.Reference)).Id;
+					: outlet.Source.Reference)).Id;
 				if (typeIndex == null)
 					throw new InvalidOperationException ("Connection " + record.ConnectionId + " references null object ID");
 				List<IBConnectionRecord> records;
@@ -129,21 +134,20 @@ namespace MonoDevelop.IPhone
 					continue;
 				
 				//separate out the actions and outlets
-				var actions = new List<IBCocoaTouchEventConnection> ();
-				var outlets = new List<IBCocoaTouchOutletConnection> ();
+				var actions = new List<IBActionConnection> ();
+				var outlets = new List<IBOutletConnection> ();
 				foreach (var record in typeRecord.Value) {
-					var ev = record.Connection as IBCocoaTouchEventConnection;
-					if (ev != null)
-						actions.Add (ev);
-					else
-						outlets.Add (record.Connection);
+					if (record.Connection is IBActionConnection)
+						actions.Add ((IBActionConnection)record.Connection);
+					else if (record.Connection is IBOutletConnection)
+						outlets.Add ((IBOutletConnection)record.Connection);
 				}
 				
 				//process the actions, grouping ones with the same name
 				foreach (var actionGroup in actions.GroupBy (a => a.Label)) {
 					//find a common sender type for all the items in the grouping
 					CodeTypeReference senderType = null;
-					foreach (IBCocoaTouchEventConnection ev in actionGroup) {
+					foreach (IBActionConnection ev in actionGroup) {
 						var sender = ResolveIfReference (ev.Source) as UnknownIBObject;
 						var newType = sender != null
 							? new CodeTypeReference (GetTypeName (sender.Class))

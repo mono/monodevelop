@@ -32,20 +32,20 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 	public class IBConnectionRecord : IBObject
 	{
 		public int ConnectionId { get; set; }
-		public IBCocoaTouchOutletConnection Connection { get; set; }
+		public IBObject Connection { get; set; }
 		
 		protected override void OnPropertyDeserialized (string name, object value)
 		{
 			if (name == "connectionID")
 				ConnectionId = (int) value;
 			else if (name == "connection")
-				Connection = (IBCocoaTouchOutletConnection) value;
+				Connection = (IBObject) value;
 			else
 				base.OnPropertyDeserialized (name, value);
 		}
 	}
 
-	public class IBCocoaTouchOutletConnection : IBObject
+	public abstract class IBConnection : IBObject
 	{
 		public string Label { get; set; }
 		public IBReference Source { get; set; }
@@ -64,7 +64,15 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 		}
 	}
 	
-	public class IBCocoaTouchEventConnection : IBCocoaTouchOutletConnection
+	public class IBOutletConnection : IBConnection
+	{
+	}
+	
+	public class IBCocoaTouchOutletConnection : IBOutletConnection
+	{
+	}
+	
+	public class IBCocoaTouchEventConnection : IBActionConnection
 	{
 		public int IBEventType { get; set; }
 		
@@ -75,6 +83,10 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 			else
 				base.OnPropertyDeserialized (name, value);
 		}
+	}
+	
+	public class IBActionConnection : IBOutletConnection
+	{
 	}
 	
 	public class IBClassDescriptionSource : IBObject

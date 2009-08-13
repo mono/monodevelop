@@ -1,6 +1,14 @@
 2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CodeBehindGenerator.cs:
+	* InterfaceBuilder/IBDocument.cs:
+	* InterfaceBuilder/IBConnectionRecord.cs: Generalised
+	  connection record handling so we don't choke on desktop
+	  xibs.
+
+2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeBehindGenerator.cs:
 	* InterfaceBuilder/IBReference.cs:
 	* InterfaceBuilder/IBConnectionRecord.cs: Lazily resolve the
 	  ClassDescriptionSource on a class description instead of

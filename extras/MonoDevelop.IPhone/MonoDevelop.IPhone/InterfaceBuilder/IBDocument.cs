@@ -48,6 +48,8 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 					{ "IBMutableOrderedSet", () => new IBMutableOrderedSet () },
 					{ "IBCocoaTouchOutletConnection", () => new IBCocoaTouchOutletConnection () },
 					{ "IBCocoaTouchEventConnection", () => new IBCocoaTouchEventConnection () },
+					{ "IBActionConnection", () => new IBActionConnection () },
+					{ "IBOutletConnection", () => new IBOutletConnection () },
 					{ "IBConnectionRecord", () => new IBConnectionRecord () },
 					{ "IBProxyObject", () => new IBProxyObject () },
 					{ "IBObjectRecord", () => new IBObjectRecord () },
