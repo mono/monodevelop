@@ -51,6 +51,10 @@ namespace MonoDevelop.Projects
 		Ambience ambience;
 		ProjectParameters languageParameters;
 		
+		DirectoryAssemblyContext privateAssemblyContext;
+		ComposedAssemblyContext composedAssemblyContext;
+		IAssemblyContext currentRuntimeContext;
+		
 		[ItemProperty ("OutputType")]
 		CompileTarget compileTarget;
 		
@@ -182,6 +186,26 @@ namespace MonoDevelop.Projects
 		
 		public TargetRuntime TargetRuntime {
 			get { return Runtime.SystemAssemblyService.DefaultRuntime; }
+		}
+		
+		public IAssemblyContext AssemblyContext {
+			get {
+				if (composedAssemblyContext == null) {
+					composedAssemblyContext = new ComposedAssemblyContext ();
+					composedAssemblyContext.Add (PrivateAssemblyContext);
+					currentRuntimeContext = TargetRuntime.AssemblyContext;
+					composedAssemblyContext.Add (currentRuntimeContext);
+				}
+				return composedAssemblyContext;
+			}
+		}
+		
+		public IAssemblyContext PrivateAssemblyContext {
+			get {
+				if (privateAssemblyContext == null)
+					privateAssemblyContext = new DirectoryAssemblyContext ();
+				return privateAssemblyContext;
+			}
 		}
 
 		void SetDefaultFramework ()
@@ -327,6 +351,7 @@ namespace MonoDevelop.Projects
 		public override void Dispose ()
 		{
 			base.Dispose ();
+			composedAssemblyContext.Dispose ();
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
 			FileService.FileRemoved -= OnFileRemoved;
 		}
@@ -712,6 +737,10 @@ namespace MonoDevelop.Projects
 
 		void RuntimeSystemAssemblyServiceDefaultRuntimeChanged (object sender, EventArgs e)
 		{
+			if (composedAssemblyContext != null) {
+				composedAssemblyContext.Replace (currentRuntimeContext, TargetRuntime.AssemblyContext);
+				currentRuntimeContext = TargetRuntime.AssemblyContext;
+			}
 			UpdateSystemReferences ();
 		}
 		
@@ -723,7 +752,7 @@ namespace MonoDevelop.Projects
 			
 			foreach (ProjectReference pref in References) {
 				if (pref.ReferenceType == ReferenceType.Gac) {
-					string newRef = TargetRuntime.GetAssemblyNameForVersion (pref.Reference, pref.Package != null ? pref.Package.Name : null, this.TargetFramework);
+					string newRef = AssemblyContext.GetAssemblyNameForVersion (pref.Reference, pref.Package != null ? pref.Package.Name : null, this.TargetFramework);
 					if (newRef == null) {
 						pref.ResetReference ();
 					}

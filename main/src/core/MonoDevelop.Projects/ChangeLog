@@ -1,3 +1,16 @@
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/ProjectReference.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	  Added an AssemblyContext property to DotNetProject, to be
+	  used from now on to resolve assemblies for the project.
+
+	* MonoDevelop.Projects.Dom.MemoryDatabase/ProjectMemoryProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Track api changes.
+
 2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectConvertTool.cs: Allow converting

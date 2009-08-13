@@ -290,7 +290,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 			AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
 			foreach (AssemblyNameReference aname in names) {
-				string afile = runtime.GetAssemblyLocation (aname.FullName, fx);
+				string afile = runtime.AssemblyContext.GetAssemblyLocation (aname.FullName, fx);
 				if (afile != null)
 					yield return "Assembly:" + runtime.Id + ":" + Path.GetFullPath (afile);
 			}

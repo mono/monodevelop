@@ -211,8 +211,8 @@ namespace MonoDevelop.Projects
 		public bool IsExactVersion {
 			get {
 				if (ReferenceType == ReferenceType.Gac) {
-					string r1 = MonoDevelop.Core.Assemblies.TargetRuntime.NormalizeAsmName (StoredReference);
-					string r2 = MonoDevelop.Core.Assemblies.TargetRuntime.NormalizeAsmName (Reference);
+					string r1 = MonoDevelop.Core.Assemblies.AssemblyContext.NormalizeAsmName (StoredReference);
+					string r2 = MonoDevelop.Core.Assemblies.AssemblyContext.NormalizeAsmName (Reference);
 					return r1 == r2;
 				}
 				return true;
@@ -245,7 +245,7 @@ namespace MonoDevelop.Projects
 					return reference;
 				
 				case ReferenceType.Gac:
-					string file = TargetRuntime.GetAssemblyLocation (Reference, package, ownerProject != null? ownerProject.TargetFramework : null);
+					string file = AssemblyContext.GetAssemblyLocation (Reference, package, ownerProject != null? ownerProject.TargetFramework : null);
 					return file == null ? reference : file;
 				case ReferenceType.Project:
 					if (ownerProject != null) {
@@ -275,13 +275,13 @@ namespace MonoDevelop.Projects
 		{
 			if (referenceType == ReferenceType.Gac && ownerProject != null) {
 				notFound = false;
-				string cref = TargetRuntime.FindInstalledAssembly (reference, package, ownerProject.TargetFramework);
+				string cref = AssemblyContext.FindInstalledAssembly (reference, package, ownerProject.TargetFramework);
 				if (cref == null)
 					cref = reference;
-				cref = TargetRuntime.GetAssemblyNameForVersion (cref, package, ownerProject.TargetFramework);
+				cref = AssemblyContext.GetAssemblyNameForVersion (cref, package, ownerProject.TargetFramework);
 				notFound = (cref == null);
 				if (cref != null && cref != reference) {
-					SystemAssembly asm = TargetRuntime.GetAssemblyFromFullName (cref, package, ownerProject.TargetFramework);
+					SystemAssembly asm = AssemblyContext.GetAssemblyFromFullName (cref, package, ownerProject.TargetFramework);
 					bool isFrameworkAssembly = asm != null && asm.Package.IsFrameworkPackage;
 					if (loadedReference == null && !isFrameworkAssembly) {
 						loadedReference = reference;
@@ -290,6 +290,15 @@ namespace MonoDevelop.Projects
 				}
 				cachedPackage = null;
 				OnStatusChanged ();
+			}
+		}
+		
+		IAssemblyContext AssemblyContext {
+			get {
+				if (ownerProject != null)
+					return ownerProject.AssemblyContext;
+				else
+					return Runtime.SystemAssemblyService.DefaultAssemblyContext;
 			}
 		}
 		
@@ -318,12 +327,12 @@ namespace MonoDevelop.Projects
 						return cachedPackage;
 					
 					if (package != null)
-						return TargetRuntime.GetPackage (package);
+						return AssemblyContext.GetPackage (package);
 
 					// No package is specified, get any of the registered assemblies, giving priority to gaced assemblies
 					// (because non-gac assemblies should have a package name set)
 					SystemAssembly best = null;
-					foreach (SystemAssembly asm in TargetRuntime.GetAssembliesFromFullName (reference)) {
+					foreach (SystemAssembly asm in AssemblyContext.GetAssembliesFromFullName (reference)) {
 						//highest priority to framework packages
 						if (ownerProject != null && asm.Package.IsFrameworkPackage && asm.Package.TargetFramework == ownerProject.TargetFramework.Id) {
 							return cachedPackage = asm.Package;
