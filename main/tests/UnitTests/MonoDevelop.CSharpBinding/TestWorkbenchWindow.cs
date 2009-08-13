@@ -93,7 +93,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		}
 		public event EventHandler TitleChanged;
 		public event WorkbenchWindowEventHandler Closing;
-		public event EventHandler Closed;
+		public event WorkbenchWindowEventHandler Closed;
 		public event ActiveViewContentEventHandler ActiveViewContentChanged;
 	}
 }
