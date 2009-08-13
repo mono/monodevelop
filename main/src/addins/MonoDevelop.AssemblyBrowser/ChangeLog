@@ -1,3 +1,10 @@
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:
+	  Use the new AssemblyContext class to query and resolve
+	  assemblies.
+
 2009-08-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

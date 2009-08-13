@@ -1,3 +1,10 @@
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport/ToolboxService.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:
+	  Use the new AssemblyContext class to query and resolve
+	  assemblies.
+
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Flush.

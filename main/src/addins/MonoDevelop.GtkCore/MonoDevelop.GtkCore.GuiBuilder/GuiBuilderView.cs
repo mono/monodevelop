@@ -415,13 +415,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				int i = node.ClassName.IndexOf (',');
 				if (i != -1) {
 					string asm = node.ClassName.Substring (i+1).Trim ();
-					asm = gproject.Project.TargetRuntime.GetAssemblyFullName (asm, gproject.Project.TargetFramework);
+					asm = gproject.Project.AssemblyContext.GetAssemblyFullName (asm, gproject.Project.TargetFramework);
 					if (asm == null)
 						return;
-					if (gproject.Project.TargetRuntime.GetPackagesFromFullName (asm).Length > 0) {
+					if (gproject.Project.AssemblyContext.GetPackagesFromFullName (asm).Length > 0) {
 						pref = new ProjectReference (ReferenceType.Gac, asm);
 					} else {
-						asm = gproject.Project.TargetRuntime.GetAssemblyLocation (asm, gproject.Project.TargetFramework);
+						asm = gproject.Project.AssemblyContext.GetAssemblyLocation (asm, gproject.Project.TargetFramework);
 						pref = new ProjectReference (ReferenceType.Assembly, asm);
 					}
 				}

@@ -41,12 +41,12 @@ namespace MonoDevelop.GtkCore {
 		public ReferenceManager (DotNetProject project)
 		{
 			this.project = project;
-			project.TargetRuntime.PackagesChanged += ResetSupportedVersions;
+			project.AssemblyContext.Changed += ResetSupportedVersions;
 		}
 
 		public void Dispose ()
 		{
-			project.TargetRuntime.PackagesChanged -= ResetSupportedVersions;
+			project.AssemblyContext.Changed -= ResetSupportedVersions;
 			project = null;
 		}
 		
@@ -102,7 +102,7 @@ namespace MonoDevelop.GtkCore {
 				return String.Empty;
 
 			pkg_version = pkg_version + ".";
-			foreach (SystemAssembly asm in project.TargetRuntime.GetAssemblies ()) {
+			foreach (SystemAssembly asm in project.AssemblyContext.GetAssemblies ()) {
 				if (asm.Name == "gtk-sharp" && asm.Version.StartsWith (pkg_version)) {
 					int i = asm.FullName.IndexOf (',');
 					return asm.FullName.Substring (i+1).Trim ();
@@ -174,8 +174,8 @@ namespace MonoDevelop.GtkCore {
 				
 			if (!posix && info.GenerateGettext && info.GettextClass == "Mono.Unix.Catalog") {
 				// Add a reference to Mono.Posix. Use the version for the selected project's runtime version.
-				string aname = project.TargetRuntime.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756", null, project.TargetFramework);
-				aname = project.TargetRuntime.GetAssemblyNameForVersion (aname, project.TargetFramework);
+				string aname = project.AssemblyContext.FindInstalledAssembly ("Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756", null, project.TargetFramework);
+				aname = project.AssemblyContext.GetAssemblyNameForVersion (aname, project.TargetFramework);
 				project.References.Add (new ProjectReference (ReferenceType.Gac, aname));
 				changed = true;
 			}
@@ -262,7 +262,7 @@ namespace MonoDevelop.GtkCore {
 			get {
 				if (supported_versions == null) {
 					supported_versions = new List<string> ();
-					foreach (SystemAssembly asm in project.TargetRuntime.GetAssemblies ()) {
+					foreach (SystemAssembly asm in project.AssemblyContext.GetAssemblies ()) {
 						if (asm.Name == "gtk-sharp") {
 							string v = GetVersionPrefix (asm.Version);
 							if (!supported_versions.Contains (v))

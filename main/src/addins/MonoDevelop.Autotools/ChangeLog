@@ -1,3 +1,9 @@
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MakefileData.cs:
+	* MakefileOptionPanelWidget.cs: Use the new AssemblyContext
+	  class to query and resolve assemblies.
+
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

@@ -330,7 +330,7 @@ namespace MonoDevelop.Prj2Make
 						if (rname == "System.XML")
 							rname = "System.Xml";
 						
-						string oref = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyFullName (rname, fx);
+						string oref = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName (rname, fx);
 						if (oref == null) {
 							monitor.ReportWarning (GettextCatalog.GetString ("Assembly reference could not be imported: ") + rf.AssemblyName);
 							continue;
@@ -388,7 +388,7 @@ namespace MonoDevelop.Prj2Make
 
 			// Test to see if file exist in GAC location
 			if (System.IO.File.Exists (strRefFileName)) {
-				ProjectReference rfOut = new ProjectReference (MonoDevelop.Projects.ReferenceType.Gac, Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyFullName (strRefFileName, fx));
+				ProjectReference rfOut = new ProjectReference (MonoDevelop.Projects.ReferenceType.Gac, Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName (strRefFileName, fx));
 				rfOut.LocalCopy = true;
 				return rfOut;
 			}

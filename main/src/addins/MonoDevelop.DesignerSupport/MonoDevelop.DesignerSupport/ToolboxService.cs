@@ -569,7 +569,7 @@ namespace MonoDevelop.DesignerSupport
 			// Look for new assemblies
 			
 			foreach (TargetRuntime runtime in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
-				foreach (SystemAssembly asm in runtime.GetAssemblies ()) {
+				foreach (SystemAssembly asm in runtime.AssemblyContext.GetAssemblies ()) {
 					if (files.Add (asm.Location)) {
 						ComponentIndexFile c = new ComponentIndexFile (asm.Location);
 						index.Files.Add (c);
@@ -740,7 +740,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			// Set the location field only if this is a widget library
 			if (entries.Count > 0 && Runtime.SystemAssemblyService.GetPackageFromPath (fileName) != null)
-				location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyFullName (fileName, TargetFramework.Default);
+				location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName (fileName, TargetFramework.Default);
 		}
 		
 		string GetFileTimestamp (string file)

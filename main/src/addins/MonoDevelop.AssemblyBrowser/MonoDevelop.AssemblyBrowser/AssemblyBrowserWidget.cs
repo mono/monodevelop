@@ -807,7 +807,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (nav == null) {
 					foreach (DomCecilCompilationUnit definition in definitions.ToArray ()) {
 						foreach (AssemblyNameReference assemblyNameReference in definition.AssemblyDefinition.MainModule.AssemblyReferences) {
-							string assemblyFile = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation (assemblyNameReference.FullName, null);
+							string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyNameReference.FullName, null);
 							if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
 								AddReference (assemblyFile);
 						}

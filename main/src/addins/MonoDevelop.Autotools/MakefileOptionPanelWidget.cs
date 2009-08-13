@@ -958,9 +958,9 @@ namespace MonoDevelop.Autotools
 			
 			// 'core' here simply means any assemblies in the gac
 			foreach (string file in list) {
-				string fullName = dnp.TargetRuntime.GetAssemblyFullName (file, dnp.TargetFramework);
+				string fullName = dnp.AssemblyContext.GetAssemblyFullName (file, dnp.TargetFramework);
 				if (fullName != null) {
-					SystemAssembly asm = dnp.TargetRuntime.GetAssemblyFromFullName (fullName, null, dnp.TargetFramework);
+					SystemAssembly asm = dnp.AssemblyContext.GetAssemblyFromFullName (fullName, null, dnp.TargetFramework);
 					if (asm != null && asm.Package.IsGacPackage)
 						return true;
 				}

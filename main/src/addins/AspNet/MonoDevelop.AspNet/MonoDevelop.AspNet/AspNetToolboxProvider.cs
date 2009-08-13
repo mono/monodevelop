@@ -49,17 +49,17 @@ namespace MonoDevelop.AspNet
 			
 			TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework ("1.1");
 			
-			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web, Version=1.0.5000.0", fx);
+			location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation ("System.Web, Version=1.0.5000.0", fx);
 			if (!string.IsNullOrEmpty (location))
 				yield return location;
 			
 			fx = Runtime.SystemAssemblyService.GetTargetFramework ("3.5");
 			
-			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web, Version=2.0.0.0", fx);
+			location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation ("System.Web, Version=2.0.0.0", fx);
 			if (!string.IsNullOrEmpty (location))
 				yield return location;
 			
-			location = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation ("System.Web.Extensions", fx);
+			location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation ("System.Web.Extensions", fx);
 			if (!string.IsNullOrEmpty (location))
 				yield return location;
 		}

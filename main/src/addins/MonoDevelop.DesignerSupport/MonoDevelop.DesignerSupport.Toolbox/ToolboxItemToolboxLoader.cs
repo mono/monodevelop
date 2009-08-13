@@ -62,7 +62,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			bool found = false;
 			foreach (TargetRuntime runtime in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
-				SystemPackage p = runtime.GetPackageFromPath (filename);
+				SystemPackage p = runtime.AssemblyContext.GetPackageFromPath (filename);
 				if (p != null) {
 					found = true;
 					yield return p.TargetRuntime;
@@ -89,7 +89,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		
 			TargetRuntime runtime = Runtime.SystemAssemblyService.CurrentRuntime;
-			SystemPackage package = runtime.GetPackageFromPath (filename);
+			SystemPackage package = runtime.AssemblyContext.GetPackageFromPath (filename);
 			
 			//need to initialise if this if out of the main process
 			//in order to be able to load icons etc.

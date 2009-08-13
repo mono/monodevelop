@@ -44,13 +44,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		public virtual IList<ItemToolboxNode> Load (LoaderContext ctx, string filename)
 		{
-			SystemPackage sp = Runtime.SystemAssemblyService.DefaultRuntime.GetPackageFromPath (filename);
+			SystemPackage sp = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetPackageFromPath (filename);
 			ReferenceType rt;
 			string rname;
 			
 			if (sp != null) {
 				rt = ReferenceType.Gac;
-				rname = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyFullName (filename, null);
+				rname = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName (filename, null);
 			} else {
 				rt = ReferenceType.Assembly;
 				rname = filename;

@@ -71,7 +71,7 @@ namespace MonoDevelop.AssemblyBrowser
 			foreach (AssemblyNameReference assemblyNameReference in referenceFolder.ModuleDefinition.AssemblyReferences) {
 //				AssemblyDefinition assembly = null;
 				try {
-					string assemblyFile = Runtime.SystemAssemblyService.DefaultRuntime.GetAssemblyLocation (assemblyNameReference.FullName, null);
+					string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyNameReference.FullName, null);
 					if (assemblyFile != null && System.IO.File.Exists (assemblyFile)) {
 						ctx.AddChild (new Reference (assemblyFile));
 					} else {

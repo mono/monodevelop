@@ -1,3 +1,8 @@
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MsPrjHelper.cs: Use the new AssemblyContext class to query
+	  and resolve assemblies.
+
 2009-08-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VS2003ProjectFileFormat.cs: Add support for reading vs2003

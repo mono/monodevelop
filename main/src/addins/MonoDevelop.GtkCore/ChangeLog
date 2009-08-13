@@ -1,3 +1,11 @@
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/ReferenceManager.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ToolboxLoader.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Use the
+	  new AssemblyContext class to query and resolve assemblies.
+
 2009-08-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

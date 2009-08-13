@@ -60,7 +60,7 @@ namespace MonoDevelop.Autotools
 		[ProjectPathItemProperty("File", Scope="*")]
 		List<string> excludedFiles = new List<string> ();
 		
-		TargetRuntime targetRuntime;
+		AssemblyContext assemblyContext;
 
 		public MakefileData ()
 		{
@@ -69,18 +69,18 @@ namespace MonoDevelop.Autotools
 			cleanTargetName = "clean";
 			executeTargetName = String.Empty;
 			
-			targetRuntime = GetMonoRuntime ();
-			if (targetRuntime == null)
+			assemblyContext = GetMonoRuntimeContext ();
+			if (assemblyContext == null)
 				integrationEnabled = false;
 		}
 		
-		internal static TargetRuntime GetMonoRuntime ()
+		internal static AssemblyContext GetMonoRuntimeContext ()
 		{
 			if (Runtime.SystemAssemblyService.CurrentRuntime.RuntimeId == "Mono")
-				return Runtime.SystemAssemblyService.CurrentRuntime;
+				return Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext;
 			else {
 				foreach (TargetRuntime r in Runtime.SystemAssemblyService.GetTargetRuntimes ("Mono"))
-					return r;
+					return r.AssemblyContext;
 			}
 			return null;
 		}
@@ -746,7 +746,7 @@ namespace MonoDevelop.Autotools
 							if (pref.ReferenceType == ReferenceType.Gac) {
 								// Store the package version required by this reference. We'll use
 								// the same version when trying to match references coming from the makefile
-								SystemAssembly asm = targetRuntime.GetAssemblyFromFullName (pref.StoredReference, pref.Package != null ? pref.Package.Name : null, dotnetProject.TargetFramework);
+								SystemAssembly asm = assemblyContext.GetAssemblyFromFullName (pref.StoredReference, pref.Package != null ? pref.Package.Name : null, dotnetProject.TargetFramework);
 								if (asm != null && asm.Package != null)
 									requiredPackageVersions [asm.Package.Name] = asm.Package.Version;
 							}
@@ -1070,9 +1070,9 @@ namespace MonoDevelop.Autotools
 				}
 
 				// Valid assembly, From a package, add as Gac
-				SystemPackage pkg = targetRuntime.GetPackageFromPath (fullpath);
+				SystemPackage pkg = assemblyContext.GetPackageFromPath (fullpath);
 				if (fullname != null && pkg != null) {
-					SystemAssembly sa = targetRuntime.GetAssemblyFromFullName (fullname, pkg.Name, project.TargetFramework);
+					SystemAssembly sa = assemblyContext.GetAssemblyFromFullName (fullname, pkg.Name, project.TargetFramework);
 					if (sa != null) {
 						AddNewGacReference (project, sa);
 						continue;
@@ -1090,9 +1090,9 @@ namespace MonoDevelop.Autotools
 			SystemPackage pkg = null;
 			string packageVersion;
 			if (requiredPackageVersions.TryGetValue (pkgName, out packageVersion))
-				pkg = targetRuntime.GetPackage (pkgName, packageVersion);
+				pkg = assemblyContext.GetPackage (pkgName, packageVersion);
 			if (pkg == null)
-				pkg = targetRuntime.GetPackage (pkgName);
+				pkg = assemblyContext.GetPackage (pkgName);
 			
 			if (pkg == null) {
 				LoggingService.LogWarning ("No package named '{0}' found. Ignoring.", pkgName);
@@ -1117,11 +1117,11 @@ namespace MonoDevelop.Autotools
 				//-r:Mono.Posix.dll
 				aname = rname.Substring (0, rname.Length - 4);
 
-			string fullname = targetRuntime.GetAssemblyFullName (aname, project.TargetFramework);
+			string fullname = assemblyContext.GetAssemblyFullName (aname, project.TargetFramework);
 			if (fullname == null)
 				return null;
 
-			SystemAssembly asm = targetRuntime.GetAssemblyForVersion (fullname, null, project.TargetFramework);
+			SystemAssembly asm = assemblyContext.GetAssemblyForVersion (fullname, null, project.TargetFramework);
 			if (asm == null)
 				return null;
 
@@ -1490,7 +1490,7 @@ namespace MonoDevelop.Autotools
 			SystemPackage pkg = pr.Package;
 			if (pkg == null) {
 				//reference could be a path
-				pkg = targetRuntime.GetPackageFromPath (Path.GetFullPath (pr.Reference));
+				pkg = assemblyContext.GetPackageFromPath (Path.GetFullPath (pr.Reference));
 				if (pkg != null) {
 					//Path
 					try {
@@ -1741,7 +1741,7 @@ namespace MonoDevelop.Autotools
 				string pkgVarName = s.Replace ("_LIBS", String.Empty);
 				List<string> l = GetNamesFromVarName (pkgVarName);
 
-				TargetRuntime r = MakefileData.GetMonoRuntime ();
+				AssemblyContext r = MakefileData.GetMonoRuntimeContext ();
 				if (l != null && l.Count == 1 && r.GetPackage (l [0]) != null) {
 					//PKG_CHECK_MODULES for pkgVarName was found
 					//and it references only a single managed package
