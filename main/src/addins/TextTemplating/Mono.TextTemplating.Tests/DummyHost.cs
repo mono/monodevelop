@@ -51,6 +51,7 @@ namespace Mono.TextTemplating.Tests
 		
 		public virtual bool LoadIncludeText (string requestFileName, out string content, out string location)
 		{
+			content = null;
 			return Locations.TryGetValue (requestFileName, out location)
 				&& Contents.TryGetValue (requestFileName, out content);
 		}
