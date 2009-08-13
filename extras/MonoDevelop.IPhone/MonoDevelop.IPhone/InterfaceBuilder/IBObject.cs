@@ -50,7 +50,7 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 					try {
 						OnPropertyDeserialized (keyStr, val);
 					} catch (Exception ex) {
-						Console.WriteLine ("Error assigning {0}={1} to {2}:\n{3}", keyStr, val, GetType (), ex);
+						Console.WriteLine ("Error assigning {0}={1} to {2} in id {3}:\n{4}", keyStr, val, GetType (), Id, ex);
 					}
 				}
 			}
@@ -66,9 +66,10 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 		{
 			var idAtt = element.Attribute ("id");
 			object val = DeserializeInner (element, constructors, resolver);
+			var ib = val as IBObject;
+			
 			if (idAtt != null) {
 				int id = Int32.Parse (idAtt.Value);
-				var ib = val as IBObject;
 				if (ib != null) {
 					ib.Id = id;
 					resolver.Add (ib);
@@ -76,6 +77,10 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 					resolver.Add (id, val);
 				}
 			}
+			
+			if (ib != null)
+				ib.DeserializeContents (element.Elements (), constructors, resolver);
+			
 			return val;
 		}
 		
@@ -101,6 +106,8 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 						throw new Exception (String.Format ("Unknown string encoding type {0}", typeAtt.Value));
 					}
 				}
+				return element.Value;
+			case "characters":
 				return element.Value;
 			case "bool":
 				return element.Value == "YES";
@@ -134,7 +141,6 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 					obj = constructor ();
 				else
 					obj = new UnknownIBObject (className);
-				obj.DeserializeContents (element.Elements (), constructors, resolver);
 				return obj;
 			default:
 				throw new Exception (String.Format ("Cannot handle primitive type {0}", element.Name));

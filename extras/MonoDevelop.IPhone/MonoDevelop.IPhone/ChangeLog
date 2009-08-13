@@ -1,5 +1,10 @@
 2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* InterfaceBuilder/IBObject.cs: Change deserialization order
+	  so the stack doesn't get so deep.
+
+2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* CodeBehindGenerator.cs:
 	* InterfaceBuilder/IBDocument.cs:
 	* InterfaceBuilder/IBConnectionRecord.cs: Generalised
