@@ -1,5 +1,9 @@
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* UnitTests.csproj: Update reference.
+
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs: Track api
 	  changes.
 
