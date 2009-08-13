@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		SelectReferenceDialog selectDialog;
 		TargetFramework version;
-		TargetRuntime runtime;
+		IAssemblyContext runtime;
 
 		ListStore store;
 		TreeView treeView;
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			BorderWidth = 6;
 		}
 		
-		public void SetTargetFramework (TargetRuntime runtime, TargetFramework version)
+		public void SetTargetFramework (IAssemblyContext runtime, TargetFramework version)
 		{
 			this.version = version;
 			this.runtime = runtime;

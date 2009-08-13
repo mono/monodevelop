@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			DotNetProject netProject = configureProject as DotNetProject;
 			if (netProject != null)
-				gacRefPanel.SetTargetFramework (netProject.TargetRuntime, netProject.TargetFramework);
+				gacRefPanel.SetTargetFramework (netProject.AssemblyContext, netProject.TargetFramework);
 			gacRefPanel.Reset ();
 			assemblyRefPanel.SetBasePath (configureProject.BaseDirectory);
 
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			OnChanged (null, null);
 		}
 		
-		public void SetReferenceCollection (ProjectReferenceCollection references, TargetRuntime runtime, TargetFramework targetVersion)
+		public void SetReferenceCollection (ProjectReferenceCollection references, AssemblyContext runtime, TargetFramework targetVersion)
 		{
 			((ListStore) ReferencesTreeView.Model).Clear ();
 

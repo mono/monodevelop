@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Templates
 						// If SpecificVersion is not specified, then make sure the reference is
 						// valid for the default runtime
 						if (projectReference.ReferenceType == ReferenceType.Gac) {
-							string newRef = IdeApp.Workspace.ActiveRuntime.FindInstalledAssembly (projectReference.Reference, null, IdeApp.Services.ProjectService.DefaultTargetFramework);
+							string newRef = IdeApp.Workspace.ActiveRuntime.AssemblyContext.FindInstalledAssembly (projectReference.Reference, null, IdeApp.Services.ProjectService.DefaultTargetFramework);
 							if (newRef != projectReference.Reference && newRef != null)
 								projectReference = new ProjectReference (ReferenceType.Gac, newRef);
 						}

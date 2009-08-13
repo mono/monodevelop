@@ -684,13 +684,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public bool SelectProjectReferences (ProjectReferenceCollection references, TargetRuntime runtime, TargetFramework targetVersion)
+		public bool SelectProjectReferences (ProjectReferenceCollection references, AssemblyContext ctx, TargetFramework targetVersion)
 		{
 			try {
 				if (selDialog == null)
 					selDialog = new SelectReferenceDialog ();
 				
-				selDialog.SetReferenceCollection (references, runtime, targetVersion);
+				selDialog.SetReferenceCollection (references, ctx, targetVersion);
 
 				if (selDialog.Run() == (int)Gtk.ResponseType.Ok) {
 					references.Clear ();

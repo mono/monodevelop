@@ -1,5 +1,15 @@
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Use the new AssemblyContext class to query and resolve
+	  assemblies.
+
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.csproj: Set correct encoding.
 
 2009-08-12  Christian Hergert  <chris@dronelabs.com>
