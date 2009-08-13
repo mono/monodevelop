@@ -113,6 +113,18 @@ namespace Mono.PkgConfig
 			return location;
 		}
 		
+		public IEnumerable<PackageAssemblyInfo> ResolveAssemblyName (string name)
+		{
+			foreach (PackageInfo pinfo in infos.Values) {
+				if (pinfo.IsValidPackage) {
+					foreach (PackageAssemblyInfo asm in pinfo.Assemblies) {
+						if (asm.Name == name)
+							yield return asm;
+					}
+				}
+			}
+		}
+		
 		// Returns information about a .pc file
 		public PackageInfo GetPackageInfo (string file)
 		{
@@ -269,6 +281,7 @@ namespace Mono.PkgConfig
 					asm.File = tr.GetAttribute ("file");
 					if (pinfo.Assemblies == null)
 						pinfo.Assemblies = new List<PackageAssemblyInfo> ();
+					asm.ParentPackage = pinfo;
 					pinfo.Assemblies.Add (asm);
 					tr.Read ();
 					tr.MoveToContent ();
@@ -345,6 +358,7 @@ namespace Mono.PkgConfig
 				if (File.Exists (asm)) {
 					PackageAssemblyInfo pi = new PackageAssemblyInfo ();
 					pi.File = asm;
+					pi.ParentPackage = pinfo;
 					pi.UpdateFromFile (pi.File);
 					list.Add (pi);
 					if (!gacPackageSet && !asm.StartsWith (monoPrefix) && Path.IsPathRooted (asm)) {
@@ -658,6 +672,8 @@ namespace Mono.PkgConfig
 				return fn;
 			}
 		}
+		
+		public PackageInfo ParentPackage { get; set; }
 		
 		public void UpdateFromFile (string file)
 		{
