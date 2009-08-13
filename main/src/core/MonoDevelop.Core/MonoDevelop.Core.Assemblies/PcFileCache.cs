@@ -309,7 +309,7 @@ namespace Mono.PkgConfig
 				}
 			}
 			
-			string value = file.GetVariable ("libraries");
+			string value = file.GetVariable ("Libraries");
 			if (!string.IsNullOrEmpty (value))
 				fullassemblies = GetAssembliesFromLibrariesVar (value);
 			

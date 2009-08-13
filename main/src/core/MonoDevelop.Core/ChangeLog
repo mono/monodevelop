@@ -1,5 +1,10 @@
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Libraries list
+	  is stored in 'Libraries', not 'libraries.
+
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.csproj:
 	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
