@@ -79,9 +79,13 @@ namespace MonoDevelop.WebReferences.Commands
 					ProjectReference gacRef;
 					
 					foreach(string refName in references) {
-						gacRef = new ProjectReference(ReferenceType.Gac, refName);
-						if (!project.References.Contains(gacRef))
-							project.References.Add(gacRef);
+						string targetName = project.TargetRuntime.AssemblyContext.GetAssemblyNameForVersion (refName, null, project.TargetFramework);
+						//FIXME: warn when we could not find a matching target assembly
+						if (targetName != null) {
+							gacRef = new ProjectReference (ReferenceType.Gac, refName);
+							if (!project.References.Contains (gacRef))
+								project.References.Add (gacRef);
+						}
 					}
 
 					IdeApp.ProjectOperations.Save(project);
