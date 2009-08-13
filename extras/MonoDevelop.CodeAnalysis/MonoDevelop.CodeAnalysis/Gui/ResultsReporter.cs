@@ -12,7 +12,6 @@ namespace MonoDevelop.CodeAnalysis.Gui {
 	/// Class that interacts with MonoDevelop GUI.
 	/// </summary>
 	static class ResultsReporter {
-		private static TaskService task_service = IdeApp.Services.TaskService;	
 		private static double work_complete = 0.0;
 		
 		/// <value>
@@ -36,7 +35,7 @@ namespace MonoDevelop.CodeAnalysis.Gui {
 			DispatchService.GuiDispatch (delegate {
 				ResetProgressBar ();
 				IdeApp.Workbench.StatusBar.BeginProgress (AddinCatalog.GetString ("Analyzing {0}...", entryName));
-				ResultsReporter.task_service.ClearExceptCommentTasks ();
+				TaskService.Errors.Clear ();
 			});
 		}		
 
@@ -67,7 +66,7 @@ namespace MonoDevelop.CodeAnalysis.Gui {
 		/// </summary>
 		public static void ReportViolations (IEnumerable<IViolation> violations)
 		{
-			ResultsReporter.task_service.ShowErrors ();
+			TaskService.ShowErrors ();
 			
 			foreach (IViolation v in violations)
 				AddViolation (v);
@@ -79,17 +78,17 @@ namespace MonoDevelop.CodeAnalysis.Gui {
 		private static void AddViolation (IViolation v)
 		{
 			// TODO: replace Task View with our own GUI			
-			TaskType type = TaskType.Warning;
+			TaskSeverity type = TaskSeverity.Warning;
 			
 			if ((v.Severity == Severity.Critical || v.Severity == Severity.High)
 			    && (v.Confidence == Confidence.Total || v.Confidence == Confidence.High))
-				type = TaskType.Error;
+				type = TaskSeverity.Error;
 			
 			string text = v.Problem + Environment.NewLine + v.Solution;
 
 			// TODO: handle Location
-			Task task = new Task (v.Location.File, text, v.Location.Column, v.Location.Line, type, MainAnalyzer.CurrentProject);
-			task_service.Add (task);				  
+			Task task = new Task (v.Location.File, text, v.Location.Column, v.Location.Line, type, TaskPriority.Normal, MainAnalyzer.CurrentProject);
+			TaskService.Errors.Add (task);				  
 		}
 		
 		static void ResetProgressBar ()
