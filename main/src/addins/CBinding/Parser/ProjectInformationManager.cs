@@ -53,7 +53,8 @@ namespace CBinding.Parser
 		public ProjectInformation Get (Project project)
 		{
 			foreach (ProjectInformation p in projects) {
-				if (project.Equals (p.Project)) {
+				if (p.Project == project || 
+				    (null != project && project.Equals (p.Project))) {
 					return p;
 				}
 			}

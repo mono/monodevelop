@@ -1,3 +1,7 @@
+2009-08-13  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/ProjectInformationManager.cs: Fix NRE.
+
 2009-08-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* CBinding.addin.xml: 
