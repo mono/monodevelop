@@ -1,5 +1,9 @@
 2009-08-14  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Typo.
+
+2009-08-14  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Store culture
 	  info.
 

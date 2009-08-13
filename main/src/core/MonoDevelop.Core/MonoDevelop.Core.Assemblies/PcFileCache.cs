@@ -672,7 +672,7 @@ namespace Mono.PkgConfig
 			get {
 				string fn = Name + ", Version=" + Version;
 				if (!string.IsNullOrEmpty (Culture))
-					fn += ", Culture=" + PublicKeyToken;
+					fn += ", Culture=" + Culture;
 				if (!string.IsNullOrEmpty (PublicKeyToken))
 					fn += ", PublicKeyToken=" + PublicKeyToken;
 				return fn;
