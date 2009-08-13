@@ -1,3 +1,9 @@
+2009-08-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	  Don't need to use FindInstalledAssembly now that
+	  GetAssemblyforVersion is fixed.
+
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs:
