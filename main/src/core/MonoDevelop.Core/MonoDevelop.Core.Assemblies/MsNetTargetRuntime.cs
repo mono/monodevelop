@@ -115,7 +115,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
-		protected override IEnumerable<string> GetGacDirectories ()
+		internal protected override IEnumerable<string> GetGacDirectories ()
 		{
 			yield return gacDir;
 		}

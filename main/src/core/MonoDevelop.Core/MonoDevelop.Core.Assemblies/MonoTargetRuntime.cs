@@ -129,7 +129,7 @@ namespace MonoDevelop.Core.Assemblies
 		}
 
 		
-		protected override IEnumerable<string> GetGacDirectories ()
+		internal protected override IEnumerable<string> GetGacDirectories ()
 		{
 			yield return Path.Combine (monoDir, "gac");
 			
@@ -179,7 +179,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			// Don't register the package twice
 			string pname = Path.GetFileNameWithoutExtension (pcfile);
-			if (GetPackageInternal (pname) != null || IsCorePackage (pname))
+			if (AssemblyContext.GetPackageInternal (pname) != null || IsCorePackage (pname))
 				return;
 
 			PackageInfo pinfo = PcFileCache.GetPackageInfo (pcfile);

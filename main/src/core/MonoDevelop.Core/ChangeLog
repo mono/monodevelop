@@ -1,5 +1,23 @@
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs:
+	* MonoDevelop.Core.Assemblies/IAssemblyContext.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs:
+	* MonoDevelop.Core.AddIns/PackageInstalledCondition.cs:
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs:
+	* MonoDevelop.Core.Assemblies/RuntimeAssemblyContext.cs:
+	* MonoDevelop.Core.Assemblies/ComposedAssemblyContext.cs:
+	* MonoDevelop.Core.Assemblies/DirectoryAssemblyContext.cs:
+	  Moved all assembly and package query methods to a new
+	  AssemblyContext class. TargetRuntime now has an instance of
+	  that class.
+
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Use normalized
 	  assembly names when storing assemblies in the assembly
 	  dictionary.

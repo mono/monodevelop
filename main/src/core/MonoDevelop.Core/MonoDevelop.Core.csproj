@@ -180,6 +180,11 @@
     <Compile Include="MonoDevelop.Core.Instrumentation\Counter.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\CounterCategory.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\MemoryProbe.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\IAssemblyContext.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\ComposedAssemblyContext.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\DirectoryAssemblyContext.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\AssemblyContext.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\RuntimeAssemblyContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

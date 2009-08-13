@@ -11,7 +11,11 @@ FILES =  \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageInstalledCondition.cs \
 	MonoDevelop.Core.AddIns/TargetFrameworkNode.cs \
+	MonoDevelop.Core.Assemblies/AssemblyContext.cs \
+	MonoDevelop.Core.Assemblies/ComposedAssemblyContext.cs \
 	MonoDevelop.Core.Assemblies/CustomRuntimeExecutionModeSet.cs \
+	MonoDevelop.Core.Assemblies/DirectoryAssemblyContext.cs \
+	MonoDevelop.Core.Assemblies/IAssemblyContext.cs \
 	MonoDevelop.Core.Assemblies/MonoFrameworkBackend.cs \
 	MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs \
 	MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs \
@@ -20,6 +24,7 @@ FILES =  \
 	MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs \
 	MonoDevelop.Core.Assemblies/MsNetTargetRuntimeFactory.cs \
 	MonoDevelop.Core.Assemblies/PcFileCache.cs \
+	MonoDevelop.Core.Assemblies/RuntimeAssemblyContext.cs \
 	MonoDevelop.Core.Assemblies/SystemAssembly.cs \
 	MonoDevelop.Core.Assemblies/SystemAssemblyService.cs \
 	MonoDevelop.Core.Assemblies/SystemPackage.cs \

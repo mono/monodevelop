@@ -89,6 +89,10 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
+		public AssemblyContext DefaultAssemblyContext {
+			get { return DefaultRuntime.AssemblyContext; }
+		}
+		
 		public void RegisterRuntime (TargetRuntime runtime)
 		{
 			runtime.StartInitialization ();
@@ -147,7 +151,7 @@ namespace MonoDevelop.Core.Assemblies
 		public SystemPackage GetPackageFromPath (string assemblyPath)
 		{
 			foreach (TargetRuntime r in runtimes) {
-				SystemPackage p = r.GetPackageFromPath (assemblyPath);
+				SystemPackage p = r.AssemblyContext.GetPackageFromPath (assemblyPath);
 				if (p != null)
 					return p;
 			}
@@ -197,7 +201,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public static string GetAssemblyName (string file)
 		{
-			return TargetRuntime.NormalizeAsmName (GetAssemblyNameObj (file).ToString ());
+			return AssemblyContext.NormalizeAsmName (GetAssemblyNameObj (file).ToString ());
 		}
 		
 		internal static bool UseExpandedFrameworksFile {
@@ -315,7 +319,7 @@ namespace MonoDevelop.Core.Assemblies
 				AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
 				foreach (AssemblyNameReference aname in names) {
 					if (aname.Name == "mscorlib")
-						return tr.GetCorlibFramework (aname.FullName) ?? "Unknown";
+						return tr.AssemblyContext.GetCorlibFramework (aname.FullName) ?? "Unknown";
 				}
 			} catch {
 				// Ignore
