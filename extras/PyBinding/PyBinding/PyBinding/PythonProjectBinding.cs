@@ -59,7 +59,7 @@ namespace PyBinding
 
 		public bool CanCreateSingleFileProject (string sourceFile)
 		{
-			return true;
+			return Path.GetExtension (sourceFile) == ".py";
 		}
 	}
 }
