@@ -209,7 +209,7 @@ namespace MonoDevelop.IPhone
 					foreach (var clsDesc in arr.Values.OfType<IBPartialClassDescription> ()) {
 						if (clsDesc.SourceIdentifier == null)
 							continue;
-						string majorKey = clsDesc.SourceIdentifier.MajorKey;
+						string majorKey = clsDesc.SourceIdentifier.Value.MajorKey;
 						if (majorKey != "IBUserSource" && majorKey != "IBProjectSource")
 							continue;
 						

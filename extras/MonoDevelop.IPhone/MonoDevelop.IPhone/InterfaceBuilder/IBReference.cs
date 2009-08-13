@@ -48,4 +48,30 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 		void Add (IBReference reference);
 		void Add (int id, object primitive);
 	}
+	
+	public sealed class Unref<T> where T : class
+	{
+		object unresolved;
+		T resolved;
+		
+		public T Value {
+			get {
+				return resolved ?? (resolved = (T) ResolveIfReference (unresolved));
+			}
+		}
+		
+		public Unref (object unresolved)
+		{
+			this.unresolved = unresolved;
+		}
+		
+		static object ResolveIfReference (object o)
+		{
+			IBReference r = o as IBReference;
+			if (r != null)
+				return ResolveIfReference (r.Reference);
+			else
+				return o;
+		}
+	}
 }

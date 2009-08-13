@@ -99,7 +99,7 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 		public string SuperclassName { get; set; }
 		public NSMutableDictionary Actions { get; set; }
 		public NSMutableDictionary Outlets { get; set; }
-		public IBClassDescriptionSource SourceIdentifier { get; set; }
+		public Unref<IBClassDescriptionSource> SourceIdentifier { get; set; }
 		
 		protected override void OnPropertyDeserialized (string name, object value)
 		{
@@ -112,7 +112,7 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 			else if (name == "outlets")
 				Outlets = (NSMutableDictionary) value;
 			else if (name == "sourceIdentifier")
-				SourceIdentifier = (IBClassDescriptionSource) value;
+				SourceIdentifier = new Unref<IBClassDescriptionSource> (value);
 			else
 				base.OnPropertyDeserialized (name, value);
 		}
