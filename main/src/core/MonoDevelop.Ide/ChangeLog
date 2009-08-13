@@ -1,5 +1,10 @@
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Tasks/TaskStore.cs: Don't send unnecessary
+	  task removal events.
+
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
 	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:

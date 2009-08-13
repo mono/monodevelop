@@ -146,17 +146,27 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public void Clear ()
 		{
-			List<Task> toRemove = tasks;
-			tasks = new List<Task> ();
-			foreach (Task t in toRemove)
-				OnTaskRemoved (t);
+			try {
+				BeginTaskUpdates ();
+				List<Task> toRemove = tasks;
+				tasks = new List<Task> ();
+				foreach (Task t in toRemove)
+					OnTaskRemoved (t);
+			} finally {
+				EndTaskUpdates ();
+			}
 		}
 		
 		public void ClearByOwner (object owner)
 		{
-			List<Task> toRemove = new List<Task> (GetOwnerTasks (owner));
-			foreach (Task t in toRemove)
-				Remove (t);
+			try {
+				BeginTaskUpdates ();
+				List<Task> toRemove = new List<Task> (GetOwnerTasks (owner));
+				foreach (Task t in toRemove)
+					Remove (t);
+			} finally {
+				EndTaskUpdates ();
+			}
 		}
 		
 		public IEnumerator<Task> GetEnumerator ()
