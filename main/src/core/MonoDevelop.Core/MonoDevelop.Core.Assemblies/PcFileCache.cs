@@ -101,16 +101,15 @@ namespace Mono.PkgConfig
 					assemblyLocations = new Dictionary<string, string> ();
 					foreach (PackageInfo info in infos.Values) {
 						if (info.IsValidPackage) {
-							foreach (PackageAssemblyInfo asm in info.Assemblies) {
-								assemblyLocations [asm.Name] = asm.File;
-							}
+							foreach (PackageAssemblyInfo asm in info.Assemblies)
+								assemblyLocations [NormalizeAsmName (asm.FullName)] = asm.File;
 						}
 					}
 				}
 			}
 			// This collection is read-only once built, so there is no need for a lock
 			string location;
-			assemblyLocations.TryGetValue (fullName, out location);
+			assemblyLocations.TryGetValue (NormalizeAsmName (fullName), out location);
 			return location;
 		}
 		
@@ -488,6 +487,17 @@ namespace Mono.PkgConfig
 			}
 			return null;
 		}
+		
+		public static string NormalizeAsmName (string name)
+		{
+			int i = name.ToLower ().IndexOf (", publickeytoken=null");
+			if (i != -1)
+				name = name.Substring (0, i).Trim ();
+			i = name.ToLower ().IndexOf (", processorarchitecture=");
+			if (i != -1)
+				name = name.Substring (0, i).Trim ();
+			return name;
+		}
 	}
 
 	internal class PcFile
@@ -639,6 +649,15 @@ namespace Mono.PkgConfig
 		public string Version;
 		
 		public string PublicKeyToken;
+		
+		public string FullName {
+			get {
+				string fn = Name + ", Version=" + Version;
+				if (!string.IsNullOrEmpty (PublicKeyToken))
+					fn += ", PublicKeyToken=" + PublicKeyToken;
+				return fn;
+			}
+		}
 		
 		public void UpdateFromFile (string file)
 		{

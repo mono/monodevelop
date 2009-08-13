@@ -1,5 +1,11 @@
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Use normalized
+	  assembly names when storing assemblies in the assembly
+	  dictionary.
+
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs:
 	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
 	* MonoDevelop.Core.Assemblies/SystemPackage.cs:
