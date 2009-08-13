@@ -51,6 +51,7 @@ namespace MonoDevelop.SourceEditor
 			try {
 				// Directory may have removed/unmounted. Therefore this operation is not guaranteed to work.
 				File.WriteAllText (GetAutoSaveFileName (fileName), content);
+				Counters.AutoSavedFiles++;
 			} catch (Exception) {
 			}
 		}

@@ -48,6 +48,8 @@ namespace MonoDevelop.SourceEditor
 {
 	public class ExtensibleTextEditor : Mono.TextEditor.TextEditor
 	{
+		internal object MemoryProbe = Counters.EditorsInMemory.CreateMemoryProbe ();
+		
 		ITextEditorExtension extension = null;
 		SourceEditorView view;
 		Dictionary<int, ErrorMarker> errors;

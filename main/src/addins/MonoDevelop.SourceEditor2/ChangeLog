@@ -1,3 +1,13 @@
+2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/AutoSave.cs:
+	* MonoDevelop.SourceEditor/Counters.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Add some
+	  counters.
+
 2009-08-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: drop down

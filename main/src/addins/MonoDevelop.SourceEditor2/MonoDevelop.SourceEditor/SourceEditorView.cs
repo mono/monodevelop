@@ -70,6 +70,7 @@ namespace MonoDevelop.SourceEditor
 		DateTime lastSaveTime;
 		object attributes; // Contains platform specific file attributes
 		string loadedMimeType;
+		internal object MemoryProbe = Counters.SourceViewsInMemory.CreateMemoryProbe ();
 		
 		TextMarker currentDebugLineMarker;
 		TextMarker breakpointMarker;
@@ -135,6 +136,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public SourceEditorView()
 		{
+			Counters.LoadedEditors++;
 			executionLocationChanged = (EventHandler) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
 			breakpointAdded = (EventHandler<BreakpointEventArgs>) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointAdded));
 			breakpointRemoved = (EventHandler<BreakpointEventArgs>) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointRemoved));
@@ -356,6 +358,8 @@ namespace MonoDevelop.SourceEditor
 		public override void Dispose()
 		{
 			this.isDisposed= true;
+			Counters.LoadedEditors--;
+			
 			if (autoSave != null) {
 				autoSave.RemoveAutoSaveFile ();
 				autoSave.Dispose ();
