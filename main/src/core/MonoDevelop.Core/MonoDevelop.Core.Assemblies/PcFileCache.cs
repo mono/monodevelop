@@ -48,10 +48,10 @@ namespace Mono.PkgConfig
 	
 	internal class PcFileCache
 	{
-		const string CACHE_VERSION = "1";
+		const string CACHE_VERSION = "2";
 		
 		Dictionary<string, PackageInfo> infos = new Dictionary<string, PackageInfo> ();
-		Dictionary<string, string> assemblyLocations;
+		Dictionary<string, PackageAssemblyInfo> assemblyLocations;
 		string cacheFile;
 		bool hasChanges;
 		IPcFileCacheContext ctx;
@@ -93,24 +93,24 @@ namespace Mono.PkgConfig
 		}
 		
 		// Returns the location of an assembly, given the full name
-		public string GetAssemblyLocation (string fullName)
+		public PackageAssemblyInfo GetAssemblyLocation (string fullName)
 		{
 			lock (infos) {
 				if (assemblyLocations == null) {
 					// Populate on demand
-					assemblyLocations = new Dictionary<string, string> ();
+					assemblyLocations = new Dictionary<string, PackageAssemblyInfo> ();
 					foreach (PackageInfo info in infos.Values) {
 						if (info.IsValidPackage) {
 							foreach (PackageAssemblyInfo asm in info.Assemblies)
-								assemblyLocations [NormalizeAsmName (asm.FullName)] = asm.File;
+								assemblyLocations [NormalizeAsmName (asm.FullName)] = asm;
 						}
 					}
 				}
 			}
 			// This collection is read-only once built, so there is no need for a lock
-			string location;
-			assemblyLocations.TryGetValue (NormalizeAsmName (fullName), out location);
-			return location;
+			PackageAssemblyInfo pasm;
+			assemblyLocations.TryGetValue (NormalizeAsmName (fullName), out pasm);
+			return pasm;
 		}
 		
 		public IEnumerable<PackageAssemblyInfo> ResolveAssemblyName (string name)
@@ -242,6 +242,7 @@ namespace Mono.PkgConfig
 					tw.WriteStartElement ("Assembly");
 					tw.WriteAttributeString ("name", asm.Name);
 					tw.WriteAttributeString ("version", asm.Version);
+					tw.WriteAttributeString ("culture", asm.Culture);
 					tw.WriteAttributeString ("publicKeyToken", asm.PublicKeyToken);
 					tw.WriteAttributeString ("file", asm.File);
 					tw.WriteEndElement (); // Assembly
@@ -277,6 +278,7 @@ namespace Mono.PkgConfig
 					PackageAssemblyInfo asm = new PackageAssemblyInfo ();
 					asm.Name = tr.GetAttribute ("name");
 					asm.Version = tr.GetAttribute ("version");
+					asm.Culture = tr.GetAttribute ("culture");
 					asm.PublicKeyToken = tr.GetAttribute ("publicKeyToken");
 					asm.File = tr.GetAttribute ("file");
 					if (pinfo.Assemblies == null)
@@ -662,11 +664,15 @@ namespace Mono.PkgConfig
 		
 		public string Version;
 		
+		public string Culture;
+		
 		public string PublicKeyToken;
 		
 		public string FullName {
 			get {
 				string fn = Name + ", Version=" + Version;
+				if (!string.IsNullOrEmpty (Culture))
+					fn += ", Culture=" + PublicKeyToken;
 				if (!string.IsNullOrEmpty (PublicKeyToken))
 					fn += ", PublicKeyToken=" + PublicKeyToken;
 				return fn;
@@ -684,6 +690,12 @@ namespace Mono.PkgConfig
 		{
 			Name = aname.Name;
 			Version = aname.Version.ToString ();
+			if (aname.CultureInfo != null) {
+				if (aname.CultureInfo.LCID == System.Globalization.CultureInfo.InvariantCulture.LCID)
+					Culture = "neutral";
+				else
+					Culture = aname.CultureInfo.Name;
+			}
 			string fn = aname.ToString ();
 			string key = "publickeytoken=";
 			int i = fn.ToLower().IndexOf (key) + key.Length;
