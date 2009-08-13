@@ -1,3 +1,8 @@
+2009-08-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.TextTemplating.csproj: Fix build on windows.
+
 2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.TextTemplating.csproj: Don't local-copy project

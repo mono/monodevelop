@@ -103,6 +103,10 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
+      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
+      <Name>MonoDevelop.Components</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
