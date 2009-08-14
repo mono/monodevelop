@@ -40,6 +40,7 @@ FILES =  \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
 	Mono.TextEditor.Vi/ViMode.cs \
+	Mono.TextEditor.Vi/ViWordFindStrategy.cs \
 	Mono.TextEditor/BookmarkActions.cs \
 	Mono.TextEditor/BookmarkMarker.cs \
 	Mono.TextEditor/BufferedTextReader.cs \

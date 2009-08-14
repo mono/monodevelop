@@ -1,3 +1,9 @@
+2009-08-14  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViActionMaps.cs: 
+	* Mono.TextEditor.Vi/ViWordFindStrategy.cs: 
+	  Add vi-like word-breaking for wWbB.
+
 2009-08-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SyntaxModes/XmlSyntaxMode.xml: Fix BlockCommentEnd value.

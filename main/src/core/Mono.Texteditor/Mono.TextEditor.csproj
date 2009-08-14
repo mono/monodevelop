@@ -140,6 +140,7 @@
     <Compile Include="Mono.TextEditor\TextRenderer.cs" />
     <Compile Include="Mono.TextEditor\IBracketMatcher.cs" />
     <Compile Include="Mono.TextEditor\FoldActions.cs" />
+    <Compile Include="Mono.TextEditor.Vi\ViWordFindStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

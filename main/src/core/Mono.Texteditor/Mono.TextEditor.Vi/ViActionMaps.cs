@@ -40,10 +40,14 @@ namespace Mono.TextEditor.Vi
 			case 'h':
 				return ViActions.Left;
 			case 'b':
+				return CaretMoveActions.PreviousSubword;
+			case 'B':
 				return CaretMoveActions.PreviousWord;
 			case 'l':
 				return ViActions.Right;
 			case 'w':
+				return CaretMoveActions.NextSubword;
+			case 'W':
 				return CaretMoveActions.NextWord;
 			case 'k':
 				return CaretMoveActions.Up;
