@@ -16,6 +16,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
 
 REFS =  \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
