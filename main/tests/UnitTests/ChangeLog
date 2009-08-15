@@ -1,3 +1,9 @@
+2009-08-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added
+	  test for "Bug 531525 - Refactoring + Renaming fails for
+	  delegate".
+
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* UnitTests.csproj: Update reference.

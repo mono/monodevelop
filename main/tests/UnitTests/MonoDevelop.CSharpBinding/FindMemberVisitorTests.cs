@@ -535,6 +535,29 @@ class B : BaseClass
 		}
 		
 		
+				
+		/// <summary>
+		/// Bug 531525 - Refactoring + Renaming fails for delegate
+		/// </summary>
+		[Test()]
+		public void TestBug531525 ()
+		{
+			RunTest (
+@"public class Foo {
+	void $@IdeAppWorkspaceSolutionLoaded (
+object sender, 
+SolutionEventArgs e)
+	{}
+
+	public void Main()
+	{
+		IdeApp.Workspace.SolutionLoaded += @IdeAppWorkspaceSolutionLoaded;
+	}
+}
+");
+		}
+		
+		
 		/*
 		[Test()]
 		public void FindInterfaceMethodReferences ()
