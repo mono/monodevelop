@@ -1,3 +1,9 @@
+2009-08-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
+	  Fixed "Bug 531549 - Quick insert menu adds erroneous
+	  override keyword for interfaces".
+
 2009-08-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:

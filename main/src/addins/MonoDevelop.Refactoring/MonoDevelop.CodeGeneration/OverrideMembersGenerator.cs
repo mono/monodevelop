@@ -127,8 +127,10 @@ namespace MonoDevelop.CodeGeneration
 			protected override IEnumerable<INode> GenerateCode (List<IMember> includedMembers)
 			{
 				foreach (IMember member in includedMembers) {
-					ICSharpCode.NRefactory.Ast.Modifiers modifier = (((ICSharpCode.NRefactory.Ast.Modifiers)member.Modifiers) & ~(ICSharpCode.NRefactory.Ast.Modifiers.Abstract | ICSharpCode.NRefactory.Ast.Modifiers.Virtual)) | ICSharpCode.NRefactory.Ast.Modifiers.Override;
+					ICSharpCode.NRefactory.Ast.Modifiers modifier = (((ICSharpCode.NRefactory.Ast.Modifiers)member.Modifiers) & ~(ICSharpCode.NRefactory.Ast.Modifiers.Abstract | ICSharpCode.NRefactory.Ast.Modifiers.Virtual));
 					bool isInterfaceMember = member.DeclaringType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface;
+					if (!isInterfaceMember)
+						modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Override;
 					if (isInterfaceMember)
 						modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Public;
 					
