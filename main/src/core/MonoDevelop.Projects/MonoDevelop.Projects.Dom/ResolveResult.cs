@@ -224,9 +224,12 @@ namespace MonoDevelop.Projects.Dom
 	
 	public class MemberResolveResult : ResolveResult
 	{
-		public IMember ResolvedMember {
+		public virtual IMember ResolvedMember {
 			get;
 			set;
+		}
+		protected MemberResolveResult ()
+		{
 		}
 		
 		public MemberResolveResult (IMember resolvedMember)
@@ -316,7 +319,7 @@ namespace MonoDevelop.Projects.Dom
 		}
 	}
 	
-	public class MethodResolveResult : ResolveResult
+	public class MethodResolveResult : MemberResolveResult
 	{
 		List<IMethod> methods = new List<IMethod> ();
 		List<IReturnType> arguments = new List<IReturnType> ();
@@ -329,11 +332,18 @@ namespace MonoDevelop.Projects.Dom
 			get;
 			set;
 		}
+		
 		public ReadOnlyCollection<IMethod> Methods {
 			get {
 				return methods.AsReadOnly ();
+					}
+		}
+		public override IMember ResolvedMember {
+			get {
+				return MostLikelyMethod;
 			}
 		}
+		
 
 		public IMethod MostLikelyMethod {
 			get {
