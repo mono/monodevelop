@@ -122,6 +122,7 @@ namespace MonoDevelop.IPhone
 					foreach (var pf in proj.Files)
 						if (pf.BuildAction == BuildAction.Content)
 							args.AppendFormat (" -res=\"{0}\"", pf.FilePath);
+					args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
 					
 					using (ProcessWrapper pw = Runtime.ProcessService.StartProcess (mtouchPath, args.ToString (), conf.OutputDirectory, outWriter, outWriter, null)) {
 						pw.WaitForOutput ();

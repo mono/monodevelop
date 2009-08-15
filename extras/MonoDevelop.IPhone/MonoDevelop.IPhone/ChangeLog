@@ -1,5 +1,9 @@
 2009-08-14  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Include the output file.
+
+2009-08-14  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs:
 	* MonoDevelop.IPhone.addin.xml: Add a Debug in Xcode command.
 
