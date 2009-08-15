@@ -1,3 +1,8 @@
+2009-08-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneCommands.cs:
+	* MonoDevelop.IPhone.addin.xml: Add a Debug in Xcode command.
+
 2009-08-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Templates/IPhoneViewController.xft.xml: Add a view and

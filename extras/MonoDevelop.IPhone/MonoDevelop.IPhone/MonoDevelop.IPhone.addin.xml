@@ -97,9 +97,14 @@
 			_description = "Upload the application to the device" 
 			defaultHandler = "MonoDevelop.IPhone.DefaultUploadToDeviceHandler"
 			_label = "Upload to Device" />
+		<Command id = "MonoDevelop.IPhone.IPhoneCommands.DebugInXcode" 
+			_description = "Debug the project in Xcode" 
+			defaultHandler = "MonoDevelop.IPhone.DebugInXcodeCommandHandler"
+			_label = "Debug in Xcode" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
+	<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.DebugInXcode" />
 	<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice"
 		insertBefore="MonoDevelop.Ide.Commands.ProjectCommands.Run" />
 	</Extension>

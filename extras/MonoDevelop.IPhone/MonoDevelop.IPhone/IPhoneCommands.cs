@@ -25,18 +25,22 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
 using System.IO;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.IPhone
 {
 	
 	public enum IPhoneCommands
 	{
-		UploadToDevice
+		UploadToDevice,
+		DebugInXcode
 	}
 	
 	class DefaultUploadToDeviceHandler : CommandHandler
@@ -58,9 +62,7 @@ namespace MonoDevelop.IPhone
 			var proj = GetActiveProject ();
 			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			
-			string mtouchPath = proj.TargetRuntime.GetToolPath (proj.TargetFramework, "mtouch");
-			if (string.IsNullOrEmpty (mtouchPath))
-				throw new InvalidOperationException ("Cannot upload iPhone application. mtouch tool is missing.");
+			string mtouchPath = GetMtouchPath (proj);
 			
 			var console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
 				GettextCatalog.GetString ("Deploy to Device"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
@@ -68,8 +70,17 @@ namespace MonoDevelop.IPhone
 			Runtime.ProcessService.StartConsoleProcess (mtouchPath,
 				String.Format ("-installdev=\"{0}\"", conf.AppDirectory), conf.OutputDirectory, console, null);
 		}
+
+		public static string GetMtouchPath (MonoDevelop.IPhone.IPhoneProject proj)
+		{
+			string mtouchPath = proj.TargetRuntime.GetToolPath (proj.TargetFramework, "mtouch");
+			if (string.IsNullOrEmpty (mtouchPath))
+				throw new InvalidOperationException ("Cannot upload iPhone application. mtouch tool is missing.");
+			return mtouchPath;
+		}
+
 		
-		IPhoneProject GetActiveProject ()
+		public static IPhoneProject GetActiveProject ()
 		{
 			var proj = IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (proj != null)
@@ -78,6 +89,48 @@ namespace MonoDevelop.IPhone
 			if (sln != null)
 				return sln.StartupItem as IPhoneProject;
 			return null;
+		}
+	}
+	
+	class DebugInXcodeCommandHandler : CommandHandler
+	{
+		protected override void Update (MonoDevelop.Components.Commands.CommandInfo info)
+		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveProject ();
+			if (proj != null) {
+				var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				info.Enabled = conf.Platform == IPhoneProject.PLAT_IPHONE;
+			} else {
+				info.Enabled = false;
+			}
+		}
+		
+		protected override void Run ()
+		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveProject ();
+			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			
+			string mtouchPath = DefaultUploadToDeviceHandler.GetMtouchPath (proj);
+			
+			IdeApp.ProjectOperations.Build (proj).Completed += delegate (IAsyncOperation op) {
+				if (op.Success) {
+					var outWriter= new StringWriter ();
+					var xcodeDir = conf.OutputDirectory.Combine ("XcodeProject");
+					
+					var args = new System.Text.StringBuilder ();
+					args.AppendFormat ("-xcode=\"{0}\"", xcodeDir);
+					foreach (var pf in proj.Files)
+						if (pf.BuildAction == BuildAction.Content)
+							args.AppendFormat (" -res=\"{0}\"", pf.FilePath);
+					
+					using (ProcessWrapper pw = Runtime.ProcessService.StartProcess (mtouchPath, args.ToString (), conf.OutputDirectory, outWriter, outWriter, null)) {
+						pw.WaitForOutput ();
+						if (pw.ExitCode != 0) {
+							MessageService.ShowError ("mtouch failed to export the xcode project", outWriter.ToString ());
+						}
+					}
+				}
+			};
 		}
 	}
 }
