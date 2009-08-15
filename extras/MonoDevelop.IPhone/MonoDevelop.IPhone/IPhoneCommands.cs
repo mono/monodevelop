@@ -117,6 +117,15 @@ namespace MonoDevelop.IPhone
 					var outWriter= new StringWriter ();
 					var xcodeDir = conf.OutputDirectory.Combine ("XcodeProject");
 					
+					if (!Directory.Exists (xcodeDir)) {
+						try {
+							Directory.CreateDirectory (xcodeDir);
+						} catch (IOException ex) {
+							MessageService.ShowException (ex, "Failed to create directory '" + xcodeDir +"' for Xcode project");
+							return;
+						}
+					}
+					
 					var args = new System.Text.StringBuilder ();
 					args.AppendFormat ("-xcode=\"{0}\"", xcodeDir);
 					foreach (var pf in proj.Files)
@@ -127,7 +136,7 @@ namespace MonoDevelop.IPhone
 					using (ProcessWrapper pw = Runtime.ProcessService.StartProcess (mtouchPath, args.ToString (), conf.OutputDirectory, outWriter, outWriter, null)) {
 						pw.WaitForOutput ();
 						if (pw.ExitCode != 0) {
-							MessageService.ShowError ("mtouch failed to export the xcode project", outWriter.ToString ());
+							MessageService.ShowError ("mtouch failed to export the Xcode project", outWriter.ToString ());
 						}
 					}
 				}
