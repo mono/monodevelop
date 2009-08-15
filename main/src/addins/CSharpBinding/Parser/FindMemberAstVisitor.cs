@@ -496,17 +496,17 @@ namespace MonoDevelop.CSharpBinding
 				int line = idExp.StartLocation.Y;
 				int col = idExp.StartLocation.X;
 				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line - 1, col - 1));
-//				Console.WriteLine ("result:" + result);
+				//Console.WriteLine ("result:" + result);
 				if (searchedMember is IType) {
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
-					if (item == null || item is IType && ((IType) item).FullName == ((IType)searchedMember).FullName) {
+					if (item == null || item is IType && ((IType)item).FullName == ((IType)searchedMember).FullName) {
 						//Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
 						AddUniqueReference (line, col, idExp.Identifier);
 					}
 				} else if (searchedMember is LocalVariable && result is LocalVariableResolveResult) {
 					LocalVariable avar = searchedMember as LocalVariable;
 					LocalVariable var = ((LocalVariableResolveResult)result).LocalVariable;
-					
+
 					if (var != null && avar.DeclaringMember.FullName == var.DeclaringMember.FullName) {
 //						Console.WriteLine (avar.Region.Start.Line + "---" +  var.Region.Start.Line);
 						if (Math.Abs (avar.Region.Start.Line - var.Region.Start.Line) <= 1)
@@ -519,6 +519,7 @@ namespace MonoDevelop.CSharpBinding
 				} else if (searchedMember is IMember && result is MemberResolveResult) {
 					IMember item = ((MemberResolveResult)result).ResolvedMember;
 					IMember m = item as IMember;
+					//Console.WriteLine (searchedMember +  "/" + item);
 					if (m != null /*&& IsExpectedClass (m.DeclaringType)*/ && ((IMember)searchedMember).DeclaringType.FullName == item.DeclaringType.FullName &&
 						((searchedMember is IField && item is IField) || (searchedMember is IMethod && item is IMethod) ||
 						 (searchedMember is IProperty && item is IProperty) || (searchedMember is IEvent && item is IEvent))) {
@@ -606,6 +607,7 @@ namespace MonoDevelop.CSharpBinding
 						}
 					}
 				}
+				return true;
 			}
 			invokeExp.Arguments.ForEach (o => o.AcceptVisitor(this, data));
 			return base.VisitInvocationExpression (invokeExp, data);
