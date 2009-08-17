@@ -1,3 +1,15 @@
+2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/SystemPackage.cs:
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs:
+	* MonoDevelop.Core.AddIns/PackageInstalledCondition.cs:
+	* MonoDevelop.Core.Assemblies/DirectoryAssemblyContext.cs:
+	  Added support for user-defined assembly paths. MD will look
+	  for assemblies and .pc files in those paths.
+
 2009-08-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Typo.

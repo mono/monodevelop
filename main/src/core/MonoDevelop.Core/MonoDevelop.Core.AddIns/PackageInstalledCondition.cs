@@ -35,7 +35,7 @@ namespace MonoDevelop.Core.AddIns
 		public override bool Evaluate (Mono.Addins.NodeElement conditionNode)
 		{
 			string pname = conditionNode.GetAttribute ("name");
-			SystemPackage pkg = Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext.GetPackageInternal (pname);
+			SystemPackage pkg = Runtime.SystemAssemblyService.CurrentRuntime.RuntimeAssemblyContext.GetPackageInternal (pname);
 			if (pkg == null)
 				return false;
 			string ver = conditionNode.GetAttribute ("version");

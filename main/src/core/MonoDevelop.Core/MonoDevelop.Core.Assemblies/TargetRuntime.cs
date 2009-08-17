@@ -51,10 +51,14 @@ namespace MonoDevelop.Core.Assemblies
 		TargetFrameworkBackend[] frameworkBackends;
 		
 		RuntimeAssemblyContext assemblyContext;
+		ComposedAssemblyContext composedAssemblyContext;
 		
 		public TargetRuntime ()
 		{
 			assemblyContext = new RuntimeAssemblyContext (this);
+			composedAssemblyContext = new ComposedAssemblyContext ();
+			composedAssemblyContext.Add (Runtime.SystemAssemblyService.UserAssemblyContext);
+			composedAssemblyContext.Add (assemblyContext);
 		}
 		
 		internal void StartInitialization ()
@@ -97,7 +101,11 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public abstract IExecutionHandler GetExecutionHandler ();
 		
-		public RuntimeAssemblyContext AssemblyContext {
+		public IAssemblyContext AssemblyContext {
+			get { return composedAssemblyContext; }
+		}
+		
+		public RuntimeAssemblyContext RuntimeAssemblyContext {
 			get { return assemblyContext; }
 		}
 		
@@ -250,25 +258,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, params string[] assemblyFiles)
 		{
-			List<PackageAssemblyInfo> pinfos = new List<PackageAssemblyInfo> (assemblyFiles.Length);
-			foreach (string afile in assemblyFiles) {
-				try {
-					PackageAssemblyInfo pi = new PackageAssemblyInfo ();
-					pi.File = afile;
-					pi.Update (SystemAssemblyService.GetAssemblyNameObj (pi.File));
-					pinfos.Add (pi);
-				}
-				catch {
-					// Ignore
-				}
-			}
-			return RegisterPackage (pinfo, isInternal, pinfos.ToArray ());
-		}
-		
-		internal SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, PackageAssemblyInfo[] assemblyFiles)
-		{
-			SystemPackage p = new SystemPackage (this);
-			return assemblyContext.RegisterPackage (p, pinfo, isInternal, assemblyFiles);
+			return assemblyContext.RegisterPackage (pinfo, isInternal, assemblyFiles);
 		}
 		
 		public bool IsInstalled (TargetFramework fx)
@@ -337,7 +327,7 @@ namespace MonoDevelop.Core.Assemblies
 						string pkg = assembly.Package ?? string.Empty;
 						SystemPackage package;
 						if (!packs.TryGetValue (pkg, out package)) {
-							packs [pkg] = package = new SystemPackage (this);
+							packs [pkg] = package = new SystemPackage ();
 							assemblies [pkg] = new List<SystemAssembly> ();
 						}
 						List<SystemAssembly> list = assemblies [pkg];

@@ -179,12 +179,12 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			// Don't register the package twice
 			string pname = Path.GetFileNameWithoutExtension (pcfile);
-			if (AssemblyContext.GetPackageInternal (pname) != null || IsCorePackage (pname))
+			if (RuntimeAssemblyContext.GetPackageInternal (pname) != null || IsCorePackage (pname))
 				return;
 
 			PackageInfo pinfo = PcFileCache.GetPackageInfo (pcfile);
 			if (pinfo.IsValidPackage)
-				RegisterPackage (new SystemPackageInfo (pinfo), false, pinfo.Assemblies.ToArray ());
+				RuntimeAssemblyContext.RegisterPackage (pinfo, false);
 		}
 
 		

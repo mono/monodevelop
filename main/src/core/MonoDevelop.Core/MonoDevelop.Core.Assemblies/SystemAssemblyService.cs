@@ -49,6 +49,8 @@ namespace MonoDevelop.Core.Assemblies
 		List<TargetFramework> frameworks;
 		List<TargetRuntime> runtimes;
 		TargetRuntime defaultRuntime;
+		DirectoryAssemblyContext userAssemblyContext = new DirectoryAssemblyContext ();
+		
 		internal static string ReferenceFrameworksPath;
 		internal static string GeneratedFrameworksFile;
 		
@@ -61,6 +63,10 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			ReferenceFrameworksPath = Environment.GetEnvironmentVariable ("MONODEVELOP_FRAMEWORKS_FILE");
 			GeneratedFrameworksFile = Environment.GetEnvironmentVariable ("MONODEVELOP_FRAMEWORKS_OUTFILE");
+			LoadUserAssemblyContext ();
+			userAssemblyContext.Changed += delegate {
+				SaveUserAssemblyContext ();
+			};
 		}
 		
 		internal void Initialize ()
@@ -89,7 +95,11 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
-		public AssemblyContext DefaultAssemblyContext {
+		public DirectoryAssemblyContext UserAssemblyContext {
+			get { return userAssemblyContext; }
+		}
+		
+		public IAssemblyContext DefaultAssemblyContext {
 			get { return DefaultRuntime.AssemblyContext; }
 		}
 		
@@ -319,12 +329,26 @@ namespace MonoDevelop.Core.Assemblies
 				AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
 				foreach (AssemblyNameReference aname in names) {
 					if (aname.Name == "mscorlib")
-						return tr.AssemblyContext.GetCorlibFramework (aname.FullName) ?? "Unknown";
+						return tr.RuntimeAssemblyContext.GetCorlibFramework (aname.FullName) ?? "Unknown";
 				}
 			} catch {
 				// Ignore
 			}
 			return "Unknown";
+		}
+		
+		void SaveUserAssemblyContext ()
+		{
+			List<string> list = new List<string> (userAssemblyContext.Directories);
+			PropertyService.Set ("MonoDevelop.Core.Assemblies.UserAssemblyContext", list);
+			PropertyService.SaveProperties ();
+		}
+		
+		void LoadUserAssemblyContext ()
+		{
+			List<string> dirs = PropertyService.Get<List<string>> ("MonoDevelop.Core.Assemblies.UserAssemblyContext");
+			if (dirs != null)
+				userAssemblyContext.Directories = dirs;
 		}
 	}
 }

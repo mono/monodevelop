@@ -25,11 +25,64 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Collections.Generic;
+using Mono.PkgConfig;
 
 namespace MonoDevelop.Core.Assemblies
 {
 	public class DirectoryAssemblyContext: AssemblyContext
 	{
+		List<SystemPackage> packages = new List<SystemPackage> ();
+		List<string> directories = new List<string> ();
+		
+		public IEnumerable<string> Directories {
+			get {
+				return directories;
+			}
+			set {
+				directories = new List<string> (value);
+				UpdatePackages ();
+			}
+		}
+		
+		void UpdatePackages ()
+		{
+			foreach (SystemPackage p in packages)
+				UnregisterPackage (p);
+			packages.Clear ();
+			
+			foreach (string dir in directories) {
+				foreach (string file in Directory.GetFiles (dir)) {
+					string ext = Path.GetExtension (file);
+					if (ext == ".dll")
+						RegisterAssembly (file);
+					else if (ext == ".pc")
+						RegisterPcFile (file);
+				}
+			}
+		}
+		
+		void RegisterAssembly (string file)
+		{
+			SystemPackageInfo spi = new SystemPackageInfo ();
+			spi.Name = file;
+			spi.Description = Path.GetDirectoryName (file);
+			spi.Version = "";
+			spi.IsGacPackage = false;
+			spi.TargetFramework = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (Runtime.SystemAssemblyService.CurrentRuntime, file);
+			
+			SystemPackage sp = RegisterPackage (spi, true, file);
+			packages.Add (sp);
+		}
+		
+		void RegisterPcFile (string file)
+		{
+			PackageInfo pinfo = MonoTargetRuntime.PcFileCache.GetPackageInfo (file);
+			if (pinfo.IsValidPackage) {
+				SystemPackage sp = RegisterPackage (pinfo, true);
+				packages.Add (sp);
+			}
+		}
 	}
 }

@@ -46,8 +46,31 @@ namespace MonoDevelop.Core.Assemblies
 			return assemblyFullNameToAsm.Keys;
 		}
 		
-		internal SystemPackage RegisterPackage (SystemPackage p, SystemPackageInfo pinfo, bool isInternal, PackageAssemblyInfo[] assemblyFiles)
+		internal SystemPackage RegisterPackage (PackageInfo pinfo, bool isInternal)
 		{
+			return RegisterPackage (new SystemPackageInfo (pinfo), isInternal, pinfo.Assemblies.ToArray ());
+		}
+		
+		internal protected SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, params string[] assemblyFiles)
+		{
+			List<PackageAssemblyInfo> pinfos = new List<PackageAssemblyInfo> (assemblyFiles.Length);
+			foreach (string afile in assemblyFiles) {
+				try {
+					PackageAssemblyInfo pi = new PackageAssemblyInfo ();
+					pi.File = afile;
+					pi.Update (SystemAssemblyService.GetAssemblyNameObj (pi.File));
+					pinfos.Add (pi);
+				}
+				catch {
+					// Ignore
+				}
+			}
+			return RegisterPackage (pinfo, isInternal, pinfos.ToArray ());
+		}
+		
+		SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, PackageAssemblyInfo[] assemblyFiles)
+		{
+			SystemPackage p = new SystemPackage ();
 			List<SystemAssembly> asms = new List<SystemAssembly> ();
 			foreach (PackageAssemblyInfo asm in assemblyFiles)
 				asms.Add (AddAssembly (asm.File, new AssemblyInfo (asm), p));
@@ -61,14 +84,22 @@ namespace MonoDevelop.Core.Assemblies
 			return p;
 		}
 		
-		public void UnregisterPackage (string name, string version)
+		internal protected void UnregisterPackage (string name, string version)
 		{
 			SystemPackage p = GetPackage (name, version);
+			UnregisterPackage (p);
+		}
+		
+		internal protected void UnregisterPackage (SystemPackage p)
+		{
 			if (!p.IsInternalPackage)
 				throw new InvalidOperationException ("Only internal packages can be unregistered");
 			
+			foreach (SystemAssembly asm in p.Assemblies)
+				RemoveAssembly (asm);
+			
 			packages.Remove (p);
-			packagesHash.Remove (name);
+			packagesHash.Remove (p.Name);
 
 			if (Changed != null)
 				Changed (this, EventArgs.Empty);
@@ -448,6 +479,31 @@ namespace MonoDevelop.Core.Assemblies
 			} catch {
 				return null;
 			}
+		}
+		
+		void RemoveAssembly (SystemAssembly asm)
+		{
+			SystemAssembly ca;
+			if (!assemblyFullNameToAsm.TryGetValue (asm.FullName, out ca))
+				return;
+			
+			assemblyPathToPackage.Remove (asm.Location);
+			
+			SystemAssembly prev = null;
+			do {
+				if (ca == asm) {
+					if (prev != null)
+						prev.NextSameName = ca.NextSameName;
+					else if (ca.NextSameName != null)
+						assemblyFullNameToAsm [asm.FullName] = ca.NextSameName;
+					else
+						assemblyFullNameToAsm.Remove (asm.FullName);
+					break;
+				} else {
+					prev = ca;
+					ca = ca.NextSameName;
+				}
+			} while (ca != null);
 		}
 		
 		internal void InternalAddPackage (SystemPackage package)

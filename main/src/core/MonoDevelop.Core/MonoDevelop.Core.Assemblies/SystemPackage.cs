@@ -43,11 +43,9 @@ namespace MonoDevelop.Core.Assemblies
 		string targetFramework;
 		string gacRoot;
 		bool gacPackage;
-		TargetRuntime targetRuntime;
 		
-		internal SystemPackage (TargetRuntime targetRuntime)
+		internal SystemPackage ()
 		{
-			this.targetRuntime = targetRuntime;
 		}
 		
 		internal void Initialize (SystemPackageInfo info, IEnumerable<SystemAssembly> assemblies, bool isInternal)
@@ -74,10 +72,6 @@ namespace MonoDevelop.Core.Assemblies
 					last.NextSamePackage = asm;
 				last = asm;
 			}
-		}
-		
-		public TargetRuntime TargetRuntime {
-			get { return targetRuntime; }
 		}
 		
 		public string Name {
