@@ -65,7 +65,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				SystemPackage p = runtime.AssemblyContext.GetPackageFromPath (filename);
 				if (p != null) {
 					found = true;
-					yield return p.TargetRuntime;
+					yield return runtime;
 				}
 			}
 			if (!found) {
