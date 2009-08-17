@@ -37,11 +37,14 @@ using System.Text;
 using MonoDevelop.Core;
 using System.Text.RegularExpressions;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Autotools
 {
 	public class CustomMakefile
 	{
+		static Counter UpdatedMakefiles = InstrumentationService.CreateCounter ("Updated Makefiles", "Project Model");
+		
 		string content;
 		//FIXME: Improve the regex
 		static string multilineMatch = @"(((?<content>.*)(?<!\\)\n)|((?<content>.*?)\s*\\\n([ \t]*(?<content>.*?)\s*\\\n)*[ \t]*(?<content>.*?)(?<!\\)\n))";
@@ -257,7 +260,8 @@ namespace MonoDevelop.Autotools
 
 			using (StreamWriter sw = new StreamWriter (fileName))
 				sw.Write (content);
-			
+
+			UpdatedMakefiles++;
 			FileService.NotifyFileChanged (fileName);
 		}
 		

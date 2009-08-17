@@ -60,7 +60,7 @@ namespace MonoDevelop.Autotools
 		[ProjectPathItemProperty("File", Scope="*")]
 		List<string> excludedFiles = new List<string> ();
 		
-		AssemblyContext assemblyContext;
+		IAssemblyContext assemblyContext;
 
 		public MakefileData ()
 		{
@@ -1741,7 +1741,7 @@ namespace MonoDevelop.Autotools
 				string pkgVarName = s.Replace ("_LIBS", String.Empty);
 				List<string> l = GetNamesFromVarName (pkgVarName);
 
-				AssemblyContext r = MakefileData.GetMonoRuntimeContext ();
+				IAssemblyContext r = MakefileData.GetMonoRuntimeContext ();
 				if (l != null && l.Count == 1 && r.GetPackage (l [0]) != null) {
 					//PKG_CHECK_MODULES for pkgVarName was found
 					//and it references only a single managed package
