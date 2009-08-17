@@ -90,4 +90,8 @@
       </itemgroup>
     </signals>
   </object>
+  <object type="MonoDevelop.Components.FolderListSelector" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

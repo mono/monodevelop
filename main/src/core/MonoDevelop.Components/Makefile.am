@@ -18,6 +18,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Components.FolderListSelector.cs \
 	MonoDevelop.Components.Chart/Axis.cs \
 	MonoDevelop.Components.Chart/AxisDimension.cs \
 	MonoDevelop.Components.Chart/AxisPosition.cs \
@@ -127,6 +128,7 @@ FILES =  \
 	MonoDevelop.Components/FixedWidthWrapLabel.cs \
 	MonoDevelop.Components/FolderDialog.cs \
 	MonoDevelop.Components/FolderEntry.cs \
+	MonoDevelop.Components/FolderListSelector.cs \
 	MonoDevelop.Components/GladeWidgetExtract.cs \
 	MonoDevelop.Components/IconView.cs \
 	MonoDevelop.Components/InvisibleFrame.cs \

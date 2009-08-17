@@ -1,3 +1,14 @@
+2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components/FolderListSelector.cs:
+	* gtk-gui/MonoDevelop.Components.FolderListSelector.cs: New
+	  folder list selector widget.
+
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Chart\BasicChart.cs: Handle some
