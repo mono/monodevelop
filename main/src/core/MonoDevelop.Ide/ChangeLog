@@ -1,3 +1,10 @@
+2009-08-07  Viktoria Dudka  <viktoriad@remobjects.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs: removed
+	* MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:
+	* MonoDevelop.Ide.Templates/VersionInformationTabPage.cs: Rewritten from scratch
+	  to make it non-GPL.
+	  
 2009-08-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Templates/ProjectTemplate.cs: Categorise all
