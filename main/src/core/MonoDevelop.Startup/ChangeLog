@@ -1,3 +1,8 @@
+2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Startup/MonoDevelopMain.cs: If the runtime could
+	  not be initialized, don't try to rebuild the registry.
+
 2009-06-19  Mike Krüger  <mkrueger@novell.com>
 
 	* AssemblyInfo.cs: Commented out empty assembly key file

@@ -23,7 +23,7 @@ namespace MonoDevelop.Startup
 					IdeStartup app = new IdeStartup ();
 					return app.Run (args);
 				} catch (Exception ex) {
-					if (!retry) {
+					if (!retry && AddinManager.IsInitialized) {
 						LoggingService.LogWarning ("MonoDevelop failed to start. Rebuilding addins registry.");
 						AddinManager.Registry.Rebuild (new Mono.Addins.ConsoleProgressStatus (true));
 						LoggingService.LogInfo ("Addin registry rebuilt. Restarting MonoDevelop.");
