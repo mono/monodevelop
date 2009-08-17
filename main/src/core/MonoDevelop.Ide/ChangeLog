@@ -1,3 +1,13 @@
+2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ChangeLog:
+	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs: Rewritten
+	  the gpl parts.
+
+2009-08-17  Viktoria Dudka  <viktoriad@remobjects.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs: Rewritten the gpl parts.
+
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Tasks/TaskStore.cs: Don't send unnecessary
