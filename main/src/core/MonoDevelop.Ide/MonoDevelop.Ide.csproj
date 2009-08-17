@@ -571,6 +571,8 @@
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\MaintenanceOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskStore.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AssemblyFoldersPanel.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

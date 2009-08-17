@@ -1,5 +1,16 @@
 2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui.OptionPanels/AssemblyFoldersPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs:
+	  Added options panel which allows defining paths where MD
+	  should look for assemblies and .pc files.
+
+2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* ChangeLog:
 	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs: Rewritten
 	  the gpl parts.

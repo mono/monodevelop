@@ -1258,7 +1258,9 @@
 			<Section id = "Style" _label = "Visual Style" icon="gtk-preferences" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel" />
 			<Section id = "KeyBindings" _label = "Key Bindings" fill="true" icon="md-keyboard-shortcuts" class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" />
 			<Section id = "LoadSave" _label = "Load/Save" icon="gtk-harddisk" class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel" />
-			<Section id = "Build" _label = "Build" icon="md-build-current-selected-project" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel" />
+			<Section id = "Build" _label = "Build" icon="md-build-current-selected-project" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel">
+				<Panel id = "Directories" _label = "Assembly Folders" class = "MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanel" />
+			</Section>
 			<Section id = "AddIns" _label = "Add-ins" icon="md-addin" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
 			<Section id = "TaskList" _label = "Task List" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
 			<Section id = "ExternalTools" _label = "External Tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />

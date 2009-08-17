@@ -60,6 +60,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs \
@@ -214,6 +215,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs \
 	MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/AssemblyFoldersPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \
