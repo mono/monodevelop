@@ -107,67 +107,41 @@ namespace CBinding.Parser
 		
 		public IEnumerable<LanguageItem> Containers ()
 		{
-			foreach (Namespace n in namespaces)
-				yield return n;
+			List<LanguageItem> containers = new List<LanguageItem> ();
 			
-			foreach (Class c in classes)
-				yield return c;
+			containers.AddRange ((LanguageItem[])namespaces.ToArray());
+			containers.AddRange ((LanguageItem[])classes.ToArray());
+			containers.AddRange ((LanguageItem[])structures.ToArray());
+			containers.AddRange ((LanguageItem[])enumerations.ToArray());
+			containers.AddRange ((LanguageItem[])unions.ToArray());
 			
-			foreach (Structure s in structures)
-				yield return s;
-			
-			foreach (Enumeration e in enumerations)
-				yield return e;
-			
-			foreach (Union u in unions)
-				yield return u;
+			return containers;
 		}
 		
 		// Functions, fields
 		public IEnumerable<LanguageItem> InstanceMembers ()
 		{
-			foreach (Function f in functions)
-				yield return f;
+			List<LanguageItem> instanceMembers = new List<LanguageItem> ();
 			
-			foreach (Member m in members)
-				yield return m;
+			instanceMembers.AddRange ((LanguageItem[])functions.ToArray());
+			instanceMembers.AddRange ((LanguageItem[])members.ToArray());
+			
+			return instanceMembers;
 		}
 		
 		// All items except macros
 		public IEnumerable<LanguageItem> AllItems ()
 		{
-			foreach (Namespace n in namespaces)
-				yield return n;
+			List<LanguageItem> allItems = new List<LanguageItem> ();
 			
-			foreach (Class c in classes)
-				yield return c;
+			allItems.AddRange (Containers ());
+			allItems.AddRange (InstanceMembers ());
+			allItems.AddRange ((LanguageItem[])variables.ToArray());
+			allItems.AddRange ((LanguageItem[])enumerators.ToArray());
+			allItems.AddRange ((LanguageItem[])typedefs.ToArray());
+			allItems.AddRange ((LanguageItem[])locals.ToArray());
 			
-			foreach (Structure s in structures)
-				yield return s;
-			
-			foreach (Enumeration e in enumerations)
-				yield return e;
-			
-			foreach (Union u in unions)
-				yield return u;
-			
-			foreach (Function f in functions)
-				yield return f;
-			
-			foreach (Member m in members)
-				yield return m;
-			
-			foreach (Variable v in variables)
-				yield return v;
-			
-			foreach (Enumerator e in enumerators)
-				yield return e;
-			
-			foreach (Typedef t in typedefs)
-				yield return t;
-			
-			foreach (Local lo in locals)
-				yield return lo;
+			return allItems;
 		}
 		
 		public Project Project {

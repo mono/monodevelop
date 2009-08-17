@@ -1,3 +1,7 @@
+2009-08-17  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/ProjectInformation.cs: Fix #530826.
+
 2009-08-13  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Parser/ProjectInformationManager.cs: Fix NRE.
