@@ -89,7 +89,6 @@ namespace MonoDevelop.Core
 				
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
-				AddinManager.Shutdown ();
 				AddinManager.AddinLoadError -= OnLoadError;
 				AddinManager.AddinLoaded -= OnLoad;
 				AddinManager.AddinUnloaded -= OnUnload;

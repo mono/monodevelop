@@ -35,31 +35,43 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		List<SystemPackage> packages = new List<SystemPackage> ();
 		List<string> directories = new List<string> ();
+		object updatesLock = new object ();
+		bool pendingUpdate;
 		
 		public IEnumerable<string> Directories {
 			get {
 				return directories;
 			}
 			set {
-				directories = new List<string> (value);
-				UpdatePackages ();
+				lock (updatesLock) {
+					directories = new List<string> (value);
+					if (!pendingUpdate) {
+						pendingUpdate = true;
+						Runtime.SystemAssemblyService.CurrentRuntime.Initialized += OnUpdatePackages;
+					}
+				}
 			}
 		}
 		
-		void UpdatePackages ()
+		void OnUpdatePackages (object o, EventArgs a)
 		{
-			foreach (SystemPackage p in packages)
-				UnregisterPackage (p);
-			packages.Clear ();
+			lock (updatesLock) {
+				Runtime.SystemAssemblyService.CurrentRuntime.Initialized -= OnUpdatePackages;
 			
-			foreach (string dir in directories) {
-				foreach (string file in Directory.GetFiles (dir)) {
-					string ext = Path.GetExtension (file);
-					if (ext == ".dll")
-						RegisterAssembly (file);
-					else if (ext == ".pc")
-						RegisterPcFile (file);
+				foreach (SystemPackage p in packages)
+					UnregisterPackage (p);
+				packages.Clear ();
+				
+				foreach (string dir in directories) {
+					foreach (string file in Directory.GetFiles (dir)) {
+						string ext = Path.GetExtension (file);
+						if (ext == ".dll")
+							RegisterAssembly (file);
+						else if (ext == ".pc")
+							RegisterPcFile (file);
+					}
 				}
+				pendingUpdate = false;
 			}
 		}
 		

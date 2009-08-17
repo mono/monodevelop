@@ -47,6 +47,7 @@ namespace MonoDevelop.Core.Assemblies
 		HashSet<string> corePackages = new HashSet<string> ();
 		
 		object initLock = new object ();
+		object initEventLock = new object ();
 		bool initialized;
 		TargetFrameworkBackend[] frameworkBackends;
 		
@@ -201,6 +202,24 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal protected abstract IEnumerable<string> GetGacDirectories ();
 		
+		EventHandler initializedEvent;
+			
+		public event EventHandler Initialized {
+			add {
+				lock (initEventLock) {
+					if (initialized)
+						value (this, EventArgs.Empty);
+					else
+						initializedEvent += value;
+				}
+			}
+			remove {
+				lock (initEventLock) {
+					initializedEvent -= value;
+				}
+			}
+		}
+		
 		internal void Initialize ()
 		{
 			lock (initLock) {
@@ -220,7 +239,11 @@ namespace MonoDevelop.Core.Assemblies
 					LoggingService.LogFatalError ("Unhandled exception in SystemAssemblyService background initialisation thread.", ex);
 				} finally {
 					Monitor.PulseAll (initLock);
-					initialized = true;
+					lock (initEventLock) {
+						initialized = true;
+						if (initializedEvent != null)
+							initializedEvent (this, EventArgs.Empty);
+					}
 					Counters.TargetRuntimesLoading--;
 				}
 			}

@@ -63,10 +63,6 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			ReferenceFrameworksPath = Environment.GetEnvironmentVariable ("MONODEVELOP_FRAMEWORKS_FILE");
 			GeneratedFrameworksFile = Environment.GetEnvironmentVariable ("MONODEVELOP_FRAMEWORKS_OUTFILE");
-			LoadUserAssemblyContext ();
-			userAssemblyContext.Changed += delegate {
-				SaveUserAssemblyContext ();
-			};
 		}
 		
 		internal void Initialize ()
@@ -82,6 +78,11 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			if (CurrentRuntime == null)
 				LoggingService.LogFatalError ("Could not create runtime info for current runtime");
+			
+			LoadUserAssemblyContext ();
+			userAssemblyContext.Changed += delegate {
+				SaveUserAssemblyContext ();
+			};
 		}
 		
 		public TargetRuntime DefaultRuntime {

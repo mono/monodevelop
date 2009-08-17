@@ -1,5 +1,22 @@
 2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Added an event
+	  which is fired when the runtime has finished initializing.
+
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: Load
+	  the user assembly context after the runtimes have been
+	  initialized.
+
+	* MonoDevelop.Core.Assemblies/DirectoryAssemblyContext.cs:
+	  Don't update the packages until the current runtime has been
+	  initialized. It is required to find the target framework of
+	  the assemblies.
+
+	* MonoDevelop.Core/Runtime.cs: Don't call shutdown here. The
+	  Main method does it.
+
+2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
 	* MonoDevelop.Core.Assemblies/SystemPackage.cs:
 	* MonoDevelop.Core.Assemblies/AssemblyContext.cs:
