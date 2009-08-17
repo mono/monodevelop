@@ -74,7 +74,7 @@ namespace MonoDevelop.Autotools
 				integrationEnabled = false;
 		}
 		
-		internal static AssemblyContext GetMonoRuntimeContext ()
+		internal static IAssemblyContext GetMonoRuntimeContext ()
 		{
 			if (Runtime.SystemAssemblyService.CurrentRuntime.RuntimeId == "Mono")
 				return Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext;

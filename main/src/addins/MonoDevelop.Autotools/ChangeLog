@@ -1,3 +1,7 @@
+2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MakefileData.cs: Track api changes.
+
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MakefileData.cs:
