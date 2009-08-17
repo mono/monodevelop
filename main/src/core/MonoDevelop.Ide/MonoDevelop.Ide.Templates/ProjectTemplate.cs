@@ -159,15 +159,16 @@ namespace MonoDevelop.Ide.Templates
 				ExpandLanguageWildcards (listLanguages);
 
 				this.languagename = listLanguages [0];
+				
+				if (!String.IsNullOrEmpty (languagename) && !category.StartsWith (languagename + "/"))
+					category = languagename + "/" + category;
 
-				int i = 0;
-				foreach (string language in listLanguages) {
+				for (int i = 1; i < listLanguages.Count; i++) {
+					string language = listLanguages[i];
 					try {
-						if (i++ != 0)
-							ProjectTemplates.Add (new ProjectTemplate (addin, id, codon, language));
-					}
-					catch (Exception e) {
-						LoggingService.LogFatalError (GettextCatalog.GetString ("Error loading template {0}", codon.Id), e);
+						ProjectTemplates.Add (new ProjectTemplate (addin, id, codon, language));
+					} catch (Exception e) {
+						LoggingService.LogError (GettextCatalog.GetString ("Error loading template {0} for language {1}", codon.Id, language), e);
 					}
 				}
 			}
