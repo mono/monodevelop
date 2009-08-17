@@ -1,3 +1,8 @@
+2009-08-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CodeGeneration/CodeGenerationOptions.cs: Don't
+	  explode when ParsedDocument or CompilationUnit is null.
+
 2009-08-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:

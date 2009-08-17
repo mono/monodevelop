@@ -68,15 +68,15 @@ namespace MonoDevelop.CodeGeneration
 		
 		public static CodeGenerationOptions CreateCodeGenerationOptions (Document document)
 		{
-			ProjectDom dom = document.Project != null ? ProjectDomService.GetProjectDom (document.Project) : ProjectDom.Empty;
-			IType enclosingType = document.ParsedDocument.CompilationUnit.GetTypeAt (document.TextEditor.CursorLine, document.TextEditor.CursorColumn);
-			IMember enclosingMember = document.ParsedDocument.CompilationUnit.GetMemberAt (document.TextEditor.CursorLine, document.TextEditor.CursorColumn);
-			return new CodeGenerationOptions () {
-				Dom = dom,
+			var options = new CodeGenerationOptions () {
+				Dom = document.Project != null ? ProjectDomService.GetProjectDom (document.Project) : ProjectDom.Empty,
 				Document = document,
-				EnclosingType = enclosingType,
-				EnclosingMember = enclosingMember
 			};
+			if (document.ParsedDocument != null && document.ParsedDocument.CompilationUnit != null) {
+				options.EnclosingType = document.ParsedDocument.CompilationUnit.GetTypeAt (document.TextEditor.CursorLine, document.TextEditor.CursorColumn);
+				options.EnclosingMember = document.ParsedDocument.CompilationUnit.GetMemberAt (document.TextEditor.CursorLine, document.TextEditor.CursorColumn);
+			}
+			return options;
 		}
 		
 	}
