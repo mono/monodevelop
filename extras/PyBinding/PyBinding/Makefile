@@ -99,6 +99,7 @@ RESOURCES =  \
 	PyBinding.addin.xml \
 	Resources/BasicScriptPySourceFile.xft.xml \
 	Resources/completion.py \
+	Resources/EmptyDjangoProject.xpt.xml \
 	Resources/EmptyPyProject.xpt.xml \
 	Resources/EmptyPySourceFile.xft.xml \
 	Resources/py-icon-32.png \

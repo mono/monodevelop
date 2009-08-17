@@ -47,6 +47,9 @@
     	<ProjectTemplate
     		id = "EmptyPyProject"
     		resource = "EmptyPyProject.xpt.xml"/>
+    	<ProjectTemplate
+    		id = "EmptyDjangoPyProject"
+    		resource = "EmptyDjangoProject.xpt.xml"/>
     </Extension>
     
     <Extension path = "/MonoDevelop/Core/MimeTypes">

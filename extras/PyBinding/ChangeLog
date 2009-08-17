@@ -1,3 +1,8 @@
+2009-08-17 John Tindell <john@yeticode.co.uk>
+
+	* Resources/DjangoProject.xpt.xml: template that creates same
+	files as "django-admin startproject ${projectname}"
+
 2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* PyBinding.sln: Remove obsolete extension.
