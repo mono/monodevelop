@@ -73,8 +73,9 @@ namespace MonoDevelop.CodeGeneration
 		IGenerateAction curInitializeObject = null;
 		CodeGenerationOptions options;
 		
-		GenerateCodeWindow (MonoDevelop.Projects.Gui.Completion.CodeCompletionContext completionContext) : base(Gtk.WindowType.Toplevel)
+		GenerateCodeWindow (CodeGenerationOptions options, MonoDevelop.Projects.Gui.Completion.CodeCompletionContext completionContext) : base(Gtk.WindowType.Toplevel)
 		{
+			this.options = options;
 			Move (completionContext.TriggerXCoord, completionContext.TriggerYCoord);
 			this.Build ();
 			scrolledwindow1.Child = treeviewGenerateActions;
@@ -167,7 +168,7 @@ namespace MonoDevelop.CodeGeneration
 			if (validGenerators.Count < 1)
 				return;
 			
-			var window = new GenerateCodeWindow (completionContext);
+			var window = new GenerateCodeWindow (options, completionContext);
 			window.Populate (validGenerators);
 			window.ShowAll ();
 		}
