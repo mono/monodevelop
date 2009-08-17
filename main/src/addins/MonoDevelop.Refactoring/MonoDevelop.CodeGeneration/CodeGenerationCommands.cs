@@ -48,9 +48,7 @@ namespace MonoDevelop.CodeGeneration
 			if (completionWidget == null)
 				return;
 			CodeCompletionContext completionContext = completionWidget.CreateCodeCompletionContext (document.TextEditor.CursorPosition);
-			GenerateCodeWindow codeWindow = new GenerateCodeWindow (document, completionContext);
-			codeWindow.Create ();
+			GenerateCodeWindow.ShowIfValid (document, completionContext);
 		}
-		
 	}
 }

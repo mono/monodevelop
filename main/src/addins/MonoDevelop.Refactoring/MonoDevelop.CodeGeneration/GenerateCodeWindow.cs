@@ -30,6 +30,7 @@ using Gtk;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Refactoring;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -72,9 +73,8 @@ namespace MonoDevelop.CodeGeneration
 		IGenerateAction curInitializeObject = null;
 		CodeGenerationOptions options;
 		
-		public GenerateCodeWindow (Document document, MonoDevelop.Projects.Gui.Completion.CodeCompletionContext completionContext) : base(Gtk.WindowType.Toplevel)
+		GenerateCodeWindow (MonoDevelop.Projects.Gui.Completion.CodeCompletionContext completionContext) : base(Gtk.WindowType.Toplevel)
 		{
-			options = CodeGenerationOptions.CreateCodeGenerationOptions (document);
 			Move (completionContext.TriggerXCoord, completionContext.TriggerYCoord);
 			this.Build ();
 			scrolledwindow1.Child = treeviewGenerateActions;
@@ -125,6 +125,17 @@ namespace MonoDevelop.CodeGeneration
 			messageArea.Add (vbox1);
 			this.Add (messageArea);
 		}
+		
+		void Populate (List<ICodeGenerator> validGenerators)
+		{
+			foreach (var generator in validGenerators)
+				generateActionsStore.AppendValues (ImageService.GetPixbuf (generator.Icon, IconSize.Menu), generator.Text, generator);
+			
+			TreeIter iter;
+			if (generateActionsStore.GetIterFirst (out iter))
+				treeviewGenerateActions.Selection.SelectIter (iter);
+			treeviewGenerateActions.GrabFocus ();
+		}
 
 		void TreeviewGenerateActionsSelectionChanged (object sender, EventArgs e)
 		{
@@ -144,24 +155,21 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 		
-		public void Create ()
+		public static void ShowIfValid (Document document, MonoDevelop.Projects.Gui.Completion.CodeCompletionContext completionContext)
 		{
-			bool isValid = false;
+			var options = CodeGenerationOptions.CreateCodeGenerationOptions (document);
+			
+			var validGenerators = new List<ICodeGenerator> ();
 			foreach (ICodeGenerator generator in RefactoringService.CodeGenerators) {
-				if (!generator.IsValid (options))
-					continue;
-				isValid = true;
-				generateActionsStore.AppendValues (ImageService.GetPixbuf (generator.Icon, IconSize.Menu), generator.Text, generator);
+				if (generator.IsValid (options))
+					validGenerators.Add (generator);
 			}
-			if (!isValid) {
-				Destroy ();
+			if (validGenerators.Count < 1)
 				return;
-			}
-			TreeIter iter;
-			if (generateActionsStore.GetIterFirst (out iter))
-				treeviewGenerateActions.Selection.SelectIter (iter);
-			treeviewGenerateActions.GrabFocus ();
-			this.ShowAll ();
+			
+			var window = new GenerateCodeWindow (completionContext);
+			window.Populate (validGenerators);
+			window.ShowAll ();
 		}
 		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)

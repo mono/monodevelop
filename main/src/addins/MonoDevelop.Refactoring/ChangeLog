@@ -1,5 +1,11 @@
 2009-08-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:
+	* MonoDevelop.CodeGeneration/CodeGenerationCommands.cs: Don't
+	  show the generator window at all if it's not valid.
+
+2009-08-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.CodeGeneration/CodeGenerationOptions.cs: Don't
 	  explode when ParsedDocument or CompilationUnit is null.
 
