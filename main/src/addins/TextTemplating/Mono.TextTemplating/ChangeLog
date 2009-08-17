@@ -1,3 +1,8 @@
+2009-08-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/TemplatingEngine.cs: Fix NRE when
+	  template fails to compile.
+
 2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

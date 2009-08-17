@@ -41,7 +41,10 @@ namespace Mono.TextTemplating
 		
 		public string ProcessTemplate (string content, ITextTemplatingEngineHost host)
 		{
-			return CompileTemplate (content, host).Process ();
+			var tpl = CompileTemplate (content, host);
+			if (tpl != null)
+				return tpl.Process ();
+			return null;
 		}
 
 		public CompiledTemplate CompileTemplate (string content, ITextTemplatingEngineHost host)
