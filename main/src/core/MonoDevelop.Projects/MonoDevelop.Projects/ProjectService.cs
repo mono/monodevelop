@@ -654,7 +654,8 @@ namespace MonoDevelop.Projects
 			else
 				throw new InvalidOperationException ("Unknown item type: " + item);
 			
-			res.SourceTarget = item;
+			if (res != null)
+				res.SourceTarget = item;
 			return res;
 		}
 		

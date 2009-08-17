@@ -351,7 +351,8 @@ namespace MonoDevelop.Projects
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			composedAssemblyContext.Dispose ();
+			if (composedAssemblyContext != null)
+				composedAssemblyContext.Dispose ();
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
 			FileService.FileRemoved -= OnFileRemoved;
 		}

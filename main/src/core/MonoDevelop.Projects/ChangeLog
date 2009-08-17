@@ -1,3 +1,9 @@
+2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/ProjectService.cs: Added missing null
+	  checks.
+
 2009-08-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed "Bug 531525
