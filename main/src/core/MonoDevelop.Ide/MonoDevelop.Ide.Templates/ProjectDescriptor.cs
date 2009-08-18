@@ -134,12 +134,15 @@ namespace MonoDevelop.Ide.Templates
 				return;
 			}
 
-			project.Name = StringParserService.Parse (name, new string[,] { {
+			string pname = StringParserService.Parse (name, new string[,] { {
 				"ProjectName",
 				projectCreateInformation.ProjectName
 			} });
-			project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, project.Name);
-
+			
+			// Set the file before setting the name, to make sure the file extension is kept
+			project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, pname);
+			project.Name = pname;
+			
 			if (project is DotNetProject) {
 				if (policyParent.ParentSolution != null && !policyParent.ParentSolution.FileFormat.CanWrite (item))
 					TryFixingFramework (policyParent.ParentSolution.FileFormat, (DotNetProject)project);
