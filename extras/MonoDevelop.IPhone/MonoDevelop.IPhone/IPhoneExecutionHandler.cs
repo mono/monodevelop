@@ -111,7 +111,7 @@ namespace MonoDevelop.IPhone
 		{
 			if (stop)
 				throw new InvalidOperationException ("Cannot start after stopping");
-			if (thread == null)
+			if (thread != null)
 				throw new InvalidOperationException ("Already started");
 			thread = new Thread (Run) {
 				IsBackground = true,

@@ -1,5 +1,9 @@
 2009-08-18  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneExecutionHandler.cs: Fix typo.
+
+2009-08-18  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneExecutionHandler.cs: Rework the file tailing and the
 	  cleanup and disposal of the threads and file handles.
 	  Hopefully fixes fix "Bug 531110 - MonoTouch: Application
