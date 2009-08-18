@@ -120,7 +120,7 @@ namespace MonoDevelop.Projects
 					return;
 				string oldName = name;
 				name = value;
-				if (ItemHandler.SyncFileName) {
+				if (!Loading && ItemHandler.SyncFileName) {
 					if (string.IsNullOrEmpty (fileName))
 						FileName = value;
 					else {

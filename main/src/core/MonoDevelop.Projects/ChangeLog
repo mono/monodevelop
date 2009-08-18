@@ -1,3 +1,10 @@
+2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/SolutionEntityItem.cs: When setting the
+	  name, don't try to update the file name if the project is
+	  being deserialized. Fixes bug #527937 - Project names
+	  truncate after opening solution.
+
 2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs:
