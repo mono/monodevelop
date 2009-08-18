@@ -611,6 +611,22 @@
                                 <property name="MemberName" />
                                 <property name="Spacing">6</property>
                                 <child>
+                                  <widget class="Gtk.Button" id="buttonFlush">
+                                    <property name="MemberName" />
+                                    <property name="CanFocus">True</property>
+                                    <property name="Type">TextOnly</property>
+                                    <property name="Label" translatable="yes">Flush Memory</property>
+                                    <property name="UseUnderline">True</property>
+                                    <signal name="Clicked" handler="OnButtonFlushClicked" />
+                                  </widget>
+                                  <packing>
+                                    <property name="Position">0</property>
+                                    <property name="AutoSize">True</property>
+                                    <property name="Expand">False</property>
+                                    <property name="Fill">False</property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <widget class="Gtk.Button" id="buttonZoomOut">
                                     <property name="MemberName" />
                                     <property name="CanFocus">True</property>
@@ -622,7 +638,7 @@
                                   </widget>
                                   <packing>
                                     <property name="PackType">End</property>
-                                    <property name="Position">0</property>
+                                    <property name="Position">1</property>
                                     <property name="AutoSize">True</property>
                                     <property name="Expand">False</property>
                                     <property name="Fill">False</property>
@@ -640,7 +656,7 @@
                                   </widget>
                                   <packing>
                                     <property name="PackType">End</property>
-                                    <property name="Position">1</property>
+                                    <property name="Position">2</property>
                                     <property name="AutoSize">True</property>
                                     <property name="Expand">False</property>
                                     <property name="Fill">False</property>

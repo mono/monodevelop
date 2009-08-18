@@ -1,3 +1,10 @@
+2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Core.Gui.Dialogs/InstrumentationViewerDialog.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.InstrumentationViewerDialog.cs:
+	  Fixed warning. Added method for flushing memory.
+
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui\DispatchService.cs: MSBuild requires

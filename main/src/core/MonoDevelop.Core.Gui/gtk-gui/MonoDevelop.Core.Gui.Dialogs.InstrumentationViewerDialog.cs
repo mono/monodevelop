@@ -57,6 +57,8 @@ namespace MonoDevelop.Core.Gui.Dialogs {
         
         private Gtk.HBox hbox3;
         
+        private Gtk.Button buttonFlush;
+        
         private Gtk.Button buttonZoomOut;
         
         private Gtk.Button buttonZoomIn;
@@ -280,67 +282,78 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.hbox3.Name = "hbox3";
             this.hbox3.Spacing = 6;
             // Container child hbox3.Gtk.Box+BoxChild
+            this.buttonFlush = new Gtk.Button();
+            this.buttonFlush.CanFocus = true;
+            this.buttonFlush.Name = "buttonFlush";
+            this.buttonFlush.UseUnderline = true;
+            this.buttonFlush.Label = Mono.Unix.Catalog.GetString("Flush Memory");
+            this.hbox3.Add(this.buttonFlush);
+            Gtk.Box.BoxChild w42 = ((Gtk.Box.BoxChild)(this.hbox3[this.buttonFlush]));
+            w42.Position = 0;
+            w42.Expand = false;
+            w42.Fill = false;
+            // Container child hbox3.Gtk.Box+BoxChild
             this.buttonZoomOut = new Gtk.Button();
             this.buttonZoomOut.CanFocus = true;
             this.buttonZoomOut.Name = "buttonZoomOut";
             this.buttonZoomOut.UseUnderline = true;
             // Container child buttonZoomOut.Gtk.Container+ContainerChild
-            Gtk.Alignment w42 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w43 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment4.Gtk.Container+ContainerChild
-            Gtk.HBox w43 = new Gtk.HBox();
-            w43.Spacing = 2;
+            Gtk.HBox w44 = new Gtk.HBox();
+            w44.Spacing = 2;
             // Container child GtkHBox5.Gtk.Container+ContainerChild
-            Gtk.Image w44 = new Gtk.Image();
-            w44.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-zoom-out", Gtk.IconSize.Menu, 16);
+            Gtk.Image w45 = new Gtk.Image();
+            w45.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-zoom-out", Gtk.IconSize.Menu, 16);
+            w44.Add(w45);
+            // Container child GtkHBox5.Gtk.Container+ContainerChild
+            Gtk.Label w47 = new Gtk.Label();
+            w44.Add(w47);
             w43.Add(w44);
-            // Container child GtkHBox5.Gtk.Container+ContainerChild
-            Gtk.Label w46 = new Gtk.Label();
-            w43.Add(w46);
-            w42.Add(w43);
-            this.buttonZoomOut.Add(w42);
+            this.buttonZoomOut.Add(w43);
             this.hbox3.Add(this.buttonZoomOut);
-            Gtk.Box.BoxChild w50 = ((Gtk.Box.BoxChild)(this.hbox3[this.buttonZoomOut]));
-            w50.PackType = ((Gtk.PackType)(1));
-            w50.Position = 0;
-            w50.Expand = false;
-            w50.Fill = false;
+            Gtk.Box.BoxChild w51 = ((Gtk.Box.BoxChild)(this.hbox3[this.buttonZoomOut]));
+            w51.PackType = ((Gtk.PackType)(1));
+            w51.Position = 1;
+            w51.Expand = false;
+            w51.Fill = false;
             // Container child hbox3.Gtk.Box+BoxChild
             this.buttonZoomIn = new Gtk.Button();
             this.buttonZoomIn.CanFocus = true;
             this.buttonZoomIn.Name = "buttonZoomIn";
             this.buttonZoomIn.UseUnderline = true;
             // Container child buttonZoomIn.Gtk.Container+ContainerChild
-            Gtk.Alignment w51 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w52 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment3.Gtk.Container+ContainerChild
-            Gtk.HBox w52 = new Gtk.HBox();
-            w52.Spacing = 2;
+            Gtk.HBox w53 = new Gtk.HBox();
+            w53.Spacing = 2;
             // Container child GtkHBox4.Gtk.Container+ContainerChild
-            Gtk.Image w53 = new Gtk.Image();
-            w53.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-zoom-in", Gtk.IconSize.Menu, 16);
+            Gtk.Image w54 = new Gtk.Image();
+            w54.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-zoom-in", Gtk.IconSize.Menu, 16);
+            w53.Add(w54);
+            // Container child GtkHBox4.Gtk.Container+ContainerChild
+            Gtk.Label w56 = new Gtk.Label();
+            w53.Add(w56);
             w52.Add(w53);
-            // Container child GtkHBox4.Gtk.Container+ContainerChild
-            Gtk.Label w55 = new Gtk.Label();
-            w52.Add(w55);
-            w51.Add(w52);
-            this.buttonZoomIn.Add(w51);
+            this.buttonZoomIn.Add(w52);
             this.hbox3.Add(this.buttonZoomIn);
-            Gtk.Box.BoxChild w59 = ((Gtk.Box.BoxChild)(this.hbox3[this.buttonZoomIn]));
-            w59.PackType = ((Gtk.PackType)(1));
-            w59.Position = 1;
-            w59.Expand = false;
-            w59.Fill = false;
-            this.boxCharts.Add(this.hbox3);
-            Gtk.Box.BoxChild w60 = ((Gtk.Box.BoxChild)(this.boxCharts[this.hbox3]));
-            w60.Position = 0;
+            Gtk.Box.BoxChild w60 = ((Gtk.Box.BoxChild)(this.hbox3[this.buttonZoomIn]));
+            w60.PackType = ((Gtk.PackType)(1));
+            w60.Position = 2;
             w60.Expand = false;
             w60.Fill = false;
+            this.boxCharts.Add(this.hbox3);
+            Gtk.Box.BoxChild w61 = ((Gtk.Box.BoxChild)(this.boxCharts[this.hbox3]));
+            w61.Position = 0;
+            w61.Expand = false;
+            w61.Fill = false;
             // Container child boxCharts.Gtk.Box+BoxChild
             this.frameCharts = new Gtk.VBox();
             this.frameCharts.Name = "frameCharts";
             this.frameCharts.Spacing = 6;
             this.boxCharts.Add(this.frameCharts);
-            Gtk.Box.BoxChild w61 = ((Gtk.Box.BoxChild)(this.boxCharts[this.frameCharts]));
-            w61.Position = 1;
+            Gtk.Box.BoxChild w62 = ((Gtk.Box.BoxChild)(this.boxCharts[this.frameCharts]));
+            w62.Position = 1;
             // Container child boxCharts.Gtk.Box+BoxChild
             this.chartScroller = new Gtk.HScrollbar(null);
             this.chartScroller.Name = "chartScroller";
@@ -349,27 +362,27 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.chartScroller.Adjustment.PageSize = 10;
             this.chartScroller.Adjustment.StepIncrement = 1;
             this.boxCharts.Add(this.chartScroller);
-            Gtk.Box.BoxChild w62 = ((Gtk.Box.BoxChild)(this.boxCharts[this.chartScroller]));
-            w62.Position = 2;
-            w62.Expand = false;
-            w62.Fill = false;
+            Gtk.Box.BoxChild w63 = ((Gtk.Box.BoxChild)(this.boxCharts[this.chartScroller]));
+            w63.Position = 2;
+            w63.Expand = false;
+            w63.Fill = false;
             this.hbox4.Add(this.boxCharts);
-            Gtk.Box.BoxChild w63 = ((Gtk.Box.BoxChild)(this.hbox4[this.boxCharts]));
-            w63.Position = 0;
+            Gtk.Box.BoxChild w64 = ((Gtk.Box.BoxChild)(this.hbox4[this.boxCharts]));
+            w64.Position = 0;
             this.hpaned2.Add(this.hbox4);
             this.hpaned1.Add(this.hpaned2);
             this.vbox2.Add(this.hpaned1);
-            Gtk.Box.BoxChild w66 = ((Gtk.Box.BoxChild)(this.vbox2[this.hpaned1]));
-            w66.Position = 1;
+            Gtk.Box.BoxChild w67 = ((Gtk.Box.BoxChild)(this.vbox2[this.hpaned1]));
+            w67.Position = 1;
             w1.Add(this.vbox2);
-            Gtk.Box.BoxChild w67 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
-            w67.Position = 0;
+            Gtk.Box.BoxChild w68 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
+            w68.Position = 0;
             // Internal child MonoDevelop.Core.Gui.Dialogs.InstrumentationViewerDialog.ActionArea
-            Gtk.HButtonBox w68 = this.ActionArea;
-            w68.Name = "dialog1_ActionArea";
-            w68.Spacing = 10;
-            w68.BorderWidth = ((uint)(5));
-            w68.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w69 = this.ActionArea;
+            w69.Name = "dialog1_ActionArea";
+            w69.Spacing = 10;
+            w69.BorderWidth = ((uint)(5));
+            w69.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -378,10 +391,10 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.buttonOk.UseStock = true;
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-close";
-            w68.Add(this.buttonOk);
-            Gtk.ButtonBox.ButtonBoxChild w69 = ((Gtk.ButtonBox.ButtonBoxChild)(w68[this.buttonOk]));
-            w69.Expand = false;
-            w69.Fill = false;
+            w69.Add(this.buttonOk);
+            Gtk.ButtonBox.ButtonBoxChild w70 = ((Gtk.ButtonBox.ButtonBoxChild)(w69[this.buttonOk]));
+            w70.Expand = false;
+            w70.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
@@ -396,6 +409,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.buttonDelete.Clicked += new System.EventHandler(this.OnButtonDeleteClicked);
             this.buttonHideSelector.Clicked += new System.EventHandler(this.OnButtonHideSelectorClicked);
             this.buttonSelect.Clicked += new System.EventHandler(this.OnButtonSelectClicked);
+            this.buttonFlush.Clicked += new System.EventHandler(this.OnButtonFlushClicked);
             this.buttonZoomIn.Clicked += new System.EventHandler(this.OnButtonZoomInClicked);
             this.buttonZoomOut.Clicked += new System.EventHandler(this.OnButtonZoomOutClicked);
             this.chartScroller.ValueChanged += new System.EventHandler(this.OnChartScrollerValueChanged);

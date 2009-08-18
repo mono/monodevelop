@@ -39,7 +39,6 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		ListStore seriesStore;
 		ChartView view = new ChartView ();
 		List<ChartView> views = new List<ChartView> ();
-		bool loading;
 		
 		BasicChart countChart;
 		BasicChart timeChart;
@@ -531,6 +530,15 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				buttonDelete.Sensitive = comboProfiles.Active != 0;
 				buttonSave.Sensitive = view.Modified;
 				buttonSaveAs.Sensitive = true;
+			}
+		}
+
+		protected virtual void OnButtonFlushClicked (object sender, System.EventArgs e)
+		{
+			GC.Collect ();
+			for (int n=0; n<500; n++) {
+				byte[] mem = new byte [1024 * 1000];
+				mem [0] = 0;
 			}
 		}
 	}
