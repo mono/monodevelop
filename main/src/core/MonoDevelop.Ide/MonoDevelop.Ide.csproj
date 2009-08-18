@@ -310,7 +310,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\TipOfTheDay.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AddinLoadErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildPanel.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\CodeGenerationPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\LoadSavePanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AddInsOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AssemblyReferencePanel.cs" />
@@ -410,7 +409,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\TextEditorCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\FileTabCommands.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs" />

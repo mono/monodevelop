@@ -63,7 +63,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs \
@@ -185,6 +184,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs \
 	MonoDevelop.Ide.Gui.Content/TextStylePolicy.cs \
+	MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs \
@@ -211,15 +211,13 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectFileFormatDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs \
-	MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs \
 	MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs \
+	MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/AssemblyFoldersPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
-	MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs \
