@@ -1,3 +1,8 @@
+2009-08-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Fixed clipping for mac
+	  (vwduder).
+
 2009-08-14  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViActionMaps.cs: 
