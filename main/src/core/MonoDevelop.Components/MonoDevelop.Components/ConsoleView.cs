@@ -231,9 +231,9 @@ namespace MonoDevelop.Components
 			set {
 				TextIter start = InputLineBegin;
 				TextIter end = InputLineEnd;
-				Buffer.Delete (start, end);
+				Buffer.Delete (ref start, ref end);
 				start = InputLineBegin;
-				Buffer.Insert (start, value);
+				Buffer.Insert (ref start, value);
 			}
 		}
 		
@@ -246,7 +246,8 @@ namespace MonoDevelop.Components
 		
 		public void WriteOutput (string line)
 		{
-			Buffer.Insert (Buffer.EndIter , line);
+			TextIter start = Buffer.EndIter;
+			Buffer.Insert (ref start , line);
 			Buffer.PlaceCursor (Buffer.EndIter);
 			textView.ScrollMarkOnscreen (Buffer.InsertMark);
 		}
@@ -258,12 +259,13 @@ namespace MonoDevelop.Components
 	
 		public void Prompt (bool newLine, bool multiline)
 		{
+			TextIter end = Buffer.EndIter;
 			if (newLine)
-				Buffer.Insert (Buffer.EndIter , "\n");
+				Buffer.Insert (ref end, "\n");
 			if (multiline)
-				Buffer.Insert (Buffer.EndIter , PromptMultiLineString);
+				Buffer.Insert (ref end, PromptMultiLineString);
 			else
-				Buffer.Insert (Buffer.EndIter , PromptString);
+				Buffer.Insert (ref end, PromptString);
 	
 			Buffer.PlaceCursor (Buffer.EndIter);
 			textView.ScrollMarkOnscreen (Buffer.InsertMark);

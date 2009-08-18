@@ -1,3 +1,10 @@
+2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/ConsoleView.cs: Fix warnings.
+
+	* MonoDevelop.Components/FolderListSelector.cs: Fix button
+	  sensitivity issue.
+
 2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

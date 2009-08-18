@@ -43,6 +43,9 @@ namespace MonoDevelop.Components
 			store = new ListStore (typeof(String));
 			dirList.Model = store;
 			dirList.AppendColumn ("", new CellRendererText (), "text", 0);
+			dirList.Selection.Changed += delegate {
+				UpdateStatus ();
+			};
 		}
 		
 		public List<string> Directories {
