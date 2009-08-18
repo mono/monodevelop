@@ -1,5 +1,16 @@
 2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:
+	  Updated license header. The file was rewritten long time
+	  ago. Minor fix.
+
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:
+	  Improved performance of cyclic reference check. Improve the
+	  way cyclic reference messages are shown. Show a message for
+	  incompatible framework.
+
+2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:
 	  Updated license header. The file was rewritten long time
 	  ago.

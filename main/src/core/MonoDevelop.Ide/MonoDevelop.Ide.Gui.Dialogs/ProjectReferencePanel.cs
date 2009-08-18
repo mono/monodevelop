@@ -28,7 +28,7 @@
 
 
 using System;
-
+using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			this.selectDialog = selectDialog;
 			
-			store = new ListStore (typeof (string), typeof (string), typeof(Project), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool));
+			store = new ListStore (typeof (string), typeof (string), typeof(Project), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool), typeof(string));
 			store.SetSortFunc (0, CompareNodes);
 			treeView = new TreeView (store);
 			
@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			CellRendererText text_render = new CellRendererText ();
 			secondColumn.PackStart (text_render, true);
 			secondColumn.AddAttribute (text_render, "text", 0);
-			secondColumn.AddAttribute (text_render, "visible", 5);
+			secondColumn.AddAttribute (text_render, "foreground", 6);
 			
 			treeView.AppendColumn (firstColumn);
 			treeView.AppendColumn (secondColumn);
@@ -145,41 +145,54 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return;
 			}
 			
-			bool circDeps = false;
+			Dictionary<DotNetProject,bool> references = new Dictionary<DotNetProject, bool> ();
+			
 			foreach (Project projectEntry in openSolution.GetAllSolutionItems<Project>()) {
 
-				if (projectEntry == configureProject) {
+				if (projectEntry == configureProject)
 					continue;
-				}
 
+				string txt = projectEntry.Name;
+				bool allowSelecting = true;
 				DotNetProject netProject = projectEntry as DotNetProject;
 				if (netProject != null) {
-					if (ProjectReferencesProject (netProject, configureProject.Name)) {
-						circDeps = true;
-						continue;
+					if (ProjectReferencesProject (references, netProject, configureProject.Name)) {
+						txt += " " + GettextCatalog.GetString ("(Cyclic dependencies not allowed)");
+						allowSelecting = false;
 					}
-				    if (!configureProject.TargetFramework.IsCompatibleWithFramework (netProject.TargetFramework.Id))
-						continue;
+				    else if (!configureProject.TargetFramework.IsCompatibleWithFramework (netProject.TargetFramework.Id)) {
+						txt += " " + GettextCatalog.GetString ("(Incompatible target framework: v{0})", netProject.TargetFramework.Id);
+						allowSelecting = false;
+					}
 				}
 				
 				Gdk.Pixbuf icon = ImageService.GetPixbuf (projectEntry.StockIcon, IconSize.Menu);
-				store.AppendValues (projectEntry.Name, projectEntry.BaseDirectory, projectEntry, false, icon, true);
+				if (!allowSelecting)
+					icon = ImageService.MakeTransparent (icon, 0.5);
+				Gtk.TreeIter it = store.AppendValues (txt, projectEntry.BaseDirectory.ToString (), projectEntry, false, icon, allowSelecting);
+				if (!allowSelecting)
+					store.SetValue (it, 6, "dimgrey");
 			}
-			
-			if (circDeps)
-				store.AppendValues ("", "<span foreground='dimgrey'>" + GettextCatalog.GetString ("(Projects referencing '{0}' are not shown,\nsince cyclic dependencies are not allowed)", configureProject.Name) + "</span>", null, false, null, false);
 		}
 		
-		bool ProjectReferencesProject (DotNetProject project, string targetProject)
+		bool ProjectReferencesProject (Dictionary<DotNetProject,bool> references, DotNetProject project, string targetProject)
 		{
+			bool res;
+			if (references.TryGetValue (project, out res))
+				return res;
 			foreach (ProjectReference pr in project.References) {
-				if (pr.Reference == targetProject)
+				if (pr.Reference == targetProject) {
+					references [project] = true;
 					return true;
+				}
 				
 				DotNetProject pref = project.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
-				if (pref != null && ProjectReferencesProject (pref, targetProject))
+				if (pref != null && ProjectReferencesProject (references, pref, targetProject)) {
+					references [project] = true;
 					return true;
+				}
 			}
+			references [project] = false;
 			return false;
 		}
 	}
