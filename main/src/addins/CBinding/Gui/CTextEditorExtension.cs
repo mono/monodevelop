@@ -228,7 +228,7 @@ namespace CBinding
 		public override ICompletionDataList HandleCodeCompletion (
 		    ICodeCompletionContext completionContext, char completionChar)
 		{
-			string lineText = Editor.GetLineText (completionContext.TriggerLine + 1).TrimEnd();
+			string lineText = Editor.GetLineText (completionContext.TriggerLine).TrimEnd();
 			
 			// If the line ends with a matched extension, invoke its handler
 			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {

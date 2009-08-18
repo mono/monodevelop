@@ -122,9 +122,10 @@ namespace CBinding.Parser
 				p = Runtime.ProcessService.StartProcess ("gcc", option + " -MG " + filename.Replace(@"\ ", " ").Replace(" ", @"\ "), null, null);
 				p.WaitForOutput ();
 
-				// Skip first two lines (.o & .c* files) - WARNING, sometimes this is compacted to 1 line... we need a better way of handling this.
-				if(p.StandardOutput.ReadLine () == null) return new string[0]; // object file
-				if(p.StandardOutput.ReadLine () == null) return new string[0]; // compile file
+				// Doing the below completely breaks header parsing
+				// // Skip first two lines (.o & .c* files) - WARNING, sometimes this is compacted to 1 line... we need a better way of handling this.
+				// if(p.StandardOutput.ReadLine () == null) return new string[0]; // object file
+				// if(p.StandardOutput.ReadLine () == null) return new string[0]; // compile file
 
 				string line;
 				while ((line = p.StandardOutput.ReadLine ()) != null)
@@ -359,15 +360,17 @@ namespace CBinding.Parser
 				return;
 
 			string[] headers = Headers (project, filename, false);
-			string ctags_kinds = "--C++-kinds=+px";
+			string[] system_headers = diff (Headers (project, filename, true), headers);
+			StringBuilder ctags_kinds = new StringBuilder ("--C++-kinds=+px");
 			
 			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
-				ctags_kinds += "+l";
+				ctags_kinds.Append ("+l");
 			
 			// Maybe we should only ask for locals for 'local' files? (not external #includes?)
-			string ctags_options = ctags_kinds + " --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f - '" + filename + "'";// " + string.Join (" ", headers);
-			
-			string[] system_headers = diff (Headers (project, filename, true), headers);
+			ctags_kinds.AppendFormat (" --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f - '{0}'", filename);
+			foreach (string header in headers) {
+				ctags_kinds.AppendFormat (" '{0}'", header);
+			}
 			
 			string ctags_output = string.Empty;
 
@@ -377,7 +380,7 @@ namespace CBinding.Parser
 				output = new System.IO.StringWriter ();
 				error = new System.IO.StringWriter ();
 				
-				p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, project.BaseDirectory, output, error, null);
+				p = Runtime.ProcessService.StartProcess ("ctags", ctags_kinds.ToString (), project.BaseDirectory, output, error, null);
 				p.WaitForOutput (10000);
 				if (p.ExitCode != 0) {
 					LoggingService.LogError ("Ctags did not successfully populate the tags database from '{0}' within ten seconds.\nError output: {1}", filename, error.ToString ());

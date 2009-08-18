@@ -1,3 +1,10 @@
+2009-08-18  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/Member.cs: 
+	* Gui/CTextEditorExtension.cs: 
+	* Parser/TagDatabaseManager.cs: 
+	  Fix C and C++ completion.
+
 2009-08-17  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Parser/ProjectInformation.cs: Fix #530826.

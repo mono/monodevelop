@@ -30,6 +30,7 @@
 //
 
 using System;
+using System.IO;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Projects;
@@ -80,16 +81,24 @@ namespace CBinding.Parser
 		/// <see cref="System.Boolean"/>
 		/// </returns>
 		protected bool GetInstanceType (Tag tag) {
-			/*Match m = InstanceTypeExpression.Match (tag.Pattern);
+			try {
+				string declaration = null;
+				
+				using (StreamReader reader = new StreamReader (tag.File)) {
+					for (ulong i=0; i<tag.Line; ++i) {
+						declaration = reader.ReadLine ();
+					}
+				}
+				
+				Match m = InstanceTypeExpression.Match (declaration);
+				
+				if (null != m) {
+					instanceType = m.Groups["type"].Value;
+					isPointer = m.Groups["pointer"].Success;
+					return true;
+				}
+			} catch { }
 			
-			if (null == m)
-				return false;
-			
-			instanceType = m.Groups["type"].Value;
-			isPointer = m.Groups["pointer"].Success;
-			
-			return true;*/
-			// TODO: Fix this back up, without using the tag pattern (we reference tags by line number now)
 			return false;
 		}
 	}
