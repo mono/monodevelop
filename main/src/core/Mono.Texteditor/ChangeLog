@@ -1,3 +1,9 @@
+2009-08-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Revert changes to
+	  horizontal clipping, as they caused rendering regressions.
+	  Keep vertical clipping changes.
+
 2009-08-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed clipping for mac

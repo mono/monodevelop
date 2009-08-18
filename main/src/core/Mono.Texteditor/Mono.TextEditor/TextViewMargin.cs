@@ -1757,7 +1757,7 @@ namespace Mono.TextEditor
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
 
-			SetClip (area);
+			SetClip (new Gdk.Rectangle (xStart, area.Y, area.Right - xStart, area.Height));
 			ClipRenderers ();
 
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
