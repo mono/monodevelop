@@ -1275,24 +1275,23 @@ namespace MonoDevelop.Ide.Gui.Components
 			object currentIt = nodeHash [dataObject];
 			if (currentIt is Gtk.TreeIter[]) {
 				Gtk.TreeIter[] arr = (Gtk.TreeIter[]) currentIt;
-				Gtk.TreePath path = store.GetPath (iter);
-				int i = -1;
-				for (int n=0; n<arr.Length; n++) {
-					if (path.Equals (store.GetPath (arr [n]))) {
-						i = n;
-						break;
-					}
+				Gtk.TreePath path = null;
+				List<Gtk.TreeIter> iters = new List<Gtk.TreeIter> ();
+				if (store.IterIsValid (iter))
+					path = store.GetPath (iter);
+				
+				// Iters can't be directly compared (TreeIter.Equals is broken), so we have
+				// to compare paths.
+				foreach (Gtk.TreeIter it in arr) {
+					if (store.IterIsValid (it) && (path == null || !path.Equals (store.GetPath (it))))
+						iters.Add (it);
 				}
-				if (arr.Length > 2) {
-					Gtk.TreeIter[] newArr = new Gtk.TreeIter[arr.Length - 1];
-					Array.Copy (arr, 0, newArr, 0, i);
-					if (i < newArr.Length)
-						Array.Copy (arr, i+1, newArr, i, arr.Length - i - 1);
-					nodeHash [dataObject] = newArr;
-				} else {
-					if (i == 0) nodeHash [dataObject] = arr[1];
-					else nodeHash [dataObject] = arr[0];
-				}
+				if (iters.Count > 1)
+					nodeHash [dataObject] = iters.ToArray ();
+				else if (iters.Count == 1)
+					nodeHash [dataObject] = iters[0];
+				else
+					nodeHash.Remove (dataObject);
 			} else {
 				nodeHash.Remove (dataObject);
 				NotifyNodeRemoved (dataObject, chain);
