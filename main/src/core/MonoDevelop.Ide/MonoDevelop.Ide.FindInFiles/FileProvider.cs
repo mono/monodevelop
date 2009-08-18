@@ -73,7 +73,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.SelectionEndPosition = selectionEndPosition;
 		}
 		
-		string content = null;
 		public virtual TextReader Open ()
 		{
 			if (buffer != null)

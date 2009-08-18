@@ -1509,7 +1509,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		NodeAttributes GetNodeAttributes (TreeNodeNavigator node)
 		{
-			Gtk.TreeIter iter = node.CurrentPosition._iter;
 			object dataObject = node.DataItem;
 			NodeAttributes attributes = NodeAttributes.None;
 			

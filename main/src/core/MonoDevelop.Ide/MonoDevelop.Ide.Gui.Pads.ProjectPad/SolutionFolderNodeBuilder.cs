@@ -139,10 +139,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		void OnEntryRemoved (object sender, SolutionItemEventArgs e)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
-			if (tb != null) {
-				ITreeBuilder tbs = Context.GetTreeBuilder (e.SolutionItem);
+			if (tb != null)
 				tb.Remove ();
-			}
 		}
 	}
 	

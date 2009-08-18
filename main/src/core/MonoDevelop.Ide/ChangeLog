@@ -1,5 +1,29 @@
 2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:
+	* MonoDevelop.Ide.FindInFiles/FileProvider.cs:
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:
+	* MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeWidget.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ConfirmProjectDeleteDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	  Fix warnings.
+
+	* MonoDevelop.Ide.Templates/SolutionDescriptor.cs: Properly
+	  initialize the startup item.
+
+2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Fix project
 	  name truncation issue.
 

@@ -133,5 +133,12 @@ namespace MonoDevelop.Ide.Gui
 			TextFileNavigationPoint other = o as TextFileNavigationPoint;
 			return other != null && other.line == line && base.Equals (other);
 		}
+		
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return line + base.GetHashCode ();
+			}
+		}
 	}
 }

@@ -50,7 +50,6 @@ namespace MonoDevelop.Ide.Gui
 		WorkspaceItemCollection items;
 //		IParserDatabase parserDatabase;
 		string activeConfiguration;
-		TargetRuntime activeRuntime;
 		bool useDefaultRuntime;
 		
 		Dictionary<WorkspaceItem, PropertyBag> userPrefs;
@@ -921,7 +920,6 @@ namespace MonoDevelop.Ide.Gui
 		void NotifyItemAddedGui (WorkspaceItem item)
 		{
 			try {
-				DateTime t = DateTime.Now;
 //				Mono.Profiler.RuntimeControls.EnableProfiler ();
 				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Load (item);
 //				Mono.Profiler.RuntimeControls.DisableProfiler ();

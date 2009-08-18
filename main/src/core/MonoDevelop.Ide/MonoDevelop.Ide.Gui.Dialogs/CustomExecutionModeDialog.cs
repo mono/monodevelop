@@ -36,7 +36,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal partial class CustomExecutionModeDialog : Gtk.Dialog
 	{
-		IExecutionConfigurationEditor editor;
 		IExecutionMode mode;
 		Dictionary<object,IExecutionConfigurationEditor> currentEditors = new Dictionary<object, IExecutionConfigurationEditor> ();
 		CommandExecutionContext ctx;

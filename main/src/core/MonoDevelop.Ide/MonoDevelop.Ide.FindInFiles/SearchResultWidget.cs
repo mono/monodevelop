@@ -236,7 +236,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		string AdjustColors (string markup)
 		{
-			Gdk.Color baseColor = Style.Base (StateType.Normal);
 			StringBuilder result = new StringBuilder ();
 			int idx = markup.IndexOf ("foreground=\"");
 			int offset = 0;
@@ -280,11 +279,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			CellRendererPixbuf fileNamePixbufRenderer = (CellRendererPixbuf)cell;
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			fileNamePixbufRenderer.Pixbuf = DesktopService.GetPixbufForFile (searchResult.FileName, Gtk.IconSize.Menu);
-		}
-		
-		Gdk.Color GetColor (Gdk.Color baseColor)
-		{
-			return baseColor;
 		}
 		
 		string MarkupText (string text, bool didRead, bool isSelected)

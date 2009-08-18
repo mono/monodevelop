@@ -69,7 +69,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Gdk.Pixbuf iconWarning;
 		Gdk.Pixbuf iconError;
 		Gdk.Pixbuf iconInfo;
-		Gdk.Pixbuf iconQuestion;
 		
 		const string showErrorsPropertyName = "SharpDevelop.TaskList.ShowErrors";
 		const string showWarningsPropertyName = "SharpDevelop.TaskList.ShowWarnings";
@@ -200,7 +199,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			iconWarning = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu, "");
 			iconError = sw.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu, "");
 			iconInfo = sw.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
-			iconQuestion = sw.RenderIcon (Gtk.Stock.DialogQuestion, Gtk.IconSize.Menu, "");
 			
 			control.Add (sw);
 			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;

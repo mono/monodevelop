@@ -244,7 +244,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		[GLib.ConnectBefore]
 		void OnAccelEntryKeyPress (object sender, KeyPressEventArgs e)
 		{
-			Gdk.ModifierType mod = e.Event.State;
 			Gdk.Key key = e.Event.Key;
 			string accel;
 			

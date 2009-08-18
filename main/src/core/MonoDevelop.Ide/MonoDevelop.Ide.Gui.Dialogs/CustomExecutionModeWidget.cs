@@ -36,8 +36,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CustomExecutionModeWidget : Gtk.Bin, IExecutionConfigurationEditor
 	{
-		List<IExecutionMode> modes;
-		
 		public CustomExecutionModeWidget ()
 		{
 			this.Build ();
@@ -46,7 +44,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		#region IExecutionModeEditor implementation
 		public Gtk.Widget Load (CommandExecutionContext ctx, object data)
 		{
-			IExecutionMode curMode = null;
 			if (data != null) {
 				CustomArgsExecutionModeData cdata = (CustomArgsExecutionModeData) data;
 				entryArgs.Text = cdata.Arguments;

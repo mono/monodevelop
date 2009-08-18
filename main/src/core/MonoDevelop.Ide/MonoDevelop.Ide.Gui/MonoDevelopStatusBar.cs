@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide
 			
 			progress = new ProgressBar ();
 			progress.PulseStep = 0.3;
-			Requisition req = progress.SizeRequest ();
+			progress.SizeRequest ();
 			progress.HeightRequest = 1;
 			Alignment pal = new Alignment (0, 0.5f, 1, 1);
 			pal.TopPadding = 0;

@@ -128,19 +128,19 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		#region CommandHandler
 		[CommandHandler (ViewCommands.Open)]
-		void OnOpen ()
+		protected void OnOpen ()
 		{
 			widget.OpenSelectedMatches ();
 		}
 		
 		[CommandHandler (EditCommands.SelectAll)]
-		void OnSelectAll ()
+		protected void OnSelectAll ()
 		{
 			widget.SelectAll ();
 		}
 		
 		[CommandHandler (EditCommands.Copy)]
-		void OnCopy ()
+		protected void OnCopy ()
 		{
 			widget.CopySelection ();
 		}

@@ -91,13 +91,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 			cellRendererCombo.EditingStarted += delegate(object o, EditingStartedArgs args) {
 				CodeFormatType type = description.GetCodeFormatType (settings, option);
 				comboBoxStore.Clear ();
-				int active = 0, i = 0;
-				KeyValuePair<string, string> curValue = description.GetValue (settings, option);
 				foreach (KeyValuePair<string, string> v in type.Values) {
-					if (v.Key == curValue.Key)
-						active = i;
 					comboBoxStore.AppendValues (v.Key, GettextCatalog.GetString (v.Value));
-					i++;
 				}
 			};
 			
@@ -193,7 +188,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		const int toggleVisibleColumn = 6;
 		const int comboVisibleColumn = 7;
 
-		public T Settings {
+		public new T Settings {
 			get {
 				return settings;
 			}
@@ -249,25 +244,15 @@ namespace MonoDevelop.Ide.CodeFormatting
 				this.store = model as TreeStore;
 				if (option == null) {
 					texteditor1.Document.Text = "";
-//					comboboxentryValue.Sensitive = false;
 					return;
 				}
-//				ComboboxValue.Changed -= HandleChanged;
-//				comboboxentryValue.Sensitive = true;
 				CodeFormatType type = description.GetCodeFormatType (settings, option);
 				texteditor1.Document.Text = option.Example;
 				
 				comboBoxStore.Clear ();
-				int active = 0, i = 0;
-				KeyValuePair<string, string> curValue = description.GetValue (settings, option);
 				foreach (KeyValuePair<string, string> v in type.Values) {
-					if (v.Key == curValue.Key)
-						active = i;
 				 	comboBoxStore.AppendValues (v.Key, GettextCatalog.GetString (v.Value));
-					i++;
 				}
-			//	ComboboxValue.Active = active;
-			//	ComboboxValue.Changed += HandleChanged;
 				UpdateExample ();
 			}
 		}

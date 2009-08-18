@@ -64,7 +64,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		bool searchFiles;
 		bool updating;
-		bool userSelecting;
 		
 		string filename;
 		int fileLine;
@@ -218,8 +217,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void PerformSearch ()
 		{
-			userSelecting = false;
-			
 			StopActiveSearch ();
 			
 			string toMatch = matchEntry.Text.ToLower ();
@@ -321,7 +318,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					allTypes = types;
 				
 				List<IType> newFilteredTypes = new List<IType> ();
-				foreach (IType type in types) {
+				foreach (IType type in allTypes) {
 					if (!searchCycleActive) return;
 					if (CheckType (results, type, toMatch))
 						newFilteredTypes.Add (type);

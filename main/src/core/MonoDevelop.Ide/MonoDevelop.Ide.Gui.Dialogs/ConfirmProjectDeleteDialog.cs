@@ -179,7 +179,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			foreach (string file in Directory.GetFiles (dir)) {
 				string path = System.IO.Path.GetFileName (file);
-				string ext = System.IO.Path.GetExtension (file);
 				Gdk.Pixbuf pix = DesktopService.GetPixbufForFile (file, IconSize.Menu);
 				bool active = itemFiles.Contains (file);
 				string color = null;

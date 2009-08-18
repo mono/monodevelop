@@ -393,7 +393,6 @@ namespace MonoDevelop.Ide.Gui
 			Counters.OpenDocuments--;
 		}
 #region document tasks
-		List<Task> tasks = new List<Task> ();
 		object lockObj = new object ();
 		
 		ParsedDocument lastErrorFreeParsedDocument;

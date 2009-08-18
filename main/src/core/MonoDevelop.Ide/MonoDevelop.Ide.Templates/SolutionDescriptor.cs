@@ -146,6 +146,8 @@ namespace MonoDevelop.Ide.Templates
                     }
 
                     solution.RootFolder.Items.Add (info);
+					if (startupProject == info.Name)
+						solution.StartupItem = info;
                 }
             }
 
