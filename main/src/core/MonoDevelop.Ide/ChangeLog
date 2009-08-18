@@ -1,5 +1,11 @@
 2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:
+	  Updated license header. The file was rewritten long time
+	  ago.
+
+2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Fixed
 	  crash in UnregisterNode. Should fix bug #530499 - Crash when
 	  working with project tree view.
