@@ -139,16 +139,28 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			Read ();
 		}
 		
+		static bool? regenPackageDbOnlyOnVersionChange;
+		static bool RegenPackageDbOnlyOnVersionChange {
+			get {
+				if (!regenPackageDbOnlyOnVersionChange.HasValue)
+					regenPackageDbOnlyOnVersionChange =
+						String.Equals (Environment.GetEnvironmentVariable ("MD_ASM_DB_UPDATE_POLICY"), "PKGVERSION",
+						               StringComparison.OrdinalIgnoreCase);
+				return regenPackageDbOnlyOnVersionChange.Value;
+			}
+		}
+		
 		protected override bool IsFileModified (FileEntry file)
 		{
 			if (parsing)
 				return false;
 			
-			if (!isPackageAssembly)
+			if (!isPackageAssembly || !RegenPackageDbOnlyOnVersionChange)
 				return base.IsFileModified (file);
 
-			// Don't check timestamps for packaged assemblies.
-			// Just check if the package has changed.
+			// This feature can be enabled by setting MD_ASM_DB_UPDATE_POLICY=PKGVERSION
+			// It stops checking timestamps for packaged assemblies, and instead checks the package version.
+			// This is useful for people hacking on the Mono classlibs.
 			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromPath (assemblyFile);
 			bool versionMismatch = pkg != null && packageVersion != pkg.Name + " " + pkg.Version;
 			return (!file.DisableParse && (versionMismatch || file.LastParseTime == DateTime.MinValue || file.ParseErrorRetries > 0));
