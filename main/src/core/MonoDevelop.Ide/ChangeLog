@@ -1,3 +1,7 @@
+2009-08-18  Viktoria Dudka  <viktoriad@remobjects.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Rewritten GPL parts. 
+	  
 2009-08-18  Viktoria Dudka  <viktoriad@remobjects.com>
 
 	* MonoDevelop.Ide.Gui.Pads/FileList.cs: Rewritten the GPL parts.

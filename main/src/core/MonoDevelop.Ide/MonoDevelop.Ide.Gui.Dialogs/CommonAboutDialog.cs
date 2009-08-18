@@ -1,22 +1,34 @@
 //  CommonAboutDialog.cs
 //
-//  This file was derived from a file from #Develop. 
+// Author:
+//   Todd Berman  <tberman@sevenl.net>
+//   John Luke  <jluke@cfl.rr.com>
+//   Lluis Sanchez Gual  <lluis@novell.com>
+//   Viktoria Dudka  <viktoriad@remobjects.com>
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
-// 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Copyright (c) 2004 Todd Berman
+// Copyright (c) 2004 John Luke
+// Copyright (C) 2008 Novell, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+//
 
 using System;
 using System.Text;
@@ -45,9 +57,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Gdk.GC backGc;
 
 		internal uint TimerHandle;
-		
-		string[] authors = new string[]
-		{
+
+		string[] authors = new string[] {
 			"Aaron Bockover",
 			"Alberto Paro",
 			"Alejandro Serrano",
@@ -114,16 +125,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"Yan-ren Tsai",
 			"Zach Lute"
 		};
-		
+
 		public ScrollBox ()
 		{
 			this.Realized += new EventHandler (OnRealized);
 			this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (49, 49, 74));
-			
-			image = new Gdk.Pixbuf (GetType().Assembly, "AboutImage.png");
-			monoPowered = new Gdk.Pixbuf (GetType().Assembly, "mono-powered.png");
+
+			image = new Gdk.Pixbuf (GetType ().Assembly, "AboutImage.png");
+			monoPowered = new Gdk.Pixbuf (GetType ().Assembly, "mono-powered.png");
 			this.SetSizeRequest (450, image.Height - 1);
-			
+
 			TimerHandle = GLib.Timeout.Add (50, new TimeoutHandler (ScrollDown));
 		}
 
@@ -132,17 +143,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				StringBuilder sb = new StringBuilder ();
 				sb.Append (GettextCatalog.GetString ("<b>Ported and developed by:</b>\n"));
 
-				for (int n=0; n<authors.Length; n++) {
-					sb.Append (authors [n]);
+				for (int n = 0; n < authors.Length; n++) {
+					sb.Append (authors[n]);
 					if (n % 2 == 1)
-						sb.Append ("\n");
-					else
+						sb.Append ("\n"); else
 						sb.Append (",  ");
 				}
 
 				string trans = GettextCatalog.GetString ("translator-credits");
-				if (trans != "translator-credits")
-				{
+				if (trans != "translator-credits") {
 					sb.Append (GettextCatalog.GetString ("\n\n<b>Translated by:</b>\n"));
 					sb.Append (trans);
 				}
@@ -153,7 +162,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return sb.ToString ();
 			}
 		}
-		
+
 		bool ScrollDown ()
 		{
 			if (scrollPause > 0) {
@@ -166,13 +175,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.QueueDrawArea (0, 0, w, image.Height);
 			return true;
 		}
-		
+
 		private void DrawImage ()
 		{
 			if (image != null) {
 				int w, h;
 				this.GdkWindow.GetSize (out w, out h);
-				this.GdkWindow.DrawPixbuf (backGc, image, 0, 0, (w - image.Width) / 2, 0, -1, -1, RgbDither.Normal,  0,  0);
+				this.GdkWindow.DrawPixbuf (backGc, image, 0, 0, (w - image.Width) / 2, 0, -1, -1, RgbDither.Normal, 0,
+				0);
 			}
 		}
 
@@ -182,28 +192,31 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 //			layout.GetPixelSize (out w, out h);
 //			return h;
 //		}
-		
+
 		private void DrawText ()
 		{
-			int w, h;
-			this.GdkWindow.GetSize (out w, out h);
-			int tw, maxHeight;
-			layout.GetPixelSize (out tw, out maxHeight);
-			
-			this.GdkWindow.DrawLayout (this.Style.WhiteGC, 0, textTop - scroll, layout);
-			this.GdkWindow.DrawPixbuf (backGc, monoPowered, 0, 0, (w/2) - (monoPowered.Width/2), textTop - scroll + maxHeight + monoLogoSpacing, -1, -1, RgbDither.Normal,  0,  0);
+			int width, height;
+			GdkWindow.GetSize (out width, out height);
 
-			maxHeight += image.Height - 80;
-			if (scroll == maxHeight && scrollPause == 0)
+			int widthPixel, heightPixel;
+			layout.GetPixelSize (out widthPixel, out heightPixel);
+
+			GdkWindow.DrawLayout (Style.WhiteGC, 0, textTop - scroll, layout);
+			GdkWindow.DrawPixbuf (backGc, monoPowered, 0, 0, (width / 2) - (monoPowered.Width / 2), textTop - scroll + heightPixel + monoLogoSpacing, -1, -1, RgbDither.Normal, 0,
+			0);
+
+			heightPixel = heightPixel - 80 + image.Height;
+
+			if ((scroll == heightPixel) && (scrollPause == 0))
 				scrollPause = 60;
-			if (scroll > maxHeight + monoLogoSpacing + monoPowered.Height)
+			if (scroll > heightPixel + monoLogoSpacing + monoPowered.Height)
 				scroll = scrollStart;
 		}
-		
+
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			int w, h;
-			
+
 			this.GdkWindow.GetSize (out w, out h);
 			this.DrawText ();
 			this.DrawImage ();
@@ -217,11 +230,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			int w, h;
 			GdkWindow.GetOrigin (out x, out y);
 			GdkWindow.GetSize (out w, out h);
-			
+
 			textTop = y + image.Height - 30;
 			scrollStart = -(image.Height - textTop);
 			scroll = scrollStart;
-			
+
 			layout = new Pango.Layout (this.PangoContext);
 			// FIXME: this seems wrong but works
 			layout.Width = w * (int)Pango.Scale.PangoScale;
@@ -229,12 +242,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			layout.Alignment = Pango.Alignment.Center;
 			FontDescription fd = FontDescription.FromString ("Tahoma 10");
 			layout.FontDescription = fd;
-			layout.SetMarkup (CreditText);	
-			
+			layout.SetMarkup (CreditText);
+
 			backGc = new Gdk.GC (GdkWindow);
 			backGc.RgbBgColor = new Gdk.Color (49, 49, 74);
 		}
-		
+
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
@@ -242,47 +255,38 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		}
 
 	}
-	
+
 	internal class CommonAboutDialog : Dialog
 	{
 		ScrollBox aboutPictureScrollBox;
 		Pixbuf imageSep;
-		
+
 		public CommonAboutDialog ()
 		{
-			HasSeparator = false;
-			this.VBox.BorderWidth = 0;
-			
+			Title = GettextCatalog.GetString ("About MonoDevelop");
+			TransientFor = IdeApp.Workbench.RootWindow;
 			AllowGrow = false;
-			this.Title = GettextCatalog.GetString ("About MonoDevelop");
-			this.TransientFor = IdeApp.Workbench.RootWindow;
-			aboutPictureScrollBox = new ScrollBox ();
-		
-			this.VBox.PackStart (aboutPictureScrollBox, false, false, 0);
-			
-			imageSep = new Gdk.Pixbuf (GetType().Assembly, "AboutImageSep.png");
-			Gtk.Image img = new Gtk.Image (imageSep);
-			this.VBox.PackStart (img, false, false, 0);
-		
-			Notebook nb = new Notebook ();
-			nb.BorderWidth = 6;
-//			nb.SetSizeRequest (440, 240);
-//			nb.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
-			VersionInformationTabPage vinfo = new VersionInformationTabPage ();
-			
-			nb.AppendPage (new AboutMonoDevelopTabPage (), new Label (GettextCatalog.GetString ("About MonoDevelop")));
+			HasSeparator = false;
 
-			nb.AppendPage (vinfo, new Label (GettextCatalog.GetString ("Version Info")));
-			this.VBox.PackStart (nb, true, true, 4);
-			this.AddButton (Gtk.Stock.Close, (int) ResponseType.Close);
-			
-//			ChangeColor (this);
-//			this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (49, 49, 74));
-//			aboutPictureScrollBox.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (49, 49, 74));
-			
-			this.ShowAll ();
+			VBox.BorderWidth = 0;
+
+			aboutPictureScrollBox = new ScrollBox ();
+
+			VBox.PackStart (aboutPictureScrollBox, false, false, 0);
+			imageSep = new Pixbuf (typeof(CommonAboutDialog).Assembly, "AboutImageSep.png");
+			VBox.PackStart (new Gtk.Image (imageSep), false, false, 0);
+
+			Notebook notebook = new Notebook ();
+			notebook.BorderWidth = 6;
+			notebook.AppendPage (new AboutMonoDevelopTabPage (), new Label (Title));
+			notebook.AppendPage (new VersionInformationTabPage (), new Label (GettextCatalog.GetString ("Version Info")));
+			VBox.PackStart (notebook, true, true, 4);
+
+			AddButton (Gtk.Stock.Close, (int)ResponseType.Close);
+
+			ShowAll ();
 		}
-		
+
 		void ChangeColor (Gtk.Widget w)
 		{
 			w.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (69, 69, 94));
@@ -296,7 +300,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					ChangeColor (cw);
 			}
 		}
-		
+
 		public new int Run ()
 		{
 			int tmp = base.Run ();
