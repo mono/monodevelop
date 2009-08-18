@@ -70,10 +70,6 @@ namespace MonoDevelop.IPhone
 				UseShellExecute = false
 			};
 			
-			var outWriter = new StringWriter ();
-			var errWriter = new StringWriter ();
-			var mtouchProcess = Runtime.ProcessService.StartProcess (psi, outWriter, errWriter, null);
-			
 			try {
 				if (File.Exists (errLog))
 				    File.Delete (errLog);
@@ -81,24 +77,25 @@ namespace MonoDevelop.IPhone
 				    File.Delete (outLog);
 			} catch (IOException) {}
 			
-			var t = new Tail (cmd.LogDirectory.Combine ("out.log"), console.Out);
-			var t2 = new Tail (cmd.LogDirectory.Combine ("err.log"), console.Error);
-			t.StartThread ();
-			t2.StartThread ();
-			mtouchProcess.Exited += delegate {
-				t.Stop ();
-				t2.Stop ();
-			};
+			var outWriter = new StringWriter ();
+			var errWriter = new StringWriter ();
+			var mtouchProcess = Runtime.ProcessService.StartProcess (psi, outWriter, errWriter, null);
 			
-			return new IPhoneProcess (mtouchProcess, outWriter, errWriter);
+			var outTail = new Tail (cmd.LogDirectory.Combine ("out.log"), console.Out);
+			var errTail = new Tail (cmd.LogDirectory.Combine ("err.log"), console.Error);
+			outTail.Start ();
+			errTail.Start ();
+			return new IPhoneProcess (mtouchProcess, outTail, errTail);
 		}
 	}
 	
-	class Tail
+	class Tail : IDisposable
 	{
-		bool stop;
+		volatile bool stop, finish;
 		string file;
 		TextWriter writer;
+		Thread thread;
+		ManualResetEvent endHandle = new ManualResetEvent (false);
 		
 		public Tail (string file, TextWriter writer)
 		{
@@ -106,26 +103,34 @@ namespace MonoDevelop.IPhone
 			this.writer = writer;
 		}
 		
-		public void StartThread ()
+		public WaitHandle EndHandle {
+			get { return endHandle; }
+		}
+		
+		public void Start ()
 		{
 			if (stop)
 				throw new InvalidOperationException ("Cannot start after stopping");
-			var t = new Thread (Run);
-			t.Start ();
+			if (thread == null)
+				throw new InvalidOperationException ("Already started");
+			thread = new Thread (Run) {
+				IsBackground = true,
+			};
+			thread.Start ();
 		}
 		
 		void Run ()
 		{
 			FileStream fs = null;
 			try {
-				fs = File.Open (file, FileMode.OpenOrCreate);
+				fs = File.Open (file, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
 				byte[] buffer = new byte [1024];
 				var encoding = System.Text.Encoding.UTF8;
-				while (true && !stop) {
+				while (true && !finish) {
 					int nr;
-					if (fs.Position < fs.Length)
-						while ((nr = fs.Read (buffer, 0, buffer.Length)) > 0)
-							writer.Write (encoding.GetString (buffer, 0, nr));
+					long remaining;
+					while (!stop && (remaining = (fs.Length - fs.Position)) > 0 && (nr = fs.Read (buffer, 0, (int)Math.Min (remaining, buffer.Length))) > 0)
+						writer.Write (encoding.GetString (buffer, 0, nr));
 					Thread.Sleep (500);
 				}
 			} catch (Exception ex) {
@@ -133,26 +138,51 @@ namespace MonoDevelop.IPhone
 			} finally {
 				if (fs != null)
 					fs.Dispose ();
+				endHandle.Set ();
 			}
 		}
 		
-		public void Stop ()
+		public void Finish ()
+		{
+			finish = true;
+		}
+		
+		public void Cancel ()
 		{
 			stop = true;
+		}
+		
+		public void Dispose ()
+		{
+			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+		
+		void Dispose (bool disposing)
+		{
+			if (thread != null && thread.IsAlive) {
+				LoggingService.LogWarning ("Aborted tail thread on file '" + file + "'. Should wait to collect remaining output.");
+				thread.Abort ();
+				thread = null;
+			}
+		}
+		
+		~Tail ()
+		{
+			Dispose (false);
 		}
 	}
 	
 	class IPhoneProcess : IProcessAsyncOperation, IDisposable
 	{
 		ProcessWrapper mtouchProcess;
-		StringWriter mtouchOut;
-		StringWriter mtouchErr;
+		Tail outTail, errTail;
 		
-		public IPhoneProcess (ProcessWrapper mtouchProcess, StringWriter mtouchOut, StringWriter mtouchErr)
+		public IPhoneProcess (ProcessWrapper mtouchProcess, Tail outTail, Tail errTail)
 		{
 			this.mtouchProcess = mtouchProcess;
-			this.mtouchErr = mtouchErr;
-			this.mtouchOut = mtouchOut;
+			this.outTail = outTail;
+			this.errTail = errTail;
 		}
 		
 		public int ExitCode {
@@ -174,17 +204,31 @@ namespace MonoDevelop.IPhone
 			remove { ((IProcessAsyncOperation)mtouchProcess).Completed -= value; }
 		}
 		
+		void FinishCollectingOutput ()
+		{
+			outTail.Finish ();
+			errTail.Finish ();
+		}
+		
 		public void Cancel ()
 		{
 			mtouchProcess.StandardInput.Write ('\n');
+			FinishCollectingOutput ();
 			mtouchProcess.WaitForExit (1000);
 			if (!((IProcessAsyncOperation)mtouchProcess).IsCompleted)
 				((IProcessAsyncOperation)mtouchProcess).Cancel ();
 		}
 		
-		public void WaitForCompleted ()
+		public void WaitForOutput ()
 		{
+			FinishCollectingOutput ();
 			((IProcessAsyncOperation)mtouchProcess).WaitForCompleted ();
+			WaitHandle.WaitAll (new WaitHandle[] { outTail.EndHandle, errTail.EndHandle });
+		}
+		
+		void IAsyncOperation.WaitForCompleted ()
+		{
+			WaitForOutput ();
 		}
 		
 		public bool IsCompleted {
@@ -201,7 +245,23 @@ namespace MonoDevelop.IPhone
 		
 		public void Dispose ()
 		{
+			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+		
+		void Dispose (bool disposing)
+		{
+			if (mtouchProcess == null)
+				return;
 			mtouchProcess.Dispose ();
+			outTail.Dispose ();
+			errTail.Dispose ();
+			mtouchProcess = null;
+		}
+		
+		~IPhoneProcess ()
+		{
+			Dispose (false);
 		}
 	}
 }
