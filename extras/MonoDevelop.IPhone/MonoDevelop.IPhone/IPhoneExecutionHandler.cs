@@ -77,14 +77,16 @@ namespace MonoDevelop.IPhone
 				    File.Delete (outLog);
 			} catch (IOException) {}
 			
-			var outWriter = new StringWriter ();
-			var errWriter = new StringWriter ();
-			var mtouchProcess = Runtime.ProcessService.StartProcess (psi, outWriter, errWriter, null);
-			
 			var outTail = new Tail (cmd.LogDirectory.Combine ("out.log"), console.Out);
 			var errTail = new Tail (cmd.LogDirectory.Combine ("err.log"), console.Error);
 			outTail.Start ();
 			errTail.Start ();
+			
+			//FIXME: do something with these
+			var outWriter = new StringWriter ();
+			var errWriter = new StringWriter ();
+			var mtouchProcess = Runtime.ProcessService.StartProcess (psi, outWriter, errWriter, null);
+			
 			return new IPhoneProcess (mtouchProcess, outTail, errTail);
 		}
 	}
@@ -198,31 +200,51 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
-		public event OperationHandler Completed {
-			add { ((IProcessAsyncOperation)mtouchProcess).Completed += value; }
-			remove { ((IProcessAsyncOperation)mtouchProcess).Completed -= value; }
+		void CompletionWrapper (IAsyncOperation op)
+		{
+			FinishCollectingOutput (1000);
+			completed (op);
 		}
 		
-		void FinishCollectingOutput ()
+		OperationHandler completed;
+		
+		public event OperationHandler Completed {
+			add {
+				lock (completed) {
+					if (completed == null)
+						((IProcessAsyncOperation)mtouchProcess).Completed += CompletionWrapper;
+					completed += value;
+				}
+			}
+			remove {
+				lock (completed) {
+					completed -= value;
+					if (completed == null)
+						((IProcessAsyncOperation)mtouchProcess).Completed -= CompletionWrapper;
+				}
+			}
+		}
+		
+		void FinishCollectingOutput (int timeoutMilliseconds)
 		{
 			outTail.Finish ();
 			errTail.Finish ();
+			WaitHandle.WaitAll (new WaitHandle[] { outTail.EndHandle, errTail.EndHandle }, timeoutMilliseconds);
 		}
 		
 		public void Cancel ()
 		{
 			mtouchProcess.StandardInput.Write ('\n');
-			FinishCollectingOutput ();
 			mtouchProcess.WaitForExit (1000);
 			if (!((IProcessAsyncOperation)mtouchProcess).IsCompleted)
 				((IProcessAsyncOperation)mtouchProcess).Cancel ();
+			FinishCollectingOutput (1000);
 		}
 		
 		public void WaitForOutput ()
 		{
-			FinishCollectingOutput ();
 			((IProcessAsyncOperation)mtouchProcess).WaitForCompleted ();
-			WaitHandle.WaitAll (new WaitHandle[] { outTail.EndHandle, errTail.EndHandle });
+			FinishCollectingOutput (1000);
 		}
 		
 		void IAsyncOperation.WaitForCompleted ()
