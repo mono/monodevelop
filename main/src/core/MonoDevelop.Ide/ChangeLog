@@ -1,3 +1,7 @@
+2009-08-18  Viktoria Dudka  <viktoriad@remobjects.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Rewritten the gpl parts.   
+	  
 2009-08-18  Viktoria Dudka  <viktoriad@remobjects.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Rewritten GPL parts. 
@@ -138,6 +142,7 @@
 	* MonoDevelop.Ide.Gui/AbstractViewContent.cs:
 	* MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs: Rewritten.
 	  Patch by Viktoria Dudka.
+
 
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>
 
