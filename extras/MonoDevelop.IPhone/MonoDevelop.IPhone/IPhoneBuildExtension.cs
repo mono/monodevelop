@@ -147,7 +147,7 @@ namespace MonoDevelop.IPhone
 					psi.EnvironmentVariables.Add ("CODESIGN_ALLOCATE", "/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate");
 					string output;
 					if ((signResultCode = ExecuteCommand (monitor, psi, out output)) != 0) {
-						result.AddError ("Code signing failed: " + output);
+						result.AddError (string.Format ("Code signing failed with error code {0}: {1}", signResultCode, output));
 						return result;
 					}
 				}

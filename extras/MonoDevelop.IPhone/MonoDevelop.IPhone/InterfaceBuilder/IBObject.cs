@@ -150,10 +150,14 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 	
 	struct AppleEvilByteArrayEncoding
 	{
-		string Text;
+		string text;
 		public AppleEvilByteArrayEncoding (string text)
 		{
-			this.Text = text;
+			this.text = text;
+		}
+		
+		public string Text {
+			get { return text; }
 		}
 	}
 	
