@@ -1,3 +1,7 @@
+2009-08-18  Viktoria Dudka  <viktoriad@remobjects.com>
+
+	* MonoDevelop.Ide.Gui.Pads/FileList.cs: Rewritten the GPL parts.
+	  
 2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:
