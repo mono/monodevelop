@@ -91,7 +91,7 @@ namespace MonoDevelop.IPhone
 	
 	class Tail : IDisposable
 	{
-		volatile bool stop, finish;
+		volatile bool finish;
 		string file;
 		TextWriter writer;
 		Thread thread;
@@ -109,8 +109,6 @@ namespace MonoDevelop.IPhone
 		
 		public void Start ()
 		{
-			if (stop)
-				throw new InvalidOperationException ("Cannot start after stopping");
 			if (thread != null)
 				throw new InvalidOperationException ("Already started");
 			thread = new Thread (Run) {
@@ -126,13 +124,14 @@ namespace MonoDevelop.IPhone
 				fs = File.Open (file, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
 				byte[] buffer = new byte [1024];
 				var encoding = System.Text.Encoding.UTF8;
-				while (true && !finish) {
+				while (!finish) {
 					int nr;
-					long remaining;
-					while (!stop && (remaining = (fs.Length - fs.Position)) > 0 && (nr = fs.Read (buffer, 0, (int)Math.Min (remaining, buffer.Length))) > 0)
+					while ((nr = fs.Read (buffer, 0, buffer.Length)) > 0)
 						writer.Write (encoding.GetString (buffer, 0, nr));
 					Thread.Sleep (500);
 				}
+			} catch (ThreadAbortException) {
+				Thread.ResetAbort ();
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 			} finally {
@@ -149,7 +148,7 @@ namespace MonoDevelop.IPhone
 		
 		public void Cancel ()
 		{
-			stop = true;
+			thread.Abort ();
 		}
 		
 		public void Dispose ()
