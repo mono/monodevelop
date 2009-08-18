@@ -1,5 +1,9 @@
 2009-08-18  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Parser/TagDatabaseManager.cs: Clear file info before update.
+
+2009-08-18  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Parser/Member.cs: 
 	* Gui/CTextEditorExtension.cs: 
 	* Parser/TagDatabaseManager.cs: 

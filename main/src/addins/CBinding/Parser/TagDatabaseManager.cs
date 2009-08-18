@@ -399,6 +399,7 @@ namespace CBinding.Parser
 			}
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
+			info.RemoveFileInfo (filename);
 			string tagEntry;
 
 			using (StringReader reader = new StringReader (ctags_output)) {
