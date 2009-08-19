@@ -1,3 +1,8 @@
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Templates/SolutionDescriptor.cs: Update
+	  license header. This file has been rewritten.
+
 2009-08-19  Viktoria Dudka  <viktoriad@remobjects.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Rewritten the
