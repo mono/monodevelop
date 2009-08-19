@@ -1,5 +1,12 @@
 2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/IWorkbench.cs:
+	* MonoDevelop.Ide.Gui/IWorkbenchLayout.cs: Updated license
+	  header. The original code has been relicensed as LGPL in
+	  #develop 2.0.
+
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Templates/SolutionDescriptor.cs: Update
 	  license header. This file has been rewritten.
 
