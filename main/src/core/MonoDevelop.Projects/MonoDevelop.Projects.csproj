@@ -74,7 +74,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Projects\FileFormatManager.cs" />
-    <Compile Include="MonoDevelop.Projects\ProjectEventArgs.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ItemPropertyCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Utility\DiffUtility.cs" />

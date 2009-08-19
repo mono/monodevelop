@@ -2,6 +2,15 @@
 
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/ProjectFile.cs:
+	* MonoDevelop.Projects/ProjectEventArgs.cs: Rewritten gpl
+	  code. Patch by Viktoria Dudka.
+
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
 	* MonoDevelop.Projects.addin.xml:
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:

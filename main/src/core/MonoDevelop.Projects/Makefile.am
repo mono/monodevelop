@@ -244,7 +244,6 @@ FILES =  \
 	MonoDevelop.Projects/ProjectConfiguration.cs \
 	MonoDevelop.Projects/ProjectConvertTool.cs \
 	MonoDevelop.Projects/ProjectCreateInformation.cs \
-	MonoDevelop.Projects/ProjectEventArgs.cs \
 	MonoDevelop.Projects/ProjectFile.cs \
 	MonoDevelop.Projects/ProjectFileCollection.cs \
 	MonoDevelop.Projects/ProjectFileEventArgs.cs \

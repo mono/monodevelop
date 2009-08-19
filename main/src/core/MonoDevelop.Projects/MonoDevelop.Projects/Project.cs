@@ -1,184 +1,174 @@
 //  Project.cs
 //
-//  This file was derived from a file from #Develop. 
+// Author:
+//   Lluis Sanchez Gual <lluis@novell.com>
+//   Viktoria Dudka  <viktoriad@remobjects.com>
+// 
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2009 RemObjects Software
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
-// 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+//
+
 
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Reflection;
-using System.Xml;
-using System.CodeDom.Compiler;
-
+using System.IO;
+using MonoDevelop;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using Mono.Addins;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Dom.Output;
+
 
 namespace MonoDevelop.Projects
 {
-	public enum NewFileSearch {
+	public enum NewFileSearch
+	{
 		None,
 		OnLoad,
 		OnLoadAutoInsert
 	}
-	
-	/// <summary>
-	/// External language bindings must extend this class
-	/// </summary>
-	[DataInclude (typeof(ProjectFile))]
-	[DataItem (FallbackType=typeof(UnknownProject))]
+
+	[DataInclude(typeof(ProjectFile))]
+	[DataItem(FallbackType = typeof(UnknownProject))]
 	public abstract class Project : SolutionEntityItem
 	{
-		[ItemProperty ("Description", DefaultValue="")]
-		protected string description     = "";
+		string[] buildActions;
+		bool isDirty;
 
-		[ItemProperty ("newfilesearch", DefaultValue = NewFileSearch.None)]
-		protected NewFileSearch newFileSearch  = NewFileSearch.None;
-		
-		[ItemProperty ("AppDesignerFolder")]
-		string designerFolder;
-
-		string [] buildActions = null;
-		ProjectFileCollection projectFiles;
-		
-		bool isDirty = false;
-		
 		public Project ()
 		{
 			FileService.FileChanged += OnFileChanged;
-			projectFiles = new ProjectFileCollection ();
-			Items.Bind (projectFiles);
+			files = new ProjectFileCollection ();
+			Items.Bind (files);
 			DependencyResolutionEnabled = true;
 		}
-		
+
+		[ItemProperty("Description", DefaultValue = "")]
+		private string description = "";
 		public string Description {
-			get {
-				return description;
-			}
+			get { return description; }
 			set {
 				description = value;
 				NotifyModified ("Description");
 			}
 		}
-		
-		public ProjectFileCollection Files {
-			get {
-				return projectFiles;
-			}
+
+		public virtual bool IsCompileable (string fileName)
+		{
+			return false;
 		}
-		
+
+		private ProjectFileCollection files;
+		public ProjectFileCollection Files {
+			get { return files; }
+		}
+
+		[ItemProperty("newfilesearch", DefaultValue = NewFileSearch.None)]
+		protected NewFileSearch newFileSearch = NewFileSearch.None;
 		public NewFileSearch NewFileSearch {
-			get {
-				return newFileSearch;
-			}
+			get { return newFileSearch; }
 
 			set {
 				newFileSearch = value;
 				NotifyModified ("NewFileSearch");
 			}
 		}
-		
+
 		public abstract string ProjectType {
 			get;
 		}
-		
+
 		string stockIcon = "md-project";
 		public virtual string StockIcon {
-			get {
-				return stockIcon;
-			}
-			set {
-				this.stockIcon = value;
-			}
+			get { return stockIcon; }
+			set { this.stockIcon = value; }
 		}
-		
+
 		public virtual Ambience Ambience {
 			get { return new NetAmbience (); }
 		}
-		
-		[Browsable(false)]
-		public virtual string [] SupportedLanguages {
-			get {
-				return new String [] { "" };
-			}
+
+		public virtual string[] SupportedLanguages {
+			get { return new String[] { "" }; }
 		}
 
-		public string DesignerFolder {
-			get {
-				return designerFolder;
-			}
-			set {
-				designerFolder = value;
-			}
+		public virtual string GetDefaultBuildAction (string fileName)
+		{
+			return IsCompileable (fileName) ? BuildAction.Compile : BuildAction.None;
 		}
-		
+
+		public ProjectFile GetProjectFile (string fileName)
+		{
+			return files.GetFile (fileName);
+		}
+
+		public bool IsFileInProject (string fileName)
+		{
+			return files.GetFile (fileName) != null;
+		}
+
 		//NOTE: groups the common actions at the top, separated by a "--" entry *IF* there are 
 		// more "uncommon" actions than "common" actions
 		public string[] GetBuildActions ()
 		{
 			if (buildActions != null)
 				return buildActions;
-			
+
 			// find all the actions in use and add them to the list of standard actions
 			Hashtable actions = new Hashtable ();
 			object marker = new object (); //avoid using bools as they need to be boxed. re-use single object instead
-			
 			//ad the standard actions
 			foreach (string action in GetStandardBuildActions ())
-				actions [action] = marker;
-			
+				actions[action] = marker;
+
 			//add any more actions that are in the project file
-			foreach (ProjectFile pf in projectFiles)
+			foreach (ProjectFile pf in files)
 				if (!actions.ContainsKey (pf.BuildAction))
-					actions [pf.BuildAction] = marker;
-			
+					actions[pf.BuildAction] = marker;
+
 			//remove the "common" actions, since they're handled separately
 			IList<string> commonActions = GetCommonBuildActions ();
 			foreach (string action in commonActions)
 				if (actions.Contains (action))
 					actions.Remove (action);
-			
+
 			//calculate dimensions for our new array and create it
 			int dashPos = commonActions.Count;
 			bool hasDash = commonActions.Count > 0 && actions.Count > 0;
 			int arrayLen = commonActions.Count + actions.Count;
-			int uncommonStart = hasDash? dashPos + 1 : dashPos;
+			int uncommonStart = hasDash ? dashPos + 1 : dashPos;
 			if (hasDash)
 				arrayLen++;
-			buildActions = new string [arrayLen];
-			
+			buildActions = new string[arrayLen];
+
 			//populate it
 			if (commonActions.Count > 0)
 				commonActions.CopyTo (buildActions, 0);
 			if (hasDash)
-				buildActions [dashPos] = "--";
+				buildActions[dashPos] = "--";
 			if (actions.Count > 0)
 				actions.Keys.CopyTo (buildActions, uncommonStart);
-			
+
 			//sort the actions
 			if (hasDash) {
 				//it may be better to leave common actions in the order that the project specified
@@ -189,51 +179,28 @@ namespace MonoDevelop.Projects
 			}
 			return buildActions;
 		}
-		
+
 		protected virtual IEnumerable<string> GetStandardBuildActions ()
 		{
 			return BuildAction.StandardActions;
 		}
-		
+
 		protected virtual IList<string> GetCommonBuildActions ()
 		{
 			return BuildAction.StandardActions;
 		}
 
-		public bool IsFileInProject(string filename)
-		{
-			return GetProjectFile (filename) != null;
-		}
-		
-		public ProjectFile GetProjectFile (string fileName)
-		{
-			return Files.GetFile (fileName);
-		}
-		
-		public virtual bool IsCompileable (string fileName)
-		{
-			return false;
-		}
-		
-		public virtual string GetDefaultBuildAction (string fileName)
-		{
-			if (IsCompileable (fileName))
-				return BuildAction.Compile;
-			else
-				return BuildAction.None;
-		}
-				
 		public static Project LoadProject (string filename, IProgressMonitor monitor)
 		{
 			Project prj = Services.ProjectService.ReadSolutionItem (monitor, filename) as Project;
 			if (prj == null)
 				throw new InvalidOperationException ("Invalid project file: " + filename);
-			
+
 			return prj;
 		}
 
-		
-		public override void Dispose()
+
+		public override void Dispose ()
 		{
 			FileService.FileChanged -= OnFileChanged;
 			foreach (ProjectFile file in Files) {
@@ -241,12 +208,12 @@ namespace MonoDevelop.Projects
 			}
 			base.Dispose ();
 		}
-		
+
 		public ProjectFile AddFile (string filename)
 		{
 			return AddFile (filename, null);
 		}
-		
+
 		public ProjectFile AddFile (string filename, string buildAction)
 		{
 			foreach (ProjectFile fInfo in Files) {
@@ -254,28 +221,29 @@ namespace MonoDevelop.Projects
 					return fInfo;
 				}
 			}
-			
+
 			if (String.IsNullOrEmpty (buildAction)) {
 				buildAction = GetDefaultBuildAction (filename);
 			}
-			
+
 			ProjectFile newFileInformation = new ProjectFile (filename, buildAction);
 			Files.Add (newFileInformation);
 			return newFileInformation;
 		}
-		
-		public void AddFile (ProjectFile projectFile) {
+
+		public void AddFile (ProjectFile projectFile)
+		{
 			Files.Add (projectFile);
 		}
-		
+
 		public ProjectFile AddDirectory (string relativePath)
 		{
 			string newPath = Path.Combine (BaseDirectory, relativePath);
-			
+
 			foreach (ProjectFile fInfo in Files)
 				if (fInfo.Name == newPath && fInfo.Subtype == Subtype.Directory)
 					return fInfo;
-			
+
 			if (!Directory.Exists (newPath)) {
 				if (File.Exists (newPath)) {
 					string message = GettextCatalog.GetString ("Cannot create directory {0}, as a file with that name exists.", newPath);
@@ -283,13 +251,13 @@ namespace MonoDevelop.Projects
 				}
 				FileService.CreateDirectory (newPath);
 			}
-			
+
 			ProjectFile newDir = new ProjectFile (newPath);
 			newDir.Subtype = Subtype.Directory;
 			AddFile (newDir);
 			return newDir;
 		}
-		
+
 		protected internal override BuildResult OnBuild (IProgressMonitor monitor, string solutionConfiguration)
 		{
 			// create output directory, if not exists
@@ -301,111 +269,107 @@ namespace MonoDevelop.Projects
 			}
 			string outputDir = conf.OutputDirectory;
 			try {
-				DirectoryInfo directoryInfo = new DirectoryInfo(outputDir);
+				DirectoryInfo directoryInfo = new DirectoryInfo (outputDir);
 				if (!directoryInfo.Exists) {
-					directoryInfo.Create();
+					directoryInfo.Create ();
 				}
 			} catch (Exception e) {
-				throw new ApplicationException("Can't create project output directory " + outputDir + " original exception:\n" + e.ToString());
+				throw new ApplicationException ("Can't create project output directory " + outputDir + " original exception:\n" + e.ToString ());
 			}
-			
+
 			//copy references and files marked to "CopyToOutputDirectory"
 			CopySupportFiles (monitor, solutionConfiguration);
-		
+
 			StringParserService.Properties["Project"] = Name;
-			
+
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
 			BuildResult res = DoBuild (monitor, conf.Id);
-			
+
 			isDirty = false;
-			
+
 			if (res != null) {
-				string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", res.ErrorCount, res.ErrorCount);
-				string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", res.WarningCount, res.WarningCount);
-			
-				monitor.Log.WriteLine(GettextCatalog.GetString("Build complete -- ") + errorString + ", " + warningString);
+				string errorString = GettextCatalog.GetPluralString ("{0} error", "{0} errors", res.ErrorCount, res.ErrorCount);
+				string warningString = GettextCatalog.GetPluralString ("{0} warning", "{0} warnings", res.WarningCount, res.WarningCount);
+
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Build complete -- ") + errorString + ", " + warningString);
 			}
-			
+
 			return res;
 		}
-		
+
 		public void CopySupportFiles (IProgressMonitor monitor, string solutionConfiguration)
 		{
-			ProjectConfiguration config = (ProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
-			
+			ProjectConfiguration config = (ProjectConfiguration)GetActiveConfiguration (solutionConfiguration);
+
 			foreach (FileCopySet.Item item in GetSupportFileList (solutionConfiguration)) {
 				string dest = Path.GetFullPath (Path.Combine (config.OutputDirectory, item.Target));
 				string src = Path.GetFullPath (item.Src);
-				
+
 				try {
 					if (dest == src)
 						continue;
-					
-					if (item.CopyOnlyIfNewer && File.Exists (dest) &&
-					    (File.GetLastWriteTimeUtc (dest) >=  File.GetLastWriteTimeUtc (src)))
+
+					if (item.CopyOnlyIfNewer && File.Exists (dest) && (File.GetLastWriteTimeUtc (dest) >= File.GetLastWriteTimeUtc (src)))
 						continue;
-					
+
 					if (!Directory.Exists (Path.GetDirectoryName (dest)))
 						FileService.CreateDirectory (Path.GetDirectoryName (dest));
-					
+
 					if (File.Exists (src))
 						FileService.CopyFile (src, dest);
 					else
-						monitor.ReportError (
-							GettextCatalog.GetString ("Could not find support file '{0}'.", src), null);
-					
+						monitor.ReportError (GettextCatalog.GetString ("Could not find support file '{0}'.", src), null);
+
 				} catch (IOException ex) {
-					monitor.ReportError (
-						GettextCatalog.GetString ("Error copying support file '{0}'.", dest), ex);
+					monitor.ReportError (GettextCatalog.GetString ("Error copying support file '{0}'.", dest), ex);
 				}
 			}
 		}
-		
+
 		public void DeleteSupportFiles (IProgressMonitor monitor, string solutionConfiguration)
 		{
-			ProjectConfiguration config = (ProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
-			
+			ProjectConfiguration config = (ProjectConfiguration)GetActiveConfiguration (solutionConfiguration);
+
 			foreach (FileCopySet.Item item in GetSupportFileList (solutionConfiguration)) {
 				string dest = Path.Combine (config.OutputDirectory, item.Target);
-				
+
 				// Ignore files which were not copied
 				if (Path.GetFullPath (dest) == Path.GetFullPath (item.Src))
 					continue;
-				
+
 				try {
 					if (File.Exists (dest)) {
 						FileService.DeleteFile (dest);
 					}
 				} catch (IOException ex) {
-					monitor.ReportError (
-						GettextCatalog.GetString ("Error deleting support file '{0}'.", dest), ex);
+					monitor.ReportError (GettextCatalog.GetString ("Error deleting support file '{0}'.", dest), ex);
 				}
 			}
 		}
-		
+
 		public FileCopySet GetSupportFileList (string solutionConfiguration)
 		{
 			FileCopySet list = new FileCopySet ();
 			PopulateSupportFileList (list, solutionConfiguration);
 			return list;
 		}
-		
+
 		protected virtual void PopulateSupportFileList (FileCopySet list, string solutionConfiguration)
 		{
 			foreach (ProjectFile pf in Files) {
 				if (pf.CopyToOutputDirectory == FileCopyMode.None)
 					continue;
-				FilePath outpath = pf.IsExternalToProject? (FilePath) pf.FilePath.FileName : pf.RelativePath;
+				FilePath outpath = pf.IsExternalToProject ? (FilePath)pf.FilePath.FileName : pf.RelativePath;
 				list.Add (pf.FilePath, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest, outpath);
 			}
 		}
-		
+
 		protected virtual BuildResult DoBuild (IProgressMonitor monitor, string itemConfiguration)
 		{
 			BuildResult res = ItemHandler.RunTarget (monitor, "Build", itemConfiguration);
 			return res ?? new BuildResult ();
 		}
-		
+
 		protected internal override void OnClean (IProgressMonitor monitor, string solutionConfiguration)
 		{
 			SetDirty ();
@@ -414,35 +378,36 @@ namespace MonoDevelop.Projects
 				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", solutionConfiguration, Name), null);
 				return;
 			}
-			
+
 			// Delete the generated assembly
 			string file = GetOutputFileName (solutionConfiguration);
 			if (file != null) {
 				if (File.Exists (file))
 					FileService.DeleteFile (file);
 			}
-			
+
 			DeleteSupportFiles (monitor, solutionConfiguration);
 
 			DoClean (monitor, config.Id);
 		}
-		
+
 		protected virtual void DoClean (IProgressMonitor monitor, string itemConfiguration)
 		{
 			ItemHandler.RunTarget (monitor, "Clean", itemConfiguration);
 		}
-		
+
 		void GetBuildableReferencedItems (List<SolutionItem> referenced, SolutionItem item, string configuration)
 		{
-			if (referenced.Contains (item)) return;
-			
+			if (referenced.Contains (item))
+				return;
+
 			if (item.NeedsBuilding (configuration))
 				referenced.Add (item);
 
 			foreach (SolutionItem ritem in item.GetReferencedItems (configuration))
 				GetBuildableReferencedItems (referenced, ritem, configuration);
 		}
-		
+
 		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string solutionConfiguration)
 		{
 			ProjectConfiguration config = GetActiveConfiguration (solutionConfiguration) as ProjectConfiguration;
@@ -452,21 +417,21 @@ namespace MonoDevelop.Projects
 			}
 			DoExecute (monitor, context, config.Id);
 		}
-		
+
 		protected virtual void DoExecute (IProgressMonitor monitor, ExecutionContext context, string itemConfiguration)
 		{
 		}
-		
+
 		public FilePath GetOutputFileName (string solutionConfiguration)
 		{
 			return OnGetOutputFileName (GetActiveConfigurationId (solutionConfiguration));
 		}
-		
+
 		protected virtual FilePath OnGetOutputFileName (string itemConfiguration)
 		{
 			return FilePath.Null;
 		}
-		
+
 		protected internal override bool OnGetNeedsBuilding (string solutionConfiguration)
 		{
 			if (!isDirty) {
@@ -475,24 +440,24 @@ namespace MonoDevelop.Projects
 			}
 			return isDirty;
 		}
-		
+
 		protected internal override void OnSetNeedsBuilding (bool value, string solutionConfiguration)
 		{
 			isDirty = value;
 		}
-		
+
 		void SetDirty ()
 		{
 			if (!Loading)
 				isDirty = true;
 		}
-		
+
 		protected virtual bool CheckNeedsBuild (string solutionConfiguration)
 		{
 			DateTime tim = GetLastBuildTime (solutionConfiguration);
 			if (tim == DateTime.MinValue)
 				return true;
-			
+
 			foreach (ProjectFile file in Files) {
 				if (file.BuildAction == BuildAction.Content || file.BuildAction == BuildAction.None)
 					continue;
@@ -503,12 +468,12 @@ namespace MonoDevelop.Projects
 					// Ignore.
 				}
 			}
-			
+
 			foreach (SolutionItem pref in GetReferencedItems (solutionConfiguration)) {
 				if (pref.GetLastBuildTime (solutionConfiguration) > tim || pref.NeedsBuilding (solutionConfiguration))
 					return true;
 			}
-			
+
 			try {
 				if (File.GetLastWriteTime (FileName) > tim)
 					return true;
@@ -518,8 +483,8 @@ namespace MonoDevelop.Projects
 
 			return false;
 		}
-		
-		internal protected override DateTime OnGetLastBuildTime (string solutionConfiguration)
+
+		protected internal override DateTime OnGetLastBuildTime (string solutionConfiguration)
 		{
 			string conf = GetActiveConfigurationId (solutionConfiguration);
 			string file = OnGetOutputFileName (conf);
@@ -527,8 +492,10 @@ namespace MonoDevelop.Projects
 				return DateTime.MinValue;
 
 			FileInfo finfo = new FileInfo (file);
-			if (!finfo.Exists) return DateTime.MinValue;
-			else return finfo.LastWriteTime;
+			if (!finfo.Exists)
+				return DateTime.MinValue;
+			else
+				return finfo.LastWriteTime;
 		}
 
 		internal virtual void OnFileChanged (object source, FileEventArgs e)
@@ -547,7 +514,7 @@ namespace MonoDevelop.Projects
 
 		}
 
-		internal protected override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
+		protected internal override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
 			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles);
 			if (includeReferencedFiles) {
@@ -558,38 +525,38 @@ namespace MonoDevelop.Projects
 			}
 			return col;
 		}
-		
+
 		protected internal override void OnItemAdded (object obj)
 		{
 			base.OnItemAdded (obj);
 			if (obj is ProjectFile)
-				NotifyFileAddedToProject ((ProjectFile) obj);
+				NotifyFileAddedToProject ((ProjectFile)obj);
 		}
-		
+
 		protected internal override void OnItemRemoved (object obj)
 		{
 			base.OnItemRemoved (obj);
 			if (obj is ProjectFile)
-				NotifyFileRemovedFromProject ((ProjectFile) obj);
+				NotifyFileRemovedFromProject ((ProjectFile)obj);
 		}
-		
- 		internal void NotifyFileChangedInProject (ProjectFile file)
+
+		internal void NotifyFileChangedInProject (ProjectFile file)
 		{
 			OnFileChangedInProject (new ProjectFileEventArgs (this, file));
 		}
-		
- 		internal void NotifyFilePropertyChangedInProject (ProjectFile file)
+
+		internal void NotifyFilePropertyChangedInProject (ProjectFile file)
 		{
 			NotifyModified ("Files");
 			OnFilePropertyChangedInProject (new ProjectFileEventArgs (this, file));
 		}
-		
+
 		List<ProjectFile> unresolvedDeps;
-		
+
 		void NotifyFileRemovedFromProject (ProjectFile file)
 		{
 			file.SetProject (null);
-			
+
 			if (DependencyResolutionEnabled) {
 				if (unresolvedDeps.Contains (file))
 					unresolvedDeps.Remove (file);
@@ -600,72 +567,72 @@ namespace MonoDevelop.Projects
 				}
 				file.DependsOnFile = null;
 			}
-			
+
 			SetDirty ();
 			NotifyModified ("Files");
 			OnFileRemovedFromProject (new ProjectFileEventArgs (this, file));
 		}
-		
+
 		void NotifyFileAddedToProject (ProjectFile file)
 		{
 			if (file.Project != null)
 				throw new InvalidOperationException ("ProjectFile already belongs to a project");
 			file.SetProject (this);
-			
+
 			ResolveDependencies (file);
-			
+
 			SetDirty ();
 			NotifyModified ("Files");
 			OnFileAddedToProject (new ProjectFileEventArgs (this, file));
 		}
-		
+
 		internal void ResolveDependencies (ProjectFile file)
 		{
 			if (!DependencyResolutionEnabled)
 				return;
-			
+
 			if (!file.ResolveParent ())
 				unresolvedDeps.Add (file);
-			
+
 			List<ProjectFile> resolved = null;
 			foreach (ProjectFile unres in unresolvedDeps) {
-				if (string.IsNullOrEmpty (unres.DependsOn )) {
+				if (string.IsNullOrEmpty (unres.DependsOn)) {
 					resolved.Add (unres);
 				}
 				if (unres.ResolveParent ()) {
 					if (resolved == null)
 						resolved = new List<ProjectFile> ();
-						resolved.Add (unres);
+					resolved.Add (unres);
 				}
 			}
 			if (resolved != null)
 				foreach (ProjectFile pf in resolved)
 					unresolvedDeps.Remove (pf);
 		}
-		
+
 		bool DependencyResolutionEnabled {
+
+			get { return unresolvedDeps != null; }
 			set {
 				if (value) {
 					if (unresolvedDeps != null)
 						return;
-					
 					unresolvedDeps = new List<ProjectFile> ();
-					foreach (ProjectFile file in projectFiles)
+					foreach (ProjectFile file in files)
 						ResolveDependencies (file);
 				} else {
 					unresolvedDeps = null;
 				}
 			}
-			get { return unresolvedDeps != null; }
 		}
-		
+
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
 			SetDirty ();
 			NotifyModified ("Files");
 			OnFileRenamedInProject (args);
 		}
-		
+
 		protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
 		{
 			buildActions = null;
@@ -673,7 +640,7 @@ namespace MonoDevelop.Projects
 				FileRemovedFromProject (this, e);
 			}
 		}
-		
+
 		protected virtual void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
 			buildActions = null;
@@ -682,36 +649,38 @@ namespace MonoDevelop.Projects
 			}
 		}
 
- 		protected virtual void OnFileChangedInProject (ProjectFileEventArgs e)
+		protected virtual void OnFileChangedInProject (ProjectFileEventArgs e)
 		{
 			if (FileChangedInProject != null) {
 				FileChangedInProject (this, e);
 			}
 		}
-		
- 		protected virtual void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+
+		protected virtual void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
 		{
 			buildActions = null;
 			if (FilePropertyChangedInProject != null) {
 				FilePropertyChangedInProject (this, e);
 			}
 		}
-		
- 		protected virtual void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
+
+		protected virtual void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
 		{
 			if (FileRenamedInProject != null) {
 				FileRenamedInProject (this, e);
 			}
 		}
-				
+
 		public event ProjectFileEventHandler FileRemovedFromProject;
 		public event ProjectFileEventHandler FileAddedToProject;
 		public event ProjectFileEventHandler FileChangedInProject;
 		public event ProjectFileEventHandler FilePropertyChangedInProject;
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
+
+
 	}
-	
-	public class UnknownProject: Project
+
+	public class UnknownProject : Project
 	{
 		public override string ProjectType {
 			get { return ""; }
@@ -720,6 +689,20 @@ namespace MonoDevelop.Projects
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			return null;
+		}
+	}
+
+	public delegate void ProjectEventHandler (Object sender, ProjectEventArgs e);
+	public class ProjectEventArgs : EventArgs
+	{
+		public ProjectEventArgs (Project project)
+		{
+			this.project = project;
+		}
+
+		private Project project;
+		public Project Project {
+			get { return project; }
 		}
 	}
 }
