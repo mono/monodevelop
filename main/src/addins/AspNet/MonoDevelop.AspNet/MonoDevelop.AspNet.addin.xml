@@ -30,7 +30,6 @@
 		<DotNetProjectSubtype
 			guid="{349c5851-65df-11da-9384-00065b846f21}"
 			type="MonoDevelop.AspNet.AspNetAppProject"
-			import="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v8.0\WebApplications\Microsoft.WebApplication.targets"
 			/>
 	</Extension>
 	

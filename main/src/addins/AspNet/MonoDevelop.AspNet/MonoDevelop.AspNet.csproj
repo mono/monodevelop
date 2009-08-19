@@ -301,6 +301,7 @@
     <Compile Include="MonoDevelop.AspNet\AspNetExecutionCommand.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetExecutionHandler.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetSyntaxMode.cs" />
+    <Compile Include="MonoDevelop.AspNet\AspNetMSBuildImportProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -110,6 +110,7 @@ FILES =  \
 	MonoDevelop.AspNet/AspNetExecutionCommand.cs \
 	MonoDevelop.AspNet/AspNetExecutionHandler.cs \
 	MonoDevelop.AspNet/AspNetFileDescriptionTemplate.cs \
+	MonoDevelop.AspNet/AspNetMSBuildImportProvider.cs \
 	MonoDevelop.AspNet/AspNetParserService.cs \
 	MonoDevelop.AspNet/AspNetSyntaxMode.cs \
 	MonoDevelop.AspNet/AspNetToolboxLoader.cs \

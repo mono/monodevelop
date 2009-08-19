@@ -1,3 +1,11 @@
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.AspNet.csproj:
+	* MonoDevelop.AspNet.addin.xml:
+	* MonoDevelop.AspNet/AspNetMSBuildImportProvider.cs: Use the
+	  new extension point for generating msbuild imports.
+
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet/WebTypeManager.cs:
