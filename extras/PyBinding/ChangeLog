@@ -1,6 +1,13 @@
 2009-08-19  Christian Hergert  <chris@dronelabs.com>
 
 	* PyBinding/PyBinding.csproj: 
+	* PyBinding/PyBinding.addin.xml: 
+	* PyBinding/Resources/PyClutterProject.xpt.xml: 
+	* PyBinding/Makefile: Add a pyclutter example program.
+
+2009-08-19  Christian Hergert  <chris@dronelabs.com>
+
+	* PyBinding/PyBinding.csproj: 
 	* PyBinding/PyBinding/PythonHelper.cs: 
 	* PyBinding/PyBinding/PythonProject.cs: 
 	* PyBinding/PyBinding/PythonConfiguration.cs: 

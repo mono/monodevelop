@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<Template
+    originator   = "Christian Hergert" 
+    created      = "08/19/2008"
+    lastModified = "08/19/2008">
+
+    <!-- Template Header -->
+    <TemplateConfiguration>
+        <_Name>PyClutter Project</_Name>
+        <_Category>Python</_Category>
+        <Icon>md-project|res:py-icon-32.png</Icon>
+        <LanguageName>Python</LanguageName>
+        <_Description>Creates a Clutter application using Python.</_Description>
+    </TemplateConfiguration>
+
+    <!-- Template Content -->
+    <Combine name = "${ProjectName}" directory = ".">
+        <Project name = "${ProjectName}" directory = "." type = "Python">
+        	<Files>
+        		<File name="main.py" AddStandardHeader="True">
+        			<![CDATA[
+import clutter
+
+def main():
+    stage = clutter.stage_get_default()
+    stage.props.title = '${ProjectName}'
+    stage.show()
+
+    button = clutter.Rectangle()
+    button.props.color = clutter.Color(0xff, 0x00, 0x00, 0xff)
+    button.set_size(150, 75)
+    button.set_position(100, 100)
+    button.set_reactive(True)
+    def onButtonPress(actor, event):
+        w = actor.get_width()
+        if w != 150:
+            actor.animate(clutter.EASE_OUT_QUAD, 300, 'width', 150, 'height', 75)
+        else:
+            actor.animate(clutter.EASE_OUT_QUAD, 300, 'width', 300, 'height', 150)
+    button.connect('button-press-event', onButtonPress)
+    stage.add(button)
+    button.show()
+
+if __name__ == '__main__':
+    main()
+]]>
+        		</File>
+        	</Files>
+        </Project>
+    </Combine>
+</Template>

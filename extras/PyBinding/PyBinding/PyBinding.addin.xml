@@ -53,6 +53,9 @@
         <ProjectTemplate
             id = "PyGtkProject"
             resource = "PyGtkProject.xpt.xml"/>
+        <ProjectTemplate
+            id = "PyClutterProject"
+            resource = "PyClutterProject.xpt.xml"/>
     </Extension>
     
     <Extension path = "/MonoDevelop/Core/MimeTypes">
