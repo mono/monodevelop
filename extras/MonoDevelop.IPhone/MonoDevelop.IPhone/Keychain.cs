@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using MonoDevelop.Core;
@@ -60,11 +61,20 @@ namespace MonoDevelop.IPhone
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecIdentitySearchCreate (IntPtr keychainOrArray, CssmKeyUse keyUsage, out IntPtr searchRef);
 		
+		//not sure if this is public API
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecIdentitySearchCreateWithPolicy (IntPtr policy, IntPtr idString, CssmKeyUse keyUsage,
+		                                                          IntPtr keychainOrArray, bool returnOnlyValidIdentities,
+		                                                          out IntPtr searchRef);
+		
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecIdentitySearchCopyNext (IntPtr searchRef, out IntPtr identity);
 		
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecIdentityCopyCertificate (IntPtr identityRef, out IntPtr certificateRef);
+		
+		[DllImport (SecurityLib)]
+		static extern IntPtr SecCopyErrorMessageString (OSStatus status, IntPtr reserved);
 		
 		#region CFString handling
 		
@@ -114,6 +124,20 @@ namespace MonoDevelop.IPhone
 		
 		#endregion
 		
+		static string GetError (OSStatus status)
+		{
+			IntPtr str = IntPtr.Zero;
+			try {
+				str = SecCopyErrorMessageString (status, IntPtr.Zero);
+				return FetchString (str);
+			} catch {
+				return status.ToString ();
+			} finally {
+				if (str != IntPtr.Zero)
+					CFRelease (str);
+			}
+		}
+		
 		public static List<string> GetAllCertificateNames ()
 		{
 			IntPtr attrList = IntPtr.Zero; //match any attributes
@@ -122,7 +146,7 @@ namespace MonoDevelop.IPhone
 			//null keychain means use default
 			var res = SecKeychainSearchCreateFromAttributes (IntPtr.Zero, SecItemClass.Certificate, attrList, out searchRef);
 			if (res != OSStatus.Ok)
-				throw new Exception (String.Format ("Could not enumerate certificates from the keychain. Error code {0}", (int)res));
+				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
 			var list = new List<string> ();
 			
@@ -145,7 +169,7 @@ namespace MonoDevelop.IPhone
 			//null keychain means use default
 			var res = SecIdentitySearchCreate (IntPtr.Zero, CssmKeyUse.Sign, out searchRef);
 			if (res != OSStatus.Ok)
-				throw new Exception (String.Format ("Could not enumerate identities from the keychain. Error code {0}", (int)res));
+				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
 			var list = new List<string> ();
 			
@@ -168,21 +192,39 @@ namespace MonoDevelop.IPhone
 		public const string DEV_CERT_PREFIX  = "iPhone Developer:";
 		public const string DIST_CERT_PREFIX = "iPhone Distribution:";
 		
-		public static string GetCertificateName (IPhoneProject project, bool distribution)
+		public static string GetStoredCertificateName (IPhoneProject project, bool distribution)
 		{
 			var keys = project.UserProperties.GetValue<SigningKeyInformation> ("IPhoneSigningKeys");
-			
 			if (keys != null) {
 				string key = distribution? keys.Distribution : keys.Developer;
 				if (key != null)
 					return key;
 			}
-			
-			string cmp = distribution? DIST_CERT_PREFIX : DEV_CERT_PREFIX;
-			foreach (string certName in GetAllSigningIdentities ())
-				if (certName.StartsWith (cmp))
-					return certName;
 			return null;
+		}
+		
+		/// <summary>
+		/// Gets the name of a valid iPhone code signing certificate.
+		/// </summary>
+		/// <param name="distribution">Whether the key is for distribution</param>
+		/// <param name="hint">An optional substring hint for the key name.</param>
+		/// <returns>A valid certificate name, or null if no certificate is available.</returns>
+		public static string GetInstalledCertificateName (bool distribution, string hint)
+		{	
+			string cmp = distribution? DIST_CERT_PREFIX : DEV_CERT_PREFIX;
+			var certs = GetAllSigningIdentities ().Where (c => c.StartsWith (cmp));
+			
+			if (String.IsNullOrEmpty (hint))
+				return certs.FirstOrDefault ();
+			
+			string best = null;
+			foreach (string certName in certs) {
+				if (certName.Contains (hint))
+					return certName;
+				else if (best == null)
+					best = certName;
+			}
+			return best;
 		}
 		
 		enum SecItemClass : uint
@@ -246,6 +288,17 @@ namespace MonoDevelop.IPhone
 			Wrap =				0x00000040,
 			Unwrap =			0x00000080,
 			Derive =			0x00000100
+		}
+		
+		[Flags]
+		enum CssmTPAppleCertStatus : uint
+		{
+			Expired         = 0x00000001,
+			NotValidYet     = 0x00000002,
+			IsInInputCerts  = 0x00000004,
+			IsInAnchors     = 0x00000008,
+			IsRoot          = 0x00000010,
+			IsFromNet       = 0x00000020
 		}
 	}
 	

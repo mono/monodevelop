@@ -133,16 +133,22 @@ namespace MonoDevelop.IPhone
 			
 			if (conf.Platform == IPhoneProject.PLAT_IPHONE) {
 				monitor.BeginTask (GettextCatalog.GetString ("Signing application"), 0);
-				string signingKey = Keychain.GetCertificateName (proj, false);
-				if (String.IsNullOrEmpty (signingKey)) {
-					result.AddWarning ("No signing key is specified. The application will not be signed");
+				
+				string savedKeyName = Keychain.GetStoredCertificateName (proj, false);
+				string installedKeyName = Keychain.GetInstalledCertificateName (false, savedKeyName);
+				
+				if (String.IsNullOrEmpty (installedKeyName)) {
+					result.AddWarning ("No signing key is available. The application will not be signed");
 				} else {
+					if (savedKeyName != installedKeyName)
+						result.AddWarning (String.Format ("Signing key '{0}' not found. The default key will be used."));
+					
 					int signResultCode;
 					var psi = new ProcessStartInfo ("codesign") {
 						UseShellExecute = false,
 						RedirectStandardError = true,
 						RedirectStandardOutput = true,
-						Arguments = String.Format ("-v -s \"{0}\" \"{1}\"", signingKey, mtouchOutput),
+						Arguments = String.Format ("-v -s \"{0}\" \"{1}\"", installedKeyName, mtouchOutput),
 					};
 					psi.EnvironmentVariables.Add ("CODESIGN_ALLOCATE", "/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate");
 					string output;

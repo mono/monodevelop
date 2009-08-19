@@ -1,5 +1,12 @@
 2009-08-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Keychain.cs:
+	* IPhoneBuildExtension.cs: Check whether saved cert name is
+	  installed before trying to use it. If it's not present, fall
+	  back to automatic.
+
+2009-08-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneExecutionHandler.cs: Fix a race that caused tailing
 	  threads not to read final output when finishing.
 
