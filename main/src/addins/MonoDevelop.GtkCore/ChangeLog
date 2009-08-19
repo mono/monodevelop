@@ -1,3 +1,9 @@
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.NodeBuilders/FolderNodeBuilder.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/GuiBuilderProjectNodeBuilder.cs:
+	  Remove unused files.
+
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore/ReferenceManager.cs:
