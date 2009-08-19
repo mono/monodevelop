@@ -1,22 +1,32 @@
 //  NewProjectDialog.cs
 //
-//  This file was derived from a file from #Develop. 
+//   Todd Berman  <tberman@off.net>
+//   Lluis Sanchez Gual <lluis@novell.com>
+//   Viktoria Dudka  <viktoriad@remobjects.com>
 //
-//  Copyright (C) 2001-2007 Mike Krüger <mkrueger@novell.com>
-// 
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-// 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// Copyright (c) 2004 Todd Berman
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2009 RemObjects Software
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+//
 
 using System;
 using System.Collections;
@@ -34,6 +44,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using IconView = MonoDevelop.Components.IconView;
 using Gtk;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
 	/// <summary>
@@ -43,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 	public partial class NewProjectDialog: Gtk.Dialog
 	{
 		ArrayList alltemplates = new ArrayList();
-		ArrayList categories   = new ArrayList();
+		List<Category> categories = new List<Category> ();
 		
 		IconView TemplateView;
 		TreeStore catStore;
@@ -178,25 +189,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			base.OnDestroyed ();
 		}
 		
-		void InsertCategories (TreeIter node, ArrayList catarray)
-		{
-			foreach (Category cat in catarray) {
-				TreeIter i;
-				if (node.Equals (TreeIter.Zero)) {
-					i = catStore.AppendValues (cat.Name, cat);
-				} else {
-					i = catStore.AppendValues (node, cat.Name, cat);
-				}
-				InsertCategories(i, cat.Categories);
-			}
-		}
+		
 		
 		Category GetCategory (string categoryname)
 		{
 			return GetCategory (categories, categoryname);
 		}
 		
-		Category GetCategory (ArrayList catList, string categoryname)
+		Category GetCategory (List<Category> catList, string categoryname)
 		{
 			int i = categoryname.IndexOf ('/');
 			if (i != -1) {
@@ -214,38 +214,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			return newcategory;
 		}
 		
-		void InitializeTemplates()
-		{
-			foreach (ProjectTemplate template in ProjectTemplate.ProjectTemplates) {
-				// When creating a project (not a solution) hide solutions that don't have at least one project
-				if (!newSolution && template.SolutionDescriptor.EntryDescriptors.Length == 0)
-					continue;
-				TemplateItem titem = new TemplateItem(template);
-				Category cat = GetCategory(titem.Template.Category);
-				cat.Templates.Add(titem);
-				//if (cat.Templates.Count == 1)
-				//	titem.Selected = true;
-				alltemplates.Add(titem);
-			}
-			InitializeComponents ();
-		}
 		
-		void CategoryChange(object sender, EventArgs e)
-		{
-			TreeModel mdl;
-			TreeIter  iter;
-			if (lst_template_types.Selection.GetSelected (out mdl, out iter)) {
-				TemplateView.Clear ();
-				foreach (TemplateItem item in ((Category)catStore.GetValue (iter, 1)).Templates) {
-					string icon = item.Template.Icon;
-					if (icon == null) icon = "md-project";
-					icon = ImageService.GetStockId (icon);
-					TemplateView.AddIcon (icon, Gtk.IconSize.Dnd, item.Name, item.Template);
-				}
-				
-				btn_new.Sensitive = false;
-			}
-		}
+		
+		
 		
 		string GetValidDir (string name)
 		{
@@ -537,36 +508,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			InitializeView ();
 		}
 
-		/// <summary>
-		///  Represents a category
-		/// </summary>
-		internal class Category
-		{
-			ArrayList categories = new ArrayList();
-			ArrayList templates  = new ArrayList();
-			string name;
-			
-			public Category(string name)
-			{
-				this.name = name;
-			}
-			
-			public string Name {
-				get {
-					return name;
-				}
-			}
-			public ArrayList Categories {
-				get {
-					return categories;
-				}
-			}
-			public ArrayList Templates {
-				get {
-					return templates;
-				}
-			}
-		}
 		
 		/// <summary>
 		/// Holds a new file template
@@ -590,6 +531,82 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				get {
 					return template;
 				}
+			}
+		}
+
+		private void InitializeTemplates ()
+		{
+			foreach (ProjectTemplate projectTemplate in ProjectTemplate.ProjectTemplates) {
+				if (newSolution && (projectTemplate.SolutionDescriptor.EntryDescriptors != null) && (projectTemplate.SolutionDescriptor.EntryDescriptors.Length == 0))
+					continue;
+	            else {
+	            	
+				} {
+					TemplateItem templateItem = new TemplateItem (projectTemplate);
+					
+					Category category = GetCategory(templateItem.Template.Category);
+					if (category != null )
+						category.Templates.Add(templateItem);
+					
+					alltemplates.Add(templateItem);
+				}
+			}
+			
+			InitializeComponents ();
+		}
+		
+		private void InsertCategories (TreeIter node, List<Category> listCategories)
+		{
+			foreach (Category category in listCategories) {
+				if (TreeIter.Zero.Equals (node))
+					InsertCategories (catStore.AppendValues (category.Name, category), category.Categories);
+	            else {
+	            	
+				}
+				InsertCategories (catStore.AppendValues (node, category.Name, category), category.Categories);
+			}
+		}
+		
+		private void CategoryChange (System.Object o, EventArgs e)
+		{
+			TreeModel treeModel;
+			TreeIter treeIter;
+			
+			if (lst_template_types.Selection.GetSelected(out treeModel, out treeIter)) {
+				TemplateView.Clear();
+				
+				foreach ( TemplateItem templateItem in  (catStore.GetValue(treeIter, 1) as Category).Templates) {
+					TemplateView.AddIcon(ImageService.GetStockId(templateItem.Template.Icon ?? "md-project"), IconSize.Dnd, templateItem.Name, templateItem.Template);
+				}
+				
+				btn_new.Sensitive = false;
+			}
+			
+		}
+		
+		internal class Category 
+		{
+			private string name;
+			public string Name
+			{
+				get { return name; }
+			}
+			
+			public Category (string name)
+			{
+				this.name = name;
+			}        
+			
+			private List<TemplateItem> templates = new List<TemplateItem>();
+			public List<TemplateItem> Templates
+			{
+				get { return templates; }
+			}
+			
+			private List<Category> categories = new List<Category>();
+			public List<Category> Categories
+			{
+				get { return categories; }
 			}
 		}
 	}

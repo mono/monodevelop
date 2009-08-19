@@ -1,3 +1,8 @@
+2009-08-19  Viktoria Dudka  <viktoriad@remobjects.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Rewritten the
+	  GPL parts. 
+
 2009-08-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Added a fix from ki9a - he
