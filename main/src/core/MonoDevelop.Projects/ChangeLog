@@ -1,3 +1,9 @@
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/WorkspaceItem.cs:
+	* MonoDevelop.Projects/ProjectReference.cs: Updated license
+	  headers. Those files have been rewritten.
+
 2009-08-18  Viktoria Dudka  <viktoriad@remobjects.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Rewritten GPL parts.
