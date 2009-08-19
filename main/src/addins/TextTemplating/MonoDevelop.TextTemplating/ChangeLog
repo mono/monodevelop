@@ -1,3 +1,8 @@
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.TextTemplating.csproj: Don't local copy
+	  MD.Components.
+
 2009-08-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
