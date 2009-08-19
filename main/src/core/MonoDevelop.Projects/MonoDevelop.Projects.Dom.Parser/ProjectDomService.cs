@@ -976,9 +976,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 				AddToCache (parseInformation, fileName);
 			}
 */
-			AddToCache (parserOutput);
+			if (parserOutput != null) {
+				AddToCache (parserOutput);
+				OnParsedDocumentUpdated (new ParsedDocumentEventArgs (parserOutput));
+			}
 			
-			OnParsedDocumentUpdated (new ParsedDocumentEventArgs (parserOutput));
 			return parserOutput;
 		}
 
@@ -1004,6 +1006,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static void AddToCache (ParsedDocument info)
 		{
+			if (info == null)
+				throw new ArgumentNullException ("info");
 			lock (parsings) 
 			{
 				if (parsings.Count >= MAX_PARSING_CACHE_SIZE)
