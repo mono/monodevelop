@@ -127,10 +127,10 @@ namespace MonoDevelop.IPhone
 				byte[] buffer = new byte [1024];
 				var encoding = System.Text.Encoding.UTF8;
 				while (!finish) {
+					Thread.Sleep (500);
 					int nr;
 					while ((nr = fs.Read (buffer, 0, buffer.Length)) > 0)
 						writer.Write (encoding.GetString (buffer, 0, nr));
-					Thread.Sleep (500);
 				}
 			} catch (ThreadAbortException) {
 				Thread.ResetAbort ();
