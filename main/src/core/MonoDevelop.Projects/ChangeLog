@@ -1,3 +1,7 @@
+2009-08-18  Viktoria Dudka  <viktoriad@remobjects.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Rewritten GPL parts.
+
 2009-08-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Fixed
