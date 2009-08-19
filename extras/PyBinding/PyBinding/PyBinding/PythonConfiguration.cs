@@ -34,7 +34,7 @@ namespace PyBinding
 {
 	public class PythonConfiguration : ProjectConfiguration
 	{
-		static readonly string m_DefaultModule = "main";
+		static readonly string s_DefaultModule = "main";
 		
 		[ItemProperty("Runtime/Interpreter")]
 		IPythonRuntime m_Runtime;
@@ -50,8 +50,8 @@ namespace PyBinding
 		
 		public PythonConfiguration ()
 		{
-			this.m_Runtime = new Python25Runtime ();
-			this.m_Module = m_DefaultModule;
+			this.m_Runtime = PythonHelper.FindPreferedRuntime ();
+			this.m_Module = s_DefaultModule;
 		}
 		
 		public string Module {

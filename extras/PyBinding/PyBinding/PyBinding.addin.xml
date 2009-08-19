@@ -13,13 +13,13 @@
     </Runtime>
 
     <Dependencies>
-        <Addin id = "Core" version = "2.1.0"/>
-        <Addin id = "Core.Gui" version = "2.1.0"/>
-        <Addin id = "Projects" version = "2.1.0"/>
-        <Addin id = "Projects.Gui" version = "2.1.0"/>
-        <Addin id = "Ide" version = "2.1.0"/>
-        <Addin id = "Components" version = "2.1.0"/>
-        <Addin id="SourceEditor2" version="2.1.0"/>
+        <Addin id = "Core"          version = "2.1.0"/>
+        <Addin id = "Core.Gui"      version = "2.1.0"/>
+        <Addin id = "Projects"      version = "2.1.0"/>
+        <Addin id = "Projects.Gui"  version = "2.1.0"/>
+        <Addin id = "Ide"           version = "2.1.0"/>
+        <Addin id = "Components"    version = "2.1.0"/>
+        <Addin id = "SourceEditor2" version = "2.1.0"/>
     </Dependencies>
     
     <Extension path = "/MonoDevelop/Core/StockIcons">
@@ -50,6 +50,9 @@
     	<ProjectTemplate
     		id = "EmptyDjangoPyProject"
     		resource = "EmptyDjangoProject.xpt.xml"/>
+        <ProjectTemplate
+            id = "PyGtkProject"
+            resource = "PyGtkProject.xpt.xml"/>
     </Extension>
     
     <Extension path = "/MonoDevelop/Core/MimeTypes">

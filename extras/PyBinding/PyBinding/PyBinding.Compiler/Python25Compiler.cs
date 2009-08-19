@@ -35,9 +35,9 @@ namespace PyBinding.Compiler
 {
 	public class Python25Compiler : IPythonCompiler
 	{
-		static readonly string m_CompileFormat =
+		static readonly string s_CompileFormat =
 			"-c \"import py_compile; py_compile.compile('{0}','{1}c');\"";
-		static readonly string m_OptimizedCompileFormat =
+		static readonly string s_OptimizedCompileFormat =
 			"-O -c \"import py_compile; py_compile.compile('{0}','{1}o');\"";
 		
 		IPythonRuntime m_Runtime = null;
@@ -79,14 +79,13 @@ namespace PyBinding.Compiler
 				return;
 			}
 			
-			fileName = fileName.ToRelative (project.BaseDirectory);
-			string outFile = fileName.ToAbsolute (config.OutputDirectory);
+			FilePath relName = fileName.ToRelative (project.BaseDirectory);
+			string outFile = relName.ToAbsolute (config.OutputDirectory);
 			
 			// Create the destination directory
 			FileInfo fileInfo = new FileInfo (outFile);
-			if (!fileInfo.Directory.Exists) {
+			if (!fileInfo.Directory.Exists)
 				fileInfo.Directory.Create ();
-			}
 			
 			// Create and start our process to generate the byte code
 			Process process = BuildCompileProcess (fileName, outFile, config.Optimize);
@@ -118,14 +117,10 @@ namespace PyBinding.Compiler
 			startInfo.RedirectStandardError = true;
 			startInfo.UseShellExecute = false;
 			
-			if (optimize) {
-				startInfo.Arguments =
-					String.Format (m_OptimizedCompileFormat, fileName, outFile);
-			}
-			else {
-				startInfo.Arguments =
-					String.Format (m_CompileFormat, fileName, outFile);
-			}
+			if (optimize)
+				startInfo.Arguments = String.Format (s_OptimizedCompileFormat, fileName, outFile);
+			else
+				startInfo.Arguments = String.Format (s_CompileFormat, fileName, outFile);
 			
 			Process process = new Process ();
 			process.StartInfo = startInfo;

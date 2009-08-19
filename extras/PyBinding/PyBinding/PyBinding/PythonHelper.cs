@@ -24,6 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using PyBinding.Runtime;
+
 namespace PyBinding
 {
 	public class PythonHelper
@@ -90,6 +92,36 @@ namespace PyBinding
 				return modName;
 
 			return RecursiveModuleFromFile (dirInfo.Parent, modName);
+		}
+		
+		public static IPythonRuntime FindPreferedRuntime ()
+		{
+			try {
+				return new Python25Runtime () {
+					Path = Which ("python2.6")
+				};
+			}
+			catch {}
+			
+			try {
+				return new Python25Runtime () {
+					Path = Which ("python2.5")
+				};
+			}
+			catch {}
+			
+			// look for "python" and what version it is
+			
+			return null;
+		}
+		
+		public static string FindPreferredPython ()
+		{
+			try { return Which ("python2.6"); } catch {}
+			try { return Which ("python2.5"); } catch {}
+			try { return Which ("python"); } catch {}
+			
+			throw new FileNotFoundException ("Could not locate python executable");
 		}
 	}
 }

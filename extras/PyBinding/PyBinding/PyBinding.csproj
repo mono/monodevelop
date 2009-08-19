@@ -193,6 +193,9 @@
     <EmbeddedResource Include="Resources\EmptyDjangoProject.xpt.xml">
       <LogicalName>EmptyDjangoProject.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PyGtkProject.xpt.xml">
+      <LogicalName>PyGtkProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

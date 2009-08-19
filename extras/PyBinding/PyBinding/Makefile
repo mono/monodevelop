@@ -102,6 +102,7 @@ RESOURCES =  \
 	Resources/EmptyDjangoProject.xpt.xml \
 	Resources/EmptyPyProject.xpt.xml \
 	Resources/EmptyPySourceFile.xft.xml \
+	Resources/PyGtkProject.xpt.xml \
 	Resources/py-icon-32.png \
 	Resources/text-x-pysrc.16x16.png 
 

@@ -40,11 +40,11 @@ namespace PyBinding
 {
 	public class PythonProject : Project
 	{
-		static readonly string m_ProjectType = "Python";
+		static readonly string s_ProjectType = "Python";
 		
 		public override string ProjectType {
 			get {
-				return m_ProjectType;
+				return s_ProjectType;
 			}
 		}
 		
@@ -59,7 +59,7 @@ namespace PyBinding
 			PythonConfiguration defaultConfig;
 			string binPath;
 			
-			if (!String.Equals (m_ProjectType, languageName)) {
+			if (!String.Equals (s_ProjectType, languageName)) {
 				throw new ArgumentException ("Not Python Project");
 			}
 			

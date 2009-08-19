@@ -1,3 +1,20 @@
+2009-08-19  Christian Hergert  <chris@dronelabs.com>
+
+	* PyBinding/PyBinding.csproj: 
+	* PyBinding/PyBinding/PythonHelper.cs: 
+	* PyBinding/PyBinding/PythonProject.cs: 
+	* PyBinding/PyBinding/PythonConfiguration.cs: 
+	* PyBinding/PyBinding.Compiler/Python25Compiler.cs: 
+	* PyBinding/PyBinding.addin.xml: 
+	* PyBinding/PyBinding.Runtime/Python25Runtime.cs: 
+	* PyBinding/gtk-gui/gui.stetic: 
+	* PyBinding/Resources/PyGtkProject.xpt.xml: 
+	* PyBinding/Makefile: 
+	* PyBinding/PyBinding.Parser/PythonParserInternal.cs: Update python
+	binding to work with python2.6 by reusing the python25 infrastructure.
+	This will eventually change, but should help those that are currently
+	stuck without python2.5.
+
 2009-08-17 John Tindell <john@yeticode.co.uk>
 
 	* Resources/DjangoProject.xpt.xml: template that creates same

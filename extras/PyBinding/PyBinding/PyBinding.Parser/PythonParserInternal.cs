@@ -92,8 +92,18 @@ namespace PyBinding.Parser
 			if (src == null)
 				throw new InvalidOperationException ("Missing completion.py");
 
+			string pypath;
+			
+			try {
+				pypath = PythonHelper.FindPreferredPython ();
+			}
+			catch {
+				MonoDevelop.Core.LoggingService.LogError ("Cannot locate python executable. Disabling python parsing.");
+				return;
+			}
+			
 			m_Process = new Process ();
-			m_Process.StartInfo.FileName = PythonHelper.Which ("python2.5");
+			m_Process.StartInfo.FileName = pypath;
 			m_Process.StartInfo.Arguments = "-u -";
 			m_Process.StartInfo.UseShellExecute = false;
 			m_Process.StartInfo.RedirectStandardError = true;

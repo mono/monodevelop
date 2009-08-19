@@ -46,9 +46,8 @@ namespace PyBinding.Runtime
 		
 		public override IPythonCompiler Compiler {
 			get {
-				if (this.m_Compiler == null) {
+				if (this.m_Compiler == null)
 					this.m_Compiler = new Python25Compiler ();
-				}
 				
 				// Give compiler a reference to this instance
 				(this.m_Compiler as Python25Compiler).Runtime = this;
@@ -65,9 +64,8 @@ namespace PyBinding.Runtime
 		
 		public override string Path {
 			get {
-				if (String.IsNullOrEmpty (this.m_Path)) {
+				if (String.IsNullOrEmpty (this.m_Path))
 					this.m_Path = this.Resolve (m_DefaultPath);
-				}
 				
 				return this.m_Path;
 			}
@@ -78,9 +76,9 @@ namespace PyBinding.Runtime
 		
 		public override object Clone ()
 		{
-			Python25Runtime clone = new Python25Runtime ();
-			clone.Path = m_Path;
-			return clone;
+			return new Python25Runtime () {
+				Path = this.Path
+			};
 		}
 		
 		public override string[] GetArguments (PythonConfiguration config)
