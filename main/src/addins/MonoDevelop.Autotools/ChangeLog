@@ -1,3 +1,9 @@
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Handler.cs: Store TargetDirectory as a relative path. Fixes
+	  bug #532295 - TargetDirectory for a packaging project should
+	  be relative to the project.
+
 2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MakefileData.cs:

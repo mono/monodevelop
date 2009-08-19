@@ -16,7 +16,7 @@ namespace MonoDevelop.Autotools
 {
 	public class TarballDeployTarget: PackageBuilder
 	{
-		[ItemProperty ("TargetDirectory")]
+		[ProjectPathItemProperty ("TargetDirectory")]
 		string targetDir;
 		
 		[ItemProperty ("DefaultConfiguration")]
