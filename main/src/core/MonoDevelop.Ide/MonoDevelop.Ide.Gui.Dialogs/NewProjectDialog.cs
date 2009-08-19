@@ -561,9 +561,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				if (TreeIter.Zero.Equals (node))
 					InsertCategories (catStore.AppendValues (category.Name, category), category.Categories);
 	            else {
-	            	
+					InsertCategories (catStore.AppendValues (node, category.Name, category), category.Categories);
 				}
-				InsertCategories (catStore.AppendValues (node, category.Name, category), category.Categories);
 			}
 		}
 		
