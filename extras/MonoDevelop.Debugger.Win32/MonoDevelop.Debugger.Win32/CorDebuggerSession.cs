@@ -73,8 +73,14 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override void Dispose ( )
 		{
-			if (dbg != null && !terminated)
-				dbg.Terminate ();
+			if (dbg != null && !terminated) {
+				// The Terminate call will fail if this Dispose is being called from the handler
+				// of a debugger event. Just in case, we run it in a separate thread.
+				CorDebugger dd = dbg;
+				ThreadPool.QueueUserWorkItem (delegate {
+					dd.Terminate ();
+				});
+			}
 			base.Dispose ();
 
 			// There is no explicit way of disposing the metadata objects, so we have
