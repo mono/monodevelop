@@ -972,7 +972,10 @@ namespace MonoDevelop.Ide.Gui
 					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 					return;
 				}
-
+				
+				if (project != null)
+					newContent.Project = project;
+				
 				IEncodedTextContent etc = (IEncodedTextContent) newContent.GetContent (typeof(IEncodedTextContent));
 				if (fileInfo.Encoding != null && etc != null)
 					etc.Load (fileName, fileInfo.Encoding);
@@ -988,8 +991,6 @@ namespace MonoDevelop.Ide.Gui
 				fileInfo.NewContent = newContent;
 				return;
 			}
-			if (project != null)
-				newContent.Project = project;
 			
 			workbench.ShowView (newContent, fileInfo.BringToFront);
 			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow);

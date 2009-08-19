@@ -1,3 +1,8 @@
+2009-08-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Added a fix from ki9a - he
+	  encountered an exception while loading.
+
 2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs:
