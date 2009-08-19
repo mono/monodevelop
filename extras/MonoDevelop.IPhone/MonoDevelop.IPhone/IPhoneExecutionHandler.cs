@@ -57,8 +57,8 @@ namespace MonoDevelop.IPhone
 			if (string.IsNullOrEmpty (mtouchPath))
 				throw new InvalidOperationException ("Cannot execute iPhone application. mtouch tool is missing.");
 			
-			string errLog = cmd.LogDirectory.Combine ("out.log");
-			string outLog = cmd.LogDirectory.Combine ("err.log");
+			string outLog = cmd.LogDirectory.Combine ("out.log");
+			string errLog = cmd.LogDirectory.Combine ("err.log");
 			
 			string mtouchArgs = String.Format ("-launchsim='{0}' -stderr='{1}' -stdout='{2}'", cmd.AppPath, errLog, outLog);
 			
@@ -77,8 +77,8 @@ namespace MonoDevelop.IPhone
 				    File.Delete (outLog);
 			} catch (IOException) {}
 			
-			var outTail = new Tail (cmd.LogDirectory.Combine ("out.log"), console.Out);
-			var errTail = new Tail (cmd.LogDirectory.Combine ("err.log"), console.Error);
+			var outTail = new Tail (outLog, console.Out);
+			var errTail = new Tail (errLog, console.Error);
 			outTail.Start ();
 			errTail.Start ();
 			

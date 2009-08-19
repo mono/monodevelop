@@ -1,5 +1,12 @@
 2009-08-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneExecutionHandler.cs: Get outLog/errLog the right way
+	  round.
+
+	* IPhoneProject.cs: Add a fixme regarding file grouping.
+
+2009-08-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Templates/IPhoneViewController.xft.xml: Remove the explicit
 	  controller and instead make the File's Owner the controller.
 	  Add another ctor.

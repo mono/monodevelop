@@ -252,6 +252,7 @@ namespace MonoDevelop.IPhone
 			}
 			
 			//find any related files, e.g codebehind
+			//FIXME: base this on the controller class names defined in the xib
 			IEnumerable<string> filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies
 				(this, e.ProjectFile, groupedExtensions);
 			
