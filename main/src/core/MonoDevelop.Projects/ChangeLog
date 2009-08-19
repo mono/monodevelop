@@ -1,5 +1,16 @@
 2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/IMSBuildImportProvider.cs:
+	  Added extension point for Import providers, which can inject
+	  custom import items in msbuild files.
+
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/WorkspaceItem.cs:
 	* MonoDevelop.Projects/ProjectReference.cs: Updated license
 	  headers. Those files have been rewritten.

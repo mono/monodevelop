@@ -328,6 +328,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteLogger.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteLoggerController.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteProjectBuilder.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildImportProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />

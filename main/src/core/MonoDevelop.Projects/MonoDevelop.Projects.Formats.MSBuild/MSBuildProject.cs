@@ -119,8 +119,32 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void AddNewImport (string name, string condition)
 		{
 			XmlElement elem = doc.CreateElement (null, "Import", MSBuildProject.Schema);
-			doc.DocumentElement.AppendChild (elem);
 			elem.SetAttribute ("Project", name);
+			
+			XmlElement last = doc.DocumentElement.SelectSingleNode ("tns:Import[last()]", XmlNamespaceManager) as XmlElement;
+			if (last != null)
+				doc.DocumentElement.InsertAfter (elem, last);
+			else
+				doc.DocumentElement.AppendChild (elem);
+		}
+		
+		public void RemoveImport (string name)
+		{
+			XmlElement elem = (XmlElement) doc.DocumentElement.SelectSingleNode ("tns:Import[@Project='" + name + "']", XmlNamespaceManager);
+			if (elem != null)
+				elem.ParentNode.RemoveChild (elem);
+			else
+				Console.WriteLine ("ppnf:");
+		}
+		
+		public List<string> Imports {
+			get {
+				List<string> ims = new List<string> ();
+				foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:Import", XmlNamespaceManager)) {
+					ims.Add (elem.GetAttribute ("Project"));
+				}
+				return ims;
+			}
 		}
 		
 		public MSBuildPropertyGroup GetGlobalPropertyGroup ()

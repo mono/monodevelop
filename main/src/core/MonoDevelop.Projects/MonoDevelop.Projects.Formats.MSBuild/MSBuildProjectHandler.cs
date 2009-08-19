@@ -38,6 +38,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Execution;
+using Mono.Addins;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -693,9 +694,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 			}
 
-			if (newProject) {
-				foreach (string import in TargetImports)
-					msproject.AddNewImport (import, null);
+			// Impdate the imports section
+			
+			List<string> currentImports = msproject.Imports;
+			List<string> newImports = GetImports ();
+			foreach (string imp in newImports) {
+				if (!currentImports.Contains (imp))
+					msproject.AddNewImport (imp, null);
+			}
+			foreach (string imp in currentImports) {
+				if (!newImports.Contains (imp))
+					msproject.RemoveImport (imp);
 			}
 			
 			DataItem extendedData = ser.ExternalItemProperties;
@@ -834,6 +843,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			WriteBuildItemMetadata (ser, buildItem, pref);
 			buildItem.Condition = pref.Condition;
+		}
+		
+		List<string> GetImports ()
+		{
+			List<string> imps = new List<string> ();
+			if (targetImports != null) {
+				foreach (string imp in targetImports)
+					imps.Add (imp);
+			}
+			foreach (IMSBuildImportProvider ip in AddinManager.GetExtensionObjects ("/MonoDevelop/ProjectModel/MSBuildImportProviders")) {
+				foreach (string imp in ip.GetRequiredImports (EntityItem))
+					imps.Add (imp);
+			}
+			return imps;
 		}
 
 		void UnmergeBaseConfiguration (List<ConfigData> configData, MSBuildPropertyGroup propGroup, string conf, string platform)
