@@ -1,3 +1,7 @@
+2009-08-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Corrected clipping.
+
 2009-08-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Revert changes to
