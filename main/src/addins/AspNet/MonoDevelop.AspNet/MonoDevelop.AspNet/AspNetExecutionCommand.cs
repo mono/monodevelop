@@ -47,6 +47,8 @@ namespace MonoDevelop.AspNet
 		
 		public TargetRuntime TargetRuntime { get; set; }
 		
+		public TargetFramework TargetFramework { get; set; }
+		
 		public override string CommandString {
 			get {
 				return "[asp-net]";

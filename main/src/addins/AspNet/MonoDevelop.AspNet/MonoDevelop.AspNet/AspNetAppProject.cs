@@ -225,6 +225,7 @@ namespace MonoDevelop.AspNet
 			cmd.XspParameters = XspParameters;
 			cmd.BaseDirectory = BaseDirectory;
 			cmd.TargetRuntime = TargetRuntime;
+			cmd.TargetFramework = TargetFramework;
 			return cmd;
 		}
 		
@@ -589,6 +590,14 @@ namespace MonoDevelop.AspNet
 		#endregion
 		
 		#region File event handlers
+		
+		protected override void OnFileChangedInProject (MonoDevelop.Projects.ProjectFileEventArgs e)
+		{
+			//if (!DisableCodeBehindGeneration) {
+			//FIXME implement codebehind updates
+			
+			base.OnFileChangedInProject (e);
+		}
 		
 		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
 		{

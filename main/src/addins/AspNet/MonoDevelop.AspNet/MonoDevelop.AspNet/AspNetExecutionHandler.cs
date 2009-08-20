@@ -30,13 +30,13 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
+using System.IO;
 
 namespace MonoDevelop.AspNet
 {
 	public class AspNetExecutionHandler: IExecutionHandler
 	{
-
-		#region IExecutionHandler implementation
+		
 		public bool CanExecute (ExecutionCommand command)
 		{
 			return command is AspNetExecutionCommand;
@@ -46,24 +46,35 @@ namespace MonoDevelop.AspNet
 		{
 			AspNetExecutionCommand cmd = command as AspNetExecutionCommand;
 			
-			// Create a native execution command for running XSP
-			NativeExecutionCommand ncmd = new NativeExecutionCommand ();
+			string xspName = (cmd.ClrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
+			string xspPath = cmd.TargetRuntime.GetToolPath (cmd.TargetFramework, xspName);
 			
-			//set mono debug mode if project's in debug mode
-			Dictionary<string, string> envVars = new Dictionary<string,string> (); 
-			if (cmd.DebugMode)
-				envVars ["MONO_OPTIONS"] = "--debug";
+			//if the current runtime doesn't provide XSP, use one bundled alongside the addin
+			if (String.IsNullOrEmpty (xspPath))
+				 xspPath = Path.Combine (Path.GetDirectoryName (typeof (AspNetExecutionHandler).Assembly.CodeBase), xspName);
 			
-			if (cmd.ClrVersion == ClrVersion.Net_1_1)
-				ncmd.Command = "xsp";
-			else
-				ncmd.Command = "xsp2";
+			//if it's a script, use a native execution handler
+			if (!xspPath.EndsWith (".exe")) {
+				//set mono debug mode if project's in debug mode
+				var envVars = cmd.TargetRuntime.GetToolsEnvironmentVariables (cmd.TargetFramework); 
+				if (cmd.DebugMode) {
+					envVars = new Dictionary<string, string> (envVars);
+					envVars ["MONO_OPTIONS"] = "--debug";
+				}
+				
+				var ncmd = new NativeExecutionCommand (
+					xspPath, cmd.XspParameters.GetXspParameters (),
+					cmd.BaseDirectory, envVars);
+				
+				return Runtime.ProcessService.GetDefaultExecutionHandler (ncmd).Execute (ncmd, console);
+			}
 			
-			ncmd.Arguments = cmd.XspParameters.GetXspParameters ();
-			ncmd.WorkingDirectory = cmd.BaseDirectory;
+			var netCmd = new DotNetExecutionCommand (
+				xspPath, cmd.XspParameters.GetXspParameters (),
+				cmd.BaseDirectory, cmd.TargetRuntime.GetToolsEnvironmentVariables (cmd.TargetFramework));
+			netCmd.DebugMode = cmd.DebugMode;
 			
-			return Runtime.ProcessService.GetDefaultExecutionHandler (ncmd).Execute (ncmd, console);
+			return cmd.TargetRuntime.GetExecutionHandler ().Execute (netCmd, console);
 		}
-		#endregion
 	}
 }
