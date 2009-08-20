@@ -108,10 +108,10 @@ namespace MonoDevelop.Debugger.Gdb
 				StartGdb ();
 				
 				// Initialize the terminal
-				RunCommand ("-inferior-tty-set", tty);
-				RunCommand ("-file-exec-and-symbols", startInfo.Command);
+				RunCommand ("-inferior-tty-set", Escape (tty));
+				RunCommand ("-file-exec-and-symbols", Escape (startInfo.Command));
 
-				RunCommand ("-environment-directory", startInfo.WorkingDirectory);
+				RunCommand ("-environment-directory", Escape (startInfo.WorkingDirectory));
 				
 				// Set inferior arguments
 				if (!string.IsNullOrEmpty (startInfo.Arguments))
@@ -264,10 +264,14 @@ namespace MonoDevelop.Debugger.Gdb
 						if (!bp.BreakIfConditionChanges)
 							extraCmd += " -c " + bp.ConditionExpression;
 					}
-					RunCommand ("-environment-directory", Path.GetDirectoryName (bp.FileName));
-					GdbCommandResult res = RunCommand ("-break-insert", extraCmd.Trim (), bp.FileName + ":" + bp.Line);
+					
+					// Breakpoint locations must be double-quoted if files contain spaces.
+					// For example: -break-insert "\"C:/Documents and Settings/foo.c\":17"
+					
+					RunCommand ("-environment-directory", Escape (Path.GetDirectoryName (bp.FileName)));
+					GdbCommandResult res = RunCommand ("-break-insert", extraCmd.Trim (), Escape (Escape (bp.FileName) + ":" + bp.Line));
 					if (CommandStatus.Error == res.Status)
-						res = RunCommand ("-break-insert", extraCmd.Trim (), Path.GetFileName (bp.FileName) + ":" + bp.Line);
+						res = RunCommand ("-break-insert", extraCmd.Trim (), Escape (Escape (Path.GetFileName (bp.FileName)) + ":" + bp.Line));
 					int bh = res.GetObject ("bkpt").GetInt ("number");
 					if (!activate)
 						RunCommand ("-break-disable", bh.ToString ());
@@ -287,13 +291,13 @@ namespace MonoDevelop.Debugger.Gdb
 			
 			if (!string.IsNullOrEmpty (bp.ConditionExpression) && bp.BreakIfConditionChanges) {
 				// Update the condition expression
-				GdbCommandResult res = RunCommand ("-data-evaluate-expression", bp.ConditionExpression);
+				GdbCommandResult res = RunCommand ("-data-evaluate-expression", Escape (bp.ConditionExpression));
 				string val = res.GetValue ("value");
 				RunCommand ("-break-condition", handle.ToString (), "(" + bp.ConditionExpression + ") != " + val);
 			}
 			
 			if (bp.HitAction == HitAction.PrintExpression) {
-				GdbCommandResult res = RunCommand ("-data-evaluate-expression", bp.TraceExpression);
+				GdbCommandResult res = RunCommand ("-data-evaluate-expression", Escape (bp.TraceExpression));
 				string val = res.GetValue ("value");
 				OnDebuggerOutput (false, val + "\n");
 				NotifyBreakEventUpdate (handle, 0, val);
@@ -493,6 +497,18 @@ namespace MonoDevelop.Debugger.Gdb
 			return RunCommand ("-thread-select", id.ToString ());
 		}
 		
+		string Escape (string str)
+		{
+			if (str == null)
+				return null;
+			else if (str.IndexOf (' ') != -1 || str.IndexOf ('"') != -1) {
+				str = str.Replace ("\"", "\\\"");
+				return "\"" + str + "\"";
+			}
+			else
+				return str;
+		}
+		
 		public GdbCommandResult RunCommand (string command, params string[] args)
 		{
 			lock (gdbLock) {
@@ -502,7 +518,6 @@ namespace MonoDevelop.Debugger.Gdb
 					lock (eventLock) {
 						running = true;
 					}
-
 #if GDB_OUTPUT
 					Console.WriteLine ("gdb<: " + command + " " + string.Join (" ", args));
 #endif
@@ -576,8 +591,9 @@ namespace MonoDevelop.Debugger.Gdb
 					lock (eventLock) {
 						running = false;
 						ev = new GdbEvent (line);
-						if (ev.GetValue ("thread-id") != null)
-							currentThread = activeThread = ev.GetInt ("thread-id");
+						string ti = ev.GetValue ("thread-id");
+						if (ti != null && ti != "all")
+							currentThread = activeThread = int.Parse (ti);
 						Monitor.PulseAll (eventLock);
 						if (internalStop) {
 							internalStop = false;

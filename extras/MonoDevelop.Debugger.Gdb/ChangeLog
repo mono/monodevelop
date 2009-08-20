@@ -1,3 +1,10 @@
+2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.Gdb.sln: Updated.
+
+	* GdbSession.cs: Quote file names when needed.
+
 2009-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.csproj: Flush.
