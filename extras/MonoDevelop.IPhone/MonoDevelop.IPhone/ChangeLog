@@ -1,5 +1,10 @@
 2009-08-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Keychain.cs:
+	* IPhoneBuildExtension.cs: Fix broken error message.
+
+2009-08-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProject.cs:
 	* gtk-gui/gui.stetic:
 	* IPhoneBuildExtension.cs:

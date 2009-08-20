@@ -140,8 +140,8 @@ namespace MonoDevelop.IPhone
 				if (String.IsNullOrEmpty (installedKeyName)) {
 					result.AddWarning ("No signing key is available. The application will not be signed");
 				} else {
-					if (savedKeyName != installedKeyName)
-						result.AddWarning (String.Format ("Signing key '{0}' not found. The default key will be used."));
+					if (savedKeyName != null && savedKeyName != installedKeyName)
+						result.AddWarning (String.Format ("Signing key '{0}' not found. The default key will be used.", savedKeyName));
 					
 					int signResultCode;
 					var psi = new ProcessStartInfo ("codesign") {

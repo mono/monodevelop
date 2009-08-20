@@ -191,7 +191,7 @@ namespace MonoDevelop.IPhone
 			var keys = project.UserProperties.GetValue<SigningKeyInformation> ("IPhoneSigningKeys");
 			if (keys != null) {
 				string key = distribution? keys.Distribution : keys.Developer;
-				if (key != null)
+				if (!String.IsNullOrEmpty (key))
 					return key;
 			}
 			return null;
