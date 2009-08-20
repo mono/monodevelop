@@ -34,7 +34,7 @@
 		<ItemProperty member="Files" scope="*" name="File" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.DotNetProject">
-		<ItemProperty member="language" />
+		<ItemProperty member="languageName" name="language"/>
 		<ItemProperty member="UsePartialTypes" defaultValue="true"/>
 		<ItemProperty member="defaultNamespace" name="DefaultNamespace" defaultValue="" />
 		<ItemProperty member="References" name="References" />

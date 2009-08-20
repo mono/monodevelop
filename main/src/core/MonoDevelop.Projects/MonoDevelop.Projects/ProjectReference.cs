@@ -121,6 +121,12 @@ namespace MonoDevelop.Projects
 			UpdateGacReference ();
 		}
 		
+		protected void InitCustomReference (string reference)
+		{
+			Reference = reference;
+			referenceType = ReferenceType.Custom;
+		}
+		
 		public static ProjectReference RenameReference (ProjectReference pref, string newReference)
 		{
 			ProjectReference newRef = (ProjectReference) pref.MemberwiseClone ();
