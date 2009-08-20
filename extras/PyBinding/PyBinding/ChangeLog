@@ -1,5 +1,10 @@
 2009-08-20  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding/Resources/EmptyPySourceFile.xft.xml: Fix template
+	description to properly check for Python project type.
+
+2009-08-20  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.csproj: 
 	* PyBinding/PythonHelper.cs: Use Python26Runtime.
 	* PyBinding/PythonExecutionHandler.cs: Make sure we respect environment

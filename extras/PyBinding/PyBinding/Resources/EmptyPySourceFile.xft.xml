@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
 <Template
-    Originator="Christian Hergert"
-    Language="Python"
-    Created="03/21/2008"
-    LastModified="03/21/2008">
+    Originator   = "Christian Hergert"
+    Created      = "03/21/2008"
+    LastModified = "08/20/2009">
 
     <TemplateConfiguration>
-        <_Name>Empty Python Source File</_Name>
+        <_Name>Empty Python File</_Name>
         <Icon>res:py-icon-32.png</Icon>
-        <_Category>General</_Category>
-        <LanguageName>Python</LanguageName>
+        <_Category>Python</_Category>
+        <ProjectType>Python</ProjectType>
         <_Description>Creates an empty Python source file.</_Description>
     </TemplateConfiguration>
 
