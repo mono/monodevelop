@@ -1795,7 +1795,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				return itable [compositionKey] as Gdk.Pixbuf;
 			}
 			
-			public void CacheComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey, Gdk.Pixbuf composedIcon)
+			public Gdk.Pixbuf CacheComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey, Gdk.Pixbuf composedIcon)
 			{
 				Hashtable itable = composedIcons [baseIcon] as Hashtable;
 				if (itable == null) {
@@ -1803,6 +1803,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					composedIcons [baseIcon] = itable;
 				}
 				itable [compositionKey] = composedIcon;
+				return composedIcon;
 			}
 			
 			public ITreeNavigator GetTreeNavigator (object dataObject)

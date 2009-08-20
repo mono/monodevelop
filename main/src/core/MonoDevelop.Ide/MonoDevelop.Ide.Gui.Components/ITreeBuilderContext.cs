@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		Gdk.Pixbuf GetIcon (string iconId);
 		Gdk.Pixbuf GetComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey);
-		void CacheComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey, Gdk.Pixbuf composedIcon);
+		Gdk.Pixbuf CacheComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey, Gdk.Pixbuf composedIcon);
 		
 		ExtensibleTreeView Tree { get; }
 	}

@@ -70,14 +70,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workspace.FileRemovedFromProject += fileRemovedHandler;
 			IdeApp.Workspace.FileRenamedInProject += fileRenamedHandler;
 			IdeApp.Workspace.FilePropertyChangedInProject += filePropertyChangedHandler;
+			
+			IdeApp.Workspace.ActiveConfigurationChanged += IdeAppWorkspaceActiveConfigurationChanged;
 		}
-		
+
 		public override void Dispose ()
 		{
 			IdeApp.Workspace.FileAddedToProject -= fileAddedHandler;
 			IdeApp.Workspace.FileRemovedFromProject -= fileRemovedHandler;
 			IdeApp.Workspace.FileRenamedInProject -= fileRenamedHandler;
 			IdeApp.Workspace.FilePropertyChangedInProject -= filePropertyChangedHandler;
+			IdeApp.Workspace.ActiveConfigurationChanged -= IdeAppWorkspaceActiveConfigurationChanged;
 		}
 
 		public override void OnNodeAdded (object dataObject)
@@ -123,6 +126,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			
 			icon = Context.GetIcon (iconName);
+			
+			SolutionConfiguration conf = p.ParentSolution.Configurations [IdeApp.Workspace.ActiveConfiguration];
+			if (conf == null || !conf.BuildEnabledForItem (p)) {
+				Gdk.Pixbuf ticon = Context.GetComposedIcon (icon, "project-no-build");
+				if (ticon == null)
+					ticon = Context.CacheComposedIcon (icon, "project-no-build", ImageService.MakeTransparent (icon, 0.5));
+				icon = ticon;
+				label = "<span foreground='gray'>" + label + "</span>";
+			}
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -298,6 +310,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ITreeBuilder tb = Context.GetTreeBuilder (args.Project);
 			if (tb != null) tb.UpdateAll ();
 		}
+		
+		void IdeAppWorkspaceActiveConfigurationChanged (object sender, EventArgs e)
+		{
+			foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
+				ITreeBuilder tb = Context.GetTreeBuilder (p);
+				if (tb != null) {
+					tb.Update ();
+					SolutionConfiguration conf = p.ParentSolution.Configurations [IdeApp.Workspace.ActiveConfiguration];
+					if (conf == null || !conf.BuildEnabledForItem (p))
+						tb.Expanded = false;
+				}
+			}
+		}
+		
 	}
 	
 	public class ProjectNodeCommandHandler: FolderCommandHandler

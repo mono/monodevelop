@@ -1,5 +1,13 @@
 2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	* MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
+	  When a project is disabled in the active configuration, show
+	  it grayed.
+
+2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Templates/ProjectTemplate.cs: Fix template
 	  categorization issue. The main C# category was added as a
 	  child of C#.
