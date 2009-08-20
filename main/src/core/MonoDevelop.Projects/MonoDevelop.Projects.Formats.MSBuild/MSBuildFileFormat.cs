@@ -225,6 +225,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			try {
 				using (XmlTextReader tr = new XmlTextReader (new StreamReader (file))) {
 					if (tr.MoveToContent () == XmlNodeType.Element) {
+						if (tr.LocalName != "Project" || tr.NamespaceURI != "http://schemas.microsoft.com/developer/msbuild/2003")
+							return string.Empty;
 						string tv = tr.GetAttribute ("ToolsVersion");
 						if (string.IsNullOrEmpty (tv))
 							return "2.0"; // Some old VS versions don't specify the tools version, so assume 2.0

@@ -1,5 +1,14 @@
 2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/FileFormatManager.cs: Added helper
+	  method for getting the file format of a file.
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
+	  Fixed false positive in the file format check. Fixes bug
+	  #525112 - VS2003 not migrated correctly.
+
+2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
 	  Properly deserialize properties with dots in the name.
 

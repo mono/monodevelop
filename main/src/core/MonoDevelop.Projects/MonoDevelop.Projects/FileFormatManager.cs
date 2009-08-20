@@ -63,6 +63,14 @@ namespace MonoDevelop.Projects
 			return list.ToArray ();
 		}
 		
+		public FileFormat GetFileFormatForFile (string fileName, Type expectedType)
+		{
+			foreach (FileFormat f in fileFormats)
+				if (f.Format.CanReadFile (fileName, expectedType))
+					return f;
+			return null;
+		}
+		
 		public FileFormat[] GetFileFormatsForObject (object obj)
 		{
 			List<FileFormat> list = new List<FileFormat> ();
