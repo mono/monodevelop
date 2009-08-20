@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects
 		{
 			foreach (SolutionConfigurationEntry entry in configurations) {
 				if (entry.Item == item)
-					return entry.Build;
+					return entry.Build && item.Configurations [entry.ItemConfiguration] != null;
 			}
 			return false;
 		}

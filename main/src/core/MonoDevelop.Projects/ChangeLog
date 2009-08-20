@@ -1,5 +1,11 @@
 2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/SolutionConfiguration.cs: Build for a
+	  project is disabled if the selected target configuration
+	  doesn't exist.
+
+2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/FileFormatManager.cs: Added helper
 	  method for getting the file format of a file.
 
