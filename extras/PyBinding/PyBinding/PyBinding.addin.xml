@@ -59,7 +59,7 @@
     </Extension>
     
     <Extension path = "/MonoDevelop/Core/MimeTypes">
-    	<MimeType id="text/x-python" icon="md-py-file">
+    	<MimeType id="text/x-python" _description="Python source code" icon="md-py-file" isText="true">
     		<File pattern="*.py" />
     	</MimeType>
     </Extension>

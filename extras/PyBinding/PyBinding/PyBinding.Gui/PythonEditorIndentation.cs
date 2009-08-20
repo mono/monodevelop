@@ -89,13 +89,6 @@ namespace PyBinding.Gui
 					if (openCount > closeCount)
 						indent = true;
 				}
-				else if (String.IsNullOrEmpty (trimmed))
-				{
-					// duplicate the last line
-					base.KeyPress (key, keyChar, modifier);
-					Editor.InsertText (Editor.CursorPosition, lastLine);
-					return false;
-				}
 
 				if (indent)
 				{

@@ -1,5 +1,11 @@
 2009-08-20  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding/PyBinding.addin.xml: Add description for python mime type.
+	* PyBinding/PyBinding.Gui/PythonEditorIndentation.cs: Do not try to
+	workaround the editor any more.  It works as expected.
+
+2009-08-20  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding/Resources/EmptyPySourceFile.xft.xml: Fix template
 	description to properly check for Python project type.
 
