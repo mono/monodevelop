@@ -66,9 +66,10 @@ namespace MonoDevelop.DesignerSupport
 					
 					//if the file exists, set the dependency
 					string path = Path.Combine (Path.GetDirectoryName (file.FilePath), parentName);
-					if (File.Exists (path))
+					if (File.Exists (path)) {
 						file.DependsOn = parentName;
-					return new string[] { path };
+						return new string[] { path };
+					}
 				}
 			} 
 			//else, it may be a parent
