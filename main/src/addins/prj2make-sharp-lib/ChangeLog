@@ -1,3 +1,11 @@
+2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CsprojInfo.cs:
+	* MsPrjHelper.cs:
+	* VS2003ProjectFileFormat.cs: Make sure the project has the
+	  2003 format before trying to import it. Properly import
+	  assembly references.
+
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MsPrjHelper.cs: Use the new AssemblyContext class to query

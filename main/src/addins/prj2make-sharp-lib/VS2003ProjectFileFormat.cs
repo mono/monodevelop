@@ -119,7 +119,7 @@ namespace MonoDevelop.Prj2Make
 				if (choice == TargetConvert.None)
 					throw new InvalidOperationException ("VS2003 projects are not supported natively.");
 	
-				DotNetProject project = ImportCsproj (fileName);
+				SolutionEntityItem project = ImportCsproj (fileName);
 				project.FileName = fileName;
 	
 				if (choice == TargetConvert.MonoDevelop) {
@@ -132,7 +132,7 @@ namespace MonoDevelop.Prj2Make
 				return project;
 			}
 			else {
-				DotNetProject project = ImportCsproj (fileName);
+				SolutionEntityItem project = ImportCsproj (fileName);
 				project.FileName = fileName;
 				return project;
 			}
@@ -160,9 +160,9 @@ namespace MonoDevelop.Prj2Make
 				return ImportSln (fileName);
 		}
 
-		internal DotNetProject ImportCsproj (FilePath fileName)
+		internal SolutionEntityItem ImportCsproj (FilePath fileName)
 		{
-			DotNetProject project = null;
+			SolutionEntityItem project = null;
 			SlnMaker slnmaker = new SlnMaker ();
 			try {
 				IProgressMonitor m = IdeApp.IsInitialized ? GuiHelper.CreateProgressMonitor () : new ConsoleProgressMonitor ();
@@ -179,7 +179,6 @@ namespace MonoDevelop.Prj2Make
 
 		public void ConvertToFormat (object obj)
 		{
-			throw new NotSupportedException ();
 		}
 
 		public List<FilePath> GetItemFiles (object obj)
@@ -254,7 +253,7 @@ namespace MonoDevelop.Prj2Make
 		TargetConvert QueryConversion (string text)
 		{
 			AlertButton monodevelop = new AlertButton (GettextCatalog.GetString ("Convert to MonoDevelop"));
-			AlertButton vs2005      = new AlertButton (GettextCatalog.GetString ("Convert to Visual Studio 2005"));
+			AlertButton vs2005      = new AlertButton (GettextCatalog.GetString ("Convert to MSBuild"));
 
 			AlertButton choice = MessageService.AskQuestion (text,
 			                                                 GettextCatalog.GetString ("Converting to Visual Studio 2005 format will overwrite existing files."),

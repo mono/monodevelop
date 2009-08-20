@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
-
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Prj2Make
 {
@@ -21,6 +21,7 @@ namespace MonoDevelop.Prj2Make
 		public string src;
 		private bool m_bAllowUnsafeCode;
 		private MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject m_projObject;
+		public bool NeedsConversion = true;
     
 		public string ext_refs = "";
 		public string switches = "";
@@ -62,8 +63,14 @@ namespace MonoDevelop.Prj2Make
 
 			// loads the file in order to deserialize and
 			// build the object graph
-			try 
+			try
 			{
+				FileFormat format = Services.ProjectService.FileFormats.GetFileFormatForFile (csprojpath, typeof(SolutionEntityItem));
+				if (format != null && format.Id != "VS2003ProjectFileFormat") {
+					NeedsConversion = false;
+					return;
+				}
+				
 				m_projObject = LoadPrjFromFile (csprojpath);
 			} 
 			catch (Exception exc) 

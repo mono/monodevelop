@@ -170,9 +170,13 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
     
-		public DotNetProject CreatePrjxFromCsproj (string csprojFileName, IProgressMonitor monitor)
+		public SolutionEntityItem CreatePrjxFromCsproj (string csprojFileName, IProgressMonitor monitor)
 		{
 			try {
+				FileFormat format = Services.ProjectService.FileFormats.GetFileFormatForFile (csprojFileName, typeof(SolutionEntityItem));
+				if (format != null && format.Id != "VS2003ProjectFileFormat")
+					return (SolutionEntityItem) Services.ProjectService.ReadSolutionItem (monitor, csprojFileName);
+				
 				MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject csprojObj = null;
 				
 				monitor.BeginTask (GettextCatalog.GetString ("Importing project: ") + csprojFileName, 4);
@@ -202,7 +206,7 @@ namespace MonoDevelop.Prj2Make
 				GetContents (prjxObj, csprojObj.CSHARP.Files.Include, prjxObj.Files, monitor);
 				monitor.Step (1);
 				
-				GetReferences (csprojObj.CSHARP.Build.References, prjxObj.References, monitor);
+				GetReferences (prjxObj, csprojObj.CSHARP.Build.References, prjxObj.References, monitor);
 				monitor.Step (1);
 				
 				prjxObj.Configurations.Clear ();
@@ -248,7 +252,12 @@ namespace MonoDevelop.Prj2Make
 						monitor.ReportWarning (GettextCatalog.GetString ("Project file not found: ") + pi.csprojpath);
 						continue;
 					}
-					DotNetProject prj = CreatePrjxFromCsproj (mappedPath, monitor);
+					SolutionEntityItem prj;
+					if (pi.NeedsConversion)
+						prj = CreatePrjxFromCsproj (mappedPath, monitor);
+					else
+						prj = (DotNetProject) Services.ProjectService.ReadSolutionItem (monitor, mappedPath);
+					
 					if (prj == null)
 						return null;
 
@@ -276,7 +285,7 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 		
-		protected void GetReferences (MonoDevelop.Prj2Make.Schema.Csproj.Reference[] References, ProjectReferenceCollection references, IProgressMonitor monitor)
+		protected void GetReferences (Project project, MonoDevelop.Prj2Make.Schema.Csproj.Reference[] References, ProjectReferenceCollection references, IProgressMonitor monitor)
 		{
 			if (References == null || References.Length == 0)
 				return;
@@ -332,6 +341,14 @@ namespace MonoDevelop.Prj2Make
 						
 						string oref = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName (rname, fx);
 						if (oref == null) {
+							if (rf.HintPath != null) {
+								string asm = MapPath (project.ItemDirectory, rf.HintPath);
+								if (!System.IO.File.Exists (asm))
+									monitor.ReportWarning (GettextCatalog.GetString ("Referenced assembly not found: ") + asm);
+								ProjectReference aref = new ProjectReference (MonoDevelop.Projects.ReferenceType.Assembly, asm);
+								references.Add (aref);
+								continue;
+							}
 							monitor.ReportWarning (GettextCatalog.GetString ("Assembly reference could not be imported: ") + rf.AssemblyName);
 							continue;
 						}
