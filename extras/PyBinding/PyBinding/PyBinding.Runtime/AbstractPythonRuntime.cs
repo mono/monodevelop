@@ -27,6 +27,7 @@ using System.IO;
 using System.Text;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 
 using PyBinding;
@@ -63,11 +64,7 @@ namespace PyBinding.Runtime
 			paths = new List<string> ();
 			paths.Add (".");
 			
-			foreach (string dirName in Environment.GetEnvironmentVariable (
-			    "PATH").Split (m_PathSeparators))
-			{
-				paths.Add (dirName);
-			}
+			paths.AddRange (Environment.GetEnvironmentVariable ("PATH").Split (m_PathSeparators));
 			
 			foreach (string dirName in paths) {
 				string absPath = System.IO.Path.Combine (dirName, commandName);

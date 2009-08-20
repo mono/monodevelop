@@ -21,11 +21,17 @@ namespace PyBinding.Gui {
         
         private Gtk.Table table1;
         
-        private Gtk.Label label2;
+        private Gtk.Label label4;
+        
+        private Gtk.Label label5;
         
         private Gtk.Entry m_ModuleEntry;
         
         private Gtk.CheckButton m_OptimizeCheckBox;
+        
+        private Gtk.Entry m_PythonOptions;
+        
+        private Gtk.ComboBox m_RuntimeCombo;
         
         private Gtk.Label label3;
         
@@ -68,18 +74,32 @@ namespace PyBinding.Gui {
             this.alignment1.Name = "alignment1";
             this.alignment1.LeftPadding = ((uint)(12));
             // Container child alignment1.Gtk.Container+ContainerChild
-            this.table1 = new Gtk.Table(((uint)(3)), ((uint)(2)), false);
+            this.table1 = new Gtk.Table(((uint)(5)), ((uint)(2)), false);
             this.table1.Name = "table1";
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
             // Container child table1.Gtk.Table+TableChild
-            this.label2 = new Gtk.Label();
-            this.label2.Name = "label2";
-            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Default module:");
-            this.table1.Add(this.label2);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table1[this.label2]));
+            this.label4 = new Gtk.Label();
+            this.label4.Name = "label4";
+            this.label4.LabelProp = Mono.Unix.Catalog.GetString("Python _Options:");
+            this.label4.UseUnderline = true;
+            this.table1.Add(this.label4);
+            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table1[this.label4]));
+            w2.TopAttach = ((uint)(1));
+            w2.BottomAttach = ((uint)(2));
             w2.XOptions = ((Gtk.AttachOptions)(4));
             w2.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
+            this.label5 = new Gtk.Label();
+            this.label5.Name = "label5";
+            this.label5.LabelProp = Mono.Unix.Catalog.GetString("Default _Module:");
+            this.label5.UseUnderline = true;
+            this.table1.Add(this.label5);
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table1[this.label5]));
+            w3.TopAttach = ((uint)(2));
+            w3.BottomAttach = ((uint)(3));
+            w3.XOptions = ((Gtk.AttachOptions)(4));
+            w3.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.m_ModuleEntry = new Gtk.Entry();
             this.m_ModuleEntry.CanFocus = true;
@@ -87,10 +107,12 @@ namespace PyBinding.Gui {
             this.m_ModuleEntry.IsEditable = true;
             this.m_ModuleEntry.InvisibleChar = '●';
             this.table1.Add(this.m_ModuleEntry);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table1[this.m_ModuleEntry]));
-            w3.LeftAttach = ((uint)(1));
-            w3.RightAttach = ((uint)(2));
-            w3.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.m_ModuleEntry]));
+            w4.TopAttach = ((uint)(2));
+            w4.BottomAttach = ((uint)(3));
+            w4.LeftAttach = ((uint)(1));
+            w4.RightAttach = ((uint)(2));
+            w4.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.m_OptimizeCheckBox = new Gtk.CheckButton();
             this.m_OptimizeCheckBox.CanFocus = true;
@@ -99,27 +121,49 @@ namespace PyBinding.Gui {
             this.m_OptimizeCheckBox.DrawIndicator = true;
             this.m_OptimizeCheckBox.UseUnderline = true;
             this.table1.Add(this.m_OptimizeCheckBox);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table1[this.m_OptimizeCheckBox]));
-            w4.TopAttach = ((uint)(1));
-            w4.BottomAttach = ((uint)(2));
-            w4.RightAttach = ((uint)(2));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.m_OptimizeCheckBox]));
+            w5.TopAttach = ((uint)(3));
+            w5.BottomAttach = ((uint)(4));
+            w5.RightAttach = ((uint)(2));
+            w5.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
+            this.m_PythonOptions = new Gtk.Entry();
+            this.m_PythonOptions.CanFocus = true;
+            this.m_PythonOptions.Name = "m_PythonOptions";
+            this.m_PythonOptions.IsEditable = true;
+            this.m_PythonOptions.InvisibleChar = '●';
+            this.table1.Add(this.m_PythonOptions);
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table1[this.m_PythonOptions]));
+            w6.TopAttach = ((uint)(1));
+            w6.BottomAttach = ((uint)(2));
+            w6.LeftAttach = ((uint)(1));
+            w6.RightAttach = ((uint)(2));
+            w6.XOptions = ((Gtk.AttachOptions)(4));
+            w6.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table1.Gtk.Table+TableChild
+            this.m_RuntimeCombo = Gtk.ComboBox.NewText();
+            this.m_RuntimeCombo.Name = "m_RuntimeCombo";
+            this.table1.Add(this.m_RuntimeCombo);
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table1[this.m_RuntimeCombo]));
+            w7.RightAttach = ((uint)(2));
+            w7.XOptions = ((Gtk.AttachOptions)(4));
+            w7.YOptions = ((Gtk.AttachOptions)(4));
             this.alignment1.Add(this.table1);
             this.vbox1.Add(this.alignment1);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
-            w6.Position = 1;
-            w6.Expand = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
+            w9.Position = 1;
+            w9.Expand = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("<span weight=\"bold\">Paths</span>");
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString("<span weight=\"bold\">Module Paths</span>");
             this.label3.UseMarkup = true;
             this.vbox1.Add(this.label3);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox1[this.label3]));
-            w7.Position = 2;
-            w7.Expand = false;
-            w7.Fill = false;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox1[this.label3]));
+            w10.Position = 2;
+            w10.Expand = false;
+            w10.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.alignment2 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
             this.alignment2.Name = "alignment2";
@@ -135,17 +179,17 @@ namespace PyBinding.Gui {
             this.scrolledwindow1.Name = "scrolledwindow1";
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
-            Gtk.Viewport w8 = new Gtk.Viewport();
-            w8.ShadowType = ((Gtk.ShadowType)(0));
+            Gtk.Viewport w11 = new Gtk.Viewport();
+            w11.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport.Gtk.Container+ContainerChild
             this.m_PathsTreeView = new Gtk.TreeView();
             this.m_PathsTreeView.CanFocus = true;
             this.m_PathsTreeView.Name = "m_PathsTreeView";
-            w8.Add(this.m_PathsTreeView);
-            this.scrolledwindow1.Add(w8);
+            w11.Add(this.m_PathsTreeView);
+            this.scrolledwindow1.Add(w11);
             this.hbox1.Add(this.scrolledwindow1);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox1[this.scrolledwindow1]));
-            w11.Position = 0;
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.hbox1[this.scrolledwindow1]));
+            w14.Position = 0;
             // Container child hbox1.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
@@ -158,10 +202,10 @@ namespace PyBinding.Gui {
             this.m_AddPathButton.UseUnderline = true;
             this.m_AddPathButton.Label = "gtk-add";
             this.vbox2.Add(this.m_AddPathButton);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox2[this.m_AddPathButton]));
-            w12.Position = 0;
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox2[this.m_AddPathButton]));
+            w15.Position = 0;
+            w15.Expand = false;
+            w15.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.m_RemovePathButton = new Gtk.Button();
             this.m_RemovePathButton.CanFocus = true;
@@ -170,23 +214,25 @@ namespace PyBinding.Gui {
             this.m_RemovePathButton.UseUnderline = true;
             this.m_RemovePathButton.Label = "gtk-remove";
             this.vbox2.Add(this.m_RemovePathButton);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox2[this.m_RemovePathButton]));
-            w13.Position = 1;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox2[this.m_RemovePathButton]));
+            w16.Position = 1;
+            w16.Expand = false;
+            w16.Fill = false;
             this.hbox1.Add(this.vbox2);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
-            w14.Position = 1;
-            w14.Expand = false;
-            w14.Fill = false;
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+            w17.Position = 1;
+            w17.Expand = false;
+            w17.Fill = false;
             this.alignment2.Add(this.hbox1);
             this.vbox1.Add(this.alignment2);
-            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment2]));
-            w16.Position = 3;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment2]));
+            w19.Position = 3;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label4.MnemonicWidget = this.m_PythonOptions;
+            this.label5.MnemonicWidget = this.m_ModuleEntry;
             this.Show();
         }
     }

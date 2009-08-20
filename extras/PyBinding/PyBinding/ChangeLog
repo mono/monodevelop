@@ -1,3 +1,27 @@
+2009-08-20  Christian Hergert  <chris@dronelabs.com>
+
+	* PyBinding.csproj: 
+	* PyBinding/PythonHelper.cs: Use Python26Runtime.
+	* PyBinding/PythonExecutionHandler.cs: Make sure we respect environment
+	variables.
+	* PyBinding/PythonConfiguration.cs: Make sure we allow the parent class
+	to copy values over on Clone().  Adds PythonOptions for specifying
+	options directly to the python interpriter.
+	* PyBinding.Compiler/Python25Compiler.cs: Flush
+	* PyBinding.addin.xml: 
+	* PyBinding.Runtime/Python25Runtime.cs: Respect module arguments
+	that have been set and allow for passing custom arguments to the python
+	interpriter during execution.
+	* PyBinding.Runtime/Python26Runtime.cs: New runtime class for
+	Python 2.6.
+	* PyBinding.Runtime/AbstractPythonRuntime.cs: 
+	* PyBinding.Gui/PythonOptionsPanel.cs: 
+	* PyBinding.Gui/PythonOptionsWidget.cs: 
+	* gtk-gui/PyBinding.Gui.PythonOptionsWidget.cs: 
+	* gtk-gui/gui.stetic: Add GtkEntry for specifying options to the
+	python runtime directly.
+	* Makefile: 
+
 2009-08-19  Christian Hergert  <chris@dronelabs.com>
 
 	* PyBinding/PyBinding.csproj: 

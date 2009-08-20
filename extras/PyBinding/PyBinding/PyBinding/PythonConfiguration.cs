@@ -42,6 +42,9 @@ namespace PyBinding
 		[ItemProperty("Runtime/Module")]
 		string m_Module = String.Empty;
 		
+		[ItemProperty("Runtime/PythonOptions")]
+		string m_PythonOptions = String.Empty;
+		
 		[ItemProperty("Runtime/Paths")]
 		List<string> m_Paths = new List<string> ();
 		
@@ -52,6 +55,15 @@ namespace PyBinding
 		{
 			this.m_Runtime = PythonHelper.FindPreferedRuntime ();
 			this.m_Module = s_DefaultModule;
+		}
+		
+		public string PythonOptions {
+			get {
+				return this.m_PythonOptions;
+			}
+			set {
+				this.m_PythonOptions = value;
+			}
 		}
 		
 		public string Module {
@@ -82,6 +94,9 @@ namespace PyBinding
 			get {
 				return this.m_Runtime;
 			}
+			set {
+				this.m_Runtime = value;
+			}
 		}
 
 		public override void CopyFrom (ItemConfiguration config)
@@ -91,9 +106,12 @@ namespace PyBinding
 			if (pyConfig == null)
 				throw new ArgumentException ("not a PythonConfiguration");
 			
-			this.m_Module   = pyConfig.Module;
-			this.m_Runtime  = (IPythonRuntime) pyConfig.Runtime.Clone ();
-			this.m_Optimize = pyConfig.Optimize;
+			base.CopyFrom (config);
+			
+			this.m_Module        = pyConfig.Module;
+			this.m_Runtime       = (IPythonRuntime) pyConfig.Runtime.Clone ();
+			this.m_Optimize      = pyConfig.Optimize;
+			this.m_PythonOptions = pyConfig.PythonOptions;
 		}
 	}
 }

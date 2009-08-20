@@ -77,12 +77,12 @@
             class = "PyBinding.PythonLanguageBinding"/>
   	</Extension>
 
-  	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
+  	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Run">
 		<Condition id="ItemType" value="PyBinding.PythonProject">
 			<Section
 				id          = "PythonOptionsPanel"
-	            _label      = "Python Options"
-	            insertafter = "Compile"
+	            _label      = "Python"
+	            insertafter = "General"
 	            class       = "PyBinding.Gui.OutputOptionsPanel"/>
 		</Condition>
 	</Extension>
@@ -101,6 +101,7 @@
         <DataType class = "PyBinding.PythonProject"/>
         <DataType class = "PyBinding.PythonConfiguration"/>
         <DataType class = "PyBinding.Runtime.Python25Runtime"/>
+        <DataType class = "PyBinding.Runtime.Python26Runtime"/>
         <DataType class = "PyBinding.Compiler.Python25Compiler"/>
     </Extension>
 

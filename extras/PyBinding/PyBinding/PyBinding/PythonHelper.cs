@@ -96,8 +96,12 @@ namespace PyBinding
 		
 		public static IPythonRuntime FindPreferedRuntime ()
 		{
+			// We look explicity for the executable here so that
+			// we know when it doesn't exist and can find the
+			// next preferred type.
+			
 			try {
-				return new Python25Runtime () {
+				return new Python26Runtime () {
 					Path = Which ("python2.6")
 				};
 			}

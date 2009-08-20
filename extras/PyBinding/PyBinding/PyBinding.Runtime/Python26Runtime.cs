@@ -1,6 +1,6 @@
-// Python25Runtime.cs
+// Python26Runtime.cs
 //
-// Copyright (c) 2008 Christian Hergert <chris@dronelabs.com>
+// Copyright (c) 2009 Christian Hergert <chris@dronelabs.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,10 +33,10 @@ using PyBinding.Compiler;
 
 namespace PyBinding.Runtime
 {
-	public class Python25Runtime : AbstractPythonRuntime
+	public class Python26Runtime : AbstractPythonRuntime
 	{
-		static readonly string m_Name        = "Python25";
-		static readonly string m_DefaultPath = "python2.5";
+		static readonly string m_Name        = "Python26";
+		static readonly string m_DefaultPath = "python2.6";
 		
 		[ItemProperty("path")]
 		string m_Path = String.Empty;
@@ -50,6 +50,7 @@ namespace PyBinding.Runtime
 					this.m_Compiler = new Python25Compiler ();
 				
 				// Give compiler a reference to this instance
+				// Reusing 2.5 compiler for now
 				(this.m_Compiler as Python25Compiler).Runtime = this;
 				
 				return this.m_Compiler;
@@ -76,7 +77,7 @@ namespace PyBinding.Runtime
 		
 		public override object Clone ()
 		{
-			return new Python25Runtime () {
+			return new Python26Runtime () {
 				Path = this.Path
 			};
 		}

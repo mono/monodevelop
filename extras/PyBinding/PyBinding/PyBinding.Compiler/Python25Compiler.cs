@@ -35,10 +35,8 @@ namespace PyBinding.Compiler
 {
 	public class Python25Compiler : IPythonCompiler
 	{
-		static readonly string s_CompileFormat =
-			"-c \"import py_compile; py_compile.compile('{0}','{1}c');\"";
-		static readonly string s_OptimizedCompileFormat =
-			"-O -c \"import py_compile; py_compile.compile('{0}','{1}o');\"";
+		static readonly string s_CompileFormat = "-c \"import py_compile; py_compile.compile('{0}','{1}c');\"";
+		static readonly string s_OptimizedCompileFormat = "-O -c \"import py_compile; py_compile.compile('{0}','{1}o');\"";
 		
 		IPythonRuntime m_Runtime = null;
 		Regex m_WarningRegex;

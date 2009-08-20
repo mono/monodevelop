@@ -21,28 +21,39 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 using Gtk;
 
 using MonoDevelop.Gettext;
+
+using PyBinding.Runtime;
 
 namespace PyBinding.Gui
 {
 	public partial class PythonOptionsWidget : Gtk.Bin
 	{
 		ListStore m_PathsListStore;
+		ListStore m_RuntimeListStore;
 		
 		public PythonOptionsWidget ()
 		{
 			this.Build();
 			
+			// Setup PYTHON_PATH
 			this.m_PathsListStore = new ListStore (typeof (string));
 			this.m_PathsTreeView.Model = this.m_PathsListStore;
-			
 			TreeViewColumn column = new TreeViewColumn ();
 			CellRendererText ctext = new CellRendererText ();
 			column.PackStart (ctext, true);
 			column.AddAttribute (ctext, "text", 0);
+			
+			// Setup Python Runtime Version
+			this.m_RuntimeListStore = new ListStore (typeof (string), typeof (Type));
+			this.m_RuntimeCombo.Model = this.m_RuntimeListStore;
+			
+			this.m_RuntimeListStore.AppendValues ("Python 2.5", typeof (Python25Runtime));
+			this.m_RuntimeListStore.AppendValues ("Python 2.6", typeof (Python26Runtime));
 		}
 		
 		public string DefaultModule {
@@ -60,6 +71,41 @@ namespace PyBinding.Gui
 			}
 			set {
 				this.m_OptimizeCheckBox.Active = value;
+			}
+		}
+		
+		public string PythonOptions {
+			get {
+				return m_PythonOptions.Text;
+			}
+			set {
+				m_PythonOptions.Text = value;
+			}
+		}
+		
+		public IPythonRuntime Runtime {
+			get {
+				Type runtimeType;
+				Gtk.TreeIter iter;
+				
+				if (!this.m_RuntimeCombo.GetActiveIter (out iter))
+					throw new Exception ("No selected runtime!");
+				
+				runtimeType = this.m_RuntimeListStore.GetValue (iter, 1) as Type;
+				return Activator.CreateInstance (runtimeType) as IPythonRuntime;
+			}
+			set {
+				Gtk.TreeIter iter;
+				
+				if (this.m_RuntimeListStore.GetIterFirst (out iter)) {
+					do {
+						Type t = this.m_RuntimeListStore.GetValue (iter, 1) as Type;
+						if (t == value.GetType ()) {
+							this.m_RuntimeCombo.SetActiveIter (iter);
+							break;
+						}
+					} while (m_RuntimeListStore.IterNext (ref iter));
+				}
 			}
 		}
 	}

@@ -28,7 +28,7 @@
     <widget-library name="MonoDevelop.Refactoring, Version=2.1.0.0, Culture=neutral" />
     <widget-library name="../../build/PyBinding.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="PyBinding.Gui.PythonOptionsWidget" design-size="491 370">
+  <widget class="Gtk.Bin" id="PyBinding.Gui.PythonOptionsWidget" design-size="491 382">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -55,7 +55,7 @@
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
-                <property name="NRows">3</property>
+                <property name="NRows">5</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
@@ -66,11 +66,36 @@
                   <placeholder />
                 </child>
                 <child>
-                  <widget class="Gtk.Label" id="label2">
+                  <widget class="Gtk.Label" id="label4">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Default module:</property>
+                    <property name="LabelProp" translatable="yes">Python _Options:</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="MnemonicWidget">m_PythonOptions</property>
                   </widget>
                   <packing>
+                    <property name="TopAttach">1</property>
+                    <property name="BottomAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label5">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Default _Module:</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="MnemonicWidget">m_ModuleEntry</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">2</property>
+                    <property name="BottomAttach">3</property>
                     <property name="AutoSize">False</property>
                     <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
@@ -90,6 +115,8 @@
                     <property name="InvisibleChar">●</property>
                   </widget>
                   <packing>
+                    <property name="TopAttach">2</property>
+                    <property name="BottomAttach">3</property>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">False</property>
@@ -112,12 +139,54 @@
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>
-                    <property name="TopAttach">1</property>
-                    <property name="BottomAttach">2</property>
+                    <property name="TopAttach">3</property>
+                    <property name="BottomAttach">4</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">False</property>
                     <property name="YOptions">Fill</property>
                     <property name="XExpand">True</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Entry" id="m_PythonOptions">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="IsEditable">True</property>
+                    <property name="InvisibleChar">●</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">1</property>
+                    <property name="BottomAttach">2</property>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.ComboBox" id="m_RuntimeCombo">
+                    <property name="MemberName" />
+                    <property name="IsTextCombo">True</property>
+                    <property name="Items" translatable="yes" />
+                  </widget>
+                  <packing>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
                     <property name="XFill">True</property>
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
@@ -138,7 +207,7 @@
           <widget class="Gtk.Label" id="label3">
             <property name="MemberName" />
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">&lt;span weight="bold"&gt;Paths&lt;/span&gt;</property>
+            <property name="LabelProp" translatable="yes">&lt;span weight="bold"&gt;Module Paths&lt;/span&gt;</property>
             <property name="UseMarkup">True</property>
           </widget>
           <packing>

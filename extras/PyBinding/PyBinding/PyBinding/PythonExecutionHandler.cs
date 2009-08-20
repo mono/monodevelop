@@ -44,7 +44,7 @@ namespace PyBinding
 			string[] args = cmd.Configuration.Runtime.GetArguments (cmd.Configuration);
 			string dir = Path.GetFullPath (cmd.Configuration.OutputDirectory);
 			
-			NativeExecutionCommand ncmd = new NativeExecutionCommand (cmd.Configuration.Runtime.Path, string.Join (" ", args), dir, null);
+			NativeExecutionCommand ncmd = new NativeExecutionCommand (cmd.Configuration.Runtime.Path, string.Join (" ", args), dir, cmd.Configuration.EnvironmentVariables);
 			return base.Execute (ncmd, console);
 		}
 		

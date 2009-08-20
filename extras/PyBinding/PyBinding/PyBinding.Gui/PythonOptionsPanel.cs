@@ -51,6 +51,8 @@ namespace PyBinding.Gui
 			
 			widget.DefaultModule = config.Module;
 			widget.Optimize = config.Optimize;
+			widget.Runtime = config.Runtime;
+			widget.PythonOptions = config.PythonOptions;
 		}
 
 		public override void ApplyChanges ()
@@ -59,6 +61,8 @@ namespace PyBinding.Gui
 			
 			config.Module = widget.DefaultModule;
 			config.Optimize = widget.Optimize;
+			config.Runtime = widget.Runtime;
+			config.PythonOptions = widget.PythonOptions;
 		}
 	}
 }

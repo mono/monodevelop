@@ -138,6 +138,7 @@
     <Compile Include="PyBinding\PythonConfiguration.cs" />
     <Compile Include="PyBinding.Runtime\IPythonRuntime.cs" />
     <Compile Include="PyBinding.Runtime\AbstractPythonRuntime.cs" />
+    <Compile Include="PyBinding.Runtime\Python26Runtime.cs" />
     <Compile Include="PyBinding.Compiler\IPythonCompiler.cs" />
     <Compile Include="PyBinding\PythonProjectBinding.cs" />
     <Compile Include="PyBinding.Gui\PythonOptionsWidget.cs" />
