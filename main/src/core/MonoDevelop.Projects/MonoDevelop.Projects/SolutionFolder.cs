@@ -704,12 +704,12 @@ namespace MonoDevelop.Projects
 		
 		internal void NotifyItemAddedToFolder (object sender, SolutionItemChangeEventArgs e, bool newToSolution)
 		{
-			if (DescendantItemAdded != null)
-				DescendantItemAdded (sender, e);
 			if (ParentFolder != null)
 				ParentFolder.NotifyItemAddedToFolder (sender, e, newToSolution);
 			else if (ParentSolution != null && newToSolution)
 				ParentSolution.OnSolutionItemAdded (e);
+			if (DescendantItemAdded != null)
+				DescendantItemAdded (sender, e);
 		}
 		
 		internal void NotifyItemRemovedFromFolder (object sender, SolutionItemChangeEventArgs e, bool removedFromSolution)
@@ -724,8 +724,12 @@ namespace MonoDevelop.Projects
 		
 		void OnItemAdded (SolutionItemChangeEventArgs e, bool newToSolution)
 		{
-			OnItemAdded (e);
 			NotifyItemAddedToFolder (this, e, newToSolution);
+			
+			// Fire the event after notifying the parent because the parent may need to complete
+			// some data initialization before the item is accessible to the clients. For example,
+			// the solution needs to setup the configuration maps.
+			OnItemAdded (e);
 		}
 		
 		protected virtual void OnItemAdded (SolutionItemChangeEventArgs e)

@@ -97,7 +97,41 @@ namespace MonoDevelop.Projects
 		
 		public SolutionConfigurationEntry AddItem (SolutionEntityItem item)
 		{
-			return AddItem (item, true, Id);
+			string conf = FindMatchingConfiguration (item);
+			return AddItem (item, conf != null, conf);
+		}
+		
+		string FindMatchingConfiguration (SolutionEntityItem item)
+		{
+			if (item.Configurations [Id] != null)
+				return Id;
+			
+			if (item.Configurations.Count == 0)
+				return null;
+			
+			// This configuration is not present in the project. Try to find the best match.
+			// First of all try matching name
+			foreach (SolutionItemConfiguration iconf in item.Configurations) {
+				if (iconf.Name == Name && iconf.Platform.Length == 0)
+					return iconf.Id;
+			}
+			
+			if (Platform.Length > 0) {
+				// No name coincidence, now try matching the platform
+				foreach (SolutionItemConfiguration iconf in item.Configurations) {
+					if (iconf.Platform == Platform)
+						return iconf.Id;
+				}
+			}
+			
+			// Now match name, ignoring platform
+			foreach (SolutionItemConfiguration iconf in item.Configurations) {
+				if (iconf.Name == Name)
+					return iconf.Id;
+			}
+			
+			// No luck. Pick whatever.
+			return item.Configurations [0].Id;
 		}
 		
 		public SolutionConfigurationEntry AddItem (SolutionEntityItem item, bool build, string itemConfiguration)

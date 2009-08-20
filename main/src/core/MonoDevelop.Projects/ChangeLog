@@ -1,5 +1,14 @@
 2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/SolutionFolder.cs:
+	* MonoDevelop.Projects/SolutionConfiguration.cs: When adding a
+	  new project to the solution, try to find the best matching
+	  configuration for each solution configuration. In any case,
+	  make sure the assigned configuration does exist. Fixes bug
+	  #473704.
+
+2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/SolutionConfiguration.cs: Build for a
 	  project is disabled if the selected target configuration
 	  doesn't exist.
