@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.Templates
 
 				this.languagename = listLanguages [0];
 				
-				if (!String.IsNullOrEmpty (languagename) && !category.StartsWith (languagename + "/"))
+				if (listLanguages.Count > 1 && !String.IsNullOrEmpty (languagename) && !category.StartsWith (languagename + "/"))
 					category = languagename + "/" + category;
 
 				for (int i = 1; i < listLanguages.Count; i++) {
