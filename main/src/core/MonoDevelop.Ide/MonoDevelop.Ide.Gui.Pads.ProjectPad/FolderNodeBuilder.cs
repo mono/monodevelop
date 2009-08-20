@@ -345,6 +345,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			FileSelector fdiag  = new FileSelector (GettextCatalog.GetString ("Add files"));
 			fdiag.SetCurrentFolder (GetFolderPath (CurrentNode.DataItem));
 			fdiag.SelectMultiple = true;
+			fdiag.TransientFor = IdeApp.Workbench.RootWindow;
 			
 			//add a combo that can be used to override the default build action
 			ComboBox combo = new ComboBox (project.GetBuildActions ());
