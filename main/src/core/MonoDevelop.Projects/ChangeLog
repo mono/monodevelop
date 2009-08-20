@@ -1,5 +1,10 @@
 2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Properly deserialize properties with dots in the name.
+
+2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectReference.cs: Added a protected
 	  member to be used by custom reference implementations to
 	  initialize the reference.

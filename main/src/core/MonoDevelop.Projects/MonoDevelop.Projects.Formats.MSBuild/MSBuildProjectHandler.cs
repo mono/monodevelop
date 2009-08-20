@@ -881,10 +881,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			DataItem ditem = new DataItem ();
 			foreach (ItemProperty prop in ser.GetProperties (dataItem)) {
-				if (prop.Name == "Include")
+				string name = ToMsbuildItemName (prop.Name);
+				if (name == "Include")
 					ditem.ItemData.Add (new DataValue ("Include", buildItem.Include));
-				else if (buildItem.HasMetadata (prop.Name)) {
-					string data = buildItem.GetMetadata (prop.Name);
+				else if (buildItem.HasMetadata (name)) {
+					string data = buildItem.GetMetadata (name);
 					ditem.ItemData.Add (GetDataNode (prop, data));
 				}
 			}
@@ -948,6 +949,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			foreach (string prop in notWrittenProps)
 				propGroup.RemoveProperty (prop);
+		}
+		
+		string ToMsbuildItemName (string name)
+		{
+			return name.Replace ('.', '-');
 		}
 
 		void ConvertToMsbuildFormat (DataNode node)
