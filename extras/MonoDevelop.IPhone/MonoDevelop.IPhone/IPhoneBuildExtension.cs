@@ -205,7 +205,7 @@ namespace MonoDevelop.IPhone
 			SetIfNotPresent (dict, "CFBundleSignature", "????");
 			SetIfNotPresent (dict,  "CFBundleSupportedPlatforms",
 				new PropertyList.PlistArray () { sim? "iphonesimulator" : "iphoneos" });
-			SetIfNotPresent (dict, "CFBundleVersion", "1.0");
+			SetIfNotPresent (dict, "CFBundleVersion", proj.BundleVersion ?? "1.0");
 			SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
 			SetIfNotPresent (dict, "DTSDKName", sim? "iphonesimulator3.0" : "iphoneos3.0");
 			SetIfNotPresent (dict,  "LSRequiresIPhoneOS", true);

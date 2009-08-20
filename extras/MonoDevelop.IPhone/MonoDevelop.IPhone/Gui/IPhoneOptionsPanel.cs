@@ -61,6 +61,7 @@ namespace MonoDevelop.IPhone.Gui
 		{
 			devRegionEntry.Text = proj.BundleDevelopmentRegion ?? "";
 			bundleIdEntry.Text = proj.BundleIdentifier ?? "";
+			bundleVersionEntry.Text = proj.BundleVersion ?? "";
 			displayNameEntry.Text = proj.BundleDisplayName ?? "";
 			
 			mainNibPicker.Project = proj;
@@ -80,6 +81,7 @@ namespace MonoDevelop.IPhone.Gui
 		{
 			proj.BundleDevelopmentRegion = NullIfEmpty (devRegionEntry.Text);
 			proj.BundleIdentifier = NullIfEmpty (bundleIdEntry.Text);
+			proj.BundleVersion = NullIfEmpty (bundleVersionEntry.Text);
 			proj.BundleDisplayName = NullIfEmpty (displayNameEntry.Text);
 			proj.MainNibFile = NullIfEmpty (mainNibPicker.SelectedFile);
 			proj.BundleIcon = NullIfEmpty (appIconPicker.SelectedFile);

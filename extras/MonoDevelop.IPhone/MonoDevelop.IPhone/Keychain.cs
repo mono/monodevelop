@@ -61,12 +61,6 @@ namespace MonoDevelop.IPhone
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecIdentitySearchCreate (IntPtr keychainOrArray, CssmKeyUse keyUsage, out IntPtr searchRef);
 		
-		//not sure if this is public API
-		[DllImport (SecurityLib)]
-		static extern OSStatus SecIdentitySearchCreateWithPolicy (IntPtr policy, IntPtr idString, CssmKeyUse keyUsage,
-		                                                          IntPtr keychainOrArray, bool returnOnlyValidIdentities,
-		                                                          out IntPtr searchRef);
-		
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecIdentitySearchCopyNext (IntPtr searchRef, out IntPtr identity);
 		

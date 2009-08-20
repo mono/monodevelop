@@ -1,3 +1,14 @@
+2009-08-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* gtk-gui/gui.stetic:
+	* IPhoneBuildExtension.cs:
+	* Gui/IPhoneOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs:
+	  Add support for setting the bundle version.
+
+	* Keychain.cs: Remove unused code.
+
 2009-08-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Keychain.cs:

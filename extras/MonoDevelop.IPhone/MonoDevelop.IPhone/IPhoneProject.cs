@@ -55,6 +55,9 @@ namespace MonoDevelop.IPhone
 		[ItemProperty ("BundleIdentifier")]
 		string bundleIdentifier;
 		
+		[ItemProperty ("BundleVersion")]
+		string bundleVersion;
+		
 		[ItemProperty ("BundleDisplayName")]
 		string bundleDisplayName;
 		
@@ -96,6 +99,18 @@ namespace MonoDevelop.IPhone
 					return;
 				NotifyModified ("BundleIdentifier");
 				bundleIdentifier = value;
+			}
+		}
+		
+		public string BundleVersion {
+			get { return bundleVersion; }
+			set {
+				if (value == "")
+					value = null;
+				if (value == bundleVersion)
+					return;
+				NotifyModified ("BundleVersion");
+				bundleVersion = value;
 			}
 		}
 		
