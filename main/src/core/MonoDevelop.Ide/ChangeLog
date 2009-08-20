@@ -1,3 +1,8 @@
+2009-08-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Update project
+	  association when checkbox is toggled.
+
 2009-08-20  Christian Hergert <chris@dronelabs.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs: Make the add

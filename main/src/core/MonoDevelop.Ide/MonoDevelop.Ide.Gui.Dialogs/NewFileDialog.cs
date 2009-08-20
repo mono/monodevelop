@@ -495,8 +495,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			projectFolderEntry.Sensitive = projectAddCheckbox.Active;
 
 			TemplateItem titem = (TemplateItem)iconView.CurrentlySelected;
-
-			InitializeDialog (true);
+			
+			if (projectAddCheckbox.Active) {
+				AddToProjectComboChanged (null, null);
+			} else {
+				parentProject = null;
+				InitializeDialog (true);
+			}
 
 			if (titem != null)
 				SelectTemplate (titem.Template.Id);
