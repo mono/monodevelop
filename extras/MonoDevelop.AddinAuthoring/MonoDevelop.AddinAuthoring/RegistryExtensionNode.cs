@@ -50,6 +50,10 @@ namespace MonoDevelop.AddinAuthoring
 		[NodeAttribute("description")]
 		string description;
 
+		[ItemProperty()]
+		[NodeAttribute("testCommand")]
+		string testCommand;
+
 		public RegistryInfo ()
 		{
 		}
@@ -59,6 +63,8 @@ namespace MonoDevelop.AddinAuthoring
 			name = app.Name;
 			description = app.Description;
 			regPath = app.Registry.RegistryPath;
+			appPath = app.StartupPath;
+			testCommand = app.TestCommand;
 		}
 
 		public string ApplicationName {
@@ -79,6 +85,11 @@ namespace MonoDevelop.AddinAuthoring
 		public string RegistryPath {
 			get { return regPath; }
 			set { regPath = !string.IsNullOrEmpty (value) ? AddinAuthoringService.NormalizeRegistryPath (value) : null; }
+		}
+
+		public string TestCommand {
+			get { return testCommand; }
+			set { testCommand = value; }
 		}
 	}
 }

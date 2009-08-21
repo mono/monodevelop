@@ -1,5 +1,13 @@
 2009-08-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.AddinAuthoring/SolutionAddinData.cs:
+	* MonoDevelop.AddinAuthoring/AddinFeatureWidget.cs:
+	* MonoDevelop.AddinAuthoring/RegistryExtensionNode.cs:
+	* MonoDevelop.AddinAuthoring/AddinProjectExtension.cs: Add
+	support for testing add-ins.
+
+2009-08-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.AddinAuthoring.addin.xml:
 	* MonoDevelop.AddinAuthoring/AddinData.cs:

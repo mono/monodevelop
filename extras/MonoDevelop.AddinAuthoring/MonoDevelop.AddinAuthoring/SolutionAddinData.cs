@@ -51,16 +51,15 @@ namespace MonoDevelop.AddinAuthoring
 		}
 		
 		public string ApplicationName {
-			get { return regInfo.ApplicationName; }
+			get { return regInfo != null ? regInfo.ApplicationName : null; }
 			set {
-				Console.WriteLine ("ppnn:");
 				if (regInfo != null && regInfo.ApplicationName == value)
 					return;
-				RegistryInfo ri = solution.UserProperties.GetValue<RegistryInfo> ("MonoDevelop.AddinAuthoring.RegistryInfo");
-				if (ri != null && ri.ApplicationName == value) 
-					ExternalRegistryInfo = ri;
+				Application app = SetupService.GetExtensibleApplication (value);
+				if (app != null)
+					ExternalRegistryInfo = new RegistryInfo (app);
 				else {
-					ri = new RegistryInfo ();
+					RegistryInfo ri = new RegistryInfo ();
 					ri.ApplicationName = value;
 					ExternalRegistryInfo = ri;
 				}
@@ -81,6 +80,15 @@ namespace MonoDevelop.AddinAuthoring
 			}
 		}
 		
+		public FilePath TestRegistryPath {
+			get { return TempRegistryPath; }
+		}
+		
+		public void SetupTestRegistry ()
+		{
+			UpdateRegistry ();
+		}
+		
 		public AddinRegistry Registry {
 			get {
 				lock (this) {
@@ -99,7 +107,7 @@ namespace MonoDevelop.AddinAuthoring
 			RegistryInfo ri = ExternalRegistryInfo;
 			if (ri != null) {
 				if (string.IsNullOrEmpty (ri.ApplicationPath) || string.IsNullOrEmpty (ri.RegistryPath))
-					registry = SetupService.GetRegistryForApplication (ri.ApplicationName);
+					throw new InvalidOperationException ();
 				else
 					registry = new AddinRegistry (ri.RegistryPath, ri.ApplicationPath);
 			}

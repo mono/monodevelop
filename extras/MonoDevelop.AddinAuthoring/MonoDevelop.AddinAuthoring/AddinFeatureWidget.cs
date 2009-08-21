@@ -42,12 +42,7 @@ namespace MonoDevelop.AddinAuthoring
 					if (solution.HasAddinRoot ())
 						boxRepo.Visible = false;
 					else if (solution.GetAddinData() != null) {
-						Console.WriteLine ("pp1:" + solution);
-						SolutionAddinData sdata = solution.GetAddinData();
-						Console.WriteLine ("pp2:" + sdata);
-						Console.WriteLine ("pp21:" + sdata.ApplicationName);
-						string app = sdata.ApplicationName;
-						Console.WriteLine ("pp3:");
+						string app = solution.GetAddinData().ApplicationName;
 						if (app != null) {
 							regSelector.ApplicationName = app;
 							regSelector.Sensitive = false;
@@ -173,17 +168,16 @@ namespace MonoDevelop.AddinAuthoring
 
 		protected virtual void OnRegSelectorChanged (object sender, System.EventArgs e)
 		{
-			string app = regSelector.ApplicationName;
-			AddinRegistry reg = Mono.Addins.Setup.SetupService.GetRegistryForApplication (app);
-			if (reg == null)
+			Mono.Addins.Setup.Application app = Mono.Addins.Setup.SetupService.GetExtensibleApplication (regSelector.ApplicationName);
+			if (app == null)
 				return;
 			
 			Hashtable names = new Hashtable ();
-			foreach (Addin ad in reg.GetAddinRoots ()) {
+			foreach (Addin ad in app.Registry.GetAddinRoots ()) {
 				if (ad.Namespace.Length > 0)
 					names [ad.Namespace] = ad.Namespace;
 			}
-			foreach (Addin ad in reg.GetAddins ()) {
+			foreach (Addin ad in app.Registry.GetAddins ()) {
 				if (ad.Namespace.Length > 0)
 					names [ad.Namespace] = ad.Namespace;
 			}
