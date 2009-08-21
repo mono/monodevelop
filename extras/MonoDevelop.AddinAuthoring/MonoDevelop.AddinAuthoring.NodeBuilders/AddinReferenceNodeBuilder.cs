@@ -43,7 +43,7 @@ namespace MonoDevelop.AddinAuthoring
 	public class AddinReferenceNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(AddinDependency); }
+			get { return typeof(AddinProjectReference); }
 		}
 		
 		public override Type CommandHandlerType {
@@ -57,15 +57,15 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			AddinDependency adep = (AddinDependency) dataObject;
-			return Addin.GetIdName (adep.FullAddinId);
+			AddinProjectReference adep = (AddinProjectReference) dataObject;
+			return Addin.GetIdName (adep.Reference);
 		}
 
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
 		{
-			AddinDependency adep = (AddinDependency) dataObject;
-			label = Addin.GetIdName (adep.FullAddinId);
+			AddinProjectReference adep = (AddinProjectReference) dataObject;
+			label = Addin.GetIdName (adep.Reference);
 			icon = closedIcon = Context.GetIcon ("md-addin");
 		}
 	}
@@ -76,11 +76,11 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			DotNetProject p = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
 			AddinData data = AddinData.GetAddinData (p);
-			AddinDependency adep = (AddinDependency) CurrentNode.DataItem;
+			AddinProjectReference adep = (AddinProjectReference) CurrentNode.DataItem;
 			
-			string q = AddinManager.CurrentLocalizer.GetString ("Are you sure you want to remove the reference to add-in '{0}'?", Addin.GetIdName (adep.FullAddinId));
+			string q = AddinManager.CurrentLocalizer.GetString ("Are you sure you want to remove the reference to add-in '{0}'?", Addin.GetIdName (adep.Reference));
 			if (MessageService.Confirm (q, AlertButton.Remove)) {
-				AddinAuthoringService.RemoveReferences (data, new string[] { adep.FullAddinId });
+				AddinAuthoringService.RemoveReferences (data, new string[] { adep.Reference });
 			}
 		}
 	}

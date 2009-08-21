@@ -31,46 +31,54 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.AddinAuthoring
 {
-	[DataItem ("AddinRegistry")]
-	public class RegistryInfo: ExtensionNode
+	[DataItem("AddinRegistry")]
+	public class RegistryInfo : ExtensionNode
 	{
-		[ItemProperty]
-		[NodeAttribute ("name", Required=true)]
+		[ItemProperty()]
+		[NodeAttribute("name", Required = true)]
 		string name;
-		
-		[ItemProperty]
-		[NodeAttribute ("appPath", Required=true)]
+
+		[ItemProperty()]
+		[NodeAttribute("appPath", Required = true)]
 		string appPath;
-		
-		[ItemProperty]
-		[NodeAttribute ("regPath", Required=true)]
+
+		[ItemProperty()]
+		[NodeAttribute("regPath", Required = true)]
 		string regPath;
-		
+
+		[ItemProperty()]
+		[NodeAttribute("description")]
+		string description;
+
+		public RegistryInfo ()
+		{
+		}
+
+		public RegistryInfo (Mono.Addins.Setup.Application app)
+		{
+			name = app.Name;
+			description = app.Description;
+			regPath = app.Registry.RegistryPath;
+		}
+
 		public string ApplicationName {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+			get { return name; }
+			set { name = value; }
+		}
+
+		public string Description {
+			get { return description; }
+			set { description = value; }
 		}
 
 		public string ApplicationPath {
-			get {
-				return appPath;
-			}
-			set {
-				appPath = value != null ? AddinAuthoringService.NormalizeUserPath (value) : null;
-			}
+			get { return appPath; }
+			set { appPath = !string.IsNullOrEmpty (value) ? AddinAuthoringService.NormalizeUserPath (value) : null; }
 		}
 
 		public string RegistryPath {
-			get {
-				return regPath;
-			}
-			set {
-				regPath = value != null ? AddinAuthoringService.NormalizeRegistryPath (value) : null;
-			}
+			get { return regPath; }
+			set { regPath = !string.IsNullOrEmpty (value) ? AddinAuthoringService.NormalizeRegistryPath (value) : null; }
 		}
 	}
 }

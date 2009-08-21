@@ -28,14 +28,16 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Xml;
 using Mono.Addins;
 using Mono.Addins.Description;
+using Mono.Addins.Setup;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
-using System.Xml;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -123,6 +125,8 @@ namespace MonoDevelop.AddinAuthoring
 				yield return node;
 			foreach (RegistryInfo node in config.Registries)
 				yield return node;
+			foreach (Application app in SetupService.GetExtensibleApplications ())
+				yield return new RegistryInfo (app);
 		}
 		
 		public static void AddCustomRegistry (RegistryInfo reg)
@@ -152,6 +156,8 @@ namespace MonoDevelop.AddinAuthoring
 			FilePath fp = Path.GetFullPath (path);
 			foreach (Environment.SpecialFolder sf in Enum.GetValues (typeof(Environment.SpecialFolder))) {
 				FilePath folderPath = Environment.GetFolderPath (sf);
+				if (folderPath.IsNullOrEmpty)
+					continue;
 				if (fp.IsChildPathOf (folderPath))
 					return "[" + sf.ToString () + "]" + Path.DirectorySeparatorChar + fp.ToRelative (folderPath);
 			}
@@ -270,8 +276,8 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			foreach (DotNetProject dnp in sol.GetAllSolutionItems<DotNetProject> ()) {
 				AddinData data = AddinData.GetAddinData (dnp);
-				if (data != null && data.ExtendedApplication != null)
-					return data.ExtendedApplication;
+				if (data != null && data.ApplicationName != null)
+					return data.ApplicationName;
 			}
 			return null;
 		}
@@ -284,6 +290,17 @@ namespace MonoDevelop.AddinAuthoring
 		[ItemProperty]
 		public List<RegistryInfo> Registries {
 			get { return registries; }
+		}
+	}
+	
+	[Extension]
+	public class MonoAddinsMSBuildImportProvider: IMSBuildImportProvider
+	{
+		public IEnumerable<string> GetRequiredImports (SolutionEntityItem item)
+		{
+			DotNetProject project = item as DotNetProject;
+			if (project != null && project.GetAddinData () != null)
+				yield return @"$(MSBuildExtensionsPath)\Mono.Addins.targets";
 		}
 	}
 }

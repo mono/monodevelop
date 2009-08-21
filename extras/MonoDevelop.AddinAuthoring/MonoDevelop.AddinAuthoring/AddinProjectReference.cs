@@ -37,6 +37,12 @@ namespace MonoDevelop.AddinAuthoring
 	[DataItem ("AddinReference")]
 	public class AddinProjectReference: ProjectReference 
 	{
+		[ItemProperty ("Include")]
+		internal string Include {
+			get { return Reference; }
+			set { InitCustomReference (value); }
+		}
+		
 		public AddinProjectReference ()
 		{
 		}

@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Mono.Addins;
 using Mono.Addins.Description;
 using Gtk;
@@ -84,12 +85,16 @@ namespace MonoDevelop.AddinAuthoring
 		
 		AddinDescription CompiledAddinDesc {
 			get {
-				if (compiledDesc == null) {
-					if (System.IO.File.Exists (data.Project.GetOutputFileName (data.Project.DefaultConfigurationId)))
-						compiledDesc = data.AddinRegistry.GetAddinDescription (new Mono.Addins.ConsoleProgressStatus (false), data.Project.GetOutputFileName (data.Project.DefaultConfigurationId));
-				}
-				return compiledDesc;
+				return data.CompiledAddinManifest;
 			}
+		}
+		
+		bool CheckCompiledAddinDesc ()
+		{
+			if (CompiledAddinDesc == null) {
+				
+			}
+			return true;
 		}
 		
 		public void SetData (AddinDescription desc, AddinData data)
@@ -103,8 +108,8 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			state.Save ();
 			store.Clear ();
-			ArrayList deps = new ArrayList ();
-			deps.Add (CompiledAddinDesc);
+			List<AddinDescription> deps = new List<AddinDescription> ();
+			deps.Add (adesc);
 			
 			foreach (Dependency dep in adesc.MainModule.Dependencies) {
 				AddinDependency adep = dep as AddinDependency;
@@ -227,7 +232,6 @@ namespace MonoDevelop.AddinAuthoring
 		void CreateNode (TreeIter it, Extension ext, ExtensionNodeDescription node, ExtensionNodeType nt)
 		{
 			ExtensionNodeDescription newNode = new ExtensionNodeDescription (nt.NodeName);
-			string ppath = ext != null ? ext.Path : node.GetParentPath () + "/" + node.Id;
 			
 			if (ext != null) {
 				if (ext.Parent == null)
@@ -242,7 +246,7 @@ namespace MonoDevelop.AddinAuthoring
 			NotifyChanged ();
 		}
 		
-		void AddExtension (Extension ext, ArrayList deps)
+		void AddExtension (Extension ext, IEnumerable<AddinDescription> deps)
 		{
 			ExtensionPoint extep = null;
 			foreach (AddinDescription desc in deps) {
@@ -299,7 +303,7 @@ namespace MonoDevelop.AddinAuthoring
 				}
 				while (store.IterNext (ref it));
 			}
-			if (adesc != CompiledAddinDesc) {
+			if (adesc != this.adesc) {
 				string txt = GLib.Markup.EscapeText (adesc.Name);
 				return store.AppendValues (txt, adesc.AddinId, null, null, pixAddin, true, null);
 			} else {
@@ -323,7 +327,7 @@ namespace MonoDevelop.AddinAuthoring
 
 		protected virtual void OnButtonAddClicked(object sender, System.EventArgs e)
 		{
-			ExtensionSelectorDialog dlg = new ExtensionSelectorDialog (data.AddinRegistry, CompiledAddinDesc, CompiledAddinDesc.IsRoot, false);
+			ExtensionSelectorDialog dlg = new ExtensionSelectorDialog (data.AddinRegistry, adesc, adesc.IsRoot, false);
 			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 				foreach (object ob in dlg.GetSelection ()) {
 					AddinDescription desc = null;
@@ -346,7 +350,7 @@ namespace MonoDevelop.AddinAuthoring
 						Extension ext = new Extension (eext.Path + "/" + node.Id + path);
 						adesc.MainModule.Extensions.Add (ext);
 					}
-					if (!adesc.MainModule.DependsOnAddin (desc.AddinId))
+					if (adesc.AddinId != desc.AddinId && !adesc.MainModule.DependsOnAddin (desc.AddinId))
 						adesc.MainModule.Dependencies.Add (new AddinDependency (desc.AddinId));
 				}
 				NotifyChanged ();

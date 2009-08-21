@@ -50,17 +50,20 @@ namespace MonoDevelop.AddinAuthoring
 			get { return solution.BaseDirectory.Combine (".temp-addin-registry").Combine (IdeApp.Workspace.ActiveConfiguration); }
 		}
 		
-		public void SetTargetApplication (string appName)
-		{
-			if (regInfo != null && regInfo.ApplicationName == appName)
-				return;
-			RegistryInfo ri = solution.UserProperties.GetValue<RegistryInfo> ("MonoDevelop.AddinAuthoring.RegistryInfo");
-			if (ri != null && ri.ApplicationName == appName) 
-				ExternalRegistryInfo = ri;
-			else {
-				ri = new RegistryInfo ();
-				ri.ApplicationName = appName;
-				ExternalRegistryInfo = ri;
+		public string ApplicationName {
+			get { return regInfo.ApplicationName; }
+			set {
+				Console.WriteLine ("ppnn:");
+				if (regInfo != null && regInfo.ApplicationName == value)
+					return;
+				RegistryInfo ri = solution.UserProperties.GetValue<RegistryInfo> ("MonoDevelop.AddinAuthoring.RegistryInfo");
+				if (ri != null && ri.ApplicationName == value) 
+					ExternalRegistryInfo = ri;
+				else {
+					ri = new RegistryInfo ();
+					ri.ApplicationName = value;
+					ExternalRegistryInfo = ri;
+				}
 			}
 		}
 		
@@ -96,7 +99,7 @@ namespace MonoDevelop.AddinAuthoring
 			RegistryInfo ri = ExternalRegistryInfo;
 			if (ri != null) {
 				if (string.IsNullOrEmpty (ri.ApplicationPath) || string.IsNullOrEmpty (ri.RegistryPath))
-					registry = SetupService.GetRegistryForPackage (ri.ApplicationName);
+					registry = SetupService.GetRegistryForApplication (ri.ApplicationName);
 				else
 					registry = new AddinRegistry (ri.RegistryPath, ri.ApplicationPath);
 			}

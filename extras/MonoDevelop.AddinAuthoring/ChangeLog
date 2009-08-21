@@ -1,3 +1,23 @@
+2009-08-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.AddinAuthoring.addin.xml:
+	* MonoDevelop.AddinAuthoring/AddinData.cs:
+	* MonoDevelop.AddinAuthoring/ExtensionDomain.cs:
+	* MonoDevelop.AddinAuthoring/RegistrySelector.cs:
+	* MonoDevelop.AddinAuthoring/SolutionAddinData.cs:
+	* MonoDevelop.AddinAuthoring/AddinFeatureWidget.cs:
+	* MonoDevelop.AddinAuthoring/AddinAuthoringService.cs:
+	* MonoDevelop.AddinAuthoring/RegistryExtensionNode.cs:
+	* MonoDevelop.AddinAuthoring/AddinProjectReference.cs:
+	* MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs:
+	* MonoDevelop.AddinAuthoring/SelectRepositoryDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.SelectRepositoryDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.AddinDescriptionWidget.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/ReferencesFolderNodeBuilder.cs:
+	Ongoing work.
+
 2009-08-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

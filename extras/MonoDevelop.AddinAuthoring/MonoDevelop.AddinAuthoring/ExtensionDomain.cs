@@ -35,8 +35,8 @@ namespace MonoDevelop.AddinAuthoring
 		[ItemProperty("Include")]
 		public string Application { get; set; }
 		
-		[ItemProperty("IsRoot")]
-		public bool IsRoot { get; set; }
+		//[ItemProperty("IsRoot", DefaultValue=false)]
+		//public bool IsRoot { get; set; }
 		
 		public ExtensionDomain()
 		{

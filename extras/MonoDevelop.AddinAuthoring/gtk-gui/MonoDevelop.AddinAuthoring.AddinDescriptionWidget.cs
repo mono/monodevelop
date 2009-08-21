@@ -299,7 +299,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label15 = new Gtk.Label();
             this.label15.Name = "label15";
             this.label15.Xalign = 0F;
-            this.label15.Yalign = 1F;
+            this.label15.Yalign = 0F;
             this.label15.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Description:");
             this.table1.Add(this.label15);
             Gtk.Table.TableChild w19 = ((Gtk.Table.TableChild)(this.table1[this.label15]));

@@ -34,7 +34,6 @@
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/AddinAuthoring/AddinRegistries">
-		<Registry name="MonoDevelop" path="~/.config/MonoDevelop" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -129,5 +128,10 @@
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AddinAuthoring.CodeCompletion.CodeCompletionExtension" insertbefore="MonoDevelop.XmlEditor.XmlTextEditorExtension" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
+		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
+			name = "ExtensionDomain" type = "System.String" external="false"/>
 	</Extension>
 </Addin>

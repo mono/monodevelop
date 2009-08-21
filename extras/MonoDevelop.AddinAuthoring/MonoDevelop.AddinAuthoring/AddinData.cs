@@ -45,7 +45,7 @@ namespace MonoDevelop.AddinAuthoring
 		AddinRegistry registry;
 		string lastOutputPath;
 		bool isRoot;
-		ExtensionDomain domainData;
+		bool updating;
 		
 		AddinDescription manifest;
 		AddinDescription compiledManifest;
@@ -76,12 +76,8 @@ namespace MonoDevelop.AddinAuthoring
 			watcher.EnableRaisingEvents = true;
 			lastOutputPath = Path.GetDirectoryName (Project.GetOutputFileName (Project.DefaultConfigurationId));
 			
-			domainData = project.Items.GetAll<ExtensionDomain> ().FirstOrDefault ();
-			if (domainData == null) {
-				domainData = new ExtensionDomain ();
-				project.Items.Add (domainData);
-			} else if (!string.IsNullOrEmpty (domainData.Application)) {
-				project.ParentSolution.GetAddinData ().SetTargetApplication (domainData.Application);
+			if (!string.IsNullOrEmpty (ApplicationName)) {
+				project.ParentSolution.GetAddinData ().ApplicationName = ApplicationName;
 			}
 			
 			SyncRoot ();
@@ -90,13 +86,15 @@ namespace MonoDevelop.AddinAuthoring
 			project.ReferenceAddedToProject += ProjectReferenceAddedToProject;
 			project.ReferenceRemovedFromProject += ProjectReferenceRemovedFromProject;
 		}
-
+		
 		void ProjectReferenceRemovedFromProject (object sender, ProjectReferenceEventArgs e)
 		{
 		}
 
 		void ProjectReferenceAddedToProject (object sender, ProjectReferenceEventArgs e)
 		{
+			if (updating)
+				return;
 			if (e.ProjectReference.ReferenceType == ReferenceType.Project) {
 				DotNetProject rp = project.ParentSolution.FindProjectByName (e.ProjectReference.Reference) as DotNetProject;
 				if (rp != null) {
@@ -138,8 +136,8 @@ namespace MonoDevelop.AddinAuthoring
 			
 			AddinData data = project.ExtendedProperties ["MonoDevelop.AddinAuthoring"] as AddinData;
 			if (data == null) {
-				ExtensionDomain domainData = project.Items.GetAll<ExtensionDomain> ().FirstOrDefault ();
-				if (domainData != null)
+				string domainData = project.ExtendedProperties ["ExtensionDomain"] as string;
+				if (!string.IsNullOrEmpty (domainData))
 					data = new AddinData (project);
 			}
 			return data;
@@ -184,9 +182,7 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public AddinDescription LoadAddinManifest ()
 		{
-			Console.WriteLine ("ppl:" + AddinManifestFileName);
 			AddinDescription d = AddinRegistry.ReadAddinManifestFile (AddinManifestFileName);
-			Console.WriteLine ("ppl2:" + d);
 			return d;
 		}
 		
@@ -208,48 +204,43 @@ namespace MonoDevelop.AddinAuthoring
 		public AddinDescription CompiledAddinManifest {
 			get {
 				if (compiledManifest == null) {
-					if (File.Exists (project.GetOutputFileName (project.DefaultConfigurationId)))
-						compiledManifest = registry.GetAddinDescription (null, project.GetOutputFileName (project.DefaultConfigurationId));
+					if (File.Exists (project.GetOutputFileName (project.DefaultConfigurationId))) {
+						compiledManifest = registry.GetAddinDescription (new ConsoleProgressStatus (false), project.GetOutputFileName (project.DefaultConfigurationId));
+					}
 				}
 				return compiledManifest;
 			}
 		}
 		
-		public string ExtendedApplication {
-			get { return domainData.Application; }
+		public string ApplicationName {
+			get { return project.ExtendedProperties ["ExtensionDomain"] as string; }
 			set {
-				domainData.Application = value;
+				if (string.IsNullOrEmpty (value))
+					project.ExtendedProperties.Remove ("ExtensionDomain");
+				else
+					project.ExtendedProperties ["ExtensionDomain"] = value;
+				project.ParentSolution.GetAddinData ().ApplicationName = value;
 				NotifyChanged (true);
 			}
 		}
-		
+
 		public AddinRegistry AddinRegistry {
 			get {
 				if (registry != null)
 					return registry;
 				return SetRegistry ();
 			}
-/*			set {
-				registry = value;
-				RegistryPath = registry.RegistryPath;
-			}
-*/		}
+		}
 		
 		AddinRegistry SetRegistry ()
 		{
-			if (ExtendedApplication == null)
+			if (ApplicationName == null)
 				return registry = AddinRegistry.GetGlobalRegistry ();
 			else {
-				if (Project.ParentSolution != null) {
-					registry = Project.ParentSolution.GetAddinRegistry ();
-				}
-				else if (isRoot) {
-					string outDir = Path.GetDirectoryName (Project.GetOutputFileName (Project.DefaultConfigurationId));
-					registry = new AddinRegistry (outDir, outDir);
-				} else {
-					registry = Mono.Addins.Setup.SetupService.GetRegistryForPackage (ExtendedApplication);
-				}
-				return registry;
+				if (Project.ParentSolution != null)
+					return Project.ParentSolution.GetAddinRegistry ();
+				else
+					throw new InvalidOperationException ();
 			}
 		}
 		
@@ -292,7 +283,6 @@ namespace MonoDevelop.AddinAuthoring
 		
 		void SyncReferences ()
 		{
-			Console.WriteLine ("pp SyncReferences:");
 			bool changed = false;
 			Hashtable addinRefs = new Hashtable ();
 			foreach (AddinDependency adep in CachedAddinManifest.MainModule.Dependencies) {
@@ -314,11 +304,16 @@ namespace MonoDevelop.AddinAuthoring
 					}
 				}
 				if (!found) {
-					DotNetProject p = FindProjectImplementingAddin (adep.FullAddinId);
-					if (p != null)
-						Project.References.Add (new ProjectReference (p));
-					else
-						Project.References.Add (new AddinProjectReference (adep.FullAddinId));
+					try {
+						updating = true;
+						DotNetProject p = FindProjectImplementingAddin (adep.FullAddinId);
+						if (p != null)
+							Project.References.Add (new ProjectReference (p));
+						else
+							Project.References.Add (new AddinProjectReference (adep.FullAddinId));
+					} finally {
+						updating = false;
+					}
 					changed = true;
 				}
 				addinRefs [adep.FullAddinId] = adep;

@@ -36,12 +36,11 @@ namespace MonoDevelop.AddinAuthoring {
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.AddinAuthoring.SelectRepositoryDialog
-            this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.AddinAuthoring.SelectRepositoryDialog";
             this.Title = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Select Add-in Registry");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.DefaultWidth = 0;
-            this.DefaultHeight = 0;
+            this.DefaultWidth = 500;
+            this.DefaultHeight = 400;
             // Internal child MonoDevelop.AddinAuthoring.SelectRepositoryDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
@@ -56,7 +55,7 @@ namespace MonoDevelop.AddinAuthoring {
             this.label11 = new Gtk.Label();
             this.label11.Name = "label11";
             this.label11.Xalign = 0F;
-            this.label11.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Select the add-in registry for the new add-in:");
+            this.label11.LabelProp = Mono.Addins.AddinManager.CurrentLocalizer.GetString("Select the application you want to extend:");
             this.vbox4.Add(this.label11);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox4[this.label11]));
             w2.Position = 0;
@@ -75,7 +74,6 @@ namespace MonoDevelop.AddinAuthoring {
             this.tree = new Gtk.TreeView();
             this.tree.CanFocus = true;
             this.tree.Name = "tree";
-            this.tree.HeadersVisible = false;
             this.scrolledwindow4.Add(this.tree);
             this.hbox1.Add(this.scrolledwindow4);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.scrolledwindow4]));

@@ -41,10 +41,15 @@ namespace MonoDevelop.AddinAuthoring
 				else {
 					if (solution.HasAddinRoot ())
 						boxRepo.Visible = false;
-					else {
-						RegistryInfo app = solution.GetAddinData().ExternalRegistryInfo;
+					else if (solution.GetAddinData() != null) {
+						Console.WriteLine ("pp1:" + solution);
+						SolutionAddinData sdata = solution.GetAddinData();
+						Console.WriteLine ("pp2:" + sdata);
+						Console.WriteLine ("pp21:" + sdata.ApplicationName);
+						string app = sdata.ApplicationName;
+						Console.WriteLine ("pp3:");
 						if (app != null) {
-							regSelector.RegistryInfo = app;
+							regSelector.ApplicationName = app;
 							regSelector.Sensitive = false;
 						}
 					}
@@ -54,6 +59,7 @@ namespace MonoDevelop.AddinAuthoring
 				entryId.Text = project.Name;
 			} else {
 				if (project.CompileTarget != CompileTarget.Library) {
+					// Editing options of an exe
 					labelExtensibleApp.Visible = data == null;
 					boxRepo.Visible = false;
 					boxLibraryType.Visible = false;
@@ -61,16 +67,20 @@ namespace MonoDevelop.AddinAuthoring
 					isRoot = true;
 				}
 				else {
+					// Editing options of an add-in or extensible library
 					labelExtensibleApp.Visible = false;
 					if (data != null && data.CachedAddinManifest != null && data.CachedAddinManifest.IsRoot)
 						radiobuttonLibrary.Active = true;
 					else
 						radiobuttonAddin.Active = true;
 					isRoot = radiobuttonLibrary.Active;
+					
+					// There is a root in the solution. The target registry can't be selected.
 					if (solution.HasAddinRoot ())
 						boxRepo.Visible = false;
 				}
 				if (data != null) {
+					regSelector.ApplicationName = data.ApplicationName;
 					((Gtk.Container)tableNames.Parent).Remove (tableNames);
 					((Gtk.Container)labelAddinInfo.Parent).Remove (labelAddinInfo);
 				} else {
@@ -90,34 +100,13 @@ namespace MonoDevelop.AddinAuthoring
 			UpdateControls ();
 		}
 
-		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
-		{
-			
-/*			FolderDialog fd = new FolderDialog (AddinManager.CurrentLocalizer.GetString ("Select Repository"));
-			
-			try {
-				fd.SetFilename (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
-				
-				int response = fd.Run ();
-				
-				if (response == (int) ResponseType.Ok) {
-					paths.Add (fd.Filename);
-					UpdatePaths ();
-					comboRepos.Active = paths.Count - 1;
-				}
-			} finally {
-				fd.Destroy ();
-			}
-			*/
-		}
-		
 		void UpdateControls ()
 		{
 			boxRepo.Sensitive = !isRoot;
 		}
 
-		public RegistryInfo RegistryInfo {
-			get { return isRoot ? null : regSelector.RegistryInfo; }
+		public string ApplicationName {
+			get { return isRoot ? null : regSelector.ApplicationName; }
 		}
 		
 		public bool HasRegistryInfo {
@@ -142,7 +131,7 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public string Validate ()
 		{
-			if (!isRoot && RegistryInfo == null && boxRepo.Visible)
+			if (!isRoot && ApplicationName == null && boxRepo.Visible)
 				return AddinManager.CurrentLocalizer.GetString ("Please select the application to be extended by this add-in.");
 			else
 				return null;
@@ -184,8 +173,11 @@ namespace MonoDevelop.AddinAuthoring
 
 		protected virtual void OnRegSelectorChanged (object sender, System.EventArgs e)
 		{
-			RegistryInfo ri = regSelector.RegistryInfo;
-			AddinRegistry reg = new AddinRegistry (ri.RegistryPath, ri.ApplicationPath);
+			string app = regSelector.ApplicationName;
+			AddinRegistry reg = Mono.Addins.Setup.SetupService.GetRegistryForApplication (app);
+			if (reg == null)
+				return;
+			
 			Hashtable names = new Hashtable ();
 			foreach (Addin ad in reg.GetAddinRoots ()) {
 				if (ad.Namespace.Length > 0)
@@ -264,7 +256,7 @@ namespace MonoDevelop.AddinAuthoring
 			
 			DotNetProject project = (DotNetProject) entry;
 			if (editor.HasRegistryInfo)
-				project.ParentSolution.GetAddinData().ExternalRegistryInfo = editor.RegistryInfo;
+				project.GetAddinData ().ApplicationName = editor.ApplicationName;
 
 			AddinDescription desc = data.LoadAddinManifest ();
 			if (editor.AddinId.Length > 0)
