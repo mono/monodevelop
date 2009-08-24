@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-07-17 19:40:32+0200\n"
-"PO-Revision-Date: 2009-08-24 07:37:04+0200\n"
+"PO-Revision-Date: 2009-08-24 11:36:53+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -2457,11 +2457,11 @@ msgstr "Codeausschnitt für eine Klassendeklaration"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:542
 msgid "Template for an Interface"
-msgstr "Codeausschnitt für ein Interface"
+msgstr "Codeausschnitt für eine Schnittstelle"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:548
 msgid "Interface name"
-msgstr "Interfacename"
+msgstr "Schnittstellenname"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:563
 msgid "Template for a Struct"
@@ -10126,7 +10126,7 @@ msgstr "Innerhalb Klassen"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:301
 msgid "within interfaces"
-msgstr "in Interfaces"
+msgstr "in Schnittstelle"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:302
 msgid "within structs"
@@ -12938,7 +12938,7 @@ msgstr "Methode ist nativ (P/Invoke)"
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:119
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:176
 msgid "Interface method"
-msgstr "Interface Methode"
+msgstr "Schnittstellen-Methode"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:119
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:176
@@ -15156,12 +15156,12 @@ msgstr "Member implementieren/überschreiben..."
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:542
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:561
 msgid "Implement Interface (implicit)"
-msgstr "Implementiertes Interface (Implizit)"
+msgstr "Implementiere Schnittstelle (Implizit)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:543
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:564
 msgid "Implement Interface (explicit)"
-msgstr "Implementiertes Interface (Explizit)"
+msgstr "Implementierte Schnittstelle (Explizit)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:569
 msgid "Field <b>{0}</b>"
@@ -16305,7 +16305,6 @@ msgstr "_Lokale Variable deklarieren"
 #~ msgstr "Frage"
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
-
 #~ msgid "Do you want to save the current changes?"
 #~ msgstr "Wollen sie die aktuellen Änderungen speichern?"
 
