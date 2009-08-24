@@ -1,5 +1,10 @@
 2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Make it
+	  buildable with .net 2.0.
+
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.csproj:
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs:

@@ -437,12 +437,66 @@ namespace Mono.PkgConfig
 	{
 		Dictionary<string,string> variables = new Dictionary<string, string> ();
 		
-		public string FilePath { get; set; }
-		public string Name { get; set; }
-		public string Description { get; set; }
-		public string Version { get; set; }
-		public string Libs { get; set; }
-		public bool HasErrors { get; set; }
+		string filePath;
+		string name;
+		string description;
+		string version;
+		string libs;
+		bool hasErrors;
+
+		public string Description {
+			get {
+				return description;
+			}
+			set {
+				description = value;
+			}
+		}
+		
+		public string FilePath {
+			get {
+				return filePath;
+			}
+			set {
+				filePath = value;
+			}
+		}
+		
+		public bool HasErrors {
+			get {
+				return hasErrors;
+			}
+			set {
+				hasErrors = value;
+			}
+		}
+		
+		public string Libs {
+			get {
+				return libs;
+			}
+			set {
+				libs = value;
+			}
+		}
+		
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				name = value;
+			}
+		}
+		
+		public string Version {
+			get {
+				return version;
+			}
+			set {
+				version = value;
+			}
+		}
 		
 		public string GetVariable (string varName)
 		{
@@ -526,12 +580,24 @@ namespace Mono.PkgConfig
 	internal class PackageInfo
 	{
 		Dictionary<string,string> customData;
-
-		public string Name { get; set; }
+		string name;
+		string version;
+		string description;
 		
-		public string Version { get; set; }
+		public string Name {
+			get { return name; }
+			set { name = value; }
+		}
 		
-		public string Description { get; set; }
+		public string Version {
+			get { return version; }
+			set { version = value; }
+		}
+		
+		public string Description {
+			get { return description; }
+			set { description = value; }
+		}
 		
 		public string GetData (string name)
 		{
