@@ -1,3 +1,13 @@
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs: Document.Save can
+	  only be called from the gui thread.
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Before building,
+	  don't autosave files which don't belong to a project. Fixes
+	  bug #498686 - Compiling a solution/project with a file that
+	  doesn't belong to any project MD ask for write the file.
+
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:

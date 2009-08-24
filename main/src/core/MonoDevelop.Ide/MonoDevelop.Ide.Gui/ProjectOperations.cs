@@ -974,7 +974,7 @@ namespace MonoDevelop.Ide.Gui
 					break;
 				case BeforeCompileAction.PromptForSave:
 					foreach (Document doc in IdeApp.Workbench.Documents) {
-						if (doc.IsDirty) {
+						if (doc.IsDirty && doc.Project != null) {
 							if (MessageService.AskQuestion (
 						            GettextCatalog.GetString ("Save changed documents before building?"),
 							        GettextCatalog.GetString ("Some of the open documents have unsaved changes."),
@@ -988,7 +988,9 @@ namespace MonoDevelop.Ide.Gui
 					}
 					break;
 				case BeforeCompileAction.SaveAllFiles:
-					IdeApp.Workbench.SaveAll ();
+					foreach (Document doc in new List<Document> (IdeApp.Workbench.Documents))
+						if (doc.IsDirty && doc.Project != null)
+							doc.Save ();
 					break;
 				default:
 					System.Diagnostics.Debug.Assert(false);

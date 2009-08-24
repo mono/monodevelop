@@ -75,18 +75,10 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run (object dataItem)
 		{
-			ExternalTools.ExternalTool externalTool = (ExternalTools.ExternalTool)dataItem;
-			DispatchService.BackgroundDispatch (new StatefulMessageHandler (RunExternalTool), externalTool);
-		}
-
-		void RunExternalTool (object externalTool)
-		{
-			ExternalTools.ExternalTool tool = (ExternalTools.ExternalTool) externalTool;
-
-			string commandTool = StringParserService.Parse (tool.Command);
+			ExternalTools.ExternalTool tool = (ExternalTools.ExternalTool)dataItem;
+			
 			string argumentsTool = StringParserService.Parse (tool.Arguments);
-			string initialDirectoryTool = StringParserService.Parse (tool.InitialDirectory);
-
+			
 			//Save current file checkbox
 			if (tool.SaveCurrentFile && IdeApp.Workbench.ActiveDocument != null)
 				IdeApp.Workbench.ActiveDocument.Save ();
@@ -96,6 +88,16 @@ namespace MonoDevelop.Ide.Commands
 				if (customerArguments != String.Empty)
 					argumentsTool = StringParserService.Parse (customerArguments);
 			}
+
+			DispatchService.BackgroundDispatch (delegate {
+				RunExternalTool (tool, argumentsTool);
+			});
+		}
+
+		void RunExternalTool (ExternalTools.ExternalTool tool, string argumentsTool)
+		{
+			string commandTool = StringParserService.Parse (tool.Command);
+			string initialDirectoryTool = StringParserService.Parse (tool.InitialDirectory);
 
 			//Execute tool
 			IProgressMonitor progressMonitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
