@@ -1,5 +1,11 @@
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
+	  Fixed "Bug 533681 - Method overriding always uses full
+	  namespaces".
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:
