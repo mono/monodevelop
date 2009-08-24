@@ -1,3 +1,12 @@
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* templates/Makefile.am.project.template:
+	* templates/Makefile.noauto.project.template: Fix issue that
+	  prevented generated makefiles from working in parallel
+	  builds. Patch by Bertrand Lorentz. Closes bug #531349 -
+	  Generated Makefile.am does not properly support parallel
+	  make.
+
 2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Handler.cs: Store TargetDirectory as a relative path. Fixes
