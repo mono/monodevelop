@@ -1,3 +1,17 @@
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui.Content/ISupportsProjectReload.cs: Added
+	  support for re-binding an open file to a project. This is
+	  used when reloading a project.
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Show a warning
+	  when trying to save a project whose files have changed since
+	  the last save.
+
 2009-08-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Update project

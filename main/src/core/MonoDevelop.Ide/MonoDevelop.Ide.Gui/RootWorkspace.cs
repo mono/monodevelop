@@ -28,7 +28,6 @@
 using System;
 using System.IO;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml;
@@ -36,11 +35,10 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects.Gui;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Content;
 using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Ide.Gui
@@ -486,6 +484,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IAsyncOperation OpenWorkspaceItem (string filename, bool closeCurrent)
 		{
+			return OpenWorkspaceItem (filename, closeCurrent, true);
+		}
+		
+		public IAsyncOperation OpenWorkspaceItem (string filename, bool closeCurrent, bool loadPreferences)
+		{
 			if (closeCurrent)
 				Close ();
 
@@ -495,12 +498,27 @@ namespace MonoDevelop.Ide.Gui
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true);
 			
 			DispatchService.BackgroundDispatch (delegate {
-				BackgroundLoadWorkspace (monitor, filename);
+				BackgroundLoadWorkspace (monitor, filename, loadPreferences);
 			});
 			return monitor.AsyncOperation;
 		}
 		
-		void BackgroundLoadWorkspace (IProgressMonitor monitor, string filename)
+		void ReattachDocumentProjects (IEnumerable<string> closedDocs)
+		{
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+				if (doc.Project == null && doc.IsFile) {
+					Project p = GetProjectContainingFile (doc.FileName);
+					if (p != null)
+						doc.SetProject (p);
+				}
+			}
+			if (closedDocs != null) {
+				foreach (string doc in closedDocs)
+					IdeApp.Workbench.OpenDocument (doc, false);
+			}
+		}
+		
+		void BackgroundLoadWorkspace (IProgressMonitor monitor, string filename, bool loadPreferences)
 		{
 			WorkspaceItem item = null;
 			
@@ -547,8 +565,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			Gtk.Application.Invoke (delegate {
 				using (monitor) {
-					if (Items.Count == 1)
+					if (Items.Count == 1 && loadPreferences)
 						RestoreWorkspacePreferences (item);
+					ReattachDocumentProjects (null);
 					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
 				}
 			});
@@ -810,15 +829,18 @@ namespace MonoDevelop.Ide.Gui
 		void OnCheckWorkspaceItem (WorkspaceItem item)
 		{
 			if (item.NeedsReload) {
-				if (AllowReload (item.GetAllProjects ())) {
+				IEnumerable<string> closedDocs;
+				if (AllowReload (item.GetAllProjects (), out closedDocs)) {
 					if (item.ParentWorkspace == null) {
 						string file = item.FileName;
+						SavePreferences ();
 						CloseWorkspaceItem (item);
-						OpenWorkspaceItem (file);
+						OpenWorkspaceItem (file, false);
 					}
 					else {
 						using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true)) {
 							item.ParentWorkspace.ReloadItem (m, item);
+							ReattachDocumentProjects (closedDocs);
 						}
 					}
 
@@ -849,10 +871,13 @@ namespace MonoDevelop.Ide.Gui
 					projects = ((SolutionFolder)entry).GetAllProjects ();
 				}
 				
-				if (AllowReload (projects)) {
+				IEnumerable<string> closedDocs;
+				
+				if (AllowReload (projects, out closedDocs)) {
 					using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
 						// Root folders never need to reload
 						entry.ParentFolder.ReloadItem (m, entry);
+						ReattachDocumentProjects (closedDocs);
 					}
 					return;
 				} else
@@ -870,6 +895,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool AllowReload (IEnumerable projects)
 		{
+			IEnumerable<string> closedDocs;
+			return AllowReload (projects, out closedDocs);
+		}
+		
+		bool AllowReload (IEnumerable projects, out IEnumerable<string> closedDocs)
+		{
+			closedDocs = null;
+			
 			if (projects == null)
 				return true;
 			
@@ -881,13 +914,76 @@ namespace MonoDevelop.Ide.Gui
 			if (docs.Count == 0)
 				return true;
 			
-			if (!MessageService.Confirm (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? All project files will be closed.", docs[0].Project.Name), AlertButton.Reload))
-				return false;
+			// Find a common project reload capability
 			
+			bool hasUnsaved = false;
+			bool hasNoFiles = false;
+			ProjectReloadCapability prc = ProjectReloadCapability.Full;
 			foreach (Document doc in docs) {
-				if (!doc.Close ())
+				if (doc.IsDirty)
+					hasUnsaved = true;
+				if (!doc.IsFile)
+					hasNoFiles = true;
+				ISupportsProjectReload pr = doc.GetContent<ISupportsProjectReload> ();
+				if (pr != null) {
+					ProjectReloadCapability c = pr.ProjectReloadCapability;
+					if ((int) c < (int) prc)
+						prc = c;
+				}
+				else
+					prc = ProjectReloadCapability.None;
+			}
+
+			string msg = null;
+			
+			switch (prc) {
+				case ProjectReloadCapability.None:
+					if (hasNoFiles && hasUnsaved)
+						msg = GettextCatalog.GetString ("WARNING: Some documents may need to be closed, and unsaved data will be lost. You will be asked to save the unsaved documents.");
+					else if (hasNoFiles)
+						msg = GettextCatalog.GetString ("WARNING: Some documents may need to be reloaded or closed, and unsaved data will be lost. You will be asked to save the unsaved documents.");
+					else if (hasUnsaved)
+						msg = GettextCatalog.GetString ("WARNING: Some files may need to be reloaded, and unsaved data will be lost. You will be asked to save the unsaved files.");
+					else
+						goto case ProjectReloadCapability.UnsavedData;
+					break;
+					
+				case ProjectReloadCapability.UnsavedData:
+					msg = GettextCatalog.GetString ("Some files may need to be reloaded, and editing status for those files (such as the undo queue) will be lost.");
+					break;
+			}
+			if (msg != null) {
+				if (!MessageService.Confirm (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it?", docs[0].Project.Name), msg, AlertButton.Reload))
 					return false;
 			}
+			
+			List<string> closed = new List<string> ();
+			
+			foreach (Document doc in docs) {
+				if (doc.IsDirty)
+					hasUnsaved = true;
+				ISupportsProjectReload pr = doc.GetContent<ISupportsProjectReload> ();
+				if (pr != null)
+					pr.Update (null);
+				else {
+					FilePath file = doc.IsFile ? doc.FileName : FilePath.Null;
+					EventHandler saved = delegate {
+						if (doc.IsFile)
+							file = doc.FileName;
+					};
+					doc.Saved += saved;
+					try {
+						if (!doc.Close ())
+							return false;
+						else if (!file.IsNullOrEmpty && File.Exists (file))
+							closed.Add (file);
+					} finally {
+						doc.Saved -= saved;
+					}
+				}
+			}
+			closedDocs = closed;
+
 			return true;
 		}
 		

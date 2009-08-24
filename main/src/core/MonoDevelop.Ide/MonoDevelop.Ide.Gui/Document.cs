@@ -489,6 +489,28 @@ namespace MonoDevelop.Ide.Gui
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
 		}
 		
+		internal void SetProject (Project project)
+		{
+			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
+			if (editor != null)
+				editor.TextChanged -= OnDocumentChanged;
+			while (editorExtension != null) {
+				try {
+					editorExtension.Dispose ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
+				}
+				editorExtension = editorExtension.Next as TextEditorExtension;
+			}
+			editorExtension = null;
+			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
+			if (pr != null) {
+				Window.ViewContent.Project = project;
+				pr.Update (project);
+			}
+			OnDocumentAttached ();
+		}
+		
 		/// <summary>
 		/// This method can take some time to finish. It's not threaded
 		/// </summary>

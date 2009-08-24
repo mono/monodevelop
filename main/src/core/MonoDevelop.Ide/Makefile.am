@@ -176,6 +176,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IPrintable.cs \
 	MonoDevelop.Ide.Gui.Content/ISmartIndenter.cs \
 	MonoDevelop.Ide.Gui.Content/ISplittable.cs \
+	MonoDevelop.Ide.Gui.Content/ISupportsProjectReload.cs \
 	MonoDevelop.Ide.Gui.Content/ITextBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/ITextEditorResolver.cs \
 	MonoDevelop.Ide.Gui.Content/IUndoHandler.cs \

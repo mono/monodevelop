@@ -572,6 +572,7 @@
     <Compile Include="MonoDevelop.Ide.Tasks\TaskStore.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AssemblyFoldersPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Content\ISupportsProjectReload.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

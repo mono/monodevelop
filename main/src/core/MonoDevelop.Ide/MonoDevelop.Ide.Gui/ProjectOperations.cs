@@ -306,6 +306,10 @@ namespace MonoDevelop.Ide.Gui
 					Save (itemContainer);
 				return;
 			}
+			
+			if (!AllowSave (entry))
+				return;
+			
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
 				entry.Save (monitor);
@@ -323,6 +327,9 @@ namespace MonoDevelop.Ide.Gui
 				if (!SelectValidFileFormat (item))
 					return;
 			}
+			
+			if (!AllowSave (item))
+				return;
 			
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
@@ -378,7 +385,8 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				monitor.BeginTask (null, count);
 				foreach (IWorkspaceFileObject item in items) {
-					item.Save (monitor);
+					if (AllowSave (item))
+						item.Save (monitor);
 					monitor.Step (1);
 				}
 				monitor.EndTask ();
@@ -404,6 +412,9 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 			
+			if (!AllowSave (item))
+				return;
+			
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
 				item.Save (monitor);
@@ -413,6 +424,29 @@ namespace MonoDevelop.Ide.Gui
 			} finally {
 				monitor.Dispose ();
 			}
+		}
+		
+		bool AllowSave (IWorkspaceFileObject item)
+		{
+			if (HasChanged (item))
+				return MessageService.Confirm (
+				    GettextCatalog.GetString ("Some project files have been changed from outside MonoDevelop. Do you want to overwrite them?"),
+				    GettextCatalog.GetString ("Changes done in those files will be overwritten by MonoDevelop."),
+				    AlertButton.OverwriteFile);
+			else
+				return true;
+		}
+		
+		bool HasChanged (IWorkspaceFileObject item)
+		{
+			if (item.ItemFilesChanged)
+				return true;
+			if (item is WorkspaceItem) {
+				foreach (SolutionEntityItem eitem in ((WorkspaceItem)item).GetAllSolutionItems<SolutionEntityItem> ())
+					if (eitem.ItemFilesChanged)
+						return true;
+			}
+			return false;
 		}
 
 		IWorkspaceFileObject GetContainer (IWorkspaceFileObject item)
