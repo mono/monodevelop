@@ -1,5 +1,10 @@
 2009-08-24  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Parser/ParserDatabase.cs: No need for MaxValue.  OS X (and
+	probably 32-bit in general) don't seem to like this.
+
+2009-08-24  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.csproj:
 	* PyBinding/PythonSite.cs:
 	* PyBinding/PythonConfiguration.cs:
