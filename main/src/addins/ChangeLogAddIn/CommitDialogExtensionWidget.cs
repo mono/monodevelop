@@ -120,6 +120,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				pathLabel.Text = GettextCatalog.GetString ("Click on the 'Details' button for more info.");
 			} else if (entries.Count == 1) {
 				msgLabel.Markup = warning + "<b>" + GettextCatalog.GetString ("The following ChangeLog file will be updated:") + "</b>";
+				pathLabel.Ellipsize = Pango.EllipsizeMode.Start;
 				foreach (ChangeLogEntry e in entries.Values)
 					pathLabel.Text = e.File;
 			} else {
