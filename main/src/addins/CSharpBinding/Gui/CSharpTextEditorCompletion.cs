@@ -392,12 +392,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 						
 						if (evt == null)
 							return null;
-						
-						IType delegateType = dom.SearchType (new SearchTypeRequest (resolver.Unit, evt.ReturnType, resolver.CallingType));
+						IType delegateType = dom.GetType (evt.ReturnType);
 						if (delegateType == null || delegateType.ClassType != ClassType.Delegate)
 							return null;
 						CompletionDataList completionList = new ProjectDomCompletionDataList ();
 						CompletionDataCollector cdc = new CompletionDataCollector (Document.CompilationUnit, location);
+						
 						IType declaringType = resolver.CallingType;
 						if (Document.LastErrorFreeParsedDocument != null) {
 							declaringType = Document.LastErrorFreeParsedDocument.CompilationUnit.GetType (declaringType.FullName, declaringType.TypeParameters.Count);

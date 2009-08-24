@@ -1,5 +1,12 @@
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 531035 -
+	  Automcompleted delegate callback generation for TEventArgs
+	  could be better".
+
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/FindMemberAstVisitor.cs: Fixed "Bug 528329 - Find
 	  class references returns incorrect reference".
 
