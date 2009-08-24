@@ -39,7 +39,7 @@ namespace MonoDevelop.CodeGeneration
 {
 	public abstract class AbstractGenerateAction : IGenerateAction
 	{
-		TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
+		TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(IBaseMember));
 		CodeGenerationOptions options;
 		
 		public CodeGenerationOptions Options {
@@ -77,7 +77,7 @@ namespace MonoDevelop.CodeGeneration
 
 			treeView.AppendColumn (column);
 			Ambience ambience = AmbienceService.GetAmbienceForFile (options.Document.FileName);
-			foreach (IMember member in GetValidMembers ()) {
+			foreach (IBaseMember member in GetValidMembers ()) {
 				Store.AppendValues (false, ImageService.GetPixbuf (member.StockIcon, IconSize.Menu), ambience.GetString (member, OutputFlags.ClassBrowserEntries), member);
 			}
 			
@@ -93,27 +93,27 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 		
-		protected abstract IEnumerable<IMember> GetValidMembers ();
+		protected abstract IEnumerable<IBaseMember> GetValidMembers ();
 		
 		public bool IsValid ()
 		{
 			return GetValidMembers ().Any ();
 		}
 		
-		protected abstract IEnumerable<INode> GenerateCode (List<IMember> includedMembers);
+		protected abstract IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers);
 		
 		public void GenerateCode ()
 		{
 			TreeIter iter;
 			if (!store.GetIterFirst (out iter))
 				return;
-			List<IMember> includedMembers = new List<IMember> ();
+			List<IBaseMember> includedMembers = new List<IBaseMember> ();
 			do {
 				bool include = (bool)store.GetValue (iter, 0);
 				if (include)
-					includedMembers.Add ((IMember)store.GetValue (iter, 3));
+					includedMembers.Add ((IBaseMember)store.GetValue (iter, 3));
 			} while (store.IterNext (ref iter));
-			
+
 			INRefactoryASTProvider astProvider = options.GetASTProvider ();
 			if (astProvider == null)
 				return;
@@ -124,8 +124,10 @@ namespace MonoDevelop.CodeGeneration
 					output.AppendLine ();
 				output.Append (astProvider.OutputNode (options.Dom, node, RefactoringOptions.GetIndent (options.Document, options.EnclosingType) + "\t"));
 			}
-			
-			options.Document.TextEditor.InsertText (options.Document.TextEditor.GetPositionFromLineColumn (options.Document.TextEditor.CursorLine, 1), output.ToString ());
+			int column = 1;
+			if (!Char.IsWhiteSpace (output[0]))
+				column = options.Document.TextEditor.CursorColumn;
+			options.Document.TextEditor.InsertText (options.Document.TextEditor.GetPositionFromLineColumn (options.Document.TextEditor.CursorLine, column), output.ToString ());
 		}
 	}
 }

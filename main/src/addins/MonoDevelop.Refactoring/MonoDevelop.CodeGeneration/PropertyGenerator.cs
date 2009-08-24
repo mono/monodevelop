@@ -86,7 +86,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IMember> GetValidMembers ()
+			protected override IEnumerable<IBaseMember> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
@@ -104,7 +104,7 @@ namespace MonoDevelop.CodeGeneration
 				return char.ToUpper (member.Name[0]) + member.Name.Substring (1);
 			}
 			
-			protected override IEnumerable<INode> GenerateCode (List<IMember> includedMembers)
+			protected override IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers)
 			{
 				foreach (IField field in includedMembers) {
 					PropertyDeclaration propertyDeclaration = new PropertyDeclaration (ICSharpCode.NRefactory.Ast.Modifiers.Public, null, CreatePropertyName (field), null);

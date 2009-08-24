@@ -81,7 +81,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IMember> GetValidMembers ()
+			protected override IEnumerable<IBaseMember> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
@@ -107,7 +107,7 @@ namespace MonoDevelop.CodeGeneration
 				return member.Name;
 			}
 			
-			protected override IEnumerable<INode> GenerateCode (List<IMember> includedMembers)
+			protected override IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers)
 			{
 				List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression> ();
 				foreach (IMember member in includedMembers) {

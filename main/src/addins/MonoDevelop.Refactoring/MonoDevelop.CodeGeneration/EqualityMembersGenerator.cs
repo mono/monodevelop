@@ -80,7 +80,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IMember> GetValidMembers ()
+			protected override IEnumerable<IBaseMember> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
@@ -98,7 +98,7 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			protected override IEnumerable<INode> GenerateCode (List<IMember> includedMembers)
+			protected override IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers)
 			{
 				// Genereate Equals
 				MethodDeclaration methodDeclaration = new MethodDeclaration ();

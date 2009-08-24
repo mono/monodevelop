@@ -1,5 +1,19 @@
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CodeGeneration/ToStringGenerator.cs:
+	* MonoDevelop.CodeGeneration/PropertyGenerator.cs:
+	* MonoDevelop.CodeGeneration/WriteLineGenerator.cs:
+	* MonoDevelop.CodeGeneration/CodeGenerationOptions.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs:
+	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs:
+	* MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs:
+	  Fixed "Bug 533330 - Code generator ignores virtual space
+	  when inserting code in body".
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:

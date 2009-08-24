@@ -35,6 +35,9 @@ using ICSharpCode.NRefactory.Ast;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
+using MonoDevelop.Refactoring.ExtractMethod;
+using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -76,7 +79,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IMember> GetValidMembers ()
+			protected override IEnumerable<IBaseMember> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember == null)
 					yield break;
@@ -92,13 +95,36 @@ namespace MonoDevelop.CodeGeneration
 					if (property.HasGet)
 						yield return property;
 				}
+			//	MonoDevelop.Projects.Dom.Parser.IResolver resolver = Options.GetResolver ();
+				IMethod method = Options.EnclosingMember as IMethod;
+				if (method != null) {
+					foreach (IParameter param in method.Parameters)
+						yield return param;
+				}
+				
+				IProperty p = Options.EnclosingMember as IProperty;
+				if (p != null) {
+					foreach (IParameter param in p.Parameters)
+						yield return param;
+				}
+				LookupTableVisitor visitor = new LookupTableVisitor (ICSharpCode.NRefactory.SupportedLanguage.CSharp);
+				Location location = new Location (Options.Document.TextEditor.CursorColumn, Options.Document.TextEditor.CursorLine);
+				INRefactoryASTProvider provider = Options.GetASTProvider ();
+				var result = provider.ParseFile (Options.Document.TextEditor.Text);
+				result.AcceptVisitor (visitor, null);
+				foreach (var list in visitor.Variables.Values) {
+					foreach (LocalLookupVariable varDescr in list) {
+						if (varDescr.StartPos <= location && location <= varDescr.EndPos)
+							yield return new LocalVariable (Options.EnclosingMember, varDescr.Name, varDescr.TypeRef.ConvertToReturnType (), DomRegion.Empty);
+					}
+				}
 			}
 			
-			protected override IEnumerable<INode> GenerateCode (List<IMember> includedMembers)
+			protected override IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers)
 			{
 				StringBuilder format = new StringBuilder ();
 				int i = 0;
-				foreach (IMember member in includedMembers) {
+				foreach (IBaseMember member in includedMembers) {
 					if (i > 0)
 						format.Append (", ");
 					format.Append (member.Name);
@@ -109,10 +135,11 @@ namespace MonoDevelop.CodeGeneration
 
 				InvocationExpression invocationExpression = new InvocationExpression (new MemberReferenceExpression (new IdentifierExpression ("Console"), "WriteLine"));
 				invocationExpression.Arguments.Add (new PrimitiveExpression (format.ToString ()));
-				foreach (IMember member in includedMembers) {
+				foreach (IBaseMember member in includedMembers) {
 					invocationExpression.Arguments.Add (new IdentifierExpression (member.Name));
 				}
-				yield return invocationExpression;
+				
+				yield return new ExpressionStatement (invocationExpression);
 			}
 		}
 	}

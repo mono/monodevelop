@@ -81,7 +81,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IMember> GetValidMembers ()
+			protected override IEnumerable<IBaseMember> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
@@ -124,7 +124,8 @@ namespace MonoDevelop.CodeGeneration
 			}
 			
 			static readonly INode throwNotImplemented = new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null));
-			protected override IEnumerable<INode> GenerateCode (List<IMember> includedMembers)
+			
+			protected override IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers)
 			{
 				foreach (IMember member in includedMembers) {
 					ICSharpCode.NRefactory.Ast.Modifiers modifier = (((ICSharpCode.NRefactory.Ast.Modifiers)member.Modifiers) & ~(ICSharpCode.NRefactory.Ast.Modifiers.Abstract | ICSharpCode.NRefactory.Ast.Modifiers.Virtual));

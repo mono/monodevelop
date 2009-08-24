@@ -66,6 +66,10 @@ namespace MonoDevelop.CodeGeneration
 			return RefactoringService.GetASTProvider (MimeType);
 		}
 		
+		public MonoDevelop.Projects.Dom.Parser.IParser GetParser ()
+		{
+			return ProjectDomService.GetParser (Document.FileName, MimeType);
+		}
 		
 		public ICSharpCode.NRefactory.Ast.TypeReference MatchNamespaceImports (ICSharpCode.NRefactory.Ast.TypeReference typeReference)
 		{
@@ -83,6 +87,14 @@ namespace MonoDevelop.CodeGeneration
 			if (!string.IsNullOrEmpty (prefix))
 				typeReference.Type = typeReference.Type.Substring (prefix.Length + 1);
 			return typeReference;
+		}
+		
+		public IResolver GetResolver ()
+		{
+			MonoDevelop.Projects.Dom.Parser.IParser domParser = GetParser ();
+			if (domParser == null)
+				return null;
+			return domParser.CreateResolver (Dom, Document, Document.FileName);
 		}
 		
 		public static CodeGenerationOptions CreateCodeGenerationOptions (Document document)
