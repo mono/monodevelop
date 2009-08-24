@@ -70,26 +70,26 @@ namespace MonoDevelop.Projects.Gui.Completion
 			base.OnDestroyed ();
 		}
 
-		public void PostProcessKeyEvent (KeyAction ka)
+		public void PostProcessKeyEvent (KeyActions ka)
 		{
-			if ((ka & KeyAction.Complete) != 0) 
+			if ((ka & KeyActions.Complete) != 0) 
 				UpdateWord ();
 		}
 		
-		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyAction ka)
+		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions ka)
 		{
 			ka = ProcessKey (key, keyChar, modifier);
 
-			if ((ka & KeyAction.Complete) != 0)
+			if ((ka & KeyActions.Complete) != 0)
 				UpdateWord ();
-			
-			if ((ka & KeyAction.CloseWindow) != 0)
+
+			if ((ka & KeyActions.CloseWindow) != 0)
 				CompletionWindowManager.HideWindow ();
 
-			if ((ka & KeyAction.Ignore) != 0)
+			if ((ka & KeyActions.Ignore) != 0)
 				return true;
 
-			if ((ka & KeyAction.Process) != 0) {
+			if ((ka & KeyActions.Process) != 0) {
 				if (key == Gdk.Key.Left || key == Gdk.Key.Right) {
 					// Close if there's a modifier active EXCEPT lock keys and Modifiers
 					// Makes an exception for Mod1Mask (usually alt), shift, control, meta and super
@@ -102,7 +102,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 					if (declarationviewwindow.Multiple) {
 						if (key == Gdk.Key.Left)
-							declarationviewwindow.OverloadLeft (); else
+							declarationviewwindow.OverloadLeft ();
+						else
 							declarationviewwindow.OverloadRight ();
 						UpdateDeclarationView ();
 					}
@@ -167,7 +168,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 					Show ();
 					ResetSizes ();
 					if (List.Selection > (int)(scrollbar.Adjustment.Value + scrollbar.Adjustment.PageSize)) {
-						scrollbar.Adjustment.Value = List.Page = List.Selection;
+//						scrollbar.Adjustment.Value = List.Selection;
+						List.UpdatePage ();
 					}
 				}
 				this.AutoSelect = list.AutoSelect;

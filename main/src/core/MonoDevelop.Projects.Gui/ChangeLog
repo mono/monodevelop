@@ -1,3 +1,14 @@
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	  Fixed "Bug 533672 - Code completion window does not show the
+	  selected row in some cases".
+
 2009-08-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui/ProjectFileEntry.cs: Tweak spacing.
