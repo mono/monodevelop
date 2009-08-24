@@ -668,23 +668,38 @@ namespace MonoDevelop.Projects.Dom
 			{
 				typeTable.Add (name, type);
 			}
-			
-			public override IDomVisitable Visit (IReturnType type, IType typeToInstantiate)
+			IType currentType = null;
+			public override IDomVisitable Visit (IType type, IType data)
 			{
-				DomReturnType copyFrom = (DomReturnType) type;
-				
+				currentType = type;
+				return base.Visit (type, data);
+			}
+			
+			IReturnType LookupReturnType (string decoratedName, IReturnType type, IType typeToInstantiate) 
+			{
 				IReturnType res;
-				if (typeTable.TryGetValue (copyFrom.DecoratedFullName, out res)) {
+				if (typeTable.TryGetValue (decoratedName, out res)) {
 					if (type.GenericArguments.Count == 0) {
-						if (type.ArrayDimensions == 0 && type.PointerNestingLevel == 0)
+						if (type.ArrayDimensions == 0 && type.PointerNestingLevel == 0) {
 							return res;
+						}
 						DomReturnType copy = (DomReturnType)base.Visit (res, typeToInstantiate);
 						copy.PointerNestingLevel = type.PointerNestingLevel;
 						copy.SetDimensions (type.GetDimensions ());
 						return copy;
 					}
 				}
-				return base.Visit (type, typeToInstantiate);
+				return null;
+			}
+			
+			public override IDomVisitable Visit (IReturnType type, IType typeToInstantiate)
+			{
+				DomReturnType copyFrom = (DomReturnType) type;
+				string decoratedName = copyFrom.DecoratedFullName;
+				IReturnType result = LookupReturnType (decoratedName, type, typeToInstantiate);
+				if (result == null && currentType != null)
+					result = LookupReturnType (currentType.DecoratedFullName + "." + decoratedName, type, typeToInstantiate);
+				return result ?? base.Visit (type, typeToInstantiate);
 			}
 			
 			protected override DomType CreateInstance (IType type, IType typeToInstantiate)
