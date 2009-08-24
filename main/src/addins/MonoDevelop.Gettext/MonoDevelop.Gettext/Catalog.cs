@@ -358,10 +358,13 @@ namespace MonoDevelop.Gettext
 		
 		static bool CanEncodeToCharset (string charset)
 		{
-			foreach (EncodingInfo info in Encoding.GetEncodings ())
-			{
-				if (info.Name.ToLower () == charset.ToLower ())
-					return true;
+			foreach (EncodingInfo info in Encoding.GetEncodings ()) {
+				try {
+					if (info.Name.ToLower () == charset.ToLower ())
+						return true;
+				} catch (Exception) {
+					// info.Name may fail.
+				}
 			}
 			return false;
 		}

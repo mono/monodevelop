@@ -1,5 +1,10 @@
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Gettext/Catalog.cs: Handled same bug in
+	  different method.
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Gettext/Catalog.cs: Handled possible exception
 	  (I think I've encountered a mono bug).
 
