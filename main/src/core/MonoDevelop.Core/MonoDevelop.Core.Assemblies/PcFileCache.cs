@@ -583,6 +583,7 @@ namespace Mono.PkgConfig
 		string name;
 		string version;
 		string description;
+		DateTime lastWriteTime;
 		
 		public string Name {
 			get { return name; }
@@ -625,7 +626,10 @@ namespace Mono.PkgConfig
 			get { return customData; }
 		}
 		
-		internal DateTime LastWriteTime { get; set; }
+		internal DateTime LastWriteTime {
+			get { return lastWriteTime; }
+			set { lastWriteTime = value; }
+		}
 		
 		internal bool HasCustomData {
 			get { return customData != null && customData.Count > 0; }

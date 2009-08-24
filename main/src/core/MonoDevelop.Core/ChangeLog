@@ -1,3 +1,8 @@
+2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Another fix to
+	  make it build with .net 2.0.
+
 2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Make it
