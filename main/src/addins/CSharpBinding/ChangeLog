@@ -1,5 +1,9 @@
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
+	* CSharpEnhancedCodeProvider.cs: Track API changes
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NewCSharpExpressionFinder.cs: It's now possible to
 	  determine the parent expression contexts.
 
