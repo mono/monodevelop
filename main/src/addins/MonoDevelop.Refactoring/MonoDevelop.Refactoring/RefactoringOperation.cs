@@ -61,8 +61,11 @@ namespace MonoDevelop.Refactoring
 			return false;
 		}
 		
-		public abstract List<Change> PerformChanges (RefactoringOptions options, object properties);
-		
+		public virtual List<Change> PerformChanges (RefactoringOptions options, object properties)
+		{
+			throw new System.NotImplementedException ();
+		}
+
 		public virtual void Run (RefactoringOptions options)
 		{
 			List<Change> changes = PerformChanges (options, null);

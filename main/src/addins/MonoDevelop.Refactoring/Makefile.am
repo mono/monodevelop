@@ -53,6 +53,8 @@ FILES =  \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs \
 	MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs \
+	MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs \
+	MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs \
 	MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs \
 	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantDialog.cs \
 	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs \

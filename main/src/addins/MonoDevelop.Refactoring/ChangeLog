@@ -1,3 +1,15 @@
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring.ImplementInterface:
+	* MonoDevelop.Refactoring/RefactoringOperation.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs:
+	  Added 'Bug 325224 - Better placing of 'Implement Interface'
+	  command'.
+
 2009-08-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs: Fix NRE

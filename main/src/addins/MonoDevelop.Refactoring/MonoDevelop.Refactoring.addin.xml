@@ -52,6 +52,8 @@
 		<Class id="CreateStruct" class = "MonoDevelop.Refactoring.CreateClass.CreateStructCodeGenerator" />
 		<Class id="MoveTypeToFile" class = "MonoDevelop.Refactoring.MoveTypeToFile.MoveTypeToFileRefactoring" />
 		<Class id="IntroduceFormatItem" class = "MonoDevelop.Refactoring.IntroduceFormat.IntroduceFormatItemRefactoring" />
+		<Class id="ImplementImplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementImplicit" />
+		<Class id="ImplementExplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementExplicit" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">

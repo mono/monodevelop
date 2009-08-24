@@ -96,6 +96,8 @@
     <Compile Include="MonoDevelop.Refactoring.RefactorImports\RefactorImportsHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring.RefactorImports\FindTypeReferencesVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring.RefactorImports\SortImportsRefactoring.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementImplicit.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementExplicit.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -109,6 +111,7 @@
     <Folder Include="MonoDevelop.Refactoring.IntroduceFormatItem\" />
     <Folder Include="MonoDevelop.CodeGeneration\" />
     <Folder Include="MonoDevelop.Refactoring.RefactorImports\" />
+    <Folder Include="MonoDevelop.Refactoring.ImplementInterface\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />
