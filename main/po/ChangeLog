@@ -1,3 +1,8 @@
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
+	* de.po: Fixed "Bug 502562 - some details in german
+	  translation".
+
 2009-07-17  Mike Krüger  <mkrueger@novell.com>
 
 	* de.po: Worked on german translation.

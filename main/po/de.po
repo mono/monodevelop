@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-07-17 19:40:32+0200\n"
-"PO-Revision-Date: 2009-07-17 19:44:06+0200\n"
+"PO-Revision-Date: 2009-08-24 07:37:04+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -2088,7 +2088,7 @@ msgstr "Codeausschnitte"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1265
 msgid "Formatting"
-msgstr "Formatiere"
+msgstr "Formatierung"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1268
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:71
@@ -10571,23 +10571,23 @@ msgstr "<b>Einrückung</b>"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.FormattingPanelWidget.cs:81
 msgid "Indent case labels"
-msgstr "Gedachte Etiketten"
+msgstr "Case-Labels einrücken"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.FormattingPanelWidget.cs:103
 msgid "<b>Label Indentation</b>"
-msgstr "<b>Marken-Einrückung</b>"
+msgstr "<b>Label-Einrückung</b>"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.FormattingPanelWidget.cs:127
 msgid "Place goto labels in leftmost column"
-msgstr "Gehe zuEtiketten in der linken Spalte"
+msgstr "Goto-Labels am linken Rand platzieren"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.FormattingPanelWidget.cs:140
 msgid "Place goto labels one indent less than current"
-msgstr "Gehe zu Etiketten einen Bindestrichweniger als das aktuelle"
+msgstr "Goto-Labels einmal weniger einrücken als aktuell"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.FormattingPanelWidget.cs:152
 msgid "Indent goto labels normally"
-msgstr "Bindestrich gehe normalerweise zu den Etiketten"
+msgstr "Goto-Labels normal einrücken"
 
 #: ../src/addins/CSharpBinding/gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs:211
 msgid "<b>Language Options</b>"
@@ -10608,7 +10608,7 @@ msgstr "Ungültige Codepage-Nummer."
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:416
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:424
 msgid "Creates anonymous delegate."
-msgstr "Erzeugt einen anonymen Delegaten."
+msgstr "Erzeugt ein anonymes Delegate."
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1726
 msgid "Set text in a code-like font"
@@ -10624,7 +10624,7 @@ msgstr "Markiert ein Beispiel"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1729
 msgid "Identifies the exceptions a method can throw"
-msgstr "Erläutert eine mögliche Ausnahme die geworfen werden kann"
+msgstr "Erläutert die möglichen Ausnahmen, die geworfen werden können"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1730
 msgid "Includes comments from a external file"
@@ -16301,10 +16301,8 @@ msgstr "_Lokale Variable deklarieren"
 #~ msgstr "Ab_wärts"
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
-
 #~ msgid "Question"
 #~ msgstr "Frage"
-
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
 
