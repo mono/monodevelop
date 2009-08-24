@@ -1,3 +1,13 @@
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project.cs:
+	* UndoQueue.cs:
+	* WidgetDesigner.cs:
+	* ProjectBackend.cs:
+	* WidgetEditSession.cs: Added support for saving and restoring
+	  the status of the designer, including the undo queue. This
+	  allows implenting ISupportsProjectReload.
+
 2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Metacity/Preview.cs: Remove debug code.

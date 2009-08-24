@@ -500,7 +500,8 @@ namespace Stetic {
 			}
 			
 			// Remove undo annotations from the xml document
-			CleanUndoData (doc.DocumentElement);
+			if (!includeUndoInfo)
+				CleanUndoData (doc.DocumentElement);
 			
 			return doc;
 		}
@@ -682,27 +683,35 @@ namespace Stetic {
 		{
 			if (loading) return;
 			
-			if (tempDoc != null) {
-				if (frontend != null)
-					frontend.NotifyProjectReloading ();
-				if (ProjectReloading != null)
-					ProjectReloading (this, EventArgs.Empty);
-				
-				ProjectIconFactory icf = iconFactory;
-				
-				Read (tempDoc);
+			if (tempDoc != null)
+				LoadStatus (tempDoc);
+		}
+		
+		public object SaveStatus ()
+		{
+			return Write (true);
+		}
+		
+		public void LoadStatus (object ob)
+		{
+			if (frontend != null)
+				frontend.NotifyProjectReloading ();
+			if (ProjectReloading != null)
+				ProjectReloading (this, EventArgs.Empty);
+			
+			ProjectIconFactory icf = iconFactory;
+			
+			Read ((XmlDocument)ob);
 
-				// Reuse the same icon factory, since a registry change has no effect to it
-				// and it may be inherited from another project
-				iconFactory = icf;
-				
-				tempDoc = null;
-				if (frontend != null)
-					frontend.NotifyProjectReloaded ();
-				if (ProjectReloaded != null)
-					ProjectReloaded (this, EventArgs.Empty);
-				NotifyComponentTypesChanged ();
-			}
+			// Reuse the same icon factory, since a registry change has no effect to it
+			// and it may be inherited from another project
+			iconFactory = icf;
+			
+			if (frontend != null)
+				frontend.NotifyProjectReloaded ();
+			if (ProjectReloaded != null)
+				ProjectReloaded (this, EventArgs.Empty);
+			NotifyComponentTypesChanged ();
 		}
 		
 		public void Reload ()

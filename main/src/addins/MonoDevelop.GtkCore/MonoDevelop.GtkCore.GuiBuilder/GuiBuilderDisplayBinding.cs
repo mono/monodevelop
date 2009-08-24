@@ -67,7 +67,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return view;
 		}
 		
-		GuiBuilderWindow GetWindow (string file)
+		internal static GuiBuilderWindow GetWindow (string file)
 		{
 			if (!IdeApp.Workspace.IsOpen)
 				return null;

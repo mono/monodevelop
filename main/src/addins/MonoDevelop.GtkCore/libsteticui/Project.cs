@@ -233,6 +233,16 @@ namespace Stetic
 			ProjectBackend.ExportGlade (fileName);
 		}
 		
+		public object SaveStatus ()
+		{
+			return ProjectBackend.SaveStatus ();
+		}
+		
+		public void LoadStatus (object status)
+		{
+			ProjectBackend.LoadStatus (status);
+		}
+		
 		public bool Modified {
 			get {
 				if (backend != null)

@@ -129,6 +129,16 @@ namespace Stetic
 			set { editedProject.ImportFileCallback = value; }
 		}
 		
+		public object SaveStatus ()
+		{
+			return session.SaveState ();
+		}
+		
+		public void LoadStatus (object ob)
+		{
+			session.RestoreState (ob);
+		}
+		
 		void CreateSession ()
 		{
 			try {

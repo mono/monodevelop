@@ -49,29 +49,69 @@ using Gdk;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderView : CombinedDesignView, IToolboxConsumer, MonoDevelop.DesignerSupport.IOutlinedDocument
+	public class GuiBuilderView : CombinedDesignView, IToolboxConsumer, MonoDevelop.DesignerSupport.IOutlinedDocument, ISupportsProjectReload
 	{
 		Stetic.WidgetDesigner designer;
 		Stetic.ActionGroupDesigner actionsBox;
 		GuiBuilderWindow window;
 		
-		Gtk.EventBox designerPage;
-		VBox actionsPage;
+		DesignerPage designerPage;
+		ActionGroupPage actionsPage;
 		
-		bool actionsButtonVisible;
 		
 		CodeBinder codeBinder;
 		GuiBuilderProject gproject;
 		string rootName;
+		object designerStatus;
 		
 		public GuiBuilderView (IViewContent content, GuiBuilderWindow window): base (content)
 		{
 			rootName = window.Name;
+			
+			designerPage = new DesignerPage ();
+			designerPage.Show ();
+			AddButton (GettextCatalog.GetString ("Designer"), designerPage);
+			
+			actionsPage = new ActionGroupPage ();
+			actionsPage.Show ();
+			
+			AttachWindow (window);
+		}
+		
+		void AttachWindow (GuiBuilderWindow window)
+		{
 			gproject = window.Project;
 			GtkDesignInfo info = GtkDesignInfo.FromProject (gproject.Project);
 			gproject.SteticProject.ImagesRootPath = FileService.AbsoluteToRelativePath (info.GtkGuiFolder, gproject.Project.BaseDirectory);
 			gproject.UpdateLibraries ();
 			LoadDesigner ();
+		}
+		
+		ProjectReloadCapability ISupportsProjectReload.ProjectReloadCapability {
+			get {
+				return ProjectReloadCapability.Full;
+			}
+		}
+		
+		void ISupportsProjectReload.Update (Project project)
+		{
+			if (gproject != null && gproject.Project == project)
+				return;
+			
+			if (designer != null)
+				designerStatus = designer.SaveStatus ();
+			
+			CloseDesigner ();
+			CloseProject ();
+			if (project != null) {
+				GuiBuilderWindow w = GuiBuilderDisplayBinding.GetWindow (this.ContentName);
+				if (w != null) {
+					AttachWindow (w);
+					if (designerStatus != null)
+						designer.LoadStatus (designerStatus);
+					designerStatus = null;
+				}
+			}
 		}
 		
 		void LoadDesigner ()
@@ -85,9 +125,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject.Unloaded += OnDisposeProject;
 			
 			designer = gproject.SteticProject.CreateWidgetDesigner (window.RootWidget, false);
+			
+			// Designer page
+			designerPage.ClearChild ();
+			designerPage.Add (designer);
+			
 			if (designer.RootComponent == null) {
 				// Something went wrong while creating the designer. Show it, but don't do aything else.
-				AddButton (GettextCatalog.GetString ("Designer"), designer);
 				designer.ShowAll ();
 				return;
 			}
@@ -106,28 +150,22 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.ComponentTypesChanged += OnComponentTypesChanged;
 			designer.ImportFileCallback = ImportFile;
 			
-			// Designer page
-			designerPage = new DesignerPage (designer);
-			designerPage.Show ();
-			designerPage.Add (designer);
-
-			AddButton (GettextCatalog.GetString ("Designer"), designerPage);
-			
 			// Actions designer
 			actionsBox = designer.CreateActionGroupDesigner ();
 			actionsBox.AllowActionBinding = !gproject.Project.UsePartialTypes;
 			actionsBox.BindField += new EventHandler (OnBindActionField);
 			actionsBox.ModifiedChanged += new EventHandler (OnActionshanged);
 			
-			actionsPage = new ActionGroupPage (actionsBox);
+			actionsPage.ClearChild ();
 			actionsPage.PackStart (actionsBox, true, true, 0);
 			actionsPage.ShowAll ();
 			
 			if (actionsBox.HasData) {
-				AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
-				actionsButtonVisible = true;
-			} else
-				actionsButtonVisible = false;
+				if (!HasPage (actionsPage))
+					AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
+			} else {
+				RemoveButton (actionsPage);
+			}
 			
 			designer.ShowAll ();
 			GuiBuilderService.SteticApp.ActiveDesigner = designer;
@@ -139,9 +177,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnDisposeProject (object s, EventArgs args)
 		{
-			if (actionsButtonVisible)
-				RemoveButton (2);
-			RemoveButton (1);
 			CloseDesigner ();
 		}
 		
@@ -159,6 +194,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (designer == null)
 				return;
+			
 			gproject.Unloaded -= OnDisposeProject;
 			designer.BindField -= OnBindWidgetField;
 			designer.ModifiedChanged -= OnWindowModifiedChanged;
@@ -169,27 +205,41 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.RootComponentChanged -= OnRootComponentChanged;
 			designer.ComponentTypesChanged -= OnComponentTypesChanged;
 			
-			if (designerPage != null)
-				designerPage = null;
-			
-			if (actionsPage != null) {
+			if (actionsBox != null) {
 				actionsBox.BindField -= OnBindActionField;
 				actionsBox.ModifiedChanged -= OnActionshanged;
-				actionsPage.Destroy ();
 				actionsBox = null;
-				actionsPage = null;
 			}
-			designer.Destroy ();
+
+			actionsPage.ClearChild ();
+			designerPage.ClearChild ();
+			
+			designerPage.Add (CreateDesignerNotAvailableWidget ());
+			actionsPage.Add (CreateDesignerNotAvailableWidget ());
+			
 			designer = null;
+			
 			gproject.Reloaded += OnReloadProject;
+		}
+		
+		void CloseProject ()
+		{
+			gproject.Reloaded -= OnReloadProject;
 		}
 		
 		public override void Dispose ()
 		{
 			CloseDesigner ();
-			gproject.Reloaded -= OnReloadProject;
+			CloseProject ();
 			codeBinder = null;
 			base.Dispose ();
+		}
+		
+		Gtk.Widget CreateDesignerNotAvailableWidget ()
+		{
+			Gtk.Label label = new Gtk.Label (GettextCatalog.GetString ("Designer not available"));
+			label.Show ();
+			return label;
 		}
 		
 		public override void ShowPage (int npage)
@@ -241,10 +291,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnActionshanged (object s, EventArgs args)
 		{
-			if (designer != null && !actionsButtonVisible && !ErrorMode) {
-				actionsButtonVisible = true;
+			if (designer != null && !HasPage (actionsPage) && !ErrorMode)
 				AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
-			}
 		}
 		
 		void OnWindowModifiedChanged (object s, EventArgs args)
@@ -452,11 +500,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class DesignerPage: Gtk.EventBox, ICustomPropertyPadProvider
 	{
-		Stetic.WidgetDesigner designer;
-		
-		public DesignerPage (Stetic.WidgetDesigner designer)
+		public DesignerPage ()
 		{
-			this.designer = designer;
 		}
 		
 		Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
@@ -468,76 +513,91 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 		
+		Stetic.WidgetDesigner Designer {
+			get {
+				return Child as Stetic.WidgetDesigner;
+			}
+		}
+		
+		public void ClearChild ()
+		{
+			if (Child != null) {
+				Gtk.Widget w = Child;
+				Remove (w);
+				w.Destroy ();
+			}
+		}
+		
 		[CommandHandler (EditCommands.Delete)]
 		protected void OnDelete ()
 		{
-			designer.DeleteSelection ();
+			Designer.DeleteSelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
 		protected void OnUpdateDelete (CommandInfo cinfo)
 		{
-			cinfo.Bypass = !designer.CanDeleteSelection;
+			cinfo.Bypass = Designer != null && !Designer.CanDeleteSelection;
 		}
 		
 		[CommandHandler (EditCommands.Copy)]
 		protected void OnCopy ()
 		{
-			designer.CopySelection ();
+			Designer.CopySelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Copy)]
 		protected void OnUpdateCopy (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.CanCopySelection;
+			cinfo.Enabled = Designer != null && Designer.CanCopySelection;
 		}
 		
 		[CommandHandler (EditCommands.Cut)]
 		protected void OnCut ()
 		{
-			designer.CutSelection ();
+			Designer.CutSelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Cut)]
 		protected void OnUpdateCut (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.CanCutSelection;
+			cinfo.Enabled = Designer != null && Designer.CanCutSelection;
 		}
 		
 		[CommandHandler (EditCommands.Paste)]
 		protected void OnPaste ()
 		{
-			designer.PasteToSelection ();
+			Designer.PasteToSelection ();
 		}
 		
 		[CommandHandler (EditCommands.Undo)]
 		protected void OnUndo ()
 		{
-			designer.UndoQueue.Undo ();
+			Designer.UndoQueue.Undo ();
 		}
 		
 		[CommandHandler (EditCommands.Redo)]
 		protected void OnRedo ()
 		{
-			designer.UndoQueue.Redo ();
+			Designer.UndoQueue.Redo ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Paste)]
 		protected void OnUpdatePaste (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.CanPasteToSelection;
+			cinfo.Enabled = Designer != null && Designer.CanPasteToSelection;
 		}
 		
 		[CommandUpdateHandler (EditCommands.Undo)]
 		protected void OnUpdateUndo (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.UndoQueue.CanUndo;
+			cinfo.Enabled = Designer != null && Designer.UndoQueue.CanUndo;
 		}
 		
 		[CommandUpdateHandler (EditCommands.Redo)]
 		protected void OnUpdateRedo (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.UndoQueue.CanRedo;
+			cinfo.Enabled = Designer != null && Designer.UndoQueue.CanRedo;
 		}
 	}
 }

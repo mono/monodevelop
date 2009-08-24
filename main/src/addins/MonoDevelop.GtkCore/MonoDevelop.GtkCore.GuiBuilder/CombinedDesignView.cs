@@ -117,6 +117,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return button;
 		}
 		
+		public bool HasPage (Gtk.Widget page)
+		{
+			return notebook.PageNum (page) != -1;
+		}
+		
+		public void RemoveButton (Gtk.Widget page)
+		{
+			int i = notebook.PageNum (page);
+			if (i != -1)
+				RemoveButton (i);
+		}
+		
 		public void RemoveButton (int npage)
 		{
 			if (npage >= toolbar.Children.Length)

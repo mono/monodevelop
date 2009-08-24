@@ -1,3 +1,13 @@
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs:
+	  Added support for saving and restoring the status of the
+	  designer, including the undo queue. This allows implenting
+	  ISupportsProjectReload.
+
 2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.NodeBuilders/FolderNodeBuilder.cs:

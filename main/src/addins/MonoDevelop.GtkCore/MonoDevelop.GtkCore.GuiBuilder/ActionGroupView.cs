@@ -69,7 +69,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.AllowActionBinding = project.Project.UsePartialTypes;
 			designer.BindField += new EventHandler (OnBindField);
 			
-			ActionGroupPage actionsPage = new ActionGroupPage (designer);
+			ActionGroupPage actionsPage = new ActionGroupPage ();
 			actionsPage.PackStart (designer, true, true, 0);
 			actionsPage.ShowAll ();
 			
@@ -214,11 +214,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class ActionGroupPage: Gtk.VBox, ICustomPropertyPadProvider
 	{
-		Stetic.ActionGroupDesigner actionsBox;
-		
-		public ActionGroupPage (Stetic.ActionGroupDesigner actionsBox)
+		public ActionGroupPage ()
 		{
-			this.actionsBox = actionsBox;
 		}
 		
 		Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
@@ -230,6 +227,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 		
+		public void ClearChild ()
+		{
+			if (Children.Length > 0) {
+				Gtk.Widget w = Children [0];
+				Remove (w);
+				w.Destroy ();
+			}
+		}
+		
+		Stetic.ActionGroupDesigner actionsBox {
+			get { return Children[0] as Stetic.ActionGroupDesigner; }
+		}
+		
 		[CommandHandler (EditCommands.Delete)]
 		protected void OnDelete ()
 		{
@@ -239,7 +249,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandUpdateHandler (EditCommands.Delete)]
 		protected void OnUpdateDelete (CommandInfo cinfo)
 		{
-			cinfo.Enabled = actionsBox.SelectedAction != null;
+			cinfo.Enabled = actionsBox != null && actionsBox.SelectedAction != null;
 		}
 		
 		[CommandHandler (EditCommands.Copy)]
@@ -251,7 +261,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandUpdateHandler (EditCommands.Copy)]
 		protected void OnUpdateCopy (CommandInfo cinfo)
 		{
-			cinfo.Enabled = actionsBox.SelectedAction != null;
+			cinfo.Enabled = actionsBox != null && actionsBox.SelectedAction != null;
 		}
 		
 		[CommandHandler (EditCommands.Cut)]
@@ -263,7 +273,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandUpdateHandler (EditCommands.Cut)]
 		protected void OnUpdateCut (CommandInfo cinfo)
 		{
-			cinfo.Enabled = actionsBox.SelectedAction != null;
+			cinfo.Enabled = actionsBox != null && actionsBox.SelectedAction != null;
 		}
 		
 		[CommandHandler (EditCommands.Paste)]
@@ -293,13 +303,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandUpdateHandler (EditCommands.Undo)]
 		protected void OnUpdateUndo (CommandInfo cinfo)
 		{
-			cinfo.Enabled = actionsBox.UndoQueue.CanUndo;
+			cinfo.Enabled = actionsBox != null && actionsBox.UndoQueue.CanUndo;
 		}
 		
 		[CommandUpdateHandler (EditCommands.Redo)]
 		protected void OnUpdateRedo (CommandInfo cinfo)
 		{
-			cinfo.Enabled = actionsBox.UndoQueue.CanRedo;
+			cinfo.Enabled = actionsBox != null && actionsBox.UndoQueue.CanRedo;
 		}
 	}
 }

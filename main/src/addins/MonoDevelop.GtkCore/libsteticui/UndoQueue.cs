@@ -2,12 +2,13 @@
 using System;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Stetic
 {
 	public class UndoQueue: MarshalByRefObject
 	{
-		ArrayList changeList = new ArrayList ();
+		List<UndoRedoChange> changeList = new List<UndoRedoChange> ();
 		int undoListCount = 0;
 		static UndoQueue empty = new UndoQueue ();
 		
@@ -19,6 +20,10 @@ namespace Stetic
 			}
 			changeList.Add (change);
 			undoListCount = changeList.Count;
+		}
+		
+		public IEnumerable<UndoRedoChange> Changes {
+			get { return changeList; }
 		}
 		
 		public static UndoQueue Empty {
@@ -40,7 +45,7 @@ namespace Stetic
 
 			UndoRedoChange change = (UndoRedoChange) changeList [--undoListCount];
 			if (change.CheckValid ()) {
-				object res = change.ApplyChange ();
+				UndoRedoChange res = change.ApplyChange ();
 				if (res != null)
 					changeList [undoListCount] = res;
 				else
@@ -59,7 +64,7 @@ namespace Stetic
 			
 			UndoRedoChange change = (UndoRedoChange) changeList [undoListCount++];
 			if (change.CheckValid ()) {
-				object res = change.ApplyChange ();
+				UndoRedoChange res = change.ApplyChange ();
 				if (res != null)
 					changeList [undoListCount - 1] = res;
 				else {
@@ -110,6 +115,11 @@ namespace Stetic
 			this.manager = manager;
 			this.TargetObject = targetObject;
 			this.Diff = diff;
+		}
+		
+		public UndoRedoManager Manager {
+			get { return manager; }
+			set { manager = value; }
 		}
 			
 		public override UndoRedoChange ApplyChange ()

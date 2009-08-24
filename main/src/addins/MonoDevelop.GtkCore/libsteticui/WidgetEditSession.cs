@@ -374,11 +374,23 @@ namespace Stetic {
 		
 		public object SaveState ()
 		{
-			return null;
+			return new object[] {
+				gproject.SaveStatus (),
+				undoQueue
+			};
 		}
 		
 		public void RestoreState (object sessionData)
 		{
+			object[] status = (object[]) sessionData;
+			gproject.LoadStatus (status [0]);
+			undoQueue = (UndoQueue) status [1];
+			foreach (UndoRedoChange ch in undoQueue.Changes) {
+				ObjectWrapperUndoRedoChange och = ch as ObjectWrapperUndoRedoChange;
+				if (och != null)
+					och.Manager = undoManager;
+			}
+			undoManager.UndoQueue = undoQueue;
 		}
 		
 		internal void ClipboardCopySelection ()
