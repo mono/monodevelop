@@ -1,5 +1,10 @@
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Caret.cs: fixed "Bug 533295 - Cursor
+	  incorrectly positioned when moving up/down".
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
 	* SyntaxModes/CSyntaxMode.xml:
 	* SyntaxModes/ILSyntaxMode.xml:
 	* SyntaxModes/LuaSyntaxMode.xml:

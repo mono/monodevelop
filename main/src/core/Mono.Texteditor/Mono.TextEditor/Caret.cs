@@ -214,8 +214,10 @@ namespace Mono.TextEditor
 		
 		public void SetToDesiredColumn (int desiredColumn) 
 		{
+			DocumentLocation old = Location;
 			this.desiredColumn = desiredColumn;
 			SetColumn ();
+			OnPositionChanged (new DocumentLocationEventArgs (old));
 		}
 		
 		public override string ToString ()
