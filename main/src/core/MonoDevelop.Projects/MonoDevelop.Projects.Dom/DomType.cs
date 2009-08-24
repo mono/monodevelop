@@ -679,15 +679,14 @@ namespace MonoDevelop.Projects.Dom
 			{
 				IReturnType res;
 				if (typeTable.TryGetValue (decoratedName, out res)) {
-					if (type.GenericArguments.Count == 0) {
-						if (type.ArrayDimensions == 0 && type.PointerNestingLevel == 0) {
-							return res;
-						}
-						DomReturnType copy = (DomReturnType)base.Visit (res, typeToInstantiate);
-						copy.PointerNestingLevel = type.PointerNestingLevel;
-						copy.SetDimensions (type.GetDimensions ());
-						return copy;
+					Console.WriteLine ("Found type :" + res);
+					if (type.ArrayDimensions == 0 && type.PointerNestingLevel == 0) {
+						return res;
 					}
+					DomReturnType copy = (DomReturnType)base.Visit (res, typeToInstantiate);
+					copy.PointerNestingLevel = type.PointerNestingLevel;
+					copy.SetDimensions (type.GetDimensions ());
+					return copy;
 				}
 				return null;
 			}
@@ -697,8 +696,11 @@ namespace MonoDevelop.Projects.Dom
 				DomReturnType copyFrom = (DomReturnType) type;
 				string decoratedName = copyFrom.DecoratedFullName;
 				IReturnType result = LookupReturnType (decoratedName, type, typeToInstantiate);
-				if (result == null && currentType != null)
-					result = LookupReturnType (currentType.DecoratedFullName + "." + decoratedName, type, typeToInstantiate);
+				IType curType = currentType;
+				while (result == null && curType != null) {
+					result = LookupReturnType (curType.DecoratedFullName + "." + decoratedName, type, typeToInstantiate);
+					curType = curType.DeclaringType;
+				}
 				return result ?? base.Visit (type, typeToInstantiate);
 			}
 			
