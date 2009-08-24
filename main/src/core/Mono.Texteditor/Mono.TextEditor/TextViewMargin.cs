@@ -157,6 +157,8 @@ namespace Mono.TextEditor
 			}
 			linesToRemove.ForEach (line => chunkDict.Remove (line));
 			linesToRemove.Clear ();
+			ResetCaretBlink ();
+			caretBlink = true;
 		}
 
 		TextRenderer CreateTextRenderer ()
@@ -405,31 +407,32 @@ namespace Mono.TextEditor
 			caretY = y;
 		}
 
-		public void DrawCaret (Gdk.Drawable win)
+		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
+		public Gdk.Rectangle DrawCaret (Gdk.Drawable win)
 		{
 			if (!this.textEditor.IsInDrag) {
 				if (!(this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0)))
-					return;
+					return EmptyRectangle;
 				if (!textEditor.HasFocus)
-					return;
+					return EmptyRectangle;
 			}
 			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink))
-				return;
-
+				return EmptyRectangle;
+			
+			Gdk.Rectangle caretClipRectangle = GetClipRectangle (Caret.Mode);
+			SetClip (caretClipRectangle);
 			switch (Caret.Mode) {
 			case CaretMode.Insert:
 				if (caretX < this.XOffset)
-					return;
-				SetClip (new Gdk.Rectangle (caretX, caretY, 1, LineHeight));
+					return EmptyRectangle;
 				win.DrawLine (GetGC (ColorStyle.Caret.Color), caretX, caretY, caretX, caretY + LineHeight);
 				break;
 			case CaretMode.Block:
 				if (caretX + this.charWidth < this.XOffset)
-					return;
-				SetClip (new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
+					return EmptyRectangle;
 				win.DrawRectangle (GetGC (ColorStyle.Caret.Color), true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
 				textRenderer.BeginDraw (win);
-				textRenderer.SetClip (clipRectangle);
+//				textRenderer.SetClip (clipRectangle);
 				textRenderer.Color = ColorStyle.Caret.BackgroundColor;
 				textRenderer.SetText (caretChar.ToString ());
 				textRenderer.DrawText (win, caretX, caretY);
@@ -437,13 +440,27 @@ namespace Mono.TextEditor
 				break;
 			case CaretMode.Underscore:
 				if (caretX + this.charWidth < this.XOffset)
-					return;
+					return EmptyRectangle;
 				int bottom = caretY + lineHeight;
-				SetClip (new Gdk.Rectangle (caretX, bottom, this.charWidth, 1));
 				win.DrawLine (GetGC (ColorStyle.Caret.Color), caretX, bottom, caretX + this.charWidth, bottom);
 				break;
 			}
+			return caretClipRectangle;
 		}
+
+		Gdk.Rectangle GetClipRectangle (Mono.TextEditor.CaretMode mode)
+		{
+			switch (mode) {
+			case CaretMode.Insert:
+				return new Gdk.Rectangle (caretX, caretY, 1, LineHeight);
+			case CaretMode.Block:
+				return new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight);
+			case CaretMode.Underscore:
+				return new Gdk.Rectangle (caretX, caretY + LineHeight, this.charWidth, 1);
+			}
+			throw new NotImplementedException ("Unknown caret mode :" + mode);
+		}
+
 		/*
 		void DrawChunkPart (Gdk.Drawable win, LineSegment line, Chunk chunk, ref int visibleColumn, ref int xPos, int y, int startOffset, int endOffset, int selectionStart, int selectionEnd)
 		{

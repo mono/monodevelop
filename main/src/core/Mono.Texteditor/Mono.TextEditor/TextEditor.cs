@@ -218,12 +218,13 @@ namespace Mono.TextEditor
 			}
 			Caret.IsVisible = true;
 			TextViewMargin.VAdjustmentValueChanged ();
-			
+			OverpaintCaret (GdkWindow);
 			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
 			                        buffer,
 			                        0, 0, 
 			                        0, 0, 
 			                        Allocation.Width, Allocation.Height);
+			Document.CommitLineUpdate (Caret.Line);
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
@@ -1265,7 +1266,7 @@ namespace Mono.TextEditor
 				oldRequest = lastVisibleLine;
 			}
 		}
-		
+		Gdk.Rectangle lastCaretPosition = TextViewMargin.EmptyRectangle;
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)
@@ -1281,15 +1282,28 @@ namespace Mono.TextEditor
 					repaint = false;
 				}
 				
+				OverpaintCaret (e.Window);
 				e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
 				                       buffer,
 				                       e.Area.X, e.Area.Y, e.Area.X, e.Area.Y,
 				                       e.Area.Width, e.Area.Height + 1);
-				// If the whole document is readonly - don't display caret.
-				if (!Document.ReadOnly)
-					textViewMargin.DrawCaret (e.Window);
+				PaintCaret (e.Window);
 			}
 			return true;
+		}
+		
+		void PaintCaret (Gdk.Drawable drawable)
+		{
+			if (!Document.ReadOnly)
+				lastCaretPosition = textViewMargin.DrawCaret (drawable);
+		}
+		
+		void OverpaintCaret (Gdk.Drawable drawable)
+		{
+			if (lastCaretPosition.Width == 0) 
+				return;
+			drawable.DrawDrawable (Style.BackgroundGC (StateType.Normal), buffer, lastCaretPosition.X, lastCaretPosition.Y, lastCaretPosition.X, lastCaretPosition.Y, lastCaretPosition.Width, lastCaretPosition.Height + 1);
+			lastCaretPosition = TextViewMargin.EmptyRectangle;
 		}
 		
 		#region TextEditorData functions
