@@ -1,3 +1,8 @@
+2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BooBinding.sln:
+	* BooBinding.booproj: Don't require specific versions.
+
 2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/ShellTextView.boo: Track api changes.
