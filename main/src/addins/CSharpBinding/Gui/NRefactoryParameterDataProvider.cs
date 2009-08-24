@@ -65,9 +65,14 @@ namespace MonoDevelop.CSharpBinding
 				if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
 					methods.Add (method);
 			}
-			
+			methods.Sort (MethodComparer);
 			if (resolveResult.Methods.Count > 0)
 				this.prefix = ambience.GetString (resolveResult.Methods[0].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) + " ";
+		}
+		
+		static int MethodComparer (IMethod left, IMethod right)
+		{
+			return left.Parameters.Count - right.Parameters.Count;
 		}
 		
 		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)
