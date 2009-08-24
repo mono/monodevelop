@@ -1,5 +1,10 @@
 2009-08-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* CodeBehindGenerator.cs: Change access of generated members
+	  to private.
+
+2009-08-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Icons/32x32:
 	* Icons/22x22:
 	* Icons/48x48:

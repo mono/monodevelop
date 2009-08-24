@@ -307,7 +307,7 @@ namespace MonoDevelop.IPhone
 							new CodeMethodReferenceExpression (
 								new CodeThisReferenceExpression (), "GetNativeField"),
 								new CodePrimitiveExpression (name)))));
-			prop.Attributes = (prop.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Family;
+			prop.Attributes = (prop.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
 			return prop;
 		}
 		
