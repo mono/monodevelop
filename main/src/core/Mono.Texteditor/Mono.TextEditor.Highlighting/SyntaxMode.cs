@@ -365,7 +365,9 @@ namespace Mono.TextEditor.Highlighting
 								}
 							}
 							if (!mismatch) {
-								i++;
+								i += cur.Escape.Length;
+								if (cur.Escape.Length > 1)
+									i--;
 								continue;
 							}
 						}

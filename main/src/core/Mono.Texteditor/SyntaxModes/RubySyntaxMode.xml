@@ -30,17 +30,17 @@
 	
 	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">#</EolSpan>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+	<Span color = "string" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+	<Span color = "string" rule="String" stopateol = "true" escape='\'>
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\/'>
+	<Span color = "string" rule="String" stopateol = "true" escape='\'>
 		<Begin>/</Begin>
 		<End>/</End>
 	</Span>

@@ -1,3 +1,22 @@
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
+	* SyntaxModes/CSyntaxMode.xml:
+	* SyntaxModes/ILSyntaxMode.xml:
+	* SyntaxModes/LuaSyntaxMode.xml:
+	* SyntaxModes/BooSyntaxMode.xml:
+	* SyntaxModes/CPPSyntaxMode.xml:
+	* SyntaxModes/RubySyntaxMode.xml:
+	* SyntaxModes/JavaSyntaxMode.xml:
+	* SyntaxModes/ValaSyntaxMode.xml:
+	* SyntaxModes/VBNetSyntaxMode.xml:
+	* SyntaxModes/CSharpSyntaxMode.xml:
+	* SyntaxModes/PythonSyntaxMode.xml:
+	* SyntaxModes/MakefileSyntaxMode.xml:
+	* SyntaxModes/JavascriptSyntaxMode.xml:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed "Bug
+	  530511 - Syntax highlighting not escaping strings
+	  correctly".
+
 2009-08-19  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Corrected clipping.
