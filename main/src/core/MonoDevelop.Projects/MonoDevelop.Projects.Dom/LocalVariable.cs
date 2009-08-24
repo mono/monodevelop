@@ -32,81 +32,76 @@ using System.Collections.Specialized;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class LocalVariable : IDomVisitable
+	public class LocalVariable : IBaseMember
 	{
-		string name;
-		IReturnType returnType;
-		DomRegion region;
-		IMember declaringMember;
+		public string Name {
+			get;
+			set;
+		}
 		
-		public virtual string StockIcon {
+		public DomLocation Location {
+			get;
+			private set;
+		}
+		
+		public IReturnType ReturnType {
+			get;
+			set;
+		}
+		
+		public string StockIcon {
 			get {
 				return Stock.Field;
 			}
 		}
 		
-		public LocalVariable (IMember declaringMember, string name, IReturnType type, DomRegion region)
-		{
-			this.declaringMember = declaringMember;
-			this.name = name;
-			this.returnType = type;
-			this.region = region;
-		}
-		
-		public IMember DeclaringMember {
+		public MemberType MemberType {
 			get {
-				return declaringMember;
+				return MemberType.LocalVariable;
 			}
+		}
+
+			
+		public IMember DeclaringMember {
+			get;
+			private set;
 		}
 		
 		public ICompilationUnit CompilationUnit {
 			get {
-				return declaringMember.DeclaringType.CompilationUnit;
+				return DeclaringMember.DeclaringType.CompilationUnit;
 			}
 		}
 		
 		public string FileName {
 			get {
-				return declaringMember.DeclaringType.CompilationUnit.FileName;
+				return DeclaringMember.DeclaringType.CompilationUnit.FileName;
 			}
-		}
-		public string Name {
-			get { return name; }
-		}
-		
-		public IReturnType ReturnType {
-			get { return returnType; }
 		}
 		
 		public DomRegion Region {
-			get { return region; }
+			get;
+			private set;
 		}
-/*
-		public virtual int CompareTo (object value)
+	
+		public LocalVariable (IMember declaringMember, string name, IReturnType type, DomRegion region)
 		{
-			LocalVariable loc = (LocalVariable) value;
-			
-			int res = name.CompareTo (loc.name);
-			if (res != 0) return res;
-			
-			return returnType.CompareTo (loc.returnType);
+			if (declaringMember == null)
+				throw new ArgumentNullException ("declaringMember");
+			if (name == null)
+				throw new ArgumentNullException ("name");
+			if (type == null)
+				throw new ArgumentNullException ("type");
+			this.DeclaringMember = declaringMember;
+			this.Name = name;
+			this.ReturnType = type;
+			this.Region = region;
+			this.Location = region.Start;
 		}
-		
-		public override bool Equals (object ob)
-		{
-			LocalVariable other = ob as LocalVariable;
-			if (other == null) return false;
-			return CompareTo (other) == 0;
-		}
-		
-		public override int GetHashCode ()
-		{
-			return name.GetHashCode () + returnType.GetHashCode ();
-		}*/
-		
 		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
 		}
+		
 	}
 }

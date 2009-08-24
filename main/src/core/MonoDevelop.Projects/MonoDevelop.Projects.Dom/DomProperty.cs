@@ -67,8 +67,14 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public override bool CanHaveParameters {
+			get {
+				return true;
+			}
+		}
+		
 		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
-		public virtual ReadOnlyCollection<IParameter> Parameters {
+		public override ReadOnlyCollection<IParameter> Parameters {
 			get {
 				return parameters != null ? parameters.AsReadOnly () : emptyParameters;
 			}

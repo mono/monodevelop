@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -39,16 +40,14 @@ namespace MonoDevelop.Projects.Dom
 		Property,
 		Event,
 		Type,
-		Namespace
+		Namespace,
+		LocalVariable,
+		Parameter
 	}
-
-	public interface IMember : IComparable, IDomVisitable
+	
+	public interface IMember : IBaseMember, IComparable
 	{
 		string FullName {
-			get;
-		}
-		
-		IReturnType ReturnType {
 			get;
 		}
 		
@@ -61,17 +60,9 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		string Name {
-			get;
-		}
-		
 		string Documentation {
 			get;
 			set;
-		}
-		
-		DomLocation Location {
-			get;
 		}
 		
 		DomRegion BodyRegion {
@@ -90,21 +81,20 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		string StockIcon {
+		bool IsExplicitDeclaration {
 			get;
 		}
 		
-		bool IsExplicitDeclaration {
+		bool CanHaveParameters {
+			get;
+		}
+		ReadOnlyCollection<IParameter> Parameters {
 			get;
 		}
 		
 		System.Xml.XmlNode GetMonodocDocumentation ();
 		bool IsAccessibleFrom (ProjectDom dom, IType calledType, IMember member, bool includeProtected);
-
-		MemberType MemberType {
-			get;
-		}
-
+		
 		#region ModifierAccessors
 		bool IsObsolete { get; }
 		bool IsPrivate   { get; }

@@ -64,10 +64,6 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		ReadOnlyCollection<IParameter> Parameters {
-			get;
-		}
-		
 		ReadOnlyCollection<ITypeParameter> TypeParameters {
 			get;
 		}

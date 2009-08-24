@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -299,6 +300,17 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public virtual bool CanHaveParameters {
+			get {
+				return member.CanHaveParameters;
+			}
+		}
+		
+		public virtual ReadOnlyCollection<IParameter> Parameters {
+			get {
+				return member.Parameters;
+			}
+		}
 		#endregion 
 		
 		

@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Projects.Dom.Parser;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -135,6 +136,17 @@ namespace MonoDevelop.Projects.Dom
 					}
 				}
 				return false;
+			}
+		}
+		
+		public virtual bool CanHaveParameters {
+			get {
+				return false;
+			}
+		}
+		public virtual ReadOnlyCollection<IParameter> Parameters {
+			get {
+				throw new InvalidOperationException ();
 			}
 		}
 		

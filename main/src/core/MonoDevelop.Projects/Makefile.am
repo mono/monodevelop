@@ -103,6 +103,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/ExtensionMethod.cs \
 	MonoDevelop.Projects.Dom/FoldingRegion.cs \
 	MonoDevelop.Projects.Dom/IAttribute.cs \
+	MonoDevelop.Projects.Dom/IBaseMember.cs \
 	MonoDevelop.Projects.Dom/ICompilationUnit.cs \
 	MonoDevelop.Projects.Dom/IDomVisitor.cs \
 	MonoDevelop.Projects.Dom/IEvent.cs \

@@ -1,3 +1,20 @@
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.Dom/IMember.cs:
+	* MonoDevelop.Projects.Dom/IMethod.cs:
+	* MonoDevelop.Projects.Dom/IProperty.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/IParameter.cs:
+	* MonoDevelop.Projects.Dom/DomProperty.cs:
+	* MonoDevelop.Projects.Dom/IBaseMember.cs:
+	* MonoDevelop.Projects.Dom/DomParameter.cs:
+	* MonoDevelop.Projects.Dom/LocalVariable.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs:
+	* MonoDevelop.Projects.Dom/DomMemberDecorator.cs: Made it a
+	  bit easier to work with the DOM.
+
 2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:

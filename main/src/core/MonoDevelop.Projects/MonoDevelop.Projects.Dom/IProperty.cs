@@ -46,10 +46,6 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		ReadOnlyCollection<IParameter> Parameters {
-			get;
-		}
-		
 		bool IsIndexer {
 			get;
 		}

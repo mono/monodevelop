@@ -36,6 +36,12 @@ namespace MonoDevelop.Projects.Dom
 	{
 		protected List<IAttribute> attributes = null;
 
+		public MemberType MemberType {
+			get {
+				return MemberType.Parameter;
+			}
+		}
+
 		public CodeExpression DefaultValue {
 			get;
 			set;
@@ -106,6 +112,8 @@ namespace MonoDevelop.Projects.Dom
 			this.DeclaringMember = declaringMember;
 			this.ReturnType      = returnType;
 		}
+		
+		
 		
 		public void Add (IAttribute attribute)
 		{

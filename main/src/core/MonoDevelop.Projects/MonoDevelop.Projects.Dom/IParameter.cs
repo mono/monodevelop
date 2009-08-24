@@ -32,12 +32,8 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IParameter : IDomVisitable
+	public interface IParameter : IBaseMember
 	{
-		string Name {
-			get;
-		}
-		
 		ParameterModifiers ParameterModifiers {
 			get;
 		}
@@ -47,15 +43,7 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 
-		IReturnType ReturnType {
-			get;
-		}
-
 		IEnumerable<IAttribute> Attributes {
-			get;
-		}
-		
-		DomLocation Location {
 			get;
 		}
 		
@@ -68,10 +56,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		bool IsParams {
-			get;
-		}
-		
-		string StockIcon {
 			get;
 		}
 		
