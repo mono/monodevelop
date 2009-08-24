@@ -1,3 +1,81 @@
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Location.cs:
+	* Src/Ast/Enums.cs:
+	* Src/Ast/INode.cs:
+	* Src/Lexer/Token.cs:
+	* Src/IAstVisitor.cs:
+	* Src/Lexer/ILexer.cs:
+	* Src/Ast/Generated.cs:
+	* Src/Parser/Errors.cs:
+	* Src/SnippetParser.cs:
+	* Src/ParserFactory.cs:
+	* Src/Ast/INullable.cs:
+	* Src/Parser/IParser.cs:
+	* Src/Ast/AbstractNode.cs:
+	* Src/Parser/CSharp/cs.ATG:
+	* Src/Ast/TypeReference.cs:
+	* Src/Lexer/LookupTable.cs:
+	* Src/Lexer/VBNet/Lexer.cs:
+	* Src/OperatorPrecedence.cs:
+	* Src/Lexer/CSharp/Lexer.cs:
+	* Src/Lexer/VBNet/Tokens.cs:
+	* Src/Lexer/AbstractLexer.cs:
+	* Src/Parser/VBNet/VBNET.ATG:
+	* Src/Parser/ModifierList.cs:
+	* Src/Lexer/CSharp/Tokens.cs:
+	* Src/Parser/VBNet/Parser.cs:
+	* Src/Parser/CSharp/Parser.cs:
+	* Src/Lexer/Special/Comment.cs:
+	* Src/Parser/AbstractParser.cs:
+	* Src/Ast/General/Statement.cs:
+	* Src/Lexer/Special/ISpecial.cs:
+	* Src/Ast/General/Expression.cs:
+	* Src/Lexer/Special/BlankLine.cs:
+	* Src/Parser/VBNet/VBNetParser.cs:
+	* Src/Lexer/Special/TagComment.cs:
+	* Src/Lexer/Special/CommentType.cs:
+	* Src/Visitors/SetParentVisitor.cs:
+	* Src/Ast/General/BlockStatement.cs:
+	* Src/Parser/CSharp/CSharpParser.cs:
+	* Src/AstBuilder/StatementBuilder.cs:
+	* Src/Visitors/AbstractASTVisitor.cs:
+	* Src/Visitors/ConvertVisitorBase.cs:
+	* Src/Visitors/LookupTableVisitor.cs:
+	* Src/Ast/General/CompilationUnit.cs:
+	* Src/Lexer/Special/SpecialTracker.cs:
+	* Src/Visitors/PrefixFieldsVisitor.cs:
+	* Src/AstBuilder/ExpressionBuilder.cs:
+	* Src/Visitors/CodeDOMOutputVisitor.cs:
+	* Src/Visitors/ToVBNetConvertVisitor.cs:
+	* Src/Parser/VBNet/ParamModifierList.cs:
+	* Src/EnvironmentInformationProvider.cs:
+	* Src/PrettyPrinter/IOutputAstVisitor.cs:
+	* Src/Visitors/NodeTrackingAstVisitor.cs:
+	* Src/Visitors/ToCSharpConvertVisitor.cs:
+	* Src/Ast/General/PrimitiveExpression.cs:
+	* Src/Visitors/AbstractAstTransformer.cs:
+	* Src/Visitors/RenameIdentifierVisitor.cs:
+	* Src/Visitors/NotImplementedAstVisitor.cs:
+	* Src/PrettyPrinter/SpecialNodesInserter.cs:
+	* Src/Lexer/CSharp/ConditionalCompilation.cs:
+	* Src/Ast/General/LocalVariableDeclaration.cs:
+	* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
+	* Src/Lexer/Special/PreProcessingDirective.cs:
+	* Src/PrettyPrinter/AbstractOutputFormatter.cs:
+	* Src/Visitors/VBNetConstructsConvertVisitor.cs:
+	* Src/Visitors/CodeDOMVerboseOutputGenerator.cs:
+	* Src/PrettyPrinter/VBNet/VBNetOutputVisitor.cs:
+	* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+	* Src/Visitors/CSharpConstructsConvertVisitor.cs:
+	* Src/PrettyPrinter/VBNet/VBNetOutputFormatter.cs:
+	* Src/PrettyPrinter/AbstractPrettyPrintOptions.cs:
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs:
+	* Src/Visitors/ToVBNetRenameConflictingVariables.cs:
+	* Src/PrettyPrinter/VBNet/VBNetPrettyPrintOptions.cs: Fixed
+	  "Bug 533666 - if/else not properly formatted" and updated
+	  nrefactory to the latest version.
+
 2009-07-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Visitors/LookupTableVisitor.cs: Lookup table visitor

@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2357 $</version>
+//     <version>$Revision: 4570 $</version>
 // </file>
 
 using System;
@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			// variable name => case sensitive variable name
 			// value is null if there are multiple casings for the variable -> the variable is conflicting
-			Dictionary<string, string> caseInsensitive = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+			Dictionary<string, string> caseInsensitive = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			
 			LookupTableVisitor ltv = new LookupTableVisitor(SupportedLanguage.CSharp);
 			method.AcceptVisitor(ltv, null);
@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		static void RenameVariable(INode method, string from, ref int index)
 		{
 			index += 1;
-			method.AcceptVisitor(new RenameLocalVariableVisitor(from, from + "__" + index, StringComparer.InvariantCulture), null);
+			method.AcceptVisitor(new RenameLocalVariableVisitor(from, from + "__" + index, StringComparer.Ordinal), null);
 		}
 		
 		static void AddVariableToDict(Dictionary<string, string> caseInsensitive, string varName, bool hasDeclaration)

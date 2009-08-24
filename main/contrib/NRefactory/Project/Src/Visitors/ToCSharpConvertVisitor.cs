@@ -2,9 +2,10 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3660 $</version>
+//     <version>$Revision: 4570 $</version>
 // </file>
 
+using ICSharpCode.NRefactory.AstBuilder;
 using System;
 using ICSharpCode.NRefactory.Ast;
 
@@ -24,6 +25,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//      => create additional member for implementing the interface
 		//      or convert to implicit interface implementation
 		//   Modules: make all members static
+		//   Use Convert.ToInt32 for VB casts
 		
 		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
@@ -225,6 +227,52 @@ namespace ICSharpCode.NRefactory.Visitors
 				switchSection.Children.Add(new BreakStatement());
 			}
 			return base.VisitSwitchSection(switchSection, data);
+		}
+		
+		public override object VisitCastExpression(CastExpression castExpression, object data)
+		{
+			base.VisitCastExpression(castExpression, data);
+			if (castExpression.CastType == CastType.Conversion || castExpression.CastType == CastType.PrimitiveConversion) {
+				switch (castExpression.CastTo.Type) {
+					case "System.Boolean":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToBoolean");
+					case "System.Byte":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToByte");
+					case "System.Char":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToChar");
+					case "System.DateTime":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToDateTime");
+					case "System.Decimal":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToDecimal");
+					case "System.Double":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToDouble");
+					case "System.Int16":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToInt16");
+					case "System.Int32":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToInt32");
+					case "System.Int64":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToInt64");
+					case "System.SByte":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToSByte");
+					case "System.Single":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToSingle");
+					case "System.String":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToString");
+					case "System.UInt16":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToUInt16");
+					case "System.UInt32":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToUInt32");
+					case "System.UInt64":
+						return ReplacePrimitiveCastWithConvertMethodCall(castExpression, "ToUInt64");
+				}
+			}
+			return null;
+		}
+		
+		object ReplacePrimitiveCastWithConvertMethodCall(CastExpression castExpression, string methodName)
+		{
+			ReplaceCurrentNode(ExpressionBuilder.Identifier("Convert").Call(methodName, castExpression.Expression));
+			return null;
 		}
 	}
 }

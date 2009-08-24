@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 4482 $</version>
+//     <version>$Revision: 4527 $</version>
 // </file>
 
 using System;
@@ -69,12 +69,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 		}
 		
-		public override object VisitCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit, object data)
-		{
-			variables.Clear ();
-			return base.VisitCompilationUnit (compilationUnit, data);
-		}
-		
 		public void AddVariable(TypeReference typeRef, string name,
 		                        Location startPos, Location endPos, bool isConst,
 		                        bool isLoopVariable, Expression initializer,
@@ -105,6 +99,12 @@ namespace ICSharpCode.NRefactory.Visitors
 			get {
 				return (endLocationStack.Count == 0) ? Location.Empty : endLocationStack.Peek();
 			}
+		}
+		
+		public override object VisitCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit, object data)
+		{
+			variables.Clear ();
+			return base.VisitCompilationUnit (compilationUnit, data);
 		}
 		
 		public override object VisitBlockStatement(BlockStatement blockStatement, object data)

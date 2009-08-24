@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 4471 $</version>
+//     <version>$Revision: 4741 $</version>
 // </file>
 
 using System;
@@ -44,6 +44,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public PrettyPrintOptions Options {
 			get { return prettyPrintOptions; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException();
+				prettyPrintOptions = value;
+			}
 		}
 		
 		public IOutputFormatter OutputFormatter {
@@ -589,13 +594,42 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintIdentifier(propertyDeclaration.Name);
 			
-			outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle, this.prettyPrintOptions.IndentPropertyBody);
+			OutputGetAndSetRegion(propertyDeclaration.GetRegion, propertyDeclaration.SetRegion);
 			
-			TrackVisit(propertyDeclaration.GetRegion, data);
-			TrackVisit(propertyDeclaration.SetRegion, data);
-			
-			outputFormatter.EndBrace(this.prettyPrintOptions.IndentPropertyBody);
 			return null;
+		}
+		
+		void OutputGetAndSetRegion(PropertyGetRegion getRegion, PropertySetRegion setRegion)
+		{
+			BraceStyle braceStyle = this.prettyPrintOptions.PropertyBraceStyle;
+			
+			if (getRegion.Block.IsNull && setRegion.Block.IsNull && getRegion.Attributes.Count == 0 && setRegion.Attributes.Count == 0
+			    && (braceStyle == BraceStyle.EndOfLine || braceStyle == BraceStyle.EndOfLineWithoutSpace))
+			{
+				if (braceStyle == BraceStyle.EndOfLine)
+					outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
+				// automatic property / abstract property:
+				// output in a single line: "string Text { get; set; }"
+				if (!getRegion.IsNull) {
+					outputFormatter.Space();
+					OutputModifier(getRegion.Modifier);
+					outputFormatter.PrintText("get;");
+				}
+				if (!setRegion.IsNull) {
+					outputFormatter.Space();
+					OutputModifier(setRegion.Modifier);
+					outputFormatter.PrintText("set;");
+				}
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+				outputFormatter.NewLine();
+			} else {
+				outputFormatter.BeginBrace(braceStyle, this.prettyPrintOptions.IndentPropertyBody);
+				TrackVisit(getRegion, null);
+				TrackVisit(setRegion, null);
+				outputFormatter.EndBrace(this.prettyPrintOptions.IndentPropertyBody);
+			}
 		}
 		
 		public override object TrackedVisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data)
@@ -658,7 +692,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();
 			} else {
-				outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle, this.prettyPrintOptions.IndentEventBody);
+				outputFormatter.BeginBrace(this.prettyPrintOptions.EventBraceStyle, this.prettyPrintOptions.IndentEventBody);
 				TrackVisit(eventDeclaration.AddRegion, data);
 				TrackVisit(eventDeclaration.RemoveRegion, data);
 				outputFormatter.EndBrace(this.prettyPrintOptions.IndentEventBody);
@@ -786,6 +820,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			} else {
 				switch (operatorDeclaration.OverloadableOperator) {
 					case OverloadableOperatorType.Add:
+					case OverloadableOperatorType.UnaryPlus:
 						outputFormatter.PrintToken(Tokens.Plus);
 						break;
 					case OverloadableOperatorType.BitNot:
@@ -859,6 +894,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.GreaterThan);
 						outputFormatter.PrintToken(Tokens.GreaterThan);
 						break;
+					case OverloadableOperatorType.UnaryMinus:
 					case OverloadableOperatorType.Subtract:
 						outputFormatter.PrintToken(Tokens.Minus);
 						break;
@@ -950,18 +986,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (this.prettyPrintOptions.SpacesWithinBrackets) {
 				outputFormatter.Space();
 			}
+			
 			outputFormatter.PrintToken(Tokens.CloseSquareBracket);
-			outputFormatter.NewLine();
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
+			
+			outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle, this.prettyPrintOptions.IndentPropertyBody);
+			
 			TrackVisit(indexerDeclaration.GetRegion, data);
 			TrackVisit(indexerDeclaration.SetRegion, data);
-			--outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
-			outputFormatter.NewLine();
+			
+			outputFormatter.EndBrace(this.prettyPrintOptions.IndentPropertyBody);
 			return null;
 		}
 		
@@ -1268,13 +1301,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
 			PrintIfSection(ifElseStatement.TrueStatement);
+			bool wasBlock = false;
+			if (ifElseStatement.TrueStatement != null && ifElseStatement.TrueStatement.Count > 0)
+				wasBlock = ifElseStatement.TrueStatement.Last () is BlockStatement;
 			
 			foreach (ElseIfSection elseIfSection in ifElseStatement.ElseIfSections) {
 				TrackVisit(elseIfSection, data);
+				wasBlock = elseIfSection.EmbeddedStatement is BlockStatement;
 			}
 			
 			if (ifElseStatement.HasElseStatements) {
-				if (prettyPrintOptions.PlaceElseOnNewLine) {
+				if (prettyPrintOptions.PlaceElseOnNewLine || (prettyPrintOptions.PlaceNonBlockElseOnNewLine && !wasBlock)) {
 					outputFormatter.NewLine();
 					outputFormatter.Indent();
 				} else {
@@ -1289,33 +1326,31 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void PrintIfSection(List<Statement> statements)
 		{
-			/*
 			if (statements.Count == 1 && (statements[0] is BlockStatement)) {
-				WriteEmbeddedStatement(statements[0],
-				                       prettyPrintOptions.IfElseBraceForcement,
-				                       prettyPrintOptions.StatementBraceStyle,
-				                       prettyPrintOptions.PlaceElseOnNewLine);
+				OutputBlock((BlockStatement)statements[0],
+				            prettyPrintOptions.StatementBraceStyle,
+				            prettyPrintOptions.PlaceElseOnNewLine);
 				return;
-			}*/
+			}
 			/*			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
 				outputFormatter.Space();
 			}*/
 			if (statements.Count != 1) {
 				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
+			} else {
 				outputFormatter.NewLine ();
 				outputFormatter.IndentationLevel++;
 				outputFormatter.Indent ();
-				foreach (Statement stmt in statements) {
-					TrackVisit(stmt, prettyPrintOptions.StatementBraceStyle);
-				}
+			}
+			
+			foreach (Statement stmt in statements) {
+				TrackVisit(stmt, prettyPrintOptions.StatementBraceStyle);
+			}
+			
+			if (statements.Count == 1) {
 				outputFormatter.IndentationLevel--;
-				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
 			} else {
-				WriteEmbeddedStatement(statements[0],
-				                       prettyPrintOptions.IfElseBraceForcement,
-				                       prettyPrintOptions.StatementBraceStyle,
-				                       false);
-
+				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
 			}
 			/*			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
 				outputFormatter.Space();
@@ -1325,7 +1360,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitElseIfSection(ElseIfSection elseIfSection, object data)
 		{
 			if (prettyPrintOptions.PlaceElseOnNewLine) {
-				outputFormatter.NewLine();
 				outputFormatter.Indent();
 			} else {
 				outputFormatter.Space();
@@ -1346,10 +1380,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			WriteEmbeddedStatement(elseIfSection.EmbeddedStatement,
-			                       prettyPrintOptions.IfElseBraceForcement,
-			                       prettyPrintOptions.StatementBraceStyle,
-			                       false);
+			WriteEmbeddedStatement(elseIfSection.EmbeddedStatement, prettyPrintOptions.IfElseBraceForcement, prettyPrintOptions.StatementBraceStyle, false);
 			
 			return null;
 		}
@@ -1407,10 +1438,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.DoNewLine     = true;
 			outputFormatter.DoIndent      = true;
 			
-			WriteEmbeddedStatement (forStatement.EmbeddedStatement, 
-			                        prettyPrintOptions.ForBraceForcement,
-			                        prettyPrintOptions.StatementBraceStyle,
-			                        true);
+			WriteEmbeddedStatement(forStatement.EmbeddedStatement, prettyPrintOptions.ForBraceForcement, prettyPrintOptions.StatementBraceStyle, true);
+			
 			return null;
 		}
 		
@@ -1678,10 +1707,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Do);
 			}
 			
-			WriteEmbeddedStatement(doLoopStatement.EmbeddedStatement,
-			                        prettyPrintOptions.WhileBraceForcement,
-			                        prettyPrintOptions.StatementBraceStyle,
-			                        prettyPrintOptions.PlaceWhileOnNewLine);
+			WriteEmbeddedStatement(doLoopStatement.EmbeddedStatement, prettyPrintOptions.WhileBraceForcement, prettyPrintOptions.StatementBraceStyle, prettyPrintOptions.PlaceWhileOnNewLine);
 			
 			if (doLoopStatement.ConditionPosition == ConditionPosition.End) {
 				if (prettyPrintOptions.PlaceWhileOnNewLine) {
@@ -1719,10 +1745,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			WriteEmbeddedStatement(foreachStatement.EmbeddedStatement, 
-			                       prettyPrintOptions.ForEachBraceForcement,
-			                       prettyPrintOptions.StatementBraceStyle,
-			                       true);
+			WriteEmbeddedStatement(foreachStatement.EmbeddedStatement, prettyPrintOptions.ForEachBraceForcement, prettyPrintOptions.StatementBraceStyle, true);
 			
 			return null;
 		}
@@ -1764,10 +1787,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			WriteEmbeddedStatement(usingStatement.EmbeddedStatement,
-			                       prettyPrintOptions.UsingBraceForcement,
-			                       prettyPrintOptions.StatementBraceStyle,
-			                       true);
+			WriteEmbeddedStatement(usingStatement.EmbeddedStatement, prettyPrintOptions.UsingBraceForcement, prettyPrintOptions.StatementBraceStyle, true);
+			
 			return null;
 		}
 		
@@ -1792,7 +1813,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintToken(Tokens.Try);
 			
-			WriteEmbeddedStatement(tryCatchStatement.StatementBlock, prettyPrintOptions.PlaceCatchOnNewLine);
+			WriteEmbeddedStatement (tryCatchStatement.StatementBlock, prettyPrintOptions.PlaceCatchOnNewLine);
 			for (int i = 0 ; i < tryCatchStatement.CatchClauses.Count; i++) {
 				TrackVisit(tryCatchStatement.CatchClauses[i], i == tryCatchStatement.CatchClauses.Count - 1);
 			}
@@ -1870,10 +1891,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			WriteEmbeddedStatement(fixedStatement.EmbeddedStatement,
-			                       prettyPrintOptions.FixedBraceForcement,
-			                       prettyPrintOptions.StatementBraceStyle,
-			                       true);
+			WriteEmbeddedStatement(fixedStatement.EmbeddedStatement, prettyPrintOptions.FixedBraceForcement, prettyPrintOptions.StatementBraceStyle, true);
 			return null;
 		}
 		
@@ -1971,10 +1989,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			WriteEmbeddedStatement (forNextStatement.EmbeddedStatement, 
-			                        prettyPrintOptions.ForBraceForcement,
-			                        prettyPrintOptions.StatementBraceStyle,
-			                        true);
+			WriteEmbeddedStatement(forNextStatement.EmbeddedStatement, prettyPrintOptions.ForBraceForcement, prettyPrintOptions.StatementBraceStyle, true);
 			return null;
 		}
 		#endregion
@@ -2621,8 +2636,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.LambdaArrow);
-			outputFormatter.Space();
 			if (!lambdaExpression.ExpressionBody.IsNull) {
+				outputFormatter.Space();
 				TrackVisit(lambdaExpression.ExpressionBody, null);
 			}
 			if (!lambdaExpression.StatementBody.IsNull) {

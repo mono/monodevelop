@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3718 $</version>
+//     <version>$Revision: 4741 $</version>
 // </file>
 
 using System;
@@ -814,7 +814,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
-				VisitReturnTypeAttributes(parameterDeclarationExpression.Attributes, data);
+			VisitReturnTypeAttributes(parameterDeclarationExpression.Attributes, data);
 			TrackedVisit(parameterDeclarationExpression.TypeReference, data);
 			return null;
 		}
@@ -983,7 +983,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
-				VisitReturnTypeAttributes(indexerDeclaration.Attributes, data);
+			VisitReturnTypeAttributes(indexerDeclaration.Attributes, data);
 			TrackedVisit(indexerDeclaration.TypeReference, data);
 			PrintInterfaceImplementations(indexerDeclaration.InterfaceImplementations);
 			
@@ -1071,8 +1071,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			switch(operatorDeclaration.OverloadableOperator)
 			{
 				case OverloadableOperatorType.Add:
+				case OverloadableOperatorType.UnaryPlus:
 					op = Tokens.Plus;
 					break;
+				case OverloadableOperatorType.UnaryMinus:
 				case OverloadableOperatorType.Subtract:
 					op = Tokens.Minus;
 					break;
@@ -1410,6 +1412,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitYieldStatement(YieldStatement yieldStatement, object data)
 		{
 			UnsupportedNode(yieldStatement);
+			outputFormatter.PrintText("yield ");
+			TrackedVisit(yieldStatement.Statement, data);
 			return null;
 		}
 		
@@ -2079,52 +2083,69 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
+			outputFormatter.PrintText(ToVBNetString(primitiveExpression));
+			return null;
+		}
+		
+		internal static string ToVBNetString(PrimitiveExpression primitiveExpression)
+		{
 			object val = primitiveExpression.Value;
 			if (val == null) {
-				outputFormatter.PrintToken(Tokens.Nothing);
-				return null;
+				return "Nothing";
 			}
 			if (val is bool) {
 				if ((bool)primitiveExpression.Value) {
-					outputFormatter.PrintToken(Tokens.True);
+					return "True";
 				} else {
-					outputFormatter.PrintToken(Tokens.False);
+					return "False";
 				}
-				return null;
 			}
 			
 			if (val is string) {
-				outputFormatter.PrintText(ConvertString((string)val));
-				return null;
+				return ConvertString((string)val);
 			}
 			
 			if (val is char) {
-				outputFormatter.PrintText(ConvertCharLiteral((char)primitiveExpression.Value));
-				return null;
+				return ConvertCharLiteral((char)primitiveExpression.Value);
 			}
 
 			if (val is decimal) {
-				outputFormatter.PrintText(((decimal)primitiveExpression.Value).ToString(NumberFormatInfo.InvariantInfo) + "D");
-				return null;
+				return ((decimal)primitiveExpression.Value).ToString(NumberFormatInfo.InvariantInfo) + "D";
 			}
 			
 			if (val is float) {
-				outputFormatter.PrintText(((float)primitiveExpression.Value).ToString(NumberFormatInfo.InvariantInfo) + "F");
-				return null;
+				return ((float)primitiveExpression.Value).ToString(NumberFormatInfo.InvariantInfo) + "F";
+			}
+			
+			if (val is double) {
+				string text = ((double)val).ToString(NumberFormatInfo.InvariantInfo);
+				if (text.IndexOf('.') < 0 && text.IndexOf('E') < 0)
+					return text + ".0";
+				else
+					return text;
 			}
 			
 			if (val is IFormattable) {
+				StringBuilder b = new StringBuilder();
 				if (primitiveExpression.LiteralFormat == LiteralFormat.HexadecimalNumber) {
-					outputFormatter.PrintText("&H");
-					outputFormatter.PrintText(((IFormattable)val).ToString("x", NumberFormatInfo.InvariantInfo));
+					b.Append("&H");
+					b.Append(((IFormattable)val).ToString("x", NumberFormatInfo.InvariantInfo));
 				} else {
-					outputFormatter.PrintText(((IFormattable)val).ToString(null, NumberFormatInfo.InvariantInfo));
+					b.Append(((IFormattable)val).ToString(null, NumberFormatInfo.InvariantInfo));
 				}
+				if (val is ushort || val is uint || val is ulong) {
+					b.Append('U');
+					if (val is uint)
+						b.Append('I');
+				}
+				if (val is long || val is ulong)
+					b.Append('L');
+				if (val is short || val is ushort)
+					b.Append('S');
+				return b.ToString();
 			} else {
-				outputFormatter.PrintText(val.ToString());
+				return val.ToString();
 			}
-			
-			return null;
 		}
 		
 		public override object TrackedVisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
@@ -2346,12 +2367,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					
 				case UnaryOperatorType.Dereference:
 					outputFormatter.PrintToken(Tokens.Times);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					return null;
 				case UnaryOperatorType.AddressOf:
 					outputFormatter.PrintToken(Tokens.AddressOf);
+					TrackedVisit(unaryOperatorExpression.Expression, data);
 					return null;
 				default:
 					Error("unknown unary operator: " + unaryOperatorExpression.Op.ToString(), unaryOperatorExpression.StartLocation);
+					outputFormatter.PrintText(unaryOperatorExpression.Op.ToString());
+					outputFormatter.PrintText("(");
+					TrackedVisit(unaryOperatorExpression.Expression, data);
+					outputFormatter.PrintText(")");
 					return null;
 			}
 		}
@@ -2420,7 +2447,33 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
 		{
+			if (!sizeOfExpression.TypeReference.IsArrayType && sizeOfExpression.TypeReference.PointerNestingLevel == 0) {
+				switch (sizeOfExpression.TypeReference.Type) {
+					case "System.Byte":
+					case "System.SByte":
+						outputFormatter.PrintText("1");
+						return null;
+					case "System.Char":
+					case "System.Int16":
+					case "System.UInt16":
+						outputFormatter.PrintText("2");
+						return null;
+					case "System.Single":
+					case "System.Int32":
+					case "System.UInt32":
+						outputFormatter.PrintText("4");
+						return null;
+					case "System.Double":
+					case "System.Int64":
+					case "System.UInt64":
+						outputFormatter.PrintText("8");
+						return null;
+				}
+			}
 			UnsupportedNode(sizeOfExpression);
+			outputFormatter.PrintText("sizeof(");
+			TrackedVisit(sizeOfExpression.TypeReference, data);
+			outputFormatter.PrintText(")");
 			return null;
 		}
 		
@@ -2481,6 +2534,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
 			UnsupportedNode(pointerReferenceExpression);
+			TrackedVisit(pointerReferenceExpression.TargetObject, data);
+			outputFormatter.PrintText(".");
+			outputFormatter.PrintIdentifier(pointerReferenceExpression.MemberName);
+			PrintTypeArguments(pointerReferenceExpression.TypeArguments);
 			return null;
 		}
 		
@@ -2565,6 +2622,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
 		{
 			UnsupportedNode(stackAllocExpression);
+			outputFormatter.PrintText("stackalloc");
 			return null;
 		}
 		

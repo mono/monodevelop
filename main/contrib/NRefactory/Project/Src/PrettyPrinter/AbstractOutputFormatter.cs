@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 4324 $</version>
+//     <version>$Revision: 4482 $</version>
 // </file>
 
 using System;
@@ -147,7 +147,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			WriteInPreviousLine(txt, forceWriteInPreviousBlock, true);
 		}
-		
 		protected void WriteInPreviousLine(string txt, bool forceWriteInPreviousBlock, bool indent)
 		{
 			if (txt.Length == 0) return;

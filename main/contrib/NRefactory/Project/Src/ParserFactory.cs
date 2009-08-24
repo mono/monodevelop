@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 1965 $</version>
+//     <version>$Revision: 4482 $</version>
 // </file>
 
 using System;
@@ -52,9 +52,9 @@ namespace ICSharpCode.NRefactory
 		public static IParser CreateParser(string fileName, Encoding encoding)
 		{
 			string ext = Path.GetExtension(fileName);
-			if (ext.Equals(".cs", StringComparison.InvariantCultureIgnoreCase))
+			if (ext.Equals(".cs", StringComparison.OrdinalIgnoreCase))
 				return CreateParser(SupportedLanguage.CSharp, new StreamReader(fileName, encoding));
-			if (ext.Equals(".vb", StringComparison.InvariantCultureIgnoreCase))
+			if (ext.Equals(".vb", StringComparison.OrdinalIgnoreCase))
 				return CreateParser(SupportedLanguage.VBNet, new StreamReader(fileName, encoding));
 			return null;
 		}

@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3832 $</version>
+//     <version>$Revision: 4482 $</version>
 // </file>
 
 using ICSharpCode.NRefactory.AstBuilder;

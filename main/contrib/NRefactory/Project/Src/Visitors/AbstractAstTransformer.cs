@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-
+ 
 namespace ICSharpCode.NRefactory.Visitors {
 	using System;
 	using System.Collections.Generic;

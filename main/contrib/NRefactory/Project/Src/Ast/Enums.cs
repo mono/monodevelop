@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 3403 $</version>
+//     <version>$Revision: 4740 $</version>
 // </file>
 
 using System;
@@ -309,6 +309,9 @@ namespace ICSharpCode.NRefactory.Ast
 		Divide,
 		Modulus,
 		Concat,
+		
+		UnaryPlus,
+		UnaryMinus,
 		
 		Not,
 		BitNot,

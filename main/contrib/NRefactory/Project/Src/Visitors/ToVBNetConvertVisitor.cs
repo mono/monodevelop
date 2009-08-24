@@ -2,12 +2,13 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 2819 $</version>
+//     <version>$Revision: 4570 $</version>
 // </file>
 
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.AstBuilder;
 using Attribute = ICSharpCode.NRefactory.Ast.Attribute;
 
 namespace ICSharpCode.NRefactory.Visitors
@@ -27,6 +28,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   Move Imports-statements out of namespaces
 		//   Parenthesis around Cast expressions remove - these are syntax errors in VB.NET
 		//   Decrease array creation size - VB specifies upper bound instead of array length
+		//   Automatic properties are converted to explicit implementation
 		
 		List<INode> nodesToMoveToCompilationUnit = new List<INode>();
 		
@@ -309,6 +311,25 @@ namespace ICSharpCode.NRefactory.Visitors
 			
 			ToVBNetRenameConflictingVariablesVisitor.RenameConflicting(propertyDeclaration);
 			
+			if (!IsClassType(ClassType.Interface) && (propertyDeclaration.Modifier & Modifiers.Abstract) == 0) {
+				if (propertyDeclaration.HasGetRegion && propertyDeclaration.HasSetRegion) {
+					if (propertyDeclaration.GetRegion.Block.IsNull && propertyDeclaration.SetRegion.Block.IsNull) {
+						// automatically implemented property
+						string fieldName = "m_" + propertyDeclaration.Name;
+						Modifiers fieldModifier = propertyDeclaration.Modifier & ~(Modifiers.Visibility) | Modifiers.Private;
+						FieldDeclaration newField = new FieldDeclaration(null, propertyDeclaration.TypeReference, fieldModifier);
+						newField.Fields.Add(new VariableDeclaration(fieldName));
+						InsertAfterSibling(propertyDeclaration, newField);
+						
+						propertyDeclaration.GetRegion.Block = new BlockStatement();
+						propertyDeclaration.GetRegion.Block.Return(ExpressionBuilder.Identifier(fieldName));
+						propertyDeclaration.SetRegion.Block = new BlockStatement();
+						propertyDeclaration.SetRegion.Block.Assign(ExpressionBuilder.Identifier(fieldName), ExpressionBuilder.Identifier("Value"));
+						
+					}
+				}
+			}
+			
 			return null;
 		}
 		
@@ -335,7 +356,9 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			base.VisitParenthesizedExpression(parenthesizedExpression, data);
 			if (parenthesizedExpression.Expression is CastExpression) {
-				ReplaceCurrentNode(parenthesizedExpression.Expression); // remove parenthesis
+				ReplaceCurrentNode(parenthesizedExpression.Expression); // remove parenthesis around casts
+			} else if (parenthesizedExpression.Parent is CastExpression) {
+				ReplaceCurrentNode(parenthesizedExpression.Expression); // remove parenthesis inside casts
 			}
 			return null;
 		}
@@ -346,6 +369,15 @@ namespace ICSharpCode.NRefactory.Visitors
 				arrayCreateExpression.Arguments[i] = Expression.AddInteger(arrayCreateExpression.Arguments[i], -1);
 			}
 			return base.VisitArrayCreateExpression(arrayCreateExpression, data);
+		}
+		
+		public override object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
+		{
+			base.VisitDefaultValueExpression(defaultValueExpression, data);
+			Expression defaultValue = ExpressionBuilder.CreateDefaultValueForType(defaultValueExpression.TypeReference);
+			if (!(defaultValue is DefaultValueExpression))
+				ReplaceCurrentNode(defaultValue);
+			return null;
 		}
 	}
 }

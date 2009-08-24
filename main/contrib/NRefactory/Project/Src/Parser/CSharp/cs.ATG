@@ -880,6 +880,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 		parameters.Add(new ParameterDeclarationExpression(type, varName));
 		OperatorDeclaration operatorDeclaration = new OperatorDeclaration {
+			Name = (isImplicit ? "op_Implicit" : "op_Explicit"),
 			Modifier = m.Modifier,
 			Attributes = attributes, 
 			Parameters = parameters, 
@@ -915,11 +916,16 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		(. Location endPos = t.Location; .)
 		")" ( Block<out stmt> | ";" )
 		(.
+			if (op == OverloadableOperatorType.Add && secondType == null)
+				op = OverloadableOperatorType.UnaryPlus;
+			if (op == OverloadableOperatorType.Subtract && secondType == null)
+				op = OverloadableOperatorType.UnaryMinus;
 			OperatorDeclaration operatorDeclaration = new OperatorDeclaration {
 				Modifier = m.Modifier,
 				Attributes = attributes,
 				TypeReference = type,
 				OverloadableOperator = op,
+				Name = GetReflectionNameForOperator(op),
 				Body = (BlockStatement)stmt,
 				StartLocation = m.GetDeclarationLocation(startPos),
 				EndLocation = endPos
@@ -1697,14 +1703,16 @@ SwitchLabel<out CaseLabel label>
 TryStatement<out Statement tryStatement>
 (.
 	Statement blockStmt = null, finallyStmt = null;
-	List<CatchClause> catchClauses = null;
+	CatchClause catchClause = null;
+	List<CatchClause> catchClauses = new List<CatchClause>();
 .)
 =
 	"try"  Block<out blockStmt>
-	(
-		CatchClauses<out catchClauses> [ "finally" Block<out finallyStmt> ]
-		| "finally" Block<out finallyStmt>
-	)
+	{
+		CatchClause<out catchClause>
+		(. if (catchClause != null) catchClauses.Add(catchClause); .)
+	}
+	[ "finally" Block<out finallyStmt> ]
 	(.
 		tryStatement = new TryCatchStatement(blockStmt, catchClauses, finallyStmt);
 		if (catchClauses != null) {
@@ -1713,36 +1721,28 @@ TryStatement<out Statement tryStatement>
 	.)
 .
 
-CatchClauses<out List<CatchClause> catchClauses>
-(.
-	catchClauses = new List<CatchClause>();
-.)
+CatchClause<out CatchClause catchClause>
 =
 	"catch" (. string identifier;
 	           Statement stmt;
 	           TypeReference typeRef;
 	           Location startPos = t.Location;
-	           CatchClause catchClause = null;
+	           catchClause = null;
 	        .)
-	/*--- general catch clause (as only catch clause) */
 	(
+		/*--- general catch clause */
 		Block<out stmt> (. catchClause = new CatchClause(stmt);  .)
+		
 		/*--- specific catch clause */
 		| "(" ClassType<out typeRef, false> (. identifier = null; .)
 			[ Identifier (. identifier = t.val; .) ]
 		   ")" Block<out stmt> 
 		   (. catchClause = new CatchClause(typeRef, identifier, stmt); .)
-		{ IF (IsTypedCatch()) "catch" "(" ClassType<out typeRef, false> (. identifier = null; .)
-			[ Identifier (. identifier = t.val; .) ]
-		   ")" Block<out stmt>
-		   (. catchClause = new CatchClause(typeRef, identifier, stmt); .) }
-		/*--- general catch clause (after specific catch clauses, optional) */
-		[ "catch" Block<out stmt> (. catchClause = new CatchClause(stmt); .) ]
-	) (. 
+	)
+	(. 
 		if (catchClause != null) {
 			catchClause.StartLocation = startPos;
 			catchClause.EndLocation = t.Location;
-			catchClauses.Add(catchClause);
 		}
 	.)
 .
