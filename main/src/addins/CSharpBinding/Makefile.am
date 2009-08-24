@@ -51,6 +51,7 @@ FILES =  \
 	Gui/NewCSharpExpressionFinder.cs \
 	Gui/NewOverrideCompletionData.cs \
 	Gui/NRefactoryDocumentMetaInformation.cs \
+	Gui/NRefactoryIndexerParameterDataProvider.cs \
 	Gui/NRefactoryParameterDataProvider.cs \
 	Gui/NRefactoryResolver.cs \
 	Gui/NRefactoryTemplateParameterDataProvider.cs \

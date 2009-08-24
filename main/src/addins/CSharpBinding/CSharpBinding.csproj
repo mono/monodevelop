@@ -197,6 +197,7 @@
     <Compile Include="Syntax\HighlightPropertiesSemanticRule.cs" />
     <Compile Include="FormattingStrategy\CSharpFormattingPolicyPanel.cs" />
     <Compile Include="Parser\CSharpNRefactoryASTProvider.cs" />
+    <Compile Include="Gui\NRefactoryIndexerParameterDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

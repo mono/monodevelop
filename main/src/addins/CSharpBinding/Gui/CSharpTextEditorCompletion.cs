@@ -571,30 +571,36 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
-			if (dom == null || (completionChar != '(' && completionChar != '<'))
+			if (dom == null || (completionChar != '(' && completionChar != '<' && completionChar != '['))
 				return null;
-			
+
 			if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 				return null;
-			
+
 			ExpressionResult result = FindExpression (dom, completionContext, -1);
 			if (result == null)
 				return null;
-			
+
 			//DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2);
-			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit,
-			                                                                                ICSharpCode.NRefactory.SupportedLanguage.CSharp,
-			                                                                                Editor,
-			                                                                                Document.FileName);
-			
+			NRefactoryResolver resolver = new MonoDevelop.CSharpBinding.NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+
 			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
-				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion(Editor, Document.CompilationUnit, Document.FileName, resolver.CallingType) ?? result.ExpressionContext;
-			
+				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName, resolver.CallingType) ?? result.ExpressionContext;
+
 			switch (completionChar) {
 			case '<':
 				if (string.IsNullOrEmpty (result.Expression))
 					return null;
 				return new NRefactoryTemplateParameterDataProvider (Editor, resolver, GetUsedNamespaces (), result.Expression.Trim ());
+			case '[': {
+				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+				if (resolveResult != null) {
+					IType type = dom.GetType (resolveResult.ResolvedType);
+					if (type != null)
+						return new NRefactoryIndexerParameterDataProvider (Editor, type, result.Expression);
+				}
+				return null;
+			}
 			case '(':
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (resolveResult != null) {

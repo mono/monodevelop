@@ -1,5 +1,5 @@
 // 
-// NRefactoryTemplateParameterDataProvider.cs
+// NRefactoryIndexerParameterDataProvider.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
@@ -35,28 +36,26 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
 using CSharpBinding.FormattingStrategy;
+using MonoDevelop.CSharpBinding;
 
 namespace MonoDevelop.CSharpBinding
 {
-	public class NRefactoryTemplateParameterDataProvider : IParameterDataProvider
+	public class NRefactoryIndexerParameterDataProvider : IParameterDataProvider
 	{
+		IType type;
+		string resolvedExpression;
 		MonoDevelop.Ide.Gui.TextEditor editor;
-		List<IType> types = new List<IType> ();
 		static CSharpAmbience ambience = new CSharpAmbience ();
+		List<IProperty> indexers;
 		
-		public NRefactoryTemplateParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, string typeName)
+		public NRefactoryIndexerParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, IType type, string resolvedExpression)
 		{
 			this.editor = editor;
-			foreach (string ns in namespaces) {
-				string prefix = ns + (ns.Length > 0 ? "." : "") + typeName + "`";
-				for (int i = 1; i < 99; i++) {
-					IType possibleType = resolver.Dom.GetType (prefix + i);
-					if (possibleType != null)
-						types.Add (possibleType);
-				}
-			}
+			this.type = type;
+			this.resolvedExpression = resolvedExpression;
+			indexers = new List<IProperty> (type.Properties.Where (p => p.IsIndexer));
 		}
-		
+
 		#region IParameterDataProvider implementation
 		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
@@ -81,9 +80,9 @@ namespace MonoDevelop.CSharpBinding
 				
 				if (c == ',' && depth == 1)
 					index++;
-				if (c == '<')
+				if (c == '[')
 					depth++;
-				if (c == '>')
+				if (c == ']')
 					depth--;
 				i++;
 			} while (i <= cursor && depth > 0);
@@ -93,49 +92,45 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
-			string name = ambience.GetString (types[overload], OutputFlags.UseFullName | OutputFlags.IncludeMarkup);
-			StringBuilder parameters = new StringBuilder ();
+			Console.WriteLine (indexers[overload] + "/" + indexers[overload].Parameters.Count);
+			StringBuilder result = new StringBuilder ();
 			int curLen = 0;
-			
-			foreach (string parameter in parameterMarkup) {
-				if (parameters.Length > 0)
-					parameters.Append (", ");
-				string text;
-				Pango.AttrList attrs;
-				char ch;
-				Pango.Global.ParseMarkup (parameter, '_', out attrs, out text, out ch);
-				if (curLen > 80) {
-					parameters.AppendLine ();
-					//parameters.Append (new string (' ', (prefix != null ? prefix.Length : 0) + name.Length + 4));
-					curLen = 0;
-				}
-				curLen += text.Length + 2;
-				parameters.Append (parameter);
+			result.Append (ambience.GetString (indexers[overload].ReturnType, OutputFlags.ClassBrowserEntries));
+			result.Append (' ');
+			result.Append (resolvedExpression);
+			result.Append ('[');
+			int parameterCount = 0;
+			foreach (IParameter parameter in indexers[overload].Parameters) {
+				if (parameterCount > 0)
+					result.Append (", ");
+				if (parameterCount == currentParameter)
+					result.Append ("<b>");
+				result.Append (ambience.GetString (parameter, OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName  | OutputFlags.IncludeReturnType));
+				if (parameterCount == currentParameter)
+					result.Append ("</b>");
+				parameterCount++;
 			}
-			return "<b>" + name + "</b>&lt;" + parameters + "&gt;";
+			result.Append (']');
+			return result.ToString ();
 		}
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
-			if (paramIndex < 0 || paramIndex >= types[overload].TypeParameters.Count)
-				return "";
-			return types[overload].TypeParameters[paramIndex].Name;//ambience.GetString (, OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
+			return type.Name;
 		}
 		
 		public int GetParameterCount (int overload)
 		{
 			if (overload < 0 || overload >= OverloadCount)
 				return 0;
-			int result = types[overload].TypeParameters.Count;
-			
-			return result;
+			return indexers[overload].Parameters.Count;
 		}
 		
 		public int OverloadCount {
 			get {
-				return types.Count;
+				return indexers.Count;
 			}
 		}
-		#endregion 
+		#endregion
 	}
 }
