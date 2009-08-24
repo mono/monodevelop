@@ -170,7 +170,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return -1;
 			int result = 0;
 			int lastIndex = -10;
-			Console.WriteLine (text);
+			
 			for (int i = 0; i < indices.Length; i++) {
 				int idx = indices[i];
 				if (idx >= text.Length)
