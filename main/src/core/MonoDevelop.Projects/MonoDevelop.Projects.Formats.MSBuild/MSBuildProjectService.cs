@@ -475,8 +475,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string fname = file.RelativePath;
 			if (file.IsExternalToProject)
 				fname = Path.GetFileName (fname);
-			else
+			else {
 				fname = FileService.NormalizeRelativePath (fname);
+				fname = Path.Combine (Path.GetDirectoryName (fname).Replace (' ','_'), Path.GetFileName (fname));
+			}
 
 			if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
 				fname = Path.ChangeExtension (fname, ".resources");
@@ -489,7 +491,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 
-			string rname = fname.Replace ('/', '.').Replace (' ', '_');
+			string rname = fname.Replace ('/', '.');
 			
 			DotNetProject dp = file.Project as DotNetProject;
 

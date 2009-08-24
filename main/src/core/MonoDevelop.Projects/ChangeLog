@@ -1,3 +1,9 @@
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	  Spaces have to be scaped as '_' only in the directory, not
+	  in the file name.
+
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: 
