@@ -108,6 +108,7 @@ RES =  \
 	Styles/BrownStyle.xml \
 	Styles/C64Style.xml \
 	Styles/OblivionStyle.xml \
+	Styles/Styles.xsd \
 	Styles/TangoLightStyle.xml \
 	Styles/VisualStudioStyle.xml \
 	SyntaxModes/ActionScriptSyntaxMode.xml \

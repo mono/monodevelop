@@ -32,6 +32,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
+using System.Xml.Schema;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -319,7 +320,7 @@ namespace Mono.TextEditor.Highlighting
 				;
 			return reader.GetAttribute (attribute);
 		}
-		
+		/*
 		public static bool IsValidStyle (string fileName)
 		{
 			if (!fileName.EndsWith ("Style.xml"))
@@ -332,7 +333,26 @@ namespace Mono.TextEditor.Highlighting
 			} catch (Exception) {
 				return false;
 			}
+		}*/
+		
+		public static List<ValidationEventArgs> ValidateStyleFile (string fileName)
+		{
+			List<ValidationEventArgs> result = new List<ValidationEventArgs> ();
+			XmlReaderSettings settings = new XmlReaderSettings ();
+			settings.ValidationType = ValidationType.Schema;
+			settings.ValidationEventHandler += delegate(object sender, ValidationEventArgs e) {
+				result.Add (e);
+			};
+			settings.Schemas.Add (null, new XmlTextReader (typeof(SyntaxModeService).Assembly.GetManifestResourceStream ("Styles.xsd")));
+			
+			using (XmlReader reader = XmlReader.Create (fileName, settings)) {
+				while (reader.Read ())
+					;
+			}
+			return result;
 		}
+		
+		
 		
 		public static bool IsValidSyntaxMode (string fileName)
 		{

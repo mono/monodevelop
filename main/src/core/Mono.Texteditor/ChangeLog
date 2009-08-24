@@ -1,5 +1,15 @@
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* Styles/Styles.xsd:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed Bug
+	  529544 - Source editor should validate styles when adding
+	  them & Bug 531014 - Syntax Highlighting: Style sheet file
+	  has to be called [something]Style.xml.
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/TextViewMargin.cs: Worked on "Bug 533332 -
 	  Caret is cometimes painted in wrong location".

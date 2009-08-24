@@ -218,6 +218,9 @@
     <EmbeddedResource Include="SyntaxModes\RubySyntaxMode.xml">
       <LogicalName>RubySyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Styles\Styles.xsd">
+      <LogicalName>Styles.xsd</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
