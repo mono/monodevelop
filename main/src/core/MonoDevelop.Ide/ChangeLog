@@ -1,5 +1,10 @@
 2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Properly reset the
+	  project of a document when reloading.
+
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.Gui/Document.cs:

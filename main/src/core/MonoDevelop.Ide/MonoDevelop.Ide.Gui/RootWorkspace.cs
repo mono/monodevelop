@@ -964,7 +964,7 @@ namespace MonoDevelop.Ide.Gui
 					hasUnsaved = true;
 				ISupportsProjectReload pr = doc.GetContent<ISupportsProjectReload> ();
 				if (pr != null)
-					pr.Update (null);
+					doc.SetProject (null);
 				else {
 					FilePath file = doc.IsFile ? doc.FileName : FilePath.Null;
 					EventHandler saved = delegate {
