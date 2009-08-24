@@ -1,17 +1,21 @@
-// PythonParser.cs
-//
-// Copyright (c) 2008 Christian Hergert <chris@dronelabs.com>
-//
+// 
+// ParserManager.cs
+//  
+// Author:
+//       Christian Hergert <chris@dronelabs.com>
+// 
+// Copyright (c) 2009 Christian Hergert
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,37 +25,33 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Threading;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using PyBinding.Runtime;
 
 namespace PyBinding.Parser
 {
-	public class PythonParser : AbstractParser
+	/// <summary>
+	/// Manage the parser subprocesses and access to them.
+	/// </summary>
+	internal static class ParserManager
 	{
-		public PythonParser () : base ("Python", "text/x-python")
+		static Dictionary<Type,PythonParserInternal> s_parsers = new Dictionary<Type, PythonParserInternal> ();
+		static object s_syncRoot = new object ();
+		
+		internal static PythonParserInternal GetParser (IPythonRuntime runtime)
 		{
-		}
-
-		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
-		{
-			var config = dom.Project.DefaultConfiguration as PythonConfiguration;
-			var parser = ParserManager.GetParser (config.Runtime);
+			if (runtime == null)
+				throw new ArgumentNullException ("runtime");
 			
-			try {
-				return parser.Parse (fileName, content);
+			lock (s_syncRoot) {
+				if (!s_parsers.ContainsKey (runtime.GetType ())) {
+					s_parsers [runtime.GetType ()] = new PythonParserInternal (runtime);
+				}
 			}
-			catch (Exception ex) {
-				Console.WriteLine ("Python parser exception:");
-				Console.WriteLine (ex.ToString ());
-				throw;
-			}
-		}
-
-		public override bool CanParse (string fileName)
-		{
-			return Path.GetExtension (fileName) == ".py";
+			
+			return s_parsers [runtime.GetType ()];
 		}
 	}
 }

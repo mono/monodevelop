@@ -43,9 +43,6 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Posix" />
-    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
@@ -76,38 +73,8 @@
     <Reference Include="MonoDevelop.GtkCore, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.DesignerSupport, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
     <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.VersionControl, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.NUnit, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.XmlEditor, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.AspNet, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Deployment, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Deployment.Linux, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.VBNetBinding, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.CBinding, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.CSharpBinding, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.Autotools, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
@@ -128,6 +95,41 @@
     <Reference Include="MonoDevelop.Refactoring, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
+    <Reference Include="Mono.Data.Sqlite" />
+    <Reference Include="NRefactory, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.VersionControl, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.NUnit, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.XmlEditor, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.AspNet, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Deployment, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Deployment.Linux, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.DesignerSupport, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.VBNetBinding, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.CBinding, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.CSharpBinding, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -170,6 +172,10 @@
     <Compile Include="PyBinding.Gui\PythonOptionsPanel.cs" />
     <Compile Include="PyBinding\PythonExecutionCommand.cs" />
     <Compile Include="PyBinding\PythonExecutionHandler.cs" />
+    <Compile Include="PyBinding\PythonSite.cs" />
+    <Compile Include="PyBinding.Parser\ParserDatabase.cs" />
+    <Compile Include="PyBinding.Parser\ParserItem.cs" />
+    <Compile Include="PyBinding.Parser\ParserManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EmptyPyProject.xpt.xml">
@@ -202,6 +208,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\PyClutterProject.xpt.xml">
       <LogicalName>PyClutterProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Schema.sql">
+      <LogicalName>Schema.sql</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

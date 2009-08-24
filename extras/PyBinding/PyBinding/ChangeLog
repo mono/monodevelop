@@ -1,3 +1,36 @@
+2009-08-24  Christian Hergert  <chris@dronelabs.com>
+
+	* PyBinding.csproj:
+	* PyBinding/PythonSite.cs:
+	* PyBinding/PythonConfiguration.cs:
+	* PyBinding.Parser.Dom/PythonParsedDocument.cs:
+	* PyBinding.Runtime/IPythonRuntime.cs:
+	* PyBinding.Runtime/AbstractPythonRuntime.cs:
+	* PyBinding.Gui/PythonOptionsPanel.cs:
+	* PyBinding.Gui/PythonOptionsWidget.cs:
+	* PyBinding.Gui/PythonEditorCompletion.cs:
+	* gtk-gui/PyBinding.Gui.PythonOptionsWidget.cs:
+	* gtk-gui/gui.stetic:
+	* Resources/completion.py:
+	* Resources/Schema.sql:
+	* Makefile:
+	* PyBinding.Parser/PythonParserInternal.cs:
+	* PyBinding.Parser/ParserItem.cs:
+	* PyBinding.Parser/PythonParser.cs:
+	* PyBinding.Parser/ParserDatabase.cs:
+	* PyBinding.Parser/ParserManager.cs:
+
+	This commit is the first push towards making the PyBinding more stable.
+	Code completion data for python site-modules can now be indexed and is
+	stored in Sqlite using Mono.Data.Sqlite.  This sqlite library requires
+	3.5 from everything I can gather.
+
+	The Python editor widget has been updated to support adding/removing
+	custom PYTHONPATH directories.
+
+	A bit of refactoring has also occurred to make managing the parser
+	database instances easier.
+
 2009-08-20  Christian Hergert  <chris@dronelabs.com>
 
 	* PyBinding/PyBinding.addin.xml: Add description for python mime type.

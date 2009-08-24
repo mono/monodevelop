@@ -170,7 +170,6 @@ namespace PyBinding.Gui {
             this.alignment2.LeftPadding = ((uint)(12));
             // Container child alignment2.Gtk.Container+ContainerChild
             this.hbox1 = new Gtk.HBox();
-            this.hbox1.Sensitive = false;
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
@@ -208,6 +207,7 @@ namespace PyBinding.Gui {
             w15.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.m_RemovePathButton = new Gtk.Button();
+            this.m_RemovePathButton.Sensitive = false;
             this.m_RemovePathButton.CanFocus = true;
             this.m_RemovePathButton.Name = "m_RemovePathButton";
             this.m_RemovePathButton.UseStock = true;
@@ -234,6 +234,8 @@ namespace PyBinding.Gui {
             this.label4.MnemonicWidget = this.m_PythonOptions;
             this.label5.MnemonicWidget = this.m_ModuleEntry;
             this.Show();
+            this.m_AddPathButton.Clicked += new System.EventHandler(this.AddPath_Clicked);
+            this.m_RemovePathButton.Clicked += new System.EventHandler(this.RemovePath_Clicked);
         }
     }
 }

@@ -79,6 +79,9 @@ FILES =  \
 	PyBinding.Parser.Dom/PythonModule.cs \
 	PyBinding.Parser.Dom/PythonNode.cs \
 	PyBinding.Parser.Dom/PythonParsedDocument.cs \
+	PyBinding.Parser/ParserDatabase.cs \
+	PyBinding.Parser/ParserItem.cs \
+	PyBinding.Parser/ParserManager.cs \
 	PyBinding.Parser/PythonParser.cs \
 	PyBinding.Parser/PythonParserInternal.cs \
 	PyBinding.Runtime/AbstractPythonRuntime.cs \
@@ -91,7 +94,8 @@ FILES =  \
 	PyBinding/PythonHelper.cs \
 	PyBinding/PythonLanguageBinding.cs \
 	PyBinding/PythonProject.cs \
-	PyBinding/PythonProjectBinding.cs 
+	PyBinding/PythonProjectBinding.cs \
+	PyBinding/PythonSite.cs 
 
 DATA_FILES = 
 
@@ -106,12 +110,14 @@ RESOURCES =  \
 	Resources/PyClutterProject.xpt.xml \
 	Resources/PyGtkProject.xpt.xml \
 	Resources/py-icon-32.png \
+	Resources/Schema.sql \
 	Resources/text-x-pysrc.16x16.png 
 
 EXTRAS = \
 	monodevelop-pybinding.pc.in 
 
 REFERENCES =  \
+	Mono.Data.Sqlite \
 	Mono.Posix \
 	-pkg:gtk-sharp-2.0 \
 	-pkg:mono-addins \
@@ -119,6 +125,7 @@ REFERENCES =  \
 	-pkg:monodevelop-core-addins \
 	System \
 	System.Core \
+	System.Data \
 	System.Xml
 
 DLL_REFERENCES = 

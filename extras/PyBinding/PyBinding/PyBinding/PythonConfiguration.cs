@@ -45,9 +45,6 @@ namespace PyBinding
 		[ItemProperty("Runtime/PythonOptions")]
 		string m_PythonOptions = String.Empty;
 		
-		[ItemProperty("Runtime/Paths")]
-		List<string> m_Paths = new List<string> ();
-		
 		[ItemProperty("Build/Optimize")]
 		bool m_Optimize = false;
 		
@@ -81,12 +78,6 @@ namespace PyBinding
 			}
 			set {
 				this.m_Optimize = value;
-			}
-		}
-		
-		public List<string> Paths {
-			get {
-				return this.m_Paths;
 			}
 		}
 		

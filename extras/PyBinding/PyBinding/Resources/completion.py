@@ -49,7 +49,6 @@ except ImportError:
 from   BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import cgi
 import compiler
-import gc
 import sys
 from   xml.etree.ElementTree import ElementTree, Element
 
@@ -60,14 +59,13 @@ class XmlASTVisitor(compiler.visitor.ASTVisitor):
     IPC so that we might add python code completion to MonoDevelop.
     """
     
-    def __init__(self, stream = sys.stdout):
+    def __init__(self):
         """
         Initializes the visitor and sets the stream to be used for
         outputing xml data.
         """
         compiler.visitor.ASTVisitor.__init__(self)
         
-        self.stream = stream
         self.tree = ElementTree(element = Element('module'))
         self.root = self.tree.getroot()
         
@@ -233,7 +231,7 @@ class ParseHandler(BaseHTTPRequestHandler):
         parse(content, outStream)
 
 def parse(content, outStream):
-    visitor = XmlASTVisitor(sys.stdout)
+    visitor = XmlASTVisitor()
     
     try:
         # get our AST for the file
@@ -264,9 +262,11 @@ def parse(content, outStream):
 
         visitor.tree.write(file = outStream)
     except SyntaxError, ex:
-        outStream.write('<error line="%d" column="%d">%s</error>' % (ex.lineno, ex.offset, str(ex)))
-    finally:
-        gc.collect()
+        lineno = hasattr(ex, 'lineno') and ex.lineno or 0
+        offset = hasattr(ex, 'offset') and ex.offset or 0
+        outStream.write('<error line="%d" column="%d">%s</error>' % (lineno, offset, str(ex)))
+    except TypeError, ex:
+        outStream.write('<error line="0" column="0">Invalid characters were found in the file. Could not parse.</error>')
 
 if __name__ == '__main__':
     if len(sys.argv[1:]) and sys.argv[1] == "MAGIC_TEST":

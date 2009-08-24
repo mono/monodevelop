@@ -53,6 +53,7 @@ namespace PyBinding.Gui
 			widget.Optimize = config.Optimize;
 			widget.Runtime = config.Runtime;
 			widget.PythonOptions = config.PythonOptions;
+			widget.PythonPaths = config.Runtime.Site.Paths;
 		}
 
 		public override void ApplyChanges ()
@@ -63,6 +64,13 @@ namespace PyBinding.Gui
 			config.Optimize = widget.Optimize;
 			config.Runtime = widget.Runtime;
 			config.PythonOptions = widget.PythonOptions;
+			
+			foreach (var path in widget.PythonPaths) {
+				if (!config.Runtime.Site.ContainsPath (path)) {
+					Console.WriteLine ("Adding path {0}", path);
+					config.Runtime.Site.AddPath (path);
+				}
+			}
 		}
 	}
 }

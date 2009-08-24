@@ -41,6 +41,8 @@ namespace PyBinding.Runtime
 		//      windows are also :. Someone should fix this at some point.
 		static readonly char[] m_PathSeparators = new char[] {';', ':'};
 		
+		PythonSite m_Site;
+		
 		public abstract string Name {
 			get;
 		}
@@ -48,6 +50,14 @@ namespace PyBinding.Runtime
 		public abstract string Path {
 			get;
 			set;
+		}
+		
+		public PythonSite Site {
+			get {
+				if (m_Site == null)
+					m_Site = new PythonSite (this);
+				return m_Site;
+			}
 		}
 		
 		public abstract IPythonCompiler Compiler {

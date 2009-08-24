@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.Gettext;
+using MonoDevelop.Ide.Gui;
 
 using PyBinding.Runtime;
 
@@ -40,20 +41,24 @@ namespace PyBinding.Gui
 		{
 			this.Build();
 			
-			// Setup PYTHON_PATH
-			this.m_PathsListStore = new ListStore (typeof (string));
-			this.m_PathsTreeView.Model = this.m_PathsListStore;
+			// Python paths
+			m_PathsListStore = new ListStore (typeof (string));
+			m_PathsTreeView.Model = this.m_PathsListStore;
+			m_PathsTreeView.HeadersVisible = false;
 			TreeViewColumn column = new TreeViewColumn ();
 			CellRendererText ctext = new CellRendererText ();
 			column.PackStart (ctext, true);
 			column.AddAttribute (ctext, "text", 0);
+			m_PathsTreeView.AppendColumn (column);
+			m_PathsTreeView.Selection.Changed += delegate {
+				this.m_RemovePathButton.Sensitive = m_PathsTreeView.Selection.CountSelectedRows () == 1;
+			};
 			
 			// Setup Python Runtime Version
-			this.m_RuntimeListStore = new ListStore (typeof (string), typeof (Type));
-			this.m_RuntimeCombo.Model = this.m_RuntimeListStore;
-			
-			this.m_RuntimeListStore.AppendValues ("Python 2.5", typeof (Python25Runtime));
-			this.m_RuntimeListStore.AppendValues ("Python 2.6", typeof (Python26Runtime));
+			m_RuntimeListStore = new ListStore (typeof (string), typeof (Type));
+			m_RuntimeCombo.Model = this.m_RuntimeListStore;
+			m_RuntimeListStore.AppendValues ("Python 2.5", typeof (Python25Runtime));
+			m_RuntimeListStore.AppendValues ("Python 2.6", typeof (Python26Runtime));
 		}
 		
 		public string DefaultModule {
@@ -83,6 +88,29 @@ namespace PyBinding.Gui
 			}
 		}
 		
+		public string[] PythonPaths {
+			get {
+				List<string> paths = new List<string> ();
+				TreeIter iter;
+				
+				if (m_PathsListStore.GetIterFirst (out iter)) {
+					do {
+						var path = (string)m_PathsListStore.GetValue (iter, 0);
+						paths.Add (path);
+					} while (m_PathsListStore.IterNext (ref iter));
+				}
+				
+				return paths.ToArray ();
+			}
+			set {
+				m_PathsListStore.Clear ();
+				
+				foreach (var path in value) {
+					m_PathsListStore.AppendValues (path);
+				}
+			}
+		}
+		
 		public IPythonRuntime Runtime {
 			get {
 				Type runtimeType;
@@ -106,6 +134,31 @@ namespace PyBinding.Gui
 						}
 					} while (m_RuntimeListStore.IterNext (ref iter));
 				}
+			}
+		}
+
+		protected virtual void AddPath_Clicked (object sender, System.EventArgs e)
+		{
+			var dialog = new FileChooserDialog ("Add Path",
+			                                    IdeApp.Workbench.RootWindow,
+			                                    FileChooserAction.SelectFolder,
+			                                    Gtk.Stock.Cancel, Gtk.ResponseType.Cancel,
+			                                    Gtk.Stock.Open, Gtk.ResponseType.Ok);
+			
+			if (dialog.Run () == (int)Gtk.ResponseType.Ok) {
+				m_PathsListStore.AppendValues (dialog.Filename);
+			}
+			
+			dialog.Destroy ();
+		}
+
+		protected virtual void RemovePath_Clicked (object sender, System.EventArgs e)
+		{
+			TreeModel model;
+			TreeIter iter;
+			
+			if (m_PathsTreeView.Selection.GetSelected (out model, out iter)) {
+				(model as ListStore).Remove (ref iter);
 			}
 		}
 	}

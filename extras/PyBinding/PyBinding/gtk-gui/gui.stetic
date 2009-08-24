@@ -224,7 +224,6 @@
             <child>
               <widget class="Gtk.HBox" id="hbox1">
                 <property name="MemberName" />
-                <property name="Sensitive">False</property>
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
@@ -261,6 +260,7 @@
                         <property name="UseStock">True</property>
                         <property name="Type">StockItem</property>
                         <property name="StockId">gtk-add</property>
+                        <signal name="Clicked" handler="AddPath_Clicked" />
                         <property name="label">gtk-add</property>
                       </widget>
                       <packing>
@@ -273,10 +273,12 @@
                     <child>
                       <widget class="Gtk.Button" id="m_RemovePathButton">
                         <property name="MemberName" />
+                        <property name="Sensitive">False</property>
                         <property name="CanFocus">True</property>
                         <property name="UseStock">True</property>
                         <property name="Type">StockItem</property>
                         <property name="StockId">gtk-remove</property>
+                        <signal name="Clicked" handler="RemovePath_Clicked" />
                         <property name="label">gtk-remove</property>
                       </widget>
                       <packing>

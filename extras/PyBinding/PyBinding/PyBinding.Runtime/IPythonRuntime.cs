@@ -52,6 +52,13 @@ namespace PyBinding.Runtime
 		}
 		
 		/// <summary>
+		/// The PythonSite containing information on the host.
+		/// </summary>
+		PythonSite Site {
+			get;
+		}
+		
+		/// <summary>
 		/// Builds a list of arguments to pass to the runtime for running
 		/// a project with the passed configuration.
 		/// </summary>

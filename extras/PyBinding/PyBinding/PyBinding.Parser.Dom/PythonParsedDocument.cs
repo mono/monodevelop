@@ -123,10 +123,13 @@ namespace PyBinding.Parser.Dom
 
 		void ExtractError (XmlElement element)
 		{
-			Add (new Error (ErrorType.Error,
-			                Int32.Parse (element.GetAttribute ("line")),
-							Int32.Parse (element.GetAttribute ("column")),
-			                element.InnerText));
+			int line = 0;
+			int column = 0;
+			
+			Int32.TryParse (element.GetAttribute ("line"), out line);
+			Int32.TryParse (element.GetAttribute ("column"), out column);
+			
+			Add (new Error (ErrorType.Error, line, column, element.InnerText));
 		}
 
 		/// <summary>
