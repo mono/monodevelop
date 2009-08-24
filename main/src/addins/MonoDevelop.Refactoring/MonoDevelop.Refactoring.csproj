@@ -86,7 +86,6 @@
     <Compile Include="MonoDevelop.CodeGeneration\ReadonlyPropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\CodeGenerationOptions.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\ToStringGenerator.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\EventMethodGenerator.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\EqualityMembersGenerator.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\WriteLineGenerator.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\AbstractGenerateAction.cs" />
@@ -98,6 +97,7 @@
     <Compile Include="MonoDevelop.Refactoring.RefactorImports\SortImportsRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementImplicit.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementExplicit.cs" />
+    <Compile Include="MonoDevelop.CodeGeneration\RaiseEventMethodGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

@@ -147,7 +147,7 @@ namespace MonoDevelop.CodeGeneration
 						
 						List<Expression> arguments = new List<Expression> ();
 						foreach (IParameter parameter in method.Parameters) {
-							methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (MatchNamespaceImports (parameter.ReturnType.ConvertToTypeReference ()), parameter.Name, GetModifier (parameter)));
+							methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (Options.MatchNamespaceImports (parameter.ReturnType.ConvertToTypeReference ()), parameter.Name, GetModifier (parameter)));
 							arguments.Add (new DirectionExpression (GetDirection (parameter), new IdentifierExpression (parameter.Name)));
 						}
 						
@@ -167,7 +167,7 @@ namespace MonoDevelop.CodeGeneration
 					if (member is IProperty) {
 						IProperty property = (IProperty)member;
 						PropertyDeclaration propertyDeclaration = new PropertyDeclaration (modifier, null, member.Name, null);
-						propertyDeclaration.TypeReference = MatchNamespaceImports (member.ReturnType.ConvertToTypeReference ());
+						propertyDeclaration.TypeReference = Options.MatchNamespaceImports (member.ReturnType.ConvertToTypeReference ());
 						if (property.HasGet) {
 							BlockStatement block = new BlockStatement ();
 							block.AddChild (isInterfaceMember ? throwNotImplemented : new ReturnStatement (baseReference));
@@ -184,23 +184,6 @@ namespace MonoDevelop.CodeGeneration
 				
 			}
 
-			ICSharpCode.NRefactory.Ast.TypeReference MatchNamespaceImports (ICSharpCode.NRefactory.Ast.TypeReference typeReference)
-			{
-				string prefix = "";
-				foreach (IUsing u in Options.Document.CompilationUnit.Usings) {
-					if (!u.IsFromNamespace || u.Region.Contains (Options.Document.TextEditor.CursorLine, Options.Document.TextEditor.CursorColumn)) {
-						foreach (string n in u.Namespaces) {
-							if (n.Length <= prefix.Length)
-								continue;
-							if (typeReference.Type.StartsWith (n + "."))
-								prefix = n;
-						}
-					}
-				}
-				if (!string.IsNullOrEmpty (prefix))
-					typeReference.Type = typeReference.Type.Substring (prefix.Length + 1);
-				return typeReference;
-			}
 		}
 	}
 }

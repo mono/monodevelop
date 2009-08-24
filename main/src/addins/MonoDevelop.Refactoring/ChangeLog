@@ -1,5 +1,17 @@
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.CodeGeneration/EventMethodGenerator.cs:
+	* MonoDevelop.CodeGeneration/CodeGenerationOptions.cs:
+	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs:
+	  Worked on raise event method generator (now it generates a
+	  thread safe version).
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
 	  Fixed "Bug 533681 - Method overriding always uses full
 	  namespaces".

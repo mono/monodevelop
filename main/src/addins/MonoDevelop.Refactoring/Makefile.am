@@ -36,11 +36,11 @@ FILES =  \
 	MonoDevelop.CodeGeneration/CodeGenerationOptions.cs \
 	MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs \
 	MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs \
-	MonoDevelop.CodeGeneration/EventMethodGenerator.cs \
 	MonoDevelop.CodeGeneration/GenerateCodeWindow.cs \
 	MonoDevelop.CodeGeneration/ICodeGenerator.cs \
 	MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs \
 	MonoDevelop.CodeGeneration/PropertyGenerator.cs \
+	MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs \
 	MonoDevelop.CodeGeneration/ReadonlyPropertyGenerator.cs \
 	MonoDevelop.CodeGeneration/ToStringGenerator.cs \
 	MonoDevelop.CodeGeneration/WriteLineGenerator.cs \

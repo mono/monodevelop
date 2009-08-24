@@ -40,7 +40,7 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class EventMethodGenerator : ICodeGenerator
+	public class RaiseEventMethodGenerator : ICodeGenerator
 	{
 		public string Icon {
 			get {
@@ -107,13 +107,19 @@ namespace MonoDevelop.CodeGeneration
 					IType type = Options.Dom.SearchType (new SearchTypeRequest (Options.Document.ParsedDocument.CompilationUnit, member.ReturnType, Options.EnclosingType));
 					IMethod invokeMethod = type.Methods.First ();
 
-					methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (invokeMethod.Parameters[1].ReturnType.ConvertToTypeReference (), invokeMethod.Parameters[1].Name));
+					methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (Options.MatchNamespaceImports (invokeMethod.Parameters[1].ReturnType.ConvertToTypeReference ()), invokeMethod.Parameters[1].Name));
+					const string handlerName = "handler";
+					
+					LocalVariableDeclaration handlerVariable = new LocalVariableDeclaration (new VariableDeclaration (handlerName, new MemberReferenceExpression (new ThisReferenceExpression (), member.Name)));
+					handlerVariable.TypeReference = Options.MatchNamespaceImports (member.ReturnType.ConvertToTypeReference ());
+					methodDeclaration.Body.AddChild (handlerVariable);
+					
 					IfElseStatement ifStatement = new IfElseStatement (null);
-					ifStatement.Condition = new BinaryOperatorExpression (new IdentifierExpression (member.Name), BinaryOperatorType.InEquality, new PrimitiveExpression (null));
+					ifStatement.Condition = new BinaryOperatorExpression (new IdentifierExpression (handlerName), BinaryOperatorType.InEquality, new PrimitiveExpression (null));
 					List<Expression> arguments = new List<Expression> ();
 					arguments.Add (new ThisReferenceExpression ());
 					arguments.Add (new IdentifierExpression (invokeMethod.Parameters[1].Name));
-					ifStatement.TrueStatement.Add (new ExpressionStatement (new InvocationExpression (new IdentifierExpression (member.Name), arguments)));
+					ifStatement.TrueStatement.Add (new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments)));
 					methodDeclaration.Body.AddChild (ifStatement);
 					yield return methodDeclaration;
 				}
