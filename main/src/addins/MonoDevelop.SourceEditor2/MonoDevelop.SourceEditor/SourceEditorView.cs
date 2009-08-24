@@ -58,7 +58,7 @@ namespace MonoDevelop.SourceEditor
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
-		ICodeTemplateWidget, ITemplateWidget
+		ICodeTemplateWidget, ITemplateWidget, ISupportsProjectReload
 #if GNOME_PRINT
 		, IPrintable
 #endif
@@ -1504,6 +1504,21 @@ namespace MonoDevelop.SourceEditor
 			return this.SourceEditorWidget.TextEditor.GetLanguageItem (offset, expression);
 		}
 		#endregion 
+		
+		#region ISupportsProjectReload implementaion
+		
+		ProjectReloadCapability ISupportsProjectReload.ProjectReloadCapability {
+			get {
+				return ProjectReloadCapability.Full;
+			}
+		}
+		
+		void ISupportsProjectReload.Update (Project project)
+		{
+			// The project will be assigned to the view. Nothing else to do. 
+		}
+		
+		#endregion
 		
 		#endregion
 		public Mono.TextEditor.TextEditorData GetTextEditorData ()
