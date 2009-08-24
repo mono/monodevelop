@@ -679,7 +679,6 @@ namespace MonoDevelop.Projects.Dom
 			{
 				IReturnType res;
 				if (typeTable.TryGetValue (decoratedName, out res)) {
-					Console.WriteLine ("Found type :" + res);
 					if (type.ArrayDimensions == 0 && type.PointerNestingLevel == 0) {
 						return res;
 					}
