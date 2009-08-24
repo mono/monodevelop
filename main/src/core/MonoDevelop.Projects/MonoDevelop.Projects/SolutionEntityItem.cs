@@ -211,16 +211,28 @@ namespace MonoDevelop.Projects
 				OnSaved (thisItemArgs);
 				
 				// Update save times
-				lastSaveTime.Clear ();
-				reloadCheckTime.Clear ();
-				foreach (FilePath file in GetItemFiles (false))
-					lastSaveTime [file] = reloadCheckTime [file] = GetLastWriteTime (file);
+				ResetLoadTimes ();
 				
 				FileService.NotifyFileChanged (FileName);
 			} finally {
 				savingFlag = false;
 			}
 		}
+		
+		void ResetLoadTimes ()
+		{
+			lastSaveTime.Clear ();
+			reloadCheckTime.Clear ();
+			foreach (FilePath file in GetItemFiles (false))
+				lastSaveTime [file] = reloadCheckTime [file] = GetLastWriteTime (file);
+		}
+		
+		protected override void OnEndLoad ()
+		{
+			base.OnEndLoad ();
+			ResetLoadTimes ();
+		}
+
 		
 		internal bool IsSaved {
 			get {

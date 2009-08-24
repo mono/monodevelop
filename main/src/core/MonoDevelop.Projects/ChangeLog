@@ -1,3 +1,14 @@
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/WorkspaceItem.cs:
+	* MonoDevelop.Projects/SolutionEntityItem.cs: Properly set the
+	  last write time flag after loading a project.
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Make sure the Load operation is started before creating the
+	  solution item, otherwise it will not be included in the
+	  loading context.
+
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ExpressionResult.cs: It's now

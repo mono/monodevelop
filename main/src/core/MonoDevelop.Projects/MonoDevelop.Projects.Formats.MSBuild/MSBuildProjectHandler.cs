@@ -206,24 +206,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			
-			Item = CreateSolutionItem (language, projectTypeGuids, itemType, itemClass);
-
-			Item.SetItemHandler (this);
-			MSBuildProjectService.SetId (Item, itemGuid);
-			
-			SolutionEntityItem it = (SolutionEntityItem) Item;
-			
-			it.FileName = fileName;
-			it.Name = System.IO.Path.GetFileNameWithoutExtension (fileName);
-			
 			try {
 				ProjectExtensionUtil.BeginLoadOperation ();
+				Item = CreateSolutionItem (language, projectTypeGuids, itemType, itemClass);
+	
+				Item.SetItemHandler (this);
+				MSBuildProjectService.SetId (Item, itemGuid);
+				
+				SolutionEntityItem it = (SolutionEntityItem) Item;
+				
+				it.FileName = fileName;
+				it.Name = System.IO.Path.GetFileNameWithoutExtension (fileName);
+			
 				Load (monitor, p);
+				return it;
+				
 			} finally {
 				ProjectExtensionUtil.EndLoadOperation ();
 			}
-			
-			return it;
 		}
 		
 		SolutionItem CreateSolutionItem (string language, string typeGuids, string itemType, Type itemClass)

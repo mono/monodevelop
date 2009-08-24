@@ -313,15 +313,20 @@ namespace MonoDevelop.Projects
 				OnSaved (new WorkspaceItemEventArgs (this));
 				
 				// Update save times
-				lastSaveTime.Clear ();
-				reloadCheckTime.Clear ();
-				foreach (FilePath file in GetItemFiles (false))
-					lastSaveTime [file] = reloadCheckTime [file] = GetLastWriteTime (file);
+				ResetLoadTimes ();
 				
 				FileService.NotifyFileChanged (FileName);
 			} finally {
 				savingFlag = false;
 			}
+		}
+		
+		void ResetLoadTimes ()
+		{
+			lastSaveTime.Clear ();
+			reloadCheckTime.Clear ();
+			foreach (FilePath file in GetItemFiles (false))
+				lastSaveTime [file] = reloadCheckTime [file] = GetLastWriteTime (file);
 		}
 		
 		public virtual bool NeedsReload {
@@ -430,6 +435,7 @@ namespace MonoDevelop.Projects
 		void ILoadController.EndLoad ()
 		{
 			loading--;
+			ResetLoadTimes ();
 			OnEndLoad ();
 		}
 		
