@@ -1,3 +1,10 @@
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:
+	  Fixed Bug 529544 - Source editor should validate styles when
+	  adding them & Bug 531014 - Syntax Highlighting: Style sheet
+	  file has to be called [something]Style.xml.
+
 2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implement
