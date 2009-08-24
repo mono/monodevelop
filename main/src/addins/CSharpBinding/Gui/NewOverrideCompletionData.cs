@@ -177,7 +177,7 @@ namespace MonoDevelop.CSharpBinding
 		bool NamespaceImported (string namespaceName)
 		{
 			foreach (IUsing u in unit.Usings) {
-				if (u.Region.Contains (editor.CursorLine, editor.CursorColumn)) {
+				if (!u.IsFromNamespace || u.Region.Contains (editor.CursorLine, editor.CursorColumn)) {
 					foreach (string n in u.Namespaces) {
 						if (n == namespaceName)
 							return true;

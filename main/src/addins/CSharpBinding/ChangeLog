@@ -1,5 +1,10 @@
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NewOverrideCompletionData.cs: Fixed 'Bug 533681 - Method
+	  overriding always uses full namespaces'.
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
 	* CSharpEnhancedCodeProvider.cs: Track API changes
 
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
