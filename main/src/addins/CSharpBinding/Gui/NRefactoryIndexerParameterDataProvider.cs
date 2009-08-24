@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharpBinding
 			this.editor = editor;
 			this.type = type;
 			this.resolvedExpression = resolvedExpression;
-			indexers = new List<IProperty> (type.Properties.Where (p => p.IsIndexer));
+			indexers = new List<IProperty> (type.Properties.Where (p => p.IsIndexer && !p.Name.Contains ('.')));
 		}
 
 		#region IParameterDataProvider implementation
@@ -92,7 +92,6 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
-			Console.WriteLine (indexers[overload] + "/" + indexers[overload].Parameters.Count);
 			StringBuilder result = new StringBuilder ();
 			int curLen = 0;
 			result.Append (ambience.GetString (indexers[overload].ReturnType, OutputFlags.ClassBrowserEntries));
