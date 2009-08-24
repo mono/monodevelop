@@ -46,7 +46,7 @@ namespace MonoDevelop.Core.Assemblies
 			return assemblyFullNameToAsm.Keys;
 		}
 		
-		internal SystemPackage RegisterPackage (PackageInfo pinfo, bool isInternal)
+		internal SystemPackage RegisterPackage (LibraryPackageInfo pinfo, bool isInternal)
 		{
 			return RegisterPackage (new SystemPackageInfo (pinfo), isInternal, pinfo.Assemblies.ToArray ());
 		}

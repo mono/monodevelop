@@ -49,7 +49,7 @@ namespace MonoDevelop.Core.Assemblies
 		MonoPlatformExecutionHandler execHandler;
 		Dictionary<string,string> environmentVariables;
 		
-		internal static PcFileCache PcFileCache = new PcFileCache (new PcFileCacheContext ());
+		internal static LibraryPcFileCache PcFileCache = new LibraryPcFileCache (new PcFileCacheContext ());
 		
 		MonoRuntimeInfo monoRuntimeInfo;
 		
@@ -182,7 +182,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (RuntimeAssemblyContext.GetPackageInternal (pname) != null || IsCorePackage (pname))
 				return;
 
-			PackageInfo pinfo = PcFileCache.GetPackageInfo (pcfile);
+			LibraryPackageInfo pinfo = PcFileCache.GetPackageInfo (pcfile);
 			if (pinfo.IsValidPackage)
 				RuntimeAssemblyContext.RegisterPackage (pinfo, false);
 		}
@@ -199,19 +199,19 @@ namespace MonoDevelop.Core.Assemblies
 		}
 	}
 	
-	class PcFileCacheContext: Mono.PkgConfig.IPcFileCacheContext
+	class PcFileCacheContext: Mono.PkgConfig.IPcFileCacheContext<LibraryPackageInfo>
 	{
 		public void ReportError (string message, System.Exception ex)
 		{
 			LoggingService.LogError (message, ex);
 		}
 		
-		public bool IsCustomDataComplete (string pcfile, PackageInfo pkg)
+		public bool IsCustomDataComplete (string pcfile, LibraryPackageInfo pkg)
 		{
 			return pkg.GetData ("targetFramework") != null;
 		}
 		
-		public void StoreCustomData (PcFile pcfile, PackageInfo pinfo)
+		public void StoreCustomData (PcFile pcfile, LibraryPackageInfo pinfo)
 		{
 			TargetFramework commonFramework = null;
 			bool inconsistentFrameworks = false;

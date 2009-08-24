@@ -1,3 +1,16 @@
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs:
+	* MonoDevelop.Core.Assemblies/SystemPackage.cs:
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/LibraryPcFileCache.cs:
+	* MonoDevelop.Core.Assemblies/DirectoryAssemblyContext.cs:
+	  Renamed some classes used by PcFileCache. Split PcFileCache
+	  in two files, to make it easier to reuse in Mono.Addins.
+
 2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Added an event

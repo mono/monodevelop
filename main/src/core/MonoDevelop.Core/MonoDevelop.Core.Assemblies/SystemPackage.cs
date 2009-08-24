@@ -141,7 +141,7 @@ namespace MonoDevelop.Core.Assemblies
 			IsGacPackage = true;
 		}
 
-		public SystemPackageInfo (PackageInfo info)
+		internal SystemPackageInfo (LibraryPackageInfo info)
 		{
 			Name = info.Name;
 			IsGacPackage = info.IsGacPackage;
