@@ -27,44 +27,71 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	
-	
 	public class ExpressionResult
 	{
-		
 		public string Expression {
 			get;
 			set;
 		}
-
-		public ExpressionContext ExpressionContext {
-			get;
-			set;
-		}
-
-		DomRegion region;
+		
 		public DomRegion Region {
+			get;
+			private set;
+		}
+		
+		List<ExpressionContext> expressionContexts = new List<ExpressionContext> ();
+		public IList<ExpressionContext> Contexts {
 			get {
-				return region;
+				return expressionContexts;
 			}
 		}
 		
-		public ExpressionResult (string expression) : this (expression, DomRegion.Empty, null)
-		{
+		public ExpressionContext ExpressionContext {
+			get {
+				return expressionContexts.Count > 0 ? expressionContexts[expressionContexts.Count - 1] : null;
+			}
+			set {
+				expressionContexts.Clear ();
+				expressionContexts.Add (value);
+			}
 		}
 		
-		public ExpressionResult (string expression, DomRegion region, ExpressionContext expressionContext)
+		public bool IsInInheritableTypeContext {
+			get {
+				for (int i = expressionContexts.Count - 1; i >= 0; i--) {
+					ExpressionContext cur = expressionContexts[i];
+					if (cur == ExpressionContext.IdentifierExpected || cur == ExpressionContext.Global)
+						continue;
+					return cur == ExpressionContext.InheritableType;
+				}
+				return false;
+			}
+		}
+		
+		public ExpressionResult (string expression) : this (expression, DomRegion.Empty, new ExpressionContext[0])
 		{
-			this.Expression = expression;
-			this.region = region;
-			this.ExpressionContext = expressionContext;
 		}
 		
 		public ExpressionResult (string expression, ExpressionContext expressionContext) : this (expression, DomRegion.Empty, expressionContext)
 		{
+		}
+		public ExpressionResult (string expression, IEnumerable<ExpressionContext> expressionContexts) : this (expression, DomRegion.Empty, expressionContexts)
+		{
+		}
+		
+		public ExpressionResult (string expression, DomRegion region, ExpressionContext expressionContext) : this (expression, region, new [] {expressionContext})
+		{
+		}
+		
+		public ExpressionResult (string expression, DomRegion region, IEnumerable<ExpressionContext> expressionContexts)
+		{
+			this.Expression = expression;
+			this.Region     = region;
+			this.expressionContexts = new List<ExpressionContext> (expressionContexts);
 		}
 		
 		public override string ToString ()
