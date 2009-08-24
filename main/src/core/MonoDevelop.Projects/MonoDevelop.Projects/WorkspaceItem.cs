@@ -54,6 +54,7 @@ namespace MonoDevelop.Projects
 		FilePath baseDirectory;
 		
 		Dictionary<string,DateTime> lastSaveTime = new Dictionary<string,DateTime> ();
+		Dictionary<string,DateTime> reloadCheckTime = new Dictionary<string,DateTime> ();
 		bool savingFlag;
 		
 		public Workspace ParentWorkspace {
@@ -313,8 +314,9 @@ namespace MonoDevelop.Projects
 				
 				// Update save times
 				lastSaveTime.Clear ();
+				reloadCheckTime.Clear ();
 				foreach (FilePath file in GetItemFiles (false))
-					lastSaveTime [file] = GetLastWriteTime (file);
+					lastSaveTime [file] = reloadCheckTime [file] = GetLastWriteTime (file);
 				
 				FileService.NotifyFileChanged (FileName);
 			} finally {
@@ -327,18 +329,29 @@ namespace MonoDevelop.Projects
 				if (savingFlag)
 					return false;
 				foreach (FilePath file in GetItemFiles (false))
-					if (GetLastSaveTime (file) != GetLastWriteTime (file))
+					if (GetLastReloadCheckTime (file) != GetLastWriteTime (file))
 						return true;
 				return false;
 			}
 			set {
-				lastSaveTime.Clear ();
+				reloadCheckTime.Clear ();
 				foreach (FilePath file in GetItemFiles (false)) {
 					if (value)
-						lastSaveTime [file] = DateTime.MinValue;
+						reloadCheckTime [file] = DateTime.MinValue;
 					else
-						lastSaveTime [file] = GetLastWriteTime (file);
+						reloadCheckTime [file] = GetLastWriteTime (file);
 				}
+			}
+		}
+		
+		public virtual bool ItemFilesChanged {
+			get {
+				if (savingFlag)
+					return false;
+				foreach (FilePath file in GetItemFiles (false))
+					if (GetLastSaveTime (file) != GetLastWriteTime (file))
+						return true;
+				return false;
 			}
 		}
 
@@ -356,6 +369,15 @@ namespace MonoDevelop.Projects
 		{
 			DateTime dt;
 			if (lastSaveTime.TryGetValue (file, out dt))
+				return dt;
+			else
+				return DateTime.MinValue;
+		}
+
+		DateTime GetLastReloadCheckTime (FilePath file)
+		{
+			DateTime dt;
+			if (reloadCheckTime.TryGetValue (file, out dt))
 				return dt;
 			else
 				return DateTime.MinValue;

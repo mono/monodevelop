@@ -192,6 +192,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			// Gets the name and version of the mscorlib assembly required by the project
 			string requiredRefUri = "Assembly:" + prj.TargetRuntime.Id + ":";
 			SystemAssembly asm = prj.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, prj.TargetFramework);
+			if (asm == null) {
+				LoggingService.LogWarning ("mscorlib assembly not found for framework '" + prj.TargetFramework.Id + "'. The framework may not be installed.");
+				return false;
+			}
 			requiredRefUri += asm.Location;
 			
 			// Replace the old reference if the target version has changed

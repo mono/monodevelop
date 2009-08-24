@@ -1,3 +1,14 @@
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/WorkspaceItem.cs:
+	* MonoDevelop.Projects/IWorkspaceObject.cs:
+	* MonoDevelop.Projects/SolutionEntityItem.cs: Added
+	  ItemFilesChanged. Returns true if the project files have
+	  changed since the last save.
+
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	  Added null check.
+
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: Fixed "Bug 531035 -
