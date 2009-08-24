@@ -5,7 +5,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Empty Interface Definition</_Name>
-		<Icon>md-html-file-icon</Icon>
+		<Icon>res:xib-template-empty.png</Icon>
 		<_Category>iPhone</_Category>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>IPhone</ProjectType>

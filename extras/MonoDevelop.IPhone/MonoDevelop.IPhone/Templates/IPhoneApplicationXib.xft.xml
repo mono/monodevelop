@@ -5,7 +5,7 @@
 	<TemplateConfiguration>
 		<_Name>Main Window Definition</_Name>
 		<_Category>iPhone</_Category>
-		<Icon>md-xml-file-icon</Icon>
+		<Icon>res:xib-template-application.png</Icon>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>IPhone</ProjectType>
 		<DefaultFilename IsFixed="True">MainWindow</DefaultFilename>

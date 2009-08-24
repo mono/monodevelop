@@ -1,3 +1,47 @@
+2009-08-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Icons/32x32:
+	* Icons/22x22:
+	* Icons/48x48:
+	* Icons/16x16:
+	* Icons/24x24:
+	* Icons/256x256:
+	* Icons/iPhone.svgz:
+	* Icons/iphone-22.png:
+	* Icons/iphone-16.png:
+	* Icons/iphone-32.png:
+	* Icons/iPhone-22.svgz:
+	* Icons/mono-develop.svg:
+	* MonoDevelop.IPhone.csproj:
+	* Icons/phone-apple-iphone.svg:
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPhoneViewXib.xft.xml:
+	* Templates/IPhoneEmptyXib.xft.xml:
+	* Icons/iphone-project-overlay.png:
+	* Icons/32x32/xib-template-view.png:
+	* Icons/48x48/phone-apple-iphone.png:
+	* Icons/16x16/phone-apple-iphone.png:
+	* Icons/32x32/phone-apple-iphone.png:
+	* Icons/32x32/xib-template-empty.png:
+	* Icons/22x22/phone-apple-iphone.png:
+	* Icons/24x24/phone-apple-iphone.png:
+	* Icons/32x32/xib-template-window.png:
+	* Icons/256x256/phone-apple-iphone.png:
+	* Templates/IPhoneApplicationXib.xft.xml:
+	* Templates/IPhoneViewController.xft.xml:
+	* Icons/32x32/xib-template-application.png:
+	* Icons/application-x-mono-develop-xib.svg:
+	* Icons/24x24/iphone-project-options-panel.png:
+	* Icons/16x16/iphone-project-options-panel.png:
+	* Icons/24x24/application-x-mono-develop-xib.png:
+	* Icons/32x32/application-x-mono-develop-xib.png:
+	* Icons/16x16/application-x-mono-develop-xib.png:
+	* Icons/22x22/application-x-mono-develop-xib.png:
+	* Icons/48x48/application-x-mono-develop-xib.png:
+	* Icons/256x256/application-x-mono-develop-xib.png:
+	* Icons/32x32/phone-apple-iphone-project-overlay.png: Add
+	  awesome new icons from Jakub Steiner <jimmac@gmail.com>.
+
 2009-08-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Keychain.cs:
