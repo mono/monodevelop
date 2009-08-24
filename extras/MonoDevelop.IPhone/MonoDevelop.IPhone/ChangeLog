@@ -1,5 +1,9 @@
 2009-08-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.IPhone.addin.xml: Use correct size for icon.
+
+2009-08-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* CodeBehindGenerator.cs: Change access of generated members
 	  to private.
 
