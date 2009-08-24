@@ -368,10 +368,13 @@ namespace MonoDevelop.Gettext
 		
 		static Encoding GetEncoding (string charset)
 		{
-			foreach (EncodingInfo info in Encoding.GetEncodings ())
-			{
-				if (info.Name.ToLower () == charset.ToLower ())
-					return info.GetEncoding ();
+			foreach (EncodingInfo info in Encoding.GetEncodings ()) {
+				try {
+					if (info.Name.ToLower () == charset.ToLower ())
+						return info.GetEncoding ();
+				} catch (Exception) {
+					// info.Name may fail.
+				}
 			}
 			return null;
 		}
