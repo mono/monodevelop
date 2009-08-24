@@ -84,8 +84,13 @@ namespace MonoDevelop.CSharpBinding
 			} else if (searchedMember is IMember) {
 				this.searchedMemberName = ((IMember)searchedMember).Name;
 				this.searchedMemberLocation = ((IMember)searchedMember).Location;
-				if (((IMember)searchedMember).DeclaringType != null && ((IMember)searchedMember).DeclaringType.CompilationUnit != null)
-					this.searchedMemberFile = ((IMember)searchedMember).DeclaringType.CompilationUnit.FileName;
+				
+				if (searchedMember is IType) {
+					this.searchedMemberFile = ((IType)searchedMember).CompilationUnit.FileName;
+				} else {
+					if (((IMember)searchedMember).DeclaringType != null && ((IMember)searchedMember).DeclaringType.CompilationUnit != null)
+						this.searchedMemberFile = ((IMember)searchedMember).DeclaringType.CompilationUnit.FileName;
+				}
 			} else if (searchedMember is IParameter) {
 				this.searchedMemberName = ((IParameter)searchedMember).Name;
 				this.searchedMemberLocation = ((IParameter)searchedMember).Location;
@@ -98,6 +103,7 @@ namespace MonoDevelop.CSharpBinding
 					this.searchedMemberFile = ((LocalVariable)searchedMember).CompilationUnit.FileName;
 			}
 		}
+		
 		static readonly Regex paramRegex    = new Regex ("\\<param\\s+name\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
 		static readonly Regex paramRefRegex = new Regex ("\\<paramref\\s+name\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
 
@@ -499,8 +505,10 @@ namespace MonoDevelop.CSharpBinding
 				//Console.WriteLine ("result:" + result);
 				if (searchedMember is IType) {
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
-					if (item == null || item is IType && ((IType)item).FullName == ((IType)searchedMember).FullName) {
-						//Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
+					if (item != null && item is IType && ((IType)item).FullName == ((IType)searchedMember).FullName) {
+					//	Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
+						Console.WriteLine ("result:" + result);
+					
 						AddUniqueReference (line, col, idExp.Identifier);
 					}
 				} else if (searchedMember is LocalVariable && result is LocalVariableResolveResult) {
@@ -536,7 +544,6 @@ namespace MonoDevelop.CSharpBinding
 		{
 			string type = typeReference.SystemType ?? typeReference.Type;
 			if (searchedMember is IType && this.searchedMemberName == GetNameWithoutPrefix (type)) {
-				
 				int line = typeReference.StartLocation.Y;
 				int col  = typeReference.StartLocation.X;
 				ExpressionResult res = new ExpressionResult ("new " + typeReference.ToString () + "()");
@@ -544,7 +551,7 @@ namespace MonoDevelop.CSharpBinding
 				
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				IType resolvedType = cls != null ? resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, cls, resolver.CallingType)) : null;
-				if (resolvedType == null || resolvedType.FullName == ((IType)searchedMember).FullName) 
+				if (resolvedType != null && resolvedType.FullName == ((IType)searchedMember).FullName) 
 					AddUniqueReference (line, col, typeReference.Type);
 			}
 			return base.VisitTypeReference (typeReference, data);
