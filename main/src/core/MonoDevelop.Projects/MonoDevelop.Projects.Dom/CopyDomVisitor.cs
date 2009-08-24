@@ -120,10 +120,8 @@ namespace MonoDevelop.Projects.Dom
 				result.AddTypeParameter (Visit (tp, data));
 			
 			result.MethodModifier = source.MethodModifier;
-			if (source.Parameters != null) {
-				foreach (IParameter parameter in source.Parameters)
-					result.Add ((IParameter) parameter.AcceptVisitor (this, data));
-			}
+			foreach (IParameter parameter in source.Parameters)
+				result.Add ((IParameter) parameter.AcceptVisitor (this, data));
 			
 			return result;
 		}
@@ -135,6 +133,8 @@ namespace MonoDevelop.Projects.Dom
 			result.PropertyModifier = source.PropertyModifier;
 			result.GetRegion = source.GetRegion;
 			result.SetRegion = source.SetRegion;
+			foreach (IParameter parameter in source.Parameters)
+				result.Add ((IParameter) parameter.AcceptVisitor (this, data));
 			return result;
 		}
 		

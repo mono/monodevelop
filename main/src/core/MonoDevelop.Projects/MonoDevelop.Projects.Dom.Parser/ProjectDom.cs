@@ -475,7 +475,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			indexer.Name = "Item";
 			indexer.Modifiers = Modifiers.Public;
 			indexer.PropertyModifier |= PropertyModifier.IsIndexer;
-			indexer.Add (new DomParameter(indexer, "this", DomReturnType.Int32));
+			indexer.Add (new DomParameter(indexer, "index", DomReturnType.Int32));
 			indexer.ReturnType = elementType;
 			t.Add (indexer);
 			DomReturnType listType = new DomReturnType ("System.Collections.Generic.IList", false, new IReturnType [] { elementType });

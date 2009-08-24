@@ -161,7 +161,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			result.ReturnType = ReadReturnType (reader, nameTable);
 			result.MethodModifier = (MethodModifier)reader.ReadInt32 ();
 			
-				
 			uint arguments = ReadUInt (reader, 5000);
 			while (arguments-- > 0) {
 				result.Add (ReadParameter (reader, nameTable));
@@ -235,6 +234,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			while (explicitInterfaces-- > 0) {
 				result.AddExplicitInterface (ReadReturnType (reader, nameTable));
 			}
+			uint arguments = ReadUInt (reader, 5000);
+			while (arguments-- > 0) {
+				result.Add (ReadParameter (reader, nameTable));
+			}
+			
  			result.BodyRegion = ReadRegion (reader, nameTable);
 			result.ReturnType = ReadReturnType (reader, nameTable);
 			result.PropertyModifier = (PropertyModifier)reader.ReadInt32 ();
@@ -251,6 +255,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			foreach (IReturnType returnType in property.ExplicitInterfaces) {
 				Write (writer, nameTable, returnType);
 			}
+			
+			writer.Write (property.Parameters.Count);
+			foreach (IParameter param in property.Parameters) {
+				Write (writer, nameTable, param);
+			}
+			
 			Write (writer, nameTable, property.BodyRegion);
 			Write (writer, nameTable, property.ReturnType);
 			writer.Write ((int)property.PropertyModifier);
