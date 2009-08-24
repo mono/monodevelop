@@ -507,9 +507,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 			internal FrameType squareBracketChildType;
 			internal FrameState state;
 			internal char bracketType;
-			internal ExpressionContext context;
+			internal List<ExpressionContext> contexts = new List<ExpressionContext> ();
 			internal IReturnType expectedType;
 			
+			internal ExpressionContext context {
+				get {
+					return contexts.Count > 0 ? contexts[contexts.Count - 1] : null;
+				}
+			}
 			internal bool InExpressionMode {
 				get {
 					return type == FrameType.Statements
@@ -523,13 +528,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			internal void SetContext(ExpressionContext context)
 			{
-				this.context = context;
+				this.contexts.Add (context);
 				this.expectedType = null;
 			}
 			internal void SetExpectedType(IReturnType expectedType)
 			{
 				this.expectedType = expectedType;
-				this.context = ExpressionContext.Default;
+				this.contexts.Add (ExpressionContext.Default);
 			}
 			
 			internal void SetDefaultContext()
@@ -730,13 +735,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (lastExpressionStartOffset >= 0) {
 				if (offset < tokenOffset) {
 					// offset is in front of this token
-					return MakeResult(text, lastExpressionStartOffset, tokenOffset, frame.context);
+					return MakeResult(text, lastExpressionStartOffset, tokenOffset, frame.contexts);
 				} else {
 					// offset is IN this token
-					return MakeResult(text, lastExpressionStartOffset, offset, frame.context);
+					return MakeResult(text, lastExpressionStartOffset, offset, frame.contexts);
 				}
 			} else {
-				return new ExpressionResult (null, frame.context);
+				return new ExpressionResult (null, frame.contexts);
 			}
 		}
 		
@@ -845,7 +850,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			if (frame.state == FrameState.ObjectCreation) {
 				if (token.Kind == Tokens.CloseParenthesis) {
 					if (frame.context.IsObjectCreation) {
-						frame.context = ExpressionContext.Default;
+						frame.SetContext (ExpressionContext.Default);
 						frame.lastExpressionStart = frame.lastNewTokenStart;
 					}
 					// keep frame.state
@@ -1147,10 +1152,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 						} else if (resultFrame.bracketType == '<' && token.Kind == Tokens.GreaterThan) {
 							// expression was a type argument
 							resultContext = ExpressionContext.Type;
-							return MakeResult(text, resultStartOffset, resultEndOffset, resultContext);
+							return MakeResult(text, resultStartOffset, resultEndOffset, new ExpressionContext[] { resultContext });
 						}
 						if (frame == resultFrame || resultFrame.type == FrameType.Popped) {
-							return MakeResult(text, resultStartOffset, resultEndOffset, resultContext);
+							return MakeResult(text, resultStartOffset, resultEndOffset, new ExpressionContext[] { resultContext });
 						}
 					} else {
 						if (frame.bracketType != '<') {
@@ -1164,7 +1169,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return new ExpressionResult(null, frame.context);
 		}
 		
-		ExpressionResult MakeResult(string text, int startOffset, int endOffset, ExpressionContext context)
+		ExpressionResult MakeResult(string text, int startOffset, int endOffset, IEnumerable<ExpressionContext> contexts)
 		{
 			if (endOffset < startOffset) {
 				int tmp = startOffset;
@@ -1174,7 +1179,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			Location start = OffsetToLocation(startOffset), end = OffsetToLocation(endOffset);
 			return new ExpressionResult(text.Substring(startOffset, endOffset - startOffset),
 			                            new DomRegion (start.Line, start.Column, end.Line, end.Column),
-			                            context);
+			                            contexts);
 		}
 		
 		public string RemoveLastPart(string expression)
