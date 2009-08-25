@@ -62,8 +62,11 @@ namespace MonoDevelop.WebReferences
 		public static void GenerateDiscoXml (StringBuilder text, DiscoveryDocument doc)
 		{
 			text.Append ("<big><b>" + GettextCatalog.GetString ("Web Service References") + "</b></big>\n\n");
-			foreach (DiscoveryReference dref in doc.References)
+			foreach (object oref in doc.References)
 			{
+				DiscoveryReference dref = oref as DiscoveryReference;
+				if (dref == null)
+					continue;
 				if (dref is ContractReference) {
 					text.AppendFormat ("<b>Service: {0}</b>\n<span size='small'>{1}</span>", System.IO.Path.GetFileNameWithoutExtension (dref.DefaultFilename), dref.Url);
 				}
