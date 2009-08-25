@@ -1,3 +1,9 @@
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 479457 - Intellisense blocking left and right
+	  arrow keys even when not used".
+
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Removed

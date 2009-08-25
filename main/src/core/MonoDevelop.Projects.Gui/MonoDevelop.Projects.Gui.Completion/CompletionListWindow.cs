@@ -106,6 +106,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 						else
 							declarationviewwindow.OverloadRight ();
 						UpdateDeclarationView ();
+					} else {
+						CompletionWindowManager.HideWindow ();
+						return false;
 					}
 					return true;
 				}
