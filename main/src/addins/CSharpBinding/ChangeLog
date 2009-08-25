@@ -1,5 +1,10 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorIndentation.cs: Fixed "Bug 533683 - File
+	  header automatically expanded".
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryParameterDataProvider.cs:
 	* Gui/NRefactoryIndexerParameterDataProvider.cs: Indexer xml
 	  docs are now displayed.

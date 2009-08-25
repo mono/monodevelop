@@ -410,7 +410,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				newIndent = ctx.ThisLineIndent;
 				int newIndentLength = newIndent.Length;
 				if (newIndent != curIndent) {
-					Editor.DeleteText (pos, nlwsp);
+					textEditorData.Remove (pos, nlwsp);
 					newIndentLength = Editor.InsertText (pos, newIndent);
 					// Engine state is now invalid
 					stateTracker.ResetEngineToPosition (pos);
