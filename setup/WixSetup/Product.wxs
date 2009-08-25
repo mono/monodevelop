@@ -12,6 +12,20 @@
     <Package Id="*" Compressed="yes" Description="$(var.ProductShortName) $(var.ProductVersionText) ($(var.ProductVersion))" InstallerVersion="200" ShortNames="no" Manufacturer="$(var.Manufacturer)" />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
+	<!-- Ensure GTK# 2.12.9+ is installed -->
+    <Property Id="GTKSHARPVERSION">
+      <RegistrySearch Id="gsversion" Root="HKLM" Key="SOFTWARE\Novell\GtkSharp\Version" Type="raw" />
+    </Property>
+    <Condition Message="Gtk# version 2.12.9 or greater must be installed.">
+		<![CDATA[GTKSHARPVERSION >= "2.12.9" OR REMOVE ~= "ALL"]]>
+    </Condition>
+
+    <!-- Ensure .Net 3.5 is installed -->
+    <PropertyRef Id="NETFRAMEWORK35" />
+    <Condition Message="This setup requires the .NET Framework 3.5 to be installed.">
+      Installed OR NETFRAMEWORK35
+    </Condition>
+
     <!-- Major upgrade -->
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion Minimum="$(var.ProductVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED" />
