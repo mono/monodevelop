@@ -92,6 +92,8 @@ namespace PyBinding
 		List<string> m_Paths = new List<string> ();
 		ParserDatabase m_Database;
 		PythonParserInternal m_parser;
+		uint m_saveHandle = 0;
+		string m_pathsPath;
 		
 		public ParserDatabase Database {
 			get { return m_Database; }
@@ -105,7 +107,16 @@ namespace PyBinding
 		{
 			string name = runtime.GetType ().Name;
 			string configPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-			string dbPath = PathCombine (configPath, "MonoDevelop", "PyBinding", "Parser", name + ".db");
+			string dbPath = PathCombine (configPath, "MonoDevelop", "PyBinding", "Sites", name, "completion.db");
+			m_pathsPath = PathCombine (configPath, "MonoDevelop", "PyBinding", "Sites", name, "paths");
+			
+			if (File.Exists (m_pathsPath)) {
+				foreach (var line in File.ReadAllLines (m_pathsPath)) {
+					string trimmed = line.Trim ();
+					if (!String.IsNullOrEmpty (line))
+						m_Paths.Add (trimmed);
+				}
+			}
 			
 			m_Database = new ParserDatabase (dbPath);
 			m_Database.Open ();
@@ -117,9 +128,29 @@ namespace PyBinding
 			return m_Paths.Contains (path);
 		}
 		
+		bool OnSave ()
+		{
+			m_saveHandle = 0; // runs in main thread, no lock needed
+			string[] paths = m_Paths.ToArray ();
+			
+			ThreadPool.QueueUserWorkItem (delegate {
+				using (var writer = new StreamWriter (File.OpenWrite (m_pathsPath)))
+				{
+					foreach (var path in paths)
+						writer.WriteLine (path);
+				}
+			});
+			
+			return false;
+		}
+		
 		public void AddPath (string path)
 		{
 			m_Paths.Add (path);
+			
+			// add timeout to save the file to disk in a few seconds if not scheduled yet
+			if (m_saveHandle == 0)
+				m_saveHandle = GLib.Timeout.Add (5000, OnSave);
 			
 			if (!Directory.Exists (path))
 				return;

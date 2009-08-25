@@ -1,5 +1,13 @@
 2009-08-24  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding/Makefile:
+	* PyBinding/PyBinding.csproj:
+	* PyBinding/PyBinding/PythonSite.cs: Save PYTHONPATH to disk so we can
+	reload it at next startup.  Store paths and the completion database in
+	~/.config/MonoDevelop/PyBinding/Sites/<SiteName>/.
+
+2009-08-24  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Gui/PythonEditorCompletion.cs:
 	* PyBinding.Parser/PythonParser.cs: Add support for completion on files
 	that are not attached to a project.
