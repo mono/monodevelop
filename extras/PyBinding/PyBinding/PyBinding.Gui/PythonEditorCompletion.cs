@@ -93,13 +93,13 @@ namespace PyBinding.Gui
 		
 		ICompletionDataList GenerateCompletionData (ICodeCompletionContext completionContext, PythonParsedDocument document, TextEditor editor)
 		{
-			if (document == null || document.Module == null)
+			if (document == null)
 				return null;
 			
 			var triggerWord = GetTriggerWord (editor, completionContext);
 			
 			// "self."
-			if (triggerWord.Equals ("self.")) {
+			if (document.Module != null && triggerWord.Equals ("self.")) {
 				var klass = GetClass (document.Module, completionContext.TriggerLine);
 				if (klass == null)
 					return null; // nothing to complete, self not in a class

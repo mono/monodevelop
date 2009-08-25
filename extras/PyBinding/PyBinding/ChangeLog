@@ -1,5 +1,10 @@
 2009-08-24  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Gui/PythonEditorCompletion.cs: Allow completion even when
+	the current file parse is in an inconsistent state.
+
+2009-08-24  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding/Makefile:
 	* PyBinding/PyBinding.csproj:
 	* PyBinding/PyBinding/PythonSite.cs: Save PYTHONPATH to disk so we can
