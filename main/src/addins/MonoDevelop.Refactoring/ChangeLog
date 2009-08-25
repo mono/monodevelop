@@ -1,5 +1,11 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
+	  Not longer possible to remove backing stores when the field
+	  has attributes.
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs: Fixed
 	  parameter members in the code generation action.
 

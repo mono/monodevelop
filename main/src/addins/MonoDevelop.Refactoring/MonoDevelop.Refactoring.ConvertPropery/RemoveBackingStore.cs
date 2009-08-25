@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Core;
 using Mono.TextEditor;
@@ -60,34 +61,30 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				return false;
 			INRefactoryASTProvider astProvider = options.GetASTProvider ();
 			string backingStoreName = RetrieveBackingStore (options, astProvider, property);
-			return !string.IsNullOrEmpty (backingStoreName);
+			if (string.IsNullOrEmpty (backingStoreName))
+				return false;
+			
+			// look if there is a valid backing store field that doesn't have any attributes.
+			int backinStoreStart;
+			int backinStoreEnd;
+			IField backingStore = GetBackingStoreField (options, backingStoreName, out backinStoreStart, out backinStoreEnd);
+			if (backingStore == null || backingStore.Attributes.Any ())
+				return false;
+			return true;
 		}
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
 			List<Change> result = new List<Change> ();
-			
+			TextEditorData data = options.GetTextEditorData ();
 			MemberResolveResult resolveResult = options.ResolveResult as MemberResolveResult;
 			IProperty property = resolveResult.ResolvedMember as IProperty;
-			TextEditorData data = options.GetTextEditorData ();
 			INRefactoryASTProvider astProvider = options.GetASTProvider ();
 			string backingStoreName = RetrieveBackingStore (options, astProvider, property);
 			
-			List<IMember> members = options.ResolveResult.CallingType.SearchMember (backingStoreName, true);
-			IMember backingStore = null;
-			int backinStoreStart = 0, backinStoreEnd = 0;
-			
-			foreach (IMember member in members) {
-				if (member.MemberType == MemberType.Field) {
-					DocumentLocation location = member.Location.ToDocumentLocation (data.Document);
-					backinStoreStart = data.Document.LocationToOffset (location);
-					LineSegment line = data.Document.GetLine (location.Line);
-					backinStoreEnd = line.Offset + line.EditableLength;
-					backingStore = member;
-					
-					break;
-				}
-			}
+			int backinStoreStart;
+			int backinStoreEnd;
+			IField backingStore = GetBackingStoreField (options, backingStoreName, out backinStoreStart, out backinStoreEnd);
 			
 			if (backingStore != null) {
 				foreach (MemberReference memberRef in GetReferences (options, backingStore)) {
@@ -104,8 +101,6 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 					RemovedChars = backinStoreEnd - backinStoreStart
 				});
 			}
-			
-
 			
 			if (property.HasGet) {
 				int startOffset = data.Document.LocationToOffset (property.GetRegion.Start.ToDocumentLocation (data.Document));
@@ -141,6 +136,26 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				InsertedText = setText
 			});
 			return result;
+		}
+
+		static IField GetBackingStoreField (MonoDevelop.Refactoring.RefactoringOptions options, string backingStoreName, out int backinStoreStart, out int backinStoreEnd)
+		{
+			TextEditorData data = options.GetTextEditorData ();
+			List<IMember> members = options.ResolveResult.CallingType.SearchMember (backingStoreName, true);
+			IMember backingStore = null;
+			backinStoreStart = 0;
+			backinStoreEnd = 0;
+			foreach (IMember member in members) {
+				if (member.MemberType == MemberType.Field) {
+					DocumentLocation location = member.Location.ToDocumentLocation (data.Document);
+					backinStoreStart = data.Document.LocationToOffset (location);
+					LineSegment line = data.Document.GetLine (location.Line);
+					backinStoreEnd = line.Offset + line.EditableLength;
+					backingStore = member;
+					break;
+				}
+			}
+			return backingStore as IField;
 		}
 
 		string RetrieveBackingStore (MonoDevelop.Refactoring.RefactoringOptions options, MonoDevelop.Refactoring.INRefactoryASTProvider astProvider, MonoDevelop.Projects.Dom.IProperty property)
