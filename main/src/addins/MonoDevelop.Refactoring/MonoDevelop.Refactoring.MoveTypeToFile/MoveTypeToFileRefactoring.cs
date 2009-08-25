@@ -58,8 +58,8 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 		{
 			IType type = options.SelectedItem as IType;
 			if (type.CompilationUnit.Types.Count == 1)
-				return String.Format (GettextCatalog.GetString ("_Rename file to '{0}'"), type.Name + Path.GetExtension (type.CompilationUnit.FileName));
-			return String.Format (GettextCatalog.GetString ("_Move type to file '{0}'"), type.Name + Path.GetExtension (type.CompilationUnit.FileName));
+				return String.Format (GettextCatalog.GetString ("_Rename file to '{0}'"), Path.GetFileName (GetCorrectFileName (type)));
+			return String.Format (GettextCatalog.GetString ("_Move type to file '{0}'"), Path.GetFileName (GetCorrectFileName (type)));
 		}
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
@@ -99,6 +99,8 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 		{
 			if (type == null || type.CompilationUnit == null || type.SourceProject == null || string.IsNullOrEmpty (type.CompilationUnit.FileName))
 				return null;
+			if (type is InstantiatedType)
+				type = ((InstantiatedType)type).UninstantiatedType;
 			return Path.Combine (Path.GetDirectoryName (type.CompilationUnit.FileName), type.Name + Path.GetExtension (type.CompilationUnit.FileName));
 		}
 	}
