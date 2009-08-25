@@ -97,7 +97,7 @@ namespace MonoDevelop.CodeGeneration
 					        new PrimitiveExpression (null)
 					    ), new ThrowStatement (
 					    	new ObjectCreateExpression (
-					        	new TypeReference ("System.ArgumentNullException"),
+					        	Options.MatchNamespaceImports (new TypeReference ("System.ArgumentNullException")),
 					            new List<Expression> { new PrimitiveExpression (member.Name) }
 							)
 					    )

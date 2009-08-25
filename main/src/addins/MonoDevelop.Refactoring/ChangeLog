@@ -1,5 +1,11 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs: Only full
+	  reference ArgumentNullException when System namespace isn't
+	  imported.
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs:
 	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs: Fixed
 	  null check generator & abstract generate action statement
