@@ -1,3 +1,8 @@
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger\StackTracePad.cs: Improve stack frame
+	  formatting.
+
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track API

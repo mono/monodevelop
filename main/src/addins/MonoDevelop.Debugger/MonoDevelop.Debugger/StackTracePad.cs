@@ -30,7 +30,7 @@ namespace MonoDevelop.Debugger
 		{
 			this.ShadowType = ShadowType.None;
 
-			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(string), typeof(string));
+			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(string), typeof(string), typeof(string));
 
 			tree = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			tree.RulesHint = true;
@@ -46,6 +46,7 @@ namespace MonoDevelop.Debugger
 			FrameCol.Title = GettextCatalog.GetString ("Name");
 			FrameCol.PackStart (tree.TextRenderer, true);
 			FrameCol.AddAttribute (tree.TextRenderer, "text", 1);
+			FrameCol.AddAttribute (tree.TextRenderer, "foreground", 5);
 			FrameCol.Resizable = true;
 			FrameCol.Alignment = 0.0f;
 			tree.AppendColumn (FrameCol);
@@ -54,18 +55,21 @@ namespace MonoDevelop.Debugger
 			col.Title = GettextCatalog.GetString ("File");
 			col.PackStart (tree.TextRenderer, false);
 			col.AddAttribute (tree.TextRenderer, "text", 2);
+			col.AddAttribute (tree.TextRenderer, "foreground", 5);
 			tree.AppendColumn (col);
 
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Language");
 			col.PackStart (tree.TextRenderer, false);
 			col.AddAttribute (tree.TextRenderer, "text", 3);
+			col.AddAttribute (tree.TextRenderer, "foreground", 5);
 			tree.AppendColumn (col);
 
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Address");
 			col.PackStart (tree.TextRenderer, false);
 			col.AddAttribute (tree.TextRenderer, "text", 4);
+			col.AddAttribute (tree.TextRenderer, "foreground", 5);
 			tree.AppendColumn (col);
 			
 			Add (tree);
@@ -116,14 +120,16 @@ namespace MonoDevelop.Debugger
 				StackFrame fr = current_backtrace.GetFrame (i);
 				
 				StringBuilder met = new StringBuilder (fr.SourceLocation.Method);
-				met.Append (" (");
 				ObjectValue[] args = fr.GetParameters ();
-				for (int n=0; n<args.Length; n++) {
-					if (n > 0)
-						met.Append (", ");
-					met.Append (args[n].Name).Append ("=").Append (args[n].Value);
+				if (args.Length != 0 || !fr.SourceLocation.Method.StartsWith ("[")) {
+					met.Append (" (");
+					for (int n=0; n<args.Length; n++) {
+						if (n > 0)
+							met.Append (", ");
+						met.Append (args[n].Name).Append ("=").Append (args[n].Value);
+					}
+					met.Append (")");
 				}
-				met.Append (")");
 				
 				string file;
 				if (!string.IsNullOrEmpty (fr.SourceLocation.Filename)) {
