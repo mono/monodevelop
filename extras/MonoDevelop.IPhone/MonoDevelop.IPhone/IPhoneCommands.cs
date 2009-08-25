@@ -108,36 +108,52 @@ namespace MonoDevelop.IPhone
 		protected override void Run ()
 		{
 			var proj = DefaultUploadToDeviceHandler.GetActiveProject ();
-			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			var slnConf =IdeApp.Workspace.ActiveConfiguration;
+			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (slnConf);
 			
 			string mtouchPath = DefaultUploadToDeviceHandler.GetMtouchPath (proj);
 			
 			IdeApp.ProjectOperations.Build (proj).Completed += delegate (IAsyncOperation op) {
-				if (op.Success) {
-					var outWriter= new StringWriter ();
-					var xcodeDir = conf.OutputDirectory.Combine ("XcodeProject");
-					
-					if (!Directory.Exists (xcodeDir)) {
-						try {
-							Directory.CreateDirectory (xcodeDir);
-						} catch (IOException ex) {
-							MessageService.ShowException (ex, "Failed to create directory '" + xcodeDir +"' for Xcode project");
-							return;
-						}
+				if (!op.Success)
+					return;
+				
+				var outWriter= new StringWriter ();
+				var xcodeDir = conf.OutputDirectory.Combine ("XcodeProject");
+				
+				if (!Directory.Exists (xcodeDir)) {
+					try {
+						Directory.CreateDirectory (xcodeDir);
+					} catch (IOException ex) {
+						MessageService.ShowException (ex, "Failed to create directory '" + xcodeDir +"' for Xcode project");
+						return;
 					}
-					
-					var args = new System.Text.StringBuilder ();
-					args.AppendFormat ("-xcode=\"{0}\"", xcodeDir);
-					foreach (var pf in proj.Files)
-						if (pf.BuildAction == BuildAction.Content)
-							args.AppendFormat (" -res=\"{0}\"", pf.FilePath);
-					args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
-					
-					using (ProcessWrapper pw = Runtime.ProcessService.StartProcess (mtouchPath, args.ToString (), conf.OutputDirectory, outWriter, outWriter, null)) {
-						pw.WaitForOutput ();
-						if (pw.ExitCode != 0) {
-							MessageService.ShowError ("mtouch failed to export the Xcode project", outWriter.ToString ());
-						}
+				}
+				
+				var args = new System.Text.StringBuilder ();
+				args.AppendFormat ("-xcode=\"{0}\"", xcodeDir);
+				foreach (ProjectFile pf in proj.Files) {
+					if (pf.BuildAction == BuildAction.Content || pf.BuildAction == BuildAction.Page) {
+						string rel = pf.IsExternalToProject? pf.FilePath.FileName : pf.RelativePath;
+						args.AppendFormat (" -res=\"{0}\",\"{1}\"", pf.FilePath, rel);
+					}
+				}
+				
+				args.AppendFormat (" -res=\"{0}\"", conf.AppDirectory.Combine ("Info.plist"));
+				
+				foreach (string asm in proj.GetReferencedAssemblies (slnConf))
+					args.AppendFormat (" -r=\"{0}\"", asm);
+				
+				if (!String.IsNullOrEmpty (conf.ExtraMtouchArgs)) {
+					args.Append (" ");
+					args.Append (conf.ExtraMtouchArgs);
+				}
+				
+				args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
+				
+				using (ProcessWrapper pw = Runtime.ProcessService.StartProcess (mtouchPath, args.ToString (), conf.OutputDirectory, outWriter, outWriter, null)) {
+					pw.WaitForOutput ();
+					if (pw.ExitCode != 0) {
+						MessageService.ShowError ("mtouch failed to export the Xcode project", outWriter.ToString ());
 					}
 				}
 			};
