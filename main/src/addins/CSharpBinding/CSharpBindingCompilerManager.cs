@@ -373,8 +373,9 @@ namespace CSharpBinding
 			return exitCode;
 		}
 		
-		// Snatched from our codedom code :-).
-		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*\d):\s*(?<message>.*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		// Snatched from our codedom code, with some changes to make it compatible with csc
+		// (the line+column group is optional is csc)
+		static Regex regexError = new Regex (@"^(\s*(?<file>[^\(]+)(\((?<line>\d*)(,(?<column>\d*[\+]*))?\))?:\s+)*(?<level>\w+)\s+(?<number>.*\d):\s*(?<message>.*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		static BuildError CreateErrorFromString (string error_string)
 		{
 			// When IncludeDebugInformation is true, prevents the debug symbols stats from braeking this.

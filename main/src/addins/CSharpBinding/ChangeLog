@@ -1,3 +1,8 @@
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBindingCompilerManager.cs: Fixed regex for parsing
+	  errors. The line+column group is optional in csc.
+
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/CSharpFormatter.cs: Fixed "Bug 533986 - Autoformat:
