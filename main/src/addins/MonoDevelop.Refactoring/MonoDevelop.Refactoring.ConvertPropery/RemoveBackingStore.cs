@@ -50,7 +50,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			if (resolveResult == null)
 				return false;
 			IProperty property = resolveResult.ResolvedMember as IProperty;
-			if (property == null)
+			if (property == null || !property.HasGet)
 				return false;
 			
 			TextEditorData data = options.GetTextEditorData ();
@@ -120,17 +120,26 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				});
 			}
 			
+			int setStartOffset;
+			int setEndOffset;
+			PropertySetRegion setRegion = new PropertySetRegion (null, null);
+			string setText;
 			if (property.HasSet) {
-				int startOffset = data.Document.LocationToOffset (property.SetRegion.Start.ToDocumentLocation (data.Document));
-				int endOffset = data.Document.LocationToOffset (property.SetRegion.End.ToDocumentLocation (data.Document));
-				string text = astProvider.OutputNode (options.Dom, new PropertySetRegion (null, null), options.GetIndent (property) + "\t").Trim ();
-				result.Add (new TextReplaceChange () {
-					FileName = options.Document.FileName,
-					Offset = startOffset,
-					RemovedChars = endOffset - startOffset,
-					InsertedText = text
-				});
+				setStartOffset = data.Document.LocationToOffset (property.SetRegion.Start.ToDocumentLocation (data.Document));
+				setEndOffset = data.Document.LocationToOffset (property.SetRegion.End.ToDocumentLocation (data.Document));
+				setText = astProvider.OutputNode (options.Dom, setRegion, options.GetIndent (property) + "\t").Trim ();
+			} else {
+				setEndOffset = setStartOffset = data.Document.LocationToOffset (property.GetRegion.End.ToDocumentLocation (data.Document));
+				setRegion.Modifier = ICSharpCode.NRefactory.Ast.Modifiers.Private;
+				setText = Environment.NewLine + astProvider.OutputNode (options.Dom, setRegion, options.GetIndent (property) + "\t").TrimEnd ();
 			}
+			
+			result.Add (new TextReplaceChange () {
+				FileName = options.Document.FileName,
+				Offset = setStartOffset,
+				RemovedChars = setEndOffset - setStartOffset,
+				InsertedText = setText
+			});
 			return result;
 		}
 

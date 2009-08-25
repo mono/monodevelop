@@ -50,14 +50,11 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			IProperty property = resolveResult.ResolvedMember as IProperty;
 			if (property == null)
 				return false;
-			Console.WriteLine (property);
 			TextEditorData data = options.GetTextEditorData ();
 			if (property.HasGet && data.Document.GetCharAt (data.Document.LocationToOffset (property.GetRegion.End.Line - 1, property.GetRegion.End.Column - 2)) != ';')
 				return false;
-			Console.WriteLine (1);
 			if (property.HasSet && data.Document.GetCharAt (data.Document.LocationToOffset (property.SetRegion.End.Line - 1, property.SetRegion.End.Column - 2)) != ';')
 				return false;
-			Console.WriteLine (2);
 			return true;
 		}
 		
@@ -71,12 +68,17 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				
 			List<TextLink> links = new List<TextLink> ();
 			TextLink link = new TextLink ("name");
-			
+			int referenceCount = 1;
+			MemberResolveResult resolveResult = options.ResolveResult as MemberResolveResult;
+			IProperty property = resolveResult.ResolvedMember as IProperty;
+			if (property.HasGet)
+				referenceCount++;
+			if (property.HasSet)
+				referenceCount++;
 			for (int i = refactoringStartOffset; i < data.Document.Length - backingStoreName.Length; i++) {
 				if (data.Document.GetTextAt (i, backingStoreName.Length) == backingStoreName) {
 					link.AddLink (new Segment (i - refactoringStartOffset, backingStoreName.Length));
-					 // need to find three references
-					if (link.Count == 3)
+					if (link.Count == referenceCount)
 						break;
 				}
 			}
