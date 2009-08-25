@@ -67,6 +67,7 @@
 		<Class class = "MonoDevelop.CodeGeneration.RaiseEventMethodGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.NullCheckGenerator" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->

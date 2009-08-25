@@ -124,10 +124,13 @@ namespace MonoDevelop.CodeGeneration
 					output.AppendLine ();
 				output.Append (astProvider.OutputNode (options.Dom, node, RefactoringOptions.GetIndent (options.Document, options.EnclosingType) + "\t"));
 			}
-			int column = 1;
-			if (!Char.IsWhiteSpace (output[0]))
-				column = options.Document.TextEditor.CursorColumn;
-			options.Document.TextEditor.InsertText (options.Document.TextEditor.GetPositionFromLineColumn (options.Document.TextEditor.CursorLine, column), output.ToString ());
+			Console.WriteLine ("output:" + output.ToString ().Replace ("\t", "->"));
+			if (output.Length > 0) {
+				int column = 1;
+				if (!Char.IsWhiteSpace (output[0]))
+					column = options.Document.TextEditor.CursorColumn;
+				options.Document.TextEditor.InsertText (options.Document.TextEditor.GetPositionFromLineColumn (options.Document.TextEditor.CursorLine, column), output.ToString ());
+			}
 		}
 	}
 }

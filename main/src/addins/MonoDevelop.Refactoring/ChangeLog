@@ -1,5 +1,14 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs: Added
+	  NullCheckGenerator from Scott Thomas <scpeterson@novell.com>
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
 	  Not longer possible to remove backing stores when the field
 	  has attributes.

@@ -38,6 +38,7 @@ FILES =  \
 	MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs \
 	MonoDevelop.CodeGeneration/GenerateCodeWindow.cs \
 	MonoDevelop.CodeGeneration/ICodeGenerator.cs \
+	MonoDevelop.CodeGeneration/NullCheckGenerator.cs \
 	MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs \
 	MonoDevelop.CodeGeneration/PropertyGenerator.cs \
 	MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs \
