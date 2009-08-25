@@ -1,5 +1,14 @@
 2009-08-25  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding/PyBinding.csproj:
+	* PyBinding/PyBinding.addin.xml:
+	* PyBinding/Resources/PythonStylePolicy.xml:
+	* PyBinding/Makefile: Add python style policy, however it is not
+	actually hooked up yet.  That will require some changes in
+	MonoDevelop.Gui.Projects.
+
+2009-08-25  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding/PyBinding.csproj: 
 	* PyBinding/PyBinding.Gui/PythonEditorCompletion.cs: Make completion
 	a little more friendly by not poping up so much when we know we dont

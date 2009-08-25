@@ -118,4 +118,8 @@
 		<ExecutionHandler id="Python" class = "PyBinding.PythonExecutionHandler"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono">
+		<Policies resource="PythonStylePolicy.xml" />
+	</Extension>
+	
 </Addin>

@@ -110,6 +110,7 @@ RESOURCES =  \
 	Resources/PyClutterProject.xpt.xml \
 	Resources/PyGtkProject.xpt.xml \
 	Resources/py-icon-32.png \
+	Resources/PythonStylePolicy.xml \
 	Resources/Schema.sql \
 	Resources/text-x-pysrc.16x16.png 
 

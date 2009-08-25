@@ -213,6 +213,9 @@
     <EmbeddedResource Include="Resources\Schema.sql">
       <LogicalName>Schema.sql</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PythonStylePolicy.xml">
+      <LogicalName>PythonStylePolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
