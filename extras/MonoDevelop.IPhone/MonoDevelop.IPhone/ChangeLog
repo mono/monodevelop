@@ -1,5 +1,9 @@
 2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Fix build.
+
+2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Pass refs and extra mtouch args to
 	  xcodeproj generator. Also include xibs as resources, and
 	  include relative path info for all resources.
