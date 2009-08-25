@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Projects.Dom;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring
 {
@@ -36,6 +37,11 @@ namespace MonoDevelop.Refactoring
 		public static bool IsIdentifierPart (this char ch)
 		{
 			return Char.IsLetterOrDigit (ch) || ch == '_';
+		}
+		
+		public static DocumentLocation ToDocumentLocation (this DomLocation location, Document document)
+		{
+			return new DocumentLocation (location.Line - 1, location.Column - 1);
 		}
 		
 		public static TypeReference ConvertToTypeReference (this MonoDevelop.Projects.Dom.IReturnType returnType)

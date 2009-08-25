@@ -98,6 +98,8 @@
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementImplicit.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementExplicit.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\RaiseEventMethodGenerator.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ConvertPropery\CreateBackingStore.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ConvertPropery\RemoveBackingStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -112,6 +114,7 @@
     <Folder Include="MonoDevelop.CodeGeneration\" />
     <Folder Include="MonoDevelop.Refactoring.RefactorImports\" />
     <Folder Include="MonoDevelop.Refactoring.ImplementInterface\" />
+    <Folder Include="MonoDevelop.Refactoring.ConvertPropery\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />

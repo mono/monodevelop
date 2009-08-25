@@ -44,6 +44,8 @@ FILES =  \
 	MonoDevelop.CodeGeneration/ReadonlyPropertyGenerator.cs \
 	MonoDevelop.CodeGeneration/ToStringGenerator.cs \
 	MonoDevelop.CodeGeneration/WriteLineGenerator.cs \
+	MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs \
+	MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs \
 	MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs \
 	MonoDevelop.Refactoring.CreateClass/CreateStructCodeGenerator.cs \
 	MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs \

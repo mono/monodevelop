@@ -71,7 +71,7 @@ namespace MonoDevelop.Refactoring.Rename
 			return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename, null).Text;
 		}
 		
-		Mono.TextEditor.TextEditor GetEditor (Gtk.Widget widget)
+		internal static Mono.TextEditor.TextEditor GetEditor (Gtk.Widget widget)
 		{
 			if (widget is Mono.TextEditor.TextEditor)
 				return (Mono.TextEditor.TextEditor)widget;

@@ -1,5 +1,17 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring.ConvertPropery:
+	* MonoDevelop.Refactoring/HelperMethods.cs:
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:
+	* MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs:
+	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
+	  Added create/remove backing store property refactorings.
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs:
 	  Move type to file refactoring now works with generic types.
 
