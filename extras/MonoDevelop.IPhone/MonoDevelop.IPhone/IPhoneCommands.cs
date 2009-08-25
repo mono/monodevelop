@@ -138,7 +138,7 @@ namespace MonoDevelop.IPhone
 					}
 				}
 				
-				args.AppendFormat (" -res=\"{0}\"", conf.AppDirectory.Combine ("Info.plist"));
+				args.AppendFormat (" -res=\"{0}\",\"Info.plist\"", conf.AppDirectory.Combine ("Info.plist"));
 				
 				foreach (string asm in proj.GetReferencedAssemblies (slnConf))
 					args.AppendFormat (" -r=\"{0}\"", asm);
@@ -150,7 +150,11 @@ namespace MonoDevelop.IPhone
 				
 				args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
 				
-				using (ProcessWrapper pw = Runtime.ProcessService.StartProcess (mtouchPath, args.ToString (), conf.OutputDirectory, outWriter, outWriter, null)) {
+				string argStr = args.ToString ();
+				
+				LoggingService.LogInfo ("Generated Xcode project by invoking mtouch with the following args: " + argStr);
+				
+				using (ProcessWrapper pw = Runtime.ProcessService.StartProcess (mtouchPath, argStr, conf.OutputDirectory, outWriter, outWriter, null)) {
 					pw.WaitForOutput ();
 					if (pw.ExitCode != 0) {
 						MessageService.ShowError ("mtouch failed to export the Xcode project", outWriter.ToString ());

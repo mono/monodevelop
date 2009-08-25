@@ -1,5 +1,12 @@
 2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Output xcodeproj generation args in a log
+	  message. Make all res IDs explicit.
+
+	* gtk-gui/generated.cs: Flush generated code.
+
+2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Fix build.
 
 2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
