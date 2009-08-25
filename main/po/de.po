@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-07-17 19:40:32+0200\n"
-"PO-Revision-Date: 2009-08-24 11:36:53+0200\n"
+"PO-Revision-Date: 2009-08-25 08:45:56+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -10126,7 +10126,7 @@ msgstr "Innerhalb Klassen"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:301
 msgid "within interfaces"
-msgstr "in Schnittstelle"
+msgstr "in Schnittstellen"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:302
 msgid "within structs"
@@ -12753,11 +12753,11 @@ msgstr "Alles Ersetzen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:122
 msgid "Find Previous"
-msgstr "Rückwärts suchen"
+msgstr "Aufwärts"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:148
 msgid "Find Next"
-msgstr "Weitersuchen"
+msgstr "Abwärts"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:198
 msgid "Find:"
@@ -16307,7 +16307,6 @@ msgstr "_Lokale Variable deklarieren"
 #~ msgstr "Lösche Dateien"
 #~ msgid "Do you want to save the current changes?"
 #~ msgstr "Wollen sie die aktuellen Änderungen speichern?"
-
 #~ msgid "Do you really want to discard your changes?"
 #~ msgstr "Wollen sie ihre Änderungen wirklich verwerfen?"
 
