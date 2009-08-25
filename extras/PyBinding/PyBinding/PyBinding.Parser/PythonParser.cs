@@ -26,18 +26,29 @@ using System.IO;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 
+using PyBinding.Runtime;
+
 namespace PyBinding.Parser
 {
 	public class PythonParser : AbstractParser
 	{
+		IPythonRuntime m_defaultRuntime;
+		
 		public PythonParser () : base ("Python", "text/x-python")
 		{
+			m_defaultRuntime = PythonHelper.FindPreferedRuntime ();
 		}
 
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
-			var config = dom.Project.DefaultConfiguration as PythonConfiguration;
-			var parser = ParserManager.GetParser (config.Runtime);
+			IPythonRuntime runtime;
+			
+			if (dom != null && dom.Project != null && dom.Project.DefaultConfiguration != null)
+				runtime = (dom.Project.DefaultConfiguration as PythonConfiguration).Runtime;
+			else
+				runtime = m_defaultRuntime;
+			
+			var parser = ParserManager.GetParser (runtime);
 			
 			try {
 				return parser.Parse (fileName, content);

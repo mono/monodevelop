@@ -1,5 +1,11 @@
 2009-08-24  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Gui/PythonEditorCompletion.cs:
+	* PyBinding.Parser/PythonParser.cs: Add support for completion on files
+	that are not attached to a project.
+
+2009-08-24  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Parser/ParserDatabase.cs: No need for MaxValue.  OS X (and
 	probably 32-bit in general) don't seem to like this.
 

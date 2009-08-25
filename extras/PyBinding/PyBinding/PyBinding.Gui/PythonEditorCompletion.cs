@@ -57,6 +57,9 @@ namespace PyBinding.Gui
 				if (config != null)
 					m_site = new PythonSite (config.Runtime);
 			}
+			
+			if (m_site == null)
+				m_site = new PythonSite (PythonHelper.FindPreferedRuntime ());
 		}
 
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
