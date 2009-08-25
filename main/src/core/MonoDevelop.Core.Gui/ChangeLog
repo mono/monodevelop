@@ -1,3 +1,8 @@
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui\DispatchService.cs: Don't set STA
+	  apartment. It doesn't work for the .NET debugger.
+
 2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Gui/ImageService.cs: Better warnings when

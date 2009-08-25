@@ -167,7 +167,6 @@ namespace MonoDevelop.Core.Gui
 		{
 			GenericMessageContainer smc = new GenericMessageContainer (cb, false);
 			Thread t = new Thread (new ThreadStart (smc.Run));
-			t.SetApartmentState (ApartmentState.STA);
 			t.IsBackground = true;
 			t.Start ();
 		}
@@ -176,7 +175,6 @@ namespace MonoDevelop.Core.Gui
 		{
 			StatefulMessageContainer smc = new StatefulMessageContainer (cb, state, false);
 			Thread t = new Thread (new ThreadStart (smc.Run));
-			t.SetApartmentState (ApartmentState.STA);
 			t.IsBackground = true;
 			t.Start ();
 		}
