@@ -1,5 +1,11 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring/RefactoringService.cs: Refactorings
+	  are now atomic.
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
 	* MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs:
 	  Worked on refactoring.

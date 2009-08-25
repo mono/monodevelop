@@ -32,6 +32,7 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
+using Mono.TextEditor;
 
 
 namespace MonoDevelop.Refactoring
@@ -72,18 +73,48 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
+		static List<TextEditorData> textEditorDatas = new List<TextEditorData> ();
+		public static void FinishRefactoringOperation ()
+		{
+			foreach (TextEditorData data in textEditorDatas) {
+				data.Document.EndAtomicUndo ();
+			}
+			textEditorDatas.Clear ();
+		}
+		
+		static TextEditorData GetTextEditorData (string fileName)
+		{
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				if (doc.FileName == fileName) {
+					ITextEditorDataProvider data = doc.GetContent<ITextEditorDataProvider> ();
+					if (data != null) {
+						TextEditorData result = data.GetTextEditorData ();
+						textEditorDatas.Add (result);
+						result.Document.BeginAtomicUndo ();
+						return result;
+					}
+				}
+			}
+			return null;
+		}
+		
 		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
 		{
 			if (rctx == null)
 				throw new InvalidOperationException ("Refactory context not available.");
-
-			IEditableTextFile file = rctx.GetFile (FileName);
-			if (file != null) {
-				if (RemovedChars > 0)
-					file.DeleteText (Offset, RemovedChars);
-				if (!string.IsNullOrEmpty (InsertedText))
-					file.InsertText (Offset, InsertedText);
-				rctx.Save ();
+			
+			TextEditorData textEditorData = GetTextEditorData (FileName);
+			if (textEditorData == null) {
+				IEditableTextFile file = rctx.GetFile (FileName);
+				if (file != null) {
+					if (RemovedChars > 0)
+						file.DeleteText (Offset, RemovedChars);
+					if (!string.IsNullOrEmpty (InsertedText))
+						file.InsertText (Offset, InsertedText);
+					rctx.Save ();
+				}
+			} else if (textEditorData != null) {
+				textEditorData.Replace (Offset, RemovedChars, InsertedText);
 			}
 		}
 	}

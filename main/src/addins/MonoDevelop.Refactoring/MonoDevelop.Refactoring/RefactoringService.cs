@@ -141,6 +141,7 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 			FileService.FileRenamed -= handler.FileRename;
+			TextReplaceChange.FinishRefactoringOperation ();
 		}
 		
 		public static INRefactoryASTProvider GetASTProvider (string mimeType)
