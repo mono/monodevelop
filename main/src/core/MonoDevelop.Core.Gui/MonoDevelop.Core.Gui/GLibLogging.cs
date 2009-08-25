@@ -36,7 +36,7 @@ namespace MonoDevelop.Core.Gui
 	
 	public static class GLibLogging
 	{
-		static readonly string[] domains = new string[] {"Gtk", "Gdk", "GLib", "GLib-GObject", "Pango"};
+		static readonly string[] domains = new string[] {"Gtk", "Gdk", "GLib", "GLib-GObject", "Pango", "GdkPixbuf" };
 		static uint[] handles;
 		
 		static Delegate exceptionManagerHook;

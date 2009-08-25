@@ -1,3 +1,10 @@
+2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Gui.csproj: Flush whitespace.
+
+	* MonoDevelop.Core.Gui/GLibLogging.cs: Add GdkPixbuf to the
+	  logging domains.
+
 2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/DesktopService.cs: Fix typo.

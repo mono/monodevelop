@@ -476,7 +476,7 @@
     <EmbeddedResource Include="icons\remove-namespace-16.png">
       <LogicalName>remove-namespace-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\sort-namespace-16.png" >
+    <EmbeddedResource Include="icons\sort-namespace-16.png">
       <LogicalName>sort-namespace-16.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
