@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects.Dom
 	public class SearchTypeRequest
 	{
 		string name;
-		List<IReturnType> genericParameters;
+		IList<IReturnType> genericParameters;
 		ICompilationUnit currentCompilationUnit;
 		int    caretLine, caretColumn;
 		bool   caseSensitive = true;
@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public List<IReturnType> GenericParameters {
+		public IList<IReturnType> GenericParameters {
 			get {
 				return genericParameters;
 			}
@@ -144,7 +144,7 @@ namespace MonoDevelop.Projects.Dom
 		//	this.genericParameterCount = -1;
 		}
 		
-		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, int caretLine, int caretColumn, string name, List<IReturnType> genericParameters)
+		public SearchTypeRequest (ICompilationUnit currentCompilationUnit, int caretLine, int caretColumn, string name, IList<IReturnType> genericParameters)
 		{
 			this.currentCompilationUnit = currentCompilationUnit;
 			this.caretLine   = caretLine;

@@ -1,5 +1,11 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/SearchTypeRequest.cs: Changed List
+	  -> IList as requirement for a search type request generic
+	  parameter list.
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomCecilField.cs:
 	* MonoDevelop.Projects.Dom/DomCecilEvent.cs:
 	* MonoDevelop.Projects.Dom/AbstractMember.cs:
