@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects.Dom
 				this.fieldDefinition = fieldDefinition;
 			base.name            = fieldDefinition.Name;
 			base.Modifiers       = DomCecilType.GetModifiers (fieldDefinition);
-			base.returnType      = DomCecilMethod.GetReturnType (fieldDefinition.FieldType);
+			base.ReturnType      = DomCecilMethod.GetReturnType (fieldDefinition.FieldType);
 			DomCecilMethod.AddAttributes (this, fieldDefinition.CustomAttributes);
 		}
 	}

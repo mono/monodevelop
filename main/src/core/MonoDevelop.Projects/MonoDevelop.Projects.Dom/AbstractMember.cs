@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Dom
 {
 	public abstract class AbstractMember : IMember
 	{
-		protected IReturnType returnType;
+		
 		protected List<IReturnType> explicitInterfaces = null;
 		
 		protected IType  declaringType;
@@ -73,12 +73,8 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		public virtual IReturnType ReturnType {
-			get {
-				return returnType;
-			}
-			set {
-				returnType = value;
-			}
+			get;
+			set;
 		}
 		
 		public IEnumerable<IReturnType> ExplicitInterfaces {
@@ -455,7 +451,5 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return this.Location.GetHashCode () ^ this.FullName.GetHashCode ();
 		}
-
-
 	}
 }

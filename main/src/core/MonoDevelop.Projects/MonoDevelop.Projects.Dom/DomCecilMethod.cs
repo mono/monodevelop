@@ -152,7 +152,7 @@ namespace MonoDevelop.Projects.Dom
 				
 			AddAttributes (this, methodDefinition.CustomAttributes);
 			base.Modifiers  = DomCecilType.GetModifiers (methodDefinition);
-			base.returnType = DomCecilMethod.GetReturnType (methodDefinition.ReturnType.ReturnType);
+			base.ReturnType = DomCecilMethod.GetReturnType (methodDefinition.ReturnType.ReturnType);
 			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
 				Add (new DomCecilParameter (paramDef));
 			}
