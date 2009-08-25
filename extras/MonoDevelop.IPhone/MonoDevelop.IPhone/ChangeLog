@@ -1,5 +1,12 @@
 2009-08-24  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.IPhone.csproj:
+	* Icons/32x32/xib-template-window.png:
+	* Icons/32x32/xib-template-application.png: Window/application
+	  were the wrong way round. Fix.
+
+2009-08-24  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.IPhone.addin.xml: Use correct size for icon.
 
 2009-08-24  Michael Hutchinson  <mhutchinson@novell.com>

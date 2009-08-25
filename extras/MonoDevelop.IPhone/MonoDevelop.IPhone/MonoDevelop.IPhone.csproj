@@ -175,8 +175,8 @@
     <EmbeddedResource Include="Icons\32x32\phone-apple-iphone-project-overlay.png">
       <LogicalName>iphone-project-overlay.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Icons\32x32\xib-template-application.png">
-      <LogicalName>xib-template-application.png</LogicalName>
+    <EmbeddedResource Include="Icons\32x32\xib-template-window.png">
+      <LogicalName>xib-template-window.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Icons\32x32\xib-template-empty.png">
       <LogicalName>xib-template-empty.png</LogicalName>
@@ -184,8 +184,8 @@
     <EmbeddedResource Include="Icons\32x32\xib-template-view.png">
       <LogicalName>xib-template-view.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Icons\32x32\xib-template-window.png">
-      <LogicalName>xib-template-window.png</LogicalName>
+    <EmbeddedResource Include="Icons\32x32\xib-template-application.png">
+      <LogicalName>xib-template-application.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Icons\48x48\application-x-mono-develop-xib.png">
       <LogicalName>application-x-mono-develop-xib-48.png</LogicalName>
