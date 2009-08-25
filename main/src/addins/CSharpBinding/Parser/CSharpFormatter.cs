@@ -208,7 +208,7 @@ namespace CSharpBinding.Parser
 			int selAnchor = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Anchor) : -1;
 			int selLead = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Lead) : -1;
 			int textOffset = 0;
-			
+			int caretOffset = data.Caret.Offset;
 			while (textOffset < formattedText.Length && offset < data.Caret.Offset) {
 				char ch1 = data.Document.GetCharAt (offset);
 				char ch2 = formattedText[textOffset];
@@ -220,8 +220,8 @@ namespace CSharpBinding.Parser
 				} else if (ch1 == '\n') {
 					LineSegment line = data.Document.GetLineByOffset (offset);
 					string indent = line.GetIndentation (data.Document) + TextEditorProperties.IndentString;
-					if (offset < data.Caret.Offset) {
-						data.Caret.Offset += indent.Length;
+					if (offset < caretOffset) {
+						caretOffset += indent.Length;
 					}
 					offset++;
 					data.Insert (offset, indent);
@@ -248,8 +248,8 @@ namespace CSharpBinding.Parser
 				}
 				
 				if ((!ch2Ws || ch2 == '\n') && ch1Ws) {
-					if (offset < data.Caret.Offset)
-						data.Caret.Offset--;
+					if (offset < caretOffset)
+						caretOffset--;
 					if (offset < selAnchor)
 						selAnchor--;
 					if (offset < selLead)
@@ -266,7 +266,8 @@ namespace CSharpBinding.Parser
 				}
 				break;
 			}
-
+			data.Caret.Offset = caretOffset;
+			
 			if (selAnchor >= 0)
 				data.MainSelection = new Selection (data.Document.OffsetToLocation (selAnchor), data.Document.OffsetToLocation (selLead));
 			data.Document.EndAtomicUndo ();

@@ -1,5 +1,10 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/CSharpFormatter.cs: Fixed "Bug 533986 - Autoformat:
+	  issue when pressing enter at the end of a line".
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpTextEditorIndentation.cs: Use GetContent instead
 	  of casting.
 
