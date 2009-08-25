@@ -80,6 +80,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				desc = GettextCatalog.GetString ("Type '{0}' already registered", desc);
 				mimeType = null;
 			}
+			if (string.IsNullOrEmpty (desc))
+				desc = mt;
 			buttonOk.Sensitive = mimeType != null;
 			labelDesc.Text = desc ?? string.Empty;
 			image.Pixbuf = img;

@@ -21,8 +21,4 @@
     </itemgroups>
     <signals />
   </object>
-  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
 </objects>

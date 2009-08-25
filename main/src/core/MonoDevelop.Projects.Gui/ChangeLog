@@ -1,3 +1,10 @@
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/AddMimeTypeDialog.cs: If
+	  description of mime type is empty, use the mime type name.
+
+	* gtk-gui/objects.xml: Flush.
+
 2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
