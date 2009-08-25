@@ -66,7 +66,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			base.Initialize ();
 			InitTracker ();
-			Mono.TextEditor.ITextEditorDataProvider view = this.Document.ActiveView as Mono.TextEditor.ITextEditorDataProvider;
+			
+			Mono.TextEditor.ITextEditorDataProvider view = base.Document.GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
+			
 			if (view != null) {
 				textEditorData = view.GetTextEditorData ();
 				textEditorData.VirtualSpaceManager = new IndentVirtualSpaceManager (view.GetTextEditorData (), new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor));
