@@ -601,7 +601,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 				return null;
 			}
-			case '(':
+			case '(': {
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (resolveResult != null) {
 					if (result.ExpressionContext == ExpressionContext.Attribute) {
@@ -639,7 +639,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 				}
 				break;
-			}
+			} }
 			return null;
 		}
 		
