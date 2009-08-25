@@ -60,10 +60,9 @@ namespace MonoDevelop.CSharpBinding
 		#region IParameterDataProvider implementation
 		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
-			int result =  GetCurrentParameterIndex (editor, ctx.TriggerOffset, 0);
-			return result;
+			return GetCurrentParameterIndex (editor, ctx.TriggerOffset, 0);
 		}
-		
+	
 		internal static int GetCurrentParameterIndex (MonoDevelop.Ide.Gui.TextEditor editor, int offset, int memberStart)
 		{
 			int cursor = editor.CursorPosition;
@@ -72,7 +71,7 @@ namespace MonoDevelop.CSharpBinding
 			if (i > cursor)
 				return -1;
 			if (i == cursor)
-				return 0;
+				return 1;
 			
 			int index = memberStart + 1;
 			int depth = 0;

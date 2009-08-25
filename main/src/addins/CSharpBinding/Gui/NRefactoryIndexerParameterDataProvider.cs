@@ -59,35 +59,7 @@ namespace MonoDevelop.CSharpBinding
 		#region IParameterDataProvider implementation
 		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
-			int result =  GetCurrentParameterIndex (editor, ctx.TriggerOffset, 0);
-			return result;
-		}
-		
-		internal static int GetCurrentParameterIndex (MonoDevelop.Ide.Gui.TextEditor editor, int offset, int memberStart)
-		{
-			int cursor = editor.CursorPosition;
-			int i = offset;
-			
-			if (i > cursor)
-				return -1;
-			if (i == cursor)
-				return 0;
-			
-			int index = memberStart + 1;
-			int depth = 0;
-			do {
-				char c = editor.GetCharAt (i - 1);
-				
-				if (c == ',' && depth == 1)
-					index++;
-				if (c == '[')
-					depth++;
-				if (c == ']')
-					depth--;
-				i++;
-			} while (i <= cursor && depth > 0);
-			
-			return depth == 0 ? -1 : index;
+			return NRefactoryParameterDataProvider.GetCurrentParameterIndex (editor, ctx.TriggerOffset, 0);
 		}
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
@@ -96,17 +68,15 @@ namespace MonoDevelop.CSharpBinding
 			int curLen = 0;
 			result.Append (ambience.GetString (indexers[overload].ReturnType, OutputFlags.ClassBrowserEntries));
 			result.Append (' ');
+			result.Append ("<b>");
 			result.Append (resolvedExpression);
+			result.Append ("</b>");
 			result.Append ('[');
 			int parameterCount = 0;
-			foreach (IParameter parameter in indexers[overload].Parameters) {
+			foreach (string parameter in parameterMarkup) {
 				if (parameterCount > 0)
 					result.Append (", ");
-				if (parameterCount == currentParameter)
-					result.Append ("<b>");
-				result.Append (ambience.GetString (parameter, OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName  | OutputFlags.IncludeReturnType));
-				if (parameterCount == currentParameter)
-					result.Append ("</b>");
+				result.Append (parameter);
 				parameterCount++;
 			}
 			result.Append (']');
@@ -115,7 +85,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
-			return type.Name;
+			return ambience.GetString (indexers[overload].Parameters[paramIndex], OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName  | OutputFlags.IncludeReturnType | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
 		}
 		
 		public int GetParameterCount (int overload)
