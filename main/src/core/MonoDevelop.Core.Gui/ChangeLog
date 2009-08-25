@@ -1,3 +1,7 @@
+2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/DesktopService.cs: Fix typo.
+
 2009-08-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

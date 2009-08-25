@@ -112,7 +112,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public static Gdk.Pixbuf GetPixbufForType (string mimeType, Gtk.IconSize size)
 		{
-			return platformService.GetPixbufForFile (mimeType, size);
+			return platformService.GetPixbufForType (mimeType, size);
 		}
 		
 		public static bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager, string commandMenuAddinPath)
