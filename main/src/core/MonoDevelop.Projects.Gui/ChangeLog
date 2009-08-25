@@ -1,5 +1,11 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 533674 - Documentation tooltip shown over
+	  completion list".
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
 	  Fixed "Bug 533668 - Completion window shown over the
 	  parameter information tooltip".

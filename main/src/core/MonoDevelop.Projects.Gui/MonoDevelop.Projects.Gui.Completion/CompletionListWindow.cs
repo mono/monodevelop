@@ -375,9 +375,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			currentData = data;
 			if (declarationviewwindow.DescriptionMarkup.Length == 0)
 				return;
-
-			int dvwWidth, dvwHeight;
-
+			
 			declarationviewwindow.Move (this.Screen.Width+1, vert);
 			
 			declarationviewwindow.SetFixedWidth (-1);
@@ -385,8 +383,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 			declarationviewwindow.ShowAll ();
 			declarationviewwindow.Multiple = (overloadedData != null && overloadedData.IsOverloaded);
 
-			declarationviewwindow.GdkWindow.GetSize (out dvwWidth, out dvwHeight);
-
+			Requisition req = declarationviewwindow.SizeRequest ();
+			int dvwWidth = req.Width;
+			int dvwHeight = req.Height;
+			
+//			int dvwWidth, dvwHeight;
+//			declarationviewwindow.GdkWindow.GetSize (out dvwWidth, out dvwHeight);
+		
 			int horiz = listpos_x + lvWidth + declarationWindowMargin;
 			if (this.Screen.Width - horiz >= lvWidth) {
 				if (this.Screen.Width - horiz < dvwWidth)
@@ -396,7 +399,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					declarationviewwindow.SetFixedWidth (listpos_x - declarationWindowMargin);
 					dvwWidth = declarationviewwindow.SizeRequest ().Width;
 				}
-				horiz = listpos_x - dvwWidth - declarationWindowMargin;
+				horiz = completionContext.TriggerXCoord - TextOffset - dvwWidth - declarationWindowMargin;
 			}
 
 			declarationviewwindow.Move (horiz, vert);
