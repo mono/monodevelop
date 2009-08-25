@@ -1,3 +1,11 @@
+2009-08-25  Christian Hergert  <chris@dronelabs.com>
+
+	* PyBinding/PyBinding.csproj: 
+	* PyBinding/PyBinding.Gui/PythonEditorCompletion.cs: Make completion
+	a little more friendly by not poping up so much when we know we dont
+	know how to do anything anyway.  Also be a bit smarter with class
+	and def lines.
+
 2009-08-24  Christian Hergert  <chris@dronelabs.com>
 
 	* PyBinding.Gui/PythonEditorCompletion.cs: Add support for context

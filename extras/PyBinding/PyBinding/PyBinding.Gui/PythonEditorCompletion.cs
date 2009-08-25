@@ -72,11 +72,13 @@ namespace PyBinding.Gui
 		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
 			switch (completionChar) {
+			case '(':
 			case ' ':
+			case '=':
 			case '.':
 				PythonParsedDocument doc = Document.ParsedDocument as PythonParsedDocument;
 				if (doc != null)
-					return GenerateCompletionData (completionContext, doc, Editor);
+					return GenerateCompletionData (completionContext, doc, Editor, completionChar);
 				return null;
 			default:
 				return null;
@@ -91,12 +93,27 @@ namespace PyBinding.Gui
 				yield return new CompletionData (func.Name, s_ImgFunc, func.Documentation);
 		}
 		
-		ICompletionDataList GenerateCompletionData (ICodeCompletionContext completionContext, PythonParsedDocument document, TextEditor editor)
+		ICompletionDataList GenerateCompletionData (ICodeCompletionContext completionContext, PythonParsedDocument document, TextEditor editor, char completionChar)
 		{
 			if (document == null)
 				return null;
 			
 			var triggerWord = GetTriggerWord (editor, completionContext);
+			var triggerLine = editor.GetLineText (completionContext.TriggerLine).Trim ();
+			
+			if (triggerWord.Contains ("="))
+				triggerWord = triggerWord.Substring (triggerWord.LastIndexOf ('=') + 1);
+			
+			// if completionChar is ' ' and it is not a known completion type
+			// that we can handle, return as early as possible
+			if (completionChar == ' ') {
+				if (!triggerWord.Contains ('.') &&
+				    !triggerLine.StartsWith ("class") &&
+				    !triggerLine.StartsWith ("def") &&
+				    !triggerLine.StartsWith ("from") &&
+				    !triggerLine.StartsWith ("import"))
+					return null;
+			}
 			
 			// "self."
 			if (document.Module != null && triggerWord.Equals ("self.")) {
@@ -106,8 +123,9 @@ namespace PyBinding.Gui
 				return new CompletionDataList (SelfDotCompletionData (klass));
 			}
 			
-			var triggerLine = editor.GetLineText (completionContext.TriggerLine).Trim ();
 			var inFrom = triggerLine.StartsWith ("from ");
+			var inClass = triggerLine.StartsWith ("class ") || (triggerLine.StartsWith ("class") && completionChar == ' ');
+			var inDef = triggerLine.StartsWith ("def ") || (triggerLine.StartsWith ("def") && completionChar == ' ');
 			var parts = triggerLine.Split (' ');
 			
 			// "from blah import "
@@ -120,9 +138,29 @@ namespace PyBinding.Gui
 					;
 			}
 			
+			// if we are in a new class line and not to '(' yet
+			// we cannot complete anything at this time, finish now
+			if (inClass && parts.Length < 2)
+				return null;
+			
+			// if we are in a new def line, the only time we can complete
+			// is after an equal '='.  so ignore space trigger
+			if (inDef && completionChar == ' ')
+				return null;
+			else if (inDef && completionChar == '=')
+				triggerWord = "";
+			
 			string suffix = "";
-			if (inFrom)
+			
+			if (inFrom) {
 				suffix = " import";
+			}
+			else if (inClass) {
+				if (completionChar == '(')
+					triggerWord = "";
+				else
+					triggerWord = triggerLine.Substring (triggerLine.LastIndexOf ('(') + 1);
+			}
 			
 			// anything in the sqlite store
 			if (!String.IsNullOrEmpty (triggerWord)) {
