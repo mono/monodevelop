@@ -1,3 +1,8 @@
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.dll.config: Make dll mappings work in
+	  FreeBSD. Fixes bug #496269. Patch by Romain Tartière.
+
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/SearchTypeRequest.cs: Changed List
