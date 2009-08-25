@@ -29,10 +29,18 @@ namespace ${Namespace}
 {
 	public partial class ${Name} : UIViewController
 	{
+		#region Constructors
 		
-		// This is required for controllers that need to be able to be
-		// created from a xib rather than from managed code
+		// The IntPtr and NSCoder constructors are required for controllers that need 
+		// to be able to be created from a xib rather than from managed code
+		
 		public ${Name} (IntPtr handle) : base (handle)
+		{
+			Initialize ();
+		}
+		
+		[Export ("initWithCoder:")]
+		public TempViewController (NSCoder coder) : base (coder)
 		{
 			Initialize ();
 		}
@@ -45,6 +53,10 @@ namespace ${Namespace}
 		void Initialize ()
 		{
 		}
+		
+		#endregion
+		
+		
 		
 	}
 }

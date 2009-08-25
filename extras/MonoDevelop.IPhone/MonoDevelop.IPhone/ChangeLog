@@ -1,5 +1,10 @@
 2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Templates/IPhoneViewController.xft.xml: Add an
+	  initWithCoder/NSCoder ctor. Put ctors in a region.
+
+2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Output xcodeproj generation args in a log
 	  message. Make all res IDs explicit.
 
