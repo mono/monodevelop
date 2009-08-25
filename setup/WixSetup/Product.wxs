@@ -12,12 +12,12 @@
     <Package Id="*" Compressed="yes" Description="$(var.ProductShortName) $(var.ProductVersionText) ($(var.ProductVersion))" InstallerVersion="200" ShortNames="no" Manufacturer="$(var.Manufacturer)" />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
-	<!-- Ensure GTK# 2.12.9+ is installed -->
+    <!-- Ensure GTK# 2.12.9+ is installed -->
     <Property Id="GTKSHARPVERSION">
       <RegistrySearch Id="gsversion" Root="HKLM" Key="SOFTWARE\Novell\GtkSharp\Version" Type="raw" />
     </Property>
     <Condition Message="Gtk# version 2.12.9 or greater must be installed.">
-		<![CDATA[GTKSHARPVERSION >= "2.12.9" OR REMOVE ~= "ALL"]]>
+      <![CDATA[GTKSHARPVERSION >= "2.12.9" OR REMOVE ~= "ALL"]]>
     </Condition>
 
     <!-- Ensure .Net 3.5 is installed -->
@@ -173,9 +173,21 @@
                 <File Name="MonoDevelop.MsVisualStudio.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.MsVisualStudio\MonoDevelop.MsVisualStudio.dll" />
               </Component>
             </Directory>
+            <Directory Id="MonoDevelop.Refactoring" Name="MonoDevelop.Refactoring">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_Refactoring" Guid="9AA6DDC9-1C34-47DD-AA7F-96EFD383C418">
+                <File Name="MonoDevelop.Refactoring.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll" />
+              </Component>
+            </Directory>
             <Directory Id="MonoDevelop.RegexToolkit" Name="MonoDevelop.RegexToolkit">
               <Component Id="MonoDevelop_AddIns_MonoDevelop_RegexToolkit" Guid="fada4d10-0c22-43a4-826f-fe71a88a3e07">
                 <File Name="MonoDevelop.RegexToolkit.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.RegexToolkit\MonoDevelop.RegexToolkit.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.TextTemplating" Name="MonoDevelop.TextTemplating">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_TextTemplating" Guid="18795EF7-DC71-4FEC-91A8-7E3391B69D2B">
+                <File Name="Mono.TextTemplating.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.TextTemplating\Mono.TextTemplating.dll" />
+                <File Name="MonoDevelop.TextTemplating.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.TextTemplating\MonoDevelop.TextTemplating.dll" />
+                <File Name="TextTransform.exe" Source="$(var.BuildRoot)\AddIns\MonoDevelop.TextTemplating\TextTransform.exe" />
               </Component>
             </Directory>
             <Directory Id="MonoDevelop.WebReferences" Name="MonoDevelop.WebReferences">
@@ -270,7 +282,9 @@
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Moonlight_Templates" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Moonlight" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_MsVisualStudio" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Refactoring" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_RegexToolkit" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_TextTemplating" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_WebReferences" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_XmlEditor_schemas" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_XmlEditor" />
