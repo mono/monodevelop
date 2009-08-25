@@ -54,6 +54,7 @@
               <File Name="MonoDevelop.exe.config" Source="$(var.BuildRoot)\bin\MonoDevelop.exe.config" />
               <File Name="MonoDevelop.Ide.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Ide.dll" />
               <File Name="MonoDevelop.Projects.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.dll" />
+              <File Name="MonoDevelop.Projects.Formats.MSBuild.exe" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Formats.MSBuild.exe" />
               <File Name="MonoDevelop.Projects.Gui.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Gui.dll" />
               <File Name="NRefactory.dll" Source="$(var.BuildRoot)\bin\NRefactory.dll" />
 
@@ -236,7 +237,7 @@
                 <File Name="MonoDevelop.VersionControl.Subversion.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.dll" />
                 <File Name="SharpSvn.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpSvn.dll" />
                 <File Name="SharpSvn-DB44-20-Win32.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpSvn-DB44-20-Win32.dll" />
-                <File Name="SharpSvn-SASL21-22-Win32.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpSvn-SASL21-22-Win32.dll" />
+                <File Name="SharpSvn-SASL21-23-Win32.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpSvn-SASL21-23-Win32.dll" />
                 <File Name="SubversionAddinWindows.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SubversionAddinWindows.dll" />
                 <File Name="SharpPlink-Win32.svnExe" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpPlink-Win32.svnExe" />
               </Component>
