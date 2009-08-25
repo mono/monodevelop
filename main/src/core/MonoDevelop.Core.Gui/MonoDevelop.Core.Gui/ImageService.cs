@@ -288,12 +288,25 @@ namespace MonoDevelop.Core.Gui
 				Gdk.Pixbuf icon = null;
 				for (int n=0; n<ids.Length; n++) {
 					Gdk.Pixbuf px = GetPixbuf (ids[n], sz);
-					if (px != null)
-						icon = MergeIcons (icon, px);
-					else {
+					if (px == null) {
+						LoggingService.LogWarning ("Error creating composed icon {0} at size {1}. Icon {2} is missing.", id, o, ids[n]);
 						icon = null;
 						break;
 					}
+					
+					if (n == 0) {
+						icon = px;
+						continue;
+					}
+					
+					if (icon.Width != px.Width || icon.Height != px.Height) {
+						LoggingService.LogWarning ("Error creating composed icon {0} at size {1}. Icon {2} is {3}x{4}, expected {5}x{6}.",
+						                           id, o, ids[n], px.Width, px.Height, icon.Width, icon.Height);
+						icon = null;
+						break;
+					}
+					
+					icon = MergeIcons (icon, px);
 				}
 				if (icon != null)
 					AddToIconFactory (id, icon, sz);
@@ -302,12 +315,9 @@ namespace MonoDevelop.Core.Gui
 			return id;
 		}
 		
+		//caller should check null and that sizes match
 		static Gdk.Pixbuf MergeIcons (Gdk.Pixbuf icon1, Gdk.Pixbuf icon2)
 		{
-			if (icon1 == null)
-				return icon2;
-			if (icon2 == null)
-				return icon1;
 			Gdk.Pixbuf res = new Gdk.Pixbuf (icon1.Colorspace, icon1.HasAlpha, icon1.BitsPerSample, icon1.Width, icon1.Height);
 			res.Fill (0);
 			icon1.CopyArea (0, 0, icon1.Width, icon1.Height, res, 0, 0);

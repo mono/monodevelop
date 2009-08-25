@@ -1,5 +1,10 @@
 2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Gui/ImageService.cs: Better warnings when
+	  composing icons.
+
+2009-08-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Gui.csproj: Flush whitespace.
 
 	* MonoDevelop.Core.Gui/GLibLogging.cs: Add GdkPixbuf to the
