@@ -111,6 +111,11 @@ namespace MonoDevelop.Projects.Dom.Output
 				get;
 				set;
 			}
+			
+			public int MaxLineLength {
+				get;
+				set;
+			}
 		}
 		
 		public static string GetSummaryMarkup (IMember member)
@@ -198,6 +203,32 @@ namespace MonoDevelop.Projects.Dom.Output
 				0x86 <= charValue && charValue <= 0x9F;
 		}
 		
+		public static string BreakLines (string text, int maxLineLength)
+		{
+			if (maxLineLength <= 0)
+				return text;
+			StringBuilder result = new StringBuilder ();
+			int lineLength = 0;
+			foreach (char ch in text) {
+				switch (ch) {
+				case '\n':
+					lineLength = 0;
+					break;
+				case '\r':
+					lineLength = 0;
+					break;
+				default:
+					result.Append (ch);
+					lineLength++;
+					if (!Char.IsLetterOrDigit (ch) && lineLength > maxLineLength) {
+						result.AppendLine ();
+						lineLength = 0;
+					}
+					break;
+				}
+			}
+			return result.ToString ();
+		}
 		public static string EscapeText (string text)
 		{
 			StringBuilder result = new StringBuilder ();
@@ -315,7 +346,8 @@ namespace MonoDevelop.Projects.Dom.Output
 							txt = txt.Replace ("  ", " ");
 						} while (len != txt.Length);
 
-						txt = EscapeText (txt);
+						txt = BreakLines (EscapeText (txt), options.MaxLineLength);
+						
 						ret.Append (txt);
 						lastLinePos = -1;
 					}

@@ -1,3 +1,8 @@
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: Added a
+	  max line length option for xml doc formatting.
+
 2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
