@@ -1,5 +1,12 @@
 2009-08-24  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding/PythonSite.cs: Use background progress monitor for python
+	site module indexing.
+	* PyBinding.Gui/PythonOptionsPanel.cs: Add support for removing paths
+	from PYTHONPATH and truncating the database.
+
+2009-08-24  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Gui/PythonEditorCompletion.cs: Allow completion even when
 	the current file parse is in an inconsistent state.
 

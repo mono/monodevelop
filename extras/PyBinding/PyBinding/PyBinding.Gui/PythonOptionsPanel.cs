@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 using Gtk;
 
@@ -65,10 +66,21 @@ namespace PyBinding.Gui
 			config.Runtime = widget.Runtime;
 			config.PythonOptions = widget.PythonOptions;
 			
-			foreach (var path in widget.PythonPaths) {
+			var paths = new List<string> (widget.PythonPaths);
+			
+			// look for added modules
+			foreach (var path in paths) {
 				if (!config.Runtime.Site.ContainsPath (path)) {
 					Console.WriteLine ("Adding path {0}", path);
 					config.Runtime.Site.AddPath (path);
+				}
+			}
+			
+			// look for removed
+			foreach (var path in config.Runtime.Site.Paths) {
+				if (!paths.Contains (path)) {
+					Console.WriteLine ("Removing path {0}", path);
+					config.Runtime.Site.RemovePath (path);
 				}
 			}
 		}

@@ -161,8 +161,8 @@ namespace PyBinding
 				var count = toParse.Count;
 				var i = 0;
 				
-				var progress = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("", Gtk.Stock.Execute, false);
-				progress.BeginTask ("Parsing python site modules", count);
+				var progress = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Indexing python modules", Gtk.Stock.Execute);
+				progress.BeginTask (String.Format ("Indexing {0}", path), count);
 				
 				foreach (var file in toParse) {
 					progress.Log.WriteLine ("Parsing {0} of {1}: {2}", ++i, count, file);
@@ -177,7 +177,6 @@ namespace PyBinding
 					}
 				}
 				
-				progress.ReportSuccess ("Python site modules parsed");
 				progress.EndTask ();
 				progress.Dispose ();
 			});
