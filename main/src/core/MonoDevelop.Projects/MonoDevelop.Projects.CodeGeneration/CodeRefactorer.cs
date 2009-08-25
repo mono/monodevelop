@@ -370,12 +370,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public IType ImplementInterface (ICompilationUnit pinfo, IType klass, IType iface, bool explicitly, IType declaringClass, IReturnType hintReturnType)
 		{
+			if (klass == null)
+				throw new ArgumentNullException ("klass");
+			if (iface == null)
+				throw new ArgumentNullException ("iface");
 			RefactorerContext gctx = GetGeneratorContext (klass);
 			klass = GetUpdatedClass (gctx, klass);
 			
 			bool alreadyImplemented;
 			IReturnType prefix = null;
-			
 			
 			List<KeyValuePair<IMember,IReturnType>> toImplement = new List<KeyValuePair<IMember,IReturnType>> ();
 			
@@ -457,7 +460,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			IEditableTextFile file = gctx.GetFile (klass.CompilationUnit.FileName);
 			ParsedDocument doc = ProjectDomService.Parse (gctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
-			IType result = gctx.ParserContext.GetType (klass.FullName, null, true, true);
+			IType result = gctx.ParserContext.GetType (klass.FullName, klass.TypeParameters.Count, true);
 			if (result is CompoundType) {
 				IType hintType = doc.CompilationUnit.GetType (klass.FullName, klass.TypeParameters.Count);
 				if (hintType != null) 

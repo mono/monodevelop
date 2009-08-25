@@ -814,7 +814,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			// Don't get the class from the parse results because in that class the types are not resolved.
 			// Get the class from the database instead.
 			ParsedDocument doc = ProjectDomService.Parse (ctx.ParserContext.Project, buffer.Name, null, delegate () { return buffer.Text; });
-			IType result =  ctx.ParserContext.GetType (cls.FullName, null, true, true);
+			IType result =  ctx.ParserContext.GetType (cls.FullName, cls.TypeParameters.Count, true, true);
 			if (result is CompoundType) {
 				IType hintType = doc.CompilationUnit.GetType (cls.FullName, cls.TypeParameters.Count);
 				if (hintType != null)

@@ -64,6 +64,8 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				for (int i = expressionContexts.Count - 1; i >= 0; i--) {
 					ExpressionContext cur = expressionContexts[i];
+					if (cur == ExpressionContext.ObjectCreation)
+						return true;
 					if (cur == ExpressionContext.IdentifierExpected || cur == ExpressionContext.Global)
 						continue;
 					return cur == ExpressionContext.InheritableType;

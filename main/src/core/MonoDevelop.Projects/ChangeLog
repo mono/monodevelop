@@ -1,5 +1,15 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/ExpressionResult.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom/ExpressionContext.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed
+	  "Bug 531510 - Refactoring of generic types fails with
+	  exception".
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: Added a
 	  max line length option for xml doc formatting.
 

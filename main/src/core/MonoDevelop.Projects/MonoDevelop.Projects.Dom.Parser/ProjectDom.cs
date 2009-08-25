@@ -147,6 +147,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IEnumerable<IType> GetInheritanceTree (IType type)
 		{
+			if (type == null)
+				throw new ArgumentNullException ("type");
 			type = ResolveType (type);
 			if (type == null)
 				yield break;
@@ -180,6 +182,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 		public IType ResolveType (IType type)
 		{
+			if (type == null)
+				throw new ArgumentNullException ("type");
 			if (!((DomType)type).Resolved) {
 				InstantiatedType itype = type as InstantiatedType;
 				IType rtype;

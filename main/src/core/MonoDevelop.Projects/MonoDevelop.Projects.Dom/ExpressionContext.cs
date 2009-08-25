@@ -37,8 +37,6 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
-		string contextName;
-		
 		public virtual bool IsObjectCreation {
 			get {
 				return false;
@@ -46,9 +44,8 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		public string ContextName {
-			get {
-				return contextName;
-			}
+			get;
+			protected set;
 		}
 		
 		public virtual bool FilterEntry (object entry)
@@ -74,7 +71,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public ExpressionContext (string contextName)
 		{
-			this.contextName = contextName;
+			this.ContextName = contextName;
 		}
 		
 		public override string ToString ()
@@ -111,8 +108,8 @@ namespace MonoDevelop.Projects.Dom
 		public static ExpressionContext EnumBaseType                 = new ExpressionContext ("EnumBaseType");
 		public static ExpressionContext InheritableType              = new ExpressionContext ("InheritableType");
 		public static ExpressionContext NamespaceNameExcepted        = new ExpressionContext ("NamespaceNameExcepted");
-
-		public static ExpressionContext ObjectCreation          = new ObjectCreationContext ();
+		
+		public static ExpressionContext ObjectCreation               = new ObjectCreationContext ();
 		
 		public class ObjectCreationContext : ExpressionContext
 		{
@@ -120,6 +117,10 @@ namespace MonoDevelop.Projects.Dom
 				get {
 					return true;
 				}
+			}
+			public ObjectCreationContext ()
+			{
+				ContextName = "ObjectCreationContext";
 			}
 		}
 		
@@ -130,19 +131,15 @@ namespace MonoDevelop.Projects.Dom
 		
 		public class TypeExpressionContext : ExpressionContext
 		{
-			IReturnType type;
 			public new IReturnType Type {
-				get {
-					return type;
-				}
-			}
-			IReturnType unresolvedType;
-			public IReturnType UnresolvedType {
-				get {
-					return unresolvedType;
-				}
+				get;
+				private set;
 			}
 			
+			public IReturnType UnresolvedType {
+				get;
+				private set;
+			}
 			
 			bool isObjectCreation;
 			public override bool IsObjectCreation {
@@ -150,7 +147,7 @@ namespace MonoDevelop.Projects.Dom
 					return isObjectCreation;
 				}
 			}
-		
+			
 			public override bool FilterEntry (object entry)
 			{
 				IType type = entry as IType;
@@ -164,19 +161,18 @@ namespace MonoDevelop.Projects.Dom
 				return true;
 			}
 			
-
 			public TypeExpressionContext (IReturnType type, IReturnType unresolvedType, bool isObjectCreation)
 			{
-				this.type             = type;
-				this.unresolvedType   = unresolvedType;
+				this.Type             = type;
+				this.UnresolvedType   = unresolvedType;
 				this.isObjectCreation = isObjectCreation;
+				this.ContextName = this.ToString ();
 			}
 			
 			public override string ToString ()
 			{
 				return String.Format ("[TypeExpressionContext:Type={0}, UnresolvedType={1}, IsObjectCreation={2}]", Type, UnresolvedType, IsObjectCreation);
 			}
-		
 		}
 		
 	}
