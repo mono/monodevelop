@@ -63,7 +63,11 @@ namespace Mono.TextEditor
 			}
 			
 			if (data.Caret.Column > 0) {
-				data.Caret.Column--;
+				if (data.Caret.Column > line.EditableLength) {
+					data.Caret.Column = line.EditableLength;
+				} else {
+					data.Caret.Column--;
+				}
 			} else if (data.Caret.Line > 0) {
 				LineSegment prevLine = data.Document.GetLine (data.Caret.Line - 1);
 				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, prevLine.EditableLength);
