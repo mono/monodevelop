@@ -154,6 +154,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Projects.Gui\ProjectFileEntry.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Completion\ListWidget.cs" />
+    <Compile Include="MonoDevelop.Projects.Gui.Dialogs\AddMimeTypeDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.AddMimeTypeDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

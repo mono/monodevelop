@@ -23,11 +23,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
         
         private Gtk.TreeView tree;
         
-        private Gtk.VBox vbox2;
+        private Gtk.VBox boxButtons;
         
-        private Gtk.Button button1;
+        private Gtk.Button buttonAdd;
         
-        private Gtk.Button button2;
+        private Gtk.Button buttonRemove;
         
         private Gtk.Button buttonEdit;
         
@@ -67,47 +67,47 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.GtkScrolledWindow]));
             w3.Position = 0;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.vbox2 = new Gtk.VBox();
-            this.vbox2.Name = "vbox2";
-            this.vbox2.Spacing = 6;
-            // Container child vbox2.Gtk.Box+BoxChild
-            this.button1 = new Gtk.Button();
-            this.button1.CanFocus = true;
-            this.button1.Name = "button1";
-            this.button1.UseStock = true;
-            this.button1.UseUnderline = true;
-            this.button1.Label = "gtk-add";
-            this.vbox2.Add(this.button1);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.button1]));
+            this.boxButtons = new Gtk.VBox();
+            this.boxButtons.Name = "boxButtons";
+            this.boxButtons.Spacing = 6;
+            // Container child boxButtons.Gtk.Box+BoxChild
+            this.buttonAdd = new Gtk.Button();
+            this.buttonAdd.CanFocus = true;
+            this.buttonAdd.Name = "buttonAdd";
+            this.buttonAdd.UseStock = true;
+            this.buttonAdd.UseUnderline = true;
+            this.buttonAdd.Label = "gtk-add";
+            this.boxButtons.Add(this.buttonAdd);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.boxButtons[this.buttonAdd]));
             w4.Position = 0;
             w4.Expand = false;
             w4.Fill = false;
-            // Container child vbox2.Gtk.Box+BoxChild
-            this.button2 = new Gtk.Button();
-            this.button2.CanFocus = true;
-            this.button2.Name = "button2";
-            this.button2.UseStock = true;
-            this.button2.UseUnderline = true;
-            this.button2.Label = "gtk-remove";
-            this.vbox2.Add(this.button2);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.button2]));
+            // Container child boxButtons.Gtk.Box+BoxChild
+            this.buttonRemove = new Gtk.Button();
+            this.buttonRemove.CanFocus = true;
+            this.buttonRemove.Name = "buttonRemove";
+            this.buttonRemove.UseStock = true;
+            this.buttonRemove.UseUnderline = true;
+            this.buttonRemove.Label = "gtk-remove";
+            this.boxButtons.Add(this.buttonRemove);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.boxButtons[this.buttonRemove]));
             w5.Position = 1;
             w5.Expand = false;
             w5.Fill = false;
-            // Container child vbox2.Gtk.Box+BoxChild
+            // Container child boxButtons.Gtk.Box+BoxChild
             this.buttonEdit = new Gtk.Button();
             this.buttonEdit.CanFocus = true;
             this.buttonEdit.Name = "buttonEdit";
             this.buttonEdit.UseStock = true;
             this.buttonEdit.UseUnderline = true;
             this.buttonEdit.Label = "gtk-edit";
-            this.vbox2.Add(this.buttonEdit);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.buttonEdit]));
+            this.boxButtons.Add(this.buttonEdit);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.boxButtons[this.buttonEdit]));
             w6.Position = 2;
             w6.Expand = false;
             w6.Fill = false;
-            this.hbox1.Add(this.vbox2);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+            this.hbox1.Add(this.boxButtons);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox1[this.boxButtons]));
             w7.Position = 1;
             w7.Expand = false;
             w7.Fill = false;
@@ -119,6 +119,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
                 this.Child.ShowAll();
             }
             this.Hide();
+            this.buttonAdd.Clicked += new System.EventHandler(this.OnButtonAddClicked);
+            this.buttonRemove.Clicked += new System.EventHandler(this.OnButtonRemoveClicked);
             this.buttonEdit.Clicked += new System.EventHandler(this.OnButtonEditClicked);
         }
     }

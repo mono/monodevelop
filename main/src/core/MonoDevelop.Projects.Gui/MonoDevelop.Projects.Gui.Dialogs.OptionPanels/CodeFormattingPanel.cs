@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 	{
 		PolicyContainer policyContainer;
 		Dictionary<string,MimeTypePanelData> typeSections = new Dictionary<string, MimeTypePanelData> ();
+		List<string> globalMimeTypes;
 		
 		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
 		{
@@ -54,26 +55,56 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				policyContainer = ((Solution)dataObject).Policies;
 			} else if (dataObject is PolicySet) {
 				policyContainer = ((PolicySet)dataObject);
+				globalMimeTypes = new List<string> ();
+				string userTypes = PropertyService.Get<string> ("MonoDevelop.Projects.GlobalPolicyMimeTypes", "");
+				globalMimeTypes.AddRange (userTypes.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
 			}
 			
-			foreach (string mt in GetItemMimeTypes ()) {
-				MimeTypePanelData data = new MimeTypePanelData ();
-				OptionsDialogSection sec = new OptionsDialogSection (typeof(MimeTypePolicyOptionsSection));
-				sec.Fill = true;
-				Gdk.Pixbuf icon = DesktopService.GetPixbufForType (mt, Gtk.IconSize.Menu);
-				sec.Icon = ImageService.GetStockId (icon, Gtk.IconSize.Menu);
-				data.Section = sec;
-				data.MimeType = mt;
-				data.TypeDescription = DesktopService.GetMimeTypeDescription (mt);
-				if (string.IsNullOrEmpty (data.TypeDescription))
-					data.TypeDescription = mt;
-				data.DataObject = DataObject;
-				data.PolicyContainer = policyContainer;
-				sec.Label = data.TypeDescription;
-				LoadPolicyTypeData (data, mt);
-				typeSections [mt] = data;
-				dialog.AddChildSection (this, sec, data);
+			foreach (string mt in GetItemMimeTypes ())
+				AddPanel (mt);
+		}
+		
+		MimeTypePanelData AddPanel (string mt)
+		{
+			MimeTypePanelData data = new MimeTypePanelData ();
+			OptionsDialogSection sec = new OptionsDialogSection (typeof(MimeTypePolicyOptionsSection));
+			sec.Fill = true;
+			Gdk.Pixbuf icon = DesktopService.GetPixbufForType (mt, Gtk.IconSize.Menu);
+			sec.Icon = ImageService.GetStockId (icon, Gtk.IconSize.Menu);
+			data.Section = sec;
+			data.MimeType = mt;
+			data.TypeDescription = DesktopService.GetMimeTypeDescription (mt);
+			if (string.IsNullOrEmpty (data.TypeDescription))
+				data.TypeDescription = mt;
+			data.DataObject = DataObject;
+			data.PolicyContainer = policyContainer;
+			sec.Label = data.TypeDescription;
+			LoadPolicyTypeData (data, mt);
+			typeSections [mt] = data;
+			ParentDialog.AddChildSection (this, sec, data);
+			return data;
+		}
+		
+		void RemovePanel (string mt)
+		{
+			MimeTypePanelData data = typeSections [mt];
+			typeSections.Remove (mt);
+			ParentDialog.RemoveSection (data.Section);
+		}
+		
+		internal MimeTypePanelData AddGlobalMimeType (string mt)
+		{
+			if (!globalMimeTypes.Contains (mt)) {
+				globalMimeTypes.Add (mt);
+				return AddPanel (mt);
 			}
+			return null;
+		}
+		
+		internal void RemoveGlobalMimeType (string mt)
+		{
+			if (globalMimeTypes.Remove (mt))
+				RemovePanel (mt);
 		}
 		
 		public IEnumerable<MimeTypePanelData> GetMimeTypeData ()
@@ -120,6 +151,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public override void ApplyChanges ()
 		{
+			if (globalMimeTypes != null) {
+				string types = string.Join (";", globalMimeTypes.ToArray ());
+				PropertyService.Set ("MonoDevelop.Projects.GlobalPolicyMimeTypes", types);
+			}
 			// If a section is already loaded, changes will be committed in the panel
 			foreach (MimeTypePanelData pd in typeSections.Values) {
 				if (!pd.SectionLoaded)
@@ -134,9 +169,20 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				GetItemMimeTypes (types, ((Solution)DataObject).RootFolder);
 			else if (DataObject is SolutionItem)
 				GetItemMimeTypes (types, (SolutionItem)DataObject);
-			else
-				return new string[] { "text/plain", "application/xml", "text/x-csharp" };
+			else {
+				types.Add ("application/xml");
+				foreach (MimeTypeOptionsPanelNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels")) {
+					types.Add (node.MimeType);
+					globalMimeTypes.Remove (node.MimeType);
+				}
+				types.UnionWith (globalMimeTypes);
+			}
 			return types;
+		}
+		
+		public bool IsUserMimeType (string type)
+		{
+			return globalMimeTypes.Contains (type);
 		}
 		
 		void GetItemMimeTypes (HashSet<string> types, SolutionItem item)
@@ -171,6 +217,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			store = new Gtk.ListStore (typeof(MimeTypePanelData), typeof(Gdk.Pixbuf), typeof(string));
 			tree.Model = store;
 			
+			boxButtons.Visible = panel.DataObject is PolicySet;
 			Gtk.CellRendererText crt = new Gtk.CellRendererText ();
 			Gtk.CellRendererPixbuf crp = new Gtk.CellRendererPixbuf ();
 			
@@ -181,6 +228,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			col.AddAttribute (crp, "pixbuf", 1);
 			col.AddAttribute (crt, "text", 2);
 			tree.AppendColumn (col);
+			store.SetSortColumnId (2, Gtk.SortType.Ascending);
 			
 			CellRendererComboBox comboCell = new CellRendererComboBox ();
 			comboCell.Changed += OnPolicySelectionChanged;
@@ -197,6 +245,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			};
 
 			Fill ();
+			UpdateButtons ();
+			
+			tree.Selection.Changed += delegate {
+				UpdateButtons ();
+			};
 		}
 		
 		static readonly string parentPolicyText = GettextCatalog.GetString ("(Inherited Policy)");
@@ -267,6 +320,44 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				MimeTypePanelData mt = (MimeTypePanelData) store.GetValue (iter, 0);
 				dialog.ShowPage (mt.Section);
 			}
+		}
+
+		protected virtual void OnButtonAddClicked (object sender, System.EventArgs e)
+		{
+			AddMimeTypeDialog dlg = new AddMimeTypeDialog (panel.GetItemMimeTypes ());
+			try {
+				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+					MimeTypePanelData mt = panel.AddGlobalMimeType (dlg.MimeType);
+					store.AppendValues (mt, DesktopService.GetPixbufForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
+				}
+			} finally {
+				dlg.Destroy ();
+			}
+		}
+
+		protected virtual void OnButtonRemoveClicked (object sender, System.EventArgs e)
+		{
+			Gtk.TreeIter iter;
+			if (tree.Selection.GetSelected (out iter)) {
+				MimeTypePanelData mt = (MimeTypePanelData) store.GetValue (iter, 0);
+				if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to remove the formatting policy for the type '{0}'?", mt.TypeDescription), AlertButton.Delete)) {
+					panel.RemoveGlobalMimeType (mt.MimeType);
+					store.Remove (ref iter);
+				}
+			}
+		}
+		
+		void UpdateButtons ()
+		{
+			Gtk.TreeIter iter;
+			if (tree.Selection.GetSelected (out iter)) {
+				MimeTypePanelData mt = (MimeTypePanelData) store.GetValue (iter, 0);
+				if (panel.IsUserMimeType (mt.MimeType)) {
+					buttonRemove.Sensitive = buttonEdit.Sensitive = true;
+					return;
+				}
+			}
+			buttonRemove.Sensitive = buttonEdit.Sensitive = false;
 		}
 	}
 }

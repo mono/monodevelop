@@ -19,6 +19,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.AddMimeTypeDialog.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs \
@@ -72,6 +73,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs \
 	MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs \
+	MonoDevelop.Projects.Gui.Dialogs/AddMimeTypeDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/DefaultPolicyOptionsDialog.cs \
 	MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs \
