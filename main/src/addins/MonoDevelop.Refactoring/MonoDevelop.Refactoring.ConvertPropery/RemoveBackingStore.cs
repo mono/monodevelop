@@ -32,6 +32,8 @@ using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.CodeGeneration;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Refactoring.ConvertPropery
 {
@@ -56,8 +58,9 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				return false;
 			if (property.HasSet && data.Document.GetCharAt (data.Document.LocationToOffset (property.SetRegion.End.Line - 1, property.SetRegion.End.Column - 2)) == ';')
 				return false;
-			
-			return true;
+			INRefactoryASTProvider astProvider = options.GetASTProvider ();
+			string backingStoreName = RetrieveBackingStore (options, astProvider, property);
+			return !string.IsNullOrEmpty (backingStoreName);
 		}
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
@@ -68,24 +71,41 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			IProperty property = resolveResult.ResolvedMember as IProperty;
 			TextEditorData data = options.GetTextEditorData ();
 			INRefactoryASTProvider astProvider = options.GetASTProvider ();
-			string backingStoreName = char.ToLower (property.Name[0]) + property.Name.Substring (1);
+			string backingStoreName = RetrieveBackingStore (options, astProvider, property);
 			
 			List<IMember> members = options.ResolveResult.CallingType.SearchMember (backingStoreName, true);
+			IMember backingStore = null;
+			int backinStoreStart = 0, backinStoreEnd = 0;
+			
 			foreach (IMember member in members) {
 				if (member.MemberType == MemberType.Field) {
 					DocumentLocation location = member.Location.ToDocumentLocation (data.Document);
-					int startOffset = data.Document.LocationToOffset (location);
+					backinStoreStart = data.Document.LocationToOffset (location);
 					LineSegment line = data.Document.GetLine (location.Line);
-					int endOffset = line.Offset + line.EditableLength;
+					backinStoreEnd = line.Offset + line.EditableLength;
+					backingStore = member;
 					
-					result.Add (new TextReplaceChange () {
-						FileName = options.Document.FileName,
-						Offset = startOffset,
-						RemovedChars = endOffset - startOffset
-					});
 					break;
 				}
 			}
+			
+			if (backingStore != null) {
+				foreach (MemberReference memberRef in GetReferences (options, backingStore)) {
+					result.Add (new TextReplaceChange () {
+						FileName = memberRef.FileName,
+						Offset = memberRef.Position,
+						RemovedChars = memberRef.Name.Length,
+						InsertedText = property.Name
+					});
+				}
+				result.Add (new TextReplaceChange () {
+					FileName = options.Document.FileName,
+					Offset = backinStoreStart,
+					RemovedChars = backinStoreEnd - backinStoreStart
+				});
+			}
+			
+
 			
 			if (property.HasGet) {
 				int startOffset = data.Document.LocationToOffset (property.GetRegion.Start.ToDocumentLocation (data.Document));
@@ -111,8 +131,22 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 					InsertedText = text
 				});
 			}
-			
 			return result;
+		}
+
+		string RetrieveBackingStore (MonoDevelop.Refactoring.RefactoringOptions options, MonoDevelop.Refactoring.INRefactoryASTProvider astProvider, MonoDevelop.Projects.Dom.IProperty property)
+		{
+			ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit = astProvider.ParseFile (options.Document.TextEditor.Text);
+			PropertyVisitor visitor = new PropertyVisitor (property);
+			compilationUnit.AcceptVisitor (visitor, null);
+			return visitor.BackingStoreName;
+		}
+
+		MemberReferenceCollection GetReferences (RefactoringOptions options, IMember member)
+		{
+			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null);
+			return refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution, true);
 		}
 	}
 }

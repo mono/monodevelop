@@ -127,10 +127,16 @@ namespace MonoDevelop.Refactoring
 					TextReplaceChange change = changes[j] as TextReplaceChange;
 					if (change == null)
 						continue;
-					if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName && replaceChange.Offset < change.Offset) {
-						change.Offset -= replaceChange.RemovedChars;
-						if (!string.IsNullOrEmpty (replaceChange.InsertedText))
-							change.Offset += replaceChange.InsertedText.Length;
+					if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
+						if (replaceChange.Offset < change.Offset) {
+							change.Offset -= replaceChange.RemovedChars;
+							if (!string.IsNullOrEmpty (replaceChange.InsertedText))
+								change.Offset += replaceChange.InsertedText.Length;
+						} else if (replaceChange.Offset < change.Offset + change.RemovedChars) {
+							change.RemovedChars -= replaceChange.RemovedChars;
+							if (!string.IsNullOrEmpty (replaceChange.InsertedText))
+								change.RemovedChars += replaceChange.InsertedText.Length;
+						}
 					}
 				}
 			}

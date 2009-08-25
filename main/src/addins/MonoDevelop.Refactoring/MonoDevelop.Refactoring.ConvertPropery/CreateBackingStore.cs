@@ -50,13 +50,14 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			IProperty property = resolveResult.ResolvedMember as IProperty;
 			if (property == null)
 				return false;
-			
+			Console.WriteLine (property);
 			TextEditorData data = options.GetTextEditorData ();
 			if (property.HasGet && data.Document.GetCharAt (data.Document.LocationToOffset (property.GetRegion.End.Line - 1, property.GetRegion.End.Column - 2)) != ';')
 				return false;
+			Console.WriteLine (1);
 			if (property.HasSet && data.Document.GetCharAt (data.Document.LocationToOffset (property.SetRegion.End.Line - 1, property.SetRegion.End.Column - 2)) != ';')
 				return false;
-			
+			Console.WriteLine (2);
 			return true;
 		}
 		

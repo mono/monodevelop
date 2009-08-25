@@ -147,7 +147,7 @@ namespace MonoDevelop.Refactoring.Rename
 			MemberReferenceCollection col = GetReferences (options);
 			if (col == null)
 				return result;
-
+			
 			if (properties.RenameFile && options.SelectedItem is IType) {
 				IType cls = (IType)options.SelectedItem;
 				if (cls.IsPublic) {

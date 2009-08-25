@@ -100,6 +100,7 @@
     <Compile Include="MonoDevelop.CodeGeneration\RaiseEventMethodGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring.ConvertPropery\CreateBackingStore.cs" />
     <Compile Include="MonoDevelop.Refactoring.ConvertPropery\RemoveBackingStore.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ConvertPropery\PropertyVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
