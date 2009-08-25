@@ -330,7 +330,8 @@ namespace Mono.PkgConfig
 				pinfo.Version = file.Version;
 				pinfo.Description = file.Description;
 				ParsePackageInfo (file, pinfo);
-				ctx.StoreCustomData (file, pinfo);
+				if (pinfo.IsValidPackage)
+					ctx.StoreCustomData (file, pinfo);
 			}
 			return pinfo;
 		}

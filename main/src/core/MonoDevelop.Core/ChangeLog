@@ -1,5 +1,10 @@
 2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Don't try to
+	  store custom data if a package is not valid.
+
+2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Another fix to
 	  make it build with .net 2.0.
 
