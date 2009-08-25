@@ -37,6 +37,7 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
 using CSharpBinding.FormattingStrategy;
 using MonoDevelop.CSharpBinding;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -80,6 +81,24 @@ namespace MonoDevelop.CSharpBinding
 				parameterCount++;
 			}
 			result.Append (']');
+			IParameter curParameter = currentParameter >= 0 && currentParameter < indexers[overload].Parameters.Count ? indexers[overload].Parameters[currentParameter] : null;
+			if (curParameter != null) {
+				string docText = AmbienceService.GetDocumentation (indexers[overload]);
+				if (!string.IsNullOrEmpty (docText)) {
+					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
+					Match match = paramRegex.Match (docText);
+					if (match.Success) {
+						result.AppendLine ();
+						string text = match.Groups[1].Value;
+						text = "<summary>" + AmbienceService.GetDocumentationSummary (indexers[overload]) + "</summary>" + text;
+						result.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
+							HighlightParameter = curParameter.Name,
+							MaxLineLength = 60
+						}));
+					}
+				}
+			}
+			
 			return result.ToString ();
 		}
 		

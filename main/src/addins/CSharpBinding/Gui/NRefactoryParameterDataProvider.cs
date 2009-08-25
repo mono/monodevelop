@@ -244,8 +244,9 @@ namespace MonoDevelop.CSharpBinding
 						string text = match.Groups[1].Value;
 						text = "<summary>" + AmbienceService.GetDocumentationSummary (methods[overload]) + "</summary>" + text;
 						sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
-							HighlightParameter = curParameter.Name
-								}));
+							HighlightParameter = curParameter.Name,
+							MaxLineLength = 60
+						}));
 					}
 				}
 			} else {
