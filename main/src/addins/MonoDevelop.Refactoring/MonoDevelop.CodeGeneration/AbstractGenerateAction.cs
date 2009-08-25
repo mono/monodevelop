@@ -118,13 +118,17 @@ namespace MonoDevelop.CodeGeneration
 			if (astProvider == null)
 				return;
 			StringBuilder output = new StringBuilder ();
-
+			string indent = RefactoringOptions.GetIndent (options.Document, options.EnclosingMember != null ? options.EnclosingMember : options.EnclosingType) + "\t";
 			foreach (INode node in GenerateCode (includedMembers)) {
-				if (output.Length > 0)
+				if (output.Length > 0) {
 					output.AppendLine ();
-				output.Append (astProvider.OutputNode (options.Dom, node, RefactoringOptions.GetIndent (options.Document, options.EnclosingType) + "\t"));
+					if (node is Statement)
+						output.Append (indent);
+				}
+				string nodeText = astProvider.OutputNode (options.Dom, node, indent);
+				output.Append (nodeText);
 			}
-			Console.WriteLine ("output:" + output.ToString ().Replace ("\t", "->"));
+			//Console.WriteLine ("output:" + output.ToString ().Replace ("\t", "->"));
 			if (output.Length > 0) {
 				int column = 1;
 				if (!Char.IsWhiteSpace (output[0]))

@@ -1,5 +1,12 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs: Fixed
+	  null check generator & abstract generate action statement
+	  output.
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:
