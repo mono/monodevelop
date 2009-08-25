@@ -100,7 +100,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			IProperty property = resolveResult.ResolvedMember as IProperty;
 			TextEditorData data = options.GetTextEditorData ();
 			INRefactoryASTProvider astProvider = options.GetASTProvider ();
-			backingStoreName = char.ToLower (property.Name[0]) + property.Name.Substring (1);
+			backingStoreName = GetBackingStoreName (property);
 			
 			FieldDeclaration backingStore = new FieldDeclaration (null);
 			backingStore.TypeReference = property.ReturnType.ConvertToTypeReference ();
@@ -146,5 +146,32 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			
 			return result;
 		}
+
+		static string GetBackingStoreName (MonoDevelop.Projects.Dom.IProperty property)
+		{
+			string baseName = char.ToLower (property.Name[0]) + property.Name.Substring (1);
+			int    number   = -1;
+			IType type = property.DeclaringType;
+			if (type != null) {
+				List<IMember> members;
+				do {
+					number++;
+					members = type.SearchMember (GenNumberedName (baseName, number), true);
+				} while (members != null && members.Count > 0);
+			}
+			
+			return GenNumberedName (baseName, number);
+		}
+
+		static string GenNumberedName (string baseName, int number)
+		{
+//			if (number == 1)
+//				return "_" + baseName;
+//			if (number == 2)
+//				return "m_" + baseName;
+			return baseName + (number > 0 ? number.ToString () : "");
+		}
+
+
 	}
 }

@@ -1,5 +1,10 @@
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs:
+	  Improved backing store name creation.
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:
