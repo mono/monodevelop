@@ -106,11 +106,13 @@ namespace PyBinding.Gui
 				return new CompletionDataList (SelfDotCompletionData (klass));
 			}
 			
-			// anything in the sqlite store
-			if (!String.IsNullOrEmpty (triggerWord)) {
-				// todo: try to complete on class/module/func/attr data
-				// todo: limit to just the next word rather than full phrase
-				
+			var triggerLine = editor.GetLineText (completionContext.TriggerLine).Trim ();
+			var inFrom = triggerLine.StartsWith ("from ");
+			var parts = triggerLine.Split (' ');
+			
+			// "from blah import "
+			if (inFrom && parts.Length > 2) {
+				triggerWord = parts [1] + ".";
 				return new CompletionDataList (
 					from ParserItem item in m_site.Database.Find (triggerWord)
 				    where !item.FullName.Substring (triggerWord.Length).Contains ('.')
@@ -118,21 +120,40 @@ namespace PyBinding.Gui
 					;
 			}
 			
-			if (m_site != null) {
+			string suffix = "";
+			if (inFrom)
+				suffix = " import";
+			
+			// anything in the sqlite store
+			if (!String.IsNullOrEmpty (triggerWord)) {
+				// todo: try to complete on class/module/func/attr data
+				// todo: limit to just the next word rather than full phrase
+				
 				return new CompletionDataList (
-					from ParserItem item in m_site.Database.Find ("", ParserItemType.Module)
-					where !item.FullName.Contains ('.')
-					select CreateCompletionData (item, triggerWord))
+					from ParserItem item in m_site.Database.Find (triggerWord)
+					// TODO this is super wasteful on memory
+				    where !item.FullName.Substring (triggerWord.Length).Contains ('.')
+					select CreateCompletionData (item, triggerWord, suffix))
 					;
 			}
 			
-			return null;
+			return new CompletionDataList (
+				from ParserItem item in m_site.Database.Find ("", ParserItemType.Module)
+				// Super wasteful
+				where !item.FullName.Contains ('.')
+				select CreateCompletionData (item, triggerWord))
+				;
 		}
 		
 		static ICompletionData CreateCompletionData (ParserItem item, string triggerWord)
 		{
+			return CreateCompletionData (item, triggerWord, "");
+		}
+		
+		static ICompletionData CreateCompletionData (ParserItem item, string triggerWord, string suffix)
+		{
 			var name = item.FullName.Substring (triggerWord.Length);
-			return new CompletionData (name, IconForType (item), item.Documentation, name);
+			return new CompletionData (name, IconForType (item), item.Documentation, name + suffix);
 		}
 		
 		static string IconForType (ParserItem item)

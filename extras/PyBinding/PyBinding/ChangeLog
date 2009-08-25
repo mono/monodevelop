@@ -1,5 +1,11 @@
 2009-08-24  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Gui/PythonEditorCompletion.cs: Add support for context
+	specific completion on "from blah import blah" style lines.  Completion
+	is aware of import prefix.
+
+2009-08-24  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding/PythonSite.cs: Use background progress monitor for python
 	site module indexing.
 	* PyBinding.Gui/PythonOptionsPanel.cs: Add support for removing paths
