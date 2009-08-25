@@ -1,5 +1,9 @@
 2009-08-25  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Compiler/Python25Compiler.cs: Only compile .py files.
+
+2009-08-25  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding/PyBinding.csproj:
 	* PyBinding/PyBinding.addin.xml:
 	* PyBinding/Resources/PythonStylePolicy.xml:

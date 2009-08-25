@@ -80,6 +80,9 @@ namespace PyBinding.Compiler
 			FilePath relName = fileName.ToRelative (project.BaseDirectory);
 			string outFile = relName.ToAbsolute (config.OutputDirectory);
 			
+			if (!outFile.EndsWith (".py"))
+				return;
+			
 			// Create the destination directory
 			FileInfo fileInfo = new FileInfo (outFile);
 			if (!fileInfo.Directory.Exists)
