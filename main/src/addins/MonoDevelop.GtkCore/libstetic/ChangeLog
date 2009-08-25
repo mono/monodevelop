@@ -1,3 +1,10 @@
+2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* wrapper/Container.cs: Properly validate widget ids when
+	  pasting a child. If there is a conflict, the child has to be
+	  modified. Fixes bug #530086 - When copy/pasting widgets in
+	  stetic, the original is renamed.
+
 2009-08-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* wrapper/Notebook.cs: Fix issue with adding a widget with

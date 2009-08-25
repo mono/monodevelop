@@ -87,7 +87,7 @@ namespace Stetic.Wrapper
 			// Make sure children's IDs don't conflict with other widgets
 			// in the parent container.
 			if (!Loading)
-				ValidateChildNames (Wrapped);
+				ValidateChildNames (child);
 
 			Widget w = Widget.Lookup (child);
 			if (w != null) {
