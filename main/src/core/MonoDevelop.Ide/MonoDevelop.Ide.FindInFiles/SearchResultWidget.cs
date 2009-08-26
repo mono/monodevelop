@@ -94,11 +94,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileNameColumn.SetCellDataFunc (fileNameRenderer, new Gtk.TreeCellDataFunc (FileNameDataFunc));
 			treeviewSearchResults.AppendColumn (fileNameColumn);
 			
-			store.SetSortFunc (0, new TreeIterCompareFunc (CompareFileNames));
-			
 			TreeViewColumn lineColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Line"), new Gtk.CellRendererText (), new Gtk.TreeCellDataFunc (ResultLineDataFunc));
 			lineColumn.SortColumnId = 1;
-			store.SetSortFunc (1, new TreeIterCompareFunc (CompareLineNumbers));
 			
 			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"), new Gtk.CellRendererText (), new Gtk.TreeCellDataFunc (ResultTextDataFunc));
 			textColumn.SortColumnId = 2;
@@ -107,6 +104,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"), new Gtk.CellRendererText (), new Gtk.TreeCellDataFunc (ResultPathDataFunc));
 			pathColumn.SortColumnId = 3;
 			pathColumn.Resizable = true;
+			store.SetSortFunc (0, new TreeIterCompareFunc (CompareFileNames));
+			store.SetSortFunc (1, new TreeIterCompareFunc (CompareLineNumbers));
 			store.SetSortFunc (3, new TreeIterCompareFunc (CompareFilePaths));
 			
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
@@ -173,13 +172,19 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			Reset ();
 			buttonStop.Sensitive = true;
-//			treeviewSearchResults.Model = null;
+			treeviewSearchResults.FreezeChildNotify ();
+			store.SetSortFunc (0, new TreeIterCompareFunc (DefaultSortFunc));
+			store.SetSortFunc (1, new TreeIterCompareFunc (DefaultSortFunc));
+			store.SetSortFunc (3, new TreeIterCompareFunc (DefaultSortFunc));
 		}
 		
 		public void EndProgress ()
 		{
 			buttonStop.Sensitive = false;
-//			treeviewSearchResults.Model = store;
+			store.SetSortFunc (0, new TreeIterCompareFunc (CompareFileNames));
+			store.SetSortFunc (1, new TreeIterCompareFunc (CompareLineNumbers));
+			store.SetSortFunc (3, new TreeIterCompareFunc (CompareFilePaths));
+			treeviewSearchResults.ThawChildNotify ();
 		}
 		
 		public void Reset ()
@@ -192,6 +197,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			store.Clear ();
 			labelStatus.Text = "";
 			textviewLog.Buffer.Clear ();
+			
 		}
 		
 		protected override void OnDestroyed ()
@@ -304,6 +310,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			return loc1.Line.CompareTo (loc2.Line);
 		}
 		
+		static int DefaultSortFunc (TreeModel model, TreeIter first, TreeIter second)
+		{
+			return 0;
+		}
+		
 		static int CompareFileNames (TreeModel model, TreeIter first, TreeIter second)
 		{
 			SearchResult searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
@@ -342,6 +353,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			CellRendererText textRenderer = (CellRendererText)cell;
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			
 			Mono.TextEditor.Document doc = GetDocument (searchResult);
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			LineSegment line = doc.GetLine (lineNr);
@@ -458,8 +470,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void Add (SearchResult result)
 		{
+			store.InsertWithValues (ResultCount, result, false);
 			ResultCount++;
-			store.AppendValues (result, false);
 		}
 		
 		void OpenDocumentAt (Gtk.TreeIter iter)
