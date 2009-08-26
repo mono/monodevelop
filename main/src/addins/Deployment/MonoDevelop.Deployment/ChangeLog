@@ -1,5 +1,10 @@
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Deployment.csproj: Updated dependencies. We now
+	  depend on gtk# 2.12.8, Mono 2.4, and Mono.Addins 0.4.
+
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Deployment/PackageBuilder.cs: When running on
 	  command line, don't try to get the opened solution.
 
