@@ -398,6 +398,16 @@ namespace MonoDevelop.Projects
 				this.References.Add (prNew);
 			}
 		}
+		
+		public override BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		{
+			if (!TargetRuntime.IsInstalled (TargetFramework)) {
+				BuildResult res = new BuildResult ();
+				res.AddError (GettextCatalog.GetString ("Framework '{0}' not installed.", TargetFramework.Name));
+				return res;
+			}
+			return base.RunTarget (monitor, target, configuration);
+		}
 
 		protected override void PopulateSupportFileList (FileCopySet list, string solutionConfiguration)
 		{

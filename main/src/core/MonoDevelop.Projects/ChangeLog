@@ -1,5 +1,15 @@
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/SolutionConfiguration.cs: Never assign
+	  a null configuration name.
+
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/DotNetProject.cs: Before running a
+	  target on a project, make sure the target framework is
+	  installed.
+
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.dll.config: Make dll mappings work in
 	  FreeBSD. Fixes bug #496269. Patch by Romain Tartière.
 

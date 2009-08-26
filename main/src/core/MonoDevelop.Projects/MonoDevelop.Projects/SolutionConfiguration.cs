@@ -136,6 +136,8 @@ namespace MonoDevelop.Projects
 		
 		public SolutionConfigurationEntry AddItem (SolutionEntityItem item, bool build, string itemConfiguration)
 		{
+			if (itemConfiguration == null)
+				itemConfiguration = Name;
 			SolutionConfigurationEntry conf = new SolutionConfigurationEntry (this, item);
 			conf.Build = build;
 			conf.ItemConfiguration = itemConfiguration;

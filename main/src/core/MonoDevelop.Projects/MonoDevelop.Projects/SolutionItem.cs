@@ -217,14 +217,14 @@ namespace MonoDevelop.Projects
 			return new SolutionItem [0];
 		}
 		
-		public BuildResult RunTarget (IProgressMonitor monitor, string target, string solutionConfiguration)
+		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, string solutionConfiguration)
 		{
 			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, target, solutionConfiguration);
 		}
 		
 		public void Clean (IProgressMonitor monitor, string solutionConfiguration)
 		{
-			Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.CleanTarget, solutionConfiguration);
+			RunTarget (monitor, ProjectService.CleanTarget, solutionConfiguration);
 		}
 		
 		public BuildResult Build (IProgressMonitor monitor, string solutionConfiguration)
@@ -244,7 +244,7 @@ namespace MonoDevelop.Projects
 					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
 					
 					// This will end calling OnBuild ()
-					return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.BuildTarget, solutionConfiguration);
+					return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
 					
 				} finally {
 					monitor.EndTask ();
