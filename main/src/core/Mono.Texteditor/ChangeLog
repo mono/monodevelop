@@ -1,5 +1,9 @@
 2009-08-26  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: Little performance fix.
+
+2009-08-26  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/TextMarker.cs:
 	* Mono.TextEditor/GutterMargin.cs:

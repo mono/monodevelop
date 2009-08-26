@@ -510,9 +510,10 @@ namespace Mono.TextEditor
 			foreach (UndoOperation op in undoStack) {
 				op.InformTextReplace (args);
 			}
-			foreach (UndoOperation op in redoStack) {
-				op.InformTextReplace (args);
-			}
+			// since we're only displaying the undo stack it's not required to update the redo stack
+//			foreach (UndoOperation op in redoStack) {
+//				op.InformTextReplace (args);
+//			}
 		}
 		
 		public bool CanUndo {
