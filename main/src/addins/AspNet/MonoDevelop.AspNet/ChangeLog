@@ -1,3 +1,7 @@
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic: Update gtk# dependency.
+
 2009-08-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs:
