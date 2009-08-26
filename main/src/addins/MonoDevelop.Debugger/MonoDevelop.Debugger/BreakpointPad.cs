@@ -51,7 +51,7 @@ namespace MonoDevelop.Debugger
 	{
 		BreakpointStore bps;
 		
-		MonoDevelop.Ide.Gui.Components.PadTreeView tree;
+		BreakpointsTreeView tree;
 		Gtk.TreeStore store;
 		VBox control;
 		ScrolledWindow sw;
@@ -116,7 +116,8 @@ namespace MonoDevelop.Debugger
 			
 			store = new TreeStore (typeof(string), typeof (bool), typeof(string), typeof(object), typeof(string), typeof(string), typeof(string), typeof(string));
 
-			tree = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
+			tree = new BreakpointsTreeView (this);
+			tree.Model = store;
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
 			
@@ -169,7 +170,6 @@ namespace MonoDevelop.Debugger
 			UpdateDisplay ();
 			
 			tree.PopupMenu += new PopupMenuHandler (OnPopupMenu);
-			tree.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
 
 			breakpointUpdatedHandler = DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointUpdated));
 			
@@ -189,24 +189,13 @@ namespace MonoDevelop.Debugger
 			DebuggingService.Breakpoints.Changed -= OnBpChanged;
 			DebuggingService.Breakpoints.BreakpointUpdated -= breakpointUpdatedHandler;
 		}
-
 		
-		[GLib.ConnectBefore]
-		void OnButtonPressed (object o, ButtonPressEventArgs args)
-		{
-			// Show the menu with a small delay, since some options depend on a
-			// tree item to be selected, and this click may select a row
-			Gtk.Application.Invoke (delegate {
-				if (args.Event.Button == 3)
-					ShowPopup ();
-			});
-		}
 		private void OnPopupMenu (object o, PopupMenuArgs args)
 		{
 			ShowPopup ();
 		}
 
-		private void ShowPopup ()
+		internal void ShowPopup ()
 		{
 			IdeApp.CommandService.ShowContextMenu (menuSet, tree);
 		}
@@ -371,5 +360,24 @@ namespace MonoDevelop.Debugger
 		{
 			OnDeleted ();
 		}
+	}
+	
+	class BreakpointsTreeView: MonoDevelop.Ide.Gui.Components.PadTreeView
+	{
+		BreakpointPad pad;
+		
+		public BreakpointsTreeView (BreakpointPad pad)
+		{
+			this.pad = pad;
+		}
+		
+		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+		{
+			bool ret = base.OnButtonPressEvent (evnt);
+			if (evnt.Button == 3)
+				pad.ShowPopup ();
+			return ret;
+		}
+
 	}
 }

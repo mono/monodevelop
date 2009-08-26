@@ -1,5 +1,10 @@
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/BreakpointPad.cs: Fix issue with
+	  context menu. Fixes bug #480535.
+
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger\StackTracePad.cs: Improve stack frame
 	  formatting.
 
