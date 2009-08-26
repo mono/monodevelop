@@ -33,7 +33,7 @@ namespace Mono.TextEditor
 	
 	public interface ITextEditorOptions : IDisposable
 	{
-		double Zoom { get; }
+		double Zoom { get; set; }
 		bool CanZoomIn { get; }
 		bool CanZoomOut { get; }
 		bool CanResetZoom { get; }
@@ -41,31 +41,35 @@ namespace Mono.TextEditor
 		void ZoomOut ();
 		void ZoomReset ();
 		string IndentationString { get; }
-		IWordFindStrategy WordFindStrategy { get; }
-		bool AllowTabsAfterNonTabs { get; }
-		bool HighlightMatchingBracket { get; }
-		bool RemoveTrailingWhitespaces { get; }
-		bool TabsToSpaces { get; }
-		int IndentationSize { get; }
-		int TabSize { get; }
-		bool ShowIconMargin { get; }
-		bool ShowLineNumberMargin { get; }
-		bool ShowFoldMargin { get; }
-		bool ShowInvalidLines { get; }
-		bool ShowTabs { get; }
-		bool ShowEolMarkers { get; }
-		bool HighlightCaretLine { get; }
-		bool ShowSpaces { get; }
-		int RulerColumn { get; }
-		bool ShowRuler { get; }
-		bool AutoIndent { get; }
-		bool OverrideDocumentEolMarker { get; }
-		string FontName { get; }
-		bool EnableSyntaxHighlighting { get; }
-		Pango.FontDescription Font { get; }
-		string ColorScheme { get; }
-		string DefaultEolMarker { get; }
+		IWordFindStrategy WordFindStrategy { get; set; }
+		bool AllowTabsAfterNonTabs { get; set; }
+		bool HighlightMatchingBracket { get; set; }
+		bool RemoveTrailingWhitespaces { get; set; }
+		bool TabsToSpaces { get; set; }
+		int IndentationSize { get; set; }
+		int TabSize { get; set; }
+		bool ShowIconMargin { get; set; }
+		bool ShowLineNumberMargin { get; set; }
+		bool ShowFoldMargin { get; set; }
+		bool ShowInvalidLines { get; set; }
+		bool ShowTabs { get; set; }
+		bool ShowEolMarkers { get; set; }
+		bool HighlightCaretLine { get; set; }
+		bool ShowSpaces { get; set; }
+		int RulerColumn { get; set; }
+		bool ShowRuler { get; set; }
+		bool AutoIndent { get; set; }
+		bool OverrideDocumentEolMarker { get; set; }
+		bool EnableSyntaxHighlighting { get; set; }
+		
+		string FontName { get;  set; }
+		Pango.FontDescription Font { get;  }
+		
+		string ColorScheme { get; set;  }
+		string DefaultEolMarker { get; set; }
+		
 		Style GetColorStyle (Gtk.Widget widget);
+		
 		event EventHandler Changed;
 	}
 }

@@ -1,3 +1,9 @@
+2009-08-26  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/ITextEditorOptions.cs: Made it easier to
+	  work with the text editor control by allowing that options
+	  can be set directly. This doesn't affect monodevelop.
+
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/CaretMoveActions.cs: Fixed "Bug 513056 -
