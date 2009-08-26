@@ -232,7 +232,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		_reset.Show()
 	
 	override def OnKeyPressEvent (ev as Gdk.EventKey):
-		ka as KeyAction
+		ka as KeyActions
 		processkeyresult as bool
 		// TODO: cast ((char), ev.Key) (seems not to work)
 		processkeyresult = CompletionWindowManager.PreProcessKeyEvent (ev.Key, char('\0'), ev.State, ka)
