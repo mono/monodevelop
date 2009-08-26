@@ -116,9 +116,14 @@ namespace MonoDevelop.IPhone
 						if (obj is IBProxyObject) {
 							baseType = "MonoTouch.UIKit.UIViewController";
 						} else if (obj is UnknownIBObject) {
-							var cls = ((UnknownIBObject)obj).Class;
-							if (cls != "IBUICustomObject")
-								baseType = GetTypeName (cls);
+							var uobj = (UnknownIBObject)obj;
+							
+							//if the item comes from another nib, don't generate the partial class in this xib's codebehind
+							if (uobj.Properties.ContainsKey ("IBUINibName") && !String.IsNullOrEmpty (uobj.Properties["IBUINibName"] as string))
+								continue;
+							
+							if (uobj.Class != "IBUICustomObject")
+								baseType = GetTypeName (uobj.Class);
 						}
 						type.Comments.Add (new CodeCommentStatement (String.Format ("Base type probably should be {0} or subclass", baseType))); 
 					}
