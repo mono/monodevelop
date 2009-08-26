@@ -530,7 +530,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				} else {
 					string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found", "{0} matches found", find.FoundMatchesCount), find.FoundMatchesCount);
 					string files = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
-					message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + Environment.NewLine + files;
+					message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + " " + files;
 				}
 				searchMonitor.ReportStatus (message);
 				searchMonitor.Log.WriteLine (message);
