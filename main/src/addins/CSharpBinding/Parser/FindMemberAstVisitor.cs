@@ -43,6 +43,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
+using MonoDevelop.Ide.FindInFiles;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -114,8 +115,22 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (searchedMember == null)
 				return;
+			string text = file.Text;
 			
-			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (file.Text));
+			// search if the member name exists in the file (otherwise it doesn't make sense to search it)
+			FindReplace findReplace = new FindReplace ();
+			FilterOptions filterOptions = new FilterOptions {
+				CaseSensitive = true,
+				WholeWordsOnly = true
+			};
+			findReplace.CompilePattern (searchedMemberName, filterOptions);
+			IEnumerable<SearchResult> result = findReplace.Search (new FileProvider (null), text, searchedMemberName, null, filterOptions);
+			if (result == null || !result.Any ()) {
+				return;
+			}
+			
+			// It exists -> now looking with the parser
+			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (text));
 			parser.Lexer.EvaluateConditionalCompilation = true;
 			parser.Parse ();
 			resolver.SetupParsedCompilationUnit (parser.CompilationUnit);
