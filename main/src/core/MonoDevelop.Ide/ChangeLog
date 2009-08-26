@@ -1,5 +1,15 @@
 2009-08-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Changed the
+	  remove trailing whitespace algorihtm to use the
+	  Mono.TextEditor data structures - they're not suffering from
+	  extensive caret movement.
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Removed unused
+	  event listener.
+
+2009-08-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.addin.xml:
 	* MonoDevelop.Ide.Commands/EditCommands.cs:
 	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Added remove

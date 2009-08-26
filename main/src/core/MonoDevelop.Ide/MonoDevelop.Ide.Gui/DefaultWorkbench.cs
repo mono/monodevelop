@@ -316,10 +316,6 @@ namespace MonoDevelop.Ide.Gui
 				content.WorkbenchWindow.SelectWindow();
 			
 			RedrawAllComponents ();
-			
-			IEditableTextBuffer editor = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
-			if (editor != null)
-				editor.TextChanged += OnViewTextChanged;
 		}
 		
 		void ShowPadNode (ExtensionNode node)
@@ -584,60 +580,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-//		bool parsingFile;
-		
-		void OnViewTextChanged (object sender, TextChangedEventArgs e)
-		{
-//document does it.
-/*			if (!parsingFile) {
-				parsingFile = true;
-				GLib.Timeout.Add (500, new TimeoutHandler (ParseCurrentFile));
-			}*/
-		}
-		/*
-		bool ParseCurrentFile ()
-		{
-			parsingFile = false;
-			
-			if (ActiveWorkbenchWindow == null || ActiveWorkbenchWindow.ActiveViewContent == null)
-				return false;
-
-			IEditableTextBuffer editable = (IEditableTextBuffer) ActiveWorkbenchWindow.ActiveViewContent.GetContent (typeof(IEditableTextBuffer));
-			if (editable == null)
-				return false;
-			
-			string fileName = null;
-			
-			IViewContent viewContent = ActiveWorkbenchWindow.ViewContent;
-			IParseableContent parseableContent = (IParseableContent) ActiveWorkbenchWindow.ActiveViewContent.GetContent (typeof(IParseableContent));
-			
-			if (parseableContent != null) {
-				fileName = parseableContent.ParseableContentName;
-			} else {
-				fileName = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.ContentName;
-			}
-			
-			if (fileName == null || fileName.Length == 0)
-				return false;
-			
-			if (ProjectDomService.GetParserByFileName (fileName) == null)
-				return false;
-			
-			string text = editable.Text;
-			if (text == null)
-				return false;
-		
-			System.Threading.ThreadPool.QueueUserWorkItem (new System.Threading.WaitCallback (AsyncParseCurrentFile), new object[] { viewContent.Project, fileName, text });
-			
-			return false;
-		}
-		
-		void AsyncParseCurrentFile (object ob)
-		{
-			object[] data = (object[]) ob;
-			IdeApp.Workspace.ParserDatabase.UpdateFile ((Project) data[0], (string) data[1], (string) data[2]);
-		}
-*/
 		public Gtk.Toolbar[] ToolBars {
 			get { return toolbars; }
 		}

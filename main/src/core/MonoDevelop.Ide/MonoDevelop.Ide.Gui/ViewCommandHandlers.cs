@@ -585,11 +585,11 @@ namespace MonoDevelop.Ide.Gui
 				return ch == ' ' || ch == '\t' || ch == '\v';
 			}
 			
-			public static RemoveInfo GetRemoveInfo (IEditableTextBuffer buffer, ref int pos)
+			public static RemoveInfo GetRemoveInfo (Mono.TextEditor.Document document, ref int pos)
 			{
 				RemoveInfo result;
 				int len = 0;
-				while (pos > 0 && IsWhiteSpace (buffer.GetCharAt (pos))) {
+				while (pos > 0 && IsWhiteSpace (document.GetCharAt (pos))) {
 					--pos;
 					++len;
 				}
@@ -609,21 +609,25 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.RemoveTrailingWhiteSpaces)]
 		public void OnRemoveTrailingWhiteSpaces ()
 		{
-			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
-			if (buffer == null)
+			Mono.TextEditor.ITextEditorDataProvider provider = GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
+			if (provider == null)
 				return;
+			Mono.TextEditor.TextEditorData data = provider.GetTextEditorData ();
+			if (data == null)
+				return;
+			
 			System.Collections.Generic.List<RemoveInfo> removeList = new System.Collections.Generic.List<RemoveInfo> ();
-			int pos = buffer.Length - 1;
-			RemoveInfo removeInfo = RemoveInfo.GetRemoveInfo (buffer, ref pos);
+			int pos = data.Document.Length - 1;
+			RemoveInfo removeInfo = RemoveInfo.GetRemoveInfo (data.Document, ref pos);
 			if (!removeInfo.IsEmpty)
 				removeList.Add (removeInfo);
 			
 			while (pos >= 0) {
-				char ch = buffer.GetCharAt (pos);
+				char ch = data.Document.GetCharAt (pos);
 				if (ch == '\n' || ch == '\r') {
-					if (RemoveInfo.IsWhiteSpace (buffer.GetCharAt (pos - 1))) {
+					if (RemoveInfo.IsWhiteSpace (data.Document.GetCharAt (pos - 1))) {
 						--pos;
-						removeInfo = RemoveInfo.GetRemoveInfo (buffer, ref pos);
+						removeInfo = RemoveInfo.GetRemoveInfo (data.Document, ref pos);
 						if (!removeInfo.IsEmpty)
 							removeList.Add (removeInfo);
 					}
@@ -631,9 +635,10 @@ namespace MonoDevelop.Ide.Gui
 				--pos;
 			}
 			
-			buffer.BeginAtomicUndo ();
-			removeList.ForEach (info => buffer.DeleteText (info.Position, info.Length));
-			buffer.EndAtomicUndo ();
+			data.Document.BeginAtomicUndo ();
+			removeList.ForEach (info => ((Mono.TextEditor.IBuffer)data.Document).Remove (info.Position, info.Length));
+			data.Caret.Offset = Math.Min (data.Caret.Offset, data.Document.Length - 1);
+			data.Document.EndAtomicUndo ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.RemoveTrailingWhiteSpaces)]
