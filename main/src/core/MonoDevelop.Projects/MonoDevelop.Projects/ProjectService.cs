@@ -145,23 +145,24 @@ namespace MonoDevelop.Projects
 			return loadedItem;
 		}
 		
-		public SolutionItem ReadSolutionItem (IProgressMonitor monitor, SolutionItemReference reference)
-		{
-			return ReadSolutionItem (monitor, reference, null);
-		}
-		
 		public SolutionItem ReadSolutionItem (IProgressMonitor monitor, SolutionItemReference reference, params WorkspaceItem[] workspaces)
 		{
 			if (reference.Id == null) {
+				FilePath file = reference.Path.FullPath;
+				foreach (WorkspaceItem workspace in workspaces) {
+					foreach (SolutionEntityItem eitem in workspace.GetAllSolutionItems<SolutionEntityItem> ())
+						if (file == eitem.FileName)
+							return eitem;
+				}
 				return ReadSolutionItem (monitor, reference.Path);
 			}
 			else {
 				Solution sol = null;
 				if (workspaces.Length > 0) {
-					string file = Path.GetFullPath (reference.Path);
+					FilePath file = reference.Path.FullPath;
 					foreach (WorkspaceItem workspace in workspaces) {
 						foreach (Solution item in workspace.GetAllSolutions ()) {
-							if (Path.GetFullPath (item.FileName) == file) {
+							if (item.FileName.FullPath == file) {
 								sol = item;
 								break;
 							}
@@ -169,12 +170,9 @@ namespace MonoDevelop.Projects
 						if (sol != null)
 							break;
 					}
-				} else {
-					sol = ReadWorkspaceItem (monitor, reference.Path) as Solution;
 				}
-				
 				if (sol == null)
-					return null;
+					sol = ReadWorkspaceItem (monitor, reference.Path) as Solution;
 				
 				if (reference.Id == ":root:")
 					return sol.RootFolder;

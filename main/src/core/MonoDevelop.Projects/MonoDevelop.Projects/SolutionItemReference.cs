@@ -26,6 +26,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Projects
@@ -33,7 +34,7 @@ namespace MonoDevelop.Projects
 	public class SolutionItemReference
 	{
 		[ProjectPathItemProperty]
-		string path;
+		FilePath path;
 		
 		[ItemProperty]
 		string id;
@@ -55,18 +56,18 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public SolutionItemReference (string path)
+		public SolutionItemReference (FilePath path)
 		{
 			this.path = path;
 		}
 		
-		public SolutionItemReference (string path, string id)
+		public SolutionItemReference (FilePath path, string id)
 		{
 			this.path = path;
 			this.id = id;
 		}
 		
-		internal string Path {
+		internal FilePath Path {
 			get { return path; }
 		}
 		
@@ -99,6 +100,11 @@ namespace MonoDevelop.Projects
 		public static bool operator != (SolutionItemReference r1, SolutionItemReference r2)
 		{
 			return !(r1 == r2);
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[SolutionItemReference: path={0}, id={1}]", path, id);
 		}
 	}
 }

@@ -45,6 +45,17 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute]
 		string import;
 		
+		public ItemTypeNode ()
+		{
+		}
+		
+		public ItemTypeNode (string guid, string extension, string import)
+		{
+			this.guid = guid;
+			this.extension = extension;
+			this.import = import;
+		}
+		
 		public string Guid {
 			get { return guid; }
 		}

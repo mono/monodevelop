@@ -1,5 +1,21 @@
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/ProjectService.cs: In ReadSolutionItem,
+	  if the reference has no id, try to find the project in the
+	  provided workspace list.
+
+	* MonoDevelop.Projects/BuildResult.cs:
+	* MonoDevelop.Projects/SolutionItemReference.cs: Improve
+	  ToString.
+
+	* MonoDevelop.Projects.Extensions/ItemTypeNode.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	  Create an ItemTypeNode for mdproj, and use it like any other
+	  item type. There is no need to special-case it anymore.
+
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/SolutionConfiguration.cs: Never assign
 	  a null configuration name.
 

@@ -75,10 +75,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return slnFileFormat.GetValidFormatName (obj, fileName, this);
 			else {
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
-				if (node != null)
-					return fileName.ChangeExtension ("." + node.Extension);
-				else
-					return fileName.ChangeExtension (".mdproj");
+				return fileName.ChangeExtension ("." + node.Extension);
 			}
 		}
 

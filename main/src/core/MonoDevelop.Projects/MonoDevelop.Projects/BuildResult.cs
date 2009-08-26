@@ -217,10 +217,27 @@ namespace MonoDevelop.Projects
 
 		public override string ToString ()
 		{
-			string type = isWarning ? "warning" : "error";
-			return String.Format (System.Globalization.CultureInfo.InvariantCulture,
-					"{0}({1},{2}) : {3} {4}: {5}", fileName, line, column, type,
-					errorNumber, errorText);
+			System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+			if (!string.IsNullOrEmpty (fileName)) {
+				sb.Append (fileName);
+				if (line > 0) {
+					sb.Append ('(').Append (line);
+					if (column > 0)
+						sb.Append (',').Append (column);
+					sb.Append (')');
+				}
+				sb.Append (" : ");
+			}
+			if (isWarning)
+				sb.Append ("warning");
+			else
+				sb.Append ("error");
+			
+			if (!string.IsNullOrEmpty (errorNumber))
+				sb.Append (' ').Append (errorNumber);
+			
+			sb.Append (": ").Append (errorText);
+			return sb.ToString ();
 		}
 
 		public int Line

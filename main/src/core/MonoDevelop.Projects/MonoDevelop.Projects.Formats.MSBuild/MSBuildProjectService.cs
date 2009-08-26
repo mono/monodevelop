@@ -52,6 +52,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static DataContext dataContext;
 		
 		static Dictionary<TargetRuntime,RemoteProjectBuilder> builders = new Dictionary<TargetRuntime, RemoteProjectBuilder> ();
+		static GenericItemTypeNode genericItemTypeNode = new GenericItemTypeNode ();
 		
 		public static DataContext DataContext {
 			get {
@@ -77,11 +78,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public static SolutionEntityItem LoadItem (IProgressMonitor monitor, string fileName, string typeGuid, string itemGuid)
 		{
-			if ((typeGuid != null && string.Compare (typeGuid, GenericItemGuid, true) == 0) || Path.GetExtension (fileName) == ".mdproj") {
-				MSBuildProjectHandler handler = new MSBuildProjectHandler (GenericItemGuid, null, null);
-				return handler.Load (monitor, fileName, null, null);
-			}
-			
 			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
 				if (node.CanHandleFile (fileName, typeGuid))
 					return node.LoadSolutionItem (monitor, fileName, itemGuid);
@@ -131,9 +127,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						return;
 					}
 				}
-				MSBuildProjectHandler h = new MSBuildProjectHandler (GenericItemGuid, null, null);
-				h.Item = eitem;
-				eitem.SetItemHandler (h);
 			}
 			else if (item is SolutionFolder) {
 				MSBuildHandler h = new MSBuildHandler (FolderTypeGuid, null);
@@ -169,6 +162,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (node is ItemTypeNode)
 					yield return (ItemTypeNode) node;
 			}
+			yield return genericItemTypeNode;
 		}
 		
 		static IEnumerable<DotNetProjectSubtypeNode> GetItemSubtypeNodes ()
@@ -179,7 +173,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		internal static ItemTypeNode FindHandlerForFile (string file)
+		internal static ItemTypeNode FindHandlerForFile (FilePath file)
 		{
 			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
 				if (node.CanHandleFile (file, null)) {
@@ -196,7 +190,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return node;
 				}
 			}
-			return null;
+			// The generic handler should always be found
+			throw new InvalidOperationException ();
 		}
 		
 		static char[] specialCharacters = new char [] {'%', '$', '@', '(', ')', '\'', ';', '?', '*' };
@@ -499,6 +494,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return rname;
 			else
 				return dp.DefaultNamespace + "." + rname;
+		}
+	}
+	
+	class GenericItemTypeNode: ItemTypeNode
+	{
+		public GenericItemTypeNode (): base (MSBuildProjectService.GenericItemGuid, "mdproj", null)
+		{
+		}
+		
+		public override bool CanHandleItem (SolutionEntityItem item)
+		{
+			return true;
+		}
+		
+		public override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, string itemGuid)
+		{
+			MSBuildProjectHandler handler = new MSBuildProjectHandler (Guid, Import, itemGuid);
+			return handler.Load (monitor, fileName, null, null);
 		}
 	}
 }
