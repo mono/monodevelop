@@ -69,8 +69,12 @@ namespace MonoDevelop.Deployment.Targets
 			try {
 				if (RootSolutionItem.NeedsBuilding (configuration)) {
 					BuildResult res = RootSolutionItem.Build (monitor, configuration);
-					if (res.ErrorCount > 0)
+					if (res.ErrorCount > 0) {
+						foreach (BuildError e in res.Errors)
+							monitor.ReportError (e.ToString (), null);
+						monitor.ReportError (GettextCatalog.GetString ("The source project failed to build."), null);
 						return false;
+					}
 				}
 				
 				tmpFolder = FileService.CreateTempDirectory ();
