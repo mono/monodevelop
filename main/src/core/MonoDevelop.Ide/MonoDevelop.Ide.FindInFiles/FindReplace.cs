@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		int[] occ;
 		int[] next;
 		
-		void CompilePattern (string pattern, FilterOptions filter)
+		public void CompilePattern (string pattern, FilterOptions filter)
 		{
 			if (!filter.CaseSensitive)
 				pattern = pattern.ToUpper ();
@@ -223,14 +223,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 		}
 		
-		IEnumerable<SearchResult> Search (FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
+		public IEnumerable<SearchResult> Search (FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
 		{
 			if (!filter.CaseSensitive) {
 				pattern = pattern.ToUpper ();
 				content = content.ToUpper ();
 			}
 
-			List<SearchResult> results = new List<SearchResult> ();
 			int plen = pattern.Length - 1;
 			int delta = 0;
 			int i = 0, end = content.Length - pattern.Length;
@@ -247,12 +246,12 @@ namespace MonoDevelop.Ide.FindInFiles
 					int idx = i;
 					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
 						if (replacePattern != null) {
-							results.Add (new SearchResult (provider, idx + delta, replacePattern.Length));
+							yield return new SearchResult (provider, idx + delta, replacePattern.Length);
 							
 							provider.Replace (idx + delta, pattern.Length, replacePattern);
 							delta += replacePattern.Length - pattern.Length;
 						} else {
-							results.Add (new SearchResult (provider, idx, pattern.Length));
+							yield return new SearchResult (provider, idx, pattern.Length);
 						}
 					}
 					i += next[0];
@@ -260,8 +259,6 @@ namespace MonoDevelop.Ide.FindInFiles
 				else
 					i += System.Math.Max (next[j + 1], j-occ[(int)content[i + j]]);
 			}
-			
-			return results;
 		}
 	}
 }
