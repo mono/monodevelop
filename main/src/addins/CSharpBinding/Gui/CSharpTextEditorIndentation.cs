@@ -212,9 +212,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 				bool retval = base.KeyPress (key, keyChar, modifier);
 
 				stateTracker.UpdateEngine ();
-
+				
 				//handle inserted characters
-				if (Editor.CursorPosition <= 0)
+				if (Editor.CursorPosition <= 0 || Editor.SelectionStartPosition < Editor.SelectionEndPosition)
 					return retval;
 
 				bool reIndent = false;
