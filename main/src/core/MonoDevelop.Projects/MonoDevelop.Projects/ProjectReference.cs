@@ -70,6 +70,7 @@ namespace MonoDevelop.Projects
 		bool notFound;
 		string package;
 		SystemPackage cachedPackage;
+		string customError;
 		
 		public event EventHandler StatusChanged;
 		
@@ -197,6 +198,8 @@ namespace MonoDevelop.Projects
 		// Returns the validation error message, or an empty string if everything is ok
 		public virtual string ValidationErrorMessage {
 			get {
+				if (customError != null)
+					return customError;
 				if (ReferenceType == ReferenceType.Gac) {
 					if (!IsExactVersion && SpecificVersion)
 						return GettextCatalog.GetString ("Specified version not found: expected {0}, found {1}", GetVersionNum (StoredReference), GetVersionNum (Reference));
@@ -220,6 +223,12 @@ namespace MonoDevelop.Projects
 				}
 				return string.Empty;
 			}
+		}
+		
+		public void SetInvalid (string message)
+		{
+			customError = message;
+			OnStatusChanged ();
 		}
 		
 		public bool IsExactVersion {

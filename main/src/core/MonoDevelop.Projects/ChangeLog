@@ -1,5 +1,18 @@
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/ProjectReference.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  when reading an assembly reference, if the path is absolute,
+	  write it as absolute when saving. 
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	  when reading an assembly reference, if the path is absolute,
+	  write it as absolute when saving. If the path is an absolute
+	  windows path (with drive letter), show it as invalid when
+	  not running on windows.
+
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectService.cs: In ReadSolutionItem,
 	  if the reference has no id, try to find the project in the
 	  provided workspace list.

@@ -392,13 +392,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				else if (buildItem.Name == "Reference" && dotNetProject != null) {
 					ProjectReference pref;
 					if (buildItem.HasMetadata ("HintPath")) {
-						string path = MSBuildProjectService.FromMSBuildPath (dotNetProject.ItemDirectory, buildItem.GetMetadata ("HintPath"));
-						if (File.Exists (path)) {
+						string hintPath = buildItem.GetMetadata ("HintPath");
+						string path;
+						if (!MSBuildProjectService.FromMSBuildPath (dotNetProject.ItemDirectory, hintPath, out path)) {
 							pref = new ProjectReference (ReferenceType.Assembly, path);
-							pref.LocalCopy = !buildItem.GetMetadataIsFalse ("Private");
+							pref.SetInvalid (GettextCatalog.GetString ("Invalid file path"));
+							pref.ExtendedProperties ["_OriginalMSBuildReferenceInclude"] = buildItem.Include;
+							pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] = hintPath;
+						} else if (File.Exists (path)) {
+							pref = new ProjectReference (ReferenceType.Assembly, path);
+							if (MSBuildProjectService.IsAbsoluteMSBuildPath (hintPath))
+								pref.ExtendedProperties ["_OriginalMSBuildReferenceIsAbsolute"] = true;
 						} else {
 							pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
 						}
+						pref.LocalCopy = !buildItem.GetMetadataIsFalse ("Private");
 					} else {
 						string asm = buildItem.Include;
 						// This is a workaround for a VS bug. Looks like it is writing this assembly incorrectly
@@ -786,21 +794,32 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildItem buildItem;
 			if (pref.ReferenceType == ReferenceType.Assembly) {
 				string asm = null;
-				if (File.Exists (pref.Reference)) {
-					try {
-						asm = AssemblyName.GetAssemblyName (pref.Reference).FullName;
-					} catch (Exception ex) {
-						string msg = string.Format ("Could not get full name for assembly '{0}'.", pref.Reference);
-						monitor.ReportWarning (msg);
-						LoggingService.LogError (msg, ex);
+				string hintPath = null;
+				if (pref.ExtendedProperties.Contains ("_OriginalMSBuildReferenceInclude")) {
+					asm = (string) pref.ExtendedProperties ["_OriginalMSBuildReferenceInclude"];
+					hintPath = (string) pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"];
+				}
+				else {
+					if (File.Exists (pref.Reference)) {
+						try {
+							asm = AssemblyName.GetAssemblyName (pref.Reference).FullName;
+						} catch (Exception ex) {
+							string msg = string.Format ("Could not get full name for assembly '{0}'.", pref.Reference);
+							monitor.ReportWarning (msg);
+							LoggingService.LogError (msg, ex);
+						}
 					}
+					string basePath = Item.ItemDirectory;
+					if (pref.ExtendedProperties.Contains ("_OriginalMSBuildReferenceIsAbsolute"))
+						basePath = null;
+					hintPath = MSBuildProjectService.ToMSBuildPath (basePath, pref.Reference);
 				}
 				if (asm == null)
 					asm = Path.GetFileNameWithoutExtension (pref.Reference);
 				buildItem = msproject.AddNewItem ("Reference", asm);
 				if (!pref.SpecificVersion)
 					buildItem.SetMetadata ("SpecificVersion", "False");
-				buildItem.SetMetadata ("HintPath", MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, pref.Reference));
+				buildItem.SetMetadata ("HintPath", hintPath);
 				if (!pref.LocalCopy)
 					buildItem.SetMetadata ("Private", "False");
 			}

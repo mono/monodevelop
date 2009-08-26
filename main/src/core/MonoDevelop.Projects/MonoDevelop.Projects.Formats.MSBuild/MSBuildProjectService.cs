@@ -221,30 +221,56 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public static string ToMSBuildPath (string baseDirectory, string absPath)
 		{
 			absPath = EscapeString (absPath);
-			return FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (
-			         baseDirectory, absPath)).Replace ('/', '\\');
+			if (baseDirectory != null) {
+				absPath = FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (
+				         baseDirectory, absPath));
+			}
+			return absPath.Replace ('/', '\\');
 		}
-		
 
 		internal static string FromMSBuildPath (string basePath, string relPath)
 		{
-			if (relPath == null || relPath.Length == 0)
-				return null;
+			string res;
+			FromMSBuildPath (basePath, relPath, out res);
+			return res;
+		}
+		
+		internal static bool IsAbsoluteMSBuildPath (string path)
+		{
+			if (path.Length > 1 && char.IsLetter (path [0]) && path[1] == ':')
+				return true;
+			if (path.Length > 0 && path [0] == '\\')
+				return true;
+			return false;
+		}
+		
+		internal static bool FromMSBuildPath (string basePath, string relPath, out string resultPath)
+		{
+			resultPath = relPath;
+			
+			if (string.IsNullOrEmpty (relPath))
+				return false;
 			
 			string path = relPath;
-			if (Path.DirectorySeparatorChar != '\\')
+			if (!PropertyService.IsWindows)
 				path = path.Replace ("\\", "/");
 			
 			path = UnscapeString (path);
 
-			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':')
-				return null;
+			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':') {
+				if (PropertyService.IsWindows) {
+					resultPath = path; // Return the escaped value
+					return true;
+				} else
+					return false;
+			}
 			
 			if (basePath != null)
 				path = Path.Combine (basePath, path);
 			
 			if (System.IO.File.Exists (path) || System.IO.Directory.Exists (path)){
-				return Path.GetFullPath (path);
+				resultPath = Path.GetFullPath (path);
+				return true;
 			}
 				
 			if (Path.IsPathRooted (path) && !PropertyService.IsWindows) {
@@ -260,7 +286,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 					if (names [n] == ".."){
 						if (part == "/")
-							return ""; // Can go further back. It's not an existing file
+							return false; // Can go further back. It's not an existing file
 						part = Path.GetFullPath (part + "/..");
 						continue;
 					}
@@ -279,15 +305,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						part = Path.GetFullPath (part);
 						for (; n < names.Length; n++)
 							part += "/" + names[n];
-						return part;
+						resultPath = part;
+						return true;
 					}
 
 					part = fpath;
 				}
-				return Path.GetFullPath (part);
+				resultPath = Path.GetFullPath (part);
 			} else {
-				return Path.GetFullPath (path);
+				resultPath = Path.GetFullPath (path);
 			}
+			return true;
 		}
 
 		//Given a filename like foo.it.resx, splits it into - foo, it, resx
