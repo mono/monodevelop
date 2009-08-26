@@ -1,0 +1,5 @@
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gui.stetic: We now depend on gtk# 2.12.8, Mono 2.4, and
+	  Mono.Addins 0.4.
+

@@ -1,3 +1,9 @@
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* PyBinding.csproj:
+	* gtk-gui/gui.stetic: We now depend on gtk# 2.12.8, Mono 2.4,
+	  and Mono.Addins 0.4.
+
 2009-08-25  Christian Hergert  <chris@dronelabs.com>
 
 	* PyBinding.Compiler/Python25Compiler.cs: Only compile .py files.
