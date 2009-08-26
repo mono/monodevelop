@@ -291,7 +291,10 @@ namespace MonoDevelop.Deployment
 		
 		SolutionItem GetEntry (SolutionItemReference reference)
 		{
-			return Services.ProjectService.ReadSolutionItem (new NullProgressMonitor (), reference, IdeApp.Workspace.Items.ToArray ());
+			if (IdeApp.IsInitialized)
+				return Services.ProjectService.ReadSolutionItem (new NullProgressMonitor (), reference, IdeApp.Workspace.Items.ToArray ());
+			else
+				return Services.ProjectService.ReadSolutionItem (new NullProgressMonitor (), reference);
 		}
 		
 		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, string configuration)
