@@ -1,3 +1,8 @@
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Fix windows
+	  build.
+
 2009-08-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Formatted

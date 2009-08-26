@@ -574,7 +574,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
-			RemoveInfo (int position, int length) 
+			RemoveInfo (int position, int length): this ()
 			{
 				Position = position;
 				Length = length;
