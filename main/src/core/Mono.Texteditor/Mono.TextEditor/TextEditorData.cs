@@ -285,11 +285,11 @@ namespace Mono.TextEditor
 			savedSelection = Selection.Clone (MainSelection);
 		}
 		
-		void OnEndUndo (object sender, Document.UndoOperation operation)
+		void OnEndUndo (object sender, Document.UndoOperationEventArgs e)
 		{
-			if (operation == null)
+			if (e == null)
 				return;
-			TextEditorDataState state = new TextEditorDataState (this, operation, savedCaretPos, savedSelection);
+			TextEditorDataState state = new TextEditorDataState (this, e.Operation, savedCaretPos, savedSelection);
 			state.Attach ();
 			states.Add (state);
 		}

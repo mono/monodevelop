@@ -541,13 +541,13 @@ namespace Mono.TextEditor
 			startXPos += Editor.GetWidth (Editor.Document.GetTextBetween (startOffset, endOffset));
 		}
 		*/
-		bool Overlaps (ISegment segment, int start, int end)
+	/*	bool Overlaps (ISegment segment, int start, int end)
 		{
 			return segment.Offset <= start && start < segment.EndOffset || 
 				    segment.Offset <= end && end < segment.EndOffset ||
 					start <= segment.Offset && segment.Offset < end ||
 					start < segment.EndOffset && segment.EndOffset < end;
-		}
+		}*/
 		
 	public bool DrawBackground (TextEditor Editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
 	{

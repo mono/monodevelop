@@ -102,7 +102,7 @@ namespace Mono.TextEditor
 			base.MouseHover (args);
 			
 			if (args.Button == 1) {
-				DocumentLocation loc = editor.Document.LogicalToVisualLocation (editor.GetTextEditorData (), editor.Caret.Location);
+			//	DocumentLocation loc = editor.Document.LogicalToVisualLocation (editor.GetTextEditorData (), editor.Caret.Location);
 				
 				int lineNumber = args.LineNumber != -1 ? args.LineNumber : editor.Document.LineCount - 1;
 				editor.Caret.PreserveSelection = true;

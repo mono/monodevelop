@@ -1,5 +1,19 @@
 2009-08-26  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor/GutterMargin.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor/DefaultEditActions.cs:
+	* Mono.TextEditor.PopupWindow/ListWidget.cs:
+	* Mono.TextEditor.Highlighting/SemanticRule.cs: Fixed some
+	  performance graveyards - complex text editor operations
+	  should be recognizable faster.
+
+2009-08-26  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/ITextEditorOptions.cs: Made it easier to
 	  work with the text editor control by allowing that options
 	  can be set directly. This doesn't affect monodevelop.

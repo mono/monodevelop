@@ -106,7 +106,7 @@ namespace Mono.TextEditor
 
 			ResetCaretBlink ();
 			Caret.PositionChanged += CaretPositionChanged;
-			textEditor.Document.TextReplaced += UpdateBracketHighlighting;
+			textEditor.Document.EndUndo += UpdateBracketHighlighting;
 			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
 				if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
 					int delta = -e.Count;
@@ -340,7 +340,7 @@ namespace Mono.TextEditor
 			caretTimer.Dispose ();
 
 			Caret.PositionChanged -= CaretPositionChanged;
-			textEditor.Document.TextReplaced -= UpdateBracketHighlighting;
+			textEditor.Document.EndUndo -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
 			Document.LineChanged -= CheckLongestLine;
 			//		Document.LineInserted -= CheckLongestLine;
@@ -739,7 +739,7 @@ namespace Mono.TextEditor
 
 				ISegment firstSearch;
 				int o = offset;
-				int s;
+			//	int s;
 				while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
 
 					HandleSelection (selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
@@ -864,7 +864,6 @@ namespace Mono.TextEditor
 			uint curIndex = 0, byteIndex = 0;
 			for (int i = 0; i < lineText.Length; i++) {
 				if (lineText[i] == ' ') {
-					int line2;
 					Pango.Rectangle pos = layout.IndexToPos ((int)TranslateToUTF8Index (lineText, (uint)i, ref curIndex, ref byteIndex));
 					int xpos = pos.X;
 					DrawSpaceMarker (win, selectionStart <= offset + i && offset + i <= selectionEnd, xPos + xpos / 1024, y);
@@ -878,7 +877,6 @@ namespace Mono.TextEditor
 			uint curIndex = 0, byteIndex = 0;
 			for (int i = 0; i < lineText.Length; i++) {
 				if (lineText[i] == '\t') {
-					int line2;
 					Pango.Rectangle pos = layout.IndexToPos ((int)TranslateToUTF8Index (lineText, (uint)i, ref curIndex, ref byteIndex));
 					int xpos = pos.X;
 					DrawTabMarker (win, selectionStart <= offset + i && offset + i <= selectionEnd, xPos + xpos / 1024, y);
@@ -1067,14 +1065,15 @@ namespace Mono.TextEditor
 			return null;
 		}
 
-		bool IsSearchResultAt (int offset)
+/*		bool IsSearchResultAt (int offset)
 		{
 			foreach (ISegment segment in this.selectedRegions) {
 				if (segment.Contains (offset))
 					return true;
 			}
 			return false;
-		}
+		}*/
+		
 		Pango.Weight DefaultWeight {
 			get { return textEditor.Options.Font.Weight; }
 		}
@@ -1211,7 +1210,7 @@ namespace Mono.TextEditor
 				SetVisibleCaretPosition (win, Document.Contains (caretOffset) ? Document.GetCharAt (caretOffset) : ' ', drawCaretAt, y);
 		}*/
 
-		void DrawText (Gdk.Drawable win, string text, Gdk.Color foreColor, bool drawBg, Gdk.Color backgroundColor, ref int xPos, int y)
+/*		void DrawText (Gdk.Drawable win, string text, Gdk.Color foreColor, bool drawBg, Gdk.Color backgroundColor, ref int xPos, int y)
 		{
 			textRenderer.SetText (text);
 
@@ -1223,7 +1222,7 @@ namespace Mono.TextEditor
 			textRenderer.Color = foreColor;
 			textRenderer.DrawText (win, xPos, y);
 			xPos += xadv;
-		}
+		}*/
 
 		void DrawEolMarker (Gdk.Drawable win, bool selected, int xPos, int y)
 		{
@@ -1253,11 +1252,11 @@ namespace Mono.TextEditor
 		{
 			return (((ulong)color.Red) << 32) | (((ulong)color.Green) << 16) | ((ulong)color.Blue);
 		}
-		bool UseDefaultBackgroundColor (ChunkStyle style)
+/*		bool UseDefaultBackgroundColor (ChunkStyle style)
 		{
 			return style.TransparentBackround || GetPixel (style.BackgroundColor) == GetPixel (ColorStyle.Default.BackgroundColor);
-		}
-		Gdk.Color GetBackgroundColor (int offset, bool selected, ChunkStyle style)
+		}*/
+	/*	Gdk.Color GetBackgroundColor (int offset, bool selected, ChunkStyle style)
 		{
 			if (selected)
 				return ColorStyle.Selection.BackgroundColor;
@@ -1266,7 +1265,7 @@ namespace Mono.TextEditor
 			if (UseDefaultBackgroundColor (style))
 				return defaultBgColor;
 			return style.BackgroundColor;
-		}
+		}*/
 
 		public bool inSelectionDrag = false;
 		public bool inDrag = false;

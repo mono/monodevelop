@@ -73,7 +73,8 @@ namespace Mono.TextEditor.PopupWindow
 				UpdateStyle ();
 				QueueDraw ();
 			}
-			if (SelectionChanged != null) SelectionChanged (this, EventArgs.Empty);
+			if (SelectionChanged != null) 
+				SelectionChanged (this, EventArgs.Empty);
 		}
 		
 		public int Selection

@@ -176,7 +176,6 @@ namespace Mono.TextEditor
 			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.MaxLine : data.Caret.Line;
 			if (endLineNr < 0)
 				endLineNr = data.Document.LineCount;
-			
 			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLine (data.MainSelection.Anchor.Line) : null;
 			int         anchorColumn = data.IsSomethingSelected ? data.MainSelection.Anchor.Column : -1;
 			data.Document.BeginAtomicUndo ();

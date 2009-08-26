@@ -182,13 +182,13 @@ namespace Mono.TextEditor
 			}*/
 			UndoOperation operation = null;
 			if (!isInUndo) {
-				operation = new UndoOperation (args, GetTextAt (offset, count));
+				operation = new UndoOperation (args, count > 0 ? GetTextAt (offset, count) : "");
 				if (currentAtomicOperation != null) {
 					currentAtomicOperation.Add (operation);
 				} else {
 					OnBeginUndo ();
 					undoStack.Push (operation);
-					OnEndUndo (operation);
+					OnEndUndo (new UndoOperationEventArgs (operation));
 				}
 				foreach (UndoOperation redoOp in redoStack) {
 					redoOp.Dispose ();
@@ -200,6 +200,7 @@ namespace Mono.TextEditor
 			OnTextReplaced (args);
 			splitter.TextReplaced (this, args);
 			
+			UpdateUndoStackOnReplace (args);
 			if (operation != null)
 				operation.Setup (this, args);
 			if (this.syntaxMode != null)
@@ -233,6 +234,7 @@ namespace Mono.TextEditor
 			if (TextReplaced != null)
 				TextReplaced (this, args);
 		}
+		
 		public event EventHandler<ReplaceEventArgs> TextReplaced;
 		
 		protected virtual void OnTextReplacing (ReplaceEventArgs args)
@@ -299,7 +301,6 @@ namespace Mono.TextEditor
 		#region Undo/Redo operations
 		public class UndoOperation : IDisposable
 		{
-			Document doc;
 			ReplaceEventArgs args;
 			string text;
 			int startOffset, length;
@@ -332,6 +333,7 @@ namespace Mono.TextEditor
 				this.args = args;
 				this.text = text;
 			}
+			
 			static int GetDelta (ReplaceEventArgs args)
 			{
 				int result = -args.Count;
@@ -339,17 +341,17 @@ namespace Mono.TextEditor
 					result += args.Value.Length;
 				return result;
 			}
+			
 			internal void Setup (Document doc, ReplaceEventArgs args)
 			{
-				this.doc = doc;
-				doc.TextReplaced += TextReplaced;
 				if (args != null) {
 					this.startOffset = args.Offset;
 					if (!String.IsNullOrEmpty (args.Value))
 						this.length  = args.Value.Length;
 				}
 			}
-			void TextReplaced (object sender, ReplaceEventArgs args)
+			
+			internal virtual void InformTextReplace (ReplaceEventArgs args)
 			{
 				if (args.Offset < startOffset) {
 					startOffset = System.Math.Max (startOffset + GetDelta(args), args.Offset);
@@ -361,10 +363,6 @@ namespace Mono.TextEditor
 			public virtual void Dispose ()
 			{
 				args = null;
-				if (doc != null) {
-					doc.TextReplaced -= TextReplaced;
-					doc = null;
-				}
 				if (Disposed != null) 
 					Disposed (this, EventArgs.Empty);
 			}
@@ -420,6 +418,11 @@ namespace Mono.TextEditor
 				get {
 					return null;
 				}
+			}
+			
+			internal override void InformTextReplace (ReplaceEventArgs args)
+			{
+				operations.ForEach (o => o.InformTextReplace (args));
 			}
 			
 			public override void Dispose ()
@@ -499,7 +502,19 @@ namespace Mono.TextEditor
 		Stack<UndoOperation> undoStack = new Stack<UndoOperation> ();
 		Stack<UndoOperation> redoStack = new Stack<UndoOperation> ();
 		AtomicUndoOperation currentAtomicOperation = null;
-			
+		
+		// The undo stack needs to be updated on replace, because the text editor
+		// draws a replace operation marker at the left margin.
+		public void UpdateUndoStackOnReplace (ReplaceEventArgs args)
+		{
+			foreach (UndoOperation op in undoStack) {
+				op.InformTextReplace (args);
+			}
+			foreach (UndoOperation op in redoStack) {
+				op.InformTextReplace (args);
+			}
+		}
+		
 		public bool CanUndo {
 			get {
 				return this.undoStack.Count > 0 || currentAtomicOperation != null;
@@ -661,11 +676,11 @@ namespace Mono.TextEditor
 			if (atomicUndoLevel == 0 && currentAtomicOperation != null) {
 				if (currentAtomicOperation.Operations.Count > 1) {
 					undoStack.Push (currentAtomicOperation);
-					OnEndUndo (currentAtomicOperation);
+					OnEndUndo (new UndoOperationEventArgs (currentAtomicOperation));
 				} else {
 					if (currentAtomicOperation.Operations.Count > 0) {
 						undoStack.Push (currentAtomicOperation.Operations [0]);
-						OnEndUndo (currentAtomicOperation.Operations [0]);
+						OnEndUndo (new UndoOperationEventArgs (currentAtomicOperation.Operations [0]));
 					} else {
 						OnEndUndo (null);
 					}
@@ -680,16 +695,28 @@ namespace Mono.TextEditor
 				BeginUndo (this, EventArgs.Empty);
 		}
 		
-		protected virtual void OnEndUndo (UndoOperation undo)
+		
+		[Serializable]
+		public sealed class UndoOperationEventArgs : EventArgs
 		{
-			if (EndUndo != null) 
-				EndUndo (this, undo);
+			public UndoOperation Operation { get; private set; }
+			
+			public UndoOperationEventArgs (UndoOperation operation)
+			{
+				this.Operation = operation;
+			}
+			
 		}
 		
-		public delegate void UndoOperationHandler (object sender, UndoOperation operation);
+		protected virtual void OnEndUndo (UndoOperationEventArgs e)
+		{
+			EventHandler<UndoOperationEventArgs> handler = this.EndUndo;
+			if (handler != null)
+				handler (this, e);
+		}
 		
-		public event EventHandler         BeginUndo;
-		public event UndoOperationHandler EndUndo;
+		public event EventHandler                         BeginUndo;
+		public event EventHandler<UndoOperationEventArgs> EndUndo;
 		#endregion
 		
 		#region Folding

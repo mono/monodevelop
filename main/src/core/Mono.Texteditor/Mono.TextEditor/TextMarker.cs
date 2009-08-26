@@ -222,7 +222,7 @@ namespace Mono.TextEditor
 		} else {
 			int start = startOffset < markerStart ? markerStart : startOffset;
 			int end = endOffset < markerEnd ? endOffset : markerEnd;
-			int lineNr, x_pos;
+			int /*lineNr,*/ x_pos;
 			
 			x_pos = layout.IndexToPos (start - startOffset).X;
 			@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
