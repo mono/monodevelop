@@ -71,7 +71,9 @@ public class MonoDevelopProcessHost
 				pi++;
 				logger.EnabledLevel = MonoDevelop.Core.Logging.EnabledLoggingLevel.UpToWarn;
 			} else {
-				logger.EnabledLevel = MonoDevelop.Core.Logging.EnabledLoggingLevel.UpToError;
+				// Disable logging if verbose is not specified. Command line tools should alread be
+				// providing feedback using the console
+				logger.EnabledLevel = MonoDevelop.Core.Logging.EnabledLoggingLevel.None;
 			}
 			
 			string[] newArgs = new string [args.Length - 1 - pi];

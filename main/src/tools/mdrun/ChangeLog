@@ -1,3 +1,9 @@
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* src/mdrun.cs: Disable logging if verbose is not specified.
+	  Command line tools should already be providing feedback
+	  using the console.
+
 2009-06-19  Mike Krüger  <mkrueger@novell.com>
 
 	* src/AssemblyInfo.cs: Commented out empty assembly key file
