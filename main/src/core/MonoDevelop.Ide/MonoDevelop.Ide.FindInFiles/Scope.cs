@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
@@ -36,16 +37,22 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public abstract class Scope
 	{
+		public abstract int GetTotalWork (FilterOptions filterOptions);
 		public abstract IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions);
 		public abstract string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern);
 	}
 
 	public class DocumentScope : Scope
 	{
+		public override int GetTotalWork (FilterOptions filterOptions)
+		{
+			return 1;
+		}
+		
 		public DocumentScope()
 		{
 		}
-
+		
 		public override IEnumerable<FileProvider> GetFiles(FilterOptions filterOptions)
 		{
 			yield return new FileProvider(IdeApp.Workbench.ActiveDocument.FileName);
@@ -62,6 +69,11 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	public class SelectionScope : Scope
 	{
+		public override int GetTotalWork (FilterOptions filterOptions)
+		{
+			return 1;
+		}
+		
 		public SelectionScope()
 		{
 		}
@@ -84,6 +96,14 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	public class WholeSolutionScope : Scope
 	{
+		public override int GetTotalWork (FilterOptions filterOptions)
+		{
+			int result = 0;
+			if (IdeApp.Workspace.IsOpen) 
+				result = IdeApp.Workspace.GetAllProjects ().Sum (p => p.Files.Count);
+			return result;
+		}
+		
 		public override IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions)
 		{
 			if (IdeApp.Workspace.IsOpen) {
@@ -107,6 +127,11 @@ namespace MonoDevelop.Ide.FindInFiles
 	public class WholeProjectScope : Scope
 	{
 		Project project;
+		
+		public override int GetTotalWork (FilterOptions filterOptions)
+		{
+			return project.Files.Count;
+		}
 		
 		public WholeProjectScope (Project project)
 		{
@@ -134,6 +159,11 @@ namespace MonoDevelop.Ide.FindInFiles
 	
 	public class AllOpenFilesScope : Scope
 	{
+		public override int GetTotalWork (FilterOptions filterOptions)
+		{
+			return IdeApp.Workbench.Documents.Count;
+		}
+		
 		public AllOpenFilesScope ()
 		{
 		}
@@ -159,6 +189,16 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		string path;
 		bool recurse;
+		
+		public override int GetTotalWork (FilterOptions filterOptions)
+		{
+			int result = 0;
+			foreach (string fileMask in filterOptions.FileMask.Split (',', ';')) {
+				string[] files = Directory.GetFiles (path, fileMask, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+				result += files.Length;
+			}
+			return result;
+		}
 		
 		public DirectoryScope (string path, bool recurse)
 		{

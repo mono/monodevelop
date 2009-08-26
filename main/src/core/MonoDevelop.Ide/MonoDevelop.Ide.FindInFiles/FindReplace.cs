@@ -28,6 +28,8 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 
 namespace MonoDevelop.Ide.FindInFiles
@@ -74,7 +76,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return true;
 		}
 		
-		public IEnumerable<SearchResult> FindAll (Scope scope, string pattern, string replacePattern, FilterOptions filter)
+		public IEnumerable<SearchResult> FindAll (Scope scope, IProgressMonitor monitor, string pattern, string replacePattern, FilterOptions filter)
 		{
 			if (filter.RegexSearch) {
 				RegexOptions regexOptions = RegexOptions.Compiled;
@@ -86,7 +88,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
+			
+			monitor.BeginTask (GettextCatalog.GetString ("Searching..."), 100);
 			try {
+				int totalWork = scope.GetTotalWork (filter);
+				int step = Math.Max (1, totalWork / 100);
 				foreach (FileProvider provider in scope.GetFiles (filter)) {
 					if (IsCanceled)
 						break;
@@ -101,8 +107,12 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 					if (!string.IsNullOrEmpty (replacePattern))
 						provider.EndReplace ();
+					if (SearchedFilesCount % step == 0) 
+						monitor.Step (1);
+					DispatchService.RunPendingEvents ();
 				}
 			} finally {
+				monitor.EndTask ();
 				IsRunning = false;
 			}
 		}

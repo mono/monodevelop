@@ -482,7 +482,6 @@ namespace MonoDevelop.Ide.FindInFiles
 					return;
 				CancelSearch ();
 			}
-
 			ISearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
 			searchMonitor.CancelRequested += (MonitorHandler)DispatchService.GuiDispatch (new MonitorHandler (OnCancelRequested));
 			lock (searchesInProgress)
@@ -504,11 +503,14 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			}
 
-			DispatchService.BackgroundDispatch (delegate {
+		//	DispatchService.BackgroundDispatch (delegate {
 				DateTime timer = DateTime.Now;
 				string errorMessage = null;
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), MonoDevelop.Core.Gui.Stock.FindInFiles, false);
+				
 				try {
-					foreach (SearchResult result in find.FindAll (scope, pattern, replacePattern, options)) {
+					int count = 0;
+					foreach (SearchResult result in find.FindAll (scope, monitor, pattern, replacePattern, options)) {
 						if (searchMonitor.IsCancelRequested)
 							return;
 						searchMonitor.ReportResult (result);
@@ -516,28 +518,28 @@ namespace MonoDevelop.Ide.FindInFiles
 				} catch (Exception ex) {
 					errorMessage = ex.Message;
 					LoggingService.LogError ("Error while search", ex);
+				} finally {
+					monitor.Dispose ();
 				}
-				Application.Invoke (delegate {
-					string message;
-					if (errorMessage != null) {
-						message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
-					} else if (isCanceled) {
-						message = GettextCatalog.GetString ("Search cancelled.");
-					} else {
-						string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found ", "{0} matches found ", find.FoundMatchesCount), find.FoundMatchesCount);
-						string files = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
-						message = GettextCatalog.GetString ("Search completed. ") + matches + files;
-					}
-
-					searchMonitor.ReportStatus (message);
-					searchMonitor.Log.WriteLine (message);
-					searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
-					searchMonitor.Dispose ();
-					lock (searchesInProgress)
-						searchesInProgress.Remove (searchMonitor);
-					UpdateStopButton ();
-				});
-			});
+				
+				string message;
+				if (errorMessage != null) {
+					message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
+				} else if (isCanceled) {
+					message = GettextCatalog.GetString ("Search cancelled.");
+				} else {
+					string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found", "{0} matches found", find.FoundMatchesCount), find.FoundMatchesCount);
+					string files = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
+					message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + Environment.NewLine + files;
+				}
+				searchMonitor.ReportStatus (message);
+				searchMonitor.Log.WriteLine (message);
+				searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
+				searchMonitor.Dispose ();
+				lock (searchesInProgress)
+					searchesInProgress.Remove (searchMonitor);
+				UpdateStopButton ();
+	//		});
 		}
 
 		void OnCancelRequested (IProgressMonitor monitor)

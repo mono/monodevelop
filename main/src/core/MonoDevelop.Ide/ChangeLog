@@ -1,5 +1,13 @@
 2009-08-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.FindInFiles/Scope.cs:
+	* MonoDevelop.Ide.FindInFiles/FindReplace.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Fixed
+	  "Bug 523423 - Find dialog doesn't show its searching".
+
+2009-08-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Changed the
 	  remove trailing whitespace algorihtm to use the
 	  Mono.TextEditor data structures - they're not suffering from
