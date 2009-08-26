@@ -561,6 +561,87 @@ namespace MonoDevelop.Ide.Gui
 			doc.TextEditor.EndAtomicUndo ();
 		}
 		
+		struct RemoveInfo
+		{
+			public int Position { get; set; }
+			public int Length { get; set; }
+
+			public static readonly RemoveInfo Empty = new RemoveInfo (-1, -1);
+			
+			public bool IsEmpty {
+				get {
+					return Length <= 0;
+				}
+			}
+			
+			RemoveInfo (int position, int length) 
+			{
+				Position = position;
+				Length = length;
+			}
+
+			public static bool IsWhiteSpace (char ch) 
+			{
+				return ch == ' ' || ch == '\t' || ch == '\v';
+			}
+			
+			public static RemoveInfo GetRemoveInfo (IEditableTextBuffer buffer, ref int pos)
+			{
+				RemoveInfo result;
+				int len = 0;
+				while (pos > 0 && IsWhiteSpace (buffer.GetCharAt (pos))) {
+					--pos;
+					++len;
+				}
+				if (len > 0) {
+					pos++;
+					return new RemoveInfo (pos, len);
+				}
+				return Empty;
+			}
+
+			public override string ToString ()
+			{
+				return string.Format ("[RemoveInfo: Position={0}, Length={1}]", Position, Length);
+			}
+		}
+		
+		[CommandHandler (EditCommands.RemoveTrailingWhiteSpaces)]
+		public void OnRemoveTrailingWhiteSpaces ()
+		{
+			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
+			if (buffer == null)
+				return;
+			System.Collections.Generic.List<RemoveInfo> removeList = new System.Collections.Generic.List<RemoveInfo> ();
+			int pos = buffer.Length - 1;
+			RemoveInfo removeInfo = RemoveInfo.GetRemoveInfo (buffer, ref pos);
+			if (!removeInfo.IsEmpty)
+				removeList.Add (removeInfo);
+			
+			while (pos >= 0) {
+				char ch = buffer.GetCharAt (pos);
+				if (ch == '\n' || ch == '\r') {
+					if (RemoveInfo.IsWhiteSpace (buffer.GetCharAt (pos - 1))) {
+						--pos;
+						removeInfo = RemoveInfo.GetRemoveInfo (buffer, ref pos);
+						if (!removeInfo.IsEmpty)
+							removeList.Add (removeInfo);
+					}
+				}
+				--pos;
+			}
+			
+			buffer.BeginAtomicUndo ();
+			removeList.ForEach (info => buffer.DeleteText (info.Position, info.Length));
+			buffer.EndAtomicUndo ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.RemoveTrailingWhiteSpaces)]
+		protected void OnRemoveTrailingWhiteSpaces (CommandInfo info)
+		{
+			info.Enabled = GetContent <IEditableTextBuffer> () != null;
+		}
+		
 		#region Folding
 		[CommandUpdateHandler (EditCommands.ToggleAllFoldings)]
 		[CommandUpdateHandler (EditCommands.FoldDefinitions)]

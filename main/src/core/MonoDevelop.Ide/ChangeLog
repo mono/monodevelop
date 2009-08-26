@@ -1,3 +1,11 @@
+2009-08-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/EditCommands.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Added remove
+	  trailing whitespace command from David Makovský
+	  <yakeen@sannyas-on.net> & did some optimizations.
+
 2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Commands/ToolsCommands.cs: Document.Save can

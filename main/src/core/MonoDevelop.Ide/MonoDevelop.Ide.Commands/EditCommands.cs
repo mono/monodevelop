@@ -51,6 +51,8 @@ namespace MonoDevelop.Ide.Commands
 		UnIndentSelection,
 		UppercaseSelection,
 		LowercaseSelection,
+		RemoveTrailingWhiteSpaces,
+		
 		JoinWithNextLine,
 		WordCount,
 		MonodevelopPreferences,

@@ -295,7 +295,10 @@
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection"
 				_description = "Convert the selected text to lowercase" 
 				_label = "_Lowercase Selection" />
-		<Command id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine"
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces"
+				description = "Remove trailing white spaces" 
+				_label = "_Remove trailing white spaces" />
+ 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine"
 				shortcut = "Control|Shift|J"
 				_description = "Join the current line with the next line" 
 				_label = "_Join Lines" />
@@ -1463,6 +1466,7 @@
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces" />
 				<SeparatorItem id = "Separator1" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine" />
 			</ItemSet>
