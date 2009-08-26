@@ -148,6 +148,9 @@ namespace MonoDevelop.SourceEditor
 				int endIndex   = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
 				if (TextChanged != null)
 					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
+			};
+			
+			widget.TextEditor.Document.EndUndo += delegate {
 				if (!inLoad)
 					autoSave.InformAutoSaveThread (Document.Text);
 			};

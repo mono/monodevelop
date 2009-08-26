@@ -1,3 +1,8 @@
+2009-08-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Auto save is
+	  only created after atomic undos.
+
 2009-08-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:
