@@ -61,7 +61,7 @@
 		<ItemProperty member="commandLineParameters" name="Execution/commandlineparameters" defaultValue =""/>
 		<ItemProperty member="externalConsole" name="Execution/externalconsole" defaultValue="false" />
 		<ItemProperty member="pauseConsoleOutput" name="Execution/consolepause" />
-		<ItemProperty member="environmentVariables" name="EnvironmentVariables" />
+		<ItemProperty member="environmentVariables" name="EnvironmentVariables" skipEmpty="true" />
 		<ItemProperty member="environmentVariables" name="Variable" scope="item"/>
 		<ItemProperty member="environmentVariables" name="name" scope="key"/>
 		<ItemProperty member="environmentVariables" name="value" scope="value"/>
