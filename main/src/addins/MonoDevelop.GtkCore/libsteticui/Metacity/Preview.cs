@@ -11,7 +11,8 @@ namespace Stetic.Metacity {
 	internal class Preview : Gtk.Bin
 	{
 		static Theme theme;
-
+		public static bool ThemeError = false;
+			
 		public static Metacity.Preview Create (TopLevelWindow window)
 		{
 			Metacity.Preview metacityPreview;
@@ -81,18 +82,21 @@ namespace Stetic.Metacity {
 			Title = ((TopLevelWindow)ob).Title ?? string.Empty;
 		}
 
-		static Theme GetTheme ( )
+		static Theme GetTheme ()
 		{
 			if (theme == null) {
 				try {
-					Assembly assm = Assembly.Load ("gconf-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f");
+					Assembly assm = Assembly.Load ("gconf-sharp");
 					Type client_type = assm.GetType ("GConf.Client");
 					MethodInfo method = client_type.GetMethod ("Get", BindingFlags.Instance | BindingFlags.Public);
-					object client = Activator.CreateInstance (client_type, new object[] { });
-					string themeName = (string) method.Invoke (client, new object[] { "/apps/metacity/general/theme" });
+					object client = Activator.CreateInstance (client_type, new object[] {
+						
+					});
+					string themeName = (string)method.Invoke (client, new object[] { "/apps/metacity/general/theme" });
 					theme = Metacity.Theme.Load (themeName);
-				}
-				catch {
+				} catch {
+					// Set theme error flag - in case of a theme error a solid background needs to be drawn.
+					ThemeError = true;
 					// Don't crash if metacity is not available
 					return null;
 				}
