@@ -29,6 +29,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Logging;
 using MonoDevelop.Core.Execution;
 using System.IO;
 using System.Runtime.Remoting;
@@ -75,6 +76,8 @@ public class MonoDevelopProcessHost
 			BinaryFormatter bf = new BinaryFormatter ();
 			IProcessHostController pc = (IProcessHostController) bf.Deserialize (ms);
 			
+			LoggingService.AddLogger (new LocalLogger (pc.GetLogger (), args[0]));
+			
 			ProcessHost rp = new ProcessHost (pc);
 			pc.RegisterHost (rp);
 			try {
@@ -108,6 +111,37 @@ public class MonoDevelopProcessHost
 		ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
 		return unixRemotingFile;
 	}
+}
+
+class LocalLogger: ILogger
+{
+	ILogger wrapped;
+	string id;
+	
+	public LocalLogger (ILogger wrapped, string id)
+	{
+		this.wrapped = wrapped;
+		this.id = id;
+	}
+	
+	#region ILogger implementation
+	public void Log (LogLevel level, string message)
+	{
+		wrapped.Log (level, "[" + id + "] " + message);
+	}
+	
+	public EnabledLoggingLevel EnabledLevel {
+		get {
+			return EnabledLoggingLevel.All;
+		}
+	}
+	
+	public string Name {
+		get {
+			return "Local Logger";
+		}
+	}
+	#endregion
 }
 
 public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
