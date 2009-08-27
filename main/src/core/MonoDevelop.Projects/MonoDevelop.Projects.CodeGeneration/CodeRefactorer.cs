@@ -707,7 +707,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					gctx.Save ();
 				}
 				break;
-			case RefactoryScope.File:
+			case RefactoryScope.File: {
 				string file = cls.CompilationUnit.FileName;
 				RefactorerContext gctx = GetGeneratorContext (cls);
 				IRefactorer gen = LanguageBindingService.GetRefactorerForFile (file);
@@ -716,6 +716,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				refactorDelegate (monitor, gctx, gen, file);
 				gctx.Save ();
 				break;
+				}
 			case RefactoryScope.Project:
 				Project prj = GetProjectForFile (cls.CompilationUnit.FileName);
 				if (prj == null)
