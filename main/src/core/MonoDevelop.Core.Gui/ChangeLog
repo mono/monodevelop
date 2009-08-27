@@ -1,5 +1,10 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Fixed
+	  tooltip related warnings.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Core.Gui/ImageService.cs: When icon sizes differ
 	  in icon composition no longer bail out, instead trying to
 	  get a valid icon. 

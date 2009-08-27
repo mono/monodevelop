@@ -30,7 +30,6 @@ namespace MonoDevelop.Core.Gui.Components
 	{
 		public DirectoryChangedEventHandler DirectoryChangedEvent;
 
-		private static Tooltips tips = new Tooltips ();
 		private Gtk.TreeView tv;
 		private Gtk.ScrolledWindow scrolledwindow;
 		private Gtk.ToolButton goUp, goHome;
@@ -58,18 +57,18 @@ namespace MonoDevelop.Core.Gui.Components
 
 			goUp = new ToolButton (Gtk.Stock.GoUp);
 			goUp.Clicked += new EventHandler (OnGoUpClicked);
-			goUp.SetTooltip (tips, GettextCatalog.GetString ("Go up one level"), "Go up one level");
+			goUp.TooltipText = GettextCatalog.GetString ("Go up one level");
 			toolbar.Insert (goUp, -1);
 
 			goHome = new ToolButton (Gtk.Stock.Home);
 			goHome.Clicked += new EventHandler (OnGoHomeClicked);
-			goHome.SetTooltip (tips, GettextCatalog.GetString ("Home"), "Home");
+			goHome.TooltipText = GettextCatalog.GetString ("Home");
 			toolbar.Insert (goHome, -1);
 
 			entry = new ToolbarEntry ();
 			entry.Expand = true;
 			entry.Activated += new EventHandler (OnEntryActivated);
-			entry.SetTooltip (tips, GettextCatalog.GetString ("Location"), "");
+			entry.TooltipText = GettextCatalog.GetString ("Location");
 			toolbar.Insert (entry, -1);
 			toolbar.ShowAll ();
 			this.PackStart (toolbar, false, true, 0);
