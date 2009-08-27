@@ -853,7 +853,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.window = window;
 			this.padCodon = padCodon;
-			if (padCodon.IsPadCreated) {
+			if (padCodon.Initialized) {
 				InitializeContent ();
 			} else {
 				this.Realized += HandleRealized;

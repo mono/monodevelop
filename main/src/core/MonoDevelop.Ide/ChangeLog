@@ -1,5 +1,12 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Codons/PadCodon.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Optimized startup
+	  speed a bit.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Codons/PadCodon.cs:
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: No need to lazy
 	  initalize pre created pads.

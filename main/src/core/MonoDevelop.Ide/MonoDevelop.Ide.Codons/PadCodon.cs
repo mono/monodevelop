@@ -74,12 +74,6 @@ namespace MonoDevelop.Ide.Codons
 			}
 		}
 		
-		public bool IsPadCreated {
-			get {
-				return content != null;
-			}
-		}
-		
 		public string PadId {
 			get { return id != null ? id : base.Id; }
 			set { id = value; }

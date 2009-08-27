@@ -122,8 +122,7 @@ namespace MonoDevelop.Ide.Gui
 			// now we have an layout set notify it
 			if (LayoutChanged != null)
 				LayoutChanged (this, EventArgs.Empty);
-
-			workbench.RedrawAllComponents ();
+			
 			monitors.Initialize ();
 			
 			RootWindow.Present ();
