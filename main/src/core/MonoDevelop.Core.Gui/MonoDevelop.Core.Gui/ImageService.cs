@@ -105,7 +105,7 @@ namespace MonoDevelop.Core.Gui
 			}
 
 			Gtk.IconSet iconset = Gtk.IconFactory.LookupDefault (stockid);
-			if (iconset != null)
+			if (iconset != null) 
 				return iconset.RenderIcon (Gtk.Widget.DefaultStyle, Gtk.TextDirection.None, Gtk.StateType.Normal, size, null, null);
 
 			if (Gtk.IconTheme.Default.HasIcon (stockid)) {
@@ -347,8 +347,8 @@ namespace MonoDevelop.Core.Gui
 
 					if (icon.Width != px.Width || icon.Height != px.Height) {
 						LoggingService.LogWarning ("Error creating composed icon {0} at size {1}. Icon {2} is {3}x{4}, expected {5}x{6}.", id, sz, ids[n], px.Width, px.Height, icon.Width, icon.Height);
-						icon = null;
-						break;
+//						icon = null;
+//						break;
 					}
 
 					icon = MergeIcons (icon, px);
