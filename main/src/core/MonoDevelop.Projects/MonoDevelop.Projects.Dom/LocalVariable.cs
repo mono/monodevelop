@@ -86,8 +86,6 @@ namespace MonoDevelop.Projects.Dom
 	
 		public LocalVariable (IMember declaringMember, string name, IReturnType type, DomRegion region)
 		{
-			if (declaringMember == null)
-				throw new ArgumentNullException ("declaringMember");
 			if (name == null)
 				throw new ArgumentNullException ("name");
 			if (type == null)
