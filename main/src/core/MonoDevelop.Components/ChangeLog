@@ -1,3 +1,8 @@
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandRouterContainer.cs:
+	  Added support for lazy command router container.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Update gtk# dependency.

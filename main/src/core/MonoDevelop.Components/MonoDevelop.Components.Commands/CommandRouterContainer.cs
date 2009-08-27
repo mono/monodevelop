@@ -33,15 +33,23 @@ namespace MonoDevelop.Components.Commands
 	public class CommandRouterContainer: Gtk.HBox, ICommandDelegatorRouter
 	{
 		object endTarget;
-		object delegated;
 		
-		public CommandRouterContainer (Gtk.Widget child, object target, bool continueToParent)
+		protected object Delegated {
+			get;
+			set;
+		}
+		
+		protected CommandRouterContainer (bool continueToParent)
+		{
+			if (continueToParent)
+				endTarget = Parent;
+		}
+		
+		public CommandRouterContainer (Gtk.Widget child, object target, bool continueToParent) : this (continueToParent)
 		{
 			if (child != null)
 				PackStart (child, true, true, 0);
-			delegated = target;
-			if (continueToParent)
-				endTarget = Parent;
+			Delegated = target;
 		}
 		
 		public virtual object GetNextCommandTarget ()
@@ -51,7 +59,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public virtual object GetDelegatedCommandTarget ()
 		{
-			return delegated;
+			return Delegated;
 		}
 	}
 }
