@@ -59,7 +59,7 @@ namespace MonoDevelop.CodeMetrics
 			
 			CellRendererText crt = new CellRendererText ();
 			crt.Ellipsize = Pango.EllipsizeMode.Start;
-			TreeViewColumn col1 = new TreeViewColumn (GettextCatalog.GetString ("File"), crt, "text", 0);
+			col1 = new TreeViewColumn (GettextCatalog.GetString ("File"), crt, "text", 0);
 			col1.SortIndicator = true;
 			col1.SortColumnId = 0;
 			col1.Expand = true;
