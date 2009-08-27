@@ -69,7 +69,7 @@ namespace MonoDevelop.Core.Execution
 				ThreadPool.QueueUserWorkItem (delegate {
 					res = ((IMessageSink)nextSink).SyncProcessMessage (msg);
 				});
-				if (!ev.WaitOne (timeout)) {
+				if (!ev.WaitOne (timeout, false)) {
 					timedOut = true;
 					res = new ReturnMessage (null, null, 0, mcm.LogicalCallContext, mcm);
 				}

@@ -1,5 +1,11 @@
 2009-08-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Execution/DisposerFormatterSink.cs: The
+	  WaitHandle.WaitOne(int) method was added in an SP, so it is
+	  not available in all 3.5 frameworks.
+
+2009-08-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.csproj:
 	* MonoDevelop.Core/LoggingService.cs:
