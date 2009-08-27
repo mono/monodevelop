@@ -58,7 +58,6 @@ namespace MonoDevelop.Gettext
 		ListStore foundInStore;
 		Catalog catalog;
 		string  poFileName;
-		Gtk.Tooltips tooltips = new Gtk.Tooltips ();
 
 		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
 		
@@ -168,21 +167,21 @@ namespace MonoDevelop.Gettext
 			};
 			
 			this.togglebuttonFuzzy.Active = PropertyService.Get ("Gettext.ShowFuzzy", true);
-			tooltips.SetTip (this.togglebuttonFuzzy, GettextCatalog.GetString ("Show fuzzy translations"), null);
+			this.togglebuttonFuzzy.TooltipText = GettextCatalog.GetString ("Show fuzzy translations");
 			this.togglebuttonFuzzy.Toggled += delegate {
 				MonoDevelop.Core.PropertyService.Set ("Gettext.ShowFuzzy", this.togglebuttonFuzzy.Active);
 				UpdateFromCatalog ();
 			};
 			
 			this.togglebuttonMissing.Active = PropertyService.Get ("Gettext.ShowMissing", true);
-			tooltips.SetTip (this.togglebuttonMissing, GettextCatalog.GetString ("Show missing translations"), null);
+			this.togglebuttonMissing.TooltipText = GettextCatalog.GetString ("Show missing translations");
 			this.togglebuttonMissing.Toggled += delegate {
 				MonoDevelop.Core.PropertyService.Set ("Gettext.ShowMissing", this.togglebuttonMissing.Active);
 				UpdateFromCatalog ();
 			};
 			
 			this.togglebuttonOk.Active = PropertyService.Get ("Gettext.ShowTranslated", true);
-			tooltips.SetTip (this.togglebuttonOk, GettextCatalog.GetString ("Show valid translations"), null);
+			this.togglebuttonOk.TooltipText = GettextCatalog.GetString ("Show valid translations");
 			this.togglebuttonOk.Toggled += delegate {
 				MonoDevelop.Core.PropertyService.Set ("Gettext.ShowTranslated", this.togglebuttonOk.Active);
 				UpdateFromCatalog ();
@@ -677,7 +676,7 @@ namespace MonoDevelop.Gettext
 		static string iconValid   = "silk_accept";//"md-translation-valid";
 		static string iconMissing = "silk_exclamation";//"md-translation-missing";
 		
-		static Color translated   = new Color (255, 255, 255);
+//		static Color translated   = new Color (255, 255, 255);
 		static Color untranslated = new Color (234, 232, 227);
 		static Color fuzzy        = new Color (237, 226, 187);
 		static Color missing      = new Color (237, 167, 167);
@@ -994,11 +993,6 @@ namespace MonoDevelop.Gettext
 			StopFilterWorkerThread ();
 			StopTaskWorkerThread ();
 		
-			if (tooltips != null) {
-				tooltips.Destroy ();
-				tooltips = null;
-			}
-			
 			if (store != null) {
 				store.Dispose ();
 				store = null;
