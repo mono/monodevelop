@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects
 			set { commandLineParameters = value; }
 		}
 
-		[ItemProperty("EnvironmentVariable", SkipEmpty = true)]
+		[ItemProperty("EnvironmentVariables", SkipEmpty = true)]
 		[ItemProperty("Variable", Scope = "item")]
 		[ItemProperty("name", Scope = "key")]
 		[ItemProperty("value", Scope = "value")]
