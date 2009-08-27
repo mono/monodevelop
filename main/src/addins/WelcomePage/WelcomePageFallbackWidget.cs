@@ -353,16 +353,6 @@ namespace MonoDevelop.WelcomePage
 		string text;
 		string desc;
 		string icon;
-		static Tooltips tooltips;
-		static int tipcount;
-		
-		static Tooltips Tooltips {
-			get {
-				if (tooltips == null)
-					tooltips = new Tooltips ();
-				return tooltips;
-			}
-		}
 		
 		public LinkButton () : base ()
 		{
@@ -377,14 +367,13 @@ namespace MonoDevelop.WelcomePage
 			box.PackStart (label, true, true, 0);
 			Add (box);
 			Relief = ReliefStyle.None;
-			tipcount ++;
 		}
 			
 		public string HoverMessage {
 			get { return hoverMessage; }
 			set {
 				hoverMessage = value;
-				Tooltips.SetTip (this, hoverMessage, string.Empty);
+				this.TooltipText = hoverMessage;
 			}
 		}
 		
@@ -415,17 +404,6 @@ namespace MonoDevelop.WelcomePage
 			if (!string.IsNullOrEmpty (desc))
 				markup += "\n<span size=\"small\">" + desc + "</span>";
 			label.Markup = markup;
-		}
-		
-		protected override bool OnDestroyEvent (Event evnt)
-		{
-			bool retval = base.OnDestroyEvent (evnt);
-			tipcount--;
-			if (tipcount < 1) {
-				tooltips.Destroy ();
-				tooltips = null;
-			}
-			return retval;
 		}
 		
 		string linkUrl;
