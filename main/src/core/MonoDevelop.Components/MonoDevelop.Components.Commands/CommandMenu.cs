@@ -32,6 +32,7 @@ namespace MonoDevelop.Components.Commands
 {
 	public class CommandMenu: Gtk.Menu
 	{
+		CommandEntrySet commandEntrySet;
 		CommandManager manager;
 		object initialCommandTarget;
 
@@ -40,6 +41,12 @@ namespace MonoDevelop.Components.Commands
 			this.manager = manager;
 			this.AccelGroup = manager.AccelGroup;
 		}
+		
+		public CommandMenu (CommandManager manager, CommandEntrySet commandEntrySet) : this (manager)
+		{
+			this.commandEntrySet = commandEntrySet;
+		}
+		
 		
 		public object InitialCommandTarget {
 			get { return initialCommandTarget; }
@@ -73,8 +80,17 @@ namespace MonoDevelop.Components.Commands
 			base.OnShown ();
 			Update ();
 		}
-		
-		void Update ()
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			if (commandEntrySet != null) {
+				manager.CreateMenu (commandEntrySet, this);
+				Update ();
+				commandEntrySet = null;
+			}
+		}
+
+		internal void Update ()
 		{
 			foreach (Gtk.Widget item in Children) {
 				if (item is ICommandUserItem)

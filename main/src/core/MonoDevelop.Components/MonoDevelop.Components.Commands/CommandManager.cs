@@ -375,9 +375,9 @@ namespace MonoDevelop.Components.Commands
 			return CreateToolbar ("", entrySet);
 		}
 		
-*/		public Gtk.Menu CreateMenu (CommandEntrySet entrySet)
+*/	
+		public Gtk.Menu CreateMenu (CommandEntrySet entrySet, CommandMenu menu)
 		{
-			CommandMenu menu = new CommandMenu (this);
 			foreach (CommandEntry entry in entrySet) {
 				Gtk.MenuItem mi = entry.CreateMenuItem (this);
 				CustomItem ci = mi.Child as CustomItem;
@@ -386,6 +386,11 @@ namespace MonoDevelop.Components.Commands
 				menu.Append (mi);
 			}
 			return menu;
+		}
+		
+		public Gtk.Menu CreateMenu (CommandEntrySet entrySet)
+		{
+			return CreateMenu (entrySet, new CommandMenu (this));
 		}
 		
 		public void InsertOptions (Gtk.Menu menu, CommandEntrySet entrySet, int index)

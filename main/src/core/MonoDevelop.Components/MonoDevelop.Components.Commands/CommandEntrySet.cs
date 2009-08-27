@@ -108,7 +108,7 @@ namespace MonoDevelop.Components.Commands
 				mi = new AutoHideMenuItem (name != null ? name : "");
 			else
 				mi = new Gtk.MenuItem (name != null ? name : "");
-			mi.Submenu = manager.CreateMenu (this);
+			mi.Submenu = new CommandMenu (manager, this);
 			return mi;
 		}
 
