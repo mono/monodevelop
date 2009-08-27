@@ -285,7 +285,7 @@ namespace MonoDevelop.AssemblyBrowser
 								return result;
 							nav.MoveToParent ();
 						}
-					} catch (Exception e) {
+					} catch (Exception) {
 						return null;
 					}
 				}
@@ -352,7 +352,6 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		System.ComponentModel.BackgroundWorker searchBackgoundWorker = null;
 
-		Thread searchThread = null;
 		public void StartSearch ()
 		{
 			if (searchBackgoundWorker != null && searchBackgoundWorker.IsBusy)
