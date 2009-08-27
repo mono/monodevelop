@@ -149,6 +149,9 @@ namespace MonoDevelop.Ide.Gui
 			// System checks
 			if (!CheckBug77135 ())
 				return 1;
+			
+			if (!CheckQtCurve ())
+				return 1;
 
 			CheckFileWatcher ();
 			
@@ -272,6 +275,19 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workbench.RootWindow.Present ();
 				return false;
 			}
+		}
+		
+		bool CheckQtCurve ()
+		{
+			if (Gtk.Settings.Default.ThemeName == "QtCurve") {
+				string msg = "QtCurve theme not supported";
+				string desc = "Your system is using the QtCurve GTK+ theme. This theme is known to cause stability issues in MonoDevelop. Please select another theme in the GTK+ Theme Selector.\n\nIf you click on Proceed, MonoDevelop will switch to the default GTK+ theme.";
+				AlertButton res = MessageService.GenericAlert (Gtk.Stock.DialogWarning, msg, desc, AlertButton.Cancel, AlertButton.Proceed);
+				if (res == AlertButton.Cancel)
+					return false;
+				Gtk.Settings.Default.ThemeName = "Gilouche";
+			}
+			return true;
 		}
 		
 		void CheckFileWatcher ()
