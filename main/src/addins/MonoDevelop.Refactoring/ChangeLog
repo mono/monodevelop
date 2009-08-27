@@ -1,3 +1,8 @@
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/HelperMethods.cs: changed return
+	  type.
+
 2009-08-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs: Only full

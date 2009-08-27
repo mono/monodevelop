@@ -63,7 +63,7 @@ namespace MonoDevelop.Refactoring
 			return result;
 		}
 		
-		public static IReturnType ConvertToReturnType (this TypeReference typeRef)
+		public static DomReturnType ConvertToReturnType (this TypeReference typeRef)
 		{
 			if (typeRef == null)
 				return null;
