@@ -120,10 +120,8 @@ namespace MonoDevelop.SourceEditor
 				if (proj != null) {
 					IdeApp.ProjectOperations.Build (proj);
 					return string.Format ("Building project {0}", proj.Name);
-				} else {
-					return "File is not part of a project";
 				}
-				break;
+				return "File is not part of a project";
 			case 'c':
 				// Error manipulation
 				if (3 == command.Length) {

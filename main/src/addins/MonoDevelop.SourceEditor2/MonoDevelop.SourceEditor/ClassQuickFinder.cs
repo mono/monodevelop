@@ -56,8 +56,6 @@ namespace MonoDevelop.SourceEditor
 		
 		SourceEditorWidget editor;
 		
-		Tooltips tips = new Tooltips ();
-		
 		public ClassQuickFinder (SourceEditorWidget editor): base (false, 0)
 		{
 			this.editor = editor;
@@ -213,10 +211,10 @@ namespace MonoDevelop.SourceEditor
 		void UpdateRegionComboTip (FoldingRegion region)
 		{
 			if (region == null) {
-				tips.SetTip (regionCombo, GettextCatalog.GetString ("Region list"), null);
+				regionCombo.TooltipText = GettextCatalog.GetString ("Region list");
 				return;
 			}
-			tips.SetTip (regionCombo, GettextCatalog.GetString ("Region {0}", region.Name), null);
+			regionCombo.TooltipText = GettextCatalog.GetString ("Region {0}", region.Name);
 		}
 		
 		void RegionChanged (object sender, EventArgs e)
@@ -320,10 +318,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (it != null) {
 				Ambience ambience = editor.Ambience;
-				string txt = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
-				tips.SetTip (this.membersCombo, txt, txt);
+				membersCombo.TooltipText = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
 			} else {
-				tips.SetTip (membersCombo, GettextCatalog.GetString ("Member list"), null);
+				membersCombo.TooltipText = GettextCatalog.GetString ("Member list");
 			}
 		}
 		
@@ -416,10 +413,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (it != null) {
 				Ambience ambience = editor.Ambience;
-				string txt = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
-				tips.SetTip (this.typeCombo, txt, txt);
+				this.typeCombo.TooltipText = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
 			} else {
-				tips.SetTip (typeCombo, GettextCatalog.GetString ("Type list"), null);
+				typeCombo.TooltipText = GettextCatalog.GetString ("Type list");
 			}
 		}
 #endregion
@@ -459,10 +455,6 @@ namespace MonoDevelop.SourceEditor
 			if (editor != null) 
 				editor = null;
 			
-			if (tips != null) {
-				tips.Destroy ();
-				tips = null;
-			}
 			base.OnDestroyed ();
 		}
 	}

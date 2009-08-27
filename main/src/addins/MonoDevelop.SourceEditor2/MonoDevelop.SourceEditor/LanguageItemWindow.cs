@@ -197,7 +197,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		
-		static string GetCref (string cref)
+/*		static string GetCref (string cref)
 		{
 			if (cref == null)
 				return "";
@@ -209,6 +209,6 @@ namespace MonoDevelop.SourceEditor
 				return cref.Substring (2, cref.Length - 2);
 			
 			return cref;
-		}
+		}*/
 	}
 }

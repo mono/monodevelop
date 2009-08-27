@@ -1,3 +1,11 @@
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/IdeViMode.cs:
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed
+	  compiler warnings.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Update gtk# dependency.

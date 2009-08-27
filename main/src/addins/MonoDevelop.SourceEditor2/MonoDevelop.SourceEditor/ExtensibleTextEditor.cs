@@ -318,7 +318,7 @@ namespace MonoDevelop.SourceEditor
 			if (line == null)
 				return true;
 			bool inChar = false;
-			string escape = "\"";
+//			string escape = "\"";
 			Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 			Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
 			foreach (Span span in stack) {
