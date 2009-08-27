@@ -178,6 +178,7 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual (1, extMethod.TypeParameters.Count);
 			Assert.AreEqual ("S", extMethod.TypeParameters[0].Name);
 		}
+		
 		[Test()]
 		public void InstantiatedMethodByArgumentTestComplex2 ()
 		{
@@ -196,6 +197,7 @@ namespace MonoDevelop.Projects.DomTests
 			List<IReturnType> args    = new List<IReturnType> ();
 			returnType = new DomReturnType ("MyType");
 			returnType.AddTypeParameter (DomReturnType.Int32);
+			args.Add (returnType);
 			IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (method, genArgs, args);
 			
 			// check 
