@@ -385,7 +385,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			Requisition req = declarationviewwindow.SizeRequest ();
 			int dvwWidth = req.Width;
-			int dvwHeight = req.Height;
+//			int dvwHeight = req.Height;
 			
 //			int dvwWidth, dvwHeight;
 //			declarationviewwindow.GdkWindow.GetSize (out dvwWidth, out dvwHeight);
