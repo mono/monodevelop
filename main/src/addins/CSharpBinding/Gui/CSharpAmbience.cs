@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
+using System.CodeDom;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -424,6 +425,24 @@ namespace MonoDevelop.CSharpBinding
 			return result.ToString ();
 		}
 		
+		static void PrintObject (StringBuilder result, OutputSettings settings, object o)
+		{
+			if (o is string) {
+				result.Append (settings.Markup ("\""));
+				result.Append (o);
+				result.Append (settings.Markup ("\""));
+			} else if (o is char) {
+				result.Append (settings.Markup ("'"));
+				result.Append (o);
+				result.Append (settings.Markup ("'"));
+			} else if (o is bool) {
+				result.Append (((bool)o) ? "true" : "false");
+			} else if (o is CodePrimitiveExpression) {
+				CodePrimitiveExpression cpe = (CodePrimitiveExpression)o;
+				PrintObject (result, settings, cpe.Value);
+			} else 
+				result.Append (o);
+		}
 		public string Visit (IAttribute attribute, OutputSettings settings)
 		{
 			StringBuilder result = new StringBuilder ();
@@ -439,16 +458,7 @@ namespace MonoDevelop.CSharpBinding
 					if (!first)
 						result.Append (settings.Markup (", "));
 					first = false;
-					if (o is string) {
-						result.Append (settings.Markup ("\""));
-						result.Append (o);
-						result.Append (settings.Markup ("\""));
-					} else if (o is char) {
-						result.Append (settings.Markup ("'"));
-						result.Append (o);
-						result.Append (settings.Markup ("'"));
-					} else
-						result.Append (o);
+					PrintObject (result, settings, o);
 				}
 			}
 			result.Append (settings.Markup (")]"));
