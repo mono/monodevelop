@@ -1,3 +1,14 @@
+2009-08-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core/LoggingService.cs:
+	* MonoDevelop.Core.Logging/RemoteLogger.cs:
+	* MonoDevelop.Core.Execution/ProcessHostController.cs:
+	* MonoDevelop.Core.Execution/IProcessHostController.cs: Allow
+	  routing log messages from external processes into the main
+	  MD process.
+
 2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Don't try to

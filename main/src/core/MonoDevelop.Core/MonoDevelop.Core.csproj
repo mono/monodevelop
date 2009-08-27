@@ -186,6 +186,7 @@
     <Compile Include="MonoDevelop.Core.Assemblies\AssemblyContext.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\RuntimeAssemblyContext.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\LibraryPcFileCache.cs" />
+    <Compile Include="MonoDevelop.Core.Logging\RemoteLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -37,6 +37,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Reflection;
 using Timer = System.Timers.Timer;
+using MonoDevelop.Core.Logging;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -322,6 +323,12 @@ namespace MonoDevelop.Core.Execution
 		{
 			exitRequestEvent.WaitOne ();
 		}
+		
+		public ILogger GetLogger ()
+		{
+			return LoggingService.RemoteLogger;
+		}
+
 	}
 	
 	class ProcessHostConsole: IConsole

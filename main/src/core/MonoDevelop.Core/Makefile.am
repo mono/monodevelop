@@ -76,6 +76,7 @@ FILES =  \
 	MonoDevelop.Core.Logging/FileLogger.cs \
 	MonoDevelop.Core.Logging/ILogger.cs \
 	MonoDevelop.Core.Logging/LogLevel.cs \
+	MonoDevelop.Core.Logging/RemoteLogger.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/AsyncOperation.cs \

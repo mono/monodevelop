@@ -26,10 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using MonoDevelop.Core.Logging;
+
 namespace MonoDevelop.Core.Execution
 {
 	public interface IProcessHostController
 	{
+		ILogger GetLogger ();
 		void RegisterHost (IProcessHost processHost);
 		void WaitForExit ();
 	}

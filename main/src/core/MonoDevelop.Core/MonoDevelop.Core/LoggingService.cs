@@ -37,6 +37,7 @@ namespace MonoDevelop.Core
 	public static class LoggingService
 	{
 		static List<ILogger> loggers = new List<ILogger> ();
+		static RemoteLogger remoteLogger;
 		
 		static LoggingService ()
 		{
@@ -67,6 +68,14 @@ namespace MonoDevelop.Core
 				} catch (Exception e) {
 					LogError (e.ToString ());
 				}
+			}
+		}
+		
+		internal static RemoteLogger RemoteLogger {
+			get {
+				if (remoteLogger == null)
+					remoteLogger = new RemoteLogger ();
+				return remoteLogger;
 			}
 		}
 		
