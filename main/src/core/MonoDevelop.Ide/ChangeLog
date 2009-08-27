@@ -1,3 +1,8 @@
+2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/ViewCommands.cs: Pad titles may
+	  have markup.
+
 2009-08-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Don't allow running MD

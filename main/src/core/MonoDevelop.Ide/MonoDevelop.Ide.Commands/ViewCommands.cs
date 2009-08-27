@@ -71,6 +71,7 @@ namespace MonoDevelop.Ide.Commands
 
 				CommandInfo ci = new CommandInfo(pad.Title);
 				ci.Icon = pad.Icon;
+				ci.UseMarkup = true;
 				ci.Description = GettextCatalog.GetString ("Show " + pad.Title);
 				ci.Checked = pad.Visible;
 
