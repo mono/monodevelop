@@ -18,7 +18,6 @@ namespace Stetic
 		Hashtable editors, wrappers;
 		Hashtable sensitives, invisibles;
 		ArrayList toggles;
-		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		bool disposed;
 		bool updating;
 		bool allowBinding;
@@ -191,7 +190,7 @@ namespace Stetic
 				button.IconWidget = img;
 				button.Label = cmd.Label;
 				if (cmd.Label != null && cmd.Label.Length > 0)
-					button.SetTooltip (tips, cmd.Label, "");
+					button.TooltipText = cmd.Label;
 			}
 			else {
 				button.Label = cmd.Label;

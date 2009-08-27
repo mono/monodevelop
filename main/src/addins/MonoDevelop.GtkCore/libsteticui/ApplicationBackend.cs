@@ -267,7 +267,7 @@ namespace Stetic
 					return new AssemblyWidgetLibrary (resolver, name);
 				else
 					return new CecilWidgetLibrary (resolver, name);
-			} catch (Exception ex) {
+			} catch (Exception) {
 				// FIXME: handle the error, but keep loading.
 				return null;
 			}

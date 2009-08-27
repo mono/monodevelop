@@ -11,11 +11,8 @@ namespace Stetic {
 			BorderWidth = 2;
 			WidgetFlags |= WidgetFlags.NoWindow;
 			lines = new ArrayList ();
-			tips = new Gtk.Tooltips ();
 			group = null;
 		}
-
-		Gtk.Tooltips tips;
 
 		// Padding constants
 		const int groupPad = 6;
@@ -56,7 +53,7 @@ namespace Stetic {
 					Gtk.EventBox ebox = new Gtk.EventBox ();
 					ebox.Add (l);
 					ebox.Show ();
-					grid.tips.SetTip (ebox, description, null);
+					ebox.TooltipText = description;
 					label = ebox;
 				}
 				label.Parent = grid;
@@ -101,9 +98,7 @@ namespace Stetic {
 			}
 			w.Parent = this;
 			w.Show ();
-
-			tips.SetTip (w, description, null);
-
+			w.TooltipText = description;
 			lines.Add (w);
 			QueueDraw ();
 		}
@@ -183,7 +178,6 @@ namespace Stetic {
 			}
 
 			lines.Clear ();
-			tips = new Gtk.Tooltips ();
 		}
 
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)

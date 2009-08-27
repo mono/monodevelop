@@ -594,7 +594,7 @@ namespace Stetic {
 				}
 			
 				if (doc == null) {
-					Hashtable visited = new Hashtable ();
+//					Hashtable visited = new Hashtable ();
 					foreach (AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
 						if (aref.Name != "gtk-sharp") {
 							LibraryInfo info = GetInfo (resolver, aref.FullName, baseDirectory);

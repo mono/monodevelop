@@ -99,7 +99,7 @@ namespace Stetic.Windows
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			Gdk.Rectangle rect = new Gdk.Rectangle (Allocation.X+50, Allocation.Y+50, Allocation.Width - 1, Allocation.Height - 1);
+//			Gdk.Rectangle rect = new Gdk.Rectangle (Allocation.X+50, Allocation.Y+50, Allocation.Width - 1, Allocation.Height - 1);
 			wtheme.DrawWindowFrame (this, caption, Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 			foreach (Widget child in Children)
 				PropagateExpose (child, evnt);

@@ -1,3 +1,11 @@
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* Grid.cs:
+	* LibraryCache.cs:
+	* Windows/Preview.cs:
+	* WidgetActionBar.cs:
+	* ApplicationBackend.cs: Fixed some warnings.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libsteticui.csproj: Updated dependencies. We now depend on
