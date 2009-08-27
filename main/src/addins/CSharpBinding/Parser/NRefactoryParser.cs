@@ -35,6 +35,7 @@ using System.CodeDom;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.Visitors;
 using CSharpBinding;
 using ICSharpCode.NRefactory;
@@ -165,7 +166,7 @@ namespace MonoDevelop.CSharpBinding
 				case "#endif":
 					DomLocation endLoc = new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column);
 					CloseConditionBlock (endLoc);
-					if (ConditionalRegion != null && ConditionalRegion.ElseBlock != null && !ConditionalRegion.ElseBlock.Start.IsEmpty)
+					if (ConditionalRegion != null && !ConditionalRegion.ElseBlock.Start.IsEmpty)
 						ConditionalRegion.ElseBlock = new DomRegion (ConditionalRegion.ElseBlock.Start, endLoc);
 					AddCurRegion (directive.EndPosition);
 					if (ifBlocks.Count > 0) {
@@ -301,20 +302,7 @@ namespace MonoDevelop.CSharpBinding
 
 			static DomReturnType ConvertReturnType (ICSharpCode.NRefactory.Ast.TypeReference typeReference)
 			{
-				DomReturnType result = new DomReturnType (typeReference.SystemType != null ? typeReference.SystemType : typeReference.Type);
-				result.PointerNestingLevel = typeReference.PointerNestingLevel;
-				result.ArrayDimensions = typeReference.RankSpecifier != null ? typeReference.RankSpecifier.Length : 0;
-				for (int i = 0; i < result.ArrayDimensions; i++) {
-					result.SetDimension (i, typeReference.RankSpecifier[i]);
-				}
-
-				if (typeReference.GenericTypes != null && typeReference.GenericTypes.Count > 0) {
-					foreach (ICSharpCode.NRefactory.Ast.TypeReference genericArgument in typeReference.GenericTypes) {
-						result.AddTypeParameter (ConvertReturnType (genericArgument));
-					}
-				}
-
-				return result;
+				return typeReference.ConvertToReturnType ();
 			}
 
 			static void AddAttributes (AbstractMember member, IEnumerable<ICSharpCode.NRefactory.Ast.AttributeSection> attributes)
@@ -572,6 +560,10 @@ namespace MonoDevelop.CSharpBinding
 					return null;
 				bool isBinary = operatorDeclaration.Parameters.Count == 2;
 				switch (operatorDeclaration.OverloadableOperator) {
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.UnaryMinus:
+					return "op_UnaryNegation";
+				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.UnaryPlus:
+					return "op_UnaryPlus";
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Add:
 					return isBinary ? "op_Addition" : "op_UnaryPlus";
 				case ICSharpCode.NRefactory.Ast.OverloadableOperatorType.Subtract:

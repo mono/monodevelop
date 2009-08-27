@@ -527,7 +527,7 @@ namespace MonoDevelop.CSharpBinding
 							//result.StaticResolve = isStatic;
 							//result.UnresolvedType = result.ResolvedType  = member[0].ReturnType;
 							foreach (TypeReference typeReference in memberReferenceExpression.TypeArguments) {
-								((MethodResolveResult)result).AddGenericArgument (new DomReturnType (String.IsNullOrEmpty (typeReference.SystemType) ? typeReference.Type : typeReference.SystemType));
+								((MethodResolveResult)result).AddGenericArgument (typeReference.ConvertToReturnType ());
 							}
 							//System.Console.WriteLine(result + "/" + result.ResolvedType);
 							return result;

@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharpBinding
 			return ProjectDom.Empty;
 		}
 		
-		string expression;
+	//	string expression;
 		IMember GetLanguageItem (Mono.TextEditor.Document document, int offset)
 		{
 			ProjectDom ctx = GetParserContext (document);

@@ -43,7 +43,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Projects.Gui.Completion;
-
+using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
@@ -292,7 +292,7 @@ namespace MonoDevelop.CSharpBinding
 				foreach (IUsing u in unit.Usings) {
 					
 					foreach (string alias in u.Aliases.Keys) {
-						ICompletionData data = col.AddCompletionData (completionList, alias);
+						col.AddCompletionData (completionList, alias);
 					}
 					if (u.Namespaces == null) 
 						continue;
@@ -466,20 +466,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public static IReturnType ConvertTypeReference (TypeReference typeRef)
 		{
-			if (typeRef == null)
-				return null;
-			DomReturnType result = new DomReturnType (typeRef.SystemType ?? typeRef.Type);
-			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
-				result.AddTypeParameter (ConvertTypeReference (genericArgument));
-			}
-			result.PointerNestingLevel = typeRef.PointerNestingLevel;
-			if (typeRef.IsArrayType) {
-				result.ArrayDimensions = typeRef.RankSpecifier.Length;
-				for (int i = 0; i < typeRef.RankSpecifier.Length; i++) {
-					result.SetDimension (i, typeRef.RankSpecifier[i]);
-				}
-			}
-			return result;
+			return typeRef.ConvertToReturnType ();
 		}
 		
 		IReturnType ResolveType (IReturnType type)

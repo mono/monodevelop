@@ -1,3 +1,16 @@
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/ResolveVisitor.cs:
+	* Parser/CSharpFormatter.cs:
+	* Gui/NRefactoryResolver.cs:
+	* Parser/NRefactoryParser.cs:
+	* Syntax/CSharpSyntaxMode.cs:
+	* Parser/FindMemberAstVisitor.cs:
+	* Gui/NewCSharpExpressionFinder.cs:
+	* Syntax/HighlightPropertiesSemanticRule.cs:
+	* Gui/NRefactoryIndexerParameterDataProvider.cs: Fixed unit
+	  test failures & compiler warnings.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Update gtk# dependency.

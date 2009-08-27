@@ -557,7 +557,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override object VisitTypeReference(TypeReference typeReference, object data)
 		{
-			string type = typeReference.SystemType ?? typeReference.Type;
+			string type = typeReference.Type;
 			if (searchedMember is IType && this.searchedMemberName == GetNameWithoutPrefix (type)) {
 				int line = typeReference.StartLocation.Y;
 				int col  = typeReference.StartLocation.X;

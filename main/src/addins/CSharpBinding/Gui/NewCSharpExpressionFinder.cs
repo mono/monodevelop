@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		public ExpressionContext FindExactContextForObjectInitializer (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
 			string documentToCursor = editor.GetText (0, editor.CursorPosition);
-			int pos = -1;
+//			int pos = -1;
 
 			// create a table with all opening brackets
 			Dictionary<int, int> brackets = new Dictionary<int, int> ();
@@ -171,7 +171,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					int j = i + 4;
 					while (j < documentToCursor.Length && Char.IsWhiteSpace (documentToCursor[j]))
 						j++;
-					int start = j;
+//					int start = j;
 					while (j < documentToCursor.Length && (Char.IsLetterOrDigit (documentToCursor[j]) || documentToCursor[j] == '_'))
 						j++;
 

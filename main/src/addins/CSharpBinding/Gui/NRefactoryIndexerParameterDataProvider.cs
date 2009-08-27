@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharpBinding
 {
 	public class NRefactoryIndexerParameterDataProvider : IParameterDataProvider
 	{
-		IType type;
+//		IType type;
 		string resolvedExpression;
 		MonoDevelop.Ide.Gui.TextEditor editor;
 		static CSharpAmbience ambience = new CSharpAmbience ();
@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharpBinding
 		public NRefactoryIndexerParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, IType type, string resolvedExpression)
 		{
 			this.editor = editor;
-			this.type = type;
+//			this.type = type;
 			this.resolvedExpression = resolvedExpression;
 			indexers = new List<IProperty> (type.Properties.Where (p => p.IsIndexer && !p.Name.Contains ('.')));
 		}
@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharpBinding
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			StringBuilder result = new StringBuilder ();
-			int curLen = 0;
+//			int curLen = 0;
 			result.Append (ambience.GetString (indexers[overload].ReturnType, OutputFlags.ClassBrowserEntries));
 			result.Append (' ');
 			result.Append ("<b>");

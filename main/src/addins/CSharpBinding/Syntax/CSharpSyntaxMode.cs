@@ -224,7 +224,7 @@ namespace MonoDevelop.CSharpBinding
 					while (spanStack.Count > 0 && !(CurSpan is IfBlockSpan)) {
 						spanStack.Pop ();
 					}
-					IfBlockSpan ifBlock = (IfBlockSpan)CurSpan;
+//					IfBlockSpan ifBlock = (IfBlockSpan)CurSpan;
 					
 					ElseBlockSpan elseBlockSpan = new ElseBlockSpan (!previousResult);
 					OnFoundSpanBegin (elseBlockSpan, i, 0);

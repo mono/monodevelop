@@ -118,17 +118,17 @@ namespace CSharpBinding.Parser
 			CSharpFormatter formatter = new CSharpFormatter ();
 			formatter.startIndentLevel = System.Math.Max (0, col / data.Options.TabSize - 1);
 			
-			int suffixLen = 2;
+//			int suffixLen = 2;
 			string formattedText = formatter.InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
 
 			if (formatter.hasErrors) 
 				return;
 			
-			int startLine = member.Location.Line;
-			int endLine = member.Location.Line;
-
-			if (!member.BodyRegion.IsEmpty) 
-				endLine = member.BodyRegion.End.Line + 1; 
+//			int startLine = member.Location.Line;
+//			int endLine = member.Location.Line;
+//
+//			if (!member.BodyRegion.IsEmpty) 
+//				endLine = member.BodyRegion.End.Line + 1; 
 
 			int startPos = data.Document.LocationToOffset (member.Location.Line - 1, 0);
 			InFormat = true;
@@ -203,7 +203,7 @@ namespace CSharpBinding.Parser
 		static void InsertFormattedText (TextEditorData data, int offset, string formattedText)
 		{
 			data.Document.BeginAtomicUndo ();
-			DocumentLocation caretLocation = data.Caret.Location;
+//			DocumentLocation caretLocation = data.Caret.Location;
 			
 			int selAnchor = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Anchor) : -1;
 			int selLead = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Lead) : -1;
