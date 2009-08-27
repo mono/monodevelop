@@ -128,6 +128,8 @@ namespace MonoDevelop.Components.Commands
 		
 		public bool HasVisibleChildren {
 			get {
+				if (!Submenu.IsRealized)
+					Submenu.Realize ();
 				foreach (Gtk.Widget item in ((Gtk.Menu)Submenu).Children) {
 					if (item.Visible)
 						return true;

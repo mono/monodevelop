@@ -1,5 +1,10 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Components.Commands/CommandEntrySet.cs: Fixed
+	  bug with auto hide menus.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Components.Commands/CommandMenu.cs:
 	* MonoDevelop.Components.Commands/CommandManager.cs:
 	* MonoDevelop.Components.Commands/CommandEntrySet.cs: Command
