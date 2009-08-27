@@ -929,7 +929,7 @@ namespace MonoDevelop.VersionControl.Views
 			t.IsBackground = true;
 			t.Start ();
 		}
-		static int bla = 0;
+		
 		void SetFileDiff (TreeIter iter, string file, bool remote)
 		{
 			// If diff information is already loaded, just look for the
