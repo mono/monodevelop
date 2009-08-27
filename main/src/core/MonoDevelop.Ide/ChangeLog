@@ -1,6 +1,12 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/TreeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	  Speeded up the AddChildren function.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/TreeBuilder.cs:
 	* MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs:
 	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs:
 	  Fixed typo.

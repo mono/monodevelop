@@ -166,40 +166,51 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 				return ats;
 			}
-			
+			static int NullSortFunc (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
+			{
+				return 0;
+			}
 			public void AddChildren (IEnumerable dataObjects)
 			{
 				NodeBuilder[] chain = null;
 				Type oldType = null;
 				Gtk.TreeIter oldIter = Gtk.TreeIter.Zero;
-				// TODO: Optimize this method.
+//				DateTime time = DateTime.Now;
+				int items = 0;
+				pad.Tree.FreezeChildNotify ();
+				store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (NullSortFunc);
 				foreach (object dataObject in dataObjects) {
+					items++;
 					if (chain == null || dataObject.GetType () != oldType) {
 						oldType = dataObject.GetType ();
 						chain = pad.GetBuilderChain (oldType);
 						if (chain == null)
 							continue;
 					}
-					
+
 					oldIter = currentIter;
 					NodeAttributes ats = GetAttributes (this, chain, dataObject);
 					if ((ats & NodeAttributes.Hidden) != 0)
 						continue;
-					
+
 					Gtk.TreeIter it;
 					if (!currentIter.Equals (Gtk.TreeIter.Zero)) {
-						if (!Filled) 
+						if (!Filled)
 							continue;
-						it = store.AppendValues (currentIter, "", null, null, dataObject, chain, false);
+						it = store.InsertWithValues (currentIter, 0, "", null, null, dataObject, chain, false);
 					} else {
 						it = store.AppendValues ("", null, null, dataObject, chain, false);
 					}
-					
+
 					pad.RegisterNode (it, dataObject, chain);
-					
+
 					BuildNode (it, chain, ats, dataObject);
 					pad.NotifyInserted (it, dataObject);
 				}
+				store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (pad.CompareNodes);
+
+				pad.Tree.ThawChildNotify ();
+//				Console.WriteLine (items + " : " +(DateTime.Now - time).TotalMilliseconds);
 				MoveToIter (oldIter);
 			}
 			

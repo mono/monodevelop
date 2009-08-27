@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			this.contextMenuPath = contextMenuPath;
 			builderContext = new TreeBuilderContext (this);
-		
+
 			SetBuilders (builders, options);
 			/*
 			0 -- Text
@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			4 -- Builder chain
 			5 -- Expanded
 			*/
-			store = new Gtk.TreeStore (typeof (string), typeof (Gdk.Pixbuf), typeof (Gdk.Pixbuf), typeof (object), typeof (object), typeof(bool));
+			store = new Gtk.TreeStore (typeof(string), typeof(Gdk.Pixbuf), typeof(Gdk.Pixbuf), typeof(object), typeof(object), typeof(bool));
 			tree.Model = store;
 			tree.Selection.Mode = Gtk.SelectionMode.Multiple;
 			nodeOptions = new Dictionary<Gtk.TreeIter, TreeOptions> (new IterComparer (store));
@@ -1145,10 +1145,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			return null;
 		}
 		
-		int CompareNodes (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
+		internal int CompareNodes (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
 		{
 			sorting = true;
-			
 			try {
 				NodeBuilder[] chain1 = (NodeBuilder[]) store.GetValue (a, BuilderChainColumn);
 				if (chain1 == null) return -1;
@@ -1851,7 +1850,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			this.store = store;
 		}
-
 		public bool Equals (Gtk.TreeIter x, Gtk.TreeIter y)
 		{
 			if (!store.IterIsValid (x) || !store.IterIsValid (y))
