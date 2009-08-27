@@ -1,5 +1,10 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Pads are now
+	  created on demand.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Templates/FileTemplate.cs:
 	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Only

@@ -437,20 +437,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CreatePadContent (bool force, PadCodon padCodon, PadWindow window, DockItem item)
 		{
-
 			if (force || item.Content == null) {
-				IPadContent newContent = padCodon.PadContent;
-				newContent.Initialize (window);
-
-				Gtk.Widget pcontent;
-				if (newContent is Widget) {
-					pcontent = newContent.Control;
-				} else {
-					PadCommandRouterContainer crc = new PadCommandRouterContainer (window, newContent.Control, newContent, true);
-					crc.Show ();
-					pcontent = crc;
-				}
-				
+				Gtk.Widget pcontent = new LazyPadCommandRouterContainer (window, padCodon, true);
 				PadCommandRouterContainer router = new PadCommandRouterContainer (window, pcontent, toolbarFrame, false);
 				router.Show ();
 				item.Content = router;
@@ -854,7 +842,37 @@ namespace MonoDevelop.Ide.Gui
 			PadWindow.LastActivePadWindow = window;
 			return base.GetDelegatedCommandTarget ();
 		}
+	}
+	
+	class LazyPadCommandRouterContainer : CommandRouterContainer
+	{
+		PadWindow window;
+		PadCodon padCodon;
+		
+		public LazyPadCommandRouterContainer (PadWindow window, PadCodon padCodon, bool continueToParent): base (continueToParent)
+		{
+			this.window = window;
+			this.padCodon = padCodon;
+			this.Realized += HandleRealized;
+			this.Show ();
+		}
 
+		void HandleRealized (object sender, EventArgs e)
+		{
+			this.Realized -= HandleRealized;
+			IPadContent newContent = padCodon.PadContent;
+			base.Delegated = newContent;
+			newContent.Initialize (window);
+			PackStart (newContent.Control, true, true, 0);
+			ShowAll ();
+		}
+		
+		public override object GetDelegatedCommandTarget ()
+		{
+			// This pad has currently the focus. Set the actve pad property.
+			PadWindow.LastActivePadWindow = window;
+			return base.GetDelegatedCommandTarget ();
+		}
 	}
 	
 	// The SdiDragNotebook class allows redirecting the command route to the ViewCommandHandler
