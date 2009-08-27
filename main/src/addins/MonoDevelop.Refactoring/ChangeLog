@@ -1,5 +1,10 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
+	  Fixed possible null reference exception.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/RefactoryCommands.cs:
 	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:
 	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:

@@ -51,7 +51,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			if (resolveResult == null)
 				return false;
 			IProperty property = resolveResult.ResolvedMember as IProperty;
-			if (property == null || !property.HasGet)
+			if (property == null || !property.HasGet || property.DeclaringType == null)
 				return false;
 			
 			TextEditorData data = options.GetTextEditorData ();
@@ -141,7 +141,10 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 		static IField GetBackingStoreField (MonoDevelop.Refactoring.RefactoringOptions options, string backingStoreName, out int backinStoreStart, out int backinStoreEnd)
 		{
 			TextEditorData data = options.GetTextEditorData ();
-			List<IMember> members = options.ResolveResult.CallingType.SearchMember (backingStoreName, true);
+			MemberResolveResult resolveResult = options.ResolveResult as MemberResolveResult;
+			IProperty property = resolveResult.ResolvedMember as IProperty;
+			
+			List<IMember> members = property.DeclaringType.SearchMember (backingStoreName, true);
 			IMember backingStore = null;
 			backinStoreStart = 0;
 			backinStoreEnd = 0;
