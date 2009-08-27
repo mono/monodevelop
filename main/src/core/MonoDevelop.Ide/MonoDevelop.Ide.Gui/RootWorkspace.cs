@@ -893,11 +893,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		bool AllowReload (IEnumerable projects)
-		{
-			IEnumerable<string> closedDocs;
-			return AllowReload (projects, out closedDocs);
-		}
+//		bool AllowReload (IEnumerable projects)
+//		{
+//			IEnumerable<string> closedDocs;
+//			return AllowReload (projects, out closedDocs);
+//		}
 		
 		bool AllowReload (IEnumerable projects, out IEnumerable<string> closedDocs)
 		{

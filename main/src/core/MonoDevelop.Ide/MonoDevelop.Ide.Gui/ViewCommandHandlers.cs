@@ -587,7 +587,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			public static RemoveInfo GetRemoveInfo (Mono.TextEditor.Document document, ref int pos)
 			{
-				RemoveInfo result;
 				int len = 0;
 				while (pos > 0 && IsWhiteSpace (document.GetCharAt (pos))) {
 					--pos;

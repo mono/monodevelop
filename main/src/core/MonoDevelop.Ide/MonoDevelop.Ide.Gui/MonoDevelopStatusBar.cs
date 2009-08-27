@@ -224,7 +224,6 @@ namespace MonoDevelop.Ide
 			MonoDevelopStatusBar statusBar;
 			internal EventBox box;
 			string tip;
-			Tooltips tips;
 			DateTime alertEnd;
 			Gdk.Pixbuf icon;
 			
@@ -241,10 +240,6 @@ namespace MonoDevelop.Ide
 			public void Dispose ()
 			{
 				statusBar.HideStatusIcon (this);
-				if (tips != null) {
-					tips.Destroy ();
-					tips = null;
-				}
 				if (icon != null) {
 					icon.Dispose ();
 					icon = null;
@@ -252,17 +247,9 @@ namespace MonoDevelop.Ide
 			}
 			
 			public string ToolTip {
-				get { return tip; }
+				get { return box.TooltipText; }
 				set {
-					if (tips == null) 
-						tips = new Tooltips ();	
-					tip = value;
-					if (tip == null) 
-						tips.Disable ();
-					else {
-						tips.Enable ();
-						tips.SetTip (box, tip, tip);
-					}
+					box.TooltipText = tip;
 				}
 			}
 			

@@ -54,7 +54,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ListStore store;
 		TreeModelFilter filter;
 		ToggleToolButton errorBtn, warnBtn, msgBtn;
-		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		Hashtable tasks = new Hashtable ();
 //		IPadWindow window;
 		bool initializeLocation = true;
@@ -131,7 +130,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			errorBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogError, Gtk.IconSize.Button);
 			errorBtn.IsImportant = true;
 			errorBtn.Toggled += new EventHandler (FilterChanged);
-			errorBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Errors"), GettextCatalog.GetString ("Show Errors"));
+			errorBtn.TooltipText = GettextCatalog.GetString ("Show Errors");
 			toolbar.Insert (errorBtn, -1);
 			
 			toolbar.Insert (new SeparatorToolItem (), -1);
@@ -142,7 +141,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			warnBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogWarning, Gtk.IconSize.Button);
 			warnBtn.IsImportant = true;
 			warnBtn.Toggled += new EventHandler (FilterChanged);
-			warnBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Warnings"), GettextCatalog.GetString ("Show Warnings"));
+			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
 			toolbar.Insert (warnBtn, -1);
 			
 			toolbar.Insert (new SeparatorToolItem (), -1);
@@ -153,7 +152,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			msgBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Button);
 			msgBtn.IsImportant = true;
 			msgBtn.Toggled += new EventHandler (FilterChanged);
-			msgBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Messages"), GettextCatalog.GetString ("Show Messages"));
+			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");
 			toolbar.Insert (msgBtn, -1);
 			
 			store = new Gtk.ListStore (typeof (Gdk.Pixbuf), // image - type

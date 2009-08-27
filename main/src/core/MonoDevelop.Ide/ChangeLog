@@ -1,5 +1,19 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Tasks/UserTasksView.cs:
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs:
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Fixed
+	  warnings.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Workbench.cs:
 	* MonoDevelop.Ide.Codons/PadCodon.cs:
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Optimized startup

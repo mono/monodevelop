@@ -509,7 +509,6 @@ namespace MonoDevelop.Ide.FindInFiles
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), MonoDevelop.Core.Gui.Stock.FindInFiles, false);
 				
 				try {
-					int count = 0;
 					foreach (SearchResult result in find.FindAll (scope, monitor, pattern, replacePattern, options)) {
 						if (searchMonitor.IsCancelRequested)
 							return;

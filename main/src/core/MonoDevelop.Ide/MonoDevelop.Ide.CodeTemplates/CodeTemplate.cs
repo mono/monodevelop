@@ -139,14 +139,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return start;
 		}
 		
-		static string GetLeadingWhiteSpace (MonoDevelop.Ide.Gui.TextEditor editor, int lineNr)
-		{
-			string lineText = editor.GetLineText (lineNr);
-			int index = 0;
-			while (index < lineText.Length && Char.IsWhiteSpace (lineText[index]))
-				index++;
-			return index > 0 ? lineText.Substring (0, index) : "";
-		}
+//		static string GetLeadingWhiteSpace (MonoDevelop.Ide.Gui.TextEditor editor, int lineNr)
+//		{
+//			string lineText = editor.GetLineText (lineNr);
+//			int index = 0;
+//			while (index < lineText.Length && Char.IsWhiteSpace (lineText[index]))
+//				index++;
+//			return index > 0 ? lineText.Substring (0, index) : "";
+//		}
 		
 		static Regex variableRegEx = new Regex ("\\$([^$]*)\\$", RegexOptions.Compiled);
 		
@@ -324,7 +324,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			int offset = editor.CursorPosition;
 			int line, col;
 			editor.GetLineColumnFromPosition (offset, out line, out col);
-			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
+//			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
 			
 			TemplateContext context = new TemplateContext {
 				Template       = this,

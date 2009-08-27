@@ -62,8 +62,6 @@ namespace MonoDevelop.Ide.Tasks
 		
 		Gdk.Color highPrioColor, normalPrioColor, lowPrioColor;
 		
-		Tooltips tips;
-		
 		Clipboard clipboard;
 		bool solutionLoaded = false;
 		bool updating;
@@ -82,8 +80,6 @@ namespace MonoDevelop.Ide.Tasks
 				typeof (Task),	 // user task
 				typeof (Gdk.Color),  // foreground color
 				typeof (int));		 // font style
-			
-			tips = new Tooltips ();
 			
 			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			view.RulesHint = true;
@@ -123,12 +119,12 @@ namespace MonoDevelop.Ide.Tasks
 			newButton = new ToolButton (new Gtk.Image (Gtk.Stock.New, IconSize.Button), GettextCatalog.GetString ("New Task"));
 			newButton.IsImportant = true;
 			newButton.Clicked += new EventHandler (NewUserTaskClicked); 
-			newButton.SetTooltip (tips, GettextCatalog.GetString ("Create New Task"), GettextCatalog.GetString ("Create New Task"));
+			newButton.TooltipText = GettextCatalog.GetString ("Create New Task");
 			
 			delButton = new ToolButton (new Gtk.Image (Gtk.Stock.Delete, IconSize.Button), GettextCatalog.GetString ("Delete Task"));
 			delButton.IsImportant = true;
 			delButton.Clicked += new EventHandler (DeleteUserTaskClicked); 
-			delButton.SetTooltip (tips, GettextCatalog.GetString ("Delete Task"), GettextCatalog.GetString ("Delete Task"));
+			delButton.TooltipText = GettextCatalog.GetString ("Delete Task");
 
 			TaskService.UserTasks.TasksChanged += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (UserTasksChanged));
 			TaskService.UserTasks.TasksAdded += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (UserTasksChanged));

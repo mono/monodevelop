@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.FindInFiles
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class SearchResultWidget : Gtk.Bin
 	{
-		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		ListStore store;
 		ToolButton buttonStop;
 		ToggleToolButton buttonPin;
@@ -114,22 +113,22 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonStop.Sensitive = false;
 			buttonStop.Clicked += ButtonStopClicked;
 			
-			buttonStop.SetTooltip (tips, GettextCatalog.GetString ("Stop"), "Stop");
+			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Insert (buttonStop, -1);
 
 			ToolButton buttonClear = new ToolButton ("gtk-clear");
 			buttonClear.Clicked += ButtonClearClicked;
-			buttonClear.SetTooltip (tips, GettextCatalog.GetString ("Clear results"), "Clear results");
+			buttonClear.TooltipText = GettextCatalog.GetString ("Clear results");
 			toolbar.Insert (buttonClear, -1);
 			
 			ToggleToolButton buttonOutput = new ToggleToolButton (MonoDevelop.Core.Gui.Stock.OutputIcon);
 			buttonOutput.Clicked += ButtonOutputClicked;
-			buttonOutput.SetTooltip (tips, GettextCatalog.GetString ("Show output"), "Show output");
+			buttonOutput.TooltipText = GettextCatalog.GetString ("Show output");
 			toolbar.Insert (buttonOutput, -1);
 			
 			buttonPin = new ToggleToolButton ("md-pin-up");
 			buttonPin.Clicked += ButtonPinClicked;
-			buttonPin.SetTooltip (tips, GettextCatalog.GetString ("Pin results pad"), GettextCatalog.GetString ("Pin results pad"));
+			buttonPin.TooltipText = GettextCatalog.GetString ("Pin results pad");
 			toolbar.Insert (buttonPin, -1);
 			
 			store.SetSortColumnId (3, SortType.Ascending);

@@ -53,8 +53,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ToggleToolButton buttonPin;
 		TextMark endMark;
 		bool progressStarted;
-
-		private static Gtk.Tooltips tips = new Gtk.Tooltips ();
 		
 		TextTag tag;
 		TextTag bold;
@@ -101,17 +99,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			buttonStop = new ToolButton ("gtk-stop");
 			buttonStop.Clicked += new EventHandler (OnButtonStopClick);
-			buttonStop.SetTooltip (tips, GettextCatalog.GetString ("Stop"), GettextCatalog.GetString ("Stop"));
+			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Insert (buttonStop, -1);
 
 			ToolButton buttonClear = new ToolButton ("gtk-clear");
 			buttonClear.Clicked += new EventHandler (OnButtonClearClick);
-			buttonClear.SetTooltip (tips, GettextCatalog.GetString ("Clear console"), GettextCatalog.GetString ("Clear console"));
+			buttonClear.TooltipText = GettextCatalog.GetString ("Clear console");
 			toolbar.Insert (buttonClear, -1);
 
 			buttonPin = new ToggleToolButton ("md-pin-up");
 			buttonPin.Clicked += new EventHandler (OnButtonPinClick);
-			buttonPin.SetTooltip (tips, GettextCatalog.GetString ("Pin output pad"), GettextCatalog.GetString ("Pin output pad"));
+			buttonPin.TooltipText = GettextCatalog.GetString ("Pin output pad");
 			toolbar.Insert (buttonPin, -1);
 
 			hbox = new HBox (false, 5);
