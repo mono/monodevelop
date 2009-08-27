@@ -1,3 +1,8 @@
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Added
+	  new refactory scope for private members.
+
 2009-08-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* md1format.xml: Add missing skipEmpty flag.

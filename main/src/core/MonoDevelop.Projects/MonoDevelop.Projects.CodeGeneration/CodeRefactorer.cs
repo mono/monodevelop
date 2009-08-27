@@ -525,6 +525,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return InnerRenameMember (monitor, cls, member, newName, scope);
 		}
 		
+		static RefactoryScope GetScope (IMember member)
+		{
+			if (member.DeclaringType.ClassType == ClassType.Interface)
+				return GetScope (member.DeclaringType);
+			
+			if (member.IsPublic)
+				return RefactoryScope.Solution;
+			if (member.IsProtected || member.IsInternal)
+				return RefactoryScope.Project;
+			return RefactoryScope.DeclaringType;
+		}
+		
+		public MemberReferenceCollection FindMemberReferences (IProgressMonitor monitor, IType cls, IMember member, bool includeXmlComment)
+		{
+			return FindMemberReferences (monitor, cls, member, GetScope (member), includeXmlComment);
+		}
+		
 		public MemberReferenceCollection FindMemberReferences (IProgressMonitor monitor, IType cls, IMember member, RefactoryScope scope, bool includeXmlComment)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
@@ -587,12 +604,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public IMember EncapsulateField (IProgressMonitor monitor, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter, bool updateInternalRefs)
 		{
-			RefactoryScope scope;
-			
-			if (field.IsPrivate || (!field.IsProtectedOrInternal && !field.IsPublic))
-				scope = RefactoryScope.Project;
-			else
-				scope = RefactoryScope.Solution;
+			RefactoryScope scope = GetScope (field);
 			
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
 			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, field, refs, false).Refactor));
@@ -677,7 +689,25 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		void Refactor (IProgressMonitor monitor, IType cls, RefactoryScope scope, RefactorDelegate refactorDelegate)
 		{
-			if (scope == RefactoryScope.File || solution == null) {
+			switch (scope) {
+			case RefactoryScope.DeclaringType:
+				ProjectDom ctx = GetParserContext (cls);
+				if (cls is InstantiatedType)
+					cls = ((InstantiatedType)cls).UninstantiatedType;
+				IType resolvedType = ctx.GetType (cls.FullName, cls.TypeParameters.Count, true, true);
+				if (resolvedType == null) 
+					goto case RefactoryScope.Solution;
+				foreach (IType part in resolvedType.Parts) {
+					string file = part.CompilationUnit.FileName;
+					RefactorerContext gctx = GetGeneratorContext (part);
+					IRefactorer gen = LanguageBindingService.GetRefactorerForFile (file);
+					if (gen == null)
+						return;
+					refactorDelegate (monitor, gctx, gen, file);
+					gctx.Save ();
+				}
+				break;
+			case RefactoryScope.File:
 				string file = cls.CompilationUnit.FileName;
 				RefactorerContext gctx = GetGeneratorContext (cls);
 				IRefactorer gen = LanguageBindingService.GetRefactorerForFile (file);
@@ -685,20 +715,21 @@ namespace MonoDevelop.Projects.CodeGeneration
 					return;
 				refactorDelegate (monitor, gctx, gen, file);
 				gctx.Save ();
-			}
-			else if (scope == RefactoryScope.Project)
-			{
-				string file = cls.CompilationUnit.FileName;
-				Project prj = GetProjectForFile (file);
+				break;
+			case RefactoryScope.Project:
+				Project prj = GetProjectForFile (cls.CompilationUnit.FileName);
 				if (prj == null)
 					return;
 				RefactorProject (monitor, prj, refactorDelegate);
-			}
-			else
-			{
+				break;
+			case RefactoryScope.Solution:
+				if (solution == null)
+					goto case RefactoryScope.File;
 				foreach (Project project in solution.GetAllProjects ())
 					RefactorProject (monitor, project, refactorDelegate);
+				break;
 			}
+				
 		}
 		
 		void Refactor (IProgressMonitor monitor, LocalVariable var, RefactorDelegate refactorDelegate)
@@ -908,6 +939,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 	{
 		File,
 		Project,
-		Solution
+		Solution,
+		DeclaringType
 	}
 }
