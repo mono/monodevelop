@@ -124,7 +124,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)dataObject;
 			ctx.AddChild (new BaseTypeFolder (type));
 			bool publicOnly = ctx.Options ["PublicApiOnly"];
-			ctx.AddChilds (type.Members.Where (member => !(member.IsSpecialName && !(member is IMethod && ((IMethod)member).IsConstructor)) && !(publicOnly && !member.IsPublic)));
+			ctx.AddChildren (type.Members.Where (member => !(member.IsSpecialName && !(member is IMethod && ((IMethod)member).IsConstructor)) && !(publicOnly && !member.IsPublic)));
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

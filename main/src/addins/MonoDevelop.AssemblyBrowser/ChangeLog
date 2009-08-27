@@ -1,5 +1,11 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs: fixed
+	  typo.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AssemblyBrowser/Error.cs:
 	* MonoDevelop.AssemblyBrowser/Namespace.cs:
 	* MonoDevelop.AssemblyBrowser/BaseTypeFolder.cs:

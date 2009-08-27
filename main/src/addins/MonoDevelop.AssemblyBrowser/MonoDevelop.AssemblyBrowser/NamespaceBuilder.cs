@@ -65,7 +65,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Namespace ns = (Namespace)dataObject;
 			bool publicOnly = ctx.Options ["PublicApiOnly"];
-			ctx.AddChilds (publicOnly ? ns.Types.Where (t => t.IsPublic) : ns.Types);
+			ctx.AddChildren (publicOnly ? ns.Types.Where (t => t.IsPublic) : ns.Types);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
