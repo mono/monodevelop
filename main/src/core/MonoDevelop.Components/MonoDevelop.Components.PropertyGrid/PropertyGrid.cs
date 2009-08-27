@@ -57,8 +57,6 @@ namespace MonoDevelop.Components.PropertyGrid
 		HSeparator helpSeparator;
 		VPaned vpaned;
 		
-		Tooltips tips;
-
 		Toolbar toolbar;
 		RadioToolButton catButton;
 		RadioToolButton alphButton;
@@ -82,7 +80,6 @@ namespace MonoDevelop.Components.PropertyGrid
 		internal PropertyGrid (EditorManager editorManager)
 		{
 			this.editorManager = editorManager;
-			tips = new Tooltips ();
 			
 			#region Toolbar
 			toolbar = new Toolbar ();
@@ -93,12 +90,12 @@ namespace MonoDevelop.Components.PropertyGrid
 			catButton = new RadioToolButton (new GLib.SList (IntPtr.Zero));
 			catButton.IconWidget = new Gtk.Image (new Gdk.Pixbuf (typeof (PropertyGrid).Assembly,
 				"MonoDevelop.Components.PropertyGrid.SortByCat.png"));
-			catButton.SetTooltip (tips, GettextCatalog.GetString ("Sort in categories"), null);
+			catButton.TooltipText = GettextCatalog.GetString ("Sort in categories");
 			catButton.Toggled += new EventHandler (toolbarClick);
 			toolbar.Insert (catButton, 0);
 			
 			alphButton = new RadioToolButton (catButton, Stock.SortAscending);
-			alphButton.SetTooltip (tips, GettextCatalog.GetString ("Sort alphabetically"), null);
+			alphButton.TooltipText = GettextCatalog.GetString ("Sort alphabetically");
 			alphButton.Clicked += new EventHandler (toolbarClick);
 			toolbar.Insert (alphButton, 1);
 			
@@ -106,7 +103,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			
 			toolbar.Insert (new SeparatorToolItem (), 2);
 			helpButton = new ToggleToolButton (Gtk.Stock.Help);
-			helpButton.SetTooltip (tips, GettextCatalog.GetString ("Show help panel"), null);
+			helpButton.TooltipText = GettextCatalog.GetString ("Show help panel");
 			helpButton.Clicked += delegate {
 				ShowHelp = helpButton.Active;
 				MonoDevelop.Core.PropertyService.Set (PROP_HELP_KEY, helpButton.Active);
@@ -207,7 +204,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				rtb.IconWidget = new Gtk.Image (Stock.MissingImage, IconSize.SmallToolbar);
 			
 			rtb.Tab = tab;
-			rtb.SetTooltip (tips, tab.TabName, null);
+			rtb.TooltipText = tab.TabName;
 			rtb.Toggled += new EventHandler (toolbarClick);	
 			
 			toolbar.Insert (rtb, propertyTabs.Count + FirstTabIndex);

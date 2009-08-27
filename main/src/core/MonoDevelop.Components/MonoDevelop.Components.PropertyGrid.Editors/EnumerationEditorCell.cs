@@ -66,7 +66,6 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 
 		Gtk.EventBox ebox;
 		Gtk.ComboBoxEntry combo;
-		Gtk.Tooltips tips;
 		Array values;
 
 		public EnumerationEditor () : base (false, 0)
@@ -104,8 +103,6 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			combo.Show ();
 			ebox.Add (combo);
 
-			tips = new Gtk.Tooltips ();
-
 			foreach (object value in values) {
 				string str = prop.Converter.ConvertToString (value);
 				if (names.Contains (str))
@@ -122,10 +119,6 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 
 		void IDisposable.Dispose ()
 		{
-			if (tips != null) {
-				tips.Destroy ();
-				tips = null;
-			}
 		}
 
 		public object Value {
@@ -145,10 +138,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		{
 			if (ValueChanged != null)
 				ValueChanged (this, EventArgs.Empty);
-			if (Value != null)
-				tips.SetTip (ebox, Value.ToString (), Value.ToString ());
-			else
-				tips.SetTip (ebox, null, null);
+			ebox.TooltipText = Value != null ? Value.ToString () : null;
 		}
 	}
 }

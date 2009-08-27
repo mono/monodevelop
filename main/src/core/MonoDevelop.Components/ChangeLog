@@ -1,5 +1,15 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Components/TabLabel.cs:
+	* MonoDevelop.Components.Commands/CommandEntry.cs:
+	* MonoDevelop.Components.PropertyGrid/PropertyGrid.cs:
+	* MonoDevelop.Components.Commands/CommandToolButton.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/FlagsEditorCell.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/EnumerationEditorCell.cs:
+	  Fixed tooltip releated warnings.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Components.Commands/CommandEntrySet.cs: Fixed
 	  bug with auto hide menus.
 

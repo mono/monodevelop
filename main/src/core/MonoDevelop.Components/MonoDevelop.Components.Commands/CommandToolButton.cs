@@ -34,7 +34,6 @@ namespace MonoDevelop.Components.Commands
 	{
 		CommandManager commandManager;
 		object commandId;
-		static Gtk.Tooltips tips = new Gtk.Tooltips ();
 		string lastDesc;
 		object initialTarget;
 		
@@ -81,7 +80,7 @@ namespace MonoDevelop.Components.Commands
 				} else {
 					toolTip = cmdInfo.Description + " (" + KeyBindingManager.BindingToDisplayLabel (cmdInfo.AccelKey, false) + ")";
 				}
-				SetTooltip (tips, toolTip, toolTip);
+				TooltipText = toolTip;
 				lastDesc = cmdInfo.Description;
 			}
 			

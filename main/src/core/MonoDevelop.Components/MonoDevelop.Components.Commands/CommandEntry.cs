@@ -94,9 +94,7 @@ namespace MonoDevelop.Components.Commands
 						else
 							break;
 					}
-					Gtk.Tooltips tips = new Gtk.Tooltips ();
-					ti.SetTooltip (tips, text, text);
-					tips.Enable ();
+					ti.TooltipText = text;
 				}
 				return ti;
 			}

@@ -16,7 +16,6 @@ namespace MonoDevelop.Components
 		private Label title;
 		private Gtk.Image icon;
 		private EventBox titleBox;
-		private Tooltips tips;
 		private static Gdk.Pixbuf closeImage;
 		
 		static TabLabel ()
@@ -79,8 +78,7 @@ namespace MonoDevelop.Components
 				
 		public void SetTooltip (string tip, string desc)
 		{
-			if (tips == null) tips = new Tooltips ();
-			tips.SetTip (titleBox, tip, desc);
+			titleBox.TooltipText = tip;
 		}
 		
 		protected override bool OnButtonReleaseEvent (EventButton evnt)

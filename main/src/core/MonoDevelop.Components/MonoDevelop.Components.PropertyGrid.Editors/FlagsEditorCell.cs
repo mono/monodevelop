@@ -61,7 +61,6 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors {
 	public class FlagsEditor : Gtk.HBox, IPropertyEditor
 	{
 		Hashtable flags;
-		Gtk.Tooltips tips;
 		Gtk.Entry flagsLabel;
 		string property;
 		Type propType;
@@ -94,12 +93,11 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors {
 			{
 				Gtk.VBox vbox = new Gtk.VBox (true, 3);
 
-				tips = new Gtk.Tooltips ();
 				flags = new Hashtable ();
 
 				foreach (object value in values) {
 					Gtk.CheckButton check = new Gtk.CheckButton (value.ToString ());
-					tips.SetTip (check, value.ToString (), value.ToString ());
+					check.TooltipText = value.ToString ();
 					ulong uintVal = Convert.ToUInt64 (value);
 					flags[check] = uintVal;
 					flags[uintVal] = check;
@@ -136,10 +134,6 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors {
 
 		void IDisposable.Dispose ()
 		{
-			if (tips != null) {
-				tips.Destroy ();
-				tips = null;
-			}
 		}
 
 		public object Value {
