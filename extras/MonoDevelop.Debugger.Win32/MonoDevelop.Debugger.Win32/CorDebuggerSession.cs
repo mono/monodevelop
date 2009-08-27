@@ -638,7 +638,7 @@ namespace MonoDevelop.Debugger.Win32
 				ClearEvalStatus ();
 				process.Continue (false);
 
-				if (doneEvent.WaitOne (ctx.Timeout))
+				if (doneEvent.WaitOne (ctx.Timeout, false))
 					return result;
 				else
 					return null;
