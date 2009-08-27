@@ -47,9 +47,9 @@ namespace Mono.TextEditor.Vi
 			char c = doc.GetCharAt (myoffset);
 			CharacterClass initialClass = GetCharacterClass (c);
 			
-			for (; GetCharacterClass (c) == initialClass && 
-			     0 <= myoffset && doc.Length-1 > myoffset;
-			     c = doc.GetCharAt (++myoffset));
+			while (GetCharacterClass (c) == initialClass && 0 <= myoffset && doc.Length-1 > myoffset) {
+				c = doc.GetCharAt (++myoffset);
+			}
 			for (c = doc.GetCharAt (myoffset);
 			     char.IsWhiteSpace (c) && 0 <= myoffset && doc.Length-1 > myoffset;
 			     c = doc.GetCharAt (++myoffset));

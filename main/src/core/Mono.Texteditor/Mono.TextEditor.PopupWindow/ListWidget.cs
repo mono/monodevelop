@@ -48,7 +48,14 @@ namespace Mono.TextEditor.PopupWindow
 		bool disableSelection;
 
 		public event EventHandler SelectionChanged;
-				
+		
+		protected virtual void OnSelectionChanged (EventArgs e)
+		{
+			EventHandler handler = this.SelectionChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		public ListWidget (ListWindow<T> win)
 		{
 			this.win = win;
@@ -73,8 +80,7 @@ namespace Mono.TextEditor.PopupWindow
 				UpdateStyle ();
 				QueueDraw ();
 			}
-			if (SelectionChanged != null) 
-				SelectionChanged (this, EventArgs.Empty);
+			OnSelectionChanged (EventArgs.Empty);
 		}
 		
 		public int Selection
@@ -89,13 +95,11 @@ namespace Mono.TextEditor.PopupWindow
 				if (value >= win.DataProvider.Count)
 					value = win.DataProvider.Count - 1;
 				
-				if (value != selection) 
-				{
+				if (value != selection) {
 					selection = value;
 					UpdatePage ();
 					
-					if (SelectionChanged != null)
-						SelectionChanged (this, EventArgs.Empty);
+					OnSelectionChanged (EventArgs.Empty);
 				}
 				
 				if (disableSelection)
