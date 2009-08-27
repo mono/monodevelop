@@ -167,6 +167,42 @@ namespace MonoDevelop.Ide.Gui.Components
 				return ats;
 			}
 			
+			public void AddChilds (IEnumerable dataObjects)
+			{
+				NodeBuilder[] chain = null;
+				Type oldType = null;
+				Gtk.TreeIter oldIter = Gtk.TreeIter.Zero;
+				// TODO: Optimize this method.
+				foreach (object dataObject in dataObjects) {
+					if (chain == null || dataObject.GetType () != oldType) {
+						oldType = dataObject.GetType ();
+						chain = pad.GetBuilderChain (oldType);
+						if (chain == null)
+							continue;
+					}
+					
+					oldIter = currentIter;
+					NodeAttributes ats = GetAttributes (this, chain, dataObject);
+					if ((ats & NodeAttributes.Hidden) != 0)
+						continue;
+					
+					Gtk.TreeIter it;
+					if (!currentIter.Equals (Gtk.TreeIter.Zero)) {
+						if (!Filled) 
+							continue;
+						it = store.AppendValues (currentIter, "", null, null, dataObject, chain, false);
+					} else {
+						it = store.AppendValues ("", null, null, dataObject, chain, false);
+					}
+					
+					pad.RegisterNode (it, dataObject, chain);
+					
+					BuildNode (it, chain, ats, dataObject);
+					pad.NotifyInserted (it, dataObject);
+				}
+				MoveToIter (oldIter);
+			}
+			
 			public void AddChild (object dataObject, bool moveToChild)
 			{
 				if (dataObject == null) throw new ArgumentNullException ("dataObject");

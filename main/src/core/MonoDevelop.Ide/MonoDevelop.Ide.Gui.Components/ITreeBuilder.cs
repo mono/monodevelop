@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -50,6 +51,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		// Adds a child to the current node
 		void AddChild (object dataObject);
+		
+		// Adds a child to the current node
+		void AddChilds (IEnumerable dataObjects);
 		
 		// Adds a child to the current node and if moveToChild is true, it
 		// moves to the new child.

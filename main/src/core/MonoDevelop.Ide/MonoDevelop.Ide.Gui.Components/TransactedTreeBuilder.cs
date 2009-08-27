@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using System.Collections;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -527,6 +528,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				AddChild (dataObject, false);
 			}
+			
+			public void AddChilds (IEnumerable dataObjects)
+			{
+				foreach (object dataObject in dataObjects) {
+					AddChild (dataObject, false);
+				}
+			}
+
 	
 			public void AddChild (object dataObject, bool moveToChild)
 			{
