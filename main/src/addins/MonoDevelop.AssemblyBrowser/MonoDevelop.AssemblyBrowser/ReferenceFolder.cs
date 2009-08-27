@@ -33,20 +33,14 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class ReferenceFolder
 	{
-		ModuleDefinition moduleDefinition;
-		
 		public ModuleDefinition ModuleDefinition {
-			get {
-				return moduleDefinition;
-			}
-			set {
-				moduleDefinition = value;
-			}
+			get;
+			set;
 		}
 		
 		public ReferenceFolder (ModuleDefinition moduleDefinition)
 		{
-			this.moduleDefinition = moduleDefinition;
+			this.ModuleDefinition = moduleDefinition;
 		}
 	}
 }

@@ -1,5 +1,18 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AssemblyBrowser/Error.cs:
+	* MonoDevelop.AssemblyBrowser/Namespace.cs:
+	* MonoDevelop.AssemblyBrowser/BaseTypeFolder.cs:
+	* MonoDevelop.AssemblyBrowser/ResourceFolder.cs:
+	* MonoDevelop.AssemblyBrowser/ReferenceFolder.cs:
+	* MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/ReferenceNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Worked
+	  on assembly browser.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Fixed
 	  compiler warnings.
 

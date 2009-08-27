@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Text;
 
 using Mono.Cecil;
@@ -123,16 +124,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)dataObject;
 			ctx.AddChild (new BaseTypeFolder (type));
 			bool publicOnly = ctx.Options ["PublicApiOnly"];
-			foreach (object o in type.Members) {
-				IMember member = o as IMember;
-				if (member != null) {
-					if (member.IsSpecialName && !(member is IMethod && ((IMethod)member).IsConstructor)) 
-						continue;
-					if (publicOnly && !member.IsPublic)
-						continue;
-					ctx.AddChild (member);
-				}
-			}
+			ctx.AddChilds (type.Members.Where (member => !(member.IsSpecialName && !(member is IMethod && ((IMethod)member).IsConstructor)) && !(publicOnly && !member.IsPublic)));
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

@@ -35,13 +35,11 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class Namespace
 	{
-		string name;
 		List<IType> types = new List<IType> ();
 		
 		public string Name {
-			get {
-				return name;
-			}
+			get;
+			private set;
 		}
 
 		public List<IType> Types {
@@ -52,7 +50,12 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public Namespace (string name)
 		{
-			this.name = name;
+			this.Name = name;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[Namespace: Name={0}, #Types={1}]", Name, Types.Count);
 		}
 	}
 }

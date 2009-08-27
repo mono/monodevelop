@@ -32,17 +32,14 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class BaseTypeFolder
 	{
-		IType type;
-		
 		public IType Type {
-			get {
-				return type;
-			}
+			get;
+			private set;
 		}
 		
 		public BaseTypeFolder (IType type)
 		{
-			this.type = type;
+			this.Type = type;
 		}
 	}
 }

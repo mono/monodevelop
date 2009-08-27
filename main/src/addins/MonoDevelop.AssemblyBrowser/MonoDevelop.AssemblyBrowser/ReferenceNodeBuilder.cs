@@ -42,11 +42,9 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class ReferenceNodeBuilder : TypeNodeBuilder
 	{
-		AssemblyBrowserWidget widget;
-		
 		public ReferenceNodeBuilder (AssemblyBrowserWidget widget)
 		{
-			this.widget = widget;
+			this.Widget = widget;
 		}
 				
 		public override Type NodeDataType {
@@ -58,9 +56,8 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 		public AssemblyBrowserWidget Widget {
-			get {
-				return widget;
-			}
+			get;
+			private set;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

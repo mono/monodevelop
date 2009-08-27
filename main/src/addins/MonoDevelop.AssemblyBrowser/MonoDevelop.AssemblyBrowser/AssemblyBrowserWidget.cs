@@ -47,7 +47,6 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Components;
 
-
 namespace MonoDevelop.AssemblyBrowser
 {
 	[System.ComponentModel.Category("MonoDevelop.AssemblyBrowser")]

@@ -32,17 +32,14 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public class Error
 	{
-		string msg;
-		
 		public string Message {
-			get {
-				return msg;
-			}
+			get;
+			private set;
 		}
 		
 		public Error (string msg)
 		{
-			this.msg = msg;
+			this.Message = msg;
 		}
 	}
 }

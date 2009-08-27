@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using Mono.Cecil;
@@ -64,11 +65,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Namespace ns = (Namespace)dataObject;
 			bool publicOnly = ctx.Options ["PublicApiOnly"];
-			foreach (IType type in ns.Types) {
-				if (publicOnly && !type.IsPublic)
-					continue;
-				ctx.AddChild (type);
-			}
+			ctx.AddChilds (publicOnly ? ns.Types.Where (t => t.IsPublic) : ns.Types);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
