@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			if (xmlConfiguration ["Icon"] != null) {
-				this.icon = ImageService.GetStockId (addin, xmlConfiguration ["Icon"].InnerText);
+				this.icon = ImageService.GetStockId (addin, xmlConfiguration ["Icon"].InnerText, Gtk.IconSize.Dnd);
 			}
 
 			if (xmlDocument.DocumentElement ["Combine"] == null) {

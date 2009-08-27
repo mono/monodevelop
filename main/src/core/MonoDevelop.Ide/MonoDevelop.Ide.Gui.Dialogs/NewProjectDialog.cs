@@ -575,7 +575,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				TemplateView.Clear();
 				
 				foreach ( TemplateItem templateItem in  (catStore.GetValue(treeIter, 1) as Category).Templates) {
-					TemplateView.AddIcon(ImageService.GetStockId(templateItem.Template.Icon ?? "md-project"), IconSize.Dnd, templateItem.Name, templateItem.Template);
+					TemplateView.AddIcon(ImageService.GetStockId(templateItem.Template.Icon ?? "md-project", IconSize.Dnd), IconSize.Dnd, templateItem.Name, templateItem.Template);
 				}
 				
 				btn_new.Sensitive = false;

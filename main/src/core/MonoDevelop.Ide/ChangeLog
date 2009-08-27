@@ -1,3 +1,12 @@
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs:
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Only
+	  request the composed icon in the desired size. See (Bug
+	  534499 - ImageService tries to compose icons at too many
+	  sizes).
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Update gtk# dependency.
