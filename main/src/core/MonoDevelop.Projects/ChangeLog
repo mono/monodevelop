@@ -1,3 +1,9 @@
+2009-08-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
+	  StringWriter.Encoding always returns UTF16. We need it to
+	  return UTF8, so the XmlDocument will write the UTF8 header.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/LocalVariable.cs: Fixed unit test

@@ -29,6 +29,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Xml;
+using System.Text;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -77,9 +78,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				endsWithEmptyLine = true;
 		}
 		
+		class Utf8Writer: StringWriter
+		{
+			public override Encoding Encoding {
+				get { return Encoding.UTF8; }
+			}
+		}
+		
 		public void Save (string file)
 		{
-			StringWriter sw = new StringWriter ();
+			// StringWriter.Encoding always returns UTF16. We need it to return UTF8, so the
+			// XmlDocument will write the UTF8 header.
+			Utf8Writer sw = new Utf8Writer ();
 			sw.NewLine = newLine;
 			doc.Save (sw);
 			string txt = sw.ToString ();
