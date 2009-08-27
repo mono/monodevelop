@@ -3,6 +3,13 @@
 	* MonoDevelop.Ide.Gui.Components/TreeBuilder.cs:
 	* MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs:
 	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs:
+	  Fixed typo.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/TreeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs:
 	  Added AddChilds method to tree builder.
 
 2009-08-27  Mike Krüger  <mkrueger@novell.com>

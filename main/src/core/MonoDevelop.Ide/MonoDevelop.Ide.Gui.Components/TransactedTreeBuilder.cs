@@ -529,7 +529,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				AddChild (dataObject, false);
 			}
 			
-			public void AddChilds (IEnumerable dataObjects)
+			public void AddChildren (IEnumerable dataObjects)
 			{
 				foreach (object dataObject in dataObjects) {
 					AddChild (dataObject, false);

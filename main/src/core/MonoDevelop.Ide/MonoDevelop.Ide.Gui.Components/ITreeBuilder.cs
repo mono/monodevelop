@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		void AddChild (object dataObject);
 		
 		// Adds a child to the current node
-		void AddChilds (IEnumerable dataObjects);
+		void AddChildren (IEnumerable dataObjects);
 		
 		// Adds a child to the current node and if moveToChild is true, it
 		// moves to the new child.

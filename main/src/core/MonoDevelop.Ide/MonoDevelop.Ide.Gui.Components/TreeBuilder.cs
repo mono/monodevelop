@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				return ats;
 			}
 			
-			public void AddChilds (IEnumerable dataObjects)
+			public void AddChildren (IEnumerable dataObjects)
 			{
 				NodeBuilder[] chain = null;
 				Type oldType = null;
