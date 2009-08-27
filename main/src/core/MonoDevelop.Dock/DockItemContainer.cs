@@ -52,7 +52,6 @@ namespace MonoDevelop.Components.Docking
 		Container borderFrame;
 		bool allowPlaceholderDocking;
 		bool pointerHover;
-		Gtk.Tooltips tips = new Tooltips ();
 		
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.Hand2);
@@ -84,7 +83,7 @@ namespace MonoDevelop.Components.Docking
 			btnDock.Clicked += OnClickDock;
 			
 			btnClose = new Button (new Gtk.Image (pixClose));
-			tips.SetTip (btnClose, Catalog.GetString ("Hide"), "");
+			btnClose.TooltipText = Catalog.GetString ("Hide");
 			btnClose.Relief = ReliefStyle.None;
 			btnClose.CanFocus = false;
 			btnClose.WidthRequest = btnClose.HeightRequest = 17;
@@ -167,11 +166,11 @@ namespace MonoDevelop.Components.Docking
 			
 			if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating) {
 				btnDock.Image = new Gtk.Image (pixDock);
-				tips.SetTip (btnDock, Catalog.GetString ("Dock"), "");
+				btnDock.TooltipText = Catalog.GetString ("Dock");
 			}
 			else {
 				btnDock.Image = new Gtk.Image (pixAutoHide);
-				tips.SetTip (btnDock, Catalog.GetString ("Auto Hide"), "");
+				btnDock.TooltipText = Catalog.GetString ("Auto Hide");
 			}
 		}
 		
@@ -285,13 +284,13 @@ namespace MonoDevelop.Components.Docking
 	class CustomFrame: Bin
 	{
 		Gtk.Widget child;
-		DockFrame frame;
-		DockItem item;
+//		DockFrame frame;
+//		DockItem item;
 
 		public CustomFrame (DockFrame frame, DockItem item)
 		{
-			this.frame = frame;
-			this.item = item;
+//			this.frame = frame;
+//			this.item = item;
 		}
 
 		protected override void OnAdded (Widget widget)

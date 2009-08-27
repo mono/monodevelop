@@ -218,15 +218,15 @@ namespace MonoDevelop.Components.Docking
 				xdif = 2;
 
 			int reqh;
-			StateType st;
+//			StateType st;
 
 			if (tab.Active) {
-				st = StateType.Normal;
+//				st = StateType.Normal;
 				reqh = tab.Allocation.Height;
 			}
 			else {
 				reqh = tab.Allocation.Height - 3;
-				st = StateType.Active;
+//				st = StateType.Active;
 			}
 
 			if (DockFrame.IsWindows) {
