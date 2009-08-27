@@ -49,7 +49,7 @@ namespace ILAsmBinding
 		
 		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
-			ILAsmCompilerParameters compilerParameters = (ILAsmCompilerParameters)configuration.CompilationParameters ?? new ILAsmCompilerParameters ();
+//			ILAsmCompilerParameters compilerParameters = (ILAsmCompilerParameters)configuration.CompilationParameters ?? new ILAsmCompilerParameters ();
 			string outputName       = configuration.CompiledOutputName;
 			
 			StringBuilder sb = new StringBuilder ();
