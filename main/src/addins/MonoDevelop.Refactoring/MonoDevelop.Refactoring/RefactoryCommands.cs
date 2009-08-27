@@ -637,18 +637,8 @@ namespace MonoDevelop.Refactoring
 					references = refactorer.FindParameterReferences (monitor, (IParameter)item, true);
 				} else if (item is IMember) {
 					IMember member = (IMember)item;
-
-					// private is filled only in keyword case
-					if (member.IsPrivate || (!member.IsProtectedOrInternal && !member.IsPublic)) {
-						// look in project to be partial classes safe
-						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Project, true);
-					} else {
-						// for all other types look in solution because
-						// internal members can be used in friend assemblies
-						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution, true);
-					}
+					references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, true);
 				}
-
 				if (references != null) {
 					foreach (MemberReference mref in references) {
 						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));

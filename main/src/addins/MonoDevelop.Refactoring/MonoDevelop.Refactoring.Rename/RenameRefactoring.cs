@@ -180,13 +180,13 @@ namespace MonoDevelop.Refactoring.Rename
 			if (options.SelectedItem is IType) {
 				IType cls = (IType)options.SelectedItem;
 				return refactorer.FindClassReferences (monitor, cls, RefactoryScope.Solution, true);
-			} else if (options.SelectedItem is IMember) {
-				IMember member = (IMember)options.SelectedItem;
-				return refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution, true);
 			} else if (options.SelectedItem is LocalVariable) {
 				return refactorer.FindVariableReferences (monitor, (LocalVariable)options.SelectedItem);
 			} else if (options.SelectedItem is IParameter) {
 				return refactorer.FindParameterReferences (monitor, (IParameter)options.SelectedItem, true);
+			} else if (options.SelectedItem is IMember) {
+				IMember member = (IMember)options.SelectedItem;
+				return refactorer.FindMemberReferences (monitor, member.DeclaringType, member, true);
 			}
 			return null;
 		}

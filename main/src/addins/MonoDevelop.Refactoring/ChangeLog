@@ -1,5 +1,12 @@
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:
+	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
+	  Let the code refactorer auto detect the search scope.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/HelperMethods.cs: changed return
 	  type.
 

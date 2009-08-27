@@ -170,7 +170,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 		{
 			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null);
-			return refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution, true);
+			return refactorer.FindMemberReferences (monitor, member.DeclaringType, member, true);
 		}
 	}
 }
