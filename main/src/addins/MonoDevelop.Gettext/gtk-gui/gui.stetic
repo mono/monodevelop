@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -630,7 +630,6 @@
     <property name="SkipTaskbarHint">True</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog_VBox">
         <property name="MemberName" />
@@ -911,7 +910,6 @@
     <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -1073,7 +1071,7 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="Gtk.Label" id="GtkLabel2">
+                      <widget class="Gtk.Label" id="GtkLabel4">
                         <property name="MemberName" />
                         <property name="LabelProp" translatable="yes">&lt;b&gt;Output&lt;/b&gt;</property>
                         <property name="UseMarkup">True</property>
@@ -1131,7 +1129,7 @@
                                       <widget class="Gtk.Label" id="labelInitString">
                                         <property name="MemberName" />
                                         <property name="Xalign">0</property>
-                                        <property name="LabelProp" translatable="no">Mono.Unix.Catalog.Init ("i18n", "./locale");</property>
+                                        <property name="LabelProp">Mono.Unix.Catalog.Init ("i18n", "./locale");</property>
                                       </widget>
                                     </child>
                                   </widget>
@@ -1531,10 +1529,35 @@
                             <property name="MemberName" />
                             <property name="Spacing">6</property>
                             <child>
-                              <widget class="Gtk.Label" id="label8">
+                              <widget class="Gtk.HBox" id="hbox3">
                                 <property name="MemberName" />
-                                <property name="Xalign">0</property>
-                                <property name="LabelProp" translatable="yes">Original (msgid):</property>
+                                <property name="Spacing">6</property>
+                                <child>
+                                  <widget class="Gtk.Label" id="label8">
+                                    <property name="MemberName" />
+                                    <property name="Xalign">0</property>
+                                    <property name="LabelProp" translatable="yes">Original (msgid):</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="Position">0</property>
+                                    <property name="AutoSize">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="Gtk.CheckButton" id="checkbuttonWhiteSpaces">
+                                    <property name="MemberName" />
+                                    <property name="CanFocus">True</property>
+                                    <property name="Label" translatable="yes">S_how whitespaces</property>
+                                    <property name="DrawIndicator">True</property>
+                                    <property name="HasLabel">True</property>
+                                    <property name="UseUnderline">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="Position">1</property>
+                                    <property name="AutoSize">False</property>
+                                    <property name="Expand">False</property>
+                                  </packing>
+                                </child>
                               </widget>
                               <packing>
                                 <property name="Position">0</property>
@@ -1544,7 +1567,7 @@
                               </packing>
                             </child>
                             <child>
-                              <widget class="Gtk.ScrolledWindow" id="scrolledwindow4">
+                              <widget class="Gtk.ScrolledWindow" id="scrolledwindowOriginal">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="ShadowType">In</property>
@@ -1553,11 +1576,7 @@
                                     <property name="MemberName" />
                                     <property name="ShadowType">None</property>
                                     <child>
-                                      <widget class="Gtk.Label" id="labelOriginal">
-                                        <property name="MemberName" />
-                                        <property name="Xalign">0</property>
-                                        <property name="Selectable">True</property>
-                                      </widget>
+                                      <placeholder />
                                     </child>
                                   </widget>
                                 </child>
@@ -1585,7 +1604,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="Gtk.ScrolledWindow" id="scrolledwindow5">
+                                  <widget class="Gtk.ScrolledWindow" id="scrolledwindowPlural">
                                     <property name="MemberName" />
                                     <property name="CanFocus">True</property>
                                     <property name="ShadowType">In</property>
@@ -1594,11 +1613,7 @@
                                         <property name="MemberName" />
                                         <property name="ShadowType">None</property>
                                         <child>
-                                          <widget class="Gtk.Label" id="labelPlural">
-                                            <property name="MemberName" />
-                                            <property name="Xalign">0</property>
-                                            <property name="Selectable">True</property>
-                                          </widget>
+                                          <placeholder />
                                         </child>
                                       </widget>
                                     </child>

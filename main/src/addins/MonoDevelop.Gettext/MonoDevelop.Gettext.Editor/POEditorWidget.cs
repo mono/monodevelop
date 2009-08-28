@@ -58,7 +58,10 @@ namespace MonoDevelop.Gettext
 		ListStore foundInStore;
 		Catalog catalog;
 		string  poFileName;
-
+		Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
+		Mono.TextEditor.TextEditor texteditorOriginal = new Mono.TextEditor.TextEditor ();
+		Mono.TextEditor.TextEditor texteditorPlural = new Mono.TextEditor.TextEditor ();
+		
 		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
 		
 		public Catalog Catalog {
@@ -70,7 +73,7 @@ namespace MonoDevelop.Gettext
 				headersEditor.CatalogHeaders = catalog;
 				ClearTextview ();
 				AddTextview (0);
-				this.GetTextView (0).Buffer.Changed += delegate {
+				this.GetTextView (0).Document.TextReplaced += delegate {
 					Gtk.TreeIter iter = SelectedIter;
 					if (treeviewEntries.Selection.IterIsSelected (iter)) {
 						store.SetValue (iter, (int)Columns.Stock, GetStockForEntry (SelectedEntry));
@@ -230,6 +233,36 @@ namespace MonoDevelop.Gettext
 //				if (vpaned2.Position != newPosition)
 //					vpaned2.Position = newPosition;
 //			};
+			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
+			options.ShowLineNumberMargin = false;
+			options.ShowFoldMargin = false;
+			options.ShowIconMargin = false;
+			options.ShowInvalidLines = false;
+			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = false;
+			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			
+			this.scrolledwindowOriginal.Child = this.texteditorOriginal;
+			this.scrolledwindowPlural.Child = this.texteditorPlural;
+			this.texteditorOriginal.Show ();
+			this.texteditorPlural.Show ();
+			texteditorOriginal.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
+			texteditorPlural.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
+			this.texteditorOriginal.Options = options;
+			this.texteditorPlural.Options = options;
+			this.texteditorOriginal.Document.ReadOnly = true;
+			this.texteditorPlural.Document.ReadOnly = true;
+		}
+		
+		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
+		{
+			options.ShowSpaces = options.ShowTabs = checkbuttonWhiteSpaces.Active;
+			texteditorOriginal.QueueDraw ();
+			texteditorPlural.QueueDraw ();
+			for (int i = this.notebookTranslated.NPages - 1; i >= 0; i--) {
+				Mono.TextEditor.TextEditor view = GetTextView (i);
+				if (view != null)
+					view.QueueDraw ();
+			}
 		}
 		
 		#region Options
@@ -397,11 +430,11 @@ namespace MonoDevelop.Gettext
 			this.Catalog = newCatalog;
 		}
 		
-		TextView GetTextView (int index)
+		Mono.TextEditor.TextEditor GetTextView (int index)
 		{
 			ScrolledWindow window = this.notebookTranslated.GetNthPage (index) as ScrolledWindow;
 			if (window != null)
-				return window.Child as TextView;
+				return window.Child as Mono.TextEditor.TextEditor;
 			return null;
 		}
 		
@@ -414,15 +447,15 @@ namespace MonoDevelop.Gettext
 		void AddTextview (int index)
 		{
 			ScrolledWindow window = new ScrolledWindow ();
-			TextView textView = new TextView ();
+			Mono.TextEditor.TextEditor textView = new Mono.TextEditor.TextEditor ();
 			window.Child = textView;
-			textView.AcceptsTab = false;	
-			textView.Buffer.Changed += delegate {
+			textView.Options = options;
+			textView.Document.TextReplaced += delegate {
 				if (this.isUpdating)
 					return;
 				try {
 					if (this.currentEntry != null) {
-						string escapedText = StringEscaping.FromGettextFormat (textView.Buffer.Text);
+						string escapedText = StringEscaping.FromGettextFormat (textView.Document.Text);
 						string oldText     = this.currentEntry.GetTranslation (index);
 						this.currentEntry.SetTranslation (escapedText, index);
 						AddChange (this.currentEntry, oldText, escapedText, index);
@@ -524,17 +557,17 @@ namespace MonoDevelop.Gettext
 		
 		#region EntryEditor handling
 		CatalogEntry currentEntry;
-		Dictionary<TextView, bool> gtkSpellSet = new Dictionary<TextView, bool> (); 
+//		Dictionary<Mono.TextEditor.TextEditor, bool> gtkSpellSet = new Dictionary<Mono.TextEditor.TextEditor, bool> (); 
 		void RemoveTextViewsFrom (int index)
 		{
 			for (int i = this.notebookTranslated.NPages - 1; i >= index; i--) {
-				TextView view = GetTextView (i);
+				Mono.TextEditor.TextEditor view = GetTextView (i);
 				if (view == null)
 					continue;
-				if (gtkSpellSet.ContainsKey (view)) {
+//				if (gtkSpellSet.ContainsKey (view)) {
 //					GtkSpell.Detach (view);
-					gtkSpellSet.Remove (view);
-				}
+//					gtkSpellSet.Remove (view);
+//				}
 				this.notebookTranslated.RemovePage (i);
 			}
 		}
@@ -544,8 +577,8 @@ namespace MonoDevelop.Gettext
 			this.isUpdating = true;
 			try {
 				currentEntry = entry;
-					
-				this.labelOriginal.Text = entry != null ? StringEscaping.ToGettextFormat (entry.String) : "";
+				this.texteditorOriginal.Caret.Offset = 0;
+				this.texteditorOriginal.Document.Text = entry != null ? StringEscaping.ToGettextFormat (entry.String) : "";
 				
 //				if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginal)) {
 //					GtkSpell.Attach (this.textviewOriginal, "en");
@@ -556,7 +589,8 @@ namespace MonoDevelop.Gettext
 				this.notebookTranslated.ShowTabs = entry != null && entry.HasPlural;
 				
 				if (entry != null && entry.HasPlural) {
-					this.labelPlural.Text = StringEscaping.ToGettextFormat (entry.PluralString);
+					this.texteditorPlural.Caret.Offset = 0;
+					this.texteditorPlural.Document.Text = StringEscaping.ToGettextFormat (entry.PluralString);
 //					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginalPlural)) {
 //						GtkSpell.Attach (this.textviewOriginalPlural, "en");
 //						this.gtkSpellSet[this.textviewOriginalPlural] = true;
@@ -573,14 +607,17 @@ namespace MonoDevelop.Gettext
 					}
 					
 					for (int i = 0; i < entry.NumberOfTranslations; i++) {
-						TextView textView = GetTextView (i);
+						Mono.TextEditor.TextEditor textView = GetTextView (i);
 						if (textView == null)
 							continue;
-						textView.Buffer.Text = entry != null ? StringEscaping.ToGettextFormat (entry.GetTranslation (i)) : "";
-						if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (textView)) {
+						textView.ClearSelection ();
+						textView.Document.Text = entry != null ? StringEscaping.ToGettextFormat (entry.GetTranslation (i)) : "";
+						textView.Caret.Offset = textView.Document.Text.Length;
+						textView.Document.CommitUpdateAll ();
+/*						if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (textView)) {
 							GtkSpell.Attach (textView, "en");
 							this.gtkSpellSet[textView] = true;
-						}
+						}*/
 					}
 					
 					foreach (string reference in entry.References) {
@@ -601,10 +638,10 @@ namespace MonoDevelop.Gettext
 				
 				this.textviewComments.Buffer.Text = entry != null ? StringEscaping.ToGettextFormat (entry.Comment) : null;
 				
-				if (GtkSpell.IsSupported) {
+/*				if (GtkSpell.IsSupported) {
 					foreach (TextView view in this.gtkSpellSet.Keys)
 						GtkSpell.Recheck (view);
-				}
+				}*/
 			} finally {
 				this.isUpdating = false;
 			}
@@ -712,6 +749,8 @@ namespace MonoDevelop.Gettext
 		CatalogEntry SelectedEntry {
 			get {
 				TreeIter iter = SelectedIter;
+				if (iter.Equals (Gtk.TreeIter.Zero))
+					return null;
 				if (treeviewEntries.Selection.IterIsSelected (iter))
 					return store.GetValue (iter, (int)Columns.CatalogEntry) as CatalogEntry;
 				return null;
@@ -1261,9 +1300,9 @@ namespace MonoDevelop.Gettext
 			{
 				widget.inUndoOperation = true;
 				widget.SelectEntry (Entry);
-				TextView textView = widget.GetTextView (Index);
+				Mono.TextEditor.TextEditor textView = widget.GetTextView (Index);
 				if (textView != null)
-					textView.Buffer.Text = OldText;
+					textView.Document.Text = OldText;
 				widget.inUndoOperation = false;
 			}
 			
@@ -1271,9 +1310,9 @@ namespace MonoDevelop.Gettext
 			{
 				widget.inUndoOperation = true;
 				widget.SelectEntry (Entry);
-				TextView textView = widget.GetTextView (Index);
+				Mono.TextEditor.TextEditor textView = widget.GetTextView (Index);
 				if (textView != null)
-					textView.Buffer.Text = Text;
+					textView.Document.Text = Text;
 				widget.inUndoOperation = false;
 			}
 		}

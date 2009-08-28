@@ -1,3 +1,13 @@
+2009-08-28  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:
+	  Fixed Bug 481221 - Translation editor doesn't show
+	  whitespaces & Bug 481222 - Original translatable string is
+	  vertically centered.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: fixed

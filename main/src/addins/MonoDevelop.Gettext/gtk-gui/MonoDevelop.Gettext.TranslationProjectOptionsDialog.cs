@@ -37,7 +37,7 @@ namespace MonoDevelop.Gettext {
         
         private Gtk.RadioButton radiobuttonSystemPath;
         
-        private Gtk.Label GtkLabel2;
+        private Gtk.Label GtkLabel4;
         
         private Gtk.Frame frame2;
         
@@ -180,11 +180,11 @@ namespace MonoDevelop.Gettext {
             w8.YOptions = ((Gtk.AttachOptions)(4));
             this.GtkAlignment2.Add(this.table1);
             this.frame1.Add(this.GtkAlignment2);
-            this.GtkLabel2 = new Gtk.Label();
-            this.GtkLabel2.Name = "GtkLabel2";
-            this.GtkLabel2.LabelProp = Mono.Unix.Catalog.GetString("<b>Output</b>");
-            this.GtkLabel2.UseMarkup = true;
-            this.frame1.LabelWidget = this.GtkLabel2;
+            this.GtkLabel4 = new Gtk.Label();
+            this.GtkLabel4.Name = "GtkLabel4";
+            this.GtkLabel4.LabelProp = Mono.Unix.Catalog.GetString("<b>Output</b>");
+            this.GtkLabel4.UseMarkup = true;
+            this.frame1.LabelWidget = this.GtkLabel4;
             this.vbox2.Add(this.frame1);
             Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.frame1]));
             w11.Position = 1;
