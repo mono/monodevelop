@@ -873,7 +873,7 @@ namespace MonoDevelop.Ide.Gui
 			base.Delegated = newContent;
 			newContent.Initialize (window);
 			PackStart (newContent.Control, true, true, 0);
-			ShowAll ();
+			Show ();
 		}
 		
 		public override object GetDelegatedCommandTarget ()

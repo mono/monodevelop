@@ -1,5 +1,10 @@
 2009-08-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Only call Show
+	  instead of ShowAll for lazy pad creation.
+
+2009-08-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs:
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
 	  Fixed 'Bug 502880 - Cannot create file with hypen in the
