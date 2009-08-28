@@ -135,6 +135,8 @@ namespace PropertyList
 				return new PlistBoolean (true);
 			case "data":
 				return new PlistData (reader.ReadElementContentAsString ());
+			case "date":
+				return new PlistDate (reader.ReadElementContentAsDateTime ());
 			default:
 				throw new XmlException (String.Format ("Plist Node `{0}' is not supported", reader.LocalName));
 			}

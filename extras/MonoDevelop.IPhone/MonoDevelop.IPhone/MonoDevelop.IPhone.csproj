@@ -114,6 +114,8 @@
     <Compile Include="Gui\IPhoneBuildOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanelWidget.cs" />
     <Compile Include="CodeBehind.cs" />
+    <Compile Include="MobileProvision.cs" />
+    <Compile Include="PropertyList\PlistDate.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml" />
