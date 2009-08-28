@@ -366,8 +366,16 @@
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Options"
 				defaultHandler = "MonoDevelop.Ide.Commands.SolutionItemOptionsHandler"
 				_label = "_Options" 
-				_description = "Show options window"
-				icon  = "gtk-properties" />
+				_description = "Show options window" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SolutionOptions"
+				defaultHandler = "MonoDevelop.Ide.Commands.SolutionOptionsHandler"
+				_label = "_Solution Options" 
+				_description = "Show solution options window" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ProjectOptions"
+				defaultHandler = "MonoDevelop.Ide.Commands.ProjectOptionsHandler"
+				_label = "Project _Options" 
+				_description = "Show project options window" />
+				
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 				_description = "Add and remove project references"
 				_label = "_Edit References..."
@@ -1552,11 +1560,12 @@
 
 		<ItemSet id = "Project" _label = "_Project">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
 			<SeparatorItem id = "ExportSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 			<SeparatorItem id = "OptionsSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SolutionOptions" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ProjectOptions" />
 		</ItemSet>
 
 		<ItemSet id = "Build" _label = "_Build">

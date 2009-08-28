@@ -60,6 +60,9 @@ namespace MonoDevelop.Ide.Commands
 		AddItem,
 		RemoveFromProject,
 		Options,
+		SolutionOptions,
+		ProjectOptions,
+		
 		AddReference,
 		AddNewFiles,
 		AddFiles,
@@ -84,12 +87,39 @@ namespace MonoDevelop.Ide.Commands
 		SpecificAssemblyVersion
 	}
 
+	internal class SolutionOptionsHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedSolution != null;
+		}
+
+		protected override void Run ()
+		{
+			IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedSolution);
+		}
+	}
+	
+	internal class ProjectOptionsHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			Project project = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as Project;
+			info.Enabled = project != null;
+			info.Text = project != null ? GettextCatalog.GetString ("{0} _Options", project.Name) : GettextCatalog.GetString ("Project _Options");
+		}
+
+		protected override void Run ()
+		{
+			IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+		}
+	}
+	
 	internal class SolutionItemOptionsHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget == null)
-				info.Enabled = false;
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedBuildTarget != null;
 		}
 
 		protected override void Run ()

@@ -1,5 +1,12 @@
 2009-08-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Fixed "Bug
+	  501684 - Newly created build configurations cannot be
+	  activated".
+
+2009-08-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
 	  Created identifier for full name.
 
