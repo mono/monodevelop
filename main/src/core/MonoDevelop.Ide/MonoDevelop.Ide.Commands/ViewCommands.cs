@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Commands
 						if (!found) {
 							CommandInfoSet set = new CommandInfoSet();
 							set.Text = pad.Categories[j];
-							set.Description = GettextCatalog.GetString ("Show " + set.Text);
+							set.Description = GettextCatalog.GetString ("Show {0}", set.Text);
 							list.Add (set);
 							list = set.CommandInfos;
 						}
@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Commands
 				string name = layouts[i];
 				CommandInfo item = new CommandInfo(GettextCatalog.GetString (name));
 				item.Checked = IdeApp.Workbench.CurrentLayout == name;
-				item.Description = GettextCatalog.GetString ("Switch to layout '" + name + "'");
+				item.Description = GettextCatalog.GetString ("Switch to layout '{0}'", name);
 				info.Add (item, name);
 			}
 		}
