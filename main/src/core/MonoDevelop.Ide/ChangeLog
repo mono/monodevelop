@@ -1,5 +1,10 @@
 2009-08-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Adding infinite
+	  loop fix.
+
+2009-08-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Commands/ViewCommands.cs: Fixed output
 	  strings.
 

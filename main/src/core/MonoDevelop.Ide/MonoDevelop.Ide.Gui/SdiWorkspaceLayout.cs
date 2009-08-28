@@ -870,7 +870,10 @@ namespace MonoDevelop.Ide.Gui
 		void InitializeContent ()
 		{
 			IPadContent newContent = padCodon.PadContent;
-			base.Delegated = newContent;
+			// Warning: If the newContent implements the control it causes an infinite loop to set 
+			//          the delegated to newContent
+			if (!(padCodon is Gtk.Widget))
+				base.Delegated = newContent;
 			newContent.Initialize (window);
 			PackStart (newContent.Control, true, true, 0);
 			Show ();
