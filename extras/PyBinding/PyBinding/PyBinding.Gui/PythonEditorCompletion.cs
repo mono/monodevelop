@@ -128,8 +128,12 @@ namespace PyBinding.Gui
 			var inDef = triggerLine.StartsWith ("def ") || (triggerLine.StartsWith ("def") && completionChar == ' ');
 			var parts = triggerLine.Split (' ');
 			
+			// "from blah "
+			if (inFrom && parts.Length == 2 && completionChar == ' ') {
+				return new CompletionDataList (new ICompletionData[] { new CompletionData ("import") });
+			}
 			// "from blah import "
-			if (inFrom && parts.Length > 2) {
+			else if (inFrom && parts.Length > 2) {
 				triggerWord = parts [1] + ".";
 				return new CompletionDataList (
 					from ParserItem item in m_site.Database.Find (triggerWord)
@@ -150,12 +154,7 @@ namespace PyBinding.Gui
 			else if (inDef && completionChar == '=')
 				triggerWord = "";
 			
-			string suffix = "";
-			
-			if (inFrom) {
-				suffix = " import";
-			}
-			else if (inClass) {
+			if (inClass) {
 				if (completionChar == '(')
 					triggerWord = "";
 				else
@@ -171,7 +170,7 @@ namespace PyBinding.Gui
 					from ParserItem item in m_site.Database.Find (triggerWord)
 					// TODO this is super wasteful on memory
 				    where !item.FullName.Substring (triggerWord.Length).Contains ('.')
-					select CreateCompletionData (item, triggerWord, suffix))
+					select CreateCompletionData (item, triggerWord))
 					;
 			}
 			

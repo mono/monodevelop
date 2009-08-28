@@ -1,5 +1,9 @@
 2009-08-27  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Gui/PythonEditorCompletion.cs:  Do not prematurely complete within the "from " completion entry.
+
+2009-08-27  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Gui/PythonEditorCompletion.cs: Make sure we dont limit the completion results to pakcages only if we have a trigger word.
 
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
