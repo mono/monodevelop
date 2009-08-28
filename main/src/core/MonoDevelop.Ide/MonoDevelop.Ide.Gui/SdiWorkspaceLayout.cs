@@ -876,6 +876,7 @@ namespace MonoDevelop.Ide.Gui
 			newContent.Initialize (window);
 			PackStart (newContent.Control, true, true, 0);
 			Show ();
+			window.NotifyContentShown ();
 		}
 		
 		public override object GetDelegatedCommandTarget ()

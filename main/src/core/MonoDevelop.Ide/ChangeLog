@@ -1,5 +1,10 @@
 2009-08-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Added notify
+	  shown.
+
+2009-08-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fixed typo
 
 2009-08-28  Mike Krüger  <mkrueger@novell.com>
