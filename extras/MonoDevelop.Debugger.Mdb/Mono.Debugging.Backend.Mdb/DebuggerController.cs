@@ -126,6 +126,10 @@ namespace Mono.Debugging.Backend.Mdb
 					if (startInfo != null) {
 						string monoPath = Path.Combine (startInfo.MonoPrefix, "bin");
 						process.StartInfo.FileName = Path.Combine (monoPath, "mono");
+						if (startInfo.ServerEnvironment != null) {
+							foreach (KeyValuePair<string,string> evar in startInfo.ServerEnvironment)
+								process.StartInfo.EnvironmentVariables [evar.Key] = evar.Value;
+						}
 					}
 					
 					process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;

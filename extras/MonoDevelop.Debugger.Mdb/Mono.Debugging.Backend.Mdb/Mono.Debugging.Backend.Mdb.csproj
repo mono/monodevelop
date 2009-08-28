@@ -118,6 +118,9 @@
     <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
+    <Reference Include="MonoDevelop.Refactoring, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />

@@ -1,3 +1,10 @@
+2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Backend.Mdb.csproj: Updated.
+
+	* DebuggerController.cs: Propagate mono env vars to the
+	  debugged process.
+
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDebuggerSessionFactory.cs: Use the new AssemblyContext
