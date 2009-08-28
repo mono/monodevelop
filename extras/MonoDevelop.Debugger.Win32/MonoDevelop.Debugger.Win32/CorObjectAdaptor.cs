@@ -145,6 +145,27 @@ namespace MonoDevelop.Debugger.Win32
 			return ret;
 		}
 
+		public override bool HasMethod (EvaluationContext gctx, object gtargetType, string methodName, object[] gargTypes, BindingFlags flags)
+		{
+			CorType targetType = (CorType) gtargetType;
+			CorType[] argTypes = gargTypes != null ? CastArray<CorType> (gargTypes) : null;
+
+			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
+			Type type = targetType.Class.GetTypeInfo (ctx.Session);
+			flags = flags | BindingFlags.Public | BindingFlags.NonPublic;
+
+			foreach (MethodInfo mi in type.GetMethods (flags)) {
+				if (mi.Name == methodName) {
+					if (argTypes == null)
+						return true;
+					ParameterInfo[] pi = mi.GetParameters ();
+					if (pi.Length == argTypes.Length)
+						return true;
+				}
+			}
+			return false;
+		}
+
 		public override object RuntimeInvoke (EvaluationContext gctx, object gtargetType, object gtarget, string methodName, object[] gargTypes, object[] gargValues)
 		{
 			CorType targetType = (CorType) gtargetType;
