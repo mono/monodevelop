@@ -99,10 +99,7 @@ namespace PyBinding.Gui
 				return null;
 			
 			var triggerWord = GetTriggerWord (editor, completionContext);
-			var triggerLine = editor.GetLineText (completionContext.TriggerLine).Trim ();
-			
-			if (triggerWord.Contains ("="))
-				triggerWord = triggerWord.Substring (triggerWord.LastIndexOf ('=') + 1);
+			var triggerLine = editor.GetLineText (completionContext.TriggerLine);
 			
 			// if completionChar is ' ' and it is not a known completion type
 			// that we can handle, return as early as possible
@@ -242,19 +239,26 @@ namespace PyBinding.Gui
 		
 		static string GetTriggerWord (TextEditor editor, ICodeCompletionContext completionContext)
 		{
-			// Get the word we are trying to complete.  Please, please tell
-			// me there is a better way to do this.
-			
+			// Get the line of text for our current line
+			// and trim off everything after the cursor
 			var line = editor.GetLineText (completionContext.TriggerLine);
-			var length = completionContext.TriggerLineOffset;
-			if (length > line.Length)
-				length = line.Length;
-			var word = line.Substring (0, length);
-			if (word.Contains (' '))
-				word = word.Substring (word.LastIndexOf (' '), word.Length - word.LastIndexOf (' '));
-			word = word.Trim ();
+			line = line.Substring (0, completionContext.TriggerLineOffset - 1);
 			
-			return word;
+			// Walk backwards looking for split chars and then trim the
+			// beginning of the line off
+			for (int i = line.Length - 1; i >= 0; i--) {
+				switch (line [i]) {
+				case ' ':
+				case '(':
+				case '\t':
+				case '=':
+					return line.Substring (i + 1, line.Length - 1 - i);
+				default:
+					break;
+				}
+			}
+			
+			return line;
 		}
 	}
 }
