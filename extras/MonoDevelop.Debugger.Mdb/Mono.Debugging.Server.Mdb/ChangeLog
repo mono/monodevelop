@@ -1,5 +1,10 @@
 2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MdbObjectValueAdaptor.cs: Fixed some issue with static
+	  method invocation, and implemented HasMethod.
+
+2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile:
 	* MdbAdaptor.cs:
 	* MdbAdaptor-2-6.cs:

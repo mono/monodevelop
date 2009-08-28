@@ -134,12 +134,40 @@ namespace DebuggerServer
 		}
 
 
+		public override bool HasMethod (EvaluationContext gctx, object targetType, string methodName, object[] argTypes, BindingFlags flags)
+		{
+			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
+			
+			if (argTypes == null) {
+				foreach (MemberReference mm in ObjectUtil.GetTypeMembers (ctx, (TargetType) targetType, false, false, true, flags | BindingFlags.Public | BindingFlags.NonPublic)) {
+					TargetMethodInfo met = (TargetMethodInfo) mm.Member;
+					if (met.Name == methodName)
+						return true;
+				}
+				return false;
+			}
+			
+			TargetStructType stype = targetType as TargetStructType;
+			if (stype == null)
+				return false;
+		
+			TargetType[] types = new TargetType [argTypes.Length];
+			Array.Copy (argTypes, types, argTypes.Length);
+			
+			MemberReference mem;
+			mem = OverloadResolve (ctx, methodName, stype, types, (flags & BindingFlags.Instance) != 0, (flags & BindingFlags.Static) != 0, false);
+			return mem != null;
+		}
+		
 		public override object RuntimeInvoke (EvaluationContext gctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
 			TargetObject[] lst = new TargetObject [argValues.Length];
 			Array.Copy (argValues, lst, argValues.Length);
-			return CallMethod (ctx, methodName, (TargetObject) target, lst);
+			if (target != null)
+				return CallMethod (ctx, methodName, (TargetObject) target, lst);
+			else
+				return CallStaticMethod (ctx, methodName, (TargetType) targetType, lst);
 		}
 
 		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext ctx, object type)
@@ -493,7 +521,7 @@ namespace DebuggerServer
 				types [n] = args [n].Type;
 			
 			TargetStructObject starget = (TargetStructObject) target;
-			MemberReference mem = OverloadResolve (ctx, name, starget.Type, types, true, false);
+			MemberReference mem = OverloadResolve (ctx, name, starget.Type, types, true, false, true);
 			TargetFunctionType function = (TargetFunctionType) ((TargetMethodInfo) mem.Member).Type;
 			
 			while (target.Type != mem.DeclaringType) {
@@ -539,7 +567,7 @@ namespace DebuggerServer
 			for (int n=0; n<types.Length; n++)
 				types [n] = args [n].Type;
 			
-			MemberReference mem = OverloadResolve (ctx, name, (TargetStructType) type, types, false, true);
+			MemberReference mem = OverloadResolve (ctx, name, (TargetStructType) type, types, false, true, true);
 			TargetFunctionType function = (TargetFunctionType) ((TargetMethodInfo) mem.Member).Type;
 			
 			TargetMethodSignature sig = function.GetSignature (ctx.Thread);
@@ -552,7 +580,7 @@ namespace DebuggerServer
 			return Server.Instance.RuntimeInvoke (ctx, function, null, objs);
 		}
 		
-		public static MemberReference OverloadResolve (MdbEvaluationContext ctx, string methodName, TargetStructType type, TargetType[] argtypes, bool allowInstance, bool allowStatic)
+		public static MemberReference OverloadResolve (MdbEvaluationContext ctx, string methodName, TargetStructType type, TargetType[] argtypes, bool allowInstance, bool allowStatic, bool throwIfNotFound)
 		{
 			List<MemberReference> candidates = new List<MemberReference> ();
 
@@ -581,13 +609,20 @@ namespace DebuggerServer
 				if (IsApplicable (ctx, func, argtypes, out error, out matchCount))
 					return candidates [0];
 
-				throw new EvaluatorException ("Invalid arguments for method `{0}': {1}", methodName, error);
+				if (throwIfNotFound)
+					throw new EvaluatorException ("Invalid arguments for method `{0}': {1}", methodName, error);
+				else
+					return null;
 			}
 
-			if (candidates.Count == 0)
-				throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, type.Name);
+			if (candidates.Count == 0) {
+				if (throwIfNotFound)
+					throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, type.Name);
+				else
+					return null;
+			}
 
-			return OverloadResolve (ctx, methodName, argtypes, candidates);
+			return OverloadResolve (ctx, methodName, argtypes, candidates, throwIfNotFound);
 		}
 
 		static bool IsApplicable (MdbEvaluationContext ctx, TargetFunctionType method, TargetType[] types, out string error, out int matchCount)
@@ -616,7 +651,7 @@ namespace DebuggerServer
 			return true;
 		}
 
-		static MemberReference OverloadResolve (MdbEvaluationContext ctx, string methodName, TargetType[] argtypes, List<MemberReference> candidates)
+		static MemberReference OverloadResolve (MdbEvaluationContext ctx, string methodName, TargetType[] argtypes, List<MemberReference> candidates, bool throwIfNotFound)
 		{
 			// Ok, no we need to find an exact match.
 			MemberReference match = null;
@@ -645,6 +680,8 @@ namespace DebuggerServer
 			}
 			
 			if (match == null) {
+				if (!throwIfNotFound)
+					return null;
 				if (methodName != null)
 					throw new EvaluatorException ("Invalid arguments for method `{0}'.", methodName);
 				else
@@ -652,6 +689,8 @@ namespace DebuggerServer
 			}
 			
 			if (repeatedBestCount) {
+				if (!throwIfNotFound)
+					return null;
 				if (methodName != null)
 					throw new EvaluatorException ("Ambiguous method `{0}'; need to use full name", methodName);
 				else
@@ -780,7 +819,7 @@ namespace DebuggerServer
 							continue;
 						if (!met.IsStatic && (flags & BindingFlags.Instance) == 0)
 							continue;
-						string sig = GetSignature (met);
+						string sig = met.FullName;
 						if (!foundMethods.ContainsKey (sig)) {
 							foundMethods [sig] = sig;
 							members.Add (new MemberReference (met, type));
@@ -794,14 +833,6 @@ namespace DebuggerServer
 					break;
 			}
 			return members;
-		}
-		
-		static string GetSignature (TargetMethodInfo met)
-		{
-			StringBuilder sb = new StringBuilder (met.Name);
-			foreach (TargetType t in met.Type.ParameterTypes)
-				sb.Append (' ').Append (t.Name);
-			return sb.ToString ();
 		}
 		
 		public static ObjectValueFlags GetAccessibility (TargetMemberAccessibility ma)
