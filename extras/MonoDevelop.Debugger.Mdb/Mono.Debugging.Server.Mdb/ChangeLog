@@ -1,3 +1,17 @@
+2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile:
+	* MdbAdaptor.cs:
+	* MdbAdaptor-2-6.cs:
+	* MdbAdaptor-2-0.cs:
+	* DebuggerServer.cs:
+	* MdbAdaptor-2-4-2.cs:
+	* MdbAdaptor-2-4-4.cs:
+	* MdbAdaptorFactory.cs:
+	* Mono.Debugging.Server.Mdb.csproj: Reorganized adaptors a
+	  bit. Added real support for setting breakpoints while
+	  running.
+
 2009-07-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Util.cs:

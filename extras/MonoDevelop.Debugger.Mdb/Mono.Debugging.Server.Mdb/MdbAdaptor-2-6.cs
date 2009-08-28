@@ -14,28 +14,7 @@ using Mono.Debugging.Backend.Mdb;
 
 namespace DebuggerServer
 {
-	public class MdbAdaptor_2_6: MdbAdaptor_2_4_2
+	public class MdbAdaptor_2_6: MdbAdaptor_2_4_4
 	{
-		public override void SetupXsp (DebuggerConfiguration config)
-		{
-			config.SetupXSP ();
-			config.StopOnManagedSignals = true;
-		}
-		
-		public override void InitializeBreakpoint (MDB.SourceBreakpoint bp)
-		{
-		//	bp.IsUserModule = true;
-		}
-		
-		public override void InitializeSession (MonoDebuggerStartInfo startInfo, MDB.DebuggerSession session)
-		{
-			if (startInfo.UserCodeOnly) {
-				session.AddUserModulePath (startInfo.WorkingDirectory);
-				if (startInfo.UserModules != null) {
-					foreach (string path in startInfo.UserModules)
-						session.AddUserModule (path);
-				}
-			}
-		}
 	}
 }

@@ -25,20 +25,64 @@
 // THE SOFTWARE.
 
 using System;
+using MDB=Mono.Debugger;
+using Mono.Debugging.Backend.Mdb;
 
 namespace DebuggerServer
 {
 	public class MdbAdaptor_2_4_2: MdbAdaptor
 	{
-		public override void InitializeConfiguration (Mono.Debugger.DebuggerConfiguration config)
+		public override void InitializeConfiguration ()
 		{
-			base.InitializeConfiguration (config);
-			config.RedirectOutput = true;
+			base.InitializeConfiguration ();
+			Configuration.RedirectOutput = true;
 		}
 
-		public override void AbortThread (Mono.Debugger.Thread thread, Mono.Debugger.RuntimeInvokeResult result)
+		public override void SetupXsp ()
+		{
+			Configuration.SetupXSP ();
+			Configuration.StopOnManagedSignals = true;
+		}
+		
+		public override void InitializeSession ()
+		{
+			if (StartInfo.UserCodeOnly) {
+				Session.AddUserModulePath (StartInfo.WorkingDirectory);
+				if (StartInfo.UserModules != null) {
+					foreach (string path in StartInfo.UserModules)
+						Session.AddUserModule (path);
+				}
+			}
+		}
+		
+		public override void InitializeBreakpoint (MDB.SourceBreakpoint bp)
+		{
+		//	bp.IsUserModule = true;
+		}
+		
+		public override void AbortThread (MDB.Thread thread, MDB.RuntimeInvokeResult result)
 		{
 			result.Abort ();
+		}
+		
+		public override void ActivateEvent (Mono.Debugger.Event ev)
+		{
+			Process.ActivatePendingBreakpoints ();
+		}
+		
+		public override void RemoveEvent (Mono.Debugger.Event ev)
+		{
+			Session.RemoveEvent (ev);
+			Process.ActivatePendingBreakpoints ();
+		}
+		
+		public override void EnableEvent (Mono.Debugger.Event ev, bool enable)
+		{
+			if (enable)
+				Session.ActivateEventAsync (ev);
+			else
+				Session.DeactivateEventAsync (ev);
+			Process.ActivatePendingBreakpoints ();
 		}
 	}
 }

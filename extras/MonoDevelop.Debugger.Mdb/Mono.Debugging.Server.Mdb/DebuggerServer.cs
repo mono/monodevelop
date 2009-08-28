@@ -28,7 +28,6 @@ namespace DebuggerServer
 		MD.GUIManager guiManager;
 		MdbAdaptor mdbAdaptor;
 		int max_frames;
-		bool internalInterruptionRequested;
 		List<ST.WaitCallback> stoppedWorkQueue = new List<ST.WaitCallback> ();
 		List<ST.WaitCallback> eventQueue = new List<ST.WaitCallback> ();
 		bool initializing;
@@ -96,12 +95,15 @@ namespace DebuggerServer
 					throw new ArgumentNullException ("startInfo");
 			
 				Console.WriteLine ("MDB version: " + mdbAdaptor.MdbVersion);
+				
+				mdbAdaptor.StartInfo = startInfo;
 
 				Report.Initialize ();
 
 				DebuggerConfiguration config = new DebuggerConfiguration ();
 				config.LoadConfiguration ();
-				mdbAdaptor.InitializeConfiguration (config);
+				mdbAdaptor.Configuration = config;
+				mdbAdaptor.InitializeConfiguration ();
 				
 				debugger = new MD.Debugger (config);
 				
@@ -114,7 +116,7 @@ namespace DebuggerServer
 				};
 
 				if (startInfo.IsXsp) {
-					mdbAdaptor.SetupXsp (config);
+					mdbAdaptor.SetupXsp ();
 					config.FollowFork = false;
 				}
 				config.OpaqueFileNames = false;
@@ -132,7 +134,8 @@ namespace DebuggerServer
 						options.SetEnvironment (env.Key, env.Value);
 				}
 				session = new MD.DebuggerSession (config, options, "main", null);
-				mdbAdaptor.InitializeSession (startInfo, session);
+				mdbAdaptor.Session = session;
+				mdbAdaptor.InitializeSession ();
 				
 				debugger.Run(session);
 
@@ -147,13 +150,15 @@ namespace DebuggerServer
 			Report.Initialize ();
 
 			DebuggerConfiguration config = new DebuggerConfiguration ();
-			mdbAdaptor.InitializeConfiguration (config);
+			mdbAdaptor.Configuration = config;
+			mdbAdaptor.InitializeConfiguration ();
 			config.LoadConfiguration ();
 			debugger = new MD.Debugger (config);
 
 			DebuggerOptions options = DebuggerOptions.ParseCommandLine (new string[0]);
 			options.StopInMain = false;
 			session = new MD.DebuggerSession (config, options, "main", (IExpressionParser) null);
+			mdbAdaptor.Session = session;
 			
 			Process proc = debugger.Attach (session, pid);
 			OnInitialized (debugger, proc);
@@ -166,28 +171,20 @@ namespace DebuggerServer
 		public void Detach ()
 		{
 			CancelRuntimeInvokes ();
-			RunWhenStopped (delegate {
-				try {
-					debugger.Detach ();
-				} catch (Exception ex) {
-					Console.WriteLine (ex);
-				} finally {
-					running = false;
-				}
-			});
+			try {
+				debugger.Detach ();
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+			} finally {
+				running = false;
+			}
 		}
 
 		public void Stop ()
 		{
 			CancelRuntimeInvokes ();
 			QueueTask (delegate {
-				if (internalInterruptionRequested) {
-					// Stop already internally requested. By resetting the flag, the interruption
-					// won't be considered internal anymore and the session won't be automatically restarted.
-					internalInterruptionRequested = false;
-				}
-				else
-					guiManager.Stop (process.MainThread);
+				guiManager.Stop (process.MainThread);
 			});
 		}
 
@@ -278,13 +275,9 @@ namespace DebuggerServer
 			ev.IsEnabled = enable;
 			
 			if (!initializing) {
-				RunWhenStopped (delegate {
-					try {
-						ev.Activate (process.MainThread);
-					} catch (Exception ex) {
-						Console.WriteLine (ex);
-					}
-				});
+				lock (debugger) {
+					mdbAdaptor.ActivateEvent (ev);
+				}
 			}
 						                    
 			if (bp != null && !running && activeThread.CurrentFrame != null && !string.IsNullOrEmpty (bp.ConditionExpression) && bp.BreakIfConditionChanges) {
@@ -302,27 +295,18 @@ namespace DebuggerServer
 		public void RemoveBreakEvent (int handle)
 		{
 			CancelRuntimeInvokes ();
-			RunWhenStopped (delegate {
-				try {
-					Event ev = session.GetEvent (handle);
-					session.DeleteEvent (ev);
-					events.Remove (handle);
-				} catch (Exception ex) {
-					Console.WriteLine (ex);
-				}
-			});
+			Event ev = session.GetEvent (handle);
+			mdbAdaptor.RemoveEvent (ev);
 		}
 		
 		public void EnableBreakEvent (int handle, bool enable)
 		{
 			CancelRuntimeInvokes ();
-			RunWhenStopped (delegate {
-				Event ev = session.GetEvent (handle);
-				if (enable)
-					ev.Activate (process.MainThread);
-				else
-					ev.Deactivate (process.MainThread);
-			});
+			Event ev = session.GetEvent (handle);
+			if (enable)
+				ev.Activate (process.MainThread);
+			else
+				ev.Deactivate (process.MainThread);
 		}
 		
 		public object UpdateBreakEvent (object handle, DL.BreakEvent bp)
@@ -623,6 +607,8 @@ namespace DebuggerServer
 			this.process = process;
 			this.debugger = debugger;
 			
+			mdbAdaptor.Process = process;
+			
 			guiManager = process.StartGUIManager ();
 
 			//FIXME: conditionally add event handlers
@@ -674,31 +660,13 @@ namespace DebuggerServer
 		void ResetTaskQueue ()
 		{
 			lock (debugger) {
-				internalInterruptionRequested = false;
 				stoppedWorkQueue.Clear ();
-			}
-		}
-		
-		void RunWhenStopped (ST.WaitCallback cb)
-		{
-			lock (debugger)
-			{
-				if (process.MainThread.IsStopped) {
-					cb (null);
-					return;
-				}
-				stoppedWorkQueue.Add (cb);
-				
-				if (!internalInterruptionRequested) {
-					internalInterruptionRequested = true;
-					process.MainThread.Stop ();
-				}
 			}
 		}
 		
 		void LogEvent (MD.TargetEventArgs args)
 		{
-			Console.WriteLine ("Server OnTargetEvent: {0} stopped:{1} data:{2} internal:{3} queue:{4} thread:{5} running:{6}", args.Type, args.IsStopped, args.Data, internalInterruptionRequested, stoppedWorkQueue.Count, args.Frame != null ? args.Frame.Thread : null, running);
+			Console.WriteLine ("Server OnTargetEvent: {0} stopped:{1} data:{2} queue:{3} thread:{4} running:{5}", args.Type, args.IsStopped, args.Data, stoppedWorkQueue.Count, args.Frame != null ? args.Frame.Thread : null, running);
 		}
 
 		private void OnTargetEvent (MD.Thread thread, MD.TargetEventArgs args)
@@ -720,13 +688,6 @@ namespace DebuggerServer
 				if (isStop) {
 					
 					lock (debugger) {
-						// The process was stopped, but not as a result of the internal stop request.
-						// Reset the internal request flag, in order to avoid the process to be
-						// automatically restarted
-						if (args.Type != MD.TargetEventType.TargetInterrupted && args.Type != MD.TargetEventType.TargetStopped)
-							internalInterruptionRequested = false;
-						
-						notifyToClient = notifyToClient && !internalInterruptionRequested;
 						
 						if (stoppedWorkQueue.Count > 0) {
 							// Execute queued work in another thread with a small delay
@@ -739,10 +700,6 @@ namespace DebuggerServer
 										cb (null);
 									}
 									stoppedWorkQueue.Clear ();
-									if (internalInterruptionRequested) {
-										internalInterruptionRequested = false;
-										resume = true;
-									}
 								}
 								if (resume)
 									guiManager.Continue (process.MainThread);

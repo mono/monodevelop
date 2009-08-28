@@ -34,9 +34,12 @@ namespace DebuggerServer
 	public static class MdbAdaptorFactory
 	{
 		// Bump this version number if any change is in MdbAdaptor or subclases
-		const int ApiVersion = 2;
+		const int ApiVersion = 3;
 		
-		static readonly string[] supportedVersions = new string[] {"2-6|2-4-2", "2-4-2", "2-0"};
+		// Versions for which there is an adaptor. If an adaptor is a subclass of another adaptor,
+		// the base adaptor version must be specified (recursively) after the adaptor version
+		// using | as separator.
+		static readonly string[] supportedVersions = new string[] {"2-4-4|2-4-2", "2-4-2", "2-0"};
 		
 		public static MdbAdaptor CreateAdaptor (string mdbVersion)
 		{
@@ -81,7 +84,10 @@ namespace DebuggerServer
 				
 				// Write the source code for all required classes
 				foreach (string ver in versionsArray) {
-					Stream s = typeof(MdbAdaptorFactory).Assembly.GetManifestResourceStream ("MdbAdaptor-" + ver + ".cs");
+					string resName = "MdbAdaptor-" + ver + ".cs";
+					Stream s = typeof(MdbAdaptorFactory).Assembly.GetManifestResourceStream (resName);
+					if (s == null)
+						throw new InvalidOperationException ("Resource not found: " + resName);
 					StreamReader sr = new StreamReader (s);
 					string txt = sr.ReadToEnd ();
 					sr.Close ();

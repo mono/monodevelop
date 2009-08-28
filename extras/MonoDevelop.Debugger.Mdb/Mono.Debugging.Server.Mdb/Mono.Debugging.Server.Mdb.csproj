@@ -125,6 +125,9 @@
     <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
+    <Reference Include="MonoDevelop.Refactoring, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Debugging.Backend.Mdb\Mono.Debugging.Backend.Mdb.csproj">
@@ -177,6 +180,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MdbAdaptor-2-0.cs">
       <LogicalName>MdbAdaptor-2-0.cs</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MdbAdaptor-2-4-4.cs">
+      <LogicalName>MdbAdaptor-2-4-4.cs</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
