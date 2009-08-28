@@ -462,6 +462,23 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
+		public bool HasMethod (EvaluationContext ctx, object targetType, string methodName)
+		{
+			return HasMethod (ctx, targetType, methodName, null, BindingFlags.Instance | BindingFlags.Static);
+		}
+		
+		public bool HasMethod (EvaluationContext ctx, object targetType, string methodName, BindingFlags flags)
+		{
+			return HasMethod (ctx, targetType, methodName, null, flags);
+		}
+		
+		// argTypes can be null, meaning that it has to return true if there is any method with that name
+		// flags will only contain Static or Instance flags
+		public virtual bool HasMethod (EvaluationContext ctx, object targetType, string methodName, object[] argTypes, BindingFlags flags)
+		{
+			return false;
+		}
+		
 		public virtual object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			return null;

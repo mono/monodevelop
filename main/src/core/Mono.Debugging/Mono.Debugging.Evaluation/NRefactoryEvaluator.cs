@@ -34,6 +34,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Ast;
+using System.Reflection;
 
 namespace Mono.Debugging.Evaluation
 {
@@ -178,18 +179,6 @@ namespace Mono.Debugging.Evaluation
 			ValueReference target = null;
 			string methodName;
 			
-			if (invocationExpression.TargetObject is MemberReferenceExpression) {
-				MemberReferenceExpression field = (MemberReferenceExpression)invocationExpression.TargetObject;
-				target = (ValueReference) field.TargetObject.AcceptVisitor (this, data);
-				methodName = field.MemberName;
-			} else if (invocationExpression.TargetObject is IdentifierExpression) {
-				IdentifierExpression exp = (IdentifierExpression) invocationExpression.TargetObject;
-				methodName = exp.Identifier;
-				target = null;
-			}
-			else
-				throw CreateNotSupportedError ();
-
 			object[] argtypes = new object[invocationExpression.Arguments.Count];
 			object[] args = new object[invocationExpression.Arguments.Count];
 			for (int n=0; n<args.Length; n++) {
@@ -199,9 +188,39 @@ namespace Mono.Debugging.Evaluation
 				argtypes [n] = ctx.Adapter.GetValueType (ctx, args [n]);
 			}
 			
-			object vtype = target != null ? target.Type : default (object);
-			object vtarget = (target is TypeValueReference) ? null : target.Value;
+			if (invocationExpression.TargetObject is MemberReferenceExpression) {
+				MemberReferenceExpression field = (MemberReferenceExpression)invocationExpression.TargetObject;
+				target = (ValueReference) field.TargetObject.AcceptVisitor (this, data);
+				methodName = field.MemberName;
+			} else if (invocationExpression.TargetObject is IdentifierExpression) {
+				IdentifierExpression exp = (IdentifierExpression) invocationExpression.TargetObject;
+				methodName = exp.Identifier;
+				ValueReference vref = ctx.Adapter.GetThisReference (ctx);
+				if (vref != null && ctx.Adapter.HasMethod (ctx, vref.Type, methodName, BindingFlags.Instance)) {
+					// There is an instance method for 'this', although it may not have an exact signature match. Check it now.
+					if (ctx.Adapter.HasMethod (ctx, vref.Type, methodName, argtypes, BindingFlags.Instance))
+						target = vref;
+					else {
+						// There isn't an instance method with exact signature match.
+						// If there isn't a static method, then use the instance method,
+						// which will report the signature match error when invoked
+						object etype = ctx.Adapter.GetEnclosingType (ctx);
+						if (!ctx.Adapter.HasMethod (ctx, etype, methodName, argtypes, BindingFlags.Static))
+							target = vref;
+					}
+				}
+				else {
+					if (ctx.Adapter.HasMethod (ctx, ctx.Adapter.GetEnclosingType (ctx), methodName, argtypes, BindingFlags.Instance))
+						throw new EvaluatorException ("Can't invoke an instance method from a static method.");
+					target = null;
+				}
+			}
+			else
+				throw CreateNotSupportedError ();
 
+			object vtype = target != null ? target.Type : ctx.Adapter.GetEnclosingType (ctx);
+			object vtarget = (target is TypeValueReference) || target == null ? null : target.Value;
+			
 			object res = ctx.Adapter.RuntimeInvoke (ctx, vtype, vtarget, methodName, argtypes, args);
 			if (res != null)
 				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, res);
