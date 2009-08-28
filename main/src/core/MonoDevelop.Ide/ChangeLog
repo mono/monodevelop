@@ -1,3 +1,9 @@
+2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Revert lazy
+	  loading of pads, since it is causing issues. It has to be
+	  fixed in DockItem.
+
 2009-08-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Added notify
