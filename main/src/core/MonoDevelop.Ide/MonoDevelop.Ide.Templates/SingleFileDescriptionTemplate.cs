@@ -38,6 +38,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.StandardHeader;
+using System.Text;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -294,7 +295,7 @@ namespace MonoDevelop.Ide.Templates
 				while (Path.GetExtension (identifier).Length > 0)
 					identifier = Path.GetFileNameWithoutExtension (identifier);
 			 	
-				tags ["Name"] = identifier;
+				tags ["Name"] = CreateIdentifierName (identifier);
 				tags ["FullName"] = ns.Length > 0 ? ns + "." + identifier : identifier;
 				
 				//some .NET languages may be able to use keywords as identifiers if they're escaped
@@ -329,6 +330,21 @@ namespace MonoDevelop.Ide.Templates
 				tags ["FileName"] = fileName;
 			}
 		}
+		
+		static string CreateIdentifierName (string identifier)
+		{
+			StringBuilder result = new StringBuilder ();
+			for (int i = 0; i < identifier.Length; i++) {
+				char ch = identifier[i];
+				if (i != 0 && Char.IsLetterOrDigit (ch) || i == 0 && Char.IsLetter (ch) || ch == '_') {
+					result.Append (ch);
+				} else {
+					result.Append ('_');
+				}
+			}
+			return result.ToString ();
+		}
+
 		
 		protected ILanguageBinding GetLanguageBinding (string language)
 		{

@@ -81,7 +81,8 @@ namespace MonoDevelop.Ide.Templates
 		
 		public virtual bool IsValidName (string name, string language)
 		{
-			if (name.Length > 0) {
+			return name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
+/*			if (name.Length > 0) {
 				if (language != null && language.Length > 0) {
 					IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
 					if (binding != null) {
@@ -93,7 +94,7 @@ namespace MonoDevelop.Ide.Templates
 				return name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
 			}
 			else
-				return false;
+				return false;*/
 		}
 		
 		public virtual bool SupportsProject (Project project, string projectPath)
