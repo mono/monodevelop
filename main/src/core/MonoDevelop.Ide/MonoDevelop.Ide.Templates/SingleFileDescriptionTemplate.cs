@@ -144,7 +144,8 @@ namespace MonoDevelop.Ide.Templates
 			else
 				aname = aref.Substring (0, i);
 			foreach (ProjectReference pr in project.References) {
-				if (pr.ReferenceType == ReferenceType.Gac && (pr.Reference == aname || pr.Reference.StartsWith (aname + ",")))
+				if (pr.ReferenceType == ReferenceType.Gac && (pr.Reference == aname || pr.Reference.StartsWith (aname + ",")) || 
+					pr.ReferenceType != ReferenceType.Gac && pr.Reference.Contains (aname))
 					return true;
 			}
 			return false;
