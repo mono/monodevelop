@@ -1,5 +1,10 @@
 2009-08-28  Christian Hergert  <chris@dronelabs.com>
 
+	* Resources/EmptyPyProject.xpt.xml: Open main.py by default
+	  during project creation.
+
+2009-08-28  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Gui/PythonEditorCompletion.cs: Do completion on \t
 	  and \n. Keep track of the number of "." in the query and
 	  limit our search depth to save us a huge amount of object

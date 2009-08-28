@@ -12,6 +12,11 @@
         <LanguageName>Python</LanguageName>
         <_Description>Creates an empty Python solution.</_Description>
     </TemplateConfiguration>
+    
+    <!-- Actions -->
+    <Actions>
+    	<Open filename = "main.py"/>
+    </Actions>
 
     <!-- Template Content -->
     <Combine name = "${ProjectName}" directory = ".">
