@@ -38,7 +38,7 @@
           <Directory Id="bin" Name="bin">
             <Component Id="ProductComponent" Guid="38703ED9-C1D1-4DC5-834B-31B8059BF7DF">
               <File Name="MonoDevelop.exe" Source="$(var.BuildRoot)\bin\MonoDevelop.exe">
-                <Shortcut Id="md_shortcut" Directory="ProgramMenuDir" Name="$(var.ProductShortName)" WorkingDirectory='INSTALLLOCATION' Icon="MonoDevelop.exe" IconIndex="0" Advertise="yes" />
+                <Shortcut Id="md_shortcut" Directory="ProgramMenuDir" Name="$(var.ProductShortName)" WorkingDirectory="bin" Icon="MonoDevelop.exe" IconIndex="0" Advertise="yes" />
               </File>
               <File Name="mdhost.exe" Source="$(var.BuildRoot)\bin\mdhost.exe" />
               <File Name="mdrun.exe" Source="$(var.BuildRoot)\bin\mdrun.exe" />
