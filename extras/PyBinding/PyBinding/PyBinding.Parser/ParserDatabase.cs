@@ -43,6 +43,8 @@ namespace PyBinding.Parser
 	/// </summary>
 	public class ParserDatabase
 	{
+		static readonly TimeSpan s_lockTimeout = TimeSpan.FromSeconds (60);
+		
 		ReaderWriterLock m_rwLock;
 		string m_FileName;
 		SqliteConnection m_conn;
@@ -65,7 +67,7 @@ namespace PyBinding.Parser
 			if (!dirInfo.Exists)
 				dirInfo.Create ();
 			
-			m_rwLock.AcquireWriterLock (TimeSpan.FromSeconds (60));
+			m_rwLock.AcquireWriterLock (s_lockTimeout);
 			
 			if (m_conn == null)
 				m_conn = new SqliteConnection (connString);
@@ -77,21 +79,21 @@ namespace PyBinding.Parser
 		
 		public void Close ()
 		{
-			m_rwLock.AcquireWriterLock (TimeSpan.FromSeconds (60));
+			m_rwLock.AcquireWriterLock (s_lockTimeout);
 			m_conn.Close ();
 			m_rwLock.ReleaseWriterLock ();
 		}
 		
 		public void Add (ParserItem item)
 		{
-			m_rwLock.AcquireWriterLock (TimeSpan.FromSeconds (60));
+			m_rwLock.AcquireWriterLock (s_lockTimeout);
 			item.Serialize (m_conn);
 			m_rwLock.ReleaseWriterLock ();
 		}
 		
 		public void AddRange (IEnumerable<ParserItem> items)
 		{
-			m_rwLock.AcquireWriterLock (TimeSpan.FromSeconds (60));
+			m_rwLock.AcquireWriterLock (s_lockTimeout);
 			foreach (var item in items)
 				item.Serialize (m_conn);
 			m_rwLock.ReleaseWriterLock ();
@@ -102,7 +104,7 @@ namespace PyBinding.Parser
 		
 		public IEnumerable<ParserItem> Find (string prefix)
 		{
-			m_rwLock.AcquireReaderLock (TimeSpan.FromSeconds (60));
+			m_rwLock.AcquireReaderLock (s_lockTimeout);
 			
 			if (s_Find == null) {
 				var command = new SqliteCommand ();
@@ -137,7 +139,7 @@ namespace PyBinding.Parser
 				yield break;
 			}
 			
-			m_rwLock.AcquireReaderLock (TimeSpan.FromSeconds (60));
+			m_rwLock.AcquireReaderLock (s_lockTimeout);
 			
 			if (s_FindWithType == null) {
 				var command = new SqliteCommand ();

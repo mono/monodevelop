@@ -1,5 +1,10 @@
 2009-08-27  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Parser/ParserDatabase.cs: Use shared timespan for
+	  lock timeouts.
+
+2009-08-27  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Parser/ParserItem.cs: Add ParserIteypType.Any.
 
 	* PyBinding.Parser/ParserDatabase.cs: Ignore item type if its
