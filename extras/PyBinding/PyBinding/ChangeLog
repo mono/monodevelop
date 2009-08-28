@@ -1,5 +1,12 @@
 2009-08-27  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Parser/ParserItem.cs: Add ParserIteypType.Any.
+
+	* PyBinding.Parser/ParserDatabase.cs: Ignore item type if its
+	  ParserItemType.Any.
+
+2009-08-27  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Gui/PythonEditorCompletion.cs: Cleanup
 	  GetTriggerWord to be a bit more accurate.
 

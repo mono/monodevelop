@@ -131,6 +131,12 @@ namespace PyBinding.Parser
 		
 		public IEnumerable<ParserItem> Find (string prefix, ParserItemType itemType)
 		{
+			if (itemType == ParserItemType.Any) {
+				foreach (var item in Find (prefix))
+					yield return item;
+				yield break;
+			}
+			
 			m_rwLock.AcquireReaderLock (TimeSpan.FromSeconds (60));
 			
 			if (s_FindWithType == null) {

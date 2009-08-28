@@ -38,6 +38,7 @@ namespace PyBinding.Parser
 		Function,
 		Attribute,
 		Local,
+		Any,
 	}
 	
 	public class ParserItem
