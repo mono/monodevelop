@@ -876,7 +876,7 @@ namespace MonoDevelop.Projects
 					aggregatedOperationMonitor.Dispose ();
 				}
 			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Cannot execute \"{0}\", myconfiguration.CompiledOutputname"), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Cannot execute \"{0}\"", dotNetProjectConfig.CompiledOutputName), ex);
 			}
 		}
 	}
