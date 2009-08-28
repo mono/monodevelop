@@ -175,8 +175,10 @@ namespace PyBinding.Gui
 					;
 			}
 			
+			ParserItemType itemType = String.IsNullOrEmpty (triggerWord) ? ParserItemType.Module : ParserItemType.Any;
+			
 			return new CompletionDataList (
-				from ParserItem item in m_site.Database.Find ("", ParserItemType.Module)
+				from ParserItem item in m_site.Database.Find ("", itemType)
 				// Super wasteful
 				where !item.FullName.Contains ('.')
 				select CreateCompletionData (item, triggerWord))
