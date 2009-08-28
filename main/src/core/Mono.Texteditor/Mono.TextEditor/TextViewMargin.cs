@@ -1773,7 +1773,18 @@ namespace Mono.TextEditor
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
 
-			SetClip (new Gdk.Rectangle (xStart, y, area.Right - xStart, LineHeight));
+			int clipWidth = area.Right - xStart;
+			int clipHeight = LineHeight;
+
+			xStart = System.Math.Max (0, xStart);
+
+			if (clipWidth <= 0)
+				clipWidth = win.VisibleRegion.Clipbox.Width - xStart;
+
+			if (clipHeight <= 0)
+				clipHeight = win.VisibleRegion.Clipbox.Height;
+
+			SetClip (new Gdk.Rectangle (xStart, y, clipWidth, clipHeight));
 			ClipRenderers ();
 
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);

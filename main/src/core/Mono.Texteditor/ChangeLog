@@ -1,3 +1,8 @@
+2009-08-27  Christian Hergert  <chris@dronelabs.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Be a bit more resilient to
+	erroneous exposure regions.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Vi/ViWordFindStrategy.cs:
