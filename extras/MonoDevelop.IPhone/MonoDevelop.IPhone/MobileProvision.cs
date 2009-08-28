@@ -48,7 +48,7 @@ namespace MonoDevelop.IPhone
 		public static IList<MobileProvision> GetAllInstalledProvisions ()
 		{
 			FilePath directory = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-			directory.Combine ("Library", "MobileDevice", "Provisioning Profiles");
+			directory = directory.Combine ("Library", "MobileDevice", "Provisioning Profiles");
 			if (!Directory.Exists (directory))
 				return new MobileProvision[0];
 			
