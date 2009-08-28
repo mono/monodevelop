@@ -1,5 +1,9 @@
 2009-08-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MobileProvision.cs: Extract X509 certs from the binary blob.
+
+2009-08-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* PropertyList/PlistDate.cs:
 	* PropertyList/PlistDocument.cs: Add support for date
 	  elements.

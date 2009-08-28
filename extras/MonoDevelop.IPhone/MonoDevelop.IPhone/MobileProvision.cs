@@ -30,6 +30,7 @@ using System.IO;
 using PropertyList;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MonoDevelop.IPhone
 {
@@ -98,7 +99,7 @@ namespace MonoDevelop.IPhone
 			
 			var devCerts = rootDict ["DeveloperCertificates"] as PlistArray;
 			if (devCerts != null)
-				this.DeveloperCertificates = prefixes.OfType<PlistData> ().Select (x => x.Value).ToArray ();
+				this.DeveloperCertificates = devCerts.OfType<PlistData> ().Select (x => new X509Certificate (x.Value)).ToArray ();
 			
 			var entl = rootDict ["Entitlements"] as PlistDictionary;
 			if (entl != null)
@@ -132,7 +133,7 @@ namespace MonoDevelop.IPhone
 		public string FileName { get; private set; }
 		public IList<string> ApplicationIdentifierPrefix { get; private set; }
 		public DateTime CreationDate { get; private set; }
-		public IList<byte[]> DeveloperCertificates { get; private set; }
+		public IList<X509Certificate> DeveloperCertificates { get; private set; }
 		public PlistDictionary Entitlements { get; private set; }
 		public DateTime ExpirationDate { get; private set; }
 		public string Name { get; private set; }
