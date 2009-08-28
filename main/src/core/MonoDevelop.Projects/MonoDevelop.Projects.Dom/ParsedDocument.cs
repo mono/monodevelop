@@ -249,9 +249,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static IEnumerable<FoldingRegion> ToFolds (this IType type)
 		{
-			if (!type.BodyRegion.IsEmpty && type.BodyRegion.End.Line > type.BodyRegion.Start.Line) {
+			if (!IncompleteOrSingleLine (type.BodyRegion))
 				yield return new FoldingRegion (type.BodyRegion, FoldType.Type);
-			}
+			
 			foreach (IType inner in type.InnerTypes)
 				foreach (FoldingRegion f in inner.ToFolds ())
 					yield return f;
@@ -259,17 +259,18 @@ namespace MonoDevelop.Projects.Dom
 			if (type.ClassType == ClassType.Interface)
 				yield break;
 
-			foreach (IMethod method in type.Methods) {
-				if (method.BodyRegion.End.Line <= 0)
-					continue;
-				yield return new FoldingRegion (method.BodyRegion, FoldType.Member);
-			}
+			foreach (IMethod method in type.Methods)
+				if (!IncompleteOrSingleLine (method.BodyRegion))
+					yield return new FoldingRegion (method.BodyRegion, FoldType.Member);
 			
-			foreach (IProperty property in type.Properties) {
-				if (property.BodyRegion.End.Line <= 0)
-					continue;
-				yield return new FoldingRegion (property.BodyRegion, FoldType.Member);
-			}
+			foreach (IProperty property in type.Properties)
+				if (!IncompleteOrSingleLine (property.BodyRegion))
+					yield return new FoldingRegion (property.BodyRegion, FoldType.Member);
+		}
+		
+		static bool IncompleteOrSingleLine (DomRegion region)
+		{
+			return region.Start.Line < 0 || region.End.Line <= region.Start.Line;
 		}
 		
 		public static FoldingRegion ToFold (this IEnumerable<IUsing> usings)
