@@ -1,3 +1,8 @@
+2009-08-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug
+	  534735 - Write-permission cleared on save".
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/IdeViMode.cs:

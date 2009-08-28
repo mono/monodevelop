@@ -68,7 +68,6 @@ namespace MonoDevelop.SourceEditor
 		FileSystemWatcher fileSystemWatcher;
 		static bool isInWrite = false;
 		DateTime lastSaveTime;
-		object attributes; // Contains platform specific file attributes
 		string loadedMimeType;
 		internal object MemoryProbe = Counters.SourceViewsInMemory.CreateMemoryProbe ();
 		
@@ -238,6 +237,13 @@ namespace MonoDevelop.SourceEditor
 
 			isInWrite = true;
 			try {
+				object attributes = null;
+				try {
+					attributes = DesktopService.GetFileAttributes (fileName);
+				} catch (Exception e) {
+					LoggingService.LogWarning ("Can't get file attributes", e);
+				}
+
 				TextFile.WriteFile (fileName, Document.Text, encoding);
 				lastSaveTime = File.GetLastWriteTime (fileName);
 				try {
@@ -270,11 +276,6 @@ namespace MonoDevelop.SourceEditor
 			// Handle the "reload" case.
 			if (autoSave.FileName == fileName) {
 				autoSave.RemoveAutoSaveFile ();
-			}
-			try {
-				attributes = DesktopService.GetFileAttributes (fileName);
-			} catch (Exception e) {
-				LoggingService.LogWarning ("Can't get file attributes", e);
 			}
 			autoSave.FileName = fileName;
 			if (warnOverwrite) {
