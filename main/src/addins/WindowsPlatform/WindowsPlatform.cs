@@ -88,6 +88,16 @@ namespace MonoDevelop.Platform
 			}
 			return pix;
 		}
+
+		protected override string OnGetMimeTypeDescription (string mimeType)
+		{
+			if (mimeType == "text/plain")
+				return "Text document";
+			if (mimeType == "application/xml")
+				return "XML document";
+			else
+				return mimeType;
+		}
 		
 		public Gdk.Pixbuf CreateFromResource (Bitmap bitmap)
 		{
