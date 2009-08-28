@@ -1,5 +1,10 @@
 2009-08-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Created identifier for full name.
+
+2009-08-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Only call Show
 	  instead of ShowAll for lazy pad creation.
 

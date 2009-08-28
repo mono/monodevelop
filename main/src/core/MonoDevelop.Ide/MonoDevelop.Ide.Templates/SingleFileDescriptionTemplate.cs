@@ -294,8 +294,8 @@ namespace MonoDevelop.Ide.Templates
 			 	//remove all extensions
 				while (Path.GetExtension (identifier).Length > 0)
 					identifier = Path.GetFileNameWithoutExtension (identifier);
-			 	
-				tags ["Name"] = CreateIdentifierName (identifier);
+			 	identifier = CreateIdentifierName (identifier);
+				tags ["Name"] = identifier;
 				tags ["FullName"] = ns.Length > 0 ? ns + "." + identifier : identifier;
 				
 				//some .NET languages may be able to use keywords as identifiers if they're escaped
