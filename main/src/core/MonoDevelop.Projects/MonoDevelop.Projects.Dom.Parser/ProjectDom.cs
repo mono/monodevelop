@@ -349,15 +349,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		void GetNamespaceContentsRec (List<IMember> result, HashSet<ProjectDom> visited, IEnumerable<string> subNamespaces, bool caseSensitive)
-		{
-			if (!visited.Add (this))
-				return;
-			GetNamespaceContentsInternal (result, subNamespaces, caseSensitive);
-			foreach (ProjectDom reference in References)
-				reference.GetNamespaceContentsRec (result, visited, subNamespaces, caseSensitive);
-		}
-		
 		internal virtual void GetNamespaceContentsInternal (List<IMember> result, IEnumerable<string> subNamespaces, bool caseSensitive)
 		{
 			foreach (IType type in Types) {
@@ -389,10 +380,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			List<IMember> result = new List<IMember> ();
 			HashSet<string> uniqueNamespaces = new HashSet<string> (subNamespaces);
-			if (includeReferences)
-				GetNamespaceContentsRec (result, new HashSet<ProjectDom> (), uniqueNamespaces, caseSensitive);
-			else
-				GetNamespaceContentsInternal (result, uniqueNamespaces, caseSensitive);
+			GetNamespaceContentsInternal (result, uniqueNamespaces, caseSensitive);
+			if (includeReferences) {
+				foreach (ProjectDom reference in References)
+					reference.GetNamespaceContentsInternal (result, uniqueNamespaces, caseSensitive);
+			}
 			return result;
 		}
 		

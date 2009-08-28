@@ -1,3 +1,8 @@
+2009-08-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed "Bug
+	  534678 - Extra namespaces available in Intellisense".
+
 2009-08-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/UnknownProjectVersionException.cs:
