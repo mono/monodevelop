@@ -63,6 +63,16 @@ namespace PyBinding.Parser
 			set;
 		}
 		
+		public int Depth {
+			get {
+				int i = 0;
+				foreach (var c in FullName)
+					if (c == '.')
+						i++;
+				return i;
+			}
+		}
+		
 		public string Documentation {
 			get;
 			set;
@@ -81,9 +91,10 @@ namespace PyBinding.Parser
 				var command = new SqliteCommand ();
 				command.CommandText =
 					"INSERT OR REPLACE into Items (" +
-					"FullName, FileName, LineNumber, ItemType, Pydoc, Extra) " +
-					"VALUES (@FullName, @FileName, @LineNumber, @ItemType, @Pydoc, @Extra)";
+					"FullName, Depth, FileName, LineNumber, ItemType, Pydoc, Extra) " +
+					"VALUES (@FullName, @Depth, @FileName, @LineNumber, @ItemType, @Pydoc, @Extra)";
 				command.Parameters.Add ("FullName", DbType.String);
+				command.Parameters.Add ("Depth", DbType.Int32);
 				command.Parameters.Add ("FileName", DbType.String);
 				command.Parameters.Add ("LineNumber", DbType.Int32);
 				command.Parameters.Add ("ItemType", DbType.Int32);
@@ -102,6 +113,7 @@ namespace PyBinding.Parser
 			{
 				command.Connection = conn;
 				command.Parameters["FullName"].Value = FullName;
+				command.Parameters["Depth"].Value = Depth;
 				command.Parameters["FileName"].Value = FileName;
 				command.Parameters["LineNumber"].Value = LineNumber;
 				command.Parameters["ItemType"].Value = (int)ItemType;

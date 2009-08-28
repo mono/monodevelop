@@ -44,6 +44,10 @@ namespace PyBinding.Parser
 	public class ParserDatabase
 	{
 		static readonly TimeSpan s_lockTimeout = TimeSpan.FromSeconds (60);
+		static readonly int s_version = 1;
+		static SqliteCommand s_RemoveByFilePrefix;
+		static SqliteCommand s_Find;
+		static SqliteCommand s_FindWithType;
 		
 		ReaderWriterLock m_rwLock;
 		string m_FileName;
@@ -59,9 +63,32 @@ namespace PyBinding.Parser
 			get { return m_FileName; }
 		}
 		
+		string VersionFile {
+			get {
+				return m_FileName + ".version";
+			}
+		}
+		
+		bool NeedsUpgrade {
+			get {
+				if (!File.Exists (VersionFile))
+					return true;
+				int version;
+				string content = File.ReadAllText (VersionFile).Trim ();
+				if (!Int32.TryParse (content, out version))
+					return true;
+				return version != s_version;
+			}
+		}
+		
+		string ConnStrForFile (string filename)
+		{
+			return String.Format ("Data Source={0}", filename);
+		}
+		
 		public void Open ()
 		{
-			string connString = String.Format ("Data Source={0}", m_FileName);
+			string connString = ConnStrForFile (m_FileName);
 			
 			var dirInfo = new FileInfo (m_FileName).Directory;
 			if (!dirInfo.Exists)
@@ -69,46 +96,82 @@ namespace PyBinding.Parser
 			
 			m_rwLock.AcquireWriterLock (s_lockTimeout);
 			
-			if (m_conn == null)
+			try {
+				// Backup if needed
+				var backup = m_FileName + ".bak";
+				var needsUpgrade = NeedsUpgrade;
+				if (needsUpgrade)
+					File.Move (m_FileName, backup);
+				
+				// Build
 				m_conn = new SqliteConnection (connString);
-			m_conn.Open ();
-			EnsureTables ();
-			
-			m_rwLock.ReleaseWriterLock ();
+				m_conn.Open ();
+				EnsureTables ();
+				
+				if (needsUpgrade) {
+					File.WriteAllText (m_FileName + ".version", String.Format ("{0}", s_version));
+					
+					// Open backup database
+					var conn = new SqliteConnection (ConnStrForFile (backup));
+					conn.Open ();
+					
+					// Copy the database in a thread
+					ThreadPool.QueueUserWorkItem (delegate {
+						try {
+							this.CopyDatabase (conn);
+						} catch (Exception ex) {
+							Console.WriteLine (ex.ToString ());
+						}
+						
+						conn.Close ();
+						conn.Dispose ();
+						File.Delete (backup);
+					});
+				}
+			}
+			finally {
+				m_rwLock.ReleaseWriterLock ();
+			}
 		}
 		
 		public void Close ()
 		{
 			m_rwLock.AcquireWriterLock (s_lockTimeout);
-			m_conn.Close ();
-			m_rwLock.ReleaseWriterLock ();
+			try {
+				m_conn.Close ();
+			}
+			finally {
+				m_rwLock.ReleaseWriterLock ();
+			}
 		}
 		
 		public void Add (ParserItem item)
 		{
 			m_rwLock.AcquireWriterLock (s_lockTimeout);
-			item.Serialize (m_conn);
-			m_rwLock.ReleaseWriterLock ();
+			try {
+				item.Serialize (m_conn);
+			}
+			finally {
+				m_rwLock.ReleaseWriterLock ();
+			}
 		}
 		
 		public void AddRange (IEnumerable<ParserItem> items)
 		{
 			m_rwLock.AcquireWriterLock (s_lockTimeout);
-			foreach (var item in items)
-				item.Serialize (m_conn);
-			m_rwLock.ReleaseWriterLock ();
+			try {
+				foreach (var item in items)
+					item.Serialize (m_conn);
+			} finally {
+				m_rwLock.ReleaseWriterLock ();
+			}
 		}
-		
-		static SqliteCommand s_Find;
-		static SqliteCommand s_FindWithType;
 		
 		public IEnumerable<ParserItem> Find (string prefix)
 		{
-			m_rwLock.AcquireReaderLock (s_lockTimeout);
-			
 			if (s_Find == null) {
 				var command = new SqliteCommand ();
-				command.CommandText = "SELECT * FROM Items WHERE FullName LIKE @FullName;";
+				command.CommandText = "SELECT " + s_ItemColumns + " FROM Items WHERE FullName LIKE @FullName;";
 				command.CommandType = CommandType.Text;
 				command.Parameters.Add ("FullName", DbType.String);
 				s_Find = command;
@@ -117,8 +180,6 @@ namespace PyBinding.Parser
 			var find = s_Find.Clone () as SqliteCommand;
 			find.Connection = m_conn;
 			find.Parameters ["FullName"].Value = prefix.Replace ("%", "\\%") + "%";
-			
-			m_rwLock.ReleaseReaderLock ();
 			
 			using (var reader = find.ExecuteReader ())
 			{
@@ -131,31 +192,41 @@ namespace PyBinding.Parser
 			}
 		}
 		
+		const string s_ItemColumns = "FullName, FileName, LineNumber, ItemType, PyDoc, Extra";
+		
 		public IEnumerable<ParserItem> Find (string prefix, ParserItemType itemType)
 		{
-			if (itemType == ParserItemType.Any) {
-				foreach (var item in Find (prefix))
-					yield return item;
-				yield break;
-			}
-			
-			m_rwLock.AcquireReaderLock (s_lockTimeout);
-			
+			foreach (var item in Find (prefix, itemType, -1))
+				yield return item;
+		}
+		
+		public IEnumerable<ParserItem> Find (string prefix, ParserItemType itemType, int depth)
+		{
 			if (s_FindWithType == null) {
 				var command = new SqliteCommand ();
-				command.CommandText = "SELECT * FROM Items WHERE ItemType = @ItemType AND FullName LIKE @FullName;";
+				command.CommandText = "SELECT " + s_ItemColumns + " FROM Items WHERE FullName LIKE @FullName";
 				command.CommandType = CommandType.Text;
 				command.Parameters.Add ("FullName", DbType.String);
 				command.Parameters.Add ("ItemType", DbType.Int32);
-				s_FindWithType = command;
+				s_FindWithType = command; // Race condition shouldn't matter
 			}
 			
 			var findWithType = s_FindWithType.Clone () as SqliteCommand;
+			
+			if (itemType != ParserItemType.Any) {
+				findWithType.CommandText += " AND ItemType == @ItemType";
+				findWithType.Parameters.Add ("ItemType", DbType.Int32);
+				findWithType.Parameters ["ItemType"].Value = (int)itemType;
+			}
+			
+			if (depth >= 0) {
+				findWithType.CommandText += " AND Depth == @Depth";
+				findWithType.Parameters.Add ("Depth", DbType.Int32);
+				findWithType.Parameters ["Depth"].Value = depth;
+			}
+			
 			findWithType.Connection = m_conn;
 			findWithType.Parameters ["FullName"].Value = prefix.Replace ("%", "\\%") + "%";
-			findWithType.Parameters ["ItemType"].Value = (int)itemType;
-			
-			m_rwLock.ReleaseReaderLock ();
 			
 			using (var reader = findWithType.ExecuteReader ())
 			{
@@ -167,8 +238,6 @@ namespace PyBinding.Parser
 				}
 			}
 		}
-		
-		static SqliteCommand s_RemoveByFilePrefix;
 		
 		public void RemoveByFilePrefix (string prefix)
 		{
@@ -196,6 +265,43 @@ namespace PyBinding.Parser
 			
 			foreach (string commandText in schemaSql.Split (';'))
 				new SqliteCommand (commandText, m_conn).ExecuteNonQuery ();
+		}
+		
+		void CopyDatabase (SqliteConnection src)
+		{
+			Console.WriteLine ("Migrating python completion database to version {0}", s_version);
+			
+			int batchSize = 100;
+			var cmd = new SqliteCommand ("SELECT " + s_ItemColumns + " FROM Items;", src);
+			var reader = cmd.ExecuteReader ();
+			int i = 0;
+			var items = new List<ParserItem> ();
+			
+			var rowsCommand = new SqliteCommand ("SELECT count(*) FROM Items;", src);
+			var count = (long)rowsCommand.ExecuteScalar ();
+			
+			var progress = MonoDevelop.Ide.Gui.IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Python Completion Database", Gtk.Stock.Execute);
+			progress.BeginTask ("Migrating completion database", (int)count);
+			
+			while (reader.Read ())
+			{
+				var item = new ParserItem ();
+				item.Deserialize (reader);
+				items.Add (item);
+				i++;
+				if (i % batchSize == 0) {
+					AddRange (items);
+					progress.Step (items.Count);
+					items.Clear ();
+				}
+			}
+			
+			if (items.Count > 0)
+				AddRange (items);
+			progress.Step (items.Count);
+			items.Clear ();
+			
+			progress.Dispose ();
 		}
 	}
 }

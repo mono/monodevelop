@@ -1,3 +1,20 @@
+2009-08-28  Christian Hergert  <chris@dronelabs.com>
+
+	* PyBinding.Gui/PythonEditorCompletion.cs: Do completion on \t
+	  and \n. Keep track of the number of "." in the query and
+	  limit our search depth to save us a huge amount of object
+	  creations and deserializations.
+
+	* Resources/Schema.sql: Add a Depth field that includes
+	  precalculated number of "." in the FullName and Index it. We
+	  can then search on this during resolve time.
+
+	* PyBinding.Parser/ParserItem.cs: Add Depth field.
+
+	* PyBinding.Parser/ParserDatabase.cs: Add Depth field and
+	  upgrade database if old format is discovered. Also allow for
+	  searching with a specific depth to limit the result set.
+
 2009-08-27  Christian Hergert  <chris@dronelabs.com>
 
 	* PyBinding.Parser/ParserDatabase.cs: Use shared timespan for

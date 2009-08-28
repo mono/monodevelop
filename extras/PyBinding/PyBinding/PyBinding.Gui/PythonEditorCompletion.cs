@@ -75,6 +75,8 @@ namespace PyBinding.Gui
 			case '(':
 			case ' ':
 			case '=':
+			case '\t':
+			case '\n':
 			case '.':
 				PythonParsedDocument doc = Document.ParsedDocument as PythonParsedDocument;
 				if (doc != null)
@@ -126,7 +128,7 @@ namespace PyBinding.Gui
 			var parts = triggerLine.Split (' ');
 			
 			// "from blah "
-			if (inFrom && parts.Length == 2 && completionChar == ' ') {
+			if (inFrom && parts.Length == 2 && parts [parts.Length-1].Trim ().Length > 0 && completionChar == ' ') {
 				return new CompletionDataList (new ICompletionData[] { new CompletionData ("import") });
 			}
 			// "from blah import "
@@ -158,15 +160,19 @@ namespace PyBinding.Gui
 					triggerWord = triggerLine.Substring (triggerLine.LastIndexOf ('(') + 1);
 			}
 			
+			// limit the depth of search to number of "." in trigger
+			// "xml." has depth of 1 so anything matching ^xml. and no more . with match
+			int depth = 0;
+			foreach (var c in triggerWord)
+				if (c == '.')
+					depth++;
+			
 			// anything in the sqlite store
 			if (!String.IsNullOrEmpty (triggerWord)) {
 				// todo: try to complete on class/module/func/attr data
-				// todo: limit to just the next word rather than full phrase
 				
 				return new CompletionDataList (
-					from ParserItem item in m_site.Database.Find (triggerWord)
-					// TODO this is super wasteful on memory
-				    where !item.FullName.Substring (triggerWord.Length).Contains ('.')
+					from ParserItem item in m_site.Database.Find (triggerWord, ParserItemType.Any, depth)
 					select CreateCompletionData (item, triggerWord))
 					;
 			}
@@ -174,9 +180,7 @@ namespace PyBinding.Gui
 			ParserItemType itemType = String.IsNullOrEmpty (triggerWord) ? ParserItemType.Module : ParserItemType.Any;
 			
 			return new CompletionDataList (
-				from ParserItem item in m_site.Database.Find ("", itemType)
-				// Super wasteful
-				where !item.FullName.Contains ('.')
+				from ParserItem item in m_site.Database.Find ("", itemType, depth)
 				select CreateCompletionData (item, triggerWord))
 				;
 		}
