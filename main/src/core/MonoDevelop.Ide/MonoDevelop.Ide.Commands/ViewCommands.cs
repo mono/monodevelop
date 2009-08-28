@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Commands
 				CommandInfo ci = new CommandInfo(pad.Title);
 				ci.Icon = pad.Icon;
 				ci.UseMarkup = true;
-				ci.Description = GettextCatalog.GetString ("Show " + pad.Title);
+				ci.Description = GettextCatalog.GetString ("Show {0}", pad.Title);
 				ci.Checked = pad.Visible;
 
 				ActionCommand cmd = IdeApp.CommandService.GetActionCommand ("Pad|" + pad.Id);
