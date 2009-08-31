@@ -1,3 +1,9 @@
+2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AssemblyBrowser.addin.xml: Don't use the text
+	  editor display binding id as reference for registering the
+	  designer view. Removed unused supportedFormats attribute.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs:

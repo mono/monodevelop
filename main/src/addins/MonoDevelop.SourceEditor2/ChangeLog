@@ -1,3 +1,8 @@
+2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor.addin.xml: Insert the text editor
+	  extension node in the default display binding group.
+
 2009-08-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed "Bug

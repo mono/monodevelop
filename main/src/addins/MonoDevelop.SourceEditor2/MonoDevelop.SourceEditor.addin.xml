@@ -89,9 +89,8 @@
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding 
-			id = "NewText2"
-			insertbefore ="NewText"
-			supportedformats = "Text Files,Source Files"
+			id = "TextEditor"
+			insertafter ="DefaultDisplayBinding"
 			class = "MonoDevelop.SourceEditor.SourceEditorDisplayBinding" />
 	</Extension>
 	
