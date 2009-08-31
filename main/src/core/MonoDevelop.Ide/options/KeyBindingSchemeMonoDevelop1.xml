@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<scheme version="1.0">
-	<binding command="MonoDevelop.Ide.Commands.EditCommands.Redo" shortcut="Control+Y" />
-	<binding command="MonoDevelop.Ide.Commands.FileCommands.ReloadFile" shortcut="Control+U" />
-	<binding command="MonoDevelop.Ide.Commands.SearchCommands.FindNext" shortcut="F3" />
-	<binding command="MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" shortcut="Shift+F3" />
-</scheme>
