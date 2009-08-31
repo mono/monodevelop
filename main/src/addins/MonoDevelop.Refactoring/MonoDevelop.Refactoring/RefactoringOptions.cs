@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using System.Text;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Refactoring
 {
@@ -53,6 +54,12 @@ namespace MonoDevelop.Refactoring
 		}
 		
 		public ResolveResult ResolveResult {
+			get;
+			set;
+		}
+		
+		// file provider for unit test purposes.
+		public ITextFileProvider TestFileProvider {
 			get;
 			set;
 		}

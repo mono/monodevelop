@@ -1,5 +1,12 @@
 2009-08-31  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/RefactoringOptions.cs:
+	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
+	* MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs:
+	  Worked on unit tests.
+
+2009-08-31  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
 	* MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs:
 	  Backing store commands did show up in too many context

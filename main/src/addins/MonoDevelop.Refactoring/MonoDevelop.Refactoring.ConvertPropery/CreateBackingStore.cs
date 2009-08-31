@@ -172,7 +172,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 //				return "_" + baseName;
 //			if (number == 2)
 //				return "m_" + baseName;
-			return baseName + (number > 0 ? number.ToString () : "");
+			return baseName + (number > 0 ? (number + 1).ToString () : "");
 		}
 
 
