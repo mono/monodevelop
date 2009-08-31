@@ -37,6 +37,8 @@ namespace MonoDevelop.Refactoring.Rename
 	{
 		protected override void Run (RefactoringOptions options)
 		{
+			if (options.SelectedItem == null)
+				return;
 			new RenameRefactoring ().Run (options);
 		}
 	}

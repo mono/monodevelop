@@ -1,5 +1,19 @@
 2009-08-31  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
+	* MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs:
+	  Backing store commands did show up in too many context
+	  menus.
+
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: Resolve
+	  namespace can now resolve conflicts.
+
+	* MonoDevelop.Refactoring.Rename/RenameHandler.cs:
+	* MonoDevelop.Refactoring.Rename/RenameItemDialog.cs: Fixed
+	  possible rename exceptions.
+
+2009-08-31  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/Change.cs:
 	* MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs:
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:

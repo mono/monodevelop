@@ -90,9 +90,11 @@ namespace MonoDevelop.Refactoring.Rename
 				entry.Text = lvar.Name;
 				this.fileName = lvar.FileName;
 			} else {
-				IParameter par = (IParameter)options.SelectedItem;
-				entry.Text = par.Name;
-				this.fileName = par.DeclaringMember.DeclaringType.CompilationUnit.FileName;
+				IParameter par = options.SelectedItem as IParameter;
+				if (par != null) {
+					entry.Text = par.Name;
+					this.fileName = par.DeclaringMember.DeclaringType.CompilationUnit.FileName;
+				}
 			}
 			entry.SelectRegion (0, -1);
 

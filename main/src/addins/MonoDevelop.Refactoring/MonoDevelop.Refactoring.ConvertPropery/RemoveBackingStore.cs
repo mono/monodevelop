@@ -51,7 +51,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			if (resolveResult == null)
 				return false;
 			IProperty property = resolveResult.ResolvedMember as IProperty;
-			if (property == null || !property.HasGet || property.DeclaringType == null)
+			if (property == null || resolveResult.CallingMember == null || resolveResult.CallingMember.FullName != property.FullName || !property.HasGet || property.DeclaringType == null)
 				return false;
 			
 			TextEditorData data = options.GetTextEditorData ();

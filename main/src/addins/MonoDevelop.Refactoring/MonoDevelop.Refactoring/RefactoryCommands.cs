@@ -169,24 +169,25 @@ namespace MonoDevelop.Refactoring
 					eitem = null;
 				}
 			}
-			if (item == null && resolveResult != null && resolveResult.ResolvedType != null) {
-				CommandInfoSet resolveMenu = new CommandInfoSet ();
-				resolveMenu.Text = GettextCatalog.GetString ("Resolve");
-				IReturnType returnType = resolveResult.ResolvedType;
-				if (returnType == null || string.IsNullOrEmpty (returnType.FullName))
-					returnType = new DomReturnType (resolveResult.ResolvedExpression.Expression);
-
+			if (resolveResult != null && resolveResult.ResolvedType != null) {
+				IReturnType returnType = new DomReturnType (resolveResult.ResolvedExpression.Expression);
 				List<string> namespaces = new List<string> (ctx.ResolvePossibleNamespaces (returnType));
-				foreach (string ns in namespaces) {
-					CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
-					info.Icon = MonoDevelop.Core.Gui.Stock.AddNamespace;
+				if (item == null || namespaces.Count > 1) {
+					CommandInfoSet resolveMenu = new CommandInfoSet ();
+					resolveMenu.Text = GettextCatalog.GetString ("Resolve");
+					if (item == null) {
+						foreach (string ns in namespaces) {
+							CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
+							info.Icon = MonoDevelop.Core.Gui.Stock.AddNamespace;
+						}
+						resolveMenu.CommandInfos.AddSeparator ();
+					}
+					foreach (string ns in namespaces) {
+						resolveMenu.CommandInfos.Add (ns, new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).ResolveName));
+					}
+					if (namespaces.Count > 0)
+						ainfo.Add (resolveMenu, null);
 				}
-				resolveMenu.CommandInfos.AddSeparator ();
-				foreach (string ns in namespaces) {
-					resolveMenu.CommandInfos.Add (ns, new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).ResolveName));
-				}
-				if (namespaces.Count > 0)
-					ainfo.Add (resolveMenu, null);
 			}
 			RefactoringOptions options = new RefactoringOptions () {
 				Document = doc,
