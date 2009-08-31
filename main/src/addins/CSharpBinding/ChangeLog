@@ -1,3 +1,7 @@
+2009-08-31  Mike Krüger  <mkrueger@novell.com>
+
+	* Parser/CodeGenerator.cs: Fixed unit tests.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpAmbience.cs: Improved attribute output.
