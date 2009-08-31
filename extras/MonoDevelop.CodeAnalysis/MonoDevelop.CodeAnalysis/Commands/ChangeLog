@@ -1,5 +1,0 @@
-2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
-
-	* CodeAnalysisCommands.cs: Track merge of the project pad
-	  context menu.
-
