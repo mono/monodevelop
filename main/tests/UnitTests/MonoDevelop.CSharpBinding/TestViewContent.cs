@@ -115,13 +115,13 @@ namespace MonoDevelop.CSharpBinding.Tests
 		}
 		
 		public string SelectedText { get { return ""; } set { } }
-		int cursorPosition = 0;
+		
 		public int CursorPosition {
 			get {
-				return cursorPosition;
+				return data.Caret.Offset;
 			}
 			set {
-				cursorPosition = value;
+				data.Caret.Offset = value;
 			}
 		}
 

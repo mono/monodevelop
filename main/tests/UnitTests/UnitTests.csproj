@@ -195,6 +195,10 @@
     <Compile Include="MonoDevelop.Refactoring\ExtractMethodTests.cs" />
     <Compile Include="MonoDevelop.Refactoring\CreateBackingStoreTests.cs" />
     <Compile Include="MonoDevelop.Refactoring\RemoveBackingStoreTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\DeclareLocalTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\IntegrateTemporaryVariableTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\IntroduceConstantRefactoringTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\IntroduceFormatItemRefactoringTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

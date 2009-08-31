@@ -74,7 +74,11 @@ FILES =  \
 	MonoDevelop.Projects/TextFormatterTests.cs \
 	MonoDevelop.Projects/WorkspaceTests.cs \
 	MonoDevelop.Refactoring/CreateBackingStoreTests.cs \
+	MonoDevelop.Refactoring/DeclareLocalTests.cs \
 	MonoDevelop.Refactoring/ExtractMethodTests.cs \
+	MonoDevelop.Refactoring/IntegrateTemporaryVariableTests.cs \
+	MonoDevelop.Refactoring/IntroduceConstantRefactoringTests.cs \
+	MonoDevelop.Refactoring/IntroduceFormatItemRefactoringTests.cs \
 	MonoDevelop.Refactoring/RemoveBackingStoreTests.cs \
 	MonoDevelop.Xml.StateEngine/AspNetParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/HtmlParsingTests.cs \

@@ -97,10 +97,10 @@ namespace MonoDevelop.Refactoring.Tests
 			doc.ParsedDocument = new NRefactoryParser ().Parse (null, sev.ContentName, parsedText);
 			foreach (var e in doc.ParsedDocument.Errors)
 				Console.WriteLine (e);
-			
-			if (selectionStart >= 0) {
+			if (cursorPosition >= 0)
+				doc.TextEditor.CursorPosition = cursorPosition;
+			if (selectionStart >= 0) 
 				doc.TextEditor.Select (selectionStart, selectionEnd);
-			}
 			
 			NRefactoryResolver resolver = new NRefactoryResolver (dom, 
 			                                                      doc.ParsedDocument.CompilationUnit, 
@@ -108,13 +108,18 @@ namespace MonoDevelop.Refactoring.Tests
 			                                                      "a.cs");
 			
 			ResolveResult resolveResult = endPos >= 0 ? resolver.Resolve (new NewCSharpExpressionFinder (dom).FindFullExpression (editorText, cursorPosition + 1), new DomLocation (doc.TextEditor.CursorLine, doc .TextEditor.CursorColumn)) : null;
-			Console.WriteLine ("RR:" + resolveResult);
 			RefactoringOptions result = new RefactoringOptions {
 				Document = doc,
 				Dom = dom,
 				ResolveResult = resolveResult,
 				SelectedItem = null
 			};
+			if (resolveResult is MemberResolveResult)
+				result.SelectedItem = ((MemberResolveResult)resolveResult).ResolvedMember;
+			if (resolveResult is LocalVariableResolveResult)
+				result.SelectedItem = ((LocalVariableResolveResult)resolveResult).LocalVariable;
+			if (resolveResult is ParameterResolveResult)
+				result.SelectedItem = ((ParameterResolveResult)resolveResult).Parameter;
 			result.TestFileProvider = new FileProvider (result);
 			return result;
 		}
@@ -292,3 +297,4 @@ namespace MonoDevelop.Refactoring.Tests
 		
 	}
 }
+ 

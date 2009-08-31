@@ -2,6 +2,18 @@
 
 	* Makefile.am:
 	* UnitTests.csproj:
+	* MonoDevelop.Refactoring/DeclareLocalTests.cs:
+	* MonoDevelop.CSharpBinding/TestViewContent.cs:
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs:
+	* MonoDevelop.Refactoring/IntegrateTemporaryVariableTests.cs:
+	* MonoDevelop.Refactoring/IntroduceConstantRefactoringTests.cs:
+	* MonoDevelop.Refactoring/IntroduceFormatItemRefactoringTests.cs:
+	  Added some refactoring unit tests.
+
+2009-08-31  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
 	* MonoDevelop.Refactoring/ExtractMethodTests.cs:
 	* MonoDevelop.Refactoring/CreateBackingStoreTests.cs:
 	* MonoDevelop.Refactoring/RemoveBackingStoreTests.cs: Worked
