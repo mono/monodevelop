@@ -104,12 +104,14 @@ namespace MonoDevelop.Core.Gui
 			if ((mm.MethodBase.Name == "FieldGetter" || mm.MethodBase.Name == "FieldSetter") && mm.MethodBase.DeclaringType == typeof(object)) {
 				return nextSink.SyncProcessMessage (msg);
 			}
+
+			MethodBase mb = GetRealMethod (mm);
 			
-			if (mm.MethodBase.IsDefined (typeof(FreeDispatchAttribute), true)) {
+			if (mb.IsDefined (typeof(FreeDispatchAttribute), true)) {
 				return nextSink.SyncProcessMessage (msg);
 			}
 
-			if (mm.MethodBase.IsDefined (typeof(AsyncDispatchAttribute), true)) {
+			if (mb.IsDefined (typeof(AsyncDispatchAttribute), true)) {
 				AsyncProcessMessage (msg, DummySink.Instance);
 				return new ReturnMessage (null, null, 0, null, (IMethodCallMessage)mm);
 			}
@@ -125,6 +127,27 @@ namespace MonoDevelop.Core.Gui
 			}
 			
 			return md.OutMessage;
+		}
+
+		MethodBase GetRealMethod (IMethodMessage mm)
+		{
+			if (PropertyService.IsWindows) {
+				// HACK: When running on .NET, mm.MethodBase returns the method for the type of the proxy
+				// instead of the target type. There is no legal way of getting the target type, so we have
+				// to use reflection here.
+				FieldInfo fi = mm.GetType ().GetField ("_ID", BindingFlags.NonPublic | BindingFlags.Instance);
+				if (fi != null) {
+					object id = fi.GetValue (mm);
+					PropertyInfo pi = id.GetType ().GetProperty ("ServerType", BindingFlags.NonPublic | BindingFlags.Instance);
+					if (pi != null) {
+						Type t = (Type) pi.GetValue (id, null);
+						MethodBase met = t.GetMethod (mm.MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, (Type[])mm.MethodSignature, null);
+						if (met != null)
+							return met;
+					}
+				}
+			}
+			return mm.MethodBase;
 		}
 		
 		void DispatchMessage (object data)

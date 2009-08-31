@@ -1,3 +1,11 @@
+2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui\SyncContextAttribute.cs: When running
+	  on .NET, IMethodMessage.MethodBase returns the method for
+	  the type of the proxy, instead of the target type. There is
+	  no legal way of getting the target type, so we have to use
+	  reflection here to get it.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Fixed
