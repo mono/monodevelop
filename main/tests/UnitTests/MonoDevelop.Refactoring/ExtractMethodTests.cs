@@ -144,13 +144,85 @@ namespace MonoDevelop.Refactoring.Tests
 			return result.ToString ();
 		}
 
-		
-		[Test()]
-		public void ExtractMethodTest ()
+		void TestExtractMethod (string inputString, string outputString)
 		{
 			ExtractMethodRefactoring refactoring = new ExtractMethodRefactoring ();
-			RefactoringOptions options = CreateRefactoringOptions (
-@"class TestClass
+			RefactoringOptions options = CreateRefactoringOptions (inputString);
+			ExtractMethodRefactoring.ExtractMethodParameters parameters = refactoring.CreateParameters (options);
+			Assert.IsNotNull (parameters);
+			parameters.Name = "NewMethod";
+			List<Change> changes = refactoring.PerformChanges (options, parameters);
+			
+			string output = GetOutput (options, changes);
+			Assert.IsTrue (CompareSource (output, outputString), "Expected:" + Environment.NewLine + outputString + Environment.NewLine + "was:" + Environment.NewLine + output);
+		}
+		
+		[Test()]
+		public void ExtractMethodResultStatementTest ()
+		{
+			TestExtractMethod (@"class TestClass
+{
+	int member = 5;
+	void TestMethod ()
+	{
+		int i = 5;
+		<- i = member + 1; ->
+		Console.WriteLine (i);
+	}
+}
+", @"class TestClass
+{
+	int member = 5;
+	void TestMethod ()
+	{
+		int i = 5;
+		i = NewMethod ();
+		Console.WriteLine (i);
+	}
+
+	int NewMethod ()
+	{
+		int i;
+		i = member + 1;
+		return i;
+	}
+}
+");
+		}
+		
+		[Test()]
+		public void ExtractMethodResultExpressionTest ()
+		{
+			TestExtractMethod (@"class TestClass
+{
+	int member =5;
+	void TestMethod ()
+	{
+		int i = <- member + 1 ->;
+		Console.WriteLine (i);
+	}
+}
+", @"class TestClass
+{
+	int member =5;
+	void TestMethod ()
+	{
+		int i = NewMethod ();
+		Console.WriteLine (i);
+	}
+
+	int NewMethod ()
+	{
+		return member + 1;
+	}
+}
+");
+		}
+		
+		[Test()]
+		public void ExtractMethodStaticResultStatementTest ()
+		{
+			TestExtractMethod (@"class TestClass
 {
 	void TestMethod ()
 	{
@@ -159,15 +231,7 @@ namespace MonoDevelop.Refactoring.Tests
 		Console.WriteLine (i);
 	}
 }
-");
-			ExtractMethodRefactoring.ExtractMethodParameters parameters = refactoring.CreateParameters (options);
-			Assert.IsNotNull (parameters);
-			parameters.Name = "NewMethod";
-			List<Change> changes = refactoring.PerformChanges (options, parameters);
-			
-			string output = GetOutput (options, changes);
-			Assert.IsTrue (CompareSource (output, 
-@"class TestClass
+", @"class TestClass
 {
 	void TestMethod ()
 	{
@@ -182,8 +246,35 @@ namespace MonoDevelop.Refactoring.Tests
 		return i;
 	}
 }
-"));
-//			Assert.IsTrue ()
+");
 		}
+		
+		[Test()]
+		public void ExtractMethodStaticResultExpressionTest ()
+		{
+			TestExtractMethod (@"class TestClass
+{
+	void TestMethod ()
+	{
+		int i = <- 5 + 1 ->;
+		Console.WriteLine (i);
+	}
+}
+", @"class TestClass
+{
+	void TestMethod ()
+	{
+		int i = NewMethod ();
+		Console.WriteLine (i);
+	}
+
+	static int NewMethod ()
+	{
+		return 5 + 1;
+	}
+}
+");
+		}
+		
 	}
 }

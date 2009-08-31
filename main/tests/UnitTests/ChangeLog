@@ -1,3 +1,8 @@
+2009-08-31  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs: Added some
+	  extract method unit tests.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/DomTests.cs: Fixed bug in unit test.
