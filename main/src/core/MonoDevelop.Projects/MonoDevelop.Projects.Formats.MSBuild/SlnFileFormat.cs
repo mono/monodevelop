@@ -422,7 +422,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			int lastLine = start + count - 2;
 			while (lineNum <= lastLine) {
 				if (!ReadDataNode (it, lines, lastLine, "", ref lineNum))
-					lastLine++;
+					lineNum++;
 			}
 			return it;
 		}
