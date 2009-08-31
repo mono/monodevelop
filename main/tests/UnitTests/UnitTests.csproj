@@ -193,6 +193,8 @@
     <Compile Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
     <Compile Include="MonoDevelop.Projects\DomTests.cs" />
     <Compile Include="MonoDevelop.Refactoring\ExtractMethodTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\CreateBackingStoreTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RemoveBackingStoreTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

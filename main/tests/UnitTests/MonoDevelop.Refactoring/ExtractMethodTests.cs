@@ -30,8 +30,6 @@ using MonoDevelop.CSharpBinding.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Gui.Completion;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharpBinding.Tests;
@@ -39,6 +37,7 @@ using MonoDevelop.Refactoring.ExtractMethod;
 using System.Collections.Generic;
 using MonoDevelop.CSharpBinding;
 using System.Text;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Refactoring.Tests
 {
@@ -47,13 +46,13 @@ namespace MonoDevelop.Refactoring.Tests
 	{
 		static int pcount = 0;
 		
-		static RefactoringOptions CreateRefactoringOptions (string text)
+		internal static RefactoringOptions CreateRefactoringOptions (string text)
 		{
 			int cursorPosition = -1;
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0) {
 				cursorPosition = endPos;
-				text = text.Substring (0, cursorPosition) + ' ' + text.Substring (cursorPosition + 1);
+				text = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
 			}
 			
 			int selectionStart = -1;
@@ -65,14 +64,18 @@ namespace MonoDevelop.Refactoring.Tests
 				selectionEnd = idx = text.IndexOf ("->");
 				
 				text = text.Substring (0, idx) + text.Substring (idx + 2);
+				if (cursorPosition < 0)
+					cursorPosition = selectionEnd;
 			}
-			if (cursorPosition < 0)
-				cursorPosition = selectionEnd;
+			
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			TestViewContent sev = new TestViewContent ();
-			DotNetProject project = new DotNetProject ("C#");
-			project.FileName = "/tmp/a" + pcount + ".csproj";
+	//		return new RefactoringOptions ();
 			
+			DotNetProject project = new DotNetProject ("C#");
+			Solution solution = new Solution ();
+			solution.RootFolder.Items.Add (project);
+			project.FileName = "/tmp/a" + pcount + ".csproj";
 			string file = "/tmp/test-file-" + (pcount++) + ".cs";
 			project.AddFile (file);
 			string parsedText = text;
@@ -90,6 +93,7 @@ namespace MonoDevelop.Refactoring.Tests
 			
 			tww.ViewContent = sev;
 			Document doc = new Document (tww);
+			
 			doc.ParsedDocument = new NRefactoryParser ().Parse (null, sev.ContentName, parsedText);
 			foreach (var e in doc.ParsedDocument.Errors)
 				Console.WriteLine (e);
@@ -97,12 +101,22 @@ namespace MonoDevelop.Refactoring.Tests
 			if (selectionStart >= 0) {
 				doc.TextEditor.Select (selectionStart, selectionEnd);
 			}
-			return new RefactoringOptions () {
+			
+			NRefactoryResolver resolver = new NRefactoryResolver (dom, 
+			                                                      doc.ParsedDocument.CompilationUnit, 
+			                                                      MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (sev), 
+			                                                      "a.cs");
+			
+			ResolveResult resolveResult = endPos >= 0 ? resolver.Resolve (new NewCSharpExpressionFinder (dom).FindFullExpression (editorText, cursorPosition + 1), new DomLocation (doc.TextEditor.CursorLine, doc .TextEditor.CursorColumn)) : null;
+			Console.WriteLine ("RR:" + resolveResult);
+			RefactoringOptions result = new RefactoringOptions {
 				Document = doc,
 				Dom = dom,
-				ResolveResult = null,
+				ResolveResult = resolveResult,
 				SelectedItem = null
 			};
+			result.TestFileProvider = new FileProvider (result);
+			return result;
 		}
 		
 		class FileProvider : MonoDevelop.Projects.Text.ITextFileProvider
@@ -120,14 +134,14 @@ namespace MonoDevelop.Refactoring.Tests
 			}
 		}
 			
-		static string GetOutput (RefactoringOptions options, List<Change> changes)
+		internal static string GetOutput (RefactoringOptions options, List<Change> changes)
 		{
 			RefactoringService.AcceptChanges (null, options.Dom, changes, new FileProvider (options));
 			return options.Document.TextEditor.Text;
 		}
 			
 		
-		static bool CompareSource (string code1, string code2)
+		internal static bool CompareSource (string code1, string code2)
 		{
 			return Strip (code1) == Strip (code2);
 		}

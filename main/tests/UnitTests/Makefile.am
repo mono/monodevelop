@@ -73,7 +73,9 @@ FILES =  \
 	MonoDevelop.Projects/TestProjectsChecks.cs \
 	MonoDevelop.Projects/TextFormatterTests.cs \
 	MonoDevelop.Projects/WorkspaceTests.cs \
+	MonoDevelop.Refactoring/CreateBackingStoreTests.cs \
 	MonoDevelop.Refactoring/ExtractMethodTests.cs \
+	MonoDevelop.Refactoring/RemoveBackingStoreTests.cs \
 	MonoDevelop.Xml.StateEngine/AspNetParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/HtmlParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/ParsingTests.cs \

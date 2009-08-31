@@ -1,5 +1,14 @@
 2009-08-31  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* UnitTests.csproj:
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs:
+	* MonoDevelop.Refactoring/CreateBackingStoreTests.cs:
+	* MonoDevelop.Refactoring/RemoveBackingStoreTests.cs: Worked
+	  on refactoring unit tests.
+
+2009-08-31  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/ExtractMethodTests.cs: Added some
 	  extract method unit tests.
 
