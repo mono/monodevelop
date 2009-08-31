@@ -67,6 +67,9 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			if (resolver == null || provider == null)
 				return false;
 			TextEditorData data = options.GetTextEditorData ();
+			if (data.IsSomethingSelected)
+				return provider.ParseText (data.SelectedText) is Expression;
+
 			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
 			string line = data.Document.GetTextAt (lineSegment);
 			Expression expression = provider.ParseExpression (line);
@@ -84,6 +87,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			"System.UInt16", "System.UInt32", "System.UInt64", "System.Single", "System.Double", "System.Decimal",
 			"System.String"
 		});
+		
 		public string GetSimpleTypeName (RefactoringOptions options, string fullTypeName)
 		{
 			if (builtInTypes.Contains (fullTypeName))
@@ -128,7 +132,56 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			if (resolver == null || provider == null)
 				return result;
 			TextEditorData data = options.GetTextEditorData ();
-			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
+			
+			ResolveResult resolveResult;
+			LineSegment lineSegment;
+			if (data.IsSomethingSelected) {
+				resolveResult = resolver.Resolve (new ExpressionResult (data.SelectedText), new DomLocation (data.Caret.Line, data.Caret.Column));
+				if (resolveResult == null)
+					return result;
+				string varName = CreateVariableName (resolveResult.ResolvedType);
+				TypeReference returnType;
+				if (resolveResult.ResolvedType == null) {
+					returnType = new TypeReference ("var");
+				} else {
+					returnType = resolveResult.ResolvedType.ConvertToTypeReference ();
+				}
+				options.ParseMember (resolveResult.CallingMember);
+				
+	/*			Statement lastStatement = null;
+				Location curLocation = new Location (data.Caret.Column, data.Caret.Line);
+				foreach (Statement statement in options.ParseMember (options.ResolveResult.CallingMember).Children) {
+					if (statement.StartLocation > curLocation) 
+						break;
+					lastStatement = statement;
+				}
+				if (lastStatement == null)
+					return result;
+				*/
+				
+				TextReplaceChange insert = new TextReplaceChange ();
+				insert.FileName = options.Document.FileName;
+				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
+				lineSegment = data.Document.GetLine (data.Caret.Line);
+				insert.Offset = lineSegment.Offset;
+				
+				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (ConvertToTypeRef (options, resolveResult.ResolvedType));
+				varDecl.Variables.Add (new VariableDeclaration (varName, provider.ParseExpression (data.SelectedText)));
+				insert.InsertedText =  options.GetWhitespaces (lineSegment.Offset) +provider.OutputNode (options.Dom, varDecl) + Environment.NewLine;
+				result.Add (insert);
+				
+				TextReplaceChange replace = new TextReplaceChange ();
+				replace.FileName = options.Document.FileName;
+				replace.Offset = data.SelectionRange.Offset;
+				replace.RemovedChars = data.SelectionRange.Length;
+				replace.InsertedText = varName;
+				result.Add (replace);
+				
+				
+				return result;
+			}
+
+			lineSegment = data.Document.GetLine (data.Caret.Line);
 			string line = data.Document.GetTextAt (lineSegment);
 
 			Expression expression = provider.ParseExpression (line);
@@ -136,14 +189,14 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			if (expression == null)
 				return result;
 
-			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
 
 			if (resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)) {
 				TextReplaceChange insert = new TextReplaceChange ();
 				insert.FileName = options.Document.FileName;
 				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
 				insert.Offset = lineSegment.Offset + options.GetWhitespaces (lineSegment.Offset).Length;
-				string varName = "a" + resolveResult.ResolvedType.Name;
+				string varName = CreateVariableName (resolveResult.ResolvedType);
 				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (ConvertToTypeRef (options, resolveResult.ResolvedType));
 				varDecl.Variables.Add (new VariableDeclaration (varName, expression));
 				insert.RemovedChars = expression.EndLocation.Column - 1;
@@ -155,6 +208,12 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			
 			return result;
 		}
+
+		static string CreateVariableName (MonoDevelop.Projects.Dom.IReturnType returnType)
+		{
+			return "a" + returnType.Name;
+		}
+
 
 		TypeReference ConvertToTypeRef (RefactoringOptions options, MonoDevelop.Projects.Dom.IReturnType returnType)
 		{

@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using System.Text;
 using MonoDevelop.Projects.Text;
+using ICSharpCode.NRefactory.Ast;
 
 namespace MonoDevelop.Refactoring
 {
@@ -95,6 +96,20 @@ namespace MonoDevelop.Refactoring
 		public MonoDevelop.Projects.Dom.Parser.IParser GetParser ()
 		{
 			return ProjectDomService.GetParser (Document.FileName, MimeType);
+		}
+		
+		public INode ParseMember (IMember member)
+		{
+			if (member == null || member.BodyRegion.IsEmpty)
+				return null;
+			INRefactoryASTProvider provider = GetASTProvider ();
+			if (provider == null) 
+				return null;
+			
+			int start = Document.TextEditor.GetPositionFromLineColumn (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
+			int end = Document.TextEditor.GetPositionFromLineColumn (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
+			string memberBody = Document.TextEditor.GetText (start, end);
+			return provider.ParseText (memberBody);
 		}
 		
 		public static string GetWhitespaces (Document document, int insertionOffset)
