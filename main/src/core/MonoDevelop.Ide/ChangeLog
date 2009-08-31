@@ -1,3 +1,10 @@
+2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BuildVariables.cs:
+	* icons/SplashScreen.png:
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Updated splash
+	  window.
+
 2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Revert lazy
