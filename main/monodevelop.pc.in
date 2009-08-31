@@ -2,6 +2,9 @@ prefix=@prefix@
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib/monodevelop
 GacPackage=false
+MonoAddinsRoot=${libdir}/bin
+MonoAddinsRegistry=[ApplicationData]/MonoDevelop
+MonoAddinsTestCommand=MonoDevelop.exe
                                                                                 
 Name: MonoDevelop
 Description: Free .NET Development Environment
