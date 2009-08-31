@@ -1,3 +1,10 @@
+2009-08-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Keychain.cs: API cleanup. Add a method for getting x509
+	  signing certs from the Apple keychain.
+
+	* Gui/IPhoneSigningKeyPanel.cs: API cleanup.
+
 2009-08-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MobileProvision.cs: Fix search path.

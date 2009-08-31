@@ -72,7 +72,7 @@ namespace MonoDevelop.IPhone.Gui
 	{
 		ListStore developerStore;
 		ListStore distributionStore;
-		List<string> signingCerts;
+		IList<string> signingCerts;
 		
 		public IPhoneSigningKeyPanelWidget (SigningKeyInformation info)
 		{

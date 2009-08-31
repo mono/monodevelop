@@ -30,6 +30,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MonoDevelop.IPhone
 {
@@ -37,6 +38,9 @@ namespace MonoDevelop.IPhone
 
 	public static class Keychain
 	{
+		
+		#region P/Invoke signatures
+		
 		const string SecurityLib = "/System/Library/Frameworks/Security.framework/Security";
 		const string CFLib = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
 		
@@ -69,6 +73,30 @@ namespace MonoDevelop.IPhone
 		
 		[DllImport (SecurityLib)]
 		static extern IntPtr SecCopyErrorMessageString (OSStatus status, IntPtr reserved);
+		
+		/* argh, OS 10.6 only
+		[DllImport (SecurityLib)]
+		static extern IntPtr SecCertificateCopyData (IntPtr certificate);
+		
+		[DllImport (CFLib)]
+		static extern long CFDataGetLength (IntPtr theData);
+		
+		[DllImport (CFLib)]
+		static extern void CFDataGetBytes (IntPtr theData, CFRange range, IntPtr buffer);
+		*/
+		
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecCertificateGetData (IntPtr certificate, out CssmData data);
+		
+		struct CssmData
+		{
+			/// <summary>Length in bytes</summary>
+			public UInt32 Length;
+			/// <summary>Pointer to the byte array</summary>
+			public IntPtr Data;
+		}
+		
+		#endregion
 		
 		#region CFString handling
 		
@@ -132,7 +160,7 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
-		public static List<string> GetAllCertificateNames ()
+		public static IList<string> GetAllCertificateNames ()
 		{
 			IntPtr attrList = IntPtr.Zero; //match any attributes
 			IntPtr searchRef, itemRef;
@@ -156,7 +184,7 @@ namespace MonoDevelop.IPhone
 			return list;
 		}
 		
-		public static List<string> GetAllSigningIdentities ()
+		public static IList<string> GetAllSigningIdentities ()
 		{
 			IntPtr searchRef, itemRef, certRef, commonName;
 			
@@ -181,6 +209,95 @@ namespace MonoDevelop.IPhone
 			}
 			CFRelease (searchRef);
 			return list;
+		}
+		
+		public static IList<X509Certificate> GetAllSigningCertificates ()
+		{
+			IntPtr searchRef, itemRef, certRef;
+			
+			//null keychain means use default
+			var res = SecIdentitySearchCreate (IntPtr.Zero, CssmKeyUse.Sign, out searchRef);
+			if (res != OSStatus.Ok)
+				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
+			
+			var list = new List<X509Certificate> ();
+			
+			while (SecIdentitySearchCopyNext (searchRef, out itemRef) == OSStatus.Ok) {
+				if (SecIdentityCopyCertificate (itemRef, out certRef) == OSStatus.Ok) {
+					CssmData data;
+					if (SecCertificateGetData (certRef, out data) == OSStatus.Ok) {
+						byte[] buffer = new byte[(int)data.Length];
+						unsafe {
+							byte *dataPtr = (byte*) data.Data;
+							for (int i = 0; i < buffer.Length; i++)
+								buffer[i] = *dataPtr++;
+						}
+						list.Add (new X509Certificate (buffer));
+					}
+				}
+				CFRelease (itemRef);
+			}
+			CFRelease (searchRef);
+			return list;
+		}
+		
+		/* 10.6 only
+		
+		public static IList<X509Certificate> GetAllSigningCertificates ()
+		{
+			IntPtr searchRef, itemRef, certRef;
+			
+			//null keychain means use default
+			var res = SecIdentitySearchCreate (IntPtr.Zero, CssmKeyUse.Sign, out searchRef);
+			if (res != OSStatus.Ok)
+				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
+			
+			var list = new List<X509Certificate> ();
+			
+			while (SecIdentitySearchCopyNext (searchRef, out itemRef) == OSStatus.Ok) {
+				if (SecIdentityCopyCertificate (itemRef, out certRef) == OSStatus.Ok) {
+					IntPtr cfData = SecCertificateCopyData (certRef);
+					byte[] data = GetData (cfData);
+					if (data == null)
+						continue;
+				
+					CFRelease (cfData);
+					CFRelease (certRef);
+					list.Add (new X509Certificate (buffer));
+				}
+				CFRelease (itemRef);
+			}
+			CFRelease (searchRef);
+			return list;
+		}
+		
+		static byte[] GetData (IntPtr cfData)
+		{
+			if (cfData == IntPtr.Zero)
+				return null;
+			
+			long len = CFDataGetLength (cfData);
+			if (len < 1 || len > int.MaxValue)
+				return null;
+				
+			byte[] buffer = new byte [(int)len];
+			unsafe {
+				fixed (byte *bufPtr = buffer) {
+					CFDataGetBytes (cfData, new CFRange (0, (int)len), (IntPtr)bufPtr);
+				}
+			}
+			return buffer;
+		} */
+		
+		public static string GetCertificateCommonName (X509Certificate cert)
+		{
+			int start = cert.Subject.IndexOf ("CN=");
+			if (start < 0)
+				return null;
+			int end = cert.Subject.IndexOf (",", start);
+			if (end < start)
+				return null;
+			return cert.Subject.Substring (start + 3, end - start - 3);
 		}
 		
 		public const string DEV_CERT_PREFIX  = "iPhone Developer:";
