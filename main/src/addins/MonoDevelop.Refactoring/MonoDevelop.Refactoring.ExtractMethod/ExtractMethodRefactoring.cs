@@ -188,7 +188,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 						param.ExpressionType = resolveResult.ResolvedType;
 				}
 
-				foreach (VariableDescriptor varDescr in visitor.VariableList.Where (v => !v.IsDefined)) {
+				foreach (VariableDescriptor varDescr in visitor.VariableList.Where (v => !v.IsDefined && v.InitialValueUsed)) {
 					param.Parameters.Add (varDescr);
 				}
 				param.ReferencesMember = visitor.ReferencesMember;
@@ -212,9 +212,9 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			IResolver resolver = options.GetResolver ();
 			INode parsedNode = provider.ParseText (text);
+			
 			VariableLookupVisitor visitor = new VariableLookupVisitor (resolver, param.Location);
 			parsedNode.AcceptVisitor (visitor, null);
-
 
 			INode node = Analyze (options, param, false);
 
@@ -235,7 +235,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				}
 				result.Add (varGen);
 			}
-
+			List<VariableDescriptor> variablesToDefine = new List<VariableDescriptor> (changedVariablesUsedOutside.Where (v => !v.IsDefined && !v.InitialValueUsed));
+			
 			bool oneChangedVariable = node is BlockStatement;
 			if (oneChangedVariable) {
 				oneChangedVariable = changedVariablesUsedOutside.Count == 1;
@@ -253,13 +254,12 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				invocation.Arguments.Add (new DirectionExpression (FieldDirection.Out, new IdentifierExpression (var.Name)));
 			}
 		//	string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
-			TypeReference returnType = new TypeReference ("System.Void");
+			TypeReference returnType = new TypeReference ("System.Void", true);
 
 			INode outputNode;
 			if (oneChangedVariable) {
 				string name = param.ChangedVariables.First ();
-				returnType = new TypeReference (param.Variables.Find (v => v.Name == name).ReturnType.ToInvariantString ());
-				returnType.IsKeyword = true;
+				returnType = param.Variables.Find (v => v.Name == name).ReturnType.ConvertToTypeReference ();
 				if (visitor.VariableList.Any (v => v.Name == name && !v.IsDefined)) {
 					LocalVariableDeclaration varDecl = new LocalVariableDeclaration (returnType);
 					varDecl.Variables.Add (new VariableDeclaration (name, invocation));
@@ -270,7 +270,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			} else {
 				outputNode = node is BlockStatement ? (INode)new ExpressionStatement (invocation) : invocation;
 			}
-
 			TextReplaceChange replacement = new TextReplaceChange ();
 			replacement.Description = string.Format (GettextCatalog.GetString ("Substitute selected statement(s) with call to {0}"), param.Name);
 			replacement.FileName = options.Document.FileName;
@@ -295,28 +294,36 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 
 			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (variablesToGenerate);
 			node.AcceptVisitor (transformer, null);
+			if (!oneChangedVariable && node is Expression) {
+				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (text), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+				returnType = resolveResult.ResolvedType.ConvertToTypeReference ();
+			}
 			
 			MethodDeclaration methodDecl = new MethodDeclaration ();
 			methodDecl.Name = param.Name;
 			methodDecl.Modifier = param.Modifiers;
+			methodDecl.TypeReference = returnType;
+			
 			if (!param.ReferencesMember)
 				methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
 			if (node is BlockStatement) {
-				methodDecl.TypeReference = returnType;
-				methodDecl.TypeReference.IsKeyword = true;
 				methodDecl.Body = (BlockStatement)node;
 				if (oneChangedVariable)
 					methodDecl.Body.AddChild (new ReturnStatement (new IdentifierExpression (param.ChangedVariables.First ())));
 			} else if (node is Expression) {
-				methodDecl.TypeReference = new TypeReference (param.ExpressionType != null ? param.ExpressionType.ToInvariantString () : "System.Void");
-				methodDecl.TypeReference.IsKeyword = true;
 				methodDecl.Body = new BlockStatement ();
 				methodDecl.Body.AddChild (new ReturnStatement (node as Expression));
 			}
 
+			foreach (VariableDescriptor var in variablesToDefine) {
+				BlockStatement block = methodDecl.Body;
+				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (var.ReturnType.ConvertToTypeReference());
+				varDecl.Variables.Add (new VariableDeclaration (var.Name));
+				block.Children.Insert (0, varDecl);
+			}
+			
 			foreach (VariableDescriptor var in param.Parameters) {
-				TypeReference typeReference = new TypeReference (var.ReturnType.ToInvariantString ());
-				typeReference.IsKeyword = true;
+				TypeReference typeReference = var.ReturnType.ConvertToTypeReference ();
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, var.Name);
 				if (!oneChangedVariable && param.ChangedVariables.Contains (var.Name))
 					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Ref;
@@ -324,8 +331,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			}
 
 			foreach (VariableDescriptor var in variablesToGenerate) {
-				TypeReference typeReference = new TypeReference (var.ReturnType.ToInvariantString ());
-				typeReference.IsKeyword = true;
+				TypeReference typeReference = var.ReturnType.ConvertToTypeReference ();
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, var.Name);
 				if (!oneChangedVariable && param.ChangedVariables.Contains (var.Name))
 					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;

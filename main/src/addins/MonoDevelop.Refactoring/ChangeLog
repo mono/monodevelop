@@ -1,3 +1,10 @@
+2009-08-31  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Worked on extract method.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:

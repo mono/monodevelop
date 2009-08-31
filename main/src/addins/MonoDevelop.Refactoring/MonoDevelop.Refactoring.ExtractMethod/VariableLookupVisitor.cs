@@ -46,24 +46,32 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			set;
 		}
 		
+		public bool InitialValueUsed {
+			get;
+			set;
+		}
+		
 		public bool IsDefined {
 			get;
 			set;
 		}
+		
 		public IReturnType ReturnType {
 			get;
 			set;
 		}
+		
 		public VariableDescriptor (string name)
 		{
 			this.Name = name;
-			this.GetsChanged = this.IsDefined = false;
+			this.GetsChanged = this.IsDefined = this.InitialValueUsed = false;
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format("[VariableDescriptor: Name={0}, GetsChanged={1}, IsDefined={2}, ReturnType={3}]", Name, GetsChanged, IsDefined, ReturnType);
+			return string.Format ("[VariableDescriptor: Name={0}, GetsChanged={1}, InitialValueUsed={2}, IsDefined={3}, ReturnType={4}]", Name, GetsChanged, InitialValueUsed, IsDefined, ReturnType);
 		}
+		
 	}
 	
 	public class VariableLookupVisitor : AbstractAstVisitor
@@ -138,33 +146,53 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				ExpressionResult expressionResult = new ExpressionResult (identifierExpression.Identifier);
 
 				ResolveResult result = resolver.Resolve (expressionResult, position);
+				
+				MemberResolveResult mrr = result as MemberResolveResult;
+				ReferencesMember |= mrr != null && mrr.ResolvedMember != null && !mrr.ResolvedMember.IsStatic;
+				
 				if (!(result is LocalVariableResolveResult || result is ParameterResolveResult))
 					return base.VisitIdentifierExpression (identifierExpression, data);
-				if ((result is MemberResolveResult && ((MemberResolveResult)result).ResolvedMember != null && !((MemberResolveResult)result).ResolvedMember.IsStatic) || (result is MethodResolveResult && ((MethodResolveResult)result).MostLikelyMethod != null && !((MethodResolveResult)result).MostLikelyMethod.IsStatic))
-					ReferencesMember = true;
+				
 				// result.ResolvedType == null may be true for namespace names or undeclared variables
-				if (!result.StaticResolve) {
-					variables[identifierExpression.Identifier] = new VariableDescriptor (identifierExpression.Identifier);
+				if (!result.StaticResolve && !variables.ContainsKey (identifierExpression.Identifier)) {
+					variables[identifierExpression.Identifier] = new VariableDescriptor (identifierExpression.Identifier) {
+						InitialValueUsed = !valueGetsChanged
+					};
 					variables[identifierExpression.Identifier].ReturnType = result.ResolvedType;
+					Console.WriteLine (variables[identifierExpression.Identifier]);
 				}
 				if (result != null && !result.StaticResolve && result.ResolvedType != null && !(result is MethodResolveResult) && !(result is NamespaceResolveResult) && !(result is MemberResolveResult))
 					unknownVariables.Add (new KeyValuePair <string, IReturnType> (identifierExpression.Identifier, result.ResolvedType));
 			}
 			return base.VisitIdentifierExpression (identifierExpression, data);
 		}
-		
+		bool valueGetsChanged = false;
 		public override object VisitAssignmentExpression (ICSharpCode.NRefactory.Ast.AssignmentExpression assignmentExpression, object data)
 		{
-			object result = base.VisitAssignmentExpression (assignmentExpression, data);
+			assignmentExpression.Right.AcceptVisitor(this, data);
+				
+			valueGetsChanged = true;
+			assignmentExpression.Left.AcceptVisitor(this, data);
+			valueGetsChanged = false;
 			IdentifierExpression left = assignmentExpression.Left as IdentifierExpression;
-			if (left != null && variables.ContainsKey (left.Identifier))
+			if (left != null && variables.ContainsKey (left.Identifier)) {
 				variables[left.Identifier].GetsChanged = true;
-			return result;
+			}
+			return null;
 		}
 		
 		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
+			switch (unaryOperatorExpression.Op) {
+			case UnaryOperatorType.Increment:
+			case UnaryOperatorType.Decrement:
+			case UnaryOperatorType.PostIncrement:
+			case UnaryOperatorType.PostDecrement:
+				valueGetsChanged = true;
+				break;
+			}
 			object result = base.VisitUnaryOperatorExpression (unaryOperatorExpression, data);
+			valueGetsChanged = false;
 			switch (unaryOperatorExpression.Op) {
 			case UnaryOperatorType.Increment:
 			case UnaryOperatorType.Decrement:
@@ -180,8 +208,9 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 
 		public override object VisitDirectionExpression (ICSharpCode.NRefactory.Ast.DirectionExpression directionExpression, object data)
 		{
+			valueGetsChanged = true;
 			object result = base.VisitDirectionExpression (directionExpression, data);
-			
+			valueGetsChanged = false;
 			IdentifierExpression left = directionExpression.Expression as IdentifierExpression;
 			if (left != null && variables.ContainsKey (left.Identifier))
 				variables[left.Identifier].GetsChanged = true;

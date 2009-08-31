@@ -84,6 +84,8 @@ namespace MonoDevelop.Refactoring
 		
 		static TextEditorData GetTextEditorData (string fileName)
 		{
+			if (IdeApp.Workbench == null)
+				return null;
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == fileName) {
 					ITextEditorDataProvider data = doc.GetContent<ITextEditorDataProvider> ();
