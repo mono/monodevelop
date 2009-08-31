@@ -211,7 +211,7 @@ namespace MonoDevelop.IPhone
 			return list;
 		}
 		
-		public static IList<X509Certificate> GetAllSigningCertificates ()
+		public static IList<X509Certificate2> GetAllSigningCertificates ()
 		{
 			IntPtr searchRef, itemRef, certRef;
 			
@@ -220,7 +220,7 @@ namespace MonoDevelop.IPhone
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
-			var list = new List<X509Certificate> ();
+			var list = new List<X509Certificate2> ();
 			
 			while (SecIdentitySearchCopyNext (searchRef, out itemRef) == OSStatus.Ok) {
 				if (SecIdentityCopyCertificate (itemRef, out certRef) == OSStatus.Ok) {
@@ -232,7 +232,7 @@ namespace MonoDevelop.IPhone
 							for (int i = 0; i < buffer.Length; i++)
 								buffer[i] = *dataPtr++;
 						}
-						list.Add (new X509Certificate (buffer));
+						list.Add (new X509Certificate2 (buffer));
 					}
 				}
 				CFRelease (itemRef);
@@ -243,7 +243,7 @@ namespace MonoDevelop.IPhone
 		
 		/* 10.6 only
 		
-		public static IList<X509Certificate> GetAllSigningCertificates ()
+		public static IList<X509Certificate2> GetAllSigningCertificates ()
 		{
 			IntPtr searchRef, itemRef, certRef;
 			
@@ -252,7 +252,7 @@ namespace MonoDevelop.IPhone
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
-			var list = new List<X509Certificate> ();
+			var list = new List<X509Certificate2> ();
 			
 			while (SecIdentitySearchCopyNext (searchRef, out itemRef) == OSStatus.Ok) {
 				if (SecIdentityCopyCertificate (itemRef, out certRef) == OSStatus.Ok) {
@@ -263,7 +263,7 @@ namespace MonoDevelop.IPhone
 				
 					CFRelease (cfData);
 					CFRelease (certRef);
-					list.Add (new X509Certificate (buffer));
+					list.Add (new X509Certificate2 (buffer));
 				}
 				CFRelease (itemRef);
 			}
@@ -289,7 +289,7 @@ namespace MonoDevelop.IPhone
 			return buffer;
 		} */
 		
-		public static string GetCertificateCommonName (X509Certificate cert)
+		public static string GetCertificateCommonName (X509Certificate2 cert)
 		{
 			int start = cert.Subject.IndexOf ("CN=");
 			if (start < 0)
