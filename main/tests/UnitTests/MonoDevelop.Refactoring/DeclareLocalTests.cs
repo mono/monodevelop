@@ -45,7 +45,7 @@ namespace MonoDevelop.Refactoring.Tests
 		}
 		
 		[Test()]
-		public void CreateBackingStoreTest ()
+		public void DeclareLocalStatementTest ()
 		{
 			TestDeclareLocal (@"class TestClass
 {
@@ -59,6 +59,27 @@ namespace MonoDevelop.Refactoring.Tests
 	void Test ()
 	{
 		int aInt32 = 345;
+	}
+}
+");
+		}
+		
+		[Test()]
+		public void DeclareLocalexpressionTest ()
+		{
+			TestDeclareLocal (@"class TestClass
+{
+	void Test ()
+	{
+		Console.WriteLine (1 +<- 9 ->+ 5);
+	}
+}
+", @"class TestClass
+{
+	void Test ()
+	{
+		int aInt32 = 9;
+		Console.WriteLine (1 + aInt32 + 5);
 	}
 }
 ");
