@@ -182,7 +182,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public bool IsUserMimeType (string type)
 		{
-			return globalMimeTypes.Contains (type);
+			return globalMimeTypes != null && globalMimeTypes.Contains (type);
 		}
 		
 		void GetItemMimeTypes (HashSet<string> types, SolutionItem item)

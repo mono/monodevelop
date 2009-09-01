@@ -1,3 +1,8 @@
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	  Fix NRE.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
