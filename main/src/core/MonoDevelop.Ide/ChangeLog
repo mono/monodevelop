@@ -1,3 +1,9 @@
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs: Now using
+	  (the more correct) shorten type name method from compilation
+	  unit.
+
 2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BuildVariables.cs:

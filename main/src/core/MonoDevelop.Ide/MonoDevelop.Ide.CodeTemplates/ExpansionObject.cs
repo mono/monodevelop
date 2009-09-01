@@ -175,28 +175,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetSimpleTypeName (string fullTypeName)
 		{
-			IType foundType = null;
+			if (CurrentContext.ParsedDocument == null)
+				return fullTypeName;
 			
-			string curType = fullTypeName;
-			while (foundType == null) {
-				foundType = CurrentContext.ProjectDom.GetType (curType);
-				int idx = curType.LastIndexOf ('.');
-				if (idx < 0)
-					break; 
-				curType = fullTypeName.Substring (0, idx);
-			}
-			
-			if (foundType == null) 
-				foundType = new DomType (fullTypeName);
-			if (CurrentContext.ParsedDocument != null) {
-				foreach (IUsing u in CurrentContext.ParsedDocument.CompilationUnit.Usings) {
-					foreach (string includedNamespace in u.Namespaces) {
-						if (includedNamespace == foundType.Namespace)
-							return fullTypeName.Substring (includedNamespace.Length + 1);
-					}
-				}
-			}
-			return fullTypeName;
+			return CurrentContext.ParsedDocument.CompilationUnit.ShortenTypeName (new DomReturnType (fullTypeName), CurrentContext.InsertPosition).FullName;
 		}
 		
 		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
