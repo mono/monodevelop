@@ -201,7 +201,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (projectTypeGuids != null) {
 				foreach (string guid in projectTypeGuids.Split (';')) {
 					string sguid = guid.Trim ();
-					if (sguid.Length > 0 && sguid != TypeGuid)
+					if (sguid.Length > 0 && string.Compare (sguid, TypeGuid, true) != 0)
 						subtypeGuids.Add (guid);
 				}
 			}
