@@ -48,14 +48,14 @@ namespace PyBinding.Gui.Navigation
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			PythonProject pyProject = dataObject as PythonProject;
-
-			if (pyProject == null)
-				return;
-
-			builder.AddChild (new PackagesNode () {
-				Project = pyProject
-			});
+//			PythonProject pyProject = dataObject as PythonProject;
+//
+//			if (pyProject == null)
+//				return;
+//
+//			builder.AddChild (new PackagesNode () {
+//				Project = pyProject
+//			});
 		}
 	}
 }

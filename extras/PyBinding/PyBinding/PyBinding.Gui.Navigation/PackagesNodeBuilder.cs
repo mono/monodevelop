@@ -80,12 +80,20 @@ namespace PyBinding.Gui.Navigation
 			{
 				if (projectFile.BuildAction == BuildAction.Compile)
 				{
-					if (Path.GetExtension (projectFile.Name) == ".py")
+					if (Path.GetExtension (projectFile.Name).ToLower () == ".py")
 					{
-						treeBuilder.AddChild (new PackageNode () {
-							Name = PythonHelper.ModuleFromFilename (projectFile.Name),
-							ProjectFile = projectFile,
-						});
+						var name = PythonHelper.ModuleFromFilename (projectFile.Name);
+						
+						// It's only a module unless there is a "." in the name
+						// or its the __init__.py inside the package folder.
+						if (name.Contains (".") || Path.GetFileName (projectFile.Name).ToLower () == "__init__.py")
+						{
+							name = PythonHelper.PackageFromFilename (projectFile.Name);
+							treeBuilder.AddChild (new PackageNode () {
+								Name = name,
+								ProjectFile = projectFile,
+							});
+						}
 					}
 				}
 			}

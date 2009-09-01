@@ -1,5 +1,13 @@
 2009-09-01  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Gui.Navigation/PackagesNodeBuilder.cs: Use the
+	  proper package name
+
+	* PyBinding.Gui.Navigation/ProjectNodeBuilderExtension.cs:
+	  Just use the default ClassData builders for now.
+
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Parser.Dom/PythonCompilationUnit.cs: Use proper
 	  package name and do not add class a second time.
 
