@@ -238,9 +238,9 @@ namespace MonoDevelop.Components.Docking
 		public void Present (bool giveFocus)
 		{
 			if (dockBarItem != null)
-				dockBarItem.Present (giveFocus);
+				dockBarItem.Present (Status == DockItemStatus.AutoHide || giveFocus);
 			else
-				frame.Present (this, giveFocus);
+				frame.Present (this, Status == DockItemStatus.AutoHide || giveFocus);
 		}
 
 		public bool ContentVisible {

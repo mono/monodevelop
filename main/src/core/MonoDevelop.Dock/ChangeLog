@@ -1,3 +1,8 @@
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
+	* DockItem.cs: If the DockItem status is AutoHide always give
+	  focus on Present (bool giveFocus).
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DockItem.cs: Fire the ContentRequired event only when the
