@@ -23,7 +23,12 @@ namespace MonoDevelop.VersionControl
 				foreach (VersionInfo vi in item.Repository.GetDirectoryVersionInfo (item.Path, false, true))
 					if (vi.HasLocalChanges)
 						cset.AddFile (vi);
-				Commit (item.Repository, cset, false);
+				if (!cset.IsEmpty) {
+					Commit (item.Repository, cset, false);
+				} else {
+					MessageService.ShowMessage (GettextCatalog.GetString ("There are no changes to be committed."));
+					return false;
+				}
 			}
 			return false;
 		}
@@ -31,6 +36,11 @@ namespace MonoDevelop.VersionControl
 		public static bool Commit (Repository vc, ChangeSet changeSet, bool test)
 		{
 			try {
+				if (changeSet.IsEmpty) {
+					if (!test)
+						MessageService.ShowMessage (GettextCatalog.GetString ("There are no changes to be committed."));
+					return false;
+				}
 				if (vc.CanCommit (changeSet.BaseLocalPath)) {
 					if (test) return true;
 

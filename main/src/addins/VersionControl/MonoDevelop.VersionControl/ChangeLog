@@ -1,3 +1,10 @@
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl/CommitCommand.cs: Show an error
+	  message when trying to commit a directory which has no
+	  changes. Fixes bug #517699 - Monodevelop crash when
+	  submitting to SVN.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Views/StatusView.cs: fixed
