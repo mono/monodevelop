@@ -62,5 +62,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		bool IsNamespaceUsedAt (string name, int line, int column);
 		bool IsNamespaceUsedAt (string name, DomLocation location);
+		
+		IReturnType ShortenTypeName (IReturnType fullyQualfiedType, DomLocation location);
 	}
 }

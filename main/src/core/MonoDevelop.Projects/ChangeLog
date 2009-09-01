@@ -1,5 +1,11 @@
 2009-09-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
+	* MonoDevelop.Projects.Dom/ICompilationUnit.cs: Moved shorten
+	  type name method to compilation unit.
+
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomUsing.cs:
 	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
 	* MonoDevelop.Projects.Dom/ICompilationUnit.cs: Added some

@@ -168,5 +168,38 @@ namespace MonoDevelop.Projects.Dom
 				}
 			}
 		}
+		
+		public IReturnType ShortenTypeName (IReturnType fullyQualfiedType, DomLocation location)
+		{
+			return new ShortenTypeNameVistior (this, location).Visit (fullyQualfiedType, null) as IReturnType;
+		}
+		
+		class ShortenTypeNameVistior : CopyDomVisitor<object>
+		{
+			ICompilationUnit unit;
+			DomLocation location;
+			
+			public ShortenTypeNameVistior (ICompilationUnit unit, DomLocation location)
+			{
+				this.unit = unit;
+				this.location = location;
+			}
+			
+			public override IDomVisitable Visit (IReturnType type, object data)
+			{
+				IReturnType returnType = (IReturnType)base.Visit (type, data);
+				string longest = "";
+				foreach (IUsing u in unit.Usings.Where (u => ((!u.IsFromNamespace && u.Region.Start < location) || u.Region.Contains (location)))) {
+					foreach (string ns in u.Namespaces.Where (ns => returnType.Namespace == ns || returnType.Namespace.StartsWith (ns + "."))) {
+						if (longest.Length < ns.Length)
+							longest = ns;
+					}
+				}
+				if (longest.Length > 0) 
+					returnType.Namespace = returnType.Namespace == longest ? "" : returnType.Namespace.Substring (longest.Length + 1);
+				return returnType;
+			}
+		}
+		
 	}
 }
