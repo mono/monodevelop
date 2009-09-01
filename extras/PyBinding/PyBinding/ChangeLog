@@ -1,5 +1,12 @@
 2009-09-01  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Parser.Dom/PythonCompilationUnit.cs: Use
+	  "md-package" for the python package icon. Add some FIXME's.
+	  Keep a copy of instantiated DomType, DomField, and DomMethod
+	  for later use by resolver.
+
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Parser/ParserDatabase.cs: Handle the case where
 	  there is no completion database created.
 

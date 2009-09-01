@@ -31,6 +31,8 @@ namespace PyBinding.Parser.Dom
 	[Serializable]
 	public class PythonCompilationUnit : CompilationUnit
 	{
+		List<IBaseMember> m_AllWrapped = new List<IBaseMember> ();
+		
 		public PythonCompilationUnit (string fileName) : base (fileName)
 		{
 		}
@@ -39,6 +41,10 @@ namespace PyBinding.Parser.Dom
 			get;
 			set;
 		}
+		
+		internal List<IBaseMember> AllWrapped {
+			get { return m_AllWrapped; }
+		}
 
 		public void Build ()
 		{
@@ -46,14 +52,15 @@ namespace PyBinding.Parser.Dom
 				return;
 
 			// fake class containing modules funcs
-			var module = new DomType () {
+			var module = new PackageDomType () {
 				Name       = PythonHelper.ModuleFromFilename (FileName),
 				ClassType  = ClassType.Unknown,
 				Location   = new DomLocation (0, 0),
 				BodyRegion = Module.Region,
 			};
+			m_AllWrapped.Add (module);
 			Add (module);
-
+			
 			// module functions
 			foreach (IMethod method in BuildFunctions (Module.Functions))
 				module.Add (method);
@@ -78,6 +85,7 @@ namespace PyBinding.Parser.Dom
 					BodyRegion    = pyClass.Region,
 					Location      = new DomLocation (pyClass.Region.Start.Line - 1, 0),
 				};
+				m_AllWrapped.Add (domType);
 				Add (domType);
 
 				// class functions
@@ -100,8 +108,12 @@ namespace PyBinding.Parser.Dom
 					Name       = pyAttr.Name,
 					BodyRegion = pyAttr.Region,
 					Location   = pyAttr.Region.Start,
-					ReturnType = new DomReturnType { Name = pyAttr.Name },
+					ReturnType = new DomReturnType () {
+						Name      = pyAttr.Name, // FIXME: Get inferred type
+						Namespace = Module.FullName,
+					},
 				};
+				m_AllWrapped.Add (domAttr);
 				yield return domAttr;
 			}
 		}
@@ -118,21 +130,35 @@ namespace PyBinding.Parser.Dom
 					Documentation = pyFunc.Documentation,
 					BodyRegion    = pyFunc.Region,
 					Location      = new DomLocation (pyFunc.Region.Start.Line - 1, 0),
-					ReturnType    = new DomReturnType () { Name = String.Empty },
+					ReturnType    = new DomReturnType () {
+						Name      = pyFunc.Name, // FIXME: Get inferred type
+						Namespace = Module.FullName,
+					},
 				};
+				m_AllWrapped.Add (domFunc);
 
 				foreach (PythonArgument pyArg in pyFunc.Arguments)
 				{
 					var domArg = new DomParameter () {
 						Name       = pyArg.Name,
 						ReturnType = new DomReturnType () {
-							Name   = pyArg.Name,
+							Name      = pyArg.Name, // FIXME: Get inferred type
+							Namespace = Module.FullName,
 						},
 					};
+					m_AllWrapped.Add (domArg);
 					domFunc.Add (domArg);
 				}
 
 				yield return domFunc;
+			}
+		}
+		
+		class PackageDomType: DomType
+		{
+			
+			public override string StockIcon {
+				get { return "md-package"; }
 			}
 		}
 	}
