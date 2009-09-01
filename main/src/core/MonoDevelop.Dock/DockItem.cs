@@ -120,28 +120,38 @@ namespace MonoDevelop.Components.Docking
 			get {
 				if (widget == null) {
 					widget = new DockItemContainer (frame, this);
+					widget.Visible = false; // Required to ensure that the Shown event is fired
 					widget.Label = label;
-					if (ContentRequired != null) {
-						gettingContent = true;
-						try {
-							ContentRequired (this, EventArgs.Empty);
-						} finally {
-							gettingContent = false;
-						}
-					}
-					widget.UpdateContent ();
-					widget.Shown += delegate {
-						UpdateContentVisibleStatus ();
-					};
-					widget.Hidden += delegate {
-						UpdateContentVisibleStatus ();
-					};
-					widget.ParentSet += delegate {
-						UpdateContentVisibleStatus ();
-					};
+					widget.Shown += SetupContent;
 				}
 				return widget;
 			}
+		}
+		
+		void SetupContent (object ob, EventArgs args)
+		{
+			widget.Shown -= SetupContent;
+			
+			if (ContentRequired != null) {
+				gettingContent = true;
+				try {
+					ContentRequired (this, EventArgs.Empty);
+				} finally {
+					gettingContent = false;
+				}
+			}
+
+			widget.UpdateContent ();
+			widget.Shown += delegate {
+				UpdateContentVisibleStatus ();
+			};
+			widget.Hidden += delegate {
+				UpdateContentVisibleStatus ();
+			};
+			widget.ParentSet += delegate {
+				UpdateContentVisibleStatus ();
+			};
+			UpdateContentVisibleStatus ();
 		}
 		
 		public Widget Content {

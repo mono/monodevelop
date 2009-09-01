@@ -1,3 +1,10 @@
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockItem.cs: Fire the ContentRequired event only when the
+	  content is really required, that is, when it is going to be
+	  shown. It won't be fired for example, if the pad is selected
+	  but not visible in a notebook.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* TabStrip.cs:
