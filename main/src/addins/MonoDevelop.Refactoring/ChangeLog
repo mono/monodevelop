@@ -1,3 +1,9 @@
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: ResolvedType
+	  is no longer used for the resolve namespace feature.
+	  Therefore replaced the check with an expression check.
+
 2009-08-31  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoringOptions.cs:

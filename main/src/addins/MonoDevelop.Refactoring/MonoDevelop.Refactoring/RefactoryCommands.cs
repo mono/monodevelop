@@ -169,7 +169,7 @@ namespace MonoDevelop.Refactoring
 					eitem = null;
 				}
 			}
-			if (resolveResult != null && resolveResult.ResolvedType != null) {
+			if (resolveResult != null  && resolveResult.ResolvedExpression != null && !string.IsNullOrEmpty (resolveResult.ResolvedExpression.Expression)) {
 				IReturnType returnType = new DomReturnType (resolveResult.ResolvedExpression.Expression);
 				List<string> namespaces = new List<string> (ctx.ResolvePossibleNamespaces (returnType));
 				if (item == null || namespaces.Count > 1) {
