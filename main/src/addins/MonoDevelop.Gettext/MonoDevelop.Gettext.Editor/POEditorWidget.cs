@@ -144,17 +144,26 @@ namespace MonoDevelop.Gettext
 			treeviewEntries.GetColumn (3).Resizable = true;
 			treeviewEntries.GetColumn (3).Expand = true;
 			// found in tree view
-			foundInStore = new ListStore (typeof (string), typeof (string), typeof (string));
+			foundInStore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (Pixbuf));
 			this.treeviewFoundIn.Model = foundInStore;
 			
-			treeviewFoundIn.AppendColumn ("", new CellRendererText (), "text", FoundInColumns.File);
+			TreeViewColumn fileColumn = new TreeViewColumn ();
+			CellRendererPixbuf pixbufRenderer = new CellRendererPixbuf ();
+			fileColumn.PackStart (pixbufRenderer, false);
+			fileColumn.SetAttributes (pixbufRenderer, "pixbuf", FoundInColumns.Pixbuf);
+			
+			CellRendererText textRenderer = new CellRendererText ();
+			fileColumn.PackStart (textRenderer, true);
+			fileColumn.SetAttributes (textRenderer, "text", FoundInColumns.File);
+			treeviewFoundIn.AppendColumn (fileColumn);
+			
 			treeviewFoundIn.AppendColumn ("", new CellRendererText (), "text", FoundInColumns.Line);
 			treeviewFoundIn.HeadersVisible = false;
 			treeviewFoundIn.GetColumn (1).FixedWidth = 100;
 			
 			treeviewFoundIn.RowActivated += delegate (object sender, RowActivatedArgs e) {
 				Gtk.TreeIter iter;
-				foundInStore.GetIter (out iter, e.Path); 				
+				foundInStore.GetIter (out iter, e.Path);
 				string line = foundInStore.GetValue (iter, (int)FoundInColumns.Line) as string;
 				string file = foundInStore.GetValue (iter, (int)FoundInColumns.FullFileName) as string;
 				int lineNr = 1;
@@ -632,7 +641,7 @@ namespace MonoDevelop.Gettext
 							line = "?";
 						}
 						string fullName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (this.poFileName), file);
-						this.foundInStore.AppendValues (file, line, fullName);
+						this.foundInStore.AppendValues (file, line, fullName, DesktopService.GetPixbufForFile (fullName, IconSize.Menu));
 					}
 				}
 				
@@ -665,7 +674,8 @@ namespace MonoDevelop.Gettext
 		{
 			File,
 			Line,
-			FullFileName
+			FullFileName,
+			Pixbuf
 		}
 		
 		protected override void OnStyleSet (Gtk.Style previous_style)

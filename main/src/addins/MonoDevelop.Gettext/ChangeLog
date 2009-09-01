@@ -1,3 +1,8 @@
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Show file icon
+	  in found in list.
+
 2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Gettext.addin.xml: Don't use the text editor
