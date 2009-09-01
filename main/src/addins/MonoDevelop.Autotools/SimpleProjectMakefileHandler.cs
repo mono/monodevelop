@@ -159,18 +159,19 @@ namespace MonoDevelop.Autotools
 					pfpath = FileService.NormalizeRelativePath (projectFile.RelativePath);
 					switch ( projectFile.BuildAction )
 					{
-						case "Compile":
+						case BuildAction.Compile:
 							
 							if ( projectFile.Subtype != Subtype.Code ) continue;
 							files.AppendFormat ( "\\\n\t{0} ", MakefileData.ToMakefilePath (pfpath));
 							break;
 
-						case "None":
+						case BuildAction.Content:
+						case BuildAction.None:
 
 							extraFiles.Add (MakefileData.ToMakefilePath (pfpath));
 							break;
 
-						case "EmbeddedResource":
+						case BuildAction.EmbeddedResource:
 
 							if ( !projectFile.FilePath.IsChildPathOf ( ctx.BaseDirectory ) )
 							{
