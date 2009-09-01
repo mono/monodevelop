@@ -273,7 +273,7 @@ def parse(content, outStream):
     except TypeError, ex:
         outStream.write('<error line="0" column="0">Invalid characters were found in the file. Could not parse.</error>')
 
-if __name__ == '__main__':
+def main():
     if len(sys.argv[1:]) and sys.argv[1] == "MAGIC_TEST":
         if len(sys.argv[2:]):
             fName = sys.argv[2]
@@ -318,4 +318,17 @@ if __name__ == '__main__':
 
     server = HTTPServer(('', port), ParseHandler)
     print >> sys.stdout, 'Listening on port %d' % port
-    server.serve_forever(poll_interval=POLL_INTERVAL)
+    try:
+        # requires python2.6
+        server.serve_forever(poll_interval=POLL_INTERVAL)
+    except:
+        server.serve_forever()
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception, ex:
+        logfile = os.path.expanduser('~/.config/MonoDevelop/PyBinding/completion.log')
+        log = file(logfile, 'a')
+        log.write(str(ex) + '\n')
+        log.close()

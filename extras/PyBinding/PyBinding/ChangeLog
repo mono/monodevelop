@@ -1,5 +1,10 @@
 2009-09-01  Christian Hergert  <chris@dronelabs.com>
 
+	* Resources/completion.py: Log catastrophic errors and include
+	  fallback for poll_interval= not being supported before 2.6.
+
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
 	* Resources/completion.py: Watch our parent pid if it was
 	  specified and kill ourself when the process has died.
 
