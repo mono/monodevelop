@@ -49,8 +49,13 @@ except ImportError:
 from   BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import cgi
 import compiler
+import os
 import sys
+import threading
+import time
 from   xml.etree.ElementTree import ElementTree, Element
+
+POLL_INTERVAL = 5.0
 
 class XmlASTVisitor(compiler.visitor.ASTVisitor):
     """
@@ -58,7 +63,7 @@ class XmlASTVisitor(compiler.visitor.ASTVisitor):
     representing the code being parsed.  This is intended to be the basic
     IPC so that we might add python code completion to MonoDevelop.
     """
-    
+
     def __init__(self):
         """
         Initializes the visitor and sets the stream to be used for
@@ -149,7 +154,7 @@ class XmlASTVisitor(compiler.visitor.ASTVisitor):
         element = Element('function')
         element.set('name', node.name)
         element.set('line', str(node.lineno))
-        
+
         # get the end of the function
         def walk(n,e):
             for c in n.getChildNodes():
@@ -284,7 +289,33 @@ if __name__ == '__main__':
     s.bind(('127.0.0.1', 0))
     _, port = s.getsockname()
     s.close()
-    
+
+    # create a thread to watch the parent process if needed
+    if 'WATCH_PID' in os.environ:
+        try:
+            pid = int(os.environ['WATCH_PID'])
+            def watcher():
+                def pid_exists(pid):
+                    import errno
+                    try:
+                        os.kill(pid, 0)
+                        return 1
+                    except OSError, err:
+                        return err.errno == errno.EPERM
+
+                # poll on the same timeout as our http server.
+                # i dont like forcing wake-ups in applications, but
+                # i think its acceptable in the case of an IDE.
+                while True:
+                    if not pid_exists(pid):
+                        sys.exit()
+                    time.sleep(POLL_INTERVAL)
+            t = threading.Thread(target=watcher)
+            t.daemon = True
+            t.start()
+        except:
+            pass
+
     server = HTTPServer(('', port), ParseHandler)
     print >> sys.stdout, 'Listening on port %d' % port
-    server.serve_forever()
+    server.serve_forever(poll_interval=POLL_INTERVAL)

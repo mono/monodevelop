@@ -1,5 +1,14 @@
 2009-09-01  Christian Hergert  <chris@dronelabs.com>
 
+	* Resources/completion.py: Watch our parent pid if it was
+	  specified and kill ourself when the process has died.
+
+	* PyBinding.Parser/PythonParserInternal.cs: Implement
+	  IDisposable and notify the subprocess that we want to be
+	  watched for death to enforce cleanup.
+
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Parser/PythonParser.cs: Make sure the
 	  configuration is a python configuration before we try to
 	  reuse the config's IPythonRuntime. This allows non-python

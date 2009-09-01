@@ -39,7 +39,7 @@ using PyBinding.Runtime;
 
 namespace PyBinding.Parser
 {
-	internal class PythonParserInternal
+	internal class PythonParserInternal: IDisposable
 	{
 		bool           m_Initialized    = false;
 		int            m_Port           = 0;
@@ -56,8 +56,20 @@ namespace PyBinding.Parser
 			m_Runtime = runtime;
 		}
 		
+		~PythonParserInternal ()
+		{
+			Dispose ();
+		}
+		
 		public IPythonRuntime Runtime {
 			get { return m_Runtime; }
+		}
+		
+		public void Dispose ()
+		{
+			if (m_Process != null && !m_Process.HasExited)
+				m_Process.Kill ();
+			m_Process = null;
 		}
 		
 		public PythonParsedDocument Parse (string fileName, string content)
@@ -118,6 +130,7 @@ namespace PyBinding.Parser
 			
 			var process = new Process ();
 			process.StartInfo.FileName = pypath;
+			process.StartInfo.EnvironmentVariables ["WATCH_PID"] = Process.GetCurrentProcess ().Id.ToString ();
 			process.StartInfo.Arguments = "-u -";
 			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.RedirectStandardError = true;
@@ -153,6 +166,7 @@ namespace PyBinding.Parser
 					}
 				}
 			};
+			
 			return process;
 		}
 		
