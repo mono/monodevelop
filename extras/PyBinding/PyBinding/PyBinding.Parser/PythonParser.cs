@@ -43,7 +43,7 @@ namespace PyBinding.Parser
 		{
 			IPythonRuntime runtime;
 			
-			if (dom != null && dom.Project != null && dom.Project.DefaultConfiguration != null)
+			if (dom != null && dom.Project != null && dom.Project.DefaultConfiguration is PythonConfiguration)
 				runtime = (dom.Project.DefaultConfiguration as PythonConfiguration).Runtime;
 			else
 				runtime = m_defaultRuntime;
