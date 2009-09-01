@@ -1,3 +1,8 @@
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
+	* PyBinding.Parser/ParserDatabase.cs: Handle the case where
+	  there is no completion database created.
+
 2009-08-28  Christian Hergert  <chris@dronelabs.com>
 
 	* Resources/EmptyPyProject.xpt.xml: Open main.py by default

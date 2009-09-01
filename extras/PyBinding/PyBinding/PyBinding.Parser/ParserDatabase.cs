@@ -71,7 +71,9 @@ namespace PyBinding.Parser
 		
 		bool NeedsUpgrade {
 			get {
-				if (!File.Exists (VersionFile))
+				if (!File.Exists (m_FileName))
+					return false;
+				else if (!File.Exists (VersionFile))
 					return true;
 				int version;
 				string content = File.ReadAllText (VersionFile).Trim ();
@@ -100,8 +102,10 @@ namespace PyBinding.Parser
 				// Backup if needed
 				var backup = m_FileName + ".bak";
 				var needsUpgrade = NeedsUpgrade;
-				if (needsUpgrade)
+				if (needsUpgrade && File.Exists (m_FileName))
 					File.Move (m_FileName, backup);
+				else if (!File.Exists (m_FileName))
+					File.WriteAllText (VersionFile, String.Format ("{0}", s_version));
 				
 				// Build
 				m_conn = new SqliteConnection (connString);
@@ -109,7 +113,7 @@ namespace PyBinding.Parser
 				EnsureTables ();
 				
 				if (needsUpgrade) {
-					File.WriteAllText (m_FileName + ".version", String.Format ("{0}", s_version));
+					File.WriteAllText (VersionFile, String.Format ("{0}", s_version));
 					
 					// Open backup database
 					var conn = new SqliteConnection (ConnStrForFile (backup));
@@ -125,7 +129,9 @@ namespace PyBinding.Parser
 						
 						conn.Close ();
 						conn.Dispose ();
-						File.Delete (backup);
+						
+						if (File.Exists (backup))
+							File.Delete (backup);
 					});
 				}
 			}
@@ -257,7 +263,7 @@ namespace PyBinding.Parser
 		
 		void EnsureTables ()
 		{
-			string schemaSql = String.Empty;
+			string schemaSql;
 			
 			using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream ("Schema.sql"))
 				using (var reader = new StreamReader (stream))
