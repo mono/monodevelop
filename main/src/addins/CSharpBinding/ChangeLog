@@ -1,5 +1,10 @@
 2009-09-01  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/CSharpNRefactoryASTProvider.cs: Implementet
+	  parsetypereference.
+
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: Fixed "Bug 535187 - Resolver
 	  result wrong when property name matches type".
 

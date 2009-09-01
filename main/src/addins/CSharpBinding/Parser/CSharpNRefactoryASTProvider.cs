@@ -96,6 +96,17 @@ namespace CSharpBinding.Parser
 				return parser.CompilationUnit;
 			}
 		}
-		
+
+		public TypeReference ParseTypeReference (string content)
+		{
+			content = content.Trim ();
+			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (content))) {
+				try {
+					return parser.ParseTypeReference ();
+				} catch (Exception) {
+				}
+			}
+			return null;
+		}
 	}
 }
