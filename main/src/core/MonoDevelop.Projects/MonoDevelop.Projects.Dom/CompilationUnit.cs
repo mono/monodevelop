@@ -169,6 +169,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		
+		public IReturnType ShortenTypeName (IReturnType fullyQualfiedType, int line, int column)
+		{
+			return ShortenTypeName (fullyQualfiedType, new DomLocation (line, column));
+		}
+		
 		public IReturnType ShortenTypeName (IReturnType fullyQualfiedType, DomLocation location)
 		{
 			return new ShortenTypeNameVistior (this, location).Visit (fullyQualfiedType, null) as IReturnType;
