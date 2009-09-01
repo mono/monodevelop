@@ -1,5 +1,10 @@
 2009-09-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs: Check if built
+	  in types are shortened (they don't need to).
+
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
 	* MonoDevelop.Projects.Dom/ICompilationUnit.cs: Added shorten
 	  type name overload.

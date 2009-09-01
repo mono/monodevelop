@@ -191,9 +191,18 @@ namespace MonoDevelop.Projects.Dom
 				this.location = location;
 			}
 			
+			static HashSet<string> builtInTypes = new HashSet<string> (new string[] {
+				"System.Void", "System.Object","System.Boolean","System.Byte", "System.SByte",
+				"System.Char", "System.Enum", "System.Int16", "System.Int32", "System.Int64", 
+				"System.UInt16", "System.UInt32", "System.UInt64", "System.Single", "System.Double", "System.Decimal",
+				"System.String"
+			});
+			
 			public override IDomVisitable Visit (IReturnType type, object data)
 			{
 				IReturnType returnType = (IReturnType)base.Visit (type, data);
+				if (builtInTypes.Contains (returnType.FullName))
+					return returnType;
 				string longest = "";
 				foreach (IUsing u in unit.Usings.Where (u => ((!u.IsFromNamespace && u.Region.Start < location) || u.Region.Contains (location)))) {
 					foreach (string ns in u.Namespaces.Where (ns => returnType.Namespace == ns || returnType.Namespace.StartsWith (ns + "."))) {
