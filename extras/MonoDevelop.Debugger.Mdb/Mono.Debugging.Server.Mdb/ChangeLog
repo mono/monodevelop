@@ -1,3 +1,9 @@
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MdbAdaptor-2-4-4.cs:
+	* MdbAdaptor-2-4-2.cs: Breakpoint activation while running was
+	  not supported by mono 2.4.2.
+
 2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MdbObjectValueAdaptor.cs: Fixed some issue with static

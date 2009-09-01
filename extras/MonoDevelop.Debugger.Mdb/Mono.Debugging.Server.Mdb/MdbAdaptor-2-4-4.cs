@@ -30,5 +30,24 @@ namespace DebuggerServer
 {
 	public class MdbAdaptor_2_4_4: MdbAdaptor_2_4_2
 	{
+		public override void ActivateEvent (Mono.Debugger.Event ev)
+		{
+			Process.ActivatePendingBreakpoints ();
+		}
+		
+		public override void RemoveEvent (Mono.Debugger.Event ev)
+		{
+			Session.RemoveEvent (ev);
+			Process.ActivatePendingBreakpoints ();
+		}
+		
+		public override void EnableEvent (Mono.Debugger.Event ev, bool enable)
+		{
+			if (enable)
+				Session.ActivateEventAsync (ev);
+			else
+				Session.DeactivateEventAsync (ev);
+			Process.ActivatePendingBreakpoints ();
+		}
 	}
 }
