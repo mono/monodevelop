@@ -63,7 +63,7 @@ namespace PyBinding.Gui.Navigation
 		                                ref Gdk.Pixbuf closedIcon)
 		{
 			label = GettextCatalog.GetString ("Packages");
-			icon = Context.GetIcon (Stock.NameSpace);
+			icon = Context.GetIcon ("md-package");
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -84,7 +84,7 @@ namespace PyBinding.Gui.Navigation
 					{
 						treeBuilder.AddChild (new PackageNode () {
 							Name = PythonHelper.ModuleFromFilename (projectFile.Name),
-							ProjectFile = projectFile
+							ProjectFile = projectFile,
 						});
 					}
 				}

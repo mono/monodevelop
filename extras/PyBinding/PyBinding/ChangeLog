@@ -1,5 +1,11 @@
 2009-09-01  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Gui.Navigation/PackageNodeBuilder.cs:
+	* PyBinding.Gui.Navigation/PackagesNodeBuilder.cs: Use
+	  "md-package" stock icon to be consistent.
+
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Parser.Dom/PythonCompilationUnit.cs: Use
 	  "md-package" for the python package icon. Add some FIXME's.
 	  Keep a copy of instantiated DomType, DomField, and DomMethod

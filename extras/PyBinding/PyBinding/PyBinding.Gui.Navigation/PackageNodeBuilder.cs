@@ -78,7 +78,7 @@ namespace PyBinding.Gui.Navigation
 			PackageNode packageNode = dataObject as PackageNode;
 
 			label = packageNode.Name;
-			icon = Context.GetIcon (Stock.NameSpace);
+			icon = Context.GetIcon ("md-package");
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder,
