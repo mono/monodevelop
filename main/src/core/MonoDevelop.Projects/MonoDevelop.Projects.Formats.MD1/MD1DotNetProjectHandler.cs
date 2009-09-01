@@ -259,7 +259,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 
 			string al = configuration.TargetFramework.ClrVersion == ClrVersion.Net_2_0 ? "al2" : "al";
-			CompilerError err = GenerateSatelliteAssemblies (resourcesByCulture, configuration.OutputDirectory, al, Path.GetFileNameWithoutExtension (configuration.OutputAssembly), monitor);
+			CompilerError err = GenerateSatelliteAssemblies (resourcesByCulture, configuration.OutputDirectory, al, Path.GetFileName (configuration.OutputAssembly), monitor);
 			if (err != null) {
 				CompilerResults cr = new CompilerResults (new TempFileCollection ());
 				cr.Errors.Add (err);
