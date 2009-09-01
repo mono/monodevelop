@@ -47,7 +47,7 @@ namespace MonoDevelop.GtkCore
 			ArrayList list = new ArrayList ();
 			foreach (ProjectFile file in project.Files) {
 				if (file.BuildAction == BuildAction.EmbeddedResource)
-					list.Add (new Stetic.ResourceInfo (Path.GetFileName (file.Name), file.Name, MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (file.Name)));
+					list.Add (new Stetic.ResourceInfo (file.ResourceId, file.Name, MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (file.Name)));
 			}
 			return (Stetic.ResourceInfo[]) list.ToArray (typeof(Stetic.ResourceInfo));
 		}
@@ -55,7 +55,7 @@ namespace MonoDevelop.GtkCore
 		public Stream GetResourceStream (string resourceName)
 		{
 			foreach (ProjectFile file in project.Files) {
-				if (resourceName == Path.GetFileName (file.Name))
+				if (resourceName == file.ResourceId)
 					return File.OpenRead (file.Name);
 			}
 			return null;
@@ -63,17 +63,17 @@ namespace MonoDevelop.GtkCore
 		
 		public Stetic.ResourceInfo AddResource (string fileName)
 		{
-			project.AddFile (fileName, BuildAction.EmbeddedResource);
-			project.Save (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor());
-			return new Stetic.ResourceInfo (Path.GetFileName (fileName), fileName);
+			ProjectFile file = project.AddFile (fileName, BuildAction.EmbeddedResource);
+			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.Save (project);
+			return new Stetic.ResourceInfo (file.ResourceId, fileName);
 		}
 		
 		public void RemoveResource (string resourceName)
 		{
 			foreach (ProjectFile file in project.Files) {
-				if (resourceName == Path.GetFileName (file.Name)) {
+				if (resourceName == file.ResourceId) {
 					project.Files.Remove (file);
-					project.Save (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor());
+					MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.Save (project);
 					return;
 				}
 			}
