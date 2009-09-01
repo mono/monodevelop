@@ -1,5 +1,21 @@
 2009-09-01  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.csproj: Add new files and header policy.
+
+	* Makefile: 
+
+	* PyBinding.Parser/PythonParser.cs: Add PythonResolver and
+	  PythonExpressionFinder.
+
+	* PyBinding.Parser/PythonResolver.cs: Beginnings of a simple
+	  python resolver using PythonExpressionResult.
+
+	* PyBinding.Parser/PythonExpressionFinder.cs: A simple
+	  expression finder that currently looks at the current word
+	  and a word backwards to determine context for the resolver.
+
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding/PythonHelper.cs: Add helper to get python package
 	  name.
 

@@ -82,8 +82,10 @@ FILES =  \
 	PyBinding.Parser/ParserDatabase.cs \
 	PyBinding.Parser/ParserItem.cs \
 	PyBinding.Parser/ParserManager.cs \
+	PyBinding.Parser/PythonExpressionFinder.cs \
 	PyBinding.Parser/PythonParser.cs \
 	PyBinding.Parser/PythonParserInternal.cs \
+	PyBinding.Parser/PythonResolver.cs \
 	PyBinding.Runtime/AbstractPythonRuntime.cs \
 	PyBinding.Runtime/IPythonRuntime.cs \
 	PyBinding.Runtime/Python25Runtime.cs \

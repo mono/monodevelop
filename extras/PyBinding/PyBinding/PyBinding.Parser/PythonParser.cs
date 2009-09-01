@@ -62,7 +62,17 @@ namespace PyBinding.Parser
 
 		public override bool CanParse (string fileName)
 		{
-			return Path.GetExtension (fileName) == ".py";
+			return Path.GetExtension (fileName).ToLower () == ".py";
+		}
+		
+		public override IResolver CreateResolver (ProjectDom dom, object editor, string fileName)
+		{
+			return new PythonResolver (dom, fileName);
+		}
+		
+		public override IExpressionFinder CreateExpressionFinder (ProjectDom dom)
+		{
+			return new PythonExpressionFinder (dom);
 		}
 	}
 }
