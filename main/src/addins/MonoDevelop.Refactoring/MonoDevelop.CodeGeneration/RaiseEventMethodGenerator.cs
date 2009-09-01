@@ -107,11 +107,11 @@ namespace MonoDevelop.CodeGeneration
 					IType type = Options.Dom.SearchType (new SearchTypeRequest (Options.Document.ParsedDocument.CompilationUnit, member.ReturnType, Options.EnclosingType));
 					IMethod invokeMethod = type.Methods.First ();
 
-					methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (Options.MatchNamespaceImports (invokeMethod.Parameters[1].ReturnType.ConvertToTypeReference ()), invokeMethod.Parameters[1].Name));
+					methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (Options.ShortenTypeName (invokeMethod.Parameters[1].ReturnType.ConvertToTypeReference ()), invokeMethod.Parameters[1].Name));
 					const string handlerName = "handler";
 					
 					LocalVariableDeclaration handlerVariable = new LocalVariableDeclaration (new VariableDeclaration (handlerName, new MemberReferenceExpression (new ThisReferenceExpression (), member.Name)));
-					handlerVariable.TypeReference = Options.MatchNamespaceImports (member.ReturnType.ConvertToTypeReference ());
+					handlerVariable.TypeReference = Options.ShortenTypeName (member.ReturnType.ConvertToTypeReference ());
 					methodDeclaration.Body.AddChild (handlerVariable);
 					
 					IfElseStatement ifStatement = new IfElseStatement (null);

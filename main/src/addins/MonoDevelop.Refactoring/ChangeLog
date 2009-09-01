@@ -1,5 +1,16 @@
 2009-09-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/RefactoringOptions.cs:
+	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs:
+	* MonoDevelop.CodeGeneration/CodeGenerationOptions.cs:
+	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Worked on refactoring/use shorten type name method.
+
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/RefactoryCommands.cs: ResolvedType
 	  is no longer used for the resolve namespace feature.
 	  Therefore replaced the check with an expression check.

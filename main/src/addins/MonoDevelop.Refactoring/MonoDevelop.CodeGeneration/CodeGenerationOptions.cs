@@ -71,22 +71,9 @@ namespace MonoDevelop.CodeGeneration
 			return ProjectDomService.GetParser (Document.FileName, MimeType);
 		}
 		
-		public ICSharpCode.NRefactory.Ast.TypeReference MatchNamespaceImports (ICSharpCode.NRefactory.Ast.TypeReference typeReference)
+		public ICSharpCode.NRefactory.Ast.TypeReference ShortenTypeName (ICSharpCode.NRefactory.Ast.TypeReference typeReference)
 		{
-			string prefix = "";
-			foreach (IUsing u in Document.CompilationUnit.Usings) {
-				if (!u.IsFromNamespace || u.Region.Contains (Document.TextEditor.CursorLine, Document.TextEditor.CursorColumn)) {
-					foreach (string n in u.Namespaces) {
-						if (n.Length <= prefix.Length)
-							continue;
-						if (typeReference.Type.StartsWith (n + "."))
-							prefix = n;
-					}
-				}
-			}
-			if (!string.IsNullOrEmpty (prefix))
-				typeReference.Type = typeReference.Type.Substring (prefix.Length + 1);
-			return typeReference;
+			return Document.CompilationUnit.ShortenTypeName (typeReference.ConvertToReturnType (), Document.TextEditor.CursorLine, Document.TextEditor.CursorColumn).ConvertToTypeReference ();
 		}
 		
 		public IResolver GetResolver ()

@@ -148,7 +148,7 @@ namespace MonoDevelop.CodeGeneration
 						
 						List<Expression> arguments = new List<Expression> ();
 						foreach (IParameter parameter in method.Parameters) {
-							methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (Options.MatchNamespaceImports (parameter.ReturnType.ConvertToTypeReference ()), parameter.Name, GetModifier (parameter)));
+							methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (Options.ShortenTypeName (parameter.ReturnType.ConvertToTypeReference ()), parameter.Name, GetModifier (parameter)));
 							arguments.Add (new DirectionExpression (GetDirection (parameter), new IdentifierExpression (parameter.Name)));
 						}
 						
@@ -168,7 +168,7 @@ namespace MonoDevelop.CodeGeneration
 					if (member is IProperty) {
 						IProperty property = (IProperty)member;
 						PropertyDeclaration propertyDeclaration = new PropertyDeclaration (modifier, null, member.Name, null);
-						propertyDeclaration.TypeReference = Options.MatchNamespaceImports (member.ReturnType.ConvertToTypeReference ());
+						propertyDeclaration.TypeReference = Options.ShortenTypeName (member.ReturnType.ConvertToTypeReference ());
 						if (property.HasGet) {
 							BlockStatement block = new BlockStatement ();
 							block.AddChild (isInterfaceMember ? throwNotImplemented : new ReturnStatement (baseReference));

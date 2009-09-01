@@ -139,10 +139,14 @@ namespace MonoDevelop.Refactoring
 			return GetIndent (Document, member);
 		}
 		
+		public IReturnType ShortenTypeName (IReturnType fullyQualifiedTypeName)
+		{
+			return Document.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, Document.TextEditor.CursorLine, Document.TextEditor.CursorColumn);
+		}
+		
 		public ParsedDocument ParseDocument ()
 		{
 			return ProjectDomService.Parse (Dom.Project, Document.FileName, DesktopService.GetMimeTypeForUri (Document.FileName), Document.TextEditor.Text);
 		}
-		
 	}
 }

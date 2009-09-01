@@ -169,6 +169,7 @@ namespace MonoDevelop.Refactoring
 					eitem = null;
 				}
 			}
+			
 			if (resolveResult != null  && resolveResult.ResolvedExpression != null && !string.IsNullOrEmpty (resolveResult.ResolvedExpression.Expression)) {
 				IReturnType returnType = new DomReturnType (resolveResult.ResolvedExpression.Expression);
 				List<string> namespaces = new List<string> (ctx.ResolvePossibleNamespaces (returnType));
@@ -181,11 +182,15 @@ namespace MonoDevelop.Refactoring
 							info.Icon = MonoDevelop.Core.Gui.Stock.AddNamespace;
 						}
 						resolveMenu.CommandInfos.AddSeparator ();
+					} else {
+						// remove all unused namespaces (for resolving conflicts)
+						namespaces.RemoveAll (ns => !doc.CompilationUnit.IsNamespaceUsedAt (ns, resolveResult.ResolvedExpression.Region.Start));
 					}
+					
 					foreach (string ns in namespaces) {
 						resolveMenu.CommandInfos.Add (ns, new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).ResolveName));
 					}
-					if (namespaces.Count > 0)
+					if (namespaces.Count > (item == null ? 0 : 1))
 						ainfo.Add (resolveMenu, null);
 				}
 			}
