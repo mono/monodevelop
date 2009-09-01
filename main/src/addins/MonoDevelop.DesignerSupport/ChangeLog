@@ -1,3 +1,9 @@
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs:
+	  Fix bu #535825 - Property pad should be disabled when
+	  multiple items selected.
+
 2009-08-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Fixed Bug

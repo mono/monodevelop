@@ -24,7 +24,10 @@ namespace MonoDevelop.DesignerSupport.Projects
 	{
 		public object GetActiveComponent ()
 		{
-			return CurrentNode.DataItem;
+			if (CurrentNodes.Length == 1)
+				return CurrentNode.DataItem;
+			else
+				return null;
 		}
 		
 		public object GetProvider ()
