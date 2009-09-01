@@ -74,6 +74,14 @@ namespace PyBinding
 
 			return m_ModuleCache[fileName];
 		}
+		
+		public static string PackageFromFilename (string fileName)
+		{
+			var modName = ModuleFromFilename (fileName);
+			if (modName.EndsWith (".__init__"))
+				return modName.Substring (0, modName.Length - 9);
+			return modName;
+		}
 
 		static string RecursiveModuleFromFile (DirectoryInfo dirInfo, string modName)
 		{

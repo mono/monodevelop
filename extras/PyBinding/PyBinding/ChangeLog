@@ -1,5 +1,10 @@
 2009-09-01  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding/PythonHelper.cs: Add helper to get python package
+	  name.
+
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Gui.Navigation/PackagesNodeBuilder.cs: Use the
 	  proper package name
 
