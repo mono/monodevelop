@@ -1,3 +1,10 @@
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomUsing.cs:
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
+	* MonoDevelop.Projects.Dom/ICompilationUnit.cs: Added some
+	  helper functions.
+
 2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild\SlnFileFormat.cs: Fix

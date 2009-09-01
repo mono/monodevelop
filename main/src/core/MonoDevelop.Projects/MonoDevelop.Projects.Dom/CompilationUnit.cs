@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MonoDevelop.Core;
@@ -98,11 +99,21 @@ namespace MonoDevelop.Projects.Dom
 			}
 			return null;
 		}
+		
+		public IType GetTypeAt (DomLocation location)
+		{
+			return GetTypeAt (location.Line, location.Column);
+		}
+		
 		public IType GetTypeAt (int line, int column)
 		{
 			return GetTypeAt (types, line, column);
 		}
 		
+		public IMember GetMemberAt (DomLocation location)
+		{
+			return GetMemberAt (location.Line, location.Column);
+		}
 		public IMember GetMemberAt (int line, int column)
 		{
 			IType type = GetTypeAt (line, column);
@@ -127,6 +138,16 @@ namespace MonoDevelop.Projects.Dom
 		{
 			newType.CompilationUnit = this;
 			types.Add (newType);
+		}
+		
+		public bool IsNamespaceUsedAt (string name, int line, int column)
+		{
+			return IsNamespaceUsedAt (name, new DomLocation (line, column));
+		}
+		
+		public bool IsNamespaceUsedAt (string name, DomLocation location)
+		{
+			return usings.Where (u => ((!u.IsFromNamespace && u.Region.Start < location) || u.Region.Contains (location)) && u.Namespaces.Contains (name)).Any ();
 		}
 		
 		public void GetNamespaceContents (List<IMember> list, string subNamespace, bool caseSensitive)

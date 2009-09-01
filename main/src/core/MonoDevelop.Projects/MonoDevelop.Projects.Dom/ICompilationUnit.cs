@@ -53,7 +53,14 @@ namespace MonoDevelop.Projects.Dom
 		
 		IType GetType (string fullName, int genericParameterCount);
 		IType GetTypeAt (int line, int column);
+		IType GetTypeAt (DomLocation location);
+		
 		IMember GetMemberAt (int line, int column);
+		IMember GetMemberAt (DomLocation location);
+		
 		void GetNamespaceContents (List<IMember> list, string subNameSpace, bool caseSensitive);
+		
+		bool IsNamespaceUsedAt (string name, int line, int column);
+		bool IsNamespaceUsedAt (string name, DomLocation location);
 	}
 }

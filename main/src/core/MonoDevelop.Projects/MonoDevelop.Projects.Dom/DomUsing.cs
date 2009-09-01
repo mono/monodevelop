@@ -92,5 +92,11 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return visitor.Visit (this, data);
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[DomUsing: Region={0}, Namespaces=({1}), IsFromNamespace={2}]", Region, string.Join (",", namespaces.ToArray ()), IsFromNamespace);
+		}
+		
 	}
 }
