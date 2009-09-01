@@ -67,22 +67,25 @@ namespace DebuggerServer
 		
 		public override void ActivateEvent (Mono.Debugger.Event ev)
 		{
-			Process.ActivatePendingBreakpoints ();
+			if (Process.MainThread.IsStopped)
+				ev.Activate (Process.MainThread);
+			else
+				ThrowNotSupported ("Breakpoints can't be changed while the process is running.");
 		}
 		
 		public override void RemoveEvent (Mono.Debugger.Event ev)
 		{
-			Session.RemoveEvent (ev);
-			Process.ActivatePendingBreakpoints ();
+			if (!Process.MainThread.IsStopped)
+				ThrowNotSupported ("Breakpoints can't be changed while the process is running.");
+			Session.DeleteEvent (ev);
 		}
 		
 		public override void EnableEvent (Mono.Debugger.Event ev, bool enable)
 		{
 			if (enable)
-				Session.ActivateEventAsync (ev);
+				ev.Activate (Process.MainThread);
 			else
-				Session.DeactivateEventAsync (ev);
-			Process.ActivatePendingBreakpoints ();
+				ev.Deactivate (Process.MainThread);
 		}
 	}
 }
