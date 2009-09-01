@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui
 		bool Sticky { get; set; }
 		IPadContent Content { get; }
 		
-		void Activate ();
+		void Activate (bool giveFocus);
 		
 		event EventHandler PadShown;
 		event EventHandler PadHidden;
@@ -145,10 +145,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void Activate ()
+		public void Activate (bool giveFocus)
 		{
 			CreateContent ();
-			layout.ActivatePad (codon);
+			layout.ActivatePad (codon, giveFocus);
 		}
 		
 		void CreateContent ()

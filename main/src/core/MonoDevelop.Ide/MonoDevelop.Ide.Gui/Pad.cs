@@ -87,8 +87,16 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void BringToFront ()
 		{
+			BringToFront (false);
+		}
+		
+		public void BringToFront (bool grabFocus)
+		{
 			PadWindow.LastActivePadWindow = window;
+			// TODO: Is bringToFront really required, or is Activate (grabFocus) enough ?
 			workbench.BringToFront (content);
+			if (grabFocus)
+				window.Activate (grabFocus);
 		}
 		
 		public bool Visible {

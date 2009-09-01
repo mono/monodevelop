@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide
 				} else {
 					Pad pad = SelectedPad;
 					if (pad != null)
-						pad.BringToFront ();
+						pad.BringToFront (true);
 				}
 				ret = base.OnKeyReleaseEvent (evnt);
 				Gtk.Window parent = this.TransientFor;

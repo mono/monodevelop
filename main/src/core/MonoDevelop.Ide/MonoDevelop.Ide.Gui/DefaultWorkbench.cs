@@ -397,7 +397,7 @@ namespace MonoDevelop.Ide.Gui
 			if (!layout.IsVisible (content))
 				layout.ShowPad (content);
 
-			layout.ActivatePad (content);
+			layout.ActivatePad (content, false);
 		}
 		
 		public void RedrawAllComponents()

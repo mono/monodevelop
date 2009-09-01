@@ -584,11 +584,11 @@ namespace MonoDevelop.Ide.Gui
 				item.Visible = false;
 		}
 		
-		public void ActivatePad (PadCodon padContent)
+		public void ActivatePad (PadCodon padContent, bool giveFocus)
 		{
 			DockItem item = GetDockItem (padContent);
 			if (item != null)
-				item.Present (true);
+				item.Present (giveFocus);
 		}
 		
 		public bool IsSticky (PadCodon padContent)

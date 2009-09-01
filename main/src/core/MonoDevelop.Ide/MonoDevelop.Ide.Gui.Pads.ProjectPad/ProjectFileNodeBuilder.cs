@@ -331,7 +331,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (Pad pad in IdeApp.Workbench.Pads) {
 				if (pad.Id == "MonoDevelop.DesignerSupport.PropertyPad") {
 					pad.Visible = true;
-					pad.BringToFront ();
+					pad.BringToFront (true);
 					return;
 				}
 			}

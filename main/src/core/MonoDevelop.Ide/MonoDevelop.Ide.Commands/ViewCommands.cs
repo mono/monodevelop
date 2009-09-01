@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Commands
 			if (dataItem == null) return; 
 			Pad pad = (Pad)dataItem;
 			pad.Visible = true;
-			pad.BringToFront ();
+			pad.BringToFront (true);
 		}
 	}
 

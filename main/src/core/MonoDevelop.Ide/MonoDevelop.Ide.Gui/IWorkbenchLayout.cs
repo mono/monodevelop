@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui
 		/// Activates a pad (Show only makes it visible but Activate does
 		/// bring it to foreground)
 		/// </summary>
-		void ActivatePad(PadCodon content);
+		void ActivatePad(PadCodon content, bool giveFocus);
 		
 		/// <summary>
 		/// Hides a new <see cref="IPadContent"/>.
