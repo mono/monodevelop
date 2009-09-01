@@ -1,5 +1,11 @@
 2009-09-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/INRefactoryASTProvider.cs: Resolve
+	  type now works with templates with >=2 type arguments.
+
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
 	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
 	  Use shorten type name method.

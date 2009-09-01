@@ -31,7 +31,6 @@ using ICSharpCode.NRefactory;
 using System.IO;
 using MonoDevelop.Projects.Dom.Parser;
 
-
 namespace MonoDevelop.Refactoring
 {
 	public interface INRefactoryASTProvider
@@ -42,6 +41,7 @@ namespace MonoDevelop.Refactoring
 		INode ParseText (string text);
 		Expression ParseExpression (string expressionText);
 		CompilationUnit ParseFile (string content);
+		TypeReference ParseTypeReference (string typeText);
 		
 		bool CanGenerateASTFrom (string mimeType);
 	}

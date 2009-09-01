@@ -171,7 +171,13 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			if (resolveResult != null  && resolveResult.ResolvedExpression != null && !string.IsNullOrEmpty (resolveResult.ResolvedExpression.Expression)) {
-				IReturnType returnType = new DomReturnType (resolveResult.ResolvedExpression.Expression);
+				
+				IReturnType returnType = null; 
+				INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (doc.FileName));
+				if (astProvider != null) 
+					returnType = astProvider.ParseTypeReference (resolveResult.ResolvedExpression.Expression).ConvertToReturnType ();
+				if (returnType == null)
+					returnType = DomReturnType.FromInvariantString (resolveResult.ResolvedExpression.Expression);
 				List<string> namespaces = new List<string> (ctx.ResolvePossibleNamespaces (returnType));
 				if (item == null || namespaces.Count > 1) {
 					CommandInfoSet resolveMenu = new CommandInfoSet ();
