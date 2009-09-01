@@ -191,7 +191,7 @@ namespace MonoDevelop.Core.Gui
 		}
 		public static void ShowMessage (Gtk.Window parent, string primaryText, string secondaryText)
 		{
-			GenericAlert (Stock.Information, primaryText, secondaryText, AlertButton.Cancel);
+			GenericAlert (Stock.Information, primaryText, secondaryText, AlertButton.Ok);
 		}
 		#endregion
 		

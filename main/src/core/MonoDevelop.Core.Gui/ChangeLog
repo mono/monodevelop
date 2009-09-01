@@ -1,3 +1,8 @@
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/MessageService.cs: Use OK as default
+	  button for informative dialogs.
+
 2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui\SyncContextAttribute.cs: When running
