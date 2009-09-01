@@ -1,5 +1,10 @@
 2009-09-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Pad.cs: Always call activate on
+	  padwindow.
+
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Pad.cs:
 	* MonoDevelop.Ide.Gui/Workbench.cs:
 	* MonoDevelop.Ide.Gui/IPadContainer.cs:
