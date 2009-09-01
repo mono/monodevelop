@@ -749,8 +749,26 @@ namespace MonoDevelop.CSharpBinding
 					goto end;
 				}
 			}
-			
 			if (this.callingMember != null) {
+				
+				// special handling of property return types, they can have the same name as the return type
+				// ex.: MyType MyType { get; set; }
+				if (callingMember is IProperty && identifier == callingMember.Name) {
+					int pos = editor.GetPositionFromLineColumn (resolvePosition.Line, resolvePosition.Column);
+					while (pos < editor.TextLength && !Char.IsWhiteSpace (editor.GetCharAt (pos)))
+						pos++;
+					while (pos < editor.TextLength && Char.IsWhiteSpace (editor.GetCharAt (pos)))
+						pos++;
+					StringBuilder memberName = new StringBuilder ();
+					while (pos < editor.TextLength && !Char.IsWhiteSpace (editor.GetCharAt (pos))) {
+						memberName.Append (editor.GetCharAt (pos));
+						pos++;
+					}
+					if (memberName.ToString () == identifier) {
+						result = visitor.CreateResult (callingMember.ReturnType);
+						goto end;
+					}
+				}
 				if (identifier == "value" && this.callingMember is IProperty) {
 					result = new MemberResolveResult (this.callingMember);
 					result.UnresolvedType = ((IProperty)this.callingMember).ReturnType;
