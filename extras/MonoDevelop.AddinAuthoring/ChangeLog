@@ -1,5 +1,9 @@
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* configure: Bump mono-addins dependency.
+
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* configure: Updated deps.
 
 2009-08-21  Lluis Sanchez Gual  <lluis@novell.com>
