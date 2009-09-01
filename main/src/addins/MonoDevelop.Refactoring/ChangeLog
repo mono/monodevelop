@@ -1,5 +1,11 @@
 2009-09-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Use shorten type name method.
+
+2009-09-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/RefactoryCommands.cs:
 	* MonoDevelop.Refactoring/RefactoringOptions.cs:
 	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs:

@@ -81,40 +81,6 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			return resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName) && resolveResult.ResolvedType.FullName != DomReturnType.Void.FullName;
 		}
 		
-		static HashSet<string> builtInTypes = new HashSet<string> (new string[] {
-			"System.Void", "System.Object","System.Boolean","System.Byte", "System.SByte",
-			"System.Char", "System.Enum", "System.Int16", "System.Int32", "System.Int64", 
-			"System.UInt16", "System.UInt32", "System.UInt64", "System.Single", "System.Double", "System.Decimal",
-			"System.String"
-		});
-		
-		public string GetSimpleTypeName (RefactoringOptions options, string fullTypeName)
-		{
-			if (builtInTypes.Contains (fullTypeName))
-				return fullTypeName;
-			IType foundType = null;
-			string curType = fullTypeName;
-			while (foundType == null) {
-				foundType = options.Dom.GetType (curType);
-				int idx = curType.LastIndexOf ('.');
-				if (idx < 0)
-					break;
-				curType = fullTypeName.Substring (0, idx);
-			}
-
-			if (foundType == null)
-				foundType = new DomType (fullTypeName);
-			if (options.Document.ParsedDocument != null) {
-				foreach (IUsing u in options.Document.ParsedDocument.CompilationUnit.Usings) {
-					foreach (string includedNamespace in u.Namespaces) {
-						if (includedNamespace == foundType.Namespace)
-							return fullTypeName.Substring (includedNamespace.Length + 1);
-					}
-				}
-			}
-			return fullTypeName;
-		}
-		
 		public override void Run (RefactoringOptions options)
 		{
 			base.Run (options);
@@ -201,7 +167,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
 				insert.Offset = lineSegment.Offset + options.GetWhitespaces (lineSegment.Offset).Length;
 				string varName = CreateVariableName (resolveResult.ResolvedType);
-				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (ConvertToTypeRef (options, resolveResult.ResolvedType));
+				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ());
 				varDecl.Variables.Add (new VariableDeclaration (varName, expression));
 				insert.RemovedChars = expression.EndLocation.Column - 1;
 				insert.InsertedText = provider.OutputNode (options.Dom, varDecl);
@@ -218,17 +184,6 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			if (returnType == null)
 				return "aVar";
 			return "a" + returnType.Name;
-		}
-
-
-		TypeReference ConvertToTypeRef (RefactoringOptions options, MonoDevelop.Projects.Dom.IReturnType returnType)
-		{
-			TypeReference result = new TypeReference (GetSimpleTypeName (options, returnType.FullName));
-			result.IsKeyword = true;
-			foreach (IReturnType generic in returnType.GenericArguments) {
-				result.GenericTypes.Add (ConvertToTypeRef (options, generic));
-			}
-			return result;
 		}
 
 	}

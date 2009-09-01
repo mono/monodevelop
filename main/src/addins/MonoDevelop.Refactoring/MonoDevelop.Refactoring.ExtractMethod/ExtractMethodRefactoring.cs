@@ -230,7 +230,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				varGen.Offset = line.Offset + line.EditableLength;
 				varGen.InsertedText = Environment.NewLine + options.GetWhitespaces (line.Offset);
 				foreach (VariableDescriptor var in variablesToGenerate) {
-					TypeReference tr = var.ReturnType.ConvertToTypeReference ();
+					TypeReference tr = options.ShortenTypeName (var.ReturnType).ConvertToTypeReference ();
 					varGen.InsertedText += provider.OutputNode (options.Dom, new LocalVariableDeclaration (new VariableDeclaration (var.Name, null, tr)));
 				}
 				result.Add (varGen);
@@ -259,7 +259,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			INode outputNode;
 			if (oneChangedVariable) {
 				string name = param.ChangedVariables.First ();
-				returnType = param.Variables.Find (v => v.Name == name).ReturnType.ConvertToTypeReference ();
+				returnType = options.ShortenTypeName (param.Variables.Find (v => v.Name == name).ReturnType).ConvertToTypeReference ();
 				if (visitor.VariableList.Any (v => v.Name == name && !v.IsDefined)) {
 					LocalVariableDeclaration varDecl = new LocalVariableDeclaration (returnType);
 					varDecl.Variables.Add (new VariableDeclaration (name, invocation));
@@ -296,7 +296,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			node.AcceptVisitor (transformer, null);
 			if (!oneChangedVariable && node is Expression) {
 				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (text), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
-				returnType = resolveResult.ResolvedType.ConvertToTypeReference ();
+				returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
 			}
 			
 			MethodDeclaration methodDecl = new MethodDeclaration ();
@@ -317,13 +317,13 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 
 			foreach (VariableDescriptor var in variablesToDefine) {
 				BlockStatement block = methodDecl.Body;
-				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (var.ReturnType.ConvertToTypeReference());
+				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (options.ShortenTypeName (var.ReturnType).ConvertToTypeReference());
 				varDecl.Variables.Add (new VariableDeclaration (var.Name));
 				block.Children.Insert (0, varDecl);
 			}
 			
 			foreach (VariableDescriptor var in param.Parameters) {
-				TypeReference typeReference = var.ReturnType.ConvertToTypeReference ();
+				TypeReference typeReference = options.ShortenTypeName (var.ReturnType).ConvertToTypeReference ();
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, var.Name);
 				if (!oneChangedVariable && param.ChangedVariables.Contains (var.Name))
 					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Ref;
@@ -331,7 +331,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			}
 
 			foreach (VariableDescriptor var in variablesToGenerate) {
-				TypeReference typeReference = var.ReturnType.ConvertToTypeReference ();
+				TypeReference typeReference = options.ShortenTypeName (var.ReturnType).ConvertToTypeReference ();
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, var.Name);
 				if (!oneChangedVariable && param.ChangedVariables.Contains (var.Name))
 					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;
