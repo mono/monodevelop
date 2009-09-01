@@ -1,5 +1,10 @@
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/BuildResult.cs: Update the
+	  failedBuildCount when adding errors.
+
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
 	  Fix bug #469211 - Satellite assembly names truncated when
 	  primary assembly name contains dot. Patch by Dean Brettle.

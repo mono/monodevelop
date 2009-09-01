@@ -62,7 +62,6 @@ namespace MonoDevelop.Projects
 				foreach (CompilerError err in compilerResults.Errors) {
 					Append (new BuildError (err));
 				}
-				if (errorCount > 0) failedBuildCount = 1;
 			}
 		}
 		
@@ -134,8 +133,11 @@ namespace MonoDevelop.Projects
 				error.SourceTarget = sourceTarget;
 			if (error.IsWarning)
 				warningCount++;
-			else
+			else {
 				errorCount++;
+				if (failedBuildCount == 0)
+					failedBuildCount = 1;
+			}
 			return this;
 		}
 
