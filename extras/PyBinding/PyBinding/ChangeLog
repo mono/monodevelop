@@ -1,5 +1,10 @@
 2009-09-01  Christian Hergert  <chris@dronelabs.com>
 
+	* PyBinding.Parser.Dom/PythonCompilationUnit.cs: Use proper
+	  package name and do not add class a second time.
+
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
 	* PyBinding.Gui.Navigation/PackageNodeBuilder.cs:
 	* PyBinding.Gui.Navigation/PackagesNodeBuilder.cs: Use
 	  "md-package" stock icon to be consistent.

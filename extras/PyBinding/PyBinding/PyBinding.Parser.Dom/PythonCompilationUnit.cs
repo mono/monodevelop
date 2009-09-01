@@ -53,7 +53,7 @@ namespace PyBinding.Parser.Dom
 
 			// fake class containing modules funcs
 			var module = new PackageDomType () {
-				Name       = PythonHelper.ModuleFromFilename (FileName),
+				Name       = PythonHelper.PackageFromFilename (FileName),
 				ClassType  = ClassType.Unknown,
 				Location   = new DomLocation (0, 0),
 				BodyRegion = Module.Region,
@@ -86,7 +86,6 @@ namespace PyBinding.Parser.Dom
 					Location      = new DomLocation (pyClass.Region.Start.Line - 1, 0),
 				};
 				m_AllWrapped.Add (domType);
-				Add (domType);
 
 				// class functions
 				foreach (IMethod method in BuildFunctions (pyClass.Functions))
