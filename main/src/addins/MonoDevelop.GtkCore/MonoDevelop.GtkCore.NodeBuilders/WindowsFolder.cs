@@ -35,6 +35,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	class WindowsFolder
 	{
 		Project project;
+		GuiBuilderProject gproject;
 		
 		public event EventHandler Changed;
 		
@@ -43,13 +44,13 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			this.project = project;
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			
-			info.GuiBuilderProject.Changed += OnUpdateFiles;
+			gproject = info.GuiBuilderProject;
+			gproject.Changed += OnUpdateFiles;
 		}
 		
 		public void Dispose ()
 		{
-			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
-			info.GuiBuilderProject.Changed -= OnUpdateFiles;
+			gproject.Changed -= OnUpdateFiles;
 		}
 		
 		void OnUpdateFiles (object s, EventArgs args)
