@@ -1,3 +1,9 @@
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MsPrjHelper.cs: Create default configurations for the
+	  imported solution. Fixes bug #504600 - Rebuild solution
+	  doesn't trigger a real build.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* prj2make-sharp-lib.csproj: Updated dependencies. We now

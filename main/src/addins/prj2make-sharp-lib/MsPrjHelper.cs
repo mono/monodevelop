@@ -263,6 +263,10 @@ namespace MonoDevelop.Prj2Make
 
 					monitor.Step (1);
 					solution.RootFolder.Items.Add (prj);
+					foreach (ItemConfiguration conf in prj.Configurations) {
+						if (!solution.GetConfigurations ().Contains (conf.Id))
+							solution.AddConfiguration (conf.Id, false);
+					}
 					monitor.Step (1);
 				}
 				
@@ -475,7 +479,7 @@ namespace MonoDevelop.Prj2Make
 			
 			string dir = MapPath (project.BaseDirectory, ConfigBlock.OutputPath);
 			if (dir == null) {
-				dir = "bin/" + ConfigBlock.Name;
+				dir = Path.Combine ("bin", ConfigBlock.Name);
 				monitor.ReportWarning (string.Format (GettextCatalog.GetString ("Output directory '{0}' can't be mapped to a local directory. The directory '{1}' will be used instead"), ConfigBlock.OutputPath, dir));
 			}
 			confObj.OutputDirectory = dir;
