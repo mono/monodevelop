@@ -227,11 +227,7 @@ namespace MonoDevelop.IPhone
 					CssmData data;
 					if (SecCertificateGetData (certRef, out data) == OSStatus.Ok) {
 						byte[] buffer = new byte[(int)data.Length];
-						unsafe {
-							byte *dataPtr = (byte*) data.Data;
-							for (int i = 0; i < buffer.Length; i++)
-								buffer[i] = *dataPtr++;
-						}
+						Marshal.Copy (data.Data, buffer, 0, buffer.Length);
 						list.Add (new X509Certificate2 (buffer));
 					}
 				}
