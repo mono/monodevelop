@@ -1,5 +1,10 @@
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Improved declare local code generator.
+
+2009-09-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
 	  fixed unassigned variable errors.
 
