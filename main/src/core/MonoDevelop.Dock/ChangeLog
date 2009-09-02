@@ -1,3 +1,11 @@
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockItem.cs:
+	* TabStrip.cs: When clicking on a notebook tab, give the focus
+	  to the new item being shown, so the user can use it with the
+	  keyboard right away. As a side effect, it fixes bug #356566
+	  - Problem with widget properties in gui desiner.
+
 2009-09-01  Mike Krüger  <mkrueger@novell.com>
 
 	* DockItem.cs: If the DockItem status is AutoHide always give

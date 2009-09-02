@@ -135,6 +135,8 @@ namespace MonoDevelop.Components.Docking
 		void OnTabPress (object s, Gtk.ButtonPressEventArgs args)
 		{
 			CurrentTab = Array.IndexOf (box.Children, s);
+			Tab t = (Tab) s;
+			DockItem.SetFocus (t.Page);
 			QueueDraw ();
 		}
 

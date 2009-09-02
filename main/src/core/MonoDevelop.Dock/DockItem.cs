@@ -253,9 +253,14 @@ namespace MonoDevelop.Components.Docking
 
 		internal void SetFocus ()
 		{
-			Widget.ChildFocus (DirectionType.TabForward);
+			SetFocus (Widget);
+		}
+		
+		internal static void SetFocus (Widget w)
+		{
+			w.ChildFocus (DirectionType.TabForward);
 
-			Window win = Widget.Toplevel as Gtk.Window;
+			Window win = w.Toplevel as Gtk.Window;
 			if (win == null)
 				return;
 
