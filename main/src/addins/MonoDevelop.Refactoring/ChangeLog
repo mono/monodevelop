@@ -1,3 +1,8 @@
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Refactoring.csproj: Don't require a specific
+	  version for Mono.Addins.
+
 2009-08-31  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoringOptions.cs:

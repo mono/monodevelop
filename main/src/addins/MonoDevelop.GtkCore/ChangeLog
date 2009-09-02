@@ -1,3 +1,18 @@
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/ProjectResourceProvider.cs: Use real
+	  resource Ids instead of file names. Fixes bug #528309 -
+	  Button Icons are not displayed.
+
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolder.cs: Store the
+	  GuiBuilderProject on which the ChangedEvent was subscribed,
+	  and use that reference when unsubscribing on Dispose. This
+	  is required because the GuiBuilderProject bound to a project
+	  may change. Fixes bug #525421 - Removing gtk-sharp reference
+	  from a project causes it to not function properly.
+
 2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.addin.xml: Don't use the text editor
