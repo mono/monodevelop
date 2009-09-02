@@ -150,6 +150,15 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				set;
 			}
 			
+			public Dictionary<string, VariableDescriptor> VariablesOutside {
+				get;
+				set;
+			}
+			public List<VariableDescriptor> OutsideVariableList {
+				get;
+				set;
+			}
+				
 			/// <summary>
 			/// The type of the expression, if the text is an expression, otherwise null.
 			/// </summary>
@@ -164,6 +173,12 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					return parameters;
 				}
 			}
+			
+			public List<VariableDescriptor> VariablesToDefine { get; set; }
+			public List<VariableDescriptor> ChangedVariablesUsedOutside { get; set; }
+			public List<VariableDescriptor> VariablesToGenerate { get; set; }
+			
+			public bool OneChangedVariable { get; set; }
 		}
 		
 		INode Analyze (RefactoringOptions options, ExtractMethodParameters param, bool fillParameter)
@@ -187,13 +202,48 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					if (resolveResult != null)
 						param.ExpressionType = resolveResult.ResolvedType;
 				}
-
 				foreach (VariableDescriptor varDescr in visitor.VariableList.Where (v => !v.IsDefined && v.InitialValueUsed)) {
 					param.Parameters.Add (varDescr);
 				}
-				param.ReferencesMember = visitor.ReferencesMember;
 				param.Variables = new List<VariableDescriptor> (visitor.Variables.Values);
+				foreach (VariableDescriptor varDescr in visitor.VariableList.Where (v => !v.IsDefined && param.Variables.Contains (v))) {
+					if (param.Parameters.Contains (varDescr))
+						continue;
+					param.Parameters.Add (varDescr);
+				}
+				
+				param.ReferencesMember = visitor.ReferencesMember;
 				param.ChangedVariables = new HashSet<string> (visitor.Variables.Values.Where (v => v.GetsChanged).Select (v => v.Name));
+				
+				// analyze the variables outside of the selected text
+				TextEditorData data = options.GetTextEditorData ();
+				IMember member = param.DeclaringMember;
+			
+				int startOffset = data.Document.LocationToOffset (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
+				int endOffset = data.Document.LocationToOffset (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
+				text = data.Document.GetTextBetween (startOffset, data.SelectionRange.Offset) + data.Document.GetTextBetween (data.SelectionRange.EndOffset, endOffset);
+				INode parsedNode = provider.ParseText (text);
+				
+				visitor = new VariableLookupVisitor (resolver, param.Location);
+				parsedNode.AcceptVisitor (visitor, null);
+				param.VariablesOutside = visitor.Variables;
+				param.OutsideVariableList = visitor.VariableList;
+				
+				param.ChangedVariablesUsedOutside = new List<VariableDescriptor> (param.Variables.Where (v => v.GetsChanged && param.VariablesOutside.ContainsKey (v.Name)));
+				param.OneChangedVariable = result is BlockStatement;
+				if (param.OneChangedVariable) 
+					param.OneChangedVariable = param.ChangedVariablesUsedOutside.Count == 1;
+				
+				param.VariablesToGenerate = new List<VariableDescriptor> (param.ChangedVariablesUsedOutside.Where (v => v.IsDefined));
+				foreach (VariableDescriptor var in param.VariablesToGenerate) {
+					param.Parameters.Add (var);
+				}
+				if (param.OneChangedVariable) {
+					param.VariablesToDefine = new List<VariableDescriptor> (param.Parameters.Where (var => !var.InitialValueUsed));
+					param.VariablesToDefine.ForEach (var => param.Parameters.Remove (var));
+				} else {
+					param.VariablesToDefine = new List<VariableDescriptor> ();
+				}
 			}
 			
 			return result;
@@ -203,64 +253,48 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		{
 			List<Change> result = new List<Change> ();
 			ExtractMethodParameters param = (ExtractMethodParameters)prop;
-			IMember member = param.DeclaringMember;
 			TextEditorData data = options.GetTextEditorData ();
-			int startOffset = data.Document.LocationToOffset (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
-			int endOffset = data.Document.LocationToOffset (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
-
-			string text = data.Document.GetTextBetween (startOffset, data.SelectionRange.Offset) + data.Document.GetTextBetween (data.SelectionRange.EndOffset, endOffset);
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			IResolver resolver = options.GetResolver ();
-			INode parsedNode = provider.ParseText (text);
-			
-			VariableLookupVisitor visitor = new VariableLookupVisitor (resolver, param.Location);
-			parsedNode.AcceptVisitor (visitor, null);
-
 			INode node = Analyze (options, param, false);
-
-			List<VariableDescriptor> changedVariablesUsedOutside = new List<VariableDescriptor> (from v in param.Variables
-				where visitor.Variables.ContainsKey (v.Name) && v.GetsChanged
-				select v);
-			List<VariableDescriptor> variablesToGenerate = new List<VariableDescriptor> (changedVariablesUsedOutside.Where (v => !visitor.Variables[v.Name].IsDefined));
-			if (variablesToGenerate.Count > 0) {
+			
+			if (param.VariablesToGenerate.Count > 0) {
 				TextReplaceChange varGen = new TextReplaceChange ();
 				varGen.Description = GettextCatalog.GetString ("Generate some temporary variables");
 				varGen.FileName = options.Document.FileName;
 				LineSegment line = data.Document.GetLine (Math.Max (0, data.Document.OffsetToLineNumber (data.SelectionRange.Offset) - 1));
 				varGen.Offset = line.Offset + line.EditableLength;
 				varGen.InsertedText = Environment.NewLine + options.GetWhitespaces (line.Offset);
-				foreach (VariableDescriptor var in variablesToGenerate) {
+				foreach (VariableDescriptor var in param.VariablesToGenerate) {
 					TypeReference tr = options.ShortenTypeName (var.ReturnType).ConvertToTypeReference ();
 					varGen.InsertedText += provider.OutputNode (options.Dom, new LocalVariableDeclaration (new VariableDeclaration (var.Name, null, tr)));
 				}
 				result.Add (varGen);
 			}
-			List<VariableDescriptor> variablesToDefine = new List<VariableDescriptor> (changedVariablesUsedOutside.Where (v => !v.IsDefined && !v.InitialValueUsed));
 			
-			bool oneChangedVariable = node is BlockStatement;
-			if (oneChangedVariable) {
-				oneChangedVariable = changedVariablesUsedOutside.Count == 1;
-			}
-
 			InvocationExpression invocation = new InvocationExpression (new IdentifierExpression (param.Name));
 			foreach (VariableDescriptor var in param.Parameters) {
-				if (!oneChangedVariable && param.ChangedVariables.Contains (var.Name)) {
-					invocation.Arguments.Add (new DirectionExpression (FieldDirection.Ref, new IdentifierExpression (var.Name)));
+				if (!param.OneChangedVariable && param.ChangedVariables.Contains (var.Name)) {
+					FieldDirection fieldDirection = FieldDirection.Ref;
+					VariableDescriptor outsideVar;
+					if (var.GetsAssigned && param.VariablesOutside.TryGetValue (var.Name, out outsideVar) || param.VariablesToGenerate.Where (v => v.Name == var.Name).Any ()) {
+						if (!outsideVar.GetsAssigned)
+							fieldDirection = FieldDirection.Out;
+					}
+					invocation.Arguments.Add (new DirectionExpression (fieldDirection, new IdentifierExpression (var.Name)));
 				} else {
 					invocation.Arguments.Add (new IdentifierExpression (var.Name));
 				}
 			}
-			foreach (VariableDescriptor var in variablesToGenerate) {
-				invocation.Arguments.Add (new DirectionExpression (FieldDirection.Out, new IdentifierExpression (var.Name)));
-			}
+			
 		//	string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
 			TypeReference returnType = new TypeReference ("System.Void", true);
 
 			INode outputNode;
-			if (oneChangedVariable) {
+			if (param.OneChangedVariable) {
 				string name = param.ChangedVariables.First ();
 				returnType = options.ShortenTypeName (param.Variables.Find (v => v.Name == name).ReturnType).ConvertToTypeReference ();
-				if (visitor.VariableList.Any (v => v.Name == name && !v.IsDefined)) {
+				if (param.OutsideVariableList.Any (v => v.Name == name && !v.IsDefined)) {
 					LocalVariableDeclaration varDecl = new LocalVariableDeclaration (returnType);
 					varDecl.Variables.Add (new VariableDeclaration (name, invocation));
 					outputNode = varDecl;
@@ -292,11 +326,12 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
 			insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (param.DeclaringMember.BodyRegion.End.Line, param.DeclaringMember.BodyRegion.End.Column);
 
-			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (variablesToGenerate);
+			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (param.VariablesToGenerate);
 			node.AcceptVisitor (transformer, null);
-			if (!oneChangedVariable && node is Expression) {
-				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (text), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
-				returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
+			if (!param.OneChangedVariable && node is Expression) {
+				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+				if (resolveResult.ResolvedType != null)
+					returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
 			}
 			
 			MethodDeclaration methodDecl = new MethodDeclaration ();
@@ -308,14 +343,14 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
 			if (node is BlockStatement) {
 				methodDecl.Body = (BlockStatement)node;
-				if (oneChangedVariable)
+				if (param.OneChangedVariable)
 					methodDecl.Body.AddChild (new ReturnStatement (new IdentifierExpression (param.ChangedVariables.First ())));
 			} else if (node is Expression) {
 				methodDecl.Body = new BlockStatement ();
 				methodDecl.Body.AddChild (new ReturnStatement (node as Expression));
 			}
 
-			foreach (VariableDescriptor var in variablesToDefine) {
+			foreach (VariableDescriptor var in param.VariablesToDefine) {
 				BlockStatement block = methodDecl.Body;
 				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (options.ShortenTypeName (var.ReturnType).ConvertToTypeReference());
 				varDecl.Variables.Add (new VariableDeclaration (var.Name));
@@ -325,18 +360,29 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			foreach (VariableDescriptor var in param.Parameters) {
 				TypeReference typeReference = options.ShortenTypeName (var.ReturnType).ConvertToTypeReference ();
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, var.Name);
-				if (!oneChangedVariable && param.ChangedVariables.Contains (var.Name))
-					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Ref;
+				if (!param.OneChangedVariable) {
+					if (param.ChangedVariables.Contains (var.Name))
+						pde.ParamModifier = ICSharpCode.NRefactory.Ast.ParameterModifiers.Ref;
+					if (param.VariablesToGenerate.Where (v => v.Name == var.Name).Any ()) {
+						pde.ParamModifier = ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;
+					}
+					VariableDescriptor outsideVar;
+					if (var.GetsAssigned && param.VariablesOutside.TryGetValue (var.Name, out outsideVar)) {
+						if (!outsideVar.GetsAssigned)
+							pde.ParamModifier = ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;
+					}
+				}
+				
 				methodDecl.Parameters.Add (pde);
 			}
 
-			foreach (VariableDescriptor var in variablesToGenerate) {
+	/*		foreach (VariableDescriptor var in variablesToOutput) {
 				TypeReference typeReference = options.ShortenTypeName (var.ReturnType).ConvertToTypeReference ();
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, var.Name);
-				if (!oneChangedVariable && param.ChangedVariables.Contains (var.Name))
+				if (!param.OneChangedVariable && param.ChangedVariables.Contains (var.Name))
 					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;
 				methodDecl.Parameters.Add (pde);
-			}
+			}*/
 			
 			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember));
 			result.Add (insertNewMethod);

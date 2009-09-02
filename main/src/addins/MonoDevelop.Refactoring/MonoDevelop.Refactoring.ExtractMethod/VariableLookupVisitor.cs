@@ -51,6 +51,11 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			set;
 		}
 		
+		public bool GetsAssigned {
+			get;
+			set;
+		}
+		
 		public bool IsDefined {
 			get;
 			set;
@@ -159,7 +164,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 						InitialValueUsed = !valueGetsChanged
 					};
 					variables[identifierExpression.Identifier].ReturnType = result.ResolvedType;
-					Console.WriteLine (variables[identifierExpression.Identifier]);
 				}
 				if (result != null && !result.StaticResolve && result.ResolvedType != null && !(result is MethodResolveResult) && !(result is NamespaceResolveResult) && !(result is MemberResolveResult))
 					unknownVariables.Add (new KeyValuePair <string, IReturnType> (identifierExpression.Identifier, result.ResolvedType));
@@ -172,11 +176,15 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			assignmentExpression.Right.AcceptVisitor(this, data);
 				
 			valueGetsChanged = true;
+			IdentifierExpression left = assignmentExpression.Left as IdentifierExpression;
+			bool isInitialUse = left != null && !variables.ContainsKey (left.Identifier);
 			assignmentExpression.Left.AcceptVisitor(this, data);
 			valueGetsChanged = false;
-			IdentifierExpression left = assignmentExpression.Left as IdentifierExpression;
+			
 			if (left != null && variables.ContainsKey (left.Identifier)) {
 				variables[left.Identifier].GetsChanged = true;
+				if (isInitialUse)
+					variables[left.Identifier].GetsAssigned = true;
 			}
 			return null;
 		}
@@ -209,11 +217,15 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		public override object VisitDirectionExpression (ICSharpCode.NRefactory.Ast.DirectionExpression directionExpression, object data)
 		{
 			valueGetsChanged = true;
+			IdentifierExpression left = directionExpression.Expression as IdentifierExpression;
+			bool isInitialUse = left != null && !variables.ContainsKey (left.Identifier);
 			object result = base.VisitDirectionExpression (directionExpression, data);
 			valueGetsChanged = false;
-			IdentifierExpression left = directionExpression.Expression as IdentifierExpression;
-			if (left != null && variables.ContainsKey (left.Identifier))
+			if (left != null && variables.ContainsKey (left.Identifier)) {
 				variables[left.Identifier].GetsChanged = true;
+				if (isInitialUse && directionExpression.FieldDirection == FieldDirection.Out)
+					variables[left.Identifier].GetsAssigned = true;
+			}
 			
 			return result;
 		}

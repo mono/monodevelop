@@ -1,3 +1,10 @@
+2009-09-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodAstTransformer.cs:
+	  worked on extract method.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Refactoring.csproj: Don't require a specific
