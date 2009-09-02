@@ -1,3 +1,12 @@
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	  Allow setting the release version of a project. Fixes bug
+	  #480771 - Tarball deploy uses DotNetProject.Version in the
+	  pc file but this is not configurable.
+
 2009-09-01  Christian Hergert  <chris@dronelabs.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:

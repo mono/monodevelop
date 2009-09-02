@@ -88,6 +88,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				break;
 			}
 			
+			entryVersion.Text = project.Version;
+			checkSolutionVersion.Active = project.SyncVersionWithSolution;
+			entryVersion.Sensitive = !project.SyncVersionWithSolution;
+			
 			newFilesOnLoadCheckButton.Clicked += new EventHandler(AutoLoadCheckBoxCheckedChangeEvent);
 			AutoLoadCheckBoxCheckedChangeEvent(null, null);
 		}			
@@ -116,6 +120,19 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			} else {
 				project.NewFileSearch = NewFileSearch.None;
 			}
+			if (checkSolutionVersion.Active)
+				project.SyncVersionWithSolution = true;
+			else {
+				project.SyncVersionWithSolution = false;
+				project.Version = entryVersion.Text;
+			}
+		}
+
+		protected virtual void OnCheckSolutionVersionClicked (object sender, System.EventArgs e)
+		{
+			entryVersion.Sensitive = !checkSolutionVersion.Active;
+			if (!entryVersion.Sensitive)
+				entryVersion.Text = project.ParentSolution.Version;
 		}
 	}
 

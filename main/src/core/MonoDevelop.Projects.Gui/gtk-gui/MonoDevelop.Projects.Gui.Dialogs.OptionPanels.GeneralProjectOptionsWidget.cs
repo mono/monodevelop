@@ -31,6 +31,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
         
         private Gtk.Label descriptionLabel;
         
+        private Gtk.HBox hbox1;
+        
+        private Gtk.Entry entryVersion;
+        
+        private Gtk.CheckButton checkSolutionVersion;
+        
+        private Gtk.Label label1;
+        
         private Gtk.Label nameLabel;
         
         private Gtk.Entry projectDefaultNamespaceEntry;
@@ -99,7 +107,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.vbox46.Name = "vbox46";
             this.vbox46.Spacing = 6;
             // Container child vbox46.Gtk.Box+BoxChild
-            this.table11 = new Gtk.Table(((uint)(4)), ((uint)(2)), false);
+            this.table11 = new Gtk.Table(((uint)(5)), ((uint)(2)), false);
             this.table11.Name = "table11";
             this.table11.RowSpacing = ((uint)(6));
             this.table11.ColumnSpacing = ((uint)(6));
@@ -110,19 +118,65 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.defaultNamespaceLabel.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Default Namespace:");
             this.table11.Add(this.defaultNamespaceLabel);
             Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table11[this.defaultNamespaceLabel]));
-            w3.TopAttach = ((uint)(2));
-            w3.BottomAttach = ((uint)(3));
+            w3.TopAttach = ((uint)(3));
+            w3.BottomAttach = ((uint)(4));
+            w3.XOptions = ((Gtk.AttachOptions)(4));
             // Container child table11.Gtk.Table+TableChild
             this.descriptionLabel = new Gtk.Label();
             this.descriptionLabel.Name = "descriptionLabel";
             this.descriptionLabel.Xalign = 0F;
-            this.descriptionLabel.Yalign = 1F;
+            this.descriptionLabel.Yalign = 0F;
             this.descriptionLabel.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("_Description:");
             this.descriptionLabel.UseUnderline = true;
             this.table11.Add(this.descriptionLabel);
             Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table11[this.descriptionLabel]));
-            w4.TopAttach = ((uint)(1));
-            w4.BottomAttach = ((uint)(2));
+            w4.TopAttach = ((uint)(2));
+            w4.BottomAttach = ((uint)(3));
+            w4.XOptions = ((Gtk.AttachOptions)(4));
+            // Container child table11.Gtk.Table+TableChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.entryVersion = new Gtk.Entry();
+            this.entryVersion.CanFocus = true;
+            this.entryVersion.Name = "entryVersion";
+            this.entryVersion.IsEditable = true;
+            this.entryVersion.InvisibleChar = '●';
+            this.hbox1.Add(this.entryVersion);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox1[this.entryVersion]));
+            w5.Position = 0;
+            w5.Expand = false;
+            w5.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.checkSolutionVersion = new Gtk.CheckButton();
+            this.checkSolutionVersion.CanFocus = true;
+            this.checkSolutionVersion.Name = "checkSolutionVersion";
+            this.checkSolutionVersion.Label = MonoDevelop.Core.GettextCatalog.GetString("Get version from parent solution");
+            this.checkSolutionVersion.DrawIndicator = true;
+            this.checkSolutionVersion.UseUnderline = true;
+            this.hbox1.Add(this.checkSolutionVersion);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox1[this.checkSolutionVersion]));
+            w6.Position = 1;
+            this.table11.Add(this.hbox1);
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table11[this.hbox1]));
+            w7.TopAttach = ((uint)(1));
+            w7.BottomAttach = ((uint)(2));
+            w7.LeftAttach = ((uint)(1));
+            w7.RightAttach = ((uint)(2));
+            w7.XOptions = ((Gtk.AttachOptions)(4));
+            w7.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table11.Gtk.Table+TableChild
+            this.label1 = new Gtk.Label();
+            this.label1.Name = "label1";
+            this.label1.Xalign = 0F;
+            this.label1.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Version:");
+            this.table11.Add(this.label1);
+            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table11[this.label1]));
+            w8.TopAttach = ((uint)(1));
+            w8.BottomAttach = ((uint)(2));
+            w8.XOptions = ((Gtk.AttachOptions)(4));
+            w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table11.Gtk.Table+TableChild
             this.nameLabel = new Gtk.Label();
             this.nameLabel.Name = "nameLabel";
@@ -130,31 +184,31 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.nameLabel.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("_Name:");
             this.nameLabel.UseUnderline = true;
             this.table11.Add(this.nameLabel);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table11[this.nameLabel]));
-            w5.XOptions = ((Gtk.AttachOptions)(4));
-            w5.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table11[this.nameLabel]));
+            w9.XOptions = ((Gtk.AttachOptions)(4));
+            w9.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table11.Gtk.Table+TableChild
             this.projectDefaultNamespaceEntry = new Gtk.Entry();
             this.projectDefaultNamespaceEntry.Name = "projectDefaultNamespaceEntry";
             this.projectDefaultNamespaceEntry.IsEditable = true;
             this.projectDefaultNamespaceEntry.InvisibleChar = '●';
             this.table11.Add(this.projectDefaultNamespaceEntry);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table11[this.projectDefaultNamespaceEntry]));
-            w6.TopAttach = ((uint)(2));
-            w6.BottomAttach = ((uint)(3));
-            w6.LeftAttach = ((uint)(1));
-            w6.RightAttach = ((uint)(2));
-            w6.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.table11[this.projectDefaultNamespaceEntry]));
+            w10.TopAttach = ((uint)(3));
+            w10.BottomAttach = ((uint)(4));
+            w10.LeftAttach = ((uint)(1));
+            w10.RightAttach = ((uint)(2));
+            w10.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table11.Gtk.Table+TableChild
             this.projectNameEntry = new Gtk.Entry();
             this.projectNameEntry.Name = "projectNameEntry";
             this.projectNameEntry.IsEditable = true;
             this.projectNameEntry.InvisibleChar = '●';
             this.table11.Add(this.projectNameEntry);
-            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table11[this.projectNameEntry]));
-            w7.LeftAttach = ((uint)(1));
-            w7.RightAttach = ((uint)(2));
-            w7.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table11[this.projectNameEntry]));
+            w11.LeftAttach = ((uint)(1));
+            w11.RightAttach = ((uint)(2));
+            w11.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table11.Gtk.Table+TableChild
             this.scrolledwindow5 = new Gtk.ScrolledWindow();
             this.scrolledwindow5.WidthRequest = 350;
@@ -166,27 +220,27 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.projectDescriptionTextView.Name = "projectDescriptionTextView";
             this.scrolledwindow5.Add(this.projectDescriptionTextView);
             this.table11.Add(this.scrolledwindow5);
-            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table11[this.scrolledwindow5]));
-            w9.TopAttach = ((uint)(1));
-            w9.BottomAttach = ((uint)(2));
-            w9.LeftAttach = ((uint)(1));
-            w9.RightAttach = ((uint)(2));
+            Gtk.Table.TableChild w13 = ((Gtk.Table.TableChild)(this.table11[this.scrolledwindow5]));
+            w13.TopAttach = ((uint)(2));
+            w13.BottomAttach = ((uint)(3));
+            w13.LeftAttach = ((uint)(1));
+            w13.RightAttach = ((uint)(2));
             this.vbox46.Add(this.table11);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox46[this.table11]));
-            w10.Position = 0;
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox46[this.table11]));
+            w14.Position = 0;
             this.hbox29.Add(this.vbox46);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox29[this.vbox46]));
-            w11.Position = 1;
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.hbox29[this.vbox46]));
+            w15.Position = 1;
             this.vbox47.Add(this.hbox29);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox47[this.hbox29]));
-            w12.Position = 1;
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox47[this.hbox29]));
+            w16.Position = 1;
+            w16.Expand = false;
+            w16.Fill = false;
             this.vbox40.Add(this.vbox47);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox40[this.vbox47]));
-            w13.Position = 0;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox40[this.vbox47]));
+            w17.Position = 0;
+            w17.Expand = false;
+            w17.Fill = false;
             // Container child vbox40.Gtk.Box+BoxChild
             this.vbox41 = new Gtk.VBox();
             this.vbox41.Name = "vbox41";
@@ -199,10 +253,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.onProjectLoadHeaderLabel.UseMarkup = true;
             this.onProjectLoadHeaderLabel.UseUnderline = true;
             this.vbox41.Add(this.onProjectLoadHeaderLabel);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox41[this.onProjectLoadHeaderLabel]));
-            w14.Position = 0;
-            w14.Expand = false;
-            w14.Fill = false;
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox41[this.onProjectLoadHeaderLabel]));
+            w18.Position = 0;
+            w18.Expand = false;
+            w18.Fill = false;
             // Container child vbox41.Gtk.Box+BoxChild
             this.hbox26 = new Gtk.HBox();
             this.hbox26.Name = "hbox26";
@@ -211,10 +265,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.label49.WidthRequest = 18;
             this.label49.Name = "label49";
             this.hbox26.Add(this.label49);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.hbox26[this.label49]));
-            w15.Position = 0;
-            w15.Expand = false;
-            w15.Fill = false;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox26[this.label49]));
+            w19.Position = 0;
+            w19.Expand = false;
+            w19.Fill = false;
             // Container child hbox26.Gtk.Box+BoxChild
             this.newFilesOnLoadCheckButton = new Gtk.CheckButton();
             this.newFilesOnLoadCheckButton.Name = "newFilesOnLoadCheckButton";
@@ -222,15 +276,15 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.newFilesOnLoadCheckButton.DrawIndicator = true;
             this.newFilesOnLoadCheckButton.UseUnderline = true;
             this.hbox26.Add(this.newFilesOnLoadCheckButton);
-            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.hbox26[this.newFilesOnLoadCheckButton]));
-            w16.Position = 1;
-            w16.Expand = false;
-            w16.Fill = false;
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox26[this.newFilesOnLoadCheckButton]));
+            w20.Position = 1;
+            w20.Expand = false;
+            w20.Fill = false;
             this.vbox41.Add(this.hbox26);
-            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox41[this.hbox26]));
-            w17.Position = 1;
-            w17.Expand = false;
-            w17.Fill = false;
+            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox41[this.hbox26]));
+            w21.Position = 1;
+            w21.Expand = false;
+            w21.Fill = false;
             // Container child vbox41.Gtk.Box+BoxChild
             this.hbox27 = new Gtk.HBox();
             this.hbox27.Name = "hbox27";
@@ -239,10 +293,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.label50.WidthRequest = 18;
             this.label50.Name = "label50";
             this.hbox27.Add(this.label50);
-            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.hbox27[this.label50]));
-            w18.Position = 0;
-            w18.Expand = false;
-            w18.Fill = false;
+            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.hbox27[this.label50]));
+            w22.Position = 0;
+            w22.Expand = false;
+            w22.Fill = false;
             // Container child hbox27.Gtk.Box+BoxChild
             this.autoInsertNewFilesCheckButton = new Gtk.CheckButton();
             this.autoInsertNewFilesCheckButton.Name = "autoInsertNewFilesCheckButton";
@@ -250,20 +304,20 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.autoInsertNewFilesCheckButton.DrawIndicator = true;
             this.autoInsertNewFilesCheckButton.UseUnderline = true;
             this.hbox27.Add(this.autoInsertNewFilesCheckButton);
-            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox27[this.autoInsertNewFilesCheckButton]));
-            w19.Position = 1;
-            w19.Expand = false;
-            w19.Fill = false;
+            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox27[this.autoInsertNewFilesCheckButton]));
+            w23.Position = 1;
+            w23.Expand = false;
+            w23.Fill = false;
             this.vbox41.Add(this.hbox27);
-            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.vbox41[this.hbox27]));
-            w20.Position = 2;
-            w20.Expand = false;
-            w20.Fill = false;
+            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox41[this.hbox27]));
+            w24.Position = 2;
+            w24.Expand = false;
+            w24.Fill = false;
             this.vbox40.Add(this.vbox41);
-            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.vbox40[this.vbox41]));
-            w21.Position = 1;
-            w21.Expand = false;
-            w21.Fill = false;
+            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox40[this.vbox41]));
+            w25.Position = 1;
+            w25.Expand = false;
+            w25.Fill = false;
             this.Add(this.vbox40);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
@@ -271,6 +325,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.descriptionLabel.MnemonicWidget = this.scrolledwindow5;
             this.nameLabel.MnemonicWidget = this.projectNameEntry;
             this.Show();
+            this.checkSolutionVersion.Clicked += new System.EventHandler(this.OnCheckSolutionVersionClicked);
         }
     }
 }
