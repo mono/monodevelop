@@ -1,5 +1,11 @@
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:
+	* MonoDevelop.Projects.Dom/DomCecilProperty.cs: Retrieve the
+	  explicit interfaces from cecil.
+
+2009-09-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/CompilationUnit.cs: Check type
 	  name.
 

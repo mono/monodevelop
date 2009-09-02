@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomCecilProperty (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, PropertyDefinition propertyDefinition)
 		{
-			this.declaringType      = declaringType;
+			this.declaringType = declaringType;
 			if (keepDefinitions)
 				this.propertyDefinition = propertyDefinition;
 			base.name = propertyDefinition.Name;
@@ -94,6 +94,16 @@ namespace MonoDevelop.Projects.Dom
 				base.Modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 			base.ReturnType         = DomCecilMethod.GetReturnType (propertyDefinition.PropertyType);
 			DomCecilMethod.AddAttributes (this, propertyDefinition.CustomAttributes);
+			
+			// I assume that the explicit interfaces of the get and set method are the same.
+			MethodDefinition method = propertyDefinition.GetMethod ?? propertyDefinition.SetMethod;
+			if (method != null) {
+				foreach (MethodReference overrideRef in method.Overrides) {
+					if (overrideRef.Name == this.name && IsPublic) 
+						continue; 
+					AddExplicitInterface (DomCecilMethod.GetReturnType (overrideRef.DeclaringType));
+				}
+			}
 		}
 	}
 }

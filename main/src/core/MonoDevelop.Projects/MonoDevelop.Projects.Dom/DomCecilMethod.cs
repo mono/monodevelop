@@ -165,7 +165,12 @@ namespace MonoDevelop.Projects.Dom
 					}
 				}
 			}
-
+			
+			foreach (MethodReference overrideRef in methodDefinition.Overrides) {
+				if (overrideRef.Name == this.name && IsPublic) 
+					continue; 
+				AddExplicitInterface (GetReturnType (overrideRef.DeclaringType));
+			}
 		}
 	}
 }
