@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Logging;
 using MonoDevelop.Core.Execution;
@@ -60,6 +61,7 @@ public class MonoDevelopProcessHost
 				input = Console.In;
 			
 			string sref = input.ReadLine ();
+			string pidToWatch = input.ReadLine ();
 			
 			if (tmpFile != null) {
 				try {
@@ -68,6 +70,8 @@ public class MonoDevelopProcessHost
 				} catch {
 				}
 			}
+			
+			WatchParentProcess (int.Parse (pidToWatch));
 			
 			string unixPath = RegisterRemotingChannel ();
 			
@@ -110,6 +114,22 @@ public class MonoDevelopProcessHost
 		serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
 		ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
 		return unixRemotingFile;
+	}
+	
+	static void WatchParentProcess (int pid)
+	{
+		Thread t = new Thread (delegate () {
+			while (true) {
+				try {
+					System.Diagnostics.Process.GetProcessById (pid);
+				} catch {
+					Environment.Exit (1);
+				}
+				Thread.Sleep (1000);
+			}
+		});
+		t.IsBackground = true;
+		t.Start ();
 	}
 }
 

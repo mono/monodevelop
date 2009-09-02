@@ -1,3 +1,9 @@
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* mdhost.csproj:
+	* src/mdhost.cs: Added a watch dog in mdhost. The process will
+	  exit if the main MD process dies.
+
 2009-08-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* src/mdhost.cs: Route log messages to the main MD process.
