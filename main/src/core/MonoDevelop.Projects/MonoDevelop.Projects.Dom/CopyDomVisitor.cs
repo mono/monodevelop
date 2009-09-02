@@ -97,8 +97,11 @@ namespace MonoDevelop.Projects.Dom
 				result.AddInterfaceImplementation ((IReturnType)iface.AcceptVisitor (this, data));
 
 			foreach (IMember member in type.Members) {
-				result.Add ((IMember)member.AcceptVisitor (this, data));
-				member.DeclaringType = result;
+				IMember newMember = (IMember)member.AcceptVisitor (this, data);
+				if (newMember == null)
+					continue;
+				result.Add (newMember);
+				newMember.DeclaringType = result;
 			}
 			
 			return result;

@@ -657,7 +657,24 @@ namespace MonoDevelop.Projects.Dom
 			result.GenericParameters = genericArguments;
 			result.UninstantiatedType = type;
 			result.DeclaringType = type.DeclaringType;
+			CreateInstantiatedSubtypes (result, type, genericArguments);
 			return result;
+		}
+
+		static void CreateInstantiatedSubtypes (InstantiatedType result, IType curType, IList<IReturnType> genericArguments)
+		{
+			foreach (IType innerType in curType.InnerTypes) {
+				InstantiatedType innerInstantiatedType = (InstantiatedType)CreateInstantiatedGenericTypeInternal (innerType, genericArguments);
+				for (int i = 0, j = 0; i < innerInstantiatedType.TypeParameters.Count && j < innerInstantiatedType.TypeParameters.Count; i++, j++) {
+					if (curType.TypeParameters[i].Name != innerInstantiatedType.TypeParameters[j].Name) {
+						innerInstantiatedType.typeParameters.RemoveAt (j);
+						j--;
+					}
+				}
+				
+				result.Add (innerInstantiatedType);
+				CreateInstantiatedSubtypes (innerInstantiatedType, innerType, genericArguments);
+			}
 		}
 		
 		internal class GenericTypeInstanceResolver: CopyDomVisitor<IType>
@@ -668,9 +685,12 @@ namespace MonoDevelop.Projects.Dom
 			{
 				typeTable.Add (name, type);
 			}
+			
 			IType currentType = null;
 			public override IDomVisitable Visit (IType type, IType data)
 			{
+				if (currentType != null)
+					return null;
 				currentType = type;
 				return base.Visit (type, data);
 			}
@@ -711,7 +731,7 @@ namespace MonoDevelop.Projects.Dom
 					return base.CreateInstance (type, typeToInstantiate);
 			}
 		}
- 		
+		
 		/// <summary>
 		/// Returns a list of types that contains extension methods
 		/// </summary>

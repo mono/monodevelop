@@ -1,3 +1,11 @@
+2009-09-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
+	* MonoDevelop.Projects.Dom/InstantiatedType.cs: Fixed "Bug
+	  536111 - Nested generic types should not show <> on code
+	  completion".
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/BuildResult.cs: Update the

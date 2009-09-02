@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
@@ -73,6 +74,11 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.UninstantiatedType = uninstantiatedType;
 			this.GenericParameters  = new List<IReturnType> (genericParameters);
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[InstantiatedType: UninstantiatedType={1}, GenericParameters={0}]", string.Join (";", new List<string> (genericParameters.Select (gp => gp.ToString ())).ToArray ()), UninstantiatedType);
 		}
 	}
 }
