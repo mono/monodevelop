@@ -29,6 +29,8 @@ using System;
 using Gtk;
 using Gdk;
 using Pango;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace MonoDevelop.Components
@@ -41,7 +43,8 @@ namespace MonoDevelop.Components
 //		int listWidth = 300;
 		
 		Pango.Layout layout;
-		int selection = 0;
+		bool allowMultipleSelection;
+		List<int> selectedRows = new List<int> ();
 		int page = 0;
 		int visibleRows = -1;
 		int rowHeight;
@@ -76,14 +79,17 @@ namespace MonoDevelop.Components
 		public void Reset ()
 		{
 			if (dataProvider == null) {
-				selection = -1;
+				selectedRows.Clear ();
 				return;
 			}
 			
-			if (dataProvider.ItemCount == 0)
-				selection = -1;
-			else
-				selection = 0;
+			if (dataProvider.ItemCount == 0) {
+				selectedRows.Clear ();
+			}
+			else {
+				selectedRows.Clear ();
+				selectedRows.Add (0);
+			}
 
 			page = 0;
 			disableSelection = false;
@@ -97,27 +103,60 @@ namespace MonoDevelop.Components
 
 		public void Refresh ()
 		{
-			if (Selection > RowCount)
-				Selection = RowCount - 1;
+			// Remove any selections that no longer exist.
+			// We need to build a list of 'items to remove', because
+			// collections are annoying to remove from.
+			List<int> toRemove = new List<int> ();
+			foreach (int i in selectedRows) {
+				if (i >= RowCount)
+					toRemove.Add (i);
+			}
+			
+			foreach (int i in toRemove) {
+				selectedRows.Remove (i);
+			}
+			
+			// If there are no selections left, select the last item.
+			if (selectedRows.Count == 0)
+				SelectedRow = RowCount - 1;
+			
 			UpdatePage (false, true);
 			QueueDraw ();
 		}
 		
-		public int Selection
+		public bool AllowMultipleSelection
 		{
 			get {
-				return selection;
+				return allowMultipleSelection;
 			}
 			
 			set {
+				allowMultipleSelection = value;
+			}
+		}
+		
+		public int SelectedRow
+		{
+			get {
+				// Just return the most recent selection.
+				if (selectedRows.Count > 0)
+					return selectedRows[selectedRows.Count - 1];
+				else
+					return -1;
+			}
+			
+			set {
+				// Just set the selection to a specific item.
 				if (value < 0)
 					value = 0;
 				if (value >= RowCount)
 					value = RowCount - 1;
 				
-				if (value != selection) 
+				if (value != this.SelectedRow || selectedRows.Count > 1) 
 				{
-					selection = value;
+					selectedRows.Clear ();
+					selectedRows.Add (value);
+					
 					UpdatePage (false, true);
 					
 					if (SelectionChanged != null)
@@ -130,11 +169,113 @@ namespace MonoDevelop.Components
 				this.QueueDraw ();
 			}
 		}
+		
+		public ReadOnlyCollection<int> SelectedRows
+		{
+			get {
+				return new ReadOnlyCollection<int> (selectedRows);
+			}
+		}
+		
+		public void SelectRow (int index)
+		{
+			if (!allowMultipleSelection) {
+				this.SelectedRow = index;
+				return;
+			}
+			
+			if (index < 0 || index >= this.RowCount)
+				return;
+			
+			// Remove it if it already exists.
+			selectedRows.Remove (index);
+			selectedRows.Add (index);
+			
+			if (SelectionChanged != null)
+				SelectionChanged (this, EventArgs.Empty);
+			
+			this.QueueDraw ();
+		}
+		
+		public void UnselectRow (int index)
+		{
+			if (!allowMultipleSelection) {
+				if (this.SelectedRow == index) {
+					this.SelectedRow = -1;
+					return;
+				}
+			}
+			
+			if (selectedRows.Remove (index)) {
+				if (SelectionChanged != null)
+					SelectionChanged (this, EventArgs.Empty);
+				this.QueueDraw ();
+			}
+		}
+		
+		public void ToggleRowSelection (int index)
+		{
+			if (selectedRows.Contains (index))
+				UnselectRow (index);
+			else
+				SelectRow (index);
+		}
+		
+		public void ClearSelection()
+		{
+			selectedRows.Clear();
+			this.QueueDraw();
+		}
 
+		public void ModifySelection(bool up, bool page, bool addTo)
+		{
+			// Note that we don't really handle "Shift+PageUp" type selection,
+			// because that just gets confusing for the user when there are
+			// multiple selection ranges.  Therefore, 'page' only works for
+			// non-additive selections.
+			
+			if (up)
+			{
+				// See if the most recent selection was one down from the previous.
+				// If so, we actually want to turn it off.
+				if (addTo && !page) {
+					if (selectedRows.Count > 1 && this.SelectedRow == (selectedRows[selectedRows.Count-2] + 1)) {
+						UnselectRow (this.SelectedRow);
+					}
+					else {
+						SelectRow (this.SelectedRow - 1);
+					}
+				}
+				else {
+					if (page)
+						this.SelectedRow -= VisibleRows - 1;
+					else
+						this.SelectedRow --;
+				}
+			}
+			else
+			{
+				if (addTo && !page) {
+					if (selectedRows.Count > 1 && this.SelectedRow == (selectedRows[selectedRows.Count-2] - 1)) {
+						UnselectRow (this.SelectedRow);
+					}
+					else {
+						SelectRow (this.SelectedRow + 1);
+					}
+				}
+				else {
+					if (page)
+						this.SelectedRow += VisibleRows - 1;
+					else
+						this.SelectedRow ++;
+				}
+			}
+		}
+		
 		public void CenterViewToSelection ()
 		{
 			if (vAdjustement != null) {
-				int val = Selection - VisibleRows / 2;
+				int val = SelectedRow - VisibleRows / 2;
 				if (val + VisibleRows >= RowCount)
 					val = RowCount - VisibleRows;
 				vAdjustement.Value = val > 0 ? val : 0;
@@ -154,14 +295,14 @@ namespace MonoDevelop.Components
 
 			CalcVisibleRows ();
 			
-			if (selection < page || selection >= page + VisibleRows) {
+			if (SelectedRow < page || SelectedRow >= page + VisibleRows) {
 				if (centerRow) {
-					page = selection - (VisibleRows / 2);
+					page = SelectedRow - (VisibleRows / 2);
 				} else if (keepSelectionInView) {
-					if (selection < page)
-						page = selection;
+					if (SelectedRow < page)
+						page = SelectedRow;
 					else
-						page = selection - VisibleRows + 1;
+						page = SelectedRow - VisibleRows + 1;
 				}
 				if (page < 0) page = 0;
 			}
@@ -261,22 +402,23 @@ namespace MonoDevelop.Components
 					if (SelectionDisabled)
 						SelectionDisabled = false;
 					else
-						Selection --;
+						ModifySelection (true, false, (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask);
 					return true;
 					
 				case Gdk.Key.Down:
 					if (SelectionDisabled)
 						SelectionDisabled = false;
 					else
-						Selection ++;
+						ModifySelection (false, false, (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask);
 					return true;
 					
 				case Gdk.Key.Page_Up:
-					Selection -= VisibleRows - 1;
+					ModifySelection (true, true, (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask);
+					
 					return true;
 					
 				case Gdk.Key.Page_Down:
-					Selection += VisibleRows - 1;
+					ModifySelection (false, true, (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask);
 					return true;
 					
 				case Gdk.Key.Left:
@@ -290,12 +432,17 @@ namespace MonoDevelop.Components
 					return true;
 				
 				case Gdk.Key.Home:
-					Selection = 0;
+					SelectedRow = 0;
 					return true;
 					
 				case Gdk.Key.End:
 					if (dataProvider != null)
-						Selection = RowCount - 1;
+						SelectedRow = RowCount - 1;
+					return true;
+				
+				case Gdk.Key.Return:
+					if (ItemActivated != null)
+						ItemActivated (this, EventArgs.Empty);
 					return true;
 			}
 			return false;
@@ -304,7 +451,11 @@ namespace MonoDevelop.Components
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
 			GrabFocus ();
-			Selection = GetRowByPosition ((int) e.Y);
+			int row = GetRowByPosition ((int) e.Y);
+			if ((e.State & ModifierType.ControlMask) == ModifierType.ControlMask)
+				ToggleRowSelection (row);
+			else
+				this.SelectedRow = row;
 			buttonPressed = true;
 			if (e.Type == EventType.TwoButtonPress) {
 				if (ItemActivated != null)
@@ -327,7 +478,12 @@ namespace MonoDevelop.Components
 			int winWidth, winHeight;
 			this.GdkWindow.GetSize (out winWidth, out winHeight);
 			
-			Selection = GetRowByPosition ((int) e.Y);
+			int row = GetRowByPosition ((int) e.Y);
+			
+			if ((e.State & ModifierType.ControlMask) == ModifierType.ControlMask)
+				SelectRow (row);
+			else
+				this.SelectedRow = row;
 			
 			return true;
 		}
@@ -362,7 +518,7 @@ namespace MonoDevelop.Components
 				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 				
-				if (page + n == selection) {
+				if (selectedRows.Contains (page + n)) {
 					if (!disableSelection) {
 						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected),
 						                              true, margin, ypos, lineWidth, he + padding);
@@ -374,6 +530,14 @@ namespace MonoDevelop.Components
 						                              false, margin, ypos, lineWidth, he + padding);
 						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), 
 						                           xpos + iconWidth + ColumnGap, typos, layout);
+					}
+					
+					// Draw a 'most recent selection' rectangle.
+					if (this.SelectedRow == page + n) {
+						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Active),
+						                              false, margin, ypos, lineWidth, he + padding - 1);
+						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Active),
+							                           xpos + iconWidth + ColumnGap, typos, layout);
 					}
 				}
 				else

@@ -109,7 +109,8 @@ namespace MonoDevelop.Components.Commands
 			
 			if (!wasButtonActivation) {
 				// It's being activated by an accelerator.
-				commandManager.DispatchCommandFromAccel (commandId, arrayDataItem, initialTarget);
+				if (Submenu == null)
+					commandManager.DispatchCommandFromAccel (commandId, arrayDataItem, initialTarget);
 			} else {
 				wasButtonActivation = false;
 				commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget);

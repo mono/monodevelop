@@ -78,9 +78,10 @@
   <object type="MonoDevelop.Components.ListView" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
     <itemgroups>
       <itemgroup label="ListView Properties">
-        <property name="Selection" />
         <property name="SelectionDisabled" />
         <property name="Page" />
+        <property name="AllowMultipleSelection" />
+        <property name="SelectedRow" />
       </itemgroup>
     </itemgroups>
     <signals>

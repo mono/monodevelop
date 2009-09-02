@@ -52,6 +52,10 @@ namespace MonoDevelop.Components.Commands
 		ArrayList visitors = new ArrayList ();
 		Dictionary<Gtk.Window,Gtk.Window> topLevelWindows = new Dictionary<Gtk.Window,Gtk.Window> ();
 		Stack delegatorStack = new Stack ();
+		
+		HashSet<object> visitedTargets = new HashSet<object> ();
+		bool inGlobalChain;
+		
 		bool disposed;
 		bool toolbarUpdaterRunning;
 		bool enableToolbarUpdate;
@@ -874,14 +878,21 @@ namespace MonoDevelop.Components.Commands
 		object GetFirstCommandTarget (object initialTarget)
 		{
 			delegatorStack.Clear ();
+			visitedTargets.Clear ();
+			inGlobalChain = false;
 			handlerFoundInMulticast = false;
+			object cmdTarget;
 			if (initialTarget != null)
-				return initialTarget;
-			object cmdTarget = GetActiveWidget (rootWidget);
-			if (cmdTarget != null)
-				return cmdTarget;
-			else
-				return globalHandlerChain;
+				cmdTarget = initialTarget;
+			else {
+				cmdTarget = GetActiveWidget (rootWidget);
+				if (cmdTarget == null) {
+					inGlobalChain = true;
+					cmdTarget = globalHandlerChain;
+				}
+			}
+			visitedTargets.Add (cmdTarget);
+			return cmdTarget;
 		}
 		
 		object GetNextCommandTarget (object cmdTarget)
@@ -904,7 +915,10 @@ namespace MonoDevelop.Components.Commands
 			else
 				cmdTarget = null;
 			
-			if (cmdTarget == null) {
+//			if (cmdTarget != null && visitedTargets.Contains (cmdTarget) && !inGlobalChain)
+//				Console.WriteLine ("target already visited:" + cmdTarget);
+			
+			if (cmdTarget == null || !visitedTargets.Add (cmdTarget)) {
 				if (delegatorStack.Count > 0) {
 					ICommandDelegatorRouter del = (ICommandDelegatorRouter) delegatorStack.Pop ();
 					cmdTarget = del.GetNextCommandTarget ();
@@ -913,6 +927,7 @@ namespace MonoDevelop.Components.Commands
 					if (cmdTarget != null)
 						return cmdTarget;
 				}
+				inGlobalChain = true;
 				return globalHandlerChain;
 			} else
 				return cmdTarget;
@@ -1001,7 +1016,6 @@ namespace MonoDevelop.Components.Commands
 			}
 			foreach (ICommandTargetVisitor v in visitors)
 				VisitCommandTargets (v, null);
-				
 		}
 		
 		void UpdateAppFocusStatus (bool hasFocus, bool lastFocusedExists)

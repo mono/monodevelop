@@ -1,3 +1,16 @@
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Components/ListView.cs: Add support for
+	  multi-selection.
+
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs: Don't
+	  try to execute a command when an item that shows a submenu
+	  is activated.
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Avoid
+	  infinite loops in the command target chain.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components/TabLabel.cs:
