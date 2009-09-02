@@ -35,10 +35,11 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	public class SearchResultPad : AbstractPadContent
+	public class SearchResultPad : AbstractPadContent, ILocationListPad
 	{
 		SearchResultWidget widget = new SearchResultWidget ();
 		
@@ -143,6 +144,19 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected void OnCopy ()
 		{
 			widget.CopySelection ();
+		}
+
+		#endregion
+
+		#region ILocationListPad implementation
+		public bool GetNextLocation (out string file, out int line, out int column)
+		{
+			return widget.GetNextLocation (out file, out line, out column);
+		}
+		
+		public bool GetPreviousLocation (out string file, out int line, out int column)
+		{
+			return widget.GetPreviousLocation (out file, out line, out column);
 		}
 		#endregion
 	}

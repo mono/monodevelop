@@ -1,3 +1,10 @@
+2009-09-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Fixed
+	  "Bug 536011 - Show Next/Previous not working for the search
+	  results pad".
+
 2009-09-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Pad.cs: Always call activate on

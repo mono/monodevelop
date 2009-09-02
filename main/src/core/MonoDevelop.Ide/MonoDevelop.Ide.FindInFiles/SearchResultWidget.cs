@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using Gtk;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
@@ -528,6 +529,63 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
 			clipboard.Text = sb.ToString ();
+		}
+		
+		public bool GetNextLocation (out string file, out int line, out int column)
+		{
+			TreeIter iter = TreeIter.Zero;
+			TreePath[] path = treeviewSearchResults.Selection.GetSelectedRows ();
+			if (path != null && path.Length > 0 && store.GetIter (out iter, path[0])) {
+				if (!store.IterNext (ref iter)) 
+					store.GetIterFirst (out iter);
+			} else {
+				store.GetIterFirst (out iter);
+			}
+			
+			return GetLocation (iter, out file, out line, out column);
+		}
+		
+		public bool GetPreviousLocation (out string file, out int line, out int column)
+		{
+			TreeIter iter;
+			TreeIter prevIter = TreeIter.Zero;
+			TreePath selPath = treeviewSearchResults.Selection.GetSelectedRows ().LastOrDefault ();
+			
+			bool hasNext = store.GetIterFirst (out iter);
+			if (hasNext && IsIterSelected (selPath, iter))
+				selPath = null;
+			while (hasNext) {
+				if (IsIterSelected (selPath, iter))
+					break;
+				prevIter = iter;
+				hasNext = store.IterNext (ref iter);
+			}
+			
+			return GetLocation (prevIter, out file, out line, out column);
+		}
+
+		bool IsIterSelected (TreePath selPath, TreeIter iter)
+		{
+			return selPath != null && store.GetPath (iter).Equals (selPath);
+		}
+
+		bool GetLocation (TreeIter iter, out string file, out int line, out int column)
+		{
+			this.treeviewSearchResults.Selection.UnselectAll ();
+			if (!store.IterIsValid (iter)) {
+				file = null;
+				line = column = 0;
+				return false;
+			}
+			this.treeviewSearchResults.Selection.SelectIter (iter);
+			this.treeviewSearchResults.ScrollToCell (store.GetPath (iter), this.treeviewSearchResults.Columns[0], false, 0, 0);
+			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			file = searchResult.FileName;
+			Mono.TextEditor.Document doc = GetDocument (searchResult);
+			DocumentLocation location = doc.OffsetToLocation (searchResult.Offset);
+			line = location.Line;
+			column = location.Column;
+			return true;
 		}
 	}
 }
