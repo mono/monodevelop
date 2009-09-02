@@ -75,6 +75,7 @@ namespace MonoDevelop.Core.Assemblies
 
 			foreach (string s in base.GetToolsPaths ())
 				yield return s;
+			yield return PropertyService.EntryAssemblyPath;
 		}
 		
 		string GetFrameworkToolsPath ()

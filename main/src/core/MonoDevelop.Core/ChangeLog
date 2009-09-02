@@ -1,5 +1,11 @@
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/MsNetFrameworkBackend.cs: On
+	  windows, include the MD startup path in the tools path list,
+	  since we may bundle some tools in the setup.
+
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs: In
 	  GetToolPaths, unquote quoted paths.
 
