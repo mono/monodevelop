@@ -1,3 +1,8 @@
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Add support for
+	  multi-selection. Patch by Zach Lute.
+
 2009-09-02  Christian Hergert  <chris@dronelabs.com>
 
 	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml: Add

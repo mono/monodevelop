@@ -65,21 +65,27 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		bool searchFiles;
 		bool updating;
 		
-		string filename;
-		int fileLine;
-		int fileCol;
-		
-		protected string Filename {
-			get { return filename; }
-			set { filename = value; }
+		public struct OpenLocation
+		{
+			public string Filename;
+			public int Line;
+			public int Column;
+			
+			public OpenLocation (string filename, int line, int column)
+			{
+				this.Filename = filename;
+				this.Line = line;
+				this.Column = column;
+			}
 		}
 		
-		protected int FileLine {
-			get { return fileLine; }
-		}
+		List<OpenLocation> locations = new List<OpenLocation> ();
 		
-		protected int FileColumn {
-			get { return fileCol; }
+		public ReadOnlyCollection<OpenLocation> Locations
+		{
+			get {
+				return new ReadOnlyCollection<OpenLocation> (locations);
+			}
 		}
 		
 		protected bool SearchFiles {
@@ -124,7 +130,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			GoToDialog dialog = new GoToDialog (searchFiles, initialSearchText);
 			try {
 				if ((ResponseType)dialog.Run () == ResponseType.Ok) {
-					IdeApp.Workbench.OpenDocument (dialog.Filename, dialog.FileLine, dialog.FileColumn, true);
+					foreach (OpenLocation loc in dialog.Locations)
+						IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
 				}
 			} finally {
 				dialog.Destroy ();
@@ -134,6 +141,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		private void SetupTreeView ()
 		{
 			list = new ListView ();
+			list.AllowMultipleSelection = true;
 			currentResults = new ResultsDataSource ();
 			list.DataSource = currentResults;
 			list.Show ();
@@ -163,21 +171,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		private void OpenFile ()
 		{
-			if (list.Selection != -1) {
-				SearchResult res = currentResults [list.Selection];
-				Filename = res.File;
-				fileLine = res.Row;
-				fileCol = res.Column;
-				if (fileLine == -1) {
-					int i = matchEntry.Text.LastIndexOf (':');
-					if (i != -1) {
-						if (!int.TryParse (matchEntry.Text.Substring (i+1), out fileLine))
-							fileLine = -1;
+			locations.Clear ();
+			if (list.SelectedRows.Count != 0) {
+				foreach (int sel in list.SelectedRows) {
+					SearchResult res = currentResults [sel];
+					OpenLocation loc = new OpenLocation (res.File, res.Row, res.Column);
+					if (loc.Line == -1) {
+						int i = matchEntry.Text.LastIndexOf (':');
+						if (i != -1) {
+							if (!int.TryParse (matchEntry.Text.Substring (i+1), out loc.Line))
+								loc.Line = -1;
+						}
 					}
+					locations.Add (loc);
 				}
 				Respond (ResponseType.Ok);
 			} else {
-				Filename = String.Empty;
 				Respond (ResponseType.Cancel);
 			}
 		}
@@ -338,7 +347,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Application.Invoke (delegate {
 				list.DataSource = results;
 				currentResults = results;
-				list.Selection = best;
+				list.SelectedRow = best;
 				list.CenterViewToSelection ();
 			});
 		}
@@ -638,19 +647,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Gdk.EventKey key = args.Event;
 			switch (key.Key) {
 			case Gdk.Key.Page_Down:
-				list.Selection += list.VisibleRows;
+				list.ModifySelection (false, true, (args.Event.State & ModifierType.ShiftMask) == ModifierType.ShiftMask);
 				args.RetVal = true;
 				break;
 			case Gdk.Key.Page_Up:
-				list.Selection -= list.VisibleRows;
+				list.ModifySelection (true, true, (args.Event.State & ModifierType.ShiftMask) == ModifierType.ShiftMask);
 				args.RetVal = true;
 				break;
 			case Gdk.Key.Up:
-				list.Selection--;
+				list.ModifySelection (true, false, (args.Event.State & ModifierType.ShiftMask) == ModifierType.ShiftMask);
 				args.RetVal = true;
 				break;
 			case Gdk.Key.Down:
-				list.Selection++;
+				list.ModifySelection (false, false, (args.Event.State & ModifierType.ShiftMask) == ModifierType.ShiftMask);
 				args.RetVal = true;
 				break;
 			}
