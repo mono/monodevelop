@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
@@ -204,7 +205,8 @@ namespace MonoDevelop.CSharpBinding
 			if (resolvedType != null) {
 				foreach (IType curType in resolver.Dom.GetInheritanceTree (resolvedType)) {
 					foreach (IProperty property in curType.Properties) {
-//						System.Console.WriteLine(property);
+						if ((property.IsExplicitDeclaration || property.Name.Contains (".")) && !property.ExplicitInterfaces.Where (rt => rt.DecoratedFullName == resolvedType.DecoratedFullName).Any ())
+							continue;
 						if (property.IsIndexer)
 							return CreateResult (property.ReturnType);
 					}

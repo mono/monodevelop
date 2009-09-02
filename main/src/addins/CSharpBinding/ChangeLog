@@ -1,5 +1,9 @@
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs: Fixed failing unit test.
+
+2009-09-02  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs: Fixed "Bug 536111 - Nested generic
 	  types should not show <> on code completion".
 
