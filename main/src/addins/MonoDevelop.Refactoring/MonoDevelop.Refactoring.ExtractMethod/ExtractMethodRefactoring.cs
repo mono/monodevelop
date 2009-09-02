@@ -276,8 +276,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			foreach (VariableDescriptor var in param.Parameters) {
 				if (!param.OneChangedVariable && param.ChangedVariables.Contains (var.Name)) {
 					FieldDirection fieldDirection = FieldDirection.Ref;
-					VariableDescriptor outsideVar;
-					if (var.GetsAssigned && param.VariablesOutside.TryGetValue (var.Name, out outsideVar) || param.VariablesToGenerate.Where (v => v.Name == var.Name).Any ()) {
+					VariableDescriptor outsideVar = null;
+					if (param.VariablesOutside.TryGetValue (var.Name, out outsideVar) && (var.GetsAssigned || param.VariablesToGenerate.Where (v => v.Name == var.Name).Any ())) {
 						if (!outsideVar.GetsAssigned)
 							fieldDirection = FieldDirection.Out;
 					}
@@ -366,7 +366,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					if (param.VariablesToGenerate.Where (v => v.Name == var.Name).Any ()) {
 						pde.ParamModifier = ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;
 					}
-					VariableDescriptor outsideVar;
+					VariableDescriptor outsideVar = null;
 					if (var.GetsAssigned && param.VariablesOutside.TryGetValue (var.Name, out outsideVar)) {
 						if (!outsideVar.GetsAssigned)
 							pde.ParamModifier = ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;

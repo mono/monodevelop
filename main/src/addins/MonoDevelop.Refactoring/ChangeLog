@@ -1,5 +1,10 @@
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  fixed unassigned variable errors.
+
+2009-09-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs:
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodAstTransformer.cs:
