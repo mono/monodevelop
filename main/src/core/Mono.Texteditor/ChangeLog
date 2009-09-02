@@ -1,5 +1,11 @@
 2009-09-02  Christian Hergert  <chris@dronelabs.com>
 
+	* Mono.TextEditor/TextEditor.cs: Track required exposure area
+	manually so we always expose a large enough area to cover all
+	the pending QueueDrawArea()'s before setting repaint == false.
+
+2009-09-02  Christian Hergert  <chris@dronelabs.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: Add IsIdentifier
 	  property indicating if the TextLink has restricted input.
 	  Space, Control+Tab and Control+Return can be used when the
