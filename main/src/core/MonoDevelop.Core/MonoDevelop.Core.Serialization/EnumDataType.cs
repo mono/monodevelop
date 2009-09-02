@@ -47,7 +47,7 @@ namespace MonoDevelop.Core.Serialization
 		
 		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
-			return Enum.Parse (ValueType, ((DataValue)data).Value, false);
+			return Enum.Parse (ValueType, ((DataValue)data).Value, true);
 		}
 	}
 }

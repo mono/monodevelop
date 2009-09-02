@@ -1,3 +1,8 @@
+2009-09-02  Carlo Kok  <ck@remobjects.com>
+
+	* MonoDevelop.Core.Serialization/EnumDataType.cs: Use ignore-case
+	  on enums so both "winexe" and "WinExe" work.
+	
 2009-08-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/DisposerFormatterSink.cs: The
