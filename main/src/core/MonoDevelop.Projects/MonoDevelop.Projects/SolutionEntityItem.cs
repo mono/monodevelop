@@ -99,15 +99,31 @@ namespace MonoDevelop.Projects
 				FileName = oldFile;
 		}
 		
-		[ItemProperty ("releaseversion", DefaultValue = "0.1")]
-		string release_version;
+		[ItemProperty ("ReleaseVersion", DefaultValue="0.1")]
+		string releaseVersion = "0.1";
+		
+		[ItemProperty ("SynchReleaseVersion", DefaultValue = true)]
+		bool syncReleaseVersion = true;
 
 		public string Version {
 			get {
-				return release_version;
+				// If syncReleaseVersion is set, releaseVersion will already contain the solution's version
+				// That's because the version must be up to date even when loading the project individually
+				return releaseVersion;
 			}
 			set {
-				release_version = value;
+				releaseVersion = value;
+			}
+		}
+		
+		public bool SyncVersionWithSolution {
+			get {
+				return syncReleaseVersion;
+			}
+			set {
+				syncReleaseVersion = value;
+				if (syncReleaseVersion && ParentSolution != null)
+					Version = ParentSolution.Version;
 			}
 		}
 		
@@ -231,6 +247,9 @@ namespace MonoDevelop.Projects
 		{
 			base.OnEndLoad ();
 			ResetLoadTimes ();
+			
+			if (syncReleaseVersion && ParentSolution != null)
+				releaseVersion = ParentSolution.Version;
 		}
 
 		

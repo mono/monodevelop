@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("description", DefaultValue = "")]
 		string description;
 		
-		[ItemProperty ("version", DefaultValue = "")]
+		[ItemProperty ("version", DefaultValue = "0.1")]
 		string version;
 		
 		[ProjectPathItemProperty ("outputpath")]
@@ -384,6 +384,10 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				version = value;
+				foreach (SolutionEntityItem item in GetAllSolutionItems<SolutionEntityItem> ()) {
+					if (item.SyncVersionWithSolution)
+						item.Version = value;
+				}
 			}
 		}
 		

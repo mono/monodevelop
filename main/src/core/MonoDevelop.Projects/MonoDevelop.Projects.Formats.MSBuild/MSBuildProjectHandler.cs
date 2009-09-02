@@ -1202,9 +1202,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return false;
 			}
 			if (instance is SolutionEntityItem) {
-				if (prop.Name == "Policies" || prop.Name == "BaseDirectory")
+				if (prop.IsExtendedProperty (typeof(SolutionEntityItem)))
 					return true;
-				return prop.IsExtendedProperty (typeof(SolutionEntityItem));
+				return prop.Name != "name" && prop.Name != "Configurations";
 			}
 			if (instance is ProjectFile)
 				return prop.IsExtendedProperty (typeof(ProjectFile));

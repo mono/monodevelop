@@ -1,3 +1,16 @@
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/Solution.cs:
+	* MonoDevelop.Projects/SolutionEntityItem.cs: Added option for
+	  synchronizing project release versions with the solution
+	  version.
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Use a black list instead of a white list when deciding if a
+	  property of SolutionEntityItem can be serialized.
+
+	* md1format.xml: Update.
+
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:

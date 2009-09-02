@@ -21,7 +21,8 @@
 		<ItemProperty member="Policies" skipEmpty="true" />
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.SolutionEntityItem" name="CombineEntry" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
-		<ItemProperty member="release_version" name = "releaseversion"/>
+		<ItemProperty member="releaseVersion" name = "releaseVersion" defaultValue="0.1"/>
+		<ItemProperty member="syncReleaseVersion" name = "syncReleaseVersion" defaultValue="true"/>
 		<ItemProperty member="Name" name="name"/>
 		<LiteralProperty name="fileversion" value="2.0" />
 		<ItemProperty member="Configurations"/>
