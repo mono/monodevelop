@@ -314,14 +314,12 @@ namespace MonoDevelop.IPhone
 				return true;
 			
 			//Interface Builder files
-			foreach (var fp in GetFiles (proj.Files, BuildAction.Page, proj.BaseDirectory, conf.AppDirectory))
-				if (new FilePair (fp.Input, Path.ChangeExtension (fp.Output, ".nib")).NeedsBuilding ())
-					return true;
+			if (GetIBFilePairs (proj.Files, conf.AppDirectory).Where (NeedsBuilding).Any ())
+				return true;
 			
 			//Content files
-			foreach (var fp in GetFiles (proj.Files, BuildAction.Content, proj.BaseDirectory, conf.AppDirectory))
-				if (fp.NeedsBuilding ())
-					return true;
+			if (GetContentFilePairs (proj.Files, conf.AppDirectory).Where (NeedsBuilding).Any ())
+				return true;
 			
 			// the Info.plist
 			var plistOut = conf.AppDirectory.Combine ("Info.plist");
@@ -332,6 +330,11 @@ namespace MonoDevelop.IPhone
 			
 			//TODO: determine whether the the xcode project needs building
 			return false;
+		}
+		
+		static bool NeedsBuilding (FilePair fp)
+		{
+			return fp.NeedsBuilding ();
 		}
 		
 		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
@@ -378,9 +381,9 @@ namespace MonoDevelop.IPhone
 					return result;
 			}
 			
-			var ibfiles = GetFiles (buildData.Items, BuildAction.Page, proj.BaseDirectory, ((IPhoneProjectConfiguration)buildData.Configuration).AppDirectory)
-				.Select (x => new FilePair (x.Input, Path.ChangeExtension (x.Output, ".nib")))
-				.Where (x => x.NeedsBuilding ()).ToList ();
+			string appDir = ((IPhoneProjectConfiguration)buildData.Configuration).AppDirectory;
+			
+			var ibfiles = GetIBFilePairs (buildData.Items.OfType<ProjectFile> (), appDir).Where (NeedsBuilding).ToList ();
 			
 			if (ibfiles.Count > 0) {
 				monitor.BeginTask (GettextCatalog.GetString ("Compiling interface definitions"), 0);	
@@ -399,8 +402,7 @@ namespace MonoDevelop.IPhone
 				monitor.EndTask ();
 			}
 			
-			var contentFiles = GetFiles (buildData.Items, BuildAction.Content, proj.BaseDirectory, ((IPhoneProjectConfiguration)buildData.Configuration).AppDirectory)
-				.Where (x => x.NeedsBuilding ()).ToList ();
+			var contentFiles = GetContentFilePairs (buildData.Items.OfType<ProjectFile> (), appDir).Where (NeedsBuilding).ToList ();
 			
 			if (!proj.BundleIcon.IsNullOrEmpty) {
 				FilePair icon = new FilePair (proj.BundleIcon, cfg.AppDirectory.Combine (proj.BundleIcon.FileName));
@@ -425,13 +427,22 @@ namespace MonoDevelop.IPhone
 			return result;
 		}
 		
-		IEnumerable<FilePair> GetFiles<T> (ProjectItemCollection<T> allItems, string buildAction, FilePath projectBase, FilePath appDir) where T : ProjectItem
+		IEnumerable<FilePair> GetIBFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
 		{
-			foreach (var item in allItems) {
-				var pf = item as ProjectFile;
-				if (pf != null && pf.BuildAction == buildAction)
-					yield return new FilePair (pf.FilePath, pf.FilePath.ToRelative (projectBase).ToAbsolute (appDir));
-			}
+			return allItems.OfType<ProjectFile> ().Where (pf => pf.BuildAction == BuildAction.Page && pf.FilePath.Extension == ".xib")
+				.Select (pf => {
+					string[] splits = ((string)pf.RelativePath).Split (Path.DirectorySeparatorChar);
+					FilePath name = splits.Last ();
+					if (splits.Length > 1 && splits[0].EndsWith (".lproj"))
+						name = new FilePath (splits[0]).Combine (name);
+					return new FilePair (pf.FilePath, name.ChangeExtension (".nib").ToAbsolute (outputRoot));
+				});
+		}
+		
+		IEnumerable<FilePair> GetContentFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
+		{
+			return allItems.OfType<ProjectFile> ().Where (pf => pf.BuildAction == BuildAction.Content)
+				.Select (pf => new FilePair (pf.FilePath, pf.RelativePath.ToAbsolute (outputRoot)));
 		}
 		
 		struct FilePair
