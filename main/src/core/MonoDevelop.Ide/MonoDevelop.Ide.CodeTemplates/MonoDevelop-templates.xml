@@ -31,7 +31,7 @@
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="name">
+			<Variable name="name" isIdentifier="true">
 				<Default>My</Default>
 				<_ToolTip>The name of the attribute</_ToolTip>
 			</Variable>
@@ -211,7 +211,7 @@ break;
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="name">
+			<Variable name="name" isIdentifier="true">
 				<Default>My</Default>
 				<_ToolTip>ExceptionName</_ToolTip>
 			</Variable>
@@ -281,11 +281,11 @@ public class $name$Exception : $SystemException$
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="type">
+			<Variable name="type" isIdentifier="true">
 				<Default>object</Default>
 				<_ToolTip>Return type of the indexer</_ToolTip>
 			</Variable>
-			<Variable name="indextype">
+			<Variable name="indextype" isIdentifier="true">
 				<Default>int</Default>
 				<_ToolTip>Type to index with</_ToolTip>
 			</Variable>
@@ -314,11 +314,11 @@ public class $name$Exception : $SystemException$
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="type">
+			<Variable name="type" isIdentifier="true">
 				<Default>object</Default>
 				<_ToolTip>Return type of the indexer</_ToolTip>
 			</Variable>
-			<Variable name="name">
+			<Variable name="name" isIdentifier="true">
 				<Default>MyProperty</Default>
 				<_ToolTip>Property name</_ToolTip>
 			</Variable>
@@ -339,11 +339,11 @@ public class $name$Exception : $SystemException$
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="type">
+			<Variable name="type" isIdentifier="true">
 				<Default>object</Default>
 				<_ToolTip>Return type of the indexer</_ToolTip>
 			</Variable>
-			<Variable name="name">
+			<Variable name="name" isIdentifier="true">
 				<Default>MyProperty</Default>
 				<_ToolTip>Property name</_ToolTip>
 			</Variable>
@@ -364,7 +364,7 @@ public class $name$Exception : $SystemException$
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="name">
+			<Variable name="name" isIdentifier="true">
 				<Default>My</Default>
 				<_ToolTip>ExceptionName</_ToolTip>
 			</Variable>
@@ -398,7 +398,7 @@ public sealed class $name$EventArgs : $SystemEventArgs$
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="var">
+			<Variable name="var" isIdentifier="true">
 				<Default>var</Default>
 				<_ToolTip>Variable name</_ToolTip>
 			</Variable>
@@ -420,7 +420,7 @@ public sealed class $name$EventArgs : $SystemEventArgs$
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="var">
+			<Variable name="var" isIdentifier="true">
 				<Default>var</Default>
 				<_ToolTip>Variable name</_ToolTip>
 			</Variable>
@@ -442,7 +442,7 @@ public sealed class $name$EventArgs : $SystemEventArgs$
 			<TemplateType>Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="col">
+			<Variable name="col" isIdentifier="true">
 				<Default>col</Default>
 				<_ToolTip>Collection name</_ToolTip>
 				<Function>GetCollections()</Function>
@@ -487,7 +487,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="expression">
+			<Variable name="expression" isIdentifier="true">
 				<Default>true</Default>
 				<_ToolTip>Preprocessor expression to evaluate</_ToolTip>
 			</Variable>
@@ -495,7 +495,7 @@ $selected$$end$
 		
 		<Code><![CDATA[#if $expression$
 $selected$$end$
-#endregion]]></Code>
+#endif]]></Code>
 	</CodeTemplate>
 
 	<CodeTemplate version="2.0">
@@ -523,7 +523,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="name">
+			<Variable name="name" isIdentifier="true">
 				<Default>MyClass</Default>
 				<_ToolTip>Class name</_ToolTip>
 			</Variable>
@@ -544,7 +544,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="name">
+			<Variable name="name" isIdentifier="true">
 				<Default>IMyInterface</Default>
 				<_ToolTip>Interface name</_ToolTip>
 			</Variable>
@@ -565,7 +565,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="name">
+			<Variable name="name" isIdentifier="true">
 				<Default>MyStruct</Default>
 				<_ToolTip>Struct name</_ToolTip>
 			</Variable>
@@ -586,7 +586,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="name">
+			<Variable name="name" isIdentifier="true">
 				<Default>MyEnum</Default>
 				<_ToolTip>Enumeration name</_ToolTip>
 			</Variable>
@@ -607,7 +607,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="i">
+			<Variable name="i" isIdentifier="true">
 				<Default>i</Default>
 				<_ToolTip>Index</_ToolTip>
 			</Variable>
@@ -631,7 +631,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="i">
+			<Variable name="i" isIdentifier="true">
 				<Default>i</Default>
 				<_ToolTip>Index</_ToolTip>
 			</Variable>
@@ -675,16 +675,16 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="i">
+			<Variable name="i" isIdentifier="true">
 				<Default>i</Default>
 				<_ToolTip>Index</_ToolTip>
 			</Variable>
-			<Variable name="collection">
+			<Variable name="collection" isIdentifier="true">
 				<Default>collection</Default>
 				<_ToolTip>Collection to iterate through</_ToolTip>
 				<Function>GetCollections()</Function>
 			</Variable>
-			<Variable name="varname">
+			<Variable name="varname" isIdentifier="true">
 				<Default>varname</Default>
 				<_ToolTip>Name of variable.</_ToolTip>
 			</Variable>
@@ -713,16 +713,16 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="i">
+			<Variable name="i" isIdentifier="true">
 				<Default>i</Default>
 				<_ToolTip>Index</_ToolTip>
 			</Variable>
-			<Variable name="collection">
+			<Variable name="collection" isIdentifier="true">
 				<Default>collection</Default>
 				<_ToolTip>Collection to iterate through</_ToolTip>
 				<Function>GetCollections()</Function>
 			</Variable>
-			<Variable name="varname">
+			<Variable name="varname" isIdentifier="true">
 				<Default>varname</Default>
 				<_ToolTip>Name of variable.</_ToolTip>
 			</Variable>
@@ -770,12 +770,6 @@ $selected$$end$
 			<_Description>Template for 'else'</_Description>
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
-		<Variables>
-			<Variable name="expression">
-				<Default>true</Default>
-				<_ToolTip>Expression to evaluate</_ToolTip>
-			</Variable>
-		</Variables>
 		<Code><![CDATA[else {
 	$selected$$end$
 }]]></Code>
@@ -791,11 +785,11 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="type">
+			<Variable name="type" isIdentifier="true">
 				<Default>var</Default>
 				<_ToolTip>The type of objects to iterate through</_ToolTip>
 			</Variable>
-			<Variable name="id">
+			<Variable name="id" isIdentifier="true">
 				<Default>item</Default>
 				<_ToolTip>Identifier for the current element</_ToolTip>
 			</Variable>
@@ -839,7 +833,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="object">
+			<Variable name="object" isIdentifier="true">
 				<Default>this</Default>
 				<_ToolTip>Object to lock</_ToolTip>
 			</Variable>
@@ -859,7 +853,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="name">
+			<Variable name="name" isIdentifier="true">
 				<Default>MyNamespace</Default>
 				<_ToolTip>Namespace name</_ToolTip>
 			</Variable>
@@ -916,7 +910,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="type" isEditable="true">
+			<Variable name="type" isEditable="true" isIdentifier="true">
 				<Default>cast_to</Default>
 			</Variable>
 		</Variables>
@@ -1076,4 +1070,5 @@ $selected$$end$
 		</Header>
 		<Code><![CDATA[<!--$selected$$end$-->]]></Code>
 	</CodeTemplate>
+
 </CodeTemplates>

@@ -47,6 +47,11 @@ namespace Mono.TextEditor
 				return links;
 			}
 		}
+
+		public bool IsIdentifier {
+			get;
+			set;
+		}
 		
 		public bool IsEditable {
 			get;
@@ -82,6 +87,7 @@ namespace Mono.TextEditor
 		{
 			IsEditable = true;
 			this.Name  = name;
+			this.IsIdentifier = false;
 		}
 		
 		public override string ToString ()
@@ -330,7 +336,7 @@ namespace Mono.TextEditor
 					return;
 				goto default;
 			case Gdk.Key.space:
-				if (link == null)
+				if (link == null || !link.IsIdentifier)
 					goto default;
 				return;
 			case Gdk.Key.Delete:
@@ -338,6 +344,9 @@ namespace Mono.TextEditor
 					return;
 				goto default;
 			case Gdk.Key.Tab:
+				if ((modifier & Gdk.ModifierType.ControlMask) != 0)
+					if (link != null && !link.IsIdentifier)
+						goto default;
 				GotoNextLink (link);
 				return;
 			case Gdk.Key.ISO_Left_Tab:
@@ -348,6 +357,9 @@ namespace Mono.TextEditor
 				return;
 			case Gdk.Key.Escape:
 			case Gdk.Key.Return:
+				if ((modifier & Gdk.ModifierType.ControlMask) != 0)
+					if (link != null && !link.IsIdentifier)
+						goto default;
 				if (window != null) {
 					CompleteWindow ();
 				} else {

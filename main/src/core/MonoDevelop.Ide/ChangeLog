@@ -1,3 +1,17 @@
+2009-09-02  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs: Add
+	  IsIdentifier that descrives if the variable has restricted
+	  input.
+
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
+	  IsIdentifier defaults to false as suggested. Update
+	  templates that require Identifier semantics.
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Propagate
+	  whether the link is an Identifier meaning it has restricted
+	  input.
+
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:

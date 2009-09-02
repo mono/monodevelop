@@ -57,6 +57,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 			get;
 			set;
 		}
+
+		public bool IsIdentifier {
+			get;
+			set;
+		}
 		
 		List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>> ();
 		public List<KeyValuePair<string, string>> Values {
@@ -68,6 +73,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public CodeTemplateVariable ()
 		{
 			IsEditable = true;
+			IsIdentifier = false;
 		}
 		
 		public CodeTemplateVariable (string name) : this ()
@@ -83,6 +89,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public const string Node        = "Variable";
 		const string nameAttribute       = "name";
 		const string iconAttribute       = "icon";
+		const string identifierAttribute = "isIdentifier";
 		const string editableAttribute   = "isEditable";
 		const string DefaultNode         = "Default";
 		const string ValuesNode          = "Values";
@@ -96,6 +103,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			writer.WriteAttributeString (nameAttribute, Name);
 			if (!IsEditable) 
 				writer.WriteAttributeString (editableAttribute, "false");
+			if (IsIdentifier)
+				writer.WriteAttributeString (identifierAttribute, "true");
 			
 
 			if (!string.IsNullOrEmpty (Default)) {
@@ -139,6 +148,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			string isEditable = reader.GetAttribute (editableAttribute);
 			if (!string.IsNullOrEmpty (isEditable))
 				result.IsEditable = Boolean.Parse (isEditable);
+			string isIdentifier = reader.GetAttribute (identifierAttribute);
+			if (!string.IsNullOrEmpty (isIdentifier))
+				result.IsIdentifier = Boolean.Parse (isIdentifier);
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				//Console.WriteLine ("ctv:" +reader.LocalName);
 				switch (reader.LocalName) {

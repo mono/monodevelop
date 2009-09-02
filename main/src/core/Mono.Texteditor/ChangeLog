@@ -1,3 +1,10 @@
+2009-09-02  Christian Hergert  <chris@dronelabs.com>
+
+	* Mono.TextEditor/TextLinkEditMode.cs: Add IsIdentifier
+	  property indicating if the TextLink has restricted input.
+	  Space, Control+Tab and Control+Return can be used when the
+	  TextLink is not an Identifier.
+
 2009-08-27  Christian Hergert  <chris@dronelabs.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Be a bit more resilient to

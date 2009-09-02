@@ -232,6 +232,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					result.TextLinks.Add (link);
 				}
 				link.IsEditable = variableDecarations[name].IsEditable;
+				link.IsIdentifier = variableDecarations[name].IsIdentifier;
 				if (!string.IsNullOrEmpty (variableDecarations[name].Function)) {
 					IListDataProvider<string> functionResult = expansion.RunFunction (context, null, variableDecarations[name].Function);
 					if (functionResult != null && functionResult.Count > 0) {
