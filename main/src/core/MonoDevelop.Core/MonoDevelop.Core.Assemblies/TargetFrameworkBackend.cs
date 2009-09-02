@@ -66,7 +66,6 @@ namespace MonoDevelop.Core.Assemblies
 		public virtual string GetToolPath (string toolName)
 		{
 			foreach (string path in runtime.GetToolsPaths (framework)) {
-				LoggingService.LogInfo ("Looking for tool '" + toolName + "' in '" + path + "'");
 				string toolPath = Path.Combine (path, toolName);
 				if (PropertyService.IsWindows) {
 					if (File.Exists (toolPath + ".bat"))
