@@ -1,5 +1,10 @@
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs: In
+	  GetToolPaths, unquote quoted paths.
+
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Execution/ProcessHostController.cs: Added a
 	  watch dog in mdhost. The process will exit if the main MD
 	  process dies.

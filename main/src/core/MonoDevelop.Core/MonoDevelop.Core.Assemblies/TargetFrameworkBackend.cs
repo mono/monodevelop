@@ -83,8 +83,13 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			string paths;
 			if (!runtime.GetToolsEnvironmentVariables (framework).TryGetValue ("PATH", out paths))
-				return new string[0];
-			return paths.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
+				yield break;
+			foreach (string path in paths.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries)) {
+				if (path.Length > 0 && path [0] == '"' && path [path.Length - 1] == '"')
+					yield return path.Substring (1, path.Length-2);
+				else
+					yield return path;
+			}
 		}
 		
 		public virtual IEnumerable<string> GetAssemblyDirectories ()
