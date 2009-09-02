@@ -1071,4 +1071,173 @@ $selected$$end$
 		<Code><![CDATA[<!--$selected$$end$-->]]></Code>
 	</CodeTemplate>
 
+	<!-- python -->
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Python</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-python</MimeType>
+			<Shortcut>while</Shortcut>
+			<_Description>Template for while block</_Description>
+			<TemplateType>Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression">
+				<Default>True</Default>
+				<_ToolTip>Expression to evaluate</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[while $expression$:
+$selected$$end$]]></Code>
+	</CodeTemplate>
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Python</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-python</MimeType>
+			<Shortcut>def</Shortcut>
+			<_Description>Template for function block</_Description>
+			<TemplateType>Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="name" isIdentifier="true">
+				<Default>name</Default>
+				<_ToolTip>Function name</_ToolTip>
+			</Variable>
+			<Variable name="args">
+				<Default>arg1</Default>
+				<_ToolTip>Function arguments</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[def $name$($args$):
+$end$]]></Code>
+	</CodeTemplate>
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Python</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-python</MimeType>
+			<Shortcut>cdef</Shortcut>
+			<_Description>Template for class function block</_Description>
+			<TemplateType>Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="name" isIdentifier="true">
+				<Default></Default>
+				<_ToolTip>Function name</_ToolTip>
+			</Variable>
+			<Variable name="args">
+				<Default>, arg1</Default>
+				<_ToolTip>Function arguments</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[def $name$(self$args$):
+$end$]]></Code>
+	</CodeTemplate>
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Python</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-python</MimeType>
+			<Shortcut>if</Shortcut>
+			<_Description>Template for if block</_Description>
+			<TemplateType>Expansion,SurroundsWith</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="condition">
+				<Default>True</Default>
+				<_ToolTip>If condition</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[if $condition$:
+$selection$$end$]]></Code>
+	</CodeTemplate>
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Python</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-python</MimeType>
+			<Shortcut>main</Shortcut>
+			<_Description>Template for main block</_Description>
+			<TemplateType>Expansion,SurroundsWith</TemplateType>
+		</Header>
+		<Code><![CDATA[if __name__ == '__main__':
+    $selection$$end$]]></Code>
+	</CodeTemplate>
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Python</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-python</MimeType>
+			<Shortcut>gtkwindow</Shortcut>
+			<_Description>Template for a class deriving from gtk.Window</_Description>
+			<TemplateType>Expansion,SurroundsWith</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="name" isIdentifier="true">
+				<Default>MyWindow</Default>
+				<_ToolTip>Window class name</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[class $name$(gtk.Window):
+    def __init__(self):
+        # initialize window
+        gtk.Window.__init__(self)
+        self.set_title('$name$')
+        self.set_default_size(640, 480)
+
+$selection$$end$]]></Code>
+	</CodeTemplate>
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Python</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-python</MimeType>
+			<Shortcut>gladewindow</Shortcut>
+			<_Description>Template for a class loading contents from a gtkbuilder file</_Description>
+			<TemplateType>Expansion,SurroundsWith</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="name" isIdentifier="true">
+				<Default>MyWindow</Default>
+				<_ToolTip>Window class name</_ToolTip>
+			</Variable>
+			<Variable name="path">
+				<Default>widgets.ui</Default>
+				<_ToolTip>Path to ui description file (widgets.ui)</_ToolTip>
+			</Variable>
+			<Variable name="childname" isIdentifier="true">
+				<Default>window_child</Default>
+				<_ToolTip>The top-most child of the window within the gtk.Builder file.</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[class $name$(gtk.Window):
+    def __init__(self):
+        gtk.Window.__init__(self)
+        self._build()
+        
+    def _build(self):
+        # create builder to load widgets
+        self._builder = gtk.Builder()
+        self._builder.add_from_file('$path$')
+        
+        # reparent child widget into our window
+        child = self._builder.get_object('$childname$')
+        parent = child.parent
+        child.reparent(self)
+        
+        # copy settings from original parent window
+        self.set_title(parent.get_title() or '$name$')
+        self.set_default_size(*parent.get_default_size())
+        
+        # copy objects from gtkbuilder and attach them
+        for obj in self._builder.get_objects():
+            if obj.get_name():
+                name = '_' + obj.get_name()
+                if not hasattr(self, name):
+                    setattr(self, name, obj)
+
+$selection$$end$]]></Code>
+	</CodeTemplate>
+
 </CodeTemplates>
