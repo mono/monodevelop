@@ -295,6 +295,83 @@ namespace MonoDevelop.Refactoring.Tests
 ");
 		}
 		
+		[Test()]
+		public void ExtractMethodMultiVariableTest ()
+		{
+			TestExtractMethod (@"class TestClass
+{
+	int member;
+	void TestMethod ()
+	{
+		int i = 5, j = 10, k;
+		<-
+		j = i + j;
+		k = j + member;
+		->
+		Console.WriteLine (k);
+	}
+}
+", @"class TestClass
+{
+	int member;
+	void TestMethod ()
+	{
+		int i = 5, j = 10, k;
+		NewMethod (i, ref j, out k);
+		Console.WriteLine (k);
+	}
+	
+	void NewMethod (int i, ref int j, out int k)
+	{
+		j = i + j;
+		k = j + member;
+	}
+}
+");
+		}
+		
+		[Test()]
+		public void ExtractMethodMultiVariableWithLocalReturnVariableTest ()
+		{
+			TestExtractMethod (@"class TestClass
+{
+	int member;
+	void TestMethod ()
+	{
+		int i = 5, j = 10, k;
+		<-
+		int test;
+		j = i + j;
+		k = j + member;
+		test = i + j + k;
+		->
+		Console.WriteLine (test);
+	}
+}
+", @"class TestClass
+{
+	int member;
+	void TestMethod ()
+	{
+		int i = 5, j = 10, k;
+		int test;
+		NewMethod (i, ref j, out k, out test);
+		Console.WriteLine (test);
+	}
+	
+	void NewMethod (int i, ref int j, out int k, out int test)
+	{
+		j = i + j;
+		k = j + member;
+		test = i + j + k;
+	}
+}
+");
+		}
+		
+		
+		
+		
 	}
 }
  

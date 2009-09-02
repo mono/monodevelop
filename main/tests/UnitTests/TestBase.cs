@@ -38,21 +38,40 @@ namespace UnitTests
 	{
 		static bool firstRun = true;
 		
+		
 		[TestFixtureSetUp]
 		public virtual void Setup ()
 		{
 			if (firstRun) {
-				firstRun = false;
-				Util.ClearTmpDir ();
-				Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", Path.Combine (Util.TestsRootDir, "config"));
-				Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", Path.Combine (Util.TestsRootDir, "config"));
-				Runtime.Initialize (true);
-				Gtk.Application.Init ();
-				ProjectDomService.TrackFileChanges = true;
-				DesktopService.Initialize ();
-				MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
+				string rootDir = Path.Combine (Util.TestsRootDir, "config");
+				try {
+					firstRun = false;
+					InternalSetup (rootDir);
+				} catch (Exception) {
+					// if we encounter an error, try to re create the configuration directory
+					// (This takes much time, therfore it's only done when initialization fails)
+					try {
+						if (Directory.Exists (rootDir))
+							Directory.Delete (rootDir, true);
+						InternalSetup (rootDir);
+					} catch (Exception) {
+					}
+				}
 			}
 		}
+
+		static void InternalSetup (string rootDir)
+		{
+			Util.ClearTmpDir ();
+			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
+			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
+			Runtime.Initialize (true);
+			Gtk.Application.Init ();
+			ProjectDomService.TrackFileChanges = true;
+			DesktopService.Initialize ();
+			MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
+		}
+
 		
 		[TestFixtureTearDown]
 		public virtual void TearDown ()
