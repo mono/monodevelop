@@ -94,6 +94,13 @@ namespace MonoDevelop.IPhone
 			public UInt32 Length;
 			/// <summary>Pointer to the byte array</summary>
 			public IntPtr Data;
+			
+			public byte[] GetCopy ()
+			{
+				byte[] buffer = new byte[(int)Length];
+				Marshal.Copy (Data, buffer, 0, buffer.Length);
+				return buffer;
+			}
 		}
 		
 		#endregion
@@ -225,11 +232,8 @@ namespace MonoDevelop.IPhone
 			while (SecIdentitySearchCopyNext (searchRef, out itemRef) == OSStatus.Ok) {
 				if (SecIdentityCopyCertificate (itemRef, out certRef) == OSStatus.Ok) {
 					CssmData data;
-					if (SecCertificateGetData (certRef, out data) == OSStatus.Ok) {
-						byte[] buffer = new byte[(int)data.Length];
-						Marshal.Copy (data.Data, buffer, 0, buffer.Length);
-						list.Add (new X509Certificate2 (buffer));
-					}
+					if (SecCertificateGetData (certRef, out data) == OSStatus.Ok)
+						list.Add (new X509Certificate2 (data.GetCopy ()));
 				}
 				CFRelease (itemRef);
 			}
