@@ -1,3 +1,9 @@
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* wrapper/Action.cs: For stock gtk and gnome icons, use the
+	  stock id as base name for the action identifier. Fixes bug
+	  #525571.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libstetic.csproj: Updated dependencies. We now depend on

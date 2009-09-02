@@ -100,13 +100,20 @@ namespace Stetic.Wrapper
 
 		string GetDefaultName ()
 		{
-			if (GtkAction.Label != null && GtkAction.Label.Length > 0)
+			// Don't use the label for stock actions, since it depends on the current locale
+			if (!string.IsNullOrEmpty (GtkAction.StockId)) {
+				if (GtkAction.StockId.StartsWith ("gtk-"))
+					return GetIdentifier (GtkAction.StockId.Substring (4));
+				if (GtkAction.StockId.StartsWith ("gnome-stock-"))
+					return GetIdentifier (GtkAction.StockId.Substring (12));
+			}
+					                                            
+			if (!string.IsNullOrEmpty (GtkAction.Label))
 				return GetIdentifier (GtkAction.Label);
 
-			if (GtkAction.StockId != null) {
-				string s = GtkAction.StockId.Replace ("gtk-", "");
-				return GetIdentifier (s.Replace ("gnome-stock-", ""));
-			}
+			if (!string.IsNullOrEmpty (GtkAction.StockId))
+				return GetIdentifier (GtkAction.StockId);
+
 			return "Action";
 		}
 		
