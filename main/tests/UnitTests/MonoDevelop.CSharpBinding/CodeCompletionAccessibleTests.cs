@@ -680,6 +680,43 @@ public class Test
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
 		}
+		
+		[Test()]
+		public void TestExplicitResolving ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+interface IMyInterface {
+	object this [object i] { get; }
+}
+
+class MyClass<S, T> : IMyInterface
+{
+	object IMyInterface.this[object i] {
+		get {
+			return null;
+		}
+	}
+	
+	public S this[T i] {
+		get {
+			return default(S);
+		}
+	}
+}
+	
+class TestClass
+{
+	void TestMethod ()
+	{
+		MyClass<TestClass, string> myClass = new MyClass<TestClass, string> ();
+		$myClass[""test""].$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
+		}
 
 		
 	}

@@ -1,5 +1,10 @@
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  Added unit test for explicit members.
+
+2009-09-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/ExtractMethodTests.cs: Added some
 	  more complex test cases.
 
