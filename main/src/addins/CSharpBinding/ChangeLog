@@ -1,5 +1,11 @@
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/ResolveVisitor.cs: Made a better fix for the explicit
+	  member bug (but a recreation of the code completion database
+	  is required to make it work).
+
+2009-09-02  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/ResolveVisitor.cs: Fixed failing unit test.
 
 2009-09-02  Mike Krüger  <mkrueger@novell.com>

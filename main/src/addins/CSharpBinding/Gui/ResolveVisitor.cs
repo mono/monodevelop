@@ -205,7 +205,7 @@ namespace MonoDevelop.CSharpBinding
 			if (resolvedType != null) {
 				foreach (IType curType in resolver.Dom.GetInheritanceTree (resolvedType)) {
 					foreach (IProperty property in curType.Properties) {
-						if ((property.IsExplicitDeclaration || property.Name.Contains (".")) && !property.ExplicitInterfaces.Where (rt => rt.DecoratedFullName == resolvedType.DecoratedFullName).Any ())
+						if (property.IsExplicitDeclaration)
 							continue;
 						if (property.IsIndexer)
 							return CreateResult (property.ReturnType);
