@@ -177,6 +177,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public IReturnType ShortenTypeName (IReturnType fullyQualfiedType, DomLocation location)
 		{
+			if (fullyQualfiedType == null)
+				throw new ArgumentNullException ("fullyQualfiedType");
 			return new ShortenTypeNameVistior (this, location).Visit (fullyQualfiedType, null) as IReturnType;
 		}
 		

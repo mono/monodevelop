@@ -1,3 +1,8 @@
+2009-09-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs: Check type
+	  name.
+
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Solution.cs:
