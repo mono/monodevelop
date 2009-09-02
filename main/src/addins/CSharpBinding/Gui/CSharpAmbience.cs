@@ -347,6 +347,7 @@ namespace MonoDevelop.CSharpBinding
 		public string Visit (IType type, OutputSettings settings)
 		{
 			StringBuilder result = new StringBuilder ();
+				
 			if (type is AnonymousType) {
 				result.Append ("new {");
 				foreach (IProperty property in type.Properties) {
@@ -376,23 +377,29 @@ namespace MonoDevelop.CSharpBinding
 					name += "[]";
 			} 
 			if (name == null) {
-				if (settings.UseFullName)
+				if (settings.UseFullName && type.DeclaringType == null)
 					name = Format (instantiatedType == null ? type.FullName : instantiatedType.UninstantiatedType.FullName);
 				else 
 					name = Format (NormalizeTypeName (instantiatedType == null ? type.Name : instantiatedType.UninstantiatedType.Name));
 			}
 			int parameterCount = type.TypeParameters.Count;
-			if (instantiatedType != null)
+			if (instantiatedType != null && type.DeclaringType == null) 
 				parameterCount = instantiatedType.GenericParameters.Count;
 			
-			if (modifiers.Length == 0 && keyword.Length == 0 && (!settings.IncludeGenerics || parameterCount == 0) && (!settings.IncludeBaseTypes || !type.BaseTypes.Any ()))
-				return name;
 			
+			if (modifiers.Length == 0 && keyword.Length == 0 && (!settings.IncludeGenerics || parameterCount == 0) && (!settings.IncludeBaseTypes || !type.BaseTypes.Any ()))
+				return settings.UseFullName && type.DeclaringType != null ? Visit (type.DeclaringType, settings) + "." + name : name;
 			
 			result.Append (modifiers);
 			result.Append (keyword);
 			if (result.Length > 0 && !result.ToString ().EndsWith (" "))
 				result.Append (settings.Markup (" "));
+			if (settings.UseFullName && type.DeclaringType != null) {
+				Console.WriteLine (settings.IncludeGenerics);
+				result.Append (Visit (type.DeclaringType, settings));
+				result.Append (settings.Markup ("."));
+			}
+			
 			result.Append (settings.EmitName (type, name));
 			
 			if (settings.IncludeGenerics && parameterCount > 0) {
