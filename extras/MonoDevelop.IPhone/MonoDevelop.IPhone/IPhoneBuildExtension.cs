@@ -93,7 +93,17 @@ namespace MonoDevelop.IPhone
 				
 				if (!String.IsNullOrEmpty (conf.ExtraMtouchArgs)) {
 					args.Append (" ");
-					args.Append (conf.ExtraMtouchArgs);
+					var customTags = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase) {
+						{ "projectdir", proj.BaseDirectory },
+						{ "solutiondir", proj.ParentSolution.BaseDirectory },
+						{ "appbundledir", conf.AppDirectory },
+						{ "targetpath", conf.CompiledOutputName },
+						{ "targetdir", conf.CompiledOutputName.ParentDirectory },
+						{ "targetname", conf.CompiledOutputName.FileName },
+						{ "targetext", conf.CompiledOutputName.Extension },
+					};
+					string mtExtraArgs = StringParserService.Parse (conf.ExtraMtouchArgs, customTags);
+					args.Append (mtExtraArgs);
 				}
 				
 				args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
