@@ -56,7 +56,6 @@ namespace PyBinding.Parser
 			if (unit == null)
 				return null;
 			
-			
 			if (expr.Type == "def")
 			{
 				var type = unit.GetTypeAt (resolvePosition);

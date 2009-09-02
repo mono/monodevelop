@@ -321,7 +321,7 @@ def main():
     try:
         # requires python2.6
         server.serve_forever(poll_interval=POLL_INTERVAL)
-    except:
+    except TypeError:
         server.serve_forever()
 
 if __name__ == '__main__':

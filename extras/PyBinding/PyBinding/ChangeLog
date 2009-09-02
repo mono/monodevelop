@@ -1,3 +1,9 @@
+2009-09-02  Christian Hergert  <chris@dronelabs.com>
+
+	* Resources/completion.py: Only catch TypeError
+
+	* PyBinding.Parser/PythonResolver.cs: Flush
+
 2009-09-01  Christian Hergert  <chris@dronelabs.com>
 
 	* Resources/completion.py: Log catastrophic errors and include
