@@ -1,8 +1,12 @@
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* ChangeLog: Forgot to attribute the patch.
+
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/objects.xml:
 	* MonoDevelop.Components/ListView.cs: Add support for
-	  multi-selection.
+	  multi-selection. Patch by Zach Lute.
 
 	* MonoDevelop.Components.Commands/CommandMenuItem.cs: Don't
 	  try to execute a command when an item that shows a submenu
