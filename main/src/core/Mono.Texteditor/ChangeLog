@@ -1,5 +1,10 @@
 2009-09-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Implemented update queue -
+	  this should solve the speed problems.
+
+2009-09-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/TextViewMargin.cs: Don't update bracket
 	  highlighting in atomic undo.

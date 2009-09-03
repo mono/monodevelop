@@ -1300,50 +1300,53 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		List<Gdk.Rectangle> redrawList = new List<Gdk.Rectangle> ();
+		
 		public void RepaintArea (int x, int y, int width, int height)
 		{
 			if (this.buffer == null)
 				return;
 			y = System.Math.Max (0, y);
 			height = System.Math.Min (height, Allocation.Height - y);
-			
+
 			x = System.Math.Max (0, x);
 			width = System.Math.Min (width, Allocation.Width - x);
-			if (height < 0 || width < 0) 
+			if (height < 0 || width < 0)
 				return;
-			RenderMargins (this.buffer, new Gdk.Rectangle (x, y, width, height));
-			if (GdkWindow.IsViewable)
-			{
-				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-				                        buffer,
-				                        x, y, x, y,
-				                        width, height);
-				PaintCaret (GdkWindow);
+			lock (redrawList) {
+				redrawList.Add (new Gdk.Rectangle (x, y, width, height));
 			}
+			QueueDrawArea (x, y, width, height);
 		}
 		
 		public void Repaint ()
 		{
 			if (this.buffer == null)
 				return;
-			RenderMargins (this.buffer, new Gdk.Rectangle (0, 0, this.Allocation.Width, this.Allocation.Height));
-			if (GdkWindow.IsViewable)
-			{
-				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-			                        	buffer,
-				                        0, 0, 0, 0,
-				                        this.Allocation.Width, this.Allocation.Height);
-				PaintCaret (GdkWindow);
+			lock (redrawList) {
+				redrawList.Clear ();
+				redrawList.Add (new Gdk.Rectangle (0, 0, this.Allocation.Width, this.Allocation.Height));
 			}
+			QueueDraw ();
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)
 				return true;
-			
+
 			lock (disposeLock) {
 				UpdateAdjustments ();
+				lock (redrawList) {
+					foreach (Gdk.Rectangle updateRect in redrawList) {
+						RenderMargins (this.buffer, updateRect);
+						e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+							buffer,
+							updateRect.X, updateRect.Y, updateRect.X, updateRect.Y,
+							updateRect.Width, updateRect.Height);
+					}
+					redrawList.Clear ();
+				}
 				
 				e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
 				                       buffer,
