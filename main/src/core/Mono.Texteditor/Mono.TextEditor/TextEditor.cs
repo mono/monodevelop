@@ -188,9 +188,8 @@ namespace Mono.TextEditor
 			oldVadjustment = this.textEditorData.VAdjustment.Value;
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
 				TextViewMargin.VAdjustmentValueChanged ();
-				lastCaretLine = -1;
+				lastCaretLine = DocumentLocation.Empty;
 				this.Repaint ();
-				PaintCaret (GdkWindow);
 				return;
 			}
 			int from, to;
@@ -224,7 +223,7 @@ namespace Mono.TextEditor
 			
 			Caret.IsVisible = true;
 			TextViewMargin.VAdjustmentValueChanged ();
-			lastCaretLine = -1;
+			lastCaretLine = DocumentLocation.Empty;
 			PaintCaret (GdkWindow);
 /*			
 			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
@@ -1318,7 +1317,6 @@ namespace Mono.TextEditor
 			                        x, y, x, y,
 			                        width, height);
 			PaintCaret (GdkWindow);
-//			Console.WriteLine ("x={0}, y={1}, width={2}, height={3}", x, y, width, height);
 		}
 		
 		public void Repaint ()
@@ -1349,12 +1347,12 @@ namespace Mono.TextEditor
 			}
 			return true;
 		}
-		int lastCaretLine = -1;
+		DocumentLocation lastCaretLine = DocumentLocation.Empty;
 		void PaintCaret (Gdk.Drawable drawable)
 		{
-			if (lastCaretLine != Caret.Line) {
-				lastCaretLine = Caret.Line;
-				RedrawMarginLine (this.textViewMargin, Caret.Line);
+			if (lastCaretLine != Caret.Location) {
+				lastCaretLine = Caret.Location;
+				RenderMargins (this.buffer, new Gdk.Rectangle (this.textViewMargin.XOffset, Document.LogicalToVisualLine (lastCaretLine.Line) * LineHeight - (int)this.textEditorData.VAdjustment.Value, GetMarginWidth(textViewMargin), LineHeight));
 			}
 			textViewMargin.DrawCaret (drawable);
 		}
