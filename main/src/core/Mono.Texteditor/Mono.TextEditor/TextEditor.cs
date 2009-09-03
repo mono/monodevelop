@@ -178,7 +178,7 @@ namespace Mono.TextEditor
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
-			if (buffer == null)
+			if (buffer == null) 
 				AllocateWindowBuffer (this.Allocation);
 			if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
@@ -186,10 +186,8 @@ namespace Mono.TextEditor
 			}
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
 			oldVadjustment = this.textEditorData.VAdjustment.Value;
-			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || textViewMargin.inSelectionDrag) {
-				TextViewMargin.VAdjustmentValueChanged ();
-				lastCaretLine = DocumentLocation.Empty;
-				this.Repaint ();
+			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
+				this.QueueDraw ();
 				return;
 			}
 			int from, to;
@@ -200,6 +198,7 @@ namespace Mono.TextEditor
 				from = 0;
 				to   = -delta;
 			}
+			
 			DoFlipBuffer ();
 			Caret.IsVisible = false;
 			this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
@@ -207,30 +206,20 @@ namespace Mono.TextEditor
 			                          0, from, 
 			                          0, to, 
 			                          Allocation.Width, Allocation.Height - from - to);
-			
-			
 			if (delta > 0) {
-				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-				                        buffer, 0, 0, 0, 0,
-				                        Allocation.Width, Allocation.Height - delta);
-				RepaintArea (0, Allocation.Height - delta, Allocation.Width, delta);
+				RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta));
 			} else {
-				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-				                        buffer, 0, delta, 0, delta,
-				                        Allocation.Width, Allocation.Height - delta);
-				RepaintArea (0, 0, Allocation.Width, -delta);
+				RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta));
 			}
 			Caret.IsVisible = true;
 			TextViewMargin.VAdjustmentValueChanged ();
-			lastCaretLine = DocumentLocation.Empty;
-			PaintCaret (GdkWindow);
-/*			
+			
 			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
 			                        buffer,
 			                        0, 0, 
 			                        0, 0, 
 			                        Allocation.Width, Allocation.Height);
-			Document.CommitLineUpdate (Caret.Line);*/
+			Document.CommitLineUpdate (Caret.Line);
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
@@ -1338,7 +1327,7 @@ namespace Mono.TextEditor
 			lock (disposeLock) {
 				UpdateAdjustments ();
 				lock (redrawList) {
-					foreach (Gdk.Rectangle updateRect in redrawList) {
+					foreach (Gdk.Rectangle updateRect in redrawList.ToArray ()) {
 						RenderMargins (this.buffer, updateRect);
 						e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
 							buffer,

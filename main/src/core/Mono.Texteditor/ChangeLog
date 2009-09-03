@@ -1,5 +1,9 @@
 2009-09-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Fixed repaint problem.
+
+2009-09-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Implemented update queue -
 	  this should solve the speed problems.
 
