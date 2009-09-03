@@ -36,7 +36,7 @@ namespace Mono.TextEditor
 		bool isInInsertMode = true;
 		bool autoScrollToCaret = true;
 		bool isVisible = true;
-		int  desiredColumn;
+		
 		Document document;
 		TextEditorData editor;
 		CaretMode mode;
@@ -138,7 +138,11 @@ namespace Mono.TextEditor
 				return autoScrollToCaret;
 			}
 			set {
-				autoScrollToCaret = value;
+				if (value != autoScrollToCaret) {
+					autoScrollToCaret = value;
+					if (autoScrollToCaret)
+						OnPositionChanged (new DocumentLocationEventArgs (Location));
+				}
 			}
 		}
 
@@ -157,12 +161,8 @@ namespace Mono.TextEditor
 		}
 
 		public int DesiredColumn {
-			get {
-				return desiredColumn;
-			}
-			set {
-				desiredColumn = value;
-			}
+			get;
+			set;
 		}
 		
 		public Caret (TextEditorData editor, Document document)
@@ -187,6 +187,17 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public void SetToOffsetWithDesiredColumn (int desiredOffset)
+		{
+			DocumentLocation old = Location;
+			
+			int line   = document.OffsetToLineNumber (desiredOffset);
+			int column = desiredOffset - document.GetLine (line).Offset;
+			location = new DocumentLocation (line, column);
+			SetColumn ();
+			OnPositionChanged (new DocumentLocationEventArgs (old));
+		}
+		
 		void SetDesiredColumn ()
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);
@@ -194,14 +205,14 @@ namespace Mono.TextEditor
 				return;
 			if (!AllowCaretBehindLineEnd)
 				this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
-			this.desiredColumn = curLine.GetVisualColumn (editor, document, this.Column);
+			this.DesiredColumn = curLine.GetVisualColumn (editor, document, this.Column);
 		}
 		
 		void SetColumn ()
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);
-			this.location.Column = curLine.GetLogicalColumn (editor, this.document, this.desiredColumn);
-			if (curLine.GetVisualColumn (editor, document, this.location.Column) < this.desiredColumn) {
+			this.location.Column = curLine.GetLogicalColumn (editor, this.document, this.DesiredColumn);
+			if (curLine.GetVisualColumn (editor, document, this.location.Column) < this.DesiredColumn) {
 				this.location.Column = editor.GetNextVirtualColumn (Line, this.location.Column);
 			} else {
 				if (this.Column > curLine.EditableLength) {
@@ -215,7 +226,7 @@ namespace Mono.TextEditor
 		public void SetToDesiredColumn (int desiredColumn) 
 		{
 			DocumentLocation old = Location;
-			this.desiredColumn = desiredColumn;
+			this.DesiredColumn = desiredColumn;
 			SetColumn ();
 			OnPositionChanged (new DocumentLocationEventArgs (old));
 		}

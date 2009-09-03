@@ -64,19 +64,42 @@ namespace Mono.TextEditor
 			if (!data.IsSomethingSelected) {
 				data.MainSelection = new Selection (data.Caret.Location, data.Caret.Location);
 			}
+			data.Caret.AutoScrollToCaret = false;
 		}
 		
 		public static void EndSelection (TextEditorData data)
 		{
 			data.ExtendSelectionTo (data.Caret.Offset);
 			data.Caret.PreserveSelection = false;
+			data.Caret.AutoScrollToCaret = true;
+			
 		}
 		
 		public static void Select (TextEditorData data, Action<TextEditorData> caretMoveAction)
 		{
+			PositionChangedHandler handler = new PositionChangedHandler (data);
+			data.Caret.PositionChanged += handler.DataCaretPositionChanged;
+			
 			StartSelection (data);
 			caretMoveAction (data);
-			EndSelection (data);
+			data.Caret.PositionChanged -= handler.DataCaretPositionChanged;
+			data.Caret.AutoScrollToCaret = true;
+			data.Caret.PreserveSelection = false;
+		}
+
+		class PositionChangedHandler
+		{
+			TextEditorData data;
+			
+			public PositionChangedHandler (TextEditorData data)
+			{
+				this.data = data;
+			}
+			
+			public void DataCaretPositionChanged (object sender, DocumentLocationEventArgs e)
+			{
+				data.ExtendSelectionTo (data.Caret.Offset);
+			}
 		}
 
 		public static void StartLineSelection (TextEditorData data)

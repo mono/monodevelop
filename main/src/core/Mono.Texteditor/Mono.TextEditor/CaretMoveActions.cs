@@ -170,7 +170,6 @@ namespace Mono.TextEditor
 		
 		public static void Down (TextEditorData data)
 		{
-			int desiredColumn = data.Caret.DesiredColumn;
 			//on Mac, when deselecting and moving up/down a line, column is always the column of the selection's start
 			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
 				int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
@@ -178,8 +177,7 @@ namespace Mono.TextEditor
 				data.ClearSelection ();
 				if (line < data.Document.LineCount) {
 					int offset = data.Document.LocationToOffset (line, col);
-					data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
-					data.Caret.SetToDesiredColumn (desiredColumn);
+					data.Caret.SetToOffsetWithDesiredColumn (MoveCaretOutOfFolding (data, offset));
 				} else {
 					data.Caret.Offset = data.Document.Length;
 				}
@@ -189,8 +187,7 @@ namespace Mono.TextEditor
 			if (data.Caret.Line < data.Document.LineCount - 1) {
 				int line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) + 1);
 				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
-				data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
-				data.Caret.SetToDesiredColumn (desiredColumn);
+				data.Caret.SetToOffsetWithDesiredColumn (MoveCaretOutOfFolding (data, offset));
 			} else {
 				ToDocumentEnd (data);
 			}
@@ -302,8 +299,6 @@ namespace Mono.TextEditor
 		public static void PageUp (TextEditorData data)
 		{
 			int pageIncrement =  LineHeight * ((int)(data.VAdjustment.PageIncrement / LineHeight) - 1);
-			data.VAdjustment.Value = System.Math.Max (data.VAdjustment.Lower, data.VAdjustment.Value - pageIncrement); 
-			
 			int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
 			visualLine -= pageIncrement / LineHeight;
 			int line = System.Math.Max (data.Document.VisualToLogicalLine (visualLine), 0);
@@ -314,8 +309,6 @@ namespace Mono.TextEditor
 		public static void PageDown (TextEditorData data)
 		{
 			int pageIncrement =  LineHeight * ((int)(data.VAdjustment.PageIncrement / LineHeight) - 1);
-			if (data.VAdjustment.Value < data.VAdjustment.Upper - data.VAdjustment.PageIncrement)
-				data.VAdjustment.Value = data.VAdjustment.Value + pageIncrement;
 			
 			int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
 			visualLine += pageIncrement / LineHeight;
