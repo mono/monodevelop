@@ -1,5 +1,14 @@
 2009-09-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs: Use the
+	  PositionFunc from MenuButton to align the menu so that it
+	  actually looks like a dropdown. Also copy over the code to
+	  make the button look depressed when the menu is visible. Add
+	  a method for adding multiple options. Use generic
+	  collection.
+
+2009-09-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs: Expose
 	  the entry.
 
