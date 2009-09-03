@@ -121,9 +121,7 @@ namespace Mono.TextEditor
 				}
 				if (DrawEvent != null) 
 					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, win, lineSegment, line, x, y));
-				
 			}
-			
 		}
 		
 		public EventHandler<BookmarkMarginDrawEventArgs> DrawEvent;

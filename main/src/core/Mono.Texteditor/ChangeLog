@@ -1,5 +1,11 @@
 2009-09-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/IconMargin.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/GutterMargin.cs: Optimized redrawing.
+
+2009-09-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/GutterMargin.cs: Handled some redraw issues.
 

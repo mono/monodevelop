@@ -49,8 +49,10 @@ namespace Mono.TextEditor
 
 		void EditorCarethandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
+			if (e.Location.Line == editor.Caret.Line)
+				return;
 			editor.RedrawMarginLine (this, e.Location.Line);
-			editor.RedrawMarginLine (this, this.editor.Caret.Line);
+			editor.RedrawMarginLine (this, editor.Caret.Line);
 		}
 		
 		void CalculateWidth ()

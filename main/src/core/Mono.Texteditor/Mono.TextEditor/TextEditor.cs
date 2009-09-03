@@ -369,8 +369,9 @@ namespace Mono.TextEditor
 			int oldStartLine = oldSelection != null ? oldSelection.Anchor.Line : -1;
 			int oldEndLine   = oldSelection != null ? oldSelection.Lead.Line : -1;
 			if (SelectionMode == SelectionMode.Block) {
-				this.RedrawLines (System.Math.Min (System.Math.Min (oldStartLine, oldEndLine), System.Math.Min (startLine, endLine)),
-					               System.Math.Max (System.Math.Max (oldStartLine, oldEndLine), System.Math.Max (startLine, endLine)));
+				this.RedrawMarginLines (this.textViewMargin, 
+				                        System.Math.Min (System.Math.Min (oldStartLine, oldEndLine), System.Math.Min (startLine, endLine)),
+				                        System.Math.Max (System.Math.Max (oldStartLine, oldEndLine), System.Math.Max (startLine, endLine)));
 				oldSelection = selection;
 			} else {
 				if (endLine < 0 && startLine >=0)
@@ -390,12 +391,12 @@ namespace Mono.TextEditor
 						to   = oldEndLine;
 					} else if (startLine == oldStartLine && endLine == oldEndLine)  {
 						if (selection.Anchor == oldSelection.Anchor) {
-							this.RedrawLine (endLine);
+							this.RedrawMarginLine (this.textViewMargin, endLine);
 						} else if (selection.Lead == oldSelection.Lead) {
-							this.RedrawLine (startLine);
+							this.RedrawMarginLine (this.textViewMargin, startLine);
 						} else { // 3rd case - may happen when changed programmatically
-							this.RedrawLine (endLine);
-							this.RedrawLine (startLine);
+							this.RedrawMarginLine (this.textViewMargin, endLine);
+							this.RedrawMarginLine (this.textViewMargin, startLine);
 						}
 						from = to = -1;
 					}
@@ -411,8 +412,9 @@ namespace Mono.TextEditor
 				
 				if (from >= 0 && to >= 0) {
 					oldSelection = selection;
-					this.RedrawLines (System.Math.Max (0, System.Math.Min (from, to) - 1),
-					                  System.Math.Max (from, to));
+					this.RedrawMarginLines (this.textViewMargin, 
+					                        System.Math.Max (0, System.Math.Min (from, to) - 1),
+					                        System.Math.Max (from, to));
 				}
 			}
 			
@@ -622,6 +624,21 @@ namespace Mono.TextEditor
 //			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, LineHeight);
 		}
 		
+		internal void RedrawMarginLines (Margin margin, int start, int end)
+		{
+			lock (disposeLock) {
+				if (isDisposed)
+					return;
+				if (start < 0)
+					start = 0;
+				int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
+				if (end < 0)
+					end = Document.LineCount - 1;
+				int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
+				this.RepaintArea (margin.XOffset, visualStart, margin.Width, visualEnd - visualStart );
+			}
+		}
+			
 		internal void RedrawLines (int start, int end)
 		{
 			lock (disposeLock) {
