@@ -113,5 +113,9 @@ namespace MonoDevelop.Core.Gui.Components
 					info.Add (op [0], op [1]);
 			}
 		}
+		
+		public Gtk.Entry Entry {
+			get { return entry; }
+		}
 	}
 }
