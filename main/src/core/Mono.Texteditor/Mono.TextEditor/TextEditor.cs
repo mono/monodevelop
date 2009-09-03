@@ -187,7 +187,7 @@ namespace Mono.TextEditor
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
 			oldVadjustment = this.textEditorData.VAdjustment.Value;
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
-				this.QueueDraw ();
+				this.Repaint ();
 				return;
 			}
 			int from, to;

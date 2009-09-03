@@ -618,7 +618,7 @@ namespace Mono.TextEditor
 		Dictionary<LineSegment, List<LayoutDescriptor>> layoutDict = new Dictionary<LineSegment, List<LayoutDescriptor>> ();
 		Pango.Layout GetCachedLayout (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, Action<Pango.Layout> createNew)
 		{
-			List<LayoutDescriptor> list;
+	/*		List<LayoutDescriptor> list;
 			if (!layoutDict.ContainsKey (line)) {
 				list = new List<LayoutDescriptor> ();
 				layoutDict[line] = list;
@@ -637,14 +637,14 @@ namespace Mono.TextEditor
 					list.RemoveAt (i);
 					i--;
 				}
-			}
+			}*/
 			
 			Pango.Layout layout = new Pango.Layout (textEditor.PangoContext);
 			createNew (layout);
 			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
 			selectionEnd = System.Math.Min (line.EndOffset + 1, selectionEnd);
 			LayoutDescriptor newDesrc = new LayoutDescriptor (line, offset, length, layout, selectionStart, selectionEnd);
-			list.Add (newDesrc);
+//			list.Add (newDesrc);
 			return newDesrc.Layout;
 		}
 
