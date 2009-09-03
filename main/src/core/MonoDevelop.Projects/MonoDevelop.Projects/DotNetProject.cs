@@ -427,6 +427,8 @@ namespace MonoDevelop.Projects
 				string output = Path.GetFileName (GetOutputFileName (solutionConfiguration));
 				list.Add (appConfig.Src, appConfig.CopyOnlyIfNewer, output + ".config");
 			}
+			
+			string debugExt = (TargetRuntime is MonoTargetRuntime) ? ".mdb" : ".pdb";
 
 			//collect all the "local copy" references and their attendant files
 			foreach (ProjectReference projectReference in References) {
@@ -456,24 +458,61 @@ namespace MonoDevelop.Projects
 					DotNetProjectConfiguration refConfig = p.GetActiveConfiguration (solutionConfiguration) as DotNetProjectConfiguration;
 
 					if (refConfig != null && refConfig.DebugMode) {
-						string mdbFile = refOutput + ".mdb";
+						string mdbFile = refOutput + debugExt;
 						if (File.Exists (mdbFile)) {
 							list.Add (mdbFile);
 						}
 					}
 				}
 				else if (projectReference.ReferenceType == ReferenceType.Assembly) {
-					list.Add (projectReference.Reference);
-					if (File.Exists (projectReference.Reference + ".config"))
-						list.Add (projectReference.Reference + ".config");
-					string mdbFile = projectReference.Reference + ".mdb";
-					if (File.Exists (mdbFile))
-						list.Add (mdbFile);
+					// VS COMPAT: Copy the assembly, but also all other assemblies referenced by it
+					// that are located in the same folder
+					foreach (string file in GetAssemblyRefsRec (projectReference.Reference, new HashSet<string> ())) {
+						list.Add (file);
+						if (File.Exists (file + ".config"))
+							list.Add (file + ".config");
+						string mdbFile = file + debugExt;
+						if (File.Exists (mdbFile))
+							list.Add (mdbFile);
+					}
 				}
 				else if (projectReference.ReferenceType == ReferenceType.Custom) {
 					foreach (string refFile in projectReference.GetReferencedFileNames (solutionConfiguration))
 						list.Add (refFile);
 				}
+			}
+		}
+		
+		IEnumerable<string> GetAssemblyRefsRec (string fileName, HashSet<string> visited)
+		{
+			// Recursivelly finds assemblies referenced by the given assembly
+			
+			if (!visited.Add (fileName))
+				yield break;
+			
+			if (!File.Exists (fileName)) {
+				string ext = Path.GetExtension (fileName).ToLower ();
+				if (ext == ".dll" || ext == ".exe")
+					yield break;
+				if (File.Exists (fileName + ".dll"))
+					fileName = fileName + ".dll";
+				else if (File.Exists (fileName + ".exe"))
+					fileName = fileName + ".exe";
+				else
+					yield break;
+			}
+			
+			yield return fileName;
+			Mono.Cecil.AssemblyDefinition adef;
+			try {
+				adef = Mono.Cecil.AssemblyFactory.GetAssemblyManifest (fileName);
+			} catch {
+				yield break;
+			}
+			foreach (Mono.Cecil.AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
+				string asmFile = Path.Combine (Path.GetDirectoryName (fileName), aref.Name);
+				foreach (string refa in GetAssemblyRefsRec (asmFile, visited))
+					yield return refa;
 			}
 		}
 

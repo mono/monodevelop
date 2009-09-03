@@ -1,3 +1,10 @@
+2009-09-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: When copying an
+	  assembly reference, recursively copy the assemblies it
+	  references if they are located in the same directory. Fixes
+	  bug #513889 - Fails to copy recursive assembly dependencies.
+
 2009-09-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: Overworked nested type
