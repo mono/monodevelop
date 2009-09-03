@@ -170,26 +170,12 @@ namespace Mono.TextEditor
 				flipBuffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
 			}
 		}
-
-		void EnsureNextDrawContains (int x, int y, int width, int height)
-		{
-			EnsureNextDrawContains (new Gdk.Rectangle (x, y, width, height));
-		}
-
-		void EnsureNextDrawContains (Gdk.Rectangle area)
-		{
-			repaint = true;
-			if (!boundDrawArea.Contains (area))
-				boundDrawArea = boundDrawArea != Gdk.Rectangle.Zero ? boundDrawArea.Union (area) : area;
-			this.QueueDrawArea (boundDrawArea.X, boundDrawArea.Y, boundDrawArea.Width, boundDrawArea.Height);
-		}
 		
 		void HAdjustmentValueChanged (object sender, EventArgs args)
 		{
 //			VAdjustmentValueChanged (sender, args);
-			EnsureNextDrawContains (new Gdk.Rectangle (this.textViewMargin.XOffset, 0,
-			                                           this.Allocation.Width - this.textViewMargin.XOffset,
-			                                           this.Allocation.Height));
+			this.repaint = true;
+			this.QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
 		}
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
@@ -598,7 +584,7 @@ namespace Mono.TextEditor
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
-				EnsureNextDrawContains (margin.XOffset, 0, margin.Width,  this.Allocation.Height);
+				this.QueueDrawArea (margin.XOffset, 0, margin.Width,  this.Allocation.Height);
 			}
 		}
 		internal void RedrawLine (int logicalLine)
@@ -607,7 +593,7 @@ namespace Mono.TextEditor
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
-				EnsureNextDrawContains (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
+				this.QueueDrawArea (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
 			}
 		}
 		
@@ -634,7 +620,7 @@ namespace Mono.TextEditor
 				if (end < 0)
 					end = Document.LineCount - 1;
 				int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
-				EnsureNextDrawContains (0, visualStart, this.Allocation.Width, visualEnd - visualStart);
+				this.QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
 			}
 		}
 		
@@ -644,7 +630,7 @@ namespace Mono.TextEditor
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
-				EnsureNextDrawContains (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
+				this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
 			}
 		}
 		
@@ -1280,10 +1266,7 @@ namespace Mono.TextEditor
 				oldRequest = lastVisibleLine;
 			}
 		}
-
-		Gdk.Rectangle lastCaretPosition = TextViewMargin.EmptyRectangle;
-		Gdk.Rectangle boundDrawArea = Gdk.Rectangle.Zero;
-
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)
@@ -1295,16 +1278,10 @@ namespace Mono.TextEditor
 				//RenderMargins (e.Window, e.Area);
 				
 				if (repaint) {
-					if (boundDrawArea == Gdk.Rectangle.Zero)
-						boundDrawArea = e.Area;
-					else if (!boundDrawArea.Contains (e.Area))
-						boundDrawArea = boundDrawArea.Union (e.Area);
-					RenderMargins (this.buffer, boundDrawArea);
-					boundDrawArea = Gdk.Rectangle.Zero;
+					RenderMargins (this.buffer, e.Area);
 					repaint = false;
 				}
 				
-				OverpaintCaret (e.Window);
 				e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
 				                       buffer,
 				                       e.Area.X, e.Area.Y, e.Area.X, e.Area.Y,
@@ -1316,18 +1293,10 @@ namespace Mono.TextEditor
 		
 		void PaintCaret (Gdk.Drawable drawable)
 		{
-			if (!Document.ReadOnly)
-				lastCaretPosition = textViewMargin.DrawCaret (drawable);
+			textViewMargin.DrawCaret (drawable);
 		}
 		
-		void OverpaintCaret (Gdk.Drawable drawable)
-		{
-			if (lastCaretPosition.Width == 0) 
-				return;
-			drawable.DrawDrawable (Style.BackgroundGC (StateType.Normal), buffer, lastCaretPosition.X, lastCaretPosition.Y, lastCaretPosition.X, lastCaretPosition.Y, lastCaretPosition.Width, lastCaretPosition.Height + 1);
-			lastCaretPosition = TextViewMargin.EmptyRectangle;
-		}
-		
+	
 		#region TextEditorData functions
 		public Mono.TextEditor.Highlighting.Style ColorStyle {
 			get {
