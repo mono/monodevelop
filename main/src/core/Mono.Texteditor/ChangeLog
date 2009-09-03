@@ -1,3 +1,10 @@
+2009-09-03  Christian Hergert  <chris@dronelabs.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Make sure that the
+	caret is clipped to the visible region of the Gdk.Drawable.
+	This fixes a rendering issue on OS X where the cursor could
+	be drawn outside of the TextView.
+
 2009-09-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:

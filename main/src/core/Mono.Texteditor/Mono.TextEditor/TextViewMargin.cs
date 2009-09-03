@@ -419,11 +419,20 @@ namespace Mono.TextEditor
 			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink))
 				return EmptyRectangle;
 			
+			// Unlike the clip region for the backing store buffer, this needs
+			// to be clipped to the range of the visible area of the widget to
+			// prevent drawing outside the widget on some Gdk backends.
 			Gdk.Rectangle caretClipRectangle = GetClipRectangle (Caret.Mode);
+			int width, height;
+			win.GetSize (out width, out height);
+			caretClipRectangle.Intersect (new Gdk.Rectangle (0, 0, width, height));
 			SetClip (caretClipRectangle);
+
 			switch (Caret.Mode) {
 			case CaretMode.Insert:
 				if (caretX < this.XOffset)
+					return EmptyRectangle;
+				else if (caretClipRectangle == Gdk.Rectangle.Zero)
 					return EmptyRectangle;
 				win.DrawLine (GetGC (ColorStyle.Caret.Color), caretX, caretY, caretX, caretY + LineHeight);
 				break;
