@@ -49,7 +49,7 @@ namespace MonoDevelop.IPhone
 		{
 			var proj = GetActiveProject ();
 			info.Visible = proj != null;
-			if (proj != null) {
+			if (proj != null && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) {
 				var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
 				info.Enabled = conf != null && conf.Platform == IPhoneProject.PLAT_IPHONE;
 			} else {
@@ -114,7 +114,7 @@ namespace MonoDevelop.IPhone
 			
 			if (proj != null) {
 				var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				info.Enabled = conf != null;
+				info.Enabled = conf != null && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
 			}
 		}
 		
