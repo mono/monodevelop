@@ -29,9 +29,11 @@
 using System;
 using System.Collections;
 using MonoDevelop.Components.Commands;
+using System.ComponentModel;
 
 namespace MonoDevelop.Core.Gui.Components
 {
+	[ToolboxItem (true)]
 	public class MenuButtonEntry : Gtk.HBox
 	{
 		Gtk.Entry entry;
