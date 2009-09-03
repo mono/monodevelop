@@ -97,8 +97,19 @@ namespace MonoDevelop.Core.Gui.Components
 		
 		public void AddOptions (string [,] options)
 		{
+			if (options.GetLength (1) != 2)
+				throw new ArgumentException ("The second dimension must be of size 2", "options");
 			for (int n=0; n<options.GetLength (0); n++)
 				AddOption (options [n,0], options [n,1]);
+		}
+		
+		public void AddOptions (IEnumerable<string[]> options)
+		{
+			foreach (string[] optionPair in options) {
+				if (optionPair.Length != 2)
+					throw new ArgumentException ("One of the string arrays contains <> 2 items", "options");
+				AddOption (optionPair[0], optionPair[1]);
+			}
 		}
 		
 		public void AddSeparator ()
