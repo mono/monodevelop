@@ -1,3 +1,8 @@
+2009-09-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpAmbience.cs: fixed c# ambience for nested types
+	  (they work a bit different now).
+
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/ResolveVisitor.cs: Made a better fix for the explicit

@@ -383,7 +383,7 @@ namespace MonoDevelop.CSharpBinding
 					name = Format (NormalizeTypeName (instantiatedType == null ? type.Name : instantiatedType.UninstantiatedType.Name));
 			}
 			int parameterCount = type.TypeParameters.Count;
-			if (instantiatedType != null && type.DeclaringType == null) 
+			if (instantiatedType != null) 
 				parameterCount = instantiatedType.GenericParameters.Count;
 			
 			
