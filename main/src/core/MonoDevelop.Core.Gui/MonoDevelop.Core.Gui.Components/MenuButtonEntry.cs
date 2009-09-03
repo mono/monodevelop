@@ -70,7 +70,7 @@ namespace MonoDevelop.Core.Gui.Components
 			
 			if (entry.Parent == null)
 				PackStart (entry, true, true, 0);
-			if (entry.Parent == null)
+			if (button.Parent == null)
 				PackStart (button, false, false, 6);
 			
 			ActionCommand cmd = new ActionCommand ("InsertOption", "InsertOption", null);
@@ -121,7 +121,7 @@ namespace MonoDevelop.Core.Gui.Components
 		{
 			var menu = manager.CreateMenu (entrySet);
 			
-			//FIXME: taken from MonoDevelop.Components.MenuButton. should share this.//make sure the button looks depressed
+			//FIXME: taken from MonoDevelop.Components.MenuButton. should share this.
 			
 			isOpen = true;
 			
