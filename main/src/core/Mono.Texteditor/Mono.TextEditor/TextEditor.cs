@@ -182,8 +182,6 @@ namespace Mono.TextEditor
 				AllocateWindowBuffer (this.Allocation);
 			if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
-				TextViewMargin.VAdjustmentValueChanged ();
-				this.Repaint ();
 				return;
 			}
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
@@ -208,11 +206,20 @@ namespace Mono.TextEditor
 			                          0, from, 
 			                          0, to, 
 			                          Allocation.Width, Allocation.Height - from - to);
+			
+			
 			if (delta > 0) {
+				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+				                        buffer, 0, 0, 0, 0,
+				                        Allocation.Width, Allocation.Height - delta);
 				RepaintArea (0, Allocation.Height - delta, Allocation.Width, delta);
 			} else {
+				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+				                        buffer, 0, delta, 0, delta,
+				                        Allocation.Width, Allocation.Height - delta);
 				RepaintArea (0, 0, Allocation.Width, -delta);
 			}
+			
 			Caret.IsVisible = true;
 			TextViewMargin.VAdjustmentValueChanged ();
 /*			
@@ -220,8 +227,8 @@ namespace Mono.TextEditor
 			                        buffer,
 			                        0, 0, 
 			                        0, 0, 
-			                        Allocation.Width, Allocation.Height);*/
-			Document.CommitLineUpdate (Caret.Line);
+			                        Allocation.Width, Allocation.Height);
+			Document.CommitLineUpdate (Caret.Line);*/
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
