@@ -520,24 +520,17 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Alignment" id="alignment1">
+          <widget class="Gtk.Alignment" id="contentsAlignment">
             <property name="MemberName" />
             <property name="Xalign">0</property>
             <property name="LeftPadding">24</property>
             <child>
-              <widget class="Gtk.Entry" id="mtouchArgsEntry">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="IsEditable">True</property>
-                <property name="InvisibleChar">●</property>
-              </widget>
+              <placeholder />
             </child>
           </widget>
           <packing>
             <property name="Position">1</property>
             <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>

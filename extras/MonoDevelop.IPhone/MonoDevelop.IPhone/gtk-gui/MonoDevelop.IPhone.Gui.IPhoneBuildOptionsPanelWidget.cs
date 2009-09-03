@@ -19,9 +19,7 @@ namespace MonoDevelop.IPhone.Gui {
         
         private Gtk.Label label1;
         
-        private Gtk.Alignment alignment1;
-        
-        private Gtk.Entry mtouchArgsEntry;
+        private Gtk.Alignment contentsAlignment;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -53,26 +51,16 @@ namespace MonoDevelop.IPhone.Gui {
             w2.Expand = false;
             w2.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.alignment1 = new Gtk.Alignment(0F, 0.5F, 1F, 1F);
-            this.alignment1.Name = "alignment1";
-            this.alignment1.LeftPadding = ((uint)(24));
-            // Container child alignment1.Gtk.Container+ContainerChild
-            this.mtouchArgsEntry = new Gtk.Entry();
-            this.mtouchArgsEntry.CanFocus = true;
-            this.mtouchArgsEntry.Name = "mtouchArgsEntry";
-            this.mtouchArgsEntry.IsEditable = true;
-            this.mtouchArgsEntry.InvisibleChar = '●';
-            this.alignment1.Add(this.mtouchArgsEntry);
-            this.vbox2.Add(this.alignment1);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.alignment1]));
-            w4.Position = 1;
-            w4.Expand = false;
-            w4.Fill = false;
+            this.contentsAlignment = new Gtk.Alignment(0F, 0.5F, 1F, 1F);
+            this.contentsAlignment.Name = "contentsAlignment";
+            this.contentsAlignment.LeftPadding = ((uint)(24));
+            this.vbox2.Add(this.contentsAlignment);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.vbox2[this.contentsAlignment]));
+            w3.Position = 1;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.label1.MnemonicWidget = this.mtouchArgsEntry;
             this.Hide();
         }
     }

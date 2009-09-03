@@ -27,6 +27,8 @@
 using System;
 using Gtk;
 using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.IPhone.Gui
 {
@@ -59,21 +61,37 @@ namespace MonoDevelop.IPhone.Gui
 	
 	partial class IPhoneBuildOptionsPanelWidget : Gtk.Bin
 	{
-
+		static string[,] menuOptions = new string[,] {
+			{GettextCatalog.GetString ("App _Bundle Directory"), "${AppBundleDir}"},
+			{GettextCatalog.GetString ("Target Path"), "${TargetPath}"},
+			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
+			{GettextCatalog.GetString ("Target Name"), "${TargetName}"},
+			{GettextCatalog.GetString ("Target Extension"), "${TargetExt}"},
+			{"-", ""},
+			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
+			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
+		};
+		
+		MenuButtonEntry mbe;
+		
 		public IPhoneBuildOptionsPanelWidget ()
 		{
 			this.Build ();
+			mbe = new MenuButtonEntry ();
+			contentsAlignment.Add (mbe);
+			mbe.AddOptions (menuOptions);
+			
 			this.ShowAll ();
 		}
 		
 		public void LoadPanelContents (IPhoneProjectConfiguration cfg)
 		{
-			mtouchArgsEntry.Text = cfg.ExtraMtouchArgs ?? "";
+			mbe.Entry.Text = cfg.ExtraMtouchArgs ?? "";
 		}
 		
 		public void StorePanelContents (IPhoneProjectConfiguration cfg)
 		{
-			cfg.ExtraMtouchArgs = NullIfEmpty (mtouchArgsEntry.Text);
+			cfg.ExtraMtouchArgs = NullIfEmpty (mbe.Entry.Text);
 		}
 		
 		string NullIfEmpty (string s)
