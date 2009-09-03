@@ -815,5 +815,19 @@ namespace Mono.TextEditor
 			return 0;
 		}
 		#endregion
+		
+		public void RaiseUpdateAdjustmentsRequested ()
+		{
+			OnUpdateAdjustmentsRequested (EventArgs.Empty);
+		}
+		
+		protected virtual void OnUpdateAdjustmentsRequested (EventArgs e)
+		{
+			EventHandler handler = this.UpdateAdjustmentsRequested;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler UpdateAdjustmentsRequested;
 	}
 }

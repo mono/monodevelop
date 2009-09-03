@@ -264,34 +264,26 @@ namespace Mono.TextEditor
 		{
 			textEditorData = new TextEditorData (doc);
 			doc.TextReplaced += OnDocumentStateChanged;
-			
+
 			textEditorData.CurrentMode = initialMode;
-			
+
 //			this.Events = EventMask.AllEventsMask;
-			this.Events = EventMask.PointerMotionMask | 
-			              EventMask.ButtonPressMask | 
-			              EventMask.ButtonReleaseMask | 
-			              EventMask.EnterNotifyMask | 
-			              EventMask.LeaveNotifyMask | 
-			              EventMask.VisibilityNotifyMask | 
-			              EventMask.FocusChangeMask | 
-			              EventMask.ScrollMask | 
-			              EventMask.KeyPressMask |
-			              EventMask.KeyReleaseMask;
+			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
 			this.DoubleBuffered = false;
 			this.AppPaintable = true;
 			base.CanFocus = true;
-			
+
 			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
 			foldMarkerMargin = new FoldMarkerMargin (this);
 			textViewMargin = new TextViewMargin (this);
-			
+
 			margins.Add (iconMargin);
 			margins.Add (gutterMargin);
 			margins.Add (foldMarkerMargin);
 			margins.Add (textViewMargin);
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged; 
+			this.textEditorData.UpdateAdjustmentsRequested += TextEditorDatahandleUpdateAdjustmentsRequested;
 			Document.DocumentUpdated += DocumentUpdatedHandler;
 			
 			this.textEditorData.Options = options ?? TextEditorOptions.DefaultOptions;
@@ -330,6 +322,11 @@ namespace Mono.TextEditor
 			using (Pixmap inv = new Pixmap (null, 1, 1, 1)) {
 				invisibleCursor = new Cursor (inv, inv, Gdk.Color.Zero, Gdk.Color.Zero, 0, 0);
 			}
+		}
+
+		void TextEditorDatahandleUpdateAdjustmentsRequested (object sender, EventArgs e)
+		{
+			SetAdjustments ();
 		}
 		
 		
@@ -1183,7 +1180,12 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-			
+		
+		internal void SetAdjustments ()
+		{
+			SetAdjustments (Allocation);
+		}
+		
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
 			if (this.textEditorData.VAdjustment != null) {

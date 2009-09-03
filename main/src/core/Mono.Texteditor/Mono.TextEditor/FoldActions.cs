@@ -88,6 +88,7 @@ namespace Mono.TextEditor
 			data.Document.RequestUpdate (new UpdateAll ());
 			data.Caret.MoveCaretBeforeFoldings ();
 			data.Document.CommitDocumentUpdate ();
+			data.RaiseUpdateAdjustmentsRequested ();
 		}
 	
 		/// <summary>
