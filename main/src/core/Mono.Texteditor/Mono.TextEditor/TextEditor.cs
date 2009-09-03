@@ -218,7 +218,6 @@ namespace Mono.TextEditor
 			}
 			Caret.IsVisible = true;
 			TextViewMargin.VAdjustmentValueChanged ();
-			OverpaintCaret (GdkWindow);
 			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
 			                        buffer,
 			                        0, 0, 
