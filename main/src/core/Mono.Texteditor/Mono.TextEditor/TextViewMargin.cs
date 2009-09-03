@@ -120,7 +120,7 @@ namespace Mono.TextEditor
 			base.cursor = xtermCursor;
 			Document.LineChanged += CheckLongestLine;
 			textEditor.HighlightSearchPatternChanged += delegate { selectedRegions.Clear (); };
-			textEditor.SelectionChanged += delegate { DisposeLayoutDict (); };
+//			textEditor.SelectionChanged += delegate { DisposeLayoutDict (); };
 			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
 				if (selectedRegions.Count == 0)
 					return;
@@ -523,19 +523,19 @@ namespace Mono.TextEditor
 		#region Layout cache
 		class LineDescriptor
 		{
-			int Offset {
+			public int Offset {
 				get;
 				set;
 			}
-			int Length {
+			public int Length {
 				get;
 				set;
 			}
-			int MarkerLength {
+			public int MarkerLength {
 				get;
 				set;
 			}
-			int SpanLength {
+			public int SpanLength {
 				get;
 				set;
 			}
@@ -552,7 +552,7 @@ namespace Mono.TextEditor
 			public bool Equals (LineSegment line, int offset, int length, out bool isInvalid)
 			{
 				isInvalid = MarkerLength != line.MarkerCount || SpanLength != (line.StartSpan == null ? 0 : line.StartSpan.Length);
-				return 				/*offset == Offset &&*/Length == length && !isInvalid;
+				return Length == length && !isInvalid;
 			}
 		}
 
@@ -562,17 +562,52 @@ namespace Mono.TextEditor
 				get;
 				set;
 			}
+			public int SelectionStart {
+				get;
+				set;
+			}
+			public int SelectionEnd {
+				get;
+				set;
+			}
 
-			public LayoutDescriptor (LineSegment line, int offset, int length, Pango.Layout layout) : base(line, offset, length)
+			public LayoutDescriptor (LineSegment line, int offset, int length, Pango.Layout layout, int selectionStart, int selectionEnd) : base(line, offset, length)
 			{
 				this.Layout = layout;
+				this.SelectionStart = selectionStart;
+				this.SelectionEnd = selectionEnd;
 			}
+			
+			public bool Equals (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, out bool isInvalid)
+			{
+				return base.Equals (line, offset, length, out isInvalid) && selectionStart == this.SelectionStart && selectionEnd == this.SelectionEnd;
+			}
+			
+			public override bool Equals (object obj)
+			{
+				if (obj == null)
+					return false;
+				if (ReferenceEquals (this, obj))
+					return true;
+				if (obj.GetType () != typeof(LayoutDescriptor))
+					return false;
+				Mono.TextEditor.TextViewMargin.LayoutDescriptor other = (Mono.TextEditor.TextViewMargin.LayoutDescriptor)obj;
+				return MarkerLength == other.MarkerLength && Offset == other.Offset && Length == other.Length && SpanLength == other.SpanLength  && SelectionStart == other.SelectionStart && SelectionEnd == other.SelectionEnd;
+			}
+
+			public override int GetHashCode ()
+			{
+				unchecked {
+					return SelectionStart.GetHashCode () ^ SelectionEnd.GetHashCode ();
+				}
+			}
+			
 		}
 
 		Dictionary<LineSegment, List<LayoutDescriptor>> layoutDict = new Dictionary<LineSegment, List<LayoutDescriptor>> ();
-		Pango.Layout GetCachedLayout (LineSegment line, int offset, int length, Action<Pango.Layout> createNew)
+		Pango.Layout GetCachedLayout (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, Action<Pango.Layout> createNew)
 		{
-			/*		List<LayoutDescriptor> list;
+			List<LayoutDescriptor> list;
 			if (!layoutDict.ContainsKey (line)) {
 				list = new List<LayoutDescriptor> ();
 				layoutDict[line] = list;
@@ -582,19 +617,23 @@ namespace Mono.TextEditor
 			for (int i = 0; i < list.Count; i++) {
 				LayoutDescriptor descriptor = list[i];
 				bool isInvalid;
-				if (descriptor.Equals (line, offset, length, out isInvalid))
+				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid)) {
 					return descriptor.Layout;
+				}
+				
 				if (isInvalid) {
 					descriptor.Layout.Dispose ();
 					list.RemoveAt (i);
 					i--;
 				}
-			}*/
+			}
+			
 			Pango.Layout layout = new Pango.Layout (textEditor.PangoContext);
 			createNew (layout);
-
-			LayoutDescriptor newDesrc = new LayoutDescriptor (line, offset, length, layout);
-//			list.Add (newDesrc);
+			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
+			selectionEnd = System.Math.Min (line.EndOffset + 1, selectionEnd);
+			LayoutDescriptor newDesrc = new LayoutDescriptor (line, offset, length, layout, selectionStart, selectionEnd);
+			list.Add (newDesrc);
 			return newDesrc.Layout;
 		}
 
@@ -711,7 +750,7 @@ namespace Mono.TextEditor
 
 		Pango.Layout CreateLinePartLayout (SyntaxMode mode, LineSegment line, int offset, int length, int selectionStart, int selectionEnd)
 		{
-			return GetCachedLayout (line, offset, length, delegate(Pango.Layout layout) {
+			return GetCachedLayout (line, offset, length, selectionStart, selectionEnd, delegate(Pango.Layout layout) {
 				layout.Alignment = Pango.Alignment.Left;
 				layout.FontDescription = textEditor.Options.Font;
 				StringBuilder textBuilder = new StringBuilder ();
