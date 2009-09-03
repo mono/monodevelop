@@ -176,9 +176,10 @@ namespace Mono.TextEditor
 			this.RepaintArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
 		}
 		
+		bool hasPaintedScrollingRedraw = false;
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
-			if (buffer == null) 
+			if (buffer == null)
 				AllocateWindowBuffer (this.Allocation);
 			if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
@@ -186,10 +187,11 @@ namespace Mono.TextEditor
 			}
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
 			oldVadjustment = this.textEditorData.VAdjustment.Value;
-			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
+			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || textViewMargin.inSelectionDrag) {
 				TextViewMargin.VAdjustmentValueChanged ();
 				lastCaretLine = DocumentLocation.Empty;
 				this.Repaint ();
+				hasPaintedScrollingRedraw = true;
 				return;
 			}
 			int from, to;
@@ -220,11 +222,11 @@ namespace Mono.TextEditor
 				                        Allocation.Width, Allocation.Height - delta);
 				RepaintArea (0, 0, Allocation.Width, -delta);
 			}
-			
 			Caret.IsVisible = true;
 			TextViewMargin.VAdjustmentValueChanged ();
 			lastCaretLine = DocumentLocation.Empty;
 			PaintCaret (GdkWindow);
+			hasPaintedScrollingRedraw = true;
 /*			
 			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
 			                        buffer,
@@ -364,63 +366,65 @@ namespace Mono.TextEditor
 			} else {
 				ClipboardActions.ClearPrimary ();
 			}
-				
 			// Handle redraw
-			Selection selection = Selection.Clone (MainSelection);
-			int startLine    = selection != null ? selection.Anchor.Line : -1;
-			int endLine      = selection != null ? selection.Lead.Line : -1;
-			int oldStartLine = oldSelection != null ? oldSelection.Anchor.Line : -1;
-			int oldEndLine   = oldSelection != null ? oldSelection.Lead.Line : -1;
-			if (SelectionMode == SelectionMode.Block) {
-				this.RedrawMarginLines (this.textViewMargin, 
-				                        System.Math.Min (System.Math.Min (oldStartLine, oldEndLine), System.Math.Min (startLine, endLine)),
-				                        System.Math.Max (System.Math.Max (oldStartLine, oldEndLine), System.Math.Max (startLine, endLine)));
-				oldSelection = selection;
-			} else {
-				if (endLine < 0 && startLine >=0)
-					endLine = Document.LineCount;
-				if (oldEndLine < 0 && oldStartLine >=0)
-					oldEndLine = Document.LineCount;
-				int from = oldEndLine, to = endLine;
-				if (selection != null && oldSelection != null) {
-					if (startLine != oldStartLine && endLine != oldEndLine) {
-						from = System.Math.Min (startLine, oldStartLine);
-						to   = System.Math.Max (endLine, oldEndLine);
-					} else if (startLine != oldStartLine) {
-						from = startLine;
-						to   = oldStartLine;
-					} else if (endLine != oldEndLine) {
-						from = endLine;
-						to   = oldEndLine;
-					} else if (startLine == oldStartLine && endLine == oldEndLine)  {
-						if (selection.Anchor == oldSelection.Anchor) {
-							this.RedrawMarginLine (this.textViewMargin, endLine);
-						} else if (selection.Lead == oldSelection.Lead) {
-							this.RedrawMarginLine (this.textViewMargin, startLine);
-						} else { // 3rd case - may happen when changed programmatically
-							this.RedrawMarginLine (this.textViewMargin, endLine);
-							this.RedrawMarginLine (this.textViewMargin, startLine);
-						}
-						from = to = -1;
-					}
-				} else {
-					if (selection == null) {
-						from = oldStartLine;
-						to = oldEndLine;
-					} else if (oldSelection == null) {
-						from = startLine;
-						to = endLine;
-					} 
-				}
-				
-				if (from >= 0 && to >= 0) {
-					oldSelection = selection;
+			if (!this.TextViewMargin.inSelectionDrag || !hasPaintedScrollingRedraw) {
+				Selection selection = Selection.Clone (MainSelection);
+				int startLine    = selection != null ? selection.Anchor.Line : -1;
+				int endLine      = selection != null ? selection.Lead.Line : -1;
+				int oldStartLine = oldSelection != null ? oldSelection.Anchor.Line : -1;
+				int oldEndLine   = oldSelection != null ? oldSelection.Lead.Line : -1;
+				if (SelectionMode == SelectionMode.Block) {
 					this.RedrawMarginLines (this.textViewMargin, 
-					                        System.Math.Max (0, System.Math.Min (from, to) - 1),
-					                        System.Math.Max (from, to));
+					                        System.Math.Min (System.Math.Min (oldStartLine, oldEndLine), System.Math.Min (startLine, endLine)),
+					                        System.Math.Max (System.Math.Max (oldStartLine, oldEndLine), System.Math.Max (startLine, endLine)));
+					oldSelection = selection;
+				} else {
+					if (endLine < 0 && startLine >=0)
+						endLine = Document.LineCount;
+					if (oldEndLine < 0 && oldStartLine >=0)
+						oldEndLine = Document.LineCount;
+					int from = oldEndLine, to = endLine;
+					if (selection != null && oldSelection != null) {
+						if (startLine != oldStartLine && endLine != oldEndLine) {
+							from = System.Math.Min (startLine, oldStartLine);
+							to   = System.Math.Max (endLine, oldEndLine);
+						} else if (startLine != oldStartLine) {
+							from = startLine;
+							to   = oldStartLine;
+						} else if (endLine != oldEndLine) {
+							from = endLine;
+							to   = oldEndLine;
+						} else if (startLine == oldStartLine && endLine == oldEndLine)  {
+							if (selection.Anchor == oldSelection.Anchor) {
+								this.RedrawMarginLine (this.textViewMargin, endLine);
+							} else if (selection.Lead == oldSelection.Lead) {
+								this.RedrawMarginLine (this.textViewMargin, startLine);
+							} else { // 3rd case - may happen when changed programmatically
+								this.RedrawMarginLine (this.textViewMargin, endLine);
+								this.RedrawMarginLine (this.textViewMargin, startLine);
+							}
+							from = to = -1;
+						}
+					} else {
+						if (selection == null) {
+							from = oldStartLine;
+							to = oldEndLine;
+						} else if (oldSelection == null) {
+							from = startLine;
+							to = endLine;
+						} 
+					}
+					
+					if (from >= 0 && to >= 0) {
+						oldSelection = selection;
+						this.RedrawMarginLines (this.textViewMargin, 
+						                        System.Math.Max (0, System.Math.Min (from, to) - 1),
+						                        System.Math.Max (from, to));
+					}
 				}
+			} else {
+				oldSelection = Selection.Clone (MainSelection);
 			}
-			
 			OnSelectionChanged (EventArgs.Empty);
 		}
 		
@@ -1208,6 +1212,7 @@ namespace Mono.TextEditor
 		
 		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area)
 		{
+			hasPaintedScrollingRedraw = false;
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
 			int firstLine = (int)(this.textEditorData.VAdjustment.Value / LineHeight);

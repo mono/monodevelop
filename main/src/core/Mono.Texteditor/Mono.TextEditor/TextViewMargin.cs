@@ -1282,7 +1282,6 @@ namespace Mono.TextEditor
 		protected internal override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
-
 			inSelectionDrag = false;
 			inDrag = false;
 			Selection selection = textEditor.MainSelection;
@@ -1388,11 +1387,11 @@ namespace Mono.TextEditor
 
 		protected internal override void MouseReleased (MarginMouseEventArgs args)
 		{
-			if (inDrag)
-				Caret.Location = clickLocation;
 			if (!inSelectionDrag)
 				textEditor.ClearSelection ();
 			inSelectionDrag = false;
+			if (inDrag)
+				Caret.Location = clickLocation;
 			base.MouseReleased (args);
 		}
 
