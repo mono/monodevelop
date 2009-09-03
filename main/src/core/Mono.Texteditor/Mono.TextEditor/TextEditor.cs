@@ -583,6 +583,19 @@ namespace Mono.TextEditor
 				this.RepaintArea (margin.XOffset, 0, margin.Width,  this.Allocation.Height);
 			}
 		}
+		
+		internal void RedrawMarginLine (Margin margin, int logicalLine)
+		{
+			lock (disposeLock) {
+				if (isDisposed)
+					return;
+				this.RepaintArea (margin.XOffset, 
+				                  Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value, 
+				                  margin.Width, 
+				                  LineHeight);
+			}
+		}
+		
 		internal void RedrawLine (int logicalLine)
 		{
 			lock (disposeLock) {
@@ -1088,8 +1101,10 @@ namespace Mono.TextEditor
 		
 		protected override void OnMapped ()
 		{
-			if (buffer == null) 
+			if (buffer == null) {
 				AllocateWindowBuffer (this.Allocation);
+				Repaint ();
+			}
 			base.OnMapped (); 
 		}
 
@@ -1250,7 +1265,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void RepaintArea (int x, int y, int width, int height)
+		public void RepaintArea (int x, int y, int width, int height)
 		{
 			if (this.buffer == null)
 				return;

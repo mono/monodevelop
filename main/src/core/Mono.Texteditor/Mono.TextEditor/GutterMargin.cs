@@ -44,6 +44,13 @@ namespace Mono.TextEditor
 			layout = new Pango.Layout (editor.PangoContext);
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.RightPtr);
 			this.editor.Document.LineChanged += UpdateWidth;
+			this.editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
+		}
+
+		void EditorCarethandlePositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			editor.RedrawMarginLine (this, e.Location.Line);
+			editor.RedrawMarginLine (this, this.editor.Caret.Line);
 		}
 		
 		void CalculateWidth ()
@@ -152,7 +159,6 @@ namespace Mono.TextEditor
 		
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
-			
 			Gdk.Rectangle drawArea = new Rectangle (x, y, Width, editor.LineHeight);
 			win.DrawRectangle (lineNumberBgGC, true, drawArea);
 			if (line < editor.Document.LineCount) {
