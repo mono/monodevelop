@@ -10,8 +10,10 @@ namespace Mono.TextEditor
 				return anchor;
 			}
 			set {
-				anchor = value;
-				OnChanged ();
+				if (anchor != value) {
+					anchor = value;
+					OnChanged ();
+				}
 			}
 		}
 		
@@ -21,8 +23,10 @@ namespace Mono.TextEditor
 				return lead;
 			}
 			set {
-				lead = value;
-				OnChanged ();
+				if (lead != value) {
+					lead = value;
+					OnChanged ();
+				}
 			}
 		}
 		
