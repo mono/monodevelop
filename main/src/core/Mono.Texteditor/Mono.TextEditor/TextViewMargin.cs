@@ -1007,7 +1007,7 @@ namespace Mono.TextEditor
 			}
 
 			xPos += width;
-
+			layout.Dispose ();
 			// --- new renderer end
 
 			// -- old renderer
