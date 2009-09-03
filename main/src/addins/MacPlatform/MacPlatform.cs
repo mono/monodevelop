@@ -51,7 +51,7 @@ namespace MonoDevelop.Platform
 			mimemap = new Dictionary<string, string> ();
 			LoadMimeMap ();
 			
-			CheckGtkVersion (2, 14, 7);
+			CheckGtkVersion (2, 17, 9);
 		}
 		
 		//Mac GTK+ is unstable, even between micro releases

@@ -1,3 +1,9 @@
+2009-09-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs: Bump GTK+ requirement to 2.17.9 to require
+	  client-side windows, which greatly reduces rendering
+	  glitches.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MacPlatform.csproj: Updated dependencies. We now depend on
