@@ -123,12 +123,10 @@ namespace Mono.TextEditor
 
 		public static void SelectAll (TextEditorData data)
 		{
-			data.Caret.AutoScrollToCaret = false;
 			data.Caret.PreserveSelection = true;
 			CaretMoveActions.ToDocumentEnd (data);
 			data.MainSelection = new Selection (new DocumentLocation (0, 0), data.Caret.Location);
 			data.Caret.PreserveSelection = false;
-			data.Caret.AutoScrollToCaret = true;
 		}
 		
 		

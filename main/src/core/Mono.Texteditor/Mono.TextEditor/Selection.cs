@@ -92,6 +92,25 @@ namespace Mono.TextEditor
 			return data.Document.LocationToOffset (Lead);
 		}
 		
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			if (obj.GetType () != typeof(Selection))
+				return false;
+			Mono.TextEditor.Selection other = (Mono.TextEditor.Selection)obj;
+			return Anchor == other.Anchor && Lead == other.Lead;
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return Anchor.GetHashCode () ^ Lead.GetHashCode ();
+			}
+		}
+		
 		public override string ToString ()
 		{
 			return string.Format("[Selection: Anchor={0}, Lead={1}, MinLine={2}, MaxLine={3}, SelectionMode={4}]", Anchor, Lead, MinLine, MaxLine, SelectionMode);

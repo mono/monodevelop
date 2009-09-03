@@ -421,13 +421,17 @@ namespace Mono.TextEditor
 				return mainSelection;
 			}
 			set {
-				mainSelection = value;
-				if (mainSelection != null) {
-					mainSelection.Changed += delegate {
-						OnSelectionChanged (EventArgs.Empty);
-					};
+				if (mainSelection == null && value == null)
+					return;
+				if (mainSelection == null && value != null || mainSelection != null && value == null || !mainSelection.Equals (value)) {
+					mainSelection = value;
+					if (mainSelection != null) {
+						mainSelection.Changed += delegate {
+							OnSelectionChanged (EventArgs.Empty);
+						};
+					}
+					OnSelectionChanged (EventArgs.Empty);
 				}
-				OnSelectionChanged (EventArgs.Empty);
 			}
 		}
 		
@@ -618,6 +622,8 @@ namespace Mono.TextEditor
 		public event EventHandler SelectionChanged;
 		protected virtual void OnSelectionChanged (EventArgs args)
 		{
+//			Console.WriteLine ("----");
+//			Console.WriteLine (Environment.StackTrace);
 			if (SelectionChanged != null) 
 				SelectionChanged (this, args);
 		}

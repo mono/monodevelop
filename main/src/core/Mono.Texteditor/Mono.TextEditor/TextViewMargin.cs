@@ -1302,11 +1302,7 @@ namespace Mono.TextEditor
 					int nextColumn = this.textEditor.GetTextEditorData ().GetNextVirtualColumn (clickLocation.Line, clickLocation.Column);
 					clickLocation.Column = nextColumn;
 				}
-
-				if (!textEditor.IsSomethingSelected) {
-					textEditor.MainSelection = new Selection (clickLocation, clickLocation);
-				}
-
+				
 				int offset = Document.LocationToOffset (clickLocation);
 				if (offset < 0) {
 					textEditor.RunAction (CaretMoveActions.ToDocumentEnd);
