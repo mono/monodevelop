@@ -156,10 +156,7 @@ namespace MonoDevelop.IPhone
 				foreach (string asm in proj.GetReferencedAssemblies (slnConf))
 					args.AppendFormat (" -r=\"{0}\"", asm);
 				
-				if (!String.IsNullOrEmpty (conf.ExtraMtouchArgs)) {
-					args.Append (" ");
-					args.Append (conf.ExtraMtouchArgs);
-				}
+				IPhoneBuildExtension.AppendExtrasMtouchArgs (args, proj, conf);
 				
 				args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
 				

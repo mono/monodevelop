@@ -91,20 +91,7 @@ namespace MonoDevelop.IPhone
 				foreach (string asm in proj.GetReferencedAssemblies (configuration))
 					args.AppendFormat (" -r=\"{0}\"", asm);
 				
-				if (!String.IsNullOrEmpty (conf.ExtraMtouchArgs)) {
-					args.Append (" ");
-					var customTags = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase) {
-						{ "projectdir", proj.BaseDirectory },
-						{ "solutiondir", proj.ParentSolution.BaseDirectory },
-						{ "appbundledir", conf.AppDirectory },
-						{ "targetpath", conf.CompiledOutputName },
-						{ "targetdir", conf.CompiledOutputName.ParentDirectory },
-						{ "targetname", conf.CompiledOutputName.FileName },
-						{ "targetext", conf.CompiledOutputName.Extension },
-					};
-					string mtExtraArgs = StringParserService.Parse (conf.ExtraMtouchArgs, customTags);
-					args.Append (mtExtraArgs);
-				}
+				AppendExtrasMtouchArgs (args, proj, conf);
 				
 				args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
 				
@@ -172,6 +159,25 @@ namespace MonoDevelop.IPhone
 			//TODO: create/update the xcode project
 			return result;
 		}
+
+		static internal void AppendExtrasMtouchArgs (StringBuilder args, IPhoneProject proj, IPhoneProjectConfiguration conf)
+		{
+			if (!String.IsNullOrEmpty (conf.ExtraMtouchArgs)) {
+				args.Append (" ");
+				var customTags = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase) {
+					{ "projectdir", proj.BaseDirectory },
+					{ "solutiondir", proj.ParentSolution.BaseDirectory },
+					{ "appbundledir", conf.AppDirectory },
+					{ "targetpath", conf.CompiledOutputName },
+					{ "targetdir", conf.CompiledOutputName.ParentDirectory },
+					{ "targetname", conf.CompiledOutputName.FileName },
+					{ "targetext", conf.CompiledOutputName.Extension },
+				};
+				string mtExtraArgs = StringParserService.Parse (conf.ExtraMtouchArgs, customTags);
+				args.Append (mtExtraArgs);
+			}
+		}
+
 		
 		BuildResult UpdateInfoPlist (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf, ProjectFile template)
 		{

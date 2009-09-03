@@ -1,5 +1,13 @@
 2009-09-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneBuildExtension.cs: Extract a method for the mtouch
+	  extra args substitution.
+
+	* IPhoneCommands.cs: Subst vars in the mtouch extra args
+	  value.
+
+2009-09-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Only enable deploy/debug commands while
 	  not building.
 
