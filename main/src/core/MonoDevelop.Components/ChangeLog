@@ -1,3 +1,11 @@
+2009-09-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.DockToolbars/DockToolbar.cs:
+	* MonoDevelop.Components.DockToolbars/DockToolbarPanel.cs:
+	  Detect changes in the size of custom controls in the
+	  toolbar, and reposition the toolbars accordingly. Fixes bug
+	  #500926 - Toolbar docking shows wrong tooltips.
+
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ChangeLog: Forgot to attribute the patch.

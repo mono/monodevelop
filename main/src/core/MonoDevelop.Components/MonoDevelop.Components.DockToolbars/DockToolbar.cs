@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using Gtk;
 using Gdk;
 
@@ -56,6 +57,8 @@ namespace MonoDevelop.Components.DockToolbars
 		int defaultSize;
 		int defaultHeight;
 		bool gotSize = false;
+		bool gettingSize;
+		Dictionary<Gtk.Widget,int> calculatedSizes = new Dictionary<Gtk.Widget, int> ();
 		
 		public DockToolbar (string id, string title)
 		{
@@ -144,6 +147,9 @@ namespace MonoDevelop.Components.DockToolbars
 			set { row = value; }
 		}
 		
+		/// <summary>
+		/// The current offset of the toolbar
+		/// </summary>
 		internal int DockOffset {
 			get { return offset; }
 			set { offset = value; }
@@ -154,6 +160,10 @@ namespace MonoDevelop.Components.DockToolbars
 			set { shiftOffset = value; }
 		}
 		
+		/// <summary>
+		/// The ideal offset of the toolbar. It may not be the real offset if the
+		/// toolbar has been forced to move to make room for other toolbars
+		/// </summary>
 		internal int AnchorOffset {
 			get { return anchorOffset; }
 			set { anchorOffset = value; }
@@ -178,6 +188,7 @@ namespace MonoDevelop.Components.DockToolbars
 			// Calculates the real size of the toolbar. ShowArrow=false is
 			// needed, since SizeRequest reports 0 size requested if not.
 			
+			gettingSize = true;
 			bool olda = ShowArrow;
 			ShowArrow = false;
 			Requisition r = SizeRequest ();
@@ -189,9 +200,20 @@ namespace MonoDevelop.Components.DockToolbars
 				defaultSize = r.Height;
 				defaultHeight = r.Width;
 			}
+		
+			calculatedSizes.Clear ();
+			foreach (Widget w in Children) {
+				if (!w.Visible)
+					continue;
+				if (Orientation == Orientation.Horizontal)
+					calculatedSizes [w] = w.Allocation.Width;
+				else
+					calculatedSizes [w] = w.Allocation.Height;
+			}
 			
 			ShowArrow = olda;
 			gotSize = true;
+			gettingSize = false;
 		}
 		
 		internal bool CanDockTo (DockToolbarPanel panel)
@@ -249,6 +271,17 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		    return true;
 		}
+		
+		bool firstRealized;
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			if (!firstRealized) {
+				OnItemChange (null, null);
+				firstRealized = true;
+			}
+		}
+
 
 		internal void ResetSize ()
 		{
@@ -318,18 +351,35 @@ namespace MonoDevelop.Components.DockToolbars
 			gotSize = false;
 			if (DefaultSizeChanged != null)
 				DefaultSizeChanged (this, EventArgs.Empty);
-			w.Shown += new EventHandler (OnItemChange);
-			w.Hidden += new EventHandler (OnItemChange);
+			w.Shown += OnItemChange;
+			w.Hidden += OnItemChange;
+			w.SizeAllocated += OnItemSizeChange;
 		}
-		
+
 		protected override void OnRemoved (Widget w)
 		{
 			base.OnRemoved (w);
 			gotSize = false;
 			if (DefaultSizeChanged != null)
 				DefaultSizeChanged (this, EventArgs.Empty);
-			w.Shown -= new EventHandler (OnItemChange);
-			w.Hidden -= new EventHandler (OnItemChange);
+			w.Shown -= OnItemChange;
+			w.Hidden -= OnItemChange;
+			w.SizeAllocated -= OnItemSizeChange;
+		}
+		
+		void OnItemSizeChange (object o, SizeAllocatedArgs args)
+		{
+			if (gettingSize || !gotSize)
+				return;
+			int os;
+			if (calculatedSizes.TryGetValue ((Gtk.Widget) o, out os)) {
+				int ns = (Orientation == Orientation.Horizontal ? args.Allocation.Width : args.Allocation.Height);
+				if (os != ns) {
+					Gtk.Application.Invoke (delegate {
+						OnItemChange (null, null);
+					});
+				}
+			}
 		}
 		
 		void OnItemChange (object o, EventArgs args)

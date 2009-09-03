@@ -113,7 +113,6 @@ namespace MonoDevelop.Components.DockToolbars
 			bar.AnchorOffset = offset;
 			SortBars ();
 			UpdateRowSizes (bar.DockRow);
-			PackBars ();
 			EnableAnimation (ea);
 		}
 		
@@ -623,7 +622,8 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		void OnBarSizeChanged (object s, EventArgs e)
 		{
-			UpdateRowSizes (((DockToolbar)s).DockRow);
+			if (IsRealized)
+				UpdateRowSizes (((DockToolbar)s).DockRow);
 		}
 		
 		void UpdateRowSizes (int row)
@@ -660,11 +660,16 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		int PackRow (int sn)
 		{
+			// The 'sn' parameter is the index if the first toolbar of the row.
+			// It returns the index of the first toolbar of the next row
+			
 			int n = sn;
 			int row = ((DockToolbar)bars[n]).DockRow;
 			int lastx = 0;
 			int gaps = 0;
-
+			
+			// Calculates the free space in the row
+			
 			while (n < bars.Count) {
 				DockToolbar bar = (DockToolbar) bars [n];
 				if (bar.DockRow != row) break;
