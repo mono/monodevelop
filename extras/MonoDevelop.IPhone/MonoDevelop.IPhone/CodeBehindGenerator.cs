@@ -170,23 +170,11 @@ namespace MonoDevelop.IPhone
 					}
 					
 					//create the action method and add it
-					bool isPartial;
-					var meth = CreateEventMethod (provider, actionGroup.Key, senderType, out isPartial);
-					if (isPartial) {
-						type.Members.Add (meth);
-					}
-					else {
-						var actionStubWriter = new StringWriter ();
-						try {
-							provider.GenerateCodeFromMember (meth, actionStubWriter, generatorOptions);
-							actionStubWriter.WriteLine ();
-							type.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
-						} catch {
-							actionStubWriter = null;
-							break;
-						} finally {
-							actionStubWriter.Dispose ();
-						}
+					StringWriter actionStubWriter = null;
+					GenerateAction (type, actionGroup.Key, senderType, provider, generatorOptions, ref actionStubWriter);
+					if (actionStubWriter != null) {
+						type.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
+						actionStubWriter.Dispose ();
 					}
 				}
 				
@@ -242,27 +230,7 @@ namespace MonoDevelop.IPhone
 						if (clsDesc.Actions != null) {
 							StringWriter actionStubWriter = null;
 							foreach (KeyValuePair<object,object> action in clsDesc.Actions.Values) {
-								bool isPartial;
-								//FIXME: can we strongly type this?
-								var meth = CreateEventMethod (provider, (string)action.Key,
-								                              new CodeTypeReference ("MonoTouch.Foundation.NSObject"),
-								                              out isPartial);
-								if (isPartial) {
-									type.Members.Add (meth);
-								} else {
-									if (actionStubWriter == null) {
-										actionStubWriter = new StringWriter ();
-										actionStubWriter.WriteLine ("Action method stubs:");
-										actionStubWriter.WriteLine ();
-									}
-									try {
-										provider.GenerateCodeFromMember (meth, actionStubWriter, generatorOptions);
-										actionStubWriter.WriteLine ();
-									} catch {
-										actionStubWriter = null;
-										break;
-									}
-								}
+								GenerateAction (type, (string)action.Key, new CodeTypeReference ("MonoTouch.Foundation.NSObject"), provider, generatorOptions, ref actionStubWriter);
 							}
 							if (actionStubWriter != null) {
 								type.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
@@ -275,6 +243,37 @@ namespace MonoDevelop.IPhone
 				}
 			}
 		}
+
+		static void GenerateAction (CodeTypeDeclaration type, string name, CodeTypeReference senderType, CodeDomProvider provider,
+		                            CodeGeneratorOptions generatorOptions, ref StringWriter actionStubWriter)
+		{	
+			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
+				type.Members.Add (new CodeSnippetTypeMember ("[MonoTouch.Foundation.Export(\"" + name + "\")]"));
+				type.Members.Add (new CodeSnippetTypeMember (
+					String.Format ("partial void {1} ({2} sender);\n",
+					               name, provider.CreateValidIdentifier (name.TrimEnd (':')), senderType.BaseType)));
+				return;
+			}
+			
+			var meth = CreateEventMethod (name, senderType);
+			
+			bool actionStubWriterCreated = false;
+			if (actionStubWriter == null) {
+				actionStubWriterCreated = true;
+				actionStubWriter = new StringWriter ();
+				actionStubWriter.WriteLine ("Action method stubs:");
+				actionStubWriter.WriteLine ();
+			}
+			try {
+				provider.GenerateCodeFromMember (meth, actionStubWriter, generatorOptions);
+				actionStubWriter.WriteLine ();
+			} catch {
+				//clear the header if generation failed
+				if (actionStubWriterCreated)
+					actionStubWriter = null;
+			}
+		}
+
 		
 		static string GetTypeName (string ibType)
 		{
@@ -316,19 +315,11 @@ namespace MonoDevelop.IPhone
 			return prop;
 		}
 		
-		public static CodeTypeMember CreateEventMethod (CodeDomProvider provider, string name, CodeTypeReference senderType, out bool isPartial)
+		public static CodeTypeMember CreateEventMethod (string name, CodeTypeReference senderType)
 		{
-			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
-				isPartial = true;
-				return new CodeSnippetTypeMember (
-					String.Format ("[MonoTouch.Foundation.Export(\"{0}\")]partial void {1} ({2} sender);\n",
-					               name, provider.CreateValidIdentifier (name.TrimEnd (':')), senderType.BaseType));
-			}
-			
-			isPartial = false;
 			var meth = new CodeMemberMethod () {
 				Name = name.TrimEnd (':'),
-				ReturnType = new CodeTypeReference ("partial void"),
+				ReturnType = new CodeTypeReference (typeof (void)),
 			};
 			meth.Parameters.Add (
 				new CodeParameterDeclarationExpression () {
