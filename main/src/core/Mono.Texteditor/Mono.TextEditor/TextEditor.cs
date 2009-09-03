@@ -1138,6 +1138,7 @@ namespace Mono.TextEditor
 				Repaint ();
 			}
 			base.OnMapped (); 
+			this.Repaint ();
 		}
 
 		protected override void OnUnmapped ()
@@ -1309,11 +1310,14 @@ namespace Mono.TextEditor
 			if (height < 0 || width < 0) 
 				return;
 			RenderMargins (this.buffer, new Gdk.Rectangle (x, y, width, height));
-			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-			                        buffer,
-			                        x, y, x, y,
-			                        width, height);
-			PaintCaret (GdkWindow);
+			if (GdkWindow.IsViewable)
+			{
+				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+				                        buffer,
+				                        x, y, x, y,
+				                        width, height);
+				PaintCaret (GdkWindow);
+			}
 		}
 		
 		public void Repaint ()
@@ -1321,11 +1325,14 @@ namespace Mono.TextEditor
 			if (this.buffer == null)
 				return;
 			RenderMargins (this.buffer, new Gdk.Rectangle (0, 0, this.Allocation.Width, this.Allocation.Height));
-			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-			                        buffer,
-			                        0, 0, 0, 0,
-			                        this.Allocation.Width, this.Allocation.Height);
-			PaintCaret (GdkWindow);
+			if (GdkWindow.IsViewable)
+			{
+				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+			                        	buffer,
+				                        0, 0, 0, 0,
+				                        this.Allocation.Width, this.Allocation.Height);
+				PaintCaret (GdkWindow);
+			}
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
