@@ -51,7 +51,7 @@ namespace MonoDevelop.IPhone
 			info.Visible = proj != null;
 			if (proj != null) {
 				var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				info.Enabled = conf.Platform == IPhoneProject.PLAT_IPHONE && File.Exists (conf.NativeExe);
+				info.Enabled = conf != null && conf.Platform == IPhoneProject.PLAT_IPHONE && File.Exists (conf.NativeExe);
 			} else {
 				info.Enabled = false;
 			}
@@ -97,11 +97,11 @@ namespace MonoDevelop.IPhone
 		protected override void Update (MonoDevelop.Components.Commands.CommandInfo info)
 		{
 			var proj = DefaultUploadToDeviceHandler.GetActiveProject ();
+			info.Visible = proj != null;
+			
 			if (proj != null) {
 				var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				info.Enabled = conf.Platform == IPhoneProject.PLAT_IPHONE;
-			} else {
-				info.Enabled = false;
+				info.Enabled = conf != null;
 			}
 		}
 		

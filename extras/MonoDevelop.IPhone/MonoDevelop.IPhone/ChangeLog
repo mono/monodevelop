@@ -1,5 +1,11 @@
 2009-09-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Enable the "debug in xcode" command for
+	  the sim. Disable commands if there isn't a mappable
+	  configuration for the active sln configuration.
+
+2009-09-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Substitute variables into the extra
 	  mtouch args. Fixes "Bug 535455 - Add ability to specify
 	  $ProjectLocation in additional mtouch arguments".
