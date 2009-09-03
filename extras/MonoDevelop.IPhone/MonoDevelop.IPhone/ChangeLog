@@ -1,5 +1,10 @@
 2009-09-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Build before uploading, if build before
+	  run pref is enabled.
+
+2009-09-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Enable the "debug in xcode" command for
 	  the sim. Disable commands if there isn't a mappable
 	  configuration for the active sln configuration.

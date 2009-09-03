@@ -51,7 +51,7 @@ namespace MonoDevelop.IPhone
 			info.Visible = proj != null;
 			if (proj != null) {
 				var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				info.Enabled = conf != null && conf.Platform == IPhoneProject.PLAT_IPHONE && File.Exists (conf.NativeExe);
+				info.Enabled = conf != null && conf.Platform == IPhoneProject.PLAT_IPHONE;
 			} else {
 				info.Enabled = false;
 			}
@@ -62,8 +62,21 @@ namespace MonoDevelop.IPhone
 			var proj = GetActiveProject ();
 			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			
-			string mtouchPath = GetMtouchPath (proj);
+			if (!IdeApp.Preferences.BuildBeforeExecuting) {
+				Upload (proj, conf);
+				return;
+			}
 			
+			IdeApp.ProjectOperations.Build (proj).Completed += delegate (IAsyncOperation op) {
+				if (!op.Success || (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings))
+					return;
+				Upload (proj, conf);
+			}; 
+		}
+		
+		void Upload (IPhoneProject proj, IPhoneProjectConfiguration conf)
+		{
+			string mtouchPath = GetMtouchPath (proj);
 			var console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
 				GettextCatalog.GetString ("Deploy to Device"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
 			console.Log.WriteLine (String.Format ("{0} -installdev=\"{1}\"", mtouchPath, conf.AppDirectory));
