@@ -1090,6 +1090,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Caret.MoveCaretBeforeFoldings ();
 			Document.RequestUpdate (new UpdateAll ());
 			Document.CommitDocumentUpdate ();
+			widget.TextEditor.GetTextEditorData ().RaiseUpdateAdjustmentsRequested ();
 		}
 		
 		public void ToggleAllFoldings ()
@@ -1108,6 +1109,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Caret.MoveCaretBeforeFoldings ();
 			Document.RequestUpdate (new UpdateAll ());
 			Document.CommitDocumentUpdate ();
+			widget.TextEditor.GetTextEditorData ().RaiseUpdateAdjustmentsRequested ();
 		}
 		
 		public void ToggleFolding ()

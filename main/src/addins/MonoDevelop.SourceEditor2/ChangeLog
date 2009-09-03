@@ -1,3 +1,8 @@
+2009-09-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fold actions
+	  now re calculate the vertical scrollbar.
+
 2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor.addin.xml: Insert the text editor
