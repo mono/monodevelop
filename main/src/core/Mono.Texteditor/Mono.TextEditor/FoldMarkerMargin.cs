@@ -62,8 +62,7 @@ namespace Mono.TextEditor
 				segment.IsFolded = !segment.IsFolded; 
 			}
 			editor.Caret.MoveCaretBeforeFoldings ();
-			editor.Repaint = true;
-			editor.QueueDraw ();
+			editor.Repaint ();
 		}
 		
 		internal protected override void MouseHover (MarginMouseEventArgs args)

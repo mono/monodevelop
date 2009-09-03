@@ -52,8 +52,7 @@ namespace Mono.TextEditor
 	{
 		public override void Update (TextEditor editor)
 		{
-			editor.QueueDraw ();
-			editor.Repaint = true;
+			editor.Repaint ();
 		}
 	}
 	

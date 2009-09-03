@@ -157,7 +157,6 @@ namespace Mono.TextEditor
 		
 		void DisposeBgBuffer ()
 		{
-			this.repaint = true;
 			buffer = buffer.Kill ();
 			flipBuffer = flipBuffer.Kill ();
 		}
@@ -174,25 +173,24 @@ namespace Mono.TextEditor
 		void HAdjustmentValueChanged (object sender, EventArgs args)
 		{
 //			VAdjustmentValueChanged (sender, args);
-			this.repaint = true;
-			this.QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
+			this.RepaintArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
 		}
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
-			repaint = true;
-//				this.QueueDraw ();
-//				return;
 			if (buffer == null) 
 				AllocateWindowBuffer (this.Allocation);
 			if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
+				TextViewMargin.VAdjustmentValueChanged ();
+				this.Repaint ();
 				return;
 			}
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
 			oldVadjustment = this.textEditorData.VAdjustment.Value;
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
-				this.QueueDraw ();
+				TextViewMargin.VAdjustmentValueChanged ();
+				this.Repaint ();
 				return;
 			}
 			int from, to;
@@ -203,7 +201,6 @@ namespace Mono.TextEditor
 				from = 0;
 				to   = -delta;
 			}
-			
 			DoFlipBuffer ();
 			Caret.IsVisible = false;
 			this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
@@ -212,17 +209,18 @@ namespace Mono.TextEditor
 			                          0, to, 
 			                          Allocation.Width, Allocation.Height - from - to);
 			if (delta > 0) {
-				RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta));
+				RepaintArea (0, Allocation.Height - delta, Allocation.Width, delta);
 			} else {
-				RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta));
+				RepaintArea (0, 0, Allocation.Width, -delta);
 			}
 			Caret.IsVisible = true;
 			TextViewMargin.VAdjustmentValueChanged ();
+/*			
 			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
 			                        buffer,
 			                        0, 0, 
 			                        0, 0, 
-			                        Allocation.Width, Allocation.Height);
+			                        Allocation.Width, Allocation.Height);*/
 			Document.CommitLineUpdate (Caret.Line);
 		}
 		
@@ -579,26 +577,23 @@ namespace Mono.TextEditor
 		
 		internal void RedrawMargin (Margin margin)
 		{
-			repaint = true;
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
-				this.QueueDrawArea (margin.XOffset, 0, margin.Width,  this.Allocation.Height);
+				this.RepaintArea (margin.XOffset, 0, margin.Width,  this.Allocation.Height);
 			}
 		}
 		internal void RedrawLine (int logicalLine)
 		{
-			repaint = true;
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
-				this.QueueDrawArea (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
+				this.RepaintArea (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
 			}
 		}
 		
 		internal void RedrawPosition (int logicalLine, int logicalColumn)
 		{
-			repaint = true;
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
@@ -609,7 +604,6 @@ namespace Mono.TextEditor
 		
 		internal void RedrawLines (int start, int end)
 		{
-			repaint = true;
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
@@ -619,17 +613,16 @@ namespace Mono.TextEditor
 				if (end < 0)
 					end = Document.LineCount - 1;
 				int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
-				this.QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
+				this.RepaintArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
 			}
 		}
 		
 		public void RedrawFromLine (int logicalLine)
 		{
-			repaint = true;
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
-				this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
+				this.RepaintArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
 			}
 		}
 		
@@ -1090,6 +1083,7 @@ namespace Mono.TextEditor
 				AllocateWindowBuffer (allocation);
 			SetAdjustments (allocation);
 			base.OnSizeAllocated (allocation);
+			Repaint ();
 		}
 		
 		protected override void OnMapped ()
@@ -1109,13 +1103,13 @@ namespace Mono.TextEditor
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			repaint = true;
 			HideTooltip ();
 			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
 				if (evnt.Direction == ScrollDirection.Down)
 					Options.ZoomIn ();
 				else 
 					Options.ZoomOut ();
+				this.Repaint ();
 				return true;
 			}
 			return base.OnScrollEvent (evnt); 
@@ -1144,7 +1138,6 @@ namespace Mono.TextEditor
 			
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
-			repaint = true;
 			if (this.textEditorData.VAdjustment != null) {
 				int maxY = (Document.LogicalToVisualLine (Document.LineCount - 1) + 5) * this.LineHeight;
 				this.textEditorData.VAdjustment.SetBounds (0, 
@@ -1247,15 +1240,6 @@ namespace Mono.TextEditor
 		}*/
 		
 		double oldVadjustment = 0;
-		bool repaint = true;
-		internal bool Repaint {
-			get {
-				return repaint;
-			}
-			set {
-				repaint = true;
-			}
-		}
 		
 		void UpdateAdjustments ()
 		{
@@ -1266,6 +1250,30 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		void RepaintArea (int x, int y, int width, int height)
+		{
+			if (this.buffer == null)
+				return;
+			RenderMargins (this.buffer, new Gdk.Rectangle (x, y, width, height));
+			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+			                        buffer,
+			                        x, y, x, y,
+			                        width, height);
+			PaintCaret (GdkWindow);
+		}
+		
+		public void Repaint ()
+		{
+			if (this.buffer == null)
+				return;
+			RenderMargins (this.buffer, new Gdk.Rectangle (0, 0, this.Allocation.Width, this.Allocation.Height));
+			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+			                        buffer,
+			                        0, 0, 0, 0,
+			                        this.Allocation.Width, this.Allocation.Height);
+			PaintCaret (GdkWindow);
+		}
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)
@@ -1273,13 +1281,6 @@ namespace Mono.TextEditor
 			
 			lock (disposeLock) {
 				UpdateAdjustments ();
-				
-				//RenderMargins (e.Window, e.Area);
-				
-				if (repaint) {
-					RenderMargins (this.buffer, e.Area);
-					repaint = false;
-				}
 				
 				e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
 				                       buffer,
@@ -1295,7 +1296,6 @@ namespace Mono.TextEditor
 			textViewMargin.DrawCaret (drawable);
 		}
 		
-	
 		#region TextEditorData functions
 		public Mono.TextEditor.Highlighting.Style ColorStyle {
 			get {
