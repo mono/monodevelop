@@ -1,3 +1,10 @@
+2009-09-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomType.cs: Overworked nested type
+	  instantiation (Bug 536111 - Nested generic types should not
+	  show <> on code completion when inner generic type is the
+	  same)
+
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:

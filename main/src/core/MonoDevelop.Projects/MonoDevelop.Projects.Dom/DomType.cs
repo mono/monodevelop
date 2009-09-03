@@ -664,16 +664,37 @@ namespace MonoDevelop.Projects.Dom
 		static void CreateInstantiatedSubtypes (InstantiatedType result, IType curType, IList<IReturnType> genericArguments)
 		{
 			foreach (IType innerType in curType.InnerTypes) {
-				InstantiatedType innerInstantiatedType = (InstantiatedType)CreateInstantiatedGenericTypeInternal (innerType, genericArguments);
+				
+				List<IReturnType> newArguments = new List<IReturnType> ();
+				List<int> removeInheritedArguments = new List<int> ();
+				for (int i = 0; i < innerType.TypeParameters.Count; i++) {
+					ITypeParameter curParameter = innerType.TypeParameters[i];
+					bool found = false;
+					for (int j = 0; j < curType.TypeParameters.Count; j++) {
+						if (curType.TypeParameters[j].Name == curParameter.Name) {
+							removeInheritedArguments.Add (newArguments.Count);
+							newArguments.Add (genericArguments[j]);
+							found = true;
+							break;
+						}
+					}
+					if (!found)
+						newArguments.Add (new DomReturnType (curParameter.Name));
+				}
+				
+				InstantiatedType innerInstantiatedType = (InstantiatedType)CreateInstantiatedGenericTypeInternal (innerType, newArguments);
 				for (int i = 0, j = 0; i < innerInstantiatedType.TypeParameters.Count && j < innerInstantiatedType.TypeParameters.Count; i++, j++) {
-					if (curType.TypeParameters[i].Name != innerInstantiatedType.TypeParameters[j].Name) {
+					if (curType.TypeParameters[i].Name == innerInstantiatedType.TypeParameters[j].Name) {
 						innerInstantiatedType.typeParameters.RemoveAt (j);
 						j--;
 					}
 				}
 				
 				result.Add (innerInstantiatedType);
-				CreateInstantiatedSubtypes (innerInstantiatedType, innerType, genericArguments);
+				CreateInstantiatedSubtypes (innerInstantiatedType, innerType, newArguments);
+				foreach (int i in removeInheritedArguments) {
+					newArguments.RemoveAt (i);
+				}
 			}
 		}
 		
@@ -712,7 +733,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			public override IDomVisitable Visit (IReturnType type, IType typeToInstantiate)
 			{
-				DomReturnType copyFrom = (DomReturnType) type;
+				DomReturnType copyFrom = (DomReturnType) type; 
 				string decoratedName = copyFrom.DecoratedFullName;
 				IReturnType result = LookupReturnType (decoratedName, type, typeToInstantiate);
 				IType curType = currentType;
