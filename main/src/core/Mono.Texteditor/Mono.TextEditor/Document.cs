@@ -1274,6 +1274,7 @@ namespace Mono.TextEditor
 				bracketMatcher = value;
 			}
 		}
+
 		
 		int SearchMatchingBracketForward (int offset, int bracket)
 		{
@@ -1333,7 +1334,12 @@ namespace Mono.TextEditor
 			}
 		}
 		#endregion
-	}
+
+		public bool IsInUndo {
+				get {
+					return isInUndo;
+				}
+			}	}
 	
 	public delegate bool ReadOnlyCheckDelegate (int line);
 }

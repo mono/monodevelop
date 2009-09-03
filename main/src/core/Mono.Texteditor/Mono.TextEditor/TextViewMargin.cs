@@ -242,6 +242,8 @@ namespace Mono.TextEditor
 
 		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
+			if (Document.IsInUndo)
+				return;
 			int offset = Caret.Offset - 1;
 			if (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset)))
 				offset++;
