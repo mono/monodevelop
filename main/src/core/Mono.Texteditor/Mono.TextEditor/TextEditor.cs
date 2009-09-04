@@ -178,6 +178,7 @@ namespace Mono.TextEditor
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
+			lastCaretLine = DocumentLocation.Empty;
 			if (buffer == null)
 				AllocateWindowBuffer (this.Allocation);
 			textViewMargin.VAdjustmentValueChanged ();
@@ -220,7 +221,7 @@ namespace Mono.TextEditor
 			                        0, 0, 
 			                        0, 0, 
 			                        Allocation.Width, Allocation.Height);
-			Document.CommitLineUpdate (Caret.Line);
+			PaintCaret (GdkWindow);
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
