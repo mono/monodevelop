@@ -632,8 +632,10 @@ namespace Mono.TextEditor
 		Dictionary<LineSegment, LayoutDescriptor> layoutDict = new Dictionary<LineSegment, LayoutDescriptor> ();
 		LayoutWrapper GetCachedLayout (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, Action<LayoutWrapper> createNew)
 		{
+			bool containsPreedit = offset <= textEditor.preeditOffset && textEditor.preeditOffset <= offset + length;
+			
 			LayoutDescriptor descriptor;
-			if (layoutDict.TryGetValue (line, out descriptor)) {
+			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
 				bool isInvalid;
 				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid))
 					return descriptor.Layout;
@@ -646,7 +648,8 @@ namespace Mono.TextEditor
 			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
 			selectionEnd = System.Math.Min (line.EndOffset + 1, selectionEnd);
 			descriptor = new LayoutDescriptor (line, offset, length, wrapper, selectionStart, selectionEnd);
-			layoutDict[line] = descriptor;
+			if (!containsPreedit)
+				layoutDict[line] = descriptor;
 			return wrapper;
 		}
 
@@ -811,7 +814,7 @@ namespace Mono.TextEditor
 				wrapper.Layout.Alignment = Pango.Alignment.Left;
 				wrapper.Layout.FontDescription = textEditor.Options.Font;
 				wrapper.Layout.Tabs = tabArray;
-				
+
 				StringBuilder textBuilder = new StringBuilder ();
 				Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
