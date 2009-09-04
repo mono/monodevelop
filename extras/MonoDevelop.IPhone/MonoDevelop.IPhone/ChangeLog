@@ -1,5 +1,9 @@
 2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Fix build.
+
+2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Use an output pad for generating Xcode
 	  project.
 

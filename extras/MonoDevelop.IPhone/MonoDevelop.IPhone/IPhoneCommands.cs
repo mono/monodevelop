@@ -151,8 +151,8 @@ namespace MonoDevelop.IPhone
 			args.AppendFormat ("-xcode=\"{0}\"", xcodeDir);
 			foreach (ProjectFile pf in proj.Files) {
 				if (pf.BuildAction == BuildAction.Content || pf.BuildAction == BuildAction.Page) {
-					
-					args.AppendFormat (" -res=\"{0}\",\"{1}\"", pf.FilePath, pf.ProjectVirtualPath);
+					string rel = pf.IsExternalToProject? pf.FilePath.FileName : (string)pf.RelativePath;
+					args.AppendFormat (" -res=\"{0}\",\"{1}\"", pf.FilePath, rel);
 				}
 			}
 			
