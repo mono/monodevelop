@@ -763,7 +763,12 @@ namespace Mono.TextEditor
 			}
 			return base.OnButtonPressEvent (e);
 		}
-		
+	/*	protected override bool OnWidgetEvent (Event evnt)
+		{
+			Console.WriteLine (evnt.Type);
+			return base.OnWidgetEvent (evnt);
+		}*/
+
 		Margin GetMarginAtX (int x, out int startingPos)
 		{
 			int curX = 0;
@@ -922,7 +927,6 @@ namespace Mono.TextEditor
 			double x = e.X;
 			double y = e.Y;
 			Gdk.ModifierType mod = e.State;
-			
 			int startPos;
 			Margin margin = GetMarginAtX ((int)x, out startPos);
 			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)x, (int)y)) {
@@ -957,23 +961,25 @@ namespace Mono.TextEditor
 		{
 			mx = x - textViewMargin.XOffset;
 			my = y;
-			
+
 			UpdateTooltip (state);
-			
+
 			int startPos;
-			Margin margin = GetMarginAtX ((int)x, out startPos);
-			if (margin != null)
-				GdkWindow.Cursor = margin.MarginCursor;
-			
+			Margin margin;
 			if (textViewMargin.inSelectionDrag) {
-				margin   = textViewMargin;
+				margin = textViewMargin;
 				startPos = textViewMargin.XOffset;
+			} else {
+				margin = GetMarginAtX ((int)x, out startPos);
+				if (margin != null)
+					GdkWindow.Cursor = margin.MarginCursor;
 			}
+
 			if (oldMargin != margin && oldMargin != null)
 				oldMargin.MouseLeft ();
-			if (margin != null) {
+			
+			if (margin != null) 
 				margin.MouseHover (new MarginMouseEventArgs (this, mouseButtonPressed, (int)(x - startPos), (int)y, EventType.MotionNotify, state));
-			}
 			oldMargin = margin;
 		}
 
@@ -1323,7 +1329,6 @@ namespace Mono.TextEditor
 		{
 			if (this.isDisposed)
 				return true;
-
 			lock (disposeLock) {
 				UpdateAdjustments ();
 				lock (redrawList) {
