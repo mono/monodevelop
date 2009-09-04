@@ -465,6 +465,7 @@ namespace Mono.TextEditor
 		protected override void OnUnrealized ()
 		{
 			imContext.ClientWindow = null;
+			DisposeTooltip ();
 			if (showTipScheduled || hideTipScheduled) {
 				GLib.Source.Remove (tipTimeoutId);
 				showTipScheduled = hideTipScheduled = false;
@@ -1623,8 +1624,7 @@ namespace Mono.TextEditor
 				// Tip already being shown. Update it.
 				ShowTooltip (modifierState);
 			} else {
-				if (tooltipTimer != null)
-					tooltipTimer.Dispose ();
+				DisposeTooltip ();
 				tooltipTimer = new Timer (delegate { Application.Invoke (delegate { ShowTooltip (modifierState); }); }, null, TooltipTimer, System.Threading.Timeout.Infinite);
 
 				// for some reason this leaks memory:
@@ -1636,6 +1636,13 @@ namespace Mono.TextEditor
 				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, delegate { return ShowTooltip (modifierState); });*/
 			}
 		}
+
+		void DisposeTooltip ()
+		{
+			if (tooltipTimer != null)
+				tooltipTimer.Dispose ();
+		}
+
 		
 		bool ShowTooltip (Gdk.ModifierType modifierState)
 		{
@@ -1730,6 +1737,7 @@ namespace Mono.TextEditor
 		{
 			CancelScheduledHide ();
 			
+			DisposeTooltip ();
 			if (showTipScheduled) {
 				GLib.Source.Remove (tipTimeoutId);
 				showTipScheduled = false;

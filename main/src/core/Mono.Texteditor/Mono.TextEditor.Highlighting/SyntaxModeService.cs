@@ -265,10 +265,9 @@ namespace Mono.TextEditor.Highlighting
 				} while (iter.MoveNext ());
 				} catch (Exception) {}
 				if (doUpdate) {
-					GLib.Timeout.Add (0, delegate {
+					Gtk.Application.Invoke ( delegate {
 						doc.RequestUpdate (new UpdateAll ());
 						doc.CommitDocumentUpdate ();
-						return false;
 					});
 				}
 			}
