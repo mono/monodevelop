@@ -1448,7 +1448,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public Gtk.TargetEntry[] DragTargets { 
 			get {
-				return (Gtk.TargetEntry[])ClipboardActions.CopyOperation.TargetList (TextEditor.SelectionMode);
+				return (Gtk.TargetEntry[])ClipboardActions.CopyOperation.targetList;
 			}
 		}
 				
