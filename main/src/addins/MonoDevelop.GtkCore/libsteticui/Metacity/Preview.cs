@@ -86,7 +86,7 @@ namespace Stetic.Metacity {
 		{
 			if (theme == null) {
 				try {
-					Assembly assm = Assembly.Load ("gconf-sharp");
+					Assembly assm = Assembly.LoadWithPartialName ("gconf-sharp");
 					Type client_type = assm.GetType ("GConf.Client");
 					MethodInfo method = client_type.GetMethod ("Get", BindingFlags.Instance | BindingFlags.Public);
 					object client = Activator.CreateInstance (client_type, new object[] {

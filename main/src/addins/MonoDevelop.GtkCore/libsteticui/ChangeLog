@@ -1,3 +1,8 @@
+2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Metacity/Preview.cs: Use Assembly.LoadWithPartialName. It's
+	  obsolete, but at least it works.
+
 2009-08-27  Mike Krüger  <mkrueger@novell.com>
 
 	* Metacity/Preview.cs:
