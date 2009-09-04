@@ -395,7 +395,7 @@ namespace Mono.TextEditor
 				caretBlink = newCaretBlink;
 				Application.Invoke (delegate {
 					try {
-						Document.CommitLineUpdate (Caret.Line);
+						textEditor.RedrawMarginLine (this, Caret.Line);
 					} catch (Exception) {
 					}
 				});
