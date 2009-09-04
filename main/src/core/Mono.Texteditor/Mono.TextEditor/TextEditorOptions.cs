@@ -72,10 +72,10 @@ namespace Mono.TextEditor
 		public double Zoom {
 			get {
 				return zoom;
-			}
+					}
 			set {
 				zoom = value;
-				font = null;
+				DisposeFont ();
 				OnChanged (EventArgs.Empty);
 			}
 		}
@@ -314,12 +314,21 @@ namespace Mono.TextEditor
 			}
 			set {
 				if (fontName != value) {
-					font = null;
+					DisposeFont ();
 					fontName = !String.IsNullOrEmpty (value) ? value : DEFAULT_FONT;
 					OnChanged (EventArgs.Empty);
 				}
 			}
 		}
+
+		void DisposeFont ()
+		{
+			if (font != null) {
+				font = null;
+				font.Dispose ();
+			}
+		}
+
 		
 		public virtual bool EnableSyntaxHighlighting {
 			get {

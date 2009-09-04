@@ -57,7 +57,7 @@ namespace Mono.TextEditor
 			Clipboard clipboard = Clipboard.Get (CopyOperation.CLIPBOARD_ATOM);
 			operation.CopyData (data);
 			
-			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.TargetList (data.SelectionMode), operation.ClipboardGetFunc,
+			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.targetList, operation.ClipboardGetFunc,
 			                       operation.ClipboardClearFunc);
 		}
 	
@@ -245,13 +245,14 @@ namespace Mono.TextEditor
 				return rtf.ToString ();
 			}
 			
-			public static Gtk.TargetList TargetList (SelectionMode mode) 
+			public static Gtk.TargetList targetList;
+			
+			static CopyOperation ()
 			{
-				Gtk.TargetList list = new Gtk.TargetList ();
-				list.Add (RTF_ATOM, /* FLAGS */ 0, RichTextType);
-				list.Add (MD_ATOM, /* FLAGS */ 0, MonoTextType);
-				list.AddTextTargets (TextType);
-				return list;
+				targetList = new Gtk.TargetList ();
+				targetList.Add (RTF_ATOM, /* FLAGS */0, RichTextType);
+				targetList.Add (MD_ATOM, /* FLAGS */0, MonoTextType);
+				targetList.AddTextTargets (TextType);
 			}
 			
 			void CopyData (TextEditorData data, Selection selection)
@@ -341,7 +342,7 @@ namespace Mono.TextEditor
 		{
 			CopyOperation operation = new CopyOperation (data, data.MainSelection);
 			Clipboard clipboard = Clipboard.Get (CopyOperation.PRIMARYCLIPBOARD_ATOM);
-			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.TargetList (data.SelectionMode), operation.ClipboardGetFuncLazy,
+			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.targetList, operation.ClipboardGetFuncLazy,
 			                       operation.ClipboardClearFunc);
 		}
 		

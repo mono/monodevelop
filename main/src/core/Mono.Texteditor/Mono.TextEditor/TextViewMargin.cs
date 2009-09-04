@@ -141,22 +141,16 @@ namespace Mono.TextEditor
 		{
 			int startLine = (int)(textEditor.GetTextEditorData ().VAdjustment.Value / lineHeight);
 			int endLine = (int)(startLine + textEditor.GetTextEditorData ().VAdjustment.PageSize / lineHeight) + 1;
-
+//			Console.WriteLine (layoutDict.Count + "/" + chunkDict.Count);
 			foreach (LineSegment line in layoutDict.Keys) {
 				int curLine = Document.OffsetToLineNumber (line.Offset);
-				if (startLine - 5 >= curLine || endLine + 5 <= curLine)
+				if (startLine - 5 >= curLine || endLine + 5 <= curLine) {
 					linesToRemove.Add (line);
+				}
 			}
-			linesToRemove.ForEach (line => RemoveLayoutLine (line));
+			linesToRemove.ForEach (line => RemoveCachedLine (line));
 			linesToRemove.Clear ();
 
-			foreach (LineSegment line in chunkDict.Keys) {
-				int curLine = Document.OffsetToLineNumber (line.Offset);
-				if (startLine - 5 >= curLine || endLine + 5 <= curLine)
-					linesToRemove.Add (line);
-			}
-			linesToRemove.ForEach (line => chunkDict.Remove (line));
-			linesToRemove.Clear ();
 			ResetCaretBlink ();
 			caretBlink = true;
 		}
@@ -219,9 +213,8 @@ namespace Mono.TextEditor
 				textEditor.SetAdjustments (textEditor.Allocation);
 			}
 
-			chunkDict.Clear ();
 			if (layoutDict.ContainsKey (args.Line)) {
-				RemoveLayoutLine (args.Line);
+				RemoveCachedLine (args.Line);
 			}
 		}
 
@@ -549,19 +542,19 @@ namespace Mono.TextEditor
 		{
 			public int Offset {
 				get;
-				set;
+				private set;
 			}
 			public int Length {
 				get;
-				set;
+				private set;
 			}
 			public int MarkerLength {
 				get;
-				set;
+				private set;
 			}
 			public int SpanLength {
 				get;
-				set;
+				private set;
 			}
 
 			protected LineDescriptor (LineSegment line, int offset, int length)
@@ -576,30 +569,38 @@ namespace Mono.TextEditor
 			public bool Equals (LineSegment line, int offset, int length, out bool isInvalid)
 			{
 				isInvalid = MarkerLength != line.MarkerCount || SpanLength != (line.StartSpan == null ? 0 : line.StartSpan.Length);
-				return Length == length && !isInvalid;
+				return offset == Offset && Length == length && !isInvalid;
 			}
 		}
 
-		class LayoutDescriptor : LineDescriptor
+		class LayoutDescriptor : LineDescriptor, IDisposable
 		{
-			public Pango.Layout Layout {
+			public LayoutWrapper Layout {
 				get;
-				set;
+				private set;
 			}
 			public int SelectionStart {
 				get;
-				set;
+				private set;
 			}
 			public int SelectionEnd {
 				get;
-				set;
+				private set;
 			}
 
-			public LayoutDescriptor (LineSegment line, int offset, int length, Pango.Layout layout, int selectionStart, int selectionEnd) : base(line, offset, length)
+			public LayoutDescriptor (LineSegment line, int offset, int length, LayoutWrapper layout, int selectionStart, int selectionEnd) : base(line, offset, length)
 			{
 				this.Layout = layout;
 				this.SelectionStart = selectionStart;
 				this.SelectionEnd = selectionEnd;
+			}
+			
+			public void Dispose ()
+			{
+				if (Layout != null) {
+					Layout.Dispose ();
+					Layout = null;
+				}
 			}
 			
 			public bool Equals (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, out bool isInvalid)
@@ -628,56 +629,45 @@ namespace Mono.TextEditor
 			
 		}
 
-		Dictionary<LineSegment, List<LayoutDescriptor>> layoutDict = new Dictionary<LineSegment, List<LayoutDescriptor>> ();
+		Dictionary<LineSegment, LayoutDescriptor> layoutDict = new Dictionary<LineSegment, LayoutDescriptor> ();
 		LayoutWrapper GetCachedLayout (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, Action<LayoutWrapper> createNew)
 		{
-			/*		List<LayoutDescriptor> list;
-			if (!layoutDict.ContainsKey (line)) {
-				list = new List<LayoutDescriptor> ();
-				layoutDict[line] = list;
-			} else {
-				list = layoutDict[line];
-			}
-			for (int i = 0; i < list.Count; i++) {
-				LayoutDescriptor descriptor = list[i];
+			LayoutDescriptor descriptor;
+			if (layoutDict.TryGetValue (line, out descriptor)) {
 				bool isInvalid;
-				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid)) {
+				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid))
 					return descriptor.Layout;
-				}
-				
-				if (isInvalid) {
-					descriptor.Layout.Dispose ();
-					list.RemoveAt (i);
-					i--;
-				}
-			}*/
+				descriptor.Dispose ();
+				layoutDict.Remove (line);
+			}
 
 			LayoutWrapper wrapper = new LayoutWrapper (new Pango.Layout (textEditor.PangoContext));
 			createNew (wrapper);
+			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
+			selectionEnd = System.Math.Min (line.EndOffset + 1, selectionEnd);
+			descriptor = new LayoutDescriptor (line, offset, length, wrapper, selectionStart, selectionEnd);
+			layoutDict[line] = descriptor;
 			return wrapper;
-//			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
-//			selectionEnd = System.Math.Min (line.EndOffset + 1, selectionEnd);
-//			LayoutDescriptor newDesrc = new LayoutDescriptor (line, offset, length, layout, selectionStart, selectionEnd);
-//			list.Add (newDesrc);
-//			return newDesrc.Layout;
 		}
 
-		public void RemoveLayoutLine (LineSegment line)
+		public void RemoveCachedLine (LineSegment line)
 		{
-			List<LayoutDescriptor> list;
-			if (!layoutDict.TryGetValue (line, out list))
-				return;
-			foreach (LayoutDescriptor desrc in list)
-				desrc.Layout.Dispose ();
-			list.Clear ();
-			layoutDict.Remove (line);
+			LayoutDescriptor descriptor;
+			if (layoutDict.TryGetValue (line, out descriptor)) {
+				descriptor.Dispose ();
+				layoutDict.Remove (line);
+			}
+
+			ChunkDescriptor chunkDesriptor;
+			if (chunkDict.TryGetValue (line, out chunkDesriptor)) {
+				chunkDict.Remove (line);
+			}
 		}
 
 		internal void DisposeLayoutDict ()
 		{
-			foreach (List<LayoutDescriptor> list in layoutDict.Values) {
-				foreach (LayoutDescriptor desrc in list)
-					desrc.Layout.Dispose ();
+			foreach (LayoutDescriptor descr in layoutDict.Values) {
+				descr.Dispose ();
 			}
 			layoutDict.Clear ();
 		}
@@ -686,7 +676,7 @@ namespace Mono.TextEditor
 		{
 			public Chunk Chunk {
 				get;
-				set;
+				private set;
 			}
 
 			public ChunkDescriptor (LineSegment line, int offset, int length, Chunk chunk) : base(line, offset, length)
@@ -695,38 +685,32 @@ namespace Mono.TextEditor
 			}
 		}
 
-		Dictionary<LineSegment, List<ChunkDescriptor>> chunkDict = new Dictionary<LineSegment, List<ChunkDescriptor>> ();
+		Dictionary<LineSegment, ChunkDescriptor> chunkDict = new Dictionary<LineSegment, ChunkDescriptor> ();
 		Chunk GetCachedChunks (SyntaxMode mode, Document doc, Mono.TextEditor.Highlighting.Style style, LineSegment line, int offset, int length)
 		{
-			/*		List<ChunkDescriptor> list;
-			if (!chunkDict.ContainsKey (line)) {
-				list = new List<ChunkDescriptor> ();
-				chunkDict[line] = list;
-			} else {
-				list = chunkDict[line];
-			}
-			for (int i = 0; i < list.Count; i++) {
-				ChunkDescriptor descriptor = list[i];
+//			return mode.GetChunks (doc, style, line, offset, length);
+			ChunkDescriptor descriptor;
+			if (chunkDict.TryGetValue (line, out descriptor)) {
 				bool isInvalid;
 				if (descriptor.Equals (line, offset, length, out isInvalid))
 					return descriptor.Chunk;
-				if (isInvalid) {
-					list.RemoveAt (i);
-					i--;
-				}
+				chunkDict.Remove (line);
 			}
-			*/
-//			ChunkDescriptor newDesrc = new ChunkDescriptor (line, offset, length, mode.GetChunks (doc, style, line, offset, length));
-//			list.Add (newDesrc);
-//			return newDesrc.Chunk;
-			return mode.GetChunks (doc, style, line, offset, length);
+
+			Chunk chunk = mode.GetChunks (doc, style, line, offset, length);
+			descriptor = new ChunkDescriptor (line, offset, length, chunk);
+			chunkDict.Add (line, descriptor);
+			return chunk;
 		}
 
 		public void ForceInvalidateLine (int lineNr)
 		{
 			LineSegment line = Document.GetLine (lineNr);
-			if (line != null && layoutDict.ContainsKey (line))
+			LayoutDescriptor descriptor;
+			if (line != null && layoutDict.TryGetValue (line, out descriptor)) {
+				descriptor.Dispose ();
 				layoutDict.Remove (line);
+			}
 		}
 
 		delegate void HandleSelectionDelegate (int start, int end);
@@ -773,12 +757,14 @@ namespace Mono.TextEditor
 			curIndex = textIndex;
 			return byteIndex;
 		}
+		
 		class LayoutWrapper : IDisposable
 		{
 			public Pango.Layout Layout {
 				get;
-				set;
+				private set;
 			}
+			
 			
 			Pango.AttrList attrList;
 			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
@@ -811,6 +797,7 @@ namespace Mono.TextEditor
 					attrList.Dispose ();
 					attrList = null;
 				}
+
 				if (Layout != null) {
 					Layout.Dispose ();
 					Layout = null;
@@ -823,6 +810,8 @@ namespace Mono.TextEditor
 			return GetCachedLayout (line, offset, length, selectionStart, selectionEnd, delegate(LayoutWrapper wrapper) {
 				wrapper.Layout.Alignment = Pango.Alignment.Left;
 				wrapper.Layout.FontDescription = textEditor.Options.Font;
+				wrapper.Layout.Tabs = tabArray;
+				
 				StringBuilder textBuilder = new StringBuilder ();
 				Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
@@ -836,7 +825,6 @@ namespace Mono.TextEditor
 					lineText = lineText.Insert (textEditor.preeditOffset - offset, textEditor.preeditString);
 					preeditLength = (uint)textEditor.preeditString.Length;
 				}
-				wrapper.Layout.Tabs = tabArray;
 
 				int startOffset = offset, endOffset = offset + length;
 				uint curIndex = 0, byteIndex = 0;
@@ -1011,7 +999,7 @@ namespace Mono.TextEditor
 			if (DecorateLineBg != null)
 				DecorateLineBg (win, layout.Layout, offset, length, xPos, y, selectionStart, selectionEnd);
 
-//			if (drawText)
+			//			if (drawText)
 			win.DrawLayout (GetGC (ColorStyle.Default.Color), xPos, y, layout.Layout);
 
 			if (DecorateLineFg != null)
@@ -1043,101 +1031,10 @@ namespace Mono.TextEditor
 			}
 
 			xPos += width;
-			layout.Dispose ();
-			// --- new renderer end
-
-			// -- old renderer
-		}
-			/*
-			int visibleColumn = 0;
-			Chunk lastChunk = null;
-			ChunkStyle lastChunkStyle = null;
-			for (Chunk chunk = mode.GetChunks (Document, textEditor.ColorStyle, line, offset, length); (lastChunk != null || chunk != null); chunk = chunk != null ? chunk.Next : null) {
-				if (xPos >= maxX)
-					break;
-
-				ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
-				if (lastChunk == null) {
-					lastChunk = chunk;
-					lastChunkStyle = chunkStyle;
-					continue;
-				}
-				if (chunk != null && lastChunk.EndOffset == chunk.Offset && lastChunkStyle.Equals (chunkStyle) && chunk.Style == lastChunk.Style) {
-					// Merge together chunks with the same style
-					lastChunk.Length += chunk.Length;
-					continue;
-				}
-				
-				if (lastChunk.Contains (textEditor.preeditOffset)) {
-					DrawChunkPart (win, line, lastChunk, ref visibleColumn, ref xPos, y, lastChunk.Offset, textEditor.preeditOffset, selectionStart, selectionEnd);
-					DrawPreeditString (win, lastChunk.Style, ref xPos, y);
-					DrawChunkPart (win, line, lastChunk, ref visibleColumn, ref xPos, y, textEditor.preeditOffset, lastChunk.EndOffset, selectionStart, selectionEnd);
-				} else {
-					DrawChunkPart (win, line, lastChunk, ref visibleColumn, ref xPos, y, lastChunk.Offset, lastChunk.EndOffset, selectionStart, selectionEnd);
-				}
-				lastChunk = chunk;
-				lastChunkStyle = chunkStyle;
-			}
 			
-			if (textEditor.preeditOffset == offset + length) 
-				DrawPreeditString (win, lastChunk.Style, ref xPos, y);
-			*/
-			// --- old renderer end
-
-			//	if (Caret.Offset == offset + length) 
-			//		SetVisibleCaretPosition (win, ' ', xPos, y);
-
-				/*
-		StringBuilder wordBuilder = new StringBuilder ();
-		void OutputWordBuilder (Gdk.Drawable win, LineSegment line, bool selected, ChunkStyle style, ref int visibleColumn, ref int xPos, int y, int curOffset)
-		{
-			bool drawText = true;
-			bool drawBg   = true;
-			int oldxPos = xPos;
-			int startOffset = curOffset - wordBuilder.Length;
-			foreach (TextMarker marker in line.Markers)  {
-				IBackgroundMarker bgMarker = marker as IBackgroundMarker;
-				if (bgMarker == null) 
-					continue;
-				drawText &= bgMarker.DrawBackground (textEditor, win, selected, startOffset, curOffset, y, oldxPos, oldxPos + xPos, ref drawBg);
-			}
-			if (drawText) {
-				string text = wordBuilder.ToString ();
-				if (selected) {
-					DrawText (win, text, ColorStyle.Selection.Color, drawBg, ColorStyle.Selection.BackgroundColor, ref xPos, y);
-				} else {
-					ISegment firstSearch;
-					int offset = startOffset;
-					int s;
-					while ((firstSearch = GetFirstSearchResult (offset, curOffset)) != null) {
-						// Draw text before the search result (if any)
-						if (firstSearch.Offset > offset) {
-							s = offset - startOffset;
-							Gdk.Color bgc = UseDefaultBackgroundColor (style) ? defaultBgColor : style.BackgroundColor;
-							DrawText (win, text.Substring (s, firstSearch.Offset - offset), style.Color, drawBg, bgc, ref xPos, y);
-							offset += firstSearch.Offset - offset;
-						}
-						// Draw text within the search result
-						s = offset - startOffset;
-						int len = System.Math.Min (firstSearch.EndOffset - offset, text.Length - s);
-						if (len > 0)
-							DrawText (win, text.Substring (s, len), style.Color, drawBg, ColorStyle.SearchTextBg, ref xPos, y);
-						offset = System.Math.Max (firstSearch.EndOffset, offset + 1);
-					}
-					s = offset - startOffset;
-					if (s < wordBuilder.Length) {
-						Gdk.Color bgc = UseDefaultBackgroundColor (style) ? defaultBgColor : style.BackgroundColor;
-						DrawText (win, s > 0 ? text.Substring (s, wordBuilder.Length - s) : text, style.Color, drawBg, bgc, ref xPos, y);
-					}
-				}
-			}
-			foreach (TextMarker marker in line.Markers) {
-				marker.Draw (textEditor, win, selected, startOffset, curOffset, y, oldxPos, xPos);
-			}
-			visibleColumn += wordBuilder.Length;
-			wordBuilder.Length = 0;
 		}
-		*/
+
+		
 		ISegment GetFirstSearchResult (int startOffset, int endOffset)
 		{
 			if (startOffset < endOffset && this.selectedRegions.Count > 0) {
@@ -1151,164 +1048,12 @@ namespace Mono.TextEditor
 			return null;
 		}
 
-/*		bool IsSearchResultAt (int offset)
-		{
-			foreach (ISegment segment in this.selectedRegions) {
-				if (segment.Contains (offset))
-					return true;
-			}
-			return false;
-		}*/
-		
 		Pango.Weight DefaultWeight {
 			get { return textEditor.Options.Font.Weight; }
 		}
 		Pango.Style DefaultStyle {
 			get { return textEditor.Options.Font.Style; }
 		}
-		/*
-		void DrawStyledText (Gdk.Drawable win, LineSegment line, bool selected, Chunk chunk, ref int visibleColumn, ref int xPos, int y, int startOffset, int endOffset)
-		{
-			int caretOffset = Caret.Offset;
-			int drawCaretAt = -1;
-			wordBuilder.Length = 0;
-			ChunkStyle style = chunk.GetChunkStyle (ColorStyle);
-			
-			foreach (TextMarker marker in line.Markers)
-				style = marker.GetStyle (style);
-			UnderlineMarker underlineMarker = null;
-			if (style.Underline) {
-				underlineMarker = new UnderlineMarker (selected ? this.ColorStyle.Selection.Color : style.Color, 
-				                                       chunk.Offset - line.Offset, 
-				                                       chunk.EndOffset - line.Offset);
-				line.AddMarker (underlineMarker);
-			}
-			
-			textRenderer.Weight = style.GetWeight (DefaultWeight);
-			textRenderer.Style = style.GetStyle (DefaultStyle);
-			
-			for (int offset = startOffset; offset < endOffset; offset++) {
-				char ch = chunk.GetCharAt (Document, offset);
-				
-				if (textEditor.Options.HighlightMatchingBracket && offset == this.highlightBracketOffset && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0)) {
-					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
-					
-					bool drawText = true;
-					bool drawBg   = true;
-					foreach (TextMarker marker in line.Markers)  {
-						IBackgroundMarker bgMarker = marker as IBackgroundMarker;
-						if (bgMarker == null) 
-							continue;
-						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth, ref drawBg);
-					}
-					int width = this.charWidth;
-					if (drawText) {
-						int cWidth, cHeight, cAdv;
-						textRenderer.SetText (ch.ToString ());
-						textRenderer.GetPixelSize (out cWidth, out cHeight, out cAdv);
-						width = cWidth;
-						if (drawBg) {
-							Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos, y, cWidth - 1, cHeight - 1);
-							win.DrawRectangle (GetGC (selected ? this.ColorStyle.Selection.BackgroundColor : this.ColorStyle.BracketHighlightRectangle.BackgroundColor), true, bracketMatch);
-							win.DrawRectangle (GetGC (this.ColorStyle.BracketHighlightRectangle.Color), false, bracketMatch);
-						}
-						textRenderer.Color = selected ? ColorStyle.Selection.Color : style.Color;
-						textRenderer.DrawText (win, xPos, y);
-						width = cAdv;
-					}
-					foreach (TextMarker marker in line.Markers) {
-						marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
-					}
-					xPos += width;
-					visibleColumn++;
-				} else if (ch == ' ' && textEditor.Options.ShowSpaces) {
-					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
-					bool drawText = true;
-					bool drawBg   = true;
-					foreach (TextMarker marker in line.Markers)  {
-						IBackgroundMarker bgMarker = marker as IBackgroundMarker;
-						if (bgMarker == null) 
-							continue;
-						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth, ref drawBg);
-					}
-					if (drawText) {
-						if (drawBg) {
-							Gdk.Color bgc = GetBackgroundColor (offset, selected, style);
-							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, charWidth, LineHeight), bgc, false);
-						}
-						
-						if (textEditor.Options.ShowSpaces) 
-							DrawSpaceMarker (win, selected, xPos, y);
-						if (offset == caretOffset) 
-							SetVisibleCaretPosition (win, textEditor.Options.ShowSpaces ? spaceMarkerChar : ' ', xPos, y);
-					}
-					foreach (TextMarker marker in line.Markers) {
-						marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth);
-					}
-					xPos += this.charWidth;
-					visibleColumn++;
-				} else if (ch == '\t') {
-					OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, offset);
-					int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
-					int delta = (newColumn - visibleColumn) * CharWidth;
-					visibleColumn = newColumn;
-					bool drawText = true;
-					bool drawBg   = true;
-					foreach (TextMarker marker in line.Markers)  {
-						IBackgroundMarker bgMarker = marker as IBackgroundMarker;
-						if (bgMarker == null) 
-							continue;
-						drawText &= bgMarker.DrawBackground (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + charWidth, ref drawBg);
-					}
-					if (drawText) {
-						if (drawBg)
-							DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, delta, LineHeight), GetBackgroundColor (offset, selected, style), false);
-						if (textEditor.Options.ShowTabs) 
-							DrawTabMarker (win, selected, xPos, y);
-						if (offset == caretOffset) 
-							SetVisibleCaretPosition (win, textEditor.Options.ShowSpaces ? tabMarkerChar : ' ', xPos, y);
-					}
-					foreach (TextMarker marker in line.Markers) {
-						marker.Draw (textEditor, win, selected, offset, offset + 1, y, xPos, xPos + delta);
-					}
-					xPos += delta;
-				} else {
-					if (offset == caretOffset) {
-						textRenderer.SetText (wordBuilder.ToString ());
-						
-						int width, height, xadv;
-						textRenderer.GetPixelSize (out width, out height, out xadv);
-						
-						drawCaretAt = xPos + xadv;
-					}
-					wordBuilder.Append (ch);
-				}
-			}
-			
-			OutputWordBuilder (win, line, selected, style, ref visibleColumn, ref xPos, y, endOffset);
-			
-			textRenderer.Weight = DefaultWeight;
-			textRenderer.Style = DefaultStyle;
-			if (style.Underline) 
-				line.RemoveMarker (underlineMarker);
-						
-			if (drawCaretAt >= 0)
-				SetVisibleCaretPosition (win, Document.Contains (caretOffset) ? Document.GetCharAt (caretOffset) : ' ', drawCaretAt, y);
-		}*/
-
-/*		void DrawText (Gdk.Drawable win, string text, Gdk.Color foreColor, bool drawBg, Gdk.Color backgroundColor, ref int xPos, int y)
-		{
-			textRenderer.SetText (text);
-
-			int width, height, xadv;
-			textRenderer.GetPixelSize (out width, out height, out xadv);
-			if (drawBg)
-				DrawRectangleWithRuler (win, this.XOffset, new Gdk.Rectangle (xPos, y, width, height), backgroundColor, false);
-
-			textRenderer.Color = foreColor;
-			textRenderer.DrawText (win, xPos, y);
-			xPos += xadv;
-		}*/
 
 		void DrawEolMarker (Gdk.Drawable win, bool selected, int xPos, int y)
 		{
@@ -1338,21 +1083,7 @@ namespace Mono.TextEditor
 		{
 			return (((ulong)color.Red) << 32) | (((ulong)color.Green) << 16) | ((ulong)color.Blue);
 		}
-/*		bool UseDefaultBackgroundColor (ChunkStyle style)
-		{
-			return style.TransparentBackround || GetPixel (style.BackgroundColor) == GetPixel (ColorStyle.Default.BackgroundColor);
-		}*/
-	/*	Gdk.Color GetBackgroundColor (int offset, bool selected, ChunkStyle style)
-		{
-			if (selected)
-				return ColorStyle.Selection.BackgroundColor;
-			if (IsSearchResultAt (offset))
-				return ColorStyle.SearchTextBg;
-			if (UseDefaultBackgroundColor (style))
-				return defaultBgColor;
-			return style.BackgroundColor;
-		}*/
-
+		
 		public bool inSelectionDrag = false;
 		public bool inDrag = false;
 		public DocumentLocation clickLocation;
@@ -1652,7 +1383,9 @@ namespace Mono.TextEditor
 			layout.Alignment = Pango.Alignment.Left;
 			layout.FontDescription = textEditor.Options.Font;
 			StringBuilder textBuilder = new StringBuilder ();
-			for (Chunk chunk = GetCachedChunks (Document.SyntaxMode, Document, textEditor.ColorStyle, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk != null ? chunk.Next : null) {
+			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+			Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, line.Offset, line.EditableLength);
+			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 				textBuilder.Append (chunk.GetText (Document));
 			}
 			Pango.TabArray tabArray = new Pango.TabArray (10, true);
@@ -1677,9 +1410,9 @@ namespace Mono.TextEditor
 
 			int startOffset = line.Offset, endOffset = line.Offset + line.EditableLength;
 			uint curIndex = 0, byteIndex = 0;
-			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+			
 			uint oldEndIndex = 0;
-			for (Chunk chunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk != null ? chunk.Next : null) {
+			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 				ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
 
 				foreach (TextMarker marker in line.Markers)

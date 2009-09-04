@@ -178,8 +178,9 @@ namespace Mono.TextEditor
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
-			if (buffer == null) 
+			if (buffer == null)
 				AllocateWindowBuffer (this.Allocation);
+			textViewMargin.VAdjustmentValueChanged ();
 			if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 				return;
@@ -342,12 +343,11 @@ namespace Mono.TextEditor
 		Selection oldSelection = null;
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
+			ClipboardActions.ClearPrimary ();
 			if (IsSomethingSelected) {
 				ISegment selectionRange = MainSelection.GetSelectionRange (textEditorData);
 				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.Length)
 					ClipboardActions.CopyToPrimary (this.textEditorData);
-			} else {
-				ClipboardActions.ClearPrimary ();
 			}
 			// Handle redraw
 			Selection selection = Selection.Clone (MainSelection);
@@ -928,7 +928,7 @@ namespace Mono.TextEditor
 			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)x, (int)y)) {
 				dragContents = new ClipboardActions.CopyOperation ();
 				dragContents.CopyData (textEditorData);
-				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList (textEditorData.SelectionMode), DragAction.Copy | DragAction.Move, 1, e);
+				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.targetList, DragAction.Copy | DragAction.Move, 1, e);
 				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
 				Gtk.Drag.SetIconWidget (context, window, 0, 0);
 				selection = Selection.Clone (MainSelection);
