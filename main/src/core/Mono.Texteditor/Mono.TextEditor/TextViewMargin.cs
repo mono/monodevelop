@@ -633,7 +633,6 @@ namespace Mono.TextEditor
 		LayoutWrapper GetCachedLayout (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, Action<LayoutWrapper> createNew)
 		{
 			bool containsPreedit = offset <= textEditor.preeditOffset && textEditor.preeditOffset <= offset + length;
-			
 			LayoutDescriptor descriptor;
 			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
 				bool isInvalid;
@@ -644,6 +643,7 @@ namespace Mono.TextEditor
 			}
 
 			LayoutWrapper wrapper = new LayoutWrapper (new Pango.Layout (textEditor.PangoContext));
+			wrapper.IsUncached = containsPreedit;
 			createNew (wrapper);
 			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
 			selectionEnd = System.Math.Min (line.EndOffset + 1, selectionEnd);
@@ -768,6 +768,10 @@ namespace Mono.TextEditor
 				private set;
 			}
 			
+			public bool IsUncached {
+				get;
+				set;
+			}
 			
 			Pango.AttrList attrList;
 			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
@@ -780,6 +784,7 @@ namespace Mono.TextEditor
 			public LayoutWrapper (Pango.Layout layout)
 			{
 				this.Layout = layout;
+				this.IsUncached = false;
 			}
 			
 			public void SetAttributes ()
@@ -1034,7 +1039,8 @@ namespace Mono.TextEditor
 			}
 
 			xPos += width;
-			
+			if (layout.IsUncached)
+				layout.Dispose ();
 		}
 
 		
