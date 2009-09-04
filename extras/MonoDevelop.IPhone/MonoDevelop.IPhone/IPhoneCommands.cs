@@ -167,14 +167,10 @@ namespace MonoDevelop.IPhone
 			
 			string argStr = args.ToString ();
 			
-			LoggingService.LogInfo ("Generated Xcode project by invoking mtouch with the following args: " + argStr);
-			
-			ProcessWrapper pw = Runtime.ProcessService.StartProcess (mtouchPath, argStr, conf.OutputDirectory, outWriter, outWriter, delegate {
-				pw.WaitForOutput ();
-				if (pw.ExitCode != 0) {
-					MessageService.ShowError ("mtouch failed to export the Xcode project", outWriter.ToString ());
-				}
-			});
+			var console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				GettextCatalog.GetString ("Generate Xcode project"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
+			console.Log.WriteLine (mtouchPath + " " + argStr);
+			Runtime.ProcessService.StartConsoleProcess (mtouchPath, argStr, conf.OutputDirectory, console, null);
 		}
 	}
 }

@@ -1,5 +1,10 @@
 2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Use an output pad for generating Xcode
+	  project.
+
+2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Make launch in Xcode async.
 
 2009-09-03  Michael Hutchinson  <mhutchinson@novell.com>
