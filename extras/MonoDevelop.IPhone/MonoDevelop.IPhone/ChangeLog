@@ -1,3 +1,7 @@
+2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneCommands.cs: Make launch in Xcode async.
+
 2009-09-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneBuildExtension.cs: Extract a method for the mtouch

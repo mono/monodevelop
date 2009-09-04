@@ -121,56 +121,60 @@ namespace MonoDevelop.IPhone
 		protected override void Run ()
 		{
 			var proj = DefaultUploadToDeviceHandler.GetActiveProject ();
-			var slnConf =IdeApp.Workspace.ActiveConfiguration;
+			var slnConf = IdeApp.Workspace.ActiveConfiguration;
 			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (slnConf);
-			
-			string mtouchPath = DefaultUploadToDeviceHandler.GetMtouchPath (proj);
 			
 			IdeApp.ProjectOperations.Build (proj).Completed += delegate (IAsyncOperation op) {
 				if (!op.Success)
 					return;
-				
-				var outWriter= new StringWriter ();
-				var xcodeDir = conf.OutputDirectory.Combine ("XcodeProject");
-				
-				if (!Directory.Exists (xcodeDir)) {
-					try {
-						Directory.CreateDirectory (xcodeDir);
-					} catch (IOException ex) {
-						MessageService.ShowException (ex, "Failed to create directory '" + xcodeDir +"' for Xcode project");
-						return;
-					}
-				}
-				
-				var args = new System.Text.StringBuilder ();
-				args.AppendFormat ("-xcode=\"{0}\"", xcodeDir);
-				foreach (ProjectFile pf in proj.Files) {
-					if (pf.BuildAction == BuildAction.Content || pf.BuildAction == BuildAction.Page) {
-						string rel = pf.IsExternalToProject? pf.FilePath.FileName : (string)pf.RelativePath;
-						args.AppendFormat (" -res=\"{0}\",\"{1}\"", pf.FilePath, rel);
-					}
-				}
-				
-				args.AppendFormat (" -res=\"{0}\",\"Info.plist\"", conf.AppDirectory.Combine ("Info.plist"));
-				
-				foreach (string asm in proj.GetReferencedAssemblies (slnConf))
-					args.AppendFormat (" -r=\"{0}\"", asm);
-				
-				IPhoneBuildExtension.AppendExtrasMtouchArgs (args, proj, conf);
-				
-				args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
-				
-				string argStr = args.ToString ();
-				
-				LoggingService.LogInfo ("Generated Xcode project by invoking mtouch with the following args: " + argStr);
-				
-				using (ProcessWrapper pw = Runtime.ProcessService.StartProcess (mtouchPath, argStr, conf.OutputDirectory, outWriter, outWriter, null)) {
-					pw.WaitForOutput ();
-					if (pw.ExitCode != 0) {
-						MessageService.ShowError ("mtouch failed to export the Xcode project", outWriter.ToString ());
-					}
-				}
+				GenerateXCodeProject (proj, conf);
 			};
+		}
+		
+		void GenerateXCodeProject (IPhoneProject proj, IPhoneProjectConfiguration conf, string slnConf)
+		{
+			string mtouchPath = DefaultUploadToDeviceHandler.GetMtouchPath (proj);
+			
+			var outWriter= new StringWriter ();
+			var xcodeDir = conf.OutputDirectory.Combine ("XcodeProject");
+			
+			if (!Directory.Exists (xcodeDir)) {
+				try {
+					Directory.CreateDirectory (xcodeDir);
+				} catch (IOException ex) {
+					MessageService.ShowException (ex, "Failed to create directory '" + xcodeDir +"' for Xcode project");
+					return;
+				}
+			}
+			
+			var args = new System.Text.StringBuilder ();
+			args.AppendFormat ("-xcode=\"{0}\"", xcodeDir);
+			foreach (ProjectFile pf in proj.Files) {
+				if (pf.BuildAction == BuildAction.Content || pf.BuildAction == BuildAction.Page) {
+					
+					args.AppendFormat (" -res=\"{0}\",\"{1}\"", pf.FilePath, pf.ProjectVirtualPath);
+				}
+			}
+			
+			args.AppendFormat (" -res=\"{0}\",\"Info.plist\"", conf.AppDirectory.Combine ("Info.plist"));
+			
+			foreach (string asm in proj.GetReferencedAssemblies (slnConf))
+				args.AppendFormat (" -r=\"{0}\"", asm);
+			
+			IPhoneBuildExtension.AppendExtrasMtouchArgs (args, proj, conf);
+			
+			args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
+			
+			string argStr = args.ToString ();
+			
+			LoggingService.LogInfo ("Generated Xcode project by invoking mtouch with the following args: " + argStr);
+			
+			ProcessWrapper pw = Runtime.ProcessService.StartProcess (mtouchPath, argStr, conf.OutputDirectory, outWriter, outWriter, delegate {
+				pw.WaitForOutput ();
+				if (pw.ExitCode != 0) {
+					MessageService.ShowError ("mtouch failed to export the Xcode project", outWriter.ToString ());
+				}
+			});
 		}
 	}
 }
