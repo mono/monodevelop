@@ -127,7 +127,7 @@ namespace MonoDevelop.IPhone
 			IdeApp.ProjectOperations.Build (proj).Completed += delegate (IAsyncOperation op) {
 				if (!op.Success)
 					return;
-				GenerateXCodeProject (proj, conf);
+				GenerateXCodeProject (proj, conf, slnConf);
 			};
 		}
 		
@@ -135,9 +135,7 @@ namespace MonoDevelop.IPhone
 		{
 			string mtouchPath = DefaultUploadToDeviceHandler.GetMtouchPath (proj);
 			
-			var outWriter= new StringWriter ();
 			var xcodeDir = conf.OutputDirectory.Combine ("XcodeProject");
-			
 			if (!Directory.Exists (xcodeDir)) {
 				try {
 					Directory.CreateDirectory (xcodeDir);
@@ -162,7 +160,6 @@ namespace MonoDevelop.IPhone
 				args.AppendFormat (" -r=\"{0}\"", asm);
 			
 			IPhoneBuildExtension.AppendExtrasMtouchArgs (args, proj, conf);
-			
 			args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
 			
 			string argStr = args.ToString ();

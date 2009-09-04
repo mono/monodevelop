@@ -1,5 +1,9 @@
 2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Actually fix build.
+
+2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Fix build.
 
 2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
