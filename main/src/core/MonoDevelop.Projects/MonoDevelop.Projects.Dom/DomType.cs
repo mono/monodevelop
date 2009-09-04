@@ -664,13 +664,13 @@ namespace MonoDevelop.Projects.Dom
 		static void CreateInstantiatedSubtypes (InstantiatedType result, IType curType, IList<IReturnType> genericArguments)
 		{
 			foreach (IType innerType in curType.InnerTypes) {
-				
+
 				List<IReturnType> newArguments = new List<IReturnType> ();
 				List<int> removeInheritedArguments = new List<int> ();
 				for (int i = 0; i < innerType.TypeParameters.Count; i++) {
 					ITypeParameter curParameter = innerType.TypeParameters[i];
 					bool found = false;
-					for (int j = 0; j < curType.TypeParameters.Count; j++) {
+					for (int j = curType.TypeParameters.Count - 1; j >= 0 ; j--) {
 						if (curType.TypeParameters[j].Name == curParameter.Name) {
 							removeInheritedArguments.Add (newArguments.Count);
 							newArguments.Add (genericArguments[j]);
@@ -681,19 +681,20 @@ namespace MonoDevelop.Projects.Dom
 					if (!found)
 						newArguments.Add (new DomReturnType (curParameter.Name));
 				}
-				
+
 				InstantiatedType innerInstantiatedType = (InstantiatedType)CreateInstantiatedGenericTypeInternal (innerType, newArguments);
-				for (int i = 0, j = 0; i < innerInstantiatedType.TypeParameters.Count && j < innerInstantiatedType.TypeParameters.Count; i++, j++) {
+				for (int i = 0, j = 0; i < innerInstantiatedType.TypeParameters.Count && j < innerInstantiatedType.TypeParameters.Count; i++,j++) {
 					if (curType.TypeParameters[i].Name == innerInstantiatedType.TypeParameters[j].Name) {
 						innerInstantiatedType.typeParameters.RemoveAt (j);
 						j--;
 					}
 				}
-				
+
 				result.Add (innerInstantiatedType);
 				CreateInstantiatedSubtypes (innerInstantiatedType, innerType, newArguments);
 				foreach (int i in removeInheritedArguments) {
-					newArguments.RemoveAt (i);
+					if (i >= 0 && i < newArguments.Count)
+						newArguments.RemoveAt (i);
 				}
 			}
 		}

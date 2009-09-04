@@ -1,3 +1,8 @@
+2009-09-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomType.cs: fixed "Bug 529499 -
+	  error in text editor extension chain".
+
 2009-09-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: When copying an
