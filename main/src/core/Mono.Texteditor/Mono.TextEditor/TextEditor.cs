@@ -1616,18 +1616,24 @@ namespace Mono.TextEditor
 		public List<ITooltipProvider> TooltipProviders {
 			get { return tooltipProviders; }
 		}
-		
+		Timer tooltipTimer = null;
 		void UpdateTooltip (Gdk.ModifierType modifierState)
 		{
 			if (tipWindow != null) {
 				// Tip already being shown. Update it.
 				ShowTooltip (modifierState);
 			} else {
-				// Tip already scheduled. Reset the timer.
+				if (tooltipTimer != null)
+					tooltipTimer.Dispose ();
+				tooltipTimer = new Timer (delegate { Application.Invoke (delegate { ShowTooltip (modifierState); }); }, null, TooltipTimer, System.Threading.Timeout.Infinite);
+
+				// for some reason this leaks memory:
+/*				// Tip already scheduled. Reset the timer.
 				if (showTipScheduled)
 					GLib.Source.Remove (tipTimeoutId);
+				
 				showTipScheduled = true;
-				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, delegate { return ShowTooltip (modifierState); });
+				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, delegate { return ShowTooltip (modifierState); });*/
 			}
 		}
 		
