@@ -1,3 +1,8 @@
+2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/ISearchEngine.cs: Support case-insensitive
+	  search in the regex search.
+
 2009-09-04  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Fixed memory leak.

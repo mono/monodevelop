@@ -196,7 +196,10 @@ namespace Mono.TextEditor
 		public override void CompilePattern ()
 		{
 			try {
-				regex = new Regex (searchRequest.SearchPattern, RegexOptions.Compiled);
+				RegexOptions options = RegexOptions.Compiled;
+				if (!searchRequest.CaseSensitive)
+					options |= RegexOptions.IgnoreCase;
+				regex = new Regex (searchRequest.SearchPattern, options);
 			} catch (Exception) {
 				regex = null;
 			}
@@ -206,7 +209,10 @@ namespace Mono.TextEditor
 		{
 			error = "";
 			try {
-				Regex r = new Regex (searchRequest.SearchPattern, RegexOptions.Compiled);
+				RegexOptions options = RegexOptions.Compiled;
+				if (!searchRequest.CaseSensitive)
+					options |= RegexOptions.IgnoreCase;
+				Regex r = new Regex (searchRequest.SearchPattern, options);
 				return r != null;
 			} catch (Exception e) {
 				error = e.Message;
