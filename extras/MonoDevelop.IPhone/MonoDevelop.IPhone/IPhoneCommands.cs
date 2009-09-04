@@ -146,7 +146,7 @@ namespace MonoDevelop.IPhone
 			}
 			
 			var args = new System.Text.StringBuilder ();
-			args.AppendFormat ("-xcode=\"{0}\"", xcodeDir);
+			args.AppendFormat ("-xcode=\"{0}\" -v", xcodeDir);
 			foreach (ProjectFile pf in proj.Files) {
 				if (pf.BuildAction == BuildAction.Content || pf.BuildAction == BuildAction.Page) {
 					string rel = pf.IsExternalToProject? pf.FilePath.FileName : (string)pf.RelativePath;

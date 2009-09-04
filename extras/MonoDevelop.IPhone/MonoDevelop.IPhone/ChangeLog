@@ -1,5 +1,10 @@
 2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Run mtouch in verbose mode when exporting
+	  Xcode project.
+
+2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Actually fix build.
 
 2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
