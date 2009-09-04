@@ -31,9 +31,10 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class DefaultStyle : Style
 	{
+		ChunkStyle defaultStyle;
 		public override ChunkStyle Default {
 			get {
-				return new ChunkStyle (widget.Style.Text (StateType.Normal), widget.Style.Base (StateType.Normal));
+				return defaultStyle;
 			}
 		}
 		
@@ -43,9 +44,10 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		ChunkStyle lineNumberStyle;
 		public override ChunkStyle LineNumber {
 			get {
-				return new ChunkStyle (new Gdk.Color (172, 168, 153), widget.Style.Base (StateType.Normal));
+				return lineNumberStyle;
 			}
 		}
 		
@@ -54,16 +56,17 @@ namespace Mono.TextEditor.Highlighting
 				return new Gdk.Color (122, 118, 103);
 			}
 		}
-
+		Color iconBarBg;
 		public override Color IconBarBg {
 			get {
-				return widget.Style.Background (StateType.Normal);
+				return iconBarBg;
 			}
 		}
 
+		Color iconBarSeperator;
 		public override Color IconBarSeperator {
 			get {
-				return widget.Style.Background (StateType.Active);
+				return iconBarSeperator;
 			}
 		}
 
@@ -79,9 +82,10 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		ChunkStyle selectionStyle;
 		public override ChunkStyle Selection {
 			get {
-				return new ChunkStyle (widget.Style.Text (StateType.Selected), widget.Style.Base (StateType.Selected));
+				return selectionStyle;
 			}
 		}
 
@@ -118,6 +122,18 @@ namespace Mono.TextEditor.Highlighting
 		{
 			this.PopulateDefaults ();
 			this.widget = widget;
+			this.widget.StyleSet += WidgethandleStyleSet;
+			WidgethandleStyleSet (null, null);
+		}
+
+		void WidgethandleStyleSet (object o, StyleSetArgs args)
+		{
+			Gtk.Style style = widget.Style;
+			this.selectionStyle = new ChunkStyle (style.Text (StateType.Selected), style.Base (StateType.Selected));
+			this.defaultStyle = new ChunkStyle (style.Text (StateType.Normal), style.Base (StateType.Normal));
+			this.lineNumberStyle = new ChunkStyle (new Gdk.Color (172, 168, 153), style.Base (StateType.Normal));
+			this.iconBarBg = style.Background (StateType.Normal);
+			this.iconBarSeperator = style.Background (StateType.Active);
 		}
 	}
 }

@@ -1622,16 +1622,12 @@ namespace Mono.TextEditor
 			if (tipWindow != null) {
 				// Tip already being shown. Update it.
 				ShowTooltip (modifierState);
-			}
-			else if (showTipScheduled) {
+			} else {
 				// Tip already scheduled. Reset the timer.
-				GLib.Source.Remove (tipTimeoutId);
-				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, delegate { return ShowTooltip (modifierState); } );
-			}
-			else {
-				// Start a timer to show the tip
+				if (showTipScheduled)
+					GLib.Source.Remove (tipTimeoutId);
 				showTipScheduled = true;
-				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, delegate { return ShowTooltip (modifierState); } );
+				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, delegate { return ShowTooltip (modifierState); });
 			}
 		}
 		

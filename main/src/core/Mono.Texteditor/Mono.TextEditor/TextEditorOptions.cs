@@ -324,8 +324,8 @@ namespace Mono.TextEditor
 		void DisposeFont ()
 		{
 			if (font != null) {
-				font = null;
 				font.Dispose ();
+				font = null;
 			}
 		}
 
