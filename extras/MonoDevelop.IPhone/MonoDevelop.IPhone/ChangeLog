@@ -1,3 +1,8 @@
+2009-09-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/IPhoneViewController.xft.xml: Update accessibility
+	  of generated member.
+
 2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneCommands.cs: Run mtouch in verbose mode when exporting

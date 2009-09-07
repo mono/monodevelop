@@ -80,7 +80,7 @@ namespace ${Namespace}
 	public partial class ${Name} {
 	    
 	    [MonoTouch.Foundation.Connect("view")]
-	    protected MonoTouch.UIKit.UIView view {
+	    private MonoTouch.UIKit.UIView view {
 	        get {
 	            return ((MonoTouch.UIKit.UIView)(this.GetNativeField("view")));
 	        }
