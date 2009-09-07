@@ -377,7 +377,7 @@ namespace Mono.TextEditor
 						string[] lines = text.Split ('\r');
 						int lineNr = data.Document.OffsetToLineNumber (insertionOffset);
 						int col = insertionOffset - data.Document.GetLine (lineNr).Offset;
-						int visCol = data.Document.GetLine (lineNr).GetVisualColumn (data, data.Document, col);
+						int visCol = data.Document.GetLine (lineNr).GetVisualColumn (data, col);
 						LineSegment curLine;
 						int lineCol = col;
 						result = 0;

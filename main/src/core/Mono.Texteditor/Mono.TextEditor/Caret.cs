@@ -205,14 +205,14 @@ namespace Mono.TextEditor
 				return;
 			if (!AllowCaretBehindLineEnd)
 				this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
-			this.DesiredColumn = curLine.GetVisualColumn (editor, document, this.Column);
+			this.DesiredColumn = curLine.GetVisualColumn (editor, this.Column);
 		}
 		
 		void SetColumn ()
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);
 			this.location.Column = curLine.GetLogicalColumn (editor, this.document, this.DesiredColumn);
-			if (curLine.GetVisualColumn (editor, document, this.location.Column) < this.DesiredColumn) {
+			if (curLine.GetVisualColumn (editor, this.location.Column) < this.DesiredColumn) {
 				this.location.Column = editor.GetNextVirtualColumn (Line, this.location.Column);
 			} else {
 				if (this.Column > curLine.EditableLength) {

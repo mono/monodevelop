@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 
@@ -141,7 +142,6 @@ namespace Mono.TextEditor
 		{
 			int startLine = (int)(textEditor.GetTextEditorData ().VAdjustment.Value / lineHeight);
 			int endLine = (int)(startLine + textEditor.GetTextEditorData ().VAdjustment.PageSize / lineHeight) + 1;
-//			Console.WriteLine (layoutDict.Count + "/" + chunkDict.Count);
 			foreach (LineSegment line in layoutDict.Keys) {
 				int curLine = Document.OffsetToLineNumber (line.Offset);
 				if (startLine - 5 >= curLine || endLine + 5 <= curLine) {
@@ -1731,7 +1731,7 @@ namespace Mono.TextEditor
 			}
 
 			if (Caret.Line == lineNr && Caret.Column > line.EditableLength) {
-				string virtualText = textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
+		/*		string virtualText = textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
 				int visibleColumn = line.EditableLength;
 				for (int i = 0; i < virtualText.Length; i++) {
 					if (virtualText[i] != '\t') {
@@ -1750,7 +1750,7 @@ namespace Mono.TextEditor
 						visibleColumn = newColumn;
 					}
 				}
-				SetVisibleCaretPosition (win, ' ', xPos, y);
+				SetVisibleCaretPosition (win, ' ', xPos, y);*/
 			} else {
 				if (caretOffset == line.Offset + line.EditableLength)
 					SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
@@ -1814,203 +1814,88 @@ namespace Mono.TextEditor
 				lineNumber = System.Math.Min (margin.Document.VisualToLogicalLine ((int)(yp + margin.textEditor.VAdjustment.Value) / margin.LineHeight), margin.Document.LineCount - 1);
 				line = lineNumber < margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
 			}
-			/*
-			public DocumentLocation VisualToDocumentLocation (int xp, int yp)
-			{
-				if (line == null)
-					return DocumentLocation.Empty;
-
-				Pango.Layout layout = new Pango.Layout (margin.textEditor.PangoContext);
-				layout.Alignment = Pango.Alignment.Left;
-				layout.FontDescription = margin.textEditor.Options.Font;
-				StringBuilder textBuilder = new StringBuilder ();
-				for (Chunk chunk = margin.GetCachedChunks (margin.Document.SyntaxMode, margin.Document, margin.textEditor.ColorStyle, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk != null ? chunk.Next : null) {
-					textBuilder.Append (chunk.GetText (margin.Document));
-				}
-				Pango.TabArray tabArray = new Pango.TabArray (10, true);
-				for (int i = 0; i < 10; i++)
-					tabArray.SetTab (i, Pango.TabAlign.Left, (i + 1) * margin.CharWidth * margin.textEditor.Options.TabSize);
-
-				layout.Tabs = tabArray;
-
-				string lineText = textBuilder.ToString ();
-
-				bool containsPreedit = line.Offset <= margin.textEditor.preeditOffset && margin.textEditor.preeditOffset <= line.Offset + line.EditableLength;
-				uint preeditLength = 0;
-
-				if (containsPreedit) {
-					lineText = lineText.Insert (margin.textEditor.preeditOffset - line.Offset, margin.textEditor.preeditString);
-					preeditLength = (uint)margin.textEditor.preeditString.Length;
-				}
-
-				layout.SetText (lineText);
-				Pango.AttrList attributes = new Pango.AttrList ();
-
-				int startOffset = line.Offset, endOffset = line.Offset + line.EditableLength;
-				uint curIndex = 0, byteIndex = 0;
-				SyntaxMode mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : SyntaxMode.Default;
-				uint oldEndIndex = 0;
-				for (Chunk chunk = margin.GetCachedChunks (mode, margin.Document, margin.textEditor.ColorStyle, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk != null ? chunk.Next : null) {
-					ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (margin.textEditor.ColorStyle) : null;
-
-					foreach (TextMarker marker in line.Markers)
-						chunkStyle = marker.GetStyle (chunkStyle);
-
-					if (chunkStyle != null) {
-						startOffset = chunk.Offset;
-						endOffset = chunk.EndOffset;
-
-						uint startIndex = (uint)(oldEndIndex);
-						uint endIndex = (uint)(startIndex + chunk.Length);
-						oldEndIndex = endIndex;
-
-						if (containsPreedit) {
-							if (margin.textEditor.preeditOffset < startOffset)
-								startIndex += preeditLength;
-							if (margin.textEditor.preeditOffset < endOffset)
-								endIndex += preeditLength;
-						}
-
-						HandleSelection (-1, -1, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
-
-							Pango.AttrForeground foreGround = new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue);
-							foreGround.StartIndex = TranslateToUTF8Index (lineText, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-							foreGround.EndIndex = TranslateToUTF8Index (lineText, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-
-							attributes.Insert (foreGround);
-
-						}, delegate(int start, int end) {
-							Pango.AttrForeground selectedForeground = new Pango.AttrForeground (margin.ColorStyle.Selection.Color.Red, margin.ColorStyle.Selection.Color.Green, margin.ColorStyle.Selection.Color.Blue);
-							selectedForeground.StartIndex = TranslateToUTF8Index (lineText, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-							selectedForeground.EndIndex = TranslateToUTF8Index (lineText, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-							attributes.Insert (selectedForeground);
-
-						});
-
-						if (chunkStyle.Bold) {
-							Pango.AttrWeight attrWeight = new Pango.AttrWeight (Pango.Weight.Bold);
-							attrWeight.StartIndex = startIndex;
-							attrWeight.EndIndex = endIndex;
-							attributes.Insert (attrWeight);
-						}
-
-						if (chunkStyle.Italic) {
-							Pango.AttrStyle attrStyle = new Pango.AttrStyle (Pango.Style.Italic);
-							attrStyle.StartIndex = startIndex;
-							attrStyle.EndIndex = endIndex;
-							attributes.Insert (attrStyle);
-						}
-
-						if (chunkStyle.Underline) {
-							Pango.AttrUnderline attrUnderline = new Pango.AttrUnderline (Pango.Underline.Single);
-							attrUnderline.StartIndex = startIndex;
-							attrUnderline.EndIndex = endIndex;
-							attributes.Insert (attrUnderline);
-						}
-					}
-				}
-				layout.Attributes = attributes;
-				int index, trailing;
-				layout.XyToIndex (0, yp, out index, out trailing);
-				layout.Dispose ();
-				
-				return new DocumentLocation (lineNumber, index);
-			}
-			*/
 			
-			Chunk chunks;
-			void ConsumeChunks ()
+			TextViewMargin.LayoutWrapper layoutWrapper;
+			int index;
+			bool ConsumeLayout (int xp, int yp)
 			{
-				for (; chunks != null; chunks = chunks.Next) {
-					for (int o = chunks.Offset; o < chunks.EndOffset && o < margin.Document.Length; o++) {
-						char ch = chunks.GetCharAt (margin.Document, o);
+				int trailing;
+				bool isInside = layoutWrapper.Layout.XyToIndex (xp, yp, out index, out trailing);
 
-						int delta = 0;
-						if (ch == '\t') {
-							int newColumn = GetNextTabstop (margin.textEditor.GetTextEditorData (), visibleColumn);
-							delta = (newColumn - visibleColumn) * margin.CharWidth;
-							visibleColumn = newColumn;
-						} else if (ch == ' ') {
-							delta = margin.charWidth;
-							visibleColumn++;
-						} else {
-							ChunkStyle style = chunks.GetChunkStyle (margin.ColorStyle);
-							measureLayout.Weight = style.GetWeight (margin.DefaultWeight);
-							measureLayout.Style = style.GetStyle (margin.DefaultStyle);
-							measureLayout.SetText (ch.ToString ());
-							int height, width;
-							measureLayout.GetPixelSize (out width, out height, out delta);
-							visibleColumn++;
-						}
-						int nextXPosition = xPos + delta;
-						if (nextXPosition >= visualXPos) {
-							if (!IsNearX1 (visualXPos, xPos, nextXPosition))
-								column = o - line.Offset + 1;
-							done = true;
-							return;
-						}
-						column = o - line.Offset + 1;
-						xPos = nextXPosition;
-					}
+				if (isInside) {
+					int lineNr;
+					int xp1, xp2;
+					layoutWrapper.Layout.IndexToLineX (index, false, out lineNr, out xp1);
+					layoutWrapper.Layout.IndexToLineX (index + 1, false, out lineNr, out xp2);
+					if (System.Math.Abs (xp2 - xp) < System.Math.Abs (xp1 - xp))
+						index++;
+					return true;
 				}
+				index = line.EditableLength;
+				return false;
 			}
-
+			
 			public DocumentLocation VisualToDocumentLocation (int xp, int yp)
 			{
 				if (line == null)
 					return DocumentLocation.Empty;
-				mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : SyntaxMode.Default;
-				measureLayout = margin.CreateTextRenderer ();
-				measureLayout.SentFont (margin.textEditor.Options.Font);
-				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
+
 				int offset = line.Offset;
-//				int caretOffset = margin.Caret.Offset;
-//				int index, trailing;
-				column = 0;
-				visualXPos = xp + (int)margin.textEditor.HAdjustment.Value;
+				yp %= margin.LineHeight;
+				xp *= (int)Pango.Scale.PangoScale;
+				yp *= (int)Pango.Scale.PangoScale;
+				int column = 0;
+				SyntaxMode mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : SyntaxMode.Default;
+				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
+				bool done = false;
 				restart:
-				foreach (FoldSegment folding in foldings) {
-					if (!folding.IsFolded)
-						continue;
+				foreach (FoldSegment folding in foldings.Where (f => f.IsFolded)) {
 					int foldOffset = folding.StartLine.Offset + folding.Column;
 					if (foldOffset < offset)
 						continue;
-					chunks = margin.GetCachedChunks (mode, margin.Document, margin.textEditor.ColorStyle, line, offset, foldOffset - offset);
-					ConsumeChunks ();
+					layoutWrapper = margin.CreateLinePartLayout (mode, line, line.Offset, foldOffset - offset, -1, -1);
+					done |= ConsumeLayout (xp - xPos, yp);
 					if (done)
 						break;
+					int height, width, delta;
+					layoutWrapper.Layout.GetPixelSize (out width, out height);
+					xPos += width * (int)Pango.Scale.PangoScale;
+					if (measureLayout == null) {
+						measureLayout = margin.CreateTextRenderer ();
+						measureLayout.SentFont (margin.textEditor.Options.Font);
+					}
 
-					if (folding.IsFolded) {
-						offset = folding.EndLine.Offset + folding.EndColumn;
-						DocumentLocation loc = margin.Document.OffsetToLocation (offset);
-						lineNumber = loc.Line;
-						column = loc.Column;
-						measureLayout.SetText (folding.Description);
-						int height, width, delta;
-						measureLayout.GetPixelSize (out width, out height, out delta);
-						xPos += delta;
-						if (xPos >= visualXPos) {
-							done = true;
-							break;
-						}
-						if (folding.EndLine != line) {
-							line = folding.EndLine;
-							foldings = margin.Document.GetStartFoldings (line);
-							goto restart;
-						}
-					} else {
-						chunks = margin.GetCachedChunks (mode, margin.Document, margin.textEditor.ColorStyle, line, foldOffset, folding.EndLine.Offset + folding.EndColumn - offset);
-						ConsumeChunks ();
+					measureLayout.SetText (folding.Description);
+					measureLayout.GetPixelSize (out width, out height, out delta);
+					delta *= (int)Pango.Scale.PangoScale;
+					xPos += delta;
+					if (xPos - delta / 2 >= xp) {
+						index = foldOffset - offset;
+						done = true;
+						break;
+					}
+
+					offset = folding.EndLine.Offset + folding.EndColumn;
+					DocumentLocation foldingEndLocation = margin.Document.OffsetToLocation (offset);
+					lineNumber = foldingEndLocation.Line;
+					column = foldingEndLocation.Column;
+					if (xPos >= xp) {
+						index = 0;
+						done = true;
+						break;
+					}
+					if (folding.EndLine != line) {
+						line = folding.EndLine;
+						foldings = margin.Document.GetStartFoldings (line);
+						goto restart;
 					}
 				}
-
-				if (!done && line.EndOffset - offset > 0) {
-					chunks = margin.GetCachedChunks (mode, margin.Document, margin.textEditor.ColorStyle, line, offset, line.Offset + line.EditableLength - offset);
-					ConsumeChunks ();
+				if (!done) {
+					layoutWrapper = margin.CreateLinePartLayout (mode, line, offset, line.Offset + line.EditableLength - offset, -1, -1);
+					ConsumeLayout (xp - xPos, yp);
 				}
-				WasInLine = xPos >= visualXPos;
-				measureLayout.Dispose ();
-				return new DocumentLocation (lineNumber, column);
+				measureLayout = measureLayout.Kill ();
+				return new DocumentLocation (lineNumber, column + index);
 			}
 		}
 

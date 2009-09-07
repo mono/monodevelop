@@ -1,3 +1,14 @@
+2009-09-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/LineSegment.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/ClipboardActions.cs: Overworked coordinate
+	  translation. fixed some bugs with folding coordinate
+	  translation. Refactored getvisualcolumn helper method.
+
 2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/ISearchEngine.cs: Support case-insensitive

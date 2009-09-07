@@ -449,7 +449,7 @@ namespace Mono.TextEditor
 		public DocumentLocation VisualToLogicalLocation (DocumentLocation location)
 		{
 			int line = Document.VisualToLogicalLine (location.Line);
-			int column = Document.GetLine (line).GetVisualColumn (this, Document, location.Column);
+			int column = Document.GetLine (line).GetVisualColumn (this, location.Column);
 			return new DocumentLocation (line, column);
 		}
 		public int SelectionAnchor {
