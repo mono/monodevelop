@@ -1,5 +1,10 @@
 2009-09-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Templates/IPhoneApplicationXib.xft.xml: Update accessibility
+	  of properties in generated code.
+
+2009-09-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Templates/IPhoneViewController.xft.xml: Update accessibility
 	  of generated member.
 
