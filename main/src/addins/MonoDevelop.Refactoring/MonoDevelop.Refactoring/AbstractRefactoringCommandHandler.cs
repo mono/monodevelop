@@ -58,7 +58,7 @@ namespace MonoDevelop.Refactoring
 			RefactoringOptions options = new RefactoringOptions () {
 				Document = doc,
 				Dom = dom,
-				ResolveResult = null,
+				ResolveResult = result,
 				SelectedItem = item
 			};
 			Run (options);

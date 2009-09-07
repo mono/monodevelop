@@ -60,16 +60,21 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			if (options.SelectedItem != null)
-				return false;
 			IResolver resolver = options.GetResolver ();
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (resolver == null || provider == null)
 				return false;
 			TextEditorData data = options.GetTextEditorData ();
-			if (data.IsSomethingSelected)
-				return provider.ParseText (data.SelectedText) is Expression;
-
+			ResolveResult resolveResult;
+			if (data.IsSomethingSelected) {
+				ExpressionResult expressionResult = new ExpressionResult (data.SelectedText.Trim ());
+				if (expressionResult.Expression.Contains (" ") || expressionResult.Expression.Contains ("\t"))
+					expressionResult.Expression = "(" + expressionResult.Expression + ")";
+				resolveResult = resolver.Resolve (expressionResult, new DomLocation (data.Caret.Line, data.Caret.Column));
+				if (resolveResult == null)
+					return false;
+				return true;
+			}
 			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
 			string line = data.Document.GetTextAt (lineSegment);
 			Expression expression = provider.ParseExpression (line);
@@ -77,7 +82,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			if (expression == null || (block != null && block.Children[0] is LocalVariableDeclaration))
 				return false;
 			
-			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
 			return resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName) && resolveResult.ResolvedType.FullName != DomReturnType.Void.FullName;
 		}
 		
@@ -122,7 +127,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			if (resolver == null || provider == null)
 				return result;
 			TextEditorData data = options.GetTextEditorData ();
-			
+
 			ResolveResult resolveResult;
 			LineSegment lineSegment;
 			
@@ -138,7 +143,6 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				if (resolveResult.ResolvedType == null) {
 					returnType = new TypeReference ("var");
 				} else {
-					
 					returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
 				}
 				options.ParseMember (resolveResult.CallingMember);

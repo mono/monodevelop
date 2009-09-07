@@ -1,3 +1,13 @@
+2009-09-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.Rename/RenameHandler.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalHandler.cs:
+	* MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RefactorImportsHandler.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Fixed some issues. Always check with IsValid before calling
+	  a refactoring.
+
 2009-09-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:

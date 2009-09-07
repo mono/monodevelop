@@ -50,7 +50,9 @@ namespace MonoDevelop.Refactoring.RefactorImports
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			new RemoveUnusedImportsRefactoring ().Run (options);
+			RemoveUnusedImportsRefactoring removeUnusedImportsRefactoring = new RemoveUnusedImportsRefactoring ();
+			if (removeUnusedImportsRefactoring.IsValid (options))
+				removeUnusedImportsRefactoring.Run (options);
 		}
 	}
 	
@@ -58,7 +60,9 @@ namespace MonoDevelop.Refactoring.RefactorImports
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			new SortImportsRefactoring ().Run (options);
+			SortImportsRefactoring sortImportsRefactoring = new SortImportsRefactoring ();
+			if (sortImportsRefactoring.IsValid (options))
+				sortImportsRefactoring.Run (options);
 		}
 	}
 	
@@ -66,8 +70,12 @@ namespace MonoDevelop.Refactoring.RefactorImports
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			new RemoveUnusedImportsRefactoring ().Run (options);
-			new SortImportsRefactoring ().Run (options);
+			RemoveUnusedImportsRefactoring removeUnusedImportsRefactoring = new RemoveUnusedImportsRefactoring ();
+			SortImportsRefactoring sortImportsRefactoring = new SortImportsRefactoring ();
+			if (removeUnusedImportsRefactoring.IsValid (options) && sortImportsRefactoring.IsValid (options)) {
+				removeUnusedImportsRefactoring.Run (options);
+				sortImportsRefactoring.Run (options);
+			}
 		}
 	}
 }

@@ -35,7 +35,9 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 	{
 		protected override void Run (RefactoringOptions options)
 		{
-			new DeclareLocalCodeGenerator ().Run (options);
+			DeclareLocalCodeGenerator codeGenerator = new DeclareLocalCodeGenerator ();
+			if (codeGenerator.IsValid (options)) 
+				codeGenerator.Run (options);
 		}
 	}
 }
