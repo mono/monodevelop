@@ -102,7 +102,7 @@ namespace MonoDevelop.Platform
 		}
 
 		public override string DefaultMonospaceFont {
-			get { return "Osaka 14"; } //for some reason Pango needs "Osaka Regular-Mono 14" to be named this way
+			get { return "Monaco 12"; }
 		}
 		
 		public override string Name {
