@@ -30,12 +30,12 @@ using NUnit.Framework;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class CaretMoveActionsTest
+	public class CaretMoveActionTests
 	{
-		TextEditorData Create (string text)
+		internal static TextEditorData Create (string text)
 		{
 			TextEditorData result = new TextEditorData ();
-			if (text.IndexOf ('$') > 0) {
+			if (text.IndexOf ('$') >= 0) {
 				int caretOffset = text.IndexOf ('$');
 				result.Document.Text = text.Remove (caretOffset, 1);
 				result.Caret.Offset = caretOffset;

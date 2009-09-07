@@ -1,6 +1,18 @@
 2009-09-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
+	* UnitTests.csproj: 
+
+	* Mono.TextEditor.Tests.DefaultEditActions/DeleteActionTests.cs:
+	* Mono.TextEditor.Tests.DefaultEditActions/CaretMoveActionTests.cs:
+	* Mono.TextEditor.Tests.DefaultEditActions/SelectionActionTests.cs:
+	* Mono.TextEditor.Tests.DefaultEditActions/CaretMoveActionsTest.cs:
+	* Mono.TextEditor.Tests.DefaultEditActions/SelectionSelectAllTests.cs:
+	  Extended text editor action tests.
+
+2009-09-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
 	* UnitTests.csproj:
 	* Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs: 
 

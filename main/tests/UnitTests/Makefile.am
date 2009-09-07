@@ -34,11 +34,12 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	Mono.TextEditor.Tests.DefaultEditActions/CaretMoveActionsTest.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/CaretMoveActionTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/DeleteActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs \
-	Mono.TextEditor.Tests.DefaultEditActions/SelectionSelectAllTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/SelectionActionTests.cs \
 	Mono.TextEditor.Tests/DocumentTests.cs \
 	Mono.TextEditor.Tests/FoldingTests.cs \
 	Mono.TextEditor.Tests/LineSplitterTests.cs \
