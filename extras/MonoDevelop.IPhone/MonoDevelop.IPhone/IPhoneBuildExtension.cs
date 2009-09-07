@@ -366,7 +366,9 @@ namespace MonoDevelop.IPhone
 			if (Directory.Exists (conf.AppDirectory))
 				Directory.Delete (conf.AppDirectory, true);
 			
-			//TODO: remove the xcode project
+			//remove the xcode project
+			if (Directory.Exists (conf.OutputDirectory.Combine ("XcodeProject")))
+				Directory.Delete (conf.OutputDirectory.Combine ("XcodeProject"), true);
 		}
 		
 		protected override BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData)

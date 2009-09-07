@@ -1,5 +1,10 @@
 2009-09-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneBuildExtension.cs: In the clean step, remove the
+	  XcodeProject directory if it exists.
+
+2009-09-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Templates/IPhoneApplicationXib.xft.xml: Update accessibility
 	  of properties in generated code.
 
