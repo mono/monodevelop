@@ -64,6 +64,9 @@ namespace Mono.TextEditor
 			return new Selection (selection.Anchor, selection.Lead, selection.SelectionMode);
 		}
 		
+		public Selection (int anchorLine, int anchorColumn, int leadLine, int leadColumn) : this(new DocumentLocation (anchorLine, anchorColumn), new DocumentLocation (leadLine, leadColumn), SelectionMode.Normal)
+		{
+		}
 		public Selection (DocumentLocation anchor, DocumentLocation lead) : this (anchor, lead, SelectionMode.Normal)
 		{
 		}

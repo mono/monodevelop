@@ -1,5 +1,9 @@
 2009-09-07  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Selection.cs: Added constructor.
+
+2009-09-07  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Caret.cs:
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/LineSegment.cs:
