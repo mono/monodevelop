@@ -173,7 +173,6 @@
     <Compile Include="Mono.TextEditor.Tests\SearchTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SelectionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\UndoRedoTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\CaretMoveTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\InsertNewLineTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\InsertTabTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\RemoveTabTests.cs" />
@@ -199,6 +198,7 @@
     <Compile Include="MonoDevelop.Refactoring\IntegrateTemporaryVariableTests.cs" />
     <Compile Include="MonoDevelop.Refactoring\IntroduceConstantRefactoringTests.cs" />
     <Compile Include="MonoDevelop.Refactoring\IntroduceFormatItemRefactoringTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\CaretMoveActionsTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

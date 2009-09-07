@@ -34,7 +34,7 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	Mono.TextEditor.Tests.DefaultEditActions/CaretMoveTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/CaretMoveActionsTest.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs \
