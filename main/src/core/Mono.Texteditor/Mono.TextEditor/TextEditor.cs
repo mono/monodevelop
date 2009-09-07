@@ -1159,6 +1159,7 @@ namespace Mono.TextEditor
 		
 		void SetHAdjustment ()
 		{
+			textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
 			if (longestLine != null && this.textEditorData.HAdjustment != null) {
 				LineSegment curLine = this.Document.GetLineByOffset (this.longestLine.Offset);
 				// check if the longestLine is still valid
@@ -1167,15 +1168,12 @@ namespace Mono.TextEditor
 				} else {
 					int maxX = this.TextViewMargin.GetWidth (this.Document.GetTextAt (this.longestLine)) + 10 * this.textViewMargin.CharWidth;
 					int width = Allocation.Width - this.TextViewMargin.XOffset;
-					this.textEditorData.HAdjustment.SetBounds (0, 
-					                                           maxX, 
-					                                           this.textViewMargin.CharWidth,
-					                                           width,
-					                                           width);
-					if (maxX < width) 
+					this.textEditorData.HAdjustment.SetBounds (0, maxX, this.textViewMargin.CharWidth, width, width);
+					if (maxX < width)
 						this.textEditorData.HAdjustment.Value = 0;
 				}
 			}
+			textEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged;
 		}
 		
 		internal void SetAdjustments ()

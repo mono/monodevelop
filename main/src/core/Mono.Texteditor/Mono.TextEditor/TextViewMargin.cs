@@ -1055,13 +1055,6 @@ namespace Mono.TextEditor
 			return null;
 		}
 
-		Pango.Weight DefaultWeight {
-			get { return textEditor.Options.Font.Weight; }
-		}
-		Pango.Style DefaultStyle {
-			get { return textEditor.Options.Font.Style; }
-		}
-
 		void DrawEolMarker (Gdk.Drawable win, bool selected, int xPos, int y)
 		{
 			eolMarker.Color = selected ? ColorStyle.Selection.Color : ColorStyle.WhitespaceMarker;
@@ -1796,12 +1789,7 @@ namespace Mono.TextEditor
 			int lineNumber;
 			LineSegment line;
 			int xPos = 0;
-			int column = 0;
-			int visibleColumn = 0;
-			int visualXPos;
-			SyntaxMode mode;
 			TextRenderer measureLayout;
-			bool done = false;
 
 			public bool WasInLine {
 				get;
@@ -1827,7 +1815,7 @@ namespace Mono.TextEditor
 					int xp1, xp2;
 					layoutWrapper.Layout.IndexToLineX (index, false, out lineNr, out xp1);
 					layoutWrapper.Layout.IndexToLineX (index + 1, false, out lineNr, out xp2);
-					if (System.Math.Abs (xp2 - xp) < System.Math.Abs (xp1 - xp))
+					if (!IsNearX1 (xp, xp1, xp2))
 						index++;
 					return true;
 				}
@@ -1884,6 +1872,7 @@ namespace Mono.TextEditor
 						done = true;
 						break;
 					}
+					
 					if (folding.EndLine != line) {
 						line = folding.EndLine;
 						foldings = margin.Document.GetStartFoldings (line);
