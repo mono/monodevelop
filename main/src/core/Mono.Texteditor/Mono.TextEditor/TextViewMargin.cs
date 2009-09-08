@@ -104,6 +104,7 @@ namespace Mono.TextEditor
 				eolMarker,
 				invalidLineMarker
 			};
+			
 
 			ResetCaretBlink ();
 			Caret.PositionChanged += CaretPositionChanged;
@@ -356,6 +357,10 @@ namespace Mono.TextEditor
 			arrowCursor = xtermCursor = null;
 
 			DisposeGCs ();
+			if (caretGc != null) {
+				caretGc.Dispose ();
+				caretGc = null;
+			}
 			textRenderer.Dispose ();
 			tabMarker.Dispose ();
 			spaceMarker.Dispose ();
@@ -407,7 +412,8 @@ namespace Mono.TextEditor
 		char caretChar;
 		internal int caretX;
 		int caretY;
-
+		Gdk.GC caretGc;
+		
 		void SetVisibleCaretPosition (Gdk.Drawable win, char ch, int x, int y)
 		{
 			caretChar = ch;
@@ -426,7 +432,11 @@ namespace Mono.TextEditor
 			}
 			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink))
 				return EmptyRectangle;
-			
+			if (caretGc == null) {
+				caretGc = new Gdk.GC (win);
+				caretGc.RgbFgColor = new Color (255, 255, 255);
+				caretGc.Function = Gdk.Function.Xor;
+			}
 			// Unlike the clip region for the backing store buffer, this needs
 			// to be clipped to the range of the visible area of the widget to
 			// prevent drawing outside the widget on some Gdk backends.
@@ -435,32 +445,29 @@ namespace Mono.TextEditor
 			win.GetSize (out width, out height);
 			caretClipRectangle.Intersect (new Gdk.Rectangle (0, 0, width, height));
 			SetClip (caretClipRectangle);
-
 			switch (Caret.Mode) {
 			case CaretMode.Insert:
-				if (caretX < this.XOffset)
+				if (caretX < this.XOffset || caretClipRectangle == Gdk.Rectangle.Zero)
 					return EmptyRectangle;
-				else if (caretClipRectangle == Gdk.Rectangle.Zero)
-					return EmptyRectangle;
-				win.DrawLine (GetGC (ColorStyle.Caret.Color), caretX, caretY, caretX, caretY + LineHeight);
+				win.DrawLine (caretGc, caretX, caretY, caretX, caretY + LineHeight - 1);
 				break;
 			case CaretMode.Block:
 				if (caretX + this.charWidth < this.XOffset)
 					return EmptyRectangle;
-				win.DrawRectangle (GetGC (ColorStyle.Caret.Color), true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
-				textRenderer.BeginDraw (win);
+				win.DrawRectangle (caretGc, true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
+				/*					textRenderer.BeginDraw (win);
 //				textRenderer.SetClip (clipRectangle);
-				textRenderer.Color = ColorStyle.Caret.BackgroundColor;
-				textRenderer.SetText (caretChar.ToString ());
-				textRenderer.DrawText (win, caretX, caretY);
-				textRenderer.EndDraw ();
+					textRenderer.Color = ColorStyle.Caret.BackgroundColor;
+					textRenderer.SetText (caretChar.ToString ());
+					textRenderer.DrawText (win, caretX, caretY);
+					textRenderer.EndDraw ();*/
 				break;
 			case CaretMode.Underscore:
 				if (caretX + this.charWidth < this.XOffset)
 					return EmptyRectangle;
 				int bottom = caretY + lineHeight;
-				win.DrawLine (GetGC (ColorStyle.Caret.Color), caretX, bottom, caretX + this.charWidth, bottom);
-				break;
+				win.DrawLine (caretGc, caretX, bottom, caretX + this.charWidth, bottom);
+					break;
 			}
 			return caretClipRectangle;
 		}

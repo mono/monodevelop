@@ -1,5 +1,11 @@
 2009-09-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed "Bug 537392 - It is
+	  hard to see the cursor blinking when it is "over a
+	  breakpoint line", hard to see where it is...".
+
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/TextLinkEditMode.cs: Fixed some minor issues
 	  in textlink mode.
