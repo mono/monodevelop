@@ -1,5 +1,13 @@
 2009-09-08  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 537195 - Can't select a 'Surround With' template
+	  by typing the name".
+
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed
 	  "Bug 537267 - Code completion window scrolling is wrong".
 

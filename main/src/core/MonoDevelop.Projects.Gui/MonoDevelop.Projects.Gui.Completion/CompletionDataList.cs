@@ -38,8 +38,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 		bool AutoCompleteUniqueMatch { get; }
 		bool AutoSelect { get; }
 		string DefaultCompletionString { get; }
+		CompletionSelectionMode CompletionSelectionMode { get; }
 		void Sort (Comparison<ICompletionData> comparison);
 		void Sort (IComparer<ICompletionData> comparison);
+	}
+	
+	public enum CompletionSelectionMode {
+		InsideTextEditor,
+		OwnTextField
 	}
 	
 	public class CompletionDataList : List<ICompletionData>, ICompletionDataList
@@ -48,6 +54,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public bool AutoCompleteUniqueMatch { get; set; }
 		public string DefaultCompletionString { get; set; }
 		public bool AutoSelect { get; set; }
+		public CompletionSelectionMode CompletionSelectionMode { get; set; }
 		
 		public CompletionDataList ()
 		{

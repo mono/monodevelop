@@ -112,6 +112,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 					}
 					return true;
 				}
+				if (completionDataList != null && completionDataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField)
+					return true;
 			}
 			return false;
 		}
@@ -134,6 +136,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.completionContext = completionContext;
 			this.closedDelegate = closedDelegate;
 			mutableList = completionDataList as IMutableCompletionDataList;
+			List.PreviewCompletionString = completionDataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField;
+			Console.WriteLine (List.PreviewCompletionString);
 
 			if (mutableList != null) {
 				mutableList.Changing += OnCompletionDataChanging;

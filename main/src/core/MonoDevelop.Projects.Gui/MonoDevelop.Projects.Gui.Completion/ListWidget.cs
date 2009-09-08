@@ -57,11 +57,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 				QueueDraw ();
 			}
 		}
+		
+		bool previewCompletionString = false;
+		public bool PreviewCompletionString {
+			get { return previewCompletionString; }
+			set {
+				previewCompletionString = value;
+			}
+		}
+		
 		public ListWidget (ListWindow win)
 		{
 			this.win = win;
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask;
 		}
+		
 		public void Reset ()
 		{
 			if (win.DataProvider == null) {
@@ -232,6 +242,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			CalcVisibleRows ();
 		}
+		
 		void DrawList ()
 		{
 			int winWidth, winHeight;
@@ -250,6 +261,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 				this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), (Allocation.Width - width) / 2, (Allocation.Height - height) / 2, layout);
 				return;
 			}
+			if (PreviewCompletionString) {
+				layout.SetText (string.IsNullOrEmpty (CompletionString) ? MonoDevelop.Core.GettextCatalog.GetString ("Select template") : CompletionString);
+				int wi, he;
+				layout.GetPixelSize (out wi, out he);
+				this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Insensitive), true, margin, ypos, lineWidth, he + padding);
+				this.GdkWindow.DrawLayout (string.IsNullOrEmpty (CompletionString) ? this.Style.TextGC (StateType.Insensitive) : this.Style.TextGC (StateType.Normal) , xpos, ypos, layout);
+				ypos += rowHeight;
+			}
+
 			int n = 0;
 			while (ypos < winHeight - margin && (page + n) < filteredItems.Count) {
 				bool hasMarkup = win.DataProvider.HasMarkup (filteredItems[page + n]);
@@ -296,8 +316,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				} else
 					this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
 				if (icon != null)
-					this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0,
-					0);
+					this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
 				ypos += rowHeight;
 				n++;
 				if (hasMarkup)
@@ -340,6 +359,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			rowHeight += padding;
 			visibleRows = (winHeight + padding - margin * 2) / rowHeight;
 			int newHeight = (rowHeight * Math.Max (1, Math.Min (visibleRows, filteredItems.Count))) + margin * 2;
+			if (PreviewCompletionString) {
+				visibleRows--;
+				newHeight += rowHeight;
+			}
 			if (lvWidth != listWidth || lvHeight != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
 		}
