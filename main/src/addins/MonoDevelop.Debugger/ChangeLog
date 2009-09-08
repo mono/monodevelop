@@ -1,3 +1,8 @@
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track api
+	  changes.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Update gtk# dependency.
