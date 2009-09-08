@@ -238,6 +238,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return KeyActions.CloseWindow | KeyActions.Process;
 				curPos--;
 				word.Remove (curPos, 1);
+				list.CompletionString = word.ToString ();
 				UpdateWordSelection ();
 				return KeyActions.Process;
 
@@ -289,6 +290,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			if (System.Char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				word.Insert (curPos, keyChar);
+				list.CompletionString = word.ToString ();
 				curPos++;
 				if (!SelectionDisabled || AutoSelect)
 					UpdateWordSelection ();
@@ -296,6 +298,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
+				list.CompletionString = word.ToString ();
 				bool hasMismatches;
 				int match = FindMatchedEntry (word.ToString (), out hasMismatches);
 

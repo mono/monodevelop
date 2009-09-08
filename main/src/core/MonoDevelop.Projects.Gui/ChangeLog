@@ -1,3 +1,8 @@
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed
+	  "Bug 537267 - Code completion window scrolling is wrong".
+
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:
