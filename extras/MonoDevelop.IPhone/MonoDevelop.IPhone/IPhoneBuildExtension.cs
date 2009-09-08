@@ -478,6 +478,21 @@ namespace MonoDevelop.IPhone
 				}
 				string appid = provision.ApplicationIdentifierPrefix + "." + proj.BundleIdentifier;
 				
+				if (provision.Entitlements.ContainsKey ("application-identifier")) {
+					var allowed = ((PlistString)provision.Entitlements.ContainsKey ("application-identifier")).Value;
+					for (int i = 0;; i++) {
+						if (i < allowed.Length && i < appid.Length) {
+							if (allowed[i] == '*')
+								break;
+							if (appid[i] == allowed[i])
+								continue;
+						}
+						result.AddWarning (String.Format (
+						 	"Application identifier '{0}' does not match the provisioning profile entitlements ID '{1}'.",
+							appid, allowed));
+					}
+				}
+				
 				try {
 					File.Copy (provisionFile, conf.AppDirectory.Combine ("embedded.mobileprovision"), true);
 				} catch (IOException ex) {
