@@ -337,10 +337,10 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual ICompletionDataList ShowCodeSurroundingsCommand (ICodeCompletionContext completionContext)
 		{
 			CompletionDataList list = new CompletionDataList ();
-			ITemplateWidget templateWidget = Document.GetContent <ITemplateWidget> ();
+			ITemplateWidget templateWidget = Document.GetContent<ITemplateWidget> ();
 			CodeTemplateContext ctx = CodeTemplateContext.Standard;
 			if (templateWidget != null)
-				ctx = templateWidget.GetCodeTemplateContext();
+				ctx = templateWidget.GetCodeTemplateContext ();
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (Document.FileName)) {
 				if ((template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith)  {
 					if (ctx == template.CodeTemplateContext)
@@ -406,7 +406,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			
+
 			enableCodeCompletion = (bool)PropertyService.Get ("EnableCodeCompletion", true);
 			PropertyService.PropertyChanged += OnPropertyUpdated;
 			completionWidget = Document.GetContent <ICompletionWidget> ();

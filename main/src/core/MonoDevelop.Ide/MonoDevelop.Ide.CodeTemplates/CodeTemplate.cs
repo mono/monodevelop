@@ -321,28 +321,37 @@ namespace MonoDevelop.Ide.CodeTemplates
 			ProjectDom dom = ProjectDomService.GetProjectDom (document.Project) ?? ProjectDomService.GetFileDom (document.FileName);
 			ParsedDocument doc = document.ParsedDocument ?? MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (dom, document.FileName);
 			MonoDevelop.Ide.Gui.TextEditor editor = document.TextEditor;
-			
+
+			Mono.TextEditor.ITextEditorDataProvider provider = document.GetContent<Mono.TextEditor.ITextEditorDataProvider> ();
+			Mono.TextEditor.TextEditorData data = provider.GetTextEditorData ();
+
 			int offset = editor.CursorPosition;
 			int line, col;
 			editor.GetLineColumnFromPosition (offset, out line, out col);
 //			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
-			
+
 			TemplateContext context = new TemplateContext {
-				Template       = this,
-				Document       = document,
-				ProjectDom     = dom,
+				Template = this,
+				Document = document,
+				ProjectDom = dom,
 				ParsedDocument = doc,
 				InsertPosition = new DomLocation (line, col),
-				SelectedText   = editor.SelectedText,
-				TemplateCode   = IndentCode (Code, GetIndent (editor, line, 0))
+				TemplateCode = IndentCode (Code, GetIndent (editor, line, 0))
 			};
-			
-			if (!string.IsNullOrEmpty (editor.SelectedText)) {
-				int selectionLength = editor.SelectionEndPosition - editor.SelectionStartPosition;
-				if (editor.SelectionStartPosition < offset) {
-					offset -= selectionLength;
+
+			if (data.IsSomethingSelected) {
+				int start = data.SelectionRange.Offset;
+				while (Char.IsWhiteSpace (data.Document.GetCharAt (start))) {
+					start++;
 				}
-				editor.DeleteText (editor.SelectionStartPosition, selectionLength);
+				int end = data.SelectionRange.EndOffset;
+				while (Char.IsWhiteSpace (data.Document.GetCharAt (end - 1))) {
+					end--;
+				}
+				context.SelectedText = data.Document.GetTextBetween (start, end);
+				
+				data.Remove (start, end - start);
+				offset = start;
 			} else {
 				string word = GetWordBeforeCaret (editor).Trim ();
 				if (word.Length > 0)

@@ -1,3 +1,10 @@
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Fixed "Bug 537192 - Surround With command not properly
+	  indenting text".
+
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Add support for
