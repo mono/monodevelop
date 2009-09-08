@@ -1,3 +1,9 @@
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs: Fixed some minor issues
+	  in textlink mode.
+
 2009-09-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Selection.cs: Added constructor.

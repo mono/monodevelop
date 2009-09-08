@@ -1833,6 +1833,8 @@ namespace Mono.TextEditor
 				xp += (int)margin.textEditor.HAdjustment.Value;
 				xp *= (int)Pango.Scale.PangoScale;
 				yp *= (int)Pango.Scale.PangoScale;
+				if (xp < 0)
+					return new DocumentLocation (lineNumber, 0);
 				int column = 0;
 				SyntaxMode mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : SyntaxMode.Default;
 				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);

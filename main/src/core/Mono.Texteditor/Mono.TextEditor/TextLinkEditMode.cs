@@ -408,8 +408,11 @@ namespace Mono.TextEditor
 				if (!l.IsEditable && l.Values.Count > 0) {
 					l.CurrentText = (string)l.Values[l.Values.Count - 1];
 				} else {
-					if (l.PrimaryLink != null)
-						l.CurrentText = Editor.Document.GetTextAt (l.PrimaryLink.Offset + baseOffset, l.PrimaryLink.Length);
+					if (l.PrimaryLink != null) {
+						int offset = l.PrimaryLink.Offset + baseOffset;
+						if (offset >= 0 && l.PrimaryLink.Length >= 0)
+							l.CurrentText = Editor.Document.GetTextAt (offset, l.PrimaryLink.Length);
+					}
 				}
 				UpdateLinkText (l);
 			}
@@ -418,7 +421,10 @@ namespace Mono.TextEditor
 		{
 			for (int i = link.Links.Count - 1; i >= 0; i--) {
 				Segment s = link.Links[i];
-				if (Editor.Document.GetTextAt (s.Offset + baseOffset, s.Length) != link.CurrentText)
+				int offset = s.Offset + baseOffset;
+				if (offset < 0 || s.Length < 0)
+					continue;
+				if (Editor.Document.GetTextAt (offset, s.Length) != link.CurrentText)
 					Editor.Replace (s.Offset + baseOffset, s.Length, link.CurrentText);
 				s.Length = link.CurrentText.Length;
 			}
