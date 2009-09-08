@@ -460,11 +460,6 @@ namespace MonoDevelop.IPhone
 					return result;
 				}
 				
-				BuildResult mtpResult;
-				var mtouchpack = GetTool ("mtouchpack", proj, monitor, out mtpResult);
-				if (mtouchpack == null)
-					return result.Append (mtpResult);
-				
 				string provisionFile = MobileProvision.ProfileDirectory.Combine (conf.CodesignProvision).ChangeExtension (".mobileprovision");
 				if (!File.Exists (provisionFile)) {
 					string err = string.Format ("The provisioning profile '{0}' could not be found", conf.CodesignProvision);
@@ -472,12 +467,21 @@ namespace MonoDevelop.IPhone
 					return result;
 				}
 				
-				mtouchpack.Arguments = string.Format ("-ppu \"{0}\" -o \"{1}\"", provisionFile, conf.AppDirectory.Combine ("embedded.mobileprovision"));
-				monitor.Log.WriteLine (mtouchpack.FileName + " " + mtouchpack.Arguments);
+				MobileProvision provision;
+				try {
+					provision = MobileProvision.LoadFromFile (provisionFile);
+				} catch (Exception ex) {
+					string msg = "Could not read mobile provisioning file '" + provisionFile + "'.";
+					monitor.ReportError (msg, ex);
+					result.AddError (msg);
+					return result;
+				}
+				string appid = provision.ApplicationIdentifierPrefix + "." + proj.BundleIdentifier;
 				
-				code = ExecuteCommand (monitor, mtouchpack, out errorOutput);
-				if (code != 0) {
-					result.AddError ("Embedding the provisioning profile failed: " + errorOutput);
+				try {
+					File.Copy (provisionFile, conf.AppDirectory.Combine ("embedded.mobileprovision"), true);
+				} catch (IOException ex) {
+					result.AddError ("Embedding the provisioning profile failed: " + ex.Message);
 					return result;
 				}
 				
@@ -485,7 +489,8 @@ namespace MonoDevelop.IPhone
 				
 				monitor.BeginTask (GettextCatalog.GetString ("Processing entitlements file"), 0);
 				
-				mtouchpack = GetTool ("mtouchpack", proj, monitor, out mtpResult);
+				BuildResult mtpResult;
+				var mtouchpack = GetTool ("mtouchpack", proj, monitor, out mtpResult);
 				if (mtouchpack == null)
 					return result.Append (mtpResult);
 				
@@ -499,7 +504,7 @@ namespace MonoDevelop.IPhone
 				
 				xcentName = Path.ChangeExtension (conf.OutputAssembly, ".xcent");
 				
-				mtouchpack.Arguments = string.Format ("-ppu \"{0}\" -entitlements -format xml -o \"{1}\"", entitlementsFile, xcentName);
+				mtouchpack.Arguments = string.Format ("-genxcent \"{0}\" -entitlements \"{1}\" -appid=\"{2}\"", xcentName, entitlementsFile, appid);
 				monitor.Log.WriteLine ("mtouchpack " + mtouchpack.Arguments);
 				
 				code = ExecuteCommand (monitor, mtouchpack, out errorOutput);
