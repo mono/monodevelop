@@ -212,7 +212,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				bool retval = base.KeyPress (key, keyChar, modifier);
 
 				stateTracker.UpdateEngine ();
-				
+
 				//handle inserted characters
 				if (Editor.CursorPosition <= 0 || Editor.SelectionStartPosition < Editor.SelectionEndPosition)
 					return retval;
@@ -235,15 +235,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 					stateTracker.UpdateEngine ();
 //					DoReSmartIndent ();
 				}
-				
+
 				stateTracker.UpdateEngine ();
-				
+
 				return retval;
 			}
-			
+
 			if (TextEditorProperties.IndentStyle == IndentStyle.Auto && TextEditorProperties.TabIsReindent && key == Gdk.Key.Tab) {
+				bool retval = base.KeyPress (key, keyChar, modifier);
 				DoReSmartIndent ();
-				return false;
+				return retval;
 			}
 			
 			//pass through to the base class, which actually inserts the character
