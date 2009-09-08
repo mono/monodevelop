@@ -163,7 +163,7 @@ namespace PropertyList
 			set { root = value; }
 		}
 
-		public override void Write (System.Xml.XmlTextWriter writer)
+		public override void Write (System.Xml.XmlWriter writer)
 		{
 			writer.WriteStartDocument ();
 			writer.WriteDocType ("plist", "-//Apple Computer//DTD PLIST 1.0//EN", "http://www.apple.com/DTDs/PropertyList-1.0.dtd", null);

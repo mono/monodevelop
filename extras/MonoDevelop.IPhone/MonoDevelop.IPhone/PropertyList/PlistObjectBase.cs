@@ -31,7 +31,7 @@ namespace PropertyList
 {
 	public abstract class PlistObjectBase
 	{
-		public abstract void Write (System.Xml.XmlTextWriter writer);
+		public abstract void Write (System.Xml.XmlWriter writer);
 
 		protected static PlistObjectBase ObjectToPlistObject (object value)
 		{

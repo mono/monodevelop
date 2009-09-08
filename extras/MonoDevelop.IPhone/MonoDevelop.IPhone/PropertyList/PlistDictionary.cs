@@ -68,7 +68,7 @@ namespace PropertyList
 			}
 		}
 
-		public override void Write (System.Xml.XmlTextWriter writer)
+		public override void Write (System.Xml.XmlWriter writer)
 		{
 			writer.WriteStartElement ("dict");
 			foreach (KeyValuePair<string, PlistObjectBase> item in this) {

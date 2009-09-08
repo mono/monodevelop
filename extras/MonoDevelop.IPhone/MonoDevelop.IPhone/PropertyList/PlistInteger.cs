@@ -34,7 +34,7 @@ namespace PropertyList
 		{
 		}
 
-		public override void Write (System.Xml.XmlTextWriter writer)
+		public override void Write (System.Xml.XmlWriter writer)
 		{
 			writer.WriteElementString ("integer", Value.ToString ());
 		}

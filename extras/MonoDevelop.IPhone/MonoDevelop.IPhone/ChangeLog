@@ -1,5 +1,19 @@
 2009-09-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* PropertyList/PlistReal.cs:
+	* PropertyList/PlistData.cs:
+	* PropertyList/PlistDate.cs:
+	* PropertyList/PlistArray.cs:
+	* PropertyList/PlistString.cs:
+	* PropertyList/PlistInteger.cs:
+	* PropertyList/PlistBoolean.cs:
+	* PropertyList/PlistDocument.cs:
+	* PropertyList/PlistDictionary.cs:
+	* PropertyList/PlistObjectBase.cs: Write to an XmlWriter not
+	  an XmlTextWriter.
+
+2009-09-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MobileProvision.cs: Expose the profile directory as a
 	  property.
 

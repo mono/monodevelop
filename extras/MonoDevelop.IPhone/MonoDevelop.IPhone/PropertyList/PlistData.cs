@@ -34,7 +34,7 @@ namespace PropertyList
 		{
 		}
 
-		public override void Write (System.Xml.XmlTextWriter writer)
+		public override void Write (System.Xml.XmlWriter writer)
 		{
 			writer.WriteStartElement ("data");
 			writer.WriteBase64 (Value, Value.Length, 1);

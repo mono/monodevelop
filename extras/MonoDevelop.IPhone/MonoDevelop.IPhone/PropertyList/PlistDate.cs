@@ -38,7 +38,7 @@ namespace PropertyList
 
 		static readonly string plistDateFormat = "yyyy-mm-ddThh:mm:ssZ";
 		
-		public override void Write (System.Xml.XmlTextWriter writer)
+		public override void Write (System.Xml.XmlWriter writer)
 		{
 			writer.WriteElementString ("date", Value.ToUniversalTime ().ToString (plistDateFormat));
 		}
