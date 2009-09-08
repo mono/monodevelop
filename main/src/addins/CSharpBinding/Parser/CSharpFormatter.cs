@@ -101,9 +101,9 @@ namespace CSharpBinding.Parser
 		public static void Format (TextEditorData data, ProjectDom dom, ICompilationUnit unit, MonoDevelop.Ide.Gui.TextEditor editor, DomLocation caretLocation)
 		{
 			IType type = NRefactoryResolver.GetTypeAtCursor (unit, unit.FileName, caretLocation);
-			if (type == null) 
+			if (type == null)
 				return; 
-
+			
 			IMember member = NRefactoryResolver.GetMemberAt (type, caretLocation);
 			if (member == null)  
 				return;
@@ -204,15 +204,16 @@ namespace CSharpBinding.Parser
 		{
 			data.Document.BeginAtomicUndo ();
 //			DocumentLocation caretLocation = data.Caret.Location;
-			
+
 			int selAnchor = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Anchor) : -1;
 			int selLead = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Lead) : -1;
 			int textOffset = 0;
 			int caretOffset = data.Caret.Offset;
+			
 			while (textOffset < formattedText.Length && offset < data.Caret.Offset) {
 				char ch1 = data.Document.GetCharAt (offset);
 				char ch2 = formattedText[textOffset];
-				
+
 				if (ch1 == ch2) {
 					textOffset++;
 					offset++;
@@ -220,24 +221,25 @@ namespace CSharpBinding.Parser
 				} else if (ch1 == '\n') {
 					LineSegment line = data.Document.GetLineByOffset (offset);
 					string indent = line.GetIndentation (data.Document) + TextEditorProperties.IndentString;
-					if (offset < caretOffset) {
+					if (offset < caretOffset)
 						caretOffset += indent.Length;
-					}
 					offset++;
 					data.Insert (offset, indent);
 					offset += indent.Length;
-					
+
 					// skip all white spaces in formatted text - we had a line break
 					while (textOffset < formattedText.Length && (formattedText[textOffset] == ' ' || formattedText[textOffset] == '\t')) {
 						textOffset++;
 					}
 					continue;
 				}
-				bool ch1Ws = Char.IsWhiteSpace (ch1); 
+				bool ch1Ws = Char.IsWhiteSpace (ch1);
 				bool ch2Ws = Char.IsWhiteSpace (ch2);
-				
+
 				if (ch2Ws && !ch1Ws) {
 					data.Insert (offset, ch2.ToString ());
+					if (offset < caretOffset)
+						caretOffset ++;
 					if (offset < selAnchor)
 						selAnchor++;
 					if (offset < selLead)
