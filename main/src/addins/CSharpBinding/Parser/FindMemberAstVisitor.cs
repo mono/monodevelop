@@ -522,8 +522,6 @@ namespace MonoDevelop.CSharpBinding
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
 					if (item != null && item is IType && ((IType)item).FullName == ((IType)searchedMember).FullName) {
 					//	Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
-						Console.WriteLine ("result:" + result);
-					
 						AddUniqueReference (line, col, idExp.Identifier);
 					}
 				} else if (searchedMember is LocalVariable && result is LocalVariableResolveResult) {

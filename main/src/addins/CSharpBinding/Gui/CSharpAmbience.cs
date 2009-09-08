@@ -395,7 +395,6 @@ namespace MonoDevelop.CSharpBinding
 			if (result.Length > 0 && !result.ToString ().EndsWith (" "))
 				result.Append (settings.Markup (" "));
 			if (settings.UseFullName && type.DeclaringType != null) {
-				Console.WriteLine (settings.IncludeGenerics);
 				result.Append (Visit (type.DeclaringType, settings));
 				result.Append (settings.Markup ("."));
 			}
