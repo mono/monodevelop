@@ -73,14 +73,22 @@ namespace CSharpBinding.Parser
 				return "";
 			}
 			end = data.Document.GetMatchingBracketOffset (offset);
-			if (end < 0) 
-				return ""; 
+			if (end < 0)
+				return "";
 
 			result.Append ("class " + member.DeclaringType.Name + " {");
-			result.Append (data.Document.GetTextBetween (start, end + 1));
+			for (int i = start; i <= end; i++) {
+				char ch = data.Document.GetCharAt (i);
+				switch (ch) {
+				case '\n':
+				case '\r':
+					break;
+				default:
+					result.Append (ch);
+					break;
+				}
+			}
 			result.Append ("}");
-
-
 			return result.ToString ();
 		}
 
@@ -136,9 +144,9 @@ namespace CSharpBinding.Parser
 			int len1 = formattedText.IndexOf ('{') + 1;
 			int last = formattedText.LastIndexOf ('}');
 			formattedText = formattedText.Substring (len1, last - len1 - 1);
-/*			Console.WriteLine ("----------");
+/*			Console.WriteLine ("----------Original:");
 			Console.WriteLine (wrapper.Replace ("\t", "--->").Replace (" ", "°"));
-			Console.WriteLine ("----------");
+			Console.WriteLine ("----------Formatted:");
 			Console.WriteLine (formattedText.Replace ("\t", "--->").Replace (" ", "°"));
 			Console.WriteLine ("----------");*/
 			int textLength = CanInsertFormattedText (data, startPos - 1, formattedText);
@@ -159,7 +167,7 @@ namespace CSharpBinding.Parser
 				char ch2 = formattedText[textOffset];
 				bool ch1Ws = Char.IsWhiteSpace (ch1);
 				bool ch2Ws = Char.IsWhiteSpace (ch2);
-				
+
 				if (ch1 == ch2) {
 					textOffset++;
 					offset++;
@@ -169,8 +177,14 @@ namespace CSharpBinding.Parser
 						caretOffset++;
 					offset++;
 					// skip Ws
-					while (textOffset < formattedText.Length && (formattedText[textOffset] == ' ' || formattedText[textOffset] == '\t')) {
+					
+					while (textOffset < formattedText.Length && IsPlainWhitespace (formattedText[textOffset])) {
 						textOffset++;
+					}
+
+					offset++;
+					while (offset < data.Caret.Offset && IsPlainWhitespace (data.Document.GetCharAt (offset))) {
+						offset++;
 					}
 					continue;
 				}
@@ -209,28 +223,34 @@ namespace CSharpBinding.Parser
 			int selLead = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Lead) : -1;
 			int textOffset = 0;
 			int caretOffset = data.Caret.Offset;
-			
-			while (textOffset < formattedText.Length && offset < data.Caret.Offset) {
+
+			while (textOffset < formattedText.Length && offset < caretOffset) {
 				char ch1 = data.Document.GetCharAt (offset);
 				char ch2 = formattedText[textOffset];
-
+//				Console.WriteLine (((int)ch1) + ":" + ch1 + " -- " + ((int)ch2) + ": " + ch2);
 				if (ch1 == ch2) {
 					textOffset++;
 					offset++;
 					continue;
 				} else if (ch1 == '\n') {
 					LineSegment line = data.Document.GetLineByOffset (offset);
-					string indent = line.GetIndentation (data.Document) + TextEditorProperties.IndentString;
-					if (offset < caretOffset)
-						caretOffset += indent.Length;
-					offset++;
-					data.Insert (offset, indent);
-					offset += indent.Length;
+//					string indent = line.GetIndentation (data.Document) + TextEditorProperties.IndentString;
+//					if (offset < caretOffset)
+//						caretOffset += indent.Length;
+//					data.Insert (offset, indent);
+//					offset += indent.Length;
 
 					// skip all white spaces in formatted text - we had a line break
-					while (textOffset < formattedText.Length && (formattedText[textOffset] == ' ' || formattedText[textOffset] == '\t')) {
+					
+					while (textOffset < formattedText.Length && IsPlainWhitespace (formattedText[textOffset])) {
 						textOffset++;
 					}
+
+					offset++;
+					while (offset < data.Caret.Offset && IsPlainWhitespace (data.Document.GetCharAt (offset))) {
+						offset++;
+					}
+					
 					continue;
 				}
 				bool ch1Ws = Char.IsWhiteSpace (ch1);
@@ -239,7 +259,7 @@ namespace CSharpBinding.Parser
 				if (ch2Ws && !ch1Ws) {
 					data.Insert (offset, ch2.ToString ());
 					if (offset < caretOffset)
-						caretOffset ++;
+						caretOffset++;
 					if (offset < selAnchor)
 						selAnchor++;
 					if (offset < selLead)
@@ -248,7 +268,7 @@ namespace CSharpBinding.Parser
 					offset++;
 					continue;
 				}
-				
+
 				if ((!ch2Ws || ch2 == '\n') && ch1Ws) {
 					if (offset < caretOffset)
 						caretOffset--;
@@ -261,11 +281,12 @@ namespace CSharpBinding.Parser
 				}
 				if (ch1Ws && ch2Ws) {
 					data.Replace (offset, 1, ch2.ToString ());
-					
+
 					textOffset++;
 					offset++;
 					continue;
 				}
+//				Console.WriteLine ("BAIL OUT");
 				break;
 			}
 			data.Caret.Offset = caretOffset;
@@ -273,6 +294,11 @@ namespace CSharpBinding.Parser
 			if (selAnchor >= 0)
 				data.MainSelection = new Selection (data.Document.OffsetToLocation (selAnchor), data.Document.OffsetToLocation (selLead));
 			data.Document.EndAtomicUndo ();
+		}
+
+		static bool IsPlainWhitespace (char ch)
+		{
+			return ch == ' ' || ch == '\t';
 		}
 
 		public static bool InFormat = false;
