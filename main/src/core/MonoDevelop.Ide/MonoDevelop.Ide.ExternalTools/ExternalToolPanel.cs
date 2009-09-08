@@ -326,7 +326,6 @@ namespace MonoDevelop.Ide.ExternalTools
 		
 		static string FilterPath (string path)
 		{
-			System.Console.WriteLine(path + " -> " + StringParserService.Parse (path));
 			return StringParserService.Parse (path);
 		}
 
