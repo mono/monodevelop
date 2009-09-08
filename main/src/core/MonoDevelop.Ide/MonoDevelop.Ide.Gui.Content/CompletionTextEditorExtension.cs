@@ -216,7 +216,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			currentCompletionContext = completionWidget.CreateCodeCompletionContext (cpos);
 			currentCompletionContext.TriggerWordLength = wlen;
 			completionList = ShowCodeSurroundingsCommand (currentCompletionContext);
-			
+			//Console.WriteLine ("comp list:" + completionList);
 			if (completionList != null)
 				CompletionWindowManager.ShowWindow ((char)0, completionList, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
 			else
@@ -337,6 +337,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual ICompletionDataList ShowCodeSurroundingsCommand (ICodeCompletionContext completionContext)
 		{
 			CompletionDataList list = new CompletionDataList ();
+			list.CompletionSelectionMode = CompletionSelectionMode.OwnTextField;
 			ITemplateWidget templateWidget = Document.GetContent<ITemplateWidget> ();
 			CodeTemplateContext ctx = CodeTemplateContext.Standard;
 			if (templateWidget != null)
