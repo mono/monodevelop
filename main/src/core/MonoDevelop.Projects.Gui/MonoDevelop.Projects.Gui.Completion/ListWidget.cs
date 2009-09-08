@@ -250,26 +250,28 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int ypos = margin;
 			int lineWidth = winWidth - margin * 2;
 			int xpos = margin + padding;
-			if (filteredItems.Count == 0) {
-				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = new Gdk.Color (0xff, 0xbc, 0xc1);
-				this.GdkWindow.DrawRectangle (gc, true, 0, 0, Allocation.Width, Allocation.Height);
-				gc.Dispose ();
-				layout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("No suggestions"));
-				int width, height;
-				layout.GetPixelSize (out width, out height);
-				this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), (Allocation.Width - width) / 2, (Allocation.Height - height) / 2, layout);
-				return;
-			}
+
 			if (PreviewCompletionString) {
 				layout.SetText (string.IsNullOrEmpty (CompletionString) ? MonoDevelop.Core.GettextCatalog.GetString ("Select template") : CompletionString);
 				int wi, he;
 				layout.GetPixelSize (out wi, out he);
 				this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Insensitive), true, margin, ypos, lineWidth, he + padding);
-				this.GdkWindow.DrawLayout (string.IsNullOrEmpty (CompletionString) ? this.Style.TextGC (StateType.Insensitive) : this.Style.TextGC (StateType.Normal) , xpos, ypos, layout);
+				this.GdkWindow.DrawLayout (string.IsNullOrEmpty (CompletionString) ? this.Style.TextGC (StateType.Insensitive) : this.Style.TextGC (StateType.Normal), xpos, ypos, layout);
 				ypos += rowHeight;
 			}
 
+			if (filteredItems.Count == 0) {
+				Gdk.GC gc = new Gdk.GC (GdkWindow);
+				gc.RgbFgColor = new Gdk.Color (0xff, 0xbc, 0xc1);
+				this.GdkWindow.DrawRectangle (gc, true, 0, ypos, Allocation.Width, Allocation.Height - ypos);
+				gc.Dispose ();
+				layout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("No suggestions"));
+				int width, height;
+				layout.GetPixelSize (out width, out height);
+				this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), (Allocation.Width - width) / 2, ypos + (Allocation.Height - height - ypos) / 2, layout);
+				return;
+			}
+			
 			int n = 0;
 			while (ypos < winHeight - margin && (page + n) < filteredItems.Count) {
 				bool hasMarkup = win.DataProvider.HasMarkup (filteredItems[page + n]);

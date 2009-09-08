@@ -127,7 +127,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		protected void ResetSizes ()
 		{
 			list.FilterWords ();
-			if (list.filteredItems.Count == 0) {
+			if (list.filteredItems.Count == 0 && !list.PreviewCompletionString) {
 				Hide ();
 			} else {
 				if (!Visible)
