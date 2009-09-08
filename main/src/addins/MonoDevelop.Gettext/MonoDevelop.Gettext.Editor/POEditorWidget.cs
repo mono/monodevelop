@@ -543,20 +543,21 @@ namespace MonoDevelop.Gettext
 			catalog.GetStatistics (out all, out fuzzy, out missing, out bad, out untrans);
 			double percentage = all > 0 ? ((double)(all - untrans) / all) * 100 : 0.0;
 			string barText = String.Format (GettextCatalog.GetString ("{0:#00.00}% Translated"), percentage);
-			if (missing > 0 || fuzzy > 0)
+			if (untrans > 0 || fuzzy > 0)
 				barText += " (";
-			
-			if (fuzzy > 0) {
-				barText += String.Format (GettextCatalog.GetPluralString ("{0} Fuzzy Message", "{0} Fuzzy Messages", fuzzy), fuzzy);
+
+			if (untrans > 0) {
+				barText += String.Format (GettextCatalog.GetPluralString ("{0} Missing Message", "{0} Missing Messages", untrans), untrans);
 			}
-			
-			if (missing > 0) {
-				if (fuzzy > 0) {
+
+			if (fuzzy > 0) {
+				if (untrans > 0) {
 					barText += ", ";
 				}
-				barText += String.Format (GettextCatalog.GetPluralString ("{0} Missing Message", "{0} Missing Messages", missing), missing);
+				barText += String.Format (GettextCatalog.GetPluralString ("{0} Fuzzy Message", "{0} Fuzzy Messages", fuzzy), fuzzy);
 			}
-			if (missing > 0 || fuzzy > 0)
+
+			if (untrans > 0 || fuzzy > 0)
 				barText += ")";
 			
 			this.progressbar1.Text = barText;

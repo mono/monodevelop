@@ -1,3 +1,8 @@
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Fixed progress
+	  bar status message.
+
 2009-09-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Show file icon
