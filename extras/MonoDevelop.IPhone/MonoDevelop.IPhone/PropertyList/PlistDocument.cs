@@ -147,7 +147,7 @@ namespace PropertyList
 			Debug.Assert (reader.NodeType == XmlNodeType.Element && reader.LocalName == "key");
 			while (!reader.EOF && reader.NodeType == XmlNodeType.Element) {
 				string key = reader.ReadElementString ();
-				while (reader.Read () && reader.NodeType != XmlNodeType.Element)
+				while (reader.NodeType != XmlNodeType.Element && reader.Read ())
 					if (reader.NodeType == XmlNodeType.EndElement)
 						throw new Exception (String.Format ("No value found for key {0}", key));
 				PlistObjectBase result = LoadFromNode (reader);
