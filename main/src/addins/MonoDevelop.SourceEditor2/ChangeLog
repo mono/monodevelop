@@ -1,3 +1,8 @@
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
+	  537375 - Completed text not immediately updated'.
+
 2009-09-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed build.

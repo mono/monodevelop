@@ -986,19 +986,21 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.DeleteSelectedText ();
 			}
 
-			int idx = complete_word.IndexOf ('|'); // | in the completion text now marks the caret position
+			// | in the completion text now marks the caret position
+			int idx = complete_word.IndexOf ('|');
 			if (idx >= 0) {
 				complete_word = complete_word.Remove (idx, 1);
 			} else {
 				idx = complete_word.Length;
 			}
 			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
-			
+
 			triggerOffset += TextEditor.GetTextEditorData ().EnsureCaretIsNotVirtual ();
 			this.widget.TextEditor.Document.EndAtomicUndo ();
 			this.widget.TextEditor.Replace (triggerOffset, length, complete_word);
 			this.widget.TextEditor.Caret.Offset += complete_word.Length - length;
 			this.widget.TextEditor.Document.BeginAtomicUndo ();
+			this.widget.TextEditor.Document.CommitLineUpdate (this.widget.TextEditor.Caret.Line);
 		}
 		
 		void FireCompletionContextChanged ()
