@@ -1,3 +1,18 @@
+2009-09-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MobileProvision.cs: Expose the profile directory as a
+	  property.
+
+	* Keychain.cs: Remove now-unused method.
+
+	* IPhoneBuildExtension.cs: Implement all the remaining
+	  packaging steps - compressing resources, embedding the
+	  mobile provision, and code signing with entitlements,
+	  resources rules and additional args.
+
+	* IPhoneProjectConfiguration.cs: Add serializable properties
+	  for all the code signing options.
+
 2009-09-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneBuildExtension.cs: In the clean step, remove the

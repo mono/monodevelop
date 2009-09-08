@@ -123,46 +123,21 @@ namespace MonoDevelop.IPhone
 				if (result.Append (UpdateInfoPlist (monitor, proj, conf, appInfoIn)).ErrorCount > 0)
 					return result;
 			
-			var pkgInfo = conf.AppDirectory.Combine ("PkgInfo");
-			if (!File.Exists (pkgInfo))
-				using (var f = File.OpenWrite (pkgInfo))
-					f.Write (new byte [] { 0X41, 0X50, 0X50, 0X4C, 0x3f, 0x3f, 0x3f, 0x3f}, 0, 8);
+			if (result.Append (ProcessPackaging (monitor, proj, conf)).ErrorCount > 0)
+				return result;
 			
-			if (conf.Platform == IPhoneProject.PLAT_IPHONE) {
-				monitor.BeginTask (GettextCatalog.GetString ("Signing application"), 0);
-				
-				string savedKeyName = Keychain.GetStoredCertificateName (proj, false);
-				string installedKeyName = Keychain.GetInstalledCertificateName (false, savedKeyName);
-				
-				if (String.IsNullOrEmpty (installedKeyName)) {
-					result.AddWarning ("No signing key is available. The application will not be signed");
-				} else {
-					if (savedKeyName != null && savedKeyName != installedKeyName)
-						result.AddWarning (String.Format ("Signing key '{0}' not found. The default key will be used.", savedKeyName));
-					
-					int signResultCode;
-					var psi = new ProcessStartInfo ("codesign") {
-						UseShellExecute = false,
-						RedirectStandardError = true,
-						RedirectStandardOutput = true,
-						Arguments = String.Format ("-v -s \"{0}\" \"{1}\"", installedKeyName, mtouchOutput),
-					};
-					psi.EnvironmentVariables.Add ("CODESIGN_ALLOCATE", "/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate");
-					string output;
-					if ((signResultCode = ExecuteCommand (monitor, psi, out output)) != 0) {
-						result.AddError (string.Format ("Code signing failed with error code {0}: {1}", signResultCode, output));
-						return result;
-					}
-				}
-				monitor.EndTask ();
-			}
 			//TODO: create/update the xcode project
 			return result;
 		}
 
 		static internal void AppendExtrasMtouchArgs (StringBuilder args, IPhoneProject proj, IPhoneProjectConfiguration conf)
 		{
-			if (!String.IsNullOrEmpty (conf.ExtraMtouchArgs)) {
+			AppendExtraArgs (args, conf.ExtraMtouchArgs, proj, conf);
+		}
+		
+		static void AppendExtraArgs (StringBuilder args, string extraArgs, IPhoneProject proj, IPhoneProjectConfiguration conf)
+		{
+			if (!String.IsNullOrEmpty (extraArgs)) {
 				args.Append (" ");
 				var customTags = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase) {
 					{ "projectdir", proj.BaseDirectory },
@@ -173,11 +148,11 @@ namespace MonoDevelop.IPhone
 					{ "targetname", conf.CompiledOutputName.FileName },
 					{ "targetext", conf.CompiledOutputName.Extension },
 				};
-				string mtExtraArgs = StringParserService.Parse (conf.ExtraMtouchArgs, customTags);
-				args.Append (mtExtraArgs);
+				string substExtraArgs = StringParserService.Parse (extraArgs, customTags);
+				args.Append (" ");
+				args.Append (substExtraArgs);
 			}
 		}
-
 		
 		BuildResult UpdateInfoPlist (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf, ProjectFile template)
 		{
@@ -244,12 +219,6 @@ namespace MonoDevelop.IPhone
 					writer.Formatting = Formatting.Indented;
 					doc.Write (writer);
 				}
-				if (!sim) {
-					using (XmlTextWriter writer = new XmlTextWriter (conf.AppDirectory.Combine ("ResourceRules.plist"), Encoding.UTF8)) {
-						writer.Formatting = Formatting.Indented;
-						GenerateResourceRulesPlist ().Write (writer);
-					}
-				}
 			} catch (Exception ex) {
 				var result = new BuildResult ();
 				result.AddError (plistOut, 0, 0, null, ex.Message);
@@ -258,8 +227,6 @@ namespace MonoDevelop.IPhone
 			} finally {
 				monitor.EndTask ();
 			}
-			
-			//TODO: compile PLists to binary
 			
 			return null;
 		}
@@ -290,9 +257,14 @@ namespace MonoDevelop.IPhone
 		
 		internal ProcessStartInfo GetMTouch (IPhoneProject project, IProgressMonitor monitor, out BuildResult error)
 		{
-			var mtouch = project.TargetRuntime.GetToolPath (project.TargetFramework, "mtouch");
-			if (String.IsNullOrEmpty (mtouch)) {
-				var err = GettextCatalog.GetString ("Error: Unable to find 'mtouch' tool.");
+			return GetTool ("mtouch", project, monitor, out error);
+		}
+		
+		internal ProcessStartInfo GetTool (string tool, IPhoneProject project, IProgressMonitor monitor, out BuildResult error)
+		{
+			var toolPath = project.TargetRuntime.GetToolPath (project.TargetFramework, tool);
+			if (String.IsNullOrEmpty (toolPath)) {
+				var err = GettextCatalog.GetString ("Error: Unable to find '" + tool + "' tool.");
 				monitor.ReportError (err, null);
 				error = new BuildResult ();
 				error.AddError (null, 0, 0, null, err);
@@ -300,7 +272,7 @@ namespace MonoDevelop.IPhone
 			}
 			
 			error = null;
-			return new ProcessStartInfo (mtouch) {
+			return new ProcessStartInfo (toolPath) {
 				UseShellExecute = false,
 				RedirectStandardError = true,
 				RedirectStandardOutput = true,
@@ -442,6 +414,178 @@ namespace MonoDevelop.IPhone
 				}
 				monitor.EndTask ();
 			}
+			return result;
+		}
+		
+		BuildResult ProcessPackaging (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf)
+		{
+			bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
+			bool dist = !sim && !string.IsNullOrEmpty (conf.CodesignKey) && conf.CodesignKey.StartsWith (Keychain.DIST_CERT_PREFIX);
+			BuildResult result = new BuildResult ();
+			
+			//don't bother signing in the sim
+			if (sim)
+				return null;
+			
+			var pkgInfo = conf.AppDirectory.Combine ("PkgInfo");
+			if (!File.Exists (pkgInfo))
+				using (var f = File.OpenWrite (pkgInfo))
+					f.Write (new byte [] { 0X41, 0X50, 0X50, 0X4C, 0x3f, 0x3f, 0x3f, 0x3f}, 0, 8);
+			
+			monitor.BeginTask (GettextCatalog.GetString ("Compressing resources"), 0);
+			
+			var optTool = new ProcessStartInfo () {
+				FileName = "/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/iphoneos-optimize",
+				Arguments = conf.AppDirectory,
+			};
+			
+			monitor.Log.WriteLine (optTool.FileName + " " + optTool.Arguments);
+			string errorOutput;
+			int code = ExecuteCommand (monitor, optTool, out errorOutput);
+			if (code != 0) {
+				result.AddError ("Compressing the resources failed: " + errorOutput);
+				return result;
+			}
+			
+			monitor.EndTask ();
+			
+			string xcentName = null;
+			
+			if (dist) {
+				monitor.BeginTask (GettextCatalog.GetString ("Embedding provisioning profile"), 0);
+				
+				if (string.IsNullOrEmpty (conf.CodesignProvision)) {
+					string err = string.Format ("Provisioning profile missing from code signing settings");
+					result.AddError (err);
+					return result;
+				}
+				
+				BuildResult mtpResult;
+				var mtouchpack = GetTool ("mtouchpack", proj, monitor, out mtpResult);
+				if (mtouchpack == null)
+					return result.Append (mtpResult);
+				
+				string provisionFile = MobileProvision.ProfileDirectory.Combine (conf.CodesignProvision).ChangeExtension (".mobileprovision");
+				if (!File.Exists (provisionFile)) {
+					string err = string.Format ("The provisioning profile '{0}' could not be found", conf.CodesignProvision);
+					result.AddError (err);
+					return result;
+				}
+				
+				mtouchpack.Arguments = string.Format ("-ppu \"{0}\" -o \"{1}\"", provisionFile, conf.AppDirectory.Combine ("embedded.mobileprovision"));
+				monitor.Log.WriteLine (mtouchpack.FileName + " " + mtouchpack.Arguments);
+				
+				code = ExecuteCommand (monitor, mtouchpack, out errorOutput);
+				if (code != 0) {
+					result.AddError ("Embedding the provisioning profile failed: " + errorOutput);
+					return result;
+				}
+				
+				monitor.EndTask ();
+				
+				monitor.BeginTask (GettextCatalog.GetString ("Processing entitlements file"), 0);
+				
+				mtouchpack = GetTool ("mtouchpack", proj, monitor, out mtpResult);
+				if (mtouchpack == null)
+					return result.Append (mtpResult);
+				
+				string entitlementsFile = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/Entitlements.plist";
+				if (!string.IsNullOrEmpty (conf.CodesignEntitlements)) {
+					if (!File.Exists (conf.CodesignEntitlements))
+						result.AddWarning ("Entitlements file \"" + conf.CodesignEntitlements + "\" not found. Using default.");
+					else
+						entitlementsFile = conf.CodesignEntitlements;
+				}
+				
+				xcentName = Path.ChangeExtension (conf.OutputAssembly, ".xcent");
+				
+				mtouchpack.Arguments = string.Format ("-ppu \"{0}\" -entitlements -format xml -o \"{1}\"", entitlementsFile, xcentName);
+				monitor.Log.WriteLine ("mtouchpack " + mtouchpack.Arguments);
+				
+				code = ExecuteCommand (monitor, mtouchpack, out errorOutput);
+				if (code != 0) {
+					result.AddError ("Processing the entitlements failed: " + errorOutput);
+					return result;
+				}
+				
+				monitor.EndTask ();
+				
+				monitor.BeginTask (GettextCatalog.GetString ("Preparing resources rules"), 0);
+				
+				string resRulesFile = conf.AppDirectory.Combine ("ResourceRules.plist");
+				if (File.Exists (resRulesFile))
+					File.Delete (resRulesFile);
+				
+				bool addedResRules = false;
+				if (!string.IsNullOrEmpty (conf.CodesignResourceRules)) {
+					if (File.Exists (conf.CodesignResourceRules)) {
+						File.Copy (conf.CodesignResourceRules, resRulesFile);
+						addedResRules = true;
+					} else {
+						result.AddWarning ("Resources rules file \"" + conf.CodesignResourceRules + "\" not found. Using default.");
+					}
+				}
+				
+				if (!addedResRules) {
+					using (XmlTextWriter writer = new XmlTextWriter (conf.AppDirectory.Combine ("ResourceRules.plist"), Encoding.UTF8)) {
+						writer.Formatting = Formatting.Indented;
+						GenerateResourceRulesPlist ().Write (writer);
+					}
+				}
+				
+				monitor.EndTask ();
+			}
+			
+			if (String.IsNullOrEmpty (conf.CodesignKey)) {
+				monitor.Log.WriteLine ("Code signing disabled, skipping signing.");
+				return result;
+			}
+			
+			monitor.BeginTask (GettextCatalog.GetString ("Signing application"), 0);
+			
+			string installedKeyName;
+			
+			if (conf.CodesignKey == Keychain.DEV_CERT_PREFIX || conf.CodesignKey == Keychain.DIST_CERT_PREFIX) {
+				installedKeyName = Keychain.GetAllSigningIdentities ().Where (c => c.StartsWith (conf.CodesignKey)).FirstOrDefault ();
+			} else {
+				installedKeyName = Keychain.GetAllSigningIdentities ().Where (c => c == conf.CodesignKey).FirstOrDefault ();
+			}
+			
+			if (installedKeyName == null) {
+				result.AddError ("A key could not be found matching the name \"" + conf.CodesignKey + "\". The application will not be signed");
+				return result;
+			}
+			
+			var args = new StringBuilder ();
+			args.AppendFormat ("-v -f -s \"{0}\"", installedKeyName);
+			
+			if (dist) {
+				args.AppendFormat (" --resources-rules=\"{0}\" --entitlements \"{1}\"",
+				                   conf.AppDirectory.Combine ("ResourceRules.plist"), xcentName);
+			}
+			
+			args.Append (" ");
+			args.Append (conf.AppDirectory);
+			
+			AppendExtraArgs (args, conf.CodesignExtraArgs, proj, conf);
+				
+			int signResultCode;
+			var psi = new ProcessStartInfo ("codesign") {
+				UseShellExecute = false,
+				RedirectStandardError = true,
+				RedirectStandardOutput = true,
+				Arguments = args.ToString (),
+			};
+			
+			monitor.Log.WriteLine ("codesign ", psi.Arguments);
+			psi.EnvironmentVariables.Add ("CODESIGN_ALLOCATE", "/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate");
+			string output;
+			if ((signResultCode = ExecuteCommand (monitor, psi, out output)) != 0) {
+				result.AddError (string.Format ("Code signing failed with error code {0}: {1}", signResultCode, output));
+				return result;
+			}
+			monitor.EndTask ();
+			
 			return result;
 		}
 		

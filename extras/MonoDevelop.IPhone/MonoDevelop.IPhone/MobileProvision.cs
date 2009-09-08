@@ -45,16 +45,23 @@ namespace MonoDevelop.IPhone
 			return m;
 		}
 		
+		static readonly string profileDirectory =
+			((FilePath)Environment.GetFolderPath (Environment.SpecialFolder.Personal))
+			.Combine ("Library", "MobileDevice", "Provisioning Profiles");
+		
+		public static FilePath ProfileDirectory {
+			get { return profileDirectory; }
+		}
+		
 		public static IList<MobileProvision> GetAllInstalledProvisions ()
 		{
-			FilePath directory = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-			directory = directory.Combine ("Library", "MobileDevice", "Provisioning Profiles");
-			if (!Directory.Exists (directory))
+			
+			if (!Directory.Exists (ProfileDirectory))
 				return new MobileProvision[0];
 			
 			var list = new List<MobileProvision> ();
 			
-			foreach (string file in Directory.GetFiles (directory, "*.mobileprovision")) {
+			foreach (string file in Directory.GetFiles (ProfileDirectory, "*.mobileprovision")) {
 				var m = new MobileProvision ();
 				try {
 					m.Load (file);

@@ -300,8 +300,8 @@ namespace MonoDevelop.IPhone
 			return cert.Subject.Substring (start + 3, end - start - 3);
 		}
 		
-		public const string DEV_CERT_PREFIX  = "iPhone Developer:";
-		public const string DIST_CERT_PREFIX = "iPhone Distribution:";
+		public const string DEV_CERT_PREFIX  = "iPhone Developer";
+		public const string DIST_CERT_PREFIX = "iPhone Distribution";
 		
 		public static string GetStoredCertificateName (IPhoneProject project, bool distribution)
 		{
@@ -312,30 +312,6 @@ namespace MonoDevelop.IPhone
 					return key;
 			}
 			return null;
-		}
-		
-		/// <summary>
-		/// Gets the name of a valid iPhone code signing certificate.
-		/// </summary>
-		/// <param name="distribution">Whether the key is for distribution</param>
-		/// <param name="hint">An optional substring hint for the key name.</param>
-		/// <returns>A valid certificate name, or null if no certificate is available.</returns>
-		public static string GetInstalledCertificateName (bool distribution, string hint)
-		{	
-			string cmp = distribution? DIST_CERT_PREFIX : DEV_CERT_PREFIX;
-			var certs = GetAllSigningIdentities ().Where (c => c.StartsWith (cmp));
-			
-			if (String.IsNullOrEmpty (hint))
-				return certs.FirstOrDefault ();
-			
-			string best = null;
-			foreach (string certName in certs) {
-				if (certName.Contains (hint))
-					return certName;
-				else if (best == null)
-					best = certName;
-			}
-			return best;
 		}
 		
 		enum SecItemClass : uint

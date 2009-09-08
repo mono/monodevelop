@@ -68,12 +68,39 @@ namespace MonoDevelop.IPhone
 		[ItemProperty ("ExtraMtouchArgs")]
 		public string ExtraMtouchArgs { get; set; }
 		
+		[ItemProperty ("CodesignProvision")]
+		public string CodesignProvision { get; set; }
+		
+		[ItemProperty ("CodesignKey")]
+		public string CodesignKey { get; set; }
+		
+		[ProjectPathItemProperty ("CodesignEntitlements")]
+		string codesignEntitlements;
+		public FilePath CodesignEntitlements {
+			get { return codesignEntitlements; }
+			set { codesignEntitlements = value; }
+		}
+		
+		[ProjectPathItemProperty ("CodesignResourceRules")]
+		string codesignResourceRules;
+		public FilePath CodesignResourceRules {
+			get { return codesignResourceRules; }
+			set { codesignResourceRules = value; }
+		}
+		
+		[ItemProperty ("CodesignExtraArgs")]
+		public string CodesignExtraArgs { get; set; }
+		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			var cfg = (IPhoneProjectConfiguration) configuration;
 			base.CopyFrom (configuration);
 			ExtraMtouchArgs = cfg.ExtraMtouchArgs;
+			CodesignProvision = cfg.CodesignProvision;
+			CodesignKey = cfg.CodesignKey;
+			CodesignEntitlements = cfg.CodesignEntitlements;
+			CodesignResourceRules = cfg.CodesignResourceRules;
+			CodesignExtraArgs = cfg.CodesignExtraArgs;
 		}
-		
 	}
 }
