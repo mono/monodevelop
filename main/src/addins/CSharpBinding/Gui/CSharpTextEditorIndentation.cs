@@ -176,7 +176,8 @@ namespace MonoDevelop.CSharpBinding.Gui
 		{
 			cursorPositionBeforeKeyPress = Editor.CursorPosition;
 			bool isSomethingSelected = Editor.SelectionEndPosition - Editor.SelectionStartPosition > 0;
-			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !DoInsertTemplate () && !isSomethingSelected) {
+			
+			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
 				int cursor = Editor.CursorPosition;
 
 				if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {

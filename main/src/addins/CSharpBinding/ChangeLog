@@ -1,5 +1,11 @@
 2009-09-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorIndentation.cs: fixed "Bug 537187 - When
+	  'interpret tab as reindent' option is set, code templates
+	  don't work".
+
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CSharpFormatter.cs: Fixed "Bug 537318 - Text curser
 	  misplaced on automatic refactoring (adding spaces etc. when
 	  pressing ';')".
