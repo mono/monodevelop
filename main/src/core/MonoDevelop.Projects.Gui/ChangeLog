@@ -1,5 +1,10 @@
 2009-09-08  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  removed debug message.
+
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Display
 	  no suggestions message in preview completion string mode,

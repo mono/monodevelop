@@ -137,7 +137,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.closedDelegate = closedDelegate;
 			mutableList = completionDataList as IMutableCompletionDataList;
 			List.PreviewCompletionString = completionDataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField;
-			Console.WriteLine (List.PreviewCompletionString);
 
 			if (mutableList != null) {
 				mutableList.Changing += OnCompletionDataChanging;
