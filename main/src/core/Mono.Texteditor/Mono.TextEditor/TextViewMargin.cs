@@ -1830,6 +1830,7 @@ namespace Mono.TextEditor
 
 				int offset = line.Offset;
 				yp %= margin.LineHeight;
+				xp += (int)margin.textEditor.HAdjustment.Value;
 				xp *= (int)Pango.Scale.PangoScale;
 				yp *= (int)Pango.Scale.PangoScale;
 				int column = 0;
