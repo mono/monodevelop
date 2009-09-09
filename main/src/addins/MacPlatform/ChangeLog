@@ -1,3 +1,10 @@
+2009-09-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Commands.cs:
+	* Makefile.am:
+	* MacPlatform.csproj:
+	* MacPlatform.addin.xml: Add a Minimize command.
+
 2009-09-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.cs: Change default font to Monaco now that the

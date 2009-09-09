@@ -79,6 +79,7 @@
     <Compile Include="Framework\Carbon.cs" />
     <Compile Include="Framework\CoreFoundation.cs" />
     <Compile Include="Framework\HIToolbox.cs" />
+    <Compile Include="Commands.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
