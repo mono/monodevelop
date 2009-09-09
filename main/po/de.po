@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-09 11:15:48+0200\n"
-"PO-Revision-Date: 2009-09-09 11:16:50+0200\n"
+"PO-Revision-Date: 2009-09-09 11:24:22+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -6672,11 +6672,11 @@ msgstr "Sperre aufheben"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:119
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:123
 msgid "Show Annotations"
-msgstr "Annotationen anzeigen"
+msgstr "Verfasser anzeigen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:127
 msgid "Hide Annotations"
-msgstr "Annotationen verstecken"
+msgstr "Verfasser verstecken"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:130
 msgid "Create _Patch"
@@ -14124,7 +14124,7 @@ msgstr "XML Schliesstags automatisch einfügen"
 
 #: ../src/addins/MonoDevelop.XmlEditor/gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs:47
 msgid "Show schema annotation"
-msgstr "Schema Annotation anzeigen"
+msgstr "Schema Anmerkungen anzeigen"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:70
 msgid "Built in"
@@ -14194,7 +14194,7 @@ msgstr "Autocomplete Elemente"
 
 #: ../src/addins/MonoDevelop.XmlEditor/XmlEditor.glade:49
 msgid "Show Schema Annotation"
-msgstr "Schema Annotation anzeigen"
+msgstr "Schema Anmerkungen anzeigen"
 
 #: ../src/addins/MonoDevelop.XmlEditor/XmlEditor.glade:69
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:114
@@ -16919,7 +16919,6 @@ msgstr "T4 Schablone"
 #~ msgstr "Ab_wärts"
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
-
 #~ msgid "Question"
 #~ msgstr "Frage"
 
