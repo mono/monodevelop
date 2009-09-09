@@ -589,6 +589,7 @@ namespace MonoDevelop.Gettext
 				currentEntry = entry;
 				this.texteditorOriginal.Caret.Offset = 0;
 				this.texteditorOriginal.Document.Text = entry != null ? StringEscaping.ToGettextFormat (entry.String) : "";
+				this.texteditorOriginal.VAdjustment.Value = this.texteditorOriginal.HAdjustment.Value = 0;
 				
 //				if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginal)) {
 //					GtkSpell.Attach (this.textviewOriginal, "en");
@@ -601,6 +602,7 @@ namespace MonoDevelop.Gettext
 				if (entry != null && entry.HasPlural) {
 					this.texteditorPlural.Caret.Offset = 0;
 					this.texteditorPlural.Document.Text = StringEscaping.ToGettextFormat (entry.PluralString);
+					this.texteditorPlural.VAdjustment.Value = this.texteditorPlural.HAdjustment.Value = 0;
 //					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginalPlural)) {
 //						GtkSpell.Attach (this.textviewOriginalPlural, "en");
 //						this.gtkSpellSet[this.textviewOriginalPlural] = true;
@@ -623,6 +625,7 @@ namespace MonoDevelop.Gettext
 						textView.ClearSelection ();
 						textView.Document.Text = entry != null ? StringEscaping.ToGettextFormat (entry.GetTranslation (i)) : "";
 						textView.Caret.Offset = textView.Document.Text.Length;
+						textView.VAdjustment.Value = textView.HAdjustment.Value = 0;
 						textView.Document.CommitUpdateAll ();
 /*						if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (textView)) {
 							GtkSpell.Attach (textView, "en");
