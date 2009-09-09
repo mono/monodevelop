@@ -49,6 +49,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		bool disableSelection;
 		public event EventHandler SelectionChanged;
 		string completionString;
+		
 		public string CompletionString {
 			get { return completionString; }
 			set {
@@ -103,13 +104,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 				value = Math.Min (filteredItems.Count - 1, Math.Max (0, value));
 				if (value != selection) {
 					selection = value;
+					UpdatePage ();
 					if (SelectionChanged != null)
 						SelectionChanged (this, EventArgs.Empty);
+					if (disableSelection)
+						disableSelection = false;
+					this.QueueDraw ();
 				}
-				UpdatePage ();
-				if (disableSelection)
-					disableSelection = false;
-				this.QueueDraw ();
 			}
 		}
 		

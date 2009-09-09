@@ -1,5 +1,10 @@
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Only
+	  update page / redraw when selection has really changed.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Worked on
 	  'Bug 537267 - Code completion window scrolling is wrong'.
 
