@@ -97,6 +97,7 @@ namespace MonoDevelop.Refactoring.Rename
 				Mono.TextEditor.TextEditor editor = GetEditor (options.Document.ActiveView.Control);
 				if (editor == null) {
 					RenameItemDialog dialog = new RenameItemDialog (options, this);
+					dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 					dialog.Show ();
 					return;
 				}
@@ -122,6 +123,7 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			} else {
 				RenameItemDialog dialog = new RenameItemDialog (options, this);
+				dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 				dialog.Show ();
 			}
 		}

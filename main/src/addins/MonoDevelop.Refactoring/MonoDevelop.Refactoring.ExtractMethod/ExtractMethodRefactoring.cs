@@ -80,6 +80,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			if (param == null)
 				return;
 			ExtractMethodDialog dialog = new ExtractMethodDialog (options, this, param);
+			dialog.TransientFor = IdeApp.Workbench.RootWindow;
 			dialog.Show ();
 		}
 		

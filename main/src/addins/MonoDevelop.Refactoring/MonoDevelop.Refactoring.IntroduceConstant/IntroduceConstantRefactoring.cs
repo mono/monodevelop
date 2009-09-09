@@ -87,6 +87,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 		public override void Run (RefactoringOptions options)
 		{
 			IntroduceConstantDialog dialog = new IntroduceConstantDialog (this, options, new Parameters ());
+			dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			dialog.Show ();
 		}
 		

@@ -1,3 +1,11 @@
+2009-09-09  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: 
+	* MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs: 
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: 
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Make dialogs transient for the root window.
+
 2009-09-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.Rename/RenameHandler.cs:

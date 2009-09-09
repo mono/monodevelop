@@ -784,6 +784,7 @@ namespace MonoDevelop.Refactoring
 			
 			try {
 				MonoDevelop.Ide.OverridesImplementsDialog dialog = new MonoDevelop.Ide.OverridesImplementsDialog ((IType)item);
+				dialog.TransientFor = IdeApp.Workbench.RootWindow;
 				dialog.Run ();
 			} finally {
 				if (editor != null)
