@@ -245,6 +245,13 @@ namespace MonoDevelop.XmlEditor.Gui
 				}
 				return null;
 			}
+			// Auto insert '>' when '/' is typed inside tag state (for quick tag closing)
+			if (tracker.Engine.CurrentState is XmlTagState && currentChar == '/') {
+				buf.BeginAtomicUndo ();
+				buf.InsertText (buf.CursorPosition, ">");
+				buf.EndAtomicUndo ();
+				return null;
+			}
 			
 			//element completion
 			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState) {
