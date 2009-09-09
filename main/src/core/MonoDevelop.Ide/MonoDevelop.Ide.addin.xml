@@ -355,10 +355,10 @@
 				icon  = "md-new-solution-folder" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject"
 				_description = "Add a project to the selected solution"
-				_label = "Add Existing _Project" />
+				_label = "Add Existing _Project..." />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddItem"
 				_description = "Add an existing item to the selected workspace"
-				_label = "Add Existing _Item" />
+				_label = "Add Existing _Item..." />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RemoveFromProject"
 				_label = "_Remove From Project"
 				_description = "Remove an item from the project"
