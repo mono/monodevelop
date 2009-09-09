@@ -1,3 +1,8 @@
+2009-09-09  Christian Hergert  <chris@dronelabs.com>
+
+	* Services/NUnitService.cs: Make dialog transient for the
+	  root window.
+
 2009-08-28  Mike Krüger  <mkrueger@novell.com>
 
 	* templates/NUnitTestClass.xft.xml: Fixed "Bug 479196 - "add
