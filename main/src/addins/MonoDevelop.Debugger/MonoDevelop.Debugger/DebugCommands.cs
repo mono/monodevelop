@@ -187,6 +187,7 @@ namespace MonoDevelop.Debugger
 		{
 			FileSelector fs = new FileSelector (GettextCatalog.GetString ("Application to Debug"));
 			try {
+				fs.TransientFor = IdeApp.Workbench.RootWindow;
 				int response = fs.Run ();
 				string name = fs.Filename;
 				fs.Hide ();
@@ -211,6 +212,7 @@ namespace MonoDevelop.Debugger
 		{
 			AttachToProcessDialog dlg = new AttachToProcessDialog ();
 			try {
+				dlg.TransientFor = IdeApp.Workbench.RootWindow;
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					IdeApp.ProjectOperations.AttachToProcess (dlg.SelectedDebugger, dlg.SelectedProcess);
 				}

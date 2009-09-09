@@ -1,3 +1,9 @@
+2009-09-09  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs: 
+	* MonoDevelop.Debugger/DebugCommands.cs: Make windows transient
+	  for the root monodevelop window.
+
 2009-09-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track api

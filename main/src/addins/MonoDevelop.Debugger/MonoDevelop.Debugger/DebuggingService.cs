@@ -99,6 +99,7 @@ namespace MonoDevelop.Debugger
 		{
 			BreakpointPropertiesDialog dlg = new BreakpointPropertiesDialog (bp, editNew);
 			try {
+				dlg.TransientFor = IdeApp.Workbench.RootWindow;
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					return true;
 				}
