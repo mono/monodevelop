@@ -1,5 +1,10 @@
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Optimized
+	  gettext editor.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Force reset of
 	  scrollbars when changing text.
 

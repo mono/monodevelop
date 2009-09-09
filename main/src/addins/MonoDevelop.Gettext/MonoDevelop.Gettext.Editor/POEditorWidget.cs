@@ -941,49 +941,40 @@ namespace MonoDevelop.Gettext
 			{
 				int number = 1, found = 0;
 				double count = widget.catalog.Count;
-				List<CatalogEntry> foundEntries = new List<CatalogEntry> ();
+				ListStore newStore = new ListStore (typeof(string), typeof(bool), typeof(string), typeof(string), typeof(CatalogEntry), typeof(Gdk.Color), typeof(int), typeof(Gdk.Color));
 				DispatchService.GuiSyncDispatch (delegate {
 					IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
-					widget.store.Clear ();
 				});
+				
 				try {
-					foreach (CatalogEntry curEntry in widget.catalog) {
+					foreach (CatalogEntry entry in widget.catalog) {
 						if (IsStopping)
 							return;
 						number++;
 						if (number % 50 == 0) {
 							DispatchService.GuiSyncDispatch (delegate {
-								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (Math.Min (1.0,  Math.Max (0.0, number / (double)count)));
-								foreach (CatalogEntry entry in foundEntries) {
-									if (IsStopping)
-										break;
-									widget.store.AppendValues (GetStockForEntry (entry), 
-											            entry.IsFuzzy,
-											            StringEscaping.ToGettextFormat (entry.String), 
-											            StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
-											            entry,
-											            widget.GetRowColorForEntry (entry),
-									                    GetTypeSortIndicator (entry),
-									                    widget.GetForeColorForEntry (entry)
-									                    );
-								}
-								foundEntries.Clear ();
+								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (Math.Min (1.0, Math.Max (0.0, number / (double)count)));
 							});
 						}
-						if (!widget.ShouldFilter (curEntry, widget.filter)) {
-							foundEntries.Add (curEntry);
+						if (!widget.ShouldFilter (entry, widget.filter)) {
+							newStore.AppendValues (GetStockForEntry (entry), 
+								entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), 
+								StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
+								entry,
+								widget.GetRowColorForEntry (entry),
+								GetTypeSortIndicator (entry),
+								widget.GetForeColorForEntry (entry)
+							);
 							found++;
 						}
 					}
 				} catch (Exception) {
-					
+				
 				}
 				if (!IsStopping) {
 					MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
-						foreach (CatalogEntry entry in foundEntries) {
-							widget.store.AppendValues (GetStockForEntry (entry), entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), StringEscaping.ToGettextFormat (entry.GetTranslation (0)), entry, widget.GetRowColorForEntry (entry), GetTypeSortIndicator (entry), widget.GetForeColorForEntry (entry));
-						}
-						foundEntries.Clear ();
+						widget.store.Dispose ();
+						widget.treeviewEntries.Model = widget.store = newStore;
 						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
 						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
 					});
