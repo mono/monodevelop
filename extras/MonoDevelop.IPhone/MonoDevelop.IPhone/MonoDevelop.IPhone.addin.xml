@@ -104,9 +104,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
-	<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.DebugInXcode" />
-	<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice"
-		insertBefore="MonoDevelop.Ide.Commands.ProjectCommands.Run" />
+		<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.DebugInXcode"
+		             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
+		<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
