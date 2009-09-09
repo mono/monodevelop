@@ -81,6 +81,7 @@ namespace Stetic.Editor {
 			grabWindow = new GrabDialog ();
 			editing = true;
 			entry.Text = Catalog.GetString ("Press a key...");
+			grabWindow.TransientFor = this.Toplevel as Gtk.Window;
 			grabWindow.Run ();
 			this.keyval = grabWindow.Keyval;
 			this.mask = grabWindow.Mask;

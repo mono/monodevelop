@@ -150,6 +150,7 @@ namespace Stetic.Editor {
 			dialog.ShowAll ();
 			// Have to set this *after* ShowAll
 			dialog.ActionArea.BorderWidth = 0;
+			dialog.TransientFor = this.Toplevel as Gtk.Window;
 			Gtk.ResponseType response = (Gtk.ResponseType)dialog.Run ();
 			if (response == Gtk.ResponseType.Cancel || entry.Text.Length == 0) {
 				dialog.Destroy ();

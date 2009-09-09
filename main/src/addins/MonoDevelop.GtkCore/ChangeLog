@@ -1,3 +1,25 @@
+2009-09-09  Christian Hergert  <chris@dronelabs.com>
+
+	* libstetic/editor/Accelerator.cs: 
+	* libstetic/editor/GroupPicker.cs: 
+	* libstetic/editor/TextEditor.cs: 
+	* libstetic/editor/SelectImageDialog.cs: 
+	* libstetic/editor/NonContainerWarningDialog.cs: 
+	* libstetic/editor/TextEditorDialog.cs: 
+	* libstetic/editor/EditIconDialog.cs: 
+	* libstetic/editor/IconSelectorMenu.cs: 
+	* libstetic/editor/Image.cs: 
+	* libstetic/editor/ActionGroupEditor.cs: 
+	* libstetic/editor/StringArray.cs: 
+	* libstetic/editor/EditIconFactoryDialog.cs: 
+	* libstetic/editor/SelectIconDialog.cs: 
+	* MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs: 
+	* MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs: 
+	* MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs: 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Fixes to
+	  make windows and dialogs Transient to either their parent
+	  window/dialog or the MD root window (when applicable).
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore/ProjectResourceProvider.cs: Use real

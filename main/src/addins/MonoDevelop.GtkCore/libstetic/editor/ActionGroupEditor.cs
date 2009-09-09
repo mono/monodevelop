@@ -390,6 +390,7 @@ namespace Stetic.Editor
 		{
 			string msg = string.Format (Catalog.GetString ("Are you sure you want to delete the action '{0}'? It will be removed from all menus and toolbars."), menuItem.Node.Action.Name);
 			Gtk.MessageDialog md = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal, Gtk.MessageType.Question, Gtk.ButtonsType.YesNo, msg);
+			md.TransientFor = this.Toplevel as Gtk.Window;
 			if (md.Run () == (int) Gtk.ResponseType.Yes) {
 				menuItem.Node.Action.Delete ();
 				darea.SetSelection (null, null);

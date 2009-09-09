@@ -416,6 +416,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				new Gtk.FileChooserDialog ("Open Glade File", null, Gtk.FileChooserAction.Open,
 						       Gtk.Stock.Cancel, Gtk.ResponseType.Cancel,
 						       Gtk.Stock.Open, Gtk.ResponseType.Ok);
+			dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			int response = dialog.Run ();
 			if (response == (int)Gtk.ResponseType.Ok) {
 				SteticProject.ImportGlade (dialog.Filename);

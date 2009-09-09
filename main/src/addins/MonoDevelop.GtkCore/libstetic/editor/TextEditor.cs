@@ -31,6 +31,7 @@ namespace Stetic.Editor
 			using (TextEditorDialog dlg = new TextEditorDialog ()) {
 				dlg.Text = entry.Text;
 				dlg.SetTranslatable (prop.Translatable);
+				dlg.TransientFor = this.Toplevel as Gtk.Window;
 				if (prop.Translatable) {
 					dlg.Translated = prop.IsTranslated (obj);
 					dlg.ContextHint = prop.TranslationContext (obj);

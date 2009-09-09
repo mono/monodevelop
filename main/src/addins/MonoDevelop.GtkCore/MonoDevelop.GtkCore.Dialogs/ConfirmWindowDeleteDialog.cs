@@ -67,6 +67,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public int Run ()
 		{
+			dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			return dialog.Run ();
 		}
 		

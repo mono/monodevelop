@@ -111,6 +111,10 @@ namespace Stetic.Editor
 				
 			UpdateButtons ();
 		}
+
+		public Gtk.Window TransientFor {
+			set { dialog.TransientFor = value; }
+		}
 		
 		public int Run ()
 		{

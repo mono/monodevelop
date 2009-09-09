@@ -263,6 +263,8 @@ namespace Stetic.Editor
 				new FileChooserDialog ("Open File", null, FileChooserAction.Open,
 						       Gtk.Stock.Cancel, Gtk.ResponseType.Cancel,
 						       Gtk.Stock.Open, Gtk.ResponseType.Ok);
+			if (parent != null)
+				dialog.TransientFor = parent.Toplevel as Gtk.Window;
 			int response = dialog.Run ();
 			if (response == (int)Gtk.ResponseType.Ok) {
 				ResourceInfo rinfo = resourceProvider.AddResource (dialog.Filename);
@@ -279,6 +281,8 @@ namespace Stetic.Editor
 			if (resourceList.Selection.GetSelected (out model, out iter)) {
 				string res = (string) resourceListStore.GetValue (iter, 2);
 				Gtk.MessageDialog msg = new Gtk.MessageDialog (dialog, DialogFlags.Modal, MessageType.Question, ButtonsType.YesNo, "Are you sure you want to delete the resource '{0}'?", res);
+				if (parent != null)
+					msg.TransientFor = parent.Toplevel as Gtk.Window;
 				if (msg.Run () == (int) ResponseType.Yes) {
 					resourceProvider.RemoveResource (res);
 					resourceListStore.Remove (ref iter);

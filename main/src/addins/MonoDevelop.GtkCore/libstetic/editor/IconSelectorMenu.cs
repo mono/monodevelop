@@ -43,7 +43,7 @@ namespace Stetic.Editor
 		
 		void OnSetStockActionType (object ob, EventArgs args)
 		{
-			Stetic.Editor.SelectIconDialog dialog = new Stetic.Editor.SelectIconDialog (null, project);
+			Stetic.Editor.SelectIconDialog dialog = new Stetic.Editor.SelectIconDialog (this.Toplevel as Gtk.Window, project);
 			using (dialog)
 			{
 				if (dialog.Run () != (int) Gtk.ResponseType.Ok)

@@ -169,6 +169,7 @@ namespace Stetic.Editor {
 				new Gtk.FileChooserDialog (Catalog.GetString ("Image"), null, Gtk.FileChooserAction.Open,
 							   Gtk.Stock.Cancel, Gtk.ResponseType.Cancel,
 							   Gtk.Stock.Open, Gtk.ResponseType.Ok);
+			dialog.TransientFor = this.Toplevel as Gtk.Window;
 			int response = dialog.Run ();
 			string file = dialog.Filename;
 			dialog.Destroy ();

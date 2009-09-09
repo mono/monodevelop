@@ -39,6 +39,10 @@ namespace Stetic.Editor
 			set { checkTranslatable.Active = value; }
 		}
 		
+		public Gtk.Window TransientFor {
+			set { dialog.TransientFor = value; }
+		}
+		
 		public void SetTranslatable (bool translatable)
 		{
 			if (!translatable) {

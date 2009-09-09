@@ -33,6 +33,10 @@ namespace Stetic.Editor
 			get { return !showCheck.Active; }
 			set { showCheck.Active = !value; }
 		}
+
+		public Gtk.Window TransientFor {
+			set { dialog.TransientFor = value; }
+		}
 		
 		public int Run ()
 		{

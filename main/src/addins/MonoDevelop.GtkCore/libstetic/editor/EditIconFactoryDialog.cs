@@ -47,6 +47,8 @@ namespace Stetic.Editor
 		{
 			ProjectIconSet icon = new ProjectIconSet ();
 			using (EditIconDialog dlg = new EditIconDialog (project, icon)) {
+				if (parent != null)
+					dlg.TransientFor = parent.Toplevel as Gtk.Window;
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					iconFactory.Icons.Add (icon);
 					customIconList.Refresh ();
@@ -62,6 +64,8 @@ namespace Stetic.Editor
 			ProjectIconSet icon = iconFactory.GetIcon (name);
 			if (icon != null) {
 				Gtk.MessageDialog md = new Gtk.MessageDialog (dialog, Gtk.DialogFlags.Modal, Gtk.MessageType.Question, Gtk.ButtonsType.YesNo, string.Format (Catalog.GetString ("Are you sure you want to delete the icon '{0}'"), icon.Name));
+				if (parent != null)
+					md.TransientFor = parent.Toplevel as Gtk.Window;
 				if (md.Run () == (int) Gtk.ResponseType.Yes) {
 					iconFactory.Icons.Remove (icon);
 					customIconList.Refresh ();
@@ -77,6 +81,8 @@ namespace Stetic.Editor
 			ProjectIconSet icon = iconFactory.GetIcon (name);
 			if (icon != null) {
 				using (EditIconDialog dlg = new EditIconDialog (project, icon)) {
+					if (parent != null)
+						dlg.TransientFor = parent.Toplevel as Gtk.Window;
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 						customIconList.Refresh ();
 						customIconList.Selection = icon.Name;

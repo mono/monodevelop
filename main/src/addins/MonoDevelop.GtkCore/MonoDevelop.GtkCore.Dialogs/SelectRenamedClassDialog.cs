@@ -71,6 +71,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public bool Run ()
 		{
+			dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			return dialog.Run () == (int) ResponseType.Ok;
 		}
 		
