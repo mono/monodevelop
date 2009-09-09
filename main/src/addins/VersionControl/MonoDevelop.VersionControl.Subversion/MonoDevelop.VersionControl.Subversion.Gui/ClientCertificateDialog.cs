@@ -34,6 +34,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			
 			EventHandler del = delegate {
 					ClientCertificateDialog dlg = new ClientCertificateDialog (realm, may_save);
+					dlg.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 					try {
 						res = (dlg.Run () == (int) Gtk.ResponseType.Ok);
 						if (res) {

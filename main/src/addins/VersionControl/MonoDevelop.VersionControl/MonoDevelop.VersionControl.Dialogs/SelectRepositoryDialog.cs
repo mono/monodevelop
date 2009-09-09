@@ -148,6 +148,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			EditRepositoryDialog dlg = new EditRepositoryDialog (null);
 			try {
+				dlg.TransientFor = this;
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
 					VersionControlService.AddRepository (dlg.Repository);
 					VersionControlService.SaveConfiguration ();
@@ -176,6 +177,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			if (rep != null) {
 				Repository repCopy = rep.Clone ();
 				EditRepositoryDialog dlg = new EditRepositoryDialog (repCopy);
+				dlg.TransientFor = this;
 				try {
 					if (dlg.Run () != (int) Gtk.ResponseType.Ok) {
 						VersionControlService.ResetConfiguration ();
@@ -312,6 +314,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				new FileChooserDialog (GettextCatalog.GetString ("Select target directory"), null, FileChooserAction.SelectFolder,
 						       Gtk.Stock.Cancel, Gtk.ResponseType.Cancel,
 						       Gtk.Stock.Open, Gtk.ResponseType.Ok);
+			dialog.TransientFor = this;
 			int response = dialog.Run ();
 			try {
 				if (response == (int)Gtk.ResponseType.Ok) {

@@ -47,6 +47,7 @@ namespace MonoDevelop.VersionControl
 					if (!VersionControlService.NotifyPrepareCommit (vc, changeSet))
 						return false;
 					CommitDialog dlg = new CommitDialog (changeSet);
+					dlg.TransientFor = IdeApp.Workbench.RootWindow;
 					try {
 						if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 							if (VersionControlService.NotifyBeforeCommit (vc, changeSet)) {

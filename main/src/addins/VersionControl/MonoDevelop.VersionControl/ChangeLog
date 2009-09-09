@@ -1,3 +1,11 @@
+2009-09-09  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs: 
+	* MonoDevelop.VersionControl/CommitCommand.cs: 
+	* MonoDevelop.VersionControl/PublishCommand.cs: 
+	* MonoDevelop.VersionControl/CheckoutCommand.cs: Set dialogs
+	  transient for the root window.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl/CommitCommand.cs: Show an error

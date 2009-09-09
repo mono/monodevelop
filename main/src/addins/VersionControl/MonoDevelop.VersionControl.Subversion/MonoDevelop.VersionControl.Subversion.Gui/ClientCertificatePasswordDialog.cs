@@ -35,6 +35,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			EventHandler del = delegate {
 					ClientCertificatePasswordDialog dlg = new ClientCertificatePasswordDialog (realm, may_save);
 					try {
+						dlg.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 						res = (dlg.Run () == (int) Gtk.ResponseType.Ok);
 						if (res) {
 							local_save = dlg.Save;

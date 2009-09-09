@@ -41,6 +41,7 @@ namespace MonoDevelop.VersionControl
 			try {
 				dlg.ModuleName = moduleName;
 				dlg.Message = GettextCatalog.GetString ("Initial check-in of module {0}", moduleName);
+				dlg.TransientFor = IdeApp.Workbench.RootWindow;
 				do {
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
 						AlertButton publishButton = new AlertButton ("_Publish");					

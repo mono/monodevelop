@@ -1,3 +1,11 @@
+2009-09-09  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs: 
+	* MonoDevelop.VersionControl.Subversion.Gui/UserPasswordDialog.cs: 
+	* MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs: 
+	* MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs: Set
+	  dialogs transient for the root window.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Update gtk# dependency.

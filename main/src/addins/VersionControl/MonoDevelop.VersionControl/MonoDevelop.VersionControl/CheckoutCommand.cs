@@ -16,6 +16,7 @@ namespace MonoDevelop.VersionControl
 				return;
 			
 			SelectRepositoryDialog del = new SelectRepositoryDialog (SelectRepositoryMode.Checkout);
+			del.TransientFor = IdeApp.Workbench.RootWindow;
 			try {
 				if (del.Run () == (int) Gtk.ResponseType.Ok && del.Repository != null) {
 					CheckoutWorker w = new CheckoutWorker (del.Repository, del.TargetPath);
