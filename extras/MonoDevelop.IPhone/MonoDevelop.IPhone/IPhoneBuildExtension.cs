@@ -509,19 +509,18 @@ namespace MonoDevelop.IPhone
 				if (mtouchpack == null)
 					return result.Append (mtpResult);
 				
-				string entitlementsFile = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/Entitlements.plist";
 				if (!string.IsNullOrEmpty (conf.CodesignEntitlements)) {
 					if (!File.Exists (conf.CodesignEntitlements))
 						result.AddWarning ("Entitlements file \"" + conf.CodesignEntitlements + "\" not found. Using default.");
-					else
-						entitlementsFile = conf.CodesignEntitlements;
 				}
 				
 				xcentName = Path.ChangeExtension (conf.OutputAssembly, ".xcent");
 				
-				mtouchpack.Arguments = string.Format ("-genxcent \"{0}\" -entitlements \"{1}\" -appid=\"{2}\"", xcentName, entitlementsFile, appid);
-				monitor.Log.WriteLine ("mtouchpack " + mtouchpack.Arguments);
+				mtouchpack.Arguments = string.Format ("-genxcent \"{0}\" -appid=\"{2}\"", xcentName, appid);
+				if(!string.IsNullOrEmpty (conf.CodesignEntitlements))
+					mtouchpack.Arguments = mtouchpack.Arguments + string.Format (" -entitlements \"{1}\"", conf.CodesignEntitlements);
 				
+				monitor.Log.WriteLine ("mtouchpack " + mtouchpack.Arguments);
 				code = ExecuteCommand (monitor, mtouchpack, out errorOutput);
 				if (code != 0) {
 					result.AddError ("Processing the entitlements failed: " + errorOutput);
