@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-09 12:08:13+0200\n"
-"PO-Revision-Date: 2009-09-09 13:47:04+0200\n"
+"PO-Revision-Date: 2009-09-09 14:10:01+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -359,7 +359,7 @@ msgstr "_Löschen"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:250
 msgid "_Create new folder"
-msgstr "_Erstelle neuen Ordner"
+msgstr "N_euen Ordner erstellen"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:315
 msgid "Cannot enter '{0}' folder"
@@ -1041,7 +1041,7 @@ msgstr "_Neuer Ordner"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:392
 msgid "Create a new folder"
-msgstr "Erstelle neuen Ordner"
+msgstr "Neuen Ordner erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:395
 msgid "Add existing file to the project"
@@ -1723,7 +1723,7 @@ msgstr "Nach Text in allen Dateien eines Ordners suchen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:870
 msgid "R_eplace in Files..."
-msgstr "In Dateien Ers_etzen..."
+msgstr "In Dateien ers_etzen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:873
 msgid "Search for and replace text in all files of a directory"
@@ -2868,7 +2868,7 @@ msgstr "{0} _Einstellungen"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:174
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:186
 msgid "B_uild {0}"
-msgstr "E_rstelle {0}"
+msgstr "{0} e_rstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:176
 msgid "Build solution {0}"
@@ -2886,7 +2886,7 @@ msgstr "Erstelle {0}"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:226
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:233
 msgid "R_ebuild {0}"
-msgstr "Erstelle {0} _neu"
+msgstr "{0} _neu erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:227
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:234
@@ -2900,7 +2900,7 @@ msgstr "Erneut _ausführen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:358
 msgid "C_lean {0}"
-msgstr "Säu_bere {0}"
+msgstr "{0} säu_bern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:359
 msgid "Clean {0}"
@@ -4992,7 +4992,7 @@ msgstr[1] "{0} Übereinstimmungen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:63
 msgid "Replace in Files"
-msgstr "In Dateien Ersetzen"
+msgstr "In Dateien ersetzen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:63
 msgid "Find in Files"
@@ -5262,7 +5262,7 @@ msgstr "Control gedrückt halten, um Ausführungsparameter-Dialog anzuzeigen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:83
 msgid "Edit Custom Modes..."
-msgstr "Benutzerdefinierte Modi ändern..."
+msgstr "Benutzer-Ausführungsmodi ändern..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:139
 msgid "Custom Parameters..."
@@ -10270,7 +10270,7 @@ msgstr "in Typen"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:317
 msgid "within classes"
-msgstr "Innerhalb Klassen"
+msgstr "in Klassen"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:318
 msgid "within interfaces"
@@ -10282,11 +10282,11 @@ msgstr "in Strukturen"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:320
 msgid "within enums"
-msgstr "Innerhalb Aufzählungen"
+msgstr "in Aufzählungen"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:323
 msgid "within methods"
-msgstr "Innerhalb Methoden"
+msgstr "in Methoden"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:324
 msgid "within properties"
@@ -10294,7 +10294,7 @@ msgstr "in Eigenschaften"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:325
 msgid "within events"
-msgstr "Innerhalb Ereignissen"
+msgstr "in Ereignissen"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:328
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:436
@@ -10305,7 +10305,7 @@ msgstr "Anweisungen"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:329
 msgid "within blocks"
-msgstr "Innerhalb Blöcken"
+msgstr "in Blöcken"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:330
 msgid "Indent 'switch' body"
@@ -10569,7 +10569,7 @@ msgstr "Shift Operatoren (<<,>>)"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:483
 msgid "Within Parentheses"
-msgstr "Inerhalb Klammern"
+msgstr "Innerhalb Klammern"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:484
 msgid "Parentheses"
@@ -10618,7 +10618,7 @@ msgstr "nach ':'"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:541
 msgid "Within brackets"
-msgstr "Innerhalb Klammern"
+msgstr "in Klammern"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:551
 msgid "After comma"
@@ -17333,19 +17333,14 @@ msgstr "T4 Schablone"
 #~ msgstr "Frage"
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
-
 #~ msgid "Do you want to save the current changes?"
 #~ msgstr "Wollen sie die aktuellen Änderungen speichern?"
-
 #~ msgid "Do you really want to discard your changes?"
 #~ msgstr "Wollen sie ihre Änderungen wirklich verwerfen?"
-
 #~ msgid "Delete File"
 #~ msgstr "Datei löschen"
-
 #~ msgid "_Delete from disk"
 #~ msgstr "_Lösche von Festplatte"
-
 #~ msgid ""
 #~ "The project '{0}' has been modified by an external application. Do you "
 #~ "want to reload it? Unsaved changes in the open GTK designers will be lost."
