@@ -31,6 +31,6 @@
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
 		<CommandItem id = "MonoDevelop.Platform.Mac.Commands.MinimizeWindow"
-		             insertBefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
+		             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
 	</Extension>
 </Addin>
