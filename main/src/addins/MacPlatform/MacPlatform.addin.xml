@@ -24,9 +24,12 @@
 	<Extension path = "/MonoDevelop/Ide/Commands/Window">
 		<Command id  = "MonoDevelop.Platform.Mac.Commands.MinimizeWindow"
 				defaultHandler = "MonoDevelop.Platform.Mac.MinimizeWindowHandler"
-				insertBefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow"
 				_label = "_Minimize"
 				_description = "Minimize the window" 
 				macShortcut = "Meta|M" />
-		</Extension>
+	</Extension>
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
+		<CommandItem id = "MonoDevelop.Platform.Mac.Commands.MinimizeWindow"
+		             insertBefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
+	</Extension>
 </Addin>
