@@ -1,5 +1,10 @@
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Execution/MonoExecutionParameters.cs: Added
+	  some localized descriptons for some property values.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Execution/MonoExecutionParameters.cs: Using
 	  localizable attributes for mono execution parameters.
 

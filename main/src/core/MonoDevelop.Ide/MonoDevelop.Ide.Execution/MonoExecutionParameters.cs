@@ -418,7 +418,9 @@ namespace MonoDevelop.Ide.Execution
 	
 	public enum LogLevel
 	{
-		[MonoArg (null)] Default,
+		[MonoArg (null)] 
+		[LocalizedDescription ("Default")]
+		Default,
 		[MonoArg ("error")] Error,
 		[MonoArg ("critical")] Critical,
 		[MonoArg ("warning")] Warning,
@@ -442,7 +444,9 @@ namespace MonoDevelop.Ide.Execution
 	
 	public enum SecurityMode
 	{
-		[MonoArg (null)] Disabled,
+		[MonoArg (null)] 
+		[LocalizedDescription ("Disabled")]
+		Disabled,
 		[MonoArg ("cas")] Cas,
 		[MonoArg ("core-clr")] CoreClr,
 		[MonoArg ("verifiable")] Verifiable,
