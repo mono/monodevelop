@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -1010,7 +1010,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog" design-size="465 427">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">Encapsulate Fields...</property>
+    <property name="Title" translatable="yes">Encapsulate Fields</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>

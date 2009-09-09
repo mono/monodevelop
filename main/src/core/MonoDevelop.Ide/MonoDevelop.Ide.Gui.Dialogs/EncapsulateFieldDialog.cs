@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			this.declaringType = declaringType;
 			this.Build ();
 
-			Title = GettextCatalog.GetString ("Encapsulate fields...");
+			Title = GettextCatalog.GetString ("Encapsulate Fields");
 			buttonOk.Sensitive = true;
 			store = new ListStore (typeof (bool), typeof(string), typeof (string), typeof (string), typeof (bool), typeof (IField));
 			visibilityStore = new ListStore (typeof (string));

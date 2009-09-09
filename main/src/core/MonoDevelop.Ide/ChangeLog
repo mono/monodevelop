@@ -1,5 +1,11 @@
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Fixed
+	  dialog title.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: Added missing "..." to menu
 	  items.
 
