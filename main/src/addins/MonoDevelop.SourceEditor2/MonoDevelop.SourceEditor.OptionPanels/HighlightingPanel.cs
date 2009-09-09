@@ -109,6 +109,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void AddColorScheme (object sender, EventArgs args)
 		{
 			FileSelector fd = new FileSelector ();
+			fd.TransientFor = this.Toplevel as Gtk.Window;
 			int response = fd.Run ();
 			if (response == (int)ResponseType.Ok) {
 				System.Collections.Generic.List<System.Xml.Schema.ValidationEventArgs> validationResult = Mono.TextEditor.Highlighting.SyntaxModeService.ValidateStyleFile (fd.Filename);
