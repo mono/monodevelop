@@ -58,6 +58,11 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			Name = "Declare Local";
 		}
 		
+		public override string GetMenuDescription (RefactoringOptions options)
+		{
+			return GettextCatalog.GetString ("_Declare Local");
+		}
+		
 		public override bool IsValid (RefactoringOptions options)
 		{
 			IResolver resolver = options.GetResolver ();

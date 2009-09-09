@@ -1,3 +1,10 @@
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.csproj: 
+
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Fixed translation of declare local.
+
 2009-09-09  Christian Hergert  <chris@dronelabs.com>
 
 	* MonoDevelop.Refactoring/RefactoryCommands.cs: 
