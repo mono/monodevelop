@@ -121,7 +121,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return;
 			}
 			if (selection < page || selection >= page + VisibleRows)
-				page = System.Math.Max (0, selection - (VisibleRows / 2));
+				page = selection - (VisibleRows / 2);
+			page = System.Math.Max (0, System.Math.Min (page, filteredItems.Count - VisibleRows));
 		}
 		
 		public bool SelectionDisabled {
@@ -230,10 +231,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			return j == filterText.Length ? matchIndices.ToArray () : null;
 		}
+		
 		public static bool Matches (string filterText, string text)
 		{
 			return Match (filterText, text) != null;
 		}
+		
 		public void FilterWords ()
 		{
 			filteredItems.Clear ();
@@ -242,6 +245,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					filteredItems.Add (n);
 			}
 			CalcVisibleRows ();
+			UpdatePage ();
 		}
 		
 		void DrawList ()

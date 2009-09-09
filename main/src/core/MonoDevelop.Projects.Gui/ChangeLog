@@ -1,5 +1,11 @@
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Added
+	  some bounds checking code.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Only
 	  update page / redraw when selection has really changed.
 

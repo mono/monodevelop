@@ -137,10 +137,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			scrollbar.Adjustment.Upper = Math.Max (0, list.filteredItems.Count - list.VisibleRows);
 			scrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
 			scrollbar.Adjustment.StepIncrement = 1;
-
 			if (scrollbar.Adjustment.Upper == 0) {
 				this.scrollbar.Hide ();
 			} else {
+				scrollbar.Value = list.Page;
 				this.scrollbar.Show ();
 			}
 			this.Resize (this.list.WidthRequest, this.list.HeightRequest);
@@ -403,18 +403,18 @@ namespace MonoDevelop.Projects.Gui.Completion
 			//when the list is empty, disable the selection or users get annoyed by it accepting
 			//the top entry automatically
 			if (string.IsNullOrEmpty (s)) {
+				ResetSizes ();
 				list.Selection = 0;
 				list.SelectionDisabled = true;
-				ResetSizes ();
 				return;
 			}
 
 			bool hasMismatches;
 			int n = FindMatchedEntry (s, out hasMismatches);
+			ResetSizes ();
 			SelectEntry (n);
 			if (hasMismatches)
 				list.SelectionDisabled = true;
-			ResetSizes ();
 		}
 
 		void OnScrollChanged (object o, EventArgs args)
@@ -424,9 +424,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		void OnScrolled (object o, ScrollEventArgs args)
 		{
-			if (args.Event.Direction == Gdk.ScrollDirection.Up)
-				scrollbar.Value--; else if (args.Event.Direction == Gdk.ScrollDirection.Down)
-				scrollbar.Value++;
+			switch (args.Event.Direction) {
+			case ScrollDirection.Up:
+				scrollbar.Value--; 
+				break;
+			case ScrollDirection.Down:
+				scrollbar.Value++; 
+				break;
+			}
 		}
 
 		void OnSelectionChanged (object o, EventArgs args)
