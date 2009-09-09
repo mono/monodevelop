@@ -130,6 +130,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			ComponentSelectorDialog dlg = new ComponentSelectorDialog (currentConsumer);
 			try {
+				dlg.TransientFor = IdeApp.Workbench.RootWindow;
 				dlg.Fill ();
 				dlg.Run ();
 			}

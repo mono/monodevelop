@@ -1,3 +1,8 @@
+2009-09-09  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.DesignerSupport/ToolboxService.cs: Set the dialog
+	  transient to the root ide window.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs:
