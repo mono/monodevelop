@@ -132,12 +132,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (!Visible)
 					Show ();
 			}
-
-			scrollbar.Adjustment.Lower = 0;
-			scrollbar.Adjustment.Upper = Math.Max (0, list.filteredItems.Count - list.VisibleRows);
-			scrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
-			scrollbar.Adjustment.StepIncrement = 1;
-			if (scrollbar.Adjustment.Upper == 0) {
+			double pageSize = Math.Max (0, list.VisibleRows - 1);
+			double upper = Math.Max (0, list.filteredItems.Count - 1);
+			scrollbar.Adjustment.SetBounds (0, upper, 1, pageSize, pageSize);
+			if (pageSize >= upper) {
 				this.scrollbar.Hide ();
 			} else {
 				scrollbar.Value = list.Page;
