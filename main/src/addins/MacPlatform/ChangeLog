@@ -1,5 +1,9 @@
 2009-09-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MacPlatform.addin.xml: Depend on the Ide addin.
+
+2009-09-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MacPlatform.addin.xml: Put the command in the menu.
 
 2009-09-08  Michael Hutchinson  <mhutchinson@novell.com>
