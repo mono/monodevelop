@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-09 11:15:48+0200\n"
-"PO-Revision-Date: 2009-09-09 11:24:22+0200\n"
+"POT-Creation-Date: 2009-09-09 12:08:13+0200\n"
+"PO-Revision-Date: 2009-09-09 13:47:04+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -71,6 +71,7 @@ msgstr "PROTOKOLL"
 #: ../src/core/MonoDevelop.Components/MonoDevelop.Components.Commands/KeyBindingService.cs:201
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:65
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:331
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:421
 #: ../src/addins/CSharpBinding/Gui/CompilerOptionsPanelWidget.cs:102
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:79
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:53
@@ -1303,7 +1304,7 @@ msgstr "Letzte Da_teien"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:574
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:583
 msgid "_Clear"
-msgstr "_Leeren"
+msgstr "_Löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:576
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:269
@@ -4144,6 +4145,7 @@ msgid "<b>Project features</b>"
 msgstr "<b>Projekt-Merkmale</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs:67
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:55
 msgid "Encapsulate Fields"
 msgstr "Generiere Eigenschaft für Feld"
 
@@ -4173,10 +4175,6 @@ msgid "One or more property names conflict with existing members of the class"
 msgstr ""
 "Ein oder mehrere Eigenschaftsnamen stehen in Konflikt mit existierenden "
 "Klassenmembern"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:55
-msgid "Encapsulate Fields..."
-msgstr "Eigenschaft für Feld generieren..."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:90
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs:69
@@ -5218,7 +5216,7 @@ msgstr "Speichere diese Konfiguration als benutzergesteuerten Ausführungsmodus"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeDialog.cs:148
 msgid "Custom Mode Name:"
-msgstr "Custom-Modus Name:"
+msgstr "Benutzerdefinierter Modusname:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeDialog.cs:166
 msgid "Available for:"
@@ -5264,11 +5262,11 @@ msgstr "Control gedrückt halten, um Ausführungsparameter-Dialog anzuzeigen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:83
 msgid "Edit Custom Modes..."
-msgstr "Custom-Modes ändern..."
+msgstr "Benutzerdefinierte Modi ändern..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:139
 msgid "Custom Parameters..."
-msgstr "Custom-Parameter..."
+msgstr "Benutzerdefinierter Parameter..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeManagerDialog.cs:54
 msgid "Execution Mode"
@@ -5285,24 +5283,452 @@ msgstr "Aktuelle Projektmappe"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeManagerDialog.cs:104
 msgid "Are you sure you want to delete the custom execution mode '{0}'?"
 msgstr ""
-"Sind sie sicher, dass sie dieden benutzergesteuerten Ausführungsmodus '{0}' "
-"löschen wollen?"
+"Sind sie sicher, dass sie diesen eigenen Ausführungsmodus '{0}' löschen "
+"wollen?"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeManagerDialog.cs:37
 msgid "Custom Execution Modes"
-msgstr "Benutzer-Ausführungs-Modus"
+msgstr "Benutzerdefinierter Ausführungs-Modus"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:160
+msgid "Debug Mode"
+msgstr "Debug-Modus"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:166
+msgid "Debug Casts"
+msgstr "Debug Casts"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:172
+msgid "MDB Mode"
+msgstr "MDB Modus"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:180
+msgid "Profiler"
+msgstr "Profiler"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:187
+msgid "Verbose Level"
+msgstr "Verbose Stufe"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:193
+msgid "Runtime Version"
+msgstr "Runtime-Version"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:200
+msgid "Security Mode"
+msgstr "Sicherheitsmodus"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:207
+msgid "Verify All"
+msgstr "Alles überprüfen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:215
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:150
+msgid "Trace Expression"
+msgstr "Ausdruck überwachen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:231
+msgid "Log Level"
+msgstr "Warnstufe"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:241
+msgid "Log Mask"
+msgstr "Warnmaske"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:255
+msgid "Serializer Generation"
+msgstr "Serializer Erzeugung"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:268
+msgid "Mono Configuration Directory"
+msgstr "Mono Konfigurations-Pfad"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:276
+msgid "Mono Configuration File"
+msgstr "Mono Konfigurationsdatei"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:283
+msgid "Disable AIO"
+msgstr "Deaktiviere AIO"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:292
+msgid "Disable Managed Collation"
+msgstr "Managed Collation ausschalten"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:302
+msgid "External Encodings"
+msgstr "Externe Zeichenkodierungen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:311
+msgid "GAC Prefix"
+msgstr "GAC Prefix"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:322
+msgid "Strip Drive Letters"
+msgstr "Laufwerksbuchstaben entfernen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:328
+msgid "Case Insensitive Paths"
+msgstr "Pfad Groß-/Kleinschreibung nicht berücksichtigen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:334
+msgid "Managed Watcher"
+msgstr "Managed Watcher"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:342
+msgid "No SMP"
+msgstr "Kein SMP"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:350
+msgid "Mono Path"
+msgstr "Mono Pfad"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:362
+msgid "Windows Forms Theme"
+msgstr "Windows Forms Thema"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:370
+msgid "Threads Per Cpu"
+msgstr "Threads je CPU"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:379
+msgid "Keep ASP.NET Temporary Files"
+msgstr "Temporäre ASP.NET nicht löschen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:388
+msgid "Trace Listener"
+msgstr "Überwachungs-Listener"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:401
+msgid "X11 Exceptions"
+msgstr "X11 Ausnahmen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:409
+msgid "XDebug"
+msgstr "XDebug"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:161
+msgid "Enable debugging support."
+msgstr "Debugger Unterstützung aktivieren."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:167
+msgid "Enable more detailed InvalidCastException messages."
+msgstr "Ausführliche InvalidCastException einschalten."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:173
+msgid ""
+"Disable some JIT optimizations which are normally disabled when running "
+"inside the debugger. This is useful if you plan to attach to the running process "
+"with the debugger."
+msgstr ""
+"Einige JIT Optimierungen deaktivieren die normalerweise im Debugger "
+"ausgeschaltet sind. Dies ist sinnvoll, wenn während des Ausführens ein Debugger an den "
+"Prozess angehängt werden soll."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:181
+msgid "Runs in profiling mode with the specified profiler module."
+msgstr "Führt im Profilierungsmodus mit dem spezifizierten Profiler aus."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:188
+msgid "Increases the verbosity level."
+msgstr "Verbosity stufe erhöhen."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:194
+msgid "Use the specified runtime version, instead of autodetecting"
+msgstr ""
+"Spezifizierte Runtime Version benutzen, ansonsten wird automatisch eine "
+"gewählt."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:201
+msgid "Turns on the unsupported security manager (off by default)."
+msgstr ""
+"Schaltet den nicht supporteten Sicherheitsmanager an (aus ist Standard)."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:208
+msgid ""
+"Verifies mscorlib and assemblies in the global assembly cache for valid IL, "
+"and all user code for IL verifiability."
+msgstr ""
+"Verifiziert die mscorlib, Assemblies im GAC und allen user code nach gültigem "
+"IL."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:216
+msgid ""
+"Comma separated list of expressions to trace. 'all' all assemlies, 'none' no "
+"assemblies, 'program' entry point assembly, 'assembly' specifies an assembly, "
+"'T:Type' specifies a type, 'M:Type:Method'  a method, 'N:Namespace' a "
+"namespace. 'disabled' don't print any output until toggled via SIGUSR2. Prefix with "
+"'-' to exclude and expression."
+msgstr ""
+"Komma getrennte Liste von Ausdrücken zum Überwachen. 'all' Alle assemblies, "
+"'none' keine assemblies, 'program' Einstiegspunkt Assembly, 'assembly' "
+"bestimmte Assembly, 'T:Type' bestimmter Typ. 'M:Type:Method' eine Methode, "
+"'N:Namespace' einen Namensraum, 'disabled' keine Ausgabe erzeugen bis SIGUSR2 gegeben "
+"wird. Prefix mit '-', um einen Ausdruck auszuschliessen."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:232
+msgid ""
+"Possible values are 'error', 'critical', 'warning', 'message', 'info', "
+"'debug'. The default  value  is  'error'. Messages with a logging level greater "
+"then or equal to the log level will be printed to stdout/stderr."
+msgstr ""
+"Mögliche Werte sind 'error', 'critical', 'warning', 'message', 'info', "
+"'debug'. Der Standardwert ist 'error'. Nachrichten mit einem Logwert grösser oder "
+"gleich dem Log Level werden nach stdout/stderr ausgegeben."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:242
+msgid ""
+"Possible values are 'asm'  (assembly  loader),  'type',  'dll'  (native "
+"library  loader), 'gc' (garbage collector), 'cfg' (config file loader), 'aot' "
+"(precompiler) and 'all'. The default value is 'all'. Changing the mask value "
+"allows you to display only messages for a certain component. You can use multiple "
+"masks by comma separating them. For example to  see config file messages and "
+"assembly loader messages set you mask to 'asm,cfg'."
+msgstr ""
+"Mögliche Werte sind 'asm' (Assembly Loader), 'type', 'dll' "
+"(Bibliotheks-Loader), 'gc' (garbage collector), 'cfg' (config file loader), 'aot' (Precompiler) "
+"und 'all'. Der Standardwert ist 'all'. Änderungen dieser Maske erlauben das "
+"nur Nachrichten für eine bestimmte Komponente angezeigt werden. Mehrere Werte "
+"können durch Komma getrennt angegeben werden. z.B. um Konfigurations und "
+"Assembly Loader  Nachrichten anzuzeigen muss die Maske auf 'asm,cfg' gesetzt "
+"werden."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:256
+msgid ""
+"The  possible values are `no' to disable the use of a C# customized "
+"serializer, or an integer that is the minimum number of uses before the runtime will "
+"produce a custom serializer (0 will produce a custom serializer on the first "
+"access, 50 will produce a serializer on the 50th use). Mono will fallback to "
+"an interpreted serializer if the serializer generation somehow fails. This "
+"behavior can be disabled by setting the option `nofallback' (for example: "
+"'0,nofallback')."
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:269
+msgid ""
+"Overrides the default system configuration directory ($PREFIX/etc). It's used "
+"to locate machine.config file."
+msgstr ""
+"Überschreibt das standard Systemkonfigurationsverzeichnis ($PREFIX/etc). Es "
+"wird benutzt, um die machine.config Datei zu finden."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:277
+msgid ""
+"Overrides the default runtime configuration file ($PREFIX/etc/mono/config)."
+msgstr "Definiert die standard Konfigurationsdatei ($PREFIX/etc/mono/config)."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:284
+msgid ""
+"If  set, tells mono NOT to attempt using native asynchronous I/O services. In "
+"that case, a default select/poll implementation is used. Currently only "
+"epoll() is supported."
+msgstr ""
+"Wenn gesetzt wird Mono KEINE systemeigenen asynchronen I/O Dienste nutzen. In "
+"diesem fall wird die normale select/poll Implementation benutzt. Im "
+"augenblick wird nur epoll() benutzt."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:293
+msgid ""
+"If set, the runtime uses unmanaged collation (which actually means no "
+"culture-sensitive collation). It internally disables managed collation functionality "
+"invoked via the members of System.Globalization.CompareInfo class."
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:303
+msgid ""
+"A colon-separated list of text encodings to try when turning "
+"externally-generated text (e.g. command-line arguments or filenames) into Unicode."
+msgstr ""
+"Eine durch Punkt getrennte Liste von Zeichenkodierungen die versucht wird, "
+"wenn extern generierter Text nach Unicode transformiert wird."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:312
+msgid ""
+"Provides a prefix the runtime uses to look for Global Assembly Caches. "
+"Directories are separated by the platform path separator (colons on unix). "
+"MONO_GAC_PREFIX should point to the top directory of a prefixed install. Or to the "
+"directory provided in the gacutil /gacdir command. Example: "
+"/home/username/.mono:/usr/local/mono/"
+msgstr ""
+"Spezifiziert einen Präfix in denen die Runtime nach dem GAC sucht. "
+"Verzeichnisse werden mit dem Platformeigenen Pfadseparator getrennt (':' in Unix). "
+"MONO_GAC_PREFIX sollte auf das Wurzelverzeichnis einer gepräfixten Installation "
+"zeigen oder zu dem Verzeichnis das von den gacutil/gacdir Kommandos angegeben "
+"wird. z.B. /home/username/.mono:/usr/local/mono/"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:323
+msgid "When enabled, Mono removes the drive letter from Windows paths."
+msgstr "Wenn gesetzt entfernt Mono die Laufwerksbuchstaben von Windows Pfaden."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:329
+msgid ""
+"When enabled, Mono does case-insensitive file matching in every directory in "
+"a path."
+msgstr "Wenn gesetzt, vergleicht Mono Dateinamen ohne Gross-/Kleinschreibung."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:335
+msgid ""
+"When set, System.IO.FileSystemWatcher will use the default managed "
+"implementation  (slow)."
+msgstr ""
+"Wenn gesetzt wird die managed System.IO.FileSystemWatcher Implementation "
+"genutzt (langsam)."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:343
+msgid ""
+"If set, causes the mono process to be bound to a single processor. This may "
+"be useful when debugging or working around race conditions."
+msgstr ""
+"Wenn gesetzt wird der Mono Prozess auf einen einzigen Prozessor beschränkt. "
+"Das könnte z.B. für das Debuggen nützlich sein."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:351
+msgid ""
+"Provides a search path to the runtime where to look for library files. This "
+"is a tool convenient for debugging applications, but should not be used by "
+"deployed applications as it breaks the assembly loader in subtle ways. "
+"Directories are separated by the platform path separator (colons on unix). Example: "
+"/home/username/lib:/usr/local/mono/lib"
+msgstr ""
+"Spezifiziert einen Suchpfad in dem die Runtime nach Bibliotheken sucht. "
+"Dieses Werkzeug wird zum Debuggen benutzt, aber sollte nicht für eingesetzte "
+"Anwendungen benutzt werden. Verzeichnisse werden mit dem Platformeigenen "
+"Pfadseparator getrennt (':' in Unix). z.B. /home/username/lib:/usr/local/mono/lib"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:363
+msgid ""
+"The name of the theme to be used by Windows.Forms. Available themes include "
+"'clearlooks', 'nice' and 'win32'. The default is 'win32'"
+msgstr ""
+"Der name des Themas den Windows.Forms benutzt. Mögliche werte sind "
+"'clearlooks', 'nice' und 'win32'. Der Standardwert ist 'win32'"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:371
+msgid ""
+"The maximum number of threads in the general threadpool will be 20 + "
+"(ThreadsPerCpu * number of CPUs). The default valuefor this variable is 10."
+msgstr ""
+"Die maximale Anzahl von Threads in dem generellen Threadpool wird auf 20 + "
+"(ThreadsProCPU * Anzahl der CPUs) gesetzt. Der Standardwert dieser Variable "
+"beträgt 10."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:380
+msgid ""
+"If set, temporary source files generated by ASP.NET support classes will not "
+"be removed. They will be kept in the user's temporary directory."
+msgstr ""
+"Wenn gesetzt, dann werden temporäre ASP.NET Dateien nicht gelöscht. Sie "
+"werden im User temporären verzeichnis belassen."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:389
+msgid ""
+"If set, enables the System.Diagnostics.DefaultTraceListener, which will print "
+"the output of the System.Diagnostics Trace and Debug classes. It can be set "
+"to a filename, and to Console.Out or Console.Error to display output to "
+"standard output or standard error, respectively. If it's set to Console.Out or "
+"Console.Error you can append an optional prefix that will be used when writing "
+"messages like this: Console.Error:MyProgramName."
+msgstr ""
+"Wenn gesetzt wird der System.Diagnostics.DefaultTraceListener aktiviert. Alle "
+"Ausgaben von den System.Diagnostics Trace und Debug Klassen wird ausgegeben. "
+"Es kann ein Dateiname angegeben werden, Console.Out oder Console.Error, um "
+"die Ausgabe zur Standardausgabe oder -fehlerausgabe umzuleiten. Wenn "
+"Console.Out oder Console.Error gesetzt ist kann ein optionaler Prefix für die "
+"Nachrichten angegeben werden. z.B. 'Console.Error:MeinProgramm'."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:402
+msgid ""
+"If set, an exception is thrown when a X11 error is encountered. By default a "
+"message is displayed but execution continues."
+msgstr ""
+"Wenn gesetzt, wird eine Ausnahme geworfen, wenn ein X11 Fehler auftritt. Das "
+"Standardverhalten ist das der Fehler angezeigt wird, aber die Ausführung "
+"fortführt."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:410
+msgid ""
+"When the the MONO_XDEBUG env var is set, debugging info for JITted code is "
+"emitted into a shared library, loadable into gdb. This enables, for example, to "
+"see managed frame names on gdb backtraces."
+msgstr ""
+"Wenn die MONO_XDEBUG Umgebungsvariable gesetzt ist wird die Debuginfo für JIT "
+"code in eine Bibliothek ausgeben die gdb laden kann. Das erlaubt z.B. das "
+"Managed Namen in gdb Backtraces gesehen werden können."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:447
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:159
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:165
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:171
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:186
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:408
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:39
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:54
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:64
+msgid "Debug"
+msgstr "Debug"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:179
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:192
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:282
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:341
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:369
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:400
+msgid "Runtime"
+msgstr "Runtime"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:199
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:206
+msgid "Security"
+msgstr "Sicherheit"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:214
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:387
+msgid "Tracing"
+msgstr "Überwachung"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:230
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:240
+msgid "Logging"
+msgstr "Protokollierung"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:254
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:291
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:301
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:333
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:361
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:378
+msgid "Library Options"
+msgstr "Bibliotheks Einstellungen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:267
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:275
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:310
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:349
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:89
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs:77
+msgid "Configuration"
+msgstr "Konfiguration"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:321
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:327
+msgid "Compatibility"
+msgstr "Kompatibilität"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersWidget.cs:73
 msgid "Are you sure you want to clear all specified options?"
-msgstr "Sind Sie sicher, dass sie alle ausgewählten Optionen löschen wollen?"
+msgstr ""
+"Sind Sie sicher, dass sie alle ausgewählten Optionen zurücksetzen wollen?"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersWidget.cs:63
 msgid "Clear All Options"
-msgstr "Alle Optionen löschen"
+msgstr "Alle Optionen zurücksetzen"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersWidget.cs:78
 msgid "Preview Options"
-msgstr "Vorschau Optionen"
+msgstr "Optionsvorschau"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersPreview.cs:52
 msgid "No options have been specified."
@@ -5371,7 +5797,9 @@ msgstr "MonoDevelop Instrumentierung einschalten"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs:34
 msgid ""
 "Custom folders where MonoDevelop should look for assemblies and packages:"
-msgstr "Eigene Ordner in denen MonoDevelop nach Assemblies und Paketen sucht:"
+msgstr ""
+"Benutzerdefinierte Ordner in denen MonoDevelop nach Assemblies und Paketen "
+"sucht:"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/ProjectService.cs:257
 msgid "The project could not be saved"
@@ -6002,11 +6430,6 @@ msgstr "Die Datei '{0}' existiert bereits. Wollen Sie sie ersetzen?"
 msgid "Solution Item"
 msgstr "Projektmappen-Objekt"
 
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:89
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs:77
-msgid "Configuration"
-msgstr "Konfiguration"
-
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:89
 msgid "Invalid assembly name specified"
 msgstr "Ungültiger Assembly-Name angegeben"
@@ -6147,9 +6570,9 @@ msgid ""
 "as a replacement of common project operations. It is also possible to enter "
 "custom commands which will be available in the project or solution menu."
 msgstr ""
-"MonoDevelop kann benutzerdefiniert Befehle oder Skripte ausführen, nach oder "
-"als eine Ersetzung von häufigen Projekt-Operationen. Es ist ebenfalls möglich "
-"benutzerdefinierte Befehle einzugeben, die dann im Projekt- oder "
+"MonoDevelop kann benutzerdefinierte Befehle oder Skripte ausführen, nach oder "
+"als eine Ersetzung von häufigen Projekt-Operationen. Es ist ebenfalls "
+"möglich benutzerdefinierte Befehle einzugeben, die dann im Projekt- oder "
 "Projektmappen-Menü verfügbar sein werden."
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs:38
@@ -14294,10 +14717,6 @@ msgstr "Disassembler"
 msgid "Condition"
 msgstr "Kondition"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:150
-msgid "Trace Expression"
-msgstr "Ausdruck überwachen"
-
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:153
 msgid "Hit Count"
 msgstr "Hit-Anzahl"
@@ -14433,12 +14852,6 @@ msgstr "Ausdruck in Ausgabe schreiben"
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:416
 msgid "Expression:"
 msgstr "Ausdruck:"
-
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugExecutionModeSet.cs:39
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:54
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:64
-msgid "Debug"
-msgstr "Debug"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ImmediatePad.cs:71
 msgid "Evaluation failed."
@@ -15971,6 +16384,9 @@ msgstr "Text-Schablone"
 msgid "T4 Templates"
 msgstr "T4 Schablone"
 
+#~ msgid "Encapsulate Fields..."
+#~ msgstr "Eigenschaft für Feld generieren..."
+
 #~ msgid "Encapsulate fields..."
 #~ msgstr "Eigenschaft für Feld generieren..."
 
@@ -16173,9 +16589,6 @@ msgstr "T4 Schablone"
 
 #~ msgid "Recurse subdirectories"
 #~ msgstr "Unterordner durchsuchen"
-
-#~ msgid "Case sensitive"
-#~ msgstr "Groß-/Kleinschreibung berücksichtigen"
 
 #~ msgid "Whole word only"
 #~ msgstr "Nur ganzes Wort"
@@ -16557,9 +16970,6 @@ msgstr "T4 Schablone"
 #~ msgid "window1"
 #~ msgstr "window1"
 
-#~ msgid "Enable GTK# support"
-#~ msgstr "GTK#-Unterstützung aktivieren"
-
 #~ msgid "This assembly is a widget library"
 #~ msgstr "Dieses Assembly ist eine Widget-Bibliothek"
 
@@ -16921,7 +17331,6 @@ msgstr "T4 Schablone"
 #~ msgstr "Fehler aufgetreten: {0}"
 #~ msgid "Question"
 #~ msgstr "Frage"
-
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
 
