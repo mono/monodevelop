@@ -222,6 +222,7 @@ namespace MonoDevelop.WelcomePage
 					Gtk.MessageDialog md = new Gtk.MessageDialog
 						(null, Gtk.DialogFlags.Modal| Gtk.DialogFlags.DestroyWithParent,
 						 Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);
+					md.TransientFor = IdeApp.Workbench.RootWindow;
 					try {
 						md.Run ();
 						md.Hide ();
