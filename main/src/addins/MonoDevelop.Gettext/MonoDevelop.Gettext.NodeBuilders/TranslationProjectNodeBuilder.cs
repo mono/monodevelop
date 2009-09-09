@@ -128,6 +128,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				if (project == null)
 					return;
 				TranslationProjectOptionsDialog options = new TranslationProjectOptionsDialog (project);
+				options.TransientFor = IdeApp.Workbench.RootWindow;
 				options.Run ();
 				IdeApp.Workspace.Save ();
 			}
@@ -152,6 +153,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					chooser.Response += delegate(object o, ResponseArgs args) {
 						response = (int)args.ResponseId;
 					};
+					chooser.TransientFor = IdeApp.Workbench.RootWindow;
 					chooser.Run ();
 					
 					if (response == (int)ResponseType.Ok) {

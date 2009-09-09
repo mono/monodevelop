@@ -31,6 +31,7 @@ using System;
 using Gtk;
 
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Gettext.Translator;
@@ -61,6 +62,7 @@ namespace MonoDevelop.Gettext
 				chooser.Response += delegate(object o, Gtk.ResponseArgs args) {
 					response = (int)args.ResponseId;
 				};
+				chooser.TransientFor = IdeApp.Workbench.RootWindow;
 				chooser.Run ();
 				
 				if (response == (int)Gtk.ResponseType.Ok) {
