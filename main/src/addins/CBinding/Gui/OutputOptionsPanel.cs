@@ -66,6 +66,7 @@ namespace CBinding
 		private void OnBrowseButtonClick (object sender, EventArgs e)
 		{
 			AddPathDialog dialog = new AddPathDialog (configuration.OutputDirectory);
+			dialog.TransientFor = this.Toplevel as Gtk.Window;
 			dialog.Run ();
 			outputPathTextEntry.Text = dialog.SelectedPath;
 		}

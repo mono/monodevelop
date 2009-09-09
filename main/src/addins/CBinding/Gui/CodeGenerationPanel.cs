@@ -176,6 +176,7 @@ namespace CBinding
 		private void OnBrowseButtonClick (object sender, EventArgs e)
 		{
 			AddLibraryDialog dialog = new AddLibraryDialog ();
+			dialog.TransientFor = this.Toplevel as Gtk.Window;
 			dialog.Run ();
 			libAddEntry.Text = dialog.Library;
 		}
@@ -183,6 +184,7 @@ namespace CBinding
 		private void OnIncludePathBrowseButtonClick (object sender, EventArgs e)
 		{
 			AddPathDialog dialog = new AddPathDialog ("/usr/include");
+			dialog.TransientFor = this.Toplevel as Gtk.Window;
 			dialog.Run ();
 			includePathEntry.Text = dialog.SelectedPath;
 		}
@@ -190,6 +192,7 @@ namespace CBinding
 		private void OnLibPathBrowseButtonClick (object sender, EventArgs e)
 		{
 			AddPathDialog dialog = new AddPathDialog ("/usr/lib");
+			dialog.TransientFor = this.Toplevel as Gtk.Window;
 			dialog.Run ();
 			libPathEntry.Text = dialog.SelectedPath;
 		}

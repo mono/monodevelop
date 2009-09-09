@@ -137,6 +137,7 @@ namespace CBinding.ProjectPad
 			    typeof(CProject), false);
 			
 			EditPackagesDialog dialog = new EditPackagesDialog (project);
+			dialog.TransientFor = IdeApp.Workbench.RootWindow;
 			dialog.Run ();			
 			
 			IdeApp.ProjectOperations.Save (project);

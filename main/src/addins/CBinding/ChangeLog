@@ -1,3 +1,10 @@
+2009-09-09  Christian Hergert  <chris@dronelabs.com>
+
+	* Gui/OutputOptionsPanel.cs: 
+	* Gui/CodeGenerationPanel.cs: 
+	* ProjectPad/ProjectPackagesFolderNodeBuilder.cs: Set dialogs
+	  transient to the gtk window of the calling widget.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Update gtk# dependency.
