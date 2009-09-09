@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-09 10:44:42+0200\n"
-"PO-Revision-Date: 2009-09-09 10:45:33+0200\n"
+"POT-Creation-Date: 2009-09-09 11:15:48+0200\n"
+"PO-Revision-Date: 2009-09-09 11:16:50+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -250,7 +250,7 @@ msgstr "MonoDevelop Paket"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:2651
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:69
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:236
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:238
 msgid "Loading..."
 msgstr "Lade..."
 
@@ -510,7 +510,7 @@ msgstr "Konnte die URL {0} nicht öffnen"
 
 #: ../src/core/MonoDevelop.Components/MonoDevelop.Components.Commands/LinkCommandEntry.cs:87
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:249
-#: ../src/addins/WelcomePage/WelcomePageView.cs:246
+#: ../src/addins/WelcomePage/WelcomePageView.cs:247
 msgid "Open {0}"
 msgstr "Öffne {0}"
 
@@ -1714,7 +1714,7 @@ msgstr "Rückwärts im ausgewählten Text suchen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:863
 msgid "F_ind in Files..."
-msgstr "_Suche in Dateien..."
+msgstr "_In Dateien suchen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:867
 msgid "Search for text in all files of a directory"
@@ -1887,7 +1887,7 @@ msgstr "Parameter"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:982
 msgid "Go to Matching _Brace"
-msgstr "Gehe zur passender _Klammer"
+msgstr "Zur passender _Klammer gehen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:986
 msgid "Expand selection to the left"
@@ -2510,7 +2510,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:362
 msgid "Template for event arguments"
-msgstr "Codeausschnitt für ein Event-Argument"
+msgstr "Codeausschnitt für ein Ereignis-Argument"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:396
 msgid "Sets minimum value to a variable"
@@ -2957,11 +2957,11 @@ msgstr "Sind Sie sicher, dass Sie das aktive Layout löschen wollen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:200
 msgid "Show Next ({0})"
-msgstr "Zeige Nächstes ({0})"
+msgstr "Nächstes zeigen ({0})"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:218
 msgid "Show Previous ({0})"
-msgstr "Zeige Vorheriges ({0})"
+msgstr "Vorheriges zeigen ({0})"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/WindowCommands.cs:109
 msgid "Activate window '{0}'"
@@ -3670,7 +3670,7 @@ msgid "Some of the open documents have unsaved changes."
 msgstr "Einige der offenen Dokumente haben ungespeicherte Änderungen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1016
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:186
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:188
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:150
 msgid "---------------------- Done ----------------------"
 msgstr "--------------------- Fertig ---------------------"
@@ -4144,8 +4144,8 @@ msgid "<b>Project features</b>"
 msgstr "<b>Projekt-Merkmale</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs:67
-msgid "Encapsulate fields..."
-msgstr "Eigenschaft für Feld generieren..."
+msgid "Encapsulate Fields"
+msgstr "Generiere Eigenschaft für Feld"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs:86
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:46
@@ -4175,7 +4175,6 @@ msgstr ""
 "Klassenmembern"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:55
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:495
 msgid "Encapsulate Fields..."
 msgstr "Eigenschaft für Feld generieren..."
 
@@ -6697,7 +6696,7 @@ msgid "Retrieving history for {0}..."
 msgstr "Rufe Änderungsprotokoll für {0} ab..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:81
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:68
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:69
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:52
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:404
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:80
@@ -6893,7 +6892,7 @@ msgstr "Rufe Status für {0} ab..."
 msgid "Repository"
 msgstr "Repository"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:311
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:313
 msgid "Select target directory"
 msgstr "Zielordner auswählen"
 
@@ -6905,7 +6904,7 @@ msgstr "Hinzufügen..."
 msgid "Removing..."
 msgstr "Löschen..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CheckoutCommand.cs:42
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CheckoutCommand.cs:43
 msgid "Checkout {0}..."
 msgstr "Checke {0} aus..."
 
@@ -6914,7 +6913,7 @@ msgstr "Checke {0} aus..."
 msgid "There are no changes to be committed."
 msgstr "Es sind keine Änderungen zum übertragen vorhanden."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:88
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:89
 msgid "Committing {0}..."
 msgstr "Übertrage {0}..."
 
@@ -6922,16 +6921,16 @@ msgstr "Übertrage {0}..."
 msgid "Initial check-in of module {0}"
 msgstr "Initialisiere eine Einchecken des Moduls {0}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:46
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:47
 msgid "Are you sure you want to publish the project?"
 msgstr "Sind Sie sich sicher, dass Sie das Projekt veröffentlichen wollen?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:46
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:47
 msgid "The project will be published to the repository '{0}', module '{1}'."
 msgstr ""
 "Das Projekt wird in Repository '{0}' in das Modul '{1}' veröffentlicht."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:91
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:92
 msgid "Publishing \"{0}\" Project..."
 msgstr "Veröffentliche Projekt \"{0}\"..."
 
@@ -7500,7 +7499,7 @@ msgid "Bind Widget Design"
 msgstr "Verknüpfe Widget-Design."
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:213
-#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs:60
+#: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs:61
 msgid "The widget design {0} is not currently bound to a class."
 msgstr "Das Widget-Design {0} ist momentan nicht an eine Klasse gebunden."
 
@@ -7747,7 +7746,7 @@ msgstr ""
 msgid "Press a key..."
 msgstr "Eine Taste drücken..."
 
-#: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/Accelerator.cs:166
+#: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/Accelerator.cs:167
 msgid "Press the key combination you want to assign to the accelerator..."
 msgstr ""
 "Drücken sie die Tasten-Kombination die sie dem Beschleuniger zuweisen "
@@ -7890,8 +7889,8 @@ msgstr "Zustand"
 msgid "Direction"
 msgstr "Richtung"
 
-#: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/EditIconFactoryDialog.cs:63
-#: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/SelectIconDialog.cs:147
+#: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/EditIconFactoryDialog.cs:65
+#: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/SelectIconDialog.cs:149
 msgid "Are you sure you want to delete the icon '{0}'"
 msgstr "Sind sie sich sicher, dass sie das Symbol '{0}' entfernen wollen"
 
@@ -8120,31 +8119,31 @@ msgstr "Willkommen-Seite aus dem Web aktualisieren"
 msgid "Welcome"
 msgstr "Willkommen"
 
-#: ../src/addins/WelcomePage/WelcomePageView.cs:241
+#: ../src/addins/WelcomePage/WelcomePageView.cs:242
 msgid "Open solution {0}"
 msgstr "Öffne Solution {0}"
 
-#: ../src/addins/WelcomePage/WelcomePageView.cs:243
+#: ../src/addins/WelcomePage/WelcomePageView.cs:244
 msgid "Hold Control key to open in current workspace."
 msgstr "Control gedrückt halten, um in aktueller Arbeitsumgebung zu öffnen."
 
-#: ../src/addins/WelcomePage/WelcomePageView.cs:276
+#: ../src/addins/WelcomePage/WelcomePageView.cs:277
 msgid "Less than a minute"
 msgstr "Weniger als eine Minute"
 
-#: ../src/addins/WelcomePage/WelcomePageView.cs:270
+#: ../src/addins/WelcomePage/WelcomePageView.cs:271
 msgid "{0} day"
 msgid_plural "{0} days"
 msgstr[0] "{0} Tag"
 msgstr[1] "{0} Tage"
 
-#: ../src/addins/WelcomePage/WelcomePageView.cs:272
+#: ../src/addins/WelcomePage/WelcomePageView.cs:273
 msgid "{0} hour"
 msgid_plural "{0} hours"
 msgstr[0] "{0} Stunde"
 msgstr[1] "{0} Stunden"
 
-#: ../src/addins/WelcomePage/WelcomePageView.cs:274
+#: ../src/addins/WelcomePage/WelcomePageView.cs:275
 msgid "{0} minute"
 msgid_plural "{0} minutes"
 msgstr[0] "{0} Minute"
@@ -8703,7 +8702,7 @@ msgstr "Initialisiere..."
 msgid "Web and Windows Forms Components"
 msgstr "Web- und Windows-Formen Komponenten"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/ToolboxService.cs:587
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/ToolboxService.cs:588
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:210
 msgid "Looking for components..."
 msgstr "Schaue nach Komponenten..."
@@ -10591,11 +10590,11 @@ msgstr "Übersetzung {0}: Kompilation erfolgreich."
 msgid "Translation {0}: Compilation failed. Reason: {1}"
 msgstr "Übersetzung {0}: Kompilation gescheitert. Grund: {1}"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:147
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:148
 msgid "Translator Output"
 msgstr "Übersetzer-Ausgabe"
 
-#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:183
+#: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:185
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:147
 msgid "Translation update failed."
 msgstr "Übersetzungsaktualisierung fehlgeschlagen."
@@ -12336,7 +12335,7 @@ msgstr "SharpDevelop"
 msgid "The default color scheme."
 msgstr "Voreingestelltes Farbschema."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:131
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:132
 msgid "Validation of style file failed."
 msgstr "Validierung des Farbschemas fehlgeschlagen."
 
@@ -14260,7 +14259,7 @@ msgstr "XSL_T ausführen"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:81
 msgid "_Go to Schema Definition"
-msgstr "_Gehe zur Schema Definiton"
+msgstr "_Zur Schema Definiton gehen"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:94
 msgid "_XML"
@@ -14328,11 +14327,11 @@ msgstr "_Weiter"
 msgid "Application to Debug"
 msgstr "Zu debuggende Anwendung"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:233
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:235
 msgid "Do you want to detach from the process being debugged?"
 msgstr "Wollen sie den den Debugger vom Prozess lösen?"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:233
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:235
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:74
 msgid "Detach"
 msgstr "Lösen"
@@ -14876,7 +14875,7 @@ msgstr "Refaktorisieren"
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:423
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:78
 msgid "_Go to declaration"
-msgstr "_Gehe zur Deklaration"
+msgstr "_Zur Deklaration gehen"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:427
 msgid "{0}, Line {1}"
@@ -14909,11 +14908,15 @@ msgstr "Gehe zum _Basistyp"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:491
 msgid "Find _derived classes"
-msgstr "Fin_de hergeleitete Klassen"
+msgstr "_Hergeleitete Klassen suchen"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:491
 msgid "Find _implementor classes"
-msgstr "Suche _implementierende Klassen"
+msgstr "_Implementierende Klassen suchen"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:495
+msgid "_Encapsulate Fields..."
+msgstr "_Eigenschaften für Felder generieren..."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:496
 msgid "Override/Implement members..."
@@ -14934,8 +14937,8 @@ msgid "Field <b>{0}</b>"
 msgstr "Feld <b>{0}</b>"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:535
-msgid "Encapsulate Field..."
-msgstr "Eigenschaft für Feld generieren..."
+msgid "_Encapsulate Field..."
+msgstr "_Eigenschaft für Feld generieren..."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:539
 msgid "Indexer <b>{0}</b>"
@@ -15022,7 +15025,7 @@ msgstr "_Vorschau"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:73
 msgid "_Extract Method..."
-msgstr "_Extrahiere Methode..."
+msgstr "_Methode extrahieren..."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:263
 msgid "Generate some temporary variables"
@@ -15228,11 +15231,11 @@ msgstr "I_mplementierte explizit"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs:52
 msgid "Event OnXXX method"
-msgstr "Event OnXXX Methode"
+msgstr "Ereignis OnXXX Methode"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs:58
 msgid "Select event to generate the method for."
-msgstr "Event auswählen, für den die Methode erstellt wird."
+msgstr "Ereignis auswählen, für den die Methode erstellt wird."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs:41
 msgid "_Create backing store"
@@ -15256,7 +15259,7 @@ msgstr "Neu anfertigen"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:83
 msgid "_Find references"
-msgstr "_Finde Referenzen"
+msgstr "_Referenzen suchen"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:88
 msgid "_Rename..."
@@ -15284,7 +15287,7 @@ msgstr "Us_ings optimieren"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:123
 msgid "_Organize Usings"
-msgstr "_Usings organisieren"
+msgstr "U_sings organisieren"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.addin.xml:105
 msgid "ASP.NET Files"
@@ -15967,6 +15970,9 @@ msgstr "Text-Schablone"
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/MonoDevelop.TextTemplating.addin.xml:36
 msgid "T4 Templates"
 msgstr "T4 Schablone"
+
+#~ msgid "Encapsulate fields..."
+#~ msgstr "Eigenschaft für Feld generieren..."
 
 #, fuzzy
 #~ msgid "Custom Arguments"
