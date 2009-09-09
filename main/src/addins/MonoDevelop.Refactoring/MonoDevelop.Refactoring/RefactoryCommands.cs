@@ -493,7 +493,7 @@ namespace MonoDevelop.Refactoring
 				}
 
 				if (cls.SourceProject != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Encapsulate Fields..."), new RefactoryOperation (refactorer.EncapsulateField));
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
 				}
 				
@@ -533,7 +533,7 @@ namespace MonoDevelop.Refactoring
 			} else if ((item is IField) && includeModifyCommands) {
 				txt = GettextCatalog.GetString ("Field <b>{0}</b>", itemName);
 				if (canRename)
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Field..."), new RefactoryOperation (refactorer.EncapsulateField));
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Encapsulate Field..."), new RefactoryOperation (refactorer.EncapsulateField));
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IField) item).ReturnType.FullName);
 			} else if (item is IProperty) {
 				if (((IProperty)item).IsIndexer) {				

@@ -1,5 +1,10 @@
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: Added shortcut
+	  key for encapsulate fields command.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs:
 	  Added integrate temporary variable to translation.
 
