@@ -23,6 +23,7 @@ namespace MonoDevelop.Deployment
 			SolutionItem entry = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
 			DeployDialog dlg = new DeployDialog (entry, false);
 			try {
+				dlg.TransientFor = IdeApp.Workbench.RootWindow;
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					if (dlg.SaveToProject) {
 						Package p = new Package ();
@@ -63,6 +64,7 @@ namespace MonoDevelop.Deployment
 			PackagingProject project = IdeApp.ProjectOperations.CurrentSelectedSolutionItem as PackagingProject;
 			DeployDialog dlg = new DeployDialog (project.ParentFolder, true);
 			try {
+				dlg.TransientFor = IdeApp.Workbench.RootWindow;
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					project.AddPackage (dlg.NewPackageName, dlg.PackageBuilder);
 					IdeApp.ProjectOperations.Save (project);
