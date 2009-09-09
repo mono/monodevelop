@@ -1,3 +1,8 @@
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Worked on
+	  'Bug 537267 - Code completion window scrolling is wrong'.
+
 2009-09-08  Christian Hergert  <chris@dronelabs.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs: 
