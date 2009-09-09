@@ -635,6 +635,7 @@ namespace MonoDevelop.Ide.Gui
 							NewFilesMessage message = (NewFilesMessage) state;
 							IncludeNewFilesDialog includeNewFilesDialog = new IncludeNewFilesDialog (message.Project);
 							includeNewFilesDialog.AddFiles (message.NewFiles);
+							includeNewFilesDialog.TransientFor = IdeApp.Workbench.RootWindow;
 							includeNewFilesDialog.Run ();
 							includeNewFilesDialog.Destroy ();
 						},

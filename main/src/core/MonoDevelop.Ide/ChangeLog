@@ -1,3 +1,22 @@
+2009-09-08  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs: 
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: 
+	* MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs: 
+	* MonoDevelop.Ide.Commands/ViewCommands.cs: 
+	* MonoDevelop.Ide.Commands/FileCommands.cs: 
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs: 
+	* MonoDevelop.Ide.Commands/HelpCommands.cs: 
+	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs: 
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: 
+	* MonoDevelop.Ide.Gui/Document.cs: 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: 
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: 
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs: 
+	* MonoDevelop.Ide.Gui/Workbench.cs: 
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Fix dialogs to be transient
+	  to the root window or parent dialog.
+
 2009-09-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs: Removed

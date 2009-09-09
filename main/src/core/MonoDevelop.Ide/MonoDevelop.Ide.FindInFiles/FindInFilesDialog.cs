@@ -288,6 +288,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					defaultFolder = IdeApp.ProjectOperations.ProjectsDefaultPath;
 				if (!string.IsNullOrEmpty (defaultFolder))
 					folderDialog.SetFilename (defaultFolder);
+				folderDialog.TransientFor = IdeApp.Workbench.RootWindow;
 				if (folderDialog.Run () == (int)Gtk.ResponseType.Ok)
 					this.comboboxentryPath.Entry.Text = folderDialog.Filename;
 			} finally {

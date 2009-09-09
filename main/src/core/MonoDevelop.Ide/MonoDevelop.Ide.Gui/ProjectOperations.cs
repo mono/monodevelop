@@ -276,6 +276,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			ExportProjectDialog dlg = new ExportProjectDialog (entry, format);
 			try {
+				dlg.TransientFor = IdeApp.Workbench.RootWindow;
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					
 					using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Export Project"), null, true, true)) {

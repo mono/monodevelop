@@ -71,6 +71,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			CommonAboutDialog dlg = new CommonAboutDialog ();
+			dlg.TransientFor = IdeApp.Workbench.RootWindow;
 			try {
 				dlg.Run ();
 			}

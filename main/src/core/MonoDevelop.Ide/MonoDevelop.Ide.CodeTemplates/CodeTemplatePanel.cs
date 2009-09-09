@@ -114,6 +114,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			TreeIter selected;
 			if (treeviewCodeTemplates.Selection.GetSelected (out selected)) {
 				EditTemplateDialog editDialog = new EditTemplateDialog ((CodeTemplate)templateStore.GetValue (selected, 0), false);
+				editDialog.TransientFor = this.Toplevel as Gtk.Window;
 				editDialog.Parent = parent;
 				editDialog.Run ();
 				editDialog.Destroy ();
@@ -126,6 +127,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			EditTemplateDialog editDialog = new EditTemplateDialog (newTemplate, true);
 			
 			editDialog.Parent = parent;
+			editDialog.TransientFor = this.Toplevel as Gtk.Window;
 			if (ResponseType.Ok == (ResponseType)editDialog.Run ()) {
 				InsertTemplate (newTemplate);
 				templates.Add (newTemplate);

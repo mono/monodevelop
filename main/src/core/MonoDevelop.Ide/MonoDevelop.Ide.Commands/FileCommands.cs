@@ -120,6 +120,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			NewFileDialog dlg = new NewFileDialog (null, null); // new file seems to fail if I pass the project IdeApp.ProjectOperations.CurrentSelectedProject
+			dlg.TransientFor = IdeApp.Workbench.RootWindow;
 			try {
 				dlg.Run ();
 			}

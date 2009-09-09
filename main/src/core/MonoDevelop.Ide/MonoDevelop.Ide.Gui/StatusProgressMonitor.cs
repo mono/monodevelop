@@ -119,6 +119,7 @@ namespace MonoDevelop.Ide.Gui
 						resultDialog.AddError (m);
 					foreach (string m in Warnings)
 						resultDialog.AddWarning (m);
+					resultDialog.TransientFor = IdeApp.Workbench.RootWindow;
 					resultDialog.Run ();
 					resultDialog.Destroy ();
 				}

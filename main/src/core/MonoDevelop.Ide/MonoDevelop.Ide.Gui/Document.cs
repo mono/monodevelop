@@ -252,6 +252,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 					fdiag.Encoding = encoding;
 					fdiag.ShowEncodingSelector = (tbuffer != null);
+					fdiag.TransientFor = IdeApp.Workbench.RootWindow;
 					int response = fdiag.Run ();
 					filename = fdiag.Filename;
 					encoding = fdiag.Encoding;

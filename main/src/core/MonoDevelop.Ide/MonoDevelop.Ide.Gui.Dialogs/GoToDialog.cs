@@ -128,6 +128,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	    public static void Run (bool searchFiles, string initialSearchText)
 		{
 			GoToDialog dialog = new GoToDialog (searchFiles, initialSearchText);
+			dialog.TransientFor = IdeApp.Workbench.RootWindow;
 			try {
 				if ((ResponseType)dialog.Run () == ResponseType.Ok) {
 					foreach (OpenLocation loc in dialog.Locations)

@@ -147,6 +147,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			string newLayoutName = null;
 			NewLayoutDialog dlg = new NewLayoutDialog();
+			dlg.TransientFor = IdeApp.Workbench.RootWindow;
 			try {
 				if (((Gtk.ResponseType)dlg.Run ()) == Gtk.ResponseType.Ok) 
 					newLayoutName = dlg.LayoutName; 

@@ -31,6 +31,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
@@ -88,6 +89,7 @@ namespace MonoDevelop.Ide.Execution
 			CommandItem item = (CommandItem) data;
 			if (item.Mode == null) {
 				CustomExecutionModeManagerDialog dlg = new CustomExecutionModeManagerDialog (item.Context);
+				dlg.TransientFor = IdeApp.Workbench.RootWindow;
 				try {
 					dlg.Run ();
 				} finally {
@@ -206,6 +208,7 @@ namespace MonoDevelop.Ide.Execution
 				CustomExecutionModeDialog dlg = new CustomExecutionModeDialog ();
 				try {
 					dlg.Initialize (ctx, mode, currentMode);
+					dlg.TransientFor = IdeApp.Workbench.RootWindow;
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 						cmode = dlg.GetConfigurationData ();
 						cmode.Project = ctx.Project;

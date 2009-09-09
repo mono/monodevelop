@@ -113,6 +113,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			FolderDialog fd = new FolderDialog (GettextCatalog.GetString ("Select the mono installation prefix"));
 			fd.SetFilename ("/usr");
+			fd.TransientFor = this.Toplevel as Gtk.Window;
 			
 			int response = fd.Run ();
 			

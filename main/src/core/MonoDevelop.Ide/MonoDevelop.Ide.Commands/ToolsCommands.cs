@@ -138,6 +138,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			InstrumentationViewerDialog dlg = new InstrumentationViewerDialog ();
+			dlg.TransientFor = IdeApp.Workbench.RootWindow;
 			dlg.Show ();
 		}
 		

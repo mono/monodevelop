@@ -465,6 +465,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				if (panelId != null)
 					ops.SelectPanel (panelId);
+				ops.TransientFor = RootWindow;
 				if (ops.Run () == (int) Gtk.ResponseType.Ok) {
 					PropertyService.SaveProperties ();
 				}
@@ -489,6 +490,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				if (panelId != null)
 					ops.SelectPanel (panelId);
+				ops.TransientFor = RootWindow;
 				if (ops.Run () == (int) Gtk.ResponseType.Ok) {
 					MonoDevelop.Projects.Policies.PolicyService.SaveDefaultPolicies ();
 				}
