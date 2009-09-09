@@ -157,6 +157,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			try {
 				fdiag.SetCurrentFolder (entry.BaseDirectory);
 				fdiag.SelectMultiple = false;
+				fdiag.TransientFor = this.Toplevel as Gtk.Window;
 				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
 					if (System.IO.Path.IsPathRooted (fdiag.Filename))
 						entryCommand.Text = FileService.AbsoluteToRelativePath (entry.BaseDirectory, fdiag.Filename);

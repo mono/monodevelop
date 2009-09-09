@@ -1,3 +1,10 @@
+2009-09-08  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs: 
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs: 
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs:
+	  Fix dialogs to be transient.
+
 2009-09-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:

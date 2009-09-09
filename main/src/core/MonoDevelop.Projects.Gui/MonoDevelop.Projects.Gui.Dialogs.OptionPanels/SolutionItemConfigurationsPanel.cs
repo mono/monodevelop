@@ -109,6 +109,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			try {
 				bool done = false;
 				do {
+					dlg.TransientFor = this.Toplevel as Gtk.Window;
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 						ItemConfiguration cc = configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
 						store.AppendValues (cc, cc.Id);
@@ -137,6 +138,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			DeleteConfigDialog dlg = new DeleteConfigDialog ();
 			
 			try {
+				dlg.TransientFor = this.Toplevel as Gtk.Window;
 				if (dlg.Run () == (int) Gtk.ResponseType.Yes) {
 					configData.RemoveConfiguration (cc.Id, dlg.DeleteChildren);
 					store.Remove (ref iter);
@@ -160,6 +162,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			try {
 				bool done = false;
 				do {
+					dlg.TransientFor = this.Toplevel as Gtk.Window;
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 						configData.RenameConfiguration (cc.Id, dlg.ConfigName, dlg.RenameChildren);
 						store.SetValue (iter, 1, cc.Id);
