@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-08 12:24:32+0200\n"
-"PO-Revision-Date: 2009-09-08 14:12:40+0200\n"
+"PO-Revision-Date: 2009-09-09 10:41:13+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -760,7 +760,7 @@ msgstr "_Kopieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:228
 msgid "Copy the selection"
-msgstr "Kopiere die Auswahl"
+msgstr "Den markierten Text kopieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:233
 msgid "Cu_t"
@@ -768,7 +768,7 @@ msgstr "_Ausschneiden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:235
 msgid "Cut the selection"
-msgstr "Schneide die Auswahl aus"
+msgstr "Den markierten Text ausschneiden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:240
 msgid "_Paste"
@@ -776,11 +776,11 @@ msgstr "E_infügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:242
 msgid "Paste the clipboard"
-msgstr "In Zwischenablage einfügen"
+msgstr "Den Inhalt der Zwischenablage einfügen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:248
 msgid "Delete the selection"
-msgstr "Lösche Auswahl"
+msgstr "Den markierten Text löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:252
 msgid "Re_name"
@@ -796,7 +796,7 @@ msgstr "_Rückgängig"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:258
 msgid "Undo last action"
-msgstr "Letzte Aktion rückgängig machen"
+msgstr "Den letzten Vorgang rückgängig machen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:262
 msgid "_Redo"
@@ -804,7 +804,7 @@ msgstr "_Wiederholen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:264
 msgid "Redo last undone action"
-msgstr "Wiederhole letzte rückgängig gemachte Aktion"
+msgstr "Den rückgängig gemachten Vorgang wiederholen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:269
 msgid "Select all text"
@@ -852,7 +852,7 @@ msgstr "Z_u Kleinbuchstaben"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:299
 msgid "_Remove trailing white spaces"
-msgstr "A_bschliessende Weisszeichen entfernen"
+msgstr "A_bschliessende Leerzeichen entfernen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:302
 msgid "Join the current line with the next line"
@@ -1024,7 +1024,7 @@ msgstr "_Neue Datei..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:384
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:496
 msgid "Create a new file"
-msgstr "Erstelle eine neue Datei"
+msgstr "Neue Datei erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:387
 msgid "Add existing files to the project"
@@ -1191,7 +1191,7 @@ msgstr "Ö_ffnen..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:489
 msgid "Open file or solution"
-msgstr "Öffne Datei oder Projektmappe"
+msgstr "Datei oder Projektmappe öffnen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:493
 msgid "_File..."
@@ -1207,7 +1207,7 @@ msgstr "_Speichern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:507
 msgid "Save all open files"
-msgstr "Speichere alle offenen Dateien"
+msgstr "Alle offenen Dateien speichern"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:508
 msgid "Save A_ll"
@@ -1344,7 +1344,7 @@ msgstr "Öffnet einen Ordner im Dateimanager."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:600
 msgid "O_pen Containing Folder"
-msgstr "Ö_ffne beinhalteten Ordner"
+msgstr "Ö_ffne beinhaltenden Ordner"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:601
 msgid "Opens the folder that contains this file."
@@ -1670,7 +1670,7 @@ msgstr "_Weitersuchen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:834
 msgid "Search forwards for the same text"
-msgstr "Vorwärts im selben Text suchen"
+msgstr "Vorwärts nach dem gleichen Text suchen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:838
 msgid "Find _Previous"
@@ -1686,7 +1686,7 @@ msgstr "_Weitersuchen (Emacs verhalten)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:846
 msgid "Search forwards for the same text with emacs behavior"
-msgstr "Vorwärts im selben Text suchen (nach Emacs {rt)"
+msgstr "Vorwärts nach dem gleichen Text suchen (nach Emacs Art)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:848
 msgid "Find _Previous (Emacs behavior)"
@@ -1730,7 +1730,7 @@ msgstr "Suchen und Ersetzen in allen Dateien eines Ordners"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:877
 msgid "Go to Type..."
-msgstr "Gehe zu Typ..."
+msgstr "Gehe zum Typ..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:878
 msgid "Jump to the declaration of type in the current workspace"
@@ -1738,7 +1738,7 @@ msgstr "Zur Typdeklaration im aktuellen Arbeitsbereich springen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:883
 msgid "Go to File..."
-msgstr "Gehe zu Datei..."
+msgstr "Gehe zur Datei..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:886
 msgid "Jump to a file in the current workspace"
@@ -1778,7 +1778,7 @@ msgstr "Le_sezeichen löschen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:908
 msgid "_Go to Line..."
-msgstr "_Gehe zu Zeile..."
+msgstr "_Gehe zur Zeile..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:909
 msgid "Go to a specific line"
@@ -1827,7 +1827,7 @@ msgstr "Gehe ein Zeichen nach rechts"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:943
 msgid "Go to previous line"
-msgstr "Gehe zu vorheriger Zeile"
+msgstr "Gehe zur vorheriger Zeile"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:945
 msgid "Go to next line"
@@ -1887,7 +1887,7 @@ msgstr "Parameter"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:982
 msgid "Go to Matching _Brace"
-msgstr "Gehe zu passender _Klammer"
+msgstr "Gehe zur passender _Klammer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:986
 msgid "Expand selection to the left"
@@ -2094,20 +2094,20 @@ msgstr "Projekt-Struktur anzeigen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1222
 msgid "Group members by access"
-msgstr "Gruppiere Elemente nach Zugriff"
+msgstr "Gruppiere Member nach Zugriff"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1223
 msgid "Group members by member type"
-msgstr "Gruppiere Elemente nach Typ"
+msgstr "Gruppiere Member nach Typ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1224
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:84
 msgid "Show public members only"
-msgstr "Zeige nur öffentliche Elemente"
+msgstr "Zeige nur öffentliche Member"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1225
 msgid "Show public and protected members only"
-msgstr "Zeige public und protected Elemente"
+msgstr "Zeige öffentliche und geschützte Member"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1240
 msgid "Other Windows"
@@ -3901,7 +3901,7 @@ msgstr "_Gehe zu"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:260
 msgid "Go to task"
-msgstr "Gehe zu Aufgabe"
+msgstr "Gehe zur Aufgabe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:264
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:330
@@ -4054,7 +4054,7 @@ msgstr "Gehe zur Datei"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:100
 msgid "Go to Type"
-msgstr "Gehe zu Typ"
+msgstr "Gehe zum Typ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs:85
 msgid "There are no additional features available for this project."
@@ -4166,12 +4166,12 @@ msgstr "Propertyname darf nicht leer sein."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs:253
 msgid "Property name conflicts with an existing member name."
-msgstr "Propertyname existiert schon."
+msgstr "Eigenschaftsname existiert schon."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs:350
 msgid "One or more property names conflict with existing members of the class"
 msgstr ""
-"Ein oder mehrere Propertynamen stehen in Konflikt mit existierenden "
+"Ein oder mehrere Eigenschaftsnamen stehen in Konflikt mit existierenden "
 "Klassenmembern"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:55
@@ -4835,7 +4835,7 @@ msgstr "_Zeilenende:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:138
 msgid "<b>Whitespace</b>"
-msgstr "<b>Leerraumzeichen</b>"
+msgstr "<b>Leerzeichen</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:161
 msgid "_Tab width:"
@@ -4855,7 +4855,7 @@ msgstr "Ta_bulatoren nach anderen Zeichen erlauben"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:223
 msgid "_Remove trailing whitespace"
-msgstr "A_bschliessende Weisszeichen entfernen"
+msgstr "A_bschliessende Leerzeichen entfernen"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:72
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs:129
@@ -5899,7 +5899,7 @@ msgstr "Als Ressource einbeziehen"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:87
 msgid "Content"
-msgstr "Content"
+msgstr "Inhalt"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:88
 msgid "Application definition"
@@ -10911,7 +10911,7 @@ msgstr "Gruppe '{0}' nicht gefunden"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:352
 msgid "Ignore Whitespace"
-msgstr "Ignorierte Leerraumzeichen"
+msgstr "Ignoriere Leerzeichen"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:353
 msgid "Ignore case"
@@ -11305,7 +11305,7 @@ msgstr "\\s"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:54
 msgid "Matches any white-space character."
-msgstr "Entspricht einem beliebigen Leerraumzeichen."
+msgstr "Entspricht einem beliebigen Leerzeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:55
 msgid "\\S"
@@ -11313,7 +11313,7 @@ msgstr "\\S"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:55
 msgid "Matches any non-white-space character."
-msgstr "Entspricht einem beliebigen Nichtleerraumzeichen."
+msgstr "Entspricht einem beliebigen Nichtleerzeichen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:56
 msgid "\\d"
@@ -12359,7 +12359,7 @@ msgstr "Region {0}"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ClassQuickFinder.cs:322
 msgid "Member list"
-msgstr "Elemente"
+msgstr "Member Liste"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ClassQuickFinder.cs:417
 msgid "Type list"
@@ -12440,7 +12440,7 @@ msgstr "Ze_ige das Spaltenlineal"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:145
 msgid "<b>Whitespace Markers</b>"
-msgstr "<b>Leerraumzeichen anzeigen</b>"
+msgstr "<b>Leerzeichen anzeigen</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:164
 msgid "_Invalid lines"
@@ -12532,7 +12532,7 @@ msgstr "_Zeilennummer"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs:90
 msgid "_Go to Line"
-msgstr "_Gehe zu Zeile"
+msgstr "_Gehe zur Zeile"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:85
 msgid "Dynamic abbrev"
@@ -12565,7 +12565,7 @@ msgstr "Typen"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:148
 msgid "Members"
-msgstr "Elementen"
+msgstr "Member"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:149
 msgid "Disassembler"
@@ -12585,7 +12585,7 @@ msgstr "Anzeigen"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:317
 msgid "Member"
-msgstr "Element"
+msgstr "Member"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:326
 msgid "Declaring Type"
@@ -12593,7 +12593,7 @@ msgstr "Deklarierender Typ"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:360
 msgid "Searching member..."
-msgstr "Suche Element..."
+msgstr "Suche Member..."
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:363
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:428
@@ -14260,7 +14260,7 @@ msgstr "XSL_T ausführen"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:81
 msgid "_Go to Schema Definition"
-msgstr "_Gehe zu Schema Definiton"
+msgstr "_Gehe zur Schema Definiton"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:94
 msgid "_XML"
@@ -14868,7 +14868,7 @@ msgstr "Refaktorisieren"
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:423
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:78
 msgid "_Go to declaration"
-msgstr "_Gehe zu Deklaration"
+msgstr "_Gehe zur Deklaration"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:427
 msgid "{0}, Line {1}"
@@ -14897,7 +14897,7 @@ msgstr "Klasse <b>{0}</b>"
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:484
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:554
 msgid "Go to _base"
-msgstr "Gehe zu _Basis"
+msgstr "Gehe zum _Basistyp"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:491
 msgid "Find _derived classes"
@@ -15161,12 +15161,12 @@ msgstr "Konstruktor"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs:60
 msgid "Select members to be initialized by the constructor."
-msgstr "Elemente zum Initalisieren auswählen."
+msgstr "Member zum Initalisieren auswählen."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/PropertyGenerator.cs:60
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/ReadonlyPropertyGenerator.cs:50
 msgid "Select members which should be exposed."
-msgstr "Felder für Eigenschaften auswählen."
+msgstr "Member für Eigenschaften auswählen."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/ReadonlyPropertyGenerator.cs:44
 msgid "Read-only properties"
@@ -15183,7 +15183,7 @@ msgstr "Member die ausgegeben werden auswählen."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs:54
 msgid "Equality members"
-msgstr "Vergleichs Methoden"
+msgstr "Vergleichs Member"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs:60
 msgid "Select members to include in equality."
@@ -15263,11 +15263,11 @@ msgstr "_Unbenutzte Usings entfernen"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:113
 msgid "_Sort usings"
-msgstr "_Sortiere Usings"
+msgstr "U_sings sortieren"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:117
 msgid "R_emove and Sort usings"
-msgstr "_Optimiere Usings"
+msgstr "Us_ings optimieren"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:123
 msgid "_Organize Usings"
@@ -15498,7 +15498,7 @@ msgstr "Erzeugt eine ASP.NET web.config-Datei für einen Unterordner."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebContentForm-CodeBehind.xft.xml:7
 msgid "Web Content Form with CodeBehind"
-msgstr "Web-Form mit CodeBehind"
+msgstr "Web-Inhalt-Form mit CodeBehind"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebContentForm-CodeBehind.xft.xml:12
 msgid ""
@@ -15525,7 +15525,7 @@ msgstr ""
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebContentForm.xft.xml:7
 msgid "Web Content Form"
-msgstr "Web-Content Form"
+msgstr "Web-Inhalt Form"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebContentForm.xft.xml:12
 msgid "Creates an ASP.NET Web Form that is the child of a Master Page."
@@ -15571,7 +15571,7 @@ msgstr ""
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:84
 msgid "Generating CodeBehind members..."
-msgstr "Generiere CodeBehind-Elemente..."
+msgstr "Generiere CodeBehind-Member..."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:110
 msgid "Waiting for project type database to finish updating..."
@@ -16906,16 +16906,12 @@ msgstr "T4 Schablone"
 #~ msgstr "Lösche Dateien"
 #~ msgid "Do you want to save the current changes?"
 #~ msgstr "Wollen sie die aktuellen Änderungen speichern?"
-
 #~ msgid "Do you really want to discard your changes?"
 #~ msgstr "Wollen sie ihre Änderungen wirklich verwerfen?"
-
 #~ msgid "Delete File"
 #~ msgstr "Datei löschen"
-
 #~ msgid "_Delete from disk"
 #~ msgstr "_Lösche von Festplatte"
-
 #~ msgid ""
 #~ "The project '{0}' has been modified by an external application. Do you "
 #~ "want to reload it? Unsaved changes in the open GTK designers will be lost."
@@ -16923,10 +16919,8 @@ msgstr "T4 Schablone"
 #~ "Das Projekt '{0}' wurde von einer externen Anwendung verändert. Möchen "
 #~ "sie es neu laden? Nicht gespeicherte Änderungen im offenen GTK-Designer "
 #~ "werden verloren gehen."
-
 #~ msgid "F_ile in Solution..."
 #~ msgstr "Öffne D_atei in Projektmappe..."
-
 #~ msgid "Open File in Solution"
 #~ msgstr "Öffne Datei in Projektmappe"
 
