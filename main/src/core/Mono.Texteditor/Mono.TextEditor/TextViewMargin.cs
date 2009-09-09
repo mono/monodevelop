@@ -1214,7 +1214,7 @@ namespace Mono.TextEditor
 				Caret.Location = clickLocation;
 			base.MouseReleased (args);
 		}
-
+		
 		static bool IsNoLetterOrDigit (char ch)
 		{
 			return !char.IsWhiteSpace (ch) && !char.IsLetterOrDigit (ch);
@@ -1234,7 +1234,7 @@ namespace Mono.TextEditor
 
 				offset = forwardDirection ? offset + 1 : offset - 1;
 			}
-			return System.Math.Min (line.EndOffset - 1, System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
+			return System.Math.Min (line.Offset + line.EditableLength, System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
 		}
 
 		CodeSegmentPreviewWindow previewWindow = null;
