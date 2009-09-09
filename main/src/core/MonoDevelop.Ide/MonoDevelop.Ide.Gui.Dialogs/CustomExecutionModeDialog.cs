@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					cdata = data.GetCommandData (customizer.Id);
 				Gtk.Widget w = e.Load (ctx, cdata);
 				w.Show ();
-				notebook.AppendPage (w, new Gtk.Label (customizer.Name));
+				notebook.AppendPage (w, new Gtk.Label (GettextCatalog.GetString (customizer.Name)));
 			}
 			
 			ParameterizedExecutionHandler handler = mode.ExecutionHandler as ParameterizedExecutionHandler;

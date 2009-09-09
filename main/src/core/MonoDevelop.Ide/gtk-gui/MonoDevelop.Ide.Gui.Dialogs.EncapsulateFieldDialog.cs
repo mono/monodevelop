@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog";
-            this.Title = Mono.Unix.Catalog.GetString("Encapsulate Fields...");
+            this.Title = Mono.Unix.Catalog.GetString("Encapsulate Fields");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
             // Internal child MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.VBox

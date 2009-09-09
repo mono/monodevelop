@@ -1,5 +1,13 @@
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeDialog.cs:
+	  Added missing getstring call.
+
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs:
+	  Fixed translation.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Fixed
 	  dialog title.
