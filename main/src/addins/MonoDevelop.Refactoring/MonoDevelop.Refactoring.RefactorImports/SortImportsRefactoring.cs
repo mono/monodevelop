@@ -86,6 +86,8 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			INRefactoryASTProvider astProvider = options.GetASTProvider ();
 			foreach (IUsing u in usings) {
 				UsingDeclaration declaration;
+				if (u.IsFromNamespace)
+					continue;
 				if (u.Aliases.Any ()) {
 					KeyValuePair<string, IReturnType> alias = u.Aliases.First ();
 					declaration = new UsingDeclaration (alias.Key, alias.Value.ConvertToTypeReference ());

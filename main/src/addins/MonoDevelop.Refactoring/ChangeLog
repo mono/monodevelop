@@ -1,5 +1,10 @@
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.RefactorImports/SortImportsRefactoring.cs:
+	  Fixed bug in sort usings.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.csproj: 
 
 	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
