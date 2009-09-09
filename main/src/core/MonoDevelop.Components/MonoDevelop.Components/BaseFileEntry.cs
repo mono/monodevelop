@@ -69,7 +69,12 @@ namespace MonoDevelop.Components {
 			get { return default_path; }
 			set { default_path = value; }
 		}
-		
+
+		public virtual Gtk.Window TransientFor {
+			get;
+			set;
+		}
+
 		public new string Path {
 			get {
 				return default_path != null && text.Text.Length > 0 ? System.IO.Path.Combine (default_path, text.Text) : text.Text;

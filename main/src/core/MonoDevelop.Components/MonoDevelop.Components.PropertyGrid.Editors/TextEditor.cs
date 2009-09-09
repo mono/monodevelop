@@ -114,6 +114,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		void ButtonClicked (object s, EventArgs a)
 		{
 			using (TextEditorDialog dlg = new TextEditorDialog ()) {
+				dlg.TransientFor = this.Toplevel as Gtk.Window;
 				dlg.Text = entry.Text;
 				if (dlg.Run () == (int) ResponseType.Ok) {
 					entry.Text = dlg.Text;

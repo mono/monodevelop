@@ -50,6 +50,7 @@ namespace MonoDevelop.Components {
 			if (start_in != null)
 				fd.SetFilename (start_in);
 			
+			fd.TransientFor = TransientFor;
 			int response = fd.Run ();
 			
 			if (response == (int) ResponseType.Ok) {

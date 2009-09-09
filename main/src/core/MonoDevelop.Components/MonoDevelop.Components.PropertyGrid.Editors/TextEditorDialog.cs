@@ -52,6 +52,10 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			dialog.AddButton (Gtk.Stock.Ok, Gtk.ResponseType.Ok);
 			dialog.VBox.Add (sc);
 		}
+
+		public Gtk.Window TransientFor {
+			set { dialog.TransientFor = value; }
+		}
 		
 		public string Text {
 			get { return textview.Buffer.Text; }

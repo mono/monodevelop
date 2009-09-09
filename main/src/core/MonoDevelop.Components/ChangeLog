@@ -1,3 +1,13 @@
+2009-09-08  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.Components/BaseFileEntry.cs: 
+	* MonoDevelop.Components/FolderEntry.cs: 
+	* MonoDevelop.Components/FileEntry.cs: 
+	* MonoDevelop.Components.Commands/LinkCommandEntry.cs: 
+	* MonoDevelop.Components.PropertyGrid.Editors/TextEditorDialog.cs: 
+	* MonoDevelop.Components.PropertyGrid.Editors/TextEditor.cs: Fix dialogs
+	  to be transient for the root window or parent dialog.
+
 2009-09-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.DockToolbars/DockToolbar.cs:
