@@ -68,6 +68,7 @@ namespace MonoDevelop.Autotools
 				dialog = new ImportMakefileDialog (project, data, name);
 				
 				do {
+					dialog.TransientFor = IdeApp.Workbench.RootWindow;
 					if (dialog.Run () == (int) Gtk.ResponseType.Ok) {
 						if (dialog.Store ())
 							return;
