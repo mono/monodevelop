@@ -1,5 +1,10 @@
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Execution/MonoExecutionParameters.cs: Using
+	  localizable attributes for mono execution parameters.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeDialog.cs:
 	  Added missing getstring call.
 

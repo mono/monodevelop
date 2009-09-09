@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.ComponentModel;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Text;
 
@@ -156,64 +157,64 @@ namespace MonoDevelop.Ide.Execution
 			return (MonoExecutionParameters) MemberwiseClone ();
 		}
 		
-		[Category ("Debug")]
-		[DisplayName ("Debug Mode")]
-		[Description ("Enable debugging support.")]
+		[LocalizedCategory ("Debug")]
+		[LocalizedDisplayName ("Debug Mode")]
+		[LocalizedDescription ("Enable debugging support.")]
 		[ItemProperty (DefaultValue=false)]
 		public bool DebugMode { get; set; }
 		
-		[Category ("Debug")]
-		[DisplayName ("Debug Casts")]
-		[Description ("Enable more detailed InvalidCastException messages.")]
+		[LocalizedCategory ("Debug")]
+		[LocalizedDisplayName ("Debug Casts")]
+		[LocalizedDescription ("Enable more detailed InvalidCastException messages.")]
 		[ItemProperty (DefaultValue=false)]
 		public bool DebugCasts { get; set; }
 		
-		[Category ("Debug")]
-		[DisplayName ("MDB Mode")]
-		[Description ("Disable some JIT optimizations which are normally " +
+		[LocalizedCategory ("Debug")]
+		[LocalizedDisplayName ("MDB Mode")]
+		[LocalizedDescription ("Disable some JIT optimizations which are normally " +
 		              "disabled when running inside the debugger. This is useful " +
 		              "if you plan to attach to the running process with the debugger.")]
 		[ItemProperty (DefaultValue=false)]
 		public bool DebugMdbOptimizations { get; set; }
 		
-		[Category ("Runtime")]
-		[DisplayName ("Profiler")]
-		[Description ("Runs in profiling mode with the specified profiler module.")]
+		[LocalizedCategory ("Runtime")]
+		[LocalizedDisplayName ("Profiler")]
+		[LocalizedDescription ("Runs in profiling mode with the specified profiler module.")]
 		[ItemProperty (DefaultValue="")]
 		[MonoArg ("--profile={0}")]
 		public string Profile { get; set; }
 		
-		[Category ("Debug")]
-		[DisplayName ("Verbose Level")]
-		[Description ("Increases the verbosity level.")]
+		[LocalizedCategory ("Debug")]
+		[LocalizedDisplayName ("Verbose Level")]
+		[LocalizedDescription ("Increases the verbosity level.")]
 		[ItemProperty (DefaultValue=0)]
 		public int VerboseLevel { get; set; }
 		
-		[Category ("Runtime")]
-		[DisplayName ("Runtime Version")]
-		[Description ("Use the specified runtime version, instead of autodetecting")]
+		[LocalizedCategory ("Runtime")]
+		[LocalizedDisplayName ("Runtime Version")]
+		[LocalizedDescription ("Use the specified runtime version, instead of autodetecting")]
 		[ItemProperty (DefaultValue="")]
 		[MonoArg ("--runtime={0}")]
 		public string RuntimeVersion { get; set; }
 		
-		[Category ("Security")]
-		[DisplayName ("Security Mode")]
-		[Description ("Turns on the unsupported security manager (off by default).")]
+		[LocalizedCategory ("Security")]
+		[LocalizedDisplayName ("Security Mode")]
+		[LocalizedDescription ("Turns on the unsupported security manager (off by default).")]
 		[MonoArg ("--security={0}")]
 		[ItemProperty (DefaultValue=SecurityMode.Disabled)]
 		public SecurityMode SecurityMode { get; set; }
 		
-		[Category ("Security")]
-		[DisplayName ("Verify All")]
-		[Description ("Verifies mscorlib and assemblies in the global assembly cache " +
+		[LocalizedCategory ("Security")]
+		[LocalizedDisplayName ("Verify All")]
+		[LocalizedDescription ("Verifies mscorlib and assemblies in the global assembly cache " +
 		              "for valid IL, and all user code for IL verifiability.")]
 		[MonoArg ("--verifyAll")]
 		[ItemProperty (DefaultValue=false)]
 		public bool VerifyAll { get; set; }
 		
-		[Category ("Tracing")]
-		[DisplayName ("Trace Expression")]
-		[Description ("Comma separated list of expressions to trace. " +
+		[LocalizedCategory ("Tracing")]
+		[LocalizedDisplayName ("Trace Expression")]
+		[LocalizedDescription ("Comma separated list of expressions to trace. " +
 		              "'all' all assemlies, " +
 		              "'none' no assemblies, " +
 		              "'program' entry point assembly, " +
@@ -227,9 +228,9 @@ namespace MonoDevelop.Ide.Execution
 		[ItemProperty (DefaultValue="")]
 		public string TraceExpressions { get; set; }
 		
-		[Category ("Logging")]
-		[DisplayName ("Log Level")]
-		[Description ("Possible values are 'error', 'critical', 'warning', " +
+		[LocalizedCategory ("Logging")]
+		[LocalizedDisplayName ("Log Level")]
+		[LocalizedDescription ("Possible values are 'error', 'critical', 'warning', " +
 		              "'message', 'info', 'debug'. The default  value  is  'error'. " +
 		              "Messages with a logging level greater then or equal to the log level " +
 		              "will be printed to stdout/stderr.")]
@@ -237,9 +238,9 @@ namespace MonoDevelop.Ide.Execution
 		[ItemProperty (DefaultValue=LogLevel.Default)]
 		public LogLevel LogLevel { get; set; }
 		
-		[Category ("Logging")]
-		[DisplayName ("Log Mask")]
-		[Description ("Possible values are 'asm'  (assembly  loader),  'type'," +
+		[LocalizedCategory ("Logging")]
+		[LocalizedDisplayName ("Log Mask")]
+		[LocalizedDescription ("Possible values are 'asm'  (assembly  loader),  'type'," +
 		              "  'dll'  (native library  loader), 'gc' (garbage collector), " +
 		              "'cfg' (config file loader), 'aot' (precompiler) and 'all'. " +
 		              "The default value is 'all'. Changing the mask value allows you " +
@@ -251,9 +252,9 @@ namespace MonoDevelop.Ide.Execution
 		[ItemProperty (DefaultValue=LogMask.None)]
 		public LogMask LogMask { get; set; }
 		
-		[Category ("Library Options")]
-		[DisplayName ("Serializer Generation")]
-		[Description ("The  possible values are `no' to disable the use of a C# customized " +
+		[LocalizedCategory ("Library Options")]
+		[LocalizedDisplayName ("Serializer Generation")]
+		[LocalizedDescription ("The  possible values are `no' to disable the use of a C# customized " +
 		              "serializer, or an integer that is the minimum number of uses before the " +
 		              "runtime will produce a custom serializer (0 will produce a custom " +
 		              "serializer on the first access, 50 will produce a serializer on the 50th " +
@@ -264,33 +265,33 @@ namespace MonoDevelop.Ide.Execution
 		[ItemProperty (DefaultValue="")]
 		public string XmlSerializerGeneration { get; set; }
 		
-		[Category ("Configuration")]
-		[DisplayName ("Mono Configuration Directory")]
-		[Description ("Overrides the default system configuration directory ($PREFIX/etc). " +
+		[LocalizedCategory ("Configuration")]
+		[LocalizedDisplayName ("Mono Configuration Directory")]
+		[LocalizedDescription ("Overrides the default system configuration directory ($PREFIX/etc). " +
 		              "It's used to locate machine.config file.")]
 		[EnvVarAttribute ("MONO_CFG_DIR")]
 		[ItemProperty (DefaultValue="")]
 		public string MonoConfigDir { get; set; }
 		
-		[Category ("Configuration")]
-		[DisplayName ("Mono Configuration File")]
-		[Description ("Overrides the default runtime configuration file ($PREFIX/etc/mono/config).")]
+		[LocalizedCategory ("Configuration")]
+		[LocalizedDisplayName ("Mono Configuration File")]
+		[LocalizedDescription ("Overrides the default runtime configuration file ($PREFIX/etc/mono/config).")]
 		[MonoArg ("--config {0}")]
 		[ItemProperty (DefaultValue="")]
 		public string MonoConfigFile { get; set; }
 		
-		[Category ("Runtime")]
-		[DisplayName ("Disable AIO")]
-		[Description ("If  set, tells mono NOT to attempt using native asynchronous I/O " +
+		[LocalizedCategory ("Runtime")]
+		[LocalizedDisplayName ("Disable AIO")]
+		[LocalizedDescription ("If  set, tells mono NOT to attempt using native asynchronous I/O " +
 		              "services. In that case, a default select/poll implementation is " +
 		              "used. Currently only epoll() is supported.")]
 		[EnvVarAttribute ("MONO_DISABLE_AIO")]
 		[ItemProperty (DefaultValue=false)]
 		public bool DisableAIO { get; set; }
 		
-		[Category ("Library Options")]
-		[DisplayName ("Disable Managed Collation")]
-		[Description ("If set, the runtime uses unmanaged collation (which actually " +
+		[LocalizedCategory ("Library Options")]
+		[LocalizedDisplayName ("Disable Managed Collation")]
+		[LocalizedDescription ("If set, the runtime uses unmanaged collation (which actually " +
 		              "means no culture-sensitive collation). It internally disables " +
 		              "managed collation functionality invoked via the members of " +
 		              "System.Globalization.CompareInfo class.")]
@@ -298,18 +299,18 @@ namespace MonoDevelop.Ide.Execution
 		[ItemProperty (DefaultValue=false)]
 		public bool DisableManagedCollation { get; set; }
 		
-		[Category ("Library Options")]
-		[DisplayName ("External Encodings")]
-		[Description ("A colon-separated list of text encodings to try when turning " +
+		[LocalizedCategory ("Library Options")]
+		[LocalizedDisplayName ("External Encodings")]
+		[LocalizedDescription ("A colon-separated list of text encodings to try when turning " +
 		              "externally-generated text (e.g. command-line arguments or " +
 		              "filenames) into Unicode.")]
 		[EnvVarAttribute ("MONO_EXTERNAL_ENCODINGS")]
 		[ItemProperty (DefaultValue="")]
 		public string ExternalEncodings { get; set; }
 		
-		[Category ("Configuration")]
-		[DisplayName ("GAC Prefix")]
-		[Description ("Provides a prefix the runtime uses to look for Global Assembly " +
+		[LocalizedCategory ("Configuration")]
+		[LocalizedDisplayName ("GAC Prefix")]
+		[LocalizedDescription ("Provides a prefix the runtime uses to look for Global Assembly " +
 		              "Caches. Directories are separated by the platform path separator " +
 		              "(colons on unix). MONO_GAC_PREFIX should point to the top " +
 		              "directory of a prefixed install. Or to the directory provided in " +
@@ -318,37 +319,37 @@ namespace MonoDevelop.Ide.Execution
 		[ItemProperty (DefaultValue="")]
 		public string GacPrefix { get; set; }
 		
-		[Category ("Compatibility")]
-		[DisplayName ("Strip Drive Letters")]
-		[Description ("When enabled, Mono removes the drive letter from Windows paths.")]
+		[LocalizedCategory ("Compatibility")]
+		[LocalizedDisplayName ("Strip Drive Letters")]
+		[LocalizedDescription ("When enabled, Mono removes the drive letter from Windows paths.")]
 		[ItemProperty (DefaultValue=false)]
 		public bool StripDriveLetters { get; set; }
 		
-		[Category ("Compatibility")]
-		[DisplayName ("Case Insensitive Paths")]
-		[Description ("When enabled, Mono does case-insensitive file matching in every directory in a path.")]
+		[LocalizedCategory ("Compatibility")]
+		[LocalizedDisplayName ("Case Insensitive Paths")]
+		[LocalizedDescription ("When enabled, Mono does case-insensitive file matching in every directory in a path.")]
 		[ItemProperty (DefaultValue=false)]
 		public bool CaseInsensitivePaths { get; set; }
 		
-		[Category ("Library Options")]
-		[DisplayName ("Managed Watcher")]
-		[Description ("When set, System.IO.FileSystemWatcher will use the default managed " +
+		[LocalizedCategory ("Library Options")]
+		[LocalizedDisplayName ("Managed Watcher")]
+		[LocalizedDescription ("When set, System.IO.FileSystemWatcher will use the default managed " +
 		              "implementation  (slow).")]
 		[EnvVarAttribute ("MONO_MANAGED_WATCHER", "yes")]
 		[ItemProperty (DefaultValue=false)]
 		public bool ManagedWatcher { get; set; }
 		
-		[Category ("Runtime")]
-		[DisplayName ("No SMP")]
-		[Description ("If set, causes the mono process to be bound to a single processor. " +
+		[LocalizedCategory ("Runtime")]
+		[LocalizedDisplayName ("No SMP")]
+		[LocalizedDescription ("If set, causes the mono process to be bound to a single processor. " +
 		              "This may be useful when debugging or working around race conditions.")]
 		[EnvVarAttribute ("MONO_NO_SMP")]
 		[ItemProperty (DefaultValue=false)]
 		public bool NoSmp { get; set; }
 		
-		[Category ("Configuration")]
-		[DisplayName ("Mono Path")]
-		[Description ("Provides a search path to the runtime where to look for library " +
+		[LocalizedCategory ("Configuration")]
+		[LocalizedDisplayName ("Mono Path")]
+		[LocalizedDescription ("Provides a search path to the runtime where to look for library " +
 		              "files. This is a tool convenient for debugging applications, " +
 		              "but should not be used by deployed applications as it breaks the " +
 		              "assembly loader in subtle ways. Directories are separated by " +
@@ -358,35 +359,35 @@ namespace MonoDevelop.Ide.Execution
 		[ItemProperty (DefaultValue="")]
 		public string MonoPath { get; set; }
 		
-		[Category ("Library Options")]
-		[DisplayName ("Windows Forms Theme")]
-		[Description ("The name of the theme to be used by Windows.Forms. Available " +
+		[LocalizedCategory ("Library Options")]
+		[LocalizedDisplayName ("Windows Forms Theme")]
+		[LocalizedDescription ("The name of the theme to be used by Windows.Forms. Available " +
 		              "themes include 'clearlooks', 'nice' and 'win32'. The default is 'win32'")]
 		[EnvVarAttribute ("MONO_THEME")]
 		[ItemProperty (DefaultValue="")]
 		public string WindowsFormsTheme { get; set; }
 		
-		[Category ("Runtime")]
-		[DisplayName ("Threads Per Cpu")]
-		[Description ("The maximum number of threads in the general threadpool will be " +
+		[LocalizedCategory ("Runtime")]
+		[LocalizedDisplayName ("Threads Per Cpu")]
+		[LocalizedDescription ("The maximum number of threads in the general threadpool will be " +
 		              "20 + (ThreadsPerCpu * number of CPUs). The default value" +
 		              "for this variable is 10.")]
 		[EnvVarAttribute ("MONO_THREADS_PER_CPU")]
 		[ItemProperty (DefaultValue="")]
 		public string ThreadsPerCpu { get; set; }
 		
-		[Category ("Library Options")]
-		[DisplayName ("Keep ASP.NET Temporary Files")]
-		[Description ("If set, temporary source files generated by ASP.NET support " +
+		[LocalizedCategory ("Library Options")]
+		[LocalizedDisplayName ("Keep ASP.NET Temporary Files")]
+		[LocalizedDescription ("If set, temporary source files generated by ASP.NET support " +
 		              "classes will not be removed. They will be kept in the " +
 		              "user's temporary directory.")]
 		[EnvVarAttribute ("MONO_ASPNET_NODELETE")]
 		[ItemProperty (DefaultValue=false)]
 		public bool AspNetNoDelete { get; set; }
 		
-		[Category ("Tracing")]
-		[DisplayName ("Trace Listener")]
-		[Description ("If set, enables the System.Diagnostics.DefaultTraceListener, " +
+		[LocalizedCategory ("Tracing")]
+		[LocalizedDisplayName ("Trace Listener")]
+		[LocalizedDescription ("If set, enables the System.Diagnostics.DefaultTraceListener, " +
 		              "which will print the output of the System.Diagnostics Trace and " +
 		              "Debug classes. It can be set to a filename, and to Console.Out " +
 		              "or Console.Error to display output to standard output or standard " +
@@ -397,17 +398,17 @@ namespace MonoDevelop.Ide.Execution
 		[ItemProperty (DefaultValue="")]
 		public string TraceListener { get; set; }
 		
-		[Category ("Runtime")]
-		[DisplayName ("X11 Exceptions")]
-		[Description ("If set, an exception is thrown when a X11 error is encountered. " +
+		[LocalizedCategory ("Runtime")]
+		[LocalizedDisplayName ("X11 Exceptions")]
+		[LocalizedDescription ("If set, an exception is thrown when a X11 error is encountered. " +
 		              "By default a message is displayed but execution continues.")]
 		[EnvVarAttribute ("MONO_XEXCEPTIONS")]
 		[ItemProperty (DefaultValue=false)]
 		public bool XExceptions { get; set; }
 		
-		[Category ("Debug")]
-		[DisplayName ("XDebug")]
-		[Description ("When the the MONO_XDEBUG env var is set, debugging info for JITted " +
+		[LocalizedCategory ("Debug")]
+		[LocalizedDisplayName ("XDebug")]
+		[LocalizedDescription ("When the the MONO_XDEBUG env var is set, debugging info for JITted " +
 		              "code is emitted into a shared library, loadable into gdb. " +
 		              "This enables, for example, to see managed frame names on gdb backtraces.")]
 		[EnvVarAttribute ("MONO_XDEBUG")]
