@@ -43,6 +43,12 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			Name = "Integrate Temporary Variable";
 		}
 		
+		public override string GetMenuDescription (RefactoringOptions options)
+		{
+			return GettextCatalog.GetString ("_Integrate Temporary Variable");
+		}
+		
+		
 		INode GetMemberBodyNode (MonoDevelop.Refactoring.RefactoringOptions options)
 		{
 			IMember member = ((LocalVariable) options.SelectedItem).DeclaringMember;
