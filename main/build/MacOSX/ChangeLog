@@ -1,3 +1,8 @@
+2009-09-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* DS_Store, dmg-bg.png: Update branding.
+	* COPYING, INSTALL, make-dmg-bundle.sh: Clean up.
+
 2009-08-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* monodevelop:
