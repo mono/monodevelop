@@ -1,3 +1,8 @@
+2009-09-10  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor/SelectionActions.cs: Fix selection in vi
+	  mode.
+
 2009-09-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:

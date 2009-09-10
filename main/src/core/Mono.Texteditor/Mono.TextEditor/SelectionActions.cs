@@ -70,9 +70,8 @@ namespace Mono.TextEditor
 		public static void EndSelection (TextEditorData data)
 		{
 			data.ExtendSelectionTo (data.Caret.Offset);
-			data.Caret.PreserveSelection = false;
 			data.Caret.AutoScrollToCaret = true;
-			
+			data.Caret.PreserveSelection = false;
 		}
 		
 		public static void Select (TextEditorData data, Action<TextEditorData> caretMoveAction)
