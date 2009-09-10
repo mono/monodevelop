@@ -168,6 +168,8 @@ namespace Mono.TextEditor
 					searchPatternWorker.CancelAsync ();
 				if (string.IsNullOrEmpty (this.textEditor.SearchPattern)) {
 					selectedRegions.Clear ();
+					DisposeLayoutDict ();
+					textEditor.RedrawMargin (this);
 					return;
 				}
 				searchPatternWorker = new System.ComponentModel.BackgroundWorker ();
@@ -191,7 +193,12 @@ namespace Mono.TextEditor
 						offset = result.EndOffset;
 						newRegions.Add (result);
 					} while (true);
-					this.selectedRegions = newRegions;
+					Application.Invoke (delegate {
+						this.selectedRegions = newRegions;
+						DisposeLayoutDict ();
+						textEditor.RedrawMargin (this);
+					});
+					
 				};
 				searchPatternWorker.RunWorkerAsync ();
 			}
@@ -643,8 +650,9 @@ namespace Mono.TextEditor
 			LayoutDescriptor descriptor;
 			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
 				bool isInvalid;
-				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid))
+				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid)) {
 					return descriptor.Layout;
+				}
 				descriptor.Dispose ();
 				layoutDict.Remove (line);
 			}
@@ -824,7 +832,6 @@ namespace Mono.TextEditor
 				wrapper.Layout.Alignment = Pango.Alignment.Left;
 				wrapper.Layout.FontDescription = textEditor.Options.Font;
 				wrapper.Layout.Tabs = tabArray;
-
 				StringBuilder textBuilder = new StringBuilder ();
 				Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
@@ -846,7 +853,6 @@ namespace Mono.TextEditor
 				int o = offset;
 				//	int s;
 				while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
-
 					HandleSelection (selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
 						Pango.AttrBackground backGround = new Pango.AttrBackground (ColorStyle.SearchTextBg.Red, ColorStyle.SearchTextBg.Green, ColorStyle.SearchTextBg.Blue);
 						backGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(start - offset), ref curIndex, ref byteIndex);

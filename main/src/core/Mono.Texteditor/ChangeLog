@@ -1,3 +1,10 @@
+2009-09-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Fixed "Bug 537939 - Text
+	  editor doesn't correctly repaint when inline search string
+	  changes".
+
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed mouse selection

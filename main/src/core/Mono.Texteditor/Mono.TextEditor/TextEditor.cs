@@ -577,7 +577,7 @@ namespace Mono.TextEditor
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
-				this.RepaintArea (margin.XOffset, 0, margin.Width,  this.Allocation.Height);
+				this.RepaintArea (margin.XOffset, 0, GetMarginWidth (margin),  this.Allocation.Height);
 			}
 		}
 		
