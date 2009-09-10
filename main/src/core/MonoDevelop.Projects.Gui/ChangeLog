@@ -1,5 +1,10 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui/ProjectFileEntry.cs: Reduce
+	  spacing.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
 	  Make autoselect default behaviour consistent between the two
 	  ctors. Hopefully fixes "Bug 538175 - Commit completion list
