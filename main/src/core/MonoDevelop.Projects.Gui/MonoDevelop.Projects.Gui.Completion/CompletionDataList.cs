@@ -58,13 +58,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public CompletionDataList ()
 		{
-			IsSorted = false;
 			AutoSelect = true;
 		}
 		
 		public CompletionDataList (IEnumerable<ICompletionData> data)
 			: base (data)
 		{
+			AutoSelect = true;
 		}
 		
 		public CompletionData Add (string text)

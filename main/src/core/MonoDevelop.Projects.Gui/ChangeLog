@@ -1,3 +1,11 @@
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	  Make autoselect default behaviour consistent between the two
+	  ctors. Hopefully fixes "Bug 538175 - Commit completion list
+	  with space or punctuation is broken.". Also remove
+	  unnecessary assignment of a default value.
+
 2009-09-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
