@@ -113,6 +113,8 @@ namespace MonoDevelop.IPhone.Gui
 			useSpecificCertCheck.Toggled += delegate {
 				certBox.Sensitive = useSpecificCertCheck.Active;
 			};*/
+			
+			this.ShowAll ();
 		}
 		
 		public void LoadPanelContents (IPhoneProjectConfiguration cfg)

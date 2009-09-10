@@ -1,5 +1,9 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/IPhoneSigningKeyPanel.cs: Add missing ShowAll call.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/IPhoneBuildOptionsPanel.cs: Expose the options set so
 	  the signing panel can use it.
 
