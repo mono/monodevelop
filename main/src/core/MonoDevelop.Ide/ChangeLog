@@ -1,3 +1,9 @@
+2009-09-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs: Worked on
+	  template formatting.
+
 2009-09-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Execution/MonoExecutionParameters.cs: Added

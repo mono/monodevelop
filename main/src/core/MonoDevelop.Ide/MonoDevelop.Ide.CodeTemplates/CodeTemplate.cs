@@ -214,7 +214,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				} else if (name == "selected") {
 					if (!string.IsNullOrEmpty (context.SelectedText)) {
 						string indent = GetIndent (sb);
-						sb.Append (Reindent (context.SelectedText, indent));
+						string selection = Reindent (context.SelectedText, indent);
+						sb.Append (selection);
 					}
 				}
 				if (!variableDecarations.ContainsKey (name))
@@ -302,16 +303,28 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return indent.ToString ();
 		}
 		
+		string RemoveIndent (string text, string indent)
+		{
+			Document doc = new Document ();
+			doc.Text = text;
+			StringBuilder result = new StringBuilder ();
+			foreach (LineSegment line in doc.Lines) {
+				string curLineIndent = line.GetIndentation (doc);
+				int offset = Math.Min (curLineIndent.Length, indent.Length);
+				result.Append (doc.GetTextBetween (line.Offset + offset, line.EndOffset));
+			}
+			return result.ToString ();
+		}
+		
 		string Reindent (string text, string indent)
 		{
 			Document doc = new Document ();
 			doc.Text = text;
-			
 			StringBuilder result = new StringBuilder ();
 			foreach (LineSegment line in doc.Lines) {
 				if (result.Length > 0)
 					result.Append (indent);
-				result.Append (doc.GetTextAt (line).TrimStart (' ', '\t'));
+				result.Append (doc.GetTextAt (line));
 			}
 			return result.ToString ();
 		}
@@ -329,13 +342,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 			int line, col;
 			editor.GetLineColumnFromPosition (offset, out line, out col);
 //			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
-
+			
 			TemplateContext context = new TemplateContext {
 				Template = this,
 				Document = document,
 				ProjectDom = dom,
 				ParsedDocument = doc,
 				InsertPosition = new DomLocation (line, col),
+				LineIndent = GetIndent (editor, line, 0),
 				TemplateCode = IndentCode (Code, GetIndent (editor, line, 0))
 			};
 
@@ -348,8 +362,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				while (Char.IsWhiteSpace (data.Document.GetCharAt (end - 1))) {
 					end--;
 				}
-				context.SelectedText = data.Document.GetTextBetween (start, end);
-				
+				context.LineIndent = GetIndent (editor, data.Document.OffsetToLineNumber (start) + 1, 0);
+				context.SelectedText = RemoveIndent (data.Document.GetTextBetween (start, end), context.LineIndent);
 				data.Remove (start, end - start);
 				offset = start;
 			} else {

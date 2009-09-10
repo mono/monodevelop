@@ -68,6 +68,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
+		public string LineIndent {
+			get;
+			set;
+		}
+		
 		public MonoDevelop.Ide.Gui.Document Document {
 			get;
 			set;
