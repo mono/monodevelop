@@ -1,6 +1,11 @@
 2009-09-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Commands.cs:
+	* Framework/Carbon.cs: ProcessHICommand takes command by ref.
+
+2009-09-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Commands.cs:
 	* Framework/Carbon.cs: Send the commands from the menu.
 
 2009-09-09  Michael Hutchinson  <mhutchinson@novell.com>

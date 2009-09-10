@@ -64,7 +64,8 @@ namespace MonoDevelop.Platform.Mac
 		internal static void RunMenuCommand (CarbonCommandID commandID)
 		{
 			var item = HIToolbox.GetMenuItem ((uint)commandID);
-			Carbon.ProcessHICommand (new CarbonHICommand ((uint)commandID, item));
+			var cmd = new CarbonHICommand ((uint)commandID, item);
+			Carbon.ProcessHICommand (ref cmd);
 		}
 	}
 }

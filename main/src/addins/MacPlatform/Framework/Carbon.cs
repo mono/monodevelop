@@ -147,7 +147,7 @@ namespace OSXIntegration.Framework
 		}
 		
 		[DllImport (CarbonLib)]
-		public static extern CarbonEventHandlerStatus ProcessHICommand (CarbonHICommand command);
+		public static extern CarbonEventHandlerStatus ProcessHICommand (ref CarbonHICommand command);
 		
 		#endregion
 		
