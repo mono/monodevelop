@@ -31,11 +31,26 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.XmlEditor
 {
+	// TODO: Consider inheriting from AbstractPrettyPrinter instead of implementing IPrettyPrinter directly.
 	public class XmlFormatter: IPrettyPrinter
 	{
+			
+		public virtual bool SupportsOnTheFlyFormatting {
+			get {
+				return false;
+			}
+		}
+		
+		public virtual void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation)
+		{
+			throw new NotSupportedException ();
+		}
+		
 		public bool CanFormat (string mimeType)
 		{
 			return DesktopService.GetMimeTypeIsSubtype (mimeType, "application/xml");
