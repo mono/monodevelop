@@ -81,9 +81,9 @@
 				_label = "iPhone Build"
 				icon="iphone-project-options-panel"
 				class = "MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanel" />
-			<Section id = "IPhoneSigningOptions"
+			<Section id = "IPhoneSigningInfo"
 				_label = "Bundle Signing"
-				id = "IPhoneSigningInfo"
+				icon="iphone-project-options-panel"
 				class = "MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanel" />
 			<Section id = "IPhoneApplicationOptions" _label = "iPhone Application" icon="iphone-project-options-panel" >
 				<Panel id="IPhoneMiscOptions" class = "MonoDevelop.IPhone.Gui.IPhoneOptionsPanel" />
