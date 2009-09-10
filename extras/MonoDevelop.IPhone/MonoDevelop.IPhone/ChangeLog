@@ -1,5 +1,9 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.IPhone.addin.xml: Rearrange panels.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/IPhoneSigningKeyPanel.cs: Add missing ShowAll call.
 
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
