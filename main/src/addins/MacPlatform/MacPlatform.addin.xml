@@ -29,12 +29,12 @@
 				_description = "Minimize the window" 
 				macShortcut = "Meta|M" />
 		<Command id  = "MonoDevelop.Platform.Mac.Commands.HideWindow"
-				defaultHandler = "MonoDevelop.Platform.Mac.HideWindowWindowHandler"
+				defaultHandler = "MonoDevelop.Platform.Mac.HideWindowHandler"
 				_label = "_Hide MonoDevelop"
 				_description = "Hide MonoDevelop" 
 				macShortcut = "Meta|H" />
 		<Command id  = "MonoDevelop.Platform.Mac.Commands.HideOthers"
-				defaultHandler = "MonoDevelop.Platform.Mac.HideOthersWindowHandler"
+				defaultHandler = "MonoDevelop.Platform.Mac.HideOthersHandler"
 				_label = "_Hide Others"
 				_description = "Hide other windows" 
 				macShortcut = "Meta|Alt|H" />
