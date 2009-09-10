@@ -123,6 +123,34 @@ namespace OSXIntegration.Framework
 		
 		#endregion
 		
+		#region Sending events
+		
+		[DllImport (CarbonLib)]
+		static extern EventStatus SendEventToEventTarget (IntPtr eventRef, IntPtr eventTarget);
+		
+		[DllImport (CarbonLib)]
+		static extern EventStatus CreateEvent (IntPtr allocator, CarbonEventClass classID, uint kind, double eventTime,
+		                                       CarbonEventAttributes flags, out IntPtr eventHandle);
+		
+		[DllImport (CarbonLib)]
+		static extern void ReleaseEvent (IntPtr eventHandle);
+		
+		static EventStatus SendApplicationEvent (CarbonEventClass classID, uint kind, CarbonEventAttributes flags)
+		{
+			IntPtr eventHandle;
+			EventStatus s = CreateEvent (IntPtr.Zero, classID, kind, 0, flags, out eventHandle);
+			if (s != EventStatus.Ok)
+				return s;
+			s = SendEventToEventTarget (eventHandle, GetApplicationEventTarget ());
+			ReleaseEvent (eventHandle);
+			return s;
+		}
+		
+		[DllImport (CarbonLib)]
+		public static extern CarbonEventHandlerStatus ProcessHICommand (CarbonHICommand command);
+		
+		#endregion
+		
 		#region AEList manipulation
 		
 		[DllImport (CarbonLib)]
@@ -415,6 +443,13 @@ namespace OSXIntegration.Framework
 		MatchKey = 7,
 	}
 	
+	internal enum CarbonEventAttributes : uint
+	{
+		None = 0,
+		UserEvent = (1 << 0),
+		Monitored= 1 << 3,
+	}
+	
 	internal enum CarbonEventApple
 	{
 		OpenApplication = 1868656752, // 'oapp'
@@ -530,6 +565,11 @@ namespace OSXIntegration.Framework
 		
 		[FieldOffset(8)]
 		HIMenuItem menuItem;
+		
+		public static CarbonHICommand FromApplication (uint commandID)
+		{
+			return new CarbonHICommand () { commandID = commandID };
+		}
 		
 		public CarbonHICommandAttributes Attributes { get { return attributes; } }
 		public uint CommandID { get { return commandID; } }

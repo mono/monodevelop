@@ -27,12 +27,15 @@
 using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
+using OSXIntegration.Framework;
 
 namespace MonoDevelop.Platform.Mac
 {
 	public enum Commands
 	{
-		MinimizeWindow
+		MinimizeWindow,
+		HideWindow,
+		HideOthers,
 	}
 	
 	internal class MinimizeWindowHandler : CommandHandler
@@ -40,6 +43,22 @@ namespace MonoDevelop.Platform.Mac
 		protected override void Run ()
 		{
 			IdeApp.Workbench.RootWindow.Iconify ();
+		}
+	}
+	
+	internal class HideWindowHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			Carbon.ProcessHICommand (CarbonHICommand.FromApplication ((uint)CarbonCommandID.Hide));
+		}
+	}
+	
+	internal class HideOthersHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			Carbon.ProcessHICommand (CarbonHICommand.FromApplication ((uint)CarbonCommandID.HideOthers));
 		}
 	}
 }

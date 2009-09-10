@@ -28,6 +28,16 @@
 				_label = "_Minimize"
 				_description = "Minimize the window" 
 				macShortcut = "Meta|M" />
+		<Command id  = "MonoDevelop.Platform.Mac.Commands.HideWindow"
+				defaultHandler = "MonoDevelop.Platform.Mac.HideWindowWindowHandler"
+				_label = "_Hide MonoDevelop"
+				_description = "Hide MonoDevelop" 
+				macShortcut = "Meta|H" />
+		<Command id  = "MonoDevelop.Platform.Mac.Commands.HideOthers"
+				defaultHandler = "MonoDevelop.Platform.Mac.HideOthersWindowHandler"
+				_label = "_Hide Others"
+				_description = "Hide other windows" 
+				macShortcut = "Meta|Alt|H" />
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
 		<CommandItem id = "MonoDevelop.Platform.Mac.Commands.MinimizeWindow"
