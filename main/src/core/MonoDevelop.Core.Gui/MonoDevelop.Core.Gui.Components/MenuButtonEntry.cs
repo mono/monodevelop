@@ -71,7 +71,7 @@ namespace MonoDevelop.Core.Gui.Components
 			if (entry.Parent == null)
 				PackStart (entry, true, true, 0);
 			if (button.Parent == null)
-				PackStart (button, false, false, 6);
+				PackStart (button, false, false, 2);
 			
 			ActionCommand cmd = new ActionCommand ("InsertOption", "InsertOption", null);
 			cmd.CommandArray = true;
@@ -166,6 +166,11 @@ namespace MonoDevelop.Core.Gui.Components
 		
 		public Gtk.Entry Entry {
 			get { return entry; }
+		}
+		
+		public string Text {
+			get { return entry.Text; }
+			set { entry.Text = value; }
 		}
 		
 		//FIXME: taken from MonoDevelop.Components.MenuButton. should share this.
