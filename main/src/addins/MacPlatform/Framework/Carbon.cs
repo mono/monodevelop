@@ -566,9 +566,12 @@ namespace OSXIntegration.Framework
 		[FieldOffset(8)]
 		HIMenuItem menuItem;
 		
-		public static CarbonHICommand FromApplication (uint commandID)
+		public CarbonHICommand (uint commandID, HIMenuItem item)
 		{
-			return new CarbonHICommand () { commandID = commandID };
+			windowRef = controlRef = IntPtr.Zero;
+			this.commandID = commandID;
+			this.menuItem = item;
+			this.attributes = CarbonHICommandAttributes.FromMenu;
 		}
 		
 		public CarbonHICommandAttributes Attributes { get { return attributes; } }

@@ -50,7 +50,7 @@ namespace MonoDevelop.Platform.Mac
 	{
 		protected override void Run ()
 		{
-			Carbon.ProcessHICommand (CarbonHICommand.FromApplication ((uint)CarbonCommandID.Hide));
+			HideOthersHandler.RunMenuCommand (CarbonCommandID.Hide);
 		}
 	}
 	
@@ -58,7 +58,13 @@ namespace MonoDevelop.Platform.Mac
 	{
 		protected override void Run ()
 		{
-			Carbon.ProcessHICommand (CarbonHICommand.FromApplication ((uint)CarbonCommandID.HideOthers));
+			RunMenuCommand (CarbonCommandID.HideOthers);
+		}
+		
+		internal static void RunMenuCommand (CarbonCommandID commandID)
+		{
+			var item = HIToolbox.GetMenuItem ((uint)commandID);
+			Carbon.ProcessHICommand (new CarbonHICommand ((uint)commandID, item));
 		}
 	}
 }

@@ -1,5 +1,10 @@
 2009-09-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Commands.cs:
+	* Framework/Carbon.cs: Send the commands from the menu.
+
+2009-09-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MacPlatform.addin.xml: Fix command names.
 
 2009-09-09  Michael Hutchinson  <mhutchinson@novell.com>
