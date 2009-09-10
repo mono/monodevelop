@@ -25,12 +25,35 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Projects.Text
 {
 	public interface IPrettyPrinter
 	{
 		bool CanFormat (string mimeType);
+		
+		bool SupportsOnTheFlyFormatting {
+			get;
+		}
+		
+		/// <summary>
+		/// Formats a text document directly with insert/remove operations.
+		/// </summary>
+		/// <param name="textEditorData">
+		/// A <see cref="System.Object"/> that must be from type Mono.TextEditorData.
+		/// </param>
+		/// <param name="dom">
+		/// A <see cref="ProjectDom"/>
+		/// </param>
+		/// <param name="unit">
+		/// A <see cref="ICompilationUnit"/>
+		/// </param>
+		/// <param name="caretLocation">
+		/// A <see cref="DomLocation"/> that should be the end location to which the parsing should occur.
+		/// </param>
+		void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation);
 		
 		string FormatText (SolutionItem policyParent, string mimeType, string input);
 		string FormatText (SolutionItem policyParent, string mimeType, string input, int fromOffest, int toOffset);
@@ -39,6 +62,17 @@ namespace MonoDevelop.Projects.Text
 	public abstract class AbstractPrettyPrinter : IPrettyPrinter
 	{
 		public abstract bool CanFormat (string mimeType);
+		
+		public virtual bool SupportsOnTheFlyFormatting {
+			get {
+				return false;
+			}
+		}
+		
+		public virtual void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation)
+		{
+			throw new NotSupportedException ();
+		}
 		
 		protected abstract string InternalFormat (SolutionItem policyParent, string mimeType, string text, int fromOffest, int toOffset);
 		
