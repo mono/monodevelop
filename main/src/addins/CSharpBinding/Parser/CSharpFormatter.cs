@@ -55,8 +55,18 @@ namespace CSharpBinding.Parser
 		public CSharpFormatter ()
 		{
 		}
-
-		static string CreateWrapperClassForMember (IMember member, TextEditorData data, out int end)
+		static int GetTrailingWhitespaces (StringBuilder sb)
+		{
+			string str = sb.ToString ();
+			int i = str.Length - 1;
+			while (i >= 0 && Char.IsWhiteSpace (str[i])) {
+				i--;
+			}
+//			Console.WriteLine (str.Length - 1 - i);
+			
+			return str.Length - 1 - i;
+		}
+		static string CreateWrapperClassForMember (IMember member, bool generateOuterClass, TextEditorData data, out int end)
 		{
 			if (member == null) {
 				end = -1;
@@ -75,20 +85,34 @@ namespace CSharpBinding.Parser
 			end = data.Document.GetMatchingBracketOffset (offset);
 			if (end < 0)
 				return "";
-
-			result.Append ("class " + member.DeclaringType.Name + " {");
+			
+			if (generateOuterClass)
+				result.Append ("class " + (member.DeclaringType != null ? member.DeclaringType.Name : "GenericClass") + " {");
 			for (int i = start; i <= end; i++) {
 				char ch = data.Document.GetCharAt (i);
 				switch (ch) {
+				case '/':
+					if (i + 1 <= end && data.Document.GetCharAt (i + 1) == '/') {
+						while (i <= end) {
+							ch = data.Document.GetCharAt (i);
+							result.Append (ch);
+							if (i == '\n' || i == '\r')
+								break;
+							i++;
+						}
+					}
+					break;
 				case '\n':
 				case '\r':
+					result.Length -= GetTrailingWhitespaces (result);
 					break;
 				default:
 					result.Append (ch);
 					break;
 				}
 			}
-			result.Append ("}");
+			if (generateOuterClass)
+				result.Append ("}");
 			return result.ToString ();
 		}
 
@@ -106,19 +130,69 @@ namespace CSharpBinding.Parser
 			return col;
 		}
 		
-		public static void Format (TextEditorData data, ProjectDom dom, ICompilationUnit unit, MonoDevelop.Ide.Gui.TextEditor editor, DomLocation caretLocation)
+		public override bool SupportsOnTheFlyFormatting {
+			get {
+				return true;
+			}
+		}
+		
+		public override void OnTheFlyFormat (object textEditorData, IType type, IMember member, ProjectDom dom, ICompilationUnit unit, DomLocation caretLocation)
+		{
+			Format ((TextEditorData)textEditorData, type, member, dom, unit, caretLocation);
+		}
+		
+		public static void Format (TextEditorData data, ProjectDom dom, ICompilationUnit unit, DomLocation caretLocation)
 		{
 			IType type = NRefactoryResolver.GetTypeAtCursor (unit, unit.FileName, caretLocation);
 			if (type == null)
-				return; 
-			
-			IMember member = NRefactoryResolver.GetMemberAt (type, caretLocation);
-			if (member == null)  
 				return;
+			Format (data, type, NRefactoryResolver.GetMemberAt (type, caretLocation), dom, unit, caretLocation);
+		}
+		
+		static string RemoveIndent (string text, string indent)
+		{
+			Document doc = new Document ();
+			doc.Text = text;
+			StringBuilder result = new StringBuilder ();
+			foreach (LineSegment line in doc.Lines) {
+				string curLineIndent = line.GetIndentation (doc);
+				int offset = Math.Min (curLineIndent.Length, indent.Length);
+				result.Append (doc.GetTextBetween (line.Offset + offset, line.EndOffset));
+			}
+			return result.ToString ();
+		}
+		static string AddIndent (string text, string indent)
+		{
+			Document doc = new Document ();
+			doc.Text = text;
+			StringBuilder result = new StringBuilder ();
+			foreach (LineSegment line in doc.Lines) {
+				if (result.Length > 0)
+					result.Append (indent);
+				result.Append (doc.GetTextAt (line));
+			}
+			return result.ToString ();
+		}
+		
+		static string GetIndent (TextEditorData data, int lineNumber)
+		{
+			return data.Document.GetLine (lineNumber).GetIndentation (data.Document);
+		}
+		
+		public static void Format (TextEditorData data, IType type, IMember member, ProjectDom dom, ICompilationUnit unit, DomLocation caretLocation)
+		{
+			if (type == null)
+				return;
+			if (member == null) {
+//				member = type;
+				return;
+			}
+			string wrapper;
 			int endPos;
-			string wrapper = CreateWrapperClassForMember (member, data, out endPos);
-			if (string.IsNullOrEmpty (wrapper) || endPos < 0) 
-				return; 
+			wrapper = CreateWrapperClassForMember (member, member != type, data, out endPos);
+			if (string.IsNullOrEmpty (wrapper) || endPos < 0)
+				return;
+//			Console.WriteLine (wrapper);
 			
 			int i = wrapper.IndexOf ('{') + 1;
 			int col = GetColumn (wrapper, i, data.Options.TabSize);
@@ -126,58 +200,63 @@ namespace CSharpBinding.Parser
 			CSharpFormatter formatter = new CSharpFormatter ();
 			formatter.startIndentLevel = System.Math.Max (0, col / data.Options.TabSize - 1);
 			
-//			int suffixLen = 2;
 			string formattedText = formatter.InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
-
-			if (formatter.hasErrors) 
-				return;
 			
-//			int startLine = member.Location.Line;
-//			int endLine = member.Location.Line;
-//
-//			if (!member.BodyRegion.IsEmpty) 
-//				endLine = member.BodyRegion.End.Line + 1; 
+			if (formatter.hasErrors)
+				return;
 
-			int startPos = data.Document.LocationToOffset (member.Location.Line - 1, 0);
+			int startPos = data.Document.LocationToOffset (member.Location.Line - 1, 0) - 1;
 			InFormat = true;
-
-			int len1 = formattedText.IndexOf ('{') + 1;
-			int last = formattedText.LastIndexOf ('}');
-			formattedText = formattedText.Substring (len1, last - len1 - 1);
-/*			Console.WriteLine ("----------Original:");
-			Console.WriteLine (wrapper.Replace ("\t", "--->").Replace (" ", "°"));
-			Console.WriteLine ("----------Formatted:");
-			Console.WriteLine (formattedText.Replace ("\t", "--->").Replace (" ", "°"));
-			Console.WriteLine ("----------");*/
-			int textLength = CanInsertFormattedText (data, startPos - 1, formattedText);
+			if (member != type) {
+				int len1 = formattedText.IndexOf ('{') + 1;
+				int last = formattedText.LastIndexOf ('}');
+				formattedText = formattedText.Substring (len1, last - len1 - 1);
+			} else {
+				startPos++;
+			}
+			
+			if (member != type) {
+				formattedText = RemoveIndent (formattedText, "\t");
+			} else {
+				formattedText = formattedText.TrimStart ();
+			}
+			formattedText = AddIndent (formattedText, GetIndent (data, member.Location.Line - 1));
+			
+/*			Console.WriteLine ("StartPos:" + startPos);
+			Console.WriteLine ("formattedText:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
+			*/
+			int textLength = CanInsertFormattedText (data, startPos, data.Document.LocationToOffset (caretLocation.Line, caretLocation.Column), formattedText);
 			if (textLength > 0) {
-				InsertFormattedText (data, startPos - 1, formattedText.Substring (0, textLength).TrimEnd ());
+//				Console.WriteLine (formattedText.Substring (0, textLength));
+				InsertFormattedText (data, startPos, formattedText.Substring (0, textLength).TrimEnd ());
 			} else {
 				Console.WriteLine ("Can't insert !!!");
 			}
 			InFormat = false;
 		}
 
-		static int CanInsertFormattedText (TextEditorData data, int offset, string formattedText)
+		static int CanInsertFormattedText (TextEditorData data, int offset, int endOffset, string formattedText)
 		{
 			int textOffset = 0;
-			int caretOffset = data.Caret.Offset;
-			while (textOffset < formattedText.Length && offset < caretOffset) {
+			endOffset = System.Math.Min (data.Document.Length, endOffset);
+			
+			while (textOffset < formattedText.Length && offset < endOffset) {
+				if (offset < 0) {
+					offset++;
+					textOffset++;
+					continue;
+				}
 				char ch1 = data.Document.GetCharAt (offset);
 				char ch2 = formattedText[textOffset];
 				bool ch1Ws = Char.IsWhiteSpace (ch1);
 				bool ch2Ws = Char.IsWhiteSpace (ch2);
-
+				//Console.WriteLine ("ch1={0}, ch2={1}", ch1, ch2);
 				if (ch1 == ch2) {
 					textOffset++;
 					offset++;
 					continue;
 				} else if (ch1 == '\n') {
-					if (offset < caretOffset)
-						caretOffset++;
-					offset++;
 					// skip Ws
-					
 					while (textOffset < formattedText.Length && IsPlainWhitespace (formattedText[textOffset])) {
 						textOffset++;
 					}
@@ -190,15 +269,10 @@ namespace CSharpBinding.Parser
 				}
 				
 				if (ch2Ws && !ch1Ws) {
-					if (offset < caretOffset)
-						caretOffset++;
 					textOffset++;
-	//				offset++;
 					continue;
 				}
 				if ((!ch2Ws || ch2 == '\n') && ch1Ws) {
-					if (offset < caretOffset)
-						caretOffset--;
 					offset++;
 					continue;
 				}
@@ -223,8 +297,15 @@ namespace CSharpBinding.Parser
 			int selLead = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Lead) : -1;
 			int textOffset = 0;
 			int caretOffset = data.Caret.Offset;
-
-			while (textOffset < formattedText.Length && offset < caretOffset) {
+			
+//			Console.WriteLine ("formattedText:" + formattedText);
+			
+			while (textOffset < formattedText.Length /*&& offset < caretOffset*/) {
+				if (offset < 0) {
+					offset++;
+					textOffset++;
+					continue;
+				}
 				char ch1 = data.Document.GetCharAt (offset);
 				char ch2 = formattedText[textOffset];
 //				Console.WriteLine (((int)ch1) + ":" + ch1 + " -- " + ((int)ch2) + ": " + ch2);
@@ -233,24 +314,15 @@ namespace CSharpBinding.Parser
 					offset++;
 					continue;
 				} else if (ch1 == '\n') {
-					LineSegment line = data.Document.GetLineByOffset (offset);
-//					string indent = line.GetIndentation (data.Document) + TextEditorProperties.IndentString;
-//					if (offset < caretOffset)
-//						caretOffset += indent.Length;
-//					data.Insert (offset, indent);
-//					offset += indent.Length;
-
+					//LineSegment line = data.Document.GetLineByOffset (offset);
 					// skip all white spaces in formatted text - we had a line break
-					
 					while (textOffset < formattedText.Length && IsPlainWhitespace (formattedText[textOffset])) {
 						textOffset++;
 					}
-
 					offset++;
 					while (offset < data.Caret.Offset && IsPlainWhitespace (data.Document.GetCharAt (offset))) {
 						offset++;
 					}
-					
 					continue;
 				}
 				bool ch1Ws = Char.IsWhiteSpace (ch1);
@@ -362,12 +434,48 @@ namespace CSharpBinding.Parser
 			using (ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (input))) {
 				parser.Parse ();
 				hasErrors = parser.Errors.Count != 0;
-				if (hasErrors) 
-					Console.WriteLine (parser.Errors.ErrorOutput); 
+//				if (hasErrors)
+//					Console.WriteLine (parser.Errors.ErrorOutput);
 				IList<ISpecial> specials = parser.Lexer.SpecialTracker.RetrieveSpecials ();
 				if (parser.Errors.Count == 0) {
 					using (SpecialNodesInserter.Install (specials, outputVisitor)) {
 						parser.CompilationUnit.AcceptVisitor (outputVisitor, null);
+					}
+					return outputVisitor.Text;
+				}
+			}
+//			Console.WriteLine ("trying to parse block.");
+			using (ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (input))) {
+				BlockStatement blockStatement = parser.ParseBlock ();
+				hasErrors = parser.Errors.Count != 0;
+//				if (hasErrors)
+//					Console.WriteLine (parser.Errors.ErrorOutput);
+				IList<ISpecial> specials = parser.Lexer.SpecialTracker.RetrieveSpecials ();
+				if (parser.Errors.Count == 0) {
+					StringBuilder result = new StringBuilder ();
+					using (var inserter = SpecialNodesInserter.Install (specials, outputVisitor)) {
+						foreach (INode node in blockStatement.Children) {
+							node.AcceptVisitor (outputVisitor, null);
+//							result.AppendLine (outputVisitor.Text);
+						}
+						if (!outputVisitor.OutputFormatter.LastCharacterIsNewLine)
+							outputVisitor.OutputFormatter.NewLine ();
+						inserter.Finish ();
+						result.AppendLine (outputVisitor.Text);
+					}
+					return result.ToString ();
+				}
+			}
+//			Console.WriteLine ("trying to parse expression.");
+			using (ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (input))) {
+				Expression expression = parser.ParseExpression ();
+				hasErrors = parser.Errors.Count != 0;
+//				if (hasErrors)
+//					Console.WriteLine (parser.Errors.ErrorOutput);
+				IList<ISpecial> specials = parser.Lexer.SpecialTracker.RetrieveSpecials ();
+				if (parser.Errors.Count == 0) {
+					using (SpecialNodesInserter.Install (specials, outputVisitor)) {
+						expression.AcceptVisitor (outputVisitor, null);
 					}
 					return outputVisitor.Text;
 				}
