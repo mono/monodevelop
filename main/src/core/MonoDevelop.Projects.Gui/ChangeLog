@@ -1,3 +1,8 @@
+2009-09-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
+	  click position.
+
 2009-09-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fix the

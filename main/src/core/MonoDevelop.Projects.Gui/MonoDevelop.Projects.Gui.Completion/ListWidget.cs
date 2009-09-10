@@ -338,7 +338,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			if (visibleRows == -1)
 				CalcVisibleRows ();
-			return page + (ypos - margin) / rowHeight;
+			return page + (ypos - margin) / rowHeight - (PreviewCompletionString ? 1 : 0);
 		}
 		public Gdk.Rectangle GetRowArea (int row)
 		{
