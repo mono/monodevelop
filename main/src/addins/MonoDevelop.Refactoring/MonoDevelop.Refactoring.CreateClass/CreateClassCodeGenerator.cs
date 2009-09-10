@@ -87,6 +87,9 @@ namespace MonoDevelop.Refactoring.CreateClass
 			if (!expression.StartsWith ("new ")) {
 				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line - 1, options.ResolveResult.ResolvedExpression.Region.Start.Column - 1);
 				for (int pos = startPos; pos >= 0; pos--) {
+					char ch = data.Document.GetCharAt (pos);
+					if (Char.IsWhiteSpace (ch) && !Char.IsLetterOrDigit (ch) && ch != '_')
+						return null;
 					if (data.Document.GetTextAt (pos, 4) == "new ") {
 						expression = "new " + expression;
 						break;

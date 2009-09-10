@@ -57,7 +57,17 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			if (options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null || options.ResolveResult.ResolvedType == null || !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName))
 				return false;
 			invoke = GetInvocationExpression (options);
-			
+			if (invoke.TargetObject is MemberReferenceExpression) {
+				INRefactoryASTProvider provider = options.GetASTProvider ();
+				IResolver resolver = options.GetResolver ();
+				if (provider == null || resolver == null)
+					return false;
+				string callingObject = provider.OutputNode (options.Dom, ((MemberReferenceExpression)invoke.TargetObject).TargetObject);
+				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (callingObject), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+				if (resolveResult == null || resolveResult.ResolvedType == null || resolveResult.CallingType == null)
+					return false;
+				return resolveResult.ResolvedType.FullName == resolveResult.CallingType.FullName;
+			}
 			return invoke != null;
 		}
 		
@@ -107,11 +117,19 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (resolver == null || provider == null)
 				return result;
-
+			
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
 
 			MethodDeclaration methodDecl = new MethodDeclaration ();
-			methodDecl.Name = ((IdentifierExpression)invoke.TargetObject).Identifier;
+			if (invoke.TargetObject is IdentifierExpression) {
+				methodDecl.Name = ((IdentifierExpression)invoke.TargetObject).Identifier;
+			} else {
+				methodDecl.Name = ((MemberReferenceExpression)invoke.TargetObject).MemberName;
+				string callingObject = provider.OutputNode (options.Dom, ((MemberReferenceExpression)invoke.TargetObject).TargetObject);
+				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (callingObject), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+				if (resolveResult.StaticResolve)
+					methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
+			}
 			methodDecl.TypeReference = new TypeReference ("System.Void");
 			methodDecl.TypeReference.IsKeyword = true;
 
