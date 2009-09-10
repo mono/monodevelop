@@ -1,5 +1,10 @@
 2009-09-10  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  Made it a bit more strict where code generator is valid.
+
+2009-09-10  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs:
 	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
 	  Fixed "Bug 537927 - "Create" refactorings on member method

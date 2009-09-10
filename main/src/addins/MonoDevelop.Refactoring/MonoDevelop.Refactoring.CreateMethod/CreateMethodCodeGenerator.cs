@@ -57,6 +57,8 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			if (options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null || options.ResolveResult.ResolvedType == null || !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName))
 				return false;
 			invoke = GetInvocationExpression (options);
+			if (invoke == null)
+				return false;
 			if (invoke.TargetObject is MemberReferenceExpression) {
 				INRefactoryASTProvider provider = options.GetASTProvider ();
 				IResolver resolver = options.GetResolver ();
@@ -68,7 +70,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 					return false;
 				return resolveResult.ResolvedType.FullName == resolveResult.CallingType.FullName;
 			}
-			return invoke != null;
+			return invoke.TargetObject is IdentifierExpression;
 		}
 		
 		InvocationExpression invoke;
