@@ -1,3 +1,7 @@
+2009-09-10  Christian Hergert  <chris@dronelabs.com>
+
+	* libstetic/libstetic.dll.config: Use quartz on osx.
+
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* wrapper/Action.cs: For stock gtk and gnome icons, use the

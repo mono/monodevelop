@@ -1,3 +1,7 @@
+2009-09-10  Christian Hergert  <chris@dronelabs.com>
+
+	* libsteticui/libsteticui.dll.config: Use quartz on osx.
+
 2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Metacity/Preview.cs: Use Assembly.LoadWithPartialName. It's
