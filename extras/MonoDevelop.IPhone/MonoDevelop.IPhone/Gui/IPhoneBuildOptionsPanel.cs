@@ -61,7 +61,7 @@ namespace MonoDevelop.IPhone.Gui
 	
 	partial class IPhoneBuildOptionsPanelWidget : Gtk.Bin
 	{
-		static string[,] menuOptions = new string[,] {
+		internal static string[,] menuOptions = new string[,] {
 			{GettextCatalog.GetString ("Target _Path"), "${TargetPath}"},
 			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
 			{GettextCatalog.GetString ("_App Bundle Directory"), "${AppBundleDir}"},

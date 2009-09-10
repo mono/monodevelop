@@ -34,56 +34,61 @@ using MonoDevelop.Projects;
 namespace MonoDevelop.IPhone.Gui
 {
 	
-	class IPhoneSigningKeyPanel : ItemOptionsPanel
+	class IPhoneSigningKeyPanel : MultiConfigItemOptionsPanel
 	{
 		IPhoneSigningKeyPanelWidget widget;
-		IPhoneProject project;
+		
+		public override bool IsVisible ()
+		{
+			return ConfiguredProject is IPhoneProject;
+		}
 		
 		public override Gtk.Widget CreatePanelWidget ()
 		{
-			var info = project.UserProperties.GetValue<SigningKeyInformation> ("IPhoneSigningKeys");
-			return widget = new IPhoneSigningKeyPanelWidget (info);
+			AllowMixedConfigurations = false;
+			return (widget = new IPhoneSigningKeyPanelWidget ((IPhoneProject)ConfiguredProject));
+		}
+		
+		public override void LoadConfigData ()
+		{
+			widget.LoadPanelContents ((IPhoneProjectConfiguration)CurrentConfiguration);
 		}
 
 		public override void ApplyChanges ()
 		{
-			if (project != null) {
-				var info = widget.GetValue ();
-				if (info != null)
-					project.UserProperties.SetValue<SigningKeyInformation> ("IPhoneSigningKeys", info);
-				else if (project.UserProperties.HasValue ("IPhoneSigningKeys"))
-					project.UserProperties.RemoveValue ("IPhoneSigningKeys");
-			}
-		}
-
-		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
-		{
-			project = dataObject as IPhoneProject;
-			base.Initialize (dialog, dataObject);
-		}
-		
-		public override bool IsVisible ()
-		{
-			return project != null && base.IsVisible ();
+			widget.StorePanelContents ((IPhoneProjectConfiguration)CurrentConfiguration);
 		}
 	}
 	
 	partial class IPhoneSigningKeyPanelWidget : Gtk.Bin
 	{
-		ListStore developerStore;
-		ListStore distributionStore;
-		IList<string> signingCerts;
+		//IList<string> signingCerts;
 		
-		public IPhoneSigningKeyPanelWidget (SigningKeyInformation info)
+		public IPhoneSigningKeyPanelWidget (IPhoneProject project)
 		{
 			this.Build ();
 			
+			resourceRulesEntry.DefaultFilter = "*.plist";
+			resourceRulesEntry.Project = project;
+			resourceRulesEntry.EntryIsEditable = true;
+			
+			entitlementsEntry.DefaultFilter = "*.plist";
+			entitlementsEntry.Project = project;
+			entitlementsEntry.EntryIsEditable = true;
+			
+			additionalArgsEntry.AddOptions (IPhoneBuildOptionsPanelWidget.menuOptions);
+			
+			enableSigningCheck.Toggled += delegate {
+				vbox3.Sensitive = enableSigningCheck.Active;
+			};
+			
+			/*
 			var txtRenderer = new CellRendererText ();
 			txtRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			
-			developerCombo.Model = developerStore = new ListStore (typeof (String), typeof (String));
-			developerCombo.PackStart (txtRenderer, true);
-			developerCombo.AddAttribute (txtRenderer, "markup", 1);
+			provisioningCombo.Model = developerStore = new ListStore (typeof (String), typeof (String));
+			provisioningCombo.PackStart (txtRenderer, true);
+			provisioningCombo.AddAttribute (txtRenderer, "markup", 1);
 			
 			distributionCombo.Model = distributionStore = new ListStore (typeof (String), typeof (String));
 			distributionCombo.PackStart (txtRenderer, true);
@@ -107,11 +112,49 @@ namespace MonoDevelop.IPhone.Gui
 			
 			useSpecificCertCheck.Toggled += delegate {
 				certBox.Sensitive = useSpecificCertCheck.Active;
-			};
-			
-			SetValue (info);
+			};*/
 		}
 		
+		public void LoadPanelContents (IPhoneProjectConfiguration cfg)
+		{
+			enableSigningCheck.Active = !string.IsNullOrEmpty (cfg.CodesignKey);
+			SigningKey = cfg.CodesignKey;
+			ProvisionFingerprint = cfg.CodesignProvision;
+			entitlementsEntry.SelectedFile = cfg.CodesignEntitlements;
+			resourceRulesEntry.SelectedFile = cfg.CodesignResourceRules;
+			additionalArgsEntry.Entry.Text = cfg.CodesignExtraArgs;
+		}
+		
+		public void StorePanelContents (IPhoneProjectConfiguration cfg)
+		{
+			cfg.CodesignKey = enableSigningCheck.Active? SigningKey : null;
+			cfg.CodesignProvision = enableSigningCheck.Active? ProvisionFingerprint : null;
+			cfg.CodesignEntitlements = entitlementsEntry.SelectedFile;
+			cfg.CodesignResourceRules = resourceRulesEntry.SelectedFile;
+			cfg.CodesignExtraArgs = NullIfEmpty (additionalArgsEntry.Entry.Text);
+		}
+		
+		string SigningKey {
+			get {
+				//throw new NotImplementedException ();
+				return null;
+			}
+			set {
+				//throw new NotImplementedException ();
+			}
+		}
+		
+		string ProvisionFingerprint {
+			get {
+				//throw new NotImplementedException ();
+				return null;
+			}
+			set {
+				//throw new NotImplementedException ();
+			}
+		}
+		
+		/*
 		internal SigningKeyInformation GetValue ()
 		{
 			if (!useSpecificCertCheck.Active)
@@ -119,7 +162,7 @@ namespace MonoDevelop.IPhone.Gui
 			
 			string devKey = null, distKey = null;
 			TreeIter iter;
-			if (developerStore.GetIter (out iter, new TreePath (new int[] { developerCombo.Active })))
+			if (developerStore.GetIter (out iter, new TreePath (new int[] { provisioningCombo.Active })))
 				devKey = (string) developerStore.GetValue (iter, 0); 
 			if (distributionStore.GetIter (out iter, new TreePath (new int[] { distributionCombo.Active })))
 				distKey = (string) distributionStore.GetValue (iter, 0);
@@ -128,7 +171,7 @@ namespace MonoDevelop.IPhone.Gui
 		
 		void SetValue (SigningKeyInformation value)
 		{
-			distributionCombo.Active = developerCombo.Active = 0;
+			distributionCombo.Active = provisioningCombo.Active = 0;
 			useSpecificCertCheck.Active = certBox.Sensitive = value != null;
 			if (value == null)
 				return;
@@ -149,13 +192,17 @@ namespace MonoDevelop.IPhone.Gui
 				int index = 0;
 				do {
 					if ((string)developerStore.GetValue (iter, 0) == value.Developer) {
-						developerCombo.Active = index;
+						provisioningCombo.Active = index;
 						break;
 					}
 					index++;
 				} while (developerStore.IterNext (ref iter));
 			}
-		}
+		}*/
 		
+		string NullIfEmpty (string s)
+		{
+			return (s == null || s.Length == 0)? null : s;
+		}
 	}
 }

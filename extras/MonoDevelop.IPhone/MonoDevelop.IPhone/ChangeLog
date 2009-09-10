@@ -1,3 +1,16 @@
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneBuildOptionsPanel.cs: Expose the options set so
+	  the signing panel can use it.
+
+	* gtk-gui/gui.stetic:
+	* Gui/IPhoneSigningKeyPanel.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs:
+	  Partially reworked the signing options panel.
+
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs:
+	  Flush.
+
 2009-09-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.IPhone.addin.xml: Fix ordering of commands
