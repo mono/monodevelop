@@ -43,6 +43,7 @@ using MonoDevelop.Components.Commands;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.CodeTemplates;
 using Mono.Addins;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -50,19 +51,14 @@ namespace MonoDevelop.SourceEditor
 	{
 		internal object MemoryProbe = Counters.EditorsInMemory.CreateMemoryProbe ();
 		
-		ITextEditorExtension extension = null;
 		SourceEditorView view;
 		Dictionary<int, ErrorMarker> errors;
 		
 		Gdk.Point menuPopupLocation;
 		
 		public ITextEditorExtension Extension {
-			get {
-				return extension;
-			}
-			set {
-				extension = value;
-			}
+			get;
+			set;
 		}
 		
 		public new ISourceEditorOptions Options {
@@ -94,9 +90,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.view = view;
 			Caret.PositionChanged += delegate {
-				if (extension != null) {
+				if (Extension != null) {
 					try {
-						extension.CursorPositionChanged ();
+						Extension.CursorPositionChanged ();
 					} catch (Exception ex) {
 						ReportExtensionError (ex);
 					}
@@ -119,9 +115,9 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				
-				if (extension != null) {
+				if (Extension != null) {
 					try {
-						extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
+						Extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
 					} catch (Exception ex) {
 						ReportExtensionError (ex);
 					}
@@ -152,7 +148,7 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnDestroyed ()
 		{
-			extension = null;
+			Extension = null;
 			view = null;
 			this.ButtonPressEvent -= OnPopupMenu;
 			AddinManager.RemoveExtensionNodeHandler  ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
@@ -225,7 +221,7 @@ namespace MonoDevelop.SourceEditor
 		bool ExtensionKeyPress (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			try {
-				return extension.KeyPress (key, (char)ch, state);
+				return Extension.KeyPress (key, (char)ch, state);
 			} catch (Exception ex) {
 				ReportExtensionError (ex);
 			}
@@ -300,7 +296,7 @@ namespace MonoDevelop.SourceEditor
 			bool result = true;
 			if (key == Gdk.Key.Escape) {
 				bool b;
-				if (extension != null)
+				if (Extension != null)
 					b = ExtensionKeyPress (key, ch, state); else
 					b = base.OnIMProcessedKeyPressEvent (key, ch, state);
 				if (b) {
@@ -383,7 +379,7 @@ namespace MonoDevelop.SourceEditor
 				Caret.Offset++;
 				skipChars.Remove (skipChar);
 			} else {
-				if (extension != null) {
+				if (Extension != null) {
 					if (ExtensionKeyPress (key, ch, state))
 						result = base.OnIMProcessedKeyPressEvent (key, ch, state);
 					if (returnBetweenBraces) {
@@ -754,8 +750,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
 		{
+			Document.BeginAtomicUndo ();
+			IType type = document.ParsedDocument.CompilationUnit.GetTypeAt (Caret.Line, Caret.Column);
+			IMember member = document.ParsedDocument.CompilationUnit.GetMemberAt (Caret.Line, Caret.Column);
 			CodeTemplate.TemplateResult result = template.InsertTemplate (document);
-
 			TextLinkEditMode tle = new TextLinkEditMode (this, 
 			                                             result.InsertPosition,
 			                                             result.TextLinks);
@@ -764,6 +762,14 @@ namespace MonoDevelop.SourceEditor
 				tle.StartMode ();
 				CurrentMode = tle;
 			}
+/*			IPrettyPrinter prettyPrinter = TextFileService.GetPrettyPrinter (Document.MimeType);
+			if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {
+				int endOffset = result.InsertPosition + result.Code.Length;
+				DocumentLocation endDocumentLocation = Document.OffsetToLocation (endOffset);
+				DomLocation endLocation = new DomLocation (endDocumentLocation.Line, endDocumentLocation.Column);
+				prettyPrinter.OnTheFlyFormat (GetTextEditorData (), type, member, ProjectDomService.GetProjectDom (document.Project), document.ParsedDocument.CompilationUnit, endLocation);
+			}*/
+			Document.EndAtomicUndo ();
 		}
 		
 #endregion
