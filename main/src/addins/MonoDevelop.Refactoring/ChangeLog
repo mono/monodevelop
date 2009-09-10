@@ -1,3 +1,10 @@
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: In
+	  FindReferencesThread, report exceptions to the monitor
+	  instead of letting them reach the top of the thread and
+	  crash MD.
+
 2009-09-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:

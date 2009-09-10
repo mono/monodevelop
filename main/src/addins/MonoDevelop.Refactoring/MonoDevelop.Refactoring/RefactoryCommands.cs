@@ -639,7 +639,7 @@ namespace MonoDevelop.Refactoring
 		
 		void FindReferencesThread ()
 		{
-			using (monitor) {
+			try {
 				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				if (item is IType) {
 					references = refactorer.FindClassReferences (monitor, (IType)item, RefactoryScope.Solution, true);
@@ -656,6 +656,14 @@ namespace MonoDevelop.Refactoring
 						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));
 					}
 				}
+			} catch (Exception ex) {
+				if (monitor != null)
+					monitor.ReportError ("Error finding references", ex);
+				else
+					LoggingService.LogError ("Error finding references", ex);
+			} finally {
+				if (monitor != null)
+					monitor.Dispose ();
 			}
 		}
 		
