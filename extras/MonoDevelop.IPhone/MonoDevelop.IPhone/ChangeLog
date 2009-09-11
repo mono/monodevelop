@@ -1,5 +1,11 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/IPhoneSigningKeyPanel.cs: Trim names. Auto-select
+	  profile when identity changed. Only show dist provisioning
+	  profiles for the auto identity.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/IPhoneSigningKeyPanel.cs: Handle the Distribution
 	  (Automatic) identity when listing provisioning profiles. Fix
 	  NRE properly.

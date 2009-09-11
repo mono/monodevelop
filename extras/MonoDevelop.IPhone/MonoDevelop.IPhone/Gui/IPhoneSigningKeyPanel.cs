@@ -109,21 +109,23 @@ namespace MonoDevelop.IPhone.Gui
 			var signingCerts = Keychain.GetAllSigningCertificates ().Where (x => Keychain.GetCertificateCommonName (x).StartsWith ("iPhone")).ToList ();
 			signingCerts.Sort ((x , y) => Keychain.GetCertificateCommonName (x).CompareTo (Keychain.GetCertificateCommonName (x)));
 			
-			identityStore.AppendValues ("<b>iPhone Developer (Automatic)</b>", Keychain.DEV_CERT_PREFIX, null);
-			identityStore.AppendValues ("<b>iPhone Distribution (Automatic)</b>", Keychain.DIST_CERT_PREFIX, null);
+			identityStore.AppendValues ("<b>Developer (Automatic)</b>", Keychain.DEV_CERT_PREFIX, null);
+			identityStore.AppendValues ("<b>Distribution (Automatic)</b>", Keychain.DIST_CERT_PREFIX, null);
+			
+			int trimStart = "iPhone ".Length;
 			
 			identityStore.AppendValues ("-", "-", null);
 			foreach (var cert in signingCerts) {
 				string cn = Keychain.GetCertificateCommonName (cert);
 				if (cn.StartsWith (Keychain.DEV_CERT_PREFIX))
-					identityStore.AppendValues (cn, cn, cert);
+					identityStore.AppendValues (cn.Substring (trimStart, cn.Length - trimStart), cert);
 			}
 			
 			identityStore.AppendValues ("-", "-", null);
 			foreach (var cert in signingCerts) {
 				string cn = Keychain.GetCertificateCommonName (cert);
 				if (cn.StartsWith (Keychain.DIST_CERT_PREFIX))
-					identityStore.AppendValues (cn, cn, cert);
+					identityStore.AppendValues (cn.Substring (trimStart, cn.Length - trimStart), cert);
 			}
 			
 			this.ShowAll ();
@@ -191,22 +193,24 @@ namespace MonoDevelop.IPhone.Gui
 				var name = (string) identityStore.GetValue (iter, 1);
 				if (name.StartsWith (Keychain.DIST_CERT_PREFIX)) {
 					var cert = identityStore.GetValue (iter, 2) as X509Certificate2;
-					if (cert == null) {
-						foreach (var mp in profiles)
-							profileStore.AppendValues (mp.Name, mp.Uuid, mp);
-					} else {
-						foreach (var mp in profiles) {
-							foreach (var profileCert in mp.DeveloperCertificates) {
-								if (profileCert.Thumbprint == cert.Thumbprint) {
-									profileStore.AppendValues (mp.Name, mp.Uuid, mp);
-									break;
-								}
+					foreach (var mp in profiles) {
+						foreach (var profileCert in mp.DeveloperCertificates) {
+							if ((cert == null && Keychain.GetCertificateCommonName (profileCert).StartsWith (Keychain.DIST_CERT_PREFIX))
+							    || (cert != null && profileCert.Thumbprint == cert.Thumbprint))
+							{
+								profileStore.AppendValues (mp.Name, mp.Uuid, mp);
+								break;
 							}
 						}
 					}
-					
-					provisioningCombo.Sensitive = true;
-					return;
+					if (profileStore.IterNChildren () > 0) {
+						provisioningCombo.Active = 0;
+						provisioningCombo.Sensitive = true;
+						return;;
+					}
+				//	provisioningCombo.ActiveText = GettextCatalog.GetString ("(none found)");
+				//} else {
+				//	provisioningCombo.ActiveText = GettextCatalog.GetString ("(development)");
 				}
 			}
 			provisioningCombo.Sensitive = false;
