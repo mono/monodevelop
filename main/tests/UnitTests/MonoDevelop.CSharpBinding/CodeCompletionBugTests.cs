@@ -1826,6 +1826,9 @@ public class O
 		[Test()]
 		public void TestBug538208 ()
 		{
+			// We've to test 2 expressions for this bug. Since there are 2 ways of accessing
+			// members.
+			// First: the identifier expression
 			CompletionDataList provider = CreateCtrlSpaceProvider (
 @"
 class MyClass
@@ -1847,6 +1850,7 @@ class MyClass
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Test"), "property 'Test' not found.");
 			
+			// now the member reference expression 
 			provider = CreateCtrlSpaceProvider (
 @"
 class MyClass2

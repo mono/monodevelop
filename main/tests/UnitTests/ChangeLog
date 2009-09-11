@@ -1,6 +1,11 @@
 2009-09-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  some comments.
+
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
 	  unit tests for "Bug 538208 - Go to declaration not working
 	  over a generic method...".
 
