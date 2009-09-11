@@ -531,6 +531,7 @@ namespace MonoDevelop.Ide.Gui
 					this.lastErrorFreeParsedDocument = parsedDocument;
 			} finally {
 				parsing = false;
+				OnDocumentParsed (EventArgs.Empty);
 			}
 			return this.parsedDocument;
 		}
@@ -559,6 +560,9 @@ namespace MonoDevelop.Ide.Gui
 					this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, mime, currentParseText);
 					if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 						this.lastErrorFreeParsedDocument = parsedDocument;
+					DispatchService.GuiSyncDispatch (delegate {
+						OnDocumentParsed (EventArgs.Empty);
+					});
 				});
 				return false;
 			});
@@ -580,9 +584,18 @@ namespace MonoDevelop.Ide.Gui
 				window.ViewContent.Project = null;
 		}
 		
+		protected virtual void OnDocumentParsed (EventArgs e)
+		{
+			EventHandler handler = this.DocumentParsed;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		public event EventHandler Closed;
 		public event EventHandler Saved;
 		public event EventHandler ViewChanged;
+		
+		public event EventHandler DocumentParsed;
 	}
 }
 

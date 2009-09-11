@@ -1,3 +1,7 @@
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: Added DocumentParsed event.
+
 2009-09-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
