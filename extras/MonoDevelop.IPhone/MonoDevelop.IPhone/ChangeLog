@@ -1,5 +1,9 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneBuildExtension.cs: Write codesign args to log.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/IPhoneSigningKeyPanel.cs: Escape markup for text
 	  renderer.
 

@@ -615,7 +615,7 @@ namespace MonoDevelop.IPhone
 				Arguments = args.ToString (),
 			};
 			
-			monitor.Log.WriteLine ("codesign ", psi.Arguments);
+			monitor.Log.WriteLine ("codesign " + psi.Arguments);
 			psi.EnvironmentVariables.Add ("CODESIGN_ALLOCATE", "/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate");
 			string output;
 			if ((signResultCode = ExecuteCommand (monitor, psi, out output)) != 0) {
