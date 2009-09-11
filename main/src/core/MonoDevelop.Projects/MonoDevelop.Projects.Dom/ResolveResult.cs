@@ -406,6 +406,11 @@ namespace MonoDevelop.Projects.Dom
 			arguments.Add (arg);
 		}
 		
+		public MethodResolveResult (IMethod method)
+		{
+			AddMethods (new IMethod [] { method });
+		}
+		
 		public MethodResolveResult (List<IMember> members)
 		{
 			AddMethods (members);
