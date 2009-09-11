@@ -1,5 +1,11 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/IPhoneSigningKeyPanel.cs: Handle the Distribution
+	  (Automatic) identity when listing provisioning profiles. Fix
+	  NRE properly.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/IPhoneSigningKeyPanel.cs: Fix possible NRE. Update
 	  profiles when loading.
 

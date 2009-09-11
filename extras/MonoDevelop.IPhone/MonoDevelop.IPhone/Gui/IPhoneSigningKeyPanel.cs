@@ -160,7 +160,8 @@ namespace MonoDevelop.IPhone.Gui
 			set {
 				if (string.IsNullOrEmpty (value))
 					identityCombo.Active = 0;
-				SelectMatchingItem (identityCombo, 1, value);
+				else
+					SelectMatchingItem (identityCombo, 1, value);
 				UpdateProfiles ();
 			}
 		}
@@ -189,13 +190,17 @@ namespace MonoDevelop.IPhone.Gui
 			if (identityStore.GetIter (out iter, new TreePath (new int[] { identityCombo.Active }))) {
 				var name = (string) identityStore.GetValue (iter, 1);
 				if (name.StartsWith (Keychain.DIST_CERT_PREFIX)) {
-					var cert = (X509Certificate2) identityStore.GetValue (iter, 1);
-					
-					foreach (var mp in profiles) {
-						foreach (var profileCert in mp.DeveloperCertificates) {
-							if (profileCert.Thumbprint == cert.Thumbprint) {
-								profileStore.AppendValues (mp.Name, mp.Uuid, mp);
-								break;
+					var cert = identityStore.GetValue (iter, 2) as X509Certificate2;
+					if (cert == null) {
+						foreach (var mp in profiles)
+							profileStore.AppendValues (mp.Name, mp.Uuid, mp);
+					} else {
+						foreach (var mp in profiles) {
+							foreach (var profileCert in mp.DeveloperCertificates) {
+								if (profileCert.Thumbprint == cert.Thumbprint) {
+									profileStore.AppendValues (mp.Name, mp.Uuid, mp);
+									break;
+								}
 							}
 						}
 					}
