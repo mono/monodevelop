@@ -169,6 +169,7 @@ namespace MonoDevelop.IPhone
 				conf.Platform = PLAT_SIM;
 				var c2 = (IPhoneProjectConfiguration) conf.Clone ();
 				c2.Platform = PLAT_IPHONE;
+				c2.CodesignKey = Keychain.DEV_CERT_PREFIX;
 				Configurations.Add (c2);
 				
 				conf.OutputDirectory = binPath.Combine (conf.Platform, conf.Name);
@@ -202,6 +203,8 @@ namespace MonoDevelop.IPhone
 			
 			conf.OutputDirectory = BaseDirectory.IsNullOrEmpty? dir : BaseDirectory.Combine (dir);
 			conf.OutputAssembly = Name;
+			if (conf.Platform == PLAT_IPHONE)
+				conf.CodesignKey = Keychain.DEV_CERT_PREFIX;
 			
 			if (LanguageBinding != null)
 				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);

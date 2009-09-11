@@ -1,5 +1,9 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs: Enable signing on new iphone configs.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Write codesign args to log.
 
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
