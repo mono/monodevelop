@@ -289,10 +289,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (System.Char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
+				UpdateWordSelection ();
 				SelectionDisabled = word.Length <= 1;
 				curPos++;
-				if (!SelectionDisabled || AutoSelect)
-					UpdateWordSelection ();
 				return KeyActions.Process;
 			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
 				//punctuation is only accepted if it actually matches an item in the list
@@ -303,8 +302,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				int match = FindMatchedEntry (word.ToString (), out hasMismatches);
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
 					curPos++;
-					if (!SelectionDisabled || AutoSelect)
-						SelectEntry (match);
+					SelectEntry (match);
 					return KeyActions.Process;
 				} else if (CompleteWithSpaceOrPunctuation) {
 					word.Remove (curPos, 1);
