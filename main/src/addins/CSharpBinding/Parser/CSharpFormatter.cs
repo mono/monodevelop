@@ -216,15 +216,16 @@ namespace CSharpBinding.Parser
 			}
 			
 			if (member != type) {
-				formattedText = RemoveIndent (formattedText, "\t");
+				formattedText = RemoveIndent (formattedText, formattedText.Substring (0, formattedText.Length - formattedText.TrimStart ().Length));
 			} else {
 				formattedText = formattedText.TrimStart ();
 			}
+//			Console.WriteLine ("Indent:" + GetIndent (data, member.Location.Line - 1).Replace ("\t", "->").Replace (" ", "°"));
+//			Console.WriteLine ("formattedText1:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
 			formattedText = AddIndent (formattedText, GetIndent (data, member.Location.Line - 1));
 			
-/*			Console.WriteLine ("StartPos:" + startPos);
-			Console.WriteLine ("formattedText:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
-			*/
+//			Console.WriteLine ("formattedText2:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
+			
 			int textLength = CanInsertFormattedText (data, startPos, data.Document.LocationToOffset (caretLocation.Line, caretLocation.Column), formattedText);
 			if (textLength > 0) {
 //				Console.WriteLine (formattedText.Substring (0, textLength));
