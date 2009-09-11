@@ -471,6 +471,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		void OnCompletionDataChanged (object s, EventArgs args)
 		{
+			ResetSizes ();
 			//try to capture full selection state so as not to interrupt user
 			string last = null;
 			if (Visible) {

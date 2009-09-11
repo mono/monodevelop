@@ -1,6 +1,11 @@
 2009-09-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Added ResetSizes call when completion data has changed.
+
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	  Fixed code completion bug.
 
 2009-09-11  Mike Krüger  <mkrueger@novell.com>
