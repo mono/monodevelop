@@ -1,5 +1,12 @@
 2009-09-11  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/ClipboardActions.cs: Fixed "Bug 538197 -
+	  Paste of box selection copy, doesn't pastes as a box
+	  content, it pastes as flow content, even being box
+	  content...".
+
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/TextLinkEditMode.cs: Fixed 'Bug 538186 -
 	  Refactoring operations on document while links are active

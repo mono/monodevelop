@@ -273,6 +273,7 @@ namespace Mono.TextEditor
 					this.mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;
 					switch (selection.SelectionMode) {
 					case SelectionMode.Normal:
+						isBlockMode = false;
 						ISegment segment = selection.GetSelectionRange (data);
 						copiedDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
 						monoDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
@@ -282,6 +283,7 @@ namespace Mono.TextEditor
 						this.copiedDocument.GetLine (0).StartSpan = spanStack.ToArray ();
 						break;
 					case SelectionMode.Block:
+						isBlockMode = true;
 						DocumentLocation visStart = data.LogicalToVisualLocation (selection.Anchor);
 						DocumentLocation visEnd   = data.LogicalToVisualLocation (selection.Lead);
 						int startCol = System.Math.Min (visStart.Column, visEnd.Column);
