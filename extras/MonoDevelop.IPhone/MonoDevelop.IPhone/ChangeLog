@@ -1,5 +1,14 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.IPhone.addin.xml:
+	* Gui/IPhoneSigningKeyPanel.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs:
+	  Improved signing GUI.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.IPhone.addin.xml: Remove duplicate attribute.
 
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>

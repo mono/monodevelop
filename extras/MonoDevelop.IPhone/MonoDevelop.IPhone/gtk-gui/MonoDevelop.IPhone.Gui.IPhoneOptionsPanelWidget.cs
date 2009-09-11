@@ -52,6 +52,7 @@ namespace MonoDevelop.IPhone.Gui {
             this.Name = "MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget";
             // Container child MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();
+            this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 12;
             // Container child vbox1.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();

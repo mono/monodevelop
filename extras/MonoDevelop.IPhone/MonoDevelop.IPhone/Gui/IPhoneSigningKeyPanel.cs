@@ -25,11 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Projects;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MonoDevelop.IPhone.Gui
 {
@@ -62,7 +64,10 @@ namespace MonoDevelop.IPhone.Gui
 	
 	partial class IPhoneSigningKeyPanelWidget : Gtk.Bin
 	{
-		//IList<string> signingCerts;
+		IList<MobileProvision> profiles;
+		
+		ListStore identityStore = new ListStore (typeof (string), typeof (string), typeof (X509Certificate2));
+		ListStore profileStore = new ListStore (typeof (string), typeof (string), typeof (MobileProvision));
 		
 		public IPhoneSigningKeyPanelWidget (IPhoneProject project)
 		{
@@ -79,40 +84,69 @@ namespace MonoDevelop.IPhone.Gui
 			additionalArgsEntry.AddOptions (IPhoneBuildOptionsPanelWidget.menuOptions);
 			
 			enableSigningCheck.Toggled += delegate {
-				vbox3.Sensitive = enableSigningCheck.Active;
+				signingTable.Sensitive = enableSigningCheck.Active;
 			};
 			
-			/*
+			profiles = MobileProvision.GetAllInstalledProvisions ();
+			
 			var txtRenderer = new CellRendererText ();
 			txtRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			
-			provisioningCombo.Model = developerStore = new ListStore (typeof (String), typeof (String));
-			provisioningCombo.PackStart (txtRenderer, true);
-			provisioningCombo.AddAttribute (txtRenderer, "markup", 1);
+			identityCombo.Model = identityStore;
+			identityCombo.PackStart (txtRenderer, true);
+			identityCombo.AddAttribute (txtRenderer, "markup", 0);
 			
-			distributionCombo.Model = distributionStore = new ListStore (typeof (String), typeof (String));
-			distributionCombo.PackStart (txtRenderer, true);
-			distributionCombo.AddAttribute (txtRenderer, "markup", 1);
+			identityCombo.RowSeparatorFunc = delegate (TreeModel model, TreeIter iter) {
+				return (string)model.GetValue (iter, 0) == "-";
+			};
 			
-			signingCerts = Keychain.GetAllSigningIdentities ();
-			
-			string auto = GettextCatalog.GetString ("<b>Automatic</b>");
-			developerStore.AppendValues (null, auto);
-			distributionStore.AppendValues (null, auto);
-			
-			foreach (var cert in signingCerts) {
-				if (cert.StartsWith (Keychain.DEV_CERT_PREFIX)) {
-					developerStore.AppendValues (cert,
-						GLib.Markup.EscapeText (cert.Substring (Keychain.DEV_CERT_PREFIX.Length).Trim ()));
-				} else if (cert.StartsWith (Keychain.DIST_CERT_PREFIX)) {
-					distributionStore.AppendValues (cert,
-						GLib.Markup.EscapeText (cert.Substring (Keychain.DIST_CERT_PREFIX.Length).Trim ()));
+			identityCombo.Changed += delegate {
+				profileStore.Clear ();
+				TreeIter iter;
+				if (identityStore.GetIter (out iter, new TreePath (new int[] { identityCombo.Active }))) {
+					var name = (string) identityStore.GetValue (iter, 1);
+					if (name.StartsWith (Keychain.DIST_CERT_PREFIX)) {
+						var cert = (X509Certificate2) identityStore.GetValue (iter, 1);
+						
+						foreach (var mp in profiles) {
+							foreach (var profileCert in mp.DeveloperCertificates) {
+								if (profileCert.Thumbprint == cert.Thumbprint) {
+									profileStore.AppendValues (mp.Name, mp.Uuid, mp);
+									break;
+								}
+							}
+						}
+						
+						provisioningCombo.Sensitive = true;
+						return;
+					}
 				}
+				provisioningCombo.Sensitive = false;
+			};
+			
+			provisioningCombo.Model = profileStore;
+			provisioningCombo.PackStart (txtRenderer, true);
+			provisioningCombo.AddAttribute (txtRenderer, "markup", 0);
+			
+			var signingCerts = Keychain.GetAllSigningCertificates ().ToList ();
+			signingCerts.Sort ();
+			
+			identityStore.AppendValues ("<b>iPhone Developer (Automatic)</b>", Keychain.DEV_CERT_PREFIX, null);
+			identityStore.AppendValues ("<b>iPhone Distribution (Automatic)</b>", Keychain.DIST_CERT_PREFIX, null);
+			
+			identityStore.AppendValues ("-", "-", null);
+			foreach (var cert in signingCerts) {
+				string cn = Keychain.GetCertificateCommonName (cert);
+				if (cn.StartsWith (Keychain.DEV_CERT_PREFIX))
+					identityStore.AppendValues (cn, cn, cert);
 			}
 			
-			useSpecificCertCheck.Toggled += delegate {
-				certBox.Sensitive = useSpecificCertCheck.Active;
-			};*/
+			identityStore.AppendValues ("-", "-", null);
+			foreach (var cert in signingCerts) {
+				string cn = Keychain.GetCertificateCommonName (cert);
+				if (cn.StartsWith (Keychain.DIST_CERT_PREFIX))
+					identityStore.AppendValues (cn, cn, cert);
+			}
 			
 			this.ShowAll ();
 		}
@@ -120,11 +154,13 @@ namespace MonoDevelop.IPhone.Gui
 		public void LoadPanelContents (IPhoneProjectConfiguration cfg)
 		{
 			enableSigningCheck.Active = !string.IsNullOrEmpty (cfg.CodesignKey);
+			signingTable.Sensitive = enableSigningCheck.Active;
+			
 			SigningKey = cfg.CodesignKey;
 			ProvisionFingerprint = cfg.CodesignProvision;
 			entitlementsEntry.SelectedFile = cfg.CodesignEntitlements;
 			resourceRulesEntry.SelectedFile = cfg.CodesignResourceRules;
-			additionalArgsEntry.Entry.Text = cfg.CodesignExtraArgs;
+			additionalArgsEntry.Text = cfg.CodesignExtraArgs ?? "";
 		}
 		
 		public void StorePanelContents (IPhoneProjectConfiguration cfg)
@@ -138,69 +174,49 @@ namespace MonoDevelop.IPhone.Gui
 		
 		string SigningKey {
 			get {
-				//throw new NotImplementedException ();
+				TreeIter iter;
+				if (identityStore.GetIter (out iter, new TreePath (new int[] { identityCombo.Active })))
+					return (string) identityStore.GetValue (iter, 1);
 				return null;
 			}
 			set {
-				//throw new NotImplementedException ();
+				SelectMatchingItem (identityCombo, 1, value);
 			}
 		}
 		
 		string ProvisionFingerprint {
 			get {
-				//throw new NotImplementedException ();
+				TreeIter iter;
+				if (!provisioningCombo.Sensitive)
+					return null;
+				if (profileStore.GetIter (out iter, new TreePath (new int[] { provisioningCombo.Active })))
+					return (string) profileStore.GetValue (iter, 1);
 				return null;
 			}
 			set {
-				//throw new NotImplementedException ();
+				if (string.IsNullOrEmpty (value))
+					provisioningCombo.Active = 0;
+				else
+					SelectMatchingItem (provisioningCombo, 1, value);
 			}
 		}
 		
-		/*
-		internal SigningKeyInformation GetValue ()
+		bool SelectMatchingItem (ComboBox combo, int column, object value)
 		{
-			if (!useSpecificCertCheck.Active)
-				return null;
-			
-			string devKey = null, distKey = null;
+			var m = combo.Model;
 			TreeIter iter;
-			if (developerStore.GetIter (out iter, new TreePath (new int[] { provisioningCombo.Active })))
-				devKey = (string) developerStore.GetValue (iter, 0); 
-			if (distributionStore.GetIter (out iter, new TreePath (new int[] { distributionCombo.Active })))
-				distKey = (string) distributionStore.GetValue (iter, 0);
-			return new SigningKeyInformation (devKey, distKey);
+			int i = 0;
+			if (m.GetIterFirst (out iter)) {
+				do {
+					if (value.Equals (m.GetValue (iter, column))) {
+						combo.Active = i;
+						return true;
+					}
+					i++;
+				} while (m.IterNext (ref iter));
+			}
+			return false;
 		}
-		
-		void SetValue (SigningKeyInformation value)
-		{
-			distributionCombo.Active = provisioningCombo.Active = 0;
-			useSpecificCertCheck.Active = certBox.Sensitive = value != null;
-			if (value == null)
-				return;
-			
-			TreeIter iter;
-			if (distributionStore.GetIterFirst (out iter)) {
-				int index = 0;
-				do {
-					if ((string)distributionStore.GetValue (iter, 0) == value.Distribution) {
-						distributionCombo.Active = index;
-						break;
-					}
-					index++;
-				} while (distributionStore.IterNext (ref iter));
-			}
-			
-			if (developerStore.GetIterFirst (out iter)) {
-				int index = 0;
-				do {
-					if ((string)developerStore.GetValue (iter, 0) == value.Developer) {
-						provisioningCombo.Active = index;
-						break;
-					}
-					index++;
-				} while (developerStore.IterNext (ref iter));
-			}
-		}*/
 		
 		string NullIfEmpty (string s)
 		{

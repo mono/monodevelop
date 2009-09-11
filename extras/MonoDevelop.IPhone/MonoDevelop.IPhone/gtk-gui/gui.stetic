@@ -12,7 +12,7 @@
     <widget-library name="MonoDevelop.DesignerSupport, Version=2.1.0.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.IPhone.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget" design-size="620 312">
+  <widget class="Gtk.Bin" id="MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget" design-size="613 234">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
@@ -324,24 +324,12 @@
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <child>
-          <widget class="Gtk.Label" id="label5">
-            <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">&lt;b&gt;Application Signing&lt;/b&gt;</property>
-            <property name="UseMarkup">True</property>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
+          <placeholder />
         </child>
         <child>
           <widget class="Gtk.Alignment" id="alignment2">
             <property name="MemberName" />
             <property name="Xalign">0</property>
-            <property name="LeftPadding">24</property>
             <child>
               <widget class="Gtk.VBox" id="vbox3">
                 <property name="MemberName" />
