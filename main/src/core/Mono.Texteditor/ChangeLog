@@ -1,3 +1,10 @@
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs: Fixed 'Bug 538186 -
+	  Refactoring operations on document while links are active
+	  leave strange links'.
+
 2009-09-10  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor/SelectionActions.cs: Fix selection in vi

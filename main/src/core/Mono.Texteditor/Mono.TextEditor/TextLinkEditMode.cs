@@ -173,17 +173,17 @@ namespace Mono.TextEditor
 		}
 		
 		TextLinkTooltipProvider tooltipProvider;
-		public TextLinkEditMode (TextEditor Editor, int baseOffset, List<TextLink> links)
+		public TextLinkEditMode (TextEditor editor, int baseOffset, List<TextLink> links)
 		{
-			this.Editor = Editor;
+			this.Editor = editor;
 			this.links = links;
 			this.baseOffset = baseOffset;
-			this.endOffset = Editor.Caret.Offset;
+			this.endOffset = editor.Caret.Offset;
 			tooltipProvider = new TextLinkTooltipProvider (this);
 			this.Editor.TooltipProviders.Insert (0, tooltipProvider);
 			this.SetCaretPosition = true;
 		}
-		
+
 		TextLink closedLink = null;
 		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
@@ -276,6 +276,12 @@ namespace Mono.TextEditor
 			wasReplaced = true;
 			int offset = e.Offset - baseOffset;
 			int delta = -e.Count + (!string.IsNullOrEmpty (e.Value) ? e.Value.Length : 0);
+			if (e.Offset < endOffset) 
+				endOffset += delta;
+			if (!links.Where (link => link.Links.Where (segment => segment.Contains (offset) || segment.EndOffset == offset).Any ()).Any ()) {
+				ExitTextLinkMode ();
+				return;
+			}
 			foreach (TextLink link in links) {
 				foreach (Segment s in link.Links) {
 					if (offset < s.Offset) {
@@ -285,8 +291,6 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			if (e.Offset < endOffset) 
-				endOffset += delta;
 		}
 		
 		void GotoNextLink (TextLink link)

@@ -416,14 +416,14 @@ namespace Mono.TextEditor
 		}
 		#endregion
 
-		char caretChar;
+//		char caretChar;
 		internal int caretX;
 		int caretY;
 		Gdk.GC caretGc;
 		
 		void SetVisibleCaretPosition (Gdk.Drawable win, char ch, int x, int y)
 		{
-			caretChar = ch;
+//			caretChar = ch;
 			caretX = x;
 			caretY = y;
 		}
