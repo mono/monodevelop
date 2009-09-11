@@ -1,5 +1,10 @@
 2009-09-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneBuildExtension.cs: Use full path to xcent. Fix typo in
+	  codesign args. Refuse to build if bundle ID isn't set.
+
+2009-09-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Mkae build as failed if there's an
 	  exception in package build. Fix a string format index.
 

@@ -482,6 +482,12 @@ namespace MonoDevelop.IPhone
 					result.AddError (msg);
 					return result;
 				}
+				
+				if (string.IsNullOrEmpty (proj.BundleIdentifier)) {
+					result.AddError ("Cannot build for distribution with empty bundle identifier");
+					return result;
+				}
+				
 				string appid = provision.ApplicationIdentifierPrefix[0] + "." + proj.BundleIdentifier;
 				
 				if (provision.Entitlements.ContainsKey ("application-identifier")) {
@@ -520,7 +526,7 @@ namespace MonoDevelop.IPhone
 						result.AddWarning ("Entitlements file \"" + conf.CodesignEntitlements + "\" not found. Using default.");
 				}
 				
-				xcentName = Path.ChangeExtension (conf.OutputAssembly, ".xcent");
+				xcentName = Path.ChangeExtension (conf.CompiledOutputName, ".xcent");
 				
 				mtouchpack.Arguments = string.Format ("-genxcent \"{0}\" -appid=\"{1}\"", xcentName, appid);
 				if(!string.IsNullOrEmpty (conf.CodesignEntitlements))
@@ -604,7 +610,7 @@ namespace MonoDevelop.IPhone
 			args.AppendFormat ("-v -f -s \"{0}\"", Keychain.GetCertificateCommonName (installedCert));
 			
 			if (dist) {
-				args.AppendFormat (" --resources-rules=\"{0}\" --entitlements \"{1}\"",
+				args.AppendFormat (" --resource-rules=\"{0}\" --entitlements \"{1}\"",
 				                   conf.AppDirectory.Combine ("ResourceRules.plist"), xcentName);
 			}
 			
