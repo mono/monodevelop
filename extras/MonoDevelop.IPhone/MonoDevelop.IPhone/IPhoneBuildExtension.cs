@@ -450,6 +450,7 @@ namespace MonoDevelop.IPhone
 			monitor.EndTask ();
 			
 			string xcentName = null;
+			MobileProvision provision = null;
 			
 			if (dist) {
 				monitor.BeginTask (GettextCatalog.GetString ("Embedding provisioning profile"), 0);
@@ -467,7 +468,6 @@ namespace MonoDevelop.IPhone
 					return result;
 				}
 				
-				MobileProvision provision;
 				try {
 					provision = MobileProvision.LoadFromFile (provisionFile);
 				} catch (Exception ex) {
@@ -562,21 +562,40 @@ namespace MonoDevelop.IPhone
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Signing application"), 0);
 			
-			string installedKeyName;
+			IEnumerable<System.Security.Cryptography.X509Certificates.X509Certificate2> installedKeyNames;
 			
 			if (conf.CodesignKey == Keychain.DEV_CERT_PREFIX || conf.CodesignKey == Keychain.DIST_CERT_PREFIX) {
-				installedKeyName = Keychain.GetAllSigningIdentities ().Where (c => c.StartsWith (conf.CodesignKey)).FirstOrDefault ();
+				installedKeyNames = Keychain.GetAllSigningCertificates ()
+					.Where (c => Keychain.GetCertificateCommonName (c).StartsWith (conf.CodesignKey));
 			} else {
-				installedKeyName = Keychain.GetAllSigningIdentities ().Where (c => c == conf.CodesignKey).FirstOrDefault ();
+				installedKeyNames = Keychain.GetAllSigningCertificates ()
+					.Where (c => Keychain.GetCertificateCommonName (c) == conf.CodesignKey);
 			}
 			
-			if (installedKeyName == null) {
-				result.AddError ("A key could not be found matching the name \"" + conf.CodesignKey + "\". The application will not be signed");
+			if (provision != null) {
+				installedKeyNames = installedKeyNames.Where (c => {
+					foreach (var provcert in provision.DeveloperCertificates)
+						if (c.Thumbprint == provcert.Thumbprint)
+							return true;
+					return false;
+				});
+			}
+			
+			var installedCert = installedKeyNames.FirstOrDefault ();
+				
+			if (installedCert == null) {
+				if (provision != null)
+					result.AddError ("Identity '" + conf.CodesignKey + "' did not match the provisioning profile \""
+					                 + provision.Name + "\". The application will not be signed");
+				else
+					result.AddError ("A key could not be found matching the name \"" + conf.CodesignKey
+					                    + "\". The application will not be signed");
+
 				return result;
 			}
 			
 			var args = new StringBuilder ();
-			args.AppendFormat ("-v -f -s \"{0}\"", installedKeyName);
+			args.AppendFormat ("-v -f -s \"{0}\"", Keychain.GetCertificateCommonName (installedCert));
 			
 			if (dist) {
 				args.AppendFormat (" --resources-rules=\"{0}\" --entitlements \"{1}\"",

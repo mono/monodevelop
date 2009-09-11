@@ -118,14 +118,14 @@ namespace MonoDevelop.IPhone.Gui
 			foreach (var cert in signingCerts) {
 				string cn = Keychain.GetCertificateCommonName (cert);
 				if (cn.StartsWith (Keychain.DEV_CERT_PREFIX))
-					identityStore.AppendValues (cn.Substring (trimStart, cn.Length - trimStart), cert);
+					identityStore.AppendValues (GLib.Markup.EscapeText (cn.Substring (trimStart, cn.Length - trimStart)), cn, cert);
 			}
 			
 			identityStore.AppendValues ("-", "-", null);
 			foreach (var cert in signingCerts) {
 				string cn = Keychain.GetCertificateCommonName (cert);
 				if (cn.StartsWith (Keychain.DIST_CERT_PREFIX))
-					identityStore.AppendValues (cn.Substring (trimStart, cn.Length - trimStart), cert);
+					identityStore.AppendValues (GLib.Markup.EscapeText (cn.Substring (trimStart, cn.Length - trimStart)), cn, cert);
 			}
 			
 			this.ShowAll ();
@@ -198,7 +198,7 @@ namespace MonoDevelop.IPhone.Gui
 							if ((cert == null && Keychain.GetCertificateCommonName (profileCert).StartsWith (Keychain.DIST_CERT_PREFIX))
 							    || (cert != null && profileCert.Thumbprint == cert.Thumbprint))
 							{
-								profileStore.AppendValues (mp.Name, mp.Uuid, mp);
+								profileStore.AppendValues (GLib.Markup.EscapeText (mp.Name), mp.Uuid, mp);
 								break;
 							}
 						}

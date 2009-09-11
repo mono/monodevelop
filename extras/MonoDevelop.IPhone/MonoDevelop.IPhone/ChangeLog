@@ -1,5 +1,14 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/IPhoneSigningKeyPanel.cs: Escape markup for text
+	  renderer.
+
+	* IPhoneBuildExtension.cs: If using the automatic dist cert,
+	  try to resolve the correct key for the selected provisioning
+	  profile.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/IPhoneSigningKeyPanel.cs: Trim names. Auto-select
 	  profile when identity changed. Only show dist provisioning
 	  profiles for the auto identity.
