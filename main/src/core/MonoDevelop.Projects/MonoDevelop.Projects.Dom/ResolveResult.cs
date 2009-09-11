@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
+using System.Diagnostics;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -322,6 +323,7 @@ namespace MonoDevelop.Projects.Dom
 	public class MethodResolveResult : MemberResolveResult
 	{
 		List<IMethod> methods = new List<IMethod> ();
+		List<IMethod> originalMethods = new List<IMethod> ();
 		List<IReturnType> arguments = new List<IReturnType> ();
 		List<IReturnType> genericArguments = new List<IReturnType> ();
 		
@@ -419,8 +421,10 @@ namespace MonoDevelop.Projects.Dom
 		public void AddMethods (IEnumerable members) 
 		{
 			foreach (object member in members) {
-				if (member is IMethod)
+				if (member is IMethod) {
 					methods.Add ((IMethod)member);
+					originalMethods.Add ((IMethod)member);
+				}
 			}
 		}
 		public void ResolveExtensionMethods ()
@@ -437,11 +441,12 @@ namespace MonoDevelop.Projects.Dom
 //				Console.WriteLine ("<null>");
 //			}
 			
-			for (int i = 0; i < methods.Count; i++) {
-				if (methods[i].IsExtension) {
-					methods[i] = new ExtensionMethod (Type, methods[i], genericArguments, arguments);
+			Debug.Assert (originalMethods.Count == methods.Count);
+			for (int i = 0; i < originalMethods.Count; i++) {
+				if (originalMethods[i].IsExtension) {
+					methods[i] = new ExtensionMethod (Type, originalMethods[i], genericArguments, arguments);
 				} else {
-					methods[i] = DomMethod.CreateInstantiatedGenericMethod (methods[i], genericArguments, arguments);
+					methods[i] = DomMethod.CreateInstantiatedGenericMethod (originalMethods[i], genericArguments, arguments);
 				}
 			}
 //			Console.WriteLine ("-- end resolve extension.");
