@@ -19,8 +19,6 @@ namespace MonoDevelop.IPhone.Gui {
         
         private Gtk.VBox vbox3;
         
-        private Gtk.CheckButton enableSigningCheck;
-        
         private Gtk.Alignment alignment3;
         
         private Gtk.Table signingTable;
@@ -62,21 +60,8 @@ namespace MonoDevelop.IPhone.Gui {
             this.vbox3.Name = "vbox3";
             this.vbox3.Spacing = 6;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.enableSigningCheck = new Gtk.CheckButton();
-            this.enableSigningCheck.CanFocus = true;
-            this.enableSigningCheck.Name = "enableSigningCheck";
-            this.enableSigningCheck.Label = Mono.Unix.Catalog.GetString("_Sign the application bundle");
-            this.enableSigningCheck.DrawIndicator = true;
-            this.enableSigningCheck.UseUnderline = true;
-            this.vbox3.Add(this.enableSigningCheck);
-            Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox3[this.enableSigningCheck]));
-            w1.Position = 0;
-            w1.Expand = false;
-            w1.Fill = false;
-            // Container child vbox3.Gtk.Box+BoxChild
             this.alignment3 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
             this.alignment3.Name = "alignment3";
-            this.alignment3.LeftPadding = ((uint)(24));
             // Container child alignment3.Gtk.Container+ContainerChild
             this.signingTable = new Gtk.Table(((uint)(5)), ((uint)(2)), false);
             this.signingTable.Name = "signingTable";
@@ -86,32 +71,32 @@ namespace MonoDevelop.IPhone.Gui {
             this.additionalArgsEntry = new MonoDevelop.Core.Gui.Components.MenuButtonEntry();
             this.additionalArgsEntry.Name = "additionalArgsEntry";
             this.signingTable.Add(this.additionalArgsEntry);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.signingTable[this.additionalArgsEntry]));
-            w2.TopAttach = ((uint)(4));
-            w2.BottomAttach = ((uint)(5));
-            w2.LeftAttach = ((uint)(1));
-            w2.RightAttach = ((uint)(2));
-            w2.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.signingTable[this.additionalArgsEntry]));
+            w1.TopAttach = ((uint)(4));
+            w1.BottomAttach = ((uint)(5));
+            w1.LeftAttach = ((uint)(1));
+            w1.RightAttach = ((uint)(2));
+            w1.YOptions = ((Gtk.AttachOptions)(0));
             // Container child signingTable.Gtk.Table+TableChild
             this.entitlementsEntry = new MonoDevelop.Projects.Gui.ProjectFileEntry();
             this.entitlementsEntry.Name = "entitlementsEntry";
             this.entitlementsEntry.EntryIsEditable = false;
             this.signingTable.Add(this.entitlementsEntry);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.signingTable[this.entitlementsEntry]));
-            w3.TopAttach = ((uint)(2));
-            w3.BottomAttach = ((uint)(3));
-            w3.LeftAttach = ((uint)(1));
-            w3.RightAttach = ((uint)(2));
-            w3.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.signingTable[this.entitlementsEntry]));
+            w2.TopAttach = ((uint)(2));
+            w2.BottomAttach = ((uint)(3));
+            w2.LeftAttach = ((uint)(1));
+            w2.RightAttach = ((uint)(2));
+            w2.YOptions = ((Gtk.AttachOptions)(0));
             // Container child signingTable.Gtk.Table+TableChild
             this.identityCombo = new Gtk.ComboBox();
             this.identityCombo.Name = "identityCombo";
             this.signingTable.Add(this.identityCombo);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.signingTable[this.identityCombo]));
-            w4.LeftAttach = ((uint)(1));
-            w4.RightAttach = ((uint)(2));
-            w4.XOptions = ((Gtk.AttachOptions)(4));
-            w4.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.signingTable[this.identityCombo]));
+            w3.LeftAttach = ((uint)(1));
+            w3.RightAttach = ((uint)(2));
+            w3.XOptions = ((Gtk.AttachOptions)(4));
+            w3.YOptions = ((Gtk.AttachOptions)(0));
             // Container child signingTable.Gtk.Table+TableChild
             this.label4 = new Gtk.Label();
             this.label4.Name = "label4";
@@ -119,9 +104,9 @@ namespace MonoDevelop.IPhone.Gui {
             this.label4.LabelProp = Mono.Unix.Catalog.GetString("_Identity:");
             this.label4.UseUnderline = true;
             this.signingTable.Add(this.label4);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.signingTable[this.label4]));
-            w5.XOptions = ((Gtk.AttachOptions)(4));
-            w5.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.signingTable[this.label4]));
+            w4.XOptions = ((Gtk.AttachOptions)(4));
+            w4.YOptions = ((Gtk.AttachOptions)(4));
             // Container child signingTable.Gtk.Table+TableChild
             this.label6 = new Gtk.Label();
             this.label6.Name = "label6";
@@ -129,11 +114,11 @@ namespace MonoDevelop.IPhone.Gui {
             this.label6.LabelProp = Mono.Unix.Catalog.GetString("_Provisioning profile:");
             this.label6.UseUnderline = true;
             this.signingTable.Add(this.label6);
-            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.signingTable[this.label6]));
-            w6.TopAttach = ((uint)(1));
-            w6.BottomAttach = ((uint)(2));
-            w6.XOptions = ((Gtk.AttachOptions)(4));
-            w6.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.signingTable[this.label6]));
+            w5.TopAttach = ((uint)(1));
+            w5.BottomAttach = ((uint)(2));
+            w5.XOptions = ((Gtk.AttachOptions)(4));
+            w5.YOptions = ((Gtk.AttachOptions)(4));
             // Container child signingTable.Gtk.Table+TableChild
             this.label7 = new Gtk.Label();
             this.label7.Name = "label7";
@@ -141,11 +126,11 @@ namespace MonoDevelop.IPhone.Gui {
             this.label7.LabelProp = Mono.Unix.Catalog.GetString("Custom _entitlements:");
             this.label7.UseUnderline = true;
             this.signingTable.Add(this.label7);
-            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.signingTable[this.label7]));
-            w7.TopAttach = ((uint)(2));
-            w7.BottomAttach = ((uint)(3));
-            w7.XOptions = ((Gtk.AttachOptions)(4));
-            w7.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.signingTable[this.label7]));
+            w6.TopAttach = ((uint)(2));
+            w6.BottomAttach = ((uint)(3));
+            w6.XOptions = ((Gtk.AttachOptions)(4));
+            w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child signingTable.Gtk.Table+TableChild
             this.label8 = new Gtk.Label();
             this.label8.Name = "label8";
@@ -153,11 +138,11 @@ namespace MonoDevelop.IPhone.Gui {
             this.label8.LabelProp = Mono.Unix.Catalog.GetString("Custom _resource rules:");
             this.label8.UseUnderline = true;
             this.signingTable.Add(this.label8);
-            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.signingTable[this.label8]));
-            w8.TopAttach = ((uint)(3));
-            w8.BottomAttach = ((uint)(4));
-            w8.XOptions = ((Gtk.AttachOptions)(4));
-            w8.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.signingTable[this.label8]));
+            w7.TopAttach = ((uint)(3));
+            w7.BottomAttach = ((uint)(4));
+            w7.XOptions = ((Gtk.AttachOptions)(4));
+            w7.YOptions = ((Gtk.AttachOptions)(4));
             // Container child signingTable.Gtk.Table+TableChild
             this.label9 = new Gtk.Label();
             this.label9.Name = "label9";
@@ -165,42 +150,42 @@ namespace MonoDevelop.IPhone.Gui {
             this.label9.LabelProp = Mono.Unix.Catalog.GetString("_Additional arguments:");
             this.label9.UseUnderline = true;
             this.signingTable.Add(this.label9);
-            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.signingTable[this.label9]));
-            w9.TopAttach = ((uint)(4));
-            w9.BottomAttach = ((uint)(5));
-            w9.XOptions = ((Gtk.AttachOptions)(4));
-            w9.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.signingTable[this.label9]));
+            w8.TopAttach = ((uint)(4));
+            w8.BottomAttach = ((uint)(5));
+            w8.XOptions = ((Gtk.AttachOptions)(4));
+            w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child signingTable.Gtk.Table+TableChild
             this.provisioningCombo = new Gtk.ComboBox();
             this.provisioningCombo.Name = "provisioningCombo";
             this.signingTable.Add(this.provisioningCombo);
-            Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.signingTable[this.provisioningCombo]));
-            w10.TopAttach = ((uint)(1));
-            w10.BottomAttach = ((uint)(2));
-            w10.LeftAttach = ((uint)(1));
-            w10.RightAttach = ((uint)(2));
-            w10.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.signingTable[this.provisioningCombo]));
+            w9.TopAttach = ((uint)(1));
+            w9.BottomAttach = ((uint)(2));
+            w9.LeftAttach = ((uint)(1));
+            w9.RightAttach = ((uint)(2));
+            w9.YOptions = ((Gtk.AttachOptions)(0));
             // Container child signingTable.Gtk.Table+TableChild
             this.resourceRulesEntry = new MonoDevelop.Projects.Gui.ProjectFileEntry();
             this.resourceRulesEntry.Name = "resourceRulesEntry";
             this.resourceRulesEntry.EntryIsEditable = false;
             this.signingTable.Add(this.resourceRulesEntry);
-            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.signingTable[this.resourceRulesEntry]));
-            w11.TopAttach = ((uint)(3));
-            w11.BottomAttach = ((uint)(4));
-            w11.LeftAttach = ((uint)(1));
-            w11.RightAttach = ((uint)(2));
-            w11.YOptions = ((Gtk.AttachOptions)(0));
+            Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.signingTable[this.resourceRulesEntry]));
+            w10.TopAttach = ((uint)(3));
+            w10.BottomAttach = ((uint)(4));
+            w10.LeftAttach = ((uint)(1));
+            w10.RightAttach = ((uint)(2));
+            w10.YOptions = ((Gtk.AttachOptions)(0));
             this.alignment3.Add(this.signingTable);
             this.vbox3.Add(this.alignment3);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox3[this.alignment3]));
-            w13.Position = 1;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox3[this.alignment3]));
+            w12.Position = 1;
+            w12.Expand = false;
+            w12.Fill = false;
             this.alignment2.Add(this.vbox3);
             this.vbox1.Add(this.alignment2);
-            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment2]));
-            w15.Position = 1;
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox1[this.alignment2]));
+            w14.Position = 1;
             this.Add(this.vbox1);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

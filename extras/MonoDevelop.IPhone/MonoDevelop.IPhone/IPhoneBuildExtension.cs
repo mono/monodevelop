@@ -556,7 +556,7 @@ namespace MonoDevelop.IPhone
 			}
 			
 			if (String.IsNullOrEmpty (conf.CodesignKey)) {
-				monitor.Log.WriteLine ("Code signing disabled, skipping signing.");
+				result.AddWarning ("Code signing disabled, skipping signing.");
 				return result;
 			}
 			

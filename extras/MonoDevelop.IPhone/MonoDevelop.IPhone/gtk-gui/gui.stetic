@@ -335,25 +335,11 @@
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.CheckButton" id="enableSigningCheck">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Sign the application bundle</property>
-                    <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
+                  <placeholder />
                 </child>
                 <child>
                   <widget class="Gtk.Alignment" id="alignment3">
                     <property name="MemberName" />
-                    <property name="LeftPadding">24</property>
                     <child>
                       <widget class="Gtk.Table" id="signingTable">
                         <property name="MemberName" />

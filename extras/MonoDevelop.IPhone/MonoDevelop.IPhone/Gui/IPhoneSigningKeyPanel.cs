@@ -40,6 +40,11 @@ namespace MonoDevelop.IPhone.Gui
 	{
 		IPhoneSigningKeyPanelWidget widget;
 		
+		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
+		{
+			base.Initialize (dialog, dataObject);
+		}
+		
 		public override bool IsVisible ()
 		{
 			return ConfiguredProject is IPhoneProject;
@@ -59,6 +64,15 @@ namespace MonoDevelop.IPhone.Gui
 		public override void ApplyChanges ()
 		{
 			widget.StorePanelContents ((IPhoneProjectConfiguration)CurrentConfiguration);
+		}
+		
+		protected override IEnumerable<ItemConfiguration> FilterConfigurations (IEnumerable<ItemConfiguration> configurations)
+		{
+			foreach (var conf in configurations) {
+				IPhoneProjectConfiguration ipconf = conf as IPhoneProjectConfiguration;
+				if (ipconf != null && ipconf.Platform == IPhoneProject.PLAT_IPHONE)
+					yield return conf;
+			}
 		}
 	}
 	
@@ -82,10 +96,6 @@ namespace MonoDevelop.IPhone.Gui
 			entitlementsEntry.EntryIsEditable = true;
 			
 			additionalArgsEntry.AddOptions (IPhoneBuildOptionsPanelWidget.menuOptions);
-			
-			enableSigningCheck.Toggled += delegate {
-				signingTable.Sensitive = enableSigningCheck.Active;
-			};
 			
 			profiles = MobileProvision.GetAllInstalledProvisions ();
 			
@@ -133,8 +143,7 @@ namespace MonoDevelop.IPhone.Gui
 		
 		public void LoadPanelContents (IPhoneProjectConfiguration cfg)
 		{
-			enableSigningCheck.Active = !string.IsNullOrEmpty (cfg.CodesignKey);
-			signingTable.Sensitive = enableSigningCheck.Active;
+			signingTable.Sensitive = cfg.Platform == IPhoneProject.PLAT_IPHONE;
 			
 			SigningKey = cfg.CodesignKey;
 			ProvisionFingerprint = cfg.CodesignProvision;
@@ -145,8 +154,8 @@ namespace MonoDevelop.IPhone.Gui
 		
 		public void StorePanelContents (IPhoneProjectConfiguration cfg)
 		{
-			cfg.CodesignKey = enableSigningCheck.Active? SigningKey : null;
-			cfg.CodesignProvision = enableSigningCheck.Active? ProvisionFingerprint : null;
+			cfg.CodesignKey = SigningKey;
+			cfg.CodesignProvision = ProvisionFingerprint;
 			cfg.CodesignEntitlements = entitlementsEntry.SelectedFile;
 			cfg.CodesignResourceRules = resourceRulesEntry.SelectedFile;
 			cfg.CodesignExtraArgs = NullIfEmpty (additionalArgsEntry.Entry.Text);

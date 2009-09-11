@@ -1,3 +1,14 @@
+2009-09-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Warn when codesigning is disabled.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs:
+	  Disable signing GUI for sim.
+
+	* Gui/IPhoneSigningKeyPanel.cs: Disable signing GUI for sim.
+	  Only show device configs.
+
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneProject.cs: Enable signing on new iphone configs.
