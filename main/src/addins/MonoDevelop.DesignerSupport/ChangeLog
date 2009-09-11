@@ -1,3 +1,9 @@
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
+	  Fixed Bug 538072 - NullRef in the background (not causing
+	  crash).
+
 2009-09-09  Christian Hergert  <chris@dronelabs.com>
 
 	* MonoDevelop.DesignerSupport/ToolboxService.cs: Set the dialog

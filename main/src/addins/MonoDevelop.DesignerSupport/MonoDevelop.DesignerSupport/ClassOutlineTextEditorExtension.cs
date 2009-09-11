@@ -41,8 +41,8 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.DesignerSupport
 {
-	
-	
+
+
 	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
 	{
 		ParsedDocument lastCU = null;
@@ -50,54 +50,54 @@ namespace MonoDevelop.DesignerSupport
 		TreeStore outlineTreeStore;
 		bool refreshingOutline;
 		bool disposed;
-		
+
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
-			MonoDevelop.Projects.IDotNetLanguageBinding binding = 
-				MonoDevelop.Projects.LanguageBindingService.GetBindingPerFileName (doc.Name)
-				as MonoDevelop.Projects.IDotNetLanguageBinding;
+			MonoDevelop.Projects.IDotNetLanguageBinding binding = MonoDevelop.Projects.LanguageBindingService.GetBindingPerFileName (doc.Name) as MonoDevelop.Projects.IDotNetLanguageBinding;
 			return binding != null;
 		}
-		
+
 		public override void Initialize ()
 		{
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += UpdateDocumentOutline;
 			base.Initialize ();
+			if (Document != null)
+				Document.DocumentParsed += UpdateDocumentOutline;
 		}
-		
+
 		public override void Dispose ()
 		{
 			if (disposed)
 				return;
 			disposed = true;
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated -= UpdateDocumentOutline;
+			if (Document != null)
+				Document.DocumentParsed -= UpdateDocumentOutline;
 			base.Dispose ();
 		}
-		
+
 		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
 		{
 			if (outlineTreeView != null)
 				return outlineTreeView;
-			
+
 			outlineTreeStore = new TreeStore (typeof(object));
 			outlineTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView (outlineTreeStore);
-			
+
 			CellRendererPixbuf pixRenderer = new CellRendererPixbuf ();
 			pixRenderer.Xpad = 0;
 			pixRenderer.Ypad = 0;
-			
+
 			outlineTreeView.TextRenderer.Xpad = 0;
 			outlineTreeView.TextRenderer.Ypad = 0;
-			
+
 			TreeViewColumn treeCol = new TreeViewColumn ();
 			treeCol.PackStart (pixRenderer, false);
 
 			treeCol.SetCellDataFunc (pixRenderer, new TreeCellDataFunc (OutlineTreeIconFunc));
 			treeCol.PackStart (outlineTreeView.TextRenderer, true);
-			
+
 			treeCol.SetCellDataFunc (outlineTreeView.TextRenderer, new TreeCellDataFunc (OutlineTreeTextFunc));
 			outlineTreeView.AppendColumn (treeCol);
-			
+
 			outlineTreeView.HeadersVisible = false;
 			
 			outlineTreeView.Selection.Changed += delegate {
@@ -117,19 +117,19 @@ namespace MonoDevelop.DesignerSupport
 					Editor.JumpTo (line, Math.Max (1, col));
 				}
 			};
-			
+
 			this.lastCU = Document.ParsedDocument;
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
-						
+
 			ScrolledWindow sw = new ScrolledWindow ();
 			sw.Add (outlineTreeView);
 			sw.ShowAll ();
 			return sw;
 		}
-		
+
 		void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			CellRendererPixbuf pixRenderer = (CellRendererPixbuf) cell;
+			CellRendererPixbuf pixRenderer = (CellRendererPixbuf)cell;
 			object o = model.GetValue (iter, 0);
 			if (o is IMember) {
 				pixRenderer.Pixbuf = ImageService.GetPixbuf (((IMember)o).StockIcon, IconSize.Menu);
@@ -137,10 +137,10 @@ namespace MonoDevelop.DesignerSupport
 				pixRenderer.Pixbuf = ImageService.GetPixbuf ("gtk-add", IconSize.Menu);
 			}
 		}
-		
+
 		void OutlineTreeTextFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			CellRendererText txtRenderer = (CellRendererText) cell;
+			CellRendererText txtRenderer = (CellRendererText)cell;
 			object o = model.GetValue (iter, 0);
 			Ambience am = GetAmbience ();
 			if (o is IMember) {
@@ -152,35 +152,30 @@ namespace MonoDevelop.DesignerSupport
 				txtRenderer.Text = name;
 			}
 		}
-		
+
 		void MonoDevelop.DesignerSupport.IOutlinedDocument.ReleaseOutlineWidget ()
 		{
 			if (outlineTreeView == null)
 				return;
-			
-			ScrolledWindow w = (ScrolledWindow) outlineTreeView.Parent;
+
+			ScrolledWindow w = (ScrolledWindow)outlineTreeView.Parent;
 			w.Dispose ();
 			outlineTreeView.Destroy ();
 			outlineTreeStore.Dispose ();
 			outlineTreeStore = null;
 			outlineTreeView = null;
 		}
-		
-		void UpdateDocumentOutline (object sender, ParsedDocumentEventArgs args)
+
+		void UpdateDocumentOutline (object sender, EventArgs args)
 		{
-			// This event handler can get called when files other than the current content are updated. eg.
-			// when loading a new document. If we didn't do this check the member combo for this tab would have
-			// methods for a different class in it!
-			if (Document.FileName == args.FileName) {
-				lastCU = args.ParsedDocument;
-				//limit update rate to 5s
-				if (!refreshingOutline) {
-					refreshingOutline = true;
-					GLib.Timeout.Add (5000, new GLib.TimeoutHandler (RefillOutlineStore));
-				}
+			lastCU = Document.ParsedDocument;
+			//limit update rate to 5s
+			if (!refreshingOutline) {
+				refreshingOutline = true;
+				GLib.Timeout.Add (5000, new GLib.TimeoutHandler (RefillOutlineStore));
 			}
 		}
-		
+
 		bool RefillOutlineStore ()
 		{
 			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
@@ -188,19 +183,19 @@ namespace MonoDevelop.DesignerSupport
 			refreshingOutline = false;
 			if (outlineTreeStore == null || !outlineTreeView.IsRealized)
 				return false;
-			
+
 			outlineTreeStore.Clear ();
 			if (lastCU != null) {
 				BuildTreeChildren (outlineTreeStore, TreeIter.Zero, lastCU);
 				outlineTreeView.ExpandAll ();
 			}
-			
+
 			Gdk.Threads.Leave ();
-			
+
 			//stop timeout handler
 			return false;
 		}
-		
+
 		static void BuildTreeChildren (TreeStore store, TreeIter parent, ParsedDocument parsedDocument)
 		{
 			if (parsedDocument.CompilationUnit == null)
@@ -211,46 +206,46 @@ namespace MonoDevelop.DesignerSupport
 					childIter = store.AppendValues (parent, cls);
 				else
 					childIter = store.AppendValues (cls);
-				
+
 				AddTreeClassContents (store, childIter, parsedDocument, cls);
 			}
 		}
-		
+
 		static void AddTreeClassContents (TreeStore store, TreeIter parent, ParsedDocument parsedDocument, IType cls)
 		{
 			List<object> items = new List<object> ();
 			foreach (object o in cls.Members)
 				items.Add (o);
-			
-			items.Sort (delegate (object x, object y) {
+
+			items.Sort (delegate(object x, object y) {
 				DomRegion r1 = GetRegion (x), r2 = GetRegion (y);
 				return r1.CompareTo (r2);
 			});
-			
+
 			List<FoldingRegion> regions = new List<FoldingRegion> ();
 			foreach (FoldingRegion fr in parsedDocument.UserRegions)
 				//check regions inside class
 				if (cls.BodyRegion.Contains (fr.Region))
 					regions.Add (fr);
-			regions.Sort (delegate (FoldingRegion x, FoldingRegion y) { return x.Region.CompareTo (y.Region); });
-			
+			regions.Sort (delegate(FoldingRegion x, FoldingRegion y) { return x.Region.CompareTo (y.Region); });
+
 			IEnumerator<FoldingRegion> regionEnumerator = regions.GetEnumerator ();
 			if (!regionEnumerator.MoveNext ())
 				regionEnumerator = null;
-			
+
 			FoldingRegion currentRegion = null;
 			TreeIter currentParent = parent;
 			foreach (object item in items) {
-				
+
 				//no regions left; quick exit
 				if (regionEnumerator != null) {
 					DomRegion itemRegion = GetRegion (item);
-					
+
 					//advance to a region that could potentially contain this member
 					while (regionEnumerator != null && !OuterEndsAfterInner (regionEnumerator.Current.Region, itemRegion))
 						if (!regionEnumerator.MoveNext ())
 							regionEnumerator = null;
-					
+
 					//if member is within region, make sure it's the current parent.
 					//If not, move target iter back to class parent
 					if (regionEnumerator != null && regionEnumerator.Current.Region.Contains (itemRegion)) {
@@ -260,27 +255,26 @@ namespace MonoDevelop.DesignerSupport
 						}
 					} else {
 						currentParent = parent;
-					}	
+					}
 				}
-				
-				
+
+
 				TreeIter childIter = store.AppendValues (currentParent, item);
 				if (item is IType)
 					AddTreeClassContents (store, childIter, parsedDocument, (IType)item);
 			}
 		}
-		
+
 		static DomRegion GetRegion (object o)
 		{
 			if (o is IMember)
 				return ((IMember)o).BodyRegion;
 			throw new InvalidOperationException (o.GetType ().ToString ());
 		}
-		
+
 		static bool OuterEndsAfterInner (DomRegion outer, DomRegion inner)
 		{
-			return ((outer.End.Line > 0 && outer.End.Line > inner.End.Line)
-			        || (outer.End.Line == inner.End.Line && outer.End.Column > inner.End.Column));
+			return ((outer.End.Line > 0 && outer.End.Line > inner.End.Line) || (outer.End.Line == inner.End.Line && outer.End.Column > inner.End.Column));
 		}
 	}
 }
