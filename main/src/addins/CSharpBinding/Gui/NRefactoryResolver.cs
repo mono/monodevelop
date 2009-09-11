@@ -433,19 +433,21 @@ namespace MonoDevelop.CSharpBinding
 					}
 				}
 			}
+			
 			TypeReference typeRef;
 			if (expressionResult != null && expressionResult.ExpressionContext != null && expressionResult.ExpressionContext.IsObjectCreation) {
 				typeRef = ParseTypeReference (expressionResult);
 				if (typeRef != null) {
 					if (dom.NamespaceExists (typeRef.Type)) {
 //						System.Console.WriteLine("namespace resolve result");
-						result =  new NamespaceResolveResult (typeRef.Type);
+						result = new NamespaceResolveResult (typeRef.Type);
 					} else {
 						result = visitor.CreateResult (ConvertTypeReference (typeRef));
 					}
 //					System.Console.WriteLine("type reference resolve result");
 					result.ResolvedExpression = expressionResult;
-					return result;
+					if (dom.GetType (result.ResolvedType) != null)
+						return result;
 				}
 			}
 			expr = ParseExpression (expressionResult);
@@ -726,6 +728,7 @@ namespace MonoDevelop.CSharpBinding
 						}
 						if (var.Initializer != null) {
 							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
+							Console.WriteLine ("initializer : "+ var.Initializer + " result:" + initializerResolve);
 							varType           = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.ResolvedType)   : initializerResolve.ResolvedType;
 							varTypeUnresolved = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
 //							Console.WriteLine ("resolved type:" + initializerResolve.ResolvedType + " is loop : " + var.IsLoopVariable);

@@ -104,6 +104,17 @@ namespace MonoDevelop.CSharpBinding
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			if (identifierExpression.TypeArguments != null && identifierExpression.TypeArguments.Count > 0) {
+				if (resolver.CallingType != null) {
+					IMethod possibleMethod = resolver.CallingType.Methods.Where (m => m.Name == identifierExpression.Identifier && m.TypeParameters.Count == identifierExpression.TypeArguments.Count).FirstOrDefault ();
+					if (possibleMethod != null) {
+						MethodResolveResult methodResolveResult = new MethodResolveResult (possibleMethod);
+						methodResolveResult.CallingType   = resolver.CallingType;
+						methodResolveResult.CallingMember = resolver.CallingMember;
+						identifierExpression.TypeArguments.ForEach (arg => methodResolveResult.AddGenericArgument (arg.ConvertToReturnType ()));
+						methodResolveResult.ResolveExtensionMethods ();
+						return methodResolveResult;
+					}
+				}
 				TypeReference reference = new TypeReference (identifierExpression.Identifier);
 				reference.GenericTypes.AddRange (identifierExpression.TypeArguments);
 				ResolveResult result = CreateResult (reference);
@@ -531,6 +542,7 @@ namespace MonoDevelop.CSharpBinding
 							foreach (TypeReference typeReference in memberReferenceExpression.TypeArguments) {
 								((MethodResolveResult)result).AddGenericArgument (typeReference.ConvertToReturnType ());
 							}
+							((MethodResolveResult)result).ResolveExtensionMethods ();
 							//System.Console.WriteLine(result + "/" + result.ResolvedType);
 							return result;
 						}
@@ -570,12 +582,15 @@ namespace MonoDevelop.CSharpBinding
 			//System.Console.WriteLine("target:" + targetResult);
 			MethodResolveResult methodResult = targetResult as MethodResolveResult;
 			if (methodResult != null) {
-				//Console.WriteLine ("--------------------");
-				//Console.WriteLine ("i:" + methodResult.ResolvedType);
+//				Console.WriteLine ("--------------------");
+//				Console.WriteLine ("i:" + methodResult.ResolvedType);
+/*				foreach (var arg in methodResult.GenericArguments) {
+					methodResult.AddGenericArgument (arg);
+				}*/
 				foreach (Expression arg in invocationExpression.Arguments) {
 					var type = GetTypeSafe (arg);
-//					Console.WriteLine ("  arg:" + arg);
-//					Console.WriteLine ("type :" + type);
+					//Console.WriteLine ("  arg:" + arg);
+					//Console.WriteLine ("type :" + type);
 					methodResult.AddArgument (type);
 				}
 				//Console.WriteLine ("--------------------");
