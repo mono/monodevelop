@@ -1818,5 +1818,58 @@ public class O
 			Assert.IsNotNull (provider.Find ("Y"), "property 'Y' not found.");
 		}
 		
+		
+			
+		/// <summary>
+		/// Bug 538208 - Go to declaration not working over a generic method...
+		/// </summary>
+		[Test()]
+		public void TestBug538208 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+class MyClass
+{
+	public string Test { get; set; }
+	
+	T foo<T>(T arg)
+	{
+		return arg;
+	}
+
+	public void Main(string[] args)
+	{
+		var myObject = foo<MyClass>(new MyClass());
+		$myObject.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Test"), "property 'Test' not found.");
+			
+			provider = CreateCtrlSpaceProvider (
+@"
+class MyClass2
+{
+	public string Test { get; set; }
+	
+	T foo<T>(T arg)
+	{
+		return arg;
+	}
+
+	public void Main(string[] args)
+	{
+		var myObject = this.foo<MyClass2>(new MyClass2());
+		$myObject.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Test"), "property 'Test' not found.");
+		}
+		
+		
+		
 	}
 }
