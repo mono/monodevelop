@@ -155,12 +155,17 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				configCombo.AppendText (GettextCatalog.GetString ("All Configurations"));
 			
 			HashSet<string> configs = new HashSet<string> ();
-			foreach (ItemConfiguration config in dialog.ConfigurationData.Configurations) {
+			foreach (ItemConfiguration config in FilterConfigurations (dialog.ConfigurationData.Configurations)) {
 				if (configs.Add (config.Name))
 					configCombo.AppendText (config.Name);
 			}
 			
 			loading = false;
+		}
+		
+		protected virtual IEnumerable<ItemConfiguration> FilterConfigurations (IEnumerable<ItemConfiguration> configurations)
+		{
+			return configurations;
 		}
 		
 		void FillPlatforms ()
@@ -174,7 +179,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			if (!allowMixedConfigurations || configCombo.Active > 0)
 				configName = configCombo.ActiveText;
 
-			foreach (ItemConfiguration config in dialog.ConfigurationData.Configurations) {
+			foreach (ItemConfiguration config in FilterConfigurations (dialog.ConfigurationData.Configurations)) {
 				if ((configName == null || config.Name == configName) && !platforms.Contains (config.Platform)) {
 					platforms.Add (config.Platform);
 					platformCombo.AppendText (GetPlatformName (config.Platform));
@@ -220,7 +225,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			
 			string platform = GetPlatformId (dialog.CurrentPlatform = platformCombo.ActiveText);
 			
-			foreach (ItemConfiguration config in dialog.ConfigurationData.Configurations) {
+			foreach (ItemConfiguration config in FilterConfigurations (dialog.ConfigurationData.Configurations)) {
 				if ((configName == null || config.Name == configName) && config.Platform == platform)
 					currentConfigs.Add (config);
 			}
