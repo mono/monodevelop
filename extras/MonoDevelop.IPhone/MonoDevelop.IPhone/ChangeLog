@@ -1,5 +1,10 @@
 2009-09-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneExecutionHandler.cs: Show errors from the mtouch
+	  process after launching apps.
+
+2009-09-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Fix a couple of minor bugs in dist
 	  build.
 

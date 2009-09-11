@@ -34,6 +34,8 @@ using System.IO;
 using System.Threading;
 using System.Text;
 using System.Diagnostics;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui;
 
 
 namespace MonoDevelop.IPhone
@@ -86,6 +88,18 @@ namespace MonoDevelop.IPhone
 			var outWriter = new StringWriter ();
 			var errWriter = new StringWriter ();
 			var mtouchProcess = Runtime.ProcessService.StartProcess (psi, outWriter, errWriter, null);
+			mtouchProcess.Exited += delegate {
+				string err;
+				if (mtouchProcess.ExitCode != 0 && (err = errWriter.ToString ()).Length > 0) {
+					Gtk.Application.Invoke (delegate {
+						using (var errorDialog = new ErrorDialog (IdeApp.Workbench.RootWindow)) {
+							errorDialog.Message = "mtouch encountered an error running the application";
+							errorDialog.AddDetails (err, false);
+							errorDialog.Run ();	
+						}
+					});
+				}
+			};
 			
 			return new IPhoneProcess (mtouchProcess, outTail, errTail);
 		}
