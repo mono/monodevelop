@@ -128,8 +128,8 @@ namespace MonoDevelop.IPhone.Gui
 			provisioningCombo.PackStart (txtRenderer, true);
 			provisioningCombo.AddAttribute (txtRenderer, "markup", 0);
 			
-			var signingCerts = Keychain.GetAllSigningCertificates ().ToList ();
-			signingCerts.Sort ();
+			var signingCerts = Keychain.GetAllSigningCertificates ().Where (x => Keychain.GetCertificateCommonName (x).StartsWith ("iPhone")).ToList ();
+			signingCerts.Sort ((x , y) => Keychain.GetCertificateCommonName (x).CompareTo (Keychain.GetCertificateCommonName (x)));
 			
 			identityStore.AppendValues ("<b>iPhone Developer (Automatic)</b>", Keychain.DEV_CERT_PREFIX, null);
 			identityStore.AppendValues ("<b>iPhone Distribution (Automatic)</b>", Keychain.DIST_CERT_PREFIX, null);

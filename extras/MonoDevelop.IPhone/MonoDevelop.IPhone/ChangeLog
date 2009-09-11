@@ -1,5 +1,9 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/IPhoneSigningKeyPanel.cs: Sort the certs.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.IPhone.addin.xml:
 	* Gui/IPhoneSigningKeyPanel.cs:
