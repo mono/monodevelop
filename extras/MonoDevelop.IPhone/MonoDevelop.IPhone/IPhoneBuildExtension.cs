@@ -123,12 +123,14 @@ namespace MonoDevelop.IPhone
 				if (result.Append (UpdateInfoPlist (monitor, proj, conf, appInfoIn)).ErrorCount > 0)
 					return result;
 			
-			if (result.Append (ProcessPackaging (monitor, proj, conf)).ErrorCount > 0) {
+			try {
+				if (result.Append (ProcessPackaging (monitor, proj, conf)).ErrorCount > 0)
+					return result;
+			} finally {
 				//if packaging failed, make sure that it's marked as needing buildind
-				if (File.Exists (conf.AppDirectory.Combine ("PkgInfo")))
-					File.Delete (conf.AppDirectory.Combine ("PkgInfo"));
-				return result;
-			}
+				if (result.ErrorCount > 0 && File.Exists (conf.AppDirectory.Combine ("PkgInfo")))
+					File.Delete (conf.AppDirectory.Combine ("PkgInfo"));	
+			}	
 			
 			//TODO: create/update the xcode project
 			return result;
@@ -520,7 +522,7 @@ namespace MonoDevelop.IPhone
 				
 				xcentName = Path.ChangeExtension (conf.OutputAssembly, ".xcent");
 				
-				mtouchpack.Arguments = string.Format ("-genxcent \"{0}\" -appid=\"{2}\"", xcentName, appid);
+				mtouchpack.Arguments = string.Format ("-genxcent \"{0}\" -appid=\"{1}\"", xcentName, appid);
 				if(!string.IsNullOrEmpty (conf.CodesignEntitlements))
 					mtouchpack.Arguments = mtouchpack.Arguments + string.Format (" -entitlements \"{0}\"", conf.CodesignEntitlements);
 				
