@@ -510,7 +510,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void AddToProjectComboChanged (object o, EventArgs e)
 		{
 			int which = projectAddCombo.Active;
-			Project project = projectRefs[which];
+			Project project = null;
+			
+			try {
+				project = projectRefs[which];
+			} catch (IndexOutOfRangeException) { }
 
 			if (project != null) {
 				if (basePath == null || basePath == String.Empty || (parentProject != null && basePath == parentProject.BaseDirectory)) {
