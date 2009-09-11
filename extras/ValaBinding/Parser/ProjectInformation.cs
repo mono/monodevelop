@@ -590,16 +590,18 @@ namespace MonoDevelop.ValaBinding.Parser
 		public List<CodeNode> GetClassesForFile (string file)
 		{
 			List<CodeNode> classes = new List<CodeNode> ();
-			AddFile (file);
-			CodeNode node = null;
-			
-			lock(p){ p.StandardInput.WriteLine ("reparse both"); }
-			
-			foreach (string result in ParseCommand ("get-classes {0}", file)) {
-				Console.WriteLine ("get-classes: got {0}", result);
-				node = ParseType (string.Empty, result);
-				if(null != node && node.IsContainerType) { 
-					classes.Add (node); 
+			if (null != p) {
+				AddFile (file);
+				CodeNode node = null;
+				
+				lock(p){ p.StandardInput.WriteLine ("reparse both"); }
+				
+				foreach (string result in ParseCommand ("get-classes {0}", file)) {
+					Console.WriteLine ("get-classes: got {0}", result);
+					node = ParseType (string.Empty, result);
+					if(null != node && node.IsContainerType) { 
+						classes.Add (node); 
+					}
 				}
 			}
 			
