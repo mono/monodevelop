@@ -480,7 +480,7 @@ namespace MonoDevelop.IPhone
 					result.AddError (msg);
 					return result;
 				}
-				string appid = provision.ApplicationIdentifierPrefix + "." + proj.BundleIdentifier;
+				string appid = provision.ApplicationIdentifierPrefix[0] + "." + proj.BundleIdentifier;
 				
 				if (provision.Entitlements.ContainsKey ("application-identifier")) {
 					var allowed = ((PlistString)provision.Entitlements ["application-identifier"]).Value;
@@ -522,7 +522,7 @@ namespace MonoDevelop.IPhone
 				
 				mtouchpack.Arguments = string.Format ("-genxcent \"{0}\" -appid=\"{2}\"", xcentName, appid);
 				if(!string.IsNullOrEmpty (conf.CodesignEntitlements))
-					mtouchpack.Arguments = mtouchpack.Arguments + string.Format (" -entitlements \"{1}\"", conf.CodesignEntitlements);
+					mtouchpack.Arguments = mtouchpack.Arguments + string.Format (" -entitlements \"{0}\"", conf.CodesignEntitlements);
 				
 				monitor.Log.WriteLine ("mtouchpack " + mtouchpack.Arguments);
 				code = ExecuteCommand (monitor, mtouchpack, out errorOutput);
