@@ -1,5 +1,10 @@
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: another
+	  try for x bs x fix.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: fixed
 	  bug.
 

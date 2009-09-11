@@ -170,13 +170,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		public bool AutoSelect { get; set; }
 
+		string initalPartialWord = "";
 		public string PartialWord {
 			get { return word.ToString (); }
 			set {
 				string newword = value;
 				if (newword.Trim ().Length == 0)
 					return;
-
+				initalPartialWord = newword;
 				word = new StringBuilder (newword);
 				curPos = newword.Length;
 				UpdateWordSelection ();
@@ -279,7 +280,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				// AltGr
 				return KeyActions.Process;
 			}
-
+			
 			if (keyChar == '\0')
 				return KeyActions.Process;
 
@@ -290,14 +291,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
 				UpdateWordSelection ();
-				SelectionDisabled = false;
+				SelectionDisabled = word.ToString () == initalPartialWord;
 				curPos++;
 				return KeyActions.Process;
 			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
-				SelectionDisabled = false;
+				SelectionDisabled = word.ToString () == initalPartialWord;
 				bool hasMismatches;
 				int match = FindMatchedEntry (word.ToString (), out hasMismatches);
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
