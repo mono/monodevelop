@@ -29,6 +29,7 @@ using Gtk;
 using Gdk;
 using Pango;
 using System;
+using System.Xml;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
@@ -288,7 +289,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (System.Char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
-				SelectionDisabled = false;
+				SelectionDisabled = word.Length <= 1;
 				curPos++;
 				if (!SelectionDisabled || AutoSelect)
 					UpdateWordSelection ();
@@ -297,10 +298,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
-				SelectionDisabled = false;
+				SelectionDisabled = word.Length <= 1;
 				bool hasMismatches;
 				int match = FindMatchedEntry (word.ToString (), out hasMismatches);
-
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
 					curPos++;
 					if (!SelectionDisabled || AutoSelect)
