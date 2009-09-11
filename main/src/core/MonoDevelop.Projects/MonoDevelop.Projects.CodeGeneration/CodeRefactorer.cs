@@ -527,12 +527,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		static RefactoryScope GetScope (IMember member)
 		{
-			if (member.DeclaringType.ClassType == ClassType.Interface)
+			if (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface)
 				return GetScope (member.DeclaringType);
 			
 			if (member.IsPublic)
 				return RefactoryScope.Solution;
-			if (member.IsProtected || member.IsInternal)
+			
+			if (member.IsProtected || member.IsInternal || member.DeclaringType == null)
 				return RefactoryScope.Project;
 			return RefactoryScope.DeclaringType;
 		}

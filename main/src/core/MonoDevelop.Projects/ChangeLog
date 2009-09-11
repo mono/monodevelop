@@ -1,3 +1,8 @@
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Fixed
+	  'Bug 538257 - Crash in FindReferences'.
+
 2009-09-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/IPrettyPrinter.cs: Changed pretty
