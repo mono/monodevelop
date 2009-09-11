@@ -98,23 +98,10 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			};
+			
+			Document.TextReplaced += HandleSkipCharsOnReplace;
+			
 			Document.TextReplaced += delegate(object sender, ReplaceEventArgs args) {
-
-				for (int i = 0; i < skipChars.Count; i++) {
-					SkipChar sc = skipChars[i];
-					if (args.Offset < sc.Start || args.Offset > sc.Offset) {
-						skipChars.RemoveAt (i);
-						i--;
-						continue;
-					}
-					if (args.Offset <= sc.Offset) {
-						sc.Offset -= args.Count;
-						if (!string.IsNullOrEmpty (args.Value)) {
-							sc.Offset += args.Value.Length;
-						}
-					}
-				}
-				
 				if (Extension != null) {
 					try {
 						Extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
@@ -129,6 +116,24 @@ namespace MonoDevelop.SourceEditor
 			this.ButtonPressEvent += OnPopupMenu;
 
 			AddinManager.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
+		}
+		
+		void HandleSkipCharsOnReplace (object sender, ReplaceEventArgs args)
+		{
+			for (int i = 0; i < skipChars.Count; i++) {
+				SkipChar sc = skipChars[i];
+				if (args.Offset < sc.Start || args.Offset > sc.Offset) {
+					skipChars.RemoveAt (i);
+					i--;
+					continue;
+				}
+				if (args.Offset <= sc.Offset) {
+					sc.Offset -= args.Count;
+					if (!string.IsNullOrEmpty (args.Value)) {
+						sc.Offset += args.Value.Length;
+					}
+				}
+			}
 		}
 		
 		void UpdateEditMode ()
@@ -279,6 +284,11 @@ namespace MonoDevelop.SourceEditor
 			public int Start { get; set; }
 			public int Offset { get; set; }
 			public char Char  { get; set; }
+			
+			public override string ToString ()
+			{
+				return string.Format ("[SkipChar: Start={0}, Offset={1}, Char={2}]", Start, Offset, Char);
+			}
 		}
 		
 		List<SkipChar> skipChars = new List<SkipChar> ();
@@ -344,7 +354,7 @@ namespace MonoDevelop.SourceEditor
 				if (inStringOrComment && (ch == '"' || (inChar && ch == '\'')) && charBefore == '\\')
 					skipChar = null;
 			}
-			
+			char insertionChar = '\0';
 			if (skipChar == null && Options.AutoInsertMatchingBracket && braceIndex >= 0) {
 				if (!inStringOrComment) {
 					char closingBrace = closingBrackets[braceIndex];
@@ -361,15 +371,15 @@ namespace MonoDevelop.SourceEditor
 
 					if (count >= 0) {
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
+						insertionChar = closingBrace;
 						Insert (Caret.Offset, closingBrace.ToString ());
-						SetInsertionChar (Caret.Offset, closingBrace);
 					}
 				} else {
 					char charBefore = Document.GetCharAt (Caret.Offset - 1);
 					if (!inChar && ch == '"' && charBefore != '\\') {
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
+						insertionChar = '"';
 						Insert (Caret.Offset, "\"");
-						SetInsertionChar (Caret.Offset, '"');
 					}
 				}
 			}
@@ -380,7 +390,7 @@ namespace MonoDevelop.SourceEditor
 				skipChars.Remove (skipChar);
 			} else {
 				if (Extension != null) {
-					if (ExtensionKeyPress (key, ch, state))
+					if (ExtensionKeyPress (key, ch, state)) 
 						result = base.OnIMProcessedKeyPressEvent (key, ch, state);
 					if (returnBetweenBraces) {
 						Caret.Offset = initialOffset;
@@ -394,8 +404,8 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
-
-			
+			if (insertionChar != '\0')
+				SetInsertionChar (Caret.Offset, insertionChar);
 			
 			if (templateInserted) {
 				Document.EndAtomicUndo ();
@@ -751,8 +761,8 @@ namespace MonoDevelop.SourceEditor
 		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
 		{
 			Document.BeginAtomicUndo ();
-			IType type = document.ParsedDocument.CompilationUnit.GetTypeAt (Caret.Line, Caret.Column);
-			IMember member = document.ParsedDocument.CompilationUnit.GetMemberAt (Caret.Line, Caret.Column);
+//			IType type = document.ParsedDocument.CompilationUnit.GetTypeAt (Caret.Line, Caret.Column);
+//			IMember member = document.ParsedDocument.CompilationUnit.GetMemberAt (Caret.Line, Caret.Column);
 			CodeTemplate.TemplateResult result = template.InsertTemplate (document);
 			TextLinkEditMode tle = new TextLinkEditMode (this, 
 			                                             result.InsertPosition,

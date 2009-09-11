@@ -456,8 +456,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.IsDirty = Document.IsDirty;
 			
-			FireCompletionContextChanged ();
-			
 			DocumentLocation location = Document.OffsetToLocation (a.Offset);
 			
 			int i=0, lines=0;
