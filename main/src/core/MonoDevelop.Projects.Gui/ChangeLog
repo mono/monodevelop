@@ -1,5 +1,10 @@
 2009-09-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed code completion bug.
+
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed
 	  "Bug 538175 - Commit completion list with space or
 	  punctuation is broken.".

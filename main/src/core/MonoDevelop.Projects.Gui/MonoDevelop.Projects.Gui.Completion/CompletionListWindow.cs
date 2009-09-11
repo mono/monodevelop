@@ -260,6 +260,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (item == null)
 				return;
 			string word = item.CompletionText;
+			if (!ListWidget.Matches (PartialWord, word))
+				return;
 			IActionCompletionData ac = item as IActionCompletionData;
 			if (ac != null) {
 				ac.InsertCompletionText (completionWidget, completionContext);
