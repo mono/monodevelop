@@ -1,5 +1,9 @@
 2009-09-11  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/CSharpFormatter.cs: worked on formatting.
+
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CSharpFormatter.cs: Fixed "Bug 538296 -
 	  Autocompletion makes weird indentation on svn build".
 

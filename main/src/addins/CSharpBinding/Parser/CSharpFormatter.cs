@@ -149,6 +149,17 @@ namespace CSharpBinding.Parser
 			Format (data, type, NRefactoryResolver.GetMemberAt (type, caretLocation), dom, unit, caretLocation);
 		}
 		
+		static string GetIndent (string text)
+		{
+			StringBuilder result = new StringBuilder ();
+			foreach (char ch in text) {
+				if (!char.IsWhiteSpace (ch))
+					break;
+				result.Append (ch);
+			}
+			return result.ToString ();
+		}
+		
 		static string RemoveIndent (string text, string indent)
 		{
 			Document doc = new Document ();
@@ -161,6 +172,7 @@ namespace CSharpBinding.Parser
 			}
 			return result.ToString ();
 		}
+		
 		static string AddIndent (string text, string indent)
 		{
 			Document doc = new Document ();
@@ -210,13 +222,16 @@ namespace CSharpBinding.Parser
 			if (member != type) {
 				int len1 = formattedText.IndexOf ('{') + 1;
 				int last = formattedText.LastIndexOf ('}');
-				formattedText = formattedText.Substring (len1, last - len1 - 1);
+				formattedText = formattedText.Substring (len1, last - len1 - 1).TrimStart ('\n', '\r');
 			} else {
 				startPos++;
 			}
 			
+//			Console.WriteLine ("formattedText0:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
 			if (member != type) {
-				formattedText = RemoveIndent (formattedText, formattedText.Substring (0, formattedText.Length - formattedText.TrimStart ().Length));
+				string indentToRemove = GetIndent (formattedText);
+//				Console.WriteLine ("Remove:" + indentToRemove.Replace ("\t", "->").Replace (" ", "°"));
+				formattedText = RemoveIndent (formattedText, indentToRemove);
 			} else {
 				formattedText = formattedText.TrimStart ();
 			}
@@ -225,7 +240,7 @@ namespace CSharpBinding.Parser
 			formattedText = AddIndent (formattedText, GetIndent (data, member.Location.Line - 1));
 			
 //			Console.WriteLine ("formattedText2:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
-			
+	
 			int textLength = CanInsertFormattedText (data, startPos, data.Document.LocationToOffset (caretLocation.Line, caretLocation.Column), formattedText);
 			if (textLength > 0) {
 //				Console.WriteLine (formattedText.Substring (0, textLength));
