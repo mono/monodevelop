@@ -123,8 +123,12 @@ namespace MonoDevelop.IPhone
 				if (result.Append (UpdateInfoPlist (monitor, proj, conf, appInfoIn)).ErrorCount > 0)
 					return result;
 			
-			if (result.Append (ProcessPackaging (monitor, proj, conf)).ErrorCount > 0)
+			if (result.Append (ProcessPackaging (monitor, proj, conf)).ErrorCount > 0) {
+				//if packaging failed, make sure that it's marked as needing buildind
+				if (File.Exists (conf.AppDirectory.Combine ("PkgInfo")))
+					File.Delete (conf.AppDirectory.Combine ("PkgInfo"));
 				return result;
+			}
 			
 			//TODO: create/update the xcode project
 			return result;
@@ -479,17 +483,17 @@ namespace MonoDevelop.IPhone
 				string appid = provision.ApplicationIdentifierPrefix + "." + proj.BundleIdentifier;
 				
 				if (provision.Entitlements.ContainsKey ("application-identifier")) {
-					var allowed = ((PlistString)provision.Entitlements.ContainsKey ("application-identifier")).Value;
-					for (int i = 0;; i++) {
-						if (i < allowed.Length && i < appid.Length) {
-							if (allowed[i] == '*')
-								break;
-							if (appid[i] == allowed[i])
-								continue;
+					var allowed = ((PlistString)provision.Entitlements ["application-identifier"]).Value;
+					int max = Math.Max (allowed.Length, appid.Length);
+					for (int i = 0; i < max; i++) {
+						if (i < allowed.Length && allowed[i] == '*')
+							break;
+						if (i >= appid.Length || allowed[i] != appid[i]) {
+							result.AddWarning (String.Format (
+						 		"Application identifier '{0}' does not match the provisioning profile entitlements ID '{1}'.",
+								appid, allowed));
+							break;
 						}
-						result.AddWarning (String.Format (
-						 	"Application identifier '{0}' does not match the provisioning profile entitlements ID '{1}'.",
-							appid, allowed));
 					}
 				}
 				
