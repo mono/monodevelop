@@ -100,29 +100,7 @@ namespace MonoDevelop.IPhone.Gui
 				return (string)model.GetValue (iter, 0) == "-";
 			};
 			
-			identityCombo.Changed += delegate {
-				profileStore.Clear ();
-				TreeIter iter;
-				if (identityStore.GetIter (out iter, new TreePath (new int[] { identityCombo.Active }))) {
-					var name = (string) identityStore.GetValue (iter, 1);
-					if (name.StartsWith (Keychain.DIST_CERT_PREFIX)) {
-						var cert = (X509Certificate2) identityStore.GetValue (iter, 1);
-						
-						foreach (var mp in profiles) {
-							foreach (var profileCert in mp.DeveloperCertificates) {
-								if (profileCert.Thumbprint == cert.Thumbprint) {
-									profileStore.AppendValues (mp.Name, mp.Uuid, mp);
-									break;
-								}
-							}
-						}
-						
-						provisioningCombo.Sensitive = true;
-						return;
-					}
-				}
-				provisioningCombo.Sensitive = false;
-			};
+			identityCombo.Changed += delegate { UpdateProfiles (); };
 			
 			provisioningCombo.Model = profileStore;
 			provisioningCombo.PackStart (txtRenderer, true);
@@ -180,7 +158,10 @@ namespace MonoDevelop.IPhone.Gui
 				return null;
 			}
 			set {
+				if (string.IsNullOrEmpty (value))
+					identityCombo.Active = 0;
 				SelectMatchingItem (identityCombo, 1, value);
+				UpdateProfiles ();
 			}
 		}
 		
@@ -199,6 +180,31 @@ namespace MonoDevelop.IPhone.Gui
 				else
 					SelectMatchingItem (provisioningCombo, 1, value);
 			}
+		}
+		
+		void UpdateProfiles ()
+		{
+			profileStore.Clear ();
+			TreeIter iter;
+			if (identityStore.GetIter (out iter, new TreePath (new int[] { identityCombo.Active }))) {
+				var name = (string) identityStore.GetValue (iter, 1);
+				if (name.StartsWith (Keychain.DIST_CERT_PREFIX)) {
+					var cert = (X509Certificate2) identityStore.GetValue (iter, 1);
+					
+					foreach (var mp in profiles) {
+						foreach (var profileCert in mp.DeveloperCertificates) {
+							if (profileCert.Thumbprint == cert.Thumbprint) {
+								profileStore.AppendValues (mp.Name, mp.Uuid, mp);
+								break;
+							}
+						}
+					}
+					
+					provisioningCombo.Sensitive = true;
+					return;
+				}
+			}
+			provisioningCombo.Sensitive = false;
 		}
 		
 		bool SelectMatchingItem (ComboBox combo, int column, object value)

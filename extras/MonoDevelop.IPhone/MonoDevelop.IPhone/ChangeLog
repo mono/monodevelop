@@ -1,5 +1,10 @@
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/IPhoneSigningKeyPanel.cs: Fix possible NRE. Update
+	  profiles when loading.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/IPhoneSigningKeyPanel.cs: Sort the certs.
 
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
