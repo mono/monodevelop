@@ -290,14 +290,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
 				UpdateWordSelection ();
-				SelectionDisabled = word.Length <= 1;
+				SelectionDisabled = false;
 				curPos++;
 				return KeyActions.Process;
 			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
-				SelectionDisabled = word.Length <= 1;
+				SelectionDisabled = false;
 				bool hasMismatches;
 				int match = FindMatchedEntry (word.ToString (), out hasMismatches);
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
