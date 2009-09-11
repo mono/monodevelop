@@ -1,3 +1,9 @@
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed
+	  "Bug 538175 - Commit completion list with space or
+	  punctuation is broken.".
+
 2009-09-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:

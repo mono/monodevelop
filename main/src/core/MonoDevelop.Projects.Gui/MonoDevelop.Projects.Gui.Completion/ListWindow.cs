@@ -288,6 +288,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (System.Char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
+				SelectionDisabled = false;
 				curPos++;
 				if (!SelectionDisabled || AutoSelect)
 					UpdateWordSelection ();
@@ -296,6 +297,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
+				SelectionDisabled = false;
 				bool hasMismatches;
 				int match = FindMatchedEntry (word.ToString (), out hasMismatches);
 
@@ -306,6 +308,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return KeyActions.Process;
 				} else if (CompleteWithSpaceOrPunctuation) {
 					word.Remove (curPos, 1);
+					SelectionDisabled = word.Length == 0;
 					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
 				} else {
 					return KeyActions.CloseWindow | KeyActions.Process;
