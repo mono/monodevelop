@@ -243,24 +243,6 @@ namespace MonoDevelop.IPhone
 				dict[key] = value;
 		}
 		
-		PlistDocument GenerateResourceRulesPlist ()
-		{
-			return new PlistDocument (
-				new PlistDictionary () {
-					{ "rules", new PlistDictionary (true) {
-						{ ".*", new PlistDictionary () {
-							{ "omit", true },
-							{ "weight", 10 }
-						}},
-						{ "ResourceRules.plist", new PlistDictionary () {
-							{ "omit", true },
-							{ "weight", 100 }
-						}}
-					}}
-				}
-			);
-		}
-		
 		internal ProcessStartInfo GetMTouch (IPhoneProject project, IProgressMonitor monitor, out BuildResult error)
 		{
 			return GetTool ("mtouch", project, monitor, out error);
@@ -540,32 +522,23 @@ namespace MonoDevelop.IPhone
 				}
 				
 				monitor.EndTask ();
-				
-				monitor.BeginTask (GettextCatalog.GetString ("Preparing resources rules"), 0);
-				
-				string resRulesFile = conf.AppDirectory.Combine ("ResourceRules.plist");
-				if (File.Exists (resRulesFile))
-					File.Delete (resRulesFile);
-				
-				bool addedResRules = false;
-				if (!string.IsNullOrEmpty (conf.CodesignResourceRules)) {
-					if (File.Exists (conf.CodesignResourceRules)) {
-						File.Copy (conf.CodesignResourceRules, resRulesFile);
-						addedResRules = true;
-					} else {
-						result.AddWarning ("Resources rules file \"" + conf.CodesignResourceRules + "\" not found. Using default.");
-					}
-				}
-				
-				if (!addedResRules) {
-					using (XmlTextWriter writer = new XmlTextWriter (conf.AppDirectory.Combine ("ResourceRules.plist"), Encoding.UTF8)) {
-						writer.Formatting = Formatting.Indented;
-						GenerateResourceRulesPlist ().Write (writer);
-					}
-				}
-				
-				monitor.EndTask ();
 			}
+				
+			monitor.BeginTask (GettextCatalog.GetString ("Preparing resources rules"), 0);
+			
+			string resRulesFile = conf.AppDirectory.Combine ("ResourceRules.plist");
+			if (File.Exists (resRulesFile))
+				File.Delete (resRulesFile);
+			
+			string resRulesSrc = String.IsNullOrEmpty (conf.CodesignResourceRules)
+				? "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/ResourceRules.plist"
+				: (string) conf.CodesignResourceRules;
+			if (File.Exists (resRulesSrc))
+				File.Copy (resRulesSrc, resRulesFile);
+			else
+				result.AddWarning ("Resources rules file \"" + conf.CodesignResourceRules + "\" not found. Using default.");
+			
+			monitor.EndTask ();
 			
 			if (String.IsNullOrEmpty (conf.CodesignKey)) {
 				result.AddWarning ("Code signing disabled, skipping signing.");
