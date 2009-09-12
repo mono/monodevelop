@@ -109,6 +109,12 @@ namespace MonoDevelop.Projects.Gui
 				case '2':
 					listWindow.PreProcessKeyEvent (Gdk.Key.Down, '\0', Gdk.ModifierType.None, out ka);
 					break;
+				case '4':
+					listWindow.PreProcessKeyEvent (Gdk.Key.Left, '\0', Gdk.ModifierType.None, out ka);
+					break;
+				case '6':
+					listWindow.PreProcessKeyEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None, out ka);
+					break;
 				case '\t':
 					listWindow.PreProcessKeyEvent (Gdk.Key.Tab, '\t', Gdk.ModifierType.None, out ka);
 					break;
@@ -224,6 +230,26 @@ namespace MonoDevelop.Projects.Gui
 				"AbAbAbAb");
 			
 			Assert.AreEqual (null, output);
+		}
+		
+		[Test()]
+		public void TestAutoSelectionOn ()
+		{
+			// shouldn't select anything since auto select is disabled.
+			string output = RunSimulation ("", "aaa ", true, true, 
+				"AbAb",
+				"AbAbAb", 
+				"AbAbAbAb");
+			
+			Assert.AreEqual ("AbAbAb", output);
+			
+			// now with cursor down
+			output = RunSimulation ("", "aaa2 ", true, true, 
+				"AbAb",
+				"AbAbAb", 
+				"AbAbAbAb");
+			
+			Assert.AreEqual ("AbAbAbAb", output);
 		}
 		
 		[Test()]
