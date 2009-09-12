@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 
 			if (completionWidget != null) {
-				ICodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
+				CodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
 				IParameterDataProvider paramProvider = HandleParameterCompletion (ctx, keyChar);
 				if (paramProvider != null)
 					ParameterInformationWindowManager.ShowWindow (ctx, paramProvider);
@@ -263,7 +263,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			int cpos;
 			if (!GetParameterCompletionCommandOffset (out cpos))
 				cpos = Editor.CursorPosition;
-			ICodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (cpos);
+			CodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (cpos);
 			cp = ParameterCompletionCommand (ctx);
 
 			if (cp != null) {
@@ -283,19 +283,19 @@ namespace MonoDevelop.Ide.Gui.Content
 		}
 		
 		
-		public virtual ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext,
+		public virtual ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                         char completionChar, ref int triggerWordLength)
 		{
 			return HandleCodeCompletion (completionContext, completionChar);
 		}
 		
-		public virtual ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext,
+		public virtual ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                         char completionChar)
 		{
 			return null;
 		}
 		
-		public virtual IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
+		public virtual IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			return null;
 		}
@@ -334,7 +334,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			return false;
 		}
 		
-		public virtual ICompletionDataList ShowCodeSurroundingsCommand (ICodeCompletionContext completionContext)
+		public virtual ICompletionDataList ShowCodeSurroundingsCommand (CodeCompletionContext completionContext)
 		{
 			CompletionDataList list = new CompletionDataList ();
 			list.CompletionSelectionMode = CompletionSelectionMode.OwnTextField;
@@ -351,7 +351,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			return list;
 		}
 		
-		public virtual ICompletionDataList ShowCodeTemplatesCommand (ICodeCompletionContext completionContext)
+		public virtual ICompletionDataList ShowCodeTemplatesCommand (CodeCompletionContext completionContext)
 		{
 			CompletionDataList list = new CompletionDataList ();
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (Document.FileName)) {
@@ -363,7 +363,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		}
 		
 		
-		public virtual ICompletionDataList CodeCompletionCommand (ICodeCompletionContext completionContext)
+		public virtual ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			// This default implementation of CodeCompletionCommand calls HandleCodeCompletion providing
 			// the char at the cursor position. If it returns a provider, just return it.
@@ -389,7 +389,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			return null;
 		}
 		
-		public virtual IParameterDataProvider ParameterCompletionCommand (ICodeCompletionContext completionContext)
+		public virtual IParameterDataProvider ParameterCompletionCommand (CodeCompletionContext completionContext)
 		{
 			// This default implementation of ParameterCompletionCommand calls HandleParameterCompletion providing
 			// the char at the cursor position. If it returns a provider, just return it.

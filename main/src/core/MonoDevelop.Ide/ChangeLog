@@ -1,3 +1,9 @@
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Track API changes.
+
 2009-09-11  Christian Hergert  <chris@dronelabs.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Fix exception

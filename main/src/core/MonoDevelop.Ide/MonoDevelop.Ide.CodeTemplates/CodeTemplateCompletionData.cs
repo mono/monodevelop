@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.Description = template.Shortcut + Environment.NewLine + template.Description;
 		}
 		
-		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
+		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
 		{
 			if (widget is ICodeTemplateWidget) {
 				((ICodeTemplateWidget)widget).InsertTemplate (template, doc);
