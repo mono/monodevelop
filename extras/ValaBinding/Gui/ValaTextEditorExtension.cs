@@ -99,7 +99,7 @@ namespace MonoDevelop.ValaBinding
 		
 		private static Regex initializationRegex = new Regex (@"(((?<typename>\w[\w\d\.<>]*)\s+)?(?<variable>\w[\w\d]*)\s*=\s*)?new\s*(?<constructor>\w[\w\d\.<>]*)?", RegexOptions.Compiled);
 		public override ICompletionDataList HandleCodeCompletion (
-		    ICodeCompletionContext completionContext, char completionChar)
+		    CodeCompletionContext completionContext, char completionChar)
 		{
 			int line, column;
 			string lineText = null;
@@ -187,7 +187,7 @@ namespace MonoDevelop.ValaBinding
 		}// CompleteConstructor
 		
 		public override ICompletionDataList CodeCompletionCommand (
-		    ICodeCompletionContext completionContext)
+		    CodeCompletionContext completionContext)
 		{
 			if (null == (Document.Project as ValaProject)){ return null; }
 			
@@ -211,7 +211,7 @@ namespace MonoDevelop.ValaBinding
 			return list;
 		}
 		
-		private ValaCompletionDataList GlobalComplete (ICodeCompletionContext context)
+		private ValaCompletionDataList GlobalComplete (CodeCompletionContext context)
 		{
 			ProjectInformation info = Parser;
 			if (null == info){ return null; }
@@ -224,7 +224,7 @@ namespace MonoDevelop.ValaBinding
 		}
 		
 		public override  IParameterDataProvider HandleParameterCompletion (
-		    ICodeCompletionContext completionContext, char completionChar)
+		    CodeCompletionContext completionContext, char completionChar)
 		{
             //System.Console.WriteLine("ValaTextEditorExtension.HandleParameterCompletion({0})", completionChar);
 			if (completionChar != '(')

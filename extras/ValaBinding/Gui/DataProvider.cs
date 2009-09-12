@@ -121,7 +121,7 @@ namespace MonoDevelop.ValaBinding
 		// -1 means the cursor is outside the method parameter list
 		// 0 means no parameter entered
 		// > 0 is the index of the parameter (1-based)
-		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
+		public int GetCurrentParameterIndex (CodeCompletionContext ctx)
 		{
 			int cursor = editor.CursorPosition;
 			int i = ctx.TriggerOffset;
