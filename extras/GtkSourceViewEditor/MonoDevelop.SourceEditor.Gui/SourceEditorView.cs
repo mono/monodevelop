@@ -951,12 +951,12 @@ namespace MonoDevelop.SourceEditor.Gui
 			return ctx;
 		}
 		
-		string ICompletionWidget.GetCompletionText (ICodeCompletionContext ctx)
+		string ICompletionWidget.GetCompletionText (CodeCompletionContext ctx)
 		{
 			return Buffer.GetText (Buffer.GetIterAtOffset (ctx.TriggerOffset), Buffer.GetIterAtMark (Buffer.InsertMark), false);
 		}
 		int ICompletionWidget.SelectedLength { get { return buf.GetSelectedText ().Length; } }
-		void ICompletionWidget.SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
+		void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 		{
 			TextIter iter1, iter2;
 			if (buf.GetSelectionBounds (out iter1, out iter2)) {
