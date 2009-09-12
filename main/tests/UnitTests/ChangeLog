@@ -1,5 +1,11 @@
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Added
+	  tests for complete empty match option / tests are now more
+	  in line with the suggestions from mhutch.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Track
 	  API changes.
 

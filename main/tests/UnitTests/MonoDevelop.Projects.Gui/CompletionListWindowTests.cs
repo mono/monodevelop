@@ -132,23 +132,51 @@ namespace MonoDevelop.Projects.Gui
 			}
 		}
 		
+		class SimulationSettings {
+			public string PartialWord { get; set; }
+			public string SimulatedInput { get; set; }
+			public bool AutoSelect { get; set; }
+			public bool CompleteWithSpaceOrPunctuation { get; set; }
+			public bool AutoCompleteEmptyMatch { get; set; }
+			
+			public string[] CompletionData { get; set; }
+		}
+		
 		static string RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, params string[] completionData)
 		{
+			return RunSimulation (partialWord, simulatedInput, autoSelect, completeWithSpaceOrPunctuation, true, completionData);
+		}
+		
+		static string RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, bool autoCompleteEmptyMatch, params string[] completionData)
+		{
+			return RunSimulation (new SimulationSettings () {
+				PartialWord = partialWord,
+				SimulatedInput = simulatedInput,
+				AutoSelect = autoSelect,
+				CompleteWithSpaceOrPunctuation = completeWithSpaceOrPunctuation,
+				AutoCompleteEmptyMatch = autoCompleteEmptyMatch,
+				CompletionData = completionData
+			});
+		}
+		
+		static string RunSimulation (SimulationSettings settings)
+		{
 			CompletionDataList dataList = new CompletionDataList ();
-			dataList.AutoSelect = autoSelect;
-			dataList.AddRange (completionData);
+			dataList.AutoSelect = settings.AutoSelect;
+			dataList.AddRange (settings.CompletionData);
 			
 			TestCompletionWidget result = new TestCompletionWidget ();
-			dataList.AutoSelect = true;
 			CompletionListWindow listWindow = new CompletionListWindow () {
 				CompletionDataList = dataList,
-				AutoSelect = autoSelect,
+				CompletionWidget = result,
+				AutoSelect = settings.AutoSelect,
 				CodeCompletionContext = new CodeCompletionContext (),
-				PartialWord = partialWord,
-				CompleteWithSpaceOrPunctuation = completeWithSpaceOrPunctuation,
-				CompletionWidget = result
+				CompleteWithSpaceOrPunctuation = settings.CompleteWithSpaceOrPunctuation,
+				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
+				PartialWord = settings.PartialWord
 			};
-			SimulateInput (listWindow, simulatedInput);
+			listWindow.SelectEntry (settings.PartialWord);
+			SimulateInput (listWindow, settings.SimulatedInput);
 			return result.CompletedWord;
 		}
 		
@@ -315,6 +343,50 @@ namespace MonoDevelop.Projects.Gui
 				"c");
 			
 			Assert.AreEqual (null, output);
+		}
+		
+		[Test()]
+		public void TestAutoCompleteEmptyMatchOn ()
+		{
+			string output = RunSimulation ("", " ", true, true, true,
+				"AbAb",
+				"AbAbAb", 
+				"AbAbAbAb");
+			
+			Assert.AreEqual ("AbAb", output);
+			
+			output = RunSimulation ("", "\t", true, true, true,
+				"AbAb",
+				"AbAbAb", 
+				"AbAbAbAb");
+			
+			Assert.AreEqual ("AbAb", output);
+			
+		}
+		
+		[Test()]
+		public void TestAutoCompleteEmptyMatchOff ()
+		{
+			string output = RunSimulation ("", " ", true, true, false,
+				"AbAb",
+				"AbAbAb", 
+				"AbAbAbAb");
+			
+			Assert.AreEqual (null, output);
+			
+			output = RunSimulation ("", "\t", true, true, false,
+				"AbAb",
+				"AbAbAb", 
+				"AbAbAbAb");
+			
+			Assert.AreEqual ("AbAb", output);
+			
+			output = RunSimulation ("", "a ", true, true, false,
+				"AbAb",
+				"AbAbAb", 
+				"AbAbAbAb");
+			
+			Assert.AreEqual ("AbAb", output);
 		}
 	}
 }
