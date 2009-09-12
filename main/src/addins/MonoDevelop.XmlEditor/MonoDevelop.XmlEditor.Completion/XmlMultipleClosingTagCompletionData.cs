@@ -87,7 +87,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		#region IActionCompletionData implementation 
 		/*
-		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
+		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
 		{
 			IEditableTextBuffer buf = widget as IEditableTextBuffer;
 			if (buf != null) {

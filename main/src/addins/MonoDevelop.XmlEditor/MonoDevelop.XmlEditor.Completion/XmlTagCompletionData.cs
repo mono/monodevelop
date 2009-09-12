@@ -73,7 +73,7 @@ namespace MonoDevelop.XmlEditor.Completion
 			get { return DisplayFlags.None; }
 		}
 		
-		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
+		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
 		{
 			IEditableTextBuffer buf = widget as IEditableTextBuffer;
 			if (buf != null) {
