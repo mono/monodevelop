@@ -200,6 +200,7 @@
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\CaretMoveActionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\DeleteActionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\SelectionActionTests.cs" />
+    <Compile Include="MonoDevelop.Projects.Gui\CompletionListWindowTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -222,5 +223,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
+    <Folder Include="MonoDevelop.Projects.Gui\" />
   </ItemGroup>
 </Project>
