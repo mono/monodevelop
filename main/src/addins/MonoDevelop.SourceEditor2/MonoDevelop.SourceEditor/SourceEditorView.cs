@@ -966,7 +966,7 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetTemplateContext ();
 		}
 		
-		public string GetCompletionText (ICodeCompletionContext ctx)
+		public string GetCompletionText (CodeCompletionContext ctx)
 		{
 			if (ctx == null)
 				return null;
@@ -975,7 +975,7 @@ namespace MonoDevelop.SourceEditor
 			return Document.GetTextBetween (min, max);
 		}
 		
-		public void SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
+		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 		{
 			int triggerOffset = ctx.TriggerOffset;
 			if (TextEditor.IsSomethingSelected) {
