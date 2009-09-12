@@ -522,10 +522,10 @@ class ShellTextView (SourceView, ICompletionWidget):
 	def ICompletionWidget.GetText (startOffset as int, endOffset as int) as string:
 		return Buffer.GetText(Buffer.GetIterAtOffset (startOffset), Buffer.GetIterAtOffset(endOffset), true)
 	
-	def ICompletionWidget.GetCompletionText (ctx as ICodeCompletionContext) as string:
+	def ICompletionWidget.GetCompletionText (ctx as CodeCompletionContext) as string:
 		return Buffer.GetText (Buffer.GetIterAtOffset (ctx.TriggerOffset), Buffer.GetIterAtMark (Buffer.InsertMark), false);
 	
-	def ICompletionWidget.SetCompletionText (ctx as ICodeCompletionContext, partial_word as string, complete_word as string):
+	def ICompletionWidget.SetCompletionText (ctx as CodeCompletionContext, partial_word as string, complete_word as string):
 		offsetIter = Buffer.GetIterAtOffset(ctx.TriggerOffset)
 		endIter = Buffer.GetIterAtOffset (offsetIter.Offset + partial_word.Length)
 		Buffer.MoveMark (Buffer.InsertMark, offsetIter)

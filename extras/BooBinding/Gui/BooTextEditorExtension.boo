@@ -33,7 +33,7 @@ public class BooTextEditorExtension (CompletionTextEditorExtension):
 	override def ExtendsEditor (doc as Document, editor as IEditableTextBuffer) as bool:
 		return System.IO.Path.GetExtension (doc.Title) == ".boo";
 
-	override def HandleCodeCompletion (ctx as ICodeCompletionContext, typed_char as System.Char) as ICompletionDataProvider:
+	override def HandleCodeCompletion (ctx as CodeCompletionContext, typed_char as System.Char) as ICompletionDataProvider:
 		return null if not typed_char in (char('.'), char(' '))
 		
 		expr_finder = ExpressionFinder ()
