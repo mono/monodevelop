@@ -72,14 +72,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public Gtk.Requisition ShowParameterInfo (IParameterDataProvider provider, int overload, int currentParam)
 		{
-			int numParams = provider.GetParameterCount (overload);
+			if (provider == null)
+				throw new ArgumentNullException ("provider");
+			int numParams = System.Math.Max (0, provider.GetParameterCount (overload));
 			
-			string[] paramText = new string [numParams];
-			for (int n=0; n<numParams; n++) {
-				string txt = provider.GetParameterMarkup (overload, n);
-				if (n == currentParam)
+			string[] paramText = new string[numParams];
+			for (int i = 0; i < numParams; i++) {
+				string txt = provider.GetParameterMarkup (overload, i);
+				if (i == currentParam)
 					txt = "<u><span foreground='darkblue'>" + txt + "</span></u>";
-				paramText [n] = txt;
+				paramText [i] = txt;
 			}
 			string text = provider.GetMethodMarkup (overload, paramText, currentParam);
 
@@ -89,8 +91,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				goPrev.Show ();
 				goNext.Show ();
 				count.Text = GettextCatalog.GetString ("{0} of {1}", overload+1, provider.OverloadCount);
-			}
-			else {
+			} else {
 				count.Hide ();
 				goPrev.Hide ();
 				goNext.Hide ();

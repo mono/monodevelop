@@ -1,5 +1,10 @@
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	  Added some insanity checks.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
