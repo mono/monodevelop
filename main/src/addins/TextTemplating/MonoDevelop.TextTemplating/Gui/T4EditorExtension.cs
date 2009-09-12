@@ -114,7 +114,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		#region Code completion
 
-		public override ICompletionDataList CodeCompletionCommand (ICodeCompletionContext completionContext)
+		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
 			string txt = Editor.GetText (pos - 1, pos);
@@ -126,7 +126,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		}
 
 		public override ICompletionDataList HandleCodeCompletion (
-		    ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 			int pos = completionContext.TriggerOffset;
 			if (pos > 0 && Editor.GetCharAt (pos - 1) == completionChar) {

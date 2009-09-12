@@ -1,3 +1,7 @@
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/T4EditorExtension.cs: Track API changes.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.TextTemplating.csproj: Updated dependencies. We
