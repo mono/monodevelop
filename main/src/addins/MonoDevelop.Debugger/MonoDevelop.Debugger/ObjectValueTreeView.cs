@@ -787,6 +787,10 @@ namespace MonoDevelop.Debugger
 		public bool AutoCompleteUniqueMatch {
 			get { return false; }
 		}
+		
+		public bool AutoCompleteEmptyMatch {
+			get { return false; }
+		}
 
 		public CompletionSelectionMode CompletionSelectionMode {
 			get;
