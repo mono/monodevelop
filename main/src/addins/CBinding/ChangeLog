@@ -1,3 +1,8 @@
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/DataProvider.cs:
+	* Gui/CTextEditorExtension.cs: Track API changes.
+
 2009-09-09  Christian Hergert  <chris@dronelabs.com>
 
 	* Gui/OutputOptionsPanel.cs: 

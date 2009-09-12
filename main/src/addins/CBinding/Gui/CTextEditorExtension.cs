@@ -226,7 +226,7 @@ namespace CBinding
 		}
 		
 		public override ICompletionDataList HandleCodeCompletion (
-		    ICodeCompletionContext completionContext, char completionChar)
+		    CodeCompletionContext completionContext, char completionChar)
 		{
 			string lineText = Editor.GetLineText (completionContext.TriggerLine).TrimEnd();
 			
@@ -249,7 +249,7 @@ namespace CBinding
 		}
 		
 		public override ICompletionDataList CodeCompletionCommand (
-		    ICodeCompletionContext completionContext)
+		    CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
 			int line, column;
@@ -532,7 +532,7 @@ namespace CBinding
 		}
 		
 		public override  IParameterDataProvider HandleParameterCompletion (
-		    ICodeCompletionContext completionContext, char completionChar)
+		    CodeCompletionContext completionContext, char completionChar)
 		{
 			if (completionChar != '(')
 				return null;
