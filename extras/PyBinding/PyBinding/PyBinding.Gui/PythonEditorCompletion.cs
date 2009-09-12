@@ -69,7 +69,7 @@ namespace PyBinding.Gui
 			return Path.GetExtension (doc.Name) == ".py";
 		}
 
-		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
+		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			switch (completionChar) {
 			case '(':
@@ -95,7 +95,7 @@ namespace PyBinding.Gui
 				yield return new CompletionData (func.Name, s_ImgFunc, func.Documentation);
 		}
 		
-		ICompletionDataList GenerateCompletionData (ICodeCompletionContext completionContext, PythonParsedDocument document, TextEditor editor, char completionChar)
+		ICompletionDataList GenerateCompletionData (CodeCompletionContext completionContext, PythonParsedDocument document, TextEditor editor, char completionChar)
 		{
 			if (document == null)
 				return null;
@@ -241,7 +241,7 @@ namespace PyBinding.Gui
 			return region.Start.Line <= lineNumber && region.End.Line >= lineNumber;
 		}
 		
-		static string GetTriggerWord (TextEditor editor, ICodeCompletionContext completionContext)
+		static string GetTriggerWord (TextEditor editor, CodeCompletionContext completionContext)
 		{
 			// Get the line of text for our current line
 			// and trim off everything after the cursor
