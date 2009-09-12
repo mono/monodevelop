@@ -38,8 +38,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 {
 	public class CompletionListWindow : ListWindow, IListDataProvider
 	{
-		const Gdk.ModifierType META_MASK = (Gdk.ModifierType) 0x10000000; //FIXME GTK+ 2.12: Gdk.ModifierType.MetaMask;
-		const Gdk.ModifierType SUPER_MASK = (Gdk.ModifierType) 0x40000000; //FIXME GTK+ 2.12: Gdk.ModifierType.SuperMask;
 		const int declarationWindowMargin = 3;
 		
 		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
@@ -108,7 +106,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					// Makes an exception for Mod1Mask (usually alt), shift, control, meta and super
 					// This prevents the window from closing if the num/scroll/caps lock are active
 					// FIXME: modifier mappings depend on X server settings
-					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask & ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | META_MASK | SUPER_MASK)))) != 0) {
+					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask & ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)))) != 0) {
 						CompletionWindowManager.HideWindow ();
 						return false;
 					}
@@ -130,6 +128,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			return false;
 		}
+		
 		public override void SelectEntry (string s)
 		{
 			base.SelectEntry (s);
@@ -293,9 +292,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 
 			if (completionDataList != null) {
-				if (completionDataList is IDisposable) {
+				if (completionDataList is IDisposable) 
 					((IDisposable)completionDataList).Dispose ();
-				}
 				completionDataList = null;
 			}
 
@@ -339,6 +337,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int lvWidth = 0, lvHeight = 0;
 			while (lvWidth == 0)
 				this.GdkWindow.GetSize (out lvWidth, out lvHeight);
+			
 			if (vert >= listpos_y + lvHeight - 2) {
 				vert = listpos_y + lvHeight - rect.Height;
 			} else if (vert < listpos_y) {
