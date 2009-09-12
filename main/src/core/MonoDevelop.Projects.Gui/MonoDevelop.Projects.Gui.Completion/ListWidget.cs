@@ -58,12 +58,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		bool previewCompletionString = false;
 		public bool PreviewCompletionString {
-			get { return previewCompletionString; }
-			set {
-				previewCompletionString = value;
-			}
+			get;
+			set;
 		}
 		
 		public ListWidget (ListWindow win)

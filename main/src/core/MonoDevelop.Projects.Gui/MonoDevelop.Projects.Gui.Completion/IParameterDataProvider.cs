@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		// -1 means the cursor is outside the method parameter list
 		// 0 means no parameter entered
 		// > 0 is the index of the parameter (1-based)
-		int GetCurrentParameterIndex (ICodeCompletionContext ctx);
+		int GetCurrentParameterIndex (CodeCompletionContext ctx);
 		
 		// Returns the markup to use to represent the specified method overload
 		// in the parameter information window.

@@ -39,7 +39,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog.cs \
 	gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs \
-	MonoDevelop.Projects.Gui.Completion/BaseMemberCompletionData.cs \
+	MonoDevelop.Projects.Gui.Completion/CodeCompletionContext.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs \
 	MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs \
@@ -47,6 +47,7 @@ FILES =  \
 	MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs \
 	MonoDevelop.Projects.Gui.Completion/ICompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs \
+	MonoDevelop.Projects.Gui.Completion/IMemberCompletionData.cs \
 	MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs \
 	MonoDevelop.Projects.Gui.Completion/ListWidget.cs \
 	MonoDevelop.Projects.Gui.Completion/ListWindow.cs \

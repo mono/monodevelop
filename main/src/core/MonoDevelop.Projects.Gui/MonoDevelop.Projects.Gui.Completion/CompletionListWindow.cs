@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		int initialWordLength;
 		int previousWidth = -1, previousHeight = -1;
 		
-		public ICodeCompletionContext CodeCompletionContext {
+		public CodeCompletionContext CodeCompletionContext {
 			get;
 			set;
 		}
@@ -136,7 +136,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			UpdateDeclarationView ();
 		}
 
-		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, System.Action closedDelegate)
+		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext, System.Action closedDelegate)
 		{
 			if (mutableList != null) {
 				mutableList.Changing -= OnCompletionDataChanging;

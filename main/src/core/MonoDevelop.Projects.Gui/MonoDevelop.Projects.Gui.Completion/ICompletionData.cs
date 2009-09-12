@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	
 	public interface IActionCompletionData : ICompletionData
 	{
-		void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context);
+		void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context);
 	}
 	
 	[Flags]

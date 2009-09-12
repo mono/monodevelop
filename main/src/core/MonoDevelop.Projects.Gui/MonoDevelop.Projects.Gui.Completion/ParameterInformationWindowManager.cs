@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		static List<MethodData> methods = new List<MethodData> ();
 		static ParameterInformationWindow window;
 		
-		public static ICodeCompletionContext CurrentCodeCompletionContext { get; set; }
+		public static CodeCompletionContext CurrentCodeCompletionContext { get; set; }
 		
 		public static bool IsWindowVisible {
 			get { return methods.Count > 0; }
@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			UpdateWindow ();
 		}
 		
-		public static void ShowWindow (ICodeCompletionContext ctx, IParameterDataProvider provider)
+		public static void ShowWindow (CodeCompletionContext ctx, IParameterDataProvider provider)
 		{
 			if (provider.OverloadCount == 0)
 				return;
@@ -204,7 +204,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	class MethodData
 	{
 		public IParameterDataProvider MethodProvider;
-		public ICodeCompletionContext CompletionContext;
+		public CodeCompletionContext CompletionContext;
 		public int CurrentOverload;
 	}
 }
