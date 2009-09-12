@@ -1,5 +1,10 @@
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Track
+	  API changes.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Added
 	  missing test for auto select property.
 

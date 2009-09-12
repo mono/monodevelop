@@ -67,12 +67,12 @@ namespace MonoDevelop.Projects.Gui
 				return null;
 			}
 			
-			public string GetCompletionText (ICodeCompletionContext ctx)
+			public string GetCompletionText (CodeCompletionContext ctx)
 			{
 				return "";
 			}
 			
-			public void SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
+			public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 			{
 				this.CompletedWord = complete_word;
 			}
