@@ -164,6 +164,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set { list.AutoSelect = value; }
 		}
 		
+		public bool AutoCompleteEmptyMatch {
+			get { return list.AutoCompleteEmptyMatch; }
+			set { list.AutoCompleteEmptyMatch = value; }
+		}
+		
 		public string PartialWord {
 			get { return word.ToString (); }
 			set {
@@ -290,7 +295,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				curPos++;
 				return KeyActions.Process;
 			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
-				if (CompleteWithSpaceOrPunctuation && list.AutoSelect) 
+				if (CompleteWithSpaceOrPunctuation && list.SelectionEnabled) 
 					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
 				
 				//punctuation is only accepted if it actually matches an item in the list

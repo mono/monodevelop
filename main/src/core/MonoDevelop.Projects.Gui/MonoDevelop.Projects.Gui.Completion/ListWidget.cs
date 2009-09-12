@@ -129,6 +129,17 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
+		public bool AutoCompleteEmptyMatch {
+			get;
+			set;
+		}
+		
+		public bool SelectionEnabled {
+			get {
+				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));
+			}
+		}
+		
 		public int Page {
 			get { return page; }
 			set {
@@ -288,7 +299,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					layout.SetText (win.DataProvider.GetText (filteredItems[page + n]) ?? "<null>");
 				}
 				string text = win.DataProvider.GetText (filteredItems[page + n]);
-				if ((!AutoSelect || page + n != selection) && !string.IsNullOrEmpty (text) && !string.IsNullOrEmpty (CompletionString)) {
+				if ((!SelectionEnabled || page + n != selection) && !string.IsNullOrEmpty (text) && !string.IsNullOrEmpty (CompletionString)) {
 					int[] matchIndices = Match (CompletionString, text);
 					if (matchIndices != null) {
 						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
@@ -317,7 +328,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 				if (page + n == selection) {
-					if (AutoSelect) {
+					if (SelectionEnabled) {
 						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
 						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);
 					} else {

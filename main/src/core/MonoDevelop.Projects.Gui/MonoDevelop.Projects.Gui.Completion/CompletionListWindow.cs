@@ -164,7 +164,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (FillList ()) {
 				Reset (true);
 				this.AutoSelect = list.AutoSelect;
-				
+				this.AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
 
@@ -259,7 +259,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			if (SelectionIndex == -1 || completionDataList == null)
 				return;
-			
 			ICompletionData item = completionDataList[SelectionIndex];
 			if (item == null)
 				return;

@@ -1,5 +1,14 @@
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Added new option for special handling where only hint code
+	  completion can be given. 
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	  Resolved a fixme, since we're now using gtk+ 2.12.
 
