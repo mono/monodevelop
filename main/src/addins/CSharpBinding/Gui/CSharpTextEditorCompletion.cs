@@ -374,6 +374,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 								if (returnType != null && returnType.FullName == resolvedType.FullName)
 									completionList.Add (memberData);
 							}
+							completionList.AutoCompleteEmptyMatch = false;
 							return completionList;
 						}
 					}

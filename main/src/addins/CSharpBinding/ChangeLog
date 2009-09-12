@@ -1,5 +1,10 @@
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorCompletion.cs: Added auto complete empty
+	  match == false for 'hint' enum completion.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NewOverrideCompletionData.cs:
 	* Gui/CSharpTextEditorCompletion.cs:
 	* Gui/EventCreationCompletionData.cs:
