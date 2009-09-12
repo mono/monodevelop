@@ -34,7 +34,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	internal class ListWidget : Gtk.DrawingArea
+	public class ListWidget : Gtk.DrawingArea
 	{
 		int margin = 0;
 		int padding = 4;
@@ -245,9 +245,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public void FilterWords ()
 		{
 			filteredItems.Clear ();
-			for (int n = 0; n < win.DataProvider.ItemCount; n++) {
-				if (Matches (CompletionString, win.DataProvider.GetText (n)))
-					filteredItems.Add (n);
+			for (int i = 0; i < win.DataProvider.ItemCount; i++) {
+				if (Matches (CompletionString, win.DataProvider.GetText (i)))
+					filteredItems.Add (i);
 			}
 			CalcVisibleRows ();
 			UpdatePage ();

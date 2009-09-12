@@ -46,14 +46,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 		Complete = 8
 	}
 
-	internal class ListWindow : Gtk.Window
+	public class ListWindow : Gtk.Window
 	{
 		internal VScrollbar scrollbar;
 		ListWidget list;
 		Widget footer;
 		VBox vbox;
 
-		StringBuilder word;
+		StringBuilder word = new StringBuilder();
 		int curPos;
 
 		public ListWindow () : base(Gtk.WindowType.Popup)
@@ -155,8 +155,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 
-		public int Selection {
-			get { return list.Selection; }
+		public int SelectionIndex {
+			get { return list.SelectionIndex; }
 		}
 		
 		public bool AutoSelect {
@@ -192,8 +192,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get { return list; }
 		}
 
-		bool CompleteWithSpaceOrPunctuation {
-			get { return MonoDevelop.Core.PropertyService.Get ("CompleteWithSpaceOrPunctuation", true); }
+		public bool CompleteWithSpaceOrPunctuation {
+			get;
+			set;
 		}
 
 		public KeyActions ProcessKey (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
@@ -276,7 +277,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 				// AltGr
 				return KeyActions.Process;
 			}
-			
 			if (keyChar == '\0')
 				return KeyActions.Process;
 

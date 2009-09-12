@@ -52,5 +52,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }
 		public virtual DisplayFlags DisplayFlags { get; set; }
+		
+		public override string ToString ()
+		{
+			return string.Format ("[CompletionData: Icon={0}, DisplayText={1}, Description={2}, CompletionText={3}, DisplayFlags={4}]", Icon, DisplayText, Description, CompletionText, DisplayFlags);
+		}
 	}
 }
