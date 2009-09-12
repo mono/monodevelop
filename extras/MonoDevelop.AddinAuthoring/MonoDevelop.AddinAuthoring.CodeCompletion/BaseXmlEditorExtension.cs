@@ -48,7 +48,7 @@ namespace MonoDevelop.AddinAuthoring.CodeCompletion
 		
 		#endregion
 			
-		public override ICompletionDataProvider CodeCompletionCommand (ICodeCompletionContext completionContext)
+		public override ICompletionDataProvider CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
 			string txt = Editor.GetText (pos - 1, pos);
@@ -61,7 +61,7 @@ namespace MonoDevelop.AddinAuthoring.CodeCompletion
 		}
 		
 		public override ICompletionDataProvider HandleCodeCompletion (
-		    ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 			int pos = completionContext.TriggerOffset;
 			if (pos > 0 && Editor.GetCharAt (pos - 1) == completionChar) {
