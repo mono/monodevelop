@@ -37,10 +37,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 	public class CompletionWindowManager
 	{
 		static CompletionListWindow wnd;
+		
 		static CompletionWindowManager ()
 		{
 		}
-		public static bool ShowWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
+		
+		public static bool ShowWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, System.Action closedDelegate)
 		{
 			if (wnd == null)
 				wnd = new CompletionListWindow ();

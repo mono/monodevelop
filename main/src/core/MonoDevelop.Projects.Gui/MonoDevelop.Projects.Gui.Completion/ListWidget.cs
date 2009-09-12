@@ -46,7 +46,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		int visibleRows = -1;
 		int rowHeight;
 		bool buttonPressed;
-		bool disableSelection;
 		public event EventHandler SelectionChanged;
 		string completionString;
 		
@@ -81,7 +80,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			selection = win.DataProvider.ItemCount == 0 ? -1 : 0;
 			page = 0;
-			disableSelection = false;
+			AutoSelect = false;
 			if (IsRealized) {
 				UpdateStyle ();
 				QueueDraw ();
@@ -107,8 +106,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 					UpdatePage ();
 					if (SelectionChanged != null)
 						SelectionChanged (this, EventArgs.Empty);
-					if (disableSelection)
-						disableSelection = false;
 					this.QueueDraw ();
 				}
 			}
@@ -120,18 +117,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 				page = 0;
 				return;
 			}
+			
 			if (selection < page || selection >= page + VisibleRows)
 				page = selection - (VisibleRows / 2);
 			page = System.Math.Max (0, System.Math.Min (page, filteredItems.Count - VisibleRows));
 		}
 		
-		public bool SelectionDisabled {
-			get { return disableSelection; }
+		bool autoSelect;
+		public bool AutoSelect {
+			get { return autoSelect; }
 			set {
-				disableSelection = value;
-				this.QueueDraw ();
+				autoSelect = value;
+				QueueDraw ();
 			}
 		}
+		
 		public int Page {
 			get { return page; }
 			set {
@@ -139,17 +139,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 				this.QueueDraw ();
 			}
 		}
+		
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
 			Selection = GetRowByPosition ((int)e.Y);
 			buttonPressed = true;
 			return base.OnButtonPressEvent (e);
 		}
+		
 		protected override bool OnButtonReleaseEvent (EventButton e)
 		{
 			buttonPressed = false;
 			return base.OnButtonReleaseEvent (e);
 		}
+		
 		protected override bool OnMotionNotifyEvent (EventMotion e)
 		{
 			if (!buttonPressed)
@@ -159,21 +162,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 			Selection = GetRowByPosition ((int)e.Y);
 			return true;
 		}
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			base.OnExposeEvent (args);
 			DrawList ();
 			return true;
 		}
+		
 		public int TextOffset {
 			get {
 				int iconWidth, iconHeight;
-				if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
+				if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight))
 					iconHeight = iconWidth = 24;
-				}
 				return iconWidth + margin + padding + 2;
 			}
 		}
+		
 		internal List<int> filteredItems = new List<int> ();
 		public static int MatchRating (string filterText, string text)
 		{
@@ -286,7 +291,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					layout.SetText (win.DataProvider.GetText (filteredItems[page + n]) ?? "<null>");
 				}
 				string text = win.DataProvider.GetText (filteredItems[page + n]);
-				if ((disableSelection || page + n != selection) && !string.IsNullOrEmpty (text) && !string.IsNullOrEmpty (CompletionString)) {
+				if ((!AutoSelect || page + n != selection) && !string.IsNullOrEmpty (text) && !string.IsNullOrEmpty (CompletionString)) {
 					int[] matchIndices = Match (CompletionString, text);
 					if (matchIndices != null) {
 						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
@@ -300,6 +305,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 						layout.Attributes = attrList;
 					}
 				}
+				
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (filteredItems[page + n]);
 				int iconHeight, iconWidth;
 				if (icon != null) {
@@ -308,18 +314,19 @@ namespace MonoDevelop.Projects.Gui.Completion
 				} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
 					iconHeight = iconWidth = 24;
 				}
+				
 				int wi, he, typos, iypos;
 				layout.GetPixelSize (out wi, out he);
 				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 				if (page + n == selection) {
-					if (!disableSelection) {
+					if (AutoSelect) {
 						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
 						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);
 					} else {
-						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), false, margin, ypos, lineWidth, he + padding);
+						this.GdkWindow.DrawRectangle (this.Style.DarkGC (StateType.Prelight), false, margin, ypos, lineWidth - 1, he + padding - 1);
 						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
-					}
+					} 
 				} else
 					this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
 				if (icon != null)
@@ -334,12 +341,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 				}
 			}
 		}
+		
 		int GetRowByPosition (int ypos)
 		{
 			if (visibleRows == -1)
 				CalcVisibleRows ();
 			return page + (ypos - margin) / rowHeight - (PreviewCompletionString ? 1 : 0);
 		}
+		
 		public Gdk.Rectangle GetRowArea (int row)
 		{
 			row -= page;
@@ -347,6 +356,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.GdkWindow.GetSize (out winWidth, out winHeight);
 			return new Gdk.Rectangle (margin, margin + rowHeight * row, winWidth, rowHeight);
 		}
+		
 		public int VisibleRows {
 			get {
 				if (visibleRows == -1)
@@ -354,6 +364,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return visibleRows;
 			}
 		}
+		
 		void CalcVisibleRows ()
 		{
 			if (layout == null)
@@ -373,12 +384,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (lvWidth != listWidth || lvHeight != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
 		}
+		
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
 			UpdateStyle ();
 			UpdatePage ();
 		}
+		
 		void UpdateStyle ()
 		{
 			this.GdkWindow.Background = this.Style.Base (StateType.Normal);

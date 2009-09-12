@@ -50,7 +50,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 	{
 		internal VScrollbar scrollbar;
 		ListWidget list;
-		IListDataProvider provider;
 		Widget footer;
 		VBox vbox;
 
@@ -115,10 +114,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 
 			list.Reset ();
-			if (provider == null)
-				return;
-
-			ResetSizes ();
+			if (DataProvider != null)
+				ResetSizes ();
 		}
 		protected int curXPos, curYPos;
 
@@ -146,38 +143,33 @@ namespace MonoDevelop.Projects.Gui.Completion
 		}
 
 		public IListDataProvider DataProvider {
-			get { return provider; }
-			set { provider = value; }
+			get;
+			set;
 		}
 
-		public string CompleteWord {
+		public string CurrentCompletionText {
 			get {
-				if (list.SelectionIndex != -1 && !SelectionDisabled)
-					return provider.GetCompletionText (list.SelectionIndex);
-				else
-					return null;
+				if (list.SelectionIndex != -1 && list.AutoSelect)
+					return DataProvider.GetCompletionText (list.SelectionIndex);
+				return null;
 			}
 		}
 
 		public int Selection {
 			get { return list.Selection; }
 		}
-
-		public virtual bool SelectionDisabled {
-			get { return list.SelectionDisabled; }
-			set { list.SelectionDisabled = value; }
+		
+		public bool AutoSelect {
+			get { return list.AutoSelect; }
+			set { list.AutoSelect = value; }
 		}
-
-		public bool AutoSelect { get; set; }
-
-		string initalPartialWord = "";
+		
 		public string PartialWord {
 			get { return word.ToString (); }
 			set {
 				string newword = value;
 				if (newword.Trim ().Length == 0)
 					return;
-				initalPartialWord = newword;
 				word = new StringBuilder (newword);
 				curPos = newword.Length;
 				UpdateWordSelection ();
@@ -187,7 +179,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public bool IsUniqueMatch {
 			get {
 				int pos = list.Selection + 1;
-				if (provider.ItemCount > pos && provider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ()) || !(provider.GetText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
+				if (DataProvider.ItemCount > pos && 
+					DataProvider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ()) || 
+					!(DataProvider.GetText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
 					return false;
 
 				return true;
@@ -206,17 +200,19 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			switch (key) {
 			case Gdk.Key.Up:
-				if (list.SelectionDisabled)
-					list.SelectionDisabled = false;
-				else
+				if (!AutoSelect) {
+					AutoSelect = true;
+				} else {
 					list.Selection--;
+				}
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Down:
-				if (list.SelectionDisabled)
-					list.SelectionDisabled = false;
-				else
+				if (!AutoSelect) {
+					AutoSelect = true;
+				} else {
 					list.Selection++;
+				}
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Page_Up:
@@ -253,15 +249,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			case Gdk.Key.Tab:
 				//tab always completes current item even if selection is disabled
-				if (list.SelectionDisabled)
-					list.SelectionDisabled = false;
+				if (!AutoSelect)
+					AutoSelect = true;
 				goto case Gdk.Key.Return;
 
 			case Gdk.Key.Return:
 			case Gdk.Key.ISO_Enter:
 			case Gdk.Key.Key_3270_Enter:
 			case Gdk.Key.KP_Enter:
-				return (list.SelectionDisabled ? KeyActions.Process : (KeyActions.Complete | KeyActions.Ignore)) | KeyActions.CloseWindow;
+				return (!list.AutoSelect ? KeyActions.Process : (KeyActions.Complete | KeyActions.Ignore)) | KeyActions.CloseWindow;
 
 			case Gdk.Key.Escape:
 				return KeyActions.CloseWindow | KeyActions.Ignore;
@@ -291,27 +287,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
 				UpdateWordSelection ();
-				SelectionDisabled = word.ToString () == initalPartialWord;
 				curPos++;
 				return KeyActions.Process;
 			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
-				SelectionDisabled = word.ToString () == initalPartialWord;
 				bool hasMismatches;
 				int match = FindMatchedEntry (word.ToString (), out hasMismatches);
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
 					curPos++;
 					SelectEntry (match);
 					return KeyActions.Process;
-				} else if (CompleteWithSpaceOrPunctuation) {
+				} else if (CompleteWithSpaceOrPunctuation && list.AutoSelect) {
 					word.Remove (curPos, 1);
-					SelectionDisabled = word.Length == 0;
 					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
-				} else {
-					return KeyActions.CloseWindow | KeyActions.Process;
-				}
+				} 
+				return KeyActions.CloseWindow | KeyActions.Process;
 			}
 
 			return KeyActions.CloseWindow | KeyActions.Process;
@@ -324,12 +316,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		//note: finds the full match, or the best partial match
 		//returns -1 if there is no match at all
-		protected int FindMatchedEntry (string s, out bool hasMismatches)
+		protected int FindMatchedEntry (string partialWord, out bool hasMismatches)
 		{
 			// Search for exact matches.
 			for (int i = 0; i < list.filteredItems.Count; i++) {
-				string txt = provider.GetText (list.filteredItems[i]);
-				if (txt == s) {
+				if (DataProvider.GetText (list.filteredItems[i]) == partialWord) {
 					hasMismatches = false;
 					return i;
 				}
@@ -339,12 +330,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			hasMismatches = true;
 			int idx = -1;
 			int curRating = -1;
-			for (int n = 0; n < list.filteredItems.Count; n++) {
-				string txt = provider.GetText (list.filteredItems[n]);
-				int rating = ListWidget.MatchRating (s, txt);
+			for (int i = 0; i < list.filteredItems.Count; i++) {
+				int rating = ListWidget.MatchRating (partialWord, DataProvider.GetText (list.filteredItems[i]));
 				if (curRating < rating) {
 					curRating = rating;
-					idx = n;
+					idx = i;
 					hasMismatches = false;
 				}
 			}
@@ -353,24 +343,25 @@ namespace MonoDevelop.Projects.Gui.Completion
 			string historyWord = null;
 			for (int i = wordHistory.Count - 1; i >= 0; i--) {
 				string word = wordHistory[i];
-				if (ListWidget.Matches (s, word)) {
+				if (ListWidget.Matches (partialWord, word)) {
 					historyWord = word;
 					break;
 				}
 			}
 
 			if (historyWord != null) {
-				for (int n = 0; n < list.filteredItems.Count; n++) {
-					string txt = provider.GetText (list.filteredItems[n]);
-					if (txt == historyWord) {
-						if (curRating <= ListWidget.MatchRating (s, txt)) {
+				for (int i = 0; i < list.filteredItems.Count; i++) {
+					string currentWord = DataProvider.GetText (list.filteredItems[i]);
+					if (currentWord == historyWord) {
+						if (curRating <= ListWidget.MatchRating (partialWord, currentWord)) {
 							hasMismatches = false;
-							return n;
+							return i;
 						}
 						break;
 					}
 				}
 			}
+			
 			return idx;
 		}
 
@@ -390,11 +381,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		void SelectEntry (int n)
 		{
-			if (n < 0) {
-				list.SelectionDisabled = true;
-			} else {
+			if (n >= 0)
 				list.Selection = n;
-			}
 		}
 
 		public virtual void SelectEntry (string s)
@@ -405,16 +393,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (string.IsNullOrEmpty (s)) {
 				ResetSizes ();
 				list.Selection = 0;
-				list.SelectionDisabled = true;
 				return;
 			}
 
 			bool hasMismatches;
-			int n = FindMatchedEntry (s, out hasMismatches);
+			int matchedIndex = FindMatchedEntry (s, out hasMismatches);
 			ResetSizes ();
-			SelectEntry (n);
-			if (hasMismatches)
-				list.SelectionDisabled = true;
+			SelectEntry (matchedIndex);
 		}
 
 		void OnScrollChanged (object o, EventArgs args)
@@ -458,9 +443,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get { return list.TextOffset + (int)this.BorderWidth; }
 		}
 	}
-
 	
-
 	public interface IListDataProvider
 	{
 		int ItemCount { get; }

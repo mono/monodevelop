@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		ICompletionDataList completionDataList;
 		IMutableCompletionDataList mutableList;
 		Widget parsingMessage;
-		CompletionDelegate closedDelegate;
+		System.Action closedDelegate;
 		int initialWordLength;
 		int previousWidth = -1, previousHeight = -1;
 		
@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public void PostProcessKeyEvent (KeyActions ka)
 		{
 			if ((ka & KeyActions.Complete) != 0) 
-				UpdateWord ();
+				CompleteWord ();
 		}
 		
 		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions ka)
@@ -81,7 +81,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			ka = ProcessKey (key, keyChar, modifier);
 
 			if ((ka & KeyActions.Complete) != 0)
-				UpdateWord ();
+				CompleteWord ();
 
 			if ((ka & KeyActions.CloseWindow) != 0)
 				CompletionWindowManager.HideWindow ();
@@ -123,7 +123,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			UpdateDeclarationView ();
 		}
 
-		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
+		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, System.Action closedDelegate)
 		{
 			if (mutableList != null) {
 				mutableList.Changing -= OnCompletionDataChanging;
@@ -150,7 +150,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			if (FillList ()) {
 				Reset (true);
-
+				this.AutoSelect = list.AutoSelect;
+				
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
 
@@ -168,25 +169,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 				SelectEntry (PartialWord);
 				//if there is only one matching result we take it by default
 				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
-					UpdateWord ();
+					CompleteWord ();
 					CompletionWindowManager.HideWindow ();
 				} else {
 					Show ();
 					ResetSizes ();
 					if (List.Selection > (int)(scrollbar.Adjustment.Value + scrollbar.Adjustment.PageSize)) {
-//						scrollbar.Adjustment.Value = List.Selection;
+						//						scrollbar.Adjustment.Value = List.Selection;
 						List.UpdatePage ();
 					}
 				}
-				this.AutoSelect = list.AutoSelect;
-				this.SelectionDisabled = !list.AutoSelect;
-				
 				return true;
 			}
-			else {
-				CompletionWindowManager.HideWindow ();
-				return false;
-			}
+			CompletionWindowManager.HideWindow ();
+			return false;
 		}
 		
 		class DataItemComparer : IComparer<ICompletionData>
@@ -251,29 +247,24 @@ namespace MonoDevelop.Projects.Gui.Completion
 			Reposition (false);
 		}
 		
-		void UpdateWord ()
+		void CompleteWord ()
 		{
-			if (Selection == -1 || SelectionDisabled)
+			if (Selection == -1)
 				return;
-
 			ICompletionData item = currentData ?? (completionDataList != null ? completionDataList[Selection] : null);
 			if (item == null)
-				return;
-			string word = item.CompletionText;
-			if (!ListWidget.Matches (PartialWord, word))
 				return;
 			IActionCompletionData ac = item as IActionCompletionData;
 			if (ac != null) {
 				ac.InsertCompletionText (completionWidget, completionContext);
 				return;
 			}
-			
-			string partialWord = PartialWord;
-			int partialWordLength = partialWord != null ? partialWord.Length : 0;
-			int replaceLen = completionContext.TriggerWordLength + partialWordLength - initialWordLength;
-			string pword = completionWidget.GetText (completionContext.TriggerOffset, completionContext.TriggerOffset + replaceLen);
-			AddWordToHistory (word);
-			completionWidget.SetCompletionText (completionContext, pword, word);
+			int partialWordLength = PartialWord != null ? PartialWord.Length : 0;
+			int replaceLength = completionContext.TriggerWordLength + partialWordLength - initialWordLength;
+			string currentWord   = completionWidget.GetText (completionContext.TriggerOffset, completionContext.TriggerOffset + replaceLength);
+			string completedWord = item.CompletionText;
+			AddWordToHistory (completedWord);
+			completionWidget.SetCompletionText (completionContext, currentWord, completedWord);
 		}
 		
 		public override void Destroy ()
@@ -310,7 +301,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		protected override void DoubleClick ()
 		{
-			UpdateWord ();
+			CompleteWord ();
 			CompletionWindowManager.HideWindow ();
 		}
 		
@@ -474,12 +465,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			ResetSizes ();
 			//try to capture full selection state so as not to interrupt user
 			string last = null;
-			if (Visible) {
-				if (SelectionDisabled)
-					last = PartialWord;
-				else
-					last = CompleteWord;
-			}
+			if (Visible)
+				last = List.AutoSelect ? CurrentCompletionText : PartialWord;
 
 			HideFooter ();
 			if (Visible) {
@@ -491,6 +478,4 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 	}
-	
-	public delegate void CompletionDelegate ();
 }

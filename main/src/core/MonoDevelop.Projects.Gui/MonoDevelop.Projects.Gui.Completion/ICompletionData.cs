@@ -31,8 +31,6 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	
-	
 	public interface IOverloadedCompletionData : ICompletionData
 	{
 		IEnumerable<ICompletionData> GetOverloadedData ();

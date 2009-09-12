@@ -29,7 +29,6 @@ using MonoDevelop.Components;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 
-
 namespace MonoDevelop.Projects.Gui.Completion
 {
 	internal class DeclarationViewWindow : TooltipWindow

@@ -32,7 +32,6 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	
 	public class CompletionData : ICompletionData
 	{
 		protected CompletionData () {}

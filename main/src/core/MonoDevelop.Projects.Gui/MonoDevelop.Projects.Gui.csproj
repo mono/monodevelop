@@ -99,7 +99,6 @@
     <Compile Include="MonoDevelop.Projects.Gui.Completion\IParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Completion\ParameterInformationWindowManager.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Completion\ParameterInformationWindow.cs" />
-    <Compile Include="MonoDevelop.Projects.Gui.Completion\MethodParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\CustomCommandWidget.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\CustomCommandPanel.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\CustomCommandPanelWidget.cs" />

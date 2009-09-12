@@ -61,8 +61,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			AutoSelect = true;
 		}
 		
-		public CompletionDataList (IEnumerable<ICompletionData> data)
-			: base (data)
+		public CompletionDataList (IEnumerable<ICompletionData> data) : base (data)
 		{
 			AutoSelect = true;
 		}
