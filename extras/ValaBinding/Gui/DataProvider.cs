@@ -252,11 +252,7 @@ namespace MonoDevelop.ValaBinding
 			get{ return isChanging; }
 			internal set {
 				isChanging = value;
-				if (value) {
-					OnChanging (this, new EventArgs ());
-				} else {
-					OnChanged (this, new EventArgs ());
-				}
+				OnChanged (this, new EventArgs ());
 			}
 		}
 		protected bool isChanging;

@@ -150,7 +150,7 @@ namespace MonoDevelop.ValaBinding.Parser
 				p.CancelOutputRead ();
 				lock (result) {
 					// if (count < result.Count){ i = 0; }
-					if (0 < result.Count && endOutputRegex.Match(result[result.Count-1]).Success) {
+					if (0 < result.Count && null != result[result.Count-1] && endOutputRegex.Match(result[result.Count-1]).Success) {
 						break;
 					}
 					count = result.Count;
@@ -597,7 +597,6 @@ namespace MonoDevelop.ValaBinding.Parser
 				lock(p){ p.StandardInput.WriteLine ("reparse both"); }
 				
 				foreach (string result in ParseCommand ("get-classes {0}", file)) {
-					Console.WriteLine ("get-classes: got {0}", result);
 					node = ParseType (string.Empty, result);
 					if(null != node && node.IsContainerType) { 
 						classes.Add (node); 
