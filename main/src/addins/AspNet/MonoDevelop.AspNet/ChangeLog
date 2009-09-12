@@ -1,3 +1,10 @@
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Html/DocTypeCompletionData.cs:
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:
+	  Track API changes.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet.csproj: Don't require a specific version

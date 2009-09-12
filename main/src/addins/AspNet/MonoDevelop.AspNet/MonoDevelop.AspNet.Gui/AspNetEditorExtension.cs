@@ -141,7 +141,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
 		}
-		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
+		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (Tracker.Engine.CurrentState is AspNetExpressionState) {
 				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion completion = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument);
