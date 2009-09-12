@@ -1,5 +1,15 @@
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/NewOverrideCompletionData.cs:
+	* Gui/CSharpTextEditorCompletion.cs:
+	* Gui/EventCreationCompletionData.cs:
+	* Gui/NRefactoryParameterDataProvider.cs:
+	* Gui/NRefactoryIndexerParameterDataProvider.cs:
+	* Gui/NRefactoryTemplateParameterDataProvider.cs: Track API
+	  changes.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: removed debug message.
 
 2009-09-11  Mike Krüger  <mkrueger@novell.com>

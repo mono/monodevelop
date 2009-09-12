@@ -107,7 +107,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			return -1;
 		}
-		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
+		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
 		{
 			// insert add/remove event handler code after +=/-=
 			editor.DeleteText (initialOffset, editor.CursorPosition - initialOffset);

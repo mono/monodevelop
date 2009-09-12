@@ -166,7 +166,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		#region IParameterDataProvider implementation
 		
-		public int GetCurrentParameterIndex (ICodeCompletionContext ctx)
+		public int GetCurrentParameterIndex (CodeCompletionContext ctx)
 		{
 			return GetCurrentParameterIndex (editor, ctx.TriggerOffset, 0);
 		}

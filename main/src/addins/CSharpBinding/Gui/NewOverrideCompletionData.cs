@@ -73,7 +73,7 @@ namespace MonoDevelop.CSharpBinding
 			this.CompletionText = member.Name;
 		}
 		
-		public void InsertCompletionText (ICompletionWidget widget, ICodeCompletionContext context)
+		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
 		{
 			string mod = GetModifiers (member);
 			StringBuilder sb = new StringBuilder ();

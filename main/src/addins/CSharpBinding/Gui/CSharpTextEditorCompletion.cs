@@ -95,7 +95,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		
 		#endregion
 		
-		ExpressionResult FindExpression (ProjectDom dom, ICodeCompletionContext ctx, int offset)
+		ExpressionResult FindExpression (ProjectDom dom, CodeCompletionContext ctx, int offset)
 		{
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 			try {
@@ -106,7 +106,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 		}
 		
-		ExpressionResult FindExpression (ProjectDom dom, ICodeCompletionContext ctx)
+		ExpressionResult FindExpression (ProjectDom dom, CodeCompletionContext ctx)
 		{
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 			try {
@@ -150,7 +150,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 		}
 		
 		bool tryToForceCompletion = false;
-		public override ICompletionDataList HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 		try {
 			if (dom == null /*|| Document.CompilationUnit == null*/)
@@ -476,7 +476,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							bool autoSelect = true;
 							int cpos;
 							if ((prevCh == ',' || prevCh == '(') && GetParameterCompletionCommandOffset (out cpos)) {
-								ICodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
+								CodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
 								NRefactoryParameterDataProvider provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
 								if (provider != null) {
 									int i = provider.GetCurrentParameterIndex (ctx) - 1;
@@ -569,7 +569,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return false;
 		}
 		
-		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
+		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (dom == null || (completionChar != '(' && completionChar != '<' && completionChar != '['))
 				return null;
@@ -683,7 +683,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			col.AddCompletionData (completionList, type);
 		}
 		
-		public ICompletionDataList HandleKeywordCompletion (ICodeCompletionContext completionContext, ExpressionResult result, int wordStart, string word)
+		public ICompletionDataList HandleKeywordCompletion (CodeCompletionContext completionContext, ExpressionResult result, int wordStart, string word)
 		{
 			if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 				return null;
@@ -911,7 +911,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return Editor.GetText (i, endOffset);
 		}
 		
-		public override ICompletionDataList CodeCompletionCommand (ICodeCompletionContext completionContext)
+		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			if (stateTracker.Engine.IsInsidePreprocessorDirective || stateTracker.Engine.IsInsideOrdinaryCommentOrString || stateTracker.Engine.IsInsideDocLineComment)
 				return null;
@@ -1120,7 +1120,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return line.Substring (0, line.Length - trimmedLength);
 		}
 		
-		void AddVirtuals (ICodeCompletionContext ctx, Dictionary<string, bool> alreadyInserted, CompletionDataList completionList, IType type, string modifiers, IReturnType curType)
+		void AddVirtuals (CodeCompletionContext ctx, Dictionary<string, bool> alreadyInserted, CompletionDataList completionList, IType type, string modifiers, IReturnType curType)
 		{
 			if (curType == null)
 				return;
@@ -1258,7 +1258,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return result;
 		}
 		
-		CompletionDataList GetOverrideCompletionData (ICodeCompletionContext ctx, IType type, string modifiers)
+		CompletionDataList GetOverrideCompletionData (CodeCompletionContext ctx, IType type, string modifiers)
 		{
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 			Dictionary<string, bool> alreadyInserted = new Dictionary<string, bool> ();
@@ -1295,7 +1295,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			return null;
 		}
 		
-		CompletionDataList GetPartialCompletionData (ICodeCompletionContext ctx, IType type, string modifiers)
+		CompletionDataList GetPartialCompletionData (CodeCompletionContext ctx, IType type, string modifiers)
 		{
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 
@@ -1358,7 +1358,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 		}
 		
-		CompletionDataList CreateCtrlSpaceCompletionData (ICodeCompletionContext ctx, ExpressionResult expressionResult)
+		CompletionDataList CreateCtrlSpaceCompletionData (CodeCompletionContext ctx, ExpressionResult expressionResult)
 		{
 		//	Console.WriteLine (Environment.StackTrace);
 		//	Console.WriteLine ("---------");
