@@ -1,6 +1,12 @@
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Corrected failing unit test.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:

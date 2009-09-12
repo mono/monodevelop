@@ -146,6 +146,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			//initialWordLength = 0;
 			this.completionDataList = list;
 			this.CompleteWithSpaceOrPunctuation = MonoDevelop.Core.PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
+			
 			this.CodeCompletionContext = completionContext;
 			this.closedDelegate = closedDelegate;
 			mutableList = completionDataList as IMutableCompletionDataList;
@@ -259,6 +260,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			if (SelectionIndex == -1 || completionDataList == null)
 				return;
+			
 			ICompletionData item = completionDataList[SelectionIndex];
 			if (item == null)
 				return;
@@ -268,6 +270,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				ac.InsertCompletionText (CompletionWidget, CodeCompletionContext);
 				return;
 			}
+			
 			int partialWordLength = PartialWord != null ? PartialWord.Length : 0;
 			int replaceLength = CodeCompletionContext.TriggerWordLength + partialWordLength - initialWordLength;
 			string currentWord   = CompletionWidget.GetText (CodeCompletionContext.TriggerOffset, CodeCompletionContext.TriggerOffset + replaceLength);

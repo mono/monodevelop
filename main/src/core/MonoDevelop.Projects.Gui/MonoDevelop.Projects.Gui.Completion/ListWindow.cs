@@ -290,6 +290,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 				curPos++;
 				return KeyActions.Process;
 			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
+				if (CompleteWithSpaceOrPunctuation && list.AutoSelect) 
+					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
+				
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
@@ -299,9 +302,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 					curPos++;
 					SelectEntry (match);
 					return KeyActions.Process;
-				} else if (CompleteWithSpaceOrPunctuation && list.AutoSelect) {
-					word.Remove (curPos, 1);
-					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
 				} 
 				return KeyActions.CloseWindow | KeyActions.Process;
 			}
