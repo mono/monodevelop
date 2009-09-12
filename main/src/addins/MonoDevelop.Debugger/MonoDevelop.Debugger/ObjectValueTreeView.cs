@@ -623,7 +623,7 @@ namespace MonoDevelop.Debugger
 					currentCompletionData = GetCompletionData (exp);
 					if (currentCompletionData != null) {
 						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
-						ICodeCompletionContext ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
+						CodeCompletionContext ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
 						CompletionWindowManager.ShowWindow (c, dataList, this, ctx, OnCompletionWindowClosed);
 					} else
 						currentCompletionData = null;
@@ -689,12 +689,12 @@ namespace MonoDevelop.Debugger
 			return c;
 		}
 		
-		string ICompletionWidget.GetCompletionText (ICodeCompletionContext ctx)
+		string ICompletionWidget.GetCompletionText (CodeCompletionContext ctx)
 		{
 			return editEntry.Text.Substring (ctx.TriggerOffset, ctx.TriggerWordLength);
 		}
 		
-		void ICompletionWidget.SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
+		void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 		{
 			int sp = editEntry.Position - partial_word.Length;
 			editEntry.DeleteText (sp, sp + partial_word.Length);
