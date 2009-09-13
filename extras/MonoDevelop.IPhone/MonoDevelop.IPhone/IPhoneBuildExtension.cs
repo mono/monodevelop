@@ -540,21 +540,22 @@ namespace MonoDevelop.IPhone
 			
 			monitor.EndTask ();
 			
-			if (String.IsNullOrEmpty (conf.CodesignKey)) {
-				result.AddWarning ("Code signing disabled, skipping signing.");
-				return result;
+			string keyName = conf.CodesignKey;
+			if (String.IsNullOrEmpty (keyName)) {
+				result.AddWarning ("No signing identity specified in configuration. Using Developer (Automatic).");
+				keyName = Keychain.DEV_CERT_PREFIX;
 			}
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Signing application"), 0);
 			
 			IEnumerable<System.Security.Cryptography.X509Certificates.X509Certificate2> installedKeyNames;
 			
-			if (conf.CodesignKey == Keychain.DEV_CERT_PREFIX || conf.CodesignKey == Keychain.DIST_CERT_PREFIX) {
+			if (keyName == Keychain.DEV_CERT_PREFIX || keyName == Keychain.DIST_CERT_PREFIX) {
 				installedKeyNames = Keychain.GetAllSigningCertificates ()
-					.Where (c => Keychain.GetCertificateCommonName (c).StartsWith (conf.CodesignKey));
+					.Where (c => Keychain.GetCertificateCommonName (c).StartsWith (keyName));
 			} else {
 				installedKeyNames = Keychain.GetAllSigningCertificates ()
-					.Where (c => Keychain.GetCertificateCommonName (c) == conf.CodesignKey);
+					.Where (c => Keychain.GetCertificateCommonName (c) == keyName);
 			}
 			
 			if (provision != null) {
@@ -570,10 +571,10 @@ namespace MonoDevelop.IPhone
 				
 			if (installedCert == null) {
 				if (provision != null)
-					result.AddError ("Identity '" + conf.CodesignKey + "' did not match the provisioning profile \""
+					result.AddError ("Identity '" + keyName + "' did not match the provisioning profile \""
 					                 + provision.Name + "\". The application will not be signed");
 				else
-					result.AddError ("A key could not be found matching the name \"" + conf.CodesignKey
+					result.AddError ("A key could not be found matching the name \"" + keyName
 					                    + "\". The application will not be signed");
 
 				return result;
