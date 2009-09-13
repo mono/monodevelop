@@ -149,8 +149,21 @@ namespace MonoDevelop.IPhone
 			args.AppendFormat ("-xcode=\"{0}\" -v", xcodeDir);
 			foreach (ProjectFile pf in proj.Files) {
 				if (pf.BuildAction == BuildAction.Content || pf.BuildAction == BuildAction.Page) {
-					string rel = pf.IsExternalToProject? pf.FilePath.FileName : (string)pf.RelativePath;
-					args.AppendFormat (" -res=\"{0}\",\"{1}\"", pf.FilePath, rel);
+					FilePath rel = pf.IsExternalToProject? pf.FilePath.FileName : (string)pf.RelativePath;
+					args.AppendFormat (" -res=\"{0}\",\"{1}\"", pf.FilePath, (string)rel);
+					
+					//hack around mtouch 1.0 bug. create resource directories
+					string subdir = rel.ParentDirectory;
+					if (string.IsNullOrEmpty (subdir))
+						continue;
+					subdir = xcodeDir.Combine (subdir);
+					try {
+						if (!Directory.Exists (subdir))
+							Directory.CreateDirectory (subdir);
+					} catch (IOException ex) {
+						MessageService.ShowException (ex, "Failed to create directory '" + subdir +"' for Xcode project");
+						return;
+					}
 				}
 			}
 			
