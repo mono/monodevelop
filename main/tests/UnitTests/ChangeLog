@@ -1,5 +1,10 @@
 2009-09-14  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Add
+	  tests for matching on punctuation.
+
+2009-09-14  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am: Add MonoDevelop.Refactoring to the MONO_PATH so
 	  we can run the tests.
 

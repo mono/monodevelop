@@ -127,7 +127,6 @@ namespace MonoDevelop.Projects.Gui
 				default:
 					listWindow.PreProcessKeyEvent ((Gdk.Key)ch, ch, Gdk.ModifierType.None, out ka);
 					break;
-					
 				}
 			}
 		}
@@ -387,6 +386,51 @@ namespace MonoDevelop.Projects.Gui
 				"AbAbAbAb");
 			
 			Assert.AreEqual ("AbAb", output);
+		}
+		
+		string[] punctuationData = {
+			"AbAb",
+			"/AbAb", 
+			"Accc",
+			",AbAb",
+			",A..bAb",
+			",A.bAb",
+			"Addd",
+		};
+		
+		[Test]
+		public void TestMatchPunctuation ()
+		{
+			string output = RunSimulation ("", "/\n", true, false, false, punctuationData);
+			Assert.AreEqual ("/AbAb", output);
+			
+			output = RunSimulation ("", ".\n", true, false, false, punctuationData);
+			Assert.AreEqual ("AbAb", output);
+			
+			output = RunSimulation ("", "A\n", true, false, false, punctuationData);
+			Assert.AreEqual ("AbAb", output);
+			
+			output = RunSimulation ("", ",A.b\n", true, false, false, punctuationData);
+			Assert.AreEqual (",A.bAb", output);
+		}
+		
+		[Test]
+		public void TestMatchPunctuationCommitOnSpaceAndPunctuation ()
+		{
+			string output = RunSimulation ("", "Ac ", true, true, false, punctuationData);
+			Assert.AreEqual ("Accc", output);
+			
+			output = RunSimulation ("", "/ ", true, true, false, punctuationData);
+			Assert.AreEqual ("/AbAb", output);
+			
+			output = RunSimulation ("", ".", true, true, false, punctuationData);
+			Assert.AreEqual (null, output);
+			
+			output = RunSimulation ("", "A ", true, true, false, punctuationData);
+			Assert.AreEqual ("AbAb", output);
+			
+			output = RunSimulation ("", ",A.b ", true, true, false, punctuationData);
+			Assert.AreEqual (",A.bAb", output);
 		}
 	}
 }
