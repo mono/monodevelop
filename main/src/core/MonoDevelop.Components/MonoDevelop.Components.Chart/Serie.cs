@@ -42,6 +42,10 @@ namespace MonoDevelop.Components.Chart
 		bool extendBoundingValues;
 		DisplayMode mode;
 		double initialValue;
+		bool averageData;
+		double averageSpan;
+		double averageOrigin;
+		int lineWidth = 2;
 		
 		public Serie ()
 		{
@@ -88,6 +92,26 @@ namespace MonoDevelop.Components.Chart
 		public DisplayMode DisplayMode {
 			get { return mode; }
 			set { mode = value; OnSerieChanged (); }
+		}
+		
+		public bool AverageData {
+			get { return this.averageData; }
+			set { this.averageData = value; OnSerieChanged ();}
+		}
+
+		public double AverageSpan {
+			get { return this.averageSpan; }
+			set { this.averageSpan = value; OnSerieChanged ();}
+		}
+
+		public double AverageOrigin {
+			get { return this.averageOrigin; }
+			set { this.averageOrigin = value; OnSerieChanged (); }
+		}
+		
+		public int LineWidth {
+			get { return this.lineWidth; }
+			set { this.lineWidth = value; }
 		}
 		
 		public bool HasData {
