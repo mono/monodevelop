@@ -545,8 +545,8 @@ namespace Mono.TextEditor
 					DocumentLocation visEnd = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), end);
 
 					if (segment.Contains (line.Offset) || segment.Contains (line.EndOffset)) {
-						selectionStart = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), Document, System.Math.Min (visStart.Column, visEnd.Column));
-						selectionEnd = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), Document, System.Math.Max (visStart.Column, visEnd.Column));
+						selectionStart = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), System.Math.Min (visStart.Column, visEnd.Column));
+						selectionEnd = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), System.Math.Max (visStart.Column, visEnd.Column));
 					}
 				}
 			}
@@ -732,7 +732,7 @@ namespace Mono.TextEditor
 		}
 
 		delegate void HandleSelectionDelegate (int start, int end);
-		static void HandleSelection (int selectionStart, int selectionEnd, int startOffset, int endOffset, HandleSelectionDelegate handleNotSelected, HandleSelectionDelegate handleSelected)
+		static void InternalHandleSelection (int selectionStart, int selectionEnd, int startOffset, int endOffset, HandleSelectionDelegate handleNotSelected, HandleSelectionDelegate handleSelected)
 		{
 			if (startOffset >= selectionStart && endOffset <= selectionEnd) {
 				if (handleSelected != null)
@@ -757,6 +757,20 @@ namespace Mono.TextEditor
 			} else {
 				if (handleNotSelected != null)
 					handleNotSelected (startOffset, endOffset);
+			}
+		}
+		
+		void HandleSelection (LineSegment line, int selectionStart, int selectionEnd, int startOffset, int endOffset, HandleSelectionDelegate handleNotSelected, HandleSelectionDelegate handleSelected)
+		{
+			int selectionStartColumn = selectionStart - line.Offset;
+			int selectionEndColumn = selectionEnd - line.Offset;
+			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
+			int rulerOffset = line.Offset + logicalRulerColumn;
+			if (textEditor.Options.ShowRuler && selectionStartColumn < logicalRulerColumn && logicalRulerColumn < selectionEndColumn && startOffset < rulerOffset && rulerOffset < endOffset) {
+				InternalHandleSelection (selectionStart, selectionEnd, startOffset, rulerOffset, handleNotSelected, handleSelected);
+				InternalHandleSelection (selectionStart, selectionEnd, rulerOffset, endOffset, handleNotSelected, handleSelected);
+			} else {
+				InternalHandleSelection (selectionStart, selectionEnd, startOffset, endOffset, handleNotSelected, handleSelected);
 			}
 		}
 
@@ -853,7 +867,7 @@ namespace Mono.TextEditor
 				int o = offset;
 				//	int s;
 				while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
-					HandleSelection (selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
+					HandleSelection (line, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
 						Pango.AttrBackground backGround = new Pango.AttrBackground (ColorStyle.SearchTextBg.Red, ColorStyle.SearchTextBg.Green, ColorStyle.SearchTextBg.Blue);
 						backGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(start - offset), ref curIndex, ref byteIndex);
 						backGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(end - offset), ref curIndex, ref byteIndex);
@@ -884,13 +898,11 @@ namespace Mono.TextEditor
 							if (textEditor.preeditOffset < endOffset)
 								endIndex += preeditLength;
 						}
-
-						HandleSelection (selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
+						HandleSelection (line, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
 
 							Pango.AttrForeground foreGround = new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue);
 							foreGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							foreGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-
 							wrapper.Add (foreGround);
 
 							if (!chunkStyle.TransparentBackround) {
@@ -905,7 +917,14 @@ namespace Mono.TextEditor
 							selectedForeground.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							wrapper.Add (selectedForeground);
 
-							Pango.AttrBackground attrBackground = new Pango.AttrBackground (this.ColorStyle.Selection.BackgroundColor.Red, this.ColorStyle.Selection.BackgroundColor.Green, this.ColorStyle.Selection.BackgroundColor.Blue);
+							Color bgColor;
+							int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
+							if (!textEditor.Options.ShowRuler || start - line.Offset < logicalRulerColumn) {
+								bgColor = this.ColorStyle.Selection.BackgroundColor;
+							} else {
+								bgColor = DimColor (this.ColorStyle.Selection.BackgroundColor);
+							}
+							Pango.AttrBackground attrBackground = new Pango.AttrBackground (bgColor.Red, bgColor.Green, bgColor.Blue);
 							attrBackground.StartIndex = selectedForeground.StartIndex;
 							attrBackground.EndIndex = selectedForeground.EndIndex;
 							wrapper.Add (attrBackground);
@@ -1446,7 +1465,7 @@ namespace Mono.TextEditor
 							endIndex += preeditLength;
 					}
 
-					HandleSelection (-1, -1, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
+					HandleSelection (line, -1, -1, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
 
 						Pango.AttrForeground foreGround = new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue);
 						foreGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);

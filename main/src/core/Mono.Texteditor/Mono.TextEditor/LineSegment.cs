@@ -197,11 +197,11 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 		
-		public int GetLogicalColumn (TextEditorData editor, IBuffer doc, int visualColumn)
+		public int GetLogicalColumn (TextEditorData editor, int visualColumn)
 		{
 			int curVisualColumn = 0;
 			for (int i = 0; i < EditableLength; i++) {
-				if (doc.GetCharAt (Offset + i) == '\t') {
+				if (editor.Document.GetCharAt (Offset + i) == '\t') {
 					curVisualColumn = TextViewMargin.GetNextTabstop (editor, curVisualColumn);
 				} else {
 					curVisualColumn++;

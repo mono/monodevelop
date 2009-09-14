@@ -211,7 +211,7 @@ namespace Mono.TextEditor
 		void SetColumn ()
 		{
 			LineSegment curLine = this.document.GetLine (this.Line);
-			this.location.Column = curLine.GetLogicalColumn (editor, this.document, this.DesiredColumn);
+			this.location.Column = curLine.GetLogicalColumn (editor, this.DesiredColumn);
 			if (curLine.GetVisualColumn (editor, this.location.Column) < this.DesiredColumn) {
 				this.location.Column = editor.GetNextVirtualColumn (Line, this.location.Column);
 			} else {

@@ -592,8 +592,8 @@ namespace Mono.TextEditor
 				int endCol = System.Math.Max (visStart.Column, visEnd.Column);
 				for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 					LineSegment curLine = Document.GetLine (lineNr);
-					int col1 = curLine.GetLogicalColumn (this, Document, startCol);
-					int col2 = System.Math.Min (curLine.GetLogicalColumn (this, Document, endCol), curLine.EditableLength);
+					int col1 = curLine.GetLogicalColumn (this, startCol);
+					int col2 = System.Math.Min (curLine.GetLogicalColumn (this, endCol), curLine.EditableLength);
 					if (col1 >= col2)
 						continue;
 					Remove (curLine.Offset + col1, col2 - col1);

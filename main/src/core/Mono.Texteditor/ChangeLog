@@ -1,5 +1,14 @@
 2009-09-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/LineSegment.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/ClipboardActions.cs: Fixed text selection
+	  ruler background color.
+
+2009-09-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed "Bug 538060 - text
 	  not visible when "Show column ruler" option enabled".
 
