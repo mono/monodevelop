@@ -1,3 +1,12 @@
+2009-09-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/EvaluationContext.cs: Added flag
+	  for enabling/disabling execution of debugging target code
+	  while inspecting expressions.
+
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Fix cast
+	  expression evaluation.
+
 2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:

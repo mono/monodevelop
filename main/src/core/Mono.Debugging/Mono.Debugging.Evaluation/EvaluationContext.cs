@@ -48,8 +48,17 @@ namespace Mono.Debugging.Evaluation
 		
 		public int Timeout { get; set; }
 		
+		public bool AllowTargetInvoke { get; set; }
+		
+		public void AssertTargetInvokeAllowed ()
+		{
+			if (!AllowTargetInvoke)
+				throw new EvaluatorException ("Target code execution disabled");
+		}
+		
 		public EvaluationContext ()
 		{
+			AllowTargetInvoke = true;
 		}
 
 		public EvaluationContext Clone ( )

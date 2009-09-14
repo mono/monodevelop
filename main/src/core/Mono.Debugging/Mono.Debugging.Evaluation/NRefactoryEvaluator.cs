@@ -330,7 +330,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitCastExpression (ICSharpCode.NRefactory.Ast.CastExpression castExpression, object data)
 		{
-			ValueReference val = (ValueReference) castExpression.Expression.AcceptVisitor (this, data);
+			ValueReference val = (ValueReference)castExpression.Expression.AcceptVisitor (this, data);
 			TypeValueReference type = castExpression.CastTo.AcceptVisitor (this, data) as TypeValueReference;
 			if (type == null)
 				throw CreateParseError ("Invalid cast type.");
@@ -341,7 +341,7 @@ namespace Mono.Debugging.Evaluation
 				else
 					throw CreateParseError ("Invalid cast.");
 			}
-			return ob;
+			return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, ob);
 		}
 		
 		public override object VisitBinaryOperatorExpression (ICSharpCode.NRefactory.Ast.BinaryOperatorExpression binaryOperatorExpression, object data)
