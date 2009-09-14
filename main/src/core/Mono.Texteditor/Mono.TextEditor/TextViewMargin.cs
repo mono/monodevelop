@@ -1510,9 +1510,17 @@ namespace Mono.TextEditor
 
 		static Color DimColor (Color color)
 		{
-			return new Color ((byte)(((byte)color.Red * 19) / 20), (byte)(((byte)color.Green * 19) / 20), (byte)(((byte)color.Blue * 19) / 20));
+			double r = color.Red / 255.0;
+			double g = color.Red / 255.0;
+			double b = color.Red / 255.0;
+			const double dimFactor = 0.95;
+			Color result = new Color ((byte)(r * dimFactor), 
+			                          (byte)(g * dimFactor), 
+			                          (byte)(b * dimFactor));
+			//Console.WriteLine ("color={0}, result={1}", color, result);
+			return result;
 		}
-
+		
 		void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color, bool drawDefaultBackground)
 		{
 			bool isDefaultColor = (color.Red == defaultBgColor.Red && color.Green == defaultBgColor.Green && color.Blue == defaultBgColor.Blue);
