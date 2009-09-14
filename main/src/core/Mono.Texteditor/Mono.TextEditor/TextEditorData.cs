@@ -563,6 +563,13 @@ namespace Mono.TextEditor
 			MainSelection.Lead = location;
 		}
 		
+		public void SetSelection (int anchorOffset, int leadOffset)
+		{
+			DocumentLocation loc1 = document.OffsetToLocation (anchorOffset);
+			DocumentLocation loc2 = document.OffsetToLocation (leadOffset);
+			MainSelection = new Selection (loc1, loc2);
+		}
+		
 		public void ExtendSelectionTo (int offset)
 		{
 			ExtendSelectionTo (document.OffsetToLocation (offset));
