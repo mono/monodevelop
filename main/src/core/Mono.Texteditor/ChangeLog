@@ -1,5 +1,9 @@
 2009-09-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Added some isdispose checks.
+
+2009-09-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/Chunk.cs: Fixed "Bug 538298 -
 	  Exception thrown".
 

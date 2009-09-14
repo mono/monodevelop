@@ -1063,7 +1063,7 @@ namespace Mono.TextEditor
 		
 		public void CenterToCaret ()
 		{
-			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
+			if (isDisposed || Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
 			SetAdjustments (this.Allocation);
 //			Adjustment adj;
@@ -1087,7 +1087,7 @@ namespace Mono.TextEditor
 		
 		public void ScrollToCaret ()
 		{
-			if (Caret.Line < 0 || Caret.Line >= Document.LineCount)
+			if (isDisposed || Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
 			UpdateAdjustments ();
 			if (this.textEditorData.VAdjustment.Upper < Allocation.Height)  {
