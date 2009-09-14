@@ -1,3 +1,8 @@
+2009-09-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Text/TextFile.cs: Fixed 'Bug 538827 –
+	  Pango crash when opening a specific file'.
+
 2009-09-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Multiple

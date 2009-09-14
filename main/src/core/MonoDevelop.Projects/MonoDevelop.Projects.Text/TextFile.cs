@@ -115,9 +115,17 @@ namespace MonoDevelop.Projects.Text
 					new { Enc = "GB18030", Bytes = new byte[] {0x84, 0x31, 0x95, 0x33} },
 				};
 				string enc = (from bom in bomTable where content.StartsWith (bom.Bytes) select bom.Enc).FirstOrDefault ();
-
+				
 				if (!string.IsNullOrEmpty (enc)) {
+					// remove the BOM (see bug Bug 538827 – Pango crash when opening a specific file)
+					byte[] bomBytes = (from bom in bomTable where enc == bom.Enc select bom.Bytes).FirstOrDefault ();
+					if (bomBytes != null && bomBytes.Length > 0) {
+						byte[] newContent = new byte [content.Length - bomBytes.Length];
+						Array.Copy (content, bomBytes.Length, newContent, 0, newContent.Length);
+						content = newContent;
+					}
 					string s = ConvertFromEncoding (content, enc);
+				
 					if (s != null) {
 						sourceEncoding = enc;
 						text = new StringBuilder (s);
