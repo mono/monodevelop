@@ -433,22 +433,24 @@ namespace MonoDevelop.Ide.Gui
 				SavePreferences (it);
 		}
 		
-		public void Close ()
+		public bool Close ()
 		{
-			Close (true);
+			return Close (true);
 		}
 
-		public void Close (bool saveWorkspacePreferencies)
+		public bool Close (bool saveWorkspacePreferencies)
 		{
 			if (Items.Count > 0) {
 				if (saveWorkspacePreferencies)
 					SavePreferences ();
 
-				Document[] docs = new Document [IdeApp.Workbench.Documents.Count];
+				Document[] docs = new Document[IdeApp.Workbench.Documents.Count];
 				IdeApp.Workbench.Documents.CopyTo (docs, 0);
 				foreach (Document doc in docs) {
-					if (doc.HasProject)
-						doc.Close ();
+					if (doc.HasProject) {
+						if (!doc.Close ())
+							return false;
+					}
 				}
 				foreach (WorkspaceItem it in new List<WorkspaceItem> (Items)) {
 					try {
@@ -459,6 +461,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 			}
+			return true;
 		}
 		
 		public void CloseWorkspaceItem (WorkspaceItem item)

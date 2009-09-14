@@ -1,3 +1,10 @@
+2009-09-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Don't close the
+	  workspace if the users click on Cancel when asked to save a
+	  file. Fixes bug #538371 - Canceling the closing of a
+	  solution with unsaved files open does not work.
+
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
