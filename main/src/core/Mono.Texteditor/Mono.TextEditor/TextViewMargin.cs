@@ -1846,6 +1846,7 @@ namespace Mono.TextEditor
 				xp += (int)margin.textEditor.HAdjustment.Value;
 				xp *= (int)Pango.Scale.PangoScale;
 				yp *= (int)Pango.Scale.PangoScale;
+				yp = System.Math.Max (0, yp);
 				if (xp < 0)
 					return new DocumentLocation (lineNumber, 0);
 				int column = 0;
