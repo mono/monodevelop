@@ -1,5 +1,10 @@
 2009-09-14  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Ignore '?'
+	  prefix. We don't use it, but VS does.
+
+2009-09-14  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Evaluation/EvaluationContext.cs: Added flag
 	  for enabling/disabling execution of debugging target code
 	  while inspecting expressions.

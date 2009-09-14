@@ -44,6 +44,8 @@ namespace Mono.Debugging.Evaluation
 		
 		public override ValueReference Evaluate (EvaluationContext ctx, string exp, EvaluationOptions options)
 		{
+			if (exp.StartsWith ("?"))
+				exp = exp.Substring (1).Trim ();
 			if (exp.StartsWith ("var ")) {
 				exp = exp.Substring (4).Trim (' ','\t');
 				string var = null;
