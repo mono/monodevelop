@@ -1,3 +1,10 @@
+2009-09-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MdbObjectValueAdaptor.cs: Added some checks for
+	  AllowTargetInvoke flag. When resolving a method, in case of
+	  multiple valid matches, just pick the first one. Fixes bug
+	  #538059.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MdbAdaptor-2-4-4.cs:

@@ -42,6 +42,8 @@ namespace DebuggerServer
 	{
 		public override string CallToString (EvaluationContext gctx, object obj)
 		{
+			if (!gctx.AllowTargetInvoke)
+				return GetValueTypeName (gctx, obj);
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
 			TargetObject retval = CallMethod (ctx, "ToString", (TargetStructObject) obj);
 			object s = ((TargetFundamentalObject) retval).GetObject (ctx.Thread);
@@ -56,11 +58,14 @@ namespace DebuggerServer
 
 		public override object TryCast (EvaluationContext gctx, object val, object type)
 		{
-			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
+			MdbEvaluationContext ctx = (MdbEvaluationContext)gctx;
+			TargetObject tval = ctx.GetRealObject (val);
+			if (type is TargetObjectType)
+				return val;
 			if (type is TargetClassType)
-				return TargetObjectConvert.TryCast (ctx, (TargetObject) val, (TargetClassType) type);
+				return TargetObjectConvert.TryCast (ctx, tval, (TargetClassType)type);
 			else
-				return CreateNullValue (ctx, type);
+				return null;
 		}
 
 
@@ -97,10 +102,12 @@ namespace DebuggerServer
 					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
 						return null;
-					if (co.TypeName == "System.Decimal")
-						return new LiteralExp (CallToString (ctx, co));
-					if (tdata.ValueDisplayString != null)
-						return new LiteralExp (EvaluateDisplayString (ctx, co, tdata.ValueDisplayString));
+					if (ctx.AllowTargetInvoke) {
+						if (co.TypeName == "System.Decimal")
+							return new LiteralExp (CallToString (ctx, co));
+						if (tdata.ValueDisplayString != null)
+							return new LiteralExp (EvaluateDisplayString (ctx, co, tdata.ValueDisplayString));
+					}
 					
 					// Return the type name
 					if (tdata.TypeDisplayString != null)
@@ -161,6 +168,7 @@ namespace DebuggerServer
 		
 		public override object RuntimeInvoke (EvaluationContext gctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
+			gctx.AssertTargetInvokeAllowed ();
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
 			TargetObject[] lst = new TargetObject [argValues.Length];
 			Array.Copy (argValues, lst, argValues.Length);
@@ -324,19 +332,19 @@ namespace DebuggerServer
 
 		public override IEnumerable<ValueReference> GetMembers (EvaluationContext gctx, object tt, object ob, BindingFlags bindingFlags)
 		{
-			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
-			TargetStructObject co = (TargetStructObject) ctx.GetRealObject (ob);
-			TargetType t = (TargetType) tt;
+			MdbEvaluationContext ctx = (MdbEvaluationContext)gctx;
+			TargetStructObject co = (TargetStructObject)ctx.GetRealObject (ob);
+			TargetType t = (TargetType)tt;
 			if (co == null) {
 				bindingFlags |= BindingFlags.Static;
 				bindingFlags &= ~BindingFlags.Instance;
 			}
 			foreach (MemberReference mem in ObjectUtil.GetTypeMembers (ctx, t, true, true, false, bindingFlags)) {
 				if (mem.Member is TargetFieldInfo) {
-					TargetFieldInfo field = (TargetFieldInfo) mem.Member;
+					TargetFieldInfo field = (TargetFieldInfo)mem.Member;
 					yield return new FieldReference (ctx, co, mem.DeclaringType, field);
 				}
-				if (mem.Member is TargetPropertyInfo) {
+				if (mem.Member is TargetPropertyInfo && !gctx.AllowTargetInvoke) {
 					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Member;
 					if (prop.CanRead && (prop.Getter.ParameterTypes == null || prop.Getter.ParameterTypes.Length == 0))
 						yield return new PropertyReference (ctx, prop, co);
@@ -404,6 +412,7 @@ namespace DebuggerServer
 
 		public static TargetStructObject GetTypeOf (MdbEvaluationContext ctx, string typeName)
 		{
+			ctx.AssertTargetInvokeAllowed ();
 			TargetType tt = ctx.Frame.Language.LookupType ("System.Type");
 			if (tt == null)
 				return null;
@@ -516,6 +525,8 @@ namespace DebuggerServer
 				return CallMethodWithReflection (ctx, f, name, target.Type, target, args);
 			}
 #endif
+			ctx.AssertTargetInvokeAllowed ();
+			
 			TargetType[] types = new TargetType [args.Length];
 			for (int n=0; n<types.Length; n++)
 				types [n] = args [n].Type;
@@ -563,6 +574,8 @@ namespace DebuggerServer
 				return CallMethodWithReflection (ctx, f, name, type, null, args);
 			}
 #endif			
+			ctx.AssertTargetInvokeAllowed ();
+			
 			TargetType[] types = new TargetType [args.Length];
 			for (int n=0; n<types.Length; n++)
 				types [n] = args [n].Type;
@@ -689,14 +702,17 @@ namespace DebuggerServer
 			}
 			
 			if (repeatedBestCount) {
-				if (!throwIfNotFound)
+				// If there is an ambiguous match, just pick the first match. If the user was expecting
+				// something else, he can provide more specific arguments
+				
+/*				if (!throwIfNotFound)
 					return null;
 				if (methodName != null)
 					throw new EvaluatorException ("Ambiguous method `{0}'; need to use full name", methodName);
 				else
 					throw new EvaluatorException ("Ambiguous arguments for indexer.", methodName);
-			}
-
+*/			}
+			 
 			return match;
 		}		
 	}
