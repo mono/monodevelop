@@ -55,6 +55,8 @@ namespace MonoDevelop.Components.Chart
 		int AutoScaleMargin = 3;
 		int MinLabelGapX = 3;
 		int MinLabelGapY = 1;
+		BackgroundDisplay backgroundDisplay = BackgroundDisplay.Gradient;
+		Cairo.Color backroundColor = new Cairo.Color (0.9, 0.9, 1);
 		
 		ArrayList series = new ArrayList ();
 		ArrayList axis = new ArrayList ();
@@ -404,7 +406,20 @@ namespace MonoDevelop.Components.Chart
 			
 			// Draw the background
 
-			win.DrawRectangle (Style.WhiteGC, true, left - 1, top - 1, width + 2, height + 2);
+			if (backgroundDisplay == BackgroundDisplay.Gradient) {
+				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
+				Cairo.Gradient pat = new Cairo.LinearGradient (left - 1, top - 1, left - 1, height + 2);
+				pat.AddColorStop (0, backroundColor);
+				Cairo.Color endc = new Cairo.Color (1,1,1);
+				pat.AddColorStop (1, endc);
+				ctx.Pattern = pat;
+				ctx.Fill ();
+			} else {
+				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
+				ctx.Color = backroundColor;
+				ctx.Fill ();
+			}
+//			win.DrawRectangle (Style.WhiteGC, true, left - 1, top - 1, width + 2, height + 2);
 			win.DrawRectangle (Style.BlackGC, false, left - AreaBorderWidth, top - AreaBorderWidth, width + AreaBorderWidth*2, height + AreaBorderWidth*2);
 			
 			// Draw selected area
@@ -661,15 +676,15 @@ namespace MonoDevelop.Components.Chart
 			
 			ctx.NewPath ();
 			ctx.Color = serie.Color;
-			ctx.LineWidth = 3;
+			ctx.LineWidth = serie.LineWidth;
 			
 			bool first = true;
 			bool blockMode = serie.DisplayMode == DisplayMode.BlockLine;
 			
-			int lastY = 0;
+			double lastY = 0;
 			
 			foreach (Data d in serie.GetData (startX, endX)) {
-				int x, y;
+				double x, y;
 				GetPoint (d.X, d.Y, out x, out y);
 				if (first) {
 					ctx.MoveTo (x, y);
@@ -756,16 +771,24 @@ namespace MonoDevelop.Components.Chart
 		
 		void GetPoint (double wx, double wy, out int x, out int y)
 		{
+			double dx, dy;
+			GetPoint (wx, wy, out dx, out dy);
+			x = (int) dx;
+			y = (int) dy;
+		}
+		
+		void GetPoint (double wx, double wy, out double x, out double y)
+		{
 			unchecked {
 				if (reverseXAxis)
-					x = left + width - (int) (((wx - startX) * ((double) width)) / (endX - startX));
+					x = left + width - (((wx - startX) * ((double) width)) / (endX - startX));
 				else
-					x = left + (int) (((wx - startX) * ((double) width)) / (endX - startX));
+					x = left + (((wx - startX) * ((double) width)) / (endX - startX));
 
 				if (reverseYAxis)
-					y = top + (int) ((wy - startY) * ((double) height) / (endY - startY));
+					y = top + ((wy - startY) * ((double) height) / (endY - startY));
 				else
-					y = top + height - (int) ((wy - startY) * ((double) height) / (endY - startY));
+					y = top + height - ((wy - startY) * ((double) height) / (endY - startY));
 			}
 		}
 		
@@ -895,5 +918,11 @@ namespace MonoDevelop.Components.Chart
 			if (SelectionChanged != null)
 				SelectionChanged (this, EventArgs.Empty);
 		}
+	}
+	
+	public enum BackgroundDisplay
+	{
+		Solid,
+		Gradient
 	}
 }

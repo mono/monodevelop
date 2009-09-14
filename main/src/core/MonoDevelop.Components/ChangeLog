@@ -1,3 +1,15 @@
+2009-09-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/ConsoleView.cs: Added Clear method.
+
+	* MonoDevelop.Components.Chart/BasicChart.cs: Draw a gradient
+	  background.
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Added
+	  some events fired before and after scanning the command
+	  target chain. To be used for measuring the time required by
+	  the scan.
+
 2009-09-08  Christian Hergert  <chris@dronelabs.com>
 
 	* MonoDevelop.Components/BaseFileEntry.cs: 

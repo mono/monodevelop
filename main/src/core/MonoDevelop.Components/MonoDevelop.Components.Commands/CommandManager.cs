@@ -485,6 +485,7 @@ namespace MonoDevelop.Components.Commands
 			if (guiLock > 0)
 				return false;
 
+			NotifyCommandTargetScanStarted ();
 			List<HandlerCallback> handlers = new List<HandlerCallback> ();
 			ActionCommand cmd = null;
 			try {
@@ -572,6 +573,9 @@ namespace MonoDevelop.Components.Commands
 				name = name.Replace ("_","");
 				ReportError (commandId, "Error while executing command: " + name, ex);
 			}
+			finally {
+				NotifyCommandTargetScanFinished ();
+			}
 			return false;
 		}
 		
@@ -580,7 +584,8 @@ namespace MonoDevelop.Components.Commands
 			ActionCommand cmd = GetActionCommand (commandId);
 			if (cmd == null)
 				throw new InvalidOperationException ("Invalid action command id: " + commandId);
-			
+
+			NotifyCommandTargetScanStarted ();
 			CommandInfo info = new CommandInfo (cmd);
 			
 			try {
@@ -653,7 +658,10 @@ namespace MonoDevelop.Components.Commands
 				}
 				info.Enabled = false;
 				info.Visible = true;
+			} finally {
+				NotifyCommandTargetScanFinished ();
 			}
+
 			if (guiLock > 0)
 				info.Enabled = false;
 			return info;
@@ -1051,11 +1059,25 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		void NotifyCommandTargetScanStarted ()
+		{
+			if (CommandTargetScanStarted != null)
+				CommandTargetScanStarted (this, EventArgs.Empty);
+		}
+		
+		void NotifyCommandTargetScanFinished ()
+		{
+			if (CommandTargetScanFinished != null)
+				CommandTargetScanFinished (this, EventArgs.Empty);
+		}
+		
 		public event CommandErrorHandler CommandError;
 		public event EventHandler<CommandSelectedEventArgs> CommandSelected;
 		public event EventHandler CommandDeselected;
 		public event EventHandler ApplicationFocusIn; // Fired when the application gets the focus
 		public event EventHandler ApplicationFocusOut;  // Fired when the application loses the focus
+		public event EventHandler CommandTargetScanStarted;
+		public event EventHandler CommandTargetScanFinished;
 	}
 	
 	internal class HandlerTypeInfo

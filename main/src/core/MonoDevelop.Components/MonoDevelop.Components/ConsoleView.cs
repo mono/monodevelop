@@ -44,7 +44,6 @@ namespace MonoDevelop.Components
 		string blockText = "";
 	
 		bool reset_clears_history;
-		bool reset_clears_scrollback;
 		bool auto_indent;
 		
 		TextView textView;
@@ -278,17 +277,17 @@ namespace MonoDevelop.Components
 			Buffer.ApplyTag(Buffer.TagTable.Lookup("Freezer"), Buffer.StartIter, InputLineBegin);
 		}
 		
-		public void Reset()
+		public void Clear ()
 		{
-			if (reset_clears_scrollback)
-				Buffer.Text = "";
-			if (reset_clears_history) {
-				commandHistoryFuture.Clear ();
-				commandHistoryPast.Clear ();
-			}
-	
+			Buffer.Text = "";
 			scriptLines = "";
-			Prompt (!reset_clears_scrollback);
+			Prompt (false);
+		}
+		
+		public void ClearHistory ()
+		{
+			commandHistoryFuture.Clear ();
+			commandHistoryPast.Clear ();
 		}
 		
 		public string BlockStart { get; set; }
