@@ -577,29 +577,33 @@ namespace Mono.TextEditor
 		internal void DeleteSelection (Selection selection)
 		{
 			switch (selection.SelectionMode) {
-				case SelectionMode.Normal:
-					ISegment segment = selection.GetSelectionRange (this);
-					if (Caret.Offset > segment.Offset)
-						Caret.Offset -= System.Math.Min (segment.Length, Caret.Offset - segment.Offset);
-					int len = System.Math.Min (segment.Length, Document.Length - segment.Offset);
-					if (len > 0)
-						Remove (segment.Offset, len);
-					break;
-				case SelectionMode.Block:
-					DocumentLocation visStart = LogicalToVisualLocation (selection.Anchor);
-					DocumentLocation visEnd   = LogicalToVisualLocation (selection.Lead);
-					int startCol = System.Math.Min (visStart.Column, visEnd.Column);
-					int endCol   = System.Math.Max (visStart.Column, visEnd.Column);
-					for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
-						LineSegment curLine = Document.GetLine (lineNr);
-						int col1 = curLine.GetLogicalColumn (this, Document, startCol);
-						int col2 = curLine.GetLogicalColumn (this, Document, endCol);
-						Remove (curLine.Offset  + col1, col2 - col1);
-						if (Caret.Line == lineNr && Caret.Column >= col1)
-							Caret.Column -= col2 - col1;
-					}
-					break;
+			case SelectionMode.Normal:
+				ISegment segment = selection.GetSelectionRange (this);
+				if (Caret.Offset > segment.Offset)
+					Caret.Offset -= System.Math.Min (segment.Length, Caret.Offset - segment.Offset);
+				int len = System.Math.Min (segment.Length, Document.Length - segment.Offset);
+				if (len > 0)
+					Remove (segment.Offset, len);
+				break;
+			case SelectionMode.Block:
+				DocumentLocation visStart = LogicalToVisualLocation (selection.Anchor);
+				DocumentLocation visEnd = LogicalToVisualLocation (selection.Lead);
+				int startCol = System.Math.Min (visStart.Column, visEnd.Column);
+				int endCol = System.Math.Max (visStart.Column, visEnd.Column);
+				for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
+					LineSegment curLine = Document.GetLine (lineNr);
+					int col1 = curLine.GetLogicalColumn (this, Document, startCol);
+					int col2 = System.Math.Min (curLine.GetLogicalColumn (this, Document, endCol), curLine.EditableLength);
+					if (col1 >= col2)
+						continue;
+					Remove (curLine.Offset + col1, col2 - col1);
+					
+					if (Caret.Line == lineNr && Caret.Column >= col1)
+						Caret.Column -= col2 - col1;
 				}
+				break;
+			}
+			
 		}
 		
 		public void DeleteSelectedText ()

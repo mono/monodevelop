@@ -1,3 +1,10 @@
+2009-09-14  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/ClipboardActions.cs: fixed 'Bug 538379 -
+	  Situation where CUT over an "box selection" cause a strange
+	  final result, see screenshots...'.
+
 2009-09-11  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/ClipboardActions.cs: Fixed "Bug 538197 -

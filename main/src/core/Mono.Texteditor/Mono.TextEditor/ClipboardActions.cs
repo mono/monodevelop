@@ -269,7 +269,7 @@ namespace Mono.TextEditor
 					copiedDocument = new Document ();
 					monoDocument = new Document ();
 					this.docStyle = data.ColorStyle;
-					this.options  = data.Options;
+					this.options = data.Options;
 					this.mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;
 					switch (selection.SelectionMode) {
 					case SelectionMode.Normal:
@@ -277,7 +277,7 @@ namespace Mono.TextEditor
 						ISegment segment = selection.GetSelectionRange (data);
 						copiedDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
 						monoDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
-						LineSegment line    = data.Document.GetLineByOffset (segment.Offset);
+						LineSegment line = data.Document.GetLineByOffset (segment.Offset);
 						Stack<Span> spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, segment.Offset);
 						this.copiedDocument.GetLine (0).StartSpan = spanStack.ToArray ();
@@ -285,15 +285,17 @@ namespace Mono.TextEditor
 					case SelectionMode.Block:
 						isBlockMode = true;
 						DocumentLocation visStart = data.LogicalToVisualLocation (selection.Anchor);
-						DocumentLocation visEnd   = data.LogicalToVisualLocation (selection.Lead);
+						DocumentLocation visEnd = data.LogicalToVisualLocation (selection.Lead);
 						int startCol = System.Math.Min (visStart.Column, visEnd.Column);
-						int endCol   = System.Math.Max (visStart.Column, visEnd.Column);
+						int endCol = System.Math.Max (visStart.Column, visEnd.Column);
 						for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 							LineSegment curLine = data.Document.GetLine (lineNr);
 							int col1 = curLine.GetLogicalColumn (data, data.Document, startCol);
-							int col2 = curLine.GetLogicalColumn (data, data.Document, endCol);
-							((IBuffer)copiedDocument).Insert (copiedDocument.Length, data.Document.GetTextAt (curLine.Offset  + col1, col2 - col1));
-							((IBuffer)monoDocument).Insert (monoDocument.Length, data.Document.GetTextAt (curLine.Offset  + col1, col2 - col1));
+							int col2 = System.Math.Min (curLine.GetLogicalColumn (data, data.Document, endCol), curLine.EditableLength);
+							if (col1 < col2) {
+								((IBuffer)copiedDocument).Insert (copiedDocument.Length, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
+								((IBuffer)monoDocument).Insert (monoDocument.Length, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
+							}
 							if (lineNr < selection.MaxLine) {
 								// Clipboard line end needs to be system dependend and not the document one.
 								((IBuffer)copiedDocument).Insert (copiedDocument.Length, Environment.NewLine);
@@ -389,13 +391,15 @@ namespace Mono.TextEditor
 								result += Environment.NewLine.Length;
 							}
 							curLine = data.Document.GetLine (lineNr + i);
-							lineCol = curLine.GetLogicalColumn (data, data.Document, visCol);
-							if (curLine.EditableLength < lineCol) {
-								result += lineCol - curLine.EditableLength;
-								data.Insert (curLine.Offset + curLine.EditableLength, new string (' ', lineCol - curLine.EditableLength));
+							if (lines[i].Length > 0) {
+								lineCol = curLine.GetLogicalColumn (data, data.Document, visCol);
+								if (curLine.EditableLength < lineCol) {
+									result += lineCol - curLine.EditableLength;
+									data.Insert (curLine.Offset + curLine.EditableLength, new string (' ', lineCol - curLine.EditableLength));
+								}
+								data.Insert (curLine.Offset + lineCol, lines[i]);
+								result += lines[i].Length;
 							}
-							data.Insert (curLine.Offset + lineCol, lines[i]);
-							result += lines[i].Length;
 							if (!preserveState)
 								data.Caret.Offset = curLine.Offset + lineCol + lines[i].Length;
 						}
