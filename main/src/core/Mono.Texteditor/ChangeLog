@@ -1,5 +1,10 @@
 2009-09-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/Chunk.cs: Fixed "Bug 538298 -
+	  Exception thrown".
+
+2009-09-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditorData.cs: Added method SetSelection
 	  for offsets.
 

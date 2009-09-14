@@ -34,6 +34,8 @@ namespace Mono.TextEditor
 	{
 		public virtual ChunkStyle GetChunkStyle (Style style)
 		{
+			if (style == null)
+				return null;
 			return style.GetChunkStyle (Style);
 		}
 
