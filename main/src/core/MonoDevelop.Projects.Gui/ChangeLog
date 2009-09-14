@@ -1,3 +1,9 @@
+2009-09-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Accept
+	  punctuation for matching if it matches an item in the list.
+	  Fixes regression with XML and related languages' completion.
+
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:

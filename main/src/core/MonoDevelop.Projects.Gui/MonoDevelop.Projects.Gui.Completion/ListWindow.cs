@@ -295,19 +295,26 @@ namespace MonoDevelop.Projects.Gui.Completion
 				curPos++;
 				return KeyActions.Process;
 			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
-				if (CompleteWithSpaceOrPunctuation && list.SelectionEnabled) 
-					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
 				
 				//punctuation is only accepted if it actually matches an item in the list
+				Console.WriteLine (word.ToString());
 				word.Insert (curPos, keyChar);
-				ResetSizes ();
+				
 				bool hasMismatches;
 				int match = FindMatchedEntry (word.ToString (), out hasMismatches);
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
+					ResetSizes ();
+					UpdateWordSelection ();
 					curPos++;
-					SelectEntry (match);
 					return KeyActions.Process;
-				} 
+				} else {
+					word.Remove (curPos, 1);
+				}
+				Console.WriteLine (word.ToString());
+				
+				if (CompleteWithSpaceOrPunctuation && list.SelectionEnabled) 
+					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
+				
 				return KeyActions.CloseWindow | KeyActions.Process;
 			}
 
