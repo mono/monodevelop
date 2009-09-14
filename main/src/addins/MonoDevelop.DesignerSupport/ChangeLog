@@ -1,3 +1,8 @@
+2009-09-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Tweak remove
+	  message wording. Refine the GTK# item filtering hack a bit.
+
 2009-09-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:

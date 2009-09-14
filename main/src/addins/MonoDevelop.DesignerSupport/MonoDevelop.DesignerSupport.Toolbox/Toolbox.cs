@@ -200,7 +200,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
 		internal void OnDeleteItem ()
 		{
-			if (MonoDevelop.Core.Gui.MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the selected Item?"), MonoDevelop.Core.Gui.AlertButton.Delete))
+			if (MonoDevelop.Core.Gui.MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to remove the selected Item?"), MonoDevelop.Core.Gui.AlertButton.Delete))
 				toolboxService.RemoveUserItem (selectedNode);
 		}
 
@@ -209,8 +209,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			// Hack manually filter out gtk# widgets & container since they cannot be re added
 			// because they're missing the toolbox attributes.
-			info.Enabled = selectedNode != null && selectedNode.Category != "Widgets"&& selectedNode.Category != "Container";
+			info.Enabled = selectedNode != null
+				&& (selectedNode.ItemDomain != GtkWidgetDomain
+				    || (selectedNode.Category != "Widgets" && selectedNode.Category != "Container"));
 		}
+		
+		static readonly string GtkWidgetDomain = GettextCatalog.GetString ("GTK# Widgets");
 		
 		#endregion
 		
