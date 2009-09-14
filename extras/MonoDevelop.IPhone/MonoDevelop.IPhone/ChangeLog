@@ -1,3 +1,13 @@
+2009-09-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneFrameworkBackend.cs:
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml: Disable all the iPhone addin's
+	  extensions when the SDK is not installed.
+
+	* Templates/IPhoneEntitlements.xft.xml: Add a template for
+	  entitlements.plist.
+
 2009-09-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneCommands.cs: Pre-create resource directories for xcode

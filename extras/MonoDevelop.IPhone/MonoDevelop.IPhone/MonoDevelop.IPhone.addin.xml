@@ -19,40 +19,53 @@
 		<Addin id="Ide" version="2.1.0"/>
 	</Dependencies>
 	
+	<ConditionType id="MonoTouchInstalled" type="MonoDevelop.IPhone.MonoTouchInstalledCondition" />
+	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id       = "IPhoneApplicationXib"
-		              resource = "IPhoneApplicationXib.xft.xml"/>
-		<FileTemplate id       = "IPhoneViewXib"
-		              resource = "IPhoneViewXib.xft.xml"/>
-		<FileTemplate id       = "IPhoneEmptyXib"
-		              resource = "IPhoneEmptyXib.xft.xml"/>
-		<FileTemplate id       = "IPhoneViewController"
-		              resource = "IPhoneViewController.xft.xml"/>
-		<FileTemplate id       = "IPhoneApplicationPList"
-		              resource = "IPhoneApplicationPList.xft.xml"/>
+		<Condition id="MonoTouchInstalled">
+			<FileTemplate id       = "IPhoneApplicationXib"
+			              resource = "IPhoneApplicationXib.xft.xml"/>
+			<FileTemplate id       = "IPhoneViewXib"
+			              resource = "IPhoneViewXib.xft.xml"/>
+			<FileTemplate id       = "IPhoneEmptyXib"
+			              resource = "IPhoneEmptyXib.xft.xml"/>
+			<FileTemplate id       = "IPhoneViewController"
+			              resource = "IPhoneViewController.xft.xml"/>
+			<FileTemplate id       = "IPhoneApplicationPList"
+			              resource = "IPhoneApplicationPList.xft.xml"/>
+			<FileTemplate id       = "IPhoneEntitlements"
+			              resource = "IPhoneEntitlements.xft.xml"/>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id       = "IPhoneProject"
-		                 resource = "IPhoneProject.xpt.xml" />
-		<ProjectTemplate id       = "IPhoneProject-Empty"
-		                 resource = "IPhoneProjectEmpty.xpt.xml"/>
+		<Condition id="MonoTouchInstalled">
+			<ProjectTemplate id       = "IPhoneProject"
+			                 resource = "IPhoneProject.xpt.xml" />
+			<ProjectTemplate id       = "IPhoneProject-Empty"
+			                 resource = "IPhoneProjectEmpty.xpt.xml"/>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProjectSubtype
-			guid="{e613f3a2-fe9c-494f-b74e-f63bcb86fea6}"
-			type="MonoDevelop.IPhone.IPhoneProject"
-			/>
+		<Condition id="MonoTouchInstalled">
+			<DotNetProjectSubtype
+				guid="{e613f3a2-fe9c-494f-b74e-f63bcb86fea6}"
+				type="MonoDevelop.IPhone.IPhoneProject" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
-		<ProjectBinding id = "IPhone" class = "MonoDevelop.IPhone.IPhoneProjectBinding" />
+		<Condition id="MonoTouchInstalled">
+			<ProjectBinding id = "IPhone" class = "MonoDevelop.IPhone.IPhoneProjectBinding" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "MonoDevelop.IPhone.IPhoneProject" />
-		<DataType class = "MonoDevelop.IPhone.IPhoneProjectConfiguration" />
+		<Condition id="MonoTouchInstalled">
+			<DataType class = "MonoDevelop.IPhone.IPhoneProject" />
+			<DataType class = "MonoDevelop.IPhone.IPhoneProjectConfiguration" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
@@ -66,7 +79,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class class = "MonoDevelop.IPhone.IPhoneBuildExtension" insertafter="MidStep" />
+		<Condition id="MonoTouchInstalled">
+			<Class class = "MonoDevelop.IPhone.IPhoneBuildExtension" insertafter="MidStep" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Frameworks">
@@ -92,24 +107,30 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
-		<ExecutionHandler id="IPhone" class = "MonoDevelop.IPhone.IPhoneExecutionHandler"/>
+		<Condition id="MonoTouchInstalled">
+			<ExecutionHandler id="IPhone" class = "MonoDevelop.IPhone.IPhoneExecutionHandler"/>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
-		<Command id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice" 
-			_description = "Upload the application to the device" 
-			defaultHandler = "MonoDevelop.IPhone.DefaultUploadToDeviceHandler"
-			_label = "Upload to Device" />
-		<Command id = "MonoDevelop.IPhone.IPhoneCommands.DebugInXcode" 
-			_description = "Debug the project in Xcode" 
-			defaultHandler = "MonoDevelop.IPhone.DebugInXcodeCommandHandler"
-			_label = "Debug in Xcode" />
+		<Condition id="MonoTouchInstalled">
+			<Command id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice" 
+				_description = "Upload the application to the device" 
+				defaultHandler = "MonoDevelop.IPhone.DefaultUploadToDeviceHandler"
+				_label = "Upload to Device" />
+			<Command id = "MonoDevelop.IPhone.IPhoneCommands.DebugInXcode" 
+				_description = "Debug the project in Xcode" 
+				defaultHandler = "MonoDevelop.IPhone.DebugInXcodeCommandHandler"
+				_label = "Debug in Xcode" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
-		<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.DebugInXcode"
-		             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
-		<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice" />
+		<Condition id="MonoTouchInstalled">
+			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.DebugInXcode"
+			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
+			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">

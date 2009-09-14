@@ -34,27 +34,21 @@
     <Reference Include="System" />
     <Reference Include="MonoDevelop.Core, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core.Gui, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Components, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core">
@@ -62,7 +56,6 @@
     </Reference>
     <Reference Include="MonoDevelop.DesignerSupport, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
@@ -76,6 +69,7 @@
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -194,6 +188,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Icons\48x48\phone-apple-iphone.png">
       <LogicalName>phone-apple-iphone-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPhoneEntitlements.xft.xml">
+      <LogicalName>IPhoneEntitlements.xft.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

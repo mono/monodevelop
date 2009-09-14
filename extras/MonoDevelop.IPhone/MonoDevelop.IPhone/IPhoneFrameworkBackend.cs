@@ -29,6 +29,7 @@ using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core;
+using Mono.Addins;
 
 
 namespace MonoDevelop.IPhone
@@ -78,6 +79,38 @@ namespace MonoDevelop.IPhone
 		
 		public override bool IsInstalled {
 			get { return sdkDir != null; }
+		}
+	}
+	
+	public static class IPhoneFramework
+	{
+		static bool? isInstalled = null;
+		static bool? simOnly = null;
+		
+		public static bool IsInstalled {
+			get {
+				if (!isInstalled.HasValue) {
+					isInstalled = Directory.Exists ("/Developer/MonoTouch");
+				}
+				return isInstalled.Value;
+			}
+		}
+		
+		public static bool SimOnly {
+			get {
+				if (!simOnly.HasValue) {
+					simOnly = !File.Exists ("/Developer/MonoTouch/usr/bin/arm-darwin-mono");
+				}
+				return simOnly.Value;
+			}
+		}
+	}
+	
+	public class MonoTouchInstalledCondition : ConditionType
+	{
+		public override bool Evaluate (NodeElement conditionNode)
+		{
+			return IPhoneFramework.IsInstalled;
 		}
 	}
 }
