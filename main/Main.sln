@@ -726,7 +726,6 @@ Global
 		{1497D0A8-AFF1-4938-BC22-BE79B358BA5B} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		version = 0.1
 		outputpath = build\bin\
 		StartupItem = src\core\MonoDevelop.Startup\MonoDevelop.Startup.csproj
 		Policies = $0
@@ -746,6 +745,7 @@ Global
 		$5.UpdateMode = ProjectRoot
 		$5.inheritsSet = Mono
 		$0.TextStylePolicy = $6
+		$6.FileWidth = 120
 		$6.TabWidth = 4
 		$6.inheritsSet = Mono
 		$6.inheritsScope = text/plain
@@ -754,6 +754,12 @@ Global
 		$7.inheritsSet = Mono
 		$7.inheritsScope = text/x-csharp
 		$7.scope = text/x-csharp
+		$0.TextStylePolicy = $8
+		$8.inheritsSet = null
+		$8.scope = text/x-makefile
+		$0.TextStylePolicy = $9
+		$9.inheritsSet = null
+		$9.scope = application/x-addin+xml
 		MakePkgConfig = False
 		MakeLibPC = True
 	EndGlobalSection

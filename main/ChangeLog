@@ -1,3 +1,7 @@
+2009-09-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Main.sln: Increase C# file width policy to 120 columns.
+
 2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Update version label.
