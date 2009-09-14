@@ -82,7 +82,7 @@ namespace MonoDevelop.Refactoring
 			textEditorDatas.Clear ();
 		}
 		
-		static TextEditorData GetTextEditorData (string fileName)
+		internal static TextEditorData GetTextEditorData (string fileName)
 		{
 			if (IdeApp.Workbench == null)
 				return null;

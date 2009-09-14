@@ -73,7 +73,7 @@ namespace MonoDevelop.Refactoring
 		
 		public Mono.TextEditor.TextEditorData GetTextEditorData ()
 		{
-			Mono.TextEditor.ITextEditorDataProvider view = Document.ActiveView as Mono.TextEditor.ITextEditorDataProvider;
+			Mono.TextEditor.ITextEditorDataProvider view = Document.GetContent<Mono.TextEditor.ITextEditorDataProvider> ();
 			if (view == null)
 				return null;
 

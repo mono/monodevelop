@@ -68,7 +68,8 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (callingObject), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
 				if (resolveResult == null || resolveResult.ResolvedType == null || resolveResult.CallingType == null)
 					return false;
-				return resolveResult.ResolvedType.FullName == resolveResult.CallingType.FullName;
+				IType type = options.Dom.GetType (resolveResult.ResolvedType);
+				return type != null && type.CompilationUnit != null && File.Exists (type.CompilationUnit.FileName) && RefactoringService.GetASTProvider (DesktopService.GetMimeTypeForUri (type.CompilationUnit.FileName)) != null;
 			}
 			return invoke.TargetObject is IdentifierExpression;
 		}
@@ -106,10 +107,17 @@ namespace MonoDevelop.Refactoring.CreateMethod
 		public override void Run (RefactoringOptions options)
 		{
 			base.Run (options);
-			options.Document.TextEditor.CursorPosition = selectionEnd;
-			options.Document.TextEditor.Select (selectionStart, selectionEnd);
+			MonoDevelop.Ide.Gui.Document document = IdeApp.Workbench.OpenDocument (fileName);
+			Mono.TextEditor.ITextEditorDataProvider view = document.GetContent<Mono.TextEditor.ITextEditorDataProvider> ();
+			if (view != null) {
+				TextEditorData data = view.GetTextEditorData ();
+				data.ClearSelection ();
+				data.Caret.Offset = selectionEnd;
+				data.SetSelection (selectionStart, selectionEnd);
+			}
 		}
 		
+		string fileName;
 		int selectionStart;
 		int selectionEnd;
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
@@ -121,27 +129,56 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				return result;
 			
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
-
+			insertNewMethod.InsertedText = "";
+			string indent = "";
 			MethodDeclaration methodDecl = new MethodDeclaration ();
 			if (invoke.TargetObject is IdentifierExpression) {
+				insertNewMethod.FileName = options.Document.FileName;
+				insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (options.ResolveResult.CallingMember.BodyRegion.End.Line, options.ResolveResult.CallingMember.BodyRegion.End.Column);
 				methodDecl.Name = ((IdentifierExpression)invoke.TargetObject).Identifier;
+				indent = options.GetIndent (options.ResolveResult.CallingMember);
+				insertNewMethod.InsertedText = Environment.NewLine;
+				if (options.ResolveResult.CallingMember.IsStatic)
+					methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
+			
 			} else {
 				methodDecl.Name = ((MemberReferenceExpression)invoke.TargetObject).MemberName;
 				string callingObject = provider.OutputNode (options.Dom, ((MemberReferenceExpression)invoke.TargetObject).TargetObject);
 				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (callingObject), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+				IType type = options.Dom.GetType (resolveResult.ResolvedType);
+				insertNewMethod.FileName = type.CompilationUnit.FileName;
 				if (resolveResult.StaticResolve)
 					methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
+				
+				if (insertNewMethod.FileName == options.Document.FileName) {
+					indent = options.GetIndent (options.ResolveResult.CallingMember);
+					insertNewMethod.InsertedText = Environment.NewLine;
+					insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (options.ResolveResult.CallingMember.BodyRegion.End.Line, options.ResolveResult.CallingMember.BodyRegion.End.Column);
+				} else {
+					TextEditorData otherFile = TextReplaceChange.GetTextEditorData (insertNewMethod.FileName);
+					if (otherFile == null) {
+						IdeApp.Workbench.OpenDocument (insertNewMethod.FileName);
+						otherFile = TextReplaceChange.GetTextEditorData (insertNewMethod.FileName);
+					}
+					methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Public;
+					if (otherFile == null)
+						throw new InvalidOperationException ("Can't open file:" + insertNewMethod.FileName);
+					try {
+						indent = otherFile.Document.GetLine (type.Location.Line - 1).GetIndentation (otherFile.Document) ?? "";
+					} catch (Exception) {
+						indent = "";
+					}
+					indent += "\t";
+					insertNewMethod.Offset = otherFile.Document.LocationToOffset (type.BodyRegion.End.Line - 1, 0);
+				}
+				
 			}
 			methodDecl.TypeReference = new TypeReference ("System.Void");
 			methodDecl.TypeReference.IsKeyword = true;
 
-			if (options.ResolveResult.CallingMember.IsStatic)
-				methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
 			methodDecl.Body = new BlockStatement ();
 			methodDecl.Body.AddChild (new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null)));
-			insertNewMethod.FileName = options.Document.FileName;
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0}"), methodDecl.Name);
-			insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (options.ResolveResult.CallingMember.BodyRegion.End.Line, options.ResolveResult.CallingMember.BodyRegion.End.Column);
 
 			int i = 0;
 			foreach (Expression expression in invoke.Arguments) {
@@ -162,9 +199,10 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				methodDecl.Parameters.Add (pde);
 			}
 
-			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, options.GetIndent (options.ResolveResult.CallingMember));
+			insertNewMethod.InsertedText += Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, indent);
 			result.Add (insertNewMethod);
 			int idx = insertNewMethod.InsertedText.IndexOf ("throw");
+			fileName = insertNewMethod.FileName;
 			selectionStart = insertNewMethod.Offset + idx;
 			selectionEnd   = insertNewMethod.Offset + insertNewMethod.InsertedText.IndexOf (';', idx) + 1;
 			return result;

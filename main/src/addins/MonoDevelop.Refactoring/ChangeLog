@@ -1,3 +1,11 @@
+2009-09-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring/RefactoringOptions.cs:
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  Fixed Bug 537927 - "Create" refactorings on member method
+	  are broken/enh. create method on called member
+
 2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoryCommands.cs: In
