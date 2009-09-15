@@ -130,12 +130,17 @@ namespace MonoDevelop.IPhone
 					UseMarkup = true
 				}, true, false, 12);
 			
-			dialog.VBox.PackStart (new Label (
+			var align = new Gtk.Alignment (0.5f, 0.5f, 1.0f, 1.0f) { LeftPadding = 12, RightPadding = 12 };
+			dialog.VBox.PackStart (align, true, false, 12);
+			align.Add (new Label (
 				"You should upgrade to the full version of MonoTouch to build and deploy\n" +
-				" to the device, and to enable your applications to be distributed."),
-				true, false, 12);
+				" to the device, and to enable your applications to be distributed.") {
+					Xalign = 0.5f,
+					Justify = Justification.Center
+				});
 			
-			var buyButton = new Button (GettextCatalog.GetString ("<big>Buy MonoTouch</big>"));
+			var buyButton = new Button (
+				new Label (GettextCatalog.GetString ("<big>Buy MonoTouch</big>")) { UseMarkup = true } );
 			buyButton.Clicked += delegate {
 				System.Diagnostics.Process.Start ("http://monotouch.net");
 				dialog.Respond (ResponseType.Accept);
