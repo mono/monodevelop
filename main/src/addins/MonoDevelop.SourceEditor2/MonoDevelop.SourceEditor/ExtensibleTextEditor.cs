@@ -65,11 +65,12 @@ namespace MonoDevelop.SourceEditor
 			get { return (ISourceEditorOptions)base.Options; }
 		}
 		
-		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.Document doc) : base (doc, null)
+		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.Document doc) : base(doc, null)
 		{
 			base.Options = options;
 			Initialize (view);
 		}
+
 		
 		public ExtensibleTextEditor (SourceEditorView view)
 		{
@@ -112,6 +113,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			UpdateEditMode ();
+			this.GetTextEditorData ().Paste += HandleTextPaste;
 			
 			this.ButtonPressEvent += OnPopupMenu;
 
@@ -758,6 +760,18 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 		
+		void HandleTextPaste (int insertionOffset, string text)
+		{
+			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+				IPrettyPrinter prettyPrinter = TextFileService.GetPrettyPrinter (Document.MimeType);
+				if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {
+					string newText = prettyPrinter.FormatText (this.ProjectDom.Project, Document.MimeType, Document.Text, insertionOffset, insertionOffset + text.Length);
+					if (!string.IsNullOrEmpty (newText))
+						Replace (insertionOffset, text.Length, newText);
+				}
+			}
+		}
+		
 		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
 		{
 			Document.BeginAtomicUndo ();
@@ -772,9 +786,9 @@ namespace MonoDevelop.SourceEditor
 					int endOffset = result.InsertPosition + result.Code.Length;
 					string text = prettyPrinter.FormatText (document.Project, Document.MimeType, Document.Text, result.InsertPosition, endOffset);
 					string oldText = Document.GetTextAt (result.InsertPosition, result.Code.Length);
-//					Console.WriteLine (result.InsertPosition);
-//					Console.WriteLine ("old:" + oldText);
-//					Console.WriteLine ("new:" + text);
+					//					Console.WriteLine (result.InsertPosition);
+					//					Console.WriteLine ("old:" + oldText);
+					//					Console.WriteLine ("new:" + text);
 					Replace (result.InsertPosition, result.Code.Length, text);
 					Caret.Offset = result.InsertPosition + TranslateOffset (oldText, text, Caret.Offset - result.InsertPosition);
 					foreach (TextLink textLink in tle.Links) {

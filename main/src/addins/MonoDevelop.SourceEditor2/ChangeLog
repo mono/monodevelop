@@ -1,6 +1,11 @@
 2009-09-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Worked on
+	  formatting.
+
+2009-09-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Worked on
 	  on the fly format for code template insertion.
 
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
