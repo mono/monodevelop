@@ -1,5 +1,9 @@
 2009-09-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am: Fix references path again.
+
+2009-09-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am: Try to get MD references from the main build
 	  dir.
 
