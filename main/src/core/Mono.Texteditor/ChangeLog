@@ -1,5 +1,10 @@
 2009-09-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs: Corrected text link
+	  mode bug.
+
+2009-09-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: Worked on text link
 	  mode - it's now possible to update the text while in text
 	  link mode & fixed some text link bugs.

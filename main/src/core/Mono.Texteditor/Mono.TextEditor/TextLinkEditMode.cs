@@ -252,6 +252,7 @@ namespace Mono.TextEditor
 		
 		void ExitTextLinkMode ()
 		{
+			isExited = true;
 			DestroyWindow ();
 			foreach (TextLink link in links) {
 				foreach (ISegment segment in link.Links) {
@@ -276,6 +277,7 @@ namespace Mono.TextEditor
 			set;
 		}
 		
+		bool isExited = false;
 		bool wasReplaced = false;
 		void UpdateLinksOnTextReplace (object sender, ReplaceEventArgs e)
 		{
@@ -412,7 +414,7 @@ namespace Mono.TextEditor
 		
 		public void UpdateTextLinks ()
 		{
-			if (window == null)
+			if (isExited)
 				return;
 			foreach (TextLink l in links) {
 				if (l.GetStringFunc != null) {
