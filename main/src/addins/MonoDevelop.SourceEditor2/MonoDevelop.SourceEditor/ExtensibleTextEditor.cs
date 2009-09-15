@@ -761,25 +761,59 @@ namespace MonoDevelop.SourceEditor
 		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
 		{
 			Document.BeginAtomicUndo ();
-//			IType type = document.ParsedDocument.CompilationUnit.GetTypeAt (Caret.Line, Caret.Column);
-//			IMember member = document.ParsedDocument.CompilationUnit.GetMemberAt (Caret.Line, Caret.Column);
 			CodeTemplate.TemplateResult result = template.InsertTemplate (document);
 			TextLinkEditMode tle = new TextLinkEditMode (this, 
 			                                             result.InsertPosition,
 			                                             result.TextLinks);
+			
+			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+				IPrettyPrinter prettyPrinter = TextFileService.GetPrettyPrinter (Document.MimeType);
+				if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {
+					int endOffset = result.InsertPosition + result.Code.Length;
+					string text = prettyPrinter.FormatText (document.Project, Document.MimeType, Document.Text, result.InsertPosition, endOffset);
+					string oldText = Document.GetTextAt (result.InsertPosition, result.Code.Length);
+//					Console.WriteLine (result.InsertPosition);
+//					Console.WriteLine ("old:" + oldText);
+//					Console.WriteLine ("new:" + text);
+					Replace (result.InsertPosition, result.Code.Length, text);
+					Caret.Offset = result.InsertPosition + TranslateOffset (oldText, text, Caret.Offset - result.InsertPosition);
+					foreach (TextLink textLink in tle.Links) {
+						foreach (ISegment segment in textLink.Links) {
+							segment.Offset = TranslateOffset (oldText, text, segment.Offset);
+						}
+					}
+				}
+			}
+			
 			if (tle.ShouldStartTextLinkMode) {
 				tle.OldMode = CurrentMode;
 				tle.StartMode ();
 				CurrentMode = tle;
 			}
-/*			IPrettyPrinter prettyPrinter = TextFileService.GetPrettyPrinter (Document.MimeType);
-			if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {
-				int endOffset = result.InsertPosition + result.Code.Length;
-				DocumentLocation endDocumentLocation = Document.OffsetToLocation (endOffset);
-				DomLocation endLocation = new DomLocation (endDocumentLocation.Line, endDocumentLocation.Column);
-				prettyPrinter.OnTheFlyFormat (GetTextEditorData (), type, member, ProjectDomService.GetProjectDom (document.Project), document.ParsedDocument.CompilationUnit, endLocation);
-			}*/
 			Document.EndAtomicUndo ();
+		}
+		
+		static int TranslateOffset (string baseInput, string formattedInput, int offset)
+		{
+			int i = 0;
+			int j = 0;
+			while (i < baseInput.Length && j < formattedInput.Length && i < offset) {
+				char ch1 = baseInput[i];
+				char ch2 = formattedInput[j];
+				bool ch1IsWs = Char.IsWhiteSpace (ch1);
+				bool ch2IsWs = Char.IsWhiteSpace (ch2);
+				if (ch1 == ch2 || ch1IsWs && ch2IsWs) {
+					i++;
+					j++;
+				} else if (!ch1IsWs && ch2IsWs) {
+					j++;
+				} else if (ch1IsWs && !ch2IsWs) {
+					i++;
+				} else {
+					return -1;
+				}
+			}
+			return j;
 		}
 		
 #endregion
