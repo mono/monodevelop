@@ -45,9 +45,11 @@ RES =  \
 
 all: $(ASSEMBLY)
 
+LOCAL_PKGCONFIG=PKG_CONFIG_PATH=../../local-config:$$PKG_CONFIG_PATH
+
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+	$(LOCAL_PKGCONFIG) $(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.CodeAnalysis

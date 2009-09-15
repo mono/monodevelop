@@ -1,3 +1,8 @@
+2009-09-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Try to get MD references from the main build
+	  dir.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: We now depend on gtk# 2.12.8, Mono 2.4,
