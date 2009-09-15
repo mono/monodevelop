@@ -1420,10 +1420,6 @@ namespace Mono.TextEditor
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 				textBuilder.Append (chunk.GetText (Document));
 			}
-			Pango.TabArray tabArray = new Pango.TabArray (10, true);
-			for (int i = 0; i < 10; i++)
-				tabArray.SetTab (i, Pango.TabAlign.Left, (i + 1) * CharWidth * textEditor.Options.TabSize);
-
 			layout.Tabs = tabArray;
 
 			string lineText = textBuilder.ToString ();
