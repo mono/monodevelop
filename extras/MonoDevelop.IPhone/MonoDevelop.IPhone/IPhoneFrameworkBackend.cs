@@ -124,26 +124,25 @@ namespace MonoDevelop.IPhone
 			var dialog = new Dialog ();
 			dialog.Title =  GettextCatalog.GetString ("Evaluation Version");
 			
-			var box = new VBox ();
-			box.PackStart (new Label ("<big>Not available in the evaluation version</big>") { Xalign = 0.5f }, true, false, 0);
-			box.PackStart (new Label (
-				"The evaluation version of MonoTouch does not support the device."
-			));
+			dialog.VBox.PackStart (
+			 	new Label ("<big>Not available in the evaluation version</big>") {
+					Xalign = 0.5f,
+					UseMarkup = true
+				}, true, false, 12);
 			
-			var buyButton = new Button (GettextCatalog.GetString ("Buy MonoTouch"));
+			dialog.VBox.PackStart (new Label (
+				"You should upgrade to the full version of MonoTouch to build and deploy\n" +
+				" to the device, and to enable your applications to be distributed."),
+				true, false, 12);
+			
+			var buyButton = new Button (GettextCatalog.GetString ("<big>Buy MonoTouch</big>"));
 			buyButton.Clicked += delegate {
 				System.Diagnostics.Process.Start ("http://monotouch.net");
 				dialog.Respond (ResponseType.Accept);
 			};
-			box.PackStart (buyButton, true, false, 0);
-			var closeButton = new Button (Gtk.Stock.Close);
-			closeButton.Clicked += delegate {
-				dialog.Respond (ResponseType.Close);
-			};
-			box.PackStart (closeButton, true, false, 0);
+			dialog.VBox.PackStart (buyButton, true, false, 12);
 			
-			dialog.ActionArea.Visible = false;
-			dialog.VBox.PackStart (box, true, true, 0);
+			dialog.AddButton (GettextCatalog.GetString ("Continue evaluation"), ResponseType.Close);
 			dialog.ShowAll ();
 			
 			MessageService.ShowCustomDialog (dialog);

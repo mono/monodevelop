@@ -1,5 +1,9 @@
 2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneFrameworkBackend.cs: Improve sim-only dialog.
+
+2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs:
 	* IPhoneBuildExtension.cs:
 	* IPhoneFrameworkBackend.cs: Improve the sim-only warning
