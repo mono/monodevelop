@@ -1,3 +1,8 @@
+2009-09-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
+	  Fixed eventargs template.
+
 2009-09-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Don't close the

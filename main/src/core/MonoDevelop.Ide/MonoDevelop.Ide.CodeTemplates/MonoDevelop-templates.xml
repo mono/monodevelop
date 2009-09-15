@@ -377,8 +377,7 @@ public class $name$Exception : $SystemException$
 				<Function>GetSimpleTypeName("System.Serializable")</Function>
 			</Variable>
 		</Variables>
-		<Code><![CDATA[
-[$SystemSerializable$]
+		<Code><![CDATA[[$SystemSerializable$]
 public sealed class $name$EventArgs : $SystemEventArgs$
 {
 	public $name$EventArgs ()
