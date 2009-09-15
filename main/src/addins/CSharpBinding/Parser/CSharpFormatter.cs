@@ -435,9 +435,44 @@ namespace CSharpBinding.Parser
 			}
 		}
 		
+		
 		bool hasErrors = false;
 		int startIndentLevel = 0;
 		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
+		{
+			string text = GetFormattedText (policyParent, input);
+			int newStartOffset = TranslateOffset (input, text, startOffset);
+			int newEndOffset = TranslateOffset (input, text, endOffset);
+			if (newStartOffset < 0 || newEndOffset < 0)
+				return input.Substring (startOffset, startOffset - endOffset);
+			return text.Substring (newStartOffset, newEndOffset - newStartOffset);
+		}
+
+		static int TranslateOffset (string baseInput, string formattedInput, int offset)
+		{
+			int i = 0;
+			int j = 0;
+			while (i < baseInput.Length && j < formattedInput.Length && i < offset) {
+				char ch1 = baseInput[i];
+				char ch2 = formattedInput[j];
+				bool ch1IsWs = Char.IsWhiteSpace (ch1);
+				bool ch2IsWs = Char.IsWhiteSpace (ch2);
+				if (ch1 == ch2 || ch1IsWs && ch2IsWs) {
+					i++;
+					j++;
+				} else if (!ch1IsWs && ch2IsWs) {
+					j++;
+				} else if (ch1IsWs && !ch2IsWs) {
+					i++;
+				} else {
+					return -1;
+				}
+			}
+			return j;
+		}
+
+		
+		string GetFormattedText (SolutionItem policyParent, string input)
 		{
 			hasErrors = false;
 			if (string.IsNullOrEmpty (input))
@@ -450,8 +485,8 @@ namespace CSharpBinding.Parser
 			using (ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (input))) {
 				parser.Parse ();
 				hasErrors = parser.Errors.Count != 0;
-//				if (hasErrors)
-//					Console.WriteLine (parser.Errors.ErrorOutput);
+		//				if (hasErrors)
+		//					Console.WriteLine (parser.Errors.ErrorOutput);
 				IList<ISpecial> specials = parser.Lexer.SpecialTracker.RetrieveSpecials ();
 				if (parser.Errors.Count == 0) {
 					using (SpecialNodesInserter.Install (specials, outputVisitor)) {
@@ -460,19 +495,19 @@ namespace CSharpBinding.Parser
 					return outputVisitor.Text;
 				}
 			}
-//			Console.WriteLine ("trying to parse block.");
+			//			Console.WriteLine ("trying to parse block.");
 			using (ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (input))) {
 				BlockStatement blockStatement = parser.ParseBlock ();
 				hasErrors = parser.Errors.Count != 0;
-//				if (hasErrors)
-//					Console.WriteLine (parser.Errors.ErrorOutput);
+				//				if (hasErrors)
+				//					Console.WriteLine (parser.Errors.ErrorOutput);
 				IList<ISpecial> specials = parser.Lexer.SpecialTracker.RetrieveSpecials ();
 				if (parser.Errors.Count == 0) {
 					StringBuilder result = new StringBuilder ();
 					using (var inserter = SpecialNodesInserter.Install (specials, outputVisitor)) {
 						foreach (INode node in blockStatement.Children) {
 							node.AcceptVisitor (outputVisitor, null);
-//							result.AppendLine (outputVisitor.Text);
+							//							result.AppendLine (outputVisitor.Text);
 						}
 						if (!outputVisitor.OutputFormatter.LastCharacterIsNewLine)
 							outputVisitor.OutputFormatter.NewLine ();
@@ -482,12 +517,12 @@ namespace CSharpBinding.Parser
 					return result.ToString ();
 				}
 			}
-//			Console.WriteLine ("trying to parse expression.");
+			//			Console.WriteLine ("trying to parse expression.");
 			using (ICSharpCode.NRefactory.IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader (input))) {
 				Expression expression = parser.ParseExpression ();
 				hasErrors = parser.Errors.Count != 0;
-//				if (hasErrors)
-//					Console.WriteLine (parser.Errors.ErrorOutput);
+				//				if (hasErrors)
+				//					Console.WriteLine (parser.Errors.ErrorOutput);
 				IList<ISpecial> specials = parser.Lexer.SpecialTracker.RetrieveSpecials ();
 				if (parser.Errors.Count == 0) {
 					using (SpecialNodesInserter.Install (specials, outputVisitor)) {
