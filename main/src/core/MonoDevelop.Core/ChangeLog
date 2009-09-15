@@ -1,3 +1,9 @@
+2009-09-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies\MsNetTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies\MsNetFrameworkBackend.cs: Scan
+	  folders registered in AssemblyFoldersEx keys.
+
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/MsNetFrameworkBackend.cs: On

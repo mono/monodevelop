@@ -89,7 +89,7 @@ namespace MonoDevelop.Core.Assemblies
 			return targetRuntime.RootDirectory.Combine ("v" + framework.Id);
 		}
 		
-		string GetClrVersion (ClrVersion v)
+		internal static string GetClrVersion (ClrVersion v)
 		{
 			switch (v) {
 				case ClrVersion.Net_1_1: return "v1.1.4322";

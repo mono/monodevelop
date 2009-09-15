@@ -83,10 +83,42 @@ namespace MonoDevelop.Core.Assemblies
 				string folder = fk.GetValue ("") as string;
 				string version = fk.GetValue ("version") as string ?? "";
 				if (!string.IsNullOrEmpty (folder))
-					AddPackage (key, version, folder);
+					AddPackage (key, version, folder, null);
 				fk.Close ();
 			}
 			foldersKey.Close ();
+
+			// Extended assembly folders
+
+			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+				RegistryKey fxKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\v" + fx.Id + @"\AssemblyFoldersEx", false);
+				if (fxKey != null) {
+					AddPackages (fx, fxKey);
+					fxKey.Close ();
+				}
+
+				string clrVer = MsNetFrameworkBackend.GetClrVersion (fx.ClrVersion);
+				if (clrVer.StartsWith ("v" + fx.Id)) {
+					// Several frameworks can share the same clr version. Make sure only one registers the assemblies.
+					fxKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\" + clrVer + @"\AssemblyFoldersEx", false);
+					if (fxKey != null) {
+						AddPackages (fx, fxKey);
+						fxKey.Close ();
+					}
+				}
+			}
+		}
+
+		void AddPackages (TargetFramework fx, RegistryKey fxKey)
+		{
+			foreach (string key in fxKey.GetSubKeyNames ()) {
+				RegistryKey fk = fxKey.OpenSubKey (key, false);
+				string folder = fk.GetValue ("") as string;
+				string version = fk.GetValue ("version") as string ?? "";
+				if (!string.IsNullOrEmpty (folder))
+					AddPackage (key, version, folder, fx);
+				fk.Close ();
+			}
 		}
 		
 		public override string GetMSBuildBinPath (TargetFramework fx)
@@ -100,12 +132,13 @@ namespace MonoDevelop.Core.Assemblies
 			return rootDir.Combine ("v2.0.50727");
 		}
 		
-		void AddPackage (string name, string version, string folder)
+		void AddPackage (string name, string version, string folder, TargetFramework fx)
 		{
 			SystemPackageInfo pinfo = new SystemPackageInfo ();
 			pinfo.Name = name;
 			pinfo.Description = name;
 			pinfo.Version = version;
+			pinfo.TargetFramework = fx != null ? fx.Id : null;
 			RegisterPackage (pinfo, false, Directory.GetFiles (folder, "*.dll"));
 		}
 
