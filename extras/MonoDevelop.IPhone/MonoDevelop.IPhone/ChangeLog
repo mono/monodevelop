@@ -1,5 +1,9 @@
 2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneFrameworkBackend.cs: Tweak dialog a little more.
+
+2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneFrameworkBackend.cs: Improve sim-only dialog.
 
 2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>

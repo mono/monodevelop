@@ -125,7 +125,7 @@ namespace MonoDevelop.IPhone
 			dialog.Title =  GettextCatalog.GetString ("Evaluation Version");
 			
 			dialog.VBox.PackStart (
-			 	new Label ("<big>Not available in the evaluation version</big>") {
+			 	new Label ("<b><big>Feature Not Available In Evaluation Version</big></b>") {
 					Xalign = 0.5f,
 					UseMarkup = true
 				}, true, false, 12);
@@ -139,13 +139,15 @@ namespace MonoDevelop.IPhone
 					Justify = Justification.Center
 				});
 			
+			align = new Gtk.Alignment (0.5f, 0.5f, 1.0f, 1.0f) { LeftPadding = 12, RightPadding = 12 };
+			dialog.VBox.PackStart (align, true, false, 12);
 			var buyButton = new Button (
 				new Label (GettextCatalog.GetString ("<big>Buy MonoTouch</big>")) { UseMarkup = true } );
 			buyButton.Clicked += delegate {
 				System.Diagnostics.Process.Start ("http://monotouch.net");
 				dialog.Respond (ResponseType.Accept);
 			};
-			dialog.VBox.PackStart (buyButton, true, false, 12);
+			align.Add (buyButton);
 			
 			dialog.AddButton (GettextCatalog.GetString ("Continue evaluation"), ResponseType.Close);
 			dialog.ShowAll ();
