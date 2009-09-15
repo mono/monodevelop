@@ -58,12 +58,18 @@ namespace MonoDevelop.IPhone
 				return base.Build (monitor, item, configuration);
 			
 			//prebuild
+			var conf = (IPhoneProjectConfiguration) proj.GetConfiguration (configuration);
+			
+			if (IPhoneFramework.SimOnly && conf.Platform == IPhoneProject.PLAT_IPHONE) {
+				//if in the GUI, show a dialog too
+				if (MonoDevelop.Ide.Gui.IdeApp.IsInitialized)
+					Gtk.Application.Invoke (delegate { IPhoneFramework.CheckAndShowSimOnlyDialog (); } );
+				return IPhoneFramework.GetSimOnlyError ();
+			}
 			
 			BuildResult result = base.Build (monitor, item, configuration);
 			if (result.ErrorCount > 0)
 				return result;
-			
-			var conf = (IPhoneProjectConfiguration) proj.GetConfiguration (configuration);
 			
 			if (!Directory.Exists (conf.AppDirectory))
 				Directory.CreateDirectory (conf.AppDirectory);
@@ -551,11 +557,9 @@ namespace MonoDevelop.IPhone
 			IEnumerable<System.Security.Cryptography.X509Certificates.X509Certificate2> installedKeyNames;
 			
 			if (keyName == Keychain.DEV_CERT_PREFIX || keyName == Keychain.DIST_CERT_PREFIX) {
-				installedKeyNames = Keychain.GetAllSigningCertificates ()
-					.Where (c => Keychain.GetCertificateCommonName (c).StartsWith (keyName));
+				installedKeyNames = Keychain.FindNamedSigningCertificates (x => x.StartsWith (keyName));
 			} else {
-				installedKeyNames = Keychain.GetAllSigningCertificates ()
-					.Where (c => Keychain.GetCertificateCommonName (c) == keyName);
+				installedKeyNames = Keychain.FindNamedSigningCertificates (x => x == keyName);
 			}
 			
 			if (provision != null) {

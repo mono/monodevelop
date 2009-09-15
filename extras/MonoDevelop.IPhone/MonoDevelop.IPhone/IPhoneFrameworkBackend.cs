@@ -30,6 +30,8 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core;
 using Mono.Addins;
+using MonoDevelop.Core.Gui;
+using Gtk;
 
 
 namespace MonoDevelop.IPhone
@@ -103,6 +105,47 @@ namespace MonoDevelop.IPhone
 				}
 				return simOnly.Value;
 			}
+		}
+		
+		public static MonoDevelop.Projects.BuildResult GetSimOnlyError ()
+		{
+			var res = new MonoDevelop.Projects.BuildResult ();
+			res.AddError (GettextCatalog.GetString (
+				"The evalution version of MonoTouch does not support the device. " + 
+				"Please go to http://monotouch.net to purchase the full version."));
+			return res;
+		}
+		
+		public static void CheckAndShowSimOnlyDialog ()
+		{
+			if (!SimOnly)
+				return;
+			
+			var dialog = new Dialog ();
+			dialog.Title =  GettextCatalog.GetString ("Evaluation Version");
+			
+			var box = new VBox ();
+			box.PackStart (new Label ("<big>Not available in the evaluation version</big>") { Xalign = 0.5f }, true, false, 0);
+			box.PackStart (new Label (
+				"The evaluation version of MonoTouch does not support the device."
+			));
+			
+			var buyButton = new Button (GettextCatalog.GetString ("Buy MonoTouch"));
+			buyButton.Clicked += delegate {
+				System.Diagnostics.Process.Start ("http://monotouch.net");
+				dialog.Respond (ResponseType.Accept);
+			};
+			box.PackStart (buyButton, true, false, 0);
+			var closeButton = new Button (Gtk.Stock.Close);
+			closeButton.Clicked += delegate {
+				dialog.Respond (ResponseType.Close);
+			};
+			box.PackStart (closeButton, true, false, 0);
+			
+			dialog.Add (box);
+			dialog.ShowAll ();
+			
+			MessageService.ShowCustomDialog (dialog);
 		}
 	}
 	

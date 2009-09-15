@@ -218,6 +218,14 @@ namespace MonoDevelop.IPhone
 			return list;
 		}
 		
+		public static IEnumerable<X509Certificate2> FindNamedSigningCertificates (Func<string,bool> nameCheck)
+		{
+			return GetAllSigningCertificates ().Where (x => {
+				var y = GetCertificateCommonName (x);
+				return y != null && y.Length > 0 && nameCheck (y);
+			});
+		}
+		
 		public static IList<X509Certificate2> GetAllSigningCertificates ()
 		{
 			IntPtr searchRef, itemRef, certRef;

@@ -1,5 +1,21 @@
 2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneFrameworkBackend.cs: Add methods for warning about
+	  sim-only build.
+
+	* Keychain.cs:
+	* Gui/IPhoneSigningKeyPanel.cs: Simplify code for finding
+	  named certs.
+
+	* IPhoneBuildExtension.cs: Warn when using features that don't
+	  exist in eval version. Fix some possible NREs in enumerating
+	  certs.
+
+	* IPhoneCommands.cs: Warn when using features that don't exist
+	  in eval version.
+
+2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Gui/IPhoneSigningKeyPanel.cs: Fix NRE with certs that don't
 	  have a CN.
 
