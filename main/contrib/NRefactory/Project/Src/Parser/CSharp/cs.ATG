@@ -240,22 +240,24 @@ Attribute<out ASTAttribute attribute>
 		"::"
 	]
 	Qualident<out qualident> 
-	(. List<Expression> positional = new List<Expression>();
-	   List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
+	(. List<Expression> positional = null;
+	   List<NamedArgumentExpression> named = null;
 	   string name = (alias != null && alias != "global") ? alias + "." + qualident : qualident;
 	.)
-	[ AttributeArguments<positional, named> ]
+	[ AttributeArguments<out positional, out named> ]
 	(. attribute = new ASTAttribute(name, positional, named); 
 	   attribute.StartLocation = startPos;
 	   attribute.EndLocation = t.EndLocation;
 	.)
 .
 
-AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> named>
+AttributeArguments<out List<Expression> positional, out List<NamedArgumentExpression> named>
 (.
 	bool nameFound = false;
 	string name = "";
 	Expression expr;
+	positional = new List<Expression>();
+	named = new List<NamedArgumentExpression> ();
 .)
 =
 	"("
@@ -264,7 +266,8 @@ AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> na
 			IF (IsAssignment())          (. nameFound = true; .)
 			Identifier                   (. name = t.val; .)
 			"="
-		] Expr<out expr>                 (. if (expr != null) {if(name == "") positional.Add(expr);
+		] Expr<out expr>                 (. if (expr != null) {  
+												if(name == "") positional.Add(expr);
 		                                    else { named.Add(new NamedArgumentExpression(name, expr)); name = ""; }
 		                                    }
 		                                 .)

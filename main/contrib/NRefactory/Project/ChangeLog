@@ -1,3 +1,12 @@
+2009-09-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Ast/Generated.cs:
+	* Src/Parser/CSharp/cs.ATG:
+	* Src/Parser/VBNet/Parser.cs:
+	* Src/Parser/CSharp/Parser.cs:
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Added
+	  support for attributes without braces.
+
 2009-09-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/PrettyPrinter/IOutputAstVisitor.cs: moved property to

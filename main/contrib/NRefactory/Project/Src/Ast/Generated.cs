@@ -259,7 +259,10 @@ namespace ICSharpCode.NRefactory.Ast {
 		List<Expression> positionalArguments;
 		
 		List<NamedArgumentExpression> namedArguments;
-		
+		public bool IsEmptyCall {
+			get;
+			set;
+		}
 		public string Name {
 			get {
 				return name;
@@ -293,8 +296,10 @@ namespace ICSharpCode.NRefactory.Ast {
 			namedArguments = new List<NamedArgumentExpression>();
 		}
 		
-		public Attribute(string name, List<Expression> positionalArguments, List<NamedArgumentExpression> namedArguments) {
+		public Attribute (string name, List<Expression> positionalArguments, List<NamedArgumentExpression> namedArguments)
+		{
 			Name = name;
+			IsEmptyCall = positionalArguments == null && namedArguments == null;
 			PositionalArguments = positionalArguments;
 			NamedArguments = namedArguments;
 		}

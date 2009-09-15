@@ -1688,8 +1688,7 @@ IsMustOverride(m)) {
 				}
 				
 				compilationUnit.AddChild(methodDeclaration);
-				
-				if (ParseMethodBodies) { 
+								if (ParseMethodBodies) { 
 				Block(
 #line  946 "VBNET.ATG" 
 out stmt);
@@ -2069,8 +2068,7 @@ out eventAccessorDeclaration);
 			{
 				Error("Need to provide RaiseEvent accessor.");
 			}
-			
-			EventDeclaration decl = new EventDeclaration {
+					EventDeclaration decl = new EventDeclaration {
 				TypeReference = type, Name = customEventName, Modifier = m.Modifier,
 				Attributes = attributes,
 				StartLocation = m.GetDeclarationLocation(startPos),
@@ -6808,8 +6806,7 @@ out goToStatement);
 
 #line  3099 "VBNET.ATG" 
 			string val = goToStatement.Label;
-			
-			// if value is numeric, make sure that is 0
+						// if value is numeric, make sure that is 0
 			try {
 				long intLabel = Int64.Parse(val);
 				if(intLabel != 0) {

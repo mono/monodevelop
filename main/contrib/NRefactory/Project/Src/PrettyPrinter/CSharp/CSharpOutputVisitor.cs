@@ -255,30 +255,32 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitAttribute(ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
+		public override object TrackedVisitAttribute (ICSharpCode.NRefactory.Ast.Attribute attribute, object data)
 		{
-			outputFormatter.PrintIdentifier(attribute.Name);
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			outputFormatter.PrintIdentifier (attribute.Name);
+			if (attribute.IsEmptyCall)
+				return null;
+			outputFormatter.PrintToken (Tokens.OpenParenthesis);
 			if (this.prettyPrintOptions.WithinMethodCallParentheses) {
-				outputFormatter.Space();
+				outputFormatter.Space ();
 			}
-			this.AppendCommaSeparatedList(attribute.PositionalArguments);
+			this.AppendCommaSeparatedList (attribute.PositionalArguments);
 			
 			if (attribute.NamedArguments != null && attribute.NamedArguments.Count > 0) {
 				if (attribute.PositionalArguments.Count > 0) {
-					PrintFormattedComma();
+					PrintFormattedComma ();
 				}
 				for (int i = 0; i < attribute.NamedArguments.Count; ++i) {
-					TrackVisit((INode)attribute.NamedArguments[i], data);
+					TrackVisit ((INode)attribute.NamedArguments[i], data);
 					if (i + 1 < attribute.NamedArguments.Count) {
-						PrintFormattedComma();
+						PrintFormattedComma ();
 					}
 				}
 			}
 			if (this.prettyPrintOptions.WithinMethodCallParentheses) {
-				outputFormatter.Space();
+				outputFormatter.Space ();
 			}
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			outputFormatter.PrintToken (Tokens.CloseParenthesis);
 			return null;
 		}
 		
