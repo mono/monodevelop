@@ -1,3 +1,9 @@
+2009-09-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: If there
+	  are too few selections for up/down close window & process
+	  key. Should be more in line with our left/right behavior.
+
 2009-09-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Accept

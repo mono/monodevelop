@@ -206,6 +206,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			switch (key) {
 			case Gdk.Key.Up:
+				if (list.filteredItems.Count < 2)
+					return KeyActions.CloseWindow | KeyActions.Process;
 				if (!AutoSelect) {
 					AutoSelect = true;
 				} else {
@@ -214,6 +216,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Down:
+				if (list.filteredItems.Count < 2)
+					return KeyActions.CloseWindow | KeyActions.Process;
 				if (!AutoSelect) {
 					AutoSelect = true;
 				} else {
@@ -222,10 +226,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Page_Up:
+				if (list.filteredItems.Count < 2)
+					return KeyActions.CloseWindow | KeyActions.Process;
 				list.Selection -= list.VisibleRows - 1;
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Page_Down:
+				if (list.filteredItems.Count < 2)
+					return KeyActions.CloseWindow | KeyActions.Process;
 				list.Selection += list.VisibleRows - 1;
 				return KeyActions.Ignore;
 
