@@ -304,9 +304,15 @@ namespace Mono.TextEditor
 				tabArray.Dispose ();
 				tabArray = null;
 			}
-			tabArray = new Pango.TabArray (10, true);
-			for (int i = 0; i < 10; i++)
-				tabArray.SetTab (i, Pango.TabAlign.Left, (i + 1) * CharWidth * textEditor.Options.TabSize);
+			Pango.Layout tabWidthLayout = new Pango.Layout (textEditor.PangoContext);
+			tabWidthLayout.Alignment = Pango.Alignment.Left;
+			tabWidthLayout.FontDescription = textEditor.Options.Font;
+			tabWidthLayout.SetText (new string (' ', textEditor.Options.TabSize));
+			int tabWidth, h;
+			tabWidthLayout.GetPixelSize (out tabWidth, out h);
+			tabWidthLayout.Dispose ();
+			tabArray = new Pango.TabArray (1, true);
+			tabArray.SetTab (0, Pango.TabAlign.Left, tabWidth);
 			
 			DisposeLayoutDict ();
 			chunkDict.Clear ();
