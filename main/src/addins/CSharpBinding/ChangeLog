@@ -1,5 +1,9 @@
 2009-09-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/CSharpFormatter.cs: worked on formatting.
+
+2009-09-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CSharpFormatter.cs: Worked on code formatting.
 
 2009-09-12  Mike Krüger  <mkrueger@novell.com>

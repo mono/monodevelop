@@ -444,7 +444,8 @@ namespace CSharpBinding.Parser
 			int newStartOffset = TranslateOffset (input, text, startOffset);
 			int newEndOffset = TranslateOffset (input, text, endOffset);
 			if (newStartOffset < 0 || newEndOffset < 0)
-				return input.Substring (startOffset, startOffset - endOffset);
+				return input.Substring (startOffset, System.Math.Max (0, System.Math.Min (startOffset - endOffset, input.Length - endOffset)));
+			
 			return text.Substring (newStartOffset, newEndOffset - newStartOffset);
 		}
 
@@ -470,7 +471,6 @@ namespace CSharpBinding.Parser
 			}
 			return j;
 		}
-
 		
 		string GetFormattedText (SolutionItem policyParent, string input)
 		{
