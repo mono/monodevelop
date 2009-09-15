@@ -59,7 +59,10 @@ namespace MonoDevelop.IPhone
 		
 		protected override void Run ()
 		{
-			IPhoneFramework.CheckAndShowSimOnlyDialog ();
+			if (IPhoneFramework.SimOnly) {
+				IPhoneFramework.ShowSimOnlyDialog ();
+				return;
+			}
 			
 			var proj = GetActiveProject ();
 			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
@@ -122,7 +125,10 @@ namespace MonoDevelop.IPhone
 		
 		protected override void Run ()
 		{
-			IPhoneFramework.CheckAndShowSimOnlyDialog ();
+			if (IPhoneFramework.SimOnly) {
+				IPhoneFramework.ShowSimOnlyDialog ();
+				return;
+			}
 			
 			var proj = DefaultUploadToDeviceHandler.GetActiveProject ();
 			var slnConf = IdeApp.Workspace.ActiveConfiguration;

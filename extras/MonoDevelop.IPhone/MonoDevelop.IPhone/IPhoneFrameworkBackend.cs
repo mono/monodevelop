@@ -116,7 +116,7 @@ namespace MonoDevelop.IPhone
 			return res;
 		}
 		
-		public static void CheckAndShowSimOnlyDialog ()
+		public static void ShowSimOnlyDialog ()
 		{
 			if (!SimOnly)
 				return;
@@ -142,7 +142,8 @@ namespace MonoDevelop.IPhone
 			};
 			box.PackStart (closeButton, true, false, 0);
 			
-			dialog.Add (box);
+			dialog.ActionArea.Visible = false;
+			dialog.VBox.PackStart (box, true, true, 0);
 			dialog.ShowAll ();
 			
 			MessageService.ShowCustomDialog (dialog);
