@@ -1,3 +1,8 @@
+2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneSigningKeyPanel.cs: Fix NRE with certs that don't
+	  have a CN.
+
 2009-09-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneFrameworkBackend.cs:
