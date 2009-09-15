@@ -432,7 +432,6 @@ namespace Mono.TextEditor
 					data.Caret.PreserveSelection = true;
 					//int oldLine = data.Caret.Line;
 					int textLength = data.Insert (insertionOffset, text);
-					data.PasteText (insertionOffset, text);
 					result = textLength;
 
 					if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset)
@@ -453,6 +452,7 @@ namespace Mono.TextEditor
 							data.SelectionRange = new Segment (offset, selection.Length);
 						}
 					}
+					data.PasteText (insertionOffset, text);
 					data.Document.EndAtomicUndo ();
 				});
 			}

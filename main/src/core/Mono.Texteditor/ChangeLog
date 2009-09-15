@@ -1,5 +1,9 @@
 2009-09-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/ClipboardActions.cs: Worked on formatting.
+
+2009-09-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: Corrected text link
 	  mode bug.
 
