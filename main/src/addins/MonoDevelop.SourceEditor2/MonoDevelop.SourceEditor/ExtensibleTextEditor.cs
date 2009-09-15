@@ -764,11 +764,15 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
 				IPrettyPrinter prettyPrinter = TextFileService.GetPrettyPrinter (Document.MimeType);
-				if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting && ProjectDom != null) {
-					string newText = prettyPrinter.FormatText (ProjectDom.Project, Document.MimeType, Document.Text, insertionOffset, insertionOffset + text.Length);
-					if (!string.IsNullOrEmpty (newText)) {
-						Replace (insertionOffset, text.Length, newText);
-						Caret.Offset = insertionOffset + newText.Length;
+				if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting && ProjectDom != null && text != null) {
+					try {
+						string newText = prettyPrinter.FormatText (ProjectDom.Project, Document.MimeType, Document.Text, insertionOffset, insertionOffset + text.Length);
+						if (!string.IsNullOrEmpty (newText)) {
+							Replace (insertionOffset, text.Length, newText);
+							Caret.Offset = insertionOffset + newText.Length;
+						}
+					} catch (Exception e) {
+						Console.WriteLine (e);
 					}
 				}
 			}
