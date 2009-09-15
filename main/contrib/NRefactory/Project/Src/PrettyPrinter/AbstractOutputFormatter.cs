@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -164,7 +164,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			string lastLine = text.ToString(lastLineStart, text.Length - lastLineStart);
 			text.Remove(lastLineStart, text.Length - lastLineStart);
-			if (indent && txt != Environment.NewLine) {
+			if (indent) {
 				if (forceWriteInPreviousBlock) ++indentationLevel;
 				Indent();
 				if (forceWriteInPreviousBlock) --indentationLevel;
