@@ -1,5 +1,11 @@
 2009-09-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs: Worked on text link
+	  mode - it's now possible to update the text while in text
+	  link mode & fixed some text link bugs.
+
+2009-09-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Worked on bug 'Bug 538800
 	  - Tab positions are at wrong offsets.'.
 

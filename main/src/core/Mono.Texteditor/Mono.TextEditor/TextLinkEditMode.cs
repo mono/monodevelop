@@ -261,13 +261,19 @@ namespace Mono.TextEditor
 			}
 			if (SetCaretPosition && resetCaret)
 				Editor.Caret.Offset = endOffset;
-			Editor.CurrentMode = OldMode;
-			Editor.Document.CommitUpdateAll ();
+			
 			Editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged -= HandlePositionChanged;
 			this.Editor.TooltipProviders.Remove (tooltipProvider);
 			if (undoDepth >= 0)
 				Editor.Document.StackUndoToDepth (undoDepth);
+			Editor.CurrentMode = OldMode;
+			Editor.Document.CommitUpdateAll ();
+		}
+		
+		public bool IsInUpdate {
+			get;
+			set;
 		}
 		
 		bool wasReplaced = false;
@@ -276,9 +282,10 @@ namespace Mono.TextEditor
 			wasReplaced = true;
 			int offset = e.Offset - baseOffset;
 			int delta = -e.Count + (!string.IsNullOrEmpty (e.Value) ? e.Value.Length : 0);
-			if (e.Offset < endOffset) 
+			if (e.Offset < endOffset)
 				endOffset += delta;
-			if (!links.Where (link => link.Links.Where (segment => segment.Contains (offset) || segment.EndOffset == offset).Any ()).Any ()) {
+			if (!IsInUpdate && !links.Where (link => link.Links.Where (segment => segment.Contains (offset) || segment.EndOffset == offset).Any ()).Any ()) {
+				SetCaretPosition = false;
 				ExitTextLinkMode ();
 				return;
 			}
@@ -286,7 +293,9 @@ namespace Mono.TextEditor
 				foreach (Segment s in link.Links) {
 					if (offset < s.Offset) {
 						s.Offset += delta;
-					} else if (offset <= s.EndOffset) {
+					} else if (offset < s.EndOffset) {
+						s.Length += delta;
+					} else if (offset == s.EndOffset && delta > 0) {
 						s.Length += delta;
 					}
 				}
@@ -403,6 +412,8 @@ namespace Mono.TextEditor
 		
 		public void UpdateTextLinks ()
 		{
+			if (window == null)
+				return;
 			foreach (TextLink l in links) {
 				if (l.GetStringFunc != null) {
 					l.Values = l.GetStringFunc (GetStringCallback);
@@ -426,7 +437,7 @@ namespace Mono.TextEditor
 			for (int i = link.Links.Count - 1; i >= 0; i--) {
 				Segment s = link.Links[i];
 				int offset = s.Offset + baseOffset;
-				if (offset < 0 || s.Length < 0)
+				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.Length)
 					continue;
 				if (Editor.Document.GetTextAt (offset, s.Length) != link.CurrentText)
 					Editor.Replace (s.Offset + baseOffset, s.Length, link.CurrentText);
