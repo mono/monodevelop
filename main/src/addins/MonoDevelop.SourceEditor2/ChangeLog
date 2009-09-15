@@ -1,5 +1,10 @@
 2009-09-15  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Corrected
+	  caret position after format.
+
+2009-09-15  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Worked on
 	  formatting.
 
