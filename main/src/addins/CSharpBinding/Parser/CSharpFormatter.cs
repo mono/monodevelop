@@ -441,10 +441,12 @@ namespace CSharpBinding.Parser
 		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
 		{
 			string text = GetFormattedText (policyParent, input);
+			if (startOffset == 0 && endOffset >= input.Length - 1)
+				return text;
 			int newStartOffset = TranslateOffset (input, text, startOffset);
 			int newEndOffset = TranslateOffset (input, text, endOffset);
 			if (newStartOffset < 0 || newEndOffset < 0)
-				return input.Substring (startOffset, System.Math.Max (0, System.Math.Min (startOffset - endOffset, input.Length - endOffset)));
+				return input.Substring (startOffset, System.Math.Max (0, System.Math.Min (endOffset - startOffset, input.Length - startOffset)));
 			
 			return text.Substring (newStartOffset, newEndOffset - newStartOffset);
 		}
@@ -458,6 +460,7 @@ namespace CSharpBinding.Parser
 				char ch2 = formattedInput[j];
 				bool ch1IsWs = Char.IsWhiteSpace (ch1);
 				bool ch2IsWs = Char.IsWhiteSpace (ch2);
+//				Console.WriteLine ("ch1={0}, ch2={1}, ch1IsWs={2}, ch2IsWs={3}", ch1, ch2, ch1IsWs, ch2IsWs);
 				if (ch1 == ch2 || ch1IsWs && ch2IsWs) {
 					i++;
 					j++;
