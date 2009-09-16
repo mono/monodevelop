@@ -521,19 +521,22 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
+		static readonly string assemblyPrefix = "Assembly:";
+		static readonly char[] separators     = new char [] {'/', '\\'};
 		internal static bool ParseAssemblyUri (string uri, out TargetRuntime runtime, out TargetFramework fx, out string file)
 		{
-			if (uri.StartsWith ("Assembly:")) {
+			if (uri.StartsWith (assemblyPrefix)) {
 				runtime = null;
 				fx = null;
-				int i = uri.IndexOf (':', 9);
+				int curOffset = assemblyPrefix.Length;
+				int i = uri.IndexOf (':', curOffset);
 				if (i != -1) {
-					string rid = uri.Substring (9, i - 9);
+					string rid = uri.Substring (assemblyPrefix.Length, i - assemblyPrefix.Length);
 					runtime = Runtime.SystemAssemblyService.GetTargetRuntime (rid);
-					file = uri.Substring (i + 1);
-				} else
-					file = uri.Substring (9);
-				
+					curOffset = i + 1;
+				}
+				i = Math.Max (uri.IndexOfAny (separators, curOffset), curOffset);
+				file = uri.Substring (curOffset);
 				if (runtime == null)
 					runtime = Runtime.SystemAssemblyService.DefaultRuntime;
 				if (fx == null)

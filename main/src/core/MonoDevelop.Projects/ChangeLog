@@ -1,5 +1,10 @@
 2009-09-16  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Fixed
+	  bug in the assembly lookup.
+
+2009-09-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.csproj: upped the warning level to 4.
 
 2009-09-16  Mike Krüger  <mkrueger@novell.com>
