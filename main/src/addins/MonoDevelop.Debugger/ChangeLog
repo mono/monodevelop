@@ -1,3 +1,8 @@
+2009-09-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger\DebuggingService.cs: Fire the stopped
+	  event after disposing the session.
+
 2009-09-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/ImmediatePad.cs: Added a toolbar with a

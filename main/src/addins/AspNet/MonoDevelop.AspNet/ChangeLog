@@ -1,3 +1,12 @@
+2009-09-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AspNet\AspNetExecutionHandler.cs: Set DEVPATH to
+	  the path of xsp. Required on Windows, so that .NET can find
+	  Mono.Web.
+
+	* MonoDevelop.AspNet\AspNetAppProject.cs: Moved the XSP check
+	  to the execution handler.
+
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Html/DocTypeCompletionData.cs:

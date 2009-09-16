@@ -52,7 +52,10 @@ namespace MonoDevelop.AspNet
 			//if the current runtime doesn't provide XSP, use one bundled alongside the addin
 			if (String.IsNullOrEmpty (xspPath))
 				 xspPath = Path.Combine (Path.GetDirectoryName (typeof (AspNetExecutionHandler).Assembly.CodeBase), xspName);
-			
+
+			if (!File.Exists (xspPath))
+				throw new UserException (string.Format ("The \"{0}\" web server cannot be started. Please ensure that it is installed.", xspName), null);
+		
 			//if it's a script, use a native execution handler
 			if (!xspPath.EndsWith (".exe")) {
 				//set mono debug mode if project's in debug mode
@@ -63,15 +66,22 @@ namespace MonoDevelop.AspNet
 				}
 				
 				var ncmd = new NativeExecutionCommand (
-					xspPath, cmd.XspParameters.GetXspParameters (),
+					xspPath, cmd.XspParameters.GetXspParameters () + " --nonstop",
 					cmd.BaseDirectory, envVars);
 				
 				return Runtime.ProcessService.GetDefaultExecutionHandler (ncmd).Execute (ncmd, console);
 			}
+
+			// Set DEVPATH when running on Windows (notice that this has no effect unless
+			// <developmentMode developerInstallation="true" /> is set in xsp2.exe.config
+
+			var evars = cmd.TargetRuntime.GetToolsEnvironmentVariables (cmd.TargetFramework);
+			if (cmd.TargetRuntime is MsNetTargetRuntime)
+				evars["DEVPATH"] = Path.GetDirectoryName (xspPath);
 			
 			var netCmd = new DotNetExecutionCommand (
-				xspPath, cmd.XspParameters.GetXspParameters (),
-				cmd.BaseDirectory, cmd.TargetRuntime.GetToolsEnvironmentVariables (cmd.TargetFramework));
+				xspPath, cmd.XspParameters.GetXspParameters () + " --nonstop",
+				cmd.BaseDirectory, evars);
 			netCmd.DebugMode = cmd.DebugMode;
 			
 			return cmd.TargetRuntime.GetExecutionHandler ().Execute (netCmd, console);

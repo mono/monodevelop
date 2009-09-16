@@ -206,17 +206,6 @@ namespace MonoDevelop.AspNet
 				return new BuildResult ();
 		}
 		
-		static bool CheckXsp (string command)
-		{
-			try {
-				ProcessWrapper p = Runtime.ProcessService.StartProcess (command, "--version", null, null);
-				p.WaitForOutput ();
-				return true;
-			} catch {
-				return false;
-			}
-		}
-		
 		ExecutionCommand CreateExecutionCommand (AspNetAppProjectConfiguration configuration)
 		{
 			AspNetExecutionCommand cmd = new AspNetExecutionCommand ();
@@ -242,13 +231,6 @@ namespace MonoDevelop.AspNet
 			
 			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetActiveConfiguration (config);
 			ExecutionCommand cmd = CreateExecutionCommand (configuration);
-			
-			ClrVersion clrVersion = configuration.ClrVersion;
-			string xspVersion = (clrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
-			if (!CheckXsp (xspVersion)) {
-				monitor.ReportError (string.Format ("The \"{0}\" web server cannot be started. Please ensure that it is installed.",xspVersion), null);
-				return;
-			}
 			
 			IConsole console = null;
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);

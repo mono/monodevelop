@@ -168,12 +168,12 @@ namespace MonoDevelop.Debugger
 			if (!IsDebugging)
 				return;
 
-			if (StoppedEvent != null)
-				StoppedEvent (null, new EventArgs ());
-
 			// Dispose the session at the end, since it may take a while.
 			DebuggerSession oldSession = session;
 			session = null;
+
+			if (StoppedEvent != null)
+				StoppedEvent (null, new EventArgs ());
 			
 			if (console != null) {
 				console.Dispose ();
