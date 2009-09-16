@@ -196,32 +196,32 @@ namespace MonoDevelop.CSharpBinding
 			setupLookupTableVisitor = true;
 		}
 		
-		static void AddParameterList (CompletionDataList completionList, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col, IEnumerable<IParameter> parameters)
+		static void AddParameterList (MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col, IEnumerable<IParameter> parameters)
 		{
 			foreach (IParameter p in parameters) {
-				col.AddCompletionData (completionList, p);
+				col.Add (p);
 //				completionList.Add (p.Name, "md-literal");
 			}
 		}
 		
-		void AddContentsFromClassAndMembers (ExpressionContext context, CompletionDataList completionList, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
+		void AddContentsFromClassAndMembers (ExpressionContext context, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
 		{
 			IMethod method = callingMember as IMethod;
 			if (method != null && method.Parameters != null) {
-				AddParameterList (completionList, col, method.Parameters);
+				AddParameterList (col, method.Parameters);
 			}
 			IProperty property = callingMember as IProperty;
 			if (property != null && property.Parameters != null) 
-				AddParameterList (completionList, col, property.Parameters);
+				AddParameterList (col, property.Parameters);
 			if (CallingType == null)
 				return;
-			AddContentsFromOuterClass (CallingType.DeclaringType, context, completionList, col);
+			AddContentsFromOuterClass (CallingType.DeclaringType, context, col);
 			IType callingType = CallingType is InstantiatedType ? ((InstantiatedType)CallingType).UninstantiatedType : CallingType;
 			//bool isInStatic = CallingMember != null ? CallingMember.IsStatic : false;
 
 			if (CallingMember == null || !CallingMember.IsStatic) {
 				foreach (TypeParameter parameter in callingType.TypeParameters) {
-					completionList.Add (parameter.Name, "md-literal");
+					col.Add (parameter.Name, "md-literal");
 				}
 			}
 			
@@ -234,31 +234,30 @@ namespace MonoDevelop.CSharpBinding
 						if (member.IsAccessibleFrom (dom, CallingType, CallingMember, includeProtected)) {
 							if (context.FilterEntry (member))
 								continue;
-							col.AddCompletionData (completionList, member);
+							col.Add (member);
 						}
 					}
 				}
 			}
 		}
 		
-		void AddContentsFromOuterClass (IType outer, ExpressionContext context, CompletionDataList completionList, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
+		void AddContentsFromOuterClass (IType outer, ExpressionContext context, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
 		{
 			if (outer == null)
 				return;
 			foreach (IMember member in outer.Members) {
 				if (member is IType || member.IsStatic || member.IsConst) {
-					col.AddCompletionData (completionList, member);
+					col.Add (member);
 				}
 			}
-			AddContentsFromOuterClass (outer.DeclaringType, context, completionList, col);
+			AddContentsFromOuterClass (outer.DeclaringType, context, col);
 		}
 		
 		static readonly IReturnType attributeType = new DomReturnType ("System.Attribute");
-		public MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector AddAccessibleCodeCompletionData (ExpressionContext context, CompletionDataList completionList)
+		public MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector AddAccessibleCodeCompletionData (ExpressionContext context, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
 		{
-			MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector (unit, new DomLocation (editor.CursorLine - 1, editor.CursorColumn - 1));
 			if (context != ExpressionContext.Global) {
-				AddContentsFromClassAndMembers (context, completionList, col);
+				AddContentsFromClassAndMembers (context,  col);
 				
 				if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
 					int callingMemberline = CallingMember != null ? CallingMember.Location.Line : 0; // local variables could be outside members (LINQ initializers) 
@@ -266,7 +265,7 @@ namespace MonoDevelop.CSharpBinding
 						if (pair.Value != null && pair.Value.Count > 0) {
 							foreach (LocalLookupVariable v in pair.Value) {
 								if (new DomLocation (callingMemberline + v.StartPos.Line - 2, v.StartPos.Column) <= this.resolvePosition && (v.EndPos.IsEmpty || new DomLocation (callingMemberline + v.EndPos.Line - 2, v.EndPos.Column) >= this.resolvePosition)) {
-									col.AddCompletionData (completionList, new LocalVariable (CallingMember, pair.Key, ConvertTypeReference (v.TypeRef) , DomRegion.Empty));
+									col.Add (new LocalVariable (CallingMember, pair.Key, ConvertTypeReference (v.TypeRef) , DomRegion.Empty));
 								}
 							}
 						}
@@ -276,11 +275,11 @@ namespace MonoDevelop.CSharpBinding
 				if (CallingMember is IProperty) {
 					IProperty property = (IProperty)callingMember;
 					if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.CursorColumn)) 
-						col.AddCompletionData (completionList, "value");
+						col.Add ("value");
 				}
 			
 				if (CallingMember is IEvent) 
-					col.AddCompletionData (completionList, "value");
+					col.Add ("value");
 			}
 			
 			List<string> namespaceList = new List<string> ();
@@ -292,7 +291,7 @@ namespace MonoDevelop.CSharpBinding
 				foreach (IUsing u in unit.Usings) {
 					
 					foreach (string alias in u.Aliases.Keys) {
-						col.AddCompletionData (completionList, alias);
+						col.Add (alias);
 					}
 					if (u.Namespaces == null) 
 						continue;
@@ -330,13 +329,13 @@ namespace MonoDevelop.CSharpBinding
 						if (t != null && !t.IsBaseType (attributeType))
 							continue;
 					}
-					ICompletionData data = col.AddCompletionData (completionList, o);
+					ICompletionData data = col.Add (o);
 					if (data != null && context == ExpressionContext.Attribute && data.CompletionText != null && data.CompletionText.EndsWith ("Attribute")) {
 						string newText = data.CompletionText.Substring (0, data.CompletionText.Length - "Attribute".Length);
 						data.SetText (newText);
 					}
 				}
-				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", completionList);
+				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", col.CompletionList);
 			}
 			return col;
 		}

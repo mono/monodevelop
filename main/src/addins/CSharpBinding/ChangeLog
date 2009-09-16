@@ -1,3 +1,9 @@
+2009-09-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Fixed 'Bug 539318 -
+	  duplicate var suggestion'.
+
 2009-09-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Parser/CSharpFormatter.cs: Added short way to format whole
