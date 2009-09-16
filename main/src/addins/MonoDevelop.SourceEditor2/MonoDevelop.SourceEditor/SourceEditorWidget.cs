@@ -1007,10 +1007,13 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void SetSearchOptions ()
 		{
-			this.textEditor.SearchEngine    = 
-				SearchAndReplaceWidget.SearchEngine == SearchAndReplaceWidget.DefaultSearchEngine ?
-					(ISearchEngine)new BasicSearchEngine ()
-					: (ISearchEngine)new RegexSearchEngine ();
+			if (SearchAndReplaceWidget.SearchEngine == SearchAndReplaceWidget.DefaultSearchEngine) {
+				if (!(this.textEditor.SearchEngine is BasicSearchEngine))
+					this.textEditor.SearchEngine = new BasicSearchEngine ();
+			} else {
+				if (!(this.textEditor.SearchEngine is RegexSearchEngine))
+					this.textEditor.SearchEngine = new RegexSearchEngine ();
+			}
 			this.textEditor.IsCaseSensitive = SearchAndReplaceWidget.IsCaseSensitive;
 			this.textEditor.IsWholeWordOnly = SearchAndReplaceWidget.IsWholeWordOnly;
 			
