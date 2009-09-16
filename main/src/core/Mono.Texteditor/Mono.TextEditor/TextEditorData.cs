@@ -655,9 +655,6 @@ namespace Mono.TextEditor
 				value.TextEditorData = this;
 				value.SearchRequest = SearchRequest;
 				searchEngine = value;
-				searchEngine.SearchRequest.Changed += delegate {
-					OnSearchChanged (EventArgs.Empty);
-				};
 				OnSearchChanged (EventArgs.Empty);
 			}
 		}
@@ -674,8 +671,12 @@ namespace Mono.TextEditor
 		
 		public SearchRequest SearchRequest {
 			get {
-				if (currentSearchRequest == null)
+				if (currentSearchRequest == null) {
 					currentSearchRequest = new SearchRequest ();
+					currentSearchRequest.Changed += delegate {
+						OnSearchChanged (EventArgs.Empty);
+					};
+				}
 				return currentSearchRequest;
 			}
 		}
