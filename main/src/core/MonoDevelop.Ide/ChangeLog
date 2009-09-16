@@ -1,3 +1,10 @@
+2009-09-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  No longer trying to turn on code completion on action keys
+	  (like cursor keys) - should speed things up on slower
+	  machines.
+
 2009-09-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:

@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			// Handle code completion
 
-			if (completionWidget != null && currentCompletionContext == null) {
+			if (keyChar != '\0' && completionWidget != null && currentCompletionContext == null) {
 				currentCompletionContext = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
 				
 				int triggerWordLength = currentCompletionContext.TriggerWordLength;
