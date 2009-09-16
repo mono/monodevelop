@@ -1,5 +1,9 @@
 2009-09-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpAmbience.cs: Enums are no longer printed sealed.
+
+2009-09-16  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs:
 	* Gui/NewCSharpExpressionFinder.cs:
 	* Gui/CSharpTextEditorCompletion.cs: Fixed 'Bug 539327 -

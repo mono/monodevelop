@@ -364,7 +364,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			InstantiatedType instantiatedType = type as InstantiatedType;
-			string modStr = base.GetString (type.Modifiers);
+			string modStr = base.GetString (type.ClassType == ClassType.Enum ? (type.Modifiers & ~Modifiers.Sealed) :  type.Modifiers);
 			string modifiers = !String.IsNullOrEmpty (modStr) ? settings.EmitModifiers (modStr) : "";
 			string keyword = settings.EmitKeyword (GetString (type.ClassType));
 			
