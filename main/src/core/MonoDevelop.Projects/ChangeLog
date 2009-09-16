@@ -1,3 +1,8 @@
+2009-09-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Added type
+	  name expected context.
+
 2009-09-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFile.cs: Fixed 'Bug 538827 –
