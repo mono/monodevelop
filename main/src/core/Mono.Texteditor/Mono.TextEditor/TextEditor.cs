@@ -124,28 +124,7 @@ namespace Mono.TextEditor
 		
 		public TextEditor () : this (new Document ())
 		{
-		//	snooperID = Gtk.Key.SnooperInstall (KeySnooperFunc);
-		//	snooperID = 0;
 		}
-#region Key snooper (dnd hack)
-//		uint snooperID;
-//		Dictionary<Gdk.Key, bool> keyPressed = new Dictionary<Gdk.Key, bool> ();
-//		int KeySnooperFunc (Widget grab_widget, Gdk.EventKey evnt) 
-//		{
-//			// only handle the control keys
-//			if (evnt.Key != Gdk.Key.Control_L && evnt.Key != Gdk.Key.Control_R)
-//				return 0;
-//			
-//			bool state = false;
-//			if (keyPressed.ContainsKey (evnt.Key))
-//				state = keyPressed[evnt.Key];
-//			keyPressed[evnt.Key] = !state;
-//			if (IsInDrag)
-//				Gdk.Drag.Status (this.dragContext, GetSuggestedDragAction (), 0);
-//			
-//			return 0;
-//		}
-#endregion
 		Gdk.Pixmap buffer = null, flipBuffer = null;
 		
 		void DoFlipBuffer ()
@@ -526,10 +505,6 @@ namespace Mono.TextEditor
 					return;
 				this.isDisposed = true;
 				RemoveScrollWindowTimer ();
-/*				if (snooperID > 0) {
-					Gtk.Key.SnooperRemove (snooperID);
-					snooperID = 0;
-				}*/
 				if (invisibleCursor != null) {
 					invisibleCursor.Dispose ();
 					invisibleCursor = null;
@@ -880,15 +855,6 @@ namespace Mono.TextEditor
 			}
 			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
 		}
-		DragAction GetSuggestedDragAction (DragContext context)
-		{
-/*			if (keyPressed.ContainsKey (Gdk.Key.Control_L) && keyPressed [Gdk.Key.Control_L] || 
-			    keyPressed.ContainsKey (Gdk.Key.Control_R) && keyPressed[Gdk.Key.Control_R])
-				return DragAction.Copy;
-			return DragAction.Move;*/
-			
-			return context.SuggestedAction;
-		}
 		
 		protected override bool OnDragMotion (DragContext context, int x, int y, uint time)
 		{
@@ -907,11 +873,7 @@ namespace Mono.TextEditor
 				Gdk.Drag.Status (context, DragAction.Default, time);
 				Caret.Location = defaultCaretPos;
 			} else {
-				if (this.dragContext != null && context.StartTime == this.dragContext.StartTime) {
-					Gdk.Drag.Status (context, GetSuggestedDragAction (context), time);
-				} else {
-					Gdk.Drag.Status (context, GetSuggestedDragAction (context), time);
-				}
+				Gdk.Drag.Status (context, (context.Actions & DragAction.Move) == DragAction.Move ? DragAction.Move : DragAction.Copy, time);
 				Caret.Location = dragCaretPos; 
 			}
 			this.RedrawLine (oldLocation.Line);
