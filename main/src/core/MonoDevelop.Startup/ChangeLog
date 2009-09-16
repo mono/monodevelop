@@ -1,3 +1,9 @@
+2009-09-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* app.config: Added version redirect for SharpZipLib. Monodoc
+	  is linked to an old version, and fails on Windows. Removed
+	  old log4net stuff.
+
 2009-08-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Startup/MonoDevelopMain.cs: If the runtime could
