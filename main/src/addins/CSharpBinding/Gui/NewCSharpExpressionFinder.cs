@@ -580,7 +580,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 						SetContext (ExpressionContext.Attribute);
 						break;
 					case FrameType.TypeReference:
-						SetContext (ExpressionContext.Type);
+						SetContext (ExpressionContext.TypeName);
 						break;
 					default:
 						SetContext (ExpressionContext.Default);
@@ -782,18 +782,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 			case Tokens.LessThan:
 				if (Tokens.ValidInsideTypeName[lastToken]) {
 					frame = new Frame (frame, '<');
-					Console.WriteLine ("a");
 					if (frame.parent.InExpressionMode) {
-						Console.WriteLine ("1");
 						frame.SetContext (ExpressionContext.Default);
 					} else if ((frame.parent.state == FrameState.TypeDecl || frame.parent.state == FrameState.MethodDecl || frame.parent.state == FrameState.FieldDeclAfterIdentifier) && frame.parent.context == ExpressionContext.IdentifierExpected) {
-						Console.WriteLine ("2");
 						frame.type = FrameType.TypeParameterDecl;
-						frame.SetContext (ExpressionContext.TypeNameExcepted);
+						frame.SetContext (ExpressionContext.TypeName);
 						frame.parent.SetContext (ExpressionContext.ConstraintsStart);
 					} else {
-						Console.WriteLine ("3");
-						frame.SetContext (ExpressionContext.Type);
+						frame.SetContext (ExpressionContext.TypeName);
 					}
 				}
 				break;
@@ -946,7 +942,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				} else if (frame.type == FrameType.Global || frame.type == FrameType.TypeDecl) {
 					frame.parenthesisChildType = FrameType.ParameterList;
 					frame.state = FrameState.MethodDecl;
-					frame.SetContext (ExpressionContext.Type);
+					frame.SetContext (ExpressionContext.TypeName);
 				}
 				break;
 			case Tokens.LambdaArrow:
@@ -1005,9 +1001,12 @@ namespace MonoDevelop.CSharpBinding.Gui
 				break;
 			case Tokens.As:
 			case Tokens.Is:
-				frame.SetContext (ExpressionContext.Type);
+				frame.SetContext (ExpressionContext.TypeName);
 				break;
 			case Tokens.Typeof:
+				frame.parenthesisChildType = FrameType.TypeReference;
+				break;
+			case Tokens.Default:
 				frame.parenthesisChildType = FrameType.TypeReference;
 				break;
 			default:
@@ -1122,10 +1121,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 						if (frame == resultFrame && Tokens.IdentifierTokens[token.Kind]) {
 							// the expression got aborted because of an identifier. This means the
 							// expression was a type reference
-							resultContext = ExpressionContext.Type;
+							resultContext = ExpressionContext.TypeName;
 						} else if (resultFrame.bracketType == '<' && token.Kind == Tokens.GreaterThan) {
 							// expression was a type argument
-							resultContext = ExpressionContext.Type;
+							resultContext = ExpressionContext.TypeName;
 							return MakeResult (text, resultStartOffset, resultEndOffset, new ExpressionContext[] { resultContext });
 						}
 						if (frame == resultFrame || resultFrame.type == FrameType.Popped) {

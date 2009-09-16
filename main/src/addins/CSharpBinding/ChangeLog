@@ -2,6 +2,13 @@
 
 	* Gui/NRefactoryResolver.cs:
 	* Gui/NewCSharpExpressionFinder.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Fixed 'Bug 539327 -
+	  Intellisense does not work with default (type) keywork'.
+
+2009-09-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs:
+	* Gui/NewCSharpExpressionFinder.cs:
 	* Gui/CSharpTextEditorCompletion.cs: Fixed "Bug 539320 - No
 	  intellisense for delegate attributes".
 

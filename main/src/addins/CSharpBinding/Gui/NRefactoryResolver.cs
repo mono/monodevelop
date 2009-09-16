@@ -256,7 +256,7 @@ namespace MonoDevelop.CSharpBinding
 		static readonly IReturnType attributeType = new DomReturnType ("System.Attribute");
 		public MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector AddAccessibleCodeCompletionData (ExpressionContext context, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
 		{
-			if (context != ExpressionContext.Global) {
+			if (context != ExpressionContext.Global && context != ExpressionContext.TypeName) {
 				AddContentsFromClassAndMembers (context, col);
 				
 				if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
@@ -290,7 +290,6 @@ namespace MonoDevelop.CSharpBinding
 			namespaceDeclList.Add ("");
 			if (unit != null) {
 				foreach (IUsing u in unit.Usings) {
-					
 					foreach (string alias in u.Aliases.Keys) {
 						col.Add (alias);
 					}
@@ -336,8 +335,7 @@ namespace MonoDevelop.CSharpBinding
 						data.SetText (newText);
 					}
 				}
-				if (context != ExpressionContext.TypeNameExcepted)
-					CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", col.CompletionList);
+				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", col.CompletionList);
 			}
 			return col;
 		}
