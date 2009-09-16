@@ -84,7 +84,6 @@ namespace MonoDevelop.Projects.Dom
 		
 		
 		// SharpDevelop compatibilty contextes
-		public static ExpressionContext Type                         = new ExpressionContext ("Type");
 		public static ExpressionContext Namespace                    = new ExpressionContext ("Namespace");
 		public static ExpressionContext Attribute                    = new ExpressionContext ("Attribute");
 		public static ExpressionContext AttributeArguments           = new ExpressionContext ("AttributeArguments");
@@ -108,7 +107,7 @@ namespace MonoDevelop.Projects.Dom
 		public static ExpressionContext EnumBaseType                 = new ExpressionContext ("EnumBaseType");
 		public static ExpressionContext InheritableType              = new ExpressionContext ("InheritableType");
 		public static ExpressionContext NamespaceNameExcepted        = new ExpressionContext ("NamespaceNameExcepted");
-		public static ExpressionContext TypeNameExcepted             = new ExpressionContext ("TypeNameExcepted");
+		public static ExpressionContext TypeName                     = new ExpressionContext ("TypeName");
 
 	
 		public static ExpressionContext ObjectCreation               = new ObjectCreationContext ();
