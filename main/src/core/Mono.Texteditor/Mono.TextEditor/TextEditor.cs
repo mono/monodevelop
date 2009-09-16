@@ -784,7 +784,6 @@ namespace Mono.TextEditor
 		ClipboardActions.CopyOperation dragContents = null;
 		DocumentLocation defaultCaretPos, dragCaretPos;
 		Selection selection = null;
-		DragContext dragContext;
 		
 		public bool IsInDrag {
 			get {
@@ -795,12 +794,6 @@ namespace Mono.TextEditor
 		public void CaretToDragCaretPosition ()
 		{
 			Caret.Location = defaultCaretPos = dragCaretPos;
-		}
-		
-		protected override void OnDragBegin (DragContext context)
-		{
-			dragContext = context;
-			base.OnDragBegin (context);
 		}
 		
 		protected override void OnDragLeave (DragContext context, uint time_)

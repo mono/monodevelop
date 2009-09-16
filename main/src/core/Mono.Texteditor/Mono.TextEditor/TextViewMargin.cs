@@ -41,7 +41,7 @@ namespace Mono.TextEditor
 {
 	public class TextViewMargin : Margin
 	{
-		TextEditor textEditor;
+		readonly TextEditor textEditor;
 		TextRenderer tabMarker, spaceMarker, eolMarker, invalidLineMarker;
 		TextRenderer textRenderer;
 		IEnumerable<TextRenderer> allTextRenderers;
@@ -81,6 +81,8 @@ namespace Mono.TextEditor
 
 		public TextViewMargin (TextEditor textEditor)
 		{
+			if (textEditor == null)
+				throw new ArgumentNullException ("textEditor");
 			this.textEditor = textEditor;
 
 			textRenderer = CreateTextRenderer ();
