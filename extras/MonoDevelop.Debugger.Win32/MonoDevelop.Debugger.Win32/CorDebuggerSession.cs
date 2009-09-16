@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Text;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Debugging.Client;
@@ -103,7 +104,14 @@ namespace MonoDevelop.Debugger.Win32
 			string dversion = CorDebugger.GetDebuggerVersionFromFile (startInfo.Command);
 			dbg = new CorDebugger (dversion);
 
-			process = dbg.CreateProcess (startInfo.Command, startInfo.Arguments, startInfo.WorkingDirectory);
+			Dictionary<string, string> env = new Dictionary<string, string> ();
+			foreach (DictionaryEntry de in Environment.GetEnvironmentVariables ())
+				env[(string) de.Key] = (string) de.Value;
+
+			foreach (KeyValuePair<string, string> var in startInfo.EnvironmentVariables)
+				env[var.Key] = var.Value;
+
+			process = dbg.CreateProcess (startInfo.Command, startInfo.Arguments, startInfo.WorkingDirectory, env);
 			processId = process.Id;
 
 			process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
@@ -452,22 +460,32 @@ namespace MonoDevelop.Debugger.Win32
 				CorDebugMappingResult mappingResult;
 				frame.GetIP (out offset, out mappingResult);
 
-				SequencePoint nextSeq = null;
+				// Find the current line
+				SequencePoint currentSeq = null;
 				foreach (SequencePoint sp in met.GetSequencePoints ()) {
-					if (sp.Offset > offset) {
-						nextSeq = sp;
+					if (sp.Offset > offset)
 						break;
-					}
+					currentSeq = sp;
 				}
 
-				if (nextSeq == null)
-					return;
+				// Exclude all ranges belonging to the current line
+				List<COR_DEBUG_STEP_RANGE> ranges = new List<COR_DEBUG_STEP_RANGE> ();
+				SequencePoint lastSeq = null;
+				foreach (SequencePoint sp in met.GetSequencePoints ()) {
+					if (lastSeq != null && lastSeq.Line == currentSeq.Line) {
+						COR_DEBUG_STEP_RANGE r = new COR_DEBUG_STEP_RANGE ();
+						r.startOffset = (uint) lastSeq.Offset;
+						r.endOffset = (uint) sp.Offset;
+						ranges.Add (r);
+					}
+					lastSeq = sp;
+				}
 
-				COR_DEBUG_STEP_RANGE[] ranges = new COR_DEBUG_STEP_RANGE[1];
-				ranges[0] = new COR_DEBUG_STEP_RANGE ();
-				ranges[0].startOffset = offset;
-				ranges[0].endOffset = (uint) nextSeq.Offset;
-				stepper.StepRange (false, ranges);
+				if (ranges.Count == 0)
+					stepper.StepOut ();
+				else
+					stepper.StepRange (false, ranges.ToArray ());
+
 				ClearEvalStatus ();
 				process.Continue (false);
 			}
@@ -475,6 +493,8 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnRemoveBreakEvent (object handle)
 		{
+			CorFunctionBreakpoint corBp = (CorFunctionBreakpoint) handle;
+			corBp.Activate (false);
 		}
 
 
@@ -682,10 +702,16 @@ namespace MonoDevelop.Debugger.Win32
 			lock (threads) {
 				if (!threads.TryGetValue (thread.Id, out info)) {
 					string loc = string.Empty;
-					if (thread.ActiveFrame != null) {
-						StackFrame frame = CorBacktrace.CreateFrame (this, thread.ActiveFrame);
-						loc = frame.ToString ();
-					} else {
+					try {
+						if (thread.ActiveFrame != null) {
+							StackFrame frame = CorBacktrace.CreateFrame (this, thread.ActiveFrame);
+							loc = frame.ToString ();
+						}
+						else {
+							loc = "<Unknown>";
+						}
+					}
+					catch {
 						loc = "<Unknown>";
 					}
 					

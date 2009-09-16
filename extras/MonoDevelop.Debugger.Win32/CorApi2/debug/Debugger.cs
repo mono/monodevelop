@@ -14,6 +14,7 @@ using System.Threading;
 using System.Text;
 using System.Security.Permissions;
 using System.Globalization;
+using System.Collections.Generic;
 
 
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
@@ -174,8 +175,23 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                          String currentDirectory
                                          )
         {
-            return CreateProcess (applicationName, commandLine, currentDirectory, 0);
+            return CreateProcess (applicationName, commandLine, currentDirectory, null, 0);
         }
+
+		/**
+		 * Launch a process under the control of the debugger.
+		 *
+		 * Parameters are the same as the Win32 CreateProcess call.
+		 */
+		public CorProcess CreateProcess (
+										 String applicationName,
+										 String commandLine,
+										 String currentDirectory,
+										 IDictionary<string,string> environment
+										 )
+		{
+			return CreateProcess (applicationName, commandLine, currentDirectory, environment, 0);
+		}
 
         /**
          * Launch a process under the control of the debugger.
@@ -186,6 +202,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                          String applicationName,
                                          String commandLine,
                                          String currentDirectory,
+										 IDictionary<string,string> environment,
                                          int    flags
                                          )
         {
@@ -198,6 +215,16 @@ namespace Microsoft.Samples.Debugging.CorDebug
             si.hStdInput = new Microsoft.Win32.SafeHandles.SafeFileHandle(new IntPtr(0),false);
             si.hStdOutput = new Microsoft.Win32.SafeHandles.SafeFileHandle(new IntPtr(0),false);
             si.hStdError = new Microsoft.Win32.SafeHandles.SafeFileHandle(new IntPtr(0),false);
+
+			IntPtr env = IntPtr.Zero;
+			if (environment != null) {
+				string senv = null;
+				foreach (KeyValuePair<string, string> var in environment) {
+					senv += var.Key + "=" + var.Value + "\0";
+				}
+				senv += "\0";
+				env = Marshal.StringToHGlobalAnsi (senv);
+			}
 
             CorProcess ret;
 
@@ -215,7 +242,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                      null,
                                      true,   // inherit handles
                                      flags,  // creation flags
-                                     new IntPtr(0),      // environment
+									 env,      // environment
                                      currentDirectory,
                                      si,     // startup info
                                      ref pi, // process information
@@ -223,6 +250,9 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 NativeMethods.CloseHandle (pi.hProcess);
                 NativeMethods.CloseHandle (pi.hThread);
             }
+
+			if (env != IntPtr.Zero)
+				Marshal.FreeHGlobal (env);
 
             return ret;
         }
