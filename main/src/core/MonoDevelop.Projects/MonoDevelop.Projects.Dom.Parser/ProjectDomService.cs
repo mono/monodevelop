@@ -536,7 +536,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					curOffset = i + 1;
 				}
 				i = Math.Max (uri.IndexOfAny (separators, curOffset), curOffset);
-				file = uri.Substring (curOffset);
+				file = uri.Substring (i);
 				if (runtime == null)
 					runtime = Runtime.SystemAssemblyService.DefaultRuntime;
 				if (fx == null)
