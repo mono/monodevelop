@@ -1,5 +1,10 @@
 2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneFrameworkBackend.cs: Fix spelling and grammar in
+	  messages.
+
+2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneFrameworkBackend.cs: Tweak dialog a little more.
 
 2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>

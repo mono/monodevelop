@@ -111,7 +111,7 @@ namespace MonoDevelop.IPhone
 		{
 			var res = new MonoDevelop.Projects.BuildResult ();
 			res.AddError (GettextCatalog.GetString (
-				"The evalution version of MonoTouch does not support the device. " + 
+				"The evaluation version of MonoTouch does not support targeting the device. " + 
 				"Please go to http://monotouch.net to purchase the full version."));
 			return res;
 		}
@@ -133,7 +133,7 @@ namespace MonoDevelop.IPhone
 			var align = new Gtk.Alignment (0.5f, 0.5f, 1.0f, 1.0f) { LeftPadding = 12, RightPadding = 12 };
 			dialog.VBox.PackStart (align, true, false, 12);
 			align.Add (new Label (
-				"You should upgrade to the full version of MonoTouch to build and deploy\n" +
+				"You should upgrade to the full version of MonoTouch to target and deploy\n" +
 				" to the device, and to enable your applications to be distributed.") {
 					Xalign = 0.5f,
 					Justify = Justification.Center
