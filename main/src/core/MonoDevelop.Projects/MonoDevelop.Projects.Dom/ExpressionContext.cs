@@ -132,7 +132,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public class TypeExpressionContext : ExpressionContext
 		{
-			public new IReturnType Type {
+			public IReturnType Type {
 				get;
 				private set;
 			}

@@ -1,5 +1,10 @@
 2009-09-16  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Removed new
+	  keyword.
+
+2009-09-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Merged Type
 	  and TypeNameExpected context.
 
