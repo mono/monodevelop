@@ -1,3 +1,9 @@
+2009-09-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
+	  Now getting the correct text file provider for remove
+	  backing store refactoring.
+
 2009-09-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/Change.cs:
