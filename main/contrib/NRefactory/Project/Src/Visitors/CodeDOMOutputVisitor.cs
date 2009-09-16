@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -79,14 +79,10 @@ namespace ICSharpCode.NRefactory.Visitors
 			parameters.Clear();
 		}
 
-		CodeTypeReference ConvType(TypeReference type)
+		CodeTypeReference ConvType (TypeReference type)
 		{
-			if (type == null) {
-				throw new ArgumentNullException("type");
-			}
-			if (string.IsNullOrEmpty(type.Type)) {
-				throw new InvalidOperationException("empty type");
-			}
+			if (type == null || string.IsNullOrEmpty (type.Type))
+				return new CodeTypeReference ("");
 			
 			CodeTypeReference t = new CodeTypeReference(type.Type);
 			foreach (TypeReference gt in type.GenericTypes) {

@@ -451,17 +451,19 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 
 		/* True, if lookahead is a primitive type keyword, or */
 		/* if it is a type declaration followed by an ident   */
-		bool IsLocalVarDecl () {
-			if (IsYieldStatement()) {
+		bool IsLocalVarDecl ()
+		{
+			if (IsYieldStatement ()) {
 				return false;
 			}
-			if ((Tokens.TypeKW[la.kind] && Peek(1).kind != Tokens.Dot) || la.kind == Tokens.Void) {
+		
+			if ((Tokens.TypeKW[la.kind] && Peek (1).kind != Tokens.Dot) || la.kind == Tokens.Void) {
 				return true;
 			}
 			
-			StartPeek();
+			StartPeek ();
 			Token pt = la;
-			return IsTypeNameOrKWForTypeCast(ref pt) && IsIdentifierToken(pt);
+			return IsTypeNameOrKWForTypeCast (ref pt) && IsIdentifierToken (pt) && Peek (1).kind != Tokens.Question;
 		}
 
 		/* True if lookahead is a type argument list (<...>) followed by

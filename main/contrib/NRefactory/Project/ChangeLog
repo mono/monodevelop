@@ -1,3 +1,9 @@
+2009-09-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Parser/CSharp/CSharpParser.cs:
+	* Src/Visitors/CodeDOMOutputVisitor.cs: Fixed "Bug 539329 -
+	  System.InvalidOperationException: empty type".
+
 2009-09-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/PrettyPrinter/AbstractOutputFormatter.cs: Indent blank
