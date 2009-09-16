@@ -1,5 +1,9 @@
 2009-09-16  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.csproj: upped the warning level to 4.
+
+2009-09-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Removed new
 	  keyword.
 
