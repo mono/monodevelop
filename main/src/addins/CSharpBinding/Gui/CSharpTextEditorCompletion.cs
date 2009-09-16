@@ -1386,7 +1386,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			DomLocation cursorLocation = new DomLocation (ctx.TriggerLine, ctx.TriggerLineOffset);
 			resolver.SetupResolver (cursorLocation);
-			//System.Console.WriteLine ("ctrl+space expression result:" + expressionResult);
+			System.Console.WriteLine ("ctrl+space expression result:" + expressionResult);
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 			CompletionDataCollector col = new CompletionDataCollector (result, Document.CompilationUnit, cursorLocation);
 			
@@ -1527,7 +1527,10 @@ namespace MonoDevelop.CSharpBinding.Gui
 					AddPrimitiveTypes (col);
 					resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 				}
-				
+			} else if (expressionResult.ExpressionContext == ExpressionContext.TypeNameExcepted) {
+				col.Add ("global", "md-keyword");
+				AddPrimitiveTypes (col);
+				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 			} else {
 				col.Add ("global", "md-keyword");
 				col.Add ("var", "md-keyword");

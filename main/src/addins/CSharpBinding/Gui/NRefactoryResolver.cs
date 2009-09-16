@@ -257,28 +257,29 @@ namespace MonoDevelop.CSharpBinding
 		public MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector AddAccessibleCodeCompletionData (ExpressionContext context, MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion.CompletionDataCollector col)
 		{
 			if (context != ExpressionContext.Global) {
-				AddContentsFromClassAndMembers (context,  col);
+				AddContentsFromClassAndMembers (context, col);
 				
 				if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
-					int callingMemberline = CallingMember != null ? CallingMember.Location.Line : 0; // local variables could be outside members (LINQ initializers) 
+					int callingMemberline = CallingMember != null ? CallingMember.Location.Line : 0;
+					// local variables could be outside members (LINQ initializers) 
 					foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 						if (pair.Value != null && pair.Value.Count > 0) {
 							foreach (LocalLookupVariable v in pair.Value) {
 								if (new DomLocation (callingMemberline + v.StartPos.Line - 2, v.StartPos.Column) <= this.resolvePosition && (v.EndPos.IsEmpty || new DomLocation (callingMemberline + v.EndPos.Line - 2, v.EndPos.Column) >= this.resolvePosition)) {
-									col.Add (new LocalVariable (CallingMember, pair.Key, ConvertTypeReference (v.TypeRef) , DomRegion.Empty));
+									col.Add (new LocalVariable (CallingMember, pair.Key, ConvertTypeReference (v.TypeRef), DomRegion.Empty));
 								}
 							}
 						}
 					}
 				}
-			
+				
 				if (CallingMember is IProperty) {
 					IProperty property = (IProperty)callingMember;
-					if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.CursorColumn)) 
+					if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.CursorColumn))
 						col.Add ("value");
 				}
-			
-				if (CallingMember is IEvent) 
+				
+				if (CallingMember is IEvent)
 					col.Add ("value");
 			}
 			
@@ -293,7 +294,7 @@ namespace MonoDevelop.CSharpBinding
 					foreach (string alias in u.Aliases.Keys) {
 						col.Add (alias);
 					}
-					if (u.Namespaces == null) 
+					if (u.Namespaces == null)
 						continue;
 					bool isNamespaceDecl = u.IsFromNamespace && u.Region.Contains (this.resolvePosition);
 					if (u.IsFromNamespace && !isNamespaceDecl)
@@ -335,7 +336,8 @@ namespace MonoDevelop.CSharpBinding
 						data.SetText (newText);
 					}
 				}
-				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", col.CompletionList);
+				if (context != ExpressionContext.TypeNameExcepted)
+					CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", col.CompletionList);
 			}
 			return col;
 		}
