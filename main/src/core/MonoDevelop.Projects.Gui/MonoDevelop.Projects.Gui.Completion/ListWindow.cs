@@ -305,7 +305,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
 				
 				//punctuation is only accepted if it actually matches an item in the list
-				Console.WriteLine (word.ToString());
 				word.Insert (curPos, keyChar);
 				
 				bool hasMismatches;
@@ -318,7 +317,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 				} else {
 					word.Remove (curPos, 1);
 				}
-				Console.WriteLine (word.ToString());
 				
 				if (CompleteWithSpaceOrPunctuation && list.SelectionEnabled) 
 					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
