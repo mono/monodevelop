@@ -52,9 +52,7 @@ namespace MonoDevelop.WelcomePage
 		// netNewsXml is where online the news.xml file can be found
 		static string netNewsXml {
 			get {
-				return "http://mono.ximian.com/monodevelop-news/"
-					+ Mono.Addins.AddinManager.CurrentAddin.Version 
-					+ "/news.xml";
+				return "http://www.monodevelop.com/files/news/news.xml";
 			}
 		}
 		
