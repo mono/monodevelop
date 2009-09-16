@@ -493,6 +493,8 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnRemoveBreakEvent (object handle)
 		{
+			if (terminated)
+				return;
 			CorFunctionBreakpoint corBp = (CorFunctionBreakpoint) handle;
 			corBp.Activate (false);
 		}
