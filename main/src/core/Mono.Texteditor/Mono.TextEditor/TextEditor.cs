@@ -283,7 +283,7 @@ namespace Mono.TextEditor
 			
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (ClipboardActions.CopyOperation.TextType);
-			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Ask | DragAction.Default | DragAction.Move | DragAction.Copy);
+			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
 			
 			imContext = new IMMulticontext ();
 			imContext.Commit += IMCommit;
@@ -889,14 +889,14 @@ namespace Mono.TextEditor
 			
 			return context.SuggestedAction;
 		}
-		protected override bool OnDragMotion (DragContext context, int x, int y, uint time_)
+		
+		protected override bool OnDragMotion (DragContext context, int x, int y, uint time)
 		{
 			if (!this.HasFocus)
 				this.GrabFocus ();
 			if (!dragOver) {
-				defaultCaretPos = Caret.Location; 
+				defaultCaretPos = Caret.Location;
 			}
-			
 			
 			DocumentLocation oldLocation = Caret.Location;
 			dragOver = true;
@@ -904,13 +904,13 @@ namespace Mono.TextEditor
 			dragCaretPos = VisualToDocumentLocation (x - textViewMargin.XOffset, y);
 			int offset = Document.LocationToOffset (dragCaretPos);
 			if (selection != null && offset >= this.selection.GetSelectionRange (textEditorData).Offset && offset < this.selection.GetSelectionRange (textEditorData).EndOffset) {
-				Gdk.Drag.Status (context, DragAction.Default, time_);
+				Gdk.Drag.Status (context, DragAction.Default, time);
 				Caret.Location = defaultCaretPos;
 			} else {
 				if (this.dragContext != null && context.StartTime == this.dragContext.StartTime) {
-					Gdk.Drag.Status (context, GetSuggestedDragAction (context), time_);
+					Gdk.Drag.Status (context, GetSuggestedDragAction (context), time);
 				} else {
-					Gdk.Drag.Status (context, GetSuggestedDragAction (context), time_);
+					Gdk.Drag.Status (context, GetSuggestedDragAction (context), time);
 				}
 				Caret.Location = dragCaretPos; 
 			}
@@ -918,7 +918,7 @@ namespace Mono.TextEditor
 			if (oldLocation.Line != Caret.Line)
 				this.RedrawLine (Caret.Line);
 			Caret.PreserveSelection = false;
-			return true;
+			return base.OnDragMotion (context, x, y, time);
 		}
 		
 		Margin oldMargin = null;
@@ -934,7 +934,7 @@ namespace Mono.TextEditor
 			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, pressPositionX, pressPositionY, (int)x, (int)y)) {
 				dragContents = new ClipboardActions.CopyOperation ();
 				dragContents.CopyData (textEditorData);
-				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.targetList, DragAction.Copy | DragAction.Move, 1, e);
+				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.targetList, DragAction.Move | DragAction.Copy, 1, e);
 				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
 				Gtk.Drag.SetIconWidget (context, window, 0, 0);
 				selection = Selection.Clone (MainSelection);
@@ -1474,6 +1474,17 @@ namespace Mono.TextEditor
 		{
 			action (this.textEditorData);
 		}
+		
+		public void SetSelection (int anchorOffset, int leadOffset)
+		{
+			this.textEditorData.SetSelection (anchorOffset, leadOffset);
+		}
+		
+		public void SetSelection (DocumentLocation anchor, DocumentLocation lead)
+		{
+			this.textEditorData.SetSelection (anchor, lead);
+		}
+		
 		public void ExtendSelectionTo (DocumentLocation location)
 		{
 			this.textEditorData.ExtendSelectionTo (location);
