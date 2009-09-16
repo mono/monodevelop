@@ -1,3 +1,8 @@
+2009-09-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core/Gettext.cs: On windows, the catalog is
+	  located in a 'locale' subdir.
+
 2009-09-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies\MsNetTargetRuntime.cs:

@@ -46,13 +46,19 @@ namespace MonoDevelop.Core
 			if (string.IsNullOrEmpty (catalog)) {
 				string location = System.Reflection.Assembly.GetExecutingAssembly ().Location;
 				location = Path.GetDirectoryName (location);
-				// MD is located at $prefix/lib/monodevelop/bin
-				// adding "../../.." should give us $prefix
-				string prefix = Path.Combine (Path.Combine (Path.Combine (location, ".."), ".."), "..");
-				//normalise it
-				prefix = Path.GetFullPath (prefix);
-				//catalogue is installed to "$prefix/share/locale" by default
-				catalog = Path.Combine (Path.Combine (prefix, "share"), "locale");
+				if (PropertyService.IsWindows) {
+					// On windows, load the catalog from a child dir
+					catalog = Path.Combine (location, "locale");
+				}
+				else {
+					// MD is located at $prefix/lib/monodevelop/bin
+					// adding "../../.." should give us $prefix
+					string prefix = Path.Combine (Path.Combine (Path.Combine (location, ".."), ".."), "..");
+					//normalise it
+					prefix = Path.GetFullPath (prefix);
+					//catalogue is installed to "$prefix/share/locale" by default
+					catalog = Path.Combine (Path.Combine (prefix, "share"), "locale");
+				}
 			}
 			Catalog.Init ("monodevelop", catalog);
 		}
