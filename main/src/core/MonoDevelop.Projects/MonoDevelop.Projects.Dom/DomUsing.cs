@@ -46,6 +46,11 @@ namespace MonoDevelop.Projects.Dom
 			get;
 			set;
 		}
+		
+		public DomRegion ValidRegion {
+			get;
+			set;
+		}
 
 		public ReadOnlyCollection<string> Namespaces {
 			get {
@@ -67,6 +72,7 @@ namespace MonoDevelop.Projects.Dom
 		public DomUsing ()
 		{
 			IsFromNamespace = false;
+			ValidRegion = DomRegion.Empty;
 		}
 		
 		public DomUsing (DomRegion region, string nspace) : this ()

@@ -205,13 +205,23 @@ namespace MonoDevelop.Projects.Dom
 				IReturnType returnType = (IReturnType)base.Visit (type, data);
 				if (builtInTypes.Contains (returnType.FullName))
 					return returnType;
+				
 				string longest = "";
-				foreach (IUsing u in unit.Usings.Where (u => ((!u.IsFromNamespace && u.Region.Start < location) || u.Region.Contains (location)))) {
+				string lastAlias = null;
+				
+				foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
 					foreach (string ns in u.Namespaces.Where (ns => returnType.Namespace == ns || returnType.Namespace.StartsWith (ns + "."))) {
 						if (longest.Length < ns.Length)
 							longest = ns;
 					}
+					foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+						if (alias.Value.ToInvariantString() == type.ToInvariantString ())
+							lastAlias = alias.Key;
+					}
+					
 				}
+				if (lastAlias != null)
+					return new DomReturnType (lastAlias);
 				if (longest.Length > 0) 
 					returnType.Namespace = returnType.Namespace == longest ? "" : returnType.Namespace.Substring (longest.Length + 1);
 				return returnType;

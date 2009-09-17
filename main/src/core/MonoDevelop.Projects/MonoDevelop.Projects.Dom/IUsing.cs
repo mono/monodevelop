@@ -38,6 +38,10 @@ namespace MonoDevelop.Projects.Dom
 		DomRegion Region {
 			get;
 		}
+		
+		DomRegion ValidRegion {
+			get;
+		}
 
 		bool IsFromNamespace {
 			get;

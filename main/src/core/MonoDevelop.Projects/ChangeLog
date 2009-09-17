@@ -1,5 +1,12 @@
 2009-09-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/IUsing.cs:
+	* MonoDevelop.Projects.Dom/DomUsing.cs:
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs: Usings now
+	  contain a region in which they're valid.
+
+2009-09-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
 	  Fixed alias resolving.
 
