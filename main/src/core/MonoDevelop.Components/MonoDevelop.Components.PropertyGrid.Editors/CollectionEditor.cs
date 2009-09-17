@@ -66,9 +66,8 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		
 		protected override string GetValueText ()
 		{
-			return "(Collection)";
+			return MonoDevelop.Core.GettextCatalog.GetString ("(Collection)");
 		}
-
 
 		public override void LaunchDialogue ()
 		{
@@ -337,8 +336,8 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 
 			object item = itemStore.GetValue (iter, 0);
 			string name = item.ToString ();
-			if (name.Length == 0)
-				name = item.GetType ().Name;
+			if (string.IsNullOrEmpty (name))
+				name = MonoDevelop.Core.GettextCatalog.GetString ("(Empty)");;
 
 			itemStore.SetValue(iter, 2, name);
 		}
