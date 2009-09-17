@@ -196,7 +196,7 @@ namespace CSharpBinding.Parser
 			if (type == null)
 				return;
 			if (member == null) {
-//				member = type;
+				//				member = type;
 				return;
 			}
 			string wrapper;
@@ -204,7 +204,7 @@ namespace CSharpBinding.Parser
 			wrapper = CreateWrapperClassForMember (member, member != type, data, out endPos);
 			if (string.IsNullOrEmpty (wrapper) || endPos < 0)
 				return;
-//			Console.WriteLine (wrapper);
+		//			Console.WriteLine (wrapper);
 			
 			int i = wrapper.IndexOf ('{') + 1;
 			int col = GetColumn (wrapper, i, data.Options.TabSize);
@@ -217,6 +217,7 @@ namespace CSharpBinding.Parser
 			if (formatter.hasErrors)
 				return;
 
+			
 			int startPos = data.Document.LocationToOffset (member.Location.Line - 1, 0) - 1;
 			InFormat = true;
 			if (member != type) {
@@ -227,19 +228,19 @@ namespace CSharpBinding.Parser
 				startPos++;
 			}
 			
-//			Console.WriteLine ("formattedText0:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
+			//Console.WriteLine ("formattedText0:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
 			if (member != type) {
 				string indentToRemove = GetIndent (formattedText);
-//				Console.WriteLine ("Remove:" + indentToRemove.Replace ("\t", "->").Replace (" ", "°"));
+		//				Console.WriteLine ("Remove:" + indentToRemove.Replace ("\t", "->").Replace (" ", "°"));
 				formattedText = RemoveIndent (formattedText, indentToRemove);
 			} else {
 				formattedText = formattedText.TrimStart ();
 			}
-//			Console.WriteLine ("Indent:" + GetIndent (data, member.Location.Line - 1).Replace ("\t", "->").Replace (" ", "°"));
-//			Console.WriteLine ("formattedText1:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
+			//Console.WriteLine ("Indent:" + GetIndent (data, member.Location.Line - 1).Replace ("\t", "->").Replace (" ", "°"));
+			//Console.WriteLine ("formattedText1:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
 			formattedText = AddIndent (formattedText, GetIndent (data, member.Location.Line - 1));
 			
-//			Console.WriteLine ("formattedText2:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
+			//Console.WriteLine ("formattedText2:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
 	
 			int textLength = CanInsertFormattedText (data, startPos, data.Document.LocationToOffset (caretLocation.Line, caretLocation.Column), formattedText);
 			if (textLength > 0) {
@@ -273,7 +274,16 @@ namespace CSharpBinding.Parser
 					continue;
 				} else if (ch1 == '\n') {
 					// skip Ws
+					int firstWhitespace = -1;
 					while (textOffset < formattedText.Length && IsPlainWhitespace (formattedText[textOffset])) {
+						if (firstWhitespace < 0)
+							firstWhitespace = textOffset;
+						textOffset++;
+					}
+					
+					if (firstWhitespace >= 0 && firstWhitespace != textOffset && (formattedText[textOffset] == '\n' || formattedText[textOffset] == '\r')) {
+						int length = textOffset - firstWhitespace;
+						offset += length - 1;
 						textOffset++;
 					}
 
@@ -332,9 +342,21 @@ namespace CSharpBinding.Parser
 				} else if (ch1 == '\n') {
 					//LineSegment line = data.Document.GetLineByOffset (offset);
 					// skip all white spaces in formatted text - we had a line break
+					int firstWhitespace = -1;
 					while (textOffset < formattedText.Length && IsPlainWhitespace (formattedText[textOffset])) {
+						if (firstWhitespace < 0)
+							firstWhitespace = textOffset;
 						textOffset++;
 					}
+					if (firstWhitespace >= 0 && firstWhitespace != textOffset && (formattedText[textOffset] == '\n' || formattedText[textOffset] == '\r')) {
+						int length = textOffset - firstWhitespace;
+						data.Insert (offset, formattedText.Substring (firstWhitespace, length));
+						if (offset < caretOffset)
+							caretOffset+= length;
+						offset += length - 1;
+						textOffset++;
+					}
+					
 					offset++;
 					while (offset < data.Caret.Offset && IsPlainWhitespace (data.Document.GetCharAt (offset))) {
 						offset++;
