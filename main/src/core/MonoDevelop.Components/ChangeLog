@@ -1,6 +1,11 @@
 2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs:
+	  Hide toolbar in propgrid in dialog.
+
+2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs:
 	  Update list when propgrid value changes.
 
 2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>

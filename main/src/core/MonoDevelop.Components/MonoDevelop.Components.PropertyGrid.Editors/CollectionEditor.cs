@@ -263,10 +263,12 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			TreeIter selectionIter;
 			removeButton.Sensitive = itemTree.Selection.GetSelected (out selectionIter);
 			
+			dialog.ShowAll ();
+			grid.ShowToolbar = false;
+			
 			#endregion
 
 			//show and get response			
-			dialog.ShowAll ();
 			ResponseType response = (ResponseType) dialog.Run();
 			dialog.Destroy ();
 			
