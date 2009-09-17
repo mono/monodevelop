@@ -1,5 +1,10 @@
 2009-09-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Styles/VisualStudioStyle.xml: this/base is no longer bold in
+	  vs highlighting.
+
+2009-09-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.csproj: Set the target framework to 3.5
 
 2009-09-17  Mike Krüger  <mkrueger@novell.com>

@@ -83,7 +83,7 @@
 	<Style name="string.other" color="#a31515"/>
 	
 	<Style name="keyword" color="keyword-blue">
-		<Style name="access" weight="bold"/>
+		<Style name="access"/>
 	</Style>
 	
 </EditorStyle>
