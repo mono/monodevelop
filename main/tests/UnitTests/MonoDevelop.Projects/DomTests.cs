@@ -30,6 +30,8 @@ using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Serialization;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects.DomTests
 {
@@ -194,7 +196,7 @@ namespace MonoDevelop.Projects.DomTests
 			
 			// give int as param type
 			List<IReturnType> genArgs = new List<IReturnType> ();
-			List<IReturnType> args    = new List<IReturnType> ();
+			List<IReturnType> args = new List<IReturnType> ();
 			returnType = new DomReturnType ("MyType");
 			returnType.AddTypeParameter (DomReturnType.Int32);
 			args.Add (returnType);
@@ -202,6 +204,19 @@ namespace MonoDevelop.Projects.DomTests
 			
 			// check 
 			Assert.AreEqual (DomReturnType.Int32.FullName, instMethod.ReturnType.FullName);
+		}
+		
+		[Test()]
+		public void ParseAssemblyUriTests ()
+		{
+			TargetRuntime runtime;
+			TargetFramework fx;
+			string file;
+			ProjectDomService.ParseAssemblyUri ("Assembly:Mono 2.4.2.3:/usr/lib/mono/2.0/mscorlib.dll", out runtime, out fx, out file);
+			Assert.AreEqual ("/usr/lib/mono/2.0/mscorlib.dll", file);
+			
+			ProjectDomService.ParseAssemblyUri ("Assembly:MS.NET:C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\mscorlib.dll", out runtime, out fx, out file);
+			Assert.AreEqual ("C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\mscorlib.dll", file);
 		}
 		
 	}
