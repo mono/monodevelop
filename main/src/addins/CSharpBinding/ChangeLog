@@ -1,5 +1,12 @@
 2009-09-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/NRefactoryParser.cs:
+	* Gui/NewOverrideCompletionData.cs:
+	* Gui/CSharpTextEditorCompletion.cs: Correctly set valid
+	  region/improved method overriding.
+
+2009-09-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CSharpFormatter.cs: Fixed on the fly format bug.
 
 2009-09-16  Mike Krüger  <mkrueger@novell.com>

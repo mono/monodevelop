@@ -250,6 +250,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				this.specials = specials;
 				this.result = result;
+				namespaceEndLocationStack.Push (new Location (Int32.MaxValue, Int32.MaxValue));
 			}
 
 			string RetrieveDocumentation (int upToLine)
@@ -336,7 +337,7 @@ namespace MonoDevelop.CSharpBinding
 			{
 				DomUsing domUsing = new DomUsing ();
 				domUsing.Region = ConvertRegion (usingDeclaration.StartLocation, usingDeclaration.EndLocation);
-
+				domUsing.ValidRegion = ConvertRegion (usingDeclaration.StartLocation, namespaceEndLocationStack.Peek ()); 
 				foreach (ICSharpCode.NRefactory.Ast.Using u in usingDeclaration.Usings) {
 					if (u.IsAlias) {
 						domUsing.Add (u.Name, ConvertReturnType (u.Alias));
@@ -349,6 +350,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 
 			Stack<string> namespaceStack = new Stack<string> ();
+			Stack<Location> namespaceEndLocationStack = new Stack<Location> ();
 			public override object VisitNamespaceDeclaration (ICSharpCode.NRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
 			{
 				string[] splittedNamespace = namespaceDeclaration.Name.Split ('.');
@@ -356,14 +358,15 @@ namespace MonoDevelop.CSharpBinding
 					DomUsing domUsing = new DomUsing ();
 					domUsing.IsFromNamespace = true;
 					domUsing.Region = ConvertRegion (namespaceDeclaration.StartLocation, namespaceDeclaration.EndLocation);
-
+					domUsing.ValidRegion = domUsing.Region;
 					domUsing.Add (String.Join (".", splittedNamespace, 0, i));
 					((CompilationUnit)result.CompilationUnit).Add (domUsing);
 				}
-
+				namespaceEndLocationStack.Push (namespaceDeclaration.EndLocation);
 				namespaceStack.Push (namespaceStack.Count == 0 ? namespaceDeclaration.Name : namespaceStack.Peek () + "." + namespaceDeclaration.Name);
 				namespaceDeclaration.AcceptChildren (this, data);
 				namespaceStack.Pop ();
+				namespaceEndLocationStack.Pop ();
 				return null;
 			}
 			
@@ -533,7 +536,6 @@ namespace MonoDevelop.CSharpBinding
 				}
 				method.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (method);
-
 				return null;
 			}
 

@@ -32,6 +32,8 @@ using MonoDevelop.Projects.Dom.Output;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Dom.Parser;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -48,20 +50,21 @@ namespace MonoDevelop.CSharpBinding
 		bool   insertSealed;
 		IType  type;
 		ICompilationUnit unit;
-		
+		IReturnType returnType;
 		public bool GenerateBody {
 			get;
 			set;
 		}
 		
-		public NewOverrideCompletionData (MonoDevelop.Ide.Gui.TextEditor editor, int declarationBegin, ICompilationUnit unit, IType type, IMember member) : base (null)
+		public NewOverrideCompletionData (ProjectDom dom, MonoDevelop.Ide.Gui.TextEditor editor, int declarationBegin, IType type, IMember member) : base (null)
 		{
 			this.editor = editor;
 			this.type   = type;
 			this.member = member;
+			
 			this.initialOffset = editor.CursorPosition;
 			this.declarationBegin = declarationBegin;
-			this.unit = unit;
+			this.unit = type.CompilationUnit;
 			this.GenerateBody = true;
 			string declarationText = editor.GetText (declarationBegin, initialOffset);
 			insertPrivate = declarationText.Contains ("private");
@@ -71,6 +74,21 @@ namespace MonoDevelop.CSharpBinding
 			this.Icon = member.StockIcon;
 			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.IncludeMarkup | OutputFlags.HideExtensionsParameter);
 			this.CompletionText = member.Name;
+			
+			ResolveReturnTypes ();
+		}
+
+		void ResolveReturnTypes ()
+		{
+			returnType = member.ReturnType;
+			foreach (IUsing u in unit.Usings) {
+				foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+					if (alias.Key == member.ReturnType.FullName) {
+						returnType = alias.Value;
+						return;
+					}
+				}
+			}
 		}
 		
 		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
@@ -189,7 +207,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		void InsertMethod (StringBuilder sb, IMethod method)
 		{
-			sb.Append (ambience.GetString (method.ReturnType, OutputFlags.ClassBrowserEntries));
+			sb.Append (ambience.GetString (unit.ShortenTypeName (returnType, editor.CursorLine, editor.CursorColumn), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName));
 			sb.Append (" ");
 			sb.Append (method.Name);
 			sb.Append (" (");
@@ -269,7 +287,9 @@ namespace MonoDevelop.CSharpBinding
 		}
 		void InsertProperty (StringBuilder sb, IProperty property)
 		{
-			sb.Append (ambience.GetString (property, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName));
+			sb.Append (ambience.GetString (unit.ShortenTypeName (returnType, editor.CursorLine, editor.CursorColumn), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName));
+			sb.Append (" ");
+			sb.Append (property.Name);
 			sb.AppendLine (" {");
 			if (GenerateBody)
 				GeneratePropertyBody (sb, property);

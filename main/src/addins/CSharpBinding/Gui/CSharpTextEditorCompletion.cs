@@ -1176,7 +1176,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							continue;
 					
 						//System.Console.WriteLine("add");
-						NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, declarationBegin, type.CompilationUnit, type, m);
+						NewOverrideCompletionData data = new NewOverrideCompletionData (dom, Editor, declarationBegin, type, m);
 						string text = CompletionDataCollector.ambience.GetString (m, OutputFlags.ClassBrowserEntries);
 						// check if the member is already implemented
 						bool foundMember = false;
@@ -1346,7 +1346,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				}
 
 				foreach (IMethod method in methods) {
-					NewOverrideCompletionData data = new NewOverrideCompletionData (Editor, ctx.TriggerOffset, type.CompilationUnit, type, method);
+					NewOverrideCompletionData data = new NewOverrideCompletionData (dom, Editor, ctx.TriggerOffset, type, method);
 					data.GenerateBody = false;
 					result.Add (data);
 				}
