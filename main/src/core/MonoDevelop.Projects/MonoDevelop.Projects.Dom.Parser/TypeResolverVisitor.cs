@@ -59,10 +59,22 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public override IDomVisitable Visit (IReturnType type, IType contextType)
 		{
+			if (type.GenericArguments.Count == 0 && unit != null) { 
+				foreach (IUsing u in unit.Usings) {
+					if (u.IsFromNamespace || u.Aliases.Count == 0 && u.Region.Contains (contextType.Location))
+						continue;
+					foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+						if (alias.Key == type.FullName) 
+							return Visit (alias.Value, contextType);
+					}
+				}
+			}
+			
 			if (currentMethod != null) {
 				foreach (ITypeParameter t in currentMethod.TypeParameters) {
-					if (t.Name == type.Name)
+					if (t.Name == type.Name) {
 						return type;
+					}
 				}
 			}
 			
@@ -71,6 +83,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			if (firstPart.GenericArguments.Count > 0)
 				name += "`" + firstPart.GenericArguments.Count;
 			IType c = db.SearchType (new SearchTypeRequest (unit, contextType, name));
+			
 			if (c == null) {
 				unresolvedCount++;
 				return db.GetSharedReturnType (type);
