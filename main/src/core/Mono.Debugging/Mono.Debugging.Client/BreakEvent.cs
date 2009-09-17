@@ -100,6 +100,8 @@ namespace Mono.Debugging.Client
 			set {
 				if (store == null)
 					throw new InvalidOperationException ();
+				if (store.IsReadOnly)
+					return;
 				enabled = value;
 				store.EnableBreakEvent (this, value);
 			}

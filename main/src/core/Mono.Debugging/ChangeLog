@@ -1,5 +1,14 @@
 2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Client/BreakEvent.cs:
+	* Mono.Debugging.Client/DebuggerSession.cs:
+	* Mono.Debugging.Client/BreakpointStore.cs: Added support for
+	  disabling changes in the breakpoint store. Some debuggers
+	  may not support changing breakpoints while the debugger is
+	  running.
+
+2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Client/DebuggerSession.cs: Don't crash if a
 	  breakpoint can't be removed.
 

@@ -105,6 +105,7 @@ namespace Mono.Debugging.Client
 						breakpointStore.BreakEventRemoved -= OnBreakpointRemoved;
 						breakpointStore.BreakEventModified -= OnBreakpointModified;
 						breakpointStore.BreakEventEnableStatusChanged -= OnBreakpointStatusChanged;
+						breakpointStore.CheckingReadOnly -= BreakpointStoreCheckingReadOnly;
 					}
 					
 					breakpointStore = value;
@@ -118,6 +119,7 @@ namespace Mono.Debugging.Client
 						breakpointStore.BreakEventRemoved += OnBreakpointRemoved;
 						breakpointStore.BreakEventModified += OnBreakpointModified;
 						breakpointStore.BreakEventEnableStatusChanged += OnBreakpointStatusChanged;
+						breakpointStore.CheckingReadOnly += BreakpointStoreCheckingReadOnly;
 					}
 				}
 			}
@@ -380,6 +382,13 @@ namespace Mono.Debugging.Client
 			lock (slock) {
 				if (started)
 					UpdateBreakEventStatus (args.BreakEvent);
+			}
+		}
+
+		void BreakpointStoreCheckingReadOnly (object sender, ReadOnlyCheckEventArgs e)
+		{
+			lock (slock) {
+				e.SetReadOnly (!AllowBreakEventChanges);
 			}
 		}
 		
@@ -692,6 +701,8 @@ namespace Mono.Debugging.Client
 		protected abstract object OnUpdateBreakEvent (object handle, BreakEvent be);
 		
 		protected abstract void OnEnableBreakEvent (object handle, bool enable);
+		
+		protected virtual bool AllowBreakEventChanges { get { return true; } }
 
 		protected abstract void OnContinue ();
 		
