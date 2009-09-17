@@ -30,6 +30,12 @@ namespace DebuggerServer
 {
 	public class MdbAdaptor_2_4_4: MdbAdaptor_2_4_2
 	{
+		public override bool AllowBreakEventChanges {
+			get {
+				return true;
+			}
+		}
+		
 		public override void ActivateEvent (Mono.Debugger.Event ev)
 		{
 			Process.ActivatePendingBreakpoints ();

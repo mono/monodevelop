@@ -77,7 +77,13 @@ namespace DebuggerServer
 		
 		public void ThrowNotSupported (string feature)
 		{
-			throw new InvalidOperationException (feature + ". You need to install a more recent Mono Debugger version.");
+			throw new Mono.Debugging.Client.DebuggerException (feature + ". You need to install a more recent Mono Debugger version.");
+		}
+		
+		public virtual bool AllowBreakEventChanges {
+			get {
+				return true;
+			}
 		}
 	}
 }

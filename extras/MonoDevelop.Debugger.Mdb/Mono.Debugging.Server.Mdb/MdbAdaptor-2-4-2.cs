@@ -65,6 +65,12 @@ namespace DebuggerServer
 			result.Abort ();
 		}
 		
+		public override bool AllowBreakEventChanges {
+			get {
+				return Process.MainThread.IsStopped;
+			}
+		}
+		
 		public override void ActivateEvent (Mono.Debugger.Event ev)
 		{
 			if (Process.MainThread.IsStopped)

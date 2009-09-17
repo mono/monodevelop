@@ -48,7 +48,7 @@ namespace DebuggerServer
 		public const int DefaultChildEvaluationTimeout = 5000;
 		
 		const int BreakEventUpdateNotifyDelay = 500;
-
+		
 		public DebuggerServer (IDebuggerController dc)
 		{
 			this.controller = dc;
@@ -244,6 +244,12 @@ namespace DebuggerServer
 			QueueTask (delegate {
 				guiManager.Continue (activeThread);
 			});
+		}
+		
+		public bool AllowBreakpointChanges {
+			get {
+				return mdbAdaptor == null || mdbAdaptor.AllowBreakEventChanges;
+			}
 		}
 
 		public int InsertBreakEvent (DL.BreakEvent be, bool enable)

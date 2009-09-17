@@ -81,5 +81,7 @@ namespace Mono.Debugging.Backend.Mdb
 		AssemblyLine[] DisassembleFile (string file);
 		
 		void SetActiveThread (int processId, int threadId);
+		
+		bool AllowBreakpointChanges { get; }
 	}
 }

@@ -179,5 +179,14 @@ namespace Mono.Debugging.Backend.Mdb
 			if (lastTrace != null)
 				UpdateLastTraceValue (handle, lastTrace);
 		}
+		
+		protected override bool AllowBreakEventChanges {
+			get {
+				if (controller != null && controller.DebuggerServer != null)
+					return controller.DebuggerServer.AllowBreakpointChanges;
+				else
+					return true;
+			}
+		}
 	}
 }

@@ -1,3 +1,12 @@
+2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* IDebuggerServer.cs:
+	* MonoDebuggerSession.cs: Implemented AllowBreakEventChanges
+	  property.
+
+	* Mono.Debugging.Backend.Mdb.csproj: Don't require specific
+	  versions.
+
 2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Backend.Mdb.csproj: Updated.
