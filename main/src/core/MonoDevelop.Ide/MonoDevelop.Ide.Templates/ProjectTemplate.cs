@@ -1,4 +1,4 @@
-﻿// ProjectTemplate.cs
+// ProjectTemplate.cs
 //
 // Author:
 //   Mike Krüger (mkrueger@novell.com)
@@ -261,7 +261,15 @@ namespace MonoDevelop.Ide.Templates
 					ProjectTemplates.Add (new ProjectTemplate (codon.Addin, codon.Id, codon, null));
 				}
 				catch (Exception e) {
-					LoggingService.LogFatalError (e.ToString ());
+					string extId = null, addinId = null;
+					if (codon != null) {
+						if (codon.HasId)
+							extId = codon.Id;
+						if (codon.Addin != null)
+							addinId = codon.Addin.Id;
+					}
+					LoggingService.LogError ("Error loading template id {0} in addin {1}:\n{2}",
+					                         extId ?? "(null)", addinId ?? "(null)", e.ToString ());
 				}
 			}
 			else {
