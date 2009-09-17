@@ -1,3 +1,8 @@
+2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.PropertyGrid/PropertyGridTree.cs: Fix
+	  collection editors.
+
 2009-09-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Chart/Serie.cs: Fix build.

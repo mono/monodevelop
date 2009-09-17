@@ -482,7 +482,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 			else {
 				this.CellBackground = null;
-				sensitive = !property.IsReadOnly;
+				sensitive = !property.IsReadOnly || (editor != null && editor.EditsReadOnlyObject);
 			}
 			
 			editorCell = editor;
