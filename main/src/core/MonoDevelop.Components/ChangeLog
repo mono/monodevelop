@@ -1,5 +1,10 @@
 2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs:
+	  Tidy up the collection editor dialog.
+
+2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Components.PropertyGrid/PropertyGridTree.cs: Fix
 	  collection editors.
 

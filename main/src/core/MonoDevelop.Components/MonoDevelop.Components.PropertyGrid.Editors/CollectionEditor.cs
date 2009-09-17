@@ -44,11 +44,6 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		//TODO: Support for multiple object types
 		private Type[] types;
 
-		private ListStore itemStore;
-		private TreeView itemTree;
-		private PropertyGrid grid;
-		private TreeIter previousIter = TreeIter.Zero;
-
 		protected override void Initialize ()
 		{
 			base.Initialize ();
@@ -82,21 +77,27 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			string displayName = Property.DisplayName;
 
 			//populate list with existing items
-			itemStore = new ListStore (typeof (object), typeof (int), typeof (string));
+			ListStore itemStore = new ListStore (typeof (object), typeof (int), typeof (string));
 			for (int i=0; i<collection.Count; i++)
-			{
 				itemStore.AppendValues(collection [i], i, collection [i].ToString ());
-			}
 
 			#region Building Dialogue
+			
+			TreeView itemTree;
+			PropertyGrid grid;
+			TreeIter previousIter = TreeIter.Zero;
 
 			//dialogue and buttons
-			Dialog dialog = new Dialog ();
-			dialog.Title = displayName + " Editor";
-			dialog.Modal = true;
-			dialog.AllowGrow = true;
-			dialog.AllowShrink = true;
-			dialog.Modal = true;
+			Dialog dialog = new Dialog () {
+				Title = displayName + " Editor",
+				Modal = true,
+				AllowGrow = true,
+				AllowShrink = true,
+			};
+			var toplevel = this.Container.Toplevel as Window;
+			if (toplevel != null)
+				dialog.TransientFor = toplevel;
+			
 			dialog.AddActionWidget (new Button (Stock.Cancel), ResponseType.Cancel);
 			dialog.AddActionWidget (new Button (Stock.Ok), ResponseType.Ok);
 			
@@ -105,49 +106,37 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			dialog.VBox.PackStart (hBox, true, true, 5);
 
 			//propGrid at end
-			grid = new PropertyGrid (base.EditorManager);
-			grid.CurrentObject = null;
-			grid.WidthRequest = 200;
-			grid.ShowHelp = false;
+			grid = new PropertyGrid (base.EditorManager) {
+				CurrentObject = null,
+				WidthRequest = 200,
+				ShowHelp = false
+			};
 			hBox.PackEnd (grid, true, true, 5);
 
-			//followed by item sorting buttons in ButtonBox
-			VButtonBox sortButtonBox = new VButtonBox ();
-			sortButtonBox.LayoutStyle = ButtonBoxStyle.Start;
-			Button upButton = new Button ();
-			Image upImage = new Image (Stock.GoUp, IconSize.Button);
-			upImage.Show ();
-			upButton.Add (upImage);
-			upButton.Show ();
-			sortButtonBox.Add (upButton);
-			Button downButton = new Button ();
-			Image downImage = new Image (Stock.GoDown, IconSize.Button);
-			downImage.Show ();
-			downButton.Add (downImage);
-			downButton.Show ();
-			sortButtonBox.Add (downButton);
-			hBox.PackEnd (sortButtonBox, false, false, 5);
-
-			//Third column is a VBox
-			VBox itemsBox = new VBox ();
-			hBox.PackStart (itemsBox, false, false, 5);
-
-			//which at bottom has add/remove buttons
-			HButtonBox addRemoveButtons = new HButtonBox();
-			addRemoveButtons.LayoutStyle = ButtonBoxStyle.End;
-			Button addButton = new Button (Stock.Add);
-			addRemoveButtons.Add (addButton);
+			//followed by a ButtonBox
+			VBox buttonBox = new VBox ();
+			buttonBox.Spacing = 6;
+			hBox.PackEnd (buttonBox, false, false, 5);
+			
+			//add/remove buttons
+			Button addButton = new Button (new Image (Stock.Add, IconSize.Button));
+			buttonBox.PackStart (addButton, false, false, 0);
 			if (types [0].IsAbstract)
 				addButton.Sensitive = false;
-			Button removeButton = new Button (Stock.Remove);
-			addRemoveButtons.Add (removeButton);
-			itemsBox.PackEnd (addRemoveButtons, false, false, 10);
-		
-			//and at top has list (TreeView) in a ScrolledWindow
+			Button removeButton = new Button (new Gtk.Image (Stock.Remove, IconSize.Button));
+			buttonBox.PackStart (removeButton, false, false, 0);
+			
+			//sorting buttons
+			Button upButton = new Button (new Image (Stock.GoUp, IconSize.Button));
+			buttonBox.PackStart (upButton, false, false, 0);
+			Button downButton = new Button (new Image (Stock.GoDown, IconSize.Button));
+			buttonBox.PackStart (downButton, false, false, 0);
+
+			//Third column has list (TreeView) in a ScrolledWindow
 			ScrolledWindow listScroll = new ScrolledWindow ();
 			listScroll.WidthRequest = 200;
 			listScroll.HeightRequest = 320;
-			itemsBox.PackStart (listScroll, true, true, 0);
+			hBox.PackStart (listScroll, false, false, 5);
 			
 			itemTree = new TreeView (itemStore);
 			itemTree.Selection.Mode = SelectionMode.Single;
@@ -164,13 +153,112 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 
 			#region Events
 
-			addButton.Clicked += new EventHandler (addButton_Clicked);
-			removeButton.Clicked += new EventHandler (removeButton_Clicked);
-			itemTree.Selection.Changed += new EventHandler (Selection_Changed);
-			upButton.Clicked += new EventHandler (upButton_Clicked);
-			downButton.Clicked += new EventHandler (downButton_Clicked);
-
-
+			addButton.Clicked += delegate {
+				//create the object
+				object instance = System.Activator.CreateInstance (types[0]);
+				
+				//get existing selection and insert after it
+				TreeIter oldIter, newIter;
+				if (itemTree.Selection.GetSelected (out oldIter))
+					newIter = itemStore.InsertAfter (oldIter);
+				//or append if no previous selection 
+				else
+					newIter = itemStore.Append ();
+				itemStore.SetValue (newIter, 0, instance);
+				
+				//select, set name and update all the indices
+				itemTree.Selection.SelectIter (newIter);
+				UpdateName (itemStore, newIter);
+				UpdateIndices (itemStore);
+			};
+			
+			removeButton.Clicked += delegate {
+				//get selected iter and the replacement selection
+				TreeIter iter, newSelection;
+				if (!itemTree.Selection.GetSelected (out iter))
+					return;
+				
+				newSelection = iter;
+				if (!IterPrev (itemStore, ref newSelection)) {
+					newSelection = iter;
+					if (!itemStore.IterNext (ref newSelection))
+						newSelection = TreeIter.Zero;
+				}
+				
+				//new selection. Zeroing previousIter prevents trying to update name of deleted iter.
+				previousIter = TreeIter.Zero;
+				if (itemStore.IterIsValid (newSelection))
+					itemTree.Selection.SelectIter (newSelection);
+				
+				//and the removal and index update
+				itemStore.Remove (ref iter);
+				UpdateIndices (itemStore);
+			};
+			
+			upButton.Clicked += delegate {
+				TreeIter iter, prev;
+				if (!itemTree.Selection.GetSelected (out iter))
+					return;
+	
+				//get previous iter
+				prev = iter;
+				if (!IterPrev (itemStore, ref prev))
+					return;
+	
+				//swap the two
+				itemStore.Swap (iter, prev);
+	
+				//swap indices too
+				object prevVal = itemStore.GetValue (prev, 1);
+				object iterVal = itemStore.GetValue (iter, 1);
+				itemStore.SetValue (prev, 1, iterVal);
+				itemStore.SetValue (iter, 1, prevVal);
+			};
+			
+			downButton.Clicked += delegate {
+				TreeIter iter, next;
+				if (!itemTree.Selection.GetSelected (out iter))
+					return;
+	
+				//get next iter
+				next = iter;
+				if (!itemStore.IterNext (ref next))
+					return;
+				
+				//swap the two
+				itemStore.Swap (iter, next);
+	
+				//swap indices too
+				object nextVal = itemStore.GetValue (next, 1);
+				object iterVal = itemStore.GetValue (iter, 1);
+				itemStore.SetValue (next, 1, iterVal);
+				itemStore.SetValue (iter, 1, nextVal);
+			};
+			
+			itemTree.Selection.Changed += delegate {
+				TreeIter iter;
+				if (!itemTree.Selection.GetSelected (out iter)) {
+					removeButton.Sensitive = false;
+					return;
+				}
+				removeButton.Sensitive = true;
+	
+				//update grid
+				object obj = itemStore.GetValue (iter, 0);
+				grid.CurrentObject = obj;
+				
+				//update previously selected iter's name
+				UpdateName (itemStore, previousIter);
+				
+				//update current selection so we can update
+				//name next selection change
+				previousIter = iter;
+			};
+			
+			
+			TreeIter selectionIter;
+			removeButton.Sensitive = itemTree.Selection.GetSelected (out selectionIter);
+			
 			#endregion
 
 			//show and get response			
@@ -195,13 +283,6 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 					throw;
 				}
 			}
-			
-			//clean up so we start fresh if launched again
-			
-			itemTree = null;
-			itemStore = null;
-			grid = null;
-			previousIter = TreeIter.Zero;
 		}
 		
 		//This and EndTransaction are from Mono internal class System.ComponentModel.ReflectionPropertyDescriptor
@@ -235,120 +316,8 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			else
 				tran.Cancel ();
 		}
-
-		void downButton_Clicked (object sender, EventArgs e)
-		{
-			TreeIter iter, next;
-			TreeModel model;
-			if (!itemTree.Selection.GetSelected(out model, out iter))
-				return;
-
-			//get next iter
-			next = iter;
-			if (!itemStore.IterNext (ref next))
-				return;
-			
-			//swap the two
-			itemStore.Swap (iter, next);
-
-			//swap indices too
-			object nextVal = itemStore.GetValue (next, 1);
-			object iterVal = itemStore.GetValue (iter, 1);
-			itemStore.SetValue (next, 1, iterVal);
-			itemStore.SetValue (iter, 1, nextVal);
-		}
-
-		void upButton_Clicked (object sender, EventArgs e)
-		{
-			TreeIter iter, prev;
-			TreeModel model;
-			if (!itemTree.Selection.GetSelected (out model, out iter))
-				return;
-
-			//get previous iter
-			prev = iter;
-			if (!IterPrev (model, ref prev))
-				return;
-
-			//swap the two
-			itemStore.Swap (iter, prev);
-
-			//swap indices too
-			object prevVal = itemStore.GetValue (prev, 1);
-			object iterVal = itemStore.GetValue (iter, 1);
-			itemStore.SetValue (prev, 1, iterVal);
-			itemStore.SetValue (iter, 1, prevVal);
-		}
-
-		void removeButton_Clicked (object sender, EventArgs e)
-		{
-			//get selected iter and the replacement selection
-			TreeIter iter, newSelection;
-			TreeModel model;
-			if (!itemTree.Selection.GetSelected (out model, out iter))
-				return;
-			
-			newSelection = iter;
-			if (!IterPrev (model, ref newSelection)) {
-				newSelection = iter;
-				if (!itemStore.IterNext (ref newSelection))
-					newSelection = TreeIter.Zero;
-			}
-			
-			//new selection. Zeroing previousIter prevents trying to update name of deleted iter.
-			previousIter = TreeIter.Zero;
-			if (itemStore.IterIsValid (newSelection))
-				itemTree.Selection.SelectIter (newSelection);
-			
-			//and the removal and index update
-			((ListStore) model).Remove (ref iter);
-			UpdateIndices ();
-		}
-
-		void Selection_Changed (object sender, EventArgs e)
-		{
-			//get selection
-			TreeIter iter;
-			TreeModel model;
-			if (!itemTree.Selection.GetSelected (out model, out iter))
-				return;
-
-			//update grid
-			object obj = model.GetValue (iter, 0);
-			grid.CurrentObject = obj;
-			
-			//update previously selected iter's name
-			UpdateName (previousIter);
-			
-			//update current selection so we can update
-			//name next selection change
-			previousIter = iter;
-			
-		}
-
-		void addButton_Clicked (object sender, EventArgs e)
-		{
-
-			//create the object
-			object instance = System.Activator.CreateInstance (types[0]);
-			
-			//get existing selection and insert after it
-			TreeIter oldIter, newIter;
-			TreeModel model;
-			if (itemTree.Selection.GetSelected (out model, out oldIter))
-				newIter = itemStore.InsertAfter (oldIter);
-			//or append if no previous selection 
-			else
-				newIter = itemStore.Append ();
-			itemStore.SetValue (newIter, 0, instance);
-			
-			//select, set name and update all the indices
-			itemTree.Selection.SelectIter (newIter);
-			UpdateName (newIter);
-			UpdateIndices ();
-		}
-
-		private void UpdateIndices ()
+		
+		static void UpdateIndices (ListStore itemStore)
 		{
 			TreeIter iter;
 			int i = 0;
@@ -361,7 +330,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			} while (itemStore.IterNext (ref iter));
 		}
 
-		private void UpdateName (TreeIter iter)
+		static void UpdateName (ListStore itemStore, TreeIter iter)
 		{
 			if (iter.Equals (TreeIter.Zero))
 				return;
@@ -375,7 +344,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		}
 
 		//generally useful function... why not in model already?
-		private bool IterPrev (TreeModel model, ref TreeIter iter)
+		static bool IterPrev (TreeModel model, ref TreeIter iter)
 		{
 			TreePath tp = model.GetPath (iter);
 			return tp.Prev() && model.GetIter (out iter, tp);
