@@ -1,3 +1,7 @@
+2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/TestPad.cs: Add support for custom execution modes.
+
 2009-09-09  Christian Hergert  <chris@dronelabs.com>
 
 	* Services/NUnitService.cs: Make dialog transient for the

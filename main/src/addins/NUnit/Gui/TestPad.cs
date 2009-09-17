@@ -41,6 +41,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.NUnit.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Execution;
 
 namespace MonoDevelop.NUnit
 {
@@ -420,22 +421,20 @@ namespace MonoDevelop.NUnit
 		[CommandHandler (TestCommands.RunTestWith)]
 		protected void OnRunTest (object data)
 		{
-			ProcessService.ExecutionModeReference mode = (ProcessService.ExecutionModeReference) data;
-			RunSelectedTest (mode.ExecutionMode.ExecutionHandler);
+			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (data);
+			if (h != null)
+				RunSelectedTest (h);
 		}
 		
 		[CommandUpdateHandler (TestCommands.RunTestWith)]
 		protected void OnUpdateRunTest (CommandArrayInfo info)
 		{
 			UnitTest test = GetSelectedTest ();
-			if (test != null) {
-				foreach (IExecutionModeSet mset in Runtime.ProcessService.GetExecutionModes ()) {
-					foreach (IExecutionMode mode in mset.ExecutionModes) {
-						if (test.CanRun (mode.ExecutionHandler))
-							info.Add (mode.Name, new ProcessService.ExecutionModeReference (mset, mode));
-					}
-					info.AddSeparator ();
-				}
+			if (test != null && IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+				ExecutionModeCommandService.GenerateExecutionModeCommands (
+				    IdeApp.ProjectOperations.CurrentSelectedProject,
+				    test.CanRun,
+				    info);
 			}
 		}
 		
