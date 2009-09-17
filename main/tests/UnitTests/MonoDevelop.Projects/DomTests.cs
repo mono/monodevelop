@@ -217,6 +217,11 @@ namespace MonoDevelop.Projects.DomTests
 			
 			ProjectDomService.ParseAssemblyUri ("Assembly:MS.NET:C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\mscorlib.dll", out runtime, out fx, out file);
 			Assert.AreEqual ("C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\mscorlib.dll", file);
+			
+			ProjectDomService.ParseAssemblyUri ("Assembly:Mono r142024 Wed Sep 16 11:39:25 BST 2009:/usr/local/lib/mono/2.0/mscorlib.dll", out runtime, out fx, out file);
+			Assert.AreEqual ("/usr/local/lib/mono/2.0/mscorlib.dll", file);
+			
+			
 		}
 		
 	}

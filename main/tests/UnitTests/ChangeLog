@@ -1,5 +1,10 @@
 2009-09-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects/DomTests.cs: Added assembly uri string
+	  from marek to the unit tests.
+
+2009-09-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects/DomTests.cs: Added parseassemblyuri
 	  unit tests.
 
