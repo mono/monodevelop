@@ -1,4 +1,4 @@
-﻿// FileTemplate.cs
+// FileTemplate.cs
 //
 // Author:
 //   Mike Krüger (mkrueger@novell.com)
@@ -256,8 +256,16 @@ namespace MonoDevelop.Ide.Templates
                     t.id = codon.Id;
                     fileTemplates.Add (t);
 				} catch (Exception e) {
-                    LoggingService.LogFatalError (GettextCatalog.GetString ("Error loading template: {0}", codon.Id), e);
-                }
+					string extId = null, addinId = null;
+					if (codon != null) {
+						if (codon.HasId)
+							extId = codon.Id;
+						if (codon.Addin != null)
+							addinId = codon.Addin.Id;
+					}
+					LoggingService.LogError ("Error loading template id {0} in addin {1}:\n{2}",
+					                         extId ?? "(null)", addinId ?? "(null)", e.ToString ());
+				}
             }
             else {
 				ProjectTemplateCodon codon = (ProjectTemplateCodon) args.ExtensionNode;

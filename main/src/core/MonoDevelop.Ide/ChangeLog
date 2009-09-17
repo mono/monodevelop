@@ -1,5 +1,11 @@
 2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Make file
+	  template loading failures also not fatal, and improve error
+	  message.
+
+2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Templates/ProjectTemplate.cs: Downgrade
 	  "fatal" error when loading templates to a normal error. Add
 	  more information to the error string.
