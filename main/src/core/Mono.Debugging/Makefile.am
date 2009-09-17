@@ -27,6 +27,7 @@ FILES =  \
 	Mono.Debugging.Client/Catchpoint.cs \
 	Mono.Debugging.Client/CatchpointEventArgs.cs \
 	Mono.Debugging.Client/CompletionData.cs \
+	Mono.Debugging.Client/DebuggerException.cs \
 	Mono.Debugging.Client/DebuggerFeatures.cs \
 	Mono.Debugging.Client/DebuggerSession.cs \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \

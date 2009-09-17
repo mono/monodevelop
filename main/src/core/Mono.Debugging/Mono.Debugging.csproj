@@ -94,6 +94,7 @@
     <Compile Include="Mono.Debugging.Evaluation\TypeValueReference.cs" />
     <Compile Include="Mono.Debugging.Evaluation\ValueReference.cs" />
     <Compile Include="Mono.Debugging.Evaluation\UserVariableReference.cs" />
+    <Compile Include="Mono.Debugging.Client\DebuggerException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

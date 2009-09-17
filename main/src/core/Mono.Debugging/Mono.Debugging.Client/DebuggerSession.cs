@@ -273,9 +273,9 @@ namespace Mono.Debugging.Client
 			} catch (Exception ex) {
 				Breakpoint bp = be as Breakpoint;
 				if (bp != null)
-					logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + "' (" + ex.Message + ")\n");
+					OnDebuggerOutput (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + "' (" + ex.Message + ")\n");
 				else
-					logWriter (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
+					OnDebuggerOutput (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
 			}
 
 			lock (breakpoints) {
@@ -284,15 +284,22 @@ namespace Mono.Debugging.Client
 			}
 		}
 
-		void RemoveBreakEvent (BreakEvent be)
+		bool RemoveBreakEvent (BreakEvent be)
 		{
 			lock (breakpoints) {
 				object handle;
 				if (GetBreakpointHandle (be, out handle)) {
-					breakpoints.Remove (be);
-					if (handle != null)
-						OnRemoveBreakEvent (handle);
+					try {
+						if (handle != null)
+							OnRemoveBreakEvent (handle);
+						breakpoints.Remove (be);
+					} catch (DebuggerException ex) {
+						if (started)
+							OnDebuggerOutput (false, ex.Message);
+						return false;
+					}
 				}
+				return true;
 			}
 		}
 		
@@ -300,8 +307,14 @@ namespace Mono.Debugging.Client
 		{
 			lock (breakpoints) {
 				object handle;
-				if (GetBreakpointHandle (be, out handle) && handle != null)
-					OnEnableBreakEvent (handle, be.Enabled);
+				if (GetBreakpointHandle (be, out handle) && handle != null) {
+					try {
+						OnEnableBreakEvent (handle, be.Enabled);
+					} catch (DebuggerException ex) {
+						if (started)
+							OnDebuggerOutput (false, ex.Message);
+					}
+				}
 			}
 		}
 		
@@ -329,9 +342,9 @@ namespace Mono.Debugging.Client
 						} catch (Exception ex) {
 							Breakpoint bp = be as Breakpoint;
 							if (bp != null)
-								logWriter (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
+								OnDebuggerOutput (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
 							else
-								logWriter (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
+								OnDebuggerOutput (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
 						}
 					}
 				}

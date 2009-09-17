@@ -1,3 +1,13 @@
+2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/DebuggerSession.cs: Don't crash if a
+	  breakpoint can't be removed.
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/DebuggerException.cs: Added exception
+	  to be used to report debugger errors to the user.
+
 2009-09-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Ignore '?'
