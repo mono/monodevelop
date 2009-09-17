@@ -254,6 +254,11 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				previousIter = iter;
 			};
 			
+			grid.Changed += delegate {
+				TreeIter iter;
+				if (itemTree.Selection.GetSelected (out iter))
+					UpdateName (itemStore, iter);
+			};
 			
 			TreeIter selectionIter;
 			removeButton.Sensitive = itemTree.Selection.GetSelected (out selectionIter);
