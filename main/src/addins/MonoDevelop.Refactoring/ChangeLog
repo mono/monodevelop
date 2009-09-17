@@ -1,3 +1,9 @@
+2009-09-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: Fixed 'Bug
+	  539729 - Cannot use refactoring operations over a var used
+	  in a lock() statement'.
+
 2009-09-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:

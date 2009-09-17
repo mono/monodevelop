@@ -219,7 +219,6 @@ namespace MonoDevelop.Refactoring
 				ainfo.Add (ciset, null);
 				added = true;
 			}
-			
 			while (item != null) {
 				CommandInfo ci;
 
@@ -463,7 +462,6 @@ namespace MonoDevelop.Refactoring
 //				// Defer adding this item for Classes until later
 //				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
 //			}
-
 			if (item is IType) {
 				IType cls = (IType) item;
 				
@@ -530,11 +528,13 @@ namespace MonoDevelop.Refactoring
 						ciset.CommandInfos.Add (expset, null);
 					}
 				}
-			} else if ((item is IField) && includeModifyCommands) {
+			} else if (item is IField) {
 				txt = GettextCatalog.GetString ("Field <b>{0}</b>", itemName);
-				if (canRename)
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Encapsulate Field..."), new RefactoryOperation (refactorer.EncapsulateField));
-				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IField) item).ReturnType.FullName);
+				if (includeModifyCommands) {
+					if (canRename)
+						ciset.CommandInfos.Add (GettextCatalog.GetString ("_Encapsulate Field..."), new RefactoryOperation (refactorer.EncapsulateField));
+					AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IField) item).ReturnType.FullName);
+				}
 			} else if (item is IProperty) {
 				if (((IProperty)item).IsIndexer) {				
 					txt = GettextCatalog.GetString ("Indexer <b>{0}</b>", itemName);		
