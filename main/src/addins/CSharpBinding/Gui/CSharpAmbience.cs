@@ -156,7 +156,7 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (GetString (property.ReturnType, settings));
 				result.Append (settings.Markup (" "));
 			}
-			AppendExplicitInterfaces(result, property);
+			AppendExplicitInterfaces(result, property, settings);
 			result.Append (settings.EmitName (property, Format (property.Name)));
 			if (settings.IncludeParameters && property.Parameters.Count > 0) {
 				result.Append (settings.Markup ("["));
@@ -244,10 +244,10 @@ namespace MonoDevelop.CSharpBinding
 			return result.ToString ();
 		}
 		
-		void AppendExplicitInterfaces(StringBuilder sb, IMember member)
+		void AppendExplicitInterfaces(StringBuilder sb, IMember member, OutputSettings settings)
 		{
 			foreach (IReturnType explicitInterface in member.ExplicitInterfaces) {
-				sb.Append (explicitInterface.ToInvariantString ());
+				sb.Append (Visit (explicitInterface, settings));
 				sb.Append ('.');
 			}
 		}
@@ -261,7 +261,7 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (GetString (method.ReturnType, settings));
 				result.Append (settings.Markup (" "));
 			}
-			AppendExplicitInterfaces (result, method);
+			AppendExplicitInterfaces (result, method, settings);
 			
 			if (method.IsConstructor) {
 				result.Append (settings.EmitName (method, Format (method.DeclaringType.Name)));
@@ -491,7 +491,7 @@ namespace MonoDevelop.CSharpBinding
 				result.Append (settings.Markup (" "));
 			}
 			
-			AppendExplicitInterfaces(result, evt);
+			AppendExplicitInterfaces(result, evt, settings);
 			result.Append (settings.EmitName (evt, Format (evt.Name)));
 			
 			return result.ToString ();

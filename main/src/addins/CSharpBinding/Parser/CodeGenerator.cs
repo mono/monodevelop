@@ -305,7 +305,7 @@ namespace CSharpBinding.Parser
 			return base.ImplementMember (ctx, cls, member, privateImplementationType);
 		}
 		
-		public override void ImplementMembers (RefactorerContext ctx, IType cls, 
+	/*	public override void ImplementMembers (RefactorerContext ctx, IType cls, 
 		                                                      IEnumerable<KeyValuePair<IMember,IReturnType>> members,
 		                                                      string foldingRegionName)
 		{
@@ -322,9 +322,10 @@ namespace CSharpBinding.Parser
 				}
 				
 				string tn = amb.GetString (kvp.Value, OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.UseIntrinsicTypeNames);
+				Console.WriteLine ("tn :" + tn);
 				yield return new KeyValuePair<IMember,IReturnType> (kvp.Key, new DomReturnType (tn));
 			}
-		}
+		}*/
 		static void SetContext (IEnumerable<MemberReference> references, RefactorerContext ctx)
 		{
 			foreach (MemberReference r in references) {
