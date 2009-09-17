@@ -30,6 +30,7 @@ using System;
 using MonoDevelop.Core.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -95,7 +96,15 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[DomUsing: Region={0}, Namespaces=({1}), IsFromNamespace={2}]", Region, string.Join (",", namespaces.ToArray ()), IsFromNamespace);
+			StringBuilder aliasString = new StringBuilder ();
+			foreach (var alias in this.aliases) {
+				if (aliasString.Length > 0)
+					aliasString.Append (", ");
+				aliasString.Append (alias.Key);
+				aliasString.Append ("/");
+				aliasString.Append (alias.Value.ToInvariantString ());
+			}
+			return string.Format ("[DomUsing: Region={0}, Namespaces=({1}), Aliases=({3}), IsFromNamespace={2}]", Region, string.Join (",", namespaces.ToArray ()), IsFromNamespace, aliasString);
 		}
 		
 	}
