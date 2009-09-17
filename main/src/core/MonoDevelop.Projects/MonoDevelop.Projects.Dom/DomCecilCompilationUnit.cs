@@ -108,6 +108,7 @@ namespace MonoDevelop.Projects.Dom
 			string xmlFileName = null;
 			if (loadXmlDocumentation)
 				xmlFileName = System.IO.Path.ChangeExtension (fileName, ".xml");
+			//FIXME: should assign a custom resolver to the AssemblyDefinition so that it resolves from the correct GAC
 			DomCecilCompilationUnit result = new DomCecilCompilationUnit (keepDefinitions, xmlFileName, loadInternals, AssemblyFactory.GetAssembly (fileName));
 			result.fileName = fileName;
 			return result;
