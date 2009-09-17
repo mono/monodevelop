@@ -1,5 +1,11 @@
 2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* DebuggerServer.cs: Properly parse quoted arguments. Fixes
+	  bug #539317 - NUnit addin fails to run tests under the
+	  debugger.
+
+2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MdbAdaptor.cs:
 	* MdbAdaptor-2-0.cs:
 	* DebuggerServer.cs:

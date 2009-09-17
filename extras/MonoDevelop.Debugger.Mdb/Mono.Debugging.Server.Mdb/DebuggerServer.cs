@@ -127,7 +127,7 @@ namespace DebuggerServer
 				options.StopInMain = false;
 				
 				if (!string.IsNullOrEmpty (startInfo.Arguments))
-					options.InferiorArgs = startInfo.Arguments.Split(' ');
+					options.InferiorArgs = ToArgsArray (startInfo.Arguments);
 				
 				if (startInfo.EnvironmentVariables != null) {
 					foreach (KeyValuePair<string,string> env in startInfo.EnvironmentVariables)
@@ -879,6 +879,31 @@ namespace DebuggerServer
 					}
 				}
 			}
+		}
+		
+		string[] ToArgsArray (string str)
+		{
+			List<string> args = new List<string> ();
+			bool escaping = false;
+			StringBuilder currentArg = new StringBuilder ();
+			for (int n=0; n<str.Length; n++) {
+				char c = str [n];
+				if (c == '\\' && n + 1 < str.Length) {
+					if (!escaping || (escaping && (str[n+1] == '"' || str[n+1] == '\\')))
+						c = str [++n];
+				} else if (c == '"') {
+					escaping = !escaping;
+					continue;
+				} else if (c == ' ' && !escaping) {
+					args.Add (currentArg.ToString ());
+					currentArg = new StringBuilder ();
+					continue;
+				}
+				currentArg.Append (c);
+			}
+			if (currentArg.Length > 0)
+				args.Add (currentArg.ToString ());
+			return args.ToArray ();
 		}
 	}
 }
