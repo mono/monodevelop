@@ -116,7 +116,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             w7.Expand = false;
             w7.Fill = false;
             // Container child vbox69.Gtk.Box+BoxChild
-            this.envVarList = null;
+            this.envVarList = new MonoDevelop.Projects.Gui.Dialogs.OptionPanels.EnvVarList();
+            this.envVarList.CanFocus = true;
+            this.envVarList.Name = "envVarList";
+            this.envVarList.ShadowType = ((Gtk.ShadowType)(1));
             this.vbox69.Add(this.envVarList);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox69[this.envVarList]));
             w8.Position = 5;
