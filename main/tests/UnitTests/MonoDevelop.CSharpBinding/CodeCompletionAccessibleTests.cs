@@ -717,6 +717,49 @@ class TestClass
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("TestMethod"), "method 'TestMethod' not found");
 		}
+		
+		[Test()]
+		public void TestAlias ()
+			
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+namespace A
+{
+	public class MyClass 
+	{
+		public void MyMethod ()
+		{
+		}
+	}
+}
+
+namespace X
+{
+	using GG = A.MyClass;
+	
+	public abstract class I
+	{
+		protected virtual GG Foo ()
+		{
+			return null;
+		}
+	}
+}
+
+namespace X
+{
+	public class B : I
+	{
+		public void A ()
+		{
+			$Foo ().$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("MyMethod"), "method 'MyMethod' not found");			
+		}
 
 		
 	}
