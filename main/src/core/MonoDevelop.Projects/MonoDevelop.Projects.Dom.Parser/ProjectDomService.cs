@@ -517,6 +517,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 				if (addReference && db != null)
 					db.ReferenceCount++;
+				if (db == null)
+					LoggingService.LogWarning ("Could not get ProjectDom for uri {0}", uri);
 				return db;
 			}
 		}
