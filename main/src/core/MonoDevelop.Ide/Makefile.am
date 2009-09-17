@@ -26,6 +26,7 @@ REFS =  \
 	-r:System.Drawing \
 	-r:System.Runtime.Remoting \
 	-r:System.Web.Services \
+	-r:System.Windows.Forms \
 	-r:System.Xml
 
 FILES =  \

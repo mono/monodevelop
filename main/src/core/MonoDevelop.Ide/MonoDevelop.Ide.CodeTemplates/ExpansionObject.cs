@@ -135,8 +135,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 		MonoDevelop.Projects.Gui.Completion.ICompletionDataList list;
 		public IListDataProvider<string> GetCollections ()
 		{
-			List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>> ();
-			CompletionTextEditorExtension ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
+			var result = new List<CodeTemplateVariableValue> ();
+			var ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
 			if (ext != null) {
 				if (list == null)
 					list = ext.CodeCompletionCommand (CurrentContext.Document.TextEditor.CurrentCodeCompletionContext);
@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					if (data.Member is IMember) {
 						IMember m = data.Member as IMember;
 						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
-							result.Add (new KeyValuePair<string, string>(data.Icon, m.Name));
+							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
 					}
 				}
 				
@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					if (data.Member is IParameter) {
 						IParameter m = data.Member as IParameter;
 						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
-							result.Add (new KeyValuePair<string, string>(data.Icon, m.Name));
+							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
 					}
 				}
 				
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					if (data.Member is LocalVariable) {
 						LocalVariable m = data.Member as LocalVariable;
 						if (DomType.GetComponentType (CurrentContext.ProjectDom, m.ReturnType) != null)
-							result.Add (new KeyValuePair<string, string>(data.Icon, m.Name));
+							result.Add (new CodeTemplateVariableValue (m.Name, data.Icon));
 					}
 				}
 			}

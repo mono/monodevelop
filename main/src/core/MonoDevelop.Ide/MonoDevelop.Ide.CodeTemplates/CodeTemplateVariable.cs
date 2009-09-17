@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core;
@@ -33,38 +34,47 @@ namespace MonoDevelop.Ide.CodeTemplates
 {
 	public class CodeTemplateVariable
 	{
+		[Browsable (false)]
 		public string Name {
 			get;
 			set;
 		}
 		
+		[LocalizedDescription ("Default value for this variable.")]
 		public string Default {
 			get;
 			set;
 		}
 		
+		[LocalizedDescription ("The tooltip to display to the user for this variable.")]
 		public string ToolTip {
 			get;
 			set;
 		}
 		
+		[LocalizedDescription ("A function to be evaluated for the contents of this variable.")]
 		public string Function {
 			get;
 			set;
 		}
 		
+		[LocalizedDisplayName ("Editable")]
+		[LocalizedDescription ("Whether the variable is an editable region.")]
 		public bool IsEditable {
 			get;
 			set;
 		}
 
+		[LocalizedDisplayName ("Identifier")]
+		[LocalizedDescription ("Whether the variable is an identifier, and should only accept valid identifiers as input.")]
 		public bool IsIdentifier {
 			get;
 			set;
 		}
 		
-		List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>> ();
-		public List<KeyValuePair<string, string>> Values {
+		[LocalizedDescription ("A list of values for the user to choose from.")]
+		List<CodeTemplateVariableValue> values = new List<CodeTemplateVariableValue> ();
+		public List<CodeTemplateVariableValue> Values {
 			get {
 				return values;
 			}
@@ -115,11 +125,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			if (Values.Count > 0) {
 				writer.WriteStartElement (ValuesNode);
-				foreach (KeyValuePair<string, string> val in Values) {
+				foreach (var val in Values) {
 					writer.WriteStartElement (ValueNode);
-					if (!string.IsNullOrEmpty (val.Key))
-						writer.WriteAttributeString (iconAttribute, val.Key);
-					writer.WriteString (val.Value);
+					if (!string.IsNullOrEmpty (val.IconName))
+						writer.WriteAttributeString (iconAttribute, val.IconName);
+					writer.WriteString (val.Text);
 					writer.WriteEndElement (); 
 				}
 				writer.WriteEndElement (); // ValuesNode
@@ -166,7 +176,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 						case ValueNode:
 							string icon = reader.GetAttribute (iconAttribute);
 							string val  = reader.ReadElementContentAsString ();
-							result.Values.Add (new KeyValuePair<string, string> (icon, val));
+							result.Values.Add (new CodeTemplateVariableValue (val, icon));
 							return true;
 						}
 						return false;
@@ -180,6 +190,30 @@ namespace MonoDevelop.Ide.CodeTemplates
 			});
 			//Console.WriteLine ("return:" + result);
 			return result;
+		}
+	}
+	
+	public class CodeTemplateVariableValue
+	{
+		public CodeTemplateVariableValue ()
+		{
+		}
+		
+		public CodeTemplateVariableValue (string text, string iconName)
+		{
+			this.Text = text;
+			this.IconName = iconName;
+		}
+		
+		[LocalizedDisplayName ("Text")]
+		public string Text { get; set; }
+		
+		[LocalizedDisplayName ("Icon name")]
+		public string IconName { get; set; }
+		
+		public override string ToString ()
+		{
+			return Text;
 		}
 	}
 }

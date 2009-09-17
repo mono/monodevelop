@@ -32,23 +32,23 @@ namespace MonoDevelop.Ide.CodeTemplates
 {
 	public class CodeTemplateListDataProvider : IListDataProvider<string>
 	{
-		List<KeyValuePair<string, string>> itemList;
+		List<CodeTemplateVariableValue> itemList;
 		
-		public CodeTemplateListDataProvider (List<KeyValuePair<string, string>> itemList)
+		public CodeTemplateListDataProvider (List<CodeTemplateVariableValue> itemList)
 		{
 			this.itemList = itemList;
 		}
 		
 		public CodeTemplateListDataProvider (string s)
 		{
-			itemList = new List<KeyValuePair<string, string>> ();
-			itemList.Add (new KeyValuePair<string, string> (null, s));
+			itemList = new List<CodeTemplateVariableValue> ();
+			itemList.Add (new CodeTemplateVariableValue (s, null));
 		}
 
 		#region IListDataProvider implementation
 		public string GetText (int index)
 		{
-			return itemList[index].Value;
+			return itemList[index].Text;
 		}
 		
 		public string this [int index] {
@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public Gdk.Pixbuf GetIcon (int index)
 		{
-			string iconName = itemList[index].Key;
+			string iconName = itemList[index].IconName;
 			if (string.IsNullOrEmpty (iconName))
 				return null;
 			return MonoDevelop.Core.Gui.ImageService.GetPixbuf (iconName, Gtk.IconSize.Menu);

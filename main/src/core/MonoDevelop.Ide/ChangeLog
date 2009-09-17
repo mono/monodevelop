@@ -1,5 +1,26 @@
 2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj: Add ref to SWF for propgrid enum.
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs: Fix GTK
+	  warning.
+
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateListDataProvider.cs:
+	  Track API.
+
+	* MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs: Use the
+	  PropertyGrid for displaying variables, as this allows them
+	  to be edited.
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs: Mark
+	  up with attributes for the propgrid. Use a custom class for
+	  the value pairs so we can name the values and mark it up
+	  too.
+
+2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Templates/FileTemplate.cs: Make file
 	  template loading failures also not fatal, and improve error
 	  message.

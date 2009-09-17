@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		ListStore variablesListStore;
 		List<CodeTemplateVariable> variables = new List<CodeTemplateVariable> ();
+		MonoDevelop.Components.PropertyGrid.PropertyGrid grid;
 		
 		TreeStore variableStore;
 		
@@ -109,118 +110,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 				nameRenderer.Markup = ((string)model.GetValue (iter, 2));
 			});
 			
-/*			
-			treeviewVariables.HeadersClickable = true;
+			grid = new MonoDevelop.Components.PropertyGrid.PropertyGrid ();
+			grid.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
+			grid.ShowHelp = true;
+			grid.ShowAll ();
+			grid.ShowToolbar = false;
 			
-			#region NameColumn
-			TreeViewColumn column;
-			CellRendererText nameRenderer = new CellRendererText ();
-			column = treeviewVariables.AppendColumn (GettextCatalog.GetString ("Name"), nameRenderer, 
-			                                delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				nameRenderer.Text = ((CodeTemplateVariable)model.GetValue (iter, 0)).Name;
-			});
-			//column.Resizable = true;
-			#endregion
+			vbox4.Remove (scrolledwindow2);
+			vbox4.PackEnd (grid, true, true, 0);
 			
-			#region TipColumn
-			CellRendererText tipRenderer = new CellRendererText ();
-			tipRenderer.Editable = true;
-			tipRenderer.Edited += delegate(object o, EditedArgs args) {
-				TreeIter iter;
-				if (variablesStore.GetIterFromString (out iter, args.Path)) {
-					CodeTemplateVariable var = (CodeTemplateVariable)variablesStore.GetValue (iter, 0);
-					var.ToolTip = args.NewText;
-				}
-			};
-			column = treeviewVariables.AppendColumn (GettextCatalog.GetString ("Tooltip"), tipRenderer, 
-			                                delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				tipRenderer.Text = ((CodeTemplateVariable)model.GetValue (iter, 0)).ToolTip;
-			});
-			column.Resizable = true;
-			#endregion
-			
-			#region DefaultValueColumn
-			CellRendererText defaultRenderer = new CellRendererText ();
-			defaultRenderer.Editable = true;
-			defaultRenderer.Edited += delegate(object o, EditedArgs args) {
-				TreeIter iter;
-				if (variablesStore.GetIterFromString (out iter, args.Path)) {
-					CodeTemplateVariable var = (CodeTemplateVariable)variablesStore.GetValue (iter, 0);
-					var.Default = args.NewText;
-				}
-			};
-			
-			column = treeviewVariables.AppendColumn (GettextCatalog.GetString ("Default"), defaultRenderer, 
-			                                delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				defaultRenderer.Text = ((CodeTemplateVariable)model.GetValue (iter, 0)).Default;
-			});
-			column.Resizable = true;
-			#endregion
-			
-			#region EditableColumn
-			CellRendererToggle toggleRenderer = new CellRendererToggle ();
-			toggleRenderer.Activatable = true;
-			toggleRenderer.Toggled += delegate(object o, ToggledArgs args) {
-				TreeIter iter;
-				if (variablesStore.GetIterFromString (out iter, args.Path)) {
-					CodeTemplateVariable var = (CodeTemplateVariable)variablesStore.GetValue (iter, 0);
-					var.IsEditable = !var.IsEditable;
-				}
-			};
-			treeviewVariables.AppendColumn (GettextCatalog.GetString ("Editable"), toggleRenderer, 
-			                                delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				toggleRenderer.Active = ((CodeTemplateVariable)model.GetValue (iter, 0)).IsEditable;
-			});
-			#endregion
-			
-			#region FunctionColumn
-			Gtk.CellRendererCombo cellRendererFunction = new Gtk.CellRendererCombo ();
-			cellRendererFunction.Mode = CellRendererMode.Editable;
-			cellRendererFunction.Editable = true;
-			cellRendererFunction.HasEntry = true;
-			cellRendererFunction.TextColumn = 0;
-			cellRendererFunction.Edited += delegate(object o, EditedArgs args) {
-				TreeIter iter;
-				if (variablesStore.GetIterFromString (out iter, args.Path)) {
-					CodeTemplateVariable var = (CodeTemplateVariable)variablesStore.GetValue (iter, 0);
-					var.Function = args.NewText;
-				}
-			};
-			
-			ListStore store = new ListStore (typeof(string));
-			ExpansionObject expansion = CodeTemplateService.GetExpansionObject (template);
-			foreach (string str in expansion.Descriptions) {
-				store.AppendValues (str);
-			}
-			cellRendererFunction.Model = store;
-			
-			column = treeviewVariables.AppendColumn (GettextCatalog.GetString ("Function"), cellRendererFunction, 
-			                                delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				cellRendererFunction.Text = ((CodeTemplateVariable)model.GetValue (iter, 0)).Function;
-			});
-			column.Resizable = true;
-			#endregion
-			
-			#region ValueColumn
-			CellRendererText valueRenderer = new CellRendererText ();
-			valueRenderer.Editable = true;
-			valueRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {
-				Console.WriteLine ("Editing Started !!!");
-			};
-			
-			treeviewVariables.AppendColumn (GettextCatalog.GetString ("Values"), valueRenderer, 
-			                                delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				CodeTemplateVariable var = (CodeTemplateVariable)model.GetValue (iter, 0);
-				if (var.Values.Count == 0) {
-					valueRenderer.Markup = "<span foreground=\"" + CodeTemplatePanelWidget.GetColorString (Style.Text (StateType.Insensitive)) + "\">(empty)</span>";
-				} else if (var.Values.Count == 1) {
-					valueRenderer.Text = var.Values[0].Value;
-				} else { 
-					valueRenderer.Text = var.Values[0].Value + ", ...";
-				}
-			});
-			#endregion
-			*/
 			UpdateVariables ();
 		}
 
@@ -317,31 +215,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 				
 			}
 		}
-		class CellRendererProperty : CellRendererText
-		{
-			
-		}
+		
 		void FillVariableTree (CodeTemplateVariable var)
 		{
-			variableStore.Clear ();
-			if (var == null)
-				return;
-			
-			variableStore.AppendValues (GettextCatalog.GetString ("Name"), var, GLib.Markup.EscapeText (var.Name ?? ""), 0);
-			variableStore.AppendValues (GettextCatalog.GetString ("Tooltip"), var, GLib.Markup.EscapeText (var.ToolTip ?? ""), 1);
-			variableStore.AppendValues (GettextCatalog.GetString ("Default"), var, GLib.Markup.EscapeText (var.Default ?? ""), 2);
-			variableStore.AppendValues (GettextCatalog.GetString ("Editable"), var, var.IsEditable ? "True" : "False", 3);
-			variableStore.AppendValues (GettextCatalog.GetString ("Function"), var, GLib.Markup.EscapeText (var.Function ?? ""), 4);
-			string valueStr;
-			
-			if (var.Values.Count == 0) {
-				valueStr = "<span foreground=\"" + CodeTemplatePanelWidget.GetColorString (Style.Text (StateType.Insensitive)) + "\">(empty)</span>";
-			} else if (var.Values.Count == 1) {
-				valueStr = GLib.Markup.EscapeText (var.Values[0].Value);
-			} else { 
-				valueStr = GLib.Markup.EscapeText (var.Values[0].Value) + ", ...";
-			}
-			variableStore.AppendValues (GettextCatalog.GetString ("Values"), var, valueStr, 5);
+			grid.CurrentObject = var;
 		}
 		
 		void UpdateVariables ()
