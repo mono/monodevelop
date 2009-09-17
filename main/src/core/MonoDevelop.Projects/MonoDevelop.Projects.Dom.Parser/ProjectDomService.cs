@@ -523,7 +523,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static readonly string assemblyPrefix = "Assembly:";
 		static readonly char[] separators     = new char [] {'/', '\\'};
-		internal static bool ParseAssemblyUri (string uri, out TargetRuntime runtime, out TargetFramework fx, out string file)
+		public static bool ParseAssemblyUri (string uri, out TargetRuntime runtime, out TargetFramework fx, out string file)
 		{
 			if (uri.StartsWith (assemblyPrefix)) {
 				runtime = null;
@@ -536,6 +536,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 					curOffset = i + 1;
 				}
 				i = Math.Max (uri.IndexOfAny (separators, curOffset), curOffset);
+				if (uri[i - 1] == ':' && i == curOffset + 2)
+					i = curOffset;
 				file = uri.Substring (i);
 				if (runtime == null)
 					runtime = Runtime.SystemAssemblyService.DefaultRuntime;
