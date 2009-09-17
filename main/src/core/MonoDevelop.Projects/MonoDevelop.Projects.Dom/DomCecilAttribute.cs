@@ -47,8 +47,14 @@ namespace MonoDevelop.Projects.Dom
 			base.AttributeType = DomCecilMethod.GetReturnType (customAttribute.Constructor);
 			base.Name          = customAttribute.Constructor.DeclaringType.FullName;
 			
-			if (!customAttribute.Resolve ())
-				return;
+			try {
+				// This Resolve call is required to load enum parameter values.
+				// Without this call, enum parameters are omited.
+				customAttribute.Resolve ();
+			} catch {
+				// If the resolve operation fails, just continue. The enum parameters will
+				// be omited, but there will be other parameters
+			}
 			
 			foreach (object par in customAttribute.ConstructorParameters)
 				AddPositionalArgument (new System.CodeDom.CodePrimitiveExpression (par));

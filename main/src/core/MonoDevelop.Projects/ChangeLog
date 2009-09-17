@@ -1,3 +1,9 @@
+2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomCecilAttribute.cs: Avoid crash
+	  if the custom attribute can't be resolved. Fixes bug #539793
+	  - Completion database error.
+
 2009-09-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Fixed
