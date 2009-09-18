@@ -1,5 +1,11 @@
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpAmbience.cs:
+	* Gui/MemberCompletionData.cs: Show type of type.
+	  (class/interface/struct ...)
+
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs: Show return type for constants
 	  (Math.PI).
 

@@ -348,7 +348,6 @@ namespace MonoDevelop.CSharpBinding
 		public string Visit (IType type, OutputSettings settings)
 		{
 			StringBuilder result = new StringBuilder ();
-				
 			if (type is AnonymousType) {
 				result.Append ("new {");
 				foreach (IProperty property in type.Properties) {
@@ -382,7 +381,7 @@ namespace MonoDevelop.CSharpBinding
 					name = Format (instantiatedType == null ? type.FullName : instantiatedType.UninstantiatedType.FullName);
 				} else {
 					IType realType = instantiatedType == null ? type : instantiatedType.UninstantiatedType;
-					name = Format (NormalizeTypeName ((settings.UseFullInnerTypeName && realType.DeclaringType != null) ? Visit (realType.DeclaringType, settings) + "." + realType.Name : realType.Name));
+					name = Format (NormalizeTypeName ((settings.UseFullInnerTypeName && realType.DeclaringType != null) ? GetString (realType.DeclaringType, OutputFlags.UseFullInnerTypeName) + "." + realType.Name : realType.Name));
 				}
 			}
 			int parameterCount = type.TypeParameters.Count;
@@ -391,14 +390,14 @@ namespace MonoDevelop.CSharpBinding
 			
 			
 			if (modifiers.Length == 0 && keyword.Length == 0 && (!settings.IncludeGenerics || parameterCount == 0) && (!settings.IncludeBaseTypes || !type.BaseTypes.Any ()))
-				return settings.UseFullName && type.DeclaringType != null ? Visit (type.DeclaringType, settings) + "." + name : name;
+				return settings.UseFullName && type.DeclaringType != null ? GetString (type.DeclaringType, OutputFlags.UseFullName) + "." + name : name;
 			
 			result.Append (modifiers);
 			result.Append (keyword);
 			if (result.Length > 0 && !result.ToString ().EndsWith (" "))
 				result.Append (settings.Markup (" "));
 			if (settings.UseFullName && type.DeclaringType != null) {
-				result.Append (Visit (type.DeclaringType, settings));
+				result.Append (GetString (type.DeclaringType, OutputFlags.UseFullName));
 				result.Append (settings.Markup ("."));
 			}
 			

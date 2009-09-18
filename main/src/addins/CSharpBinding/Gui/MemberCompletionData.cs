@@ -122,7 +122,7 @@ namespace MonoDevelop.CSharpBinding
 			if (Member is IMethod && ((IMethod)Member).WasExtended)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
 			sb.Append (ambience.GetString (Member,
-				OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup
+				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup
 					| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
 
 			if (Member is IMember) {
