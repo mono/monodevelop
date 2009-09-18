@@ -70,13 +70,276 @@
               <File Name="Mono.Addins.CecilReflector.dll" Source="Libraries\Mono.Addins.CecilReflector.dll" />
               <File Name="Mono.GetOptions.dll" Source="Libraries\Mono.GetOptions.dll" />
               <File Name="monodoc.dll" Source="Libraries\monodoc.dll" />
-              
+
+              <File Id="file396" Name="Mono.Security.dll" Source="$(var.BuildRoot)\bin\Mono.Security.dll" />
+              <File Id="file399" Name="Mono.WebServer2.dll" Source="$(var.BuildRoot)\bin\Mono.WebServer2.dll" />
+              <File Id="file421" Name="monodoc.index" Source="$(var.BuildRoot)\bin\monodoc.index" />
+              <File Id="file422" Name="monodoc.xml" Source="$(var.BuildRoot)\bin\monodoc.xml" />
+              <File Id="file425" Name="resgen.exe" Source="$(var.BuildRoot)\bin\resgen.exe" />
+              <File Id="file426" Name="xsp2.exe" Source="$(var.BuildRoot)\bin\xsp2.exe" />
+              <File Id="file427" Name="xsp2.exe.config" Source="$(var.BuildRoot)\bin\xsp2.exe.config" />
+
               <!-- Program Menu Shortcut -->
               <RemoveFolder Id='ProgramMenuDir' Directory="ProgramMenuDir" On='uninstall' />
 				
 			  <!-- GTK# path -->
 			  <RegistryValue Root='HKLM' Key='SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\MonoDevelop.exe' Type='string' Name='Path' Value='[GTKSHARPPATH]\bin' />
             </Component>
+
+            <Directory Id="dir196" Name="locale">
+              <Directory Id="dir197" Name="ca">
+                <Directory Id="dir198" Name="LC_MESSAGES">
+                  <Component Id="comp199" Guid="7b8e623e-8462-44ad-a1ac-59f0ea741098">
+                    <File Id="file200" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\ca\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir201" Name="cs">
+                <Directory Id="dir202" Name="LC_MESSAGES">
+                  <Component Id="comp203" Guid="33f216c4-2eb8-4c89-96bb-ec7f499a13bd">
+                    <File Id="file204" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\cs\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir205" Name="da">
+                <Directory Id="dir206" Name="LC_MESSAGES">
+                  <Component Id="comp207" Guid="a05de93e-2732-4bdb-9a3c-bba473e77919">
+                    <File Id="file208" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\da\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir209" Name="de">
+                <Directory Id="dir210" Name="LC_MESSAGES">
+                  <Component Id="comp211" Guid="4b119b7c-b30e-43e8-876d-fc7c55fa720a">
+                    <File Id="file212" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\de\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir213" Name="es">
+                <Directory Id="dir214" Name="LC_MESSAGES">
+                  <Component Id="comp215" Guid="23108885-cc6f-4633-9f2f-0828e1bdf8f9">
+                    <File Id="file216" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\es\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir217" Name="fr">
+                <Directory Id="dir218" Name="LC_MESSAGES">
+                  <Component Id="comp219" Guid="e4e4ac79-d8e8-4510-a31e-f793aa89a13c">
+                    <File Id="file220" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\fr\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir221" Name="gl">
+                <Directory Id="dir222" Name="LC_MESSAGES">
+                  <Component Id="comp223" Guid="bec8da88-6025-410f-b03c-3293ffbc21cd">
+                    <File Id="file224" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\gl\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir225" Name="hu">
+                <Directory Id="dir226" Name="LC_MESSAGES">
+                  <Component Id="comp227" Guid="119ff2ce-fb22-4c88-b121-5c8517217dcb">
+                    <File Id="file228" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\hu\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir229" Name="id">
+                <Directory Id="dir230" Name="LC_MESSAGES">
+                  <Component Id="comp231" Guid="a79d5bc3-1f8d-47d7-8ce6-4071647b209e">
+                    <File Id="file232" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\id\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir233" Name="it">
+                <Directory Id="dir234" Name="LC_MESSAGES">
+                  <Component Id="comp235" Guid="2156fc9f-7511-42cd-88a9-f39865f94890">
+                    <File Id="file236" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\it\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir237" Name="ja">
+                <Directory Id="dir238" Name="LC_MESSAGES">
+                  <Component Id="comp239" Guid="ea9f023d-9202-42ae-af49-4e267c48453e">
+                    <File Id="file240" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\ja\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir241" Name="nl">
+                <Directory Id="dir242" Name="LC_MESSAGES">
+                  <Component Id="comp243" Guid="9ee229ad-f8ed-4940-a1be-af3288ee5913">
+                    <File Id="file244" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\nl\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir245" Name="pl">
+                <Directory Id="dir246" Name="LC_MESSAGES">
+                  <Component Id="comp247" Guid="cb09854a-1a53-468d-ac62-0bc4b2be9c5d">
+                    <File Id="file248" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\pl\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir249" Name="pt">
+                <Directory Id="dir250" Name="LC_MESSAGES">
+                  <Component Id="comp251" Guid="10455bf6-2e7f-4ba7-a5a0-2f2e3430eddb">
+                    <File Id="file252" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\pt\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir253" Name="pt_BR">
+                <Directory Id="dir254" Name="LC_MESSAGES">
+                  <Component Id="comp255" Guid="f279bd87-7cb5-4135-9034-c343db29635d">
+                    <File Id="file256" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\pt_BR\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir257" Name="ru">
+                <Directory Id="dir258" Name="LC_MESSAGES">
+                  <Component Id="comp259" Guid="53ccb2da-0d9b-4e62-86fd-384cca11c18f">
+                    <File Id="file260" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\ru\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir261" Name="sl">
+                <Directory Id="dir262" Name="LC_MESSAGES">
+                  <Component Id="comp263" Guid="8140af41-57c9-4260-9b7e-3620ddc28aa6">
+                    <File Id="file264" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\sl\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir265" Name="sv">
+                <Directory Id="dir266" Name="LC_MESSAGES">
+                  <Component Id="comp267" Guid="6885d440-8022-45fc-b5a9-192f140ce04a">
+                    <File Id="file268" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\sv\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir269" Name="tr">
+                <Directory Id="dir270" Name="LC_MESSAGES">
+                  <Component Id="comp271" Guid="df24ce5d-6407-4919-9fc2-5b4379daf968">
+                    <File Id="file272" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\tr\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir273" Name="zh_CN">
+                <Directory Id="dir274" Name="LC_MESSAGES">
+                  <Component Id="comp275" Guid="8e9f3603-8ffc-4308-aa69-40a8bb6e7933">
+                    <File Id="file276" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\zh_CN\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+              <Directory Id="dir277" Name="zh_TW">
+                <Directory Id="dir278" Name="LC_MESSAGES">
+                  <Component Id="comp279" Guid="917f42cf-fa65-45fa-9eba-d7b2719a7dd1">
+                    <File Id="file280" Name="monodevelop.mo" Source="$(var.BuildRoot)\bin\locale\zh_TW\LC_MESSAGES\monodevelop.mo" />
+                  </Component>
+                </Directory>
+              </Directory>
+            </Directory>
+            <Directory Id="dir281" Name="sources">
+              <Component Id="comp282" Guid="708a4fd2-ccb8-40c4-a547-9dacbc7ac3d4">
+                <File Id="file283" Name="cs-errors.tree" Source="$(var.BuildRoot)\bin\sources\cs-errors.tree" />
+                <File Id="file284" Name="cs-errors.zip" Source="$(var.BuildRoot)\bin\sources\cs-errors.zip" />
+                <File Id="file285" Name="ecma334.tree" Source="$(var.BuildRoot)\bin\sources\ecma334.tree" />
+                <File Id="file286" Name="ecma334.zip" Source="$(var.BuildRoot)\bin\sources\ecma334.zip" />
+                <File Id="file287" Name="gecko-sharp-docs.source" Source="$(var.BuildRoot)\bin\sources\gecko-sharp-docs.source" />
+                <File Id="file288" Name="gecko-sharp-docs.tree" Source="$(var.BuildRoot)\bin\sources\gecko-sharp-docs.tree" />
+                <File Id="file289" Name="gecko-sharp-docs.zip" Source="$(var.BuildRoot)\bin\sources\gecko-sharp-docs.zip" />
+                <File Id="file290" Name="Gendarme.Framework.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Framework.source" />
+                <File Id="file291" Name="Gendarme.Framework.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Framework.tree" />
+                <File Id="file292" Name="Gendarme.Framework.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Framework.zip" />
+                <File Id="file293" Name="Gendarme.Rules.BadPractice.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.BadPractice.source" />
+                <File Id="file294" Name="Gendarme.Rules.BadPractice.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.BadPractice.tree" />
+                <File Id="file295" Name="Gendarme.Rules.BadPractice.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.BadPractice.zip" />
+                <File Id="file296" Name="Gendarme.Rules.Concurrency.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Concurrency.source" />
+                <File Id="file297" Name="Gendarme.Rules.Concurrency.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Concurrency.tree" />
+                <File Id="file298" Name="Gendarme.Rules.Concurrency.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Concurrency.zip" />
+                <File Id="file299" Name="Gendarme.Rules.Correctness.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Correctness.source" />
+                <File Id="file300" Name="Gendarme.Rules.Correctness.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Correctness.tree" />
+                <File Id="file301" Name="Gendarme.Rules.Correctness.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Correctness.zip" />
+                <File Id="file302" Name="Gendarme.Rules.Design.Generic.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Design.Generic.source" />
+                <File Id="file303" Name="Gendarme.Rules.Design.Generic.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Design.Generic.tree" />
+                <File Id="file304" Name="Gendarme.Rules.Design.Generic.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Design.Generic.zip" />
+                <File Id="file305" Name="Gendarme.Rules.Design.Linq.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Design.Linq.source" />
+                <File Id="file306" Name="Gendarme.Rules.Design.Linq.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Design.Linq.tree" />
+                <File Id="file307" Name="Gendarme.Rules.Design.Linq.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Design.Linq.zip" />
+                <File Id="file308" Name="Gendarme.Rules.Design.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Design.source" />
+                <File Id="file309" Name="Gendarme.Rules.Design.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Design.tree" />
+                <File Id="file310" Name="Gendarme.Rules.Design.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Design.zip" />
+                <File Id="file311" Name="Gendarme.Rules.Exceptions.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Exceptions.source" />
+                <File Id="file312" Name="Gendarme.Rules.Exceptions.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Exceptions.tree" />
+                <File Id="file313" Name="Gendarme.Rules.Exceptions.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Exceptions.zip" />
+                <File Id="file314" Name="Gendarme.Rules.Interoperability.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Interoperability.source" />
+                <File Id="file315" Name="Gendarme.Rules.Interoperability.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Interoperability.tree" />
+                <File Id="file316" Name="Gendarme.Rules.Interoperability.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Interoperability.zip" />
+                <File Id="file317" Name="Gendarme.Rules.Maintainability.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Maintainability.source" />
+                <File Id="file318" Name="Gendarme.Rules.Maintainability.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Maintainability.tree" />
+                <File Id="file319" Name="Gendarme.Rules.Maintainability.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Maintainability.zip" />
+                <File Id="file320" Name="Gendarme.Rules.Naming.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Naming.source" />
+                <File Id="file321" Name="Gendarme.Rules.Naming.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Naming.tree" />
+                <File Id="file322" Name="Gendarme.Rules.Naming.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Naming.zip" />
+                <File Id="file323" Name="Gendarme.Rules.Performance.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Performance.source" />
+                <File Id="file324" Name="Gendarme.Rules.Performance.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Performance.tree" />
+                <File Id="file325" Name="Gendarme.Rules.Performance.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Performance.zip" />
+                <File Id="file326" Name="Gendarme.Rules.Portability.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Portability.source" />
+                <File Id="file327" Name="Gendarme.Rules.Portability.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Portability.tree" />
+                <File Id="file328" Name="Gendarme.Rules.Portability.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Portability.zip" />
+                <File Id="file329" Name="Gendarme.Rules.Security.Cas.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Security.Cas.source" />
+                <File Id="file330" Name="Gendarme.Rules.Security.Cas.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Security.Cas.tree" />
+                <File Id="file331" Name="Gendarme.Rules.Security.Cas.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Security.Cas.zip" />
+                <File Id="file332" Name="Gendarme.Rules.Security.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Security.source" />
+                <File Id="file333" Name="Gendarme.Rules.Security.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Security.tree" />
+                <File Id="file334" Name="Gendarme.Rules.Security.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Security.zip" />
+                <File Id="file335" Name="Gendarme.Rules.Serialization.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Serialization.source" />
+                <File Id="file336" Name="Gendarme.Rules.Serialization.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Serialization.tree" />
+                <File Id="file337" Name="Gendarme.Rules.Serialization.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Serialization.zip" />
+                <File Id="file338" Name="Gendarme.Rules.Smells.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Smells.source" />
+                <File Id="file339" Name="Gendarme.Rules.Smells.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Smells.tree" />
+                <File Id="file340" Name="Gendarme.Rules.Smells.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Smells.zip" />
+                <File Id="file341" Name="Gendarme.Rules.Ui.source" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Ui.source" />
+                <File Id="file342" Name="Gendarme.Rules.Ui.tree" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Ui.tree" />
+                <File Id="file343" Name="Gendarme.Rules.Ui.zip" Source="$(var.BuildRoot)\bin\sources\Gendarme.Rules.Ui.zip" />
+                <File Id="file344" Name="gendarme.source" Source="$(var.BuildRoot)\bin\sources\gendarme.source" />
+                <File Id="file345" Name="gendarme.tree" Source="$(var.BuildRoot)\bin\sources\gendarme.tree" />
+                <File Id="file346" Name="gendarme.zip" Source="$(var.BuildRoot)\bin\sources\gendarme.zip" />
+                <File Id="file347" Name="gtk-sharp-docs.source" Source="$(var.BuildRoot)\bin\sources\gtk-sharp-docs.source" />
+                <File Id="file348" Name="gtk-sharp-docs.tree" Source="$(var.BuildRoot)\bin\sources\gtk-sharp-docs.tree" />
+                <File Id="file349" Name="gtk-sharp-docs.zip" Source="$(var.BuildRoot)\bin\sources\gtk-sharp-docs.zip" />
+                <File Id="file350" Name="gtksourceview-sharp-docs.source" Source="$(var.BuildRoot)\bin\sources\gtksourceview-sharp-docs.source" />
+                <File Id="file351" Name="gtksourceview-sharp-docs.tree" Source="$(var.BuildRoot)\bin\sources\gtksourceview-sharp-docs.tree" />
+                <File Id="file352" Name="gtksourceview-sharp-docs.zip" Source="$(var.BuildRoot)\bin\sources\gtksourceview-sharp-docs.zip" />
+                <File Id="file353" Name="lang-csharp.source" Source="$(var.BuildRoot)\bin\sources\lang-csharp.source" />
+                <File Id="file354" Name="mono-addins-docs.source" Source="$(var.BuildRoot)\bin\sources\mono-addins-docs.source" />
+                <File Id="file355" Name="mono-addins-docs.tree" Source="$(var.BuildRoot)\bin\sources\mono-addins-docs.tree" />
+                <File Id="file356" Name="mono-addins-docs.zip" Source="$(var.BuildRoot)\bin\sources\mono-addins-docs.zip" />
+                <File Id="file357" Name="mono-file-formats.source" Source="$(var.BuildRoot)\bin\sources\mono-file-formats.source" />
+                <File Id="file358" Name="mono-file-formats.tree" Source="$(var.BuildRoot)\bin\sources\mono-file-formats.tree" />
+                <File Id="file359" Name="mono-file-formats.zip" Source="$(var.BuildRoot)\bin\sources\mono-file-formats.zip" />
+                <File Id="file360" Name="mono-tools.source" Source="$(var.BuildRoot)\bin\sources\mono-tools.source" />
+                <File Id="file361" Name="mono-tools.tree" Source="$(var.BuildRoot)\bin\sources\mono-tools.tree" />
+                <File Id="file362" Name="mono-tools.zip" Source="$(var.BuildRoot)\bin\sources\mono-tools.zip" />
+                <File Id="file363" Name="Mono.source" Source="$(var.BuildRoot)\bin\sources\Mono.source" />
+                <File Id="file364" Name="Mono.tree" Source="$(var.BuildRoot)\bin\sources\Mono.tree" />
+                <File Id="file365" Name="Mono.zip" Source="$(var.BuildRoot)\bin\sources\Mono.zip" />
+                <File Id="file366" Name="monoapi.source" Source="$(var.BuildRoot)\bin\sources\monoapi.source" />
+                <File Id="file367" Name="monoapi.tree" Source="$(var.BuildRoot)\bin\sources\monoapi.tree" />
+                <File Id="file368" Name="monoapi.zip" Source="$(var.BuildRoot)\bin\sources\monoapi.zip" />
+                <File Id="file369" Name="netdocs.source" Source="$(var.BuildRoot)\bin\sources\netdocs.source" />
+                <File Id="file370" Name="netdocs.tree" Source="$(var.BuildRoot)\bin\sources\netdocs.tree" />
+                <File Id="file371" Name="netdocs.zip" Source="$(var.BuildRoot)\bin\sources\netdocs.zip" />
+                <File Id="file372" Name="Novell.source" Source="$(var.BuildRoot)\bin\sources\Novell.source" />
+                <File Id="file373" Name="Novell.tree" Source="$(var.BuildRoot)\bin\sources\Novell.tree" />
+                <File Id="file374" Name="Novell.zip" Source="$(var.BuildRoot)\bin\sources\Novell.zip" />
+                <File Id="file375" Name="nunit-docs.source" Source="$(var.BuildRoot)\bin\sources\nunit-docs.source" />
+                <File Id="file376" Name="nunit-docs.tree" Source="$(var.BuildRoot)\bin\sources\nunit-docs.tree" />
+                <File Id="file377" Name="nunit-docs.zip" Source="$(var.BuildRoot)\bin\sources\nunit-docs.zip" />
+                <File Id="file378" Name="taglib-sharp-docs.source" Source="$(var.BuildRoot)\bin\sources\taglib-sharp-docs.source" />
+                <File Id="file379" Name="taglib-sharp-docs.tree" Source="$(var.BuildRoot)\bin\sources\taglib-sharp-docs.tree" />
+                <File Id="file380" Name="taglib-sharp-docs.zip" Source="$(var.BuildRoot)\bin\sources\taglib-sharp-docs.zip" />
+                <File Id="file381" Name="webkit-sharp-docs.source" Source="$(var.BuildRoot)\bin\sources\webkit-sharp-docs.source" />
+                <File Id="file382" Name="webkit-sharp-docs.tree" Source="$(var.BuildRoot)\bin\sources\webkit-sharp-docs.tree" />
+                <File Id="file383" Name="webkit-sharp-docs.zip" Source="$(var.BuildRoot)\bin\sources\webkit-sharp-docs.zip" />
+              </Component>
+            </Directory>
           </Directory>
           <Directory Id="AddIns" Name="AddIns">
             <Directory Id="BackendBindings" Name="BackendBindings">
@@ -302,6 +565,29 @@
       <ComponentRef Id="MonoDevelop_AddIns_VersionControl" />
       <ComponentRef Id="MonoDevelop_AddIns_WelcomePage" />
       <ComponentRef Id="MonoDevelop_AddIns" />
+
+      <ComponentRef Id="comp199" />
+      <ComponentRef Id="comp203" />
+      <ComponentRef Id="comp207" />
+      <ComponentRef Id="comp211" />
+      <ComponentRef Id="comp215" />
+      <ComponentRef Id="comp219" />
+      <ComponentRef Id="comp223" />
+      <ComponentRef Id="comp227" />
+      <ComponentRef Id="comp231" />
+      <ComponentRef Id="comp235" />
+      <ComponentRef Id="comp239" />
+      <ComponentRef Id="comp243" />
+      <ComponentRef Id="comp247" />
+      <ComponentRef Id="comp251" />
+      <ComponentRef Id="comp255" />
+      <ComponentRef Id="comp259" />
+      <ComponentRef Id="comp263" />
+      <ComponentRef Id="comp267" />
+      <ComponentRef Id="comp271" />
+      <ComponentRef Id="comp275" />
+      <ComponentRef Id="comp279" />
+      <ComponentRef Id="comp282" />
     </Feature>
 
     <!-- Sequences -->
