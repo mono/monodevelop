@@ -80,8 +80,8 @@ namespace Mono.TextEditor
 			int w, h;
 			layout.GetPixelSize (out w, out h);
 			
-			this.SetSizeRequest (System.Math.Min (w + 2, Screen.Width - x), 
-			                     System.Math.Min (h + 2, Screen.Height - y));
+			this.SetSizeRequest (System.Math.Min (w + 2, (Screen.Width - x) / 2), 
+			                     System.Math.Min (h + 2, (Screen.Height - y) / 2));
 		}
 		
 		protected override void OnDestroyed ()

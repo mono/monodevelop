@@ -1,5 +1,10 @@
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Reduced the
+	  maximum size of the code segment preview.
+
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Code segment
 	  preview has now a small inner margin.
 
