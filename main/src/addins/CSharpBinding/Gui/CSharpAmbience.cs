@@ -186,12 +186,13 @@ namespace MonoDevelop.CSharpBinding
 			}
 			result.Append (GetString (parameter, settings));
 		}
+		
 		public string Visit (IField field, OutputSettings settings)
 		{
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (field.Modifiers)));
 			
-			if (settings.IncludeReturnType && !field.IsLiteral) {
+			if (settings.IncludeReturnType && !(field.IsLiteral && field.DeclaringType != null && field.DeclaringType.ClassType == ClassType.Enum)) {
 				result.Append (GetString (field.ReturnType, settings));
 				result.Append (settings.Markup (" "));
 			}
