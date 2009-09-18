@@ -101,8 +101,14 @@ namespace PyBinding.Gui
 				return null;
 			
 			var triggerWord = GetTriggerWord (editor, completionContext);
+
+			// Its annoying when the data is poped up during an assignment such as:
+			// abc = _
+			if (completionChar == '=' && String.IsNullOrEmpty (triggerWord))
+				return null;
+
 			var triggerLine = editor.GetLineText (completionContext.TriggerLine);
-			
+
 			// if completionChar is ' ' and it is not a known completion type
 			// that we can handle, return as early as possible
 			if (completionChar == ' ') {

@@ -1,3 +1,8 @@
+2009-09-18  Christian Hergert  <chris@dronelabs.com>
+
+	* PyBinding.Gui/PythonEditorCompletion.cs: Be less annoying with
+	  completion after '='.
+
 2009-09-02  Christian Hergert  <chris@dronelabs.com>
 
 	* Resources/completion.py: Only catch TypeError
