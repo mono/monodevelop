@@ -1,3 +1,8 @@
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: quick class
+	  browser now shows full inner type name.
+
 2009-09-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Only set the

@@ -360,7 +360,7 @@ namespace MonoDevelop.SourceEditor
 			
 			public string GetText (int n)
 			{
-				return parent.editor.Ambience.GetString (typeList[n], OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters);
+				return parent.editor.Ambience.GetString (typeList[n], OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName);
 			}
 			
 			public Gdk.Pixbuf GetIcon (int n)
