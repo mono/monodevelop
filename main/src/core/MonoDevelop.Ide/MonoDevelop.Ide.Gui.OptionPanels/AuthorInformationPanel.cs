@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				AuthorInformation ainfo = widget.Get ();
 				if (ainfo != null)
 					solution.UserProperties.SetValue<AuthorInformation> ("AuthorInfo", ainfo);
-				else
+				else if (solution.UserProperties.HasValue ("AuthorInfo"))
 					solution.UserProperties.RemoveValue ("AuthorInfo");
 			}
 		}

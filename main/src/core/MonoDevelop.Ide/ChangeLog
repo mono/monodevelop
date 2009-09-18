@@ -1,3 +1,8 @@
+2009-09-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:
+	  Fix error removing author info when there is no info.
+
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Fixed
