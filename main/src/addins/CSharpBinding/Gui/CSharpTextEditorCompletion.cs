@@ -218,13 +218,14 @@ namespace MonoDevelop.CSharpBinding.Gui
 					}
 				}
 				return null;
-			case '[':
+/* Disabled because it gives problems when declaring arrays - for example string [] should not pop up code completion.
+ 			case '[':
 				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 					return null;
 				result = FindExpression (dom, completionContext);
 				if (result.ExpressionContext == ExpressionContext.Attribute)
 					return CreateCtrlSpaceCompletionData (completionContext, result);
-				return null;
+				return null;*/
 			case '<':
 				if (stateTracker.Engine.IsInsideDocLineComment) 
 					return GetXmlDocumentationCompletionData ();
@@ -595,7 +596,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 				return new NRefactoryTemplateParameterDataProvider (Editor, resolver, GetUsedNamespaces (), result.Expression.Trim ());
 			case '[': {
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-				if (resolveResult != null) {
+				if (resolveResult != null && !resolveResult.StaticResolve) {
 					IType type = dom.GetType (resolveResult.ResolvedType);
 					if (type != null)
 						return new NRefactoryIndexerParameterDataProvider (Editor, type, result.Expression);
