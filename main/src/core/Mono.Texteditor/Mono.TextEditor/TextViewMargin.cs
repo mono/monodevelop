@@ -1263,9 +1263,10 @@ namespace Mono.TextEditor
 			previewWindow = new CodeSegmentPreviewWindow (this.textEditor, segment);
 			int ox = 0, oy = 0;
 			this.textEditor.GdkWindow.GetOrigin (out ox, out oy);
-
+			
 			int x = hintRectangle.Right;
 			int y = hintRectangle.Bottom;
+			previewWindow.CalculateSize (x, y);
 			int w = previewWindow.SizeRequest ().Width;
 			int h = previewWindow.SizeRequest ().Height;
 			if (x + ox + w > this.textEditor.GdkWindow.Screen.Width)

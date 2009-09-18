@@ -1,5 +1,11 @@
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Code segment
+	  preview is no longer fixed size.
+
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Made code
 	  segment preview font smaller.
 

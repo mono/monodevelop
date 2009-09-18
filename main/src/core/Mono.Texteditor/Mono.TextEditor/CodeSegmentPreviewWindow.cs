@@ -58,19 +58,30 @@ namespace Mono.TextEditor
 			// no need to markup thousands of lines for a preview window
 			int startLine = editor.Document.OffsetToLineNumber (segment.Offset);
 			int endLine = editor.Document.OffsetToLineNumber (segment.EndOffset);
-			if (endLine - startLine > 40)
-				segment = new Segment (segment.Offset, editor.Document.GetLine (startLine + 20).Offset - segment.Offset);
+			const int maxLines = 40;
+			bool pushedLineLimit = endLine - startLine > maxLines;
+			if (pushedLineLimit)
+				segment = new Segment (segment.Offset, editor.Document.GetLine (startLine + maxLines).Offset - segment.Offset);
 			layout.Ellipsize = Pango.EllipsizeMode.End;
 			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document,
 			                                                        editor.Options,
 			                                                        editor.ColorStyle,
 			                                                        segment.Offset,
 			                                                        segment.Length,
-			                                                        true));
+			                                                        true) + (pushedLineLimit ? Environment.NewLine + "..." : ""));
 			int w, h;
 			layout.GetPixelSize (out w, out h);
 			this.SetSizeRequest (System.Math.Min (w, width), 
 			                     System.Math.Min (h, height));
+		}
+		
+		public void CalculateSize (int x, int y)
+		{
+			int w, h;
+			layout.GetPixelSize (out w, out h);
+			
+			this.SetSizeRequest (System.Math.Min (w, Screen.Width - x), 
+			                     System.Math.Min (h, Screen.Height - y));
 		}
 		
 		protected override void OnDestroyed ()
@@ -85,8 +96,9 @@ namespace Mono.TextEditor
 		Gdk.GC gc = null;
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
-			if (gc == null)
+			if (gc == null) {
 				gc = new Gdk.GC (ev.Window);
+			}
 			
 			gc.RgbFgColor = editor.ColorStyle.Default.BackgroundColor;
 			ev.Window.DrawRectangle (gc, true, ev.Area);
