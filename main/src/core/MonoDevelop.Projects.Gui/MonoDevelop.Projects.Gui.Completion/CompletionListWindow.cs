@@ -236,15 +236,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 			previousHeight = h;
 			previousWidth = w;
 
-			if ((x + w) > Screen.Width)
+			if (x + w > Screen.Width)
 				x = Screen.Width - w;
 
-			if ((y + h) > Screen.Height) {
+			if (y + h > Screen.Height) {
 				y = y - CodeCompletionContext.TriggerTextHeight - h;
 			}
 			curXPos = x;
 			curYPos = y;
 			Move (x, y);
+			UpdateDeclarationView ();
 		}
 		
 		//smaller lists get size reallocated after FillList, so we have to reposition them
@@ -252,7 +253,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			Reposition (false);
+			Reposition (true);
 		}
 		
 		public void CompleteWord ()
@@ -382,7 +383,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (declarationviewwindow.DescriptionMarkup.Length == 0)
 				return;
 			
-			declarationviewwindow.Move (this.Screen.Width+1, vert);
+			declarationviewwindow.Move (this.Screen.Width + 1, vert);
 			
 			declarationviewwindow.SetFixedWidth (-1);
 			declarationviewwindow.ReshowWithInitialSize ();
@@ -405,7 +406,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					declarationviewwindow.SetFixedWidth (listpos_x - declarationWindowMargin);
 					dvwWidth = declarationviewwindow.SizeRequest ().Width;
 				}
-				horiz = CodeCompletionContext.TriggerXCoord - TextOffset - dvwWidth - declarationWindowMargin;
+				horiz = curXPos - dvwWidth - declarationWindowMargin;
 			}
 
 			declarationviewwindow.Move (horiz, vert);
