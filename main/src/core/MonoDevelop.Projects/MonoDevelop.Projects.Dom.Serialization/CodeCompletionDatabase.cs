@@ -1342,6 +1342,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			else
 				return null;
 		}
+
+        public void RunWithLock<T> (Action<T> act, T data) 
+        { 
+            lock (rwlock) 
+            { 
+                act (data); 
+            } 
+        }
 	}
 }
 

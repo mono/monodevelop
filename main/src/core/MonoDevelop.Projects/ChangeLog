@@ -1,3 +1,9 @@
+2009-09-18  Carlo Kok  <ck@remobjects.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Ability to run delegates with a lock on the project completion 
+	  database to have a synchronized context to run from.
+
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: Fixed GetComponentType
