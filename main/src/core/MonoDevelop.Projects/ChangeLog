@@ -1,5 +1,11 @@
 2009-09-18  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects/DotNetProject.cs: If default namespace
+	  is blank, set it to the project name instead of treating
+	  that as the project name. Improves VS compatibility.
+
+2009-09-18  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Remove
 	  warning since the null db seems to be valid in some cases.
 

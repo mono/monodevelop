@@ -121,6 +121,7 @@ namespace MonoDevelop.Projects
 			if (projectCreateInfo != null) {
 				Name = projectCreateInfo.ProjectName;
 				binPath = projectCreateInfo.BinPath;
+				defaultNamespace = SanitisePotentialNamespace (projectCreateInfo.ProjectName);
 			} else
 				binPath = ".";
 
@@ -794,6 +795,9 @@ namespace MonoDevelop.Projects
 			IResourceHandler handler = ItemHandler as IResourceHandler;
 			if (handler != null)
 				MigrateResourceIds (handler, ResourceHandler);
+			
+			if (String.IsNullOrEmpty (defaultNamespace))
+				defaultNamespace = SanitisePotentialNamespace (Name);
 
 			base.OnEndLoad ();
 		}
