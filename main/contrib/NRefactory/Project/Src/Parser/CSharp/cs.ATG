@@ -1633,19 +1633,21 @@ IfStatement<out Statement statement>
 	Expression expr = null;
 	Statement embeddedStatement = null;
 	statement = null;
+	Location elseStart = Location.Empty;
 .)
 =
 	"if"
 	"(" Expr<out expr> ")"
 	EmbeddedStatement<out embeddedStatement>
 	(. Statement elseStatement = null; .)
-	[ "else" EmbeddedStatement<out elseStatement> ]
+	[ "else" (. elseStart = t.Location; .) EmbeddedStatement<out elseStatement> ]
 	(. statement = elseStatement != null ? new IfElseStatement(expr, embeddedStatement, elseStatement) : new IfElseStatement(expr, embeddedStatement); .)
 	(. if (elseStatement is IfElseStatement && (elseStatement as IfElseStatement).TrueStatement.Count == 1) {
 		/* else if-section (otherwise we would have a BlockStatment) */
-		(statement as IfElseStatement).ElseIfSections.Add(
-		             new ElseIfSection((elseStatement as IfElseStatement).Condition,
-		                               (elseStatement as IfElseStatement).TrueStatement[0]));
+		ElseIfSection elseIfSection = new ElseIfSection((elseStatement as IfElseStatement).Condition, (elseStatement as IfElseStatement).TrueStatement[0]);
+		elseIfSection.StartLocation = elseStart;
+		elseIfSection.EndLocation = (elseStatement as IfElseStatement).TrueStatement[0].EndLocation;
+		(statement as IfElseStatement).ElseIfSections.Add(elseIfSection);
 		(statement as IfElseStatement).ElseIfSections.AddRange((elseStatement as IfElseStatement).ElseIfSections);
 		(statement as IfElseStatement).FalseStatement = (elseStatement as IfElseStatement).FalseStatement;
 		}

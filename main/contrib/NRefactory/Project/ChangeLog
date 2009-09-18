@@ -1,3 +1,14 @@
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Ast/AbstractNode.cs:
+	* Src/Parser/CSharp/cs.ATG:
+	* Src/Parser/CSharp/Parser.cs:
+	* Src/Ast/General/Statement.cs:
+	* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Added
+	  option to place else if on new line, elseif sections have
+	  now location set.
+
 2009-09-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Parser/CSharp/CSharpParser.cs:

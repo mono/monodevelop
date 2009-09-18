@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -423,6 +423,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public bool PlaceCatchOnNewLine { get; set; }
 		public bool PlaceFinallyOnNewLine { get; set; }
 		public bool PlaceElseOnNewLine { get; set; }
+		public bool PlaceElseIfOnNewLine { get; set; }
 		public bool PlaceNonBlockElseOnNewLine { get; set; }
 		public bool PlaceWhileOnNewLine { get; set; }
 		#endregion
@@ -930,6 +931,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public PrettyPrintOptions ()
 		{
 			PlaceNonBlockElseOnNewLine = true;
+			PlaceElseIfOnNewLine = true;
 		}
 	}
 }

@@ -1361,7 +1361,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitElseIfSection(ElseIfSection elseIfSection, object data)
 		{
-			if (prettyPrintOptions.PlaceElseOnNewLine) {
+			if (prettyPrintOptions.PlaceElseIfOnNewLine) {
+				outputFormatter.NewLine();
 				outputFormatter.Indent();
 			} else {
 				outputFormatter.Space();
