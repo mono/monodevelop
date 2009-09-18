@@ -766,13 +766,15 @@
 				_label = "_Next Window"
 				icon = "gtk-go-forward"
 				_description = "Show next window" 
-				shortcut = "Control|Page_Down" />
+				shortcut = "Control|Page_Down"
+				macShortcut = "Meta|Shift|]" />
 		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow"
 				defaultHandler = "MonoDevelop.Ide.Commands.PrevWindowHandler"
 				_label = "_Previous Window"
 				icon = "gtk-go-back"
 				_description = "Show previous window"
-				shortcut = "Control|Page_Up" />
+				shortcut = "Control|Page_Up"
+				macShortcut = "Meta|Shift|[" />
 		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList"
 				defaultHandler = "MonoDevelop.Ide.Commands.OpenWindowListHandler"
 				type="radio|array"

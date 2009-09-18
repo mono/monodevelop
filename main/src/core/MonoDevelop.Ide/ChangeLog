@@ -1,5 +1,10 @@
 2009-09-18  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Add Mac shortcuts for cycling
+	  between tabs.
+
+2009-09-18  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:
 	  Fix error removing author info when there is no info.
 
