@@ -26,7 +26,12 @@
       Installed OR NETFRAMEWORK35
     </Condition>
 
-    <!-- Major upgrade -->
+	<!-- Get the GTK# install directory -->
+	<Property Id="GTKSHARPPATH">
+		<RegistrySearch Id="gspath" Root="HKLM" Key="SOFTWARE\Novell\GtkSharp\InstallFolder" Type="raw" />
+	</Property>
+	  
+	  <!-- Major upgrade -->
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion Minimum="$(var.ProductVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED" />
       <UpgradeVersion Minimum="0.0.0" IncludeMinimum="yes" IncludeMaximum="no" Property="OLDERVERSIONBEINGUPGRADED" />
@@ -68,6 +73,9 @@
               
               <!-- Program Menu Shortcut -->
               <RemoveFolder Id='ProgramMenuDir' Directory="ProgramMenuDir" On='uninstall' />
+				
+			  <!-- GTK# path -->
+			  <RegistryValue Root='HKLM' Key='SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\MonoDevelop.exe' Type='string' Name='Path' Value='[GTKSHARPPATH]\bin' />
             </Component>
           </Directory>
           <Directory Id="AddIns" Name="AddIns">
@@ -100,7 +108,7 @@
                 <File Name="MonoDevelop.AspNet.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.dll" />
               </Component>
             </Directory>
-            <Directory Id="MonoDevelop.Autotools" Name="MonoDevelop.Autotools">
+			<Directory Id="MonoDevelop.Autotools" Name="MonoDevelop.Autotools">
               <Directory Id="templates" Name="templates">
                 <Component Id="MonoDevelop_AddIns_MonoDevelop_Autotools_templates" Guid="e83dc765-18b6-4de6-8dc2-a8bbe69fd3c1">
                   <File Name="autogen.sh.template" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\autogen.sh.template" />
