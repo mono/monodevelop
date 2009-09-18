@@ -140,6 +140,14 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
+		public bool UseFullInnerTypeName {
+			get {
+				return (OutputFlags & OutputFlags.UseFullInnerTypeName) == OutputFlags.UseFullInnerTypeName;
+			}
+		}
+		
+		
+		
 		public bool IncludeParameters {
 			get {
 				return (OutputFlags & OutputFlags.IncludeParameters) == OutputFlags.IncludeParameters;

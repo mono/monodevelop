@@ -1,3 +1,10 @@
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs:
+	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Added
+	  flag to display the full name of an inner type without
+	  namespace.
+
 2009-09-18  Carlo Kok  <ck@remobjects.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
