@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					IReturnType componentType =  DomType.GetComponentType (CurrentContext.ProjectDom, result.ResolvedType);
 					if (componentType != null) {
 						Ambience ambience = AmbienceService.GetAmbience (CurrentContext.Template.MimeType);
-						return ambience != null ? ambience.GetString (componentType, OutputFlags.None) :  componentType.ToInvariantString ();
+						return ambience != null ? ambience.GetString (componentType, OutputFlags.IncludeGenerics) :  componentType.ToInvariantString ();
 					}
 				}
 			}

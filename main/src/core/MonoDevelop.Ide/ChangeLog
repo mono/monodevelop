@@ -1,3 +1,11 @@
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs: Fixed
+	  generics in component types.
+
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
+	  Made foreach template more intelligent.
+
 2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
