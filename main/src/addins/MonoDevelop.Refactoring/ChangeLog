@@ -1,3 +1,8 @@
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Fixed possible null reference in extract method.
+
 2009-09-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoryCommands.cs: Fixed 'Bug

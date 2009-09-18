@@ -224,9 +224,9 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				int endOffset = data.Document.LocationToOffset (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
 				text = data.Document.GetTextBetween (startOffset, data.SelectionRange.Offset) + data.Document.GetTextBetween (data.SelectionRange.EndOffset, endOffset);
 				INode parsedNode = provider.ParseText (text);
-				
 				visitor = new VariableLookupVisitor (resolver, param.Location);
-				parsedNode.AcceptVisitor (visitor, null);
+				if (parsedNode != null)
+					parsedNode.AcceptVisitor (visitor, null);
 				param.VariablesOutside = visitor.Variables;
 				param.OutsideVariableList = visitor.VariableList;
 				
