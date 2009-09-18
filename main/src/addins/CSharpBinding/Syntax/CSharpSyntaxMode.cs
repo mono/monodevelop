@@ -246,7 +246,7 @@ namespace MonoDevelop.CSharpBinding
 					ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
 					ICSharpCode.NRefactory.Ast.Expression expr = lexer.PPExpression ();
 					
-					bool result = !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (), null) : false;
+					bool result = expr != null && !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (), null) : false;
 					
 					IfBlockSpan ifBlockSpan = new IfBlockSpan (result);
 					OnFoundSpanBegin (ifBlockSpan, i, length);
