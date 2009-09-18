@@ -1,3 +1,8 @@
+2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeBehindGenerator.cs: Use Xcode's partial class list to
+	  filter the classes we generate. Remove unused code.
+
 2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneFrameworkBackend.cs: Fix spelling and grammar in

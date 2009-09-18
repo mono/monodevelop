@@ -93,13 +93,26 @@ namespace MonoDevelop.IPhone
 				classNames[key] = (string)pair.Value;
 			}
 			
-			//and construct the type objects, keyed by ref ID
+			// it seems to be hard to figure out which objects we should generate classes for,
+			// so take the list of classes that xcode would generate
+			var ibApprovedPartialClassNames = new HashSet<string> ();
+			UnknownIBObject classDescriber;
+			if (ibDoc.Properties.TryGetValue ("IBDocument.Classes", out outVar) && (classDescriber = outVar as UnknownIBObject) != null) {
+				NSMutableArray arr;
+				if (classDescriber.Properties.TryGetValue ("referencedPartialClassDescriptions", out outVar) && (arr = outVar as NSMutableArray) != null) {
+					foreach (var cls in arr.Values.OfType<IBPartialClassDescription> ())
+						if (!String.IsNullOrEmpty (cls.ClassName))
+						    ibApprovedPartialClassNames.Add (cls.ClassName);
+				}
+			}
+			
+			// construct the type objects, keyed by ref ID
 			var objectRecords = (IBMutableOrderedSet) objects.Properties ["objectRecords"];
 			var types = new Dictionary<int,CodeTypeDeclaration> ();
 			foreach (IBObjectRecord record in objectRecords.OrderedObjects.OfType<IBObjectRecord> ()) {
 				string name;
 				int? objId = ((IBObject)ResolveIfReference (record.Object)).Id;
-				if (objId != null && classNames.TryGetValue (record.ObjectId, out name)) {
+				if (objId != null && classNames.TryGetValue (record.ObjectId, out name) && ibApprovedPartialClassNames.Contains (name)) {
 					var type = new CodeTypeDeclaration (name) {
 						IsPartial = true
 					};
@@ -192,56 +205,6 @@ namespace MonoDevelop.IPhone
 			}
 			
 			return types.Values;
-		}
-		
-		public static IEnumerable<CodeTypeDeclaration> GetTypesOld (XDocument xibDoc, CodeDomProvider provider, CodeGeneratorOptions generatorOptions)
-		{
-			var ibDoc = IBDocument.Deserialize (xibDoc);
-				
-			object outVar;
-			UnknownIBObject classDescriber;
-			if (ibDoc.Properties.TryGetValue ("IBDocument.Classes", out outVar) && (classDescriber = outVar as UnknownIBObject) != null) {
-				NSMutableArray arr;
-				if (classDescriber.Properties.TryGetValue ("referencedPartialClassDescriptions", out outVar) && (arr = outVar as NSMutableArray) != null) {
-					foreach (var clsDesc in arr.Values.OfType<IBPartialClassDescription> ()) {
-						if (clsDesc.SourceIdentifier == null)
-							continue;
-						string majorKey = clsDesc.SourceIdentifier.Value.MajorKey;
-						if (majorKey != "IBUserSource" && majorKey != "IBProjectSource")
-							continue;
-						
-						var type = new CodeTypeDeclaration (clsDesc.ClassName) {
-							IsPartial = true
-						};
-						
-						type.CustomAttributes.Add (
-							new CodeAttributeDeclaration ("MonoTouch.Foundation.Register",
-								new CodeAttributeArgument (new CodePrimitiveExpression (clsDesc.ClassName))));
-						
-						if (!String.IsNullOrEmpty (clsDesc.SuperclassName))
-							type.BaseTypes.Add ("MonoTouch.UIKit." + clsDesc.SuperclassName);
-						else
-							type.BaseTypes.Add ("MonoTouch.UIKit.UIResponder");
-						
-						if (clsDesc.Outlets != null)
-							foreach (KeyValuePair<object,object> outlet in clsDesc.Outlets.Values)
-								type.Members.Add (CreateOutletProperty ((string)outlet.Key, new CodeTypeReference ((string)outlet.Value)));
-						
-						if (clsDesc.Actions != null) {
-							StringWriter actionStubWriter = null;
-							foreach (KeyValuePair<object,object> action in clsDesc.Actions.Values) {
-								GenerateAction (type, (string)action.Key, new CodeTypeReference ("MonoTouch.Foundation.NSObject"), provider, generatorOptions, ref actionStubWriter);
-							}
-							if (actionStubWriter != null) {
-								type.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
-								actionStubWriter.Dispose ();
-							}
-						}
-						
-						yield return type;
-					}
-				}
-			}
 		}
 
 		static void GenerateAction (CodeTypeDeclaration type, string name, CodeTypeReference senderType, CodeDomProvider provider,
