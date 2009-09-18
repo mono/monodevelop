@@ -819,7 +819,7 @@ namespace Mono.TextEditor
 		protected override void OnDragDataReceived (DragContext context, int x, int y, SelectionData selection_data, uint info, uint time_)
 		{
 			if (context.Action == DragAction.Move) {
-				if (CanEdit (Caret.Line)) {
+				if (CanEdit (Caret.Line) && selection != null) {
 					Caret.PreserveSelection = true;
 					textEditorData.DeleteSelection (selection);
 					Caret.PreserveSelection = false;

@@ -1,5 +1,10 @@
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextEditorData.cs: Fixed a dnd bug.
+
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: Fixed text link update.
 
 2009-09-17  Mike Krüger  <mkrueger@novell.com>

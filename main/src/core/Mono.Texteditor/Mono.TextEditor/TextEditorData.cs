@@ -588,6 +588,8 @@ namespace Mono.TextEditor
 		
 		internal void DeleteSelection (Selection selection)
 		{
+			if (selection == null)
+				throw new ArgumentNullException ("selection");
 			switch (selection.SelectionMode) {
 			case SelectionMode.Normal:
 				ISegment segment = selection.GetSelectionRange (this);
