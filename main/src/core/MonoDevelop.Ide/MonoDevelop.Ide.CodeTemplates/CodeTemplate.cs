@@ -246,18 +246,25 @@ namespace MonoDevelop.Ide.CodeTemplates
 						}
 						sb.Append (s);
 					} else {
-						link.AddLink (new Segment (sb.Length, variableDecarations[name].Default.Length));
-						sb.Append (variableDecarations[name].Default);
+						AddDefaultValue (sb, link, name);
 					}
-				} else {
-					link.AddLink (new Segment (sb.Length, variableDecarations[name].Default.Length));
-					sb.Append (variableDecarations[name].Default);
+				} else  {
+					AddDefaultValue (sb, link, name);
 				}
 			}
 			sb.Append (code.Substring (lastOffset, code.Length - lastOffset));
 			result.Code = sb.ToString ();
 			return result;
 		}
+
+		void AddDefaultValue (StringBuilder sb, TextLink link, string name)
+		{
+			if (string.IsNullOrEmpty (variableDecarations[name].Default))
+				return;
+			link.AddLink (new Segment (sb.Length, variableDecarations[name].Default.Length));
+			sb.Append (variableDecarations[name].Default);
+		}
+
 		
 		public string IndentCode (string code, string indent)
 		{

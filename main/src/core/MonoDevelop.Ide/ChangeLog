@@ -1,5 +1,10 @@
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Fixed
+	  possible null reference.
+
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs: Fixed
 	  generics in component types.
 
