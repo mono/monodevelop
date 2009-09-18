@@ -1,3 +1,7 @@
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextLinkEditMode.cs: Fixed text link update.
+
 2009-09-17  Mike Krüger  <mkrueger@novell.com>
 
 	* Styles/VisualStudioStyle.xml: this/base is no longer bold in

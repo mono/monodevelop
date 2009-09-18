@@ -390,6 +390,8 @@ namespace Mono.TextEditor
 				}
 				break;
 			}
+			if (link != null)
+				UpdateTextLink (link);
 			UpdateTextLinks ();
 			Editor.Document.CommitUpdateAll ();
 		}
@@ -417,23 +419,27 @@ namespace Mono.TextEditor
 			if (isExited)
 				return;
 			foreach (TextLink l in links) {
-				if (l.GetStringFunc != null) {
-					l.Values = l.GetStringFunc (GetStringCallback);
-					//Console.WriteLine ("Call function for " + l.Name + " res:" + String.Join (",", l.Values));
-				}
-
-				if (!l.IsEditable && l.Values.Count > 0) {
-					l.CurrentText = (string)l.Values[l.Values.Count - 1];
-				} else {
-					if (l.PrimaryLink != null) {
-						int offset = l.PrimaryLink.Offset + baseOffset;
-						if (offset >= 0 && l.PrimaryLink.Length >= 0)
-							l.CurrentText = Editor.Document.GetTextAt (offset, l.PrimaryLink.Length);
-					}
-				}
-				UpdateLinkText (l);
+				UpdateTextLink (l);
 			}
 		}
+
+		void UpdateTextLink (TextLink link)
+		{
+			if (link.GetStringFunc != null) {
+				link.Values = link.GetStringFunc (GetStringCallback);
+			}
+			if (!link.IsEditable && link.Values.Count > 0) {
+				link.CurrentText = (string)link.Values[link.Values.Count - 1];
+			} else {
+				if (link.PrimaryLink != null) {
+					int offset = link.PrimaryLink.Offset + baseOffset;
+					if (offset >= 0 && link.PrimaryLink.Length >= 0)
+						link.CurrentText = Editor.Document.GetTextAt (offset, link.PrimaryLink.Length);
+				}
+			}
+			UpdateLinkText (link);
+		}
+
 		public void UpdateLinkText (TextLink link)
 		{
 			for (int i = link.Links.Count - 1; i >= 0; i--) {
@@ -441,9 +447,13 @@ namespace Mono.TextEditor
 				int offset = s.Offset + baseOffset;
 				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.Length)
 					continue;
-				if (Editor.Document.GetTextAt (offset, s.Length) != link.CurrentText)
+				if (Editor.Document.GetTextAt (offset, s.Length) != link.CurrentText) {
+					int delta = link.CurrentText.Length - s.Length;
 					Editor.Replace (s.Offset + baseOffset, s.Length, link.CurrentText);
-				s.Length = link.CurrentText.Length;
+					if (offset < Editor.Caret.Offset)
+						Editor.Caret.Offset += delta;
+					s.Length = link.CurrentText.Length;
+				}
 			}
 		}
 		
