@@ -1,3 +1,8 @@
+2009-09-18  Jonathan Pobst  <monkey@jpobst.com>
+
+	* Dummy commit placeholder for adding ExtraFiles.zip to
+	  Windows installer.
+
 2009-08-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Update version label.
