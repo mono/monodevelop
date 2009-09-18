@@ -1,3 +1,8 @@
+2009-09-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Remove
+	  warning since the null db seems to be valid in some cases.
+
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Filter
