@@ -38,8 +38,9 @@ namespace Mono.TextEditor
 		const int DefaultPreviewWindowWidth = 320;
 		const int DefaultPreviewWindowHeight = 200;
 		TextEditor editor;
-		ISegment segment;
-
+		Pango.FontDescription fontDescription;
+		Pango.Layout layout;
+		
 		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment) : this (editor, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight)
 		{
 		}
@@ -47,17 +48,19 @@ namespace Mono.TextEditor
 		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment, int width, int height) : base (Gtk.WindowType.Popup)
 		{
 			this.editor = editor;
-			this.segment = segment;
 			this.AppPaintable = true;
-			Pango.Layout layout = new Pango.Layout (this.PangoContext);
-			layout.FontDescription = editor.Options.Font;
+			layout = new Pango.Layout (this.PangoContext);
+			fontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
+			fontDescription.Size = (int)(fontDescription.Size * 0.8f);
+			layout.FontDescription = fontDescription;
 			layout.Ellipsize = Pango.EllipsizeMode.End;
 			// setting a max size for the segment (40 lines should be enough), 
 			// no need to markup thousands of lines for a preview window
 			int startLine = editor.Document.OffsetToLineNumber (segment.Offset);
 			int endLine = editor.Document.OffsetToLineNumber (segment.EndOffset);
 			if (endLine - startLine > 40)
-				this.segment = segment = new Segment (segment.Offset, editor.Document.GetLine (startLine + 20).Offset - segment.Offset);
+				segment = new Segment (segment.Offset, editor.Document.GetLine (startLine + 20).Offset - segment.Offset);
+			layout.Ellipsize = Pango.EllipsizeMode.End;
 			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document,
 			                                                        editor.Options,
 			                                                        editor.ColorStyle,
@@ -73,13 +76,13 @@ namespace Mono.TextEditor
 		protected override void OnDestroyed ()
 		{
 			layout = layout.Kill ();
+			fontDescription = fontDescription.Kill ();
 			gc = gc.Kill ();
 			base.OnDestroyed ();
 		}
 
 		
 		Gdk.GC gc = null;
-		Pango.Layout layout = null;
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
 			if (gc == null)
@@ -87,18 +90,6 @@ namespace Mono.TextEditor
 			
 			gc.RgbFgColor = editor.ColorStyle.Default.BackgroundColor;
 			ev.Window.DrawRectangle (gc, true, ev.Area);
-			
-			if (layout == null) {
-				layout = new Pango.Layout (this.PangoContext);
-				layout.FontDescription = editor.Options.Font;
-				layout.Ellipsize = Pango.EllipsizeMode.End;
-				layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document,
-				                                                        editor.Options,
-				                                                        editor.ColorStyle,
-				                                                        segment.Offset,
-				                                                        segment.Length,
-				                                                        true));
-			}
 			ev.Window.DrawLayout (Style.TextGC (StateType.Normal), 0, 0, layout);
 			gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
 			ev.Window.DrawRectangle (gc, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);

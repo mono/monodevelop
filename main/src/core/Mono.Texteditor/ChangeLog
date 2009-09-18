@@ -1,5 +1,10 @@
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Made code
+	  segment preview font smaller.
+
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: dnd is now atomic.
 
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
