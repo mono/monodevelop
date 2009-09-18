@@ -151,12 +151,17 @@ namespace Mono.TextEditor
 		
 		void HAdjustmentValueChanged (object sender, EventArgs args)
 		{
+			HideTooltip ();
+			textViewMargin.HideCodeSegmentPreviewWindow ();
 //			VAdjustmentValueChanged (sender, args);
 			this.RepaintArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
 		}
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
+			HideTooltip ();
+			textViewMargin.HideCodeSegmentPreviewWindow ();
+			
 			lastCaretLine = DocumentLocation.Empty;
 			if (buffer == null)
 				AllocateWindowBuffer (this.Allocation);
@@ -165,6 +170,7 @@ namespace Mono.TextEditor
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 				return;
 			}
+			
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
 			oldVadjustment = this.textEditorData.VAdjustment.Value;
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
@@ -1101,7 +1107,6 @@ namespace Mono.TextEditor
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			HideTooltip ();
 			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
 				if (evnt.Direction == ScrollDirection.Down)
 					Options.ZoomIn ();

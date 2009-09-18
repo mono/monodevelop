@@ -1,5 +1,10 @@
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: tooltip/code preview now hide
+	  on scrolling events.
+
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Code segment
 	  preview is no longer fixed size.
