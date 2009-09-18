@@ -818,6 +818,7 @@ namespace Mono.TextEditor
 				
 		protected override void OnDragDataReceived (DragContext context, int x, int y, SelectionData selection_data, uint info, uint time_)
 		{
+			textEditorData.Document.BeginAtomicUndo ();
 			if (context.Action == DragAction.Move) {
 				if (CanEdit (Caret.Line) && selection != null) {
 					Caret.PreserveSelection = true;
@@ -829,7 +830,6 @@ namespace Mono.TextEditor
 						this.textEditorData.SelectionMode = selection.SelectionMode;
 					}
 					selection = null;
-					textEditorData.Document.MergeUndoOperations (2);
 				}
 			}
 			if (selection_data.Length > 0 && selection_data.Format == 8) {
@@ -846,6 +846,7 @@ namespace Mono.TextEditor
 				dragOver = false;
 				context = null;
 			}
+			textEditorData.Document.EndAtomicUndo ();
 			base.OnDragDataReceived (context, x, y, selection_data, info, time_);
 		}
 		
