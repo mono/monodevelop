@@ -59,8 +59,12 @@ namespace MonoDevelop.Projects.Dom
 			IProperty property = entry as IProperty;
 			if (property != null && property.IsIndexer)
 				return true;
-			if (entry is IMember) 
-				return ((IMember)entry).DeclaringType != null && ((IMember)entry).DeclaringType.ClassType != ClassType.Enum && ((IMember)entry).IsSpecialName;
+			if (member != null) {
+				if (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Enum) {
+					return !member.IsStatic && !member.IsConst;
+				}
+				return member.IsSpecialName;
+			}
 		
 			return false;
 		}
