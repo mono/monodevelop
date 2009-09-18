@@ -377,10 +377,12 @@ namespace MonoDevelop.CSharpBinding
 					name += "[]";
 			} 
 			if (name == null) {
-				if (settings.UseFullName && type.DeclaringType == null)
+				if (settings.UseFullName && type.DeclaringType == null) {
 					name = Format (instantiatedType == null ? type.FullName : instantiatedType.UninstantiatedType.FullName);
-				else 
-					name = Format (NormalizeTypeName (instantiatedType == null ? type.Name : instantiatedType.UninstantiatedType.Name));
+				} else {
+					IType realType = instantiatedType == null ? type : instantiatedType.UninstantiatedType;
+					name = Format (NormalizeTypeName ((settings.UseFullInnerTypeName && realType.DeclaringType != null) ? Visit (realType.DeclaringType, settings) + "." + realType.Name : realType.Name));
+				}
 			}
 			int parameterCount = type.TypeParameters.Count;
 			if (instantiatedType != null) 
