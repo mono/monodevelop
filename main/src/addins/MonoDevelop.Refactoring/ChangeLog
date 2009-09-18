@@ -1,5 +1,16 @@
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/GetContainingEmbeddedStatementVisitor.cs:
+	  Fixed 'Bug 540055 - refactoring 'create local var' is going
+	  wrong in for loop'.
+
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
 	  Fixed possible null reference in extract method.
 

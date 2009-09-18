@@ -119,6 +119,11 @@ namespace MonoDevelop.Refactoring
 				textEditorData.Replace (Offset, RemovedChars, InsertedText);
 			}
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[TextReplaceChange: FileName={0}, Offset={1}, RemovedChars={2}, InsertedText={3}]", FileName, Offset, RemovedChars, InsertedText);
+		}
 	}
 	
 	public class CreateFileChange : Change

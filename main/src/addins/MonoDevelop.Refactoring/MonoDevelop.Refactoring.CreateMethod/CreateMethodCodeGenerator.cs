@@ -193,7 +193,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				}
 
 				ResolveResult resolveResult2 = resolver.Resolve (new ExpressionResult (output), options.ResolveResult.ResolvedExpression.Region.Start);
-				TypeReference typeReference = new TypeReference (resolveResult2.ResolvedType.ToInvariantString ());
+				TypeReference typeReference = new TypeReference ((resolveResult2 != null && resolveResult2.ResolvedType != null) ? resolveResult2.ResolvedType.ToInvariantString () : "System.Object");
 				typeReference.IsKeyword = true;
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, parameterName);
 				methodDecl.Parameters.Add (pde);

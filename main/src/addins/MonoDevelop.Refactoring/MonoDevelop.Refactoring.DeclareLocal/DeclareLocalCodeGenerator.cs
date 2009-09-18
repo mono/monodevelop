@@ -155,21 +155,72 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				TextReplaceChange insert = new TextReplaceChange ();
 				insert.FileName = options.Document.FileName;
 				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
-				lineSegment = data.Document.GetLine (data.Caret.Line);
-				insert.Offset = lineSegment.Offset;
 				
 				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (returnType);
 				varDecl.Variables.Add (new VariableDeclaration (varName, provider.ParseExpression (data.SelectedText)));
-				insert.InsertedText =  options.GetWhitespaces (lineSegment.Offset) +provider.OutputNode (options.Dom, varDecl) + Environment.NewLine;
+				
+				GetContainingBlockVisitor blockVisitor = new GetContainingBlockVisitor ();
+				blockVisitor.LookupLocation = new Location (data.Caret.Column + 1, data.Caret.Line + 1);
+				ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (data.Document.Text);
+				unit.AcceptVisitor (blockVisitor, null);
+				
+				StatementWithEmbeddedStatement containing = blockVisitor.ContainingStatement as StatementWithEmbeddedStatement;
+				
+				if (containing != null && !(containing.EmbeddedStatement is BlockStatement)) {
+					insert.Offset = data.Document.LocationToOffset (containing.StartLocation.Line - 1, containing.StartLocation.Column - 1);
+					lineSegment = data.Document.GetLineByOffset (insert.Offset);
+					insert.RemovedChars = data.Document.LocationToOffset (containing.EndLocation.Line - 1, containing.EndLocation.Column - 1) - insert.Offset;
+					BlockStatement insertedBlock = new BlockStatement ();
+					insertedBlock.AddChild (varDecl);
+					insertedBlock.AddChild (containing.EmbeddedStatement);
+					
+					containing.EmbeddedStatement = insertedBlock;
+					insert.InsertedText = provider.OutputNode (options.Dom, containing, options.GetWhitespaces (lineSegment.Offset)).TrimStart ();
+					int offset, length;
+					if (SearchSubExpression (insert.InsertedText, data.SelectedText, 0, out offset, out length)) 
+					if (SearchSubExpression (insert.InsertedText, data.SelectedText, offset + 1, out offset, out length)) {
+						insert.InsertedText = insert.InsertedText.Substring (0, offset) + varName + insert.InsertedText.Substring (offset + length);
+					}
+					
+				} else if (blockVisitor.ContainingStatement is IfElseStatement) {
+					IfElseStatement ifElse = blockVisitor.ContainingStatement as IfElseStatement;
+					
+					insert.Offset = data.Document.LocationToOffset (blockVisitor.ContainingStatement.StartLocation.Line - 1, blockVisitor.ContainingStatement.StartLocation.Column - 1);
+					lineSegment = data.Document.GetLineByOffset (insert.Offset);
+					insert.RemovedChars = data.Document.LocationToOffset (blockVisitor.ContainingStatement.EndLocation.Line - 1, blockVisitor.ContainingStatement.EndLocation.Column - 1) - insert.Offset;
+					BlockStatement insertedBlock = new BlockStatement ();
+					insertedBlock.AddChild (varDecl);
+					if (blockVisitor.ContainsLocation (ifElse.TrueStatement[0])) {
+						insertedBlock.AddChild (ifElse.TrueStatement[0]);
+						ifElse.TrueStatement[0] = insertedBlock;
+					} else {
+						insertedBlock.AddChild (ifElse.FalseStatement[0]);
+						ifElse.FalseStatement[0] = insertedBlock;
+					}
+					
+					insert.InsertedText = provider.OutputNode (options.Dom, blockVisitor.ContainingStatement, options.GetWhitespaces (lineSegment.Offset));
+					int offset, length;
+					
+					if (SearchSubExpression (insert.InsertedText, provider.OutputNode (options.Dom, insertedBlock), 0, out offset, out length)) 
+					if (SearchSubExpression (insert.InsertedText, data.SelectedText, offset + 1, out offset, out length)) 
+					if (SearchSubExpression (insert.InsertedText, data.SelectedText, offset + 1, out offset, out length)) {
+						insert.InsertedText = insert.InsertedText.Substring (0, offset) + varName + insert.InsertedText.Substring (offset + length);
+					}
+				} else {
+					lineSegment = data.Document.GetLine (data.Caret.Line);
+					insert.Offset = lineSegment.Offset;
+					insert.InsertedText =  options.GetWhitespaces (lineSegment.Offset) + provider.OutputNode (options.Dom, varDecl) + Environment.NewLine;
+					
+					TextReplaceChange replace = new TextReplaceChange ();
+					replace.FileName = options.Document.FileName;
+					replace.Offset = data.SelectionRange.Offset;
+					replace.RemovedChars = data.SelectionRange.Length;
+					replace.InsertedText = varName;
+					result.Add (replace);
+				}
 				result.Add (insert);
 				selectionStart = insert.Offset;
 				
-				TextReplaceChange replace = new TextReplaceChange ();
-				replace.FileName = options.Document.FileName;
-				replace.Offset = data.SelectionRange.Offset;
-				replace.RemovedChars = data.SelectionRange.Length;
-				replace.InsertedText = varName;
-				result.Add (replace);
 				return result;
 			}
 
@@ -201,6 +252,39 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			return result;
 		}
 
+		static bool SearchSubExpression (string expression, string subexpression, int startOffset, out int offset, out int length)
+		{
+			length = -1;
+			for (offset = startOffset; offset < expression.Length; offset++) {
+				if (Char.IsWhiteSpace (expression[offset])) 
+					continue;
+				
+				bool mismatch = false;
+				int i = offset, j = 0;
+				while (i < expression.Length && j < subexpression.Length) {
+					if (Char.IsWhiteSpace (expression[i])) {
+						i++;
+						continue;
+					}
+					if (Char.IsWhiteSpace (subexpression[j])) {
+						j++;
+						continue;
+					}
+					if (expression[i] != subexpression[j]) {
+						mismatch = true;
+						break;
+					}
+					i++;
+					j++;
+				}
+				if (!mismatch && j > 0) {
+					length = j;
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		static string CreateVariableName (MonoDevelop.Projects.Dom.IReturnType returnType)
 		{
 			if (returnType == null)

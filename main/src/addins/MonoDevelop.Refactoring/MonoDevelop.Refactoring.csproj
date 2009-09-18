@@ -104,6 +104,7 @@
     <Compile Include="MonoDevelop.Refactoring.ConvertPropery\RemoveBackingStore.cs" />
     <Compile Include="MonoDevelop.Refactoring.ConvertPropery\PropertyVisitor.cs" />
     <Compile Include="MonoDevelop.CodeGeneration\NullCheckGenerator.cs" />
+    <Compile Include="MonoDevelop.Refactoring.DeclareLocal\GetContainingBlockVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
