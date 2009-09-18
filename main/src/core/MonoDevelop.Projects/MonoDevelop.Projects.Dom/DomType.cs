@@ -824,16 +824,21 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (dom == null || returnType == null)
 				return null;
-			if (returnType.FullName == DomReturnType.String.FullName)
+			if (returnType.FullName == DomReturnType.String.FullName && returnType.ArrayDimensions == 0)
 				return DomReturnType.Char;
 			if (returnType.ArrayDimensions > 0)
 				return new DomReturnType (returnType.FullName);
-
+			
 			IType resolvedType = dom.GetType (returnType);
 			if (resolvedType != null) {
 				foreach (IType curType in dom.GetInheritanceTree (resolvedType)) {
+					foreach (IReturnType baseType in curType.BaseTypes) {
+						if (baseType.FullName == "System.Collections.Generic.IEnumerable" && baseType.GenericArguments.Count == 1)
+							return baseType.GenericArguments[0];
+					}
+					
 					foreach (IProperty property in curType.Properties) {
-						if (property.IsIndexer)
+						if (property.IsIndexer && !property.IsExplicitDeclaration)
 							return property.ReturnType;
 					}
 				}
