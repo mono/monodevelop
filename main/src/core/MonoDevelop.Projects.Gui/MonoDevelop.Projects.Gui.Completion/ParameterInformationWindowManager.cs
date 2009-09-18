@@ -187,7 +187,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			Gtk.Requisition reqSize = window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1);
 			
 			int x = md.CompletionContext.TriggerXCoord;
-			int y = CurrentCodeCompletionContext.TriggerYCoord - md.CompletionContext.TriggerTextHeight - reqSize.Height - 2;
+			int y = CurrentCodeCompletionContext.TriggerYCoord - md.CompletionContext.TriggerTextHeight - reqSize.Height - 10;
 			
 			if (x + reqSize.Width > window.Screen.Width)
 				x = window.Screen.Width - reqSize.Width;

@@ -1,3 +1,9 @@
+2009-09-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Move the parameter info tooltip a bit further away from the
+	  text, so it's not so overbearing.
+
 2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
