@@ -245,9 +245,12 @@ namespace MonoDevelop.CSharpBinding
 					string parameter = doc.GetTextAt (i, length);
 					ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
 					ICSharpCode.NRefactory.Ast.Expression expr = lexer.PPExpression ();
-					
-					bool result = expr != null && !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (), null) : false;
-					
+					bool result = false;
+					if (expr != null && !expr.IsNull) {
+						object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (), null);
+						if (o is bool)
+							result = (bool)o;
+					}
 					IfBlockSpan ifBlockSpan = new IfBlockSpan (result);
 					OnFoundSpanBegin (ifBlockSpan, i, length);
 					i += length - 1;

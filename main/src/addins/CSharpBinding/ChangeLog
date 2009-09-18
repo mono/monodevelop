@@ -1,5 +1,9 @@
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Syntax/CSharpSyntaxMode.cs: handled null exception.
+
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Syntax/CSharpSyntaxMode.cs: handled possible null reference.
 
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
