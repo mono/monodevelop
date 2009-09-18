@@ -71,8 +71,8 @@ namespace Mono.TextEditor
 			                                                        true) + (pushedLineLimit ? Environment.NewLine + "..." : ""));
 			int w, h;
 			layout.GetPixelSize (out w, out h);
-			this.SetSizeRequest (System.Math.Min (w, width), 
-			                     System.Math.Min (h, height));
+			this.SetSizeRequest (System.Math.Min (w + 2, width), 
+			                     System.Math.Min (h + 2, height));
 		}
 		
 		public void CalculateSize (int x, int y)
@@ -80,8 +80,8 @@ namespace Mono.TextEditor
 			int w, h;
 			layout.GetPixelSize (out w, out h);
 			
-			this.SetSizeRequest (System.Math.Min (w, Screen.Width - x), 
-			                     System.Math.Min (h, Screen.Height - y));
+			this.SetSizeRequest (System.Math.Min (w + 2, Screen.Width - x), 
+			                     System.Math.Min (h + 2, Screen.Height - y));
 		}
 		
 		protected override void OnDestroyed ()
@@ -102,7 +102,9 @@ namespace Mono.TextEditor
 			
 			gc.RgbFgColor = editor.ColorStyle.Default.BackgroundColor;
 			ev.Window.DrawRectangle (gc, true, ev.Area);
-			ev.Window.DrawLayout (Style.TextGC (StateType.Normal), 0, 0, layout);
+			ev.Window.DrawLayout (Style.TextGC (StateType.Normal), 1, 1, layout);
+		
+			ev.Window.DrawRectangle (gc, false, 1, 1, this.Allocation.Width - 3, this.Allocation.Height - 3);
 			gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
 			ev.Window.DrawRectangle (gc, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
 			return true;
