@@ -1,3 +1,9 @@
+2009-09-18  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	Fix build.
+
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

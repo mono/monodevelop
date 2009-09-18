@@ -159,7 +159,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (returnType);
 				varDecl.Variables.Add (new VariableDeclaration (varName, provider.ParseExpression (data.SelectedText)));
 				
-				GetContainingBlockVisitor blockVisitor = new GetContainingBlockVisitor ();
+				GetContainingEmbeddedStatementVisitor blockVisitor = new GetContainingEmbeddedStatementVisitor ();
 				blockVisitor.LookupLocation = new Location (data.Caret.Column + 1, data.Caret.Line + 1);
 				ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (data.Document.Text);
 				unit.AcceptVisitor (blockVisitor, null);
