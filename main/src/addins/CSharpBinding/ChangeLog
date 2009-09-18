@@ -1,3 +1,10 @@
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs: Use more advanced
+	  GetComponentType method instead of a custom version (removes
+	  code duplication). Fixes 'Bug 540095 - Code completion
+	  issues with dictionaries in foreach'.
+
 2009-09-17  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpAmbience.cs:

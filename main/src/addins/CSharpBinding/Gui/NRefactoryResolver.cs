@@ -643,36 +643,6 @@ namespace MonoDevelop.CSharpBinding
 			return null;
 		}
 		
-		IReturnType GetEnumerationMember (IReturnType returnType)
-		{
-			if (returnType == null)
-				return null;
-			if (returnType.FullName == DomReturnType.String.FullName)
-				return DomReturnType.Char;
-			IType type = dom.SearchType (new SearchTypeRequest (Unit, returnType, CallingType));
-	//		System.Console.WriteLine("!!!! " + type);
-			if (type != null) {
-				foreach (IType baseType in dom.GetInheritanceTree (type)) {
-					if (baseType.FullName == "System.Collections.IEnumerable") {
-						InstantiatedType instantiated = type as InstantiatedType;
-		//				Console.WriteLine ("inst:" + instantiated);
-						if (instantiated != null && instantiated.GenericParameters != null && instantiated.GenericParameters.Count > 0) {
-			//				Console.WriteLine ("oOoOoO:" + instantiated.GenericParameters[0]);
-							return instantiated.GenericParameters[0];
-						}
-					}
-				}
-			}
-			
-			if (returnType.ArrayDimensions > 0) {
-				DomReturnType elementType = new DomReturnType (returnType.FullName);
-				elementType.ArrayDimensions = returnType.ArrayDimensions - 1;
-				return elementType;
-			}
-			
-			return returnType;
-		}
-		
 		Dictionary<string, ResolveResult> resultTable = new Dictionary<string, ResolveResult> ();
  		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
 		{
@@ -709,7 +679,7 @@ namespace MonoDevelop.CSharpBinding
 							ResolveResult initializerResolve = visitor.Resolve (grouBy.Projection);
 							ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
 							DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] { 
-							GetEnumerationMember (initializerResolve.ResolvedType), groupByResolve.ResolvedType}));
+								DomType.GetComponentType (dom, initializerResolve.ResolvedType), groupByResolve.ResolvedType}));
 						varTypeUnresolved = varType = resolved;
 						} finally {
 							resolvePosition = old;
@@ -728,8 +698,8 @@ namespace MonoDevelop.CSharpBinding
 						if (var.Initializer != null) {
 							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
 //							Console.WriteLine ("initializer : "+ var.Initializer + " result:" + initializerResolve);
-							varType           = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.ResolvedType)   : initializerResolve.ResolvedType;
-							varTypeUnresolved = var.IsLoopVariable ? GetEnumerationMember (initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
+							varType           = var.IsLoopVariable ? DomType.GetComponentType (dom, initializerResolve.ResolvedType) : initializerResolve.ResolvedType;
+							varTypeUnresolved = var.IsLoopVariable ? DomType.GetComponentType (dom, initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
 //							Console.WriteLine ("resolved type:" + initializerResolve.ResolvedType + " is loop : " + var.IsLoopVariable);
 //							Console.WriteLine (varType);
 //							Console.WriteLine ("----------");
