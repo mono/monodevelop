@@ -360,7 +360,7 @@ namespace MonoDevelop.SourceEditor
 			
 			public string GetText (int n)
 			{
-				return parent.editor.Ambience.GetString (typeList[n], OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName);
+				return GetString (typeList[n]);
 			}
 			
 			public Gdk.Pixbuf GetIcon (int n)
@@ -375,10 +375,14 @@ namespace MonoDevelop.SourceEditor
 			
 			int System.Collections.Generic.IComparer<IType>.Compare (IType x, IType y)
 			{
-				return String.Compare (x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
+				return String.Compare (GetString (x), GetString (y), StringComparison.OrdinalIgnoreCase);
+			}
+
+			string GetString (IType x)
+			{
+				return parent.editor.Ambience.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName);
 			}
 		}
-		
 		
 		IType UpdateTypeCombo (int line, int column)
 		{
@@ -388,7 +392,7 @@ namespace MonoDevelop.SourceEditor
 			if (c == null) {
 				typeCombo.SetItem ("", null, null);
 			} else {
-				typeCombo.SetItem (editor.Ambience.GetString (c, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters),
+				typeCombo.SetItem (editor.Ambience.GetString (c, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName),
 				                   MonoDevelop.Core.Gui.ImageService.GetPixbuf (c.StockIcon, IconSize.Menu),
 				                   c);
 				

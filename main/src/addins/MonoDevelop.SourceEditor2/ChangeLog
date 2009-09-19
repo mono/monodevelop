@@ -1,3 +1,8 @@
+2009-09-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: fixed inner
+	  type sorting.
+
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: quick class
