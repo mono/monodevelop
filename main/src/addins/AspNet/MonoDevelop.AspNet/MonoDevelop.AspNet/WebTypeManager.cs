@@ -84,7 +84,7 @@ namespace MonoDevelop.AspNet
 								return type;
 					}
 					if (info.IsUserControl && info.NameMatches (tagName)) {
-						IType type = GetUserControlType (project, info.Source, Path.GetDirectoryName (info.ConfigFile));
+						IType type = GetUserControlType (project, info.Source, info.ConfigFile);
 						if (type != null)
 								return type;
 					}
@@ -118,7 +118,7 @@ namespace MonoDevelop.AspNet
 				}
 				else if (info.IsUserControl) {
 					//TODO: resolve docs
-					//IType t = GetUserControlType (project, info.Source, Path.GetDirectoryName (info.ConfigFile));
+					//IType t = GetUserControlType (project, info.Source, info.ConfigFile);
 					//if (t != null)
 					yield return new CompletionData (info.TagPrefix + ":" + info.TagName, Gtk.Stock.GoForward);
 				}
@@ -392,20 +392,18 @@ namespace MonoDevelop.AspNet
 			return null;
 		}
 		
-		public static string GetUserControlTypeName (AspNetAppProject project, string fileName, string relativeToPath)
+		public static string GetUserControlTypeName (AspNetAppProject project, string virtualPath, string relativeToFile)
 		{
-			IType type = GetUserControlType (project, fileName, relativeToPath);
-			if (type != null)
-				return type.FullName;
-			return null;		
+			string absolute = project.VirtualToLocalPath (virtualPath, relativeToFile);
+			var typeName = project.GetCodebehindTypeName (absolute);
+			return typeName ?? "System.Web.UI.UserControl";
 		}
 		
-		public static IType GetUserControlType (AspNetAppProject project, string fileName, string relativeToPath)
+		public static IType GetUserControlType (AspNetAppProject project, string virtualPath, string relativeToFile)
 		{
-			//FIXME: actually look up the type
-			//or maybe it's not necessary, as the compilers can't handle the types because
-			//they're only generated when the UserControl is hit.
-			return AssemblyTypeLookup (GetSystemWebDom (project), "System.Web.UI", "UserControl");
+			string absolute = project.VirtualToLocalPath (virtualPath, relativeToFile);
+			var type = project.GetCodebehindType (absolute);
+			return type ?? AssemblyTypeLookup (GetSystemWebDom (project), "System.Web.UI", "UserControl");
 		}
 		
 		#region Global control registration tracking

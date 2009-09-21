@@ -47,6 +47,7 @@ using MonoDevelop.AspNet.Parser;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.AspNet.Deployment;
 using MonoDevelop.AspNet.Gui;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.AspNet
 {
@@ -67,6 +68,7 @@ namespace MonoDevelop.AspNet
 		protected WebDeployTargetCollection webDeployTargets = new WebDeployTargetCollection ();
 		
 		ProjectRegisteredControls controlRegistrationCache;
+		CodeBehindTypeNameCache codebehindTypeNameCache;
 		
 		#region properties
 		
@@ -158,11 +160,13 @@ namespace MonoDevelop.AspNet
 		
 		public AspNetAppProject ()
 		{
+			Init ();
 		}
 		
 		public AspNetAppProject (string languageName)
 			: base (languageName)
 		{
+			Init ();
 		}
 		
 		public AspNetAppProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
@@ -170,6 +174,7 @@ namespace MonoDevelop.AspNet
 		{
 			foreach (AspNetAppProjectConfiguration conf in Configurations)
 				conf.OutputDirectory = "bin";
+			Init ();
 		}	
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
@@ -180,6 +185,11 @@ namespace MonoDevelop.AspNet
 			if (LanguageBinding != null)
 				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);			
 			return conf;
+		}
+		
+		void Init ()
+		{
+			codebehindTypeNameCache = new CodeBehindTypeNameCache (this);
 		}
 		
 		#endregion
@@ -650,7 +660,46 @@ namespace MonoDevelop.AspNet
 				BuildAction.EmbeddedResource,
 			};
 		}
+		
+		public IType GetCodebehindType (string fileName)
+		{
+			string typeName = GetCodebehindTypeName (fileName);
+			if (typeName != null) {
+				var dom = ProjectDomService.GetProjectDom (this);
+				if (dom != null)
+					return dom.GetType (typeName, true);
+			}
+			return null;
+		}
 
+		public string GetCodebehindTypeName (string fileName)
+		{
+			lock (codebehindTypeNameCache)
+				return codebehindTypeNameCache.GetCodeBehindTypeName (fileName);
+		}
+		
+		class CodeBehindTypeNameCache : FileInfoCache<string> 
+		{
+			AspNetAppProject proj;
+			
+			public CodeBehindTypeNameCache (AspNetAppProject proj)
+			{
+				this.proj = proj;
+			}
+			
+			protected override string GenerateInfo (string fileName)
+			{
+				var cu = ProjectDomService.Parse (proj, fileName, null) as AspNetParsedDocument;
+				if (cu != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
+					return cu.PageInfo.InheritedClass;
+				return null;
+			}
+			
+			public string GetCodeBehindTypeName (string fileName)
+			{
+				return Get (fileName);
+			}
+		}
 	}
 	
 	public enum WebSubtype

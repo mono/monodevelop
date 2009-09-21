@@ -1,3 +1,19 @@
+2009-09-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/CodeBehind.cs:
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Add a cache for
+	  codebehind type names.
+
+	* MonoDevelop.AspNet/ProjectRegisteredControls.cs: Factor out
+	  FileInfoCache from the control registration cache, so we can
+	  use it for a type name cache.
+
+	* MonoDevelop.AspNet/WebTypeManager.cs: Type UserControls with
+	  the type of this CodeBehind, if it can be looked up.
+
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Fix a
+	  couple of small bugs in UserControl type lookups.
+
 2009-09-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Found a better way

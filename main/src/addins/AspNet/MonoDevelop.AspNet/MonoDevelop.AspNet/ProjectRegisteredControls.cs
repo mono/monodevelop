@@ -34,9 +34,8 @@ using System.Xml;
 namespace MonoDevelop.AspNet
 {
 	
-	class ProjectRegisteredControls
+	class ProjectRegisteredControls : FileInfoCache<IList<RegistrationInfo>>
 	{
-		Dictionary<string,WebConfig> cache = new Dictionary<string, WebConfig> ();
 		AspNetAppProject project;
 		
 		public ProjectRegisteredControls (AspNetAppProject project)
@@ -49,14 +48,13 @@ namespace MonoDevelop.AspNet
 			List<RegistrationInfo> infos = new List<RegistrationInfo> ();
 			DirectoryInfo dir = new DirectoryInfo (webDirectory);
 			string projectRootParent = new DirectoryInfo (project.BaseDirectory).Parent.FullName;
-			while (dir != null && dir.FullName.Length > projectRootParent.Length && dir.FullName != projectRootParent)
-			{
+			while (dir != null && dir.FullName.Length > projectRootParent.Length && dir.FullName != projectRootParent) {
 				string configPath = Path.Combine (dir.FullName, "web.config");
 				try {
 					if (!File.Exists (configPath))
 						configPath = Path.Combine (dir.FullName, "Web.config");
 					if (File.Exists (configPath))
-						infos.AddRange (GetInfosForFile (configPath));
+						infos.AddRange (Get (configPath));
 					dir = dir.Parent;
 				} catch (IOException ex) {
 					MonoDevelop.Core.LoggingService.LogError ("Error querying web.config file '" + configPath + "'", ex);
@@ -65,23 +63,10 @@ namespace MonoDevelop.AspNet
 			return infos;
 		}
 		
-		IEnumerable<RegistrationInfo> GetInfosForFile (string filename)
-		{
-			WebConfig cached;
-			DateTime lastWriteUtc = File.GetLastWriteTimeUtc (filename);
-			if (cache.TryGetValue (filename, out cached) && lastWriteUtc <= cached.LastWriteUtc)
-				return cached.Infos;
-			
-			cached = new WebConfig () { LastWriteUtc = lastWriteUtc };
-			cached.Infos = LoadWebConfig (filename);
-			cache[filename] = cached;
-			return cached.Infos;
-		}
-		
-		RegistrationInfo[] LoadWebConfig (string configFile)
+		protected override IList<RegistrationInfo> GenerateInfo (string filename)
 		{
 			List<RegistrationInfo> list = new List<RegistrationInfo> ();
-			using (XmlTextReader reader = new XmlTextReader (configFile))
+			using (XmlTextReader reader = new XmlTextReader (filename))
 			{
 				reader.WhitespaceHandling = WhitespaceHandling.None;
 				reader.MoveToContent();
@@ -92,7 +77,7 @@ namespace MonoDevelop.AspNet
 				    && reader.ReadToDescendant ("add") && reader.NodeType == XmlNodeType.Element) {
 					do {
 						list.Add (new RegistrationInfo (
-							configFile,
+							filename,
 							reader.GetAttribute ("tagPrefix"),
 							reader.GetAttribute ("namespace"),
 							reader.GetAttribute ("assembly"),
@@ -104,13 +89,6 @@ namespace MonoDevelop.AspNet
 				}
 			}
 			return list.ToArray ();	
-		}
-		
-		
-		class WebConfig
-		{
-			public DateTime LastWriteUtc;
-			public RegistrationInfo[] Infos;
 		}
 	}
 	
@@ -161,5 +139,41 @@ namespace MonoDevelop.AspNet
 			                     TagPrefix, Namespace, Assembly, TagName, Source, ConfigFile);
 		}
 
+	}
+	
+	//NOTE: not safe for multithreaded access
+	public abstract class FileInfoCache<T> where T : class
+	{
+		Dictionary<string, CacheEntry<T>> cache = new Dictionary<string, CacheEntry<T>> ();
+		
+		protected T Get (string filename)
+		{
+			CacheEntry<T> cached;
+			DateTime lastWriteUtc = File.GetLastWriteTimeUtc (filename);
+			
+			if (!cache.TryGetValue (filename, out cached) || lastWriteUtc <= cached.LastWriteUtc) {
+				cache[filename] = cached = new CacheEntry<T> {
+					LastWriteUtc = lastWriteUtc,
+					Info = GenerateInfo (filename)
+				};
+			}
+			
+			return cached.Info;
+		}
+		
+		public void Flush ()
+		{
+			foreach (string filename in new List<string> (cache.Keys))
+				if (!File.Exists (filename) || cache[filename].LastWriteUtc < File.GetLastWriteTimeUtc (filename))
+					cache.Remove (filename);
+		}
+		
+		protected abstract T GenerateInfo (string filename);
+		
+		class CacheEntry<T>
+		{
+			public DateTime LastWriteUtc;
+			public T Info;
+		}
 	}
 }

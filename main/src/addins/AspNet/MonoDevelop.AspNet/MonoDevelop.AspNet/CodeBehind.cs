@@ -53,13 +53,7 @@ namespace MonoDevelop.AspNet
 			AspNetAppProject proj = file.Project as AspNetAppProject;
 			if (proj == null)
 				return null;
-			
-			AspNetParsedDocument cu = ProjectDomService.Parse (file.Project, file.FilePath, null) as AspNetParsedDocument;
-			
-			if (cu != null && string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
-				return cu.PageInfo.InheritedClass;
-			else
-				return null;
+			return proj.GetCodebehindTypeName (file.Name);
 		}
 		
 		public static System.CodeDom.CodeCompileUnit GenerateCodeBehind (

@@ -95,7 +95,7 @@ namespace MonoDevelop.AspNet.Parser
 				
 				ControlRegisterDirective crd = directive as ControlRegisterDirective;
 				if (crd != null && crd.TagPrefix == tagPrefix) {
-					string fullName =  WebTypeManager.GetUserControlTypeName (doc.Project, doc.FilePath, crd.Src);
+					string fullName =  WebTypeManager.GetUserControlTypeName (doc.Project, crd.Src, doc.FilePath);
 					if (fullName != null)
 						return fullName;
 				}
@@ -183,8 +183,8 @@ namespace MonoDevelop.AspNet.Parser
 				}
 				
 				ControlRegisterDirective crd = rd as ControlRegisterDirective;
-				if (crd != null && string.Compare (crd.TagName, tagName, StringComparison.OrdinalIgnoreCase) != 0) {
-					return WebTypeManager.GetUserControlType (doc.Project, crd.Src, System.IO.Path.GetDirectoryName (doc.FilePath));
+				if (crd != null && string.Compare (crd.TagName, tagName, StringComparison.OrdinalIgnoreCase) == 0) {
+					return WebTypeManager.GetUserControlType (doc.Project, crd.Src, doc.FilePath);
 				}	
 			}
 			
