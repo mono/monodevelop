@@ -90,14 +90,14 @@ namespace MonoDevelop.AssemblyBrowser
 			DomTypeNodeBuilder.settings.EmitKeywordCallback = delegate (string text) {
 				return MarkupKeyword (text);
 			};
-			DomTypeNodeBuilder.settings.EmitNameCallback = delegate (IDomVisitable domVisitable, ref string outString) {
+			DomTypeNodeBuilder.settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
 				if (domVisitable is IType) {
 					outString = "<span style=\"text.link\"><u><a ref=\"T:" + ((IType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
 				} else {
 					outString = "<span style=\"text\">" + outString + "</span>";
 				}
 			};
-			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (IDomVisitable domVisitable, ref string outString) {
+			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (INode domVisitable, ref string outString) {
 				if (domVisitable is IReturnType) {
 					outString = "<span style=\"text.link\"><u><a ref=\"T:" + ((IReturnType)domVisitable).FullName + "\">" + outString + "</a></u></span>";
 				}
