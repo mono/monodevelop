@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Mono.TextEditor
@@ -178,6 +179,19 @@ namespace Mono.TextEditor
 			} else {
 				OpenFoldRecursive (data);
 			}
+		}
+		
+		/// <summary>
+		/// If one fold is closed call OpenAllFolds, otherwise CloseAllFolds
+		/// </summary>
+		public static void ToggleAllFolds (TextEditorData data)
+		{
+			if (data.Document.FoldSegments.Where (s => s.IsFolded).Any ()) {
+				OpenAllFolds (data);
+			} else {
+				CloseAllFolds (data);
+			}
+			
 		}
 		
 		/// <summary>
