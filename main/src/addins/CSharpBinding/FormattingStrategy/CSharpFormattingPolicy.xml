@@ -441,6 +441,7 @@ class ClassDeclaration {
 	<Category _displayName="New Lines">
 		<Category _displayName="Place on new line">
 			<Option name="PlaceElseOnNewLine" _displayName="'else'" example="simpleIf"/>
+			<Option name="PlaceElseIfOnNewLine" _displayName="'else if'" example="simpleIf"/>
 			<Option name="PlaceCatchOnNewLine" _displayName="'catch'" example="simpleCatch"/>
 			<Option name="PlaceFinallyOnNewLine" _displayName="'finally'" example="simpleCatch"/>
 			<Option name="PlaceWhileOnNewLine" _displayName="'while'" example="simpleDoWhile"/>

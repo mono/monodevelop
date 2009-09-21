@@ -288,6 +288,12 @@ namespace FormattingStrategy
 		}
 		
 		[ItemProperty]
+		public bool PlaceElseIfOnNewLine {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
 		public bool PlaceCatchOnNewLine {
 			get;
 			set;

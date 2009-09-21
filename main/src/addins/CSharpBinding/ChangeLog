@@ -1,5 +1,11 @@
 2009-09-21  Mike Krüger  <mkrueger@novell.com>
 
+	* FormattingStrategy/CSharpFormattingPolicy.cs:
+	* FormattingStrategy/CSharpFormattingPolicy.xml: Fixed 'Bug
+	  540466 - Code formatter "place else on new line" is broken'.
+
+2009-09-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Parser/CodeGenerator.cs:
 	* Parser/CSharpFormatter.cs:
 	* Gui/MemberCompletionData.cs:
