@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.Gui
 			return (GetDeclaredFile(item) != null);
 		}*/
 		
-		public bool CanJumpToDeclaration (MonoDevelop.Projects.Dom.IDomVisitable visitable)
+		public bool CanJumpToDeclaration (MonoDevelop.Projects.Dom.INode visitable)
 		{
 			if (visitable is MonoDevelop.Projects.Dom.IType) 
 				return ((MonoDevelop.Projects.Dom.IType)visitable).CompilationUnit != null;
@@ -225,7 +225,7 @@ namespace MonoDevelop.Ide.Gui
 			return member.DeclaringType.CompilationUnit != null;
 		}
 
-		public void JumpToDeclaration (MonoDevelop.Projects.Dom.IDomVisitable visitable)
+		public void JumpToDeclaration (MonoDevelop.Projects.Dom.INode visitable)
 		{
 			if (visitable is LocalVariable) {
 				LocalVariable var = (LocalVariable)visitable;

@@ -1,3 +1,8 @@
+2009-09-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Renamed
+	  IDomVisitable -> INode
+
 2009-09-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Add Mac shortcuts for cycling
