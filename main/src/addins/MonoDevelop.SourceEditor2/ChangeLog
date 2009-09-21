@@ -1,3 +1,8 @@
+2009-09-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Renamed
+	  IDomVisitable -> INode
+
 2009-09-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: fixed inner

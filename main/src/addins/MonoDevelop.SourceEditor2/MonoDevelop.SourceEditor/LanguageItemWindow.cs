@@ -59,7 +59,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
 			if ((Gdk.ModifierType.ShiftMask & modifierState) == Gdk.ModifierType.ShiftMask) {
-				settings.EmitNameCallback = delegate(IDomVisitable domVisitable, ref string outString) {
+				settings.EmitNameCallback = delegate(INode domVisitable, ref string outString) {
 					// crop used namespaces.
 					if (unit != null) {
 
