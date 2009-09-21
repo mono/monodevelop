@@ -530,7 +530,7 @@ namespace CSharpBinding.Parser
 				if (parser.Errors.Count == 0) {
 					StringBuilder result = new StringBuilder ();
 					using (var inserter = SpecialNodesInserter.Install (specials, outputVisitor)) {
-						foreach (INode node in blockStatement.Children) {
+						foreach (ICSharpCode.NRefactory.Ast.INode node in blockStatement.Children) {
 							node.AcceptVisitor (outputVisitor, null);
 							//							result.AppendLine (outputVisitor.Text);
 						}

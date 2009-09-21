@@ -66,7 +66,7 @@ namespace CSharpBinding.Parser
 			get { return RefactorOperations.All; }
 		}
 		
-		public override ValidationResult ValidateName (IDomVisitable visitable, string name)
+		public override ValidationResult ValidateName (MonoDevelop.Projects.Dom.INode visitable, string name)
 		{
 			if (string.IsNullOrEmpty (name))
 				return ValidationResult.CreateError (GettextCatalog.GetString ("Name must not be empty."));
@@ -664,13 +664,13 @@ namespace CSharpBinding.Parser
 		IEditableTextFile file;
 		RefactorerContext ctx;
 		IType declaringType;
-		IDomVisitable  member;
+		INode  member;
 		NRefactoryResolver resolver;
 		Hashtable unique;
 		string memberName;
 		Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration> ();
 		
-		public MemberRefactoryVisitor (RefactorerContext ctx, NRefactoryResolver resolver, IType declaringType, IDomVisitable member, MemberReferenceCollection references)
+		public MemberRefactoryVisitor (RefactorerContext ctx, NRefactoryResolver resolver, IType declaringType, INode member, MemberReferenceCollection references)
 		{
 			unique = new Hashtable ();
 			

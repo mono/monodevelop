@@ -1019,7 +1019,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			MemberCompletionData AddMemberCompletionData (object member, OutputFlags flags)
 			{
-				MemberCompletionData newData = new MemberCompletionData (member as IDomVisitable, flags);
+				MemberCompletionData newData = new MemberCompletionData (member as INode, flags);
 				newData.HideExtensionParameter = HideExtensionParameter;
 				string memberKey = newData.CompletionText;
 				

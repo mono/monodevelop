@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharpBinding
 		NRefactoryResolver resolver;
 		IEditableTextFile file;
 		
-		IDomVisitable searchedMember;
+		MonoDevelop.Projects.Dom.INode searchedMember;
 		DomLocation   searchedMemberLocation;
 		string        searchedMemberName;
 		string        searchedMemberFile = null;
@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharpBinding
 			get;
 			set;
 		}
-		public FindMemberAstVisitor (NRefactoryResolver resolver, IEditableTextFile file, IDomVisitable searchedMember)
+		public FindMemberAstVisitor (NRefactoryResolver resolver, IEditableTextFile file, MonoDevelop.Projects.Dom.INode searchedMember)
 		{
 			this.file = file;
 			this.resolver = resolver;
@@ -303,7 +303,7 @@ namespace MonoDevelop.CSharpBinding
 				foundReferences.Add (mref);
 		}
 		
-		bool IsSearchedNode (INode node)
+		bool IsSearchedNode (ICSharpCode.NRefactory.Ast.INode node)
 		{
 			if (node == null || node.StartLocation.IsEmpty)
 				return false;
@@ -333,7 +333,7 @@ namespace MonoDevelop.CSharpBinding
 			return false;
 		}
 		
-		void CheckNode (INode node)
+		void CheckNode (ICSharpCode.NRefactory.Ast.INode node)
 		{
 			if (IsSearchedNode (node)) {
 				int line, column;
@@ -408,7 +408,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (searchedMember is LocalVariable) {
 				LocalVariable searchedVariable = (LocalVariable)searchedMember;
-				INode parent = localVariableDeclaration.Parent;
+				ICSharpCode.NRefactory.Ast.INode parent = localVariableDeclaration.Parent;
 				while (parent != null && !(parent is MemberNode) && !(parent is ParametrizedNode)) {
 					parent = parent.Parent;
 				}

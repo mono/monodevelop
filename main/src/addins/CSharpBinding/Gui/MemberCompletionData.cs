@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharpBinding
 			set { completionString = value; }
 		}
 		
-		public IDomVisitable Member {
+		public INode Member {
 			get;
 			set;
 		}
@@ -100,7 +100,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 		}
 		
-		public MemberCompletionData (IDomVisitable member, OutputFlags flags) 
+		public MemberCompletionData (INode member, OutputFlags flags) 
 		{
 			this.Member = member;
 			this.flags = flags;
@@ -148,8 +148,8 @@ namespace MonoDevelop.CSharpBinding
 			
 			public int Compare (ICompletionData x, ICompletionData y)
 			{
-				IDomVisitable mx = ((MemberCompletionData)x).Member;
-				IDomVisitable my = ((MemberCompletionData)y).Member;
+				INode mx = ((MemberCompletionData)x).Member;
+				INode my = ((MemberCompletionData)y).Member;
 				int result;
 				
 				if (mx is IType && my is IType) {
