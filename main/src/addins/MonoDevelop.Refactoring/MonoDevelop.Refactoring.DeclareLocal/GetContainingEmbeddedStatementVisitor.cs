@@ -50,7 +50,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			}
 		}
 		
-		protected override void BeginVisit(INode node) 
+		protected override void BeginVisit(ICSharpCode.NRefactory.Ast.INode node) 
 		{
 			StatementWithEmbeddedStatement embedded = node as StatementWithEmbeddedStatement;
 			if (embedded != null) {

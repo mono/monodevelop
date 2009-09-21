@@ -49,7 +49,7 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
-		public IDomVisitable SelectedItem {
+		public MonoDevelop.Projects.Dom.INode SelectedItem {
 			get;
 			set;
 		}
@@ -98,7 +98,7 @@ namespace MonoDevelop.Refactoring
 			return ProjectDomService.GetParser (Document.FileName, MimeType);
 		}
 		
-		public INode ParseMember (IMember member)
+		public ICSharpCode.NRefactory.Ast.INode ParseMember (IMember member)
 		{
 			if (member == null || member.BodyRegion.IsEmpty)
 				return null;

@@ -95,7 +95,7 @@ namespace MonoDevelop.Refactoring
 			return null;
 		}
 		
-		public static void GetItem (ProjectDom ctx, Document doc, ITextBuffer editor, out ResolveResult resolveResult, out IDomVisitable item)
+		public static void GetItem (ProjectDom ctx, Document doc, ITextBuffer editor, out ResolveResult resolveResult, out INode item)
 		{
 			resolveResult = GetResolveResult (doc, editor);
 			if (resolveResult is AggregatedResolveResult)
@@ -141,7 +141,7 @@ namespace MonoDevelop.Refactoring
 			if (ctx == null)
 				return;
 			ResolveResult resolveResult;
-			IDomVisitable item;
+			INode item;
 			GetItem (ctx, doc, editor, out resolveResult, out item);
 			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			
@@ -327,7 +327,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		bool IsModifiable (IDomVisitable member)
+		bool IsModifiable (INode member)
 		{
 			IType t = member as IType;
 			if (t != null) {
@@ -389,9 +389,9 @@ namespace MonoDevelop.Refactoring
 			return fileName;
 		}
 		
-		CommandInfo BuildRefactoryMenuForItem (ProjectDom ctx, ICompilationUnit pinfo, IType eclass, IDomVisitable item, bool includeModifyCommands)
+		CommandInfo BuildRefactoryMenuForItem (ProjectDom ctx, ICompilationUnit pinfo, IType eclass, INode item, bool includeModifyCommands)
 		{
-			IDomVisitable realItem = item;
+			INode realItem = item;
 			if (item is InstantiatedType)
 				realItem = ((InstantiatedType)item).UninstantiatedType;
 			Document doc = IdeApp.Workbench.ActiveDocument;
@@ -589,11 +589,11 @@ namespace MonoDevelop.Refactoring
 		ISearchProgressMonitor monitor;
 		ICompilationUnit pinfo;
 		ProjectDom ctx;
-		IDomVisitable item;
+		INode item;
 		IType klass;
 		IReturnType hintReturnType;
 		
-		public Refactorer (ProjectDom ctx, ICompilationUnit pinfo, IType klass, IDomVisitable item, IReturnType hintReturnType)
+		public Refactorer (ProjectDom ctx, ICompilationUnit pinfo, IType klass, INode item, IReturnType hintReturnType)
 		{
 			this.pinfo = pinfo;
 			this.klass = klass;

@@ -107,7 +107,7 @@ namespace MonoDevelop.CodeGeneration
 				return member.Name;
 			}
 			
-			protected override IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
 			{
 				List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression> ();
 				foreach (IMember member in includedMembers) {

@@ -49,7 +49,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		}
 		
 		
-		INode GetMemberBodyNode (MonoDevelop.Refactoring.RefactoringOptions options)
+		ICSharpCode.NRefactory.Ast.INode GetMemberBodyNode (MonoDevelop.Refactoring.RefactoringOptions options)
 		{
 			IMember member = ((LocalVariable) options.SelectedItem).DeclaringMember;
 			if (member == null)
@@ -71,7 +71,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				//				Console.WriteLine ("!!! Item is not LocalVariable");
 				return false;
 			}
-			INode result = GetMemberBodyNode (options);
+			ICSharpCode.NRefactory.Ast.INode result = GetMemberBodyNode (options);
 			if (result == null)
 				return false;
 			return true;
@@ -79,7 +79,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
-			INode memberNode = GetMemberBodyNode (options);
+			ICSharpCode.NRefactory.Ast.INode memberNode = GetMemberBodyNode (options);
 			List<Change> changes = new List<Change> ();
 			try {
 				//				Console.WriteLine ("AcceptVisitor");

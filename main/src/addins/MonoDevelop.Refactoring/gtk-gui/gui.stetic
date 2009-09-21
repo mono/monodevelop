@@ -10,8 +10,8 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" internal="true" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.RefactoringPreviewDialog" design-size="400 300">
     <property name="MemberName" />

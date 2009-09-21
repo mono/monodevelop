@@ -61,7 +61,7 @@ namespace MonoDevelop.Refactoring
 			if (ctx == null)
 				return;
 			ResolveResult resolveResult;
-			IDomVisitable item;
+			INode item;
 			CurrentRefactoryOperationsHandler.GetItem (ctx, doc, editor, out resolveResult, out item);
 			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 			string itemName = null;

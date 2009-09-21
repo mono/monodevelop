@@ -87,7 +87,7 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			protected override IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
 			{
 				foreach (var member in includedMembers) {
 					yield return new IfElseStatement (

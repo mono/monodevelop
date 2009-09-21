@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeGeneration
 			return GetValidMembers ().Any ();
 		}
 		
-		protected abstract IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers);
+		protected abstract IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers);
 		
 		public void GenerateCode ()
 		{
@@ -119,7 +119,7 @@ namespace MonoDevelop.CodeGeneration
 				return;
 			StringBuilder output = new StringBuilder ();
 			string indent = RefactoringOptions.GetIndent (options.Document, options.EnclosingMember != null ? options.EnclosingMember : options.EnclosingType) + "\t";
-			foreach (INode node in GenerateCode (includedMembers)) {
+			foreach (ICSharpCode.NRefactory.Ast.INode node in GenerateCode (includedMembers)) {
 				if (output.Length > 0) {
 					output.AppendLine ();
 					if (node is Statement)

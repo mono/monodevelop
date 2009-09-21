@@ -1,5 +1,28 @@
 2009-09-21  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/RefactoringOptions.cs:
+	* MonoDevelop.CodeGeneration/PropertyGenerator.cs:
+	* MonoDevelop.CodeGeneration/ToStringGenerator.cs:
+	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs:
+	* MonoDevelop.CodeGeneration/WriteLineGenerator.cs:
+	* MonoDevelop.Refactoring/FindReferencesHandler.cs:
+	* MonoDevelop.Refactoring/GotoDeclarationHandler.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs:
+	* MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs:
+	* MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs:
+	* MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs:
+	* MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/GetContainingEmbeddedStatementVisitor.cs:
+	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs:
+	  Renamed IDomVisitable -> INode
+
+2009-09-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.csproj: fixed project file.
 
 2009-09-18  Andrés G. Aragoneses  <aaragoneses@novell.com>

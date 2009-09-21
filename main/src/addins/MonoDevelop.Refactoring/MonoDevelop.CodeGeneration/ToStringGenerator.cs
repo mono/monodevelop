@@ -94,7 +94,7 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			protected override IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
 			{
 				StringBuilder format = new StringBuilder ();
 				format.Append ("[");

@@ -182,7 +182,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			public bool OneChangedVariable { get; set; }
 		}
 		
-		INode Analyze (RefactoringOptions options, ExtractMethodParameters param, bool fillParameter)
+		ICSharpCode.NRefactory.Ast.INode Analyze (RefactoringOptions options, ExtractMethodParameters param, bool fillParameter)
 		{
 			IResolver resolver = options.GetResolver ();
 			INRefactoryASTProvider provider = options.GetASTProvider ();
@@ -191,7 +191,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 
 			string text = options.Document.TextEditor.GetText (options.Document.TextEditor.SelectionStartPosition, options.Document.TextEditor.SelectionEndPosition);
 
-			INode result = provider.ParseText (text);
+			ICSharpCode.NRefactory.Ast.INode result = provider.ParseText (text);
 
 			VariableLookupVisitor visitor = new VariableLookupVisitor (resolver, param.Location);
 
@@ -223,7 +223,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				int startOffset = data.Document.LocationToOffset (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
 				int endOffset = data.Document.LocationToOffset (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
 				text = data.Document.GetTextBetween (startOffset, data.SelectionRange.Offset) + data.Document.GetTextBetween (data.SelectionRange.EndOffset, endOffset);
-				INode parsedNode = provider.ParseText (text);
+				ICSharpCode.NRefactory.Ast.INode parsedNode = provider.ParseText (text);
 				visitor = new VariableLookupVisitor (resolver, param.Location);
 				if (parsedNode != null)
 					parsedNode.AcceptVisitor (visitor, null);
@@ -257,7 +257,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			TextEditorData data = options.GetTextEditorData ();
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			IResolver resolver = options.GetResolver ();
-			INode node = Analyze (options, param, false);
+			ICSharpCode.NRefactory.Ast.INode node = Analyze (options, param, false);
 			
 			if (param.VariablesToGenerate.Count > 0) {
 				TextReplaceChange varGen = new TextReplaceChange ();
@@ -291,7 +291,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		//	string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
 			TypeReference returnType = new TypeReference ("System.Void", true);
 
-			INode outputNode;
+			ICSharpCode.NRefactory.Ast.INode outputNode;
 			if (param.OneChangedVariable) {
 				string name = param.ChangedVariables.First ();
 				returnType = options.ShortenTypeName (param.Variables.Find (v => v.Name == name).ReturnType).ConvertToTypeReference ();
@@ -303,7 +303,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					outputNode = new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (name), ICSharpCode.NRefactory.Ast.AssignmentOperatorType.Assign, invocation));
 				}
 			} else {
-				outputNode = node is BlockStatement ? (INode)new ExpressionStatement (invocation) : invocation;
+				outputNode = node is BlockStatement ? (ICSharpCode.NRefactory.Ast.INode)new ExpressionStatement (invocation) : invocation;
 			}
 			TextReplaceChange replacement = new TextReplaceChange ();
 			replacement.Description = string.Format (GettextCatalog.GetString ("Substitute selected statement(s) with call to {0}"), param.Name);

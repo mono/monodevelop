@@ -52,7 +52,7 @@ namespace MonoDevelop.Refactoring
 				return;
 			
 			ResolveResult result;
-			IDomVisitable item;
+			INode item;
 			CurrentRefactoryOperationsHandler.GetItem (dom, doc, editor, out result, out item);
 			
 			RefactoringOptions options = new RefactoringOptions () {

@@ -154,7 +154,7 @@ namespace MonoDevelop.Refactoring.CreateClass
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, parameterName);
 				constructor.Parameters.Add (pde);
 			}
-			INode node = newType;
+			ICSharpCode.NRefactory.Ast.INode node = newType;
 			IType curType = options.Document.CompilationUnit.GetTypeAt (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn);
 			if (curType != null && !string.IsNullOrEmpty (curType.Namespace)) {
 				NamespaceDeclaration namespaceDeclaration = new NamespaceDeclaration (curType.Namespace);

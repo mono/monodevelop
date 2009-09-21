@@ -95,7 +95,7 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			protected override IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
 			{
 				foreach (IMember member in includedMembers) {
 					MethodDeclaration methodDeclaration = new MethodDeclaration ();

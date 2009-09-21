@@ -123,9 +123,9 @@ namespace MonoDevelop.CodeGeneration
 				return FieldDirection.None;
 			}
 			
-			static readonly INode throwNotImplemented = new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null));
+			static readonly ICSharpCode.NRefactory.Ast.INode throwNotImplemented = new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null));
 			
-			protected override IEnumerable<INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
 			{
 				foreach (IMember member in includedMembers) {
 					ICSharpCode.NRefactory.Ast.Modifiers modifier = (((ICSharpCode.NRefactory.Ast.Modifiers)member.Modifiers) & ~(ICSharpCode.NRefactory.Ast.Modifiers.Abstract | ICSharpCode.NRefactory.Ast.Modifiers.Virtual));
