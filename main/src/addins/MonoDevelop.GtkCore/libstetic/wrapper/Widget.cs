@@ -235,6 +235,11 @@ namespace Stetic.Wrapper {
 			}
 		}
 		
+		public string Name {
+			get { return Wrapped.Name; }
+			set { Wrapped.Name = value; EmitNotify ("Name"); }
+		}
+
 		public string MemberName {
 			get { return member != null ? member : ""; }
 			set { member = value; EmitNotify ("MemberName"); }

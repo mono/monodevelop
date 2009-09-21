@@ -1,3 +1,9 @@
+2009-09-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* wrapper/Widget.cs: Fire name change event when name changes.
+	  Fixes bug #540512 - NullReferenceException in stetic
+	  generated code.
+
 2009-09-10  Christian Hergert  <chris@dronelabs.com>
 
 	* libstetic/libstetic.dll.config: Use quartz on osx.
