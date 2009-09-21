@@ -1,5 +1,11 @@
 2009-09-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
+	  540487 - Event handler anon delegate completion puts caret
+	  in wrong place'.
+
+2009-09-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Removed code
 	  duplication/fixed folding commands.
 
