@@ -59,6 +59,11 @@ namespace MonoDevelop.Ide.Gui
 				ShowHelpExternal (topic);
 		}
 		
+		public bool CanShowHelp (string topic)
+		{
+			return topic != null && !PropertyService.IsWindows;
+		}
+		
 		void CheckExternalMonodoc ()
 		{
 			firstCall = false;
@@ -119,6 +124,11 @@ namespace MonoDevelop.Ide.Gui
 				MessageService.ShowException (e);
 				useExternalMonodoc = false;
 			}
+		}
+		
+		public bool CanShowHelp (ResolveResult result)
+		{
+			return CanShowHelp (GetHelpUrl (result));
 		}
 		
 		//note: this method is very careful to check that the generated URLs exist in MonoDoc

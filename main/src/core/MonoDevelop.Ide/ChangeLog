@@ -1,3 +1,9 @@
+2009-09-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/HelpOperations.cs:
+	* MonoDevelop.Ide.Commands/HelpCommands.cs: Don't try to show
+	  help using Monodoc. It is not supported on Windows.
+
 2009-09-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Renamed

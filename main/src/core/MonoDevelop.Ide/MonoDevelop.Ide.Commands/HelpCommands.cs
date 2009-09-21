@@ -53,6 +53,12 @@ namespace MonoDevelop.Ide.Commands
 		{
 			IdeApp.HelpOperations.ShowHelp ("root:");
 		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			if (!IdeApp.HelpOperations.CanShowHelp ("root:"))
+				info.Visible = false;
+		}
 	}
 
 	// MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay
