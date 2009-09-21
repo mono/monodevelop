@@ -67,7 +67,7 @@ namespace Mono.TextEditor
 	//	string currentModeStatus;
 		
 		// Tooltip fields
-		const int TooltipTimer = 800;
+		const int TooltipTimer = 200;
 		object tipItem;
 		bool showTipScheduled;
 		bool hideTipScheduled;

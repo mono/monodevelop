@@ -1,3 +1,9 @@
+2009-09-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Reduce time for showing the
+	  tooltip. Closes bug 531209 - Tooltip-delay when inspecting
+	  variables is too slow.
+
 2009-09-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/FoldActions.cs: Added toggle all folds
