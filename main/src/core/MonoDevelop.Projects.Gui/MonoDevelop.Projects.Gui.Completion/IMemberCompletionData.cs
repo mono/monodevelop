@@ -31,7 +31,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 {
 	public interface IMemberCompletionData : ICompletionData
 	{
-		IDomVisitable Member {
+		INode Member {
 			get;
 			set;
 		}
