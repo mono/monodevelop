@@ -1331,7 +1331,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (statements.Count == 1 && (statements[0] is BlockStatement)) {
 				OutputBlock((BlockStatement)statements[0],
 				            prettyPrintOptions.StatementBraceStyle,
-				            prettyPrintOptions.PlaceElseOnNewLine);
+				            prettyPrintOptions.PlaceElseOnNewLine && prettyPrintOptions.PlaceElseIfOnNewLine);
 				return;
 			}
 			/*			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
@@ -1346,6 +1346,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			foreach (Statement stmt in statements) {
+				
 				TrackVisit(stmt, prettyPrintOptions.StatementBraceStyle);
 			}
 			

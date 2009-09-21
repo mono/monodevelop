@@ -1,3 +1,8 @@
+2009-09-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Fixed 'Bug
+	  540466 - Code formatter "place else on new line" is broken'.
+
 2009-09-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Ast/AbstractNode.cs:
