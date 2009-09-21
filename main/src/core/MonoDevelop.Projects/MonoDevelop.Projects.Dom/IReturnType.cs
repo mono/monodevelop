@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects.Dom
 	/// Elements are defined in the order they would appear on a string:
 	/// {Namespace} {Parts} '?'{nullable} '*'{PointerNestingLevel} '[]'*{ArrayDimensions}, '*'{ArrayPointerNestingLevel} '&'{ByRef}
 	/// </summary>
-	public interface IReturnType : IReturnTypePart, IDomVisitable
+	public interface IReturnType : IReturnTypePart, INode
 	{
 		string FullName {
 			get;

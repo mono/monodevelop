@@ -163,7 +163,7 @@ namespace MonoDevelop.Projects.Dom
 					member.Documentation = doc;
 			}
 				
-			public override IDomVisitable Visit (IType type, object data)
+			public override INode Visit (IType type, object data)
 			{
 				if (type.TypeParameters.Count > 0) {
 					var oldTypes = argTypes;
@@ -180,7 +180,7 @@ namespace MonoDevelop.Projects.Dom
 				return result;
 			}
 			
-			public override IDomVisitable Visit (IReturnType type, object data)
+			public override INode Visit (IReturnType type, object data)
 			{
 				if (argTypes != null) {
 					IType res;

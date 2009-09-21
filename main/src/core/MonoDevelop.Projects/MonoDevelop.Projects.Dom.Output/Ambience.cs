@@ -155,7 +155,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			return GetString (nameSpace, new OutputSettings (flags));
 		}
 		
-		public string GetString (IDomVisitable domVisitable, OutputSettings settings)
+		public string GetString (INode domVisitable, OutputSettings settings)
 		{
 			if (domVisitable == null)
 				return nullString;
@@ -165,7 +165,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			return result;
 		}
 		
-		public string GetString (IDomVisitable domVisitable, OutputFlags flags)
+		public string GetString (INode domVisitable, OutputFlags flags)
 		{
 			return GetString (domVisitable, new OutputSettings (flags));
 		}

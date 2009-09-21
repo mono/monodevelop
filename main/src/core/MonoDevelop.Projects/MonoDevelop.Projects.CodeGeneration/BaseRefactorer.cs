@@ -1102,6 +1102,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 		}
 		public abstract void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName);
 		public abstract DomLocation CompleteStatement (RefactorerContext ctx, string fileName, DomLocation caretLocation);
-		public abstract ValidationResult ValidateName (IDomVisitable visitable, string name);
+		public abstract ValidationResult ValidateName (INode visitable, string name);
 	}
 }

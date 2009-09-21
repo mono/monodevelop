@@ -1,5 +1,5 @@
 // 
-// INameValidator.cs
+// IDomVisitor.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,50 +25,61 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Dom;
-
-namespace MonoDevelop.Projects.CodeGeneration
+namespace MonoDevelop.Projects.Dom
 {
-	public interface INameValidator
+	public interface INode
 	{
-		ValidationResult ValidateName (INode visitable, string name);
+/*		INode Parent { 
+			get; 
+		}
+		
+		INode NextSibling {
+			get;
+		}
+		
+		INode PrevSibling {
+			get;
+		}
+		
+		INode FirstChild {
+			get;
+		}
+		
+		INode LastChild {
+			get;
+		}
+		*/
+		S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
 	}
 	
-	public class ValidationResult 
+	public abstract class AbstractNode : INode
 	{
-		public static ValidationResult Valid = new ValidationResult (true, false, MonoDevelop.Core.GettextCatalog.GetString ("Name is valid"));
-		
-		public static ValidationResult CreateError (string error)
-		{
-			return new ValidationResult (false, true, error);
-		}
-		
-		public static ValidationResult CreateWarning (string warning)
-		{
-			return new ValidationResult (true, true, warning);
-		}
-		
-		public bool IsValid {
+		public INode Parent {
 			get;
 			set;
 		}
 		
-		public bool HasWarning {
+		public INode NextSibling {
 			get;
 			set;
 		}
 		
-		public string Message {
+		public INode PrevSibling {
 			get;
 			set;
 		}
 		
-		protected ValidationResult (bool isValid, bool hasWarning, string message)
-		{
-			this.IsValid    = isValid;
-			this.HasWarning = hasWarning;
-			this.Message    = message;
+		public INode FirstChild {
+			get;
+			set;
 		}
+		
+		public INode LastChild {
+			get;
+			set;
+		}
+		
+		public abstract S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
 	}
 	
 }

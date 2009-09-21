@@ -44,20 +44,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 			this.unit = unit;
 		}
 		
-		public override IDomVisitable Visit (IType type, IType data)
+		public override INode Visit (IType type, IType data)
 		{
 			return base.Visit (type, type);
 		}
 		
-		public override IDomVisitable Visit (IMethod source, IType data)
+		public override INode Visit (IMethod source, IType data)
 		{
 			currentMethod = source;
-			IDomVisitable res = base.Visit (source, data);
+			INode res = base.Visit (source, data);
 			currentMethod = null;
 			return res;
 		}
 		
-		public override IDomVisitable Visit (IReturnType type, IType contextType)
+		public override INode Visit (IReturnType type, IType contextType)
 		{
 			if (type.GenericArguments.Count == 0 && unit != null) { 
 				foreach (IUsing u in unit.Usings) {

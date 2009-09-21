@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			return IncludeMarkup ? PangoFormat (text) : text;
 		}
 
-		public string EmitName (IDomVisitable domVisitable, string text)
+		public string EmitName (INode domVisitable, string text)
 		{
 			if (EmitNameCallback != null) {
 				EmitNameCallback (domVisitable, ref text);
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			return text;
 		}
 		
-		public void PostProcess (IDomVisitable domVisitable, ref string outString)
+		public void PostProcess (INode domVisitable, ref string outString)
 		{
 			if (PostProcessCallback != null)
 				PostProcessCallback (domVisitable, ref outString);
@@ -217,6 +217,6 @@ namespace MonoDevelop.Projects.Dom.Output
 		public delegate string MarkupText (string text);
 		
 		public ProcessString PostProcessCallback;
-		public delegate void ProcessString (IDomVisitable domVisitable, ref string outString);
+		public delegate void ProcessString (INode domVisitable, ref string outString);
 	}
 }

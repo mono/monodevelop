@@ -234,7 +234,7 @@ namespace MonoDevelop.Projects.Dom
 				}
 			}
 			
-			public override IDomVisitable Visit (IMethod source, IMethod data)
+			public override INode Visit (IMethod source, IMethod data)
 			{
 				DomMethod result = CreateInstance (source, data);
 				Visit (source, result, data);
@@ -253,7 +253,7 @@ namespace MonoDevelop.Projects.Dom
 				return result;
 			}
 				
-			public override IDomVisitable Visit (IReturnType type, IMethod typeToInstantiate)
+			public override INode Visit (IReturnType type, IMethod typeToInstantiate)
 			{
 				DomReturnType copyFrom = (DomReturnType) type;
 				IReturnType res;

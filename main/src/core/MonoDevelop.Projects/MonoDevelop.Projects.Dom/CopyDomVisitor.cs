@@ -31,11 +31,11 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class CopyDomVisitor<T>: IDomVisitor<T,IDomVisitable>
+	public class CopyDomVisitor<T>: IDomVisitor<T,INode>
 	{
-		#region  IDomVisitor<object, IDomVisitable> implementation 
+		#region  IDomVisitor<object, INode> implementation 
 		
-		public virtual IDomVisitable Visit (ICompilationUnit unit, T data)
+		public virtual INode Visit (ICompilationUnit unit, T data)
 		{
 			CompilationUnit newUnit = CreateInstance (unit, data);
 			foreach (IUsing u in unit.Usings)
@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Dom
 			return newUnit;
 		}
 		
-		public virtual IDomVisitable Visit (IAttribute attribute, T data)
+		public virtual INode Visit (IAttribute attribute, T data)
 		{
 			DomAttribute newAttr = CreateInstance (attribute, data);
 			newAttr.Name = attribute.Name;
@@ -77,7 +77,7 @@ namespace MonoDevelop.Projects.Dom
 				target.Add ((IAttribute) attr.AcceptVisitor (this, data));
 		}
 		
-		public virtual IDomVisitable Visit (IType type, T data)
+		public virtual INode Visit (IType type, T data)
 		{
 			DomType result = CreateInstance (type, data);
 			Visit (type, result, data);
@@ -107,14 +107,14 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		public virtual IDomVisitable Visit (IField field, T data)
+		public virtual INode Visit (IField field, T data)
 		{
 			DomField result = CreateInstance (field, data);
 			Visit (field, result, data);
 			return result;
 		}
 		
-		public virtual IDomVisitable Visit (IMethod source, T data)
+		public virtual INode Visit (IMethod source, T data)
 		{
 			DomMethod result = CreateInstance (source, data);
 			Visit (source, result, data);
@@ -129,7 +129,7 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		public virtual IDomVisitable Visit (IProperty source, T data)
+		public virtual INode Visit (IProperty source, T data)
 		{
 			DomProperty result = CreateInstance (source, data);
 			Visit (source, result, data);
@@ -141,7 +141,7 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		public virtual IDomVisitable Visit (IEvent source, T data)
+		public virtual INode Visit (IEvent source, T data)
 		{
 			DomEvent result = CreateInstance (source, data);
 			Visit (source, result, data);
@@ -163,7 +163,7 @@ namespace MonoDevelop.Projects.Dom
 			return newPart;
 		}
 		
-		public virtual IDomVisitable Visit (IReturnType type, T data)
+		public virtual INode Visit (IReturnType type, T data)
 		{
 			List<IReturnTypePart> parts = new List<IReturnTypePart> (type.Parts.Count);
 			
@@ -178,7 +178,7 @@ namespace MonoDevelop.Projects.Dom
 			return rt;
 		}
 		
-		public virtual IDomVisitable Visit (IParameter source, T data)
+		public virtual INode Visit (IParameter source, T data)
 		{
 			DomParameter result = new DomParameter ();
 			result.Name               = source.Name;
@@ -189,7 +189,7 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		public virtual IDomVisitable Visit (IUsing u, T data)
+		public virtual INode Visit (IUsing u, T data)
 		{
 			DomUsing result = new DomUsing ();
 			result.Region = u.Region;
@@ -201,14 +201,14 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		public virtual IDomVisitable Visit (Namespace namesp, T data)
+		public virtual INode Visit (Namespace namesp, T data)
 		{
 			Namespace ns = new Namespace (namesp.Name);
 			Visit (namesp, ns, data);
 			return ns;
 		}
 		
-		public virtual IDomVisitable Visit (LocalVariable var, T data)
+		public virtual INode Visit (LocalVariable var, T data)
 		{
 			return new LocalVariable (var.DeclaringMember, var.Name, (IReturnType)var.ReturnType.AcceptVisitor (this, data), var.Region);
 		}

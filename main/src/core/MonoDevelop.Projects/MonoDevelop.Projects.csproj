@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Projects</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Projects</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -329,6 +330,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteProjectBuilder.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildImportProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\IBaseMember.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom\INode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
@@ -341,8 +343,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.Projects.addin.xml" />
-    <EmbeddedResource Include="md1format.xml" />
+    <EmbeddedResource Include="MonoDevelop.Projects.addin.xml">
+      <LogicalName>MonoDevelop.Projects.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="md1format.xml">
+      <LogicalName>md1format.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

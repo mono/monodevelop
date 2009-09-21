@@ -319,7 +319,7 @@ namespace MonoDevelop.Projects.Dom
 			this.member = member;
 		}
 
-		#region IDomVisitable implementation 
+		#region INode implementation 
 		
 		public virtual S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{

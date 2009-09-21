@@ -111,6 +111,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/IField.cs \
 	MonoDevelop.Projects.Dom/IMember.cs \
 	MonoDevelop.Projects.Dom/IMethod.cs \
+	MonoDevelop.Projects.Dom/INode.cs \
 	MonoDevelop.Projects.Dom/InstantiatedMethod.cs \
 	MonoDevelop.Projects.Dom/InstantiatedParameterType.cs \
 	MonoDevelop.Projects.Dom/InstantiatedType.cs \

@@ -30,10 +30,7 @@ using System;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IDomVisitable
-	{
-		S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
-	}
+	
 	
 	public interface IDomVisitor<T, S>
 	{

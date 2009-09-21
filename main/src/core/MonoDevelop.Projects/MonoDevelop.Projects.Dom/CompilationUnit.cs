@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		
 		
-		S IDomVisitable.AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		S INode.AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
 		}
@@ -200,7 +200,7 @@ namespace MonoDevelop.Projects.Dom
 				"System.String"
 			});
 			
-			public override IDomVisitable Visit (IReturnType type, object data)
+			public override INode Visit (IReturnType type, object data)
 			{
 				IReturnType returnType = (IReturnType)base.Visit (type, data);
 				if (builtInTypes.Contains (returnType.FullName))

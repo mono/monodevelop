@@ -33,7 +33,7 @@ using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IUsing : IDomVisitable
+	public interface IUsing : INode
 	{
 		DomRegion Region {
 			get;

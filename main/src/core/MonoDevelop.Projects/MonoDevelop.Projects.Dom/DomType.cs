@@ -709,7 +709,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 			
 			IType currentType = null;
-			public override IDomVisitable Visit (IType type, IType data)
+			public override INode Visit (IType type, IType data)
 			{
 				if (currentType != null)
 					return null;
@@ -732,7 +732,7 @@ namespace MonoDevelop.Projects.Dom
 				return null;
 			}
 			
-			public override IDomVisitable Visit (IReturnType type, IType typeToInstantiate)
+			public override INode Visit (IReturnType type, IType typeToInstantiate)
 			{
 				DomReturnType copyFrom = (DomReturnType) type; 
 				string decoratedName = copyFrom.DecoratedFullName;

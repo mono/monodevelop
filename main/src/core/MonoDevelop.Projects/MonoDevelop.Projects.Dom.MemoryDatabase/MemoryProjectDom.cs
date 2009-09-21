@@ -57,7 +57,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 				typeTable.Add (name, type);
 			}
 			
-			public override IDomVisitable Visit (IReturnType type, IType typeToInstantiate)
+			public override INode Visit (IReturnType type, IType typeToInstantiate)
 			{
 				DomReturnType copyFrom = (DomReturnType) type;
 				
