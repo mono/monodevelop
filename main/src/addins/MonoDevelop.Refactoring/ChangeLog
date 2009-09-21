@@ -1,3 +1,7 @@
+2009-09-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.csproj: fixed project file.
+
 2009-09-18  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* Makefile.am:
