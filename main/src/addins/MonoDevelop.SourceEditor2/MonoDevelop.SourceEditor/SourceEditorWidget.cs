@@ -1161,7 +1161,7 @@ namespace MonoDevelop.SourceEditor
 		internal void MonodocResolverUpdate (CommandInfo cinfo)
 		{
 			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
-			if (res == null)
+			if (res == null || !IdeApp.HelpOperations.CanShowHelp (res))
 				cinfo.Bypass = true;
 		}
 		
