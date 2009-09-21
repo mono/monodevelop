@@ -515,10 +515,15 @@ namespace MonoDevelop.AspNet
 				foreach (XmlNode node in existingAdds)
 					assembliesNode.RemoveChild (node);
 				
-				using (StringWriter writer = new StringWriter ()) {
-					doc.Save (writer);
-					textFile.Text = writer.ToString ();
-				}
+				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+				XmlWriterSettings settings = new XmlWriterSettings ();
+				settings.OmitXmlDeclaration = true;
+				settings.Indent = true;
+				XmlWriter tw = XmlTextWriter.Create (sb, settings);
+				doc.Save (tw);
+				tw.Flush ();
+				textFile.Text = sb.ToString ();
+				
 				MonoDevelop.Projects.Text.TextFile tf = textFile as MonoDevelop.Projects.Text.TextFile;
 				if (tf != null)
 					tf.Save ();
