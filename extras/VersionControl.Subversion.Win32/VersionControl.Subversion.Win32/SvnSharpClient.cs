@@ -191,9 +191,13 @@ namespace SubversionAddinWindows
 		public override void Mkdir (string[] paths, string message, IProgressMonitor monitor)
 		{
 			SvnCreateDirectoryArgs args = new SvnCreateDirectoryArgs ();
+			args.CreateParents = true;
 			BindMonitor (args, monitor);
+			List<Uri> uris = new List<Uri> ();
+			foreach (string path in paths)
+				uris.Add (new Uri (path));
 			args.LogMessage = message;
-			client.CreateDirectories (paths, args);
+			client.RemoteCreateDirectories (uris, args);
 		}
 
 		public override void Move (FilePath srcPath, FilePath destPath, SvnRevision rev, bool force, IProgressMonitor monitor)
