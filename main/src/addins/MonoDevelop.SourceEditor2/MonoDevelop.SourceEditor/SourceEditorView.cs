@@ -1075,27 +1075,9 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region IFoldable
-		void ToggleFoldings (IEnumerable<FoldSegment> segments)
-		{
-			bool doFold = true;
-			foreach (FoldSegment segment in segments) {
-				if (segment.IsFolded) {
-					doFold = false;
-					break;
-				}
-			}
-			foreach (FoldSegment segment in segments) {
-				segment.IsFolded = doFold;
-			}
-			widget.TextEditor.Caret.MoveCaretBeforeFoldings ();
-			Document.RequestUpdate (new UpdateAll ());
-			Document.CommitDocumentUpdate ();
-			widget.TextEditor.GetTextEditorData ().RaiseUpdateAdjustmentsRequested ();
-		}
-		
 		public void ToggleAllFoldings ()
 		{
-			ToggleFoldings (Document.FoldSegments);
+			FoldActions.ToggleFoldRecursive (TextEditor.GetTextEditorData ());
 		}
 		
 		public void FoldDefinitions ()
@@ -1114,8 +1096,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void ToggleFolding ()
 		{
-			int lineNumber = TextEditor.LogicalToVisualLocation (TextEditor.Caret.Location).Line;
-			ToggleFoldings (Document.GetStartFoldings (Document.GetLine (lineNumber)));
+			FoldActions.ToggleFold (TextEditor.GetTextEditorData ());
 		}
 		#endregion
 		

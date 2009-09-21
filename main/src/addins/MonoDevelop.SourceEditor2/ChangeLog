@@ -1,5 +1,10 @@
 2009-09-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Removed code
+	  duplication/fixed folding commands.
+
+2009-09-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Renamed
 	  IDomVisitable -> INode
 
