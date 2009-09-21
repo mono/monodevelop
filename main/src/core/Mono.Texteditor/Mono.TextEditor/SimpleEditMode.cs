@@ -294,6 +294,7 @@ namespace Mono.TextEditor
 			
 			action = CaretMoveActions.LineHome;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, META_MASK), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.a, Gdk.ModifierType.ControlMask), action); //emacs
 			
 			action = SelectionActions.MoveLineHome;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, META_MASK | Gdk.ModifierType.ShiftMask), action);
@@ -310,6 +311,7 @@ namespace Mono.TextEditor
 			
 			action = CaretMoveActions.LineEnd;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Right, META_MASK), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.e, Gdk.ModifierType.ControlMask), action); //emacs
 			
 			action = SelectionActions.MoveLineEnd;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Right, META_MASK | Gdk.ModifierType.ShiftMask), action);
@@ -326,12 +328,14 @@ namespace Mono.TextEditor
 			
 			action = ClipboardActions.Cut;
 			keyBindings.Add (GetKeyCode (Gdk.Key.x, META_MASK), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.w, Gdk.ModifierType.ControlMask), action); //emacs
 			
 			action = ClipboardActions.Copy;
 			keyBindings.Add (GetKeyCode (Gdk.Key.c, META_MASK), action);
 			
 			action = ClipboardActions.Paste;
 			keyBindings.Add (GetKeyCode (Gdk.Key.v, META_MASK), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.y, Gdk.ModifierType.ControlMask), action); //emacs
 			
 			// ==== Page up/down ====
 			
@@ -367,6 +371,14 @@ namespace Mono.TextEditor
 			action = SelectionActions.MoveUp;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Up, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.ShiftMask), action);
+			
+			// extra emacs stuff
+			keyBindings.Add (GetKeyCode (Gdk.Key.f, Gdk.ModifierType.ControlMask), CaretMoveActions.Right);
+			keyBindings.Add (GetKeyCode (Gdk.Key.b, Gdk.ModifierType.ControlMask), CaretMoveActions.Left);
+			keyBindings.Add (GetKeyCode (Gdk.Key.p, Gdk.ModifierType.ControlMask), CaretMoveActions.Up);
+			keyBindings.Add (GetKeyCode (Gdk.Key.n, Gdk.ModifierType.ControlMask), CaretMoveActions.Down);
+			keyBindings.Add (GetKeyCode (Gdk.Key.h, Gdk.ModifierType.ControlMask), DeleteActions.Backspace);
+			keyBindings.Add (GetKeyCode (Gdk.Key.d, Gdk.ModifierType.ControlMask), DeleteActions.Delete);
 		}
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)

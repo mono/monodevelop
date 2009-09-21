@@ -1,3 +1,8 @@
+2009-09-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/SimpleEditMode.cs: Add some emacs shortcuts
+	  to the Mac for miguel.
+
 2009-09-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Reduce time for showing the
