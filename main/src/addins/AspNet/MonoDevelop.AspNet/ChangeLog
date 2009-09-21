@@ -1,5 +1,10 @@
 2009-09-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Found a better way
+	  of removing the encoding declaration from the header.
+
+2009-09-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Omit the xml
 	  declaration when saving the .config file, because it is
 	  declaring the utf-16 encoding, which wrong when saving the
