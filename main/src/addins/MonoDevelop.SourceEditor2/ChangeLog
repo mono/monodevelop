@@ -1,3 +1,9 @@
+2009-09-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
+	  537761 - Keystrokes not working on texteditor like "CTRL +
+	  X|Y to trigger Foo action...'.
+
 2009-09-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Check that

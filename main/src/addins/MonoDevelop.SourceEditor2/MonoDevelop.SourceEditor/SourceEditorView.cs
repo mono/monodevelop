@@ -1077,7 +1077,7 @@ namespace MonoDevelop.SourceEditor
 		#region IFoldable
 		public void ToggleAllFoldings ()
 		{
-			FoldActions.ToggleFoldRecursive (TextEditor.GetTextEditorData ());
+			FoldActions.ToggleAllFolds (TextEditor.GetTextEditorData ());
 		}
 		
 		public void FoldDefinitions ()
