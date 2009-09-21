@@ -107,21 +107,17 @@ namespace MonoDevelop.AspNet.Gui
 			}
 
 			//non-xml tag completion
-			if (currentChar == '<' && !(Tracker.Engine.CurrentState is S.XmlFreeState) ) {
+			if (currentChar == '<' && !(Tracker.Engine.CurrentState is S.XmlFreeState)) {
 				CompletionDataList list = new CompletionDataList ();
 				AddAspBeginExpressions (list, AspDocument);
 				return list;
 			}
 
 			//simple completion for ASP.NET expressions
-			if (Tracker.Engine.CurrentState is AspNetExpressionState
-			/*    && ((previousChar == ' ' && char.IsLetter (currentChar))
-			        || (currentChar == ' ' && forced))*/)
-			{
-				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion completion = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument);
-				ICompletionDataList result = completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
-				completion.Dispose ();
-				return result;
+			if (Tracker.Engine.CurrentState is AspNetExpressionState) {
+				using (var completion = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument)) {
+					return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
+				}
 /*				AspNetExpression expr = Tracker.Engine.Nodes.Peek () as AspNetExpression;
 				CompletionDataList list = HandleExpressionCompletion (expr);
 				if (list != null && !forced)
@@ -144,10 +140,9 @@ namespace MonoDevelop.AspNet.Gui
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (Tracker.Engine.CurrentState is AspNetExpressionState) {
-				MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion completion = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument);
-				IParameterDataProvider pdp = completion.HandleParameterCompletion (completionContext, completionChar);
-				completion.Dispose ();
-				return pdp;
+				using (var completion = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument)) {
+					return completion.HandleParameterCompletion (completionContext, completionChar);
+				}
 			}
 			return base.HandleParameterCompletion (completionContext, completionChar);
 		}
@@ -334,8 +329,7 @@ namespace MonoDevelop.AspNet.Gui
 				}
 				
 			}  else if (attributedOb is AspNetDirective) {
-				//FIXME: use correct ClrVersion
-				DirectiveCompletion.GetAttributes (list, attributedOb.Name.FullName, ClrVersion.Net_2_0, existingAtts);
+				DirectiveCompletion.GetAttributes (list, attributedOb.Name.FullName, ProjClrVersion, existingAtts);
 			}
 		}
 		
@@ -351,8 +345,14 @@ namespace MonoDevelop.AspNet.Gui
 					AddAspAttributeValueCompletionData (list, AspCU, ob.Name, att.Name, id);
 				}
 			} else if (ob is AspNetDirective) {
-				//FIXME: use correct ClrVersion
-				DirectiveCompletion.GetAttributeValues (list, ob.Name.FullName, att.Name.FullName, ClrVersion.Net_2_0);
+				DirectiveCompletion.GetAttributeValues (list, ob.Name.FullName, att.Name.FullName, ProjClrVersion);
+			}
+		}
+		
+		ClrVersion ProjClrVersion {
+			get {
+				var proj = this.Document.Project as AspNetAppProject;
+				return proj != null? proj.TargetFramework.ClrVersion : ClrVersion.Net_2_0;
 			}
 		}
 		
@@ -447,15 +447,13 @@ namespace MonoDevelop.AspNet.Gui
 		    IType controlClass, Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not already in the tag
-			foreach (IProperty prop 
-			    in GetUniqueMembers<IProperty> (GetAllProperties (database, controlClass)))
+			foreach (IProperty prop in GetUniqueMembers<IProperty> (GetAllProperties (database, controlClass)))
 				if (prop.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
 					if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
 						list.Add (prop.Name, prop.StockIcon, prop.Documentation);
 			
 			//similarly add events
-			foreach (IEvent eve 
-			    in GetUniqueMembers<IEvent> (GetAllEvents (database, controlClass))) {
+			foreach (IEvent eve in GetUniqueMembers<IEvent> (GetAllEvents (database, controlClass))) {
 				string eveName = "On" + eve.Name;
 				if (eve.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
 					list.Add (eveName, eve.StockIcon, eve.Documentation);
