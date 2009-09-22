@@ -417,8 +417,12 @@ namespace Mono.Debugging.Evaluation
 					return exp;
 
 				ValueReference member = GetMember (ctx, GetValueType (ctx, obj), obj, mem);
-				object val = member.Value;
-				sb.Append (ctx.Evaluator.TargetObjectToString (ctx, val));
+				if (member != null) {
+					object val = member.Value;
+					sb.Append (ctx.Evaluator.TargetObjectToString (ctx, val));
+				} else {
+					sb.Append ("{Unknown member '" + mem + "'}");
+				}
 				last = j + 1;
 				i = exp.IndexOf ("{", last);
 			}
