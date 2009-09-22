@@ -49,7 +49,10 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 	{
 		public override string AccelKey {
 			get {
-				return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.DeclareLocal, null).AccelKey.Replace ("dead_circumflex", "^");
+				var cmdInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.DeclareLocal, null);
+				if (cmdInfo != null && cmdInfo.AccelKey != null)
+					return cmdInfo.AccelKey.Replace ("dead_circumflex", "^");
+				return null;
 			}
 		}
 		

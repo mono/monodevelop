@@ -1,3 +1,8 @@
+2009-09-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Don't NRE when command is not key-bound.
+
 2009-09-21  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:
