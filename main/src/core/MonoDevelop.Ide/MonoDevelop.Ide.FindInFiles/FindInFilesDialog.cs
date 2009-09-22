@@ -122,8 +122,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			scopeStore.AppendValues (GettextCatalog.GetString ("Directories"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Current document"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Selection"));
+			
 			comboboxScope.Model = scopeStore;
-
+		
 			comboboxScope.Changed += HandleScopeChanged;
 
 			InitFromProperties ();
@@ -427,7 +428,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			case ScopeWholeSolution:
 				return new WholeSolutionScope ();
 			case ScopeCurrentProject:
-				return new WholeProjectScope (IdeApp.ProjectOperations.CurrentSelectedProject);
+				MonoDevelop.Projects.Project currentSelectedProject = IdeApp.ProjectOperations.CurrentSelectedProject;
+				if (currentSelectedProject != null)
+					return new WholeProjectScope (currentSelectedProject);
+				return new WholeSolutionScope ();
 			case ScopeAllOpenFiles:
 				return new AllOpenFilesScope ();
 			case ScopeDirectories:

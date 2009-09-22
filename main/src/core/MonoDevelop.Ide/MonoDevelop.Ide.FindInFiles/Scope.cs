@@ -135,6 +135,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public WholeProjectScope (Project project)
 		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			
 			this.project = project;
 		}
 		

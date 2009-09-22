@@ -1,3 +1,10 @@
+2009-09-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/Scope.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Fixed 'Bug
+	  540891 - NRE when launching Find In Files search (whole
+	  solution)'.
+
 2009-09-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/HelpOperations.cs:
