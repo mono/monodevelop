@@ -82,10 +82,38 @@ namespace DebuggerServer
 
 		#region IDebugger Members
 		
-		public string InitializeMdb (string mdbVersion)
+		public string InitializeMdb (string mdbVersion, int mdPid)
 		{
 			mdbAdaptor = MdbAdaptorFactory.CreateAdaptor (mdbVersion);
+			WatchParentProcess (mdPid);
 			return mdbAdaptor.MdbVersion;
+		}
+	
+		void WatchParentProcess (int pid)
+		{
+			ST.Thread t = new ST.Thread (delegate () {
+				while (true) {
+					Console.WriteLine ("pp checking:" + pid);
+					try {
+						System.Diagnostics.Process.GetProcessById (pid);
+					} catch {
+						Console.WriteLine ("pp process is dead?:");
+						ForceShutdown ();
+					}
+					ST.Thread.Sleep (1000);
+				}
+			});
+			t.IsBackground = true;
+			t.Start ();
+		}
+		
+		void ForceShutdown ()
+		{
+			try {
+				Exit ();
+			} catch {
+			}
+			Environment.Exit (1);
 		}
 
 		public void Run (MonoDebuggerStartInfo startInfo)

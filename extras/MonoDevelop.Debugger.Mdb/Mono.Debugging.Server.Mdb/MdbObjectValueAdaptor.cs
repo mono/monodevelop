@@ -344,7 +344,7 @@ namespace DebuggerServer
 					TargetFieldInfo field = (TargetFieldInfo)mem.Member;
 					yield return new FieldReference (ctx, co, mem.DeclaringType, field);
 				}
-				if (mem.Member is TargetPropertyInfo && !gctx.AllowTargetInvoke) {
+				if (mem.Member is TargetPropertyInfo && gctx.AllowTargetInvoke) {
 					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Member;
 					if (prop.CanRead && (prop.Getter.ParameterTypes == null || prop.Getter.ParameterTypes.Length == 0))
 						yield return new PropertyReference (ctx, prop, co);

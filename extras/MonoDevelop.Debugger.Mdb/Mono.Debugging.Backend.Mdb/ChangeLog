@@ -1,3 +1,9 @@
+2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* IDebuggerServer.cs:
+	* MonoDebuggerSession.cs: Watch the parent process, and stop
+	  the server if the parent dies.
+
 2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* IDebuggerServer.cs:

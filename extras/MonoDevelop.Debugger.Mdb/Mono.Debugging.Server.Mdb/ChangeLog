@@ -1,3 +1,11 @@
+2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DebuggerServer.cs: Watch the parent process, and stop the
+	  server if the parent dies.
+
+	* MdbObjectValueAdaptor.cs: Fix incorrect check for
+	  AllowTargetInvoke.
+
 2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DebuggerServer.cs: Properly parse quoted arguments. Fixes

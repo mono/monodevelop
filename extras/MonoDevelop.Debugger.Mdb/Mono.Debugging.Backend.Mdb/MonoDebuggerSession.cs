@@ -66,7 +66,7 @@ namespace Mono.Debugging.Backend.Mdb
 			// Cache detected mdb versions, so version detection is done only once
 			string mdbVersion;
 			detectedMdbVersions.TryGetValue (prefix, out mdbVersion);
-			mdbVersion = controller.DebuggerServer.InitializeMdb (mdbVersion);
+			mdbVersion = controller.DebuggerServer.InitializeMdb (mdbVersion, Process.GetCurrentProcess ().Id);
 			detectedMdbVersions [prefix] = mdbVersion;
 		}
 
