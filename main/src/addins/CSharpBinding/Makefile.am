@@ -56,6 +56,15 @@ FILES =  \
 	Gui/NRefactoryResolver.cs \
 	Gui/NRefactoryTemplateParameterDataProvider.cs \
 	Gui/ResolveVisitor.cs \
+	MonoDevelop.CSharp.Dom/Attribute.cs \
+	MonoDevelop.CSharp.Dom/AttributeSection.cs \
+	MonoDevelop.CSharp.Dom/DelegateDeclaration.cs \
+	MonoDevelop.CSharp.Dom/Identifier.cs \
+	MonoDevelop.CSharp.Dom/NamespaceDeclaration.cs \
+	MonoDevelop.CSharp.Dom/QualifiedIdentifier.cs \
+	MonoDevelop.CSharp.Dom/TypeDeclaration.cs \
+	MonoDevelop.CSharp.Dom/UsingAliasDeclaration.cs \
+	MonoDevelop.CSharp.Dom/UsingDeclaration.cs \
 	Parser/CodeGenerator.cs \
 	Parser/CSharpFormatter.cs \
 	Parser/CSharpNRefactoryASTProvider.cs \

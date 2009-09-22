@@ -1,3 +1,19 @@
+2009-09-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Dom:
+	* MonoDevelop.CSharp.Dom/Attribute.cs:
+	* MonoDevelop.CSharp.Dom/Identifier.cs:
+	* MonoDevelop.CSharp.Dom/TypeDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/AttributeSection.cs:
+	* MonoDevelop.CSharp.Dom/UsingDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/DelegateDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/QualifiedIdentifier.cs:
+	* MonoDevelop.CSharp.Dom/NamespaceDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/UsingAliasDeclaration.cs: Worked on
+	  c# dom.
+
 2009-09-21  Mike Krüger  <mkrueger@novell.com>
 
 	* FormattingStrategy/CSharpFormattingPolicy.cs:

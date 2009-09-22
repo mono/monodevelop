@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.CSharpBinding</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>CSharpBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -136,7 +137,9 @@
     <EmbeddedResource Include="icons\C#.FileIcon">
       <LogicalName>C#.FileIcon</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="CSharpBinding.addin.xml" />
+    <EmbeddedResource Include="CSharpBinding.addin.xml">
+      <LogicalName>CSharpBinding.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
@@ -149,14 +152,18 @@
     <EmbeddedResource Include="templates\AssemblyInfo.xft.xml">
       <LogicalName>AssemblyInfo.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="md1format.xml" />
+    <EmbeddedResource Include="md1format.xml">
+      <LogicalName>md1format.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\csharp-project-16.png">
       <LogicalName>csharp-project-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="FormattingStrategy\CSharpFormattingPolicy.xml">
       <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoCSharpPolicy.xml" />
+    <EmbeddedResource Include="MonoCSharpPolicy.xml">
+      <LogicalName>MonoCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gui\FormattingPanel.cs" />
@@ -198,6 +205,15 @@
     <Compile Include="FormattingStrategy\CSharpFormattingPolicyPanel.cs" />
     <Compile Include="Parser\CSharpNRefactoryASTProvider.cs" />
     <Compile Include="Gui\NRefactoryIndexerParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\NamespaceDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Identifier.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\UsingDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\QualifiedIdentifier.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\UsingAliasDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\AttributeSection.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Attribute.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\DelegateDeclaration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -219,4 +235,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.CSharp.Dom\" />
+  </ItemGroup>
 </Project>
