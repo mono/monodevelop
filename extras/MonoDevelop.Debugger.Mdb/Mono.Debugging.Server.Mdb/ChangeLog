@@ -1,5 +1,10 @@
 2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MdbObjectValueAdaptor.cs: Add support for examining nested
+	  types.
+
+2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* DebuggerServer.cs: Remove debug code.
 
 2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>

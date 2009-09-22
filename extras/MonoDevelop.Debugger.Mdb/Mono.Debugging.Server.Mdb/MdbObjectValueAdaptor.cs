@@ -267,6 +267,45 @@ namespace DebuggerServer
 			}
 		}
 
+		public override IEnumerable<object> GetNestedTypes (EvaluationContext gctx, object type)
+		{
+			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
+			string[] tname = GetTypeName (ctx, type).Split ('+');
+			object td = FindType (ctx, tname[0]);
+			if (td != null) {
+				td = FindNestedType (td, tname, 1);
+				IEnumerable nestedTypes = (IEnumerable) GetProp (td, "NestedTypes");
+				foreach (object nt in nestedTypes) {
+					string name = (string) GetProp (nt, "FullName");
+					object tt = GetType (ctx, name);
+					if (tt != null)
+						yield return tt;
+				}
+			}
+		}
+		
+		object FindNestedType (object td, string[] names, int index)
+		{
+			if (index == names.Length)
+				return td;
+			IEnumerable nestedTypes = (IEnumerable) GetProp (td, "NestedTypes");
+			foreach (object nt in nestedTypes) {
+				string name = (string) GetProp (nt, "Name");
+				if (name == names [index])
+					return FindNestedType (nt, names, index + 1);
+			}
+			return null;
+		}
+		
+		object FindType (MdbEvaluationContext ctx, string typeName)
+		{
+			foreach (object typeDefinition in GetAllTypeDefinitions (ctx, true)) {
+				string fullName = (string) GetProp (typeDefinition, "FullName");
+				if (fullName == typeName)
+					return typeDefinition;
+			}
+			return null;
+		}
 
 		public override void GetNamespaceContents (EvaluationContext gctx, string namspace, out string[] childNamespaces, out string[] childTypes)
 		{
@@ -276,6 +315,25 @@ namespace DebuggerServer
 			
 			List<string> types = new List<string> ();
 			HashSet<string> namespaces = new HashSet<string> ();
+			string namspaceDotted = namspace + ".";
+			foreach (object typeDefinition in GetAllTypeDefinitions (ctx, false)) {
+				string typeNamespace = (string) GetProp (typeDefinition, "Namespace");
+				if (typeNamespace == namspace)
+					types.Add ((string) GetProp (typeDefinition, "FullName"));
+				else if (typeNamespace.StartsWith (namspaceDotted)) {
+					int i = typeNamespace.IndexOf ('.', namspaceDotted.Length);
+					if (i != -1)
+						typeNamespace = typeNamespace.Substring (0, i);
+					namespaces.Add (typeNamespace);
+				}
+			}
+			childTypes = types.ToArray ();
+			childNamespaces = new string [namespaces.Count];
+			namespaces.CopyTo (childNamespaces);
+		}
+		
+		public IEnumerable<object> GetAllTypeDefinitions (MdbEvaluationContext ctx, bool includePrivate)
+		{
 			HashSet<object> visited = new HashSet<object> ();
 			object methodHandle = ctx.Frame.Method.MethodHandle;
 
@@ -284,44 +342,34 @@ namespace DebuggerServer
 				object module = GetProp (declaringType, "Module");
 				object assembly = GetProp (module, "Assembly");
 				object resolver = GetProp (assembly, "Resolver");
-				FindTypes (namspace, resolver, visited, types, namespaces, assembly);
+				
+				foreach (object typeDefinition in GetAllTypeDefinitions (includePrivate, resolver, visited, assembly))
+					yield return typeDefinition;
 			}
-			
-			childTypes = types.ToArray ();
-			childNamespaces = new string [namespaces.Count];
-			namespaces.CopyTo (childNamespaces);
 		}
 		
-		public void FindTypes (string namspace, object resolver, HashSet<object> visited, List<string> types, HashSet<string> namespaces, object asm)
+		public IEnumerable<object> GetAllTypeDefinitions (bool includePrivate, object resolver, HashSet<object> visited, object asm)
 		{
 			if (!visited.Add (asm))
-				return;
+				yield break;
 
-			string namspaceDotted = namspace + ".";
 			object mainModule = GetProp (asm, "MainModule");
 			foreach (object typeDefinition in (IEnumerable) GetProp (mainModule, "Types")) {
-				bool isPublic = (bool) GetProp (typeDefinition, "IsPublic");
+				bool isPublic = includePrivate || (bool) GetProp (typeDefinition, "IsPublic");
 				bool isInterface = (bool) GetProp (typeDefinition, "IsInterface");
 				bool isEnum = (bool) GetProp (typeDefinition, "IsEnum");
-				string typeNamespace = (string) GetProp (typeDefinition, "Namespace");
-				if (isPublic && !isInterface && !isEnum) {
-					if (typeNamespace == namspace)
-						types.Add ((string) GetProp (typeDefinition, "FullName"));
-					else if (typeNamespace.StartsWith (namspaceDotted)) {
-						int i = typeNamespace.IndexOf ('.', namspaceDotted.Length);
-						if (i != -1)
-							typeNamespace = typeNamespace.Substring (0, i);
-						namespaces.Add (typeNamespace);
-					}
-				}
+				if (isPublic && !isInterface && !isEnum)
+					yield return typeDefinition;
 			}
 
 			Type assemblyNameReferenceType = resolver.GetType ().Assembly.GetType ("Mono.Cecil.AssemblyNameReference");
 			MethodInfo resolveMet = resolver.GetType ().GetMethod ("Resolve", new Type[] { assemblyNameReferenceType });
 			foreach (object an in (IEnumerable) GetProp (mainModule, "AssemblyReferences")) {
 				object refAsm = resolveMet.Invoke (resolver, new object[] {an});
-				if (refAsm != null)
-					FindTypes (namspace, resolver, visited, types, namespaces, refAsm);
+				if (refAsm != null) {
+					foreach (object td in GetAllTypeDefinitions (includePrivate, resolver, visited, refAsm))
+						yield return td;
+				}
 			}
 		}
 
