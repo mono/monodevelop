@@ -41,10 +41,17 @@ namespace Mono.Debugging.Evaluation
 			: base (ctx)
 		{
 			this.type = type;
-			name = ctx.Adapter.GetTypeName (ctx, type);
-			int i = name.LastIndexOf ('.');
+			name = GetTypeName (ctx.Adapter.GetTypeName (ctx, type));
+		}
+		
+		internal static string GetTypeName (string tname)
+		{
+			tname = tname.Replace ('+','.');
+			int i = tname.LastIndexOf ('.');
 			if (i != -1)
-				this.name = name.Substring (i + 1);
+				return tname.Substring (i + 1);
+			else
+				return tname;
 		}
 		
 		public override object Value {
@@ -94,6 +101,11 @@ namespace Mono.Debugging.Evaluation
 				if (val.Name == name)
 					return val;
 			}
+			foreach (object t in Context.Adapter.GetNestedTypes (Context, type)) {
+				string tn = Context.Adapter.GetTypeName (Context, t);
+				if (GetTypeName (tn) == name)
+					return new TypeValueReference (Context, t);
+			}
 			return null;
 		}
 
@@ -103,6 +115,8 @@ namespace Mono.Debugging.Evaluation
 				List<ObjectValue> list = new List<ObjectValue> ();
 				foreach (ValueReference val in Context.Adapter.GetMembers (Context, type, null, BindingFlags.Public | BindingFlags.Static))
 					list.Add (val.CreateObjectValue ());
+				foreach (object t in Context.Adapter.GetNestedTypes (Context, type))
+					list.Add (new TypeValueReference (Context, t).CreateObjectValue ());
 				list.Add (FilteredMembersSource.CreateNode (Context, type, null, BindingFlags.NonPublic | BindingFlags.Static));
 				return list.ToArray ();
 			} catch (Exception ex) {
@@ -115,7 +129,12 @@ namespace Mono.Debugging.Evaluation
 		public override IEnumerable<ValueReference> GetChildReferences ( )
 		{
 			try {
-				return Context.Adapter.GetMembers (Context, type, null, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+				List<ValueReference> list = new List<ValueReference> ();
+				foreach (ValueReference v in Context.Adapter.GetMembers (Context, type, null, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+					list.Add (v);
+				foreach (object t in Context.Adapter.GetNestedTypes (Context, type))
+					list.Add (new TypeValueReference (Context, t));
+				return list;
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				Context.WriteDebuggerOutput (ex.Message);

@@ -327,6 +327,11 @@ namespace Mono.Debugging.Evaluation
 
 		public abstract IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags);
 
+		public virtual IEnumerable<object> GetNestedTypes (EvaluationContext ctx, object type)
+		{
+			yield break;
+		}
+		
 		public abstract object TargetObjectToObject (EvaluationContext ctx, object obj);
 
 		public virtual object Cast (EvaluationContext ctx, object obj, object targetType)

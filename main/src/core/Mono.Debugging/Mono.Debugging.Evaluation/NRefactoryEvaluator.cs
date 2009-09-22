@@ -293,6 +293,14 @@ namespace Mono.Debugging.Evaluation
 			object vtype = ctx.Adapter.GetType (ctx, name);
 			if (vtype != null)
 				return new TypeValueReference (ctx, vtype);
+			
+			// Look in nested types
+			
+			vtype = ctx.Adapter.GetEnclosingType (ctx);
+			foreach (object ntype in ctx.Adapter.GetNestedTypes (ctx, vtype)) {
+				if (TypeValueReference.GetTypeName (ctx.Adapter.GetTypeName (ctx, ntype)) == name)
+					return new TypeValueReference (ctx, ntype);
+			}
 
 			string[] namespaces = ctx.Adapter.GetImportedNamespaces (ctx);
 			if (namespaces.Length > 0) {
