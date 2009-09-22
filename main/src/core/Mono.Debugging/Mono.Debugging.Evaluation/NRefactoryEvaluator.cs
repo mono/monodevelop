@@ -298,6 +298,11 @@ namespace Mono.Debugging.Evaluation
 			if (namespaces.Length > 0) {
 				// Look in namespaces
 				foreach (string ns in namespaces) {
+					vtype = ctx.Adapter.GetType (ctx, ns + "." + name);
+					if (vtype != null)
+						return new TypeValueReference (ctx, vtype);
+				}
+				foreach (string ns in namespaces) {
 					if (ns == name || ns.StartsWith (name + "."))
 						return new NamespaceValueReference (ctx, name);
 				}

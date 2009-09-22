@@ -1,3 +1,8 @@
+2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Try to
+	  resolve type names using the imported namespaces.
+
 2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/BreakEvent.cs:
