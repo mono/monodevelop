@@ -37,6 +37,7 @@ namespace Mono.Debugging.Client
 	public delegate void TargetEventHandler (object sender, TargetEventArgs args);
 	public delegate void ProcessEventHandler(int process_id);
 	public delegate void ThreadEventHandler(int thread_id);
+	public delegate bool ExceptionHandler (Exception ex);
 	
 	public abstract class DebuggerSession: IDisposable
 	{
@@ -53,6 +54,7 @@ namespace Mono.Debugging.Client
 		object olock = new object ();
 		ThreadInfo activeThread;
 		BreakEventHitHandler customBreakpointHitHandler;
+		ExceptionHandler exceptionHandler;
 		
 		ProcessInfo[] currentProcesses;
 		
@@ -84,6 +86,11 @@ namespace Mono.Debugging.Client
 					Breakpoints = null;
 				}
 			}
+		}
+		
+		public ExceptionHandler ExceptionHandler {
+			get { return exceptionHandler; }
+			set { exceptionHandler = value; }
 		}
 
 		public BreakpointStore Breakpoints {
@@ -140,9 +147,10 @@ namespace Mono.Debugging.Client
 				OnRunning ();
 				try {
 					OnRun (startInfo);
-				} catch {
+				} catch (Exception ex) {
 					ForceStop ();
-					throw;
+					if (!HandleException (ex))
+						throw;
 				}
 			}
 		}
@@ -154,9 +162,10 @@ namespace Mono.Debugging.Client
 				try {
 					OnAttachToProcess (proc.Id);
 					attached = true;
-				} catch {
+				} catch (Exception ex) {
 					ForceStop ();
-					throw;
+					if (!HandleException (ex))
+						throw;
 				}
 			}
 		}
@@ -164,7 +173,12 @@ namespace Mono.Debugging.Client
 		public void Detach ()
 		{
 			lock (slock) {
-				OnDetach ();
+				try {
+					OnDetach ();
+				} catch (Exception ex) {
+					if (!HandleException (ex))
+						throw;
+				}
 			}
 		}
 		
@@ -184,8 +198,13 @@ namespace Mono.Debugging.Client
 			}
 			set {
 				lock (slock) {
-					activeThread = value;
-					OnSetActiveThread (activeThread.ProcessId, activeThread.Id);
+					try {
+						activeThread = value;
+						OnSetActiveThread (activeThread.ProcessId, activeThread.Id);
+					} catch (Exception ex) {
+						if (!HandleException (ex))
+							throw;
+					}
 				}
 			}
 		}
@@ -196,9 +215,10 @@ namespace Mono.Debugging.Client
 				OnRunning ();
 				try {
 					OnNextLine ();
-				} catch {
+				} catch (Exception ex) {
 					ForceStop ();
-					throw;
+					if (!HandleException (ex))
+						throw;
 				}
 			}
 		}
@@ -209,9 +229,10 @@ namespace Mono.Debugging.Client
 				OnRunning ();
 				try {
 					OnStepLine ();
-				} catch {
+				} catch (Exception ex) {
 					ForceStop ();
-					throw;
+					if (!HandleException (ex))
+						throw;
 				}
 			}
 		}
@@ -222,9 +243,10 @@ namespace Mono.Debugging.Client
 				OnRunning ();
 				try {
 					OnNextInstruction ();
-				} catch {
+				} catch (Exception ex) {
 					ForceStop ();
-					throw;
+					if (!HandleException (ex))
+						throw;
 				}
 			}
 		}
@@ -235,9 +257,10 @@ namespace Mono.Debugging.Client
 				OnRunning ();
 				try {
 					OnStepInstruction ();
-				} catch {
+				} catch (Exception ex) {
 					ForceStop ();
-					throw;
+					if (!HandleException (ex))
+						throw;
 				}
 			}
 		}
@@ -248,9 +271,10 @@ namespace Mono.Debugging.Client
 				OnRunning ();
 				try {
 					OnFinish ();
-				} catch {
+				} catch (Exception ex) {
 					ForceStop ();
-					throw;
+					if (!HandleException (ex))
+						throw;
 				}
 			}
 		}
@@ -278,6 +302,8 @@ namespace Mono.Debugging.Client
 					OnDebuggerOutput (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + "' (" + ex.Message + ")\n");
 				else
 					OnDebuggerOutput (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
+				HandleException (ex);
+				return;
 			}
 
 			lock (breakpoints) {
@@ -295,9 +321,10 @@ namespace Mono.Debugging.Client
 						if (handle != null)
 							OnRemoveBreakEvent (handle);
 						breakpoints.Remove (be);
-					} catch (DebuggerException ex) {
+					} catch (Exception ex) {
 						if (started)
 							OnDebuggerOutput (false, ex.Message);
+						HandleException (ex);
 						return false;
 					}
 				}
@@ -312,9 +339,10 @@ namespace Mono.Debugging.Client
 				if (GetBreakpointHandle (be, out handle) && handle != null) {
 					try {
 						OnEnableBreakEvent (handle, be.Enabled);
-					} catch (DebuggerException ex) {
+					} catch (Exception ex) {
 						if (started)
 							OnDebuggerOutput (false, ex.Message);
+						HandleException (ex);
 					}
 				}
 			}
@@ -347,6 +375,7 @@ namespace Mono.Debugging.Client
 								OnDebuggerOutput (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
 							else
 								OnDebuggerOutput (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
+							HandleException (ex);
 						}
 					}
 				}
@@ -403,9 +432,10 @@ namespace Mono.Debugging.Client
 				OnRunning ();
 				try {
 					OnContinue ();
-				} catch {
+				} catch (Exception ex) {
 					ForceStop ();
-					throw;
+					if (!HandleException (ex))
+						throw;
 				}
 			}
 		}
@@ -413,14 +443,24 @@ namespace Mono.Debugging.Client
 		public void Stop ()
 		{
 			lock (slock) {
-				OnStop ();
+				try {
+					OnStop ();
+				} catch (Exception ex) {
+					if (!HandleException (ex))
+						throw;
+				}
 			}
 		}
 
 		public void Exit ()
 		{
 			lock (slock) {
-				OnExit ();
+				try {
+					OnExit ();
+				} catch (Exception ex) {
+					if (!HandleException (ex))
+						throw;
+				}
 			}
 		}
 
@@ -638,6 +678,14 @@ namespace Mono.Debugging.Client
 					return e.Key;
 			}
 			return null;
+		}
+		
+		protected virtual bool HandleException (Exception ex)
+		{
+			if (exceptionHandler != null)
+				return exceptionHandler (ex);
+			else
+				return false;
 		}
 		
 		internal protected bool OnCustomBreakpointAction (string actionId, object handle)

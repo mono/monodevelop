@@ -1,5 +1,10 @@
 2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Client/DebuggerSession.cs: Improve error
+	  handling. Exceptions can now be intercept using a delegate.
+
+2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Try to
 	  resolve type names using the imported namespaces.
 
