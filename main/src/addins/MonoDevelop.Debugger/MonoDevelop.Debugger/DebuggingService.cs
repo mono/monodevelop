@@ -281,6 +281,13 @@ namespace MonoDevelop.Debugger
 			session.LogWriter = delegate (bool iserr, string text) {
 				console.Log.Write (text);
 			};
+			session.ExceptionHandler = delegate (Exception ex) {
+				if (ex is DebuggerException)
+					MessageService.ShowError (ex.Message);
+				else
+					MessageService.ShowException (ex);
+				return true;
+			};
 
 			console.CancelRequested += new EventHandler (OnCancelRequested);
 			NotifyLocationChanged ();

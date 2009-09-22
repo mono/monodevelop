@@ -310,6 +310,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 		}
 	}
@@ -328,7 +329,8 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null;
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+					!DebuggingService.Breakpoints.IsReadOnly;
 		}
 	}
 	
@@ -349,7 +351,8 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+			        !DebuggingService.Breakpoints.IsReadOnly) {
 				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    	IdeApp.	Workbench.ActiveDocument.FileName,
 			    	IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine).Count > 0;
@@ -369,6 +372,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 		}
 	}
@@ -404,7 +408,8 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+			        !DebuggingService.Breakpoints.IsReadOnly) {
 				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    	IdeApp.	Workbench.ActiveDocument.FileName,
 			    	IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine).Count > 0;
@@ -428,7 +433,8 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+			        !DebuggingService.Breakpoints.IsReadOnly) {
 				info.Enabled = true;
 			}
 			else
@@ -453,7 +459,8 @@ namespace MonoDevelop.Debugger
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+			        !DebuggingService.Breakpoints.IsReadOnly) {
 				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    	IdeApp.	Workbench.ActiveDocument.FileName,
 			    	IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine).Count > 0;

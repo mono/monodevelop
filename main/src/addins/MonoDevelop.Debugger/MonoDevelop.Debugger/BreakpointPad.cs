@@ -178,6 +178,10 @@ namespace MonoDevelop.Debugger
 			DebuggingService.Breakpoints.Changed += OnBpChanged;
 			DebuggingService.Breakpoints.BreakpointUpdated += breakpointUpdatedHandler;
 			
+			DebuggingService.PausedEvent += OnDebuggerStatusCheck;
+			DebuggingService.ResumedEvent += OnDebuggerStatusCheck;
+			DebuggingService.StoppedEvent += OnDebuggerStatusCheck;
+			
 			tree.RowActivated += OnRowActivated;
 			tree.KeyPressEvent += OnKeyPressed;
 		}
@@ -188,6 +192,10 @@ namespace MonoDevelop.Debugger
 			DebuggingService.Breakpoints.BreakpointRemoved -= OnBpRemoved;
 			DebuggingService.Breakpoints.Changed -= OnBpChanged;
 			DebuggingService.Breakpoints.BreakpointUpdated -= breakpointUpdatedHandler;
+			
+			DebuggingService.PausedEvent -= OnDebuggerStatusCheck;
+			DebuggingService.ResumedEvent -= OnDebuggerStatusCheck;
+			DebuggingService.StoppedEvent -= OnDebuggerStatusCheck;
 		}
 		
 		private void OnPopupMenu (object o, PopupMenuArgs args)
@@ -320,6 +328,12 @@ namespace MonoDevelop.Debugger
 			UpdateDisplay ();	
 		}
 		
+		void OnDebuggerStatusCheck (object s, EventArgs a)
+		{
+			if (control != null)
+				control.Sensitive = !DebuggingService.Breakpoints.IsReadOnly;
+		}
+		
 		
 		void OnRowActivated (object o, Gtk.RowActivatedArgs args)
 		{
@@ -349,7 +363,6 @@ namespace MonoDevelop.Debugger
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
 		{
 			if (e.Event.Key != Gdk.Key.Delete){
-				e.RetVal = true;
 				return;
 			}
 			OnDeleted();

@@ -1,3 +1,15 @@
+2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Report debugger
+	  exceptions in a dialog.
+
+	* MonoDevelop.Debugger/BreakpointPad.cs: Disable the
+	  breakpoints pad if the breakpoint store is read-only while
+	  running.
+
+	* MonoDevelop.Debugger/DebugCommands.cs: Disable breakpoint
+	  commands when the breakpoint store is read-only.
+
 2009-09-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger\DebuggingService.cs: Fire the stopped
