@@ -1,5 +1,11 @@
 2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MdbObjectValueAdaptor.cs: Add support for
+	  DebuggerTypeProxyAttribute, DebuggerBrowsable and
+	  DebuggerDisplayAttribute.
+
+2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MdbObjectValueAdaptor.cs: Add support for examining nested
 	  types.
 

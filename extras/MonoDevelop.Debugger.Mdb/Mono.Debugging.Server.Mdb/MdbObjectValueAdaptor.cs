@@ -30,6 +30,7 @@ using System.Collections;
 using ST = System.Threading;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Mono.Debugging.Evaluation;
 using Mono.Debugger.Languages;
 using Mono.Debugger;
@@ -178,8 +179,30 @@ namespace DebuggerServer
 				return CallStaticMethod (ctx, methodName, (TargetType) targetType, lst);
 		}
 
-		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext ctx, object type)
+		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext gctx, object type)
 		{
+			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
+			TargetType tt = (TargetType) type;
+			if (tt.HasClassType) {
+				TypeDisplayData data = new TypeDisplayData ();
+				if (tt.ClassType.DebuggerTypeProxyAttribute != null) {
+					data.ProxyType = tt.ClassType.DebuggerTypeProxyAttribute.ProxyTypeName;
+					data.IsProxyType = true;
+				}
+				if (tt.ClassType.DebuggerDisplayAttribute != null) {
+					data.NameDisplayString = tt.ClassType.DebuggerDisplayAttribute.Name;
+					data.TypeDisplayString = tt.ClassType.DebuggerDisplayAttribute.Type;
+					data.ValueDisplayString = tt.ClassType.DebuggerDisplayAttribute.Value;
+				}
+				foreach (MemberReference mem in ObjectUtil.GetTypeMembers (ctx, tt, true, true, true, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)) {
+					if (mem.Member.DebuggerBrowsableState.HasValue) {
+						if (data.MemberData == null)
+							data.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
+						data.MemberData [mem.Member.Name] = mem.Member.DebuggerBrowsableState.Value;
+					}
+				}
+				return data;
+			}
 			return base.OnGetTypeDisplayData (ctx, type);
 		}
 
