@@ -93,11 +93,9 @@ namespace DebuggerServer
 		{
 			ST.Thread t = new ST.Thread (delegate () {
 				while (true) {
-					Console.WriteLine ("pp checking:" + pid);
 					try {
 						System.Diagnostics.Process.GetProcessById (pid);
 					} catch {
-						Console.WriteLine ("pp process is dead?:");
 						ForceShutdown ();
 					}
 					ST.Thread.Sleep (1000);

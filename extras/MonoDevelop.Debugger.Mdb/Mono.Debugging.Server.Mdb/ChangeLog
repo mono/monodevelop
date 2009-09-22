@@ -1,5 +1,9 @@
 2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* DebuggerServer.cs: Remove debug code.
+
+2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* DebuggerServer.cs: Watch the parent process, and stop the
 	  server if the parent dies.
 
