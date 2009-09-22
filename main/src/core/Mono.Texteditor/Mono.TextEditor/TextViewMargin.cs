@@ -1400,7 +1400,12 @@ namespace Mono.TextEditor
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, line.Offset, line.EditableLength);
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
-				textBuilder.Append (chunk.GetText (Document));
+				try { 
+					textBuilder.Append (chunk.GetText (Document));
+				} catch (Exception e) {
+					Console.WriteLine (e);
+					return 0;
+				}
 			}
 			layout.Tabs = tabArray;
 
