@@ -88,6 +88,13 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_step.SetRangeIL (value ? 1 : 0);
         }
 
+		public void SetJMC (bool enable)
+		{
+			ICorDebugStepper2 stepper2 = m_step as ICorDebugStepper2;
+			if (stepper2 != null)
+				stepper2.SetJMC (enable ? 1 : 0);
+		}
+
         private ICorDebugStepper m_step;
     } /* class Stepper */
 } /* namespace */

@@ -199,6 +199,9 @@ namespace MonoDevelop.Debugger.Win32
 			}
 			OnStopped ();
 			e.Continue = false;
+			// If a breakpoint is hit while stepping, cancel the stepping operation
+			if (stepper.IsActive ())
+				stepper.Deactivate ();
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
 			args.Process = GetPocess (process);
@@ -264,7 +267,14 @@ namespace MonoDevelop.Debugger.Win32
 					catch (Exception ex) {
 						OnDebuggerOutput (true, string.Format ("Debugger Error: {0}\n", ex.Message));
 					}
+					e.Module.SetJmcStatus (true, null);
 				}
+				else {
+					// Flag modules without debug info as not JMC. In this way
+					// the debugger won't try to step into them
+					e.Module.SetJmcStatus (false, null);
+				}
+
 				ModuleInfo moi = new ModuleInfo ();
 				moi.Module = e.Module;
 				moi.Reader = reader;
@@ -351,8 +361,11 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnFinish ( )
 		{
-			if (stepper != null)
+			if (stepper != null) {
 				stepper.StepOut ();
+				ClearEvalStatus ();
+				process.Continue (false);
+			}
 		}
 
 		protected override ProcessInfo[] OnGetPocesses ( )
@@ -447,14 +460,28 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnNextLine ( )
 		{
+			Step (false);
+		}
+
+		void Step (bool into)
+		{
 			if (stepper != null) {
+				stepper.IsActive ();
 				CorFrame frame = activeThread.ActiveFrame;
 				ISymbolReader reader = GetReaderForModule (frame.Function.Module.Name);
-				if (reader == null)
+				if (reader == null) {
+					stepper.Step (into);
+					ClearEvalStatus ();
+					process.Continue (false);
 					return;
+				}
 				ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
-				if (met == null)
+				if (met == null) {
+					stepper.Step (into);
+					ClearEvalStatus ();
+					process.Continue (false);
 					return;
+				}
 
 				uint offset;
 				CorDebugMappingResult mappingResult;
@@ -481,10 +508,7 @@ namespace MonoDevelop.Debugger.Win32
 					lastSeq = sp;
 				}
 
-				if (ranges.Count == 0)
-					stepper.StepOut ();
-				else
-					stepper.StepRange (false, ranges.ToArray ());
+				stepper.StepRange (into, ranges.ToArray ());
 
 				ClearEvalStatus ();
 				process.Continue (false);
@@ -515,8 +539,9 @@ namespace MonoDevelop.Debugger.Win32
 		void SetActiveThread (CorThread t)
 		{
 			activeThread = t;
-			stepper = activeThread.CreateStepper ();
+			stepper = activeThread.CreateStepper (); 
 			stepper.SetUnmappedStopMask (CorDebugUnmappedStop.STOP_NONE);
+			stepper.SetJMC (true);
 		}
 
 		protected override void OnStepInstruction ( )
@@ -525,11 +550,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnStepLine ( )
 		{
-			if (stepper != null) {
-				stepper.Step (true);
-				ClearEvalStatus ();
-				process.Continue (false);
-			}
+			Step (true);
 		}
 
 		protected override void OnStop ( )
