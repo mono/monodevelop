@@ -15,6 +15,7 @@ REFS =  \
 	-r:../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
+	-r:../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	-r:../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	-r:../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
 	-r:../../build/bin/Mono.TextEditor.dll \
@@ -47,6 +48,8 @@ FILES =  \
 	Mono.TextEditor.Tests/SelectionTests.cs \
 	Mono.TextEditor.Tests/SyntaxHighlightingTests.cs \
 	Mono.TextEditor.Tests/UndoRedoTests.cs \
+	MonoDevelop.AspNet/AspNetCompletionTests.cs \
+	MonoDevelop.AspNet/AspNetTesting.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs \
@@ -96,7 +99,7 @@ test: all
 	if test -n "$(fixture)"; then \
 		fp="-fixture=$(fixture)"; \
 	fi; \
-	$(MD_LAUNCH_SETUP) MONO_PATH=$(top_builddir)/build/AddIns/MonoDevelop.Refactoring:$(top_builddir)/build/AddIns/BackendBindings:$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor:$(top_builddir)/build/AddIns/MonoDevelop.AspNet mono --debug $(NUNIT_CONSOLE) -noshadow $(top_builddir)/build/bin/UnitTests.dll $$fp
+	$(MD_LAUNCH_SETUP) MONO_PATH=$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport:$(top_builddir)/build/AddIns/MonoDevelop.Refactoring:$(top_builddir)/build/AddIns/BackendBindings:$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor:$(top_builddir)/build/AddIns/MonoDevelop.AspNet mono --debug $(NUNIT_CONSOLE) -noshadow $(top_builddir)/build/bin/UnitTests.dll $$fp
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)
