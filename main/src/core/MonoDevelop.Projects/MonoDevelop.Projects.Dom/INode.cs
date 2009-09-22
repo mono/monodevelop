@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 namespace MonoDevelop.Projects.Dom
 {
 	public interface INode
@@ -54,7 +55,39 @@ namespace MonoDevelop.Projects.Dom
 	
 	public abstract class AbstractNode : INode
 	{
+		// some pre defined constants for common roles
+		public const int Identifier    = 1;
+		public const int KeywordRole   = 2;
+		public const int ArgumentRole  = 3;
+		public const int AttributeRole = 4;
+		public const int ReturnTypeRole = 4;
+		
+		// some pre defined constants for most used punctuation 
+		
+		public const int LPar  = 50; // (
+		public const int RPar  = 51; // )
+		
+		public const int LBrace  = 52; // {
+		public const int RBrace  = 53; // }
+		
+		public const int LBracket = 54; // [
+		public const int RBracket= 55; // ]
+		
+		public const int LChevron = 56; // <
+		public const int RChevron= 57; // >
+		
+		public const int Dot = 58; // ,
+		public const int Comma = 59; // ,
+		public const int Colon = 60; // :
+		public const int Semicolon = 61; // ;
+		public const int QuestionMark = 62; // ?
+		
 		public INode Parent {
+			get;
+			set;
+		}
+		
+		public int Role {
 			get;
 			set;
 		}
@@ -79,7 +112,32 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
-		public abstract S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
+		protected INode GetChildByRole (int role)
+		{
+			AbstractNode cur = (AbstractNode)FirstChild;
+			while (cur != null) {
+				if (cur.Role == role)
+					return cur;
+				cur = (AbstractNode)cur.NextSibling;
+			}
+			return null;
+		}
+		
+		protected IEnumerable<INode> GetChildrenByRole (int role)
+		{
+			AbstractNode cur = (AbstractNode)FirstChild;
+			while (cur != null) {
+				if (cur.Role == role)
+					yield return cur;
+				cur = (AbstractNode)cur.NextSibling;
+			}
+		}
+		
+		public virtual S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		{
+			return default(S);
+		}
+		
 	}
 	
 }
