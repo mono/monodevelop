@@ -140,7 +140,7 @@ namespace MonoDevelop.Projects.Dom.Output
 				} else {
 					result = member.Documentation;
 				}
-				return result;
+				return !IsEmptyDocumentation (member.Documentation) ? result : null;
 			}
 			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
 			if (node != null) {
@@ -164,7 +164,13 @@ namespace MonoDevelop.Projects.Dom.Output
 				}
 				return sb.ToString ();
 			}
-			return member.Documentation;
+			
+			return !IsEmptyDocumentation (member.Documentation) ? member.Documentation : null;
+		}
+
+		static bool IsEmptyDocumentation (string documentation)
+		{
+			return string.IsNullOrEmpty (documentation) || documentation.StartsWith ("To be added") || documentation == "we have not entered docs yet";
 		}
 		
 		public static string GetDocumentation (IMember member)
@@ -172,10 +178,12 @@ namespace MonoDevelop.Projects.Dom.Output
 			if (member == null)
 				return null;
 			if (!string.IsNullOrEmpty (member.Documentation))
-				return member.Documentation;
+				return !IsEmptyDocumentation (member.Documentation) ? member.Documentation : null;
 			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
-			if (node != null)
-				return (node.InnerXml ?? "").Trim ();
+			if (node != null) {
+				string result = (node.InnerXml ?? "").Trim ();
+				return !IsEmptyDocumentation (result) ? result : null;
+			}
 			return null;
 		}
 		
@@ -359,7 +367,7 @@ namespace MonoDevelop.Projects.Dom.Output
 				return doc;
 			}
 //			ret.Append ("</small>");
-			return ret.ToString ();
+			return !IsEmptyDocumentation (ret.ToString ()) ? ret.ToString () : null;
 		}
 		
 		#endregion
