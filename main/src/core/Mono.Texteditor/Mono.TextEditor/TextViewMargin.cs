@@ -667,7 +667,13 @@ namespace Mono.TextEditor
 			}
 			layoutDict.Clear ();
 		}
-
+		
+		public void PurgeLayoutCache ()
+		{
+			DisposeLayoutDict ();
+			chunkDict.Clear ();
+		}
+		
 		class ChunkDescriptor : LineDescriptor
 		{
 			public Chunk Chunk {
