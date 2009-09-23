@@ -1,3 +1,9 @@
+2009-09-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs: Disable
+	  edit/remove buttons when there is not a selected template.
+	  Fixes some NREs.
+
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs:

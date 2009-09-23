@@ -89,6 +89,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.buttonEdit.Clicked += ButtonEditClicked;
 			this.buttonRemove.Clicked += ButtonRemoveClicked;
 			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
+			this.treeviewCodeTemplates.Selection.Changed += SelectionChanged;
+			SelectionChanged (null, null);
+		}
+
+		void SelectionChanged (object sender, EventArgs e)
+		{
+			buttonRemove.Sensitive = buttonEdit.Sensitive = (GetSelectedTemplate () != null);
 		}
 
 		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
@@ -101,23 +108,35 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			TreeIter selected;
 			if (treeviewCodeTemplates.Selection.GetSelected (out selected)) {
-				if (MessageService.AskQuestion (GettextCatalog.GetString ("Remove template"), GettextCatalog.GetString ("Are you sure you want to remove this template?"), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove) {
-					CodeTemplate template = (CodeTemplate)templateStore.GetValue (selected, 0);
-					templates.Remove (template);
-					templateStore.Remove (ref selected);
+				var template = (CodeTemplate)templateStore.GetValue (selected, 0);
+				if (template != null) {
+					if (MessageService.AskQuestion (GettextCatalog.GetString ("Remove template"),
+					                                GettextCatalog.GetString ("Are you sure you want to remove this template?"),
+					                                AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove) {
+						templates.Remove (template);
+						templateStore.Remove (ref selected);
+					}
 				}
 			}
 		}
 
 		void ButtonEditClicked (object sender, EventArgs e)
 		{
-			TreeIter selected;
-			if (treeviewCodeTemplates.Selection.GetSelected (out selected)) {
-				EditTemplateDialog editDialog = new EditTemplateDialog ((CodeTemplate)templateStore.GetValue (selected, 0), false);
+			var template = GetSelectedTemplate ();
+			if (template != null) {
+				var editDialog = new EditTemplateDialog (template, false);
 				editDialog.TransientFor = this.Toplevel as Gtk.Window;
 				editDialog.Run ();
 				editDialog.Destroy ();
 			}
+		}
+		
+		CodeTemplate GetSelectedTemplate ()
+		{
+			TreeIter selected;
+			if (treeviewCodeTemplates.Selection.GetSelected (out selected))
+				return (CodeTemplate)templateStore.GetValue (selected, 0);
+			return null;
 		}
 
 		void ButtonAddClicked (object sender, EventArgs e)
