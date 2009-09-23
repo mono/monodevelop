@@ -36,6 +36,5 @@ namespace Mono.Debugging.Evaluation
 		object GetElement (int[] indices);
 		object ElementType { get; }
 		void SetElement (int[] indices, object val);
-		ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices);
 	}
 }

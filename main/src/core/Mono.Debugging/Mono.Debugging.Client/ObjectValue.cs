@@ -238,6 +238,7 @@ namespace Mono.Debugging.Client
 						ConnectCallbacks (cs);
 						children.AddRange (cs);
 					} catch (Exception ex) {
+						Console.WriteLine (ex);
 						children.Add (CreateError ("", ex.Message, ObjectValueFlags.ReadOnly));
 					}
 				}

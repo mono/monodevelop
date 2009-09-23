@@ -1,3 +1,21 @@
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/ObjectValue.cs: Added some debug code.
+
+	* Mono.Debugging.Evaluation/ICollectionAdaptor.cs:
+	  CreateElementValue is not used anymore.
+
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs: Make
+	  serializable some exceptions.
+
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Added some
+	  preventive error checks.
+
+	* Mono.Debugging.Evaluation/ArrayElementGroup.cs: When
+	  generating an array item, use NameDisplayString when defined
+	  for the type. Fixed upperBound value for multidimensional
+	  arrays.
+
 2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Added

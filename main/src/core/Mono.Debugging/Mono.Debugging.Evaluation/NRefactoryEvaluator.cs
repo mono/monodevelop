@@ -70,6 +70,8 @@ namespace Mono.Debugging.Evaluation
 			StringReader codeStream = new StringReader (exp);
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
+			if (expObj == null)
+				throw new EvaluatorException ("Could not parse expression '" + exp + "'");
 			EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, options, userVariables);
 			return (ValueReference) expObj.AcceptVisitor (ev, null);
 		}
@@ -238,6 +240,8 @@ namespace Mono.Debugging.Evaluation
 		public override object VisitIndexerExpression (ICSharpCode.NRefactory.Ast.IndexerExpression indexerExpression, object data)
 		{
 			ValueReference val = (ValueReference) indexerExpression.TargetObject.AcceptVisitor (this, data);
+			if (val is TypeValueReference)
+				throw CreateNotSupportedError ();
 			if (ctx.Adapter.IsArray (ctx, val.Value)) {
 				int[] indexes = new int [indexerExpression.Indexes.Count];
 				for (int n=0; n<indexes.Length; n++) {

@@ -111,7 +111,7 @@ namespace Mono.Debugging.Evaluation
 			if (bounds.Length > 1) {
 				int rank = baseIndices.Length;
 				lowerBound = 0;
-				upperBound = bounds [rank];
+				upperBound = bounds [rank] - 1;
 				isLastDimension = rank == bounds.Length - 1;
 			} else {
 				lowerBound = 0;
@@ -156,13 +156,20 @@ namespace Mono.Debugging.Evaluation
 					int index = n + initalIndex + firstItemIndex;
 					string sidx = curIndexStr + index.ToString ();
 					ObjectValue val;
+					string ename = "[" + sidx.Replace (",",", ") + "]";
 					if (index > upperBound)
 						val = ObjectValue.CreateUnknown (sidx);
 					else {
 						curIndex [curIndex.Length - 1] = index;
-						val = array.CreateElementValue (this, newPath.Append (sidx), curIndex);
+						object elem = array.GetElement (curIndex);
+						val = ctx.Adapter.CreateObjectValue (ctx, this, newPath.Append (sidx), elem, ObjectValueFlags.ArrayElement);
+						if (elem != null && !ctx.Adapter.IsNull (ctx, elem)) {
+							TypeDisplayData tdata = ctx.Adapter.GetTypeDisplayData (ctx, ctx.Adapter.GetValueType (ctx, elem));
+							if (!string.IsNullOrEmpty (tdata.NameDisplayString))
+								ename = ctx.Adapter.EvaluateDisplayString (ctx, elem, tdata.NameDisplayString);
+						}
 					}
-					val.Name = "[" + sidx.Replace (",",", ") + "]";
+					val.Name = ename;
 					values [n] = val;
 				}
 				return values;

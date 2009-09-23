@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Mono.Debugging.Evaluation
@@ -135,15 +136,27 @@ namespace Mono.Debugging.Evaluation
 		}
 	}
 	
+	[Serializable]
 	public class EvaluatorException: Exception
 	{
+		protected EvaluatorException (SerializationInfo info, StreamingContext context)
+			: base (info, context)
+		{
+		}
+		
 		public EvaluatorException (string msg, params object[] args): base (string.Format (msg, args))
 		{
 		}
 	}
 
+	[Serializable]
 	public class NotSupportedExpressionException: EvaluatorException
 	{
+		protected NotSupportedExpressionException (SerializationInfo info, StreamingContext context)
+			: base (info, context)
+		{
+		}
+		
 		public NotSupportedExpressionException ( )
 			: base ("Expression not supported.")
 		{
