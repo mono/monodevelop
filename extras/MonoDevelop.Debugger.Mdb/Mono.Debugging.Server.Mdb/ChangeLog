@@ -1,3 +1,8 @@
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MdbObjectValueAdaptor.cs: Implemented CreateValue. Fixed
+	  resolution of nested types in GetType(name).
+
 2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MdbObjectValueAdaptor.cs: Add support for

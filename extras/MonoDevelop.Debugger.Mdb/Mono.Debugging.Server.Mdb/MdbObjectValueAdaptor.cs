@@ -257,6 +257,7 @@ namespace DebuggerServer
 		public override object GetType (EvaluationContext ctx, string name, object[] typeArgs)
 		{
 			MdbEvaluationContext mctx = (MdbEvaluationContext) ctx;
+			name = name.Replace ('+','/');
 			return mctx.Frame.Language.LookupType (name);
 		}
 
@@ -469,9 +470,13 @@ namespace DebuggerServer
 		}
 
 
-		public override object CreateValue (EvaluationContext ctx, object type, params object[] args)
+		public override object CreateValue (EvaluationContext gctx, object type, params object[] args)
 		{
-			throw new System.NotImplementedException();
+			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
+			TargetType tt = (TargetType) type;
+			TargetObject[] lst = new TargetObject [args.Length];
+			Array.Copy (args, lst, args.Length);
+			return CallStaticMethod (ctx, ".ctor", tt, lst);
 		}
 
 
