@@ -1,5 +1,9 @@
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* frameworks/framework_NET_4_0.xml: Added Microsoft.CSharp.
+
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Serialization/ClassDataType.cs: Propagate
 	  ReadOnly and WriteOnly from ItemPropertyAttribute to
 	  ItemProperty.

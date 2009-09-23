@@ -88,6 +88,7 @@
   <Assembly name="ICSharpCode.SharpZipLib" />
   <Assembly name="Accessibility" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="cscompmgd" />
+  <Assembly name="Microsoft.CSharp" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="Microsoft.JScript" version="10.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="Microsoft.VisualBasic.Compatibility.Data" version="10.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="Microsoft.VisualBasic.Compatibility" version="10.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
