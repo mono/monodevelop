@@ -1,5 +1,9 @@
 2009-09-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Styles/TangoLightStyle.xml: switched green/blue color.
+
+2009-09-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Added function to purge
 	  the layout cache.
 
