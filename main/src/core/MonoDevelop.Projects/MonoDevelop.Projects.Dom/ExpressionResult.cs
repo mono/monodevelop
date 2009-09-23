@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomRegion Region {
 			get;
-			private set;
+			set;
 		}
 		
 		List<ExpressionContext> expressionContexts = new List<ExpressionContext> ();

@@ -54,6 +54,11 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
+		public ReturnTypePart (string name)
+		{
+			this.Name = name;
+		}
+		
 		public ReturnTypePart (string name, IEnumerable<IReturnType> typeParameters)
 		{
 			for (int i = 0; i < name.Length; i++) {
@@ -176,29 +181,29 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				if (Parts.Count == 1)
 					return !string.IsNullOrEmpty (nspace) ? nspace + "." + Name : Name;
-				else {
-					string fn = nspace;
-					foreach (ReturnTypePart part in Parts) {
-						if (fn.Length > 0)
-							fn += ".";
-						fn += part.Name;
-					}
-					return fn;
+				StringBuilder result = new StringBuilder (nspace);
+				foreach (IReturnTypePart part in Parts) {
+					if (result.Length > 0)
+						result.Append (".");
+					result.Append (part.Name);
 				}
+				return result.ToString ();
 			}
 		}
 		
 		public string DecoratedFullName {
 			get {
-				string dname = Namespace;
+				StringBuilder result = new StringBuilder (Namespace);
 				foreach (ReturnTypePart rpart in Parts) {
-					if (dname.Length > 0)
-						dname += ".";
-					dname += rpart.Name;
-					if (rpart.GenericArguments.Count > 0)
-						dname += "`" + rpart.GenericArguments.Count;
+					if (result.Length > 0)
+						result.Append (".");
+					result.Append (rpart.Name);
+					if (rpart.GenericArguments.Count > 0) {
+						result.Append ("`");
+						result.Append (rpart.GenericArguments.Count);
+					}
 				}
-				return dname;
+				return result.ToString ();
 			}
 		}
 		

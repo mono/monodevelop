@@ -1,3 +1,10 @@
+2009-09-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom/ExpressionResult.cs:
+	* MonoDevelop.Projects.Dom/SearchTypeRequest.cs: Fixed some
+	  small issues with the dom.
+
 2009-09-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/INode.cs: Extended abstract node a

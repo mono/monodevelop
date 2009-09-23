@@ -89,6 +89,9 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return genericParameters;
 			}
+			set {
+				genericParameters = value;
+			}
 		}
 		
 		public SearchTypeRequest (ICompilationUnit currentCompilationUnit)
@@ -115,7 +118,7 @@ namespace MonoDevelop.Projects.Dom
 			this.caretLine   = -1;
 			this.caretColumn = -1;
 			if (rtype != null) {
-				name = rtype.Namespace;
+				name = rtype.Namespace ?? ""; 
 				foreach (ReturnTypePart rpart in rtype.Parts) {
 					if (name.Length > 0)
 						name += ".";
