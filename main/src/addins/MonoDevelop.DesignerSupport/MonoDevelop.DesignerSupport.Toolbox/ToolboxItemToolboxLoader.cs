@@ -78,17 +78,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		IList<ItemToolboxNode> IExternalToolboxLoader.Load (string filename)
 		{
+			TargetRuntime runtime = Runtime.SystemAssemblyService.CurrentRuntime;
 			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
 			System.Reflection.Assembly scanAssem;
 			try {
-				scanAssem = System.Reflection.Assembly.LoadFile (filename);
+				if (runtime is MsNetTargetRuntime)
+					scanAssem = System.Reflection.Assembly.ReflectionOnlyLoadFrom (filename);
+				else
+					scanAssem = System.Reflection.Assembly.LoadFile (filename);
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("ToolboxItemToolboxLoader: Could not load assembly '"
 				    + filename + "'", ex);
 				return list;
 			}
 		
-			TargetRuntime runtime = Runtime.SystemAssemblyService.CurrentRuntime;
 			SystemPackage package = runtime.AssemblyContext.GetPackageFromPath (filename);
 			
 			//need to initialise if this if out of the main process
