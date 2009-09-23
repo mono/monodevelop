@@ -125,7 +125,7 @@ namespace MonoDevelop.Deployment
 			
 			foreach (DeployFile file in files) {
 				string desc = GetDirectoryName (file.TargetDirectoryID);
-				store.AppendValues (file, file.DisplayName, desc, file.RelativeTargetPath, file.SourceSolutionItem.Name, builder.IsFileIncluded (file));
+				store.AppendValues (file, file.DisplayName, desc, file.RelativeTargetPath.ToString (), file.SourceSolutionItem.Name, builder.IsFileIncluded (file));
 			}
 		}
 		
