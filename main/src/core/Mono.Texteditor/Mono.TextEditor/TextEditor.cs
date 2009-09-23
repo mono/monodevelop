@@ -1167,15 +1167,10 @@ namespace Mono.TextEditor
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
 			int firstLine = (int)(this.textEditorData.VAdjustment.Value / LineHeight);
-			int startLine = area.Top / this.LineHeight;
-			int endLine   = startLine + (area.Height / this.LineHeight);
-			if (area.Height % this.LineHeight == 0) {
-				startLine = (area.Top + reminder) / this.LineHeight;
-				endLine   = startLine + (area.Height / this.LineHeight);
-			} else {
+			int startLine = (area.Top + reminder) / this.LineHeight;
+			int endLine   = (area.Bottom + reminder) / this.LineHeight - 1;
+			if ((area.Bottom + reminder) % this.LineHeight != 0)
 				endLine++;
-			}
-
 			// Initialize the rendering of the margins. Determine wether each margin has to be
 			// rendered or not and calculate the X offset.
 			List<Margin> marginsToRender = new List<Margin> (this.margins.Count);
@@ -1206,7 +1201,6 @@ namespace Mono.TextEditor
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				LineSegment line = Document.GetLine (logicalLineNumber);
-				
 				string lineText  = "";
 				if (line != null && line.EndOffset < Document.Length)
 					lineText = Document.GetTextAt (line);
