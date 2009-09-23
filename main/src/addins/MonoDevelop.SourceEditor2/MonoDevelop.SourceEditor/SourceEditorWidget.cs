@@ -365,6 +365,9 @@ namespace MonoDevelop.SourceEditor
 				if (fileName != args.FileName)
 					return;
 				
+				if (MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) 
+					TextEditor.TextViewMargin.PurgeLayoutCache ();
+				
 				ParsedDocument = args.ParsedDocument;
 				bool canShowBrowser = ParsedDocument != null && ParsedDocument.CompilationUnit != null;
 				if (canShowBrowser)
