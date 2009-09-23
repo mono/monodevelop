@@ -1,3 +1,8 @@
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandRouterContainer.cs:
+	  Fix routing to parent.
+
 2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs:
