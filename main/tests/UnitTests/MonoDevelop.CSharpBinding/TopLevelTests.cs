@@ -142,12 +142,12 @@ using NUnit.Framework;").CompilationUnit;
 			Assert.AreEqual (ClassType.Delegate, type.ClassType);
 			Assert.AreEqual ("TestDelegate", type.Name);
 			foreach (IMethod method in type.Methods) {
-				Assert.AreEqual ("Void", method.ReturnType.Name);
+				Assert.AreEqual (DomReturnType.Void.FullName, method.ReturnType.Name);
 				foreach (IParameter parameter in method.Parameters) {
 					if (parameter.Name == "a") {
-						Assert.AreEqual ("System.Int32", parameter.ReturnType.FullName);
+						Assert.AreEqual (DomReturnType.Int32.FullName, parameter.ReturnType.FullName);
 					} else if (parameter.Name == "b") {
-						Assert.AreEqual ("System.String", parameter.ReturnType.FullName);
+						Assert.AreEqual (DomReturnType.String.FullName, parameter.ReturnType.FullName);
 					} else {
 						Assert.Fail ("Unknown parameter: " + parameter.Name);
 					}
