@@ -1,5 +1,10 @@
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide/Services.cs: Added some counters.
+
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui\Workbench.cs: Add null check.
 
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>

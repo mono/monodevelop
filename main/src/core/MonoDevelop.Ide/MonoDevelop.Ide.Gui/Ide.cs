@@ -35,6 +35,7 @@ using System.Net;
 using System.Net.Sockets;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using Mono.Addins;
@@ -140,6 +141,9 @@ namespace MonoDevelop.Ide.Gui
 			helpOperations = new HelpOperations ();
 			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
+			
+			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
+			commandService.CommandTargetScanFinished += CommandServiceCommandTargetScanFinished;
 
 			KeyBindingService.LoadBindingsFromExtensionPath ("/MonoDevelop/Ide/KeyBindingSchemes");
 			KeyBindingService.LoadCurrentBindings ("MD2");
@@ -366,6 +370,18 @@ namespace MonoDevelop.Ide.Gui
 			// Upgrade to latest msbuild version
 			if (IdeApp.Preferences.DefaultProjectFileFormat.StartsWith ("MSBuild"))
 				IdeApp.Preferences.DefaultProjectFileFormat = MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.DefaultFormat;
+		}
+
+		static TimeCounter commandTimeCounter;
+			
+		static void CommandServiceCommandTargetScanStarted (object sender, EventArgs e)
+		{
+			commandTimeCounter = Counters.CommandTargetScanTime.BeginTiming ();
+		}
+
+		static void CommandServiceCommandTargetScanFinished (object sender, EventArgs e)
+		{
+			commandTimeCounter.End ();
 		}
 	}
 	
