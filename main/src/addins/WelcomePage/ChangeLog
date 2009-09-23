@@ -1,3 +1,7 @@
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WelcomePageView.cs: New update thread should be Background.
+
 2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* WelcomePageView.cs: Get news from a new location.

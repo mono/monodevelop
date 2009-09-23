@@ -168,6 +168,7 @@ namespace MonoDevelop.WelcomePage
 			}
 			System.Threading.ThreadStart ts = new System.Threading.ThreadStart (updateNewsXmlThread);
 			System.Threading.Thread updateThread = new System.Threading.Thread (ts);
+			updateThread.IsBackground = true;
 			updateThread.Start ();
 		}
 		
