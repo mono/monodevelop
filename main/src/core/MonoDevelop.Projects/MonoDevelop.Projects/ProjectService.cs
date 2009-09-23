@@ -757,5 +757,8 @@ namespace MonoDevelop.Projects
 		public static Counter LiveAssemblyDatabases = InstrumentationService.CreateCounter ("Assembly Databases", "Parser Service");
 		public static Counter LiveProjectDatabases = InstrumentationService.CreateCounter ("Project Databases", "Parser Service");
 		public static Counter DatabasesWritten = InstrumentationService.CreateCounter ("Parser Databases Written", "Parser Service");
+		
+		public static Counter FileParseTime = InstrumentationService.CreateCounter ("File Parse Time", "Timing");
+		public static Counter AssemblyParseTime = InstrumentationService.CreateCounter ("Assembly Parse Time", "Timing");
 	}
 }

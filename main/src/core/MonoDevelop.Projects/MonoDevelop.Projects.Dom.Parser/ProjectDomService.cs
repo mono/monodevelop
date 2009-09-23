@@ -943,50 +943,52 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static ParsedDocument DoParseFile (ProjectDom dom, string fileName, string fileContent)
 		{
-			IParser parser = GetParserByFileName (fileName);
-			
-			if (parser == null) {
-				return null;
-			}
-			
-			parser.LexerTags = SpecialCommentTags.GetNames ();
-			
-			ParsedDocument parserOutput = null;
-			
-			if (fileContent == null) {
-				using (StreamReader sr = File.OpenText(fileName)) {
-					fileContent = sr.ReadToEnd();
+			using (Counters.FileParseTime.BeginTiming ()) {
+				IParser parser = GetParserByFileName (fileName);
+				
+				if (parser == null) {
+					return null;
 				}
+				
+				parser.LexerTags = SpecialCommentTags.GetNames ();
+				
+				ParsedDocument parserOutput = null;
+				
+				if (fileContent == null) {
+					using (StreamReader sr = File.OpenText(fileName)) {
+						fileContent = sr.ReadToEnd();
+					}
+				}
+	
+				Counters.FilesParsed++;
+				parserOutput = parser.Parse (dom, fileName, fileContent);
+				
+	/*			ParseInformation parseInformation = GetCachedParseInformation (fileName);
+				bool newInfo = false;
+				
+				if (parseInformation == null) {
+					parseInformation = new ParseInformation();
+					newInfo = true;
+				}
+				
+				if (parserOutput.Errors != null && parserOutput.Errors.Count > 0) {
+					parseInformation.DirtyCompilationUnit = parserOutput;
+				} else {
+					parseInformation.ValidCompilationUnit = parserOutput;
+					parseInformation.DirtyCompilationUnit = null;
+				}
+				
+				if (newInfo) {
+					AddToCache (parseInformation, fileName);
+				}
+	*/
+				if (parserOutput != null) {
+					AddToCache (parserOutput);
+					OnParsedDocumentUpdated (new ParsedDocumentEventArgs (parserOutput));
+				}
+				
+				return parserOutput;
 			}
-
-			Counters.FilesParsed++;
-			parserOutput = parser.Parse (dom, fileName, fileContent);
-			
-/*			ParseInformation parseInformation = GetCachedParseInformation (fileName);
-			bool newInfo = false;
-			
-			if (parseInformation == null) {
-				parseInformation = new ParseInformation();
-				newInfo = true;
-			}
-			
-			if (parserOutput.Errors != null && parserOutput.Errors.Count > 0) {
-				parseInformation.DirtyCompilationUnit = parserOutput;
-			} else {
-				parseInformation.ValidCompilationUnit = parserOutput;
-				parseInformation.DirtyCompilationUnit = null;
-			}
-			
-			if (newInfo) {
-				AddToCache (parseInformation, fileName);
-			}
-*/
-			if (parserOutput != null) {
-				AddToCache (parserOutput);
-				OnParsedDocumentUpdated (new ParsedDocumentEventArgs (parserOutput));
-			}
-			
-			return parserOutput;
 		}
 
 		static void SetSourceProject (ICompilationUnit unit, ProjectDom dom)

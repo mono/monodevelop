@@ -198,6 +198,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return;
 			IProgressMonitor monitor = parentMonitor;
 			
+			IDisposable timer = Counters.AssemblyParseTime.BeginTiming ();
+			
 			// Update the package version
 			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromPath (assemblyFile);
 			if (pkg != null)
@@ -261,6 +263,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					if (parentMonitor == null) 
 						monitor.Dispose ();
 				}
+				timer.Dispose ();
 			}
 			ProjectDomService.NotifyAssemblyInfoChange (fileName, assemblyFile);
 		}
