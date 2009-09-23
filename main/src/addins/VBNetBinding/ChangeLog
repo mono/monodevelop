@@ -1,3 +1,11 @@
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Parser/DomParser.cs:
+	* VBLanguageBinding.cs:
+	* VBBindingCompilerServices.cs:
+	* Project/VBCompilerParameters.cs: Updated license. Markus
+	  Palme has relicensed to MIT/X11.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Update gtk# dependency.
