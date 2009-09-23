@@ -166,11 +166,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			                           typeof (bool),       // read?
 			                           typeof (int));       // read? -- use Pango weight
 
-			TreeIterCompareFunc sortFunc = new TreeIterCompareFunc (TaskSortFunc);
-			store.SetSortFunc ((int)Columns.Task, sortFunc);
-			store.DefaultSortFunc = sortFunc;
-			store.SetSortColumnId ((int)Columns.Task, SortType.Ascending);
-			
 			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTaskTypes);
 			filter = new TreeModelFilter (store, null);
 			filter.VisibleFunc = filterFunct;
@@ -179,7 +174,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			view.RulesHint = true;
 			view.PopupMenu += new PopupMenuHandler (OnPopupMenu);
 			view.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
-			view.HeadersClickable = true;
 			AddColumns ();
 			LoadColumnsVisibility ();
 			
@@ -441,9 +435,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			TreeViewColumn col;
 			col = view.AppendColumn ("!", iconRender, "pixbuf", Columns.Type);
-			col.Clickable = true;
-			col.Clicked += new EventHandler (OnResortTasks);
-			col.SortIndicator = true;
 			view.AppendColumn ("", toggleRender, "active", Columns.Marked);
 			view.AppendColumn (GettextCatalog.GetString ("Line"), view.TextRenderer, "text", Columns.Line, "weight", Columns.Weight);
 			col = view.AppendColumn (GettextCatalog.GetString ("Description"), view.TextRenderer, "text", Columns.Description, "weight", Columns.Weight, "strikethrough", Columns.Marked);
@@ -656,48 +647,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 				bool val = (bool) store.GetValue(iter, (int)Columns.Marked);
 				store.SetValue(iter, (int)Columns.Marked, !val);
 			}
-		}
-
-		private SortType ReverseSortOrder (TreeViewColumn col) {
-			if (col.SortIndicator) {
-				if (col.SortOrder == SortType.Ascending)
-					return SortType.Descending;
-				else
-					return SortType.Ascending;
-			} else {
-				return SortType.Ascending;
-			}
-		}
-
-		private void OnResortTasks (object sender, EventArgs args)
-		{
-			TreeViewColumn col = sender as TreeViewColumn;
-			col.SortOrder = ReverseSortOrder (col);
-			col.SortIndicator = true;
-			store.SetSortColumnId ((int)Columns.Task, col.SortOrder);
-		}
-
-		private int TaskSortFunc (TreeModel model, TreeIter iter1, TreeIter iter2)
-		{
-			Task task1 = model.GetValue (iter1, (int)Columns.Task) as Task;
-			Task task2 = model.GetValue (iter2, (int)Columns.Task) as Task;
-
-			if (task1 == null && task2 == null) return 0;
-			else if (task1 == null) return -1;
-			else if (task2 == null) return 1;
-
-			int compare = ((int)task1.Severity).CompareTo ((int)task2.Severity);
-			if (compare != 0)
-				return compare;
-
-			if (task1.FileName != FilePath.Null || task2.FileName != FilePath.Null) {
-				if (task1.FileName == FilePath.Null) return -1;
-				if (task2.FileName == FilePath.Null) return 1;
-				compare = task1.FileName.CompareTo (task2.FileName);
-				if (compare == 0)
-					compare = task1.Line.CompareTo (task2.Line);
-			}
-			return compare;
 		}
 
 		public virtual bool GetNextLocation (out string file, out int line, out int column)
