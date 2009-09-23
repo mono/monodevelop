@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharpBinding
 			AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
 			AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
 			AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
-//			AddSemanticRule (new HighlightPropertiesRule ());
+			AddSemanticRule (new HighlightCSharpSemanticRule ());
 		}
 		
 		public override SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)

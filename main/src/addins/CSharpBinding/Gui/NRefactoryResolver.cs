@@ -155,7 +155,6 @@ namespace MonoDevelop.CSharpBinding
 			this.resolvePosition = resolvePosition;
 			this.resultTable.Clear ();
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
-			
 			if (callingType != null) {
 				callingMember = GetMemberAt (callingType, resolvePosition);
 				if (callingMember == null) {
