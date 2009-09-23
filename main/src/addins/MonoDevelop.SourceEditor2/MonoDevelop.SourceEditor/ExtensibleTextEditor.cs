@@ -702,7 +702,6 @@ namespace MonoDevelop.SourceEditor
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
 			menu.Append (new SeparatorMenuItem ());
 			menu.Append (CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods")));
-			
 			menu.Destroyed += delegate {
 				this.QueueDraw ();
 			};
@@ -710,11 +709,14 @@ namespace MonoDevelop.SourceEditor
 			menu.Popup (null, null, new Gtk.MenuPositionFunc (PositionPopupMenu), 0, Gtk.Global.CurrentEventTime);
 		}
 		
-		void PositionPopupMenu (Menu menu, out int x, out int y, out bool pushIn) 
+		void PositionPopupMenu (Menu menu, out int x, out int y, out bool pushIn)
 		{
 			this.GdkWindow.GetOrigin (out x, out y);
 			x += this.menuPopupLocation.X;
 			y += this.menuPopupLocation.Y;
+			Requisition request = menu.SizeRequest ();
+			y = Math.Min (y, GdkWindow.Screen.Height - request.Height);
+			x = Math.Min (x, GdkWindow.Screen.Width - request.Width);
 			pushIn = true;
 		}
 		
