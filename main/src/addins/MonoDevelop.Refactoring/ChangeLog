@@ -1,5 +1,10 @@
 2009-09-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/HelperMethods.cs: Fixed failing unit
+	  tests.
+
+2009-09-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/HelperMethods.cs:
 	  InnerClassTypeReferences now get properly converted.
 

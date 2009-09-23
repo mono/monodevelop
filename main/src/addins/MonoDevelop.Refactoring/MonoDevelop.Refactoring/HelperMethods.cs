@@ -71,10 +71,10 @@ namespace MonoDevelop.Refactoring
 			if (typeRef is InnerClassTypeReference) {
 				InnerClassTypeReference innerTypeRef = (InnerClassTypeReference)typeRef;
 				result = innerTypeRef.BaseType.ConvertToReturnType ();
+				result.Parts.Add (new ReturnTypePart (typeRef.Type));
 			} else {
-				result = new DomReturnType ();
+				result = new DomReturnType (typeRef.Type);
 			}
-			result.Parts.Add (new ReturnTypePart (typeRef.Type));
 			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
 				result.AddTypeParameter (ConvertToReturnType (genericArgument));
 			}
