@@ -41,7 +41,7 @@ namespace Mono.TextEditor.Vi
 		static string lastPattern;
 		static string lastReplacement;
 		State state;
-
+		const string substMatch = @"^:s(?<sep>.)(?<pattern>.+?)\k<sep>(?<replacement>.*?)(\k<sep>(?<trailer>i?))?$";
 		StringBuilder commandBuffer = new StringBuilder ();
 		
 		public virtual string Status { get; protected set; }
@@ -77,7 +77,7 @@ namespace Mono.TextEditor.Vi
 						command = string.Format (":s/{0}/{1}/", lastPattern, lastReplacement);
 					}
 		
-					System.Text.RegularExpressions.Match match = Regex.Match (command, @"^:s(?<sep>.)(?<pattern>.+?)\k<sep>(?<replacement>.*?)(\k<sep>(?<trailer>i?))?$", RegexOptions.Compiled);
+					var match = Regex.Match (command, substMatch, RegexOptions.Compiled);
 					if (!(match.Success && match.Groups["pattern"].Success && match.Groups["replacement"].Success))
 						break;
 		
