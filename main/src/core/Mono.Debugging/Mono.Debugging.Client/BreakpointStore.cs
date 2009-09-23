@@ -190,7 +190,7 @@ namespace Mono.Debugging.Client
 
 		public void Clear ()
 		{
-			List<BreakEvent> oldList = breakpoints;
+			List<BreakEvent> oldList = new List<BreakEvent> (breakpoints);
 			foreach (BreakEvent bp in oldList)
 				Remove (bp);
 		}

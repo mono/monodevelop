@@ -1,5 +1,10 @@
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Client/BreakpointStore.cs: Clear(): Properly
+	  duplicate breakpoint list.
+
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Client/ObjectValue.cs: Added some debug code.
 
 	* Mono.Debugging.Evaluation/ICollectionAdaptor.cs:
