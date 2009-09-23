@@ -121,6 +121,8 @@ namespace MonoDevelop.Core.Serialization
 			prop.DefaultValue = at.DefaultValue;
 			prop.IsExternal = at.IsExternal;
 			prop.SkipEmpty = at.SkipEmpty;
+			prop.ReadOnly = at.ReadOnly;
+			prop.WriteOnly = at.WriteOnly;
 
 			if (prop.ExpandedCollection) {
 				ICollectionHandler handler = Context.GetCollectionHandler (memberType);
