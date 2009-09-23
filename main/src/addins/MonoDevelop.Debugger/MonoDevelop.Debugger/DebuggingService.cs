@@ -279,7 +279,10 @@ namespace MonoDevelop.Debugger
 					console.Out.Write (text);
 			};
 			session.LogWriter = delegate (bool iserr, string text) {
-				console.Log.Write (text);
+				// Events may come with a bit of delay, so the debug session
+				// may already have been cleaned up
+				if (console != null)
+					console.Log.Write (text);
 			};
 			session.ExceptionHandler = delegate (Exception ex) {
 				if (ex is DebuggerException)

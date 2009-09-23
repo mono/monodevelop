@@ -1,3 +1,7 @@
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Added null check.
+
 2009-09-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Report debugger
