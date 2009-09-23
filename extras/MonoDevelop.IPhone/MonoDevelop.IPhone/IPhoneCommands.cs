@@ -48,11 +48,11 @@ namespace MonoDevelop.IPhone
 		protected override void Update (MonoDevelop.Components.Commands.CommandInfo info)
 		{
 			var proj = GetActiveProject ();
-			info.Visible = proj != null;
-			if (proj != null && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) {
-				var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				info.Enabled = conf != null && conf.Platform == IPhoneProject.PLAT_IPHONE;
-			} else {
+			info.Visible = proj != null && proj.CompileTarget == CompileTarget.Exe;
+			if (info.Visible && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) {
+					var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+					info.Enabled = conf != null && conf.Platform == IPhoneProject.PLAT_IPHONE;
+				} else {
 				info.Enabled = false;
 			}
 		}
@@ -115,9 +115,8 @@ namespace MonoDevelop.IPhone
 		protected override void Update (MonoDevelop.Components.Commands.CommandInfo info)
 		{
 			var proj = DefaultUploadToDeviceHandler.GetActiveProject ();
-			info.Visible = proj != null;
-			
-			if (proj != null) {
+			info.Visible = proj != null && proj.CompileTarget == CompileTarget.Exe;
+			if (info.Visible) {
 				var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
 				info.Enabled = conf != null && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
 			}

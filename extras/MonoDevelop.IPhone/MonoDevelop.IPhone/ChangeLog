@@ -1,3 +1,8 @@
+2009-09-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneCommands.cs: Hide the commands for library compile
+	  targets.
+
 2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CodeBehindGenerator.cs: Use Xcode's partial class list to
