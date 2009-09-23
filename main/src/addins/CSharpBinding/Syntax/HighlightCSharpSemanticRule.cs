@@ -44,16 +44,17 @@ namespace MonoDevelop.CSharpBinding
 	class HighlightCSharpSemanticRule : SemanticRule
 	{
 		ProjectDom ctx;
-		Mono.TextEditor.Document document;
-		MonoDevelop.Ide.Gui.Document doc;
-		IParser parser;
-		IResolver resolver;
-		IExpressionFinder expressionFinder;
+//		Mono.TextEditor.Document document;
+//		MonoDevelop.Ide.Gui.Document doc;
+//		IParser parser;
+//		IResolver resolver;
+//		IExpressionFinder expressionFinder;
 		
 		void Init (Mono.TextEditor.Document document)
 		{
-			parser = ProjectDomService.GetParser (document.FileName, document.MimeType);
-			expressionFinder = ProjectDomService.GetExpressionFinder (document.FileName);
+			
+//			parser = ProjectDomService.GetParser (document.FileName, document.MimeType);
+//			expressionFinder = ProjectDomService.GetExpressionFinder (document.FileName);
 		}
 		
 		
@@ -87,8 +88,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			if (!MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false))
 				return;
-			if (ctx == null)
-				Init (doc);
+			ctx = GetParserContext (doc);
 			int lineNumber = doc.OffsetToLineNumber (line.Offset);
 			ParsedDocument parsedDocument = ProjectDomService.GetParsedDocument (ctx, doc.FileName);
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk.Next) {
@@ -182,7 +182,6 @@ namespace MonoDevelop.CSharpBinding
 					}
 					nameSegments.Add (new Segment (i, nameEndOffset - i));
 
-					ctx = GetParserContext (document);
 					int column = i - line.Offset;
 					IType callingType = parsedDocument.CompilationUnit.GetTypeAt (lineNumber, column);
 					List<IReturnType> genericParams = null;

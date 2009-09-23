@@ -1,5 +1,5 @@
 // 
-// NamespaceDeclaration.cs
+// ConstructorDeclaration.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,40 +25,43 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Projects.Dom;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class NamespaceDeclaration : AbstractNode
+	public class ConstructorDeclaration : AbstractMemberBase
 	{
-		public string Name {
+		public BlockStatement Body {
 			get {
-				return NameIdentifier.QualifiedName;
+				return (BlockStatement)GetChildByRole (Roles.Body);
 			}
 		}
 		
-		public string QualifiedName {
+		public ConstructorInitializer Initializer {
 			get {
-				NamespaceDeclaration parentNamespace = Parent as NamespaceDeclaration;
-				if (parentNamespace != null)
-					return BuildQualifiedName (parentNamespace.QualifiedName, Name);
-				return Name;
+				return (ConstructorInitializer)base.GetChildByRole (Roles.Initializer);
 			}
-		}
-		
-		public QualifiedIdentifier NameIdentifier {
-			get {
-				return (QualifiedIdentifier)GetChildByRole (Identifier);
-			}
-		}
-		
-		public static string BuildQualifiedName (string name1, string name2)
-		{
-			if (string.IsNullOrEmpty (name1))
-				return name1;
-			if (string.IsNullOrEmpty (name2))
-				return name2;
-			return name1 + "." + name2;
 		}
 	}
-};
+	
+	public enum ConstructorInitializerType {
+		Base,
+		This
+	}
+	
+	public class ConstructorInitializer : AbstractNode
+	{
+		public ConstructorInitializerType ConstructorInitializerType {
+			get;
+			set;
+		}
+		
+		public IEnumerable<ArgumentDeclaration> Arguments { 
+			get {
+				return base.GetChildrenByRole (Roles.Argument).Cast <ArgumentDeclaration>();
+			}
+		}
+	}
+}

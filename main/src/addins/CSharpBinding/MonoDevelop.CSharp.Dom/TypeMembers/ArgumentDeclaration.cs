@@ -1,5 +1,5 @@
 // 
-// QualifiedIdentifier.cs
+// ArgumentDeclaration.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,27 +25,28 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text;
 using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class QualifiedIdentifier : AbstractNode
+	public class ArgumentDeclaration : AbstractMemberBase
 	{
-		public string QualifiedName {
+		public IReturnType ReturnType {
 			get {
-				StringBuilder builder = new StringBuilder ();
-				foreach (Identifier identifier in GetChildrenByRole (Identifier)) {
-					if (builder.Length > 0)
-						builder.Append ('.');
-					builder.Append (identifier.Name);
-				}
-				return builder.ToString ();
+				return (IReturnType)GetChildByRole (Roles.ReturnType);
 			}
 		}
 		
-		public QualifiedIdentifier ()
-		{
+		public Identifier NameIdentifier {
+			get {
+				return (Identifier)GetChildByRole (Roles.Identifier);
+			}
+		}
+		
+		public string Name {
+			get {
+				return NameIdentifier.Name;
+			}
 		}
 	}
 }

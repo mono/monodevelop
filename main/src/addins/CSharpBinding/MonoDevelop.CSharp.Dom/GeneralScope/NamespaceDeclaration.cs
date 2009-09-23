@@ -1,5 +1,5 @@
 // 
-// Attribute.cs
+// NamespaceDeclaration.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,13 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
 using MonoDevelop.Projects.Dom;
-using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class Attribute : AbstractNode
+	public class NamespaceDeclaration : AbstractNode
 	{
 		public string Name {
 			get {
@@ -39,21 +37,28 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
+		public string QualifiedName {
+			get {
+				NamespaceDeclaration parentNamespace = Parent as NamespaceDeclaration;
+				if (parentNamespace != null)
+					return BuildQualifiedName (parentNamespace.QualifiedName, Name);
+				return Name;
+			}
+		}
+		
 		public QualifiedIdentifier NameIdentifier {
 			get {
-				return (QualifiedIdentifier)GetChildByRole (Identifier);
+				return (QualifiedIdentifier)GetChildByRole (Roles.Identifier);
 			}
 		}
 		
-		// Todo: Arguments should not be nodes, instead it should be expressions, change when it's implemented.
-		public IEnumerable<INode> Arguments { 
-			get {
-				return base.GetChildrenByRole (ArgumentRole).Cast <INode>();
-			}
-		}
-		
-		public Attribute ()
+		public static string BuildQualifiedName (string name1, string name2)
 		{
+			if (string.IsNullOrEmpty (name1))
+				return name1;
+			if (string.IsNullOrEmpty (name2))
+				return name2;
+			return name1 + "." + name2;
 		}
 	}
-}
+};

@@ -1,5 +1,5 @@
 // 
-// AttributeSection.cs
+// MethodDeclaration.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -26,37 +26,22 @@
 
 using System;
 using System.Linq;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class AttributeSection : AbstractNode
+	public class MethodDeclaration : AbstractMember
 	{
-		const int TargetRole = 101;
-		
-		
-		public string AttributeTarget {
+		public IEnumerable<ArgumentDeclaration> Arguments { 
 			get {
-				Identifier target = TargetIdentifier;
-				return target != null ? target.Name : null;
+				return base.GetChildrenByRole (Roles.Argument).Cast <ArgumentDeclaration>();
 			}
 		}
 		
-		public Identifier TargetIdentifier {
+		public BlockStatement Body {
 			get {
-				return (Identifier)GetChildByRole (TargetRole);
+				return (BlockStatement)GetChildByRole (Roles.Body);
 			}
-		}
-		
-		public IEnumerable<Attribute> Attributes {
-			get {
-				return base.GetChildrenByRole (AttributeRole).Cast <Attribute>();
-			}
-		}
-		
-		public AttributeSection ()
-		{
 		}
 	}
 }

@@ -205,15 +205,28 @@
     <Compile Include="FormattingStrategy\CSharpFormattingPolicyPanel.cs" />
     <Compile Include="Parser\CSharpNRefactoryASTProvider.cs" />
     <Compile Include="Gui\NRefactoryIndexerParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\NamespaceDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Identifier.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\UsingDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\QualifiedIdentifier.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\UsingAliasDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\AttributeSection.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Attribute.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\DelegateDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\Attribute.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\AttributeSection.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\NamespaceDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\TypeDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\UsingAliasDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\UsingDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\DelegateDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\Identifier.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\QualifiedIdentifier.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Statements\BlockStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\AbstractMember.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ConstructorDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\DestructorDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\FieldDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\PropertyDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\VariableInitializer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\AbstractMemberBase.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\EventDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\IndexerDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\MethodDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ArgumentDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\OperatorDeclaration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -237,5 +250,9 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="MonoDevelop.CSharp.Dom\" />
+    <Folder Include="MonoDevelop.CSharp.Dom\GeneralScope\" />
+    <Folder Include="MonoDevelop.CSharp.Dom\TypeMembers\" />
+    <Folder Include="MonoDevelop.CSharp.Dom\Statements\" />
+    <Folder Include="MonoDevelop.CSharp.Dom\Expressions\" />
   </ItemGroup>
 </Project>

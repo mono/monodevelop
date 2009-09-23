@@ -1,5 +1,5 @@
 // 
-// UsingDeclaration.cs
+// DestructorDeclaration.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,26 +25,19 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Projects.Dom;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class UsingDeclaration : AbstractNode
+	public class DestructorDeclaration : AbstractMemberBase
 	{
-		public string Namespace {
+		public BlockStatement Body {
 			get {
-				return NameIdentifier.QualifiedName;
+				return (BlockStatement)GetChildByRole (Roles.Body);
 			}
 		}
 		
-		public QualifiedIdentifier NameIdentifier {
-			get {
-				return (QualifiedIdentifier)GetChildByRole (Identifier);
-			}
-		}
-		
-		public UsingDeclaration ()
-		{
-		}
 	}
 }

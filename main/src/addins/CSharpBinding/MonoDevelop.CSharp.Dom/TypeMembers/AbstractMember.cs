@@ -1,5 +1,5 @@
 // 
-// TypeDeclaration.cs
+// AbstractMember.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,46 +25,39 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
 using MonoDevelop.Projects.Dom;
-using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class TypeDeclaration : AbstractNode
+	public abstract class AbstractMember : AbstractMemberBase
 	{
-		public const int TypeKeyword      = 100;
+		const int PrivateImplementationTypeRole = 100;
 		
-		public string Name {
+		public IReturnType ReturnType {
 			get {
-				return NameIdentifier.Name;
+				return (IReturnType)GetChildByRole (Roles.ReturnType);
+			}
+		}
+		
+		/// <summary>
+		/// Only supported on members that can be declared in an interface.
+		/// </summary>
+		public IReturnType PrivateImplementationType {
+			get {
+				return (IReturnType)GetChildByRole (PrivateImplementationTypeRole);
 			}
 		}
 		
 		public Identifier NameIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier);
 			}
 		}
-				
-		public Modifiers Modifiers {
-			get;
-			set;
-		}
 		
-		public ClassType ClassType {
-			get;
-			set;
-		}
-		
-		public IEnumerable<AttributeSection> Attributes { 
+		public string Name {
 			get {
-				return base.GetChildrenByRole (AttributeRole).Cast <AttributeSection>();
+				return NameIdentifier.Name;
 			}
-		}
-		
-		public TypeDeclaration ()
-		{
 		}
 	}
 }

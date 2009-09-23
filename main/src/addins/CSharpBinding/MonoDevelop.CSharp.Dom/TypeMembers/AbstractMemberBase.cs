@@ -1,5 +1,5 @@
 // 
-// DelegateDeclaration.cs
+// AbstractMemberBase.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -31,41 +31,18 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class DelegateDeclaration : AbstractNode
+	public abstract class AbstractMemberBase : AbstractNode
 	{
-		public string Name {
+		public IEnumerable<INode> Modifiers { 
 			get {
-				return NameIdentifier.Name;
-			}
-		}
-		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Identifier);
-			}
-		}
-		
-		public IReturnType ReturnType {
-			get {
-				return (IReturnType)GetChildByRole (ReturnTypeRole);
-			}
-		}
-		
-		// Todo: Arguments should not be nodes, instead it should be expressions, change when it's implemented.
-		public IEnumerable<INode> Arguments { 
-			get {
-				return base.GetChildrenByRole (ArgumentRole).Cast <INode>();
+				return base.GetChildrenByRole (Roles.Modifier);
 			}
 		}
 		
 		public IEnumerable<AttributeSection> Attributes { 
 			get {
-				return base.GetChildrenByRole (AttributeRole).Cast <AttributeSection>();
+				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
 			}
-		}
-		
-		public DelegateDeclaration ()
-		{
 		}
 	}
 }
