@@ -139,7 +139,13 @@ namespace MonoDevelop.Core.Assemblies
 			pinfo.Description = name;
 			pinfo.Version = version;
 			pinfo.TargetFramework = fx != null ? fx.Id : null;
-			RegisterPackage (pinfo, false, Directory.GetFiles (folder, "*.dll"));
+			try {
+				if (Directory.Exists (folder))
+					RegisterPackage (pinfo, false, Directory.GetFiles (folder, "*.dll"));
+			}
+			catch (Exception ex) {
+				LoggingService.LogError ("Error while scanning assembly folder '" + folder + "'", ex);
+			}
 		}
 
 		public override bool IsRunning {

@@ -1,3 +1,10 @@
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies\MsNetTargetRuntime.cs: Don't
+	  crash if an assembly folder doesn't exist.
+
+	* MonoDevelop.Core\Gettext.cs: Improve error reporting.
+
 2009-09-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/Gettext.cs: On windows, the catalog is

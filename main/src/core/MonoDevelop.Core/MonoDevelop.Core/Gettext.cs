@@ -60,7 +60,12 @@ namespace MonoDevelop.Core
 					catalog = Path.Combine (Path.Combine (prefix, "share"), "locale");
 				}
 			}
-			Catalog.Init ("monodevelop", catalog);
+			try {
+				Catalog.Init ("monodevelop", catalog);
+			}
+			catch (Exception ex) {
+				Console.WriteLine (ex);
+			}
 		}
 		
 		#region GetString
