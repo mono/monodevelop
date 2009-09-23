@@ -38,6 +38,10 @@ namespace MonoDevelop.Core.Instrumentation
 		List<CounterValue> values = new List<CounterValue> ();
 		TimeSpan resolution = TimeSpan.FromMilliseconds (0);
 		DateTime lastValueTime = DateTime.MinValue;
+		CounterDisplayMode displayMode = CounterDisplayMode.Block;
+		
+		[ThreadStaticAttribute]
+		static TimeCounter lastTimer;
 		
 		internal Counter (string name, CounterCategory category)
 		{
@@ -72,6 +76,12 @@ namespace MonoDevelop.Core.Instrumentation
 		public int TotalCount {
 			get { return totalCount; }
 		}
+		
+		public CounterDisplayMode DisplayMode {
+			get { return this.displayMode; }
+			set { this.displayMode = value; }
+		}
+		
 		
 		public IEnumerable<CounterValue> GetValues ()
 		{
@@ -163,6 +173,16 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 		}
 		
+		public void SetValue (int value)
+		{
+			if (!InstrumentationService.Enabled)
+				return;
+			lock (values) {
+				count = value;
+				StoreValue ();
+			}
+		}
+		
 		public static Counter operator ++ (Counter c)
 		{
 			c.Inc ();
@@ -178,6 +198,17 @@ namespace MonoDevelop.Core.Instrumentation
 		public MemoryProbe CreateMemoryProbe ()
 		{
 			return new MemoryProbe (this);
+		}
+		
+		public TimeCounter BeginTiming ()
+		{
+			return lastTimer = new TimeCounter (this);
+		}
+		
+		public void EndTiming ()
+		{
+			if (lastTimer != null)
+				lastTimer.End ();
 		}
 	}
 	
@@ -205,5 +236,11 @@ namespace MonoDevelop.Core.Instrumentation
 		public int TotalCount {
 			get { return totalCount; }
 		}
+	}
+	
+	public enum CounterDisplayMode
+	{
+		Block,
+		Line
 	}
 }

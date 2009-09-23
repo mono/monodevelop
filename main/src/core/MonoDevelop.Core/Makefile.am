@@ -10,6 +10,7 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ITargetRuntimeFactory.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageInstalledCondition.cs \
+	MonoDevelop.Core.AddIns/PlatformCondition.cs \
 	MonoDevelop.Core.AddIns/TargetFrameworkNode.cs \
 	MonoDevelop.Core.Assemblies/AssemblyContext.cs \
 	MonoDevelop.Core.Assemblies/ComposedAssemblyContext.cs \
@@ -71,6 +72,7 @@ FILES =  \
 	MonoDevelop.Core.Instrumentation/CounterCategory.cs \
 	MonoDevelop.Core.Instrumentation/InstrumentationService.cs \
 	MonoDevelop.Core.Instrumentation/MemoryProbe.cs \
+	MonoDevelop.Core.Instrumentation/TimeCounter.cs \
 	MonoDevelop.Core.Logging/ConsoleCrayon.cs \
 	MonoDevelop.Core.Logging/ConsoleLogger.cs \
 	MonoDevelop.Core.Logging/FileLogger.cs \

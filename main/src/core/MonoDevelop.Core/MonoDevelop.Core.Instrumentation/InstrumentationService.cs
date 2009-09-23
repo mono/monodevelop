@@ -83,12 +83,27 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public static MemoryProbe CreateMemoryProbe (string name, string category)
 		{
+			if (!enabled)
+				return null;
+			
 			Counter c;
 			lock (counters) {
 				if (!counters.TryGetValue (name, out c))
 					c = CreateCounter (name, category);
 			}
 			return new MemoryProbe (c);
+		}
+		
+		public static Counter CreateTimerCounter (string name)
+		{
+			return CreateTimerCounter (name, null);
+		}
+		
+		public static Counter CreateTimerCounter (string name, string category)
+		{
+			Counter c = CreateCounter (name, category);
+			c.DisplayMode = CounterDisplayMode.Line;
+			return c;
 		}
 		
 		public static Counter GetCounter (string name)

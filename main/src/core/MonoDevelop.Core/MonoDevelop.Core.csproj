@@ -187,6 +187,8 @@
     <Compile Include="MonoDevelop.Core.Assemblies\RuntimeAssemblyContext.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\LibraryPcFileCache.cs" />
     <Compile Include="MonoDevelop.Core.Logging\RemoteLogger.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\TimeCounter.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\PlatformCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -1,5 +1,20 @@
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.addin.xml:
+	* MonoDevelop.Core.AddIns/PlatformCondition.cs: New platform
+	  condition, which allows enabling/disabling extensions
+	  depending on the current platform.
+
+	* MonoDevelop.Core.Instrumentation/Counter.cs:
+	* MonoDevelop.Core.Instrumentation/TimeCounter.cs:
+	* MonoDevelop.Core.Instrumentation/InstrumentationService.cs:
+	  Initial support for timers.
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj: Added new files.
+
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies\MsNetTargetRuntime.cs: Don't
 	  crash if an assembly folder doesn't exist.
 

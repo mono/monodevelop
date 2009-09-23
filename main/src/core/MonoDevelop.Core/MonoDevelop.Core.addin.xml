@@ -12,6 +12,7 @@
        
 	<ConditionType id="PackageInstalled" type="MonoDevelop.Core.AddIns.PackageInstalledCondition" />
 	<ConditionType id="PackageNotInstalled" type="MonoDevelop.Core.AddIns.PackageNotInstalledCondition" />
+	<ConditionType id="Platform" type="MonoDevelop.Core.AddIns.PlatformCondition" />
 
 	<ExtensionPoint path = "/MonoDevelop/Core/ExecutionModes" name = "Execution modes">
 		<Description>Execution modes such as default, debug, profiler, etc.</Description>
