@@ -684,11 +684,14 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			get {
 				if (serie == null) {
 					serie = new Serie (Name);
-					serie.ExtendBoundingValues = true;
-					serie.DisplayMode = DisplayMode.BlockLine;
-					serie.InitialValue = 0;
 					if (Counter == null)
 						return serie;
+					if (Counter.DisplayMode == CounterDisplayMode.Block) {
+						serie.ExtendBoundingValues = true;
+						serie.InitialValue = 0;
+						serie.DisplayMode = DisplayMode.BlockLine;
+					} else
+						serie.DisplayMode = DisplayMode.Line;
 					serie.Color = ChartView.ParseColor (Color);
 					foreach (CounterValue val in Counter.GetValues ()) {
 						serie.AddData (val.TimeStamp.Ticks, val.Value);
