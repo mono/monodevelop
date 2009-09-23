@@ -875,6 +875,8 @@ namespace DebuggerServer
 				
 				if (fields != null) {
 					foreach (TargetFieldInfo field in fields) {
+						if (field.IsCompilerGenerated)
+							continue;
 						if (field.Accessibility == TargetMemberAccessibility.Public && (flags & BindingFlags.Public) == 0)
 							continue;
 						if (field.Accessibility != TargetMemberAccessibility.Public && (flags & BindingFlags.NonPublic) == 0)

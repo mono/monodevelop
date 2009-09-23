@@ -1,5 +1,10 @@
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MdbObjectValueAdaptor.cs: Don't show compiler generated
+	  fields.
+
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MdbObjectValueAdaptor.cs: Implemented CreateValue. Fixed
 	  resolution of nested types in GetType(name).
 
