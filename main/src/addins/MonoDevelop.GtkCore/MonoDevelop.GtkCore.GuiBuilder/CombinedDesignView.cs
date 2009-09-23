@@ -79,7 +79,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
 			toolbar.ShowArrow = false;
 			
-			AddButton (GettextCatalog.GetString ("Source Code"), content.Control).Active = true;
+			CommandRouterContainer crc = new CommandRouterContainer (content.Control, content, true);
+			crc.Show ();
+			AddButton (GettextCatalog.GetString ("Source Code"), crc).Active = true;
 			
 			toolbar.ShowAll ();
 			

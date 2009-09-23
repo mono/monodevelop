@@ -1,3 +1,9 @@
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Route
+	  commands to the text editor view. Fixes bug #536740 -
+	  Expression evaluator unnecessarily in context menu.
+
 2009-09-09  Christian Hergert  <chris@dronelabs.com>
 
 	* libstetic/editor/Accelerator.cs: 
