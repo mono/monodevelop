@@ -142,7 +142,7 @@ using NUnit.Framework;").CompilationUnit;
 			Assert.AreEqual (ClassType.Delegate, type.ClassType);
 			Assert.AreEqual ("TestDelegate", type.Name);
 			foreach (IMethod method in type.Methods) {
-				Assert.AreEqual (DomReturnType.Void.FullName, method.ReturnType.Name);
+				Assert.AreEqual (DomReturnType.Void.FullName, method.ReturnType.FullName);
 				foreach (IParameter parameter in method.Parameters) {
 					if (parameter.Name == "a") {
 						Assert.AreEqual (DomReturnType.Int32.FullName, parameter.ReturnType.FullName);

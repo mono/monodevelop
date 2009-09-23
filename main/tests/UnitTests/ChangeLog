@@ -1,5 +1,9 @@
 2009-09-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/TopLevelTests.cs: Fixed unit test.
+
+2009-09-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/TopLevelTests.cs: Fixed bug in
 	  unit test.
 
