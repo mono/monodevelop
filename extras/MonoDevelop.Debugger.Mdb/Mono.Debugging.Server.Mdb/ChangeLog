@@ -1,5 +1,9 @@
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* ArrayAdaptor.cs: CreateElementValue is not required anymore.
+
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MdbObjectValueAdaptor.cs: Don't show compiler generated
 	  fields.
 

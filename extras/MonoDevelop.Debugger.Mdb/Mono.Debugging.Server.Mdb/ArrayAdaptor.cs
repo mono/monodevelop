@@ -73,11 +73,5 @@ namespace DebuggerServer
 				return array.Type.ElementType;
 			}
 		}
-		
-		public ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices)
-		{
-			TargetObject elem = array.GetElement (ctx.Thread, indices);
-			return ctx.Adapter.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);
-		}
 	}
 }
