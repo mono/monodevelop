@@ -78,7 +78,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		
 		public PropertyDescriptorCollection GetProperties (object component)
 		{
-			return GetProperties (null);
+			return GetProperties (component, null);
 		}
 		
 		public Gdk.Pixbuf GetIcon ()
