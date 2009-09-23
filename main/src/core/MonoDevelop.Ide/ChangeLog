@@ -1,5 +1,9 @@
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui\Workbench.cs: Add null check.
+
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Removed all
 	  sorting code. Errors will now be shown in the order that the
 	  compiler generated them. Fixes bug #540465 - MonoDevelop's

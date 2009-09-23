@@ -880,6 +880,8 @@ namespace MonoDevelop.Ide.Gui
 			ThreadPool.QueueUserWorkItem (delegate {
 				lock (fileStatusLock) {
 //					DateTime t = DateTime.Now;
+					if (fileStatus == null)
+						return;
 					foreach (FileData fd in fileStatus) {
 						try {
 							FileInfo fi = new FileInfo (fd.File);
