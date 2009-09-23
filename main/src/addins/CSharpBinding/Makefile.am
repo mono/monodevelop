@@ -74,7 +74,7 @@ FILES =  \
 	Project/CSharpProjectParameters.cs \
 	Project/CSharpResourceIdBuilder.cs \
 	Syntax/CSharpSyntaxMode.cs \
-	Syntax/HighlightPropertiesSemanticRule.cs
+	Syntax/HighlightCSharpSemanticRule.cs
 
 RES =  \
 	CSharpBinding.addin.xml \

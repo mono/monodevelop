@@ -201,7 +201,7 @@
     <Compile Include="Parser\CSharpFormatter.cs" />
     <Compile Include="Gui\NRefactoryTemplateParameterDataProvider.cs" />
     <Compile Include="Syntax\CSharpSyntaxMode.cs" />
-    <Compile Include="Syntax\HighlightPropertiesSemanticRule.cs" />
+    <Compile Include="Syntax\HighlightCSharpSemanticRule.cs" />
     <Compile Include="FormattingStrategy\CSharpFormattingPolicyPanel.cs" />
     <Compile Include="Parser\CSharpNRefactoryASTProvider.cs" />
     <Compile Include="Gui\NRefactoryIndexerParameterDataProvider.cs" />
