@@ -55,32 +55,39 @@ namespace MonoDevelop.Projects.Dom
 	
 	public abstract class AbstractNode : INode
 	{
-		// some pre defined constants for common roles
-		public const int Identifier    = 1;
-		public const int KeywordRole   = 2;
-		public const int ArgumentRole  = 3;
-		public const int AttributeRole = 4;
-		public const int ReturnTypeRole = 4;
-		
-		// some pre defined constants for most used punctuation 
-		
-		public const int LPar  = 50; // (
-		public const int RPar  = 51; // )
-		
-		public const int LBrace  = 52; // {
-		public const int RBrace  = 53; // }
-		
-		public const int LBracket = 54; // [
-		public const int RBracket= 55; // ]
-		
-		public const int LChevron = 56; // <
-		public const int RChevron= 57; // >
-		
-		public const int Dot = 58; // ,
-		public const int Comma = 59; // ,
-		public const int Colon = 60; // :
-		public const int Semicolon = 61; // ;
-		public const int QuestionMark = 62; // ?
+		public static class Roles
+		{
+			// some pre defined constants for common roles
+			public const int Identifier    = 1;
+			public const int Keyword   = 2;
+			public const int Argument  = 3;
+			public const int Attribute = 4;
+			public const int ReturnType = 5;
+			public const int Modifier  = 6;
+			public const int Body       = 7;
+			public const int Initializer = 8;
+			
+			
+			// some pre defined constants for most used punctuation 
+			
+			public const int LPar = 50; // (
+			public const int RPar = 51; // )
+			
+			public const int LBrace = 52; // {
+			public const int RBrace = 53; // }
+			
+			public const int LBracket = 54; // [
+			public const int RBracket = 55; // ]
+			
+			public const int LChevron = 56; // <
+			public const int RChevron = 57; // >
+			
+			public const int Dot = 58; // ,
+			public const int Comma = 59; // ,
+			public const int Colon = 60; // :
+			public const int Semicolon = 61; // ;
+			public const int QuestionMark = 62; // ?
+		}
 		
 		public INode Parent {
 			get;
