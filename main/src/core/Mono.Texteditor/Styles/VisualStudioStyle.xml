@@ -26,6 +26,7 @@
 	<!-- vs.net palette -->
 	<Color name="comment-green" value="#008000"/>
 	<Color name="keyword-blue" value="#0000ff"/>
+	<Color name="semantic-type" value="#008a8c"/>
 	<Color name="skyblue" value="#204a87"/>
 	<Color name="aluminium1" value="#eeeeec"/>
 	<Color name="aluminium2" value="#d3d7cf"/>
@@ -82,6 +83,7 @@
 	<Style name="string.double" color="#a31515"/>
 	<Style name="string.other" color="#a31515"/>
 	
+	<Style name="keyword.semantic.type" color="semantic-type"/>
 	<Style name="keyword" color="keyword-blue">
 		<Style name="access"/>
 	</Style>

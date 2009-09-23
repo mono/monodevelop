@@ -121,7 +121,7 @@
 	<Style name="fold.highlight" color="aluminium5"/>
 	<Style name="fold.togglemarker" color="black"/>
 	
-	<Style name="comment" color="chameleon3">
+	<Style name="comment" color="skyblue1">
 		<Style name="line"/>
 		<Style name="block"/>
 		<Style name="doc"/>
@@ -166,5 +166,7 @@
 		<Style name="exceptions" color="scarletred3"/>
 		<Style name="parameter" color="skyblue3"/>
 		<Style name="misc" color="skyblue3" weight="normal"/>
+		
+		<Style name="semantic.type" color="chameleon3" weight="normal"/>
 	</Style>
 </EditorStyle>

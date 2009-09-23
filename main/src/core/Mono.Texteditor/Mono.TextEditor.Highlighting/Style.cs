@@ -433,6 +433,8 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle ("string.double", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255)));
 			SetStyle ("string.other", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255)));
 			
+			SetStyle ("keyword.semantic.type", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0x8A , 0x8C)));
+			
 			SetStyle ("keyword", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), ChunkProperties.Bold));
 			
 			SetStyle ("keyword.access", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));

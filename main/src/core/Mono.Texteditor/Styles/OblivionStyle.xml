@@ -162,4 +162,6 @@
 	<Style name="keyword.operator.declaration" color="plum1" weight="bold"/>
 	<Style name="keyword.misc" color="white" weight="bold"/>
 	
+	<Style name="keyword.semantic.type" color="chameleon1"/>
+	
 </EditorStyle>

@@ -827,7 +827,11 @@ namespace Mono.TextEditor
 				StringBuilder textBuilder = new StringBuilder ();
 				Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
-					textBuilder.Append (chunk.GetText (Document));
+					try {
+						textBuilder.Append (chunk.GetText (Document));
+					} catch {
+						Console.WriteLine (chunk);
+					}
 				}
 				string lineText = textBuilder.ToString ();
 				bool containsPreedit = offset <= textEditor.preeditOffset && textEditor.preeditOffset <= offset + length;
