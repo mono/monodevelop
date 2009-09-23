@@ -1,3 +1,8 @@
+2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Compiler/GNUCompiler.cs: Fix bug #478735 - Can't link a
+	  library with a dot in the name.
+
 2009-09-12  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/DataProvider.cs:

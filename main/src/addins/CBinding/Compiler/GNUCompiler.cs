@@ -316,21 +316,39 @@ namespace CBinding
 			return (exitCode == 0);
 		}
 
+		static readonly string[] libraryExtensions = { ".so", ".a", ".dll", ".dylib" };
+		/// <summary>
+		/// Checks whether a library can be linked with -lbasename
+		/// </summary>
+		/// <remarks>
+		/// This should return true iff directory is empty or in 
+		/// the configured library paths, and library is of the form blah
+		/// or libblah.(a|so|dll|dylib), 
+		/// </remarks>
 		internal bool IsStandardLibrary(CProjectConfiguration configuration,
 		                                string directory, string library,
 		                                ref string std_lib)
 		{
-			if((String.IsNullOrEmpty(directory) || configuration.LibPaths.Contains(directory)) == false)
+			std_lib = library;
+			
+			if(!(String.IsNullOrEmpty(directory) || 
+			    configuration.LibPaths.Contains(directory)))
 				return false;
-
-			if((library.Contains(".") == false || library.StartsWith("lib")) == false)
-				return false;
-
-			if(library.Contains(".") == false)
-				std_lib = library;
-			else
-				std_lib = library.Substring(3, library.IndexOf('.') - 3);
-
+				
+			string libraryExtension = Path.GetExtension (library);
+			
+			foreach (string extension in libraryExtensions)
+			{
+				if (libraryExtension.Equals (extension, StringComparison.OrdinalIgnoreCase)) {
+					if (library.StartsWith("lib", StringComparison.OrdinalIgnoreCase)) {
+						std_lib = std_lib.Substring(3);
+						return true;
+					} else {
+						return false;
+					}
+				}
+			}
+			
 			return true;
 		}
 		
