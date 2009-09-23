@@ -1,5 +1,9 @@
 2009-09-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Syntax/HighlightCSharpSemanticRule.cs: Added some checks.
+
+2009-09-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* CSharpBinding.csproj:
 	* MonoDevelop.CSharp.Dom/Statements:

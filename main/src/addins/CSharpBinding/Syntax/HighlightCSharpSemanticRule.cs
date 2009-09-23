@@ -86,7 +86,7 @@ namespace MonoDevelop.CSharpBinding
 		
 		public override void Analyze (Mono.TextEditor.Document doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset)
 		{
-			if (!MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false))
+			if (!MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false) || doc == null || line == null || startChunk == null)
 				return;
 			ctx = GetParserContext (doc);
 			int lineNumber = doc.OffsetToLineNumber (line.Offset);
