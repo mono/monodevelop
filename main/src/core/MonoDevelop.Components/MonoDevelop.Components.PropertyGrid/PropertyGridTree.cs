@@ -49,7 +49,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		
 		public event EventHandler Changed;
 		
-		private System.Windows.Forms.PropertySort propertySort = System.Windows.Forms.PropertySort.Categorized;
+		private PropertySort propertySort = PropertySort.Categorized;
 
 		
 		public PropertyGridTree (EditorManager editorManager, PropertyGrid parentGrid)
@@ -155,14 +155,14 @@ namespace MonoDevelop.Components.PropertyGrid
 			QueueDraw ();
 		}
 		
-		public System.Windows.Forms.PropertySort PropertySort {
+		public PropertySort PropertySort {
 			get { return propertySort; }
 			set { propertySort = value; }
 		}
 		
 		internal void Populate (PropertyDescriptorCollection properties, object instance)
 		{
-			bool categorised = PropertySort == System.Windows.Forms.PropertySort.Categorized;
+			bool categorised = PropertySort == PropertySort.Categorized;
 		
 			//transcribe browsable properties
 			ArrayList sorted = new ArrayList();

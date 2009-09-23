@@ -1,3 +1,10 @@
+2009-09-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.DesignerSupport.csproj: Eliminate the property
+	  grid's System.Windows.Forms dependency, because it hurts Mac
+	  cold startup time.
+
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:

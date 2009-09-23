@@ -22,7 +22,6 @@ REFS =  \
 	-r:System.Drawing \
 	-r:System.Drawing.Design \
 	-r:System.Web \
-	-r:System.Windows.Forms \
 	-r:System.Xml
 
 FILES =  \

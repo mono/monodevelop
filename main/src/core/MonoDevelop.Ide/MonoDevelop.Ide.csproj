@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Ide</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -72,7 +73,6 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Dock\MonoDevelop.Dock.csproj">
@@ -149,7 +149,9 @@
     <EmbeddedResource Include="icons\SplashScreen.png">
       <LogicalName>SplashScreen.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Ide.addin.xml">
+      <LogicalName>MonoDevelop.Ide.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\Icons.16x16.LinkOverlay.png">
       <LogicalName>Icons.16x16.LinkOverlay.png</LogicalName>
     </EmbeddedResource>

@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			});
 			
 			grid = new MonoDevelop.Components.PropertyGrid.PropertyGrid ();
-			grid.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
+			grid.PropertySort = MonoDevelop.Components.PropertyGrid.PropertySort.Alphabetical;
 			grid.ShowHelp = true;
 			grid.ShowAll ();
 			grid.ShowToolbar = false;

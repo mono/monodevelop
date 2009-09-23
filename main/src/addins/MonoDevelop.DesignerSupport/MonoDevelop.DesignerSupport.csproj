@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.DesignerSupport</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.DesignerSupport</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,7 +38,6 @@
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Design" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Web" />
     <Reference Include="System.Drawing" />
     <Reference Include="Mono.Posix" />
@@ -156,7 +156,9 @@
     <Compile Include="MonoDevelop.DesignerSupport\CodeBehindWriter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml">
+      <LogicalName>MonoDevelop.DesignerSupport.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\group-by-category.png">
       <LogicalName>group-by-category.png</LogicalName>
     </EmbeddedResource>

@@ -34,7 +34,6 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Windows.Forms.Design;
 using MonoDevelop.Core;
  
 namespace MonoDevelop.Components.PropertyGrid

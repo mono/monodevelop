@@ -12,7 +12,6 @@ REFS =  \
 	-r:System \
 	-r:System.Core \
 	-r:System.Drawing \
-	-r:System.Windows.Forms \
 	-r:System.Xml
 
 FILES =  \

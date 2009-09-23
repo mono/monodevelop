@@ -37,7 +37,6 @@ using System;
 using System.IO;
 using System.Collections;
 using System.ComponentModel;
-using System.Windows.Forms.Design;
 
 using Gtk;
 using Gdk;
@@ -69,7 +68,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		
 		EditorManager editorManager;
 		
-		System.Windows.Forms.PropertySort propertySort = System.Windows.Forms.PropertySort.Categorized;
+		PropertySort propertySort = PropertySort.Categorized;
 		
 		const string PROP_HELP_KEY = "MonoDevelop.PropertyPad.ShowHelp";
 		
@@ -156,9 +155,9 @@ namespace MonoDevelop.Components.PropertyGrid
 		void toolbarClick (object sender, EventArgs e)
 		{
 			if (sender == alphButton)
-				PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
+				PropertySort = PropertySort.Alphabetical;
 			else if (sender == catButton)
-				PropertySort = System.Windows.Forms.PropertySort.Categorized;
+				PropertySort = PropertySort.Categorized;
 			else {
 				TabRadioToolButton button = (TabRadioToolButton) sender;
 				if (selectedTab == button.Tab) return;
@@ -167,7 +166,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 		}
 		
-		public System.Windows.Forms.PropertySort PropertySort {
+		public PropertySort PropertySort {
 			get { return propertySort; }
 			set {
 				if (value != propertySort) {
@@ -198,8 +197,9 @@ namespace MonoDevelop.Components.PropertyGrid
 					(RadioToolButton) toolbar.GetNthItem (propertyTabs.Count + FirstTabIndex - 1));
 			
 			//load image from PropertyTab's bitmap
-			if (tab.Bitmap != null)
-				rtb.IconWidget = new Gtk.Image (ImageToPixbuf (tab.Bitmap));
+			var icon = tab.GetIcon (); 
+			if (icon != null)
+				rtb.IconWidget = new Gtk.Image (icon);
 			else
 				rtb.IconWidget = new Gtk.Image (Stock.MissingImage, IconSize.SmallToolbar);
 			
@@ -399,5 +399,13 @@ namespace MonoDevelop.Components.PropertyGrid
 		}
 		
 		public PropertyTab Tab;
+	}
+	
+	public enum PropertySort
+	{
+		NoSort = 0,
+		Alphabetical,
+		Categorized,
+		CategorizedAlphabetical
 	}
 }

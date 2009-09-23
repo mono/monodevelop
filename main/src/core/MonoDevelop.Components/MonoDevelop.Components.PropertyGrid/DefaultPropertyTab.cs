@@ -34,7 +34,6 @@
 using Gtk;
 using System;
 using System.ComponentModel;
-using System.Windows.Forms.Design;
 using MonoDevelop.Core;
  
 namespace MonoDevelop.Components.PropertyGrid
@@ -67,6 +66,27 @@ namespace MonoDevelop.Components.PropertyGrid
 			if (component == null)
 				return new PropertyDescriptorCollection (new PropertyDescriptor[] {});
 			return TypeDescriptor.GetProperties (component);
+		}
+	}
+	
+	public abstract class PropertyTab
+	{
+		public abstract string TabName { get; }
+		public abstract bool CanExtend (object extendee);
+		public abstract PropertyDescriptor GetDefaultProperty (object component);
+		public abstract PropertyDescriptorCollection GetProperties (object component, Attribute[] attributes);
+		
+		public PropertyDescriptorCollection GetProperties (object component)
+		{
+			return GetProperties (null);
+		}
+		
+		public Gdk.Pixbuf GetIcon ()
+		{
+			using (var stream = GetType ().Assembly.GetManifestResourceStream (GetType ().FullName + ".bmp"))
+				if (stream != null)
+					return new Gdk.Pixbuf (stream);
+			return null;
 		}
 	}
 }
