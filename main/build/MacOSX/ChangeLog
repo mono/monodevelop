@@ -1,3 +1,10 @@
+2009-09-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* mdtool:
+	* monodevelop: Be even more defensive against MacPorts interfering 
+	  with mono, pkgconfig and other tools by making PATH point at the 
+	  official Mono.framework.
+
 2009-09-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* DS_Store, dmg-bg.png: Update branding.
