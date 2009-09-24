@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class VariableInitializer : AbstractNode
+	public class VariableInitializer : AbstractCSharpNode
 	{
 		public string Name {
 			get {
@@ -49,8 +49,10 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public VariableInitializer ()
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
+			return visitor.VisitVariableInitializer (this, data);
 		}
+
 	}
 }

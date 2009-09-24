@@ -45,8 +45,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public UsingAliasDeclaration ()
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
+			return visitor.VisitUsingAliasDeclaration (this, data);
 		}
 	}
 }

@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class Attribute : AbstractNode
+	public class Attribute : AbstractCSharpNode
 	{
 		public string Name {
 			get {
@@ -51,9 +51,10 @@ namespace MonoDevelop.CSharp.Dom
 				return base.GetChildrenByRole (Roles.Argument).Cast <INode>();
 			}
 		}
-		
-		public Attribute ()
+
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
+			return visitor.VisitAttribute (this, data);
 		}
 	}
 }

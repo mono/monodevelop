@@ -44,6 +44,11 @@ namespace MonoDevelop.CSharp.Dom
 				return (ConstructorInitializer)base.GetChildByRole (Roles.Initializer);
 			}
 		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitConstructorDeclaration (this, data);
+		}
 	}
 	
 	public enum ConstructorInitializerType {
@@ -51,7 +56,7 @@ namespace MonoDevelop.CSharp.Dom
 		This
 	}
 	
-	public class ConstructorInitializer : AbstractNode
+	public class ConstructorInitializer : AbstractCSharpNode
 	{
 		public ConstructorInitializerType ConstructorInitializerType {
 			get;
@@ -62,6 +67,11 @@ namespace MonoDevelop.CSharp.Dom
 			get {
 				return base.GetChildrenByRole (Roles.Argument).Cast <ArgumentDeclaration>();
 			}
+		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitConstructorInitializer (this, data);
 		}
 	}
 }

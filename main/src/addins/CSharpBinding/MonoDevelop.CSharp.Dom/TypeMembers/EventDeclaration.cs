@@ -57,5 +57,10 @@ namespace MonoDevelop.CSharp.Dom
 				return GetChildByRole (EventRemoveRole);
 			}
 		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitEventDeclaration (this, data);
+		}
 	}
 }

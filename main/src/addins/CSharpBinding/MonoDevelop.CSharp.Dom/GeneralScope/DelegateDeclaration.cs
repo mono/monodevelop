@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class DelegateDeclaration : AbstractNode
+	public class DelegateDeclaration : AbstractCSharpNode
 	{
 		public string Name {
 			get {
@@ -70,8 +70,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public DelegateDeclaration ()
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
+			return visitor.VisitDelegateDeclaration (this, data);
 		}
 	}
 }

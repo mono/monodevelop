@@ -50,12 +50,12 @@ namespace MonoDevelop.CSharpBinding
 //		IResolver resolver;
 //		IExpressionFinder expressionFinder;
 		
-		void Init (Mono.TextEditor.Document document)
+/*		void Init (Mono.TextEditor.Document document)
 		{
 			
 //			parser = ProjectDomService.GetParser (document.FileName, document.MimeType);
 //			expressionFinder = ProjectDomService.GetExpressionFinder (document.FileName);
-		}
+		}*/
 		
 		
 		ProjectDom GetParserContext (Mono.TextEditor.Document document)
@@ -91,6 +91,8 @@ namespace MonoDevelop.CSharpBinding
 			ctx = GetParserContext (doc);
 			int lineNumber = doc.OffsetToLineNumber (line.Offset);
 			ParsedDocument parsedDocument = ProjectDomService.GetParsedDocument (ctx, doc.FileName);
+			if (parsedDocument == null || parsedDocument.CompilationUnit == null)
+				return;
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk.Next) {
 				if (chunk.Style != "text")
 					continue;

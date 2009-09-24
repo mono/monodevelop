@@ -30,10 +30,8 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class BlockStatement : AbstractNode
+	public class BlockStatement : AbstractCSharpNode
 	{
-		public const int StatementRole = 100;
-		
 		public INode LBrace {
 			get {
 				return GetChildByRole (Roles.LBrace);
@@ -48,8 +46,13 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public IEnumerable<INode> Statements {
 			get {
-				return GetChildrenByRole (StatementRole);
+				return GetChildrenByRole (Roles.Statement);
 			}
+		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitBlockStatement (this, data);
 		}
 	}
 }

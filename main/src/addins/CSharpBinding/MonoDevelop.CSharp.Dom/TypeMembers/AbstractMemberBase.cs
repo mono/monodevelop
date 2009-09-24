@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public abstract class AbstractMemberBase : AbstractNode
+	public abstract class AbstractMemberBase : AbstractCSharpNode
 	{
 		public IEnumerable<INode> Modifiers { 
 			get {

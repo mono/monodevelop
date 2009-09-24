@@ -56,8 +56,30 @@ FILES =  \
 	Gui/NRefactoryResolver.cs \
 	Gui/NRefactoryTemplateParameterDataProvider.cs \
 	Gui/ResolveVisitor.cs \
-	MonoDevelop.CSharp.Dom/Expressions/Identifier.cs \
-	MonoDevelop.CSharp.Dom/Expressions/QualifiedIdentifier.cs \
+	MonoDevelop.CSharp.Dom/AbstractCSharpNode.cs \
+	MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/AssignmentExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/BaseReferenceExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/BinaryOperatorExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/CastExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/CheckedExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/ConditionalExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/IdentifierExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/IndexerExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/InvocationExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/MemberReferenceExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/NullReferenceExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/ObjectCreateExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/ParenthesizedExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/PointerReferenceExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/PrimitiveExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/QueryExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/SizeOfExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/StackAllocExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/ThisReferenceExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/TypeOfExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/UnaryOperatorExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/UncheckedExpression.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/Attribute.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/AttributeSection.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/DelegateDeclaration.cs \
@@ -65,7 +87,32 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/GeneralScope/TypeDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/UsingAliasDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/UsingDeclaration.cs \
+	MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs \
+	MonoDevelop.CSharp.Dom/ICSharpNode.cs \
+	MonoDevelop.CSharp.Dom/Identifier.cs \
+	MonoDevelop.CSharp.Dom/QualifiedIdentifier.cs \
 	MonoDevelop.CSharp.Dom/Statements/BlockStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/BreakStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/CheckedStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/ContinueStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/EmptyStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/FixedStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/ForeachStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/ForStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/GotoStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/IfElseStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/LabelStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/LockStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/ReturnStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/SwitchStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/ThrowStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/TryCatchStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/UncheckedStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/UnsafeStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/UsingStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/VariableDeclarationStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/WhileStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/YieldStatement.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/AbstractMember.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/AbstractMemberBase.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/ArgumentDeclaration.cs \

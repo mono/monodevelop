@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class AttributeSection : AbstractNode
+	public class AttributeSection : AbstractCSharpNode
 	{
 		const int TargetRole = 101;
 		
@@ -55,8 +55,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public AttributeSection ()
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
+			return visitor.VisitAttributeSection (this, data);
 		}
 	}
 }

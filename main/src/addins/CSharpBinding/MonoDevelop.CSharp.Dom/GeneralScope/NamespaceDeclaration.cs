@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class NamespaceDeclaration : AbstractNode
+	public class NamespaceDeclaration : AbstractCSharpNode
 	{
 		public string Name {
 			get {
@@ -59,6 +59,11 @@ namespace MonoDevelop.CSharp.Dom
 			if (string.IsNullOrEmpty (name2))
 				return name2;
 			return name1 + "." + name2;
+		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitNamespaceDeclaration (this, data);
 		}
 	}
 };

@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class UsingDeclaration : AbstractNode
+	public class UsingDeclaration : AbstractCSharpNode
 	{
 		public string Namespace {
 			get {
@@ -43,8 +43,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public UsingDeclaration ()
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
+			return visitor.VisitUsingDeclaration (this, data);
 		}
 	}
 }

@@ -52,8 +52,9 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public TypeDeclaration ()
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
+			return visitor.VisitTypeDeclaration (this, data);
 		}
 	}
 }

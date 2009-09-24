@@ -38,5 +38,10 @@ namespace MonoDevelop.CSharp.Dom
 				return base.GetChildrenByRole (Roles.Argument).Cast <ArgumentDeclaration>();
 			}
 		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitIndexerDeclaration (this, data);
+		}
 	}
 }
