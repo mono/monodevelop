@@ -1,3 +1,9 @@
+2009-09-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/INode.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Added new
+	  roles.
+
 2009-09-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/INode.cs: fixed build

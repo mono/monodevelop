@@ -196,6 +196,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					IType mainPart = ((CompoundType)type).Parts.First ();
 					((CompoundType)rtype).SetMainPart (mainPart.CompilationUnit.FileName, mainPart.Location);
 				}
+				
 				if (rtype != null)
 					return rtype;
 			}
@@ -516,7 +517,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			IType ptype = GetType (name, part.GenericArguments, searchDeep, true);
 			if (ptype == null)
 				return null;
-			for (int n=1; n<returnType.Parts.Count; n++) {
+			for (int n=1; n < returnType.Parts.Count; n++) {
 				part = returnType.Parts [n];
 				ptype = SearchInnerType (ptype, part.Name, part.GenericArguments.Count, true);
 				if (ptype != null)

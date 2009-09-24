@@ -66,7 +66,12 @@ namespace MonoDevelop.Projects.Dom
 			public const int Modifier  = 6;
 			public const int Body       = 7;
 			public const int Initializer = 8;
-			
+			public const int Condition = 9;
+			public const int EmbeddedStatement = 10;
+			public const int Iterator = 11;
+			public const int Expression = 12;
+			public const int Statement = 13;
+			public const int TargetExpression = 14;
 			
 			// some pre defined constants for most used punctuation 
 			
