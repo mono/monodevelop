@@ -120,7 +120,7 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.Return), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Enter), action);
 			
-			keyBindings.Add (GetKeyCode (Gdk.Key.Return, wordModifier), MiscActions.InsertNewLinePreserveCaretPosition);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Return, Gdk.ModifierType.ControlMask), MiscActions.InsertNewLinePreserveCaretPosition);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Return, Gdk.ModifierType.ShiftMask), MiscActions.InsertNewLineAtEnd);
 			
 			action = DeleteActions.Backspace;
@@ -379,6 +379,7 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.n, Gdk.ModifierType.ControlMask), CaretMoveActions.Down);
 			keyBindings.Add (GetKeyCode (Gdk.Key.h, Gdk.ModifierType.ControlMask), DeleteActions.Backspace);
 			keyBindings.Add (GetKeyCode (Gdk.Key.d, Gdk.ModifierType.ControlMask), DeleteActions.Delete);
+			keyBindings.Add (GetKeyCode (Gdk.Key.o, Gdk.ModifierType.ControlMask), MiscActions.InsertNewLinePreserveCaretPosition);
 		}
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)

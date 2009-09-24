@@ -1,3 +1,8 @@
+2009-09-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/SimpleEditMode.cs: Fix
+	  InsertNewLinePreserveCaretPosition bindings on Mac.
+
 2009-09-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 541177 - Bottom of
