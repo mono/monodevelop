@@ -764,14 +764,20 @@ namespace Mono.TextEditor
 				byteIndex = (uint)Encoding.UTF8.GetByteCount (charArray, 0, (int)textIndex);
 			} else {
 				int count = System.Math.Min ((int)(textIndex - curIndex), charArray.Length - (int)curIndex);
-
+				
 				if (count > 0)
 					byteIndex += (uint)Encoding.UTF8.GetByteCount (charArray, (int)curIndex, count);
 			}
 			curIndex = textIndex;
 			return byteIndex;
 		}
-		
+
+		static int TranslateIndexToUTF8 (string text, int index)
+		{
+			byte[] bytes = Encoding.UTF8.GetBytes (text);
+			return Encoding.UTF8.GetString (bytes, 0, index).Length;
+		}
+	
 		class LayoutWrapper : IDisposable
 		{
 			public Pango.Layout Layout {
@@ -1827,12 +1833,13 @@ namespace Mono.TextEditor
 			{
 				int trailing;
 				bool isInside = layoutWrapper.Layout.XyToIndex (xp, yp, out index, out trailing);
-
+				
 				if (isInside) {
 					int lineNr;
 					int xp1, xp2;
 					layoutWrapper.Layout.IndexToLineX (index, false, out lineNr, out xp1);
 					layoutWrapper.Layout.IndexToLineX (index + 1, false, out lineNr, out xp2);
+					index = TranslateIndexToUTF8 (layoutWrapper.Layout.Text, index);
 					if (!IsNearX1 (xp, xp1, xp2))
 						index++;
 					return true;
@@ -1845,7 +1852,6 @@ namespace Mono.TextEditor
 			{
 				if (line == null)
 					return DocumentLocation.Empty;
-
 				int offset = line.Offset;
 				yp %= margin.LineHeight;
 				xp += (int)margin.textEditor.HAdjustment.Value;
