@@ -108,11 +108,18 @@ namespace MonoDevelop.IPhone
 			
 			// construct the type objects, keyed by ref ID
 			var objectRecords = (IBMutableOrderedSet) objects.Properties ["objectRecords"];
+			var customTypeNames = new Dictionary<int,string> ();
 			var types = new Dictionary<int,CodeTypeDeclaration> ();
 			foreach (IBObjectRecord record in objectRecords.OrderedObjects.OfType<IBObjectRecord> ()) {
 				string name;
 				int? objId = ((IBObject)ResolveIfReference (record.Object)).Id;
-				if (objId != null && classNames.TryGetValue (record.ObjectId, out name) && ibApprovedPartialClassNames.Contains (name)) {
+				if (objId != null && classNames.TryGetValue (record.ObjectId, out name)) {
+					
+					customTypeNames[objId.Value] = name;
+					
+					if (!ibApprovedPartialClassNames.Contains (name))
+						continue;
+					
 					var type = new CodeTypeDeclaration (name) {
 						IsPartial = true
 					};
@@ -135,8 +142,7 @@ namespace MonoDevelop.IPhone
 							if (uobj.Properties.ContainsKey ("IBUINibName") && !String.IsNullOrEmpty (uobj.Properties["IBUINibName"] as string))
 								continue;
 							
-							if (uobj.Class != "IBUICustomObject")
-								baseType = GetTypeName (uobj.Class);
+							baseType = GetTypeName (null, uobj) ?? "MonoTouch.Foundation.NSObject";
 						}
 						type.Comments.Add (new CodeCommentStatement (String.Format ("Base type probably should be {0} or subclass", baseType))); 
 					}
@@ -166,10 +172,8 @@ namespace MonoDevelop.IPhone
 					//find a common sender type for all the items in the grouping
 					CodeTypeReference senderType = null;
 					foreach (IBActionConnection ev in actionGroup) {
-						var sender = ResolveIfReference (ev.Source) as UnknownIBObject;
-						var newType = sender != null
-							? new CodeTypeReference (GetTypeName (sender.Class))
-							: new CodeTypeReference ("MonoTouch.Foundation.NSObject");
+						var sender = ResolveIfReference (ev.Source) as IBObject;
+						var newType = new CodeTypeReference (GetTypeName (customTypeNames, sender) ?? "MonoTouch.Foundation.NSObject");
 						if (senderType == null) {
 							senderType = newType;
 							continue;
@@ -194,11 +198,8 @@ namespace MonoDevelop.IPhone
 				foreach (var outlet in outlets) {
 					CodeTypeReference outletType;
 					//destination is widget, so get type
-					var widget = outlet.Destination.Reference as UnknownIBObject;
-					if (widget != null)
-						outletType = new CodeTypeReference (GetTypeName (widget.Class));
-					else
-						outletType = new CodeTypeReference ("System.Object");
+					var widget = ResolveIfReference (outlet.Destination.Reference) as IBObject;
+					outletType = new CodeTypeReference (GetTypeName (customTypeNames, widget) ?? "System.Object");
 					
 					type.Members.Add (CreateOutletProperty (outlet.Label, outletType));
 				}
@@ -236,20 +237,25 @@ namespace MonoDevelop.IPhone
 					actionStubWriter = null;
 			}
 		}
-
 		
-		static string GetTypeName (string ibType)
+		static string GetTypeName (Dictionary<int,string> customTypeNames, IBObject obj)
 		{
-			if (ibType.StartsWith ("NS")) {
-				return "MonoTouch.Foundation." + ibType;
-			} else if (ibType.StartsWith ("IB") && ibType.Length > 2) {
-				string name = ibType.Substring (2);
-				if (name.StartsWith ("UI"))
-					return "MonoTouch.UIKit." + name;
-				if (name.StartsWith ("MK"))
-					return "MonoTouch.MapKit." + name;
+			string name;
+			if (obj != null && customTypeNames != null && obj.Id.HasValue && customTypeNames.TryGetValue (obj.Id.Value, out name))
+			    return name;
+			if (obj is UnknownIBObject) {
+				string ibType = ((UnknownIBObject)obj).Class;
+				if (ibType.StartsWith ("NS")) {
+					return "MonoTouch.Foundation." + ibType;
+				} else if (ibType.StartsWith ("IB") && ibType.Length > 2 && ibType != "IBUICustomObject") {
+					name = ibType.Substring (2);
+					if (name.StartsWith ("UI"))
+						return "MonoTouch.UIKit." + name;
+					if (name.StartsWith ("MK"))
+						return "MonoTouch.MapKit." + name;
+				}
 			}
-			return "MonoTouch.Foundation.NSObject";
+			return null;
 		}
 		
 		public static CodeMemberProperty CreateOutletProperty (string name, CodeTypeReference typeRef)
