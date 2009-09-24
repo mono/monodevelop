@@ -1,3 +1,9 @@
+2009-09-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj: Removed nrefactory
+	  reference.
+
 2009-09-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed menu
