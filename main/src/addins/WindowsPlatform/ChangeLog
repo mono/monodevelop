@@ -1,3 +1,8 @@
+2009-09-24  Mike Krüger  <mkrueger@novell.com>
+
+	* WindowsPlatform.cs: Fixed 'Bug 541610 - MonoDevelop 2.2 beta
+	  1 can't display Chinese text'.
+
 2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* WindowsPlatform.cs: Add a default implementation of

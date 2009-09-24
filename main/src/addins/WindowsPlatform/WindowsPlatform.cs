@@ -14,11 +14,13 @@ namespace MonoDevelop.Platform
 	{
 		public override string DefaultMonospaceFont {
 			get {
-				// Vista has the very beautiful Consolas
+				// This is a quick hack to allow monodevelop to render asian chars on windows. With Courier New 10 it doesn't work.
+				return "Mono 10";
+/*				// Vista has the very beautiful Consolas
 				if (Environment.OSVersion.Version.Major >= 6)
 					return "Consolas 10";
 					
-				return "Courier New 10";
+				return "Courier New 10";*/
 			}
 		}
 
