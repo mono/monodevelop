@@ -132,6 +132,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			insertNewMethod.InsertedText = "";
 			string indent = "";
 			MethodDeclaration methodDecl = new MethodDeclaration ();
+			bool isInInterface = false;
 			if (invoke.TargetObject is IdentifierExpression) {
 				insertNewMethod.FileName = options.Document.FileName;
 				insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (options.ResolveResult.CallingMember.BodyRegion.End.Line, options.ResolveResult.CallingMember.BodyRegion.End.Column);
@@ -161,6 +162,9 @@ namespace MonoDevelop.Refactoring.CreateMethod
 						otherFile = TextReplaceChange.GetTextEditorData (insertNewMethod.FileName);
 					}
 					methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Public;
+					isInInterface = type.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface;
+					if (isInInterface) 
+						methodDecl.Modifier = ICSharpCode.NRefactory.Ast.Modifiers.None;
 					if (otherFile == null)
 						throw new InvalidOperationException ("Can't open file:" + insertNewMethod.FileName);
 					try {
@@ -175,9 +179,10 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			}
 			methodDecl.TypeReference = new TypeReference ("System.Void");
 			methodDecl.TypeReference.IsKeyword = true;
-
-			methodDecl.Body = new BlockStatement ();
-			methodDecl.Body.AddChild (new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null)));
+			if (!isInInterface) {
+				methodDecl.Body = new BlockStatement ();
+				methodDecl.Body.AddChild (new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null)));
+			}
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0}"), methodDecl.Name);
 
 			int i = 0;
@@ -201,10 +206,14 @@ namespace MonoDevelop.Refactoring.CreateMethod
 
 			insertNewMethod.InsertedText += Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, indent);
 			result.Add (insertNewMethod);
-			int idx = insertNewMethod.InsertedText.IndexOf ("throw");
 			fileName = insertNewMethod.FileName;
-			selectionStart = insertNewMethod.Offset + idx;
-			selectionEnd   = insertNewMethod.Offset + insertNewMethod.InsertedText.IndexOf (';', idx) + 1;
+			if (!isInInterface) {
+				int idx = insertNewMethod.InsertedText.IndexOf ("throw");
+				selectionStart = insertNewMethod.Offset + idx;
+				selectionEnd   = insertNewMethod.Offset + insertNewMethod.InsertedText.IndexOf (';', idx) + 1;
+			} else {
+				selectionStart = selectionEnd = insertNewMethod.Offset;
+			}
 			return result;
 		}
 		
