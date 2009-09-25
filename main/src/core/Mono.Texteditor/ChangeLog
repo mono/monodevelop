@@ -1,3 +1,8 @@
+2009-09-25  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Corrected
+	  whitespacemarker drawing at the edge of selected text.
+
 2009-09-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Fixed 'Bug

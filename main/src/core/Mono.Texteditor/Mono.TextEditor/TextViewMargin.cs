@@ -972,7 +972,7 @@ namespace Mono.TextEditor
 				if (lineChars[i] == ' ') {
 					Pango.Rectangle pos = layout.IndexToPos ((int)TranslateToUTF8Index (lineChars, (uint)i, ref curIndex, ref byteIndex));
 					int xpos = pos.X;
-					DrawSpaceMarker (win, selectionStart <= offset + i && offset + i <= selectionEnd, xPos + xpos / 1024, y);
+					DrawSpaceMarker (win, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos / 1024, y);
 				}
 			}
 		}
@@ -985,7 +985,7 @@ namespace Mono.TextEditor
 				if (lineChars[i] == '\t') {
 					Pango.Rectangle pos = layout.IndexToPos ((int)TranslateToUTF8Index (lineChars, (uint)i, ref curIndex, ref byteIndex));
 					int xpos = pos.X;
-					DrawTabMarker (win, selectionStart <= offset + i && offset + i <= selectionEnd, xPos + xpos / 1024, y);
+					DrawTabMarker (win, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos / 1024, y);
 				}
 			}
 		}
@@ -1708,8 +1708,7 @@ namespace Mono.TextEditor
 				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y, area.Right);
 
 			
-			bool isEolSelected = textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
-
+			bool isEolSelected = textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.EndOffset);
 			
 			lineArea.X = xPos;
 			lineArea.Width = textEditor.Allocation.Width - xPos;
