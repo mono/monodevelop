@@ -1,3 +1,11 @@
+2009-09-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/IWorkbenchLayout.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Fixed some
+	  settitle bugs.
+
 2009-09-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

@@ -146,5 +146,6 @@ namespace MonoDevelop.Ide.Gui
 		void ActiveMdiChanged(object sender, Gtk.SwitchPageArgs e);
 		
 		void ResetToolbars ();
+		void SetWorkbenchTitle ();
 	}
 }

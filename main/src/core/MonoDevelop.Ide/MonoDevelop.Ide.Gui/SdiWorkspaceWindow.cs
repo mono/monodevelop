@@ -137,7 +137,6 @@ namespace MonoDevelop.Ide.Gui
 				if (fileName == null) {
 					fileName = content.UntitledName;
 				}
-				
 				OnTitleChanged(null);
 			}
 		}
@@ -214,10 +213,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SetTitleEvent(object sender, EventArgs e)
 		{
-			if (content == null) {
+			if (content == null)
 				return;
-			}
-		
+				
 			string newTitle = "";
 			if (content.ContentName == null) {
 				if (myUntitledTitle == null) {
@@ -252,7 +250,6 @@ namespace MonoDevelop.Ide.Gui
 			} else if (content.IsReadOnly) {
 				newTitle += "+";
 			}
-			
 			if (newTitle != Title) {
 				Title = newTitle;
 			}

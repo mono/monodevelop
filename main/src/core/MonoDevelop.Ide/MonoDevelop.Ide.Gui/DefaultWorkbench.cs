@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Title = "MonoDevelop";
 			LoggingService.LogInfo ("Creating DefaultWorkbench");
-		
+			
 			windowChangeEventHandler = new EventHandler(OnActiveWindowChanged);
 
 			WidthRequest = normalBounds.Width;
@@ -314,8 +314,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (bringToFront)
 				content.WorkbenchWindow.SelectWindow();
-			
-			RedrawAllComponents ();
 		}
 		
 		void ShowPadNode (ExtensionNode node)
@@ -568,11 +566,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void SetProjectTitle(object sender, ProjectEventArgs e)
 		{
-			if (e.Project != null) {
-				Title = String.Concat(e.Project.Name, " - ", "MonoDevelop");
-			} else {
-				Title = "MonoDevelop";
-			}
+			layout.SetWorkbenchTitle ();
 		}
 		
 		void OnActiveWindowChanged(object sender, EventArgs e)

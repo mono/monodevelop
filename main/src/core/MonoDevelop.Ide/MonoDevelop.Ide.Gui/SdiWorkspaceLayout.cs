@@ -140,6 +140,9 @@ namespace MonoDevelop.Ide.Gui
 			tabControl = new SdiDragNotebook ();
 			tabControl.Scrollable = true;
 			tabControl.SwitchPage += new SwitchPageHandler (ActiveMdiChanged);
+			tabControl.PageAdded += delegate { ActiveMdiChanged (null, null); };
+			tabControl.PageRemoved += delegate { ActiveMdiChanged (null, null); };
+		
 			tabControl.ButtonPressEvent += delegate(object sender, ButtonPressEventArgs e) {
 				int tab = tabControl.FindTabAtPosition (e.Event.XRoot, e.Event.YRoot);
 				if (tab < 0)
@@ -711,10 +714,9 @@ namespace MonoDevelop.Ide.Gui
 			tabLabel.CloseClicked += new EventHandler (closeClicked);			
 			tabLabel.ClearFlag (WidgetFlags.CanFocus);
 			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (workbench, content, tabControl, tabLabel);
-
+			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
 			sdiWorkspaceWindow.Closed += CloseWindowEvent;
 			tabControl.InsertPage (sdiWorkspaceWindow, tabLabel, -1);
-			
 			tabLabel.Show ();
 			return sdiWorkspaceWindow;
 		}
@@ -773,40 +775,49 @@ namespace MonoDevelop.Ide.Gui
 			if (lastActiveWindows.Count > MAX_LASTACTIVEWINDOWS)
 				lastActiveWindows.RemoveFirst ();
 			lastActiveWindows.AddLast (lastActive);
-			
 			lastActive = ActiveWorkbenchwindow;
-			
-			try {
-				if (ActiveWorkbenchwindow != null) {
-					if (ActiveWorkbenchwindow.ViewContent.IsUntitled) {
-						((Gtk.Window)workbench).Title = "MonoDevelop";
-					} else {
-						string post = String.Empty;
-						if (ActiveWorkbenchwindow.ViewContent.IsDirty) {
-							post = "*";
-						}
-						if (ActiveWorkbenchwindow.ViewContent.Project != null)
-						{
-							((Gtk.Window)workbench).Title = ActiveWorkbenchwindow.ViewContent.Project.Name + " - " + ActiveWorkbenchwindow.ViewContent.PathRelativeToProject + post + " - MonoDevelop";
-						}
-						else
-						{
-							((Gtk.Window)workbench).Title = ActiveWorkbenchwindow.ViewContent.ContentName + post + " - MonoDevelop";
-						}
-					}
-				} else {
-					((Gtk.Window)workbench).Title = "MonoDevelop";
-					if (isInFullViewMode) 
-						this.ToggleFullViewMode ();
-				}
-			} catch {
-				((Gtk.Window)workbench).Title = "MonoDevelop";
-			}
+			SetWorkbenchTitle ();
 			if (ActiveWorkbenchWindowChanged != null) {
 				ActiveWorkbenchWindowChanged(this, e);
 			}
 		}
+
+		public void SetWorkbenchTitle ()
+		{
+			try {
+				IWorkbenchWindow window = ActiveWorkbenchwindow;
+				if (window != null) {
+					if (window.ViewContent.IsUntitled) {
+						SetDefaultTitle ();
+					} else {
+						string post = String.Empty;
+						if (window.ViewContent.IsDirty) {
+							post = "*";
+						}
+						if (window.ViewContent.Project != null) {
+							((Gtk.Window)workbench).Title = window.ViewContent.Project.Name + " - " + window.ViewContent.PathRelativeToProject + post + " - MonoDevelop";
+						} else {
+							((Gtk.Window)workbench).Title = window.ViewContent.ContentName + post + " - MonoDevelop";
+						}
+					}
+				} else {
+					SetDefaultTitle ();
+					if (isInFullViewMode)
+						this.ToggleFullViewMode ();
+				}
+			} catch (Exception) {
+				SetDefaultTitle ();
+			}
+		}
 		
+		void SetDefaultTitle ()
+		{
+			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+				((Gtk.Window)workbench).Title = IdeApp.ProjectOperations.CurrentSelectedProject.Name + " - MonoDevelop";
+			} else {
+				((Gtk.Window)workbench).Title = "MonoDevelop";
+			}
+		}
 		public event EventHandler ActiveWorkbenchWindowChanged;
 		
 		
