@@ -1,5 +1,10 @@
 2009-09-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Dom/GeneralScope/AttributeSection.cs:
+	  Added attribute target enum.
+
+2009-09-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/MemberCompletionData.cs:
 	* Gui/NRefactoryParameterDataProvider.cs: Fixed 'Bug 542015 -
 	  Superfluous overloads'.

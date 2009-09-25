@@ -35,29 +35,35 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		const int TargetRole = 101;
 		
-		
-		public string AttributeTarget {
-			get {
-				Identifier target = TargetIdentifier;
-				return target != null ? target.Name : null;
-			}
+		public AttributeTarget AttributeTarget {
+			get;
+			set;
 		}
-		
+
 		public Identifier TargetIdentifier {
-			get {
-				return (Identifier)GetChildByRole (TargetRole);
-			}
+			get { return (Identifier)GetChildByRole (TargetRole); }
 		}
-		
+
 		public IEnumerable<Attribute> Attributes {
-			get {
-				return base.GetChildrenByRole (Roles.Attribute).Cast <Attribute>();
-			}
+			get { return base.GetChildrenByRole (Roles.Attribute).Cast<Attribute> (); }
 		}
-		
+
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttributeSection (this, data);
 		}
+	}
+	
+	public enum AttributeTarget {
+		None,
+		Assembly,
+		Module,
+		
+		Type,
+		Param,
+		Field,
+		Return,
+		Method,
+		Unknown
 	}
 }
