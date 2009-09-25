@@ -1,5 +1,5 @@
 // 
-// TypeDeclaration.cs
+// EnumDeclaration.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -31,13 +31,33 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class TypeDeclaration : AbstractMemberBase
+	public class EnumDeclaration : TypeDeclaration
 	{
-		public const int TypeKeyword      = 100;
+		const int EnumMemberDeclarationRole = 100;
 		
-		public Identifier NameIdentifier {
+		public IEnumerable<EnumMemberDeclaration> Members { 
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return base.GetChildrenByRole (EnumMemberDeclarationRole).Cast <EnumMemberDeclaration>();
+			}
+		}
+		
+		public override ClassType ClassType {
+			get {
+				return ClassType.Enum;
+			}
+		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitEnumDeclaration (this, data);
+		}
+	}
+	
+	public class EnumMemberDeclaration : AbstractCSharpNode
+	{
+		public IEnumerable<AttributeSection> Attributes { 
+			get {
+				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
 			}
 		}
 		
@@ -47,14 +67,21 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public virtual ClassType ClassType {
-			get;
-			protected set;
+		public Identifier NameIdentifier {
+			get {
+				return (Identifier)GetChildByRole (Roles.Identifier);
+			}
+		}
+		
+		public INode Initializer {
+			get {
+				return GetChildByRole (Roles.Initializer);
+			}
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitTypeDeclaration (this, data);
+			return visitor.VisitEnumMemberDeclaration (this, data);
 		}
 	}
 }

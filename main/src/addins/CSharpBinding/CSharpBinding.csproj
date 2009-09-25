@@ -274,6 +274,8 @@
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\AnonymousMethodExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ObjectCreateExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\QueryExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\CSharpParser.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\EnumDeclaration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -301,5 +303,6 @@
     <Folder Include="MonoDevelop.CSharp.Dom\TypeMembers\" />
     <Folder Include="MonoDevelop.CSharp.Dom\Statements\" />
     <Folder Include="MonoDevelop.CSharp.Dom\Expressions\" />
+    <Folder Include="MonoDevelop.CSharp.Parser\" />
   </ItemGroup>
 </Project>

@@ -36,6 +36,8 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, T data);
 		S VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, T data);
 		S VisitTypeDeclaration (TypeDeclaration typeDeclaration, T data);
+		S VisitEnumDeclaration (EnumDeclaration enumDeclaration, T data);
+		S VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, T data);
 		S VisitUsingDeclaration (UsingDeclaration usingDeclaration, T data);
 		S VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration, T data);
 		#endregion

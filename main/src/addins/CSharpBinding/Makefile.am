@@ -83,6 +83,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/GeneralScope/Attribute.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/AttributeSection.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/DelegateDeclaration.cs \
+	MonoDevelop.CSharp.Dom/GeneralScope/EnumDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/NamespaceDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/TypeDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/UsingAliasDeclaration.cs \
@@ -125,6 +126,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/TypeMembers/OperatorDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/PropertyDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/VariableInitializer.cs \
+	MonoDevelop.CSharp.Parser/CSharpParser.cs \
 	Parser/CodeGenerator.cs \
 	Parser/CSharpFormatter.cs \
 	Parser/CSharpNRefactoryASTProvider.cs \

@@ -1,5 +1,16 @@
 2009-09-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Parser:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/GeneralScope/TypeDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/GeneralScope/EnumDeclaration.cs:
+	  Added enumdeclaration node.
+
+2009-09-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Dom/GeneralScope/AttributeSection.cs:
 	  Added attribute target enum.
 
