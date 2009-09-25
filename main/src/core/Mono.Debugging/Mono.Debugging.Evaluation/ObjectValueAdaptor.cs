@@ -37,7 +37,6 @@ namespace Mono.Debugging.Evaluation
 
 		public abstract bool IsNull (EvaluationContext ctx, object val);
 		public abstract bool IsPrimitive (EvaluationContext ctx, object val);
-		public abstract bool IsClassInstance (EvaluationContext ctx, object val);
 		public abstract bool IsArray (EvaluationContext ctx, object val);
 		public abstract bool IsClass (object type);
 		public abstract object TryCast (EvaluationContext ctx, object val, object type);
@@ -46,6 +45,11 @@ namespace Mono.Debugging.Evaluation
 		public abstract string GetTypeName (EvaluationContext ctx, object val);
 		public abstract object[] GetTypeArgs (EvaluationContext ctx, object type);
 
+		public virtual bool IsClassInstance (EvaluationContext ctx, object val)
+		{
+			return IsClass (GetValueType (ctx, val));
+		}
+		
 		public object GetType (EvaluationContext ctx, string name)
 		{
 			return GetType (ctx, name, null);
@@ -143,8 +147,8 @@ namespace Mono.Debugging.Evaluation
 				values.Add (RawViewSource.CreateRawView (ctx, obj));
 			}
 			else {
-				ICollectionAdaptor col = CreateArrayAdaptor (ctx, proxy);
-				if (col != null) {
+				if (IsArray (ctx, proxy)) {
+					ICollectionAdaptor col = CreateArrayAdaptor (ctx, proxy);
 					ArrayElementGroup agroup = new ArrayElementGroup (ctx, col);
 					ObjectValue val = ObjectValue.CreateObject (null, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.ReadOnly, values.ToArray ());
 					values = new List<ObjectValue> ();
@@ -341,7 +345,7 @@ namespace Mono.Debugging.Evaluation
 
 		public virtual string CallToString (EvaluationContext ctx, object obj)
 		{
-			return "";
+			return GetValueTypeName (ctx, obj);
 		}
 
 		public object GetProxyObject (EvaluationContext ctx, object obj)

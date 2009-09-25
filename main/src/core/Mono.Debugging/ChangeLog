@@ -1,3 +1,9 @@
+2009-09-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Some minor
+	  fixes.
+
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/BreakpointStore.cs: Clear(): Properly

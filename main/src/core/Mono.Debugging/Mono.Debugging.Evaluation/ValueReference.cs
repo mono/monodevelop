@@ -198,13 +198,10 @@ namespace Mono.Debugging.Evaluation
 
 				return new ArrayValueReference (ctx, obj, indices);
 			}
-
+			
 			if (ctx.Adapter.IsClassInstance (Context, obj)) {
-				foreach (ValueReference val in ctx.Adapter.GetMembers (GetChildrenContext (), ctx.Adapter.GetValueType (Context, obj), obj)) {
-					if (val.Name == name)
-						return val;
-				}
-				return null;
+				ValueReference val = ctx.Adapter.GetMember (GetChildrenContext (), obj, name);
+				return val;
 			}
 					
 			return null;
