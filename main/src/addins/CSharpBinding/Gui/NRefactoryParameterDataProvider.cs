@@ -58,7 +58,7 @@ namespace MonoDevelop.CSharpBinding
 			foreach (IMethod method in resolveResult.Methods) {
 				if (method.IsConstructor)
 					continue;
-				string str = ambience.GetString (method, OutputFlags.ClassBrowserEntries);
+				string str = ambience.GetString (method, OutputFlags.IncludeParameters);
 				if (alreadyAdded.Contains (str))
 					continue;
 				alreadyAdded.Add (str);
@@ -66,8 +66,6 @@ namespace MonoDevelop.CSharpBinding
 					methods.Add (method);
 			}
 			methods.Sort (MethodComparer);
-			if (resolveResult.Methods.Count > 0)
-				this.prefix = ambience.GetString (resolveResult.Methods[0].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) + " ";
 		}
 		
 		static int MethodComparer (IMethod left, IMethod right)
@@ -78,11 +76,17 @@ namespace MonoDevelop.CSharpBinding
 		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)
 		{
 			this.editor = editor;
+			HashSet<string> alreadyAdded = new HashSet<string> ();
 			if (resolveResult.CallingType != null) {
 				bool includeProtected = true;
 				foreach (IMethod method in resolveResult.CallingType.Methods) {
 					if (!method.IsConstructor)
 						continue;
+					string str = ambience.GetString (method, OutputFlags.IncludeParameters);
+					if (alreadyAdded.Contains (str))
+						continue;
+					alreadyAdded.Add (str);
+					
 					if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
 						methods.Add (method);
 				}
@@ -92,6 +96,7 @@ namespace MonoDevelop.CSharpBinding
 		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, BaseResolveResult resolveResult)
 		{
 			this.editor = editor;
+			HashSet<string> alreadyAdded = new HashSet<string> ();
 			if (resolveResult.CallingType != null) {
 				IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
 				foreach (IReturnType rt in resolveResult.CallingType.BaseTypes) {
@@ -102,6 +107,11 @@ namespace MonoDevelop.CSharpBinding
 						foreach (IMethod method in baseType.Methods) {
 							if (!method.IsConstructor)
 								continue;
+							string str = ambience.GetString (method, OutputFlags.IncludeParameters);
+							if (alreadyAdded.Contains (str))
+								continue;
+							alreadyAdded.Add (str);
+							
 							if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
 								methods.Add (method);
 						}
@@ -123,15 +133,18 @@ namespace MonoDevelop.CSharpBinding
 					} else {
 						this.delegateName = type.Name;
 					}
-					this.prefix = ambience.GetString (invokeMethod.ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics) + " ";
-					
 					methods.Add (invokeMethod);
 					return;
 				}
 				bool includeProtected = DomType.IncludeProtected (resolver.Dom, type, resolver.CallingType);
 				bool constructorFound = false;
+				HashSet<string> alreadyAdded = new HashSet<string> ();
 				foreach (IMethod method in type.Methods) {
 					constructorFound |= method.IsConstructor;
+					string str = ambience.GetString (method, OutputFlags.IncludeParameters);
+					if (alreadyAdded.Contains (str))
+						continue;
+					alreadyAdded.Add (str);
 					if ((method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected)))
 						methods.Add (method);
 				}
@@ -154,7 +167,6 @@ namespace MonoDevelop.CSharpBinding
 		}
 		
  		string delegateName = null;
-		string prefix = null;
 		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, string delegateName, IType type)
 		{
 			this.editor = editor;
@@ -201,6 +213,7 @@ namespace MonoDevelop.CSharpBinding
 			string name = (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics) : methods[overload].Name));
 			StringBuilder parameters = new StringBuilder ();
 			int curLen = 0;
+			string prefix = ambience.GetString (methods[overload].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) + " ";
 
 			foreach (string parameter in parameterMarkup) {
 				if (parameters.Length > 0)
