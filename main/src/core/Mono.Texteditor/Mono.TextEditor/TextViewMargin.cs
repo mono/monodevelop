@@ -1708,7 +1708,7 @@ namespace Mono.TextEditor
 				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y, area.Right);
 
 			
-			bool isEolSelected = textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.EndOffset);
+			bool isEolSelected = textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
 			
 			lineArea.X = xPos;
 			lineArea.Width = textEditor.Allocation.Width - xPos;
