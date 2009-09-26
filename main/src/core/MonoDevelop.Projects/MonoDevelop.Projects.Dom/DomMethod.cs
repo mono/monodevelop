@@ -104,11 +104,20 @@ namespace MonoDevelop.Projects.Dom
 				for (int i = 0; i < parameters.Count; i++) {
 					if (i > 0)
 						result.Append (',');
-					if (parameters[i].ReturnType == null) {
+					IReturnType returnType = parameters[i].ReturnType;
+					if (parameters[i].IsRef || parameters[i].IsOut)
+						result.Append ("&");
+					if (returnType == null) {
 						result.Append ("System.Void");
 					} else {
-						result.Append (parameters[i].ReturnType.FullName);
+						result.Append (returnType.FullName);
 					}
+					for (int j = 0; j < returnType.ArrayDimensions; j++) {
+						result.Append ("[");
+						result.Append (new string (',', returnType.GetDimension (j)));
+						result.Append ("]");
+					}
+					result.Append (new string ('*', returnType.PointerNestingLevel));
 				}
 			}
 			result.Append (')');
