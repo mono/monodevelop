@@ -1,5 +1,10 @@
 2009-09-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs: Removed some
+	  debug code/fixed read/write package as proposed by lluis.
+
+2009-09-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs:
 	* MonoDevelop.Core.Assemblies/SystemPackage.cs: Add Requires
 	  info to package data.

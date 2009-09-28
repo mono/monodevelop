@@ -146,8 +146,8 @@ namespace Mono.PkgConfig
 			
 			lock (infos) {
 				if (infos.TryGetValue (file, out info)) {
-//					if (info.LastWriteTime == wtime)
-//						return info;
+					if (info.LastWriteTime == wtime)
+						return info;
 					oldInfo = info;
 				}
 			}
@@ -263,6 +263,8 @@ namespace Mono.PkgConfig
 					tw.WriteAttributeString ("version", pinfo.Version);
 				if (!string.IsNullOrEmpty (pinfo.Description))
 					tw.WriteAttributeString ("description", pinfo.Description);
+				if (!string.IsNullOrEmpty (pinfo.Requires))
+					tw.WriteAttributeString ("requires", pinfo.Requires);
 				if (pinfo.CustomData != null) {
 					foreach (KeyValuePair<string,string> cd in pinfo.CustomData)
 						tw.WriteAttributeString (cd.Key, cd.Value);
@@ -289,6 +291,7 @@ namespace Mono.PkgConfig
 					case "name": pinfo.Name = tr.Value; break;
 					case "version": pinfo.Version = tr.Value; break;
 					case "description": pinfo.Description = tr.Value; break;
+					case "requires": pinfo.Requires = tr.Value; break;
 					default: pinfo.SetData (tr.LocalName, tr.Value); break;
 				}
 			} while (tr.MoveToNextAttribute ());
