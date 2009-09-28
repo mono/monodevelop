@@ -146,8 +146,8 @@ namespace Mono.PkgConfig
 			
 			lock (infos) {
 				if (infos.TryGetValue (file, out info)) {
-					if (info.LastWriteTime == wtime)
-						return info;
+//					if (info.LastWriteTime == wtime)
+//						return info;
 					oldInfo = info;
 				}
 			}
@@ -329,6 +329,7 @@ namespace Mono.PkgConfig
 			if (!file.HasErrors) {
 				pinfo.Version = file.Version;
 				pinfo.Description = file.Description;
+				pinfo.Requires = file.Requires;
 				ParsePackageInfo (file, pinfo);
 				if (pinfo.IsValidPackage)
 					ctx.StoreCustomData (file, pinfo);
@@ -438,65 +439,39 @@ namespace Mono.PkgConfig
 	{
 		Dictionary<string,string> variables = new Dictionary<string, string> ();
 		
-		string filePath;
-		string name;
-		string description;
-		string version;
-		string libs;
-		bool hasErrors;
-
 		public string Description {
-			get {
-				return description;
-			}
-			set {
-				description = value;
-			}
+			get;
+			set;
 		}
 		
 		public string FilePath {
-			get {
-				return filePath;
-			}
-			set {
-				filePath = value;
-			}
+			get;
+			set;
 		}
 		
 		public bool HasErrors {
-			get {
-				return hasErrors;
-			}
-			set {
-				hasErrors = value;
-			}
+			get;
+			set;
 		}
 		
 		public string Libs {
-			get {
-				return libs;
-			}
-			set {
-				libs = value;
-			}
+			get;
+			set;
 		}
 		
 		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
+			get;
+			set;
 		}
 		
 		public string Version {
-			get {
-				return version;
-			}
-			set {
-				version = value;
-			}
+			get;
+			set;
+		}
+		
+		public string Requires {
+			get;
+			set;
 		}
 		
 		public string GetVariable (string varName)
@@ -532,6 +507,7 @@ namespace Mono.PkgConfig
 							case "Description": Description = value; break;
 							case "Version": Version = value; break;
 							case "Libs": Libs = value; break;
+							case "Requires": Requires = value; break;
 						}
 					}
 				}
@@ -581,24 +557,26 @@ namespace Mono.PkgConfig
 	internal class PackageInfo
 	{
 		Dictionary<string,string> customData;
-		string name;
-		string version;
-		string description;
 		DateTime lastWriteTime;
 		
 		public string Name {
-			get { return name; }
-			set { name = value; }
+			get;
+			set;
 		}
 		
 		public string Version {
-			get { return version; }
-			set { version = value; }
+			get;
+			set;
 		}
 		
 		public string Description {
-			get { return description; }
-			set { description = value; }
+			get;
+			set;
+		}
+		
+		public string Requires {
+			get;
+			set;
 		}
 		
 		public string GetData (string name)

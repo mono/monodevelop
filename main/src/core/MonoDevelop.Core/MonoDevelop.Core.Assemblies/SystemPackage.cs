@@ -60,7 +60,7 @@ namespace MonoDevelop.Core.Assemblies
 			IsFrameworkPackage = info.IsFrameworkPackage;
 			IsCorePackage = info.IsCorePackage;
 			IsBaseCorePackage = info.IsBaseCorePackage;
-
+			this.Requires = info.Requires;
 			SystemAssembly last = null;
 			foreach (SystemAssembly asm in assemblies) {
 				if (asm == null)
@@ -96,6 +96,11 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public string TargetFramework {
 			get { return targetFramework ?? "1.1"; }
+		}
+		
+		public string Requires {
+			get;
+			private set;
 		}
 		
 		internal string BaseTargetFramework { get; set; }
@@ -149,6 +154,8 @@ namespace MonoDevelop.Core.Assemblies
 			Description = info.Description;
 			TargetFramework = info.GetData ("targetFramework");
 			CustomData = info.CustomData;
+			Requires = info.Requires;
+			
 			Assemblies = new List<AssemblyInfo> ();
 			if (info.IsValidPackage) {
 				foreach (PackageAssemblyInfo asm in info.Assemblies)
@@ -167,6 +174,8 @@ namespace MonoDevelop.Core.Assemblies
 		public string Description { get; set; }
 		
 		public string TargetFramework { get; set; }
+		
+		public string Requires { get; set; }
 		
 		// The package is part of the core mono SDK
 		public bool IsCorePackage { get; set; }
