@@ -1,3 +1,9 @@
+2009-09-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs:
+	* MonoDevelop.Core.Assemblies/LibraryPcFileCache.cs: Added
+	  some notes.
+
 2009-09-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs: made
