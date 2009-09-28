@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.IPhone</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.IPhone</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,21 +35,27 @@
     <Reference Include="System" />
     <Reference Include="MonoDevelop.Core, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core.Gui, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Components, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core">
@@ -56,6 +63,7 @@
     </Reference>
     <Reference Include="MonoDevelop.DesignerSupport, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
@@ -112,7 +120,9 @@
     <Compile Include="PropertyList\PlistDate.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">
+      <LogicalName>MonoDevelop.IPhone.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneApplicationXib.xft.xml">
       <LogicalName>IPhoneApplicationXib.xft.xml</LogicalName>
     </EmbeddedResource>
@@ -128,7 +138,9 @@
     <EmbeddedResource Include="Templates\IPhoneProjectEmpty.xpt.xml">
       <LogicalName>IPhoneProjectEmpty.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="framework_IPhone.xml" />
+    <EmbeddedResource Include="framework_IPhone.xml">
+      <LogicalName>framework_IPhone.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
@@ -191,6 +203,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneEntitlements.xft.xml">
       <LogicalName>IPhoneEntitlements.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPhoneLibraryProject.xpt.xml">
+      <LogicalName>IPhoneLibraryProject.xpt.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

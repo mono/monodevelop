@@ -42,6 +42,8 @@
 		<Condition id="MonoTouchInstalled">
 			<ProjectTemplate id       = "IPhoneProject"
 			                 resource = "IPhoneProject.xpt.xml" />
+			<ProjectTemplate id       = "IPhoneLibraryProject"
+			                 resource = "IPhoneLibraryProject.xpt.xml" />
 			<ProjectTemplate id       = "IPhoneProject-Empty"
 			                 resource = "IPhoneProjectEmpty.xpt.xml"/>
 		</Condition>
