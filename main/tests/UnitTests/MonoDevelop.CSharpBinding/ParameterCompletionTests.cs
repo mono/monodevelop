@@ -58,7 +58,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			TestViewContent sev = new TestViewContent ();
-			DotNetProject project = new DotNetProject ("C#");
+			DotNetProject project = new DotNetAssemblyProject ("C#");
 			project.FileName = "/tmp/ap" + pcount + ".csproj";
 			
 			string file = "/tmp/test-pfile-" + (pcount++) + ".cs";

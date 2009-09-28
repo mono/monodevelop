@@ -181,7 +181,7 @@ namespace MonoDevelop.Prj2Make
 				
 				monitor.BeginTask (GettextCatalog.GetString ("Importing project: ") + csprojFileName, 4);
 				
-				DotNetProject prjxObj = new DotNetProject ("C#", null, null);
+				DotNetAssemblyProject prjxObj = new DotNetAssemblyProject ("C#", null, null);
 				
 				prjxFileName = String.Format ("{0}.mdp",
 					Path.Combine (Path.GetDirectoryName (csprojFileName),

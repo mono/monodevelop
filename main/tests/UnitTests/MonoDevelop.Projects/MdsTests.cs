@@ -173,7 +173,7 @@ namespace MonoDevelop.Projects
 			sol.FileName = Path.Combine (dir, "thesolution");
 			ws.Items.Add (sol);
 			
-			DotNetProject p = new DotNetProject ("C#");
+			DotNetAssemblyProject p = new DotNetAssemblyProject ("C#");
 			p.FileName = Path.Combine (dir, "theproject");
 			sol.RootFolder.Items.Add (p);
 			

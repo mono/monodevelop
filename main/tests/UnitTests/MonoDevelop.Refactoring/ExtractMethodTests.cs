@@ -72,7 +72,7 @@ namespace MonoDevelop.Refactoring.Tests
 			TestViewContent sev = new TestViewContent ();
 	//		return new RefactoringOptions ();
 			
-			DotNetProject project = new DotNetProject ("C#");
+			DotNetProject project = new DotNetAssemblyProject ("C#");
 			Solution solution = new Solution ();
 			solution.RootFolder.Items.Add (project);
 			project.FileName = "/tmp/a" + pcount + ".csproj";

@@ -245,7 +245,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				item = (SolutionItem) Activator.CreateInstance (itemClass);
 			
 			if (item == null && !string.IsNullOrEmpty (language))
-				item = new DotNetProject (language);
+				item = new DotNetAssemblyProject (language);
 			
 			if (item == null) {
 				if (string.IsNullOrEmpty (itemType))

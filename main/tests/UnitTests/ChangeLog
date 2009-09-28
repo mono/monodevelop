@@ -1,3 +1,17 @@
+2009-09-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/MdsTests.cs:
+	* MonoDevelop.Projects/ProjectTests.cs:
+	* MonoDevelop.Projects/SolutionTests.cs:
+	* MonoDevelop.Projects/WorkspaceTests.cs:
+	* MonoDevelop.Projects/TestProjectsChecks.cs:
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs:
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: Use
+	  the new DotNetAssemblyProject class instead of
+	  DotNetProject, which is now abstract.
+
 2009-09-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TopLevelTests.cs: Fixed unit test.

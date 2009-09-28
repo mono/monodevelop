@@ -1,3 +1,8 @@
+2009-09-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoMakefileFormat.cs: Use the new DotNetAssemblyProject
+	  class instead of DotNetProject, which is now abstract.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDeveloperExtensions.csproj: Updated dependencies. We now

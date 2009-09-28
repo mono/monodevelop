@@ -47,7 +47,7 @@ using MonoDevelop.Core.Assemblies;
 namespace MonoDevelop.Projects
 {
 	[DataInclude(typeof(DotNetProjectConfiguration))]
-	public class DotNetProject : Project
+	public abstract class DotNetProject : Project
 	{
 
 		bool usePartialTypes = true;

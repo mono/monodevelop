@@ -1,5 +1,17 @@
 2009-09-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* md1format.xml:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/DotNetProjectBinding.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Use the new DotNetAssemblyProject class instead of
+	  DotNetProject, which is now abstract.
+
+2009-09-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:
 	  Don't share the name table, since it now holds temporary ids
 	  which are exclusive to specific database serialization

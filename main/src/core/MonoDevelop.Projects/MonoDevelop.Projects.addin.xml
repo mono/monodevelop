@@ -138,6 +138,7 @@
 		<DataType class = "MonoDevelop.Projects.Project" />
 		<DataType class = "MonoDevelop.Projects.Workspace" />
 		<DataType class = "MonoDevelop.Projects.DotNetProject" />
+		<DataType class = "MonoDevelop.Projects.DotNetAssemblyProject" />
 		<DataType class = "MonoDevelop.Projects.GenericProject" />
 		<DataType class = "MonoDevelop.Projects.GenericProjectConfiguration" />
 	</Extension>

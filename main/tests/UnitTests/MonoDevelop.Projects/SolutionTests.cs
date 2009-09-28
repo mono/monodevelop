@@ -86,14 +86,14 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, countSolutionItemAdded);
 			Assert.AreEqual (0, sol.Items.Count);
 			
-			DotNetProject project = new DotNetProject ("C#");
+			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
 			project.Name = "project1";
 			sol.RootFolder.Items.Add (project);
 			
 			Assert.AreEqual (2, countSolutionItemAdded);
 			Assert.AreEqual (1, sol.Items.Count);
 			
-			DotNetProject project2 = new DotNetProject ("C#");
+			DotNetAssemblyProject project2 = new DotNetAssemblyProject ("C#");
 			project2.Name = "project2";
 			folder.Items.Add (project2);
 			
@@ -192,7 +192,7 @@ namespace MonoDevelop.Projects
 		{
 			int nameChanges = 0;
 			
-			DotNetProject prj = new DotNetProject ("C#");
+			DotNetAssemblyProject prj = new DotNetAssemblyProject ("C#");
 			prj.NameChanged += delegate {
 				nameChanges++;
 			};
@@ -512,7 +512,7 @@ namespace MonoDevelop.Projects
 			
 			// Add new project
 			
-			Project newp = new DotNetProject ("C#");
+			Project newp = new DotNetAssemblyProject ("C#");
 			Assert.AreEqual ("MSBuild05", newp.FileFormat.Id);
 			
 			sol.RootFolder.Items.Add (newp);

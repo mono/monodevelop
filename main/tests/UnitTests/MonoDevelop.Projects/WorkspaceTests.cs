@@ -204,14 +204,14 @@ namespace MonoDevelop.Projects
 			Solution sol1 = new Solution ();
 			cws.Items.Add (sol1);
 			sol1.RootFolder.Items.Add (it1 = new DummySolutionItem ());
-			sol1.RootFolder.Items.Add (it2 = new DotNetProject ("C#"));
+			sol1.RootFolder.Items.Add (it2 = new DotNetAssemblyProject ("C#"));
 			
 			Solution sol2 = new Solution ();
 			cws.Items.Add (sol2);
 			SolutionFolder f = new SolutionFolder ();
 			sol2.RootFolder.Items.Add (f);
-			f.Items.Add (it3 = new DotNetProject ("C#"));
-			f.Items.Add (it4 = new DotNetProject ("C#"));
+			f.Items.Add (it3 = new DotNetAssemblyProject ("C#"));
+			f.Items.Add (it4 = new DotNetAssemblyProject ("C#"));
 			
 			it3.Name = "it3";
 			it4.FileName = "/test/it4";
@@ -305,14 +305,14 @@ namespace MonoDevelop.Projects
 			Solution sol1 = new Solution ();
 			cws.Items.Add (sol1);
 			sol1.RootFolder.Items.Add (it1 = new DummySolutionItem ());
-			sol1.RootFolder.Items.Add (it2 = new DotNetProject ("C#"));
+			sol1.RootFolder.Items.Add (it2 = new DotNetAssemblyProject ("C#"));
 			
 			Solution sol2 = new Solution ();
 			cws.Items.Add (sol2);
 			SolutionFolder f = new SolutionFolder ();
 			sol2.RootFolder.Items.Add (f);
-			f.Items.Add (it3 = new DotNetProject ("C#"));
-			f.Items.Add (it4 = new DotNetProject ("C#"));
+			f.Items.Add (it3 = new DotNetAssemblyProject ("C#"));
+			f.Items.Add (it4 = new DotNetAssemblyProject ("C#"));
 			
 			ws.ExtendedProperties ["data"] = d[0];
 			cws.ExtendedProperties ["data"] = d[1];

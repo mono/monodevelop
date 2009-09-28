@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public void ProjectFilePaths ()
 		{
-			DotNetProject project = new DotNetProject ("C#");
+			DotNetProject project = new DotNetAssemblyProject ("C#");
 			string dir = Environment.CurrentDirectory;
 			
 			ProjectFile file1 = project.AddFile (Util.Combine (dir, "test1.cs"), BuildAction.Compile);
@@ -169,7 +169,7 @@ namespace MonoDevelop.Projects
 			ProjectCreateInformation info = new ProjectCreateInformation ();
 			info.ProjectName = "Some.Test";
 			info.ProjectBasePath = "/tmp/test";
-			DotNetProject p = new DotNetProject ("C#", info, null);
+			DotNetProject p = new DotNetAssemblyProject ("C#", info, null);
 
 			Assert.AreEqual (2, p.Configurations.Count);
 			Assert.AreEqual ("Debug", p.Configurations [0].Name);
@@ -182,7 +182,7 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public void NewConfigurationsHaveAnAssemblyName ()
 		{
-			DotNetProject p = new DotNetProject ("C#");
+			DotNetProject p = new DotNetAssemblyProject ("C#");
 			p.Name = "HiThere";
 			DotNetProjectConfiguration c = (DotNetProjectConfiguration) p.CreateConfiguration ("First");
 			Assert.AreEqual ("HiThere", c.OutputAssembly);

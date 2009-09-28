@@ -73,7 +73,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 					break;
 				}
 			}
-			DotNetProject project = new DotNetProject ("C#");
+			DotNetProject project = new DotNetAssemblyProject ("C#");
 			project.FileName = "/tmp/a.csproj";
 			
 			SimpleProjectDom dom = new SimpleProjectDom ();

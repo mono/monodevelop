@@ -100,7 +100,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		if not System.IO.File.Exists (_fakeFileName):
 			_fileInfo  = System.IO.File.Create (_fakeFileName)
 			_fileInfo.Close ()
-		_fakeProject = DotNetProject(Model.LanguageName, Name: "___ShellProject", FileName: shellProjectFile)
+		_fakeProject = DotNetAssemblyProject(Model.LanguageName, Name: "___ShellProject", FileName: shellProjectFile)
 		_fakeSolution = Solution()
 		_fakeSolution.RootFolder.AddItem(_fakeProject)
 		ProjectDomService.Load (_fakeSolution)

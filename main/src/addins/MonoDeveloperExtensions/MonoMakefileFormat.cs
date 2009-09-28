@@ -108,7 +108,7 @@ namespace MonoDeveloper
 				if (aname != null) {
 					// It is a project
 					monitor.BeginTask ("Loading '" + fileName + "'", 0);
-					DotNetProject project = new DotNetProject ("C#");
+					DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
 					MonoSolutionItemHandler handler = new MonoSolutionItemHandler (project);
 					ProjectExtensionUtil.InstallHandler (handler, project);
 					project.Name = Path.GetFileName (basePath);

@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects
 		
 		protected virtual DotNetProject CreateProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 		{
-			return new DotNetProject (languageName, info, projectOptions);
+			return new DotNetAssemblyProject (languageName, info, projectOptions);
 		}
 		
 		public Project CreateSingleFileProject (string file)

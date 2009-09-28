@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			IPrettyPrinter printer = TextFileService.GetPrettyPrinter (description.MimeType);
 			if (printer == null)
 				return;
-			DotNetProject parent = new DotNetProject ();
+			DotNetAssemblyProject parent = new DotNetAssemblyProject ();
 			parent.Policies.Set<T> (settings, description.MimeType);
 			texteditor1.Document.Text  = printer.FormatText (parent, description.MimeType, texteditor1.Document.Text);
 		}

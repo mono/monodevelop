@@ -220,6 +220,7 @@ FILES =  \
 	MonoDevelop.Projects/CustomCommandExtension.cs \
 	MonoDevelop.Projects/CustomCommandType.cs \
 	MonoDevelop.Projects/CyclicDependencyException.cs \
+	MonoDevelop.Projects/DotNetAssemblyProject.cs \
 	MonoDevelop.Projects/DotNetProject.cs \
 	MonoDevelop.Projects/DotNetProjectBinding.cs \
 	MonoDevelop.Projects/DotNetProjectConfiguration.cs \

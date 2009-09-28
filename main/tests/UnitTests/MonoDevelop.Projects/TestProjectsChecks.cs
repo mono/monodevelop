@@ -146,8 +146,9 @@ namespace MonoDevelop.Projects
 			Solution sol = new Solution ();
 			SolutionConfiguration scDebug = sol.AddConfiguration ("Debug", true);
 			
-			DotNetProject project = new DotNetProject ("C#");
+			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
 			sol.RootFolder.Items.Add (project);
+			Assert.AreEqual (0, project.Configurations.Count);
 			
 			InitializeProject (dir, project, "TestProject");
 			project.References.Add (new ProjectReference (ReferenceType.Gac, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
@@ -160,6 +161,9 @@ namespace MonoDevelop.Projects
 			pf.CopyToOutputDirectory = FileCopyMode.Always;
 			project.Files.Add (pf);
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Nothing.xml"), BuildAction.None));
+			
+			Assert.IsFalse (scDebug.GetEntryForItem (project).Build);
+			scDebug.GetEntryForItem (project).Build = true;
 			
 			SolutionConfiguration scRelease = sol.AddConfiguration ("Release", true);
 			
@@ -194,7 +198,7 @@ namespace MonoDevelop.Projects
 		
 		public static DotNetProject CreateProject (string dir, string lang, string name)
 		{
-			DotNetProject project = new DotNetProject (lang);
+			DotNetAssemblyProject project = new DotNetAssemblyProject (lang);
 			InitializeProject (dir, project, name);
 			return project;
 		}
@@ -352,7 +356,7 @@ namespace MonoDevelop.Projects
 			sol.FileName = Path.Combine (dir, "TestSolutionFolders");
 			sol.Name = "TheSolution";
 			
-			DotNetProject p1 = new DotNetProject ("C#");
+			DotNetAssemblyProject p1 = new DotNetAssemblyProject ("C#");
 			p1.FileName = Path.Combine (dir, "p1");
 			sol.RootFolder.Items.Add (p1);
 			string idp1 = p1.ItemId;
@@ -368,7 +372,7 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (ids.Contains (idf1));
 			ids.Add (idf1);
 			
-			DotNetProject p2 = new DotNetProject ("C#");
+			DotNetAssemblyProject p2 = new DotNetAssemblyProject ("C#");
 			p2.FileName = Path.Combine (dir, "p2");
 			f1.Items.Add (p2);
 			string idp2 = p2.ItemId;
@@ -384,7 +388,7 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (ids.Contains (idf2));
 			ids.Add (idf2);
 			
-			DotNetProject p3 = new DotNetProject ("C#");
+			DotNetAssemblyProject p3 = new DotNetAssemblyProject ("C#");
 			p3.FileName = Path.Combine (dir, "p3");
 			f2.Items.Add (p3);
 			string idp3 = p3.ItemId;
@@ -392,7 +396,7 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (ids.Contains (idp3));
 			ids.Add (idp3);
 			
-			DotNetProject p4 = new DotNetProject ("C#");
+			DotNetAssemblyProject p4 = new DotNetAssemblyProject ("C#");
 			p4.FileName = Path.Combine (dir, "p4");
 			f2.Items.Add (p4);
 			string idp4 = p4.ItemId;
@@ -405,7 +409,7 @@ namespace MonoDevelop.Projects
 			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
 			Assert.AreEqual (4, sol2.Items.Count);
 			Assert.AreEqual (2, sol2.RootFolder.Items.Count);
-			Assert.AreEqual (typeof(DotNetProject), sol2.RootFolder.Items [0].GetType ());
+			Assert.AreEqual (typeof(DotNetAssemblyProject), sol2.RootFolder.Items [0].GetType ());
 			Assert.AreEqual (typeof(SolutionFolder), sol2.RootFolder.Items [1].GetType ());
 			Assert.AreEqual ("p1", sol2.RootFolder.Items [0].Name);
 			Assert.AreEqual ("f1", sol2.RootFolder.Items [1].Name);
@@ -414,7 +418,7 @@ namespace MonoDevelop.Projects
 			
 			f1 = (SolutionFolder) sol2.RootFolder.Items [1];
 			Assert.AreEqual (2, f1.Items.Count);
-			Assert.AreEqual (typeof(DotNetProject), f1.Items [0].GetType ());
+			Assert.AreEqual (typeof(DotNetAssemblyProject), f1.Items [0].GetType ());
 			Assert.AreEqual (typeof(SolutionFolder), f1.Items [1].GetType ());
 			Assert.AreEqual ("p2", f1.Items [0].Name);
 			Assert.AreEqual ("f2", f1.Items [1].Name);
@@ -423,8 +427,8 @@ namespace MonoDevelop.Projects
 			
 			f2 = (SolutionFolder) f1.Items [1];
 			Assert.AreEqual (2, f2.Items.Count);
-			Assert.AreEqual (typeof(DotNetProject), f2.Items [0].GetType ());
-			Assert.AreEqual (typeof(DotNetProject), f2.Items [1].GetType ());
+			Assert.AreEqual (typeof(DotNetAssemblyProject), f2.Items [0].GetType ());
+			Assert.AreEqual (typeof(DotNetAssemblyProject), f2.Items [1].GetType ());
 			Assert.AreEqual ("p3", f2.Items [0].Name);
 			Assert.AreEqual ("p4", f2.Items [1].Name);
 			Assert.AreEqual (idp3, f2.Items [0].ItemId, "idp4");
