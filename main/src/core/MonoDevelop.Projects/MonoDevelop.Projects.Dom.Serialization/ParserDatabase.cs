@@ -56,8 +56,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 {
 	internal class ParserDatabase: IParserDatabase
 	{
-		StringNameTable nameTable;
-		
 		static readonly string[] sharedNameTable = new string[] {
 			"", // 505195
 			"System.Void", // 116020
@@ -163,7 +161,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public ParserDatabase ()
 		{
-			nameTable = new StringNameTable (sharedNameTable);
+			Array.Sort (sharedNameTable);
 		}
 
 		public void Initialize ()
@@ -417,13 +415,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		////////////////////////////////////
 		
-		internal INameEncoder DefaultNameEncoder {
-			get { return nameTable; }
+		internal INameEncoder CreateNameEncoder ()
+		{
+			return new StringNameTable (sharedNameTable);
 		}
 
-		internal INameDecoder DefaultNameDecoder {
-			get { return nameTable; }
+		internal INameDecoder CreateNameDecoder ()
+		{
+			return new StringNameTable (sharedNameTable);
 		}
-
 	}
 }

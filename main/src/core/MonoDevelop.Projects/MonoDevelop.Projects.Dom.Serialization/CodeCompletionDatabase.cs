@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 70;
+		static protected readonly int FORMAT_VERSION   = 71;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -365,6 +365,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					MemoryStream buffer = new MemoryStream ();
 					BinaryWriter bufWriter = new BinaryWriter (buffer);
 					
+					INameEncoder nameEncoder = pdb.CreateNameEncoder ();
+					
 					// Write all class data
 					foreach (ClassEntry ce in GetAllClasses ()) 
 					{
@@ -389,7 +391,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						}
 						else {
 							buffer.Position = 0;
-							DomPersistence.Write (bufWriter, pdb.DefaultNameEncoder, c);
+							DomPersistence.Write (bufWriter, nameEncoder, c);
 							bufWriter.Flush ();
 							data = buffer.GetBuffer ();
 							len = (int)buffer.Position;
@@ -492,7 +494,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			lock (rwlock) {
 				dataFileStream.Position = ce.Position;
 				datareader.ReadInt32 ();// Length of data
-				DomType cls = DomPersistence.ReadType (datareader, pdb.DefaultNameDecoder);
+				DomType cls = DomPersistence.ReadType (datareader, pdb.CreateNameDecoder ());
 				cls.SourceProjectDom = SourceProjectDom;
 				cls.Resolved = true;
 				Counters.LiveTypeObjects++;
@@ -1378,7 +1380,6 @@ namespace MonoDevelop.Projects.Dom
 		public StringNameTable (string[] names)
 		{
 			table = names;
-			Array.Sort (table);
 			Reset ();
 		}
 		

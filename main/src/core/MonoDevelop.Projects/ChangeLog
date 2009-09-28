@@ -1,3 +1,16 @@
+2009-09-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:
+	  Don't share the name table, since it now holds temporary ids
+	  which are exclusive to specific database serialization
+	  contexts. Should fix bug #469562 - Invalid integer value in
+	  completion DB.
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Don't share the name table, since it now holds temporary ids
+	  which are exclusive to specific database serialization
+	  contexts.
+
 2009-09-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomMethod.cs: Fixed parameter
