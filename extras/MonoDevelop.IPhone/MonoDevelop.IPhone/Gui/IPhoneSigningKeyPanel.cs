@@ -201,7 +201,7 @@ namespace MonoDevelop.IPhone.Gui
 		{
 			profileStore.Clear ();
 			TreeIter iter;
-			int active = provisioningCombo.Active;
+			int active = identityCombo.Active;
 			if (active >= 0 && identityStore.GetIter (out iter, new TreePath (new int[] { active }))) {
 				var name = (string) identityStore.GetValue (iter, 1);
 				if (name.StartsWith (Keychain.DIST_CERT_PREFIX)) {
