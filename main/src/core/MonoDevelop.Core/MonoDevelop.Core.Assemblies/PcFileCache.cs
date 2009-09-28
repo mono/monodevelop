@@ -442,39 +442,46 @@ namespace Mono.PkgConfig
 	{
 		Dictionary<string,string> variables = new Dictionary<string, string> ();
 		
+		string description;
 		public string Description {
-			get;
-			set;
+			get { return description; }
+			set { description = value; }
 		}
 		
+		string filePath;
 		public string FilePath {
-			get;
-			set;
+			get { return filePath; }
+			set { filePath = value; }
 		}
 		
+		bool hasErrors;
 		public bool HasErrors {
-			get;
-			set;
+			get { return hasErrors; }
+			set { hasErrors = value; }
 		}
 		
+		string libs;
 		public string Libs {
-			get;
-			set;
+			get { return libs; }
+			set { libs = value; }
 		}
 		
+		string name;
 		public string Name {
-			get;
-			set;
+			get { return name; }
+			set { name = value; }
 		}
 		
+		string version;
 		public string Version {
-			get;
-			set;
+			get { return version; }
+			set { version = value; }
 		}
 		
+		string requires;
 		public string Requires {
-			get;
-			set;
+			get { return requires; }
+			set { requires = value; }
 		}
 		
 		public string GetVariable (string varName)
@@ -562,24 +569,28 @@ namespace Mono.PkgConfig
 		Dictionary<string,string> customData;
 		DateTime lastWriteTime;
 		
+		string name;
 		public string Name {
-			get;
-			set;
+			get { return name; }
+			set { name = value; }
 		}
 		
+		string version;
 		public string Version {
-			get;
-			set;
+			get { return version; }
+			set { version = value; }
 		}
 		
+		string description;
 		public string Description {
-			get;
-			set;
+			get { return description; }
+			set { description = value; }
 		}
 		
+		string requires;
 		public string Requires {
-			get;
-			set;
+			get { return requires; }
+			set { requires = value; }
 		}
 		
 		public string GetData (string name)
