@@ -164,12 +164,13 @@ namespace MonoDevelop.IPhone.Gui
 		string SigningKey {
 			get {
 				TreeIter iter;
-				if (identityStore.GetIter (out iter, new TreePath (new int[] { identityCombo.Active })))
+				int active = identityCombo.Active;
+				if (active >= 0 && identityStore.GetIter (out iter, new TreePath (new int[] { active })))
 					return (string) identityStore.GetValue (iter, 1);
 				return null;
 			}
 			set {
-				if (string.IsNullOrEmpty (value))
+				if (string.IsNullOrEmpty (value) && identityStore.IterNChildren () > 0)
 					identityCombo.Active = 0;
 				else
 					SelectMatchingItem (identityCombo, 1, value);
@@ -179,15 +180,17 @@ namespace MonoDevelop.IPhone.Gui
 		
 		string ProvisionFingerprint {
 			get {
-				TreeIter iter;
 				if (!provisioningCombo.Sensitive)
 					return null;
-				if (profileStore.GetIter (out iter, new TreePath (new int[] { provisioningCombo.Active })))
+				
+				TreeIter iter;
+				int active = provisioningCombo.Active;
+				if (active >= 0 && profileStore.GetIter (out iter, new TreePath (new int[] { active })))
 					return (string) profileStore.GetValue (iter, 1);
 				return null;
 			}
 			set {
-				if (string.IsNullOrEmpty (value))
+				if (string.IsNullOrEmpty (value) && profileStore.IterNChildren () > 0)
 					provisioningCombo.Active = 0;
 				else
 					SelectMatchingItem (provisioningCombo, 1, value);
@@ -198,7 +201,8 @@ namespace MonoDevelop.IPhone.Gui
 		{
 			profileStore.Clear ();
 			TreeIter iter;
-			if (identityStore.GetIter (out iter, new TreePath (new int[] { identityCombo.Active }))) {
+			int active = provisioningCombo.Active;
+			if (active >= 0 && identityStore.GetIter (out iter, new TreePath (new int[] { active }))) {
 				var name = (string) identityStore.GetValue (iter, 1);
 				if (name.StartsWith (Keychain.DIST_CERT_PREFIX)) {
 					var cert = identityStore.GetValue (iter, 2) as X509Certificate2;
@@ -207,7 +211,10 @@ namespace MonoDevelop.IPhone.Gui
 							if ((cert == null && Keychain.GetCertificateCommonName (profileCert).StartsWith (Keychain.DIST_CERT_PREFIX))
 							    || (cert != null && profileCert.Thumbprint == cert.Thumbprint))
 							{
-								profileStore.AppendValues (GLib.Markup.EscapeText (mp.Name), mp.Uuid, mp);
+								if (string.IsNullOrEmpty (mp.Uuid))
+									LoggingService.LogWarning ("Provisioning Profile '{0}' has no UUID", mp.Name);
+								else
+									profileStore.AppendValues (GLib.Markup.EscapeText (mp.Name), mp.Uuid, mp);
 								break;
 							}
 						}
@@ -215,7 +222,7 @@ namespace MonoDevelop.IPhone.Gui
 					if (profileStore.IterNChildren () > 0) {
 						provisioningCombo.Active = 0;
 						provisioningCombo.Sensitive = true;
-						return;;
+						return;
 					}
 				//	provisioningCombo.ActiveText = GettextCatalog.GetString ("(none found)");
 				//} else {

@@ -1,3 +1,8 @@
+2009-09-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneSigningKeyPanel.cs: More careful handling of
+	  active provisioning profiles. Add a warning for null uuid.
+
 2009-09-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CodeBehindGenerator.cs: Properly type outlets connected to
