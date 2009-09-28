@@ -9,6 +9,7 @@
   <Assembly name="System.ServiceModel.Web" version="2.0.5.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Xml" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
   <Assembly name="System.Xml.Linq" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
+  <Assembly name="System.Json" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
   <Assembly name="monotouch" />
   <Assembly name="OpenTK" />
 </Assemblies>
