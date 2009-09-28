@@ -1,5 +1,10 @@
 2009-09-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Templates/IPhoneViewController.xft.xml: Call the xib-loading
+	  base ctor.
+
+2009-09-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* framework_IPhone.xml: Add System.Json.
 
 2009-09-28  Michael Hutchinson  <mhutchinson@novell.com>

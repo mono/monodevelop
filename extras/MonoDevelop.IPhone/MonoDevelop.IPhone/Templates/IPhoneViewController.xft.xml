@@ -45,7 +45,7 @@ namespace ${Namespace}
 			Initialize ();
 		}
 		
-		public ${Name} ()
+		public ${Name} () : base ("${Name}", null)
 		{
 			Initialize ();
 		}
