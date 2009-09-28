@@ -48,16 +48,6 @@ namespace CSharpBinding
 			sb.Append ('"');
 			sb.AppendLine ();
 		}
-		static IAssemblyContext GetMonoRuntimeContext ()
-		{
-			if (Runtime.SystemAssemblyService.CurrentRuntime.RuntimeId == "Mono")
-				return Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext;
-			else {
-				foreach (TargetRuntime r in Runtime.SystemAssemblyService.GetTargetRuntimes ("Mono"))
-					return r.AssemblyContext;
-			}
-			return null;
-		}
 
 		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
@@ -73,7 +63,6 @@ namespace CSharpBinding
 				runtime = project.TargetRuntime;
 
 			StringBuilder sb = new StringBuilder ();
-			IAssemblyContext context = GetMonoRuntimeContext ();
 			List<string> gacRoots = new List<string> ();
 			sb.AppendFormat ("\"/out:{0}\"", outputName);
 			sb.AppendLine ();
@@ -101,7 +90,7 @@ namespace CSharpBinding
 							gacRoots.Add (pkg.GacRoot);
 						if (!string.IsNullOrEmpty (pkg.Requires)) {
 							foreach (string requiredPackage in pkg.Requires.Split(' ')) {
-								SystemPackage rpkg = context.GetPackage (requiredPackage);
+								SystemPackage rpkg = runtime.AssemblyContext.GetPackage (requiredPackage);
 								if (rpkg == null)
 									continue;
 								foreach (SystemAssembly assembly in rpkg.Assemblies) {
