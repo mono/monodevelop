@@ -48,6 +48,16 @@ namespace CSharpBinding
 			sb.Append ('"');
 			sb.AppendLine ();
 		}
+		static IAssemblyContext GetMonoRuntimeContext ()
+		{
+			if (Runtime.SystemAssemblyService.CurrentRuntime.RuntimeId == "Mono")
+				return Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext;
+			else {
+				foreach (TargetRuntime r in Runtime.SystemAssemblyService.GetTargetRuntimes ("Mono"))
+					return r.AssemblyContext;
+			}
+			return null;
+		}
 
 		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
@@ -63,11 +73,12 @@ namespace CSharpBinding
 				runtime = project.TargetRuntime;
 
 			StringBuilder sb = new StringBuilder ();
-			
+			IAssemblyContext context = GetMonoRuntimeContext ();
 			List<string> gacRoots = new List<string> ();
 			sb.AppendFormat ("\"/out:{0}\"", outputName);
 			sb.AppendLine ();
 			
+			HashSet<string> alreadyAddedReference = new HashSet<string> ();
 			foreach (ProjectReference lib in projectItems.GetAll <ProjectReference> ()) {
 				if (lib.ReferenceType == ReferenceType.Project && !(lib.OwnerProject.ParentSolution.FindProjectByName (lib.Reference) is DotNetProject))
 					continue;
@@ -80,13 +91,27 @@ namespace CSharpBinding
 							monitor.ReportWarning (msg);
 							continue;
 						}
-						if (pkg.IsCorePackage) {
-							AppendQuoted (sb, "/r:", Path.GetFileName (fileName));
-						} else {
-							AppendQuoted (sb, "/r:", fileName);
+						string referencedName = pkg.IsCorePackage ? Path.GetFileName (fileName) : fileName;
+						if (!alreadyAddedReference.Contains (referencedName)) {
+							alreadyAddedReference.Add (referencedName);
+							AppendQuoted (sb, "/r:", referencedName);
 						}
+						
 						if (pkg.GacRoot != null && !gacRoots.Contains (pkg.GacRoot))
 							gacRoots.Add (pkg.GacRoot);
+						if (!string.IsNullOrEmpty (pkg.Requires)) {
+							foreach (string requiredPackage in pkg.Requires.Split(' ')) {
+								SystemPackage rpkg = context.GetPackage (requiredPackage);
+								if (rpkg == null)
+									continue;
+								foreach (SystemAssembly assembly in rpkg.Assemblies) {
+									if (alreadyAddedReference.Contains (assembly.Location))
+										continue;
+									alreadyAddedReference.Add (assembly.Location);
+									AppendQuoted (sb, "/r:", assembly.Location);
+								}
+							}
+						}
 						break;
 					default:
 						AppendQuoted (sb, "/r:", fileName);

@@ -1,3 +1,8 @@
+2009-09-28  Mike Krüger  <mkrueger@novell.com>
+
+	* CSharpBindingCompilerManager.cs: Building packages that have
+	  required packages now works.
+
 2009-09-25  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
