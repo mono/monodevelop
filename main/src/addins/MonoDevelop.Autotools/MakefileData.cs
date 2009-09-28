@@ -1519,7 +1519,7 @@ namespace MonoDevelop.Autotools
 			if (UseAutotools)
 				//Check whether ref'ed in configure.in
 				varname = ConfiguredPackages.GetVarNameFromName (pkg.Name);
-
+			
 			if (varname == null) {
 				//Package not referenced in configure.in
 				//Or not a autotools based project,
@@ -1704,6 +1704,7 @@ namespace MonoDevelop.Autotools
 			string content = null;
 			using (StreamReader sr = new StreamReader (fullpath))
 				content = sr.ReadToEnd ();
+			var assemblyContext = MakefileData.GetMonoRuntimeContext ();
 
 			foreach (Match match in PkgCheckModulesRegex.Matches (content)) {
 				if (!match.Success)
@@ -1725,6 +1726,7 @@ namespace MonoDevelop.Autotools
 						s = s.Substring (1, s.Length - 2);
 					pkgs.Add (s);
 					pkgNameToPkgVarName [s] = pkgId;
+					AddRequiredPackages (assemblyContext, pkgId, s);
 				}
 
 				pkgVarNameToPkgName [pkgId] = pkgs;
@@ -1754,6 +1756,18 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
+		void AddRequiredPackages (IAssemblyContext assemblyContext, string variableName, string packageName)
+		{
+			SystemPackage package = assemblyContext.GetPackage (packageName);
+			if (package != null && !string.IsNullOrEmpty (package.Requires)) {
+				foreach (string requiredPackageName in package.Requires.Split (' ')) {
+					if (!pkgNameToPkgVarName.ContainsKey (requiredPackageName))
+						pkgNameToPkgVarName[requiredPackageName] = variableName;
+					AddRequiredPackages (assemblyContext, variableName, requiredPackageName);
+				}
+			}
+		}
+		
 		public DateTime LastWriteTime {
 			get { return lastWriteTime; }
 		}

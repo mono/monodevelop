@@ -1,3 +1,9 @@
+2009-09-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MakefileData.cs: Makefiles are no longer changed, when a
+	  package is included that is already included using a package
+	  requirement.
+
 2009-09-09  Christian Hergert  <chris@dronelabs.com>
 
 	* MakefileReaderExtension.cs: Make dialog transient to the
