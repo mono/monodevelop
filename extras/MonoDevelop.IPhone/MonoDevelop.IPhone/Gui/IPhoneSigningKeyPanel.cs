@@ -47,7 +47,8 @@ namespace MonoDevelop.IPhone.Gui
 		
 		public override bool IsVisible ()
 		{
-			return ConfiguredProject is IPhoneProject;
+			return ConfiguredProject is IPhoneProject
+				&& (((IPhoneProject)ConfiguredProject).CompileTarget == CompileTarget.Exe);
 		}
 		
 		public override Gtk.Widget CreatePanelWidget ()

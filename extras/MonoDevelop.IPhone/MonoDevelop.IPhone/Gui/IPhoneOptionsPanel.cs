@@ -28,6 +28,7 @@ using System;
 using Gtk;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.IPhone.Gui
 {
@@ -46,6 +47,12 @@ namespace MonoDevelop.IPhone.Gui
 		public override void ApplyChanges ()
 		{
 			panel.Store ((IPhoneProject) ConfiguredProject);
+		}
+		
+		public override bool IsVisible ()
+		{
+			return ConfiguredProject is IPhoneProject
+				&& (((IPhoneProject)ConfiguredProject).CompileTarget == CompileTarget.Exe);
 		}
 	}
 

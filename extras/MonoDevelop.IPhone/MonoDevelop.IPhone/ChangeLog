@@ -1,5 +1,12 @@
 2009-09-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/IPhoneOptionsPanel.cs:
+	* Gui/IPhoneSigningKeyPanel.cs:
+	* Gui/IPhoneBuildOptionsPanel.cs: Hide the panels for library
+	  projects.
+
+2009-09-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.IPhone.csproj:
 	* MonoDevelop.IPhone.addin.xml:
 	* Templates/IPhoneLibraryProject.xpt.xml: Add MonoTouch
