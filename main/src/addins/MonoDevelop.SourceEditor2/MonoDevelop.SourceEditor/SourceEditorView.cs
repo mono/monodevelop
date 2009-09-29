@@ -649,13 +649,17 @@ namespace MonoDevelop.SourceEditor
 				if (view.isDisposed)
 					return;
 				line = Math.Min (line, view.Document.LineCount);
-
-				view.widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
-
-				view.widget.TextEditor.GrabFocus ();
-				view.widget.TextEditor.CenterToCaret ();
-				view.OnCaretPositionSet (EventArgs.Empty);
-				view.widget.ExposeEvent -= Run;
+				view.widget.TextEditor.Caret.AutoScrollToCaret = false;
+				try {
+					view.widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
+	
+					view.widget.TextEditor.GrabFocus ();
+					view.widget.TextEditor.CenterToCaret ();
+					view.OnCaretPositionSet (EventArgs.Empty);
+					view.widget.ExposeEvent -= Run;
+				} finally {
+					view.widget.TextEditor.Caret.AutoScrollToCaret = true;
+				}
 			}
 			
 		}
