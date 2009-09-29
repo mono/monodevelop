@@ -257,7 +257,7 @@ namespace Mono.TextEditor
 			markerLayout.SetText (" ");
 			markerLayout.GetPixelSize (out this.charWidth, out this.lineHeight);
 			
-			lineHeight = System.Math.Max (1, lineHeight);
+			CaretMoveActions.LineHeight = lineHeight = System.Math.Max (1, lineHeight);
 
 			DecorateLineFg -= DecorateTabs;
 			if (textEditor.Options.ShowTabs)
