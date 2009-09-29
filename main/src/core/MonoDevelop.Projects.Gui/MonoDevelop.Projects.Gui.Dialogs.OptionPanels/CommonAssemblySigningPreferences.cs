@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			int signAsm = -1;
 			
 			keyFile = null;
-			foreach (ProjectConfiguration c in configurations) {
+			foreach (DotNetProjectConfiguration c in configurations) {
 				int r = c.SignAssembly ? 1 : 0;
 				if (signAsm == -1)
 					signAsm = r;
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public void StorePanelContents ()
 		{
-			foreach (ProjectConfiguration c in configurations) {
+			foreach (DotNetProjectConfiguration c in configurations) {
 				if (!signAssemblyCheckbutton.Inconsistent)
 					c.SignAssembly = this.signAssemblyCheckbutton.Active;
 				if (strongNameFileEntry.Path.Length > 0 || keyFile != "?")
