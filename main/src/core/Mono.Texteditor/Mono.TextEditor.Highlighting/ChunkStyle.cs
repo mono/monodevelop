@@ -39,30 +39,26 @@ namespace Mono.TextEditor
 	
 	public class ChunkStyle
 	{
-		Gdk.Color color;
-		Gdk.Color backColor = Gdk.Color.Zero;
-		
 		public virtual Gdk.Color Color {
-			get {
-				return color;
-			}
-			set {
-				color = value;
-			}
+			get;
+			set;
 		}
 
+		Gdk.Color backColor = Gdk.Color.Zero;
+		bool backColorIsZero = true;
 		public virtual Gdk.Color BackgroundColor {
 			get {
 				return backColor;
 			}
 			set {
 				backColor = value;
+				backColorIsZero = value.Equal (Gdk.Color.Zero);
 			}
 		}
 		
 		public bool TransparentBackround {
 			get {
-				return (ChunkProperties & ChunkProperties.TransparentBackground) == ChunkProperties.TransparentBackground || BackgroundColor.Equal (Gdk.Color.Zero); 
+				return (ChunkProperties & ChunkProperties.TransparentBackground) == ChunkProperties.TransparentBackground || backColorIsZero; 
 			}
 		}
 		
@@ -105,6 +101,7 @@ namespace Mono.TextEditor
 		{
 			return Italic ? Pango.Style.Italic : Pango.Style.Normal;
 		}
+		
 		public Pango.Weight GetWeight (Pango.Weight defaultWeight)
 		{
 			if (defaultWeight == Pango.Weight.Bold)
@@ -137,18 +134,18 @@ namespace Mono.TextEditor
 		
 		public override string ToString ()
 		{
-			return string.Format("[ChunkStyle: Color={0}, BackgroundColor={1}, TransparentBackround={2}, ChunkProperties={3}, Link={4}]", Color, BackgroundColor, TransparentBackround, ChunkProperties, Link);
+			return string.Format ("[ChunkStyle: Color={0}, BackgroundColor={1}, TransparentBackround={2}, ChunkProperties={3}, Link={4}]", Color, BackgroundColor, TransparentBackround, ChunkProperties, Link);
 		}
 		
 		public override int GetHashCode ()
 		{
-			return color.GetHashCode () ^ Bold.GetHashCode ();
+			return Color.GetHashCode () ^ Bold.GetHashCode ();
 		}
 
 		public override bool Equals (object o)
 		{
 			ChunkStyle c = o as ChunkStyle;
-			return c != null && Bold == c.Bold && Italic == c.Italic && color.GetHashCode () == c.color.GetHashCode ();
+			return c != null && Bold == c.Bold && Italic == c.Italic && Color.GetHashCode () == c.Color.GetHashCode ();
 		}
 	}
 }

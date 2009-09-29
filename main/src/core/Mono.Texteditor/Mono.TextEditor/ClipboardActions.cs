@@ -346,8 +346,7 @@ namespace Mono.TextEditor
 		{
 			CopyOperation operation = new CopyOperation (data, data.MainSelection);
 			Clipboard clipboard = Clipboard.Get (CopyOperation.PRIMARYCLIPBOARD_ATOM);
-			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.targetList, operation.ClipboardGetFuncLazy,
-			                       operation.ClipboardClearFunc);
+			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.targetList, operation.ClipboardGetFuncLazy, operation.ClipboardClearFunc);
 		}
 		
 		public static void ClearPrimary ()

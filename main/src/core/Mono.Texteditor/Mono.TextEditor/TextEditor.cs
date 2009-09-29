@@ -125,6 +125,7 @@ namespace Mono.TextEditor
 		public TextEditor () : this (new Document ())
 		{
 		}
+		
 		Gdk.Pixmap buffer = null, flipBuffer = null;
 		
 		void DoFlipBuffer ()
@@ -333,6 +334,22 @@ namespace Mono.TextEditor
 		{
 			HideTooltip ();
 			ResetIMContext ();
+			
+			if (Caret.AutoScrollToCaret)
+				ScrollToCaret ();
+			
+			Rectangle rectangle = textViewMargin.GetCaretRectangle (Caret.Mode);
+			
+			textViewMargin.ResetCaretBlink ();
+			textViewMargin.caretBlink = true;
+			if (args.Location.Line != Caret.Line) {
+				if (!IsSomethingSelected)
+					RedrawLine (args.Location.Line);
+			} else {
+				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), buffer,rectangle.X, rectangle.Y, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height + 1);
+			}
+			
+			PaintCaret (GdkWindow);
 		}
 		
 		Selection oldSelection = null;
@@ -1321,6 +1338,7 @@ namespace Mono.TextEditor
 				lastCaretLine = Caret.Location;
 				RenderMargins (this.buffer, new Gdk.Rectangle (this.textViewMargin.XOffset, Document.LogicalToVisualLine (lastCaretLine.Line) * LineHeight - (int)this.textEditorData.VAdjustment.Value, GetMarginWidth(textViewMargin), LineHeight));
 			}
+			
 			textViewMargin.DrawCaret (drawable);
 		}
 		

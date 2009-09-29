@@ -85,7 +85,6 @@ namespace Mono.TextEditor
 			this.textEditor = textEditor;
 			
 			ResetCaretBlink ();
-			Caret.PositionChanged += CaretPositionChanged;
 			textEditor.Document.EndUndo += UpdateBracketHighlighting;
 			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
 				if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
@@ -199,22 +198,7 @@ namespace Mono.TextEditor
 				RemoveCachedLine (args.Line);
 			}
 		}
-
-		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)
-		{
-			if (Caret.AutoScrollToCaret) {
-				textEditor.ScrollToCaret ();
-				if (args.Location.Line != Caret.Line) {
-					caretBlink = false;
-					if (!textEditor.IsSomethingSelected)
-						textEditor.RedrawLine (args.Location.Line);
-				}
-				caretBlink = true;
-				if (!textEditor.IsSomethingSelected)
-					textEditor.RedrawLine (Caret.Line);
-			}
-		}
-
+		
 		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
 			if (Document.IsInUndo)
@@ -328,7 +312,6 @@ namespace Mono.TextEditor
 			caretTimer.Stop ();
 			caretTimer.Dispose ();
 
-			Caret.PositionChanged -= CaretPositionChanged;
 			textEditor.Document.EndUndo -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
 			Document.LineChanged -= CheckLongestLine;
@@ -363,7 +346,7 @@ namespace Mono.TextEditor
 
 		#region Caret blinking
 		Timer caretTimer = null;
-		bool caretBlink = true;
+		internal bool caretBlink = true;
 		int caretBlinkStatus;
 
 		public void ResetCaretBlink ()
@@ -405,7 +388,7 @@ namespace Mono.TextEditor
 			caretX = x;
 			caretY = y;
 		}
-
+		
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
 		public Gdk.Rectangle DrawCaret (Gdk.Drawable win)
 		{
@@ -425,7 +408,7 @@ namespace Mono.TextEditor
 			// Unlike the clip region for the backing store buffer, this needs
 			// to be clipped to the range of the visible area of the widget to
 			// prevent drawing outside the widget on some Gdk backends.
-			Gdk.Rectangle caretClipRectangle = GetClipRectangle (Caret.Mode);
+			Gdk.Rectangle caretClipRectangle = GetCaretRectangle (Caret.Mode);
 			int width, height;
 			win.GetSize (out width, out height);
 			caretClipRectangle.Intersect (new Gdk.Rectangle (0, 0, width, height));
@@ -457,7 +440,7 @@ namespace Mono.TextEditor
 			return caretClipRectangle;
 		}
 
-		Gdk.Rectangle GetClipRectangle (Mono.TextEditor.CaretMode mode)
+		public Gdk.Rectangle GetCaretRectangle (Mono.TextEditor.CaretMode mode)
 		{
 			switch (mode) {
 			case CaretMode.Insert:
@@ -870,7 +853,7 @@ namespace Mono.TextEditor
 
 					o = System.Math.Max (firstSearch.EndOffset, o + 1);
 				}
-
+				
 				uint oldEndIndex = 0;
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 					ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
@@ -1608,6 +1591,12 @@ namespace Mono.TextEditor
 		Gdk.Color defaultBgColor;
 		Gdk.Rectangle clipRectangle;
 
+		protected internal override void BeginRender (Drawable win, Rectangle area, int x)
+		{
+			base.BeginRender (win, area, x);
+			SetClip (new Gdk.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height));
+		}
+
 		protected internal override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
 		{
 			//			int visibleLine = y / this.LineHeight;
@@ -1615,19 +1604,7 @@ namespace Mono.TextEditor
 			
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
-			
-			int clipWidth = area.Right - xStart;
-			int clipHeight = LineHeight;
-			
 			xStart = System.Math.Max (0, xStart);
-			
-			if (clipWidth <= 0)
-				clipWidth = win.VisibleRegion.Clipbox.Width - xStart;
-			
-			if (clipHeight <= 0)
-				clipHeight = win.VisibleRegion.Clipbox.Height;
-			
-			SetClip (new Gdk.Rectangle (xStart, y, clipWidth, clipHeight));
 			
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
 			int width, height;
