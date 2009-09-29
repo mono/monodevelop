@@ -4,6 +4,8 @@ namespace Stetic.Wrapper {
 
 	public class Paned : Container {
 
+		int position;
+		
 		public override void Wrap (object obj, bool initialized)
 		{
 			base.Wrap (obj, initialized);
@@ -15,11 +17,36 @@ namespace Stetic.Wrapper {
 				paned.Pack2 (ph, true, false);
 				NotifyChildAdded (ph);
 			}
+			position = paned.Position;
+			paned.Realized += PanedRealized;
 		}
 
+		void PanedRealized (object sender, EventArgs e)
+		{
+			// The position may be reset while realizing the object, so
+			// we set it now here. See bug #542227.
+			paned.Position = position;
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			paned.Realized -= PanedRealized;
+		}
+		
 		protected Gtk.Paned paned {
 			get {
 				return (Gtk.Paned)Wrapped;
+			}
+		}
+		
+		public int Position {
+			get {
+				return paned.Position;
+			}
+			set {
+				position = value;
+				paned.Position = value;
 			}
 		}
 
