@@ -208,7 +208,10 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public bool IsCustomDataComplete (string pcfile, LibraryPackageInfo pkg)
 		{
-			return pkg.GetData ("targetFramework") != null;
+			string fx = pkg.GetData ("targetFramework");
+			return fx != null && fx != "Unknown";
+			// The 'unknown' check was added here to force a re-scan of .pc files
+			// which resulted in unknown framework version due to a bug
 		}
 		
 		public void StoreCustomData (PcFile pcfile, LibraryPackageInfo pinfo)
@@ -242,7 +245,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (commonFramework != null)
 				pinfo.SetData ("targetFramework", commonFramework.Id);
 			else
-				pinfo.SetData ("targetFramework", "Unknown");
+				pinfo.SetData ("targetFramework", "FxUnknown");
 		}
 	}
 }

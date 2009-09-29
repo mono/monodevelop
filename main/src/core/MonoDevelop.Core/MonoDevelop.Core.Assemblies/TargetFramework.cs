@@ -53,6 +53,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal static int FrameworkCount;
 		internal int Index;
+		string corlibVersion;
 
 		public static TargetFramework Default {
 			get { return Runtime.SystemAssemblyService.GetTargetFramework ("1.1"); }
@@ -95,6 +96,18 @@ namespace MonoDevelop.Core.Assemblies
 		public bool IsCompatibleWithFramework (string fxId)
 		{
 			return compatibleFrameworks.Contains (fxId);
+		}
+		
+		internal string GetCorlibVersion ()
+		{
+			if (corlibVersion != null)
+				return corlibVersion;
+			
+			foreach (AssemblyInfo asm in Assemblies) {
+				if (asm.Name == "mscorlib")
+					return corlibVersion = asm.Version;
+			}
+			return corlibVersion = string.Empty;
 		}
 
 		internal TargetFrameworkNode FrameworkNode { get; set; }

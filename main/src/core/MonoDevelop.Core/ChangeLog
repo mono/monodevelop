@@ -1,5 +1,14 @@
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/TargetFramework.cs:
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs:
+	  Improve detection of the target framework of a library.
+	  Should fix bug #542333.
+
+2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Serialization/ItemProperty.cs: Allow
 	  getting the custom attributes of a property.
 

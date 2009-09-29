@@ -329,13 +329,18 @@ namespace MonoDevelop.Core.Assemblies
 			
 				AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
 				foreach (AssemblyNameReference aname in names) {
-					if (aname.Name == "mscorlib")
-						return tr.RuntimeAssemblyContext.GetCorlibFramework (aname.FullName) ?? "Unknown";
+					if (aname.Name == "mscorlib") {
+						foreach (TargetFramework tf in GetTargetFrameworks ()) {
+							if (tf.GetCorlibVersion () == aname.Version.ToString ())
+								return tf.Id;
+						}
+						break;
+					}
 				}
 			} catch {
 				// Ignore
 			}
-			return "Unknown";
+			return "FxUnknown";
 		}
 		
 		void SaveUserAssemblyContext ()
