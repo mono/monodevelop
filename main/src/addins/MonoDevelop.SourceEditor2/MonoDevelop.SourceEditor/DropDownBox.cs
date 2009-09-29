@@ -143,13 +143,23 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (window == null)
 				return;
-			int dx, dy;
-			ParentWindow.GetOrigin (out dx, out dy);
-			dx += this.Allocation.X;
-			dy += this.Allocation.Bottom;
-			window.Move (dx, dy);
+			int ox, oy;
+			ParentWindow.GetOrigin (out ox, out oy);
+			int dx = ox + this.Allocation.X;
+			int dy = oy + this.Allocation.Bottom;
 			window.WidthRequest = Allocation.Width;
+			int width, height;
+			window.GetSizeRequest (out width, out height);
+			
+			if (dy + height > Screen.Height)
+				dy = oy + this.Allocation.Y - height;
+			if (dx + width > Screen.Width)
+				dx = Screen.Width - width;
+			
+			window.Move (dx, dy);
 			window.Show ();
+			window.GetSizeRequest (out width, out height);
+			
 			window.GrabFocus ();
 		}
 		

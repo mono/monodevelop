@@ -1,5 +1,11 @@
 2009-09-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Drop down
+	  box now handles the screen borders.
+
+2009-09-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Delete command
 	  now doesn't delete the whole line when nothing is selected.
 

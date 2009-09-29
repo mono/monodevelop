@@ -149,7 +149,7 @@ namespace MonoDevelop.SourceEditor
 			if (list.VisibleRows >= DataProvider.IconCount)
 				hBox.Remove (vScrollbar);
 				//vScrollbar.Hide ();
-			
+			HeightRequest = this.list.HeightRequest + 2;
 			this.Resize (this.Allocation.Width, this.list.HeightRequest + 2);
 		}
 		
