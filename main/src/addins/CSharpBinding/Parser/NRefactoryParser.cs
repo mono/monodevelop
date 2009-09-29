@@ -40,7 +40,7 @@ using ICSharpCode.NRefactory.Visitors;
 using CSharpBinding;
 using ICSharpCode.NRefactory;
 
-namespace MonoDevelop.CSharpBindingQ
+namespace MonoDevelop.CSharpBinding
 {
 	public class NRefactoryParser : AbstractParser
 	{
