@@ -124,6 +124,14 @@ namespace PropertyList
 				dict[key] = value;
 			}
 		}
+		
+		public PlistObjectBase TryGetValue (string key)
+		{
+			PlistObjectBase value;
+			if (dict.TryGetValue (key, out value))
+				return value;
+			return null;
+		}
 
 		public int Count {
 			get { return dict.Count; }

@@ -65,10 +65,10 @@ namespace MonoDevelop.IPhone
 				var m = new MobileProvision ();
 				try {
 					m.Load (file);
+					list.Add (m);
 				} catch (Exception ex) {
 					LoggingService.LogWarning ("Error reading iPhone mobile provision file '" + file +"'", ex);
 				}
-				list.Add (m);
 			}
 			return list;
 		}
@@ -120,7 +120,7 @@ namespace MonoDevelop.IPhone
 			if (name != null)
 				this.Name = name.Value;
 			
-			var provDevs = rootDict ["ProvisionedDevices"] as PlistArray;
+			var provDevs = rootDict.TryGetValue ("ProvisionedDevices") as PlistArray;
 			if (provDevs != null)
 				this.ProvisionedDevices = provDevs.OfType<PlistString> ().Select (x => x.Value).ToArray ();
 			

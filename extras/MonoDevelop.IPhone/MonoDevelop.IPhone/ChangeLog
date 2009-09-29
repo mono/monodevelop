@@ -1,3 +1,11 @@
+2009-09-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* PropertyList/PlistDictionary.cs: Add a TryGetValue method.
+
+	* MobileProvision.cs: Don't crash on loading if there are no
+	  provisioned devices. Don't add files to the list that didn't
+	  load correctly.
+
 2009-09-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/IPhoneOptionsPanel.cs:
