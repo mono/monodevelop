@@ -145,6 +145,15 @@ namespace MonoDevelop.Core.Serialization
 				return !member.DeclaringType.IsAssignableFrom (forType);
 		}
 		
+		public virtual object[] CustomAttributes {
+			get {
+				if (member != null)
+					return member.GetCustomAttributes (true);
+				else
+					return new object [0];
+			}
+		}
+		
 		internal string[] NameList {
 			get { return nameList; }
 		}
