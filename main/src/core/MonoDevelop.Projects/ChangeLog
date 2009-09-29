@@ -1,5 +1,11 @@
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MergeToProjectAttribute.cs:
+	  Support loading AssemblyKeyFile from global properties.
+
+2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* md1format.xml:
 	* MonoDevelop.Projects/ProjectConfiguration.cs:
 	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Moved

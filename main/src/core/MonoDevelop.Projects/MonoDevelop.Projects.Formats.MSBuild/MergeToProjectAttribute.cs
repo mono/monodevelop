@@ -32,6 +32,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	// if the value of that property is the same for all configurations.
 	// If they are the same, the value will be stored in the main property
 	// group, insted of individually in each configuration.
+	
 	public class MergeToProjectAttribute: Attribute
 	{
 	}

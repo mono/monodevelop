@@ -68,6 +68,7 @@ namespace MonoDevelop.Projects
 			set { signAssembly = value; }
 		}
 
+		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
 		[ProjectPathItemProperty("AssemblyKeyFile", ReadOnly=true)]
 		internal string OldAssemblyKeyFile {
 			set { assemblyKeyFile = value; }
