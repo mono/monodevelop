@@ -24,8 +24,11 @@ namespace Stetic.Wrapper {
 		void PanedRealized (object sender, EventArgs e)
 		{
 			// The position may be reset while realizing the object, so
-			// we set it now here. See bug #542227.
+			// we set it now here. See bug #542227. This seems to be Windows only.
+			bool old = Loading;
+			Loading = true;
 			paned.Position = position;
+			Loading = old;
 		}
 		
 		public override void Dispose ()

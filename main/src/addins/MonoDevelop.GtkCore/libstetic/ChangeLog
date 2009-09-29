@@ -1,5 +1,9 @@
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* wrapper/Paned.cs: Avoid unnecessary Changed event.
+
+2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* wrapper\Paned.cs: Restore the paned position after
 	  realizing. It may have been reset during the realization.
 	  Fixes bug #542227.
