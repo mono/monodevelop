@@ -1,3 +1,8 @@
+2009-09-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	  Handled file i/o error in project DOM service.
+
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:

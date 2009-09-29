@@ -946,17 +946,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 			using (Counters.FileParseTime.BeginTiming ()) {
 				IParser parser = GetParserByFileName (fileName);
 				
-				if (parser == null) {
+				if (parser == null)
 					return null;
-				}
 				
 				parser.LexerTags = SpecialCommentTags.GetNames ();
 				
 				ParsedDocument parserOutput = null;
 				
 				if (fileContent == null) {
-					using (StreamReader sr = File.OpenText(fileName)) {
-						fileContent = sr.ReadToEnd();
+					try {
+						using (StreamReader sr = File.OpenText (fileName)) {
+							fileContent = sr.ReadToEnd();
+						}
+					} catch (Exception) {
+						return null;
 					}
 				}
 	
