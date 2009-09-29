@@ -1,3 +1,8 @@
+2009-09-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Fixed 'Bug 542686 - Mark-up text
+	  not correctly rendered on status bar'.
+
 2009-09-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
