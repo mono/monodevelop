@@ -843,11 +843,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			UpdateLineCol ();
 			
-			int line = TextEditor.Caret.Line + 1;
-			int column = TextEditor.Caret.Column;
-			
 			if (classBrowser != null)
-				classBrowser.UpdatePosition (line, column);
+				classBrowser.UpdatePosition (TextEditor.Caret.Line + 1, TextEditor.Caret.Column + 1);
 		}
 		
 //		void OnChanged (object o, EventArgs e)

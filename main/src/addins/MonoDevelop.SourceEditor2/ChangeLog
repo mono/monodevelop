@@ -1,5 +1,10 @@
 2009-09-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Corrected
+	  quick class browser column.
+
+2009-09-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/DropDownBox.cs:
 	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Drop down
 	  box now handles the screen borders.
