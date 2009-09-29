@@ -1,5 +1,10 @@
 2009-09-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs: Optimized &
+	  improved the behavior of the class quick finder.
+
+2009-09-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
 	  533918 - Scroll position "jumps" first time editor tab is
 	  shown'.

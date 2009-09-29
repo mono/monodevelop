@@ -188,33 +188,24 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (parsedDocument == null)
 				return;
-			bool hasRegions = false;
-			foreach (FoldingRegion region in parsedDocument.UserRegions) {
-				hasRegions = true;
-				if (region.Region.Start.Line <= line && line <= region.Region.End.Line) {
-					if (regionCombo.CurrentItem == region)
-						return;
-					regionCombo.SetItem (region.Name, //GettextCatalog.GetString ("Region {0}", region.Name),
-					                     ImageService.GetPixbuf (Gtk.Stock.Add, IconSize.Menu),
-					                     region);
-					UpdateRegionComboTip (region);
-					return;
-				}
-			}
+			bool hasRegions = parsedDocument.UserRegions.Any ();
 			regionCombo.Sensitive = hasRegions;
-			if (regionCombo.CurrentItem != null) {
+			FoldingRegion region = hasRegions ? parsedDocument.UserRegions.Where (r => r.Region.Contains (line, column)).LastOrDefault () : null;
+			if (regionCombo.CurrentItem == region) 
+				return;
+			if (region == null) {
 				regionCombo.SetItem ("", null, null);
-				UpdateRegionComboTip (null);
+			} else {
+				regionCombo.SetItem (region.Name, //GettextCatalog.GetString ("Region {0}", region.Name),
+				                     ImageService.GetPixbuf (Gtk.Stock.Add, IconSize.Menu),
+				                     region);
 			}
+			UpdateRegionComboTip (region);
 		}
 		
 		void UpdateRegionComboTip (FoldingRegion region)
 		{
-			if (region == null) {
-				regionCombo.TooltipText = GettextCatalog.GetString ("Region list");
-				return;
-			}
-			regionCombo.TooltipText = GettextCatalog.GetString ("Region {0}", region.Name);
+			regionCombo.TooltipText = region != null ? GettextCatalog.GetString ("Region {0}", region.Name) : GettextCatalog.GetString ("Region list");
 		}
 		
 		void RegionChanged (object sender, EventArgs e)
@@ -281,26 +272,19 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateMemberCombo (IType parent, int line, int column)
 		{
-			if (parent == null || parent.ClassType == ClassType.Delegate) {
-				membersCombo.Sensitive = false;
-			} else {
-				membersCombo.Sensitive = true;
-				foreach (IMember member in parent.Members) {
-					if (member.Location.Line == line || member.BodyRegion.Contains (line, column)) {
-						if (membersCombo.CurrentItem == member)
-							return;
-						membersCombo.SetItem (editor.Ambience.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters),
-						                      MonoDevelop.Core.Gui.ImageService.GetPixbuf (member.StockIcon, IconSize.Menu),
-						                      member);
-						UpdateMemberComboTip (member);
-						return;
-					}
-				}
-			}
-			if (membersCombo.CurrentItem != null) {
+			bool hasMembers = parent != null && parent.ClassType != ClassType.Delegate;
+			membersCombo.Sensitive = hasMembers;
+			IMember member = hasMembers ? parent.GetMemberAt (line, column) : null;
+			if (membersCombo.CurrentItem == member)
+				return;
+			if (member == null) {
 				membersCombo.SetItem ("", null, null);
-				UpdateMemberComboTip (null);
+			} else {
+				membersCombo.SetItem (editor.Ambience.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters),
+				                      MonoDevelop.Core.Gui.ImageService.GetPixbuf (member.StockIcon, IconSize.Menu),
+				                      member);
 			}
+			UpdateMemberComboTip (member);
 		}
 		
 		void MemberChanged (object sender, EventArgs e)
@@ -314,14 +298,10 @@ namespace MonoDevelop.SourceEditor
 			JumpTo (Math.Max (1, line), 1);
 			UpdateMemberComboTip (member);
 		}
-		void UpdateMemberComboTip (IMember it)
+		
+		void UpdateMemberComboTip (IMember member)
 		{
-			if (it != null) {
-				Ambience ambience = editor.Ambience;
-				membersCombo.TooltipText = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
-			} else {
-				membersCombo.TooltipText = GettextCatalog.GetString ("Member list");
-			}
+			membersCombo.TooltipText = member != null ? editor.Ambience.GetString (member, OutputFlags.ClassBrowserEntries) : GettextCatalog.GetString ("Member list");
 		}
 		
 #endregion
@@ -386,19 +366,21 @@ namespace MonoDevelop.SourceEditor
 		
 		IType UpdateTypeCombo (int line, int column)
 		{
-			IType c = parsedDocument.CompilationUnit.GetTypeAt (line, column);
-			if (typeCombo.CurrentItem == c)
-				return c;
-			if (c == null) {
+			bool hasTypes = parsedDocument.CompilationUnit.Types.Any ();
+			typeCombo.Sensitive = hasTypes;
+			IType result = hasTypes ? parsedDocument.CompilationUnit.GetTypeAt (line, column) : null;
+			if (typeCombo.CurrentItem == result)
+				return result;
+			if (result == null) {
 				typeCombo.SetItem ("", null, null);
 			} else {
-				typeCombo.SetItem (editor.Ambience.GetString (c, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName),
-				                   MonoDevelop.Core.Gui.ImageService.GetPixbuf (c.StockIcon, IconSize.Menu),
-				                   c);
+				typeCombo.SetItem (editor.Ambience.GetString (result, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName),
+				                   MonoDevelop.Core.Gui.ImageService.GetPixbuf (result.StockIcon, IconSize.Menu),
+				                   result);
 				
 			}
-			UpdateTypeComboTip (c);
-			return c;
+			UpdateTypeComboTip (result);
+			return result;
 		}
 		
 		void TypeChanged (object sender, EventArgs e)
@@ -413,14 +395,10 @@ namespace MonoDevelop.SourceEditor
 			// If we can, we navigate to the line location of the IMember.
 			JumpTo (Math.Max (1, line), 1);
 		}
-		void UpdateTypeComboTip (IMember it)
+		
+		void UpdateTypeComboTip (IType type)
 		{
-			if (it != null) {
-				Ambience ambience = editor.Ambience;
-				this.typeCombo.TooltipText = ambience.GetString (it, OutputFlags.ClassBrowserEntries);
-			} else {
-				typeCombo.TooltipText = GettextCatalog.GetString ("Type list");
-			}
+			typeCombo.TooltipText = type != null ? editor.Ambience.GetString (type, OutputFlags.ClassBrowserEntries) : GettextCatalog.GetString ("Type list");
 		}
 #endregion
 		void JumpTo (int line, int column)
