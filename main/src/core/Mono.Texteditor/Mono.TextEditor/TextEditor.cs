@@ -148,13 +148,21 @@ namespace Mono.TextEditor
 				flipBuffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
 			}
 		}
-		
+		int oldHAdjustment = -1;
 		void HAdjustmentValueChanged (object sender, EventArgs args)
 		{
+			if (this.textEditorData.HAdjustment.Value != System.Math.Ceiling (this.textEditorData.HAdjustment.Value)) {
+				this.textEditorData.HAdjustment.Value = System.Math.Ceiling (this.textEditorData.HAdjustment.Value);
+				return;
+			}
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
-//			VAdjustmentValueChanged (sender, args);
+			int curHAdjustment = (int)this.textEditorData.HAdjustment.Value;
+			if (oldHAdjustment == curHAdjustment)
+				return;
+//			Console.WriteLine ("-----------------"+ curHAdjustment + "/"+ Environment.StackTrace);
 			this.RepaintArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
+			oldHAdjustment = curHAdjustment;
 		}
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
@@ -165,11 +173,12 @@ namespace Mono.TextEditor
 			lastCaretLine = DocumentLocation.Empty;
 			if (buffer == null)
 				AllocateWindowBuffer (this.Allocation);
-			textViewMargin.VAdjustmentValueChanged ();
+			
 			if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 				return;
 			}
+			textViewMargin.VAdjustmentValueChanged ();
 			
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
 			oldVadjustment = this.textEditorData.VAdjustment.Value;

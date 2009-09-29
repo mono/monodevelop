@@ -1,3 +1,9 @@
+2009-09-29  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Only allow discrete values
+	  for HAdjustment/check if hadjustment really changed. (This
+	  could fix the hscrollbar flashes.)
+
 2009-09-25  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: fixed eol selection end
