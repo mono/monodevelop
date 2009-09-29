@@ -135,6 +135,10 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.SelectExceptions"
 				_label = "Exceptions..."
 				defaultHandler = "MonoDevelop.Debugger.SelectExceptionsCommand" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowCurrentExecutionLine"
+				_label = "Show Current Execution Line"
+				shortcut = "Alt|*"
+				defaultHandler = "MonoDevelop.Debugger.ShowCurrentExecutionLineCommand" />
 		</Category>
 	</Extension>
 	
@@ -153,6 +157,7 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepOver" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepInto" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepOut" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowCurrentExecutionLine" />
 		<SeparatorItem id = "MonoDevelop.Debugger.BreakpointsSection" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ToggleBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint" />

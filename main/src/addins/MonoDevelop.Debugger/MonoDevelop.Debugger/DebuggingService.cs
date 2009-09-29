@@ -500,6 +500,19 @@ namespace MonoDevelop.Debugger
 			});
 		}
 		
+		public static void ShowCurrentExecutionLine ()
+		{
+			if (currentBacktrace != null) {
+				for (int n=0; n<currentBacktrace.FrameCount; n++) {
+					StackFrame sf = currentBacktrace.GetFrame (n);
+					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
+						IdeApp.Workbench.OpenDocument (sf.SourceLocation.Filename, sf.SourceLocation.Line, 1, true);
+						return;
+					}
+				}
+			}
+		}
+		
 		public static bool CanDebugCommand (ExecutionCommand command)
 		{
 			return GetFactoryForCommand (command) != null;

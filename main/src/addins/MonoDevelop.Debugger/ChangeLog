@@ -1,3 +1,10 @@
+2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/DebugCommands.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs: Implemented Show
+	  Current Execution Line command.
+
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Added null check.

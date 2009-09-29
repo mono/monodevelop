@@ -62,7 +62,8 @@ namespace MonoDevelop.Debugger
 		RemoveBreakpoint,
 		ShowBreakpointProperties,
 		ExpressionEvaluator,
-		SelectExceptions
+		SelectExceptions,
+		ShowCurrentExecutionLine
 	}
 
 	internal class DebugHandler: CommandHandler
@@ -494,6 +495,20 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
+		}
+	}
+	
+	internal class ShowCurrentExecutionLineCommand : CommandHandler
+	{
+		protected override void Run ()
+		{
+			DebuggingService.ShowCurrentExecutionLine ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = DebuggingService.IsDebugging && !DebuggingService.IsRunning;
+			info.Visible = DebuggingService.IsDebuggingSupported;
 		}
 	}
 }
