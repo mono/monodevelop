@@ -852,19 +852,15 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual IMember GetMemberAt (int line, int column)
 		{
-			foreach (IMember member in Members) {
-				if (member.BodyRegion.Contains (line, column)) {
-					if (member is IType) {
-						IMember tm = ((IType)member).GetMemberAt (line, column);
-						if (tm != null)
-							return tm;
-					}
-					return member;
-				} else if (member is IField && ((IField)member).Location.Line == line) {
-					return member;
-				}
+			IMember result = Members.FirstOrDefault (member => member.BodyRegion.Contains (line, column));
+			if (result is IType) {
+				IMember containingMember = ((IType)result).GetMemberAt (line, column);
+				if (containingMember != null)
+					return containingMember;
 			}
-			return null;
+			if (result == null)
+				result = Members.FirstOrDefault (member => member.Location.Line == line);
+			return result;
 		}
 		
 		public bool Equals (IType other)
