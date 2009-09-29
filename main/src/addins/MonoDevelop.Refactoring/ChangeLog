@@ -1,3 +1,10 @@
+2009-09-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CodeGeneration/WriteLineGenerator.cs: better
+	  sort order in writeline code generator: local vars ->
+	  parameters -> members. (this is the opposite of the old
+	  one).
+
 2009-09-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:

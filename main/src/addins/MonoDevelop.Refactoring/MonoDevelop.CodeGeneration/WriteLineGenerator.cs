@@ -83,19 +83,21 @@ namespace MonoDevelop.CodeGeneration
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember == null)
 					yield break;
-				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSpecialName)
-						continue;
-					yield return field;
+				
+				// add local variables
+				LookupTableVisitor visitor = new LookupTableVisitor (ICSharpCode.NRefactory.SupportedLanguage.CSharp);
+				Location location = new Location (Options.Document.TextEditor.CursorColumn, Options.Document.TextEditor.CursorLine);
+				INRefactoryASTProvider provider = Options.GetASTProvider ();
+				var result = provider.ParseFile (Options.Document.TextEditor.Text);
+				result.AcceptVisitor (visitor, null);
+				foreach (var list in visitor.Variables.Values) {
+					foreach (LocalLookupVariable varDescr in list) {
+						if (varDescr.StartPos <= location && location <= varDescr.EndPos)
+							yield return new LocalVariable (Options.EnclosingMember, varDescr.Name, varDescr.TypeRef.ConvertToReturnType (), DomRegion.Empty);
+					}
 				}
-
-				foreach (IProperty property in Options.EnclosingType.Properties) {
-					if (property.IsSpecialName)
-						continue;
-					if (property.HasGet)
-						yield return property;
-				}
-			//	MonoDevelop.Projects.Dom.Parser.IResolver resolver = Options.GetResolver ();
+				
+				// add parameters
 				IMethod method = Options.EnclosingMember as IMethod;
 				if (method != null) {
 					foreach (IParameter param in method.Parameters)
@@ -107,16 +109,19 @@ namespace MonoDevelop.CodeGeneration
 					foreach (IParameter param in p.Parameters)
 						yield return param;
 				}
-				LookupTableVisitor visitor = new LookupTableVisitor (ICSharpCode.NRefactory.SupportedLanguage.CSharp);
-				Location location = new Location (Options.Document.TextEditor.CursorColumn, Options.Document.TextEditor.CursorLine);
-				INRefactoryASTProvider provider = Options.GetASTProvider ();
-				var result = provider.ParseFile (Options.Document.TextEditor.Text);
-				result.AcceptVisitor (visitor, null);
-				foreach (var list in visitor.Variables.Values) {
-					foreach (LocalLookupVariable varDescr in list) {
-						if (varDescr.StartPos <= location && location <= varDescr.EndPos)
-							yield return new LocalVariable (Options.EnclosingMember, varDescr.Name, varDescr.TypeRef.ConvertToReturnType (), DomRegion.Empty);
-					}
+				
+				// add type members
+				foreach (IField field in Options.EnclosingType.Fields) {
+					if (field.IsSpecialName)
+						continue;
+					yield return field;
+				}
+
+				foreach (IProperty property in Options.EnclosingType.Properties) {
+					if (property.IsSpecialName)
+						continue;
+					if (property.HasGet)
+						yield return property;
 				}
 			}
 			
