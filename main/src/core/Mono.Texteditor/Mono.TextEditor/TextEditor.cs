@@ -342,11 +342,13 @@ namespace Mono.TextEditor
 			
 			textViewMargin.ResetCaretBlink ();
 			textViewMargin.caretBlink = true;
+			
 			if (args.Location.Line != Caret.Line) {
 				if (!IsSomethingSelected)
 					RedrawLine (args.Location.Line);
 			} else {
-				GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal), buffer,rectangle.X, rectangle.Y, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height + 1);
+				if (!IsSomethingSelected)
+					RedrawLine (Caret.Line);
 			}
 			
 			PaintCaret (GdkWindow);
