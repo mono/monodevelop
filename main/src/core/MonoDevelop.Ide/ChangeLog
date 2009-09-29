@@ -1,5 +1,10 @@
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Added 'Run With' commands to
+	  project context menu.
+
+2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/Ide.cs: Use markup in the statusbar only
 	  when really necessary.
 

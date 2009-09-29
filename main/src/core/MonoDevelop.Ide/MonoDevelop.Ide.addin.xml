@@ -1090,6 +1090,9 @@
 		<SeparatorItem id = "RunSectionStart" />
 		<Condition id="ItemType" value="IBuildTarget">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+			<ItemSet id = "RunWith" _label = "Run With" autohide="True">
+				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
+			</ItemSet>
 		</Condition>
 		<Condition id="ItemType" value="Project">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" />
