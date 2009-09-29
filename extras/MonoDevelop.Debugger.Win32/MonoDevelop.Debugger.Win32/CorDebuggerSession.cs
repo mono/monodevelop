@@ -200,7 +200,7 @@ namespace MonoDevelop.Debugger.Win32
 			OnStopped ();
 			e.Continue = false;
 			// If a breakpoint is hit while stepping, cancel the stepping operation
-			if (stepper.IsActive ())
+			if (stepper != null && stepper.IsActive ())
 				stepper.Deactivate ();
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
@@ -470,16 +470,12 @@ namespace MonoDevelop.Debugger.Win32
 				CorFrame frame = activeThread.ActiveFrame;
 				ISymbolReader reader = GetReaderForModule (frame.Function.Module.Name);
 				if (reader == null) {
-					stepper.Step (into);
-					ClearEvalStatus ();
-					process.Continue (false);
+					RawContinue (into);
 					return;
 				}
 				ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
 				if (met == null) {
-					stepper.Step (into);
-					ClearEvalStatus ();
-					process.Continue (false);
+					RawContinue (into);
 					return;
 				}
 
@@ -493,6 +489,11 @@ namespace MonoDevelop.Debugger.Win32
 					if (sp.Offset > offset)
 						break;
 					currentSeq = sp;
+				}
+
+				if (currentSeq == null) {
+					RawContinue (into);
+					return;
 				}
 
 				// Exclude all ranges belonging to the current line
@@ -513,6 +514,13 @@ namespace MonoDevelop.Debugger.Win32
 				ClearEvalStatus ();
 				process.Continue (false);
 			}
+		}
+
+		private void RawContinue (bool into)
+		{
+			stepper.Step (into);
+			ClearEvalStatus ();
+			process.Continue (false);
 		}
 
 		protected override void OnRemoveBreakEvent (object handle)

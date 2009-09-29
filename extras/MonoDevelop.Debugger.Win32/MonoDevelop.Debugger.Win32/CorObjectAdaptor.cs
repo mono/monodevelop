@@ -600,6 +600,8 @@ namespace MonoDevelop.Debugger.Win32
 				if (met != null) {
 					foreach (ParameterInfo pi in met.GetParameters ()) {
 						int pos = pi.Position;
+						if (met.IsStatic)
+							pos--;
 						CorValRef vref = null;
 						try {
 							vref = new CorValRef (delegate {
@@ -656,7 +658,7 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (ISymbolVariable var in scope.GetLocals ()) {
 				if (var.Name == "$site")
 					continue;
-				if (!var.Name.StartsWith ("$") || showHidden) {
+				if (var.Name.IndexOfAny(new char[] {'$','<','>'}) == -1 || showHidden) {
 					int addr = var.AddressField1;
 					CorValRef vref = new CorValRef (delegate {
 						return ctx.Frame.GetLocalVariable (addr);

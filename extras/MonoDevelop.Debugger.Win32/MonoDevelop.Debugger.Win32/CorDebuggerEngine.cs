@@ -79,7 +79,7 @@ namespace MonoDevelop.Debugger.Win32
 		public DebuggerFeatures SupportedFeatures
 		{
 			get {
-				return DebuggerFeatures.All;
+				return DebuggerFeatures.All & ~(DebuggerFeatures.ConditionalBreakpoints | DebuggerFeatures.Disassembly);
 			}
 		}
 
