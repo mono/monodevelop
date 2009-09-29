@@ -1,5 +1,10 @@
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/Initializer.cs: Don't show the
+	  disassembly window if not supported.
+
+2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger.addin.xml:
 	* MonoDevelop.Debugger/DebugCommands.cs:
 	* MonoDevelop.Debugger/DebuggingService.cs: Implemented Show

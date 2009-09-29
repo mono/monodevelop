@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger
 		void OnFrameChanged (object s, EventArgs a)
 		{
 			bool disassemblyCurrent = false;
-			if (disassemblyDoc != null) {
+			if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly)) {
 				disassemblyView.Update ();
 				if (IdeApp.Workbench.ActiveDocument == disassemblyDoc)
 					disassemblyCurrent = true;
@@ -81,6 +81,8 @@ namespace MonoDevelop.Debugger
 				if (doc != null)
 					return;
 			}
+			if (!DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
+				return;
 			if (disassemblyDoc == null)
 				OnShowDisassembly (null, null);
 			else
