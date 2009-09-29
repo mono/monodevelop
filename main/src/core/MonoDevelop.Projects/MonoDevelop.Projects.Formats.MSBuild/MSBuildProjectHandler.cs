@@ -656,6 +656,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (propGroup == null) {
 						propGroup = msproject.AddNewPropertyGroup (false);
 						propGroup.Condition = BuildConfigCondition (conf.Name, conf.Platform);
+						ConfigData cd = new ConfigData (conf.Name, conf.Platform, propGroup);
+						configData.Add (cd);
 						newConf = true;
 					}
 					
