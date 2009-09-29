@@ -324,7 +324,7 @@ namespace MonoDevelop.Ide.Gui
 				msg = msg.Replace ("_", "");
 			}
 			if (!string.IsNullOrEmpty (msg))
-				Workbench.StatusBar.ShowMessage (msg, true);
+				Workbench.StatusBar.ShowMessage (msg, args.CommandInfo.UseMarkup);
 		}
 			
 		static void OnCommandDeselected (object s, EventArgs args)

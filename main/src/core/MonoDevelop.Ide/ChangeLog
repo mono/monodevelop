@@ -1,3 +1,8 @@
+2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Use markup in the statusbar only
+	  when really necessary.
+
 2009-09-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs: Fixed 'Bug 542686 - Mark-up text
