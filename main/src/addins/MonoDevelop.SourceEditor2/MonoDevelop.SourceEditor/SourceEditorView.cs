@@ -910,7 +910,7 @@ namespace MonoDevelop.SourceEditor
 			if (TextEditor.IsSomethingSelected) {
 				TextEditor.DeleteSelectedText ();
 			} else {
-				TextEditor.RunAction (DeleteActions.CaretLine);
+				TextEditor.RunAction (DeleteActions.Delete);
 			}
 		}
 		
