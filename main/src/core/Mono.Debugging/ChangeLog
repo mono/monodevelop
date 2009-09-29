@@ -1,3 +1,8 @@
+2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation\ObjectValueAdaptor.cs: Add missing
+	  length check.
+
 2009-09-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/ValueReference.cs:

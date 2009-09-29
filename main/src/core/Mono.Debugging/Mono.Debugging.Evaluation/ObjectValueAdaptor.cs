@@ -243,6 +243,8 @@ namespace Mono.Debugging.Evaluation
 		public virtual CompletionData GetExpressionCompletionData (EvaluationContext ctx, string exp)
 		{
 			int i;
+			if (exp.Length == 0)
+				return null;
 
 			if (exp [exp.Length - 1] == '.') {
 				exp = exp.Substring (0, exp.Length - 1);
