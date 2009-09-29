@@ -89,25 +89,11 @@ namespace MonoDevelop.Projects
 			get { return environmentVariables; }
 		}
 
-		[ItemProperty("SignAssembly", DefaultValue = false)]
-		private bool signAssembly = false;
-		public bool SignAssembly {
-			get { return signAssembly; }
-			set { signAssembly = value; }
-		}
-
 		[ItemProperty("RunWithWarnings", DefaultValue = true)]
 		private bool runWithWarnings = true;
 		public virtual bool RunWithWarnings {
 			get { return runWithWarnings; }
 			set { runWithWarnings = value; }
-		}
-
-		[ItemProperty("AssemblyKeyFile", DefaultValue = "")]
-		private string assemblyKeyFile = "";
-		public string AssemblyKeyFile {
-			get { return assemblyKeyFile; }
-			set { assemblyKeyFile = value; }
 		}
 
 		public override void CopyFrom (ItemConfiguration conf)
@@ -127,10 +113,7 @@ namespace MonoDevelop.Projects
 				environmentVariables.Add (el.Key, el.Value);
 			}
 
-			signAssembly = projectConf.signAssembly;
 			runWithWarnings = projectConf.runWithWarnings;
-			assemblyKeyFile = projectConf.assemblyKeyFile;
-
 		}
 
 	}

@@ -332,6 +332,7 @@
     <Compile Include="MonoDevelop.Projects.Dom\IBaseMember.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\INode.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetAssemblyProject.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MergeToProjectAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />

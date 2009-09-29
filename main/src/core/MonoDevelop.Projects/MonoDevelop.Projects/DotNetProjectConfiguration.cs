@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects
 	
 	public class DotNetProjectConfiguration: ProjectConfiguration
 	{
+		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
 		[ItemProperty ("AssemblyName")]
 		string assembly;
 		
@@ -57,6 +58,27 @@ namespace MonoDevelop.Projects
 
 		public DotNetProjectConfiguration (string name): base (name)
 		{
+		}
+
+		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
+		[ItemProperty("SignAssembly", DefaultValue = false)]
+		private bool signAssembly = false;
+		public bool SignAssembly {
+			get { return signAssembly; }
+			set { signAssembly = value; }
+		}
+
+		[ProjectPathItemProperty("AssemblyKeyFile", ReadOnly=true)]
+		internal string OldAssemblyKeyFile {
+			set { assemblyKeyFile = value; }
+		}
+
+		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
+		[ProjectPathItemProperty("AssemblyOriginatorKeyFile", DefaultValue = "")]
+		private string assemblyKeyFile = "";
+		public string AssemblyKeyFile {
+			get { return assemblyKeyFile; }
+			set { assemblyKeyFile = value; }
 		}
 		
 		public virtual string OutputAssembly {
@@ -140,6 +162,8 @@ namespace MonoDevelop.Projects
 			if (ParentItem == null)
 				SetParentItem (conf.ParentItem);
 			CompilationParameters = conf.compilationParameters != null ? conf.compilationParameters.Clone () : null;
+			signAssembly = conf.signAssembly;
+			assemblyKeyFile = conf.assemblyKeyFile;
 		}
 		
 		public new DotNetProject ParentItem {

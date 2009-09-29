@@ -279,7 +279,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			DotNetProject dotNetProject = Item as DotNetProject;
 			
-			string assemblyName = null;
 			string frameworkVersion = null;
 			
 			// Read all items
@@ -291,8 +290,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			if (dotNetProject != null) {
-				// Get the common assembly name
-				assemblyName = globalGroup.GetPropertyValue ("AssemblyName");
 				frameworkVersion = globalGroup.GetPropertyValue ("TargetFrameworkVersion");
 				if (frameworkVersion != null && frameworkVersion.StartsWith ("v"))
 					frameworkVersion = frameworkVersion.Substring (1);
@@ -310,6 +307,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			List<ConfigData> configData = GetConfigData (msproject);
 			List<ConfigData> readConfigData = new List<ConfigData> ();
 			
+			MSBuildPropertyGroup mergedToProjectProperties = ExtractMergedtoprojectProperties (ser, globalGroup, EntityItem.CreateConfiguration ("Dummy"));
+			configData.Insert (0, new ConfigData (Unspecified, Unspecified, mergedToProjectProperties));
+			
 			foreach (ConfigData cgrp in configData) {
 				readConfigData.Add (cgrp);
 
@@ -326,11 +326,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				MSBuildPropertyGroup grp = CreateMergedConfiguration (readConfigData, conf, platform);
 				SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
 				
-				if (config is DotNetProjectConfiguration) {
-					// Clean the default assembly name
-					((DotNetProjectConfiguration)config).OutputAssembly = string.Empty;
-				}
-				
 				config.Platform = platform;
 				DataItem data = ReadPropertyGroupMetadata (ser, grp, config);
 				ser.Deserialize (config, data);
@@ -342,9 +337,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						data = ReadPropertyGroupMetadata (ser, grp, dpc.CompilationParameters);
 						ser.Deserialize (dpc.CompilationParameters, data);
 					}
-					
-					if (!string.IsNullOrEmpty (assemblyName) && string.IsNullOrEmpty (dpc.OutputAssembly))
-						dpc.OutputAssembly = assemblyName;
 				}
 			}
 			
@@ -375,7 +367,29 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			Item.NeedsReload = false;
 		}
+
+		MSBuildPropertyGroup ExtractMergedtoprojectProperties (MSBuildSerializer ser, MSBuildPropertyGroup pgroup, object ob)
+		{
+			XmlDocument doc = new XmlDocument ();
+			MSBuildPropertyGroup res = new MSBuildPropertyGroup (doc.CreateElement ("PropGroup"));
+			
+			foreach (string propName in GetMergeToProjectProperties (ser, ob)) {
+				MSBuildProperty bp = pgroup.GetProperty (propName);
+				if (bp != null)
+					res.SetPropertyValue (bp.Name, bp.Value);
+			}
+			return res;
+		}
 		
+		IEnumerable<string> GetMergeToProjectProperties (MSBuildSerializer ser, object ob)
+		{
+			ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (ob.GetType ());
+			foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, ob)) {
+				if (IsMergeToProjectProperty (prop))
+					yield return prop.Name;
+			}
+		}
+
 		ProjectItem ReadItem (MSBuildSerializer ser, MSBuildItem buildItem)
 		{
 			Project project = Item as Project;
@@ -610,18 +624,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			WritePropertyGroupMetadata (globalGroup, ser.InternalItemProperties.ItemData, ser, Item, langParams);
 			
-			// Find a common assembly name for all configurations
-			
-			string assemblyName = null;
+			// Convert debug property
 			
 			foreach (SolutionItemConfiguration conf in eitem.Configurations) {
 				DotNetProjectConfiguration cp = conf as MonoDevelop.Projects.DotNetProjectConfiguration;
 				if (cp != null) {
-					if (assemblyName == null)
-						assemblyName = cp.OutputAssembly;
-					else if (assemblyName != cp.OutputAssembly)
-						assemblyName = string.Empty;
-					
 					if (newProject)
 						cp.ExtendedProperties ["ErrorReport"] = "prompt";
 					
@@ -635,49 +642,62 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			
-			if (!string.IsNullOrEmpty (assemblyName))
-				SetGroupProperty (globalGroup, "AssemblyName", assemblyName, false);
-			else
-				globalGroup.RemoveProperty ("AssemblyName");
-			
 			// Configurations
 
-			List<ConfigData> configData = GetConfigData (msproject);
-			
-			foreach (SolutionItemConfiguration conf in eitem.Configurations) {
-				bool newConf = false;
-				MSBuildPropertyGroup propGroup = FindPropertyGroup (configData, conf);
-				if (propGroup == null) {
-					propGroup = msproject.AddNewPropertyGroup (false);
-					propGroup.Condition = BuildConfigCondition (conf.Name, conf.Platform);
-					newConf = true;
-				}
+			if (eitem.Configurations.Count > 0) {
+				List<ConfigData> configData = GetConfigData (msproject);
+				Dictionary<string,string> mergeToProjectProperties = new Dictionary<string,string> ();
+				List<string> mergeToProjectPropertyNames = new List<string> (GetMergeToProjectProperties (ser, eitem.Configurations [0]));
+				List<string> mergeToProjectPropertyNamesCopy = new List<string> (mergeToProjectPropertyNames);
 				
-				DotNetProjectConfiguration netConfig = conf as DotNetProjectConfiguration;
-				
-				DataItem ditem = (DataItem) ser.Serialize (conf);
-				
-				if (netConfig != null) {
-					// Remove all compilation parameters properties from the data item, since we are going to write them again.
-					ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (netConfig.CompilationParameters.GetType ());
-					foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, netConfig.CompilationParameters)) {
-						DataNode n = ditem.ItemData [prop.Name];
-						if (n != null)
-							ditem.ItemData.Remove (n);
+				foreach (SolutionItemConfiguration conf in eitem.Configurations) {
+					bool newConf = false;
+					MSBuildPropertyGroup propGroup = FindPropertyGroup (configData, conf);
+					if (propGroup == null) {
+						propGroup = msproject.AddNewPropertyGroup (false);
+						propGroup.Condition = BuildConfigCondition (conf.Name, conf.Platform);
+						newConf = true;
 					}
-					DataItem ditemComp = (DataItem) ser.Serialize (netConfig.CompilationParameters);
-					ditem.ItemData.AddRange (ditemComp.ItemData);
+					
+					DotNetProjectConfiguration netConfig = conf as DotNetProjectConfiguration;
+					
+					DataItem ditem = (DataItem) ser.Serialize (conf);
+					
+					if (netConfig != null) {
+						// Remove all compilation parameters properties from the data item, since we are going to write them again.
+						ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (netConfig.CompilationParameters.GetType ());
+						foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, netConfig.CompilationParameters)) {
+							DataNode n = ditem.ItemData [prop.Name];
+							if (n != null)
+								ditem.ItemData.Remove (n);
+						}
+						DataItem ditemComp = (DataItem) ser.Serialize (netConfig.CompilationParameters);
+						ditem.ItemData.AddRange (ditemComp.ItemData);
+					}
+	
+					if (newConf)
+						ditem.ItemData.Sort (configOrder);
+					
+					WritePropertyGroupMetadata (propGroup, ditem.ItemData, ser, conf, netConfig != null ? netConfig.CompilationParameters : null);
+					
+					UnmergeBaseConfiguration (configData, propGroup, conf.Name, conf.Platform);
+					
+					CollectMergetoprojectProperties (propGroup, mergeToProjectPropertyNames, mergeToProjectProperties);
 				}
-
-				if (newConf)
-					ditem.ItemData.Sort (configOrder);
 				
-				WritePropertyGroupMetadata (propGroup, ditem.ItemData, ser, conf, netConfig != null ? netConfig.CompilationParameters : null);
-				
-				if (!string.IsNullOrEmpty (assemblyName))
-					propGroup.RemoveProperty ("AssemblyName");
-
-				UnmergeBaseConfiguration (configData, propGroup, conf.Name, conf.Platform);
+				// Move properties with common values from configurations to the main
+				// property group
+				foreach (KeyValuePair<string,string> prop in mergeToProjectProperties)
+					globalGroup.SetPropertyValue (prop.Key, prop.Value);
+				foreach (string prop in mergeToProjectPropertyNamesCopy) {
+					if (!mergeToProjectProperties.ContainsKey (prop))
+						globalGroup.RemoveProperty (prop);
+				}
+				foreach (SolutionItemConfiguration conf in eitem.Configurations) {
+					MSBuildPropertyGroup propGroup = FindPropertyGroup (configData, conf);
+					foreach (string mp in mergeToProjectProperties.Keys)
+						propGroup.RemoveProperty (mp);
+				}
 			}
 			
 			// Remove old items
@@ -726,6 +746,36 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			msproject.Save (eitem.FileName);
 		}
+
+		void CollectMergetoprojectProperties (MSBuildPropertyGroup pgroup, List<String> propertyNames, Dictionary<string,string> mergeToProjectProperties)
+		{
+			// This method checks every property in pgroup which has the MergeToProject flag.
+			// If the value of this property is the same as the one stored in mergeToProjectProperties
+			// it means that the property can be merged to the main project property group (so far).
+			
+			foreach (string pname in new List<String> (propertyNames)) {
+				MSBuildProperty prop = pgroup.GetProperty (pname);
+				
+				string mvalue;
+				if (!mergeToProjectProperties.TryGetValue (pname, out mvalue)) {
+					if (prop != null) {
+						// This is the first time the value is checked. Just assign it.
+						mergeToProjectProperties.Add (pname, prop.Value);
+						continue;
+					}
+					// If there is no value, it can't be merged
+				}
+				else if (prop != null && prop.Value == mvalue)
+					// Same value. It can be merged.
+					continue;
+
+				// The property can't be merged because different configurations have different
+				// values for it. Remove it from the list.
+				propertyNames.Remove (pname);
+				mergeToProjectProperties.Remove (pname);
+			}
+		}
+
 		
 		void SaveItem (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, object ob)
 		{
@@ -1106,6 +1156,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (platform.Length == 0)
 				platform = "AnyCPU";
 			return " '$(Configuration)|$(Platform)' == '" + config + "|" + platform + "' ";
+		}
+
+		bool IsMergeToProjectProperty (ItemProperty prop)
+		{
+			foreach (object at in prop.CustomAttributes) {
+				if (at is MergeToProjectAttribute)
+					return true;
+			}
+			return false;
 		}
 
 		string FindClosestSupportedVersion (string version)

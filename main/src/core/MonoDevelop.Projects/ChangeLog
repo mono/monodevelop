@@ -1,3 +1,27 @@
+2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* md1format.xml:
+	* MonoDevelop.Projects/ProjectConfiguration.cs:
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Moved
+	  SignAssembly and AssemblyKeyFile to
+	  DotNetProjectConfiguration. Use the new MergeToProject flags
+	  for them.
+
+	* MonoDevelop.Projects/Solution.cs: Set correct default value
+	  for the version property.
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MergeToProjectAttribute.cs:
+	  Added support for MergeToProjectAttribute. When applied to a
+	  property of a project configuration, MD will check if the
+	  value of that property is the same for all configurations.
+	  If they are the same, the value will be stored in the main
+	  property group, insted of individually in each
+	  configuration.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj: Added MergeToProjectAttribute.
+
 2009-09-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetAssemblyProject.cs: Add missing

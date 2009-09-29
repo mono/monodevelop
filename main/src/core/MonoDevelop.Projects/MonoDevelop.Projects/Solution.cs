@@ -57,7 +57,7 @@ namespace MonoDevelop.Projects
 		string description;
 		
 		[ItemProperty ("version", DefaultValue = "0.1")]
-		string version;
+		string version = "0.1";
 		
 		[ProjectPathItemProperty ("outputpath")]
 		string outputdir     = null;

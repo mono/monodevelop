@@ -176,6 +176,7 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild.Conditions/ExpressionParseException.cs \
 	MonoDevelop.Projects.Formats.MSBuild.Conditions/Token.cs \
 	MonoDevelop.Projects.Formats.MSBuild/IMSBuildImportProvider.cs \
+	MonoDevelop.Projects.Formats.MSBuild/MergeToProjectAttribute.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildHandler.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildImportAttribute.cs \

@@ -46,6 +46,8 @@
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.DotNetProjectConfiguration">
 		<ItemProperty member="assembly" name="Output/assembly"/>
+		<ItemProperty member="signAssembly" name="Output/signAssembly" defaultValue="false" />
+		<ItemProperty member="assemblyKeyFile" name="Output/assemblyKeyFile" defaultValue="" />
 		<LiteralProperty name="Execution/runtime" value="MsNet" />
 		<ItemMember name="md1_CompileTarget" type="System.String"/>
 		<ItemProperty member="md1_CompileTarget" name="Build/target"/>
@@ -59,8 +61,6 @@
 	<DataItem class = "MonoDevelop.Projects.ProjectConfiguration">
 		<ItemProperty member="outputDirectory" name="Output/directory" serializationDataType="MonoDevelop.Projects.PathDataType"/>
 		<ItemProperty member="debugMode" name="Build/debugmode" />
-		<ItemProperty member="signAssembly" name="Output/signAssembly" defaultValue="false" />
-		<ItemProperty member="assemblyKeyFile" name="Output/assemblyKeyFile" defaultValue="" />
 		<ItemProperty member="runWithWarnings" name="Execution/runwithwarnings" />
 		<ItemProperty member="commandLineParameters" name="Execution/commandlineparameters" defaultValue =""/>
 		<ItemProperty member="externalConsole" name="Execution/externalconsole" defaultValue="false" />
