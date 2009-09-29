@@ -429,7 +429,7 @@ namespace Mono.TextEditor
 			int width, height;
 			win.GetSize (out width, out height);
 			caretClipRectangle.Intersect (new Gdk.Rectangle (0, 0, width, height));
-			SetClip (caretClipRectangle);
+			caretGc.ClipRectangle = caretClipRectangle;
 			switch (Caret.Mode) {
 			case CaretMode.Insert:
 				if (caretX < this.XOffset || caretClipRectangle == Gdk.Rectangle.Zero)
@@ -461,11 +461,11 @@ namespace Mono.TextEditor
 		{
 			switch (mode) {
 			case CaretMode.Insert:
-				return new Gdk.Rectangle (caretX, caretY, 1, LineHeight);
+				return new Gdk.Rectangle (System.Math.Max (this.XOffset, caretX), caretY, 1, LineHeight);
 			case CaretMode.Block:
-				return new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight);
+				return new Gdk.Rectangle (System.Math.Max (this.XOffset, caretX), caretY, this.charWidth, LineHeight);
 			case CaretMode.Underscore:
-				return new Gdk.Rectangle (caretX, caretY + LineHeight, this.charWidth, 1);
+				return new Gdk.Rectangle (System.Math.Max (this.XOffset, caretX), caretY + LineHeight, this.charWidth, 1);
 			}
 			throw new NotImplementedException ("Unknown caret mode :" + mode);
 		}

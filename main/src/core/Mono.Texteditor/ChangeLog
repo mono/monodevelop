@@ -1,5 +1,11 @@
 2009-09-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Optimized folding tree
+	  memory usage/fixed caret clip rectangle.
+
+2009-09-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/CaretMoveActions.cs: Fixed page up/down
 	  behavior.

@@ -734,9 +734,9 @@ namespace Mono.TextEditor
 				}
 			}
 			
+			Stack<FoldSegmentTreeNode> stack = new Stack<FoldSegmentTreeNode> ();
 			IEnumerable<FoldSegment> Traverse (Predicate<FoldSegment> includeChilds) 
 			{
-				Stack<FoldSegmentTreeNode> stack = new Stack<FoldSegmentTreeNode> ();
 				stack.Push (this);
 				while (stack.Count > 0) {
 					FoldSegmentTreeNode node = stack.Pop ();
@@ -805,7 +805,6 @@ namespace Mono.TextEditor
 			
 			public IEnumerable<FoldSegment> GetFoldingsFromOffset (int offset)
 			{
-				Stack<FoldSegmentTreeNode> stack = new Stack<FoldSegmentTreeNode> ();
 				stack.Push (this);
 				while (stack.Count > 0) {
 					FoldSegmentTreeNode node = stack.Pop ();
@@ -821,7 +820,6 @@ namespace Mono.TextEditor
 			
 			public IEnumerable<FoldSegment> GetFoldingContaining (LineSegment line)
 			{
-				Stack<FoldSegmentTreeNode> stack = new Stack<FoldSegmentTreeNode> ();
 				stack.Push (this);
 				while (stack.Count > 0) {
 					FoldSegmentTreeNode node = stack.Pop ();
