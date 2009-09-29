@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Text;
 
 using MonoDevelop.Ide.Gui.Content;
@@ -274,28 +275,30 @@ namespace CSharpBinding.FormattingStrategy {
 			return false;
 		}
 		
+		static readonly string[] keywords = new string [] {
+			"namespace",
+			"interface",
+			"struct",
+			"class",
+			"enum",
+			"switch",
+			"case",
+			"foreach",
+			"while",
+			"for",
+			"do",
+			"else",
+			"if",
+			"base",
+			"this",
+			"="
+		};
+		static readonly int maxKeywordLength = keywords.Max (word => word.Length);
+		
 		// Check to see if linebuf contains a keyword we're interested in (not all keywords)
 		string WordIsKeyword ()
 		{
-			string str = linebuf.ToString (wordStart, linebuf.Length - wordStart);
-			string[] keywords = new string [] {
-				"namespace",
-				"interface",
-				"struct",
-				"class",
-				"enum",
-				"switch",
-				"case",
-				"foreach",
-				"while",
-				"for",
-				"do",
-				"else",
-				"if",
-				"base",
-				"this",
-				"="
-			};
+			string str = linebuf.ToString (wordStart, Math.Min (linebuf.Length - wordStart, maxKeywordLength));
 			
 			for (int i = 0; i < keywords.Length; i++) {
 				if (str == keywords[i])
@@ -868,8 +871,7 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			needsReindent = false;
 			
-			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0 &&
-			    wordStart != -1) {
+			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0 && wordStart != -1) {
 				if (char.IsWhiteSpace (c) || c == '(' || c == '{') {
 					string tmp = WordIsKeyword ();
 					if (tmp != null)

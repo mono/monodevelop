@@ -212,14 +212,16 @@ namespace MonoDevelop.CSharpBinding.Gui
 				DoPreInsertionSmartIndent (key);
 				bool retval = base.KeyPress (key, keyChar, modifier);
 
-				stateTracker.UpdateEngine ();
-
 				//handle inserted characters
 				if (Editor.CursorPosition <= 0 || Editor.SelectionStartPosition < Editor.SelectionEndPosition)
 					return retval;
-
-				bool reIndent = false;
+				
 				char lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, Editor.GetCharAt (Editor.CursorPosition - 1));
+				if (lastCharInserted == '\0')
+					return retval;
+				stateTracker.UpdateEngine ();
+				
+				bool reIndent = false;
 				if (!(oldLine == Editor.CursorLine && lastCharInserted == '\n') && (oldBufLen != Editor.TextLength || lastCharInserted != '\0'))
 					DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
 
@@ -306,16 +308,18 @@ namespace MonoDevelop.CSharpBinding.Gui
 		}
 		void DoPreInsertionSmartIndent (Gdk.Key key)
 		{
-			stateTracker.UpdateEngine ();
 			switch (key) {
 			case Gdk.Key.BackSpace:
+				stateTracker.UpdateEngine ();
 				HandleStringConcatinationDeletion (Editor.CursorPosition - 1, 0);
 				break;
 			case Gdk.Key.Delete:
+				stateTracker.UpdateEngine ();
 				HandleStringConcatinationDeletion (Editor.CursorPosition, Editor.TextLength);
 				break;
 			}
 		}
+		
 		//special handling for certain characters just inserted , for comments etc
 		void DoPostInsertionSmartIndent (char charInserted, bool hadSelection, out bool reIndent)
 		{

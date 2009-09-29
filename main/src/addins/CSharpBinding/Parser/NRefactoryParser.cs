@@ -40,7 +40,7 @@ using ICSharpCode.NRefactory.Visitors;
 using CSharpBinding;
 using ICSharpCode.NRefactory;
 
-namespace MonoDevelop.CSharpBinding
+namespace MonoDevelop.CSharpBindingQ
 {
 	public class NRefactoryParser : AbstractParser
 	{
@@ -661,6 +661,7 @@ namespace MonoDevelop.CSharpBinding
 					field.Name = varDecl.Name;
 					field.Documentation = RetrieveDocumentation (fieldDeclaration.StartLocation.Line);
 					field.Location = ConvertLocation (fieldDeclaration.StartLocation);
+					field.BodyRegion = ConvertRegion (varDecl.StartLocation, varDecl.EndLocation);
 					field.Modifiers = ConvertModifiers (fieldDeclaration.Modifier);
 					if (typeStack.Peek ().ClassType == ClassType.Enum) {
 						field.ReturnType = new DomReturnType (typeStack.Peek ());
