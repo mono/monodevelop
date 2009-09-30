@@ -473,55 +473,13 @@ namespace MonoDevelop.CSharpBinding
 		{
 			return ResolveType (unit, type);
 		}
-
-		bool TryResolve (ICompilationUnit unit, IReturnType type, out DomReturnType result)
-		{
-			IType resolvedType = dom.SearchType (new SearchTypeRequest (unit, type, callingType));
-			//System.Console.WriteLine(type +" resolved to: " +resolvedType);
-			if (resolvedType != null) {
-				result = new DomReturnType (resolvedType);
-				result.ArrayDimensions = type.ArrayDimensions;
-				for (int i = 0; i < result.ArrayDimensions; i++) {
-					result.SetDimension (i, type.GetDimension (i));
-				}
-				result.IsNullable = type.IsNullable;
-				return true;
-			}
-			result = null;
-			return false;
-		}
 		
 		IReturnType ResolveType (ICompilationUnit unit, IReturnType type)
 		{
-			if (type == null)
-				return DomReturnType.Void;
 			if (type.Type != null) // type known (possible anonymous type), no resolving needed
 				return type;
-			DomReturnType result = null;
-			if (TryResolve (unit, type, out result))
-				return result;
 			
-			if (this.CallingType != null) {
-				DomReturnType possibleInnerType = new DomReturnType (this.CallingType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments);
-				possibleInnerType.ArrayDimensions = type.ArrayDimensions;
-				for (int i = 0; i < type.ArrayDimensions; i++) {
-					possibleInnerType.SetDimension (i, type.GetDimension (i));
-				}
-				if (TryResolve (unit, possibleInnerType, out result))
-					return result;
-				
-				if (this.CallingType.DeclaringType != null) {
-					possibleInnerType = new DomReturnType (this.CallingType.DeclaringType.FullName + "." + type.Name, type.IsNullable, type.GenericArguments);
-					possibleInnerType.ArrayDimensions = type.ArrayDimensions;
-					for (int i = 0; i < type.ArrayDimensions; i++) {
-						possibleInnerType.SetDimension (i, type.GetDimension (i));
-					}
-					if (TryResolve (unit, possibleInnerType, out result))
-						return result;
-				}
-			}
-			
-			return type;
+			return type != null ? (IReturnType)new TypeResolverVisitor (dom, unit).Visit (type, this.CallingType) : DomReturnType.Void;
 		}
 		
 		ResolveResult GetFunctionParameterType (ResolveResult resolveResult)

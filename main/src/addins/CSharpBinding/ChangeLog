@@ -1,3 +1,8 @@
+2009-09-30  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/NRefactoryResolver.cs: Fixed 'Bug 542976 - Type
+	  resolution problem'.
+
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CSharp.Parser\CSharpParser.cs: Mono.CSharp is
