@@ -179,7 +179,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 			
 			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
 				int cursor = Editor.CursorPosition;
-
+				
 				if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {
 					// insert normal tab inside @" ... "
 					if (Editor.SelectionEndPosition > 0) {
@@ -195,6 +195,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 							Editor.CursorPosition = cursor - delta;
 						}
 					}
+					stateTracker.UpdateEngine ();
 					DoReSmartIndent ();
 				}
 				return false;

@@ -1,5 +1,9 @@
 2009-09-30  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/CSharpTextEditorIndentation.cs: Fixed tab as reindent.
+
+2009-09-30  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/NRefactoryResolver.cs: Fixed 'Bug 542976 - Type
 	  resolution problem'.
 
