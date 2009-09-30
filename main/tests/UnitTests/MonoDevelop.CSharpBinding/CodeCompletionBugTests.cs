@@ -1873,6 +1873,54 @@ class MyClass2
 			Assert.IsNotNull (provider.Find ("Test"), "property 'Test' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 542976 resolution problem
+		/// </summary>
+		[Test()]
+		public void TestBug542976 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+class KeyValuePair<S, T>
+{
+	public S Key { get; set;}
+	public T Value { get; set;}
+}
+
+class TestMe<T> : System.Collections.Generic.IEnumerable<T>
+{
+	public System.Collections.Generic.IEnumerator<T> GetEnumerator ()
+	{
+		throw new System.NotImplementedException();
+	}
+
+	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+	{
+		throw new System.NotImplementedException();
+	}
+}
+
+namespace TestMe 
+{
+	class Bar
+	{
+		public int Field;
+	}
+	
+	class Test
+	{
+		void Foo (TestMe<KeyValuePair<Bar, int>> things)
+		{
+			foreach (var thing in things) {
+				$thing.Key.$
+			}
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Field"), "field 'Field' not found.");
+		}
 		
 		
 	}
