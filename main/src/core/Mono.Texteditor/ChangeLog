@@ -1,3 +1,8 @@
+2009-09-30  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Subscripe to the position
+	  change event after the first OptionsChanged.
+
 2009-09-29  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs:

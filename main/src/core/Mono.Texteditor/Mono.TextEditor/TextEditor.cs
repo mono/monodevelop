@@ -301,9 +301,12 @@ namespace Mono.TextEditor
 					this.textEditorData.Document.CommitLineUpdate (Caret.Line);
 				}
 			};
-			Caret.PositionChanged += CaretPositionChanged;
+			
 			textViewMargin.Initialize ();
-			this.Realized += OptionsChanged;
+			this.Realized += delegate {
+				OptionsChanged (this, EventArgs.Empty);
+				Caret.PositionChanged += CaretPositionChanged;
+			};
 			
 			using (Pixmap inv = new Pixmap (null, 1, 1, 1)) {
 				invisibleCursor = new Cursor (inv, inv, Gdk.Color.Zero, Gdk.Color.Zero, 0, 0);
