@@ -1,0 +1,4 @@
+2009-09-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* .temp-addin-registry: Remove temp dir.
+
