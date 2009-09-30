@@ -44,7 +44,8 @@ namespace MonoDevelop.AddinAuthoring
 	{
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(DotNetProject).IsAssignableFrom (dataType);
+			return typeof(DotNetProject).IsAssignableFrom (dataType) || 
+				   typeof(ProjectFile).IsAssignableFrom (dataType);
 /*			return typeof(ProjectFolder).IsAssignableFrom (dataType) ||
 					typeof(ProjectFile).IsAssignableFrom (dataType) ||
 					typeof(DotNetProject).IsAssignableFrom (dataType);
@@ -54,7 +55,25 @@ namespace MonoDevelop.AddinAuthoring
 			get { return typeof(AddinFolderCommandHandler); }
 		}
 		
-/*		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
+		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
+		{
+			base.GetNodeAttributes (parentNode, dataObject, ref attributes);
+			if (dataObject is ProjectFile) {
+				string fname = ((ProjectFile)dataObject).Name;
+				if (fname.EndsWith (".addin.xml") || fname.EndsWith (".addin")) {
+					if (!(parentNode.DataItem is AddinData)) {
+						DotNetProject dp = (DotNetProject) parentNode.GetParentDataItem (typeof(DotNetProject), true);
+						if (dp != null && dp.GetAddinData () != null) {
+							// Hide the manifest
+							attributes |= NodeAttributes.Hidden;
+						}
+					}
+				}
+			}
+		}
+
+		
+		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			if (dataObject is DotNetProject) {
 				AddinData data = AddinData.GetAddinData ((DotNetProject)dataObject);
@@ -62,7 +81,7 @@ namespace MonoDevelop.AddinAuthoring
 					builder.AddChild (data);
 			}
 		}
-*/		
+		
 		public override void OnNodeAdded (object dataObject)
 		{
 			if (dataObject is DotNetProject) {
@@ -98,7 +117,14 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			if (CurrentNode.DataItem is AddinData) {
 				AddinData data = (AddinData) CurrentNode.DataItem;
-				IdeApp.Workbench.OpenDocument (data.AddinManifestFileName, true);
+				foreach (Document doc in IdeApp.Workbench.Documents) {
+					AddinDescriptionView view = doc.GetContent<AddinDescriptionView> ();
+					if (view != null && view.Data == data) {
+						doc.Select ();
+						return;
+					}
+				}
+				IdeApp.Workbench.OpenDocument (new AddinDescriptionView (data), true);
 			}
 		}
 

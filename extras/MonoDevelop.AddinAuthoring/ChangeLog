@@ -1,3 +1,23 @@
+2009-10-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* addin-reference.png:
+	* MonoDevelop.AddinAuthoring.sln:
+	* MonoDevelop.AddinAuthoring.make:
+	* MonoDevelop.AddinAuthoring.csproj:
+	* MonoDevelop.AddinAuthoring.addin.xml:
+	* MonoDevelop.AddinAuthoring/AddinData.cs:
+	* MonoDevelop.AddinAuthoring/AddinDescriptionView.cs:
+	* MonoDevelop.AddinAuthoring/AddinProjectExtension.cs:
+	* MonoDevelop.AddinAuthoring/AddinAuthoringService.cs:
+	* MonoDevelop.AddinAuthoring/AddinDescriptionDisplayBinding.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/ReferenceNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/AddinFolderNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/ReferencesFolderNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	Ongoing work.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure: Bump mono-addins dependency.

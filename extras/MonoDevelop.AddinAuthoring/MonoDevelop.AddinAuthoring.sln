@@ -20,7 +20,6 @@ Global
 		$1.MessageStyle = $2
 		$2.LineAlign = 0
 		$1.inheritsSet = Mono
-		version = 0.1
 		name = MonoDevelop.AddinAuthoring
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties.Debug) = preSolution

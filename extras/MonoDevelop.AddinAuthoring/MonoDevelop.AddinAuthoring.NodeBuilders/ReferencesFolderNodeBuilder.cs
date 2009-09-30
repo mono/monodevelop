@@ -48,6 +48,33 @@ namespace MonoDevelop.AddinAuthoring
 		public override Type CommandHandlerType {
 			get { return typeof(ReferencesFolderCommandHandler); }
 		}
+		
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			if (base.HasChildNodes (builder, dataObject))
+				return true;
+			DotNetProject p = (DotNetProject) builder.GetParentDataItem (typeof(DotNetProject), false);
+			if (p != null) {
+				AddinData data = AddinData.GetAddinData (p);
+				if (data != null)
+					return data.CachedAddinManifest.MainModule.Dependencies.Count > 0;
+			}
+			return false;
+		}
+
+		
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
+		{
+			base.BuildChildNodes (treeBuilder, dataObject);
+			DotNetProject p = (DotNetProject) treeBuilder.GetParentDataItem (typeof(DotNetProject), false);
+			if (p != null) {
+				AddinData data = AddinData.GetAddinData (p);
+				if (data != null) {
+					foreach (Dependency adep in data.CachedAddinManifest.MainModule.Dependencies)
+						treeBuilder.AddChild (adep);
+				}
+			}
+		}
 	}
 	
 	class ReferencesFolderCommandHandler: NodeCommandHandler

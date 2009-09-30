@@ -80,8 +80,10 @@ namespace MonoDevelop.AddinAuthoring
 				project.ParentSolution.GetAddinData ().ApplicationName = ApplicationName;
 			}
 			
-			SyncRoot ();
-			SyncReferences ();
+			if (project.ParentSolution != null) {
+				SyncRoot ();
+				SyncReferences ();
+			}
 			
 			project.ReferenceAddedToProject += ProjectReferenceAddedToProject;
 			project.ReferenceRemovedFromProject += ProjectReferenceRemovedFromProject;
@@ -135,12 +137,16 @@ namespace MonoDevelop.AddinAuthoring
 				return null;
 			
 			AddinData data = project.ExtendedProperties ["MonoDevelop.AddinAuthoring"] as AddinData;
+			if (data != null)
+				return data;
+			
 			if (data == null) {
-				string domainData = project.ExtendedProperties ["ExtensionDomain"] as string;
-				if (!string.IsNullOrEmpty (domainData))
-					data = new AddinData (project);
+				foreach (ProjectFile pfile in project.Files) {
+					if (pfile.Name.EndsWith (".addin.xml") || pfile.Name.EndsWith (".addin"))
+						return new AddinData (project);
+				}
 			}
-			return data;
+			return null;
 		}
 		
 		public static AddinData EnableAddinAuthoringSupport (DotNetProject project)
@@ -234,14 +240,10 @@ namespace MonoDevelop.AddinAuthoring
 		
 		AddinRegistry SetRegistry ()
 		{
-			if (ApplicationName == null)
-				return registry = AddinRegistry.GetGlobalRegistry ();
-			else {
-				if (Project.ParentSolution != null)
-					return Project.ParentSolution.GetAddinRegistry ();
-				else
-					throw new InvalidOperationException ();
-			}
+			if (Project.ParentSolution != null)
+				return Project.ParentSolution.GetAddinRegistry ();
+			else
+				throw new InvalidOperationException ();
 		}
 		
 		internal void CheckOutputPath ()

@@ -40,9 +40,16 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
 		{
+			if (dataObject is AddinProjectReference) {
+				attributes |= NodeAttributes.Hidden;
+				return;
+			}
 			ProjectReference pr = (ProjectReference) dataObject;
 			DotNetProject parent = pr.OwnerProject as DotNetProject;
-			if (parent.GetAddinData () != null && pr.ReferenceType == ReferenceType.Project) {
+			if (AddinAuthoringService.IsProjectIncludedByAddin (parent, pr)) {
+				attributes |= NodeAttributes.Hidden;
+			}
+			else if (parent.GetAddinData () != null && pr.ReferenceType == ReferenceType.Project) {
 				DotNetProject tp = parent.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
 				if (tp != null && tp.GetAddinData () != null)
 					attributes |= NodeAttributes.Hidden;

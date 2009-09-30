@@ -10,6 +10,7 @@
     <ApplicationIcon>.</ApplicationIcon>
     <AssemblyName>MonoDevelop.AddinAuthoring</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.AddinAuthoring</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,7 +21,6 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <AssemblyKeyFile>.</AssemblyKeyFile>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -98,19 +98,32 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.AddinAuthoring.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.AddinAuthoring.addin.xml">
+      <LogicalName>MonoDevelop.AddinAuthoring.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="templates\AddinProject.xpt.xml">
       <LogicalName>AddinProject.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="flare.png" />
-    <EmbeddedResource Include="extension-node-type.png" />
-    <EmbeddedResource Include="extension-point.png" />
-    <EmbeddedResource Include="extension-node-set.png" />
+    <EmbeddedResource Include="flare.png">
+      <LogicalName>flare.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="extension-node-type.png">
+      <LogicalName>extension-node-type.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="extension-point.png">
+      <LogicalName>extension-point.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="extension-node-set.png">
+      <LogicalName>extension-node-set.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="templates\ExtensibleApplicationProject.xpt.xml">
       <LogicalName>ExtensibleApplicationProject.xpt.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\ExtensibleLibraryProject.xpt.xml">
       <LogicalName>ExtensibleLibraryProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="addin-reference.png">
+      <LogicalName>addin-reference.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

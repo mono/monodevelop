@@ -281,6 +281,23 @@ namespace MonoDevelop.AddinAuthoring
 			}
 			return null;
 		}
+		
+		public static bool IsProjectIncludedByAddin (DotNetProject project, ProjectReference pref)
+		{
+			// Checks if the provided reference is implicitly included by an add-in reference in the project.
+			foreach (ProjectReference p in project.References) {
+				if (p.ReferenceType != ReferenceType.Project && p != pref)
+					continue;
+				DotNetProject rp = project.ParentSolution.FindProjectByName (p.Reference) as DotNetProject;
+				if (rp != null && rp.GetAddinData () != null) {
+					foreach (ProjectReference aref in rp.References) {
+						if (aref.ReferenceType == ReferenceType.Project && aref.Reference == pref.Reference)
+							return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 	
 	class AddinAuthoringServiceConfig

@@ -71,13 +71,16 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			label = AddinManager.CurrentLocalizer.GetString ("Add-in Description");
+			label = AddinManager.CurrentLocalizer.GetString ("Extension Model");
 			icon = Context.GetIcon (Stock.Addin);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			AddinData data = (AddinData) dataObject;
+			ProjectFile file = data.Project.GetProjectFile (data.AddinManifestFileName);
+			if (file != null)
+				builder.AddChild (file);
 			builder.AddChild (data.CachedAddinManifest.ExtensionPoints);
 			builder.AddChild (data.CachedAddinManifest.MainModule.Extensions);
 		}

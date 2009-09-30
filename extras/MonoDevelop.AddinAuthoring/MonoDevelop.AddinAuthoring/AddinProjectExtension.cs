@@ -72,7 +72,7 @@ namespace MonoDevelop.AddinAuthoring
 				return null;
 				
 			RegistryInfo ri = sdata.ExternalRegistryInfo;
-			if (string.IsNullOrEmpty (ri.TestCommand))
+			if (ri == null || string.IsNullOrEmpty (ri.TestCommand))
 				return null;
 
 			FilePath cmd;

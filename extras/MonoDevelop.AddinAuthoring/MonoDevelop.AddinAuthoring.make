@@ -101,6 +101,7 @@ FILES =  \
 DATA_FILES = 
 
 RESOURCES =  \
+	addin-reference.png \
 	extension-node-set.png \
 	extension-node-type.png \
 	extension-point.png \

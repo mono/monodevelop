@@ -46,7 +46,6 @@ namespace MonoDevelop.AddinAuthoring
 			if (fileName.EndsWith (".addin.xml") || fileName.EndsWith (".xml")) {
 				if (IdeApp.Workspace.IsOpen) {
 					DotNetProject p = IdeApp.Workspace.GetProjectContainingFile (fileName) as DotNetProject;
-					Console.WriteLine ("pp aa:" + AddinData.GetAddinData (p));
 					return p != null && AddinData.GetAddinData (p) != null;
 				}
 			}

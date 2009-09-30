@@ -21,8 +21,9 @@ namespace MonoDevelop.AddinAuthoring
 		public AddinDescriptionView (AddinData data)
 		{
 			this.data = data;
-			//ContentName = data.Project.Name + " Add-in Description";
-			ContentName = data.AddinManifestFileName;
+			ContentName = data.Project.Name + " Extension Model";
+			//ContentName = data.AddinManifestFileName;
+			Project = data.Project;
 			
 			descWidget = new AddinDescriptionWidget ();
 			descWidget.Changed += delegate {

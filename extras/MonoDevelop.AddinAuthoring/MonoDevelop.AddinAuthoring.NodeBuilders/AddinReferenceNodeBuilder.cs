@@ -43,7 +43,7 @@ namespace MonoDevelop.AddinAuthoring
 	public class AddinReferenceNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(AddinProjectReference); }
+			get { return typeof(AddinDependency); }
 		}
 		
 		public override Type CommandHandlerType {
@@ -57,16 +57,16 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			AddinProjectReference adep = (AddinProjectReference) dataObject;
-			return Addin.GetIdName (adep.Reference);
+			AddinDependency adep = (AddinDependency) dataObject;
+			return Addin.GetIdName (adep.AddinId);
 		}
 
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
 		{
-			AddinProjectReference adep = (AddinProjectReference) dataObject;
-			label = Addin.GetIdName (adep.Reference);
-			icon = closedIcon = Context.GetIcon ("md-addin");
+			AddinDependency adep = (AddinDependency) dataObject;
+			label = Addin.GetIdName (adep.AddinId);
+			icon = closedIcon = Context.GetIcon ("md-addin-reference");
 		}
 	}
 	
@@ -76,11 +76,11 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			DotNetProject p = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
 			AddinData data = AddinData.GetAddinData (p);
-			AddinProjectReference adep = (AddinProjectReference) CurrentNode.DataItem;
+			AddinDependency adep = (AddinDependency) CurrentNode.DataItem;
 			
-			string q = AddinManager.CurrentLocalizer.GetString ("Are you sure you want to remove the reference to add-in '{0}'?", Addin.GetIdName (adep.Reference));
+			string q = AddinManager.CurrentLocalizer.GetString ("Are you sure you want to remove the reference to add-in '{0}'?", Addin.GetIdName (adep.AddinId));
 			if (MessageService.Confirm (q, AlertButton.Remove)) {
-				AddinAuthoringService.RemoveReferences (data, new string[] { adep.Reference });
+				AddinAuthoringService.RemoveReferences (data, new string[] { adep.FullAddinId });
 			}
 		}
 	}
