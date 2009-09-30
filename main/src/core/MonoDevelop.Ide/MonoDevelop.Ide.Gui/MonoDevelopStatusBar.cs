@@ -70,6 +70,7 @@ namespace MonoDevelop.Ide
 			statusLabel = new Label ();
 			statusLabel.SetAlignment (0, 0.5f);
 			statusLabel.Wrap = false;
+			
 			statusLabel.SetPadding (0, 0);
 			statusBox.PackEnd (statusLabel, true, true, 0);
 			textStatusBarPanel.ShadowType = ShadowType.None;

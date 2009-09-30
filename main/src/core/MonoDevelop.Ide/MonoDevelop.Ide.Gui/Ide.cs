@@ -321,7 +321,11 @@ namespace MonoDevelop.Ide.Gui
 			string msg = args.CommandInfo.Description;
 			if (string.IsNullOrEmpty (msg)) {
 				msg = args.CommandInfo.Text;
-				msg = msg.Replace ("_", "");
+				// only replace _ outside of markup: usecase : Field <b>some_field</b>
+				int idx = msg.IndexOf ('<');
+				if (idx < 0)
+					idx = msg.Length;
+				msg = msg.Substring (0, idx).Replace ("_", "") + msg.Substring (idx);
 			}
 			if (!string.IsNullOrEmpty (msg))
 				Workbench.StatusBar.ShowMessage (msg, args.CommandInfo.UseMarkup);

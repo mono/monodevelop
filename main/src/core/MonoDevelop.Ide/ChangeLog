@@ -1,3 +1,9 @@
+2009-09-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: fixed "Bug
+	  542686 - Mark-up text not correctly rendered on status bar".
+
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Added 'Run With' commands to
