@@ -52,6 +52,8 @@ namespace MonoDevelop.Platform
 			LoadMimeMap ();
 			
 			CheckGtkVersion (2, 17, 9);
+			
+			MacUpdater.RunCheck (true);
 		}
 		
 		//Mac GTK+ is unstable, even between micro releases

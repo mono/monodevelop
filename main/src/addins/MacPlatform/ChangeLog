@@ -1,3 +1,10 @@
+2009-09-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MacUpdater.cs:
+	* MacPlatform.cs:
+	* MacPlatform.csproj: Add mostly-implemented Mac updater.
+
 2009-09-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Commands.cs:

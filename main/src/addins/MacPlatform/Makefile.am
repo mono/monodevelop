@@ -14,7 +14,9 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:System \
-	-r:System.Core
+	-r:System.Core \
+	-r:System.Xml \
+	-r:System.Xml.Linq
 
 FILES =  \
 	AssemblyInfo.cs \
@@ -23,6 +25,7 @@ FILES =  \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \
 	MacPlatform.cs \
+	MacUpdater.cs \
 	Menus/OSXMenu.cs
 
 RES = MacPlatform.addin.xml
