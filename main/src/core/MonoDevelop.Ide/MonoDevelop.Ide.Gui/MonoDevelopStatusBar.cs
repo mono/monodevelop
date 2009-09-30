@@ -49,8 +49,9 @@ namespace MonoDevelop.Ide
 		internal MonoDevelopStatusBar()
 		{
 			Frame originalFrame = (Frame)Children[0];
-			
-		//	Console.WriteLine (originalFrame.Children.Length);
+//			originalFrame.WidthRequest = 8;
+//			originalFrame.Shadow = ShadowType.In;
+//			originalFrame.BorderWidth = 0;
 			
 			BorderWidth = 0;
 			
@@ -72,17 +73,19 @@ namespace MonoDevelop.Ide
 			
 			statusBox.PackStart (progressBar, false, false, 0);
 			statusBox.PackStart (statusLabel, true, true, 0);
-			statusBox.PackStart (new Label (), true, true, 0);
 			
 			textStatusBarPanel.BorderWidth = 0;
 			textStatusBarPanel.ShadowType = ShadowType.In;
 			textStatusBarPanel.Add (statusBox);
+			Label fillerLabel = new Label ();
+			fillerLabel.WidthRequest = 8;
+			statusBox.PackEnd (fillerLabel, false, false, 0);
+			
+			modeLabel = new Label (" ");
+			statusBox.PackEnd (modeLabel, false, false, 0);
 			
 			cursorLabel = new Label (" ");
 			statusBox.PackEnd (cursorLabel, false, false, 0);
-
-			modeLabel = new Label (" ");
-			statusBox.PackEnd (modeLabel, false, false, 0);
 			
 			this.PackStart (textStatusBarPanel, true, true, 0);
 			
@@ -91,14 +94,13 @@ namespace MonoDevelop.Ide
 			boxChild.Position = 0;
 			boxChild.Expand = boxChild.Fill = true;
 			
-			originalFrame.WidthRequest = 8;
-			boxChild = (Gtk.Box.BoxChild)this[originalFrame];
-			boxChild.Padding = 0;
-			boxChild.Expand = boxChild.Fill = false;
+	//		boxChild = (Gtk.Box.BoxChild)this[originalFrame];
+	//		boxChild.Padding = 0;
+	//		boxChild.Expand = boxChild.Fill = false;
 			
 			this.progressBar.Fraction = 0.0;
 			this.ShowAll ();
-			
+			originalFrame.HideAll ();
 			progressBar.Visible = false;
 		}
 		
@@ -177,7 +179,7 @@ namespace MonoDevelop.Ide
 			i.SetPadding (0, 0);
 			eventBox.Child = i;
 			statusBox.PackStart (eventBox, false, false, 2);
-			statusBox.ReorderChild (eventBox, 0);
+			statusBox.ReorderChild (eventBox, 2);
 			eventBox.ShowAll ();
 			return new StatusIcon (this, eventBox, image);
 		}

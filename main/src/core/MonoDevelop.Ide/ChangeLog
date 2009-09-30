@@ -1,5 +1,10 @@
 2009-09-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Worked on
+	  status bar.
+
+2009-09-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Using a real
 	  status bar widget for displaying the status bar instead of a
 	  hbox.
