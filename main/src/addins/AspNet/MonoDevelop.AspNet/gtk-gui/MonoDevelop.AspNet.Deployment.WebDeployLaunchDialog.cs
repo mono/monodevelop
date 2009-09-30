@@ -66,7 +66,6 @@ namespace MonoDevelop.AspNet.Deployment {
             this.scrolledwindow4 = new Gtk.ScrolledWindow();
             this.scrolledwindow4.CanFocus = true;
             this.scrolledwindow4.Name = "scrolledwindow4";
-            this.scrolledwindow4.HscrollbarPolicy = ((Gtk.PolicyType)(2));
             this.scrolledwindow4.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow4.Gtk.Container+ContainerChild
             this.targetView = new Gtk.TreeView();

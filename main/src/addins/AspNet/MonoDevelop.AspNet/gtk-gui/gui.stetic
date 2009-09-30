@@ -1,22 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll" />
-    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
-    <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll" internal="true" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Core.Gui.dll" />
+    <widget-library name="../../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
+    <widget-library name="../../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
+    <widget-library name="../../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="../../../../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll" />
+    <widget-library name="../../../../../build/bin/Mono.TextEditor.dll" />
+    <widget-library name="../../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" />
+    <widget-library name="../../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
+    <widget-library name="../../../../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget" design-size="496 300">
     <property name="MemberName" />
@@ -1001,7 +1001,6 @@
     <property name="BorderWidth">9</property>
     <property name="Buttons">3</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -1039,7 +1038,6 @@
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow4">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="HscrollbarPolicy">Never</property>
             <property name="ShadowType">In</property>
             <child>
               <widget class="Gtk.TreeView" id="targetView">
