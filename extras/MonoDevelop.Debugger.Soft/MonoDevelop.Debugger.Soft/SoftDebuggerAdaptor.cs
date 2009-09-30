@@ -465,6 +465,14 @@ namespace MonoDevelop.Debugger.Soft
 			}
 			return at;
 		}
+		
+		TypeMirror ToTypeMirror (EvaluationContext ctx, object type)
+		{
+			TypeMirror t = type as TypeMirror;
+			if (t != null)
+				return t;
+			return (TypeMirror) GetType (ctx, ((Type)type).FullName);
+		}
 
 		public override object RuntimeInvoke (EvaluationContext gctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
@@ -475,7 +483,7 @@ namespace MonoDevelop.Debugger.Soft
 			
 			TypeMirror[] types = new TypeMirror [argTypes.Length];
 			for (int n=0; n<argTypes.Length; n++)
-				types [n] = (TypeMirror) argTypes [n];
+				types [n] = ToTypeMirror (ctx, argTypes [n]);
 			
 			Value[] values = new Value[argValues.Length];
 			for (int n=0; n<argValues.Length; n++)

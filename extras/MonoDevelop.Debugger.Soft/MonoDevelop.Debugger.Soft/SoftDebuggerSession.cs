@@ -44,8 +44,11 @@ namespace MonoDevelop.Debugger.Soft
 		ThreadMirror current_thread;
 		ProcessInfo[] procs;
 		ThreadInfo[] current_threads;
-		bool disposed;
+		bool exited;
 		bool started;
+		
+		Thread outputReader;
+		Thread errorReader;
 		
 		public NRefactoryEvaluator Evaluator = new NRefactoryEvaluator ();
 		public SoftDebuggerAdaptor Adaptor = new SoftDebuggerAdaptor ();
@@ -57,9 +60,22 @@ namespace MonoDevelop.Debugger.Soft
 			Array.Copy (startInfo.Arguments.Split (' '), 0, vmargs, 1, startInfo.Arguments.Length);
 			
 			LaunchOptions options = new LaunchOptions ();
+			options.RedirectStandardOutput = true;
 			
 			vm = VirtualMachineManager.Launch (vmargs, options);
 			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath);
+
+			outputReader = new Thread (delegate () {
+				ReadOutput (vm.Process.StandardOutput, false);
+			});
+			outputReader.IsBackground = true;
+			outputReader.Start ();
+			
+			errorReader = new Thread (delegate () {
+				ReadOutput (vm.Process.StandardOutput, true);
+			});
+			errorReader.IsBackground = true;
+			errorReader.Start ();
 			
 			OnStarted ();
 			started = true;
@@ -73,7 +89,20 @@ namespace MonoDevelop.Debugger.Soft
 			OnResumed ();
 			vm.Resume ();
 		}
-		
+
+		void ReadOutput (System.IO.StreamReader reader, bool isError)
+		{
+			try {
+				char[] buffer = new char [256];
+				while (!exited) {
+					int c = reader.Read (buffer, 0, buffer.Length);
+					OnTargetOutput (true, new string (buffer, 0, c));
+				}
+			} catch {
+				// Ignore
+			}
+		}
+
 		void OnResumed ()
 		{
 			current_threads = null;
@@ -101,9 +130,9 @@ namespace MonoDevelop.Debugger.Soft
 
 		public override void Dispose ()
 		{
-			if (!disposed) {
+			if (!exited) {
 				vm.Exit (0);
-				disposed = true;
+				exited = true;
 			}
 		}
 
@@ -126,7 +155,7 @@ namespace MonoDevelop.Debugger.Soft
 		protected override void OnExit ()
 		{
 			vm.Exit (0);
-			disposed = true;
+			exited = true;
 		}
 
 		protected override void OnFinish ()
@@ -269,7 +298,6 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			while (true) {
 				Event e = vm.GetNextEvent ();
-				Console.WriteLine ("pp event: " + e);
 				
 				bool disconnected = false;
 				
@@ -283,6 +311,7 @@ namespace MonoDevelop.Debugger.Soft
 					break;
 			}
 			
+			exited = true;
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 		}
 
@@ -291,6 +320,9 @@ namespace MonoDevelop.Debugger.Soft
 			bool resume = true;
 			TargetEventType etype = TargetEventType.TargetStopped;
 			
+			if (!(e is TypeLoadEvent))
+				Console.WriteLine ("pp event: " + e);
+			
 			if (e is AssemblyLoadEvent) {
 				AssemblyLoadEvent ae = (AssemblyLoadEvent)e;
 				OnDebuggerOutput (false, "Loaded assembly: " + ae.Assembly.Location);
@@ -298,7 +330,6 @@ namespace MonoDevelop.Debugger.Soft
 			
 			if (e is TypeLoadEvent) {
 				TypeLoadEvent te = (TypeLoadEvent)e;
-				Console.WriteLine ("pp loaded type:" + te.Type.FullName);
 				types [te.Type.FullName] = te.Type;
 				
 				/* Handle pending breakpoints */
@@ -340,6 +371,11 @@ namespace MonoDevelop.Debugger.Soft
 				req.Disable ();
 				etype = TargetEventType.TargetStopped;
 				resume = false;
+			}
+			
+			if (e is ThreadStartEvent) {
+				ThreadStartEvent ts = (ThreadStartEvent)e;
+				OnDebuggerOutput (false, "Thread started: " + ts.Thread.Name);
 			}
 			
 			if (resume)

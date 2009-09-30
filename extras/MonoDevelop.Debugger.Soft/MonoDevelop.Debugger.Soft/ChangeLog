@@ -1,0 +1,6 @@
+2009-09-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ArrayAdaptor.cs:
+	* SoftDebuggerSession.cs:
+	* SoftDebuggerAdaptor.cs: Ongoing work.
+

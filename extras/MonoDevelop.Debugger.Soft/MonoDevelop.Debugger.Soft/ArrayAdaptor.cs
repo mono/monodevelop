@@ -41,7 +41,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public int[] GetDimensions ()
 		{
-			// HACK wating for a Dimensions property
+			// TODO wating for a Dimensions property
 			int i = array.Length;
 			return array.lengths;
 		}
