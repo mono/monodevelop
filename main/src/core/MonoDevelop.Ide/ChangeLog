@@ -1,5 +1,11 @@
 2009-09-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Using a real
+	  status bar widget for displaying the status bar instead of a
+	  hbox.
+
+2009-09-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Ide.cs:
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: fixed "Bug
 	  542686 - Mark-up text not correctly rendered on status bar".

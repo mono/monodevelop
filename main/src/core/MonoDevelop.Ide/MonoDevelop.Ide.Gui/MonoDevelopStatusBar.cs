@@ -33,83 +33,83 @@ using Gtk;
 
 namespace MonoDevelop.Ide
 {
-	public class MonoDevelopStatusBar : Gtk.HBox
+	public class MonoDevelopStatusBar : Gtk.Statusbar
 	{
-		ProgressBar progress       = new ProgressBar ();
-		Frame textStatusBarPanel    = new Frame ();
-		Frame cursorStatusBarPanel = new Frame ();
-		Frame modeStatusBarPanel   = new Frame ();
+		ProgressBar progressBar = new ProgressBar ();
+		Frame textStatusBarPanel = new Frame ();
+		
 		
 		Label statusLabel;
 		Label modeLabel;
 		Label cursorLabel;
 		
-		HBox iconStatusBarPanel = new HBox ();
-		
-		HBox statusBox = new HBox ();
+		HBox statusBox;
 		Image currentStatusImage;
 		
-		internal MonoDevelopStatusBar(): base (false, 3)
+		internal MonoDevelopStatusBar()
 		{
+			Frame originalFrame = (Frame)Children[0];
+			
+		//	Console.WriteLine (originalFrame.Children.Length);
+			
 			BorderWidth = 0;
 			
-			progress = new ProgressBar ();
-			progress.PulseStep = 0.3;
-			progress.SizeRequest ();
-			progress.HeightRequest = 1;
-			Alignment pal = new Alignment (0, 0.5f, 1, 1);
-			pal.TopPadding = 0;
-			pal.BottomPadding = 0;
-			pal.LeftPadding = 2;
-			pal.Add (progress);
-			this.PackStart (pal, false, false, 0);
+			progressBar = new ProgressBar ();
+			progressBar.PulseStep = 0.3;
+			progressBar.SizeRequest ();
+			progressBar.HeightRequest = 1;
 			
-			this.PackStart (textStatusBarPanel, true, true, 0);
-			statusBox = new HBox ();
+			statusBox = new HBox (false, 0);
 			statusBox.BorderWidth = 0;
+			
 			statusLabel = new Label ();
 			statusLabel.SetAlignment (0, 0.5f);
 			statusLabel.Wrap = false;
-			
-			statusLabel.SetPadding (0, 0);
-			statusBox.PackEnd (statusLabel, true, true, 0);
-			textStatusBarPanel.ShadowType = ShadowType.None;
-			textStatusBarPanel.Add (statusBox);
-			
-			this.PackStart (cursorStatusBarPanel, false, false, 0);
-			cursorLabel = new Label ("  ");
-			cursorStatusBarPanel.ShadowType = ShadowType.None;
-			cursorStatusBarPanel.Add (cursorLabel);
-				
-			this.PackStart (modeStatusBarPanel, false, false, 0);
-			modeLabel = new Label ("  ");
-			modeStatusBarPanel.ShadowType = ShadowType.None;
-			modeStatusBarPanel.Add (modeLabel);
-
-			this.PackStart (iconStatusBarPanel, false, false, 0);
-			
 			int w, h;
 			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);
 			statusLabel.HeightRequest = h;
+			statusLabel.SetPadding (0, 0);
 			
-			iconStatusBarPanel.BorderWidth = 0;
+			statusBox.PackStart (progressBar, false, false, 0);
+			statusBox.PackStart (statusLabel, true, true, 0);
+			statusBox.PackStart (new Label (), true, true, 0);
+			
+			textStatusBarPanel.BorderWidth = 0;
+			textStatusBarPanel.ShadowType = ShadowType.In;
+			textStatusBarPanel.Add (statusBox);
+			
+			cursorLabel = new Label (" ");
+			statusBox.PackEnd (cursorLabel, false, false, 0);
+
+			modeLabel = new Label (" ");
+			statusBox.PackEnd (modeLabel, false, false, 0);
+			
+			this.PackStart (textStatusBarPanel, true, true, 0);
 			
 			ShowReady ();
-			this.progress.Fraction = 0.0;
+			Gtk.Box.BoxChild boxChild = (Gtk.Box.BoxChild)this[textStatusBarPanel];
+			boxChild.Position = 0;
+			boxChild.Expand = boxChild.Fill = true;
+			
+			originalFrame.WidthRequest = 8;
+			boxChild = (Gtk.Box.BoxChild)this[originalFrame];
+			boxChild.Padding = 0;
+			boxChild.Expand = boxChild.Fill = false;
+			
+			this.progressBar.Fraction = 0.0;
 			this.ShowAll ();
-			progress.Visible = false;
+			
+			progressBar.Visible = false;
 		}
 		
 		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
 		{
 			DispatchService.AssertGuiThread ();
-			cursorStatusBarPanel.ShowAll ();
 			if (selectedChars > 0) {
 				cursorLabel.Text = String.Format ("{0,3} : {1,-3} - {2}", line, column, selectedChars);
 			} else {
 				cursorLabel.Text = String.Format ("{0,3} : {1,-3}", line, column);
 			}
-			modeStatusBarPanel.ShowAll ();
 			string status = isInInsertMode ? GettextCatalog.GetString ("INS") : GettextCatalog.GetString ("OVR");
 			modeLabel.Text = " " + status + " ";
 		}
@@ -155,6 +155,7 @@ namespace MonoDevelop.Ide
 				if (image != null) {
 					image.SetPadding (0, 0);
 					statusBox.PackStart (image, false, false, 3);
+					statusBox.ReorderChild (image, 1);
 					image.Show ();
 				}
 			}
@@ -175,7 +176,7 @@ namespace MonoDevelop.Ide
 			Gtk.Image i = new Gtk.Image (image);
 			i.SetPadding (0, 0);
 			eventBox.Child = i;
-			statusBox.PackEnd (eventBox, false, false, 2);
+			statusBox.PackStart (eventBox, false, false, 2);
 			statusBox.ReorderChild (eventBox, 0);
 			eventBox.ShowAll ();
 			return new StatusIcon (this, eventBox, image);
@@ -190,33 +191,33 @@ namespace MonoDevelop.Ide
 		public void BeginProgress (string name)
 		{
 			ShowMessage (name);
-			this.progress.Visible = true;
+			this.progressBar.Visible = true;
 		}
 		
 		public void BeginProgress (Image image, string name)
 		{
 			ShowMessage (image, name);
-			this.progress.Visible = true;
+			this.progressBar.Visible = true;
 		}
 
 		public void SetProgressFraction (double work)
 		{
 			DispatchService.AssertGuiThread ();
-			this.progress.Fraction = work;
+			this.progressBar.Fraction = work;
 		}
 		
 		public void EndProgress ()
 		{
 			ShowMessage ("");
-			this.progress.Fraction = 0.0;
-			this.progress.Visible = false;
+			this.progressBar.Fraction = 0.0;
+			this.progressBar.Visible = false;
 		}
 
 		public void Pulse ()
 		{
 			DispatchService.AssertGuiThread ();
-			this.progress.Visible = true;
-			this.progress.Pulse ();
+			this.progressBar.Visible = true;
+			this.progressBar.Pulse ();
 		}		
 		#endregion
 		
