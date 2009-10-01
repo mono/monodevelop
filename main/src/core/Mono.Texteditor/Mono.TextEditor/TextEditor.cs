@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -222,8 +223,8 @@ namespace Mono.TextEditor
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
 			if (textEditorData.HAdjustment != null)
-				textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
-			if (textEditorData.VAdjustment!= null)
+				textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
+			if (textEditorData.VAdjustment != null)
 				textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
 			
 			this.textEditorData.HAdjustment = hAdjustement;
@@ -232,7 +233,7 @@ namespace Mono.TextEditor
 			if (hAdjustement == null || vAdjustement == null)
 				return;
 
-			this.textEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged; 
+			this.textEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged;
 			this.textEditorData.VAdjustment.ValueChanged += VAdjustmentValueChanged;
 		}
 		
@@ -341,7 +342,7 @@ namespace Mono.TextEditor
 			if (Caret.AutoScrollToCaret)
 				ScrollToCaret ();
 			
-			Rectangle rectangle = textViewMargin.GetCaretRectangle (Caret.Mode);
+//			Rectangle rectangle = textViewMargin.GetCaretRectangle (Caret.Mode);
 			
 			textViewMargin.ResetCaretBlink ();
 			textViewMargin.caretBlink = true;
@@ -555,10 +556,10 @@ namespace Mono.TextEditor
 				imContext = imContext.Kill (x => x.Commit -= IMCommit);
 
 				if (this.textEditorData.HAdjustment != null) {
-					this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged; 
+					this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
 					this.textEditorData.HAdjustment = null;
 				}
-				if (this.textEditorData.VAdjustment!= null) {
+				if (this.textEditorData.VAdjustment != null) {
 					this.textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
 					this.textEditorData.VAdjustment = null;
 				}
@@ -1059,22 +1060,24 @@ namespace Mono.TextEditor
 			if (isDisposed || Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
 			SetAdjustments (this.Allocation);
-//			Adjustment adj;
+			//			Adjustment adj;
 			//adj.Upper
-			if (this.textEditorData.VAdjustment.Upper < Allocation.Height)  {
+			if (this.textEditorData.VAdjustment.Upper < Allocation.Height) {
 				this.textEditorData.VAdjustment.Value = 0;
 				return;
 			}
-			this.textEditorData.HAdjustment.Value = 0;
-//			int yMargin = 1 * this.LineHeight;
+			
+			//			int yMargin = 1 * this.LineHeight;
 			int xMargin = 10 * this.textViewMargin.CharWidth;
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
 			this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize / 2;
 			int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
 			if (this.textEditorData.HAdjustment.Value >= caretX) {
-				this.textEditorData.HAdjustment.Value = caretX ;
+				this.textEditorData.HAdjustment.Value = caretX;
 			} else if (this.textEditorData.HAdjustment.Value + this.textEditorData.HAdjustment.PageSize - 60 < caretX + xMargin) {
 				this.textEditorData.HAdjustment.Value = caretX - this.textEditorData.HAdjustment.PageSize + 60 + xMargin;
+			} else {
+				this.textEditorData.HAdjustment.Value = 0;
 			}
 		}
 		
@@ -1083,7 +1086,7 @@ namespace Mono.TextEditor
 			if (isDisposed || Caret.Line < 0 || Caret.Line >= Document.LineCount)
 				return;
 			UpdateAdjustments ();
-			if (this.textEditorData.VAdjustment.Upper < Allocation.Height)  {
+			if (this.textEditorData.VAdjustment.Upper < Allocation.Height) {
 				this.textEditorData.VAdjustment.Value = 0;
 			} else {
 				int yMargin = 1 * this.LineHeight;
@@ -1111,10 +1114,16 @@ namespace Mono.TextEditor
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			if (IsRealized) 
-				AllocateWindowBuffer (allocation);
-			SetAdjustments (allocation);
 			base.OnSizeAllocated (allocation);
+/*			if (longestLine == null) {
+				foreach (LineSegment line in Document.Lines) {
+					if (longestLine == null || line.EditableLength > longestLine.EditableLength)
+						longestLine = line;
+				}
+			}*/
+			if (IsRealized)
+				AllocateWindowBuffer (Allocation);
+			SetAdjustments (Allocation);
 			Repaint ();
 		}
 		
@@ -1122,19 +1131,17 @@ namespace Mono.TextEditor
 		{
 			if (buffer == null) {
 				AllocateWindowBuffer (this.Allocation);
-				Repaint ();
+				if (Allocation.Width != 1 || Allocation.Height != 1)
+					Repaint ();
 			}
 			base.OnMapped (); 
-			this.Repaint ();
 		}
 
 		protected override void OnUnmapped ()
 		{
 			DisposeBgBuffer ();
-			
 			base.OnUnmapped (); 
 		}
-
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
@@ -1182,7 +1189,7 @@ namespace Mono.TextEditor
 				                                           LineHeight,
 				                                           allocation.Height,
 				                                           allocation.Height);
-				if (maxY < allocation.Height) 
+				if (maxY < allocation.Height)
 					this.textEditorData.VAdjustment.Value = 0;
 			}
 			SetHAdjustment ();
@@ -1294,15 +1301,17 @@ namespace Mono.TextEditor
 			width = System.Math.Min (width, Allocation.Width - x);
 			if (height < 0 || width < 0)
 				return;
+			
 			lock (redrawList) {
 				redrawList.Add (new Gdk.Rectangle (x, y, width, height));
 			}
+			
 			QueueDrawArea (x, y, width, height);
 		}
 		
 		public void Repaint ()
 		{
-			if (this.buffer == null)
+			if (buffer == null)
 				return;
 			lock (redrawList) {
 				redrawList.Clear ();

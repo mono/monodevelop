@@ -44,7 +44,7 @@ namespace Mono.TextEditor
 				action (gc);
 				gc.Dispose ();
 			}
-				
+			
 			return default(T);
 		}
 	}

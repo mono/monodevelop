@@ -1,3 +1,12 @@
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/HelperMethods.cs: Fixed 'Bug 543200 - Files
+	  with hscrollbar open scrolled one character to the
+	  right'/optimized file opening.
+
 2009-09-30  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Subscripe to the position

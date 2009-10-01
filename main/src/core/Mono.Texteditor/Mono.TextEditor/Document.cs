@@ -77,20 +77,23 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Document()
+		public Document ()
 		{
-			buffer   = new GapBuffer ();
+			buffer = new GapBuffer ();
 			splitter = new LineSplitter (buffer);
+			splitter.LineSegmentTree.LineChanged += SplitterLineSegmentTreeLineChanged;
 			
-			splitter.LineSegmentTree.LineChanged += delegate (object sender, LineEventArgs args) {
-				if (LineChanged != null) 
-					LineChanged (this, args);
-			};
 		/*	splitter.LineSegmentTree.LineInserted += delegate (object sender, LineEventArgs args) {
 				if (LineInserted != null) 
 					LineInserted (this, args);
 			};*/
 			TextReplacing += UpdateFoldSegmentsOnReplace;
+		}
+
+		void SplitterLineSegmentTreeLineChanged (object sender, LineEventArgs e)
+		{
+			if (LineChanged != null)
+				LineChanged (this, e);
 		}
 		
 		public event EventHandler<LineEventArgs> LineChanged;
@@ -134,7 +137,9 @@ namespace Mono.TextEditor
 				ReplaceEventArgs args = new ReplaceEventArgs (0, oldLength, value);
 				this.OnTextReplacing (args);
 				this.buffer.Text = value;
+				splitter.LineSegmentTree.LineChanged -= SplitterLineSegmentTreeLineChanged;
 				splitter.TextReplaced (this, args);
+				splitter.LineSegmentTree.LineChanged += SplitterLineSegmentTreeLineChanged;
 				UpdateHighlighting ();
 				this.OnTextReplaced (args);
 				this.CommitUpdateAll ();
@@ -921,15 +926,20 @@ namespace Mono.TextEditor
 			
 			protected override void InnerRun ()
 			{
+				Run (true);
+			}
+			
+			public void Run (bool runInThread)
+			{
 				newSegments.Sort ();
 				foreach (FoldSegment foldSegment in newSegments) {
-					if (IsStopping)
+					if (runInThread && IsStopping)
 						return;
 					LineSegment startLine = doc.splitter.GetLineByOffset (foldSegment.Offset);
-					LineSegment endLine   = doc.splitter.GetLineByOffset (foldSegment.EndOffset);
-					foldSegment.EndColumn = foldSegment.EndOffset - endLine.Offset; 
-					foldSegment.Column    = foldSegment.Offset - startLine.Offset; 
-					foldSegment.EndLine   = endLine;
+					LineSegment endLine = doc.splitter.GetLineByOffset (foldSegment.EndOffset);
+					foldSegment.EndColumn = foldSegment.EndOffset - endLine.Offset;
+					foldSegment.Column = foldSegment.Offset - startLine.Offset;
+					foldSegment.EndLine = endLine;
 					foldSegment.StartLine = startLine;
 				}
 				FoldSegmentTreeNode newFoldSegmentTree = new FoldSegmentTreeNode ();
@@ -937,38 +947,43 @@ namespace Mono.TextEditor
 					newFoldSegmentTree.AddSegment (foldSegment);
 				}
 				List<FoldSegment> oldSegments = new List<FoldSegment> (doc.foldSegmentTree.FoldSegments);
-					
+				bool needsUpdate = newSegments.Count > oldSegments.Count;
 				int i = 0, j = 0;
 				while (i < oldSegments.Count && j < newSegments.Count) {
-					if (IsStopping)
+					if (runInThread && IsStopping)
 						return;
-					int cmp = oldSegments[i].CompareTo (newSegments [j]);
+					int cmp = oldSegments[i].CompareTo (newSegments[j]);
 					if (cmp == 0) {
-						if (newSegments[j].Length == oldSegments[i].Length) 
+						if (newSegments[j].Length == oldSegments[i].Length) {
 							newSegments[j].IsFolded = oldSegments[i].IsFolded;
-						i++;j++;
-					} else  if (cmp > 0) {
-						j++;
-					} else {
+						} else {
+							needsUpdate = true;
+						}
 						i++;
+						j++;
+					} else if (cmp > 0) {
+						j++;
+						needsUpdate = true;
+					} else {
+						i++;
+						needsUpdate = true;
 					}
 				}
 				
 				while (i < oldSegments.Count) {
-					newFoldSegmentTree.AddSegment (oldSegments [i]);
+					newFoldSegmentTree.AddSegment (oldSegments[i]);
 					i++;
 				}
 				doc.foldSegmentTree = newFoldSegmentTree;
-				
-				Gtk.Application.Invoke (delegate {
-//					bool needsUpdate = doc.foldSegments.Count != newSegments.Count;
-//					if (needsUpdate) {
-						doc.RequestUpdate (new UpdateAll ());
-						doc.CommitDocumentUpdate ();
-					
-//					}
-				});
-				base.Stop ();
+				if (runInThread) {
+					Gtk.Application.Invoke (delegate {
+						if (needsUpdate) {
+							doc.RequestUpdate (new UpdateAll ());
+							doc.CommitDocumentUpdate ();
+						}
+					});
+					base.Stop ();
+				}
 			}
 		}
 		
@@ -977,12 +992,22 @@ namespace Mono.TextEditor
 		
 		public void UpdateFoldSegments (List<FoldSegment> newSegments)
 		{
+			UpdateFoldSegments (newSegments, true);
+		}
+		
+		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool runInThread)
+		{
 			if (newSegments == null) {
 				return;
 			}
 			
+			if (!runInThread) {
+				new FoldSegmentWorkerThread (this, newSegments).Run (false);
+				return;
+			}
+			
 			lock (syncObject) {
-				if (foldSegmentWorkerThread != null) 
+				if (foldSegmentWorkerThread != null)
 					foldSegmentWorkerThread.Stop ();
 				
 				foldSegmentWorkerThread = new FoldSegmentWorkerThread (this, newSegments);
