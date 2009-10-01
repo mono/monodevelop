@@ -41,13 +41,18 @@ namespace MonoDevelop.Platform
 		const int formatVersion = 1;
 		const string updateAutoPropertyKey = "MacUpdater.CheckAutomatically";
 		
-		public static string[] DefaultUpdateInfoPaths {
+		static string[] updatePaths = null;
+		
+		public static string[] UpdateInfoPaths {
 			get {
-				return new string[] {
-					"/Developer/MonoTouch/updateinfo",
-					"/Library/Frameworks/Mono.framework/Versions/Current/updateinfo",
-					Path.GetDirectoryName (typeof (MacPlatform).Assembly.Location) + "../../updateinfo"
-				};
+				if (updatePaths == null) {
+					updatePaths = new string[] {
+						"/Developer/MonoTouch/updateinfo",
+						"/Library/Frameworks/Mono.framework/Versions/Current/updateinfo",
+						Path.GetDirectoryName (typeof (MacPlatform).Assembly.Location) + "/../../../updateinfo"
+					}.Where (x => File.Exists (x)).ToArray () ?? new string [0];
+				}
+				return updatePaths;
 			}
 		}
 		
@@ -62,12 +67,12 @@ namespace MonoDevelop.Platform
 		
 		public static void RunCheck (bool automatic)
 		{
-			RunCheck (DefaultUpdateInfoPaths, automatic);
+			RunCheck (UpdateInfoPaths, automatic);
 		}
 		
 		public static void RunCheck (string[] updateInfos, bool automatic)
 		{
-			if (automatic && !CheckAutomatically)
+			if (updateInfos.Length == 0 || (automatic && !CheckAutomatically))
 				return;
 			
 			var query = new StringBuilder ("http://go-mono.com/macupdate/update?v=");

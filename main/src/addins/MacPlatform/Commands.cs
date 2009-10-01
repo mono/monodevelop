@@ -76,5 +76,10 @@ namespace MonoDevelop.Platform.Mac
 		{
 			MacUpdater.RunCheck (false);
 		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = MacUpdater.UpdateInfoPaths.Length > 0;
+		}
 	}
 }
