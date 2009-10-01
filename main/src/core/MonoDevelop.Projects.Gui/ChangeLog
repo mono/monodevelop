@@ -1,3 +1,19 @@
+2009-10-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Projects.Gui.csproj: Updated.
+
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
+	  Added ConfigurationsAreEqual. When it returns true, the
+	  options panel will select All Configurations by default in
+	  the combo.
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs:
+	  Implement ConfigurationsAreEqual.
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:
+	  Allow mixed configurations.
+
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:

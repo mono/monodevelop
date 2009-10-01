@@ -163,6 +163,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			loading = false;
 		}
 		
+		protected virtual bool ConfigurationsAreEqual (IEnumerable<ItemConfiguration> configs)
+		{
+			return false;
+		}
+		
 		protected virtual IEnumerable<ItemConfiguration> FilterConfigurations (IEnumerable<ItemConfiguration> configurations)
 		{
 			return configurations;
@@ -248,10 +253,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		
 		void UpdateSelection ()
 		{
-			SelectConfiguration (dialog.CurrentConfig);
+			if (allowMixedConfigurations && ConfigurationsAreEqual (FilterConfigurations (dialog.ConfigurationData.Configurations))) {
+				configCombo.Active = 0;
+			} else {
+				SelectConfiguration (dialog.CurrentConfig);
+			}
 			if (lastConfigSelection != configCombo.Active)
 				FillPlatforms ();
-
+			
 			SelectPlatform (dialog.CurrentPlatform);
 			if (lastConfigSelection != configCombo.Active || lastPlatformSelection != platformCombo.Active)
 				UpdateCurrentConfiguration ();

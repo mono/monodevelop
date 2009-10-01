@@ -24,6 +24,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -32,7 +34,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	internal class OutputOptionsPanel : MultiConfigItemOptionsPanel
 	{
-		OutputOptionsPanelWidget  widget;
+		OutputOptionsPanelWidget widget;
+		
+		public OutputOptionsPanel ()
+		{
+			AllowMixedConfigurations = true;
+		}
 		
 		public override bool IsVisible ()
 		{
@@ -51,7 +58,16 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public override void LoadConfigData ()
 		{
-			widget.Load (ConfiguredProject, (DotNetProjectConfiguration) CurrentConfiguration);
+			widget.Load (ConfiguredProject, CurrentConfigurations);
+		}
+
+		protected override bool ConfigurationsAreEqual (IEnumerable<ItemConfiguration> configs)
+		{
+			string outAsm = null;
+			string outDir = null;
+			string outDirTemplate = null;
+			OutputOptionsPanelWidget.GetCommonData (configs, out outAsm, out outDir, out outDirTemplate);
+			return outAsm.Length != 0 && (outDir.Length != 0 || outDirTemplate.Length != 0);
 		}
 
 		
@@ -64,36 +80,74 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 	partial class OutputOptionsPanelWidget : Gtk.Bin 
 	{
-		DotNetProjectConfiguration configuration;
+		ItemConfiguration[] configurations;
 
 		public OutputOptionsPanelWidget ()
 		{
 			Build ();
 		}
 		
-		public void Load (Project project, DotNetProjectConfiguration config)
+		public void Load (Project project, ItemConfiguration[] configs)
 		{	
-			this.configuration = config;
-			assemblyNameEntry.Text = configuration.OutputAssembly;
+			this.configurations = configs;
+			string outAsm = null;
+			string outDir = null;
+			string outDirTemplate = null;
+			
+			GetCommonData (configs, out outAsm, out outDir, out outDirTemplate);
+			
+			assemblyNameEntry.Text = outAsm;
 			
 			outputPathEntry.DefaultPath = project.BaseDirectory;
-			outputPathEntry.Path = configuration.OutputDirectory;
+			outputPathEntry.Path = !string.IsNullOrEmpty (outDir) ? outDir : outDirTemplate;
+		}
+		
+		internal static void GetCommonData (IEnumerable<ItemConfiguration> configs, out string outAsm, out string outDir, out string outDirTemplate)
+		{
+			outAsm = null;
+			outDir = null;
+			outDirTemplate = null;
+			
+			foreach (DotNetProjectConfiguration conf in configs) {
+				if (outAsm == null)
+					outAsm = conf.OutputAssembly;
+				else if (outAsm != conf.OutputAssembly)
+					outAsm = "";
+				
+				string dirTemplate = conf.OutputDirectory.ToString ().Replace (conf.Name, "$(Configuration)");
+				if (conf.Platform.Length > 0)
+					dirTemplate = dirTemplate.Replace (conf.Platform, "$(Platform)");
+				
+				if (outDir == null) {
+					outDir = conf.OutputDirectory;
+					outDirTemplate = dirTemplate;
+				}
+				else {
+					if (outDir != conf.OutputDirectory)
+						outDir = "";
+					if (outDirTemplate != dirTemplate)
+						outDirTemplate = "";
+				}
+			}
 		}
 
 		public bool ValidateChanges ()
 		{
-			if (configuration == null) {
+			if (configurations == null)
 				return true;
-			}
 			
-			if (!FileService.IsValidFileName (assemblyNameEntry.Text)) {
-				MessageService.ShowError (GettextCatalog.GetString ("Invalid assembly name specified"));
-				return false;
-			}
-
-			if (!FileService.IsValidPath (outputPathEntry.Path)) {
-				MessageService.ShowError (GettextCatalog.GetString ("Invalid output directory specified"));
-				return false;
+			foreach (DotNetProjectConfiguration conf in configurations) {
+				if (assemblyNameEntry.Text.Length == 0 && conf.OutputAssembly.Length == 0) {
+					MessageService.ShowError (GettextCatalog.GetString ("Invalid assembly name specified"));
+					return false;
+				}
+				string dir = outputPathEntry.Path;
+				dir = dir.Replace ("$(Configuration)", conf.Name);
+				dir = dir.Replace ("$(Platform)", conf.Platform);
+				if (!FileService.IsValidPath (dir)) {
+					MessageService.ShowError (GettextCatalog.GetString ("Invalid output directory: {0}", dir));
+					return false;
+				}
 			}
 			
 			return true;
@@ -101,11 +155,17 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public void Store ()
 		{	
-			if (configuration == null)
+			if (configurations == null)
 				return;
 			
-			configuration.OutputAssembly = assemblyNameEntry.Text;
-			configuration.OutputDirectory = outputPathEntry.Path;
+			foreach (DotNetProjectConfiguration conf in configurations) {
+				if (assemblyNameEntry.Text.Length > 0)
+					conf.OutputAssembly = assemblyNameEntry.Text;
+				string dir = outputPathEntry.Path;
+				dir = dir.Replace ("$(Configuration)", conf.Name);
+				dir = dir.Replace ("$(Platform)", conf.Platform);
+				conf.OutputDirectory = dir;
+			}
 		}
 	}
 }

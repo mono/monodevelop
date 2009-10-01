@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -111,6 +112,22 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		{
 			AllowMixedConfigurations = true;
 			return (widget = new CommonAssemblySigningPreferences ());
+		}
+		
+		protected override bool ConfigurationsAreEqual (IEnumerable<ItemConfiguration> configs)
+		{
+			DotNetProjectConfiguration cref = null;
+			foreach (DotNetProjectConfiguration c in configs) {
+				if (cref == null)
+					cref = c;
+				else {
+					if (c.SignAssembly != cref.SignAssembly)
+						return false;
+					if (c.AssemblyKeyFile != cref.AssemblyKeyFile)
+						return false;
+				}
+			}
+			return true;
 		}
 		
 		public override void LoadConfigData ()

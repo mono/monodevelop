@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Projects.Gui</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Projects.Gui</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -106,8 +107,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs.OptionPanels\CommonAssemblySigningPreferences.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\DeleteConfigDialog.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\NewConfigurationDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs" />
@@ -156,13 +155,17 @@
     <Compile Include="MonoDevelop.Projects.Gui.Dialogs\AddMimeTypeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.AddMimeTypeDialog.cs" />
     <Compile Include="MonoDevelop.Projects.Gui.Completion\CodeCompletionContext.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.Projects.Gui.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Projects.Gui.addin.xml">
+      <LogicalName>MonoDevelop.Projects.Gui.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
