@@ -1,3 +1,8 @@
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/MessageService.cs: Added Yes/No stock
+	  buttons.
+
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.Dialogs/InstrumentationViewerDialog.cs:
