@@ -133,18 +133,18 @@ namespace MonoDevelop.SourceEditor
 			get { return GettextCatalog.GetString ("Source"); }
 		}
 		
-		public SourceEditorView()
+		public SourceEditorView ()
 		{
 			Counters.LoadedEditors++;
-			executionLocationChanged = (EventHandler) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
-			breakpointAdded = (EventHandler<BreakpointEventArgs>) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointAdded));
-			breakpointRemoved = (EventHandler<BreakpointEventArgs>) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointRemoved));
-			breakpointStatusChanged = (EventHandler<BreakpointEventArgs>) MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointStatusChanged));
+			executionLocationChanged = (EventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
+			breakpointAdded = (EventHandler<BreakpointEventArgs>)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointAdded));
+			breakpointRemoved = (EventHandler<BreakpointEventArgs>)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointRemoved));
+			breakpointStatusChanged = (EventHandler<BreakpointEventArgs>)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointStatusChanged));
 			
 			widget = new SourceEditorWidget (this);
-			widget.TextEditor.Document.TextReplaced += delegate (object sender, ReplaceEventArgs args) {
+			widget.TextEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs args) {
 				int startIndex = args.Offset;
-				int endIndex   = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
+				int endIndex = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
 				if (TextChanged != null)
 					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
 			};
@@ -159,29 +159,27 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
 			
 //			widget.TextEditor.Document.DocumentUpdated += delegate {
-//				this.IsDirty = Document.IsDirty;
-//			};
+		//				this.IsDirty = Document.IsDirty;
+		//			};
 			
 			widget.TextEditor.Caret.PositionChanged += delegate {
 				FireCompletionContextChanged ();
 			};
-			
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
-			
 			widget.ShowAll ();
 			
-			currentDebugLineMarker   = new CurrentDebugLineTextMarker (widget.TextEditor);
-			breakpointMarker         = new BreakpointTextMarker (widget.TextEditor);
+			currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor);
+			breakpointMarker = new BreakpointTextMarker (widget.TextEditor);
 			breakpointDisabledMarker = new DisabledBreakpointTextMarker (widget.TextEditor);
-			breakpointInvalidMarker  = new InvalidBreakpointTextMarker (widget.TextEditor);
+			breakpointInvalidMarker = new InvalidBreakpointTextMarker (widget.TextEditor);
 			
 			
 			fileSystemWatcher = new FileSystemWatcher ();
-			fileSystemWatcher.Created += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));	
+			fileSystemWatcher.Created += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
 			fileSystemWatcher.Changed += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
 			
 			this.ContentNameChanged += delegate {
-				this.Document.FileName   = this.ContentName;
+				this.Document.FileName = this.ContentName;
 				isInWrite = true;
 				if (String.IsNullOrEmpty (ContentName) || !File.Exists (ContentName))
 					return;
@@ -287,8 +285,6 @@ namespace MonoDevelop.SourceEditor
 			// Look for a mime type for which there is a syntax mode
 			UpdateMimeType (fileName);
 			
-			widget.InformLoad ();
-			
 			if (AutoSave.AutoSaveExists (fileName)) {
 				widget.ShowAutoSaveWarning (fileName);
 				this.encoding = encoding;
@@ -300,13 +296,11 @@ namespace MonoDevelop.SourceEditor
 				this.encoding = file.SourceEncoding;
 			}
 			ContentName = fileName;
-			widget.ParsedDocument = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (Project), fileName);
-			widget.WaitForParseInformationUpdaterWorkerThread ();
+			widget.SetParsedDocument (ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (Project), fileName), false);
 			widget.TextEditor.Caret.Offset = 0;
-			
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
-
+			
 			widget.PopulateClassCombo ();
 			this.IsDirty = false;
 		}
@@ -323,7 +317,7 @@ namespace MonoDevelop.SourceEditor
 				WorkbenchWindow.ShowNotification = false;
 			}
 			UpdateMimeType (fileName);
-			widget.InformLoad ();
+			
 			inLoad = true;
 			Document.Text = content;
 			inLoad = false;

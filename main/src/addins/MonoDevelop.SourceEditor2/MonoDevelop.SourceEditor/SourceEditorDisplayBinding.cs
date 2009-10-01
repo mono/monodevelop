@@ -91,7 +91,6 @@ namespace MonoDevelop.SourceEditor
 					result.Document.Text = reader.ReadToEnd ();
 				}
 			}
-			result.SourceEditorWidget.InformLoad ();
 			return result;
 		}
 

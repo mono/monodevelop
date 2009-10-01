@@ -67,7 +67,6 @@ namespace MonoDevelop.SourceEditor
 		
 		bool shouldShowclassBrowser;
 		bool canShowClassBrowser;
-		bool isInitialParseUpdate = true;
 		ClassQuickFinder classBrowser;
 		ISourceEditorOptions options;
 		
@@ -202,12 +201,7 @@ namespace MonoDevelop.SourceEditor
 			
 			UpdateLineCol ();
 			ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
-//			this.IsClassBrowserVisible = this.widget.TextEditor.Options.EnableQuickFinder;
-		}
-
-		public void InformLoad ()
-		{
-			this.isInitialParseUpdate = true;
+			//			this.IsClassBrowserVisible = this.widget.TextEditor.Options.EnableQuickFinder;
 		}
 
 		protected override bool OnFocused (DirectionType direction)
@@ -265,15 +259,19 @@ namespace MonoDevelop.SourceEditor
 			{
 				this.widget = widget;
 			}
-			
 			protected override void InnerRun ()
+			{
+				Run (true);
+			}
+			
+			public void Run (bool runInThread)
 			{
 				try {
 					if (this.widget.options.ShowFoldMargin && widget.parsedDocument != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
 						
 						foreach (FoldingRegion region in widget.parsedDocument.GenerateFolds ()) {
-							if (IsStopping)
+							if (runInThread && IsStopping)
 								return;
 							FoldingType type = FoldingType.None;
 							bool setFolded = false;
@@ -313,20 +311,13 @@ namespace MonoDevelop.SourceEditor
 							//and, if necessary, set its fold state
 							if (marker != null && setFolded) {
 								// only fold on document open, later added folds are NOT folded by default.
-								marker.IsFolded = widget.isInitialParseUpdate && folded;
+								marker.IsFolded = folded;
 							}
 							if (marker != null && region.Region.Contains (widget.textEditorData.Caret.Line, widget.textEditorData.Caret.Column))
 								marker.IsFolded = false;
 							
 						}
-						widget.textEditorData.Document.UpdateFoldSegments (foldSegments);
-						if (widget.isInitialParseUpdate) {
-							Application.Invoke (delegate {
-								widget.textEditorData.Document.WaitForFoldUpdateFinished ();
-								widget.TextEditor.CenterToCaret ();
-							});
-							widget.isInitialParseUpdate = false;
-						}
+						widget.textEditorData.Document.UpdateFoldSegments (foldSegments, runInThread);
 					}
 					widget.UpdateAutocorTimer ();
 					widget.PopulateClassCombo ();
@@ -375,24 +366,32 @@ namespace MonoDevelop.SourceEditor
 			});
 		}
 		
-		public ParsedDocument ParsedDocument  {
+		public ParsedDocument ParsedDocument {
 			get {
 				return this.parsedDocument;
 			}
 			set {
-				this.parsedDocument = value;
-				CanShowClassBrowser = value != null && value.CompilationUnit != null;
-				
+				SetParsedDocument (value, true);
+			}
+		}
+
+		internal void SetParsedDocument (ParsedDocument newDocument, bool runInThread)
+		{
+			this.parsedDocument = newDocument;
+			CanShowClassBrowser = newDocument != null && newDocument.CompilationUnit != null;
+			if (runInThread) {
 				lock (syncObject) {
 					StopParseInfoThread ();
 					if (parsedDocument != null) {
 						parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this);
 						parseInformationUpdaterWorkerThread.Start ();
 					}
-					
 				}
+			} else {
+				new ParseInformationUpdaterWorkerThread (this).Run (false);
 			}
 		}
+
 		
 		void StopParseInfoThread ()
 		{
