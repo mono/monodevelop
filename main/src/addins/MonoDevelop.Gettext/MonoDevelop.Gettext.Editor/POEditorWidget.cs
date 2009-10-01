@@ -1179,7 +1179,7 @@ namespace MonoDevelop.Gettext
 			{
 				if (entry.String.Contains ("_") && !entry.GetTranslation (0).Contains ("_"))
 					return GettextCatalog.GetString ("Original string '{0}' contains '_', translation doesn't.", entry.String);
-				return GettextCatalog.GetString ("Original string '{0}' doen't contain '_', translation does.", entry.String);
+				return GettextCatalog.GetString ("Original string '{0}' doesn't contain '_', translation does.", entry.String);
 			}
 		}
 		
