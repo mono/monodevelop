@@ -82,4 +82,12 @@ namespace MonoDevelop.Platform.Mac
 			info.Visible = MacUpdater.UpdateInfoPaths.Length > 0;
 		}
 	}
+	
+	class CheckForUpdatesOnStartUpHandler : CommandHandler
+	{
+		protected override void Run()
+		{
+			MacUpdater.RunCheck (true);
+		}
+	}
 }

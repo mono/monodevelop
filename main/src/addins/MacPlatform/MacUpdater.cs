@@ -131,13 +131,9 @@ namespace MonoDevelop.Platform
 								}).ToList ()
 							}).ToList ();
 						
-						if (updates != null && updates.Count > 0) {
+						if (!automatic || (updates != null && updates.Count > 0)) {
 							Gtk.Application.Invoke (delegate {
 								MessageService.ShowCustomDialog (new UpdateDialog (updates));
-							});
-						} else if (!automatic) {
-							Gtk.Application.Invoke (delegate {
-								MessageService.ShowMessage (GettextCatalog.GetString ("No updates are available at this time"));
 							});
 						}
 					}

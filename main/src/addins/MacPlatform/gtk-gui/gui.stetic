@@ -11,10 +11,10 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/AddIns/MacPlatform.dll" internal="true" />
   </import>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Platform.UpdateDialog" design-size="602 392">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Platform.UpdateDialog" design-size="448 343">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
-    <property name="Title" translatable="yes">Updates Available</property>
+    <property name="Title" translatable="yes">MonoDevelop Updater</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
@@ -30,20 +30,6 @@
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <property name="BorderWidth">6</property>
-                <child>
-                  <widget class="Gtk.Label" id="label1">
-                    <property name="MemberName" />
-                    <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">Updates are available for the following packages. Please close
-MonoDevelop before installing them.</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
                 <child>
                   <widget class="Gtk.Frame" id="frame2">
                     <property name="MemberName" />
@@ -82,7 +68,7 @@ MonoDevelop before installing them.</property>
                     </child>
                   </widget>
                   <packing>
-                    <property name="Position">1</property>
+                    <property name="Position">0</property>
                     <property name="AutoSize">False</property>
                   </packing>
                 </child>
@@ -96,7 +82,7 @@ MonoDevelop before installing them.</property>
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>
-                    <property name="Position">2</property>
+                    <property name="Position">1</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>

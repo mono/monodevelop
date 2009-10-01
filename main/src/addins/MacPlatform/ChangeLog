@@ -1,5 +1,17 @@
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Commands.cs:
+	* MacPlatform.cs:
+	* MacPlatform.addin.xml: Use a proper startup command handler.
+
+	* MacUpdater.cs:
+	* UpdateDialog.cs:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Platform.UpdateDialog.cs: Simplify
+	  dialog and show it down there are no updates.
+
+2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* UpdateDialog.cs:
 	* gtk-gui/MonoDevelop.Platform.UpdateDialog.cs: Prettify
 	  update dialog.

@@ -55,4 +55,8 @@
 		<CommandItem id = "MonoDevelop.Platform.Mac.Commands.CheckForUpdates"
 		             insertafter = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
+		<Class class="MonoDevelop.Platform.Mac.CheckForUpdatesOnStartUpHandler" />
+	</Extension>
 </Addin>

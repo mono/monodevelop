@@ -43,6 +43,13 @@ namespace MonoDevelop.Platform
 			this.Build ();
 			checkAutomaticallyCheck.Active = MacUpdater.CheckAutomatically;
 			
+			if (updates == null || updates.Count == 0) {
+				productBox.PackStart (new Alignment (0.5f, 0.5f, 0f, 0f) {
+					Child = new Label (GettextCatalog.GetString ("No updates available"))
+				}, true, true, 0);
+				return;
+			}
+			
 			foreach (var update in updates) {
 				var updateBox = new VBox () { Spacing = 2 };
 				var labelBox = new HBox ();
