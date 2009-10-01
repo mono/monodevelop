@@ -11,7 +11,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/AddIns/MacPlatform.dll" internal="true" />
   </import>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Platform.UpdateDialog" design-size="448 343">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Platform.UpdateDialog" design-size="480 343">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">MonoDevelop Updater</property>
@@ -30,6 +30,19 @@
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <property name="BorderWidth">6</property>
+                <child>
+                  <widget class="Gtk.Label" id="infoLabel">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">The following updates are available. After downloading, please 
+close MonoDevelop before installing them.</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
                 <child>
                   <widget class="Gtk.Frame" id="frame2">
                     <property name="MemberName" />
@@ -68,7 +81,7 @@
                     </child>
                   </widget>
                   <packing>
-                    <property name="Position">0</property>
+                    <property name="Position">1</property>
                     <property name="AutoSize">False</property>
                   </packing>
                 </child>
@@ -82,7 +95,7 @@
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>
-                    <property name="Position">1</property>
+                    <property name="Position">2</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>

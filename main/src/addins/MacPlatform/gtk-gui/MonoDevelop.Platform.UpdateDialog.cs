@@ -17,6 +17,8 @@ namespace MonoDevelop.Platform {
         
         private Gtk.VBox vbox2;
         
+        private Gtk.Label infoLabel;
+        
         private Gtk.Frame frame2;
         
         private Gtk.Alignment GtkAlignment1;
@@ -48,6 +50,15 @@ namespace MonoDevelop.Platform {
             this.vbox2.Spacing = 6;
             this.vbox2.BorderWidth = ((uint)(6));
             // Container child vbox2.Gtk.Box+BoxChild
+            this.infoLabel = new Gtk.Label();
+            this.infoLabel.Name = "infoLabel";
+            this.infoLabel.LabelProp = Mono.Unix.Catalog.GetString("The following updates are available. After downloading, please \nclose MonoDevelop before installing them.");
+            this.vbox2.Add(this.infoLabel);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.infoLabel]));
+            w2.Position = 0;
+            w2.Expand = false;
+            w2.Fill = false;
+            // Container child vbox2.Gtk.Box+BoxChild
             this.frame2 = new Gtk.Frame();
             this.frame2.Name = "frame2";
             this.frame2.ShadowType = ((Gtk.ShadowType)(1));
@@ -60,19 +71,19 @@ namespace MonoDevelop.Platform {
             this.scrolledwindow1.Name = "scrolledwindow1";
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
-            Gtk.Viewport w2 = new Gtk.Viewport();
-            w2.ShadowType = ((Gtk.ShadowType)(0));
+            Gtk.Viewport w3 = new Gtk.Viewport();
+            w3.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport.Gtk.Container+ContainerChild
             this.productBox = new Gtk.VBox();
             this.productBox.Name = "productBox";
             this.productBox.Spacing = 12;
-            w2.Add(this.productBox);
-            this.scrolledwindow1.Add(w2);
+            w3.Add(this.productBox);
+            this.scrolledwindow1.Add(w3);
             this.GtkAlignment1.Add(this.scrolledwindow1);
             this.frame2.Add(this.GtkAlignment1);
             this.vbox2.Add(this.frame2);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox2[this.frame2]));
-            w7.Position = 0;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.frame2]));
+            w8.Position = 1;
             // Container child vbox2.Gtk.Box+BoxChild
             this.checkAutomaticallyCheck = new Gtk.CheckButton();
             this.checkAutomaticallyCheck.CanFocus = true;
@@ -81,20 +92,20 @@ namespace MonoDevelop.Platform {
             this.checkAutomaticallyCheck.DrawIndicator = true;
             this.checkAutomaticallyCheck.UseUnderline = true;
             this.vbox2.Add(this.checkAutomaticallyCheck);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.checkAutomaticallyCheck]));
-            w8.Position = 1;
-            w8.Expand = false;
-            w8.Fill = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox2[this.checkAutomaticallyCheck]));
+            w9.Position = 2;
+            w9.Expand = false;
+            w9.Fill = false;
             this.alignment1.Add(this.vbox2);
             w1.Add(this.alignment1);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(w1[this.alignment1]));
-            w10.Position = 0;
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(w1[this.alignment1]));
+            w11.Position = 0;
             // Internal child MonoDevelop.Platform.UpdateDialog.ActionArea
-            Gtk.HButtonBox w11 = this.ActionArea;
-            w11.Name = "dialog1_ActionArea";
-            w11.Spacing = 10;
-            w11.BorderWidth = ((uint)(5));
-            w11.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w12 = this.ActionArea;
+            w12.Name = "dialog1_ActionArea";
+            w12.Spacing = 10;
+            w12.BorderWidth = ((uint)(5));
+            w12.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -104,13 +115,13 @@ namespace MonoDevelop.Platform {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-close";
             this.AddActionWidget(this.buttonOk, -7);
-            Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(w11[this.buttonOk]));
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w13 = ((Gtk.ButtonBox.ButtonBoxChild)(w12[this.buttonOk]));
+            w13.Expand = false;
+            w13.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 448;
+            this.DefaultWidth = 480;
             this.DefaultHeight = 343;
             this.Show();
         }

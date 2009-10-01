@@ -42,11 +42,16 @@ namespace MonoDevelop.Platform
 		{
 			this.Build ();
 			checkAutomaticallyCheck.Active = MacUpdater.CheckAutomatically;
+			checkAutomaticallyCheck.Toggled += delegate {
+				MacUpdater.CheckAutomatically = checkAutomaticallyCheck.Active;
+			};
 			
 			if (updates == null || updates.Count == 0) {
+				((VBox)infoLabel.Parent).Remove (infoLabel);
 				productBox.PackStart (new Alignment (0.5f, 0.5f, 0f, 0f) {
 					Child = new Label (GettextCatalog.GetString ("No updates available"))
 				}, true, true, 0);
+				productBox.ShowAll ();
 				return;
 			}
 			
@@ -90,12 +95,6 @@ namespace MonoDevelop.Platform
 				
 				textView.Visible = false;
 			}
-		}
-		
-		protected override void OnClose ()
-		{
-			MacUpdater.CheckAutomatically = checkAutomaticallyCheck.Active;
-			base.OnClose ();
 		}
 	}
 }

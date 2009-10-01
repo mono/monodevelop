@@ -1,5 +1,12 @@
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* UpdateDialog.cs:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Platform.UpdateDialog.cs: Restore the
+	  info label.
+
+2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Commands.cs:
 	* MacPlatform.cs:
 	* MacPlatform.addin.xml: Use a proper startup command handler.
