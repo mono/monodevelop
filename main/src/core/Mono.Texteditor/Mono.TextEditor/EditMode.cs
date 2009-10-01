@@ -98,13 +98,14 @@ namespace Mono.TextEditor
 					if (length > 1)
 						Caret.Offset += length - 1;
 				}
-				bool autoScroll = Caret.AutoScrollToCaret;
+				// That causes unnecessary redraws:
+//				bool autoScroll = Caret.AutoScrollToCaret;
 				Caret.Column++;
-				Caret.AutoScrollToCaret = autoScroll;
-				if (autoScroll)
-					Editor.ScrollToCaret ();
-				Document.RequestUpdate (new LineUpdate (Caret.Line));
-				Document.CommitDocumentUpdate ();
+//				Caret.AutoScrollToCaret = autoScroll;
+//				if (autoScroll)
+//					Editor.ScrollToCaret ();
+//				Document.RequestUpdate (new LineUpdate (Caret.Line));
+//				Document.CommitDocumentUpdate ();
 			}
 			Document.EndAtomicUndo ();
 			Document.OptimizeTypedUndo ();

@@ -1,5 +1,10 @@
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/EditMode.cs: Commented out some code that
+	  may've caused too much redraw operations.
+
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/DefaultStyle.cs:
 	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Better
 	  handling of the last null ref exception.
