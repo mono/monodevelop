@@ -1,5 +1,9 @@
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* UpdateDialog.cs: Add frames around the updates.
+
+2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* UpdateDialog.cs:
 	* gtk-gui/gui.stetic:
 	* gtk-gui/MonoDevelop.Platform.UpdateDialog.cs: Restore the

@@ -90,8 +90,14 @@ namespace MonoDevelop.Platform
 					textView.Visible = updateExpander.Expanded;
 				};
 				
-				productBox.PackStart (updateBox);
-				updateBox.ShowAll ();
+				var f = new Frame () {
+					BorderWidth = 2,
+					Child = updateBox,
+					ShadowType = ShadowType.In
+				};
+				updateBox.BorderWidth = 6;
+				productBox.PackStart (f);
+				f.ShowAll ();
 				
 				textView.Visible = false;
 			}
