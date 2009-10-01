@@ -178,13 +178,13 @@ namespace Mono.TextEditor
 		}
 
 		System.ComponentModel.BackgroundWorker searchPatternWorker;
-
+		System.ComponentModel.BackgroundWorker highlightBracketWorker;
 		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
 		
 		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
-			if (Document.IsInUndo || !textEditor.Options.HighlightMatchingBracket)
+			if (!textEditor.Options.HighlightMatchingBracket)
 				return;
 			int offset = Caret.Offset - 1;
 			if (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset)))
@@ -199,21 +199,37 @@ namespace Mono.TextEditor
 			if (offset < 0)
 				offset = 0;
 			
-			int oldIndex = highlightBracketOffset;
-			highlightBracketOffset = Document.GetMatchingBracketOffset (offset);
-			if (highlightBracketOffset == Caret.Offset && offset + 1 < Document.Length)
-				highlightBracketOffset = Document.GetMatchingBracketOffset (offset + 1);
-			if (highlightBracketOffset == Caret.Offset)
-				highlightBracketOffset = -1;
-
-			if (highlightBracketOffset != oldIndex) {
-				int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
-				int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
-				if (line1 >= 0)
-					textEditor.RedrawLine (line1);
-				if (line1 != line2 && line2 >= 0)
-					textEditor.RedrawLine (line2);
-			}
+			if (highlightBracketWorker != null && highlightBracketWorker.IsBusy)
+				highlightBracketWorker.CancelAsync ();
+			
+			highlightBracketWorker = new System.ComponentModel.BackgroundWorker ();
+			highlightBracketWorker.WorkerSupportsCancellation = true;
+			highlightBracketWorker.DoWork += delegate(object s, System.ComponentModel.DoWorkEventArgs ea) {
+				System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)s;
+				int oldIndex = highlightBracketOffset;
+				int caretOffset = Caret.Offset;
+				int matchingBracket;
+				matchingBracket = Document.GetMatchingBracketOffset (worker, offset);
+				if (matchingBracket == caretOffset && offset + 1 < Document.Length)
+					matchingBracket = Document.GetMatchingBracketOffset (worker, offset + 1);
+				if (matchingBracket == caretOffset)
+					matchingBracket = -1;
+				if (worker.CancellationPending)
+					return;
+				if (matchingBracket != oldIndex) {
+					highlightBracketOffset = matchingBracket;
+					int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
+					int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
+					Application.Invoke (delegate {
+						if (line1 >= 0)
+							textEditor.RedrawLine (line1);
+						if (line1 != line2 && line2 >= 0)
+							textEditor.RedrawLine (line2);
+					});
+				}
+				
+			};
+			highlightBracketWorker.RunWorkerAsync ();
 		}
 
 		protected internal override void OptionsChanged ()

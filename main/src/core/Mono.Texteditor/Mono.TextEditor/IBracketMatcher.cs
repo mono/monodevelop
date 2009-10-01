@@ -32,8 +32,8 @@ namespace Mono.TextEditor
 {
 	public interface IBracketMatcher
 	{
-		int SearchMatchingBracketForward (Document document, int offset, char openBracket, char closingBracket);
-		int SearchMatchingBracketBackward (Document document, int offset, char openBracket, char closingBracket);
+		int SearchMatchingBracketForward (System.ComponentModel.BackgroundWorker worker, Document document, int offset, char openBracket, char closingBracket);
+		int SearchMatchingBracketBackward (System.ComponentModel.BackgroundWorker worker, Document document, int offset, char openBracket, char closingBracket);
 	}
 	
 	public class DefaultBracketMatcher : IBracketMatcher
@@ -57,11 +57,13 @@ namespace Mono.TextEditor
 			return -1;
 		}
 		
-		public int SearchMatchingBracketForward (Document document, int offset, char openBracket, char closingBracket)
+		public int SearchMatchingBracketForward (System.ComponentModel.BackgroundWorker worker, Document document, int offset, char openBracket, char closingBracket)
 		{
 			bool isInBlockComment = false;
 			bool isInLineComment  = false;
 			int  curStringQuote   = -1;
+			
+			bool startsInLineComment = StartsInLineComment (document, offset);
 			
 			List<string> lineComments       = GetList (document, "LineComment");
 			List<string> blockCommentStarts = GetList (document, "BlockCommentStart");
@@ -69,7 +71,8 @@ namespace Mono.TextEditor
 			List<string> stringQuotes       = GetList (document, "StringQuote");
 			int depth = -1;
 			while (offset >= 0 && offset < document.Length) {
-				
+				if (worker != null && worker.CancellationPending)
+					return -1;
 				if (curStringQuote < 0) {
 					// check line comments
 					if (!isInBlockComment && !isInLineComment) 
@@ -101,6 +104,8 @@ namespace Mono.TextEditor
 				switch (ch) {
 					case '\n':
 					case '\r':
+						if (startsInLineComment)
+							return -1;
 						isInLineComment = false;
 						break;
 					default :
@@ -175,7 +180,7 @@ namespace Mono.TextEditor
 			return lineOffset;
 		}
 		
-		public int SearchMatchingBracketBackward (Document document, int offset, char openBracket, char closingBracket)
+		public int SearchMatchingBracketBackward (System.ComponentModel.BackgroundWorker worker, Document document, int offset, char openBracket, char closingBracket)
 		{
 			bool isInBlockComment = false;
 			bool isInLineComment  = false;
@@ -192,6 +197,8 @@ namespace Mono.TextEditor
 				offset = GetLastSourceCodePosition (document, offset);
 			
 			while (offset >= 0 && offset < document.Length) {
+				if (worker != null && worker.CancellationPending)
+					return -1;
 				char ch = document.GetCharAt (offset);
 				
 				// check block comments
@@ -218,12 +225,13 @@ namespace Mono.TextEditor
 				switch (ch) {
 					case '\n':
 					case '\r':
+						if (startsInLineComment)
+							return -1;
 						offset--;
 						while (offset > 0 && (document.GetCharAt (offset) == '\n' || document.GetCharAt (offset) == '\r')) {
 							offset--;
 						}
-						if (!startsInLineComment)
-							offset = GetLastSourceCodePosition (document, offset) + 1;
+						offset = GetLastSourceCodePosition (document, offset) + 1;
 						break;
 					default:
 						if (ch == closingBracket) {

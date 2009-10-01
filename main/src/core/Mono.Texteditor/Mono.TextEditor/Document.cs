@@ -1280,17 +1280,22 @@ namespace Mono.TextEditor
 		
 		public int GetMatchingBracketOffset (int offset)
 		{
+			return GetMatchingBracketOffset (null, offset);
+		}
+		
+		public int GetMatchingBracketOffset (System.ComponentModel.BackgroundWorker worker, int offset)
+		{
 			if (offset < 0 || offset >= Length)
 				return -1;
 			char ch = GetCharAt (offset);
 			int bracket = openBrackets.IndexOf (ch);
 			int result;
 			if (bracket >= 0) {
-				result = SearchMatchingBracketForward (offset + 1, bracket);
+				result = SearchMatchingBracketForward (worker, offset + 1, bracket);
 			} else {
 				bracket = closingBrackets.IndexOf (ch);
 				if (bracket >= 0) {
-					result = SearchMatchingBracketBackward (offset - 1, bracket);
+					result = SearchMatchingBracketBackward (worker, offset - 1, bracket);
 				} else {
 					result = -1;
 				}
@@ -1309,14 +1314,14 @@ namespace Mono.TextEditor
 		}
 
 		
-		int SearchMatchingBracketForward (int offset, int bracket)
+		int SearchMatchingBracketForward (System.ComponentModel.BackgroundWorker worker, int offset, int bracket)
 		{
-			return bracketMatcher.SearchMatchingBracketForward (this, offset, closingBrackets[bracket], openBrackets[bracket]);
+			return bracketMatcher.SearchMatchingBracketForward (worker, this, offset, closingBrackets[bracket], openBrackets[bracket]);
 		}
 		
-		int SearchMatchingBracketBackward (int offset, int bracket)
+		int SearchMatchingBracketBackward (System.ComponentModel.BackgroundWorker worker, int offset, int bracket)
 		{
-			return bracketMatcher.SearchMatchingBracketBackward (this, offset, openBrackets[bracket], closingBrackets[bracket]);
+			return bracketMatcher.SearchMatchingBracketBackward (worker, this, offset, openBrackets[bracket], closingBrackets[bracket]);
 		}
 	
 		public enum CharacterClass {
