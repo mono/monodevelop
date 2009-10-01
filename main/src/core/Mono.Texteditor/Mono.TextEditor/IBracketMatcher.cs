@@ -120,6 +120,16 @@ namespace Mono.TextEditor
 			}
 			return -1;
 		}
+		bool StartsInLineComment (Document document, int offset)
+		{
+			List<string> lineComments = GetList (document, "LineComment");
+			LineSegment line = document.GetLineByOffset (offset);
+			for (int i = line.Offset ; i < offset; i++) {
+				if (StartsWithListMember (document, lineComments, i) >= 0)
+					return true;
+			}
+			return false;
+		}
 		
 		int GetLastSourceCodePosition (Document document, int lineOffset)
 		{
@@ -175,8 +185,11 @@ namespace Mono.TextEditor
 			List<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
 			List<string> stringQuotes       = GetList (document, "StringQuote");
 			
+			bool startsInLineComment = StartsInLineComment (document, offset);
 			int depth = -1;
-			offset = GetLastSourceCodePosition (document, offset);
+			
+			if (!startsInLineComment)
+				offset = GetLastSourceCodePosition (document, offset);
 			
 			while (offset >= 0 && offset < document.Length) {
 				char ch = document.GetCharAt (offset);
@@ -209,7 +222,8 @@ namespace Mono.TextEditor
 						while (offset > 0 && (document.GetCharAt (offset) == '\n' || document.GetCharAt (offset) == '\r')) {
 							offset--;
 						}
-						offset = GetLastSourceCodePosition (document, offset) + 1;
+						if (!startsInLineComment)
+							offset = GetLastSourceCodePosition (document, offset) + 1;
 						break;
 					default:
 						if (ch == closingBracket) {

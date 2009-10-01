@@ -1238,7 +1238,8 @@ namespace Mono.TextEditor
 						System.Console.WriteLine (e);
 					}
 				}
-				// take the line real render width from the text view margin rendering (a line can)
+				// take the line real render width from the text view margin rendering (a line can consist of more than 
+				// one line and be longer (foldings!) ex. : someLine1[...]someLine2[...]someLine3)
 				int lineWidth = textViewMargin.lastLineRenderWidth + (int)HAdjustment.Value;
 				if (longestLine == null || line == longestLine || lineWidth > longestLineWidth) {
 					longestLine = line;

@@ -85,7 +85,6 @@ namespace Mono.TextEditor
 			this.textEditor = textEditor;
 			
 			ResetCaretBlink ();
-			textEditor.Document.EndUndo += UpdateBracketHighlighting;
 			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
 				if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
 					int delta = -e.Count;
@@ -95,7 +94,6 @@ namespace Mono.TextEditor
 					mouseWordEnd += delta;
 				}
 			};
-			Caret.PositionChanged += UpdateBracketHighlighting;
 			base.cursor = xtermCursor;
 			textEditor.HighlightSearchPatternChanged += delegate { selectedRegions.Clear (); };
 			//			textEditor.SelectionChanged += delegate { DisposeLayoutDict (); };
@@ -113,6 +111,9 @@ namespace Mono.TextEditor
 			
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 			markerLayout = new Pango.Layout (textEditor.PangoContext);
+			
+			textEditor.Document.EndUndo += UpdateBracketHighlighting;
+			Caret.PositionChanged += UpdateBracketHighlighting;
 		}
 
 		List<LineSegment> linesToRemove = new List<LineSegment> ();
@@ -183,7 +184,7 @@ namespace Mono.TextEditor
 		
 		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
-			if (Document.IsInUndo)
+			if (Document.IsInUndo || !textEditor.Options.HighlightMatchingBracket)
 				return;
 			int offset = Caret.Offset - 1;
 			if (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset)))
@@ -197,6 +198,7 @@ namespace Mono.TextEditor
 			}
 			if (offset < 0)
 				offset = 0;
+			
 			int oldIndex = highlightBracketOffset;
 			highlightBracketOffset = Document.GetMatchingBracketOffset (offset);
 			if (highlightBracketOffset == Caret.Offset && offset + 1 < Document.Length)
@@ -212,7 +214,6 @@ namespace Mono.TextEditor
 				if (line1 != line2 && line2 >= 0)
 					textEditor.RedrawLine (line2);
 			}
-
 		}
 
 		protected internal override void OptionsChanged ()
@@ -241,6 +242,8 @@ namespace Mono.TextEditor
 				tabArray.Dispose ();
 				tabArray = null;
 			}
+			
+			
 			Pango.Layout tabWidthLayout = new Pango.Layout (textEditor.PangoContext);
 			tabWidthLayout.Alignment = Pango.Alignment.Left;
 			tabWidthLayout.FontDescription = textEditor.Options.Font;
