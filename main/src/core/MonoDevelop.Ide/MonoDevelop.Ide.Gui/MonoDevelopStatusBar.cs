@@ -105,6 +105,7 @@ namespace MonoDevelop.Ide
 			this.progressBar.Fraction = 0.0;
 			this.ShowAll ();
 			eventBox.HideAll ();
+			
 			originalFrame.HideAll ();
 			progressBar.Visible = false;
 		}
@@ -119,6 +120,12 @@ namespace MonoDevelop.Ide
 			}
 			string status = isInInsertMode ? GettextCatalog.GetString ("INS") : GettextCatalog.GetString ("OVR");
 			modeLabel.Text = " " + status + " ";
+		}
+		
+		public void ClearCaretState ()
+		{
+			cursorLabel.Text = "";
+			modeLabel.Text = "";
 		}
 		
 		public void ShowReady ()
