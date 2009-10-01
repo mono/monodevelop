@@ -113,7 +113,9 @@ namespace Mono.TextEditor.Highlighting
 		static ChunkStyle GetChunkStyle (Style style, IEnumerable<Tag> tagStack)
 		{
 			ChunkStyle result = new ChunkStyle ();
-			result.Color = style != null && style.Default != null ? style.Default.Color : new Gdk.Color (0, 0, 0);
+			if (style == null)
+				style = new DefaultStyle (null);
+			result.Color = style.Default.Color;
 			
 			foreach (Tag tag in tagStack) {
 				//System.Console.WriteLine("'" + tag.Command + "'");
@@ -123,7 +125,7 @@ namespace Mono.TextEditor.Highlighting
 					break;
 				case "SPAN":
 					if (tag.Arguments.ContainsKey ("style")) {
-						ChunkStyle chunkStyle =  style.GetChunkStyle (tag.Arguments["style"]);
+						ChunkStyle chunkStyle = style.GetChunkStyle (tag.Arguments["style"]);
 						if (chunkStyle != null) {
 							result.Color = chunkStyle.Color;
 							result.ChunkProperties |= chunkStyle.ChunkProperties;

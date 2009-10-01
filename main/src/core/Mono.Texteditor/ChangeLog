@@ -1,5 +1,11 @@
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/DefaultStyle.cs:
+	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Better
+	  handling of the last null ref exception.
+
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs: Fixed
 	  possible null reference exception.
 

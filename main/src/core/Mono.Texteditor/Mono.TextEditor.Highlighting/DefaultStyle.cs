@@ -122,18 +122,27 @@ namespace Mono.TextEditor.Highlighting
 		{
 			this.PopulateDefaults ();
 			this.widget = widget;
-			this.widget.StyleSet += WidgethandleStyleSet;
-			WidgethandleStyleSet (null, null);
+			if (widget != null) {
+				this.widget.StyleSet += WidgethandleStyleSet;
+				WidgethandleStyleSet (null, null);
+			} else {
+				SetStyle (Gtk.Widget.DefaultStyle);
+			}
 		}
 
 		void WidgethandleStyleSet (object o, StyleSetArgs args)
 		{
-			Gtk.Style style = widget.Style;
+			SetStyle (widget.Style);
+		}
+
+		void SetStyle (Gtk.Style style)
+		{
 			this.selectionStyle = new ChunkStyle (style.Text (StateType.Selected), style.Base (StateType.Selected));
 			this.defaultStyle = new ChunkStyle (style.Text (StateType.Normal), style.Base (StateType.Normal));
 			this.lineNumberStyle = new ChunkStyle (new Gdk.Color (172, 168, 153), style.Base (StateType.Normal));
 			this.iconBarBg = style.Background (StateType.Normal);
 			this.iconBarSeperator = style.Background (StateType.Active);
 		}
+
 	}
 }
