@@ -99,7 +99,7 @@ namespace MonoDevelop.SourceEditor
 				if (shouldShowclassBrowser == value)
 					return;
 				shouldShowclassBrowser = value;
-				UpdateClassBrowserVisibility ();
+				UpdateClassBrowserVisibility (false);
 			}
 		}
 		
@@ -109,11 +109,11 @@ namespace MonoDevelop.SourceEditor
 				if (canShowClassBrowser == value)
 					return;
 				canShowClassBrowser = value;
-				UpdateClassBrowserVisibility ();
+				UpdateClassBrowserVisibility (false);
 			}
 		}
 		
-		void UpdateClassBrowserVisibility ()
+		void UpdateClassBrowserVisibility (bool threaded)
 		{
 			if (shouldShowclassBrowser && canShowClassBrowser) {
 				if (classBrowser == null) {
@@ -121,7 +121,7 @@ namespace MonoDevelop.SourceEditor
 					this.PackStart (classBrowser, false, false, CHILD_PADDING);
 					this.ReorderChild (classBrowser, 0);
 					classBrowser.ShowAll ();
-					PopulateClassCombo ();
+					PopulateClassCombo (threaded);
 				}
 			} else {
 				if (classBrowser != null) {
@@ -132,12 +132,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public void PopulateClassCombo ()
+		public void PopulateClassCombo (bool runInThread)
 		{
 			if (classBrowser == null || !CanShowClassBrowser)
 				return;
 			
-			classBrowser.UpdateCompilationUnit (this.parsedDocument);
+			classBrowser.UpdateCompilationUnit (this.parsedDocument, runInThread);
 		}
 		
 		public Ambience Ambience {
@@ -320,7 +320,7 @@ namespace MonoDevelop.SourceEditor
 						widget.textEditorData.Document.UpdateFoldSegments (foldSegments, runInThread);
 					}
 					widget.UpdateAutocorTimer ();
-					widget.PopulateClassCombo ();
+					widget.PopulateClassCombo (runInThread);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 				}

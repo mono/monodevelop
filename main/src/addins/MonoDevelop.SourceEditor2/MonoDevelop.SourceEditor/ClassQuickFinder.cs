@@ -82,8 +82,6 @@ namespace MonoDevelop.SourceEditor
 			typeCombo.DefaultIconWidth = membersCombo.DefaultIconWidth = regionCombo.DefaultIconWidth = Math.Max (w, 16);
 			
 			this.FocusChain = new Widget[] { typeCombo, membersCombo, regionCombo };
-			
-			this.ShowAll ();
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -119,7 +117,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public void UpdateCompilationUnit (ParsedDocument parsedDocument)
+		public void UpdateCompilationUnit (ParsedDocument parsedDocument, bool runInThread)
 		{
 			if (handlingParseEvent)
 				return;
@@ -128,7 +126,11 @@ namespace MonoDevelop.SourceEditor
 			
 			this.parsedDocument = parsedDocument;
 			
-			GLib.Timeout.Add (100, new GLib.TimeoutHandler (Repopulate));
+			if (runInThread) {
+				GLib.Timeout.Add (100, new GLib.TimeoutHandler (Repopulate));
+			} else {
+				Repopulate ();
+			}
 		}
 		
 		bool Repopulate ()

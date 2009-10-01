@@ -158,9 +158,9 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
 			
-//			widget.TextEditor.Document.DocumentUpdated += delegate {
-		//				this.IsDirty = Document.IsDirty;
-		//			};
+			//			widget.TextEditor.Document.DocumentUpdated += delegate {
+			//				this.IsDirty = Document.IsDirty;
+			//			};
 			
 			widget.TextEditor.Caret.PositionChanged += delegate {
 				FireCompletionContextChanged ();
@@ -300,8 +300,6 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
-			
-			widget.PopulateClassCombo ();
 			this.IsDirty = false;
 		}
 
@@ -326,8 +324,6 @@ namespace MonoDevelop.SourceEditor
 
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
-
-			widget.PopulateClassCombo ();
 			this.IsDirty = false;
 		}
 		
