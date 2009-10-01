@@ -86,7 +86,8 @@ namespace MonoDevelop.Platform
 						sb.AppendFormat ("{0} ({1:yyyy-MM-dd})\n", release.Version, release.Date);
 						sb.AppendLine ();
 					}
-					sb.Append (release.Notes);
+					sb.Append (release.Notes.Trim ('\t', ' ', '\n', '\r'));
+					sb.AppendLine ();
 				}
 				var buffer = new TextBuffer (null);
 				buffer.Text = sb.ToString ();

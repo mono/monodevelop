@@ -1,5 +1,9 @@
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* UpdateDialog.cs: Tweak presentation of release notes.
+
+2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MacUpdater.cs:
 	* UpdateDialog.cs: Better presentation of older releases.
 	  Tweak packing.
