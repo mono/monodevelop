@@ -1,5 +1,10 @@
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Added a small
+	  padding for the event box.
+
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Added clear
 	  caret state method to status bar.
 

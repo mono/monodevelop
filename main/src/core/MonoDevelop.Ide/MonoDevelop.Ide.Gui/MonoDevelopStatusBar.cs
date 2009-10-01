@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide
 			
 			eventBox = new EventBox ();
 			eventBox.BorderWidth = 0;
-			statusBox.PackEnd (eventBox, false, false, 0);
+			statusBox.PackEnd (eventBox, false, false, 4);
 			
 			this.PackStart (textStatusBarPanel, true, true, 0);
 			
