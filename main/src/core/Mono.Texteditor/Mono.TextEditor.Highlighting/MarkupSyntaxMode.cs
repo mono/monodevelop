@@ -113,7 +113,7 @@ namespace Mono.TextEditor.Highlighting
 		static ChunkStyle GetChunkStyle (Style style, IEnumerable<Tag> tagStack)
 		{
 			ChunkStyle result = new ChunkStyle ();
-			result.Color = style.Default.Color;
+			result.Color = style != null && style.Default != null ? style.Default.Color : new Gdk.Color (0, 0, 0);
 			
 			foreach (Tag tag in tagStack) {
 				//System.Console.WriteLine("'" + tag.Command + "'");
