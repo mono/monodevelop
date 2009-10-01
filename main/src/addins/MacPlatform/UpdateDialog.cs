@@ -44,13 +44,15 @@ namespace MonoDevelop.Platform
 			checkAutomaticallyCheck.Active = MacUpdater.CheckAutomatically;
 			
 			foreach (var update in updates) {
-				var updateExpander = new Expander ("");
+				var updateBox = new VBox () { Spacing = 2 };
 				var labelBox = new HBox ();
-				updateExpander.LabelWidget = labelBox;
-				labelBox.PackStart (new Label () {
+				updateBox.PackStart (labelBox, false, false, 0);
+				
+				var updateExpander = new Expander ("");
+				updateExpander.LabelWidget = new Label () {
 					Markup = string.Format ("<b>{0}</b> {1}", update.Name, update.Version),
-				}, false, false, 0);
-				labelBox.PackStart (new Label (""), true, true, 0);
+				};
+				labelBox.PackStart (updateExpander, true, true, 0);
 				
 				var downloadButton = new Button () {
 					Label = GettextCatalog.GetString ("Download")
@@ -62,18 +64,24 @@ namespace MonoDevelop.Platform
 				
 				var sb = new StringBuilder ();
 				foreach (var release in update.Releases) {
-					sb.AppendFormat ("{0} - {1}\n", release.Version, release.Date);
+					sb.AppendFormat ("{0} ({1:yyyy-MM-dd})\n", release.Version, release.Date);
 					sb.AppendLine ();
 					sb.Append (release.Notes);
 					sb.AppendLine ();
 				}
 				var buffer = new TextBuffer (null);
 				buffer.Text = sb.ToString ();
-				updateExpander.Child = new TextView (buffer);
-				updateExpander.ShowAll ();
+				var textView = new TextView (buffer);
+				updateBox.PackStart (textView, false, false, 0);
 				
-				productBox.PackStart (updateExpander);
-				updateExpander.ShowAll ();
+				updateExpander.Activated += delegate {
+					textView.Visible = updateExpander.Expanded;
+				};
+				
+				productBox.PackStart (updateBox);
+				updateBox.ShowAll ();
+				
+				textView.Visible = false;
 			}
 		}
 		

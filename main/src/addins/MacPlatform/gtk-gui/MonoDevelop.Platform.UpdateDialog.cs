@@ -122,7 +122,7 @@ namespace MonoDevelop.Platform {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 608;
+            this.DefaultWidth = 602;
             this.DefaultHeight = 392;
             this.Show();
         }

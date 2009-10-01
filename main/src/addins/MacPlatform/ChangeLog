@@ -1,5 +1,11 @@
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* UpdateDialog.cs:
+	* gtk-gui/MonoDevelop.Platform.UpdateDialog.cs: Prettify
+	  update dialog.
+
+2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Commands.cs: Hide command when no updateable packages exist.
 
 	* MacUpdater.cs: Fix update paths.
