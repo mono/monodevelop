@@ -351,6 +351,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project project = CurrentNode.DataItem as Project;
 			project.ParentSolution.SingleStartup = true;
 			project.ParentSolution.StartupItem = project;
+			IdeApp.ProjectOperations.Save (project.ParentSolution);
 		}
 		
 		public override void DeleteItem ()

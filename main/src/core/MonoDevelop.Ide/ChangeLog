@@ -1,5 +1,12 @@
 2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
+	  Save the solution after changing the startup project. Fixes
+	  bug #542054 - MonoDevelop does not remember 'startup
+	  project'.
+
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
