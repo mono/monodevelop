@@ -134,7 +134,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			base.SelectEntry (s);
 			UpdateDeclarationView ();
 		}
-
+		
 		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext, System.Action closedDelegate)
 		{
 			if (mutableList != null) {
@@ -162,7 +162,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.CompletionWidget = completionWidget;
 
 			if (FillList ()) {
-				Reset (true);
+// not neccessarry, because list window is not reused anymore:
+//				Reset (true);
 				this.AutoSelect = list.AutoSelect;
 				this.AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
 				// makes control-space in midle of words to work
@@ -172,8 +173,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 					text = completionDataList.DefaultCompletionString;
 					SelectEntry (text);
 					initialWordLength = completionWidget.SelectedLength;
-					Show ();
 					ResetSizes ();
+					ShowAll ();
+					SetScrollbarVisibilty ();
 					return true;
 				}
 
@@ -185,12 +187,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 					CompleteWord ();
 					CompletionWindowManager.HideWindow ();
 				} else {
-					Show ();
 					ResetSizes ();
+					ShowAll ();
+					SetScrollbarVisibilty ();
 				}
 				return true;
 			}
 			CompletionWindowManager.HideWindow ();
+			
 			return false;
 		}
 		
@@ -255,6 +259,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			base.OnSizeAllocated (allocation);
 			Reposition (true);
 		}
+		
 		
 		public void CompleteWord ()
 		{
@@ -453,7 +458,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		internal bool IsChanging {
 			get { return mutableList != null && mutableList.IsChanging; }
 		}
-
 		
 		void OnCompletionDataChanging (object s, EventArgs args)
 		{

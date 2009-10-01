@@ -52,9 +52,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public string CompletionString {
 			get { return completionString; }
 			set {
-				completionString = value;
-				FilterWords ();
-				QueueDraw ();
+				if (completionString != value) {
+					completionString = value;
+					FilterWords ();
+					QueueDraw ();
+				}
 			}
 		}
 		
@@ -67,6 +69,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			this.win = win;
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask;
+		
+			layout = new Pango.Layout (this.PangoContext);
+			layout.Wrap = Pango.WrapMode.Char;
+			FontDescription des = this.Style.FontDescription.Copy ();
+			layout.FontDescription = des;
 		}
 		
 		public void Reset ()
@@ -78,10 +85,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			selection = win.DataProvider.ItemCount == 0 ? -1 : 0;
 			page = 0;
 			AutoSelect = false;
-			if (IsRealized) {
-				UpdateStyle ();
-				QueueDraw ();
-			}
+			CalcVisibleRows ();
 			if (SelectionChanged != null)
 				SelectionChanged (this, EventArgs.Empty);
 		}
@@ -110,11 +114,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public void UpdatePage ()
 		{
-			if (!IsRealized) {
-				page = 0;
-				return;
-			}
-			
 			if (selection < page || selection >= page + VisibleRows)
 				page = selection - (VisibleRows / 2);
 			page = System.Math.Max (0, System.Math.Min (page, filteredItems.Count - VisibleRows));
@@ -161,6 +160,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 			return base.OnButtonReleaseEvent (e);
 		}
 		
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			this.GdkWindow.Background = this.Style.Base (StateType.Normal);
+		}
+		
 		protected override bool OnMotionNotifyEvent (EventMotion e)
 		{
 			if (!buttonPressed)
@@ -173,8 +178,94 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
-			base.OnExposeEvent (args);
-			DrawList ();
+			Gdk.Window window = args.Window;
+			int winWidth = window.ClipRegion.Clipbox.Width;
+			int winHeight = window.ClipRegion.Clipbox.Height;
+			
+			int ypos = margin;
+			int lineWidth = winWidth - margin * 2;
+			int xpos = margin + padding;
+
+			if (PreviewCompletionString) {
+				layout.SetText (string.IsNullOrEmpty (CompletionString) ? MonoDevelop.Core.GettextCatalog.GetString ("Select template") : CompletionString);
+				int wi, he;
+				layout.GetPixelSize (out wi, out he);
+				window.DrawRectangle (this.Style.BaseGC (StateType.Insensitive), true, margin, ypos, lineWidth, he + padding);
+				window.DrawLayout (string.IsNullOrEmpty (CompletionString) ? this.Style.TextGC (StateType.Insensitive) : this.Style.TextGC (StateType.Normal), xpos, ypos, layout);
+				ypos += rowHeight;
+			}
+
+			if (filteredItems.Count == 0) {
+				Gdk.GC gc = new Gdk.GC (window);
+				gc.RgbFgColor = new Gdk.Color (0xff, 0xbc, 0xc1);
+				window.DrawRectangle (gc, true, 0, ypos, Allocation.Width, Allocation.Height - ypos);
+				gc.Dispose ();
+				layout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("No suggestions"));
+				int width, height;
+				layout.GetPixelSize (out width, out height);
+				window.DrawLayout (this.Style.TextGC (StateType.Normal), (Allocation.Width - width) / 2, ypos + (Allocation.Height - height - ypos) / 2, layout);
+				return true;
+			}
+			
+			int n = 0;
+			while (ypos < winHeight - margin && (page + n) < filteredItems.Count) {
+				bool hasMarkup = win.DataProvider.HasMarkup (filteredItems[page + n]);
+				if (hasMarkup) {
+					layout.SetMarkup (win.DataProvider.GetMarkup (filteredItems[page + n]) ?? "&lt;null&gt;");
+				} else {
+					layout.SetText (win.DataProvider.GetText (filteredItems[page + n]) ?? "<null>");
+				}
+				string text = win.DataProvider.GetText (filteredItems[page + n]);
+				if ((!SelectionEnabled || page + n != selection) && !string.IsNullOrEmpty (text) && !string.IsNullOrEmpty (CompletionString)) {
+					int[] matchIndices = Match (CompletionString, text);
+					if (matchIndices != null) {
+						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
+						for (int i = 0; i < matchIndices.Length; i++) {
+							int idx = matchIndices[i];
+							Pango.AttrForeground fg = new Pango.AttrForeground (0, 0, ushort.MaxValue);
+							fg.StartIndex = (uint)idx;
+							fg.EndIndex = (uint)(idx + 1);
+							attrList.Insert (fg);
+						}
+						layout.Attributes = attrList;
+					}
+				}
+				
+				Gdk.Pixbuf icon = win.DataProvider.GetIcon (filteredItems[page + n]);
+				int iconHeight, iconWidth;
+				if (icon != null) {
+					iconWidth = icon.Width;
+					iconHeight = icon.Height;
+				} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
+					iconHeight = iconWidth = 24;
+				}
+				
+				int wi, he, typos, iypos;
+				layout.GetPixelSize (out wi, out he);
+				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
+				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
+				if (page + n == selection) {
+					if (SelectionEnabled) {
+						window.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
+						window.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);
+					} else {
+						window.DrawRectangle (this.Style.DarkGC (StateType.Prelight), false, margin, ypos, lineWidth - 1, he + padding - 1);
+						window.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
+					} 
+				} else
+					window.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
+				if (icon != null)
+					window.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
+				ypos += rowHeight;
+				n++;
+				if (hasMarkup)
+					layout.SetMarkup (string.Empty);
+				if (layout.Attributes != null) {
+					layout.Attributes.Dispose ();
+					layout.Attributes = null;
+				}
+			}
+			
 			return true;
 		}
 		
@@ -261,95 +352,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			UpdatePage ();
 		}
 		
-		void DrawList ()
-		{
-			int winWidth, winHeight;
-			this.GdkWindow.GetSize (out winWidth, out winHeight);
-			int ypos = margin;
-			int lineWidth = winWidth - margin * 2;
-			int xpos = margin + padding;
-
-			if (PreviewCompletionString) {
-				layout.SetText (string.IsNullOrEmpty (CompletionString) ? MonoDevelop.Core.GettextCatalog.GetString ("Select template") : CompletionString);
-				int wi, he;
-				layout.GetPixelSize (out wi, out he);
-				this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Insensitive), true, margin, ypos, lineWidth, he + padding);
-				this.GdkWindow.DrawLayout (string.IsNullOrEmpty (CompletionString) ? this.Style.TextGC (StateType.Insensitive) : this.Style.TextGC (StateType.Normal), xpos, ypos, layout);
-				ypos += rowHeight;
-			}
-
-			if (filteredItems.Count == 0) {
-				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = new Gdk.Color (0xff, 0xbc, 0xc1);
-				this.GdkWindow.DrawRectangle (gc, true, 0, ypos, Allocation.Width, Allocation.Height - ypos);
-				gc.Dispose ();
-				layout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("No suggestions"));
-				int width, height;
-				layout.GetPixelSize (out width, out height);
-				this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), (Allocation.Width - width) / 2, ypos + (Allocation.Height - height - ypos) / 2, layout);
-				return;
-			}
-			
-			int n = 0;
-			while (ypos < winHeight - margin && (page + n) < filteredItems.Count) {
-				bool hasMarkup = win.DataProvider.HasMarkup (filteredItems[page + n]);
-				if (hasMarkup) {
-					layout.SetMarkup (win.DataProvider.GetMarkup (filteredItems[page + n]) ?? "&lt;null&gt;");
-				} else {
-					layout.SetText (win.DataProvider.GetText (filteredItems[page + n]) ?? "<null>");
-				}
-				string text = win.DataProvider.GetText (filteredItems[page + n]);
-				if ((!SelectionEnabled || page + n != selection) && !string.IsNullOrEmpty (text) && !string.IsNullOrEmpty (CompletionString)) {
-					int[] matchIndices = Match (CompletionString, text);
-					if (matchIndices != null) {
-						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
-						for (int i = 0; i < matchIndices.Length; i++) {
-							int idx = matchIndices[i];
-							Pango.AttrForeground fg = new Pango.AttrForeground (0, 0, ushort.MaxValue);
-							fg.StartIndex = (uint)idx;
-							fg.EndIndex = (uint)(idx + 1);
-							attrList.Insert (fg);
-						}
-						layout.Attributes = attrList;
-					}
-				}
-				
-				Gdk.Pixbuf icon = win.DataProvider.GetIcon (filteredItems[page + n]);
-				int iconHeight, iconWidth;
-				if (icon != null) {
-					iconWidth = icon.Width;
-					iconHeight = icon.Height;
-				} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
-					iconHeight = iconWidth = 24;
-				}
-				
-				int wi, he, typos, iypos;
-				layout.GetPixelSize (out wi, out he);
-				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
-				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
-				if (page + n == selection) {
-					if (SelectionEnabled) {
-						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
-						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);
-					} else {
-						this.GdkWindow.DrawRectangle (this.Style.DarkGC (StateType.Prelight), false, margin, ypos, lineWidth - 1, he + padding - 1);
-						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
-					} 
-				} else
-					this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
-				if (icon != null)
-					this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
-				ypos += rowHeight;
-				n++;
-				if (hasMarkup)
-					layout.SetMarkup (string.Empty);
-				if (layout.Attributes != null) {
-					layout.Attributes.Dispose ();
-					layout.Attributes = null;
-				}
-			}
-		}
-		
 		int GetRowByPosition (int ypos)
 		{
 			if (visibleRows == -1)
@@ -375,12 +377,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		void CalcVisibleRows ()
 		{
-			if (layout == null)
-				return;
 			int winHeight = 200;
 			int lvWidth, lvHeight;
 			int rowWidth;
 			this.GetSizeRequest (out lvWidth, out lvHeight);
+			
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight += padding;
 			visibleRows = (winHeight + padding - margin * 2) / rowHeight;
@@ -389,25 +390,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				visibleRows--;
 				newHeight += rowHeight;
 			}
-			if (lvWidth != listWidth || lvHeight != newHeight)
+			if (lvWidth != listWidth || lvHeight != newHeight) 
 				this.SetSizeRequest (listWidth, newHeight);
-		}
-		
-		protected override void OnRealized ()
-		{
-			base.OnRealized ();
-			UpdateStyle ();
-			UpdatePage ();
-		}
-		
-		void UpdateStyle ()
-		{
-			this.GdkWindow.Background = this.Style.Base (StateType.Normal);
-			layout = new Pango.Layout (this.PangoContext);
-			layout.Wrap = Pango.WrapMode.Char;
-			FontDescription des = this.Style.FontDescription.Copy ();
-			layout.FontDescription = des;
-			CalcVisibleRows ();
 		}
 	}
 }

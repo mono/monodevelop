@@ -84,13 +84,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 
 		}
-
-		public new void Show ()
-		{
-			list.filteredItems.Clear ();
-			this.ShowAll ();
-		}
-
+		
 		public void ShowFooter (Widget w)
 		{
 			HideFooter ();
@@ -117,30 +111,39 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (DataProvider != null)
 				ResetSizes ();
 		}
+		
 		protected int curXPos, curYPos;
 
 		protected void ResetSizes ()
 		{
-			if (!IsRealized)
-				return;
 			list.CompletionString = word.ToString ();
+			
 			if (list.filteredItems.Count == 0 && !list.PreviewCompletionString) {
 				Hide ();
 			} else {
-				if (!Visible)
+				if (IsRealized && !Visible)
 					Show ();
 			}
+			SetScrollbarVisibilty ();
+			SetSizeRequest (this.list.WidthRequest, this.list.HeightRequest);
+			if (IsRealized) 
+				Resize (this.list.WidthRequest, this.list.HeightRequest);
+		}
+
+		protected void SetScrollbarVisibilty ()
+		{
 			double pageSize = Math.Max (0, list.VisibleRows - 1);
 			double upper = Math.Max (0, list.filteredItems.Count - 1);
 			scrollbar.Adjustment.SetBounds (0, upper, 1, pageSize, pageSize);
 			if (pageSize >= upper) {
-				this.scrollbar.Hide ();
+				this.scrollbar.Value = -1;
+				this.scrollbar.Visible = false;
 			} else {
-				scrollbar.Value = list.Page;
-				this.scrollbar.Show ();
+				this.scrollbar.Value = list.Page;
+				this.scrollbar.Visible = true;
 			}
-			this.Resize (this.list.WidthRequest, this.list.HeightRequest);
 		}
+
 
 		public IListDataProvider DataProvider {
 			get;
@@ -175,9 +178,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 				string newword = value;
 				if (newword.Trim ().Length == 0)
 					return;
-				word = new StringBuilder (newword);
-				curPos = newword.Length;
-				UpdateWordSelection ();
+				if (word.ToString () != newword) {
+					word = new StringBuilder (newword);
+					curPos = newword.Length;
+					UpdateWordSelection ();
+				}
 			}
 		}
 
@@ -446,7 +451,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		protected virtual void OnSelectionChanged ()
 		{
 		}
-
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			base.OnExposeEvent (args);
@@ -454,7 +459,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int winWidth, winHeight;
 			this.GetSize (out winWidth, out winHeight);
 			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth - 1, winHeight - 1);
-			return false;
+			return true;
 		}
 
 		public int TextOffset {
