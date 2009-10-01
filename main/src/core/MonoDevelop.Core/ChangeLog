@@ -1,3 +1,10 @@
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.ProgressMonitoring/AggregatedAsyncOperation.cs:
+	  Added async operation aggregator.
+
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/TargetFramework.cs:
