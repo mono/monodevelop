@@ -228,9 +228,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (parent == null) return;
 				
 				if (MessageService.Confirm (GettextCatalog.GetString ("Do you really want to remove solution {0} from workspace {1}?", solution.Name, parent.Name), AlertButton.Remove)) {
-					parent.Items.Remove (solution);
-					solution.Dispose ();
-					items.Add (parent);
+					if (IdeApp.Workspace.RequestItemUnload (solution)) {
+						parent.Items.Remove (solution);
+						solution.Dispose ();
+						items.Add (parent);
+					}
 				}
 			}
 			IdeApp.ProjectOperations.Save (items);

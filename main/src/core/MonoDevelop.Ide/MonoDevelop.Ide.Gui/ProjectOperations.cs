@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -78,6 +79,7 @@ namespace MonoDevelop.Ide.Gui
 		internal ProjectOperations ()
 		{
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+			IdeApp.Workspace.ItemUnloading += IdeAppWorkspaceItemUnloading;
 		}
 		
 		public BuildResult LastCompilerResult {
@@ -345,6 +347,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Save (IEnumerable<IWorkspaceFileObject> items)
 		{
+			int count = items.Count ();
+			if (count == 0)
+				return;
+			
 			// Verify that the file format for each item is still valid
 			
 			HashSet<IWorkspaceFileObject> fixedItems = new HashSet<IWorkspaceFileObject> ();
@@ -376,11 +382,6 @@ namespace MonoDevelop.Ide.Gui
 				}
 				items = notSavedEntries;
 			}
-			
-			int count = 0;
-			IEnumerator<IWorkspaceFileObject> e = items.GetEnumerator ();
-			while (e.MoveNext ())
-				count++;
 			
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
@@ -747,7 +748,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			SolutionEntityItem prj = item as SolutionEntityItem;
 			if (prj == null) {
-				if (MessageService.Confirm (question, AlertButton.Remove))
+				if (MessageService.Confirm (question, AlertButton.Remove) && IdeApp.Workspace.RequestItemUnload (item))
 					RemoveItemFromSolution (prj);
 				return;
 			}
@@ -755,6 +756,8 @@ namespace MonoDevelop.Ide.Gui
 			AlertButton result = MessageService.AskQuestion (question, secondaryText,
 			                                                 AlertButton.Delete, AlertButton.Cancel, AlertButton.Remove);
 			if (result == AlertButton.Delete) {
+				if (!IdeApp.Workspace.RequestItemUnload (prj))
+					return;
 				ConfirmProjectDeleteDialog dlg = new ConfirmProjectDeleteDialog (prj);
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					
@@ -781,7 +784,7 @@ namespace MonoDevelop.Ide.Gui
 				} else
 					dlg.Destroy ();
 			}
-			else if (result != AlertButton.Cancel) {
+			else if (result != AlertButton.Cancel && IdeApp.Workspace.RequestItemUnload (prj)) {
 				RemoveItemFromSolution (prj);
 			}
 		}
@@ -1318,6 +1321,18 @@ namespace MonoDevelop.Ide.Gui
 				EndBuild (this, new BuildEventArgs (monitor, success));
 			}
 		}
+
+		void IdeAppWorkspaceItemUnloading (object sender, ItemUnloadingEventArgs args)
+		{
+			if (IsBuilding (args.Item))
+				CurrentBuildOperation.Cancel ();
+			if (IsRunning (args.Item)) {
+				if (MessageService.Confirm (GettextCatalog.GetString ("The project '{0}' is currently running. It will have to be stopped. Do you want to continue?", currentRunOperationOwner.Name), AlertButton.Yes)) {
+					CurrentRunOperation.Cancel ();
+				} else
+					args.Cancel = true;
+			}
+		}
 		
 		void OnWorkspaceItemUnloaded (object s, WorkspaceItemEventArgs args)
 		{
@@ -1327,10 +1342,6 @@ namespace MonoDevelop.Ide.Gui
 				CurrentSelectedWorkspaceItem = null;
 			if ((currentItem is IBuildTarget) && ContainsTarget (args.Item, ((IBuildTarget)currentItem)))
 				CurrentSelectedItem = null;
-			if (IsBuilding (args.Item))
-				CurrentBuildOperation.Cancel ();
-			if (IsRunning (args.Item))
-				CurrentRunOperation.Cancel ();
 		}
 		
 		protected virtual void OnCurrentSelectedSolutionChanged(SolutionEventArgs e)

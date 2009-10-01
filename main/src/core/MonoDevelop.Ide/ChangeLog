@@ -1,3 +1,11 @@
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
+	  Ask for permission before closing or removing a project.
+	  Used for example to close a running project before closing.
+
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Added a small

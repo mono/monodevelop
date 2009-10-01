@@ -441,6 +441,13 @@ namespace MonoDevelop.Ide.Gui
 		public bool Close (bool saveWorkspacePreferencies)
 		{
 			if (Items.Count > 0) {
+				
+				// Request permission for unloading the items
+				foreach (WorkspaceItem it in new List<WorkspaceItem> (Items)) {
+					if (!RequestItemUnload (it))
+						return false;
+				}
+				
 				if (saveWorkspacePreferencies)
 					SavePreferences ();
 
@@ -452,6 +459,7 @@ namespace MonoDevelop.Ide.Gui
 							return false;
 					}
 				}
+				
 				foreach (WorkspaceItem it in new List<WorkspaceItem> (Items)) {
 					try {
 						Items.Remove (it);
@@ -469,15 +477,22 @@ namespace MonoDevelop.Ide.Gui
 			if (!Items.Contains (item))
 				throw new InvalidOperationException ("Only top level items can be closed.");
 			
-			if (WorkspaceItemClosing != null) {
+			if (RequestItemUnload (item))
+				Items.Remove (item);
+		}
+		
+		public bool RequestItemUnload (IBuildTarget item)
+		{
+			if (ItemUnloading != null) {
 				try {
-					WorkspaceItemClosing (this, new WorkspaceItemEventArgs (item));
+					ItemUnloadingEventArgs args = new ItemUnloadingEventArgs (item);
+					ItemUnloading (this, args);
+					return !args.Cancel;
 				} catch (Exception ex) {
-					LoggingService.LogError ("Exception in WorkspaceItemClosing.", ex);
+					LoggingService.LogError ("Exception in ItemUnloading.", ex);
 				}
 			}
-			
-			Items.Remove (item);
+			return true;
 		}
 		
 		public IAsyncOperation OpenWorkspaceItem (string filename)
@@ -492,8 +507,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IAsyncOperation OpenWorkspaceItem (string filename, bool closeCurrent, bool loadPreferences)
 		{
-			if (closeCurrent)
-				Close ();
+			if (closeCurrent) {
+				if (!Close ())
+					return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Failure;
+			}
 
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
@@ -1265,10 +1282,10 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemLoaded;
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemUnloaded;
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemOpened;
-		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemClosing;
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemClosed;
 		public event EventHandler<UserPreferencesEventArgs> StoringUserPreferences;
 		public event EventHandler<UserPreferencesEventArgs> LoadingUserPreferences;
+		public event EventHandler<ItemUnloadingEventArgs> ItemUnloading;
 		
 		public event EventHandler<SolutionEventArgs> CurrentSelectedSolutionChanged;
 		
@@ -1364,7 +1381,26 @@ namespace MonoDevelop.Ide.Gui
 		[ItemProperty]
 		public string ActiveRuntime;
 	}
+	
+	public class ItemUnloadingEventArgs: EventArgs
+	{
+		IBuildTarget item;
+		
+		public bool Cancel { get; set; }
+		
+		public IBuildTarget Item {
+			get {
+				return item;
+			}
+		}
+		
+		public ItemUnloadingEventArgs (IBuildTarget item)
+		{
+			this.item = item;
+		}
+	}
 }
+
 namespace Mono.Profiler {
 	public class RuntimeControls {
 		
