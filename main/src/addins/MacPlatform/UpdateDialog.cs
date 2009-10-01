@@ -69,8 +69,11 @@ namespace MonoDevelop.Platform
 				var downloadButton = new Button () {
 					Label = GettextCatalog.GetString ("Download")
 				};
+				
+				//NOTE: grab the variable from the loop var so the closure captures it 
+				var url = update.Url;
 				downloadButton.Clicked += delegate {
-					MonoDevelop.Core.Gui.DesktopService.ShowUrl (update.Url);
+					MonoDevelop.Core.Gui.DesktopService.ShowUrl (url);
 				};
 				labelBox.PackStart (downloadButton, false, false, 0);
 				
@@ -107,6 +110,7 @@ namespace MonoDevelop.Platform
 					ShadowType = ShadowType.In
 				};
 				updateBox.BorderWidth = 6;
+				productBox.Spacing = 4;
 				productBox.PackStart (f, false, false, 0);
 				f.ShowAll ();
 				
