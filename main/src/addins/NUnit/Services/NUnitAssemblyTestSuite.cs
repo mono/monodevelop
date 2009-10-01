@@ -50,6 +50,7 @@ namespace MonoDevelop.NUnit
 		UnitTest[] oldList;
 		TestInfoCache testInfoCache = new TestInfoCache ();
 		bool cacheLoaded;
+		DateTime lastAssemblyTime;
 		
 		static Queue<LoadData> loadQueue = new Queue<LoadData> ();
 		static bool loaderRunning;
@@ -104,6 +105,47 @@ namespace MonoDevelop.NUnit
 			}
 			return base.CountTestCases ();
 		}
+		
+		protected bool RefreshRequired {
+			get {
+				return lastAssemblyTime != GetAssemblyTime ();
+			}
+		}
+
+		public override IAsyncOperation Refresh ()
+		{
+			AsyncOperation oper = new AsyncOperation ();
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				lock (locker) {
+					try {
+						while (Status == TestStatus.Loading) {
+							Monitor.Wait (locker);
+						}
+						if (RefreshRequired) {
+							lastAssemblyTime = GetAssemblyTime ();
+							UpdateTests ();
+							OnCreateTests (); // Force loading
+							while (Status == TestStatus.Loading) {
+								Monitor.Wait (locker);
+							}
+						}
+						oper.SetCompleted (true);
+					} catch {
+						oper.SetCompleted (false);
+					}
+				}
+			});
+			return oper;
+		}
+		
+		DateTime GetAssemblyTime ()
+		{
+			string path = AssemblyPath;
+			if (File.Exists (path))
+				return File.GetLastWriteTime (path);
+			else
+				return DateTime.MinValue;
+		}
 
 		
 		protected override void OnCreateTests ()
@@ -121,6 +163,8 @@ namespace MonoDevelop.NUnit
 				Status = TestStatus.Loading;
 			}
 			
+			lastAssemblyTime = GetAssemblyTime ();
+			
 			if (oldList != null) {
 				foreach (UnitTest t in oldList)
 					Tests.Add (t);
@@ -132,9 +176,7 @@ namespace MonoDevelop.NUnit
 			ld.Path = AssemblyPath;
 			ld.TestInfoCachePath = cacheLoaded ? null : TestInfoCachePath;
 			ld.Callback = delegate {
-				Gtk.Application.Invoke (delegate {
-					AsyncCreateTests (ld);
-				});
+				AsyncCreateTests (ld);
 			};
 			ld.SupportAssemblies = new List<string> (SupportAssemblies);
 			

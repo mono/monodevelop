@@ -46,7 +46,6 @@ namespace MonoDevelop.NUnit
 	public class NUnitProjectTestSuite: NUnitAssemblyTestSuite
 	{
 		DotNetProject project;
-		DateTime lastAssemblyTime;
 		string resultsPath;
 		string storeId;
 		
@@ -56,7 +55,6 @@ namespace MonoDevelop.NUnit
 			resultsPath = Path.Combine (project.BaseDirectory, "test-results");
 			ResultsStore = new XmlResultsStore (resultsPath, storeId);
 			this.project = project;
-			lastAssemblyTime = GetAssemblyTime ();
 			project.NameChanged += new SolutionItemRenamedEventHandler (OnProjectRenamed);
 			IdeApp.ProjectOperations.EndBuild += new BuildEventHandler (OnProjectBuilt);
 		}
@@ -99,19 +97,8 @@ namespace MonoDevelop.NUnit
 		
 		void OnProjectBuilt (object s, BuildEventArgs args)
 		{
-			if (lastAssemblyTime != GetAssemblyTime ()) {
-				lastAssemblyTime = GetAssemblyTime ();
+			if (RefreshRequired)
 				UpdateTests ();
-			}
-		}
-		
-		DateTime GetAssemblyTime ()
-		{
-			string path = AssemblyPath;
-			if (File.Exists (path))
-				return File.GetLastWriteTime (path);
-			else
-				return DateTime.MinValue;
 		}
 	
 		protected override string AssemblyPath {

@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using System.Collections;
 using MonoDevelop.Projects;
 
@@ -105,6 +106,15 @@ namespace MonoDevelop.NUnit
 		
 		protected virtual void OnCreateTests ()
 		{
+		}
+		
+		public override IAsyncOperation Refresh ()
+		{
+			AggregatedAsyncOperation oper = new AggregatedAsyncOperation ();
+			foreach (UnitTest t in Tests)
+				oper.Add (t.Refresh ());
+			oper.StartMonitoring ();
+			return oper;
 		}
 		
 		protected override UnitTestResult OnRun (TestContext testContext)

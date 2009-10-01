@@ -110,6 +110,8 @@ namespace MonoDevelop.NUnit
 		
 		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
 		{
+			string testName = test.FullName;
+			
 			if (buildOwnerObject) {
 				IBuildTarget bt = test.OwnerObject as IBuildTarget;
 				if (bt != null && bt.NeedsBuilding (IdeApp.Workspace.ActiveConfiguration)) {
@@ -124,15 +126,21 @@ namespace MonoDevelop.NUnit
 					retOper.TrackOperation (op, false);
 						
 					op.Completed += delegate {
-						GLib.Timeout.Add (50, delegate {
+						// The completed event of the build operation is run in the gui thread,
+						// so we need a new thread, because refreshing must be async
+						System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 							if (op.Success) {
-								test = SearchTest (test.FullName);
-								if (test != null)
-									retOper.TrackOperation (RunTest (test, context, false), true);
+								RefreshTests ();
+								test = SearchTest (testName);
+								if (test != null) {
+									Gtk.Application.Invoke (delegate {
+										// RunTest must run in the gui thread
+										retOper.TrackOperation (RunTest (test, context, false), true);
+									});
+								}
 								else
 									retOper.SetCompleted (false);
 							}
-							return false;
 						});
 					};
 					
@@ -149,6 +157,12 @@ namespace MonoDevelop.NUnit
 			TestSession session = new TestSession (test, context, (TestResultsPad) resultsPad.Content);
 			session.Start ();
 			return session;
+		}
+		
+		public void RefreshTests ()
+		{
+			foreach (UnitTest t in RootTests)
+				t.Refresh ().WaitForCompleted ();
 		}
 		
 		public UnitTest SearchTest (string fullName)

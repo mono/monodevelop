@@ -324,6 +324,14 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
+		// Forces the reloading of tests, if they have changed
+		public virtual IAsyncOperation Refresh ()
+		{
+			AsyncOperation op = new AsyncOperation ();
+			op.SetCompleted (true);
+			return op;
+		}
+		
 		public UnitTestResult Run (TestContext testContext)
 		{
 			testContext.Monitor.BeginTest (this);
@@ -497,14 +505,18 @@ namespace MonoDevelop.NUnit
 		
 		protected virtual void OnTestChanged ()
 		{
-			if (TestChanged != null)
-				TestChanged (this, EventArgs.Empty);
+			Gtk.Application.Invoke (delegate {
+				if (TestChanged != null)
+					TestChanged (this, EventArgs.Empty);
+			});
 		}
 		
 		protected virtual void OnTestStatusChanged ()
 		{
-			if (TestStatusChanged != null)
-				TestStatusChanged (this, EventArgs.Empty);
+			Gtk.Application.Invoke (delegate {
+				if (TestStatusChanged != null)
+					TestStatusChanged (this, EventArgs.Empty);
+			});
 		}
 		
 		public event EventHandler TestChanged;

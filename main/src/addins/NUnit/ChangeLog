@@ -1,3 +1,20 @@
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/NUnitService.cs: After a build operation, and
+	  before running the tests, ensure that the tests are up to
+	  date by calling Refresh.
+
+	* Services/UnitTest.cs: Added refresh operation. Fire test
+	  events in the gui thread.
+
+	* Services/UnitTestGroup.cs:
+	* Services/NUnitProjectTestSuite.cs:
+	* Services/NUnitAssemblyTestSuite.cs: Implemented the Refresh
+	  operation. This operation updates any test that needs to be
+	  updated. It is an async operation. All this fixes bug
+	  #540257 - Unit test pad not updated correctly when "run
+	  tests" implies a build operation.
+
 2009-09-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/TestPad.cs: Add support for custom execution modes.
