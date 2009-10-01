@@ -124,6 +124,7 @@ namespace MonoDevelop.Platform
 								Name = x.Attribute ("name").Value,
 								Url = first.Attribute ("url").Value,
 								Version = first.Attribute ("version").Value,
+								Date = DateTime.Parse (first.Attribute ("date").Value),
 								Releases = x.Elements ("Update").Select (y => new Release () {
 									Version = y.Attribute ("version").Value,
 									Date = DateTime.Parse (y.Attribute ("date").Value),
@@ -154,6 +155,7 @@ namespace MonoDevelop.Platform
 			public string Name;
 			public string Url;
 			public string Version;
+			public DateTime Date;
 			public List<Release> Releases;
 		}
 		

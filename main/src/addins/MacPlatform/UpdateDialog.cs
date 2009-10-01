@@ -62,7 +62,7 @@ namespace MonoDevelop.Platform
 				
 				var updateExpander = new Expander ("");
 				updateExpander.LabelWidget = new Label () {
-					Markup = string.Format ("<b>{0}</b> {1}", update.Name, update.Version),
+					Markup = string.Format ("<b>{0}</b> {1} ({2:yyyy-MM-dd})", update.Name, update.Version, update.Date),
 				};
 				labelBox.PackStart (updateExpander, true, true, 0);
 				
@@ -75,11 +75,18 @@ namespace MonoDevelop.Platform
 				labelBox.PackStart (downloadButton, false, false, 0);
 				
 				var sb = new StringBuilder ();
-				foreach (var release in update.Releases) {
-					sb.AppendFormat ("{0} ({1:yyyy-MM-dd})\n", release.Version, release.Date);
-					sb.AppendLine ();
+				for (int i = 0; i < update.Releases.Count; i++) {
+					var release = update.Releases[i];
+					if (i > 0) {
+						if (i == 1) {
+							sb.AppendLine ();
+							sb.AppendLine ("This release also includes previous updates:");
+						}
+						sb.AppendLine ();
+						sb.AppendFormat ("{0} ({1:yyyy-MM-dd})\n", release.Version, release.Date);
+						sb.AppendLine ();
+					}
 					sb.Append (release.Notes);
-					sb.AppendLine ();
 				}
 				var buffer = new TextBuffer (null);
 				buffer.Text = sb.ToString ();
@@ -96,7 +103,7 @@ namespace MonoDevelop.Platform
 					ShadowType = ShadowType.In
 				};
 				updateBox.BorderWidth = 6;
-				productBox.PackStart (f, true, false, 0);
+				productBox.PackStart (f, false, false, 0);
 				f.ShowAll ();
 				
 				textView.Visible = false;

@@ -1,5 +1,11 @@
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MacUpdater.cs:
+	* UpdateDialog.cs: Better presentation of older releases.
+	  Tweak packing.
+
+2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* UpdateDialog.cs:
 	* gtk-gui/gui.stetic:
 	* gtk-gui/MonoDevelop.Platform.UpdateDialog.cs: Tweak frames.
