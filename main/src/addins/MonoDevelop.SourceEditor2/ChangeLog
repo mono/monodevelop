@@ -1,5 +1,11 @@
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed 'Bug
+	  543195 New: GTK-Critical errors in split/unsplit text
+	  editor'.
+
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
 	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs:

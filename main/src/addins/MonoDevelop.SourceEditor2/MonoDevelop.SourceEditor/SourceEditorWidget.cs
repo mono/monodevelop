@@ -599,7 +599,7 @@ namespace MonoDevelop.SourceEditor
 			this.mainsw.Remove (textEditor);
 			textEditor.Unparent ();
 			this.mainsw.Destroy ();
-			this.mainsw.Child = null;
+			
 			this.mainsw = new ScrolledWindow ();
 			this.mainsw.ShadowType = ShadowType.In;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
