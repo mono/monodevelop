@@ -13,6 +13,7 @@ DEPS =  \
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
 	-r:System.Xml \
@@ -24,11 +25,16 @@ FILES =  \
 	Framework/Carbon.cs \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Platform.UpdateDialog.cs \
 	MacPlatform.cs \
 	MacUpdater.cs \
-	Menus/OSXMenu.cs
+	Menus/OSXMenu.cs \
+	UpdateDialog.cs
 
-RES = MacPlatform.addin.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	MacPlatform.addin.xml
 
 if ENABLE_MACPLATFORM
 all: $(ASSEMBLY) $(ASSEMBLY).mdb

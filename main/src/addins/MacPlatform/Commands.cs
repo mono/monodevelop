@@ -36,6 +36,7 @@ namespace MonoDevelop.Platform.Mac
 		MinimizeWindow,
 		HideWindow,
 		HideOthers,
+		CheckForUpdates,
 	}
 	
 	internal class MinimizeWindowHandler : CommandHandler
@@ -66,6 +67,14 @@ namespace MonoDevelop.Platform.Mac
 			var item = HIToolbox.GetMenuItem ((uint)commandID);
 			var cmd = new CarbonHICommand ((uint)commandID, item);
 			Carbon.ProcessHICommand (ref cmd);
+		}
+	}
+	
+	internal class CheckForUpdatesHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			MacUpdater.RunCheck (false);
 		}
 	}
 }

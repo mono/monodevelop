@@ -39,8 +39,20 @@
 				_description = "Hide other windows" 
 				macShortcut = "Meta|Alt|H" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Help">
+		<Command id  = "MonoDevelop.Platform.Mac.Commands.CheckForUpdates"
+				defaultHandler = "MonoDevelop.Platform.Mac.Commands.CheckForUpdatesHandler"
+				_label = "_Check for Updates"
+				_description = "Check for updates to MonoDevelop and packages it requires" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
 		<CommandItem id = "MonoDevelop.Platform.Mac.Commands.MinimizeWindow"
 		             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
+	</Extension>
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Help">
+		<CommandItem id = "MonoDevelop.Platform.Mac.Commands.CheckForUpdates"
+		             insertafter = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
 	</Extension>
 </Addin>

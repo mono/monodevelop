@@ -1,3 +1,20 @@
+2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Commands.cs:
+	* MacPlatform.addin.xml: Add command for checking for updates.
+
+	* Makefile.am:
+	* MacPlatform.csproj: Updated.
+
+	* MacUpdater.cs:
+	* UpdateDialog.cs: Add updater dialog.
+
+	* gtk-gui:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Platform.UpdateDialog.cs: Add generated
+	  files.
+
 2009-09-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

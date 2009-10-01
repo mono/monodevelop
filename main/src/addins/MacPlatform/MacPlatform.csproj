@@ -43,6 +43,7 @@
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -86,6 +87,9 @@
     <Compile Include="Framework\HIToolbox.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="MacUpdater.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="UpdateDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Platform.UpdateDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -95,6 +99,9 @@
   <ItemGroup>
     <EmbeddedResource Include="MacPlatform.addin.xml">
       <LogicalName>MacPlatform.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ProjectExtensions>

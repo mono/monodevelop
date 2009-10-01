@@ -39,6 +39,7 @@ namespace MonoDevelop.Platform
 	public static class MacUpdater
 	{
 		const int formatVersion = 1;
+		const string updateAutoPropertyKey = "MacUpdater.CheckAutomatically";
 		
 		public static string[] DefaultUpdateInfoPaths {
 			get {
@@ -50,6 +51,15 @@ namespace MonoDevelop.Platform
 			}
 		}
 		
+		public static bool CheckAutomatically {
+			get {
+				return MonoDevelop.Core.PropertyService.Get<bool> (updateAutoPropertyKey, true);
+			}
+			set {
+				MonoDevelop.Core.PropertyService.Set (updateAutoPropertyKey, value);
+			}
+		}
+		
 		public static void RunCheck (bool automatic)
 		{
 			RunCheck (DefaultUpdateInfoPaths, automatic);
@@ -57,6 +67,9 @@ namespace MonoDevelop.Platform
 		
 		public static void RunCheck (string[] updateInfos, bool automatic)
 		{
+			if (automatic && !CheckAutomatically)
+				return;
+			
 			var query = new StringBuilder ("http://go-mono.com/macupdate/update?v=");
 			query.Append (formatVersion);
 			
@@ -95,13 +108,12 @@ namespace MonoDevelop.Platform
 		
 		static void ReceivedResponse (HttpWebRequest request, IAsyncResult ar, bool automatic)
 		{
-			List<Update> updates = null;
 			try {
 				using (var response = (HttpWebResponse) request.EndGetResponse (ar)) {
 					var encoding = Encoding.GetEncoding (response.CharacterSet);
 					using (var reader = new StreamReader (response.GetResponseStream(), encoding)) {
 						var doc = System.Xml.Linq.XDocument.Load (reader);
-						updates = (from x in doc.Root.Elements ("Application")
+						var updates = (from x in doc.Root.Elements ("Application")
 							let first = x.Elements ("Update").First ()
 							select new Update () {
 								Name = x.Attribute ("name").Value,
@@ -113,6 +125,12 @@ namespace MonoDevelop.Platform
 									Notes = y.Value
 								}).ToList ()
 							}).ToList ();
+						
+						if (updates != null && updates.Count > 0) {
+							Gtk.Application.Invoke (delegate {
+								MessageService.ShowCustomDialog (new UpdateDialog (updates));
+							});
+						}
 					}
 				}
 			} catch (WebException ex) {
@@ -124,14 +142,9 @@ namespace MonoDevelop.Platform
 				if (!automatic)
 					MessageService.ShowException (ex, GettextCatalog.GetString ("Error retrieving update information"));
 			}
-			
-			if (updates == null || updates.Count <= 0)
-				return;
-			
-			
 		}
 		
-		class Update
+		public class Update
 		{
 			public string Name;
 			public string Url;
@@ -139,7 +152,7 @@ namespace MonoDevelop.Platform
 			public List<Release> Releases;
 		}
 		
-		class Release
+		public class Release
 		{
 			public string Version;
 			public DateTime Date;
