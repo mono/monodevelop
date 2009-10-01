@@ -44,6 +44,9 @@ namespace Mono.TextEditor
 			layout = new Pango.Layout (editor.PangoContext);
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.RightPtr);
 			this.editor.Document.LineChanged += UpdateWidth;
+			this.editor.Document.TextSet += delegate {
+				UpdateWidth (null, null);
+			}; 
 			this.editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
 		}
 

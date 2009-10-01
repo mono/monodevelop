@@ -655,6 +655,7 @@ namespace Mono.TextEditor
 			
 		internal void RedrawLines (int start, int end)
 		{
+//			Console.WriteLine ("redraw lines: start={0}, end={1}", start, end);
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
@@ -1286,6 +1287,8 @@ namespace Mono.TextEditor
 		{
 			if (this.buffer == null)
 				return;
+//			Console.WriteLine ("RepaintArea: x={0}, y={1}, width={2}, height={3}", x, y, width, height);
+//			Console.WriteLine (Environment.StackTrace);
 			y = System.Math.Max (0, y);
 			height = System.Math.Min (height, Allocation.Height - y);
 
@@ -1305,6 +1308,8 @@ namespace Mono.TextEditor
 		{
 			if (buffer == null)
 				return;
+//			Console.WriteLine ("REPAINT");
+//			Console.WriteLine (Environment.StackTrace);
 			lock (redrawList) {
 				redrawList.Clear ();
 				redrawList.Add (new Gdk.Rectangle (0, 0, this.Allocation.Width, this.Allocation.Height));
