@@ -269,9 +269,26 @@ namespace MonoDevelop.Debugger.Gdb
 					// For example: -break-insert "\"C:/Documents and Settings/foo.c\":17"
 					
 					RunCommand ("-environment-directory", Escape (Path.GetDirectoryName (bp.FileName)));
-					GdbCommandResult res = RunCommand ("-break-insert", extraCmd.Trim (), Escape (Escape (bp.FileName) + ":" + bp.Line));
-					if (CommandStatus.Error == res.Status)
-						res = RunCommand ("-break-insert", extraCmd.Trim (), Escape (Escape (Path.GetFileName (bp.FileName)) + ":" + bp.Line));
+					GdbCommandResult res = null;
+					string errorMsg = null;
+					try {
+						res = RunCommand ("-break-insert", extraCmd.Trim (), Escape (Escape (bp.FileName) + ":" + bp.Line));
+					} catch (Exception ex) {
+						errorMsg = ex.Message;
+					}
+					
+					if (res == null) {
+						try {
+							res = RunCommand ("-break-insert", extraCmd.Trim (), Escape (Escape (Path.GetFileName (bp.FileName)) + ":" + bp.Line));
+						}
+						catch {
+						// Ignore
+						}
+					}
+					if (res == null) {
+						OnDebuggerOutput (true, "Could not set breakpoint: " + errorMsg);
+						return null;
+					}
 					int bh = res.GetObject ("bkpt").GetInt ("number");
 					if (!activate)
 						RunCommand ("-break-disable", bh.ToString ());
