@@ -359,8 +359,6 @@ namespace Mono.TextEditor
 				if (!IsSomethingSelected)
 					RedrawLine (Caret.Line);
 			}
-			
-			PaintCaret (GdkWindow);
 		}
 		
 		Selection oldSelection = null;
