@@ -73,6 +73,7 @@ namespace MonoDevelop.Platform
 				updateExpander.ShowAll ();
 				
 				productBox.PackStart (updateExpander);
+				updateExpander.ShowAll ();
 			}
 		}
 		
