@@ -1,5 +1,10 @@
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects/ProjectReference.cs: Took back the
+	  latest changes, there is another way doing this.
+
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects/ProjectReference.cs:
 	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
 	  GetReferencedFileNames now go through required packages.
