@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide
 		
 		HBox statusBox;
 		Image currentStatusImage;
-		
+		EventBox eventBox;
 		internal MonoDevelopStatusBar()
 		{
 			Frame originalFrame = (Frame)Children[0];
@@ -87,6 +87,10 @@ namespace MonoDevelop.Ide
 			cursorLabel = new Label (" ");
 			statusBox.PackEnd (cursorLabel, false, false, 0);
 			
+			eventBox = new EventBox ();
+			eventBox.BorderWidth = 0;
+			statusBox.PackEnd (eventBox, false, false, 0);
+			
 			this.PackStart (textStatusBarPanel, true, true, 0);
 			
 			ShowReady ();
@@ -100,6 +104,7 @@ namespace MonoDevelop.Ide
 			
 			this.progressBar.Fraction = 0.0;
 			this.ShowAll ();
+			eventBox.HideAll ();
 			originalFrame.HideAll ();
 			progressBar.Visible = false;
 		}
@@ -170,23 +175,26 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public StatusIcon ShowStatusIcon (Gdk.Pixbuf image)
+		public StatusIcon ShowStatusIcon (Gdk.Pixbuf pixbuf)
 		{
 			DispatchService.AssertGuiThread ();
-			EventBox eventBox = new EventBox ();
-			eventBox.BorderWidth = 0;
-			Gtk.Image i = new Gtk.Image (image);
-			i.SetPadding (0, 0);
-			eventBox.Child = i;
-			statusBox.PackStart (eventBox, false, false, 2);
-			statusBox.ReorderChild (eventBox, 2);
+			
+			Gtk.Image image = new Gtk.Image (pixbuf);
+			image.SetPadding (0, 0);
+			eventBox.Child = image;
+			
 			eventBox.ShowAll ();
-			return new StatusIcon (this, eventBox, image);
+			return new StatusIcon (this, eventBox, pixbuf);
 		}
 		
 		void HideStatusIcon (StatusIcon icon)
 		{
-			statusBox.Remove (((StatusIcon)icon).EventBox);
+			Widget child = icon.EventBox.Child; 
+			if (child != null) {
+				icon.EventBox.Remove (child);
+				child.Destroy ();
+			}
+			eventBox.HideAll ();
 		}
 		
 		#region Progress Monitor implementation

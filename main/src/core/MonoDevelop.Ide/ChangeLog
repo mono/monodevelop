@@ -1,5 +1,11 @@
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Event box has
+	  now a fixed position - no more reordering. Fixed status bar
+	  memory leak.
+
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Removed the
 	  shadow from the status bar.
 
