@@ -92,6 +92,9 @@ namespace MonoDevelop.Platform
 				var buffer = new TextBuffer (null);
 				buffer.Text = sb.ToString ();
 				var textView = new TextView (buffer);
+				textView.WrapMode = WrapMode.Word;
+				textView.Editable = false;
+				textView.LeftMargin = textView.RightMargin = 4;
 				updateBox.PackStart (textView, false, false, 0);
 				
 				updateExpander.Activated += delegate {

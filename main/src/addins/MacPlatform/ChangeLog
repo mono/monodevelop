@@ -1,5 +1,10 @@
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* UpdateDialog.cs: Make textviews noneditable. Fix margins and
+	  wrapping.
+
+2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* UpdateDialog.cs: Tweak presentation of release notes.
 
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
