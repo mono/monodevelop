@@ -96,7 +96,7 @@ namespace MonoDevelop.Platform
 					ShadowType = ShadowType.In
 				};
 				updateBox.BorderWidth = 6;
-				productBox.PackStart (f);
+				productBox.PackStart (f, true, false, 0);
 				f.ShowAll ();
 				
 				textView.Visible = false;

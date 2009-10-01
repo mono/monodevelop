@@ -44,36 +44,23 @@ close MonoDevelop before installing them.</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Frame" id="frame2">
+                  <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
                     <property name="MemberName" />
+                    <property name="CanFocus">True</property>
                     <property name="ShadowType">In</property>
                     <child>
-                      <widget class="Gtk.Alignment" id="GtkAlignment1">
+                      <widget class="Gtk.Viewport" id="GtkViewport">
                         <property name="MemberName" />
-                        <property name="Xalign">0</property>
-                        <property name="Yalign">0</property>
+                        <property name="ShadowType">None</property>
                         <child>
-                          <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
+                          <widget class="Gtk.VBox" id="productBox">
                             <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="ShadowType">In</property>
+                            <property name="Spacing">12</property>
                             <child>
-                              <widget class="Gtk.Viewport" id="GtkViewport">
-                                <property name="MemberName" />
-                                <property name="ShadowType">None</property>
-                                <child>
-                                  <widget class="Gtk.VBox" id="productBox">
-                                    <property name="MemberName" />
-                                    <property name="Spacing">12</property>
-                                    <child>
-                                      <placeholder />
-                                    </child>
-                                    <child>
-                                      <placeholder />
-                                    </child>
-                                  </widget>
-                                </child>
-                              </widget>
+                              <placeholder />
+                            </child>
+                            <child>
+                              <placeholder />
                             </child>
                           </widget>
                         </child>
@@ -82,7 +69,7 @@ close MonoDevelop before installing them.</property>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
-                    <property name="AutoSize">False</property>
+                    <property name="AutoSize">True</property>
                   </packing>
                 </child>
                 <child>

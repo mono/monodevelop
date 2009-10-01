@@ -19,10 +19,6 @@ namespace MonoDevelop.Platform {
         
         private Gtk.Label infoLabel;
         
-        private Gtk.Frame frame2;
-        
-        private Gtk.Alignment GtkAlignment1;
-        
         private Gtk.ScrolledWindow scrolledwindow1;
         
         private Gtk.VBox productBox;
@@ -59,13 +55,6 @@ namespace MonoDevelop.Platform {
             w2.Expand = false;
             w2.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.frame2 = new Gtk.Frame();
-            this.frame2.Name = "frame2";
-            this.frame2.ShadowType = ((Gtk.ShadowType)(1));
-            // Container child frame2.Gtk.Container+ContainerChild
-            this.GtkAlignment1 = new Gtk.Alignment(0F, 0F, 1F, 1F);
-            this.GtkAlignment1.Name = "GtkAlignment1";
-            // Container child GtkAlignment1.Gtk.Container+ContainerChild
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
             this.scrolledwindow1.Name = "scrolledwindow1";
@@ -79,11 +68,9 @@ namespace MonoDevelop.Platform {
             this.productBox.Spacing = 12;
             w3.Add(this.productBox);
             this.scrolledwindow1.Add(w3);
-            this.GtkAlignment1.Add(this.scrolledwindow1);
-            this.frame2.Add(this.GtkAlignment1);
-            this.vbox2.Add(this.frame2);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.frame2]));
-            w8.Position = 1;
+            this.vbox2.Add(this.scrolledwindow1);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));
+            w6.Position = 1;
             // Container child vbox2.Gtk.Box+BoxChild
             this.checkAutomaticallyCheck = new Gtk.CheckButton();
             this.checkAutomaticallyCheck.CanFocus = true;
@@ -92,20 +79,20 @@ namespace MonoDevelop.Platform {
             this.checkAutomaticallyCheck.DrawIndicator = true;
             this.checkAutomaticallyCheck.UseUnderline = true;
             this.vbox2.Add(this.checkAutomaticallyCheck);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox2[this.checkAutomaticallyCheck]));
-            w9.Position = 2;
-            w9.Expand = false;
-            w9.Fill = false;
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.vbox2[this.checkAutomaticallyCheck]));
+            w7.Position = 2;
+            w7.Expand = false;
+            w7.Fill = false;
             this.alignment1.Add(this.vbox2);
             w1.Add(this.alignment1);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(w1[this.alignment1]));
-            w11.Position = 0;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(w1[this.alignment1]));
+            w9.Position = 0;
             // Internal child MonoDevelop.Platform.UpdateDialog.ActionArea
-            Gtk.HButtonBox w12 = this.ActionArea;
-            w12.Name = "dialog1_ActionArea";
-            w12.Spacing = 10;
-            w12.BorderWidth = ((uint)(5));
-            w12.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w10 = this.ActionArea;
+            w10.Name = "dialog1_ActionArea";
+            w10.Spacing = 10;
+            w10.BorderWidth = ((uint)(5));
+            w10.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -115,9 +102,9 @@ namespace MonoDevelop.Platform {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-close";
             this.AddActionWidget(this.buttonOk, -7);
-            Gtk.ButtonBox.ButtonBoxChild w13 = ((Gtk.ButtonBox.ButtonBoxChild)(w12[this.buttonOk]));
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w11 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonOk]));
+            w11.Expand = false;
+            w11.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
