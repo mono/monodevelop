@@ -42,7 +42,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Help">
 		<Command id  = "MonoDevelop.Platform.Mac.Commands.CheckForUpdates"
-				defaultHandler = "MonoDevelop.Platform.Mac.Commands.CheckForUpdatesHandler"
+				defaultHandler = "MonoDevelop.Platform.Mac.CheckForUpdatesHandler"
 				_label = "_Check for Updates"
 				_description = "Check for updates to MonoDevelop and packages it requires" />
 	</Extension>
