@@ -1,3 +1,8 @@
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Removed the
+	  shadow from the status bar.
+
 2009-09-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Worked on

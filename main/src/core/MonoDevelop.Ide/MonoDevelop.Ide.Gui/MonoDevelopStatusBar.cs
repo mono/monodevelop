@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide
 			statusBox.PackStart (statusLabel, true, true, 0);
 			
 			textStatusBarPanel.BorderWidth = 0;
-			textStatusBarPanel.ShadowType = ShadowType.In;
+			textStatusBarPanel.ShadowType = ShadowType.None;
 			textStatusBarPanel.Add (statusBox);
 			Label fillerLabel = new Label ();
 			fillerLabel.WidthRequest = 8;
