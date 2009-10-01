@@ -1,3 +1,11 @@
+2009-10-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* Gui/CodeGenerationPanel.cs:
+	* Project/CSharpCompilerParameters.cs:
+	* gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs: Allow
+	  setting the platform target.
+
 2009-09-30  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CSharpTextEditorIndentation.cs: Fixed tab as reindent.

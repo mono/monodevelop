@@ -81,8 +81,8 @@ namespace CSharpBinding
 		[ItemProperty ("TreatWarningsAsErrors", DefaultValue = false)]
 		bool treatWarningsAsErrors;
 
-		[ItemProperty("PlatformTarget", DefaultValue="")]
-		string platformTarget = "";
+		[ItemProperty("PlatformTarget", DefaultValue="anycpu")]
+		string platformTarget = "anycpu";
 		
 		[ItemProperty("WarningsNotAsErrors", DefaultValue="")]
 		string warningsNotAsErrors = "";
