@@ -1374,10 +1374,11 @@ namespace Mono.TextEditor
 		#endregion
 
 		public bool IsInUndo {
-				get {
-					return isInUndo;
-				}
-			}	}
+			get {
+				return isInUndo;
+			}
+		}
+	}
 	
 	public delegate bool ReadOnlyCheckDelegate (int line);
 }
