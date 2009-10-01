@@ -486,6 +486,7 @@ namespace MonoDevelop.SourceEditor
 				view = null;
 				
 				ProjectDomService.ParsedDocumentUpdated -= OnParseInformationChanged;
+				IdeApp.Workbench.StatusBar.ClearCaretState ();
 			}			
 			base.OnDestroyed ();
 		}
@@ -853,7 +854,7 @@ namespace MonoDevelop.SourceEditor
 //			needsUpdate = true;
 //		}
 		
-		void UpdateLineCol ()
+		internal void UpdateLineCol ()
 		{
 			
 			int offset = this.TextEditor.Caret.Offset;

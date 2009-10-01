@@ -1,6 +1,13 @@
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Clear caret
+	  state when closing a source editor/update caret state when
+	  activating a source editor.
+
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed class
 	  quick finder flicker on file open.

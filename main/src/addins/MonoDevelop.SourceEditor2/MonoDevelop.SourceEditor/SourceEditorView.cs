@@ -177,7 +177,13 @@ namespace MonoDevelop.SourceEditor
 			fileSystemWatcher = new FileSystemWatcher ();
 			fileSystemWatcher.Created += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
 			fileSystemWatcher.Changed += (FileSystemEventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
-			
+			this.WorkbenchWindowChanged += delegate {
+				if (WorkbenchWindow != null) {
+					WorkbenchWindow.ActiveViewContentChanged += delegate {
+						widget.UpdateLineCol ();
+					};
+				}
+			};
 			this.ContentNameChanged += delegate {
 				this.Document.FileName = this.ContentName;
 				isInWrite = true;
