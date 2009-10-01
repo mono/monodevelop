@@ -288,10 +288,34 @@ namespace MonoDevelop.Projects
 		public virtual string[] GetReferencedFileNames (string configuration)
 		{
 			string s = GetReferencedFileName (configuration);
+			if (referenceType == ReferenceType.Gac) {
+				List<string> result = new List<string> ();
+				result.Add (s);
+				AddRequiredPackages (result, Package);
+				return result.ToArray ();
+			}
+			
 			if (s != null)
 				return new string[] { s };
-			else
-				return new string [0];
+			return new string [0];
+		}
+
+		void AddRequiredPackages (List<string> result, SystemPackage fromPackage)
+		{
+			if (fromPackage == null || string.IsNullOrEmpty (fromPackage.Requires))
+				return;
+			foreach (string requiredPackageName in fromPackage.Requires.Split (' ')) {
+				SystemPackage package = AssemblyContext.GetPackage (requiredPackageName);
+				if (package == null)
+					continue;
+				foreach (SystemAssembly assembly in package.Assemblies) {
+					if (assembly == null)
+						continue;
+					string location = AssemblyContext.GetAssemblyLocation (assembly.FullName, ownerProject != null ? ownerProject.TargetFramework : null);
+					result.Add (location);
+				}
+				AddRequiredPackages (result, package);
+			}
 		}
 		
 		void UpdateGacReference ()

@@ -61,7 +61,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (type.GenericArguments.Count == 0 && unit != null) { 
 				foreach (IUsing u in unit.Usings) {
-					if (u.IsFromNamespace || u.Aliases.Count == 0 && u.Region.Contains (contextType.Location))
+					if (u.IsFromNamespace || u.Aliases.Count == 0 && contextType != null && u.Region.Contains (contextType.Location))
 						continue;
 					foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
 						if (alias.Key == type.FullName) 
