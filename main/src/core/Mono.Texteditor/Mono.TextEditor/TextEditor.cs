@@ -1072,17 +1072,21 @@ namespace Mono.TextEditor
 				return;
 			}
 			
-			//			int yMargin = 1 * this.LineHeight;
-			int xMargin = 10 * this.textViewMargin.CharWidth;
+			//	int yMargin = 1 * this.LineHeight;
 			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
 			this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize / 2;
-			int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
-			if (this.textEditorData.HAdjustment.Value >= caretX) {
-				this.textEditorData.HAdjustment.Value = caretX;
-			} else if (this.textEditorData.HAdjustment.Value + this.textEditorData.HAdjustment.PageSize - 60 < caretX + xMargin) {
-				this.textEditorData.HAdjustment.Value = caretX - this.textEditorData.HAdjustment.PageSize + 60 + xMargin;
-			} else {
+			
+			if (this.textEditorData.HAdjustment.Upper < Allocation.Width)  {
 				this.textEditorData.HAdjustment.Value = 0;
+			} else {
+				int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
+				int textWith = Allocation.Width - textViewMargin.XOffset;
+				if (this.textEditorData.HAdjustment.Value > caretX) {
+					this.textEditorData.HAdjustment.Value = caretX;
+				} else if (this.textEditorData.HAdjustment.Value + textWith < caretX + TextViewMargin.CharWidth) {
+					int adjustment = System.Math.Max (0, caretX - textWith + TextViewMargin.CharWidth);
+					this.textEditorData.HAdjustment.Value = adjustment;
+				}
 			}
 		}
 		
@@ -1312,6 +1316,7 @@ namespace Mono.TextEditor
 		{
 			if (this.isDisposed)
 				return true;
+			
 			lock (disposeLock) {
 				UpdateAdjustments ();
 				lock (redrawList) {

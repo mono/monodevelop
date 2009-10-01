@@ -1,5 +1,10 @@
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Fixed center caret
+	  hadjustment value.
+
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/TextViewMargin.cs: Worked on hscrollbar
