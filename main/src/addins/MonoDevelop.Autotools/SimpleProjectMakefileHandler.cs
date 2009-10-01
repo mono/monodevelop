@@ -565,7 +565,7 @@ endif", s.SwitchName.Replace ('-', '_').ToUpperInvariant (), s.Define));
 					continue;
 				uniqueDeployFiles [key] = dfile;
 
-				string targetDeployVar = GetDeployVar (deployFileVars, Path.GetFileName (dfile.RelativeTargetPath));
+				string targetDeployVar = GetDeployVar (deployFileVars, dfile.RelativeTargetPath);
 				configSection.DeployFileVars [targetDeployVar] = dfile;
 				DeployFileData data = new DeployFileData ();
 				data.File = dfile;
@@ -752,15 +752,25 @@ endif", s.SwitchName.Replace ('-', '_').ToUpperInvariant (), s.Define));
 			return null;
 		}
 
-		string GetDeployVar (Dictionary<string, string> dict, string name)
+		string GetDeployVar (Dictionary<string, string> dict, string filePath)
 		{
+			filePath = MonoDevelop.Core.FileService.NormalizeRelativePath (filePath);
+			string name = Path.GetFileName (filePath);
 			name = name.Replace (Path.DirectorySeparatorChar, '_');
 			name = name.Replace ('.', '_');
 			name = name.ToUpper ();
 			name = AutotoolsContext.EscapeStringForAutoconf (name).Trim ('_');
+			
+			// Avoid var name colisions
+			int n = 2;
+			string extName = name;
+			string regPath;
+			while (dict.TryGetValue (extName, out regPath) && regPath != filePath) {
+				extName = name + (n++);
+			}
 
-			dict [name] = name;
-			return name;
+			dict [extName] = filePath;
+			return extName;
 		}
 
 		Project GetProjectFromName (string name, Solution targetSolution)

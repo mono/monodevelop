@@ -1,3 +1,10 @@
+2009-10-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SimpleProjectMakefileHandler.cs: Avoid variable name
+	  colisions for files to be deployed. Fixes bug #537497 -
+	  Generated Makefiles should use relative paths for rule names
+	  instead of just filenames for content files.
+
 2009-09-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MakefileData.cs: Makefiles are no longer changed, when a
