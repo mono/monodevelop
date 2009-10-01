@@ -97,7 +97,6 @@ namespace Mono.TextEditor
 			};
 			Caret.PositionChanged += UpdateBracketHighlighting;
 			base.cursor = xtermCursor;
-			Document.LineChanged += CheckLongestLine;
 			textEditor.HighlightSearchPatternChanged += delegate { selectedRegions.Clear (); };
 			//			textEditor.SelectionChanged += delegate { DisposeLayoutDict (); };
 			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
@@ -181,23 +180,6 @@ namespace Mono.TextEditor
 
 		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
-		internal void Initialize ()
-		{
-			foreach (LineSegment line in Document.Lines)
-				CheckLongestLine (this, new LineEventArgs (line));
-		}
-
-		void CheckLongestLine (object sender, LineEventArgs args)
-		{
-			if (textEditor.longestLine == null || args.Line.EditableLength > textEditor.longestLine.EditableLength) {
-				textEditor.longestLine = args.Line;
-				textEditor.SetAdjustments (textEditor.Allocation);
-			}
-
-			if (layoutDict.ContainsKey (args.Line)) {
-				RemoveCachedLine (args.Line);
-			}
-		}
 		
 		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
@@ -314,8 +296,6 @@ namespace Mono.TextEditor
 
 			textEditor.Document.EndUndo -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
-			Document.LineChanged -= CheckLongestLine;
-			//		Document.LineInserted -= CheckLongestLine;
 
 			textEditor.GetTextEditorData ().SearchChanged -= HandleSearchChanged;
 			
@@ -1672,33 +1652,21 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-
-			
-			if (textEditor.longestLine == null || line.EditableLength > textEditor.longestLine.EditableLength) {
-				textEditor.longestLine = line;
-				textEditor.SetAdjustments (textEditor.Allocation);
-			}
-
 			
 			// Draw remaining line
 			if (line.EndOffset - offset > 0)
 				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y, area.Right);
-
 			
 			bool isEolSelected = textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
 			
 			lineArea.X = xPos;
 			lineArea.Width = textEditor.Allocation.Width - xPos;
-
 			
 			if (textEditor.SelectionMode == SelectionMode.Block && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength)) {
 				DocumentLocation start = textEditor.MainSelection.Anchor;
 				DocumentLocation end = textEditor.MainSelection.Lead;
-
-				
 				DocumentLocation visStart = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), start);
 				DocumentLocation visEnd = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), end);
-
 				
 				int x1 = this.ColumnToVisualX (line, visStart.Column);
 				int x2 = this.ColumnToVisualX (line, visEnd.Column);
@@ -1709,40 +1677,25 @@ namespace Mono.TextEditor
 				}
 				x1 += (int)(XOffset - textEditor.HAdjustment.Value);
 				x2 += (int)(XOffset - textEditor.HAdjustment.Value);
-
 				
 				if (x2 > lineArea.X) {
 					if (x1 - lineArea.X > 0) {
 						DrawRectangleWithRuler (win, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor, false);
 						lineArea.X = x1;
 					}
-
-					
 					DrawRectangleWithRuler (win, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x2 - lineArea.X, lineArea.Height), this.ColorStyle.Selection.BackgroundColor, false);
-
-					
 					lineArea.X = x2;
 					lineArea.Width = textEditor.Allocation.Width - lineArea.X;
-
-				
 				}
 			}
 			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.Selection.BackgroundColor : defaultBgColor, false);
-
-
-
-			
-			
 			if (textEditor.Options.ShowEolMarkers)
 				DrawEolMarker (win, isEolSelected, xPos, y);
-
-			
 			if (textEditor.Options.ShowRuler) {
 				// warning: code duplication, scroll up.
 				win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + LineHeight);
 			}
-
-
+			
 			if (Caret.Line == lineNr && Caret.Column > line.EditableLength) {
 				/*		string virtualText = textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
 				int visibleColumn = line.EditableLength;
@@ -1765,11 +1718,14 @@ namespace Mono.TextEditor
 				}
 				SetVisibleCaretPosition (win, ' ', xPos, y);*/
 
-			}			 else {
+			} else {
 				if (caretOffset == line.Offset + line.EditableLength)
 					SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
 			}
+			lastLineRenderWidth = xPos;
 		}
+		internal int lastLineRenderWidth = 0;
+		
 		
 		void SetClip (Gdk.Rectangle rect)
 		{

@@ -142,6 +142,7 @@ namespace Mono.TextEditor
 				splitter.LineSegmentTree.LineChanged += SplitterLineSegmentTreeLineChanged;
 				UpdateHighlighting ();
 				this.OnTextReplaced (args);
+				this.OnTextSet (EventArgs.Empty);
 				this.CommitUpdateAll ();
 			}
 		}
@@ -249,6 +250,13 @@ namespace Mono.TextEditor
 		}
 		public event EventHandler<ReplaceEventArgs> TextReplacing;
 		
+		protected virtual void OnTextSet (EventArgs e)
+		{
+			EventHandler handler = this.TextSet;
+			if (handler != null)
+				handler (this, e);
+		}
+		public event EventHandler TextSet;
 		#endregion
 		
 		#region Line Splitter operations

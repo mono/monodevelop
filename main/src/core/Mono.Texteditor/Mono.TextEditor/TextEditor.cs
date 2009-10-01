@@ -54,8 +54,10 @@ namespace Mono.TextEditor
 		protected GutterMargin     gutterMargin;
 		protected FoldMarkerMargin foldMarkerMargin;
 		protected TextViewMargin   textViewMargin;
-		int oldLongestLineLength = -1;
-		internal LineSegment longestLine;
+		
+		LineSegment longestLine      = null;
+		int         longestLineWidth = -1;
+		
 		List<Margin> margins = new List<Margin> ();
 		int oldRequest = -1;
 		
@@ -85,8 +87,10 @@ namespace Mono.TextEditor
 			}
 			set {
 				textEditorData.Document.TextReplaced -= OnDocumentStateChanged;
+				textEditorData.Document.TextSet -= OnTextSet;
 				textEditorData.Document = value;
 				textEditorData.Document.TextReplaced += OnDocumentStateChanged;
+				textEditorData.Document.TextSet += OnTextSet;
 			}
 		}
 		
@@ -125,6 +129,7 @@ namespace Mono.TextEditor
 		
 		public TextEditor () : this (new Document ())
 		{
+			
 		}
 		
 		Gdk.Pixmap buffer = null, flipBuffer = null;
@@ -162,7 +167,7 @@ namespace Mono.TextEditor
 			int curHAdjustment = (int)this.textEditorData.HAdjustment.Value;
 			if (oldHAdjustment == curHAdjustment)
 				return;
-//			Console.WriteLine ("-----------------"+ curHAdjustment + "/"+ Environment.StackTrace);
+			
 			this.RepaintArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
 			oldHAdjustment = curHAdjustment;
 		}
@@ -251,6 +256,7 @@ namespace Mono.TextEditor
 		{
 			textEditorData = new TextEditorData (doc);
 			doc.TextReplaced += OnDocumentStateChanged;
+			doc.TextSet += OnTextSet;
 
 			textEditorData.CurrentMode = initialMode;
 
@@ -303,7 +309,6 @@ namespace Mono.TextEditor
 				}
 			};
 			
-			textViewMargin.Initialize ();
 			this.Realized += delegate {
 				OptionsChanged (this, EventArgs.Empty);
 				Caret.PositionChanged += CaretPositionChanged;
@@ -1160,17 +1165,12 @@ namespace Mono.TextEditor
 		{
 			textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
 			if (longestLine != null && this.textEditorData.HAdjustment != null) {
-				LineSegment curLine = this.Document.GetLineByOffset (this.longestLine.Offset);
-				// check if the longestLine is still valid
-				if (curLine == null || curLine.Offset != this.longestLine.Offset || curLine.Length != this.longestLine.Length || this.longestLine.EndOffset > this.Document.Length) {
-					longestLine = null;
-				} else {
-					int maxX = this.TextViewMargin.GetWidth (this.Document.GetTextAt (this.longestLine)) + 10 * this.textViewMargin.CharWidth;
-					int width = Allocation.Width - this.TextViewMargin.XOffset;
-					this.textEditorData.HAdjustment.SetBounds (0, maxX, this.textViewMargin.CharWidth, width, width);
-					if (maxX < width)
-						this.textEditorData.HAdjustment.Value = 0;
-				}
+				int maxX = longestLineWidth + 2 * this.textViewMargin.CharWidth;
+				int width = Allocation.Width - this.TextViewMargin.XOffset;
+				
+				this.textEditorData.HAdjustment.SetBounds (0, maxX, this.textViewMargin.CharWidth, width, width);
+				if (maxX < width)
+					this.textEditorData.HAdjustment.Value = 0;
 			}
 			textEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged;
 		}
@@ -1223,31 +1223,13 @@ namespace Mono.TextEditor
 					curX += margin.Width;
 				}
 			}
-
-			int longestLineWidth = 0;
-			if (longestLine != null) {
-				try {
-					longestLineWidth = this.TextViewMargin.GetWidth (this.Document.GetTextAt (longestLine));
-				} catch (Exception) {
-					longestLine = null;
-				}
-			}
-
+			
 			int startY = startLine * this.LineHeight - reminder;
 			int curY = startY;
-			
+			bool setLongestLine = false;
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				LineSegment line = Document.GetLine (logicalLineNumber);
-				string lineText  = "";
-				if (line != null && line.EndOffset < Document.Length)
-					lineText = Document.GetTextAt (line);
-				
-				if (line != null && (longestLine == null || longestLine.EndOffset >= this.Document.Length || line != longestLine && this.TextViewMargin.GetWidth (lineText) > longestLineWidth)) {
-					longestLine = line;
-					longestLineWidth = this.TextViewMargin.GetWidth (lineText);
-					oldLongestLineLength = -1;
-				}
 				
 				foreach (Margin margin in marginsToRender) {
 					try {
@@ -1256,16 +1238,21 @@ namespace Mono.TextEditor
 						System.Console.WriteLine (e);
 					}
 				}
+				// take the line real render width from the text view margin rendering (a line can)
+				int lineWidth = textViewMargin.lastLineRenderWidth + (int)HAdjustment.Value;
+				if (longestLine == null || line == longestLine || lineWidth > longestLineWidth) {
+					longestLine = line;
+					longestLineWidth = lineWidth;
+					setLongestLine = true;
+				}
+				
 				curY += LineHeight;
 				if (curY > area.Bottom)
 					break;
 			}
 			
-			if (longestLine != null && longestLine.Length != oldLongestLineLength) {
+			if (setLongestLine) 
 				SetHAdjustment ();
-				if (longestLine != null)
-					oldLongestLineLength = longestLine.Length;
-			}
 
 			foreach (Margin margin in marginsToRender)
 				margin.EndRender (win, area, margin.XOffset);
@@ -1777,6 +1764,21 @@ namespace Mono.TextEditor
 			HideTooltip ();
 		}
 		
+		void OnTextSet (object sender, EventArgs e)
+		{
+			LineSegment longest = longestLine;
+			foreach (LineSegment line in Document.Lines) {
+				if (longest == null || line.EditableLength > longest.EditableLength)
+					longest = line;
+			}
+			if (longest != longestLine) {
+				int width = textViewMargin.ColumnToVisualX (longest, longest.EditableLength);
+				if (width > this.longestLineWidth) {
+					this.longestLineWidth = width;
+					this.longestLine = longest;
+				}
+			}
+		}
 		#endregion
 
 		internal void FireLinkEvent (string link, int button, ModifierType modifierState)
