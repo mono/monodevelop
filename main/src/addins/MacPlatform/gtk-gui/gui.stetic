@@ -11,7 +11,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/AddIns/MacPlatform.dll" internal="true" />
   </import>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Platform.UpdateDialog" design-size="480 343">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Platform.UpdateDialog" design-size="450 335">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">MonoDevelop Updater</property>
@@ -33,8 +33,10 @@
                 <child>
                   <widget class="Gtk.Label" id="infoLabel">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">The following updates are available. After downloading, please 
-close MonoDevelop before installing them.</property>
+                    <property name="Xalign">0</property>
+                    <property name="LabelProp" translatable="yes">The following updates are available. After downloading,
+please close MonoDevelop before installing them.</property>
+                    <property name="Wrap">True</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>

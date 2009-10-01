@@ -48,7 +48,9 @@ namespace MonoDevelop.Platform {
             // Container child vbox2.Gtk.Box+BoxChild
             this.infoLabel = new Gtk.Label();
             this.infoLabel.Name = "infoLabel";
-            this.infoLabel.LabelProp = Mono.Unix.Catalog.GetString("The following updates are available. After downloading, please \nclose MonoDevelop before installing them.");
+            this.infoLabel.Xalign = 0F;
+            this.infoLabel.LabelProp = Mono.Unix.Catalog.GetString("The following updates are available. After downloading,\nplease close MonoDevelop before installing them.");
+            this.infoLabel.Wrap = true;
             this.vbox2.Add(this.infoLabel);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.infoLabel]));
             w2.Position = 0;
@@ -108,8 +110,8 @@ namespace MonoDevelop.Platform {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 480;
-            this.DefaultHeight = 343;
+            this.DefaultWidth = 450;
+            this.DefaultHeight = 335;
             this.Show();
         }
     }

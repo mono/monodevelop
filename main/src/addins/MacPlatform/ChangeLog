@@ -1,5 +1,11 @@
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Platform.UpdateDialog.cs: Fix label
+	  alignment.
+
+2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* UpdateDialog.cs: Make textviews noneditable. Fix margins and
 	  wrapping.
 
