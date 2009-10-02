@@ -69,19 +69,16 @@ namespace Mono.TextEditor
 			                                                        segment.Offset,
 			                                                        segment.Length,
 			                                                        true) + (pushedLineLimit ? Environment.NewLine + "..." : ""));
-			int w, h;
-			layout.GetPixelSize (out w, out h);
-			this.SetSizeRequest (System.Math.Min (w + 2, width), 
-			                     System.Math.Min (h + 2, height));
+			CalculateSize ();
 		}
 		
-		public void CalculateSize (int x, int y)
+		public void CalculateSize ()
 		{
 			int w, h;
 			layout.GetPixelSize (out w, out h);
 			
-			this.SetSizeRequest (System.Math.Max (1, System.Math.Min (w + 2, Screen.Width * 2 / 5)), 
-			                     System.Math.Max (1, System.Math.Min (h + 2, Screen.Height * 2 / 5)));
+			this.SetSizeRequest (System.Math.Max (1, System.Math.Min (w + 3, Screen.Width * 2 / 5)), 
+			                     System.Math.Max (1, System.Math.Min (h + 3, Screen.Height * 2 / 5)));
 		}
 		
 		protected override void OnDestroyed ()

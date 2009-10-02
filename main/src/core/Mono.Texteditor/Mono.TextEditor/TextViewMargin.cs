@@ -1277,7 +1277,7 @@ namespace Mono.TextEditor
 			
 			int x = hintRectangle.Right;
 			int y = hintRectangle.Bottom;
-			previewWindow.CalculateSize (x, y);
+			previewWindow.CalculateSize ();
 			int w = previewWindow.SizeRequest ().Width;
 			int h = previewWindow.SizeRequest ().Height;
 			if (x + ox + w > this.textEditor.GdkWindow.Screen.Width)

@@ -1,5 +1,11 @@
 2009-10-02  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Fixed code
+	  segment preview window sizing.
+
+2009-10-02  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/FoldMarkerMargin.cs: Fixed dashed line
 	  drawing for the folder marker margin.
 
