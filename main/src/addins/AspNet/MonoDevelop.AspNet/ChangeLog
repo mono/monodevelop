@@ -1,3 +1,10 @@
+2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/WebTypeManager.cs:
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Resolve user
+	  controls from referenced projects. Fixes "Bug 519651 -
+	  Custom Controls cannot be registered in ASP.NET pages".
+
 2009-09-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:

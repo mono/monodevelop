@@ -354,11 +354,41 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
-		public string ResolveAssembly (string assemblyName)
+		public ProjectDom ResolveAssemblyDom (string assemblyName)
 		{
 			System.Reflection.AssemblyName parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			if (string.IsNullOrEmpty (parsed.Name))
 				return null;
+			
+			var dllName = parsed.Name + ".dll";
+			
+			foreach (var reference in References) {
+				if (reference.ReferenceType == ReferenceType.Gac || reference.ReferenceType == ReferenceType.Assembly) {
+					foreach (string refPath in reference.GetReferencedFileNames (null))
+						if (Path.GetFileName (refPath) == dllName)
+							return ProjectDomService.GetAssemblyDom (TargetRuntime, refPath);
+				} else if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
+					var p = ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
+					if (p == null) {
+						LoggingService.LogWarning ("Project '{0}' referenced from '{1}' could not be found", reference.Reference, this.Name);
+						continue;
+					}
+					return ProjectDomService.GetProjectDom (p);
+				}
+			}
+			
+			string path = GetAssemblyPath (assemblyName);
+			if (path != null)
+				return ProjectDomService.GetAssemblyDom (TargetRuntime, path);
+			return null;
+		}
+		
+		string GetAssemblyPath (string assemblyName)
+		{
+			System.Reflection.AssemblyName parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
+			if (string.IsNullOrEmpty (parsed.Name))
+				return null;
+			
 			string localName = Path.Combine (Path.Combine (BaseDirectory, "bin"), parsed.Name + ".dll");
 			if (File.Exists (localName))
 				return localName;

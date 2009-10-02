@@ -52,6 +52,8 @@ namespace MonoDevelop.AspNet
 	public static class WebTypeManager
 	{
 		
+		const string sysWebAssemblyName = "System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
+		
 		//NOTE: we can't just fall through to GetRegisteredType, as we may be able to determine  usercontrols
 		public static string GetRegisteredTypeName (AspNetAppProject project, string webDirectory, string tagPrefix, string tagName)
 		{
@@ -290,28 +292,27 @@ namespace MonoDevelop.AspNet
 		{
 			ProjectDom dom = InternalResolveAssembly (project, assemblyName);
 			if (dom == null)
-				LoggingService.LogWarning ("Failed to obtain completion database for {0}", assemblyName);
+				LoggingService.LogWarning ("Failed to obtain completion database for '{0}'", assemblyName);
 			return dom;
 		}
 		
 		static ProjectDom InternalResolveAssembly (AspNetAppProject project, string assemblyName)
 		{
-			string path;
-			if (project == null) {
-				assemblyName = Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext.GetAssemblyFullName (assemblyName, TargetFramework.Default);
-				if (assemblyName == null)
-					return null;
-				assemblyName = Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext.GetAssemblyNameForVersion (assemblyName, TargetFramework.Default);
-				if (assemblyName == null)
-					return null;
-				path = Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext.GetAssemblyLocation (assemblyName, TargetFramework.Default);
-			} else {
-				path = project.ResolveAssembly (assemblyName);
-			}
+			if (project != null)
+				return project.ResolveAssemblyDom (assemblyName);
 			
-			if (path == null)
+			string path;
+			assemblyName = Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext.GetAssemblyFullName (assemblyName, TargetFramework.Default);
+			if (assemblyName == null)
 				return null;
-			return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (project.TargetRuntime, path);
+			assemblyName = Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext.GetAssemblyNameForVersion (assemblyName, TargetFramework.Default);
+			if (assemblyName == null)
+				return null;
+			path = Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext.GetAssemblyLocation (assemblyName, TargetFramework.Default);
+			
+			if (path != null)
+				return MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetAssemblyDom (Runtime.SystemAssemblyService.DefaultRuntime, path);
+			return null;
 		}
 		
 		#region System type listings
@@ -328,7 +329,7 @@ namespace MonoDevelop.AspNet
 		
 		static ProjectDom GetSystemWebDom (TargetRuntime runtime, TargetFramework targetFramework)
 		{
-			string file = runtime.AssemblyContext.GetAssemblyNameForVersion ("System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", targetFramework);
+			string file = runtime.AssemblyContext.GetAssemblyNameForVersion (sysWebAssemblyName, targetFramework);
 			if (String.IsNullOrEmpty (file))
 				throw new Exception ("System.Web assembly name not found for framework " + targetFramework.Id);
 			file = runtime.AssemblyContext.GetAssemblyLocation (file, targetFramework);
