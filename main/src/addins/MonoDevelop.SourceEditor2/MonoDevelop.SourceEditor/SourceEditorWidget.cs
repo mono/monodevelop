@@ -856,17 +856,14 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void UpdateLineCol ()
 		{
-			
-			int offset = this.TextEditor.Caret.Offset;
-			if (offset < 0 || offset >= this.TextEditor.Document.Length)
+			int offset = TextEditor.Caret.Offset;
+			if (offset < 0 || offset > TextEditor.Document.Length)
 				return;
-			DocumentLocation location = this.TextEditor.LogicalToVisualLocation (this.TextEditor.Caret.Location);
-			IdeApp.Workbench.StatusBar.ShowCaretState (this.TextEditor.Caret.Line + 1,
+			DocumentLocation location = TextEditor.LogicalToVisualLocation (TextEditor.Caret.Location);
+			IdeApp.Workbench.StatusBar.ShowCaretState (TextEditor.Caret.Line + 1,
 			                                           location.Column + 1,
-			                                           this.TextEditor.IsSomethingSelected ?
-			                                               this.TextEditor.SelectionRange.Length
-			                                               : 0,
-			                                           this.TextEditor.Caret.IsInInsertMode);
+			                                           TextEditor.IsSomethingSelected ? TextEditor.SelectionRange.Length : 0,
+			                                           TextEditor.Caret.IsInInsertMode);
 		}
 		
 		#endregion
