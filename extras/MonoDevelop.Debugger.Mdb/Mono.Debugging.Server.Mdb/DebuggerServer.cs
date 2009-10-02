@@ -138,7 +138,6 @@ namespace DebuggerServer
 				
 				debugger.ProcessReachedMainEvent += delegate (MD.Debugger deb, MD.Process proc) {
 					OnInitialized (deb, proc);
-					NotifyStarted ();
 				};
 
 				if (startInfo.IsXsp) {
@@ -163,7 +162,11 @@ namespace DebuggerServer
 				mdbAdaptor.Session = session;
 				mdbAdaptor.InitializeSession ();
 				
-				debugger.Run(session);
+				ST.ThreadPool.QueueUserWorkItem (delegate {
+					// Run in a thread to avoid a deadlock, since NotifyStarted calls back to the client.
+					NotifyStarted ();
+					debugger.Run(session);
+				});
 
 			} catch (Exception e) {
 				Console.WriteLine ("error: " + e.ToString ());
@@ -312,7 +315,7 @@ namespace DebuggerServer
 				}
 			}
 						                    
-			if (bp != null && !running && activeThread.CurrentFrame != null && !string.IsNullOrEmpty (bp.ConditionExpression) && bp.BreakIfConditionChanges) {
+			if (bp != null && !running && !initializing && activeThread.CurrentFrame != null && !string.IsNullOrEmpty (bp.ConditionExpression) && bp.BreakIfConditionChanges) {
 				// Initial expression evaluation
 				MdbEvaluationContext ctx = new MdbEvaluationContext (activeThread, activeThread.CurrentFrame, -1);
 				ML.TargetObject ob = EvaluateExp (ctx, bp.ConditionExpression);
@@ -667,9 +670,13 @@ namespace DebuggerServer
 		
 		void NotifyStarted ()
 		{
-			initializing = true;
-			controller.OnMainProcessCreated(process.ID);
-			initializing = false;
+			try {
+				initializing = true;
+				controller.NotifyStarted();
+				initializing = false;
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+			}
 		}
 
 		void OnTargetOutput (bool is_stderr, string text)

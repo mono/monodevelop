@@ -1,3 +1,10 @@
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DebuggerServer.cs: Notify the started event before starting
+	  the session. In this way, breakpoints will be inserted
+	  before reaching main. Fixes bug #541727 - Debugger never
+	  stops at the breakpoint.
+
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ArrayAdaptor.cs: CreateElementValue is not required anymore.

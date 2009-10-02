@@ -9,7 +9,7 @@ namespace Mono.Debugging.Backend.Mdb
 
 		//callbacks
 		//FIXME: better naming for event callbacks
-		void OnMainProcessCreated(int process_id);
+		void NotifyStarted ();
 		
 		void OnTargetEvent (TargetEventArgs args);
 		

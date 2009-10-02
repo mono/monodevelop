@@ -53,7 +53,7 @@ namespace Mono.Debugging.Backend.Mdb
 			exitRequestEvent.WaitOne();
 		}
 
-		public void OnMainProcessCreated (int processId)
+		public void NotifyStarted ()
 		{
 			frontend.NotifyStarted ();
 		}
