@@ -1376,7 +1376,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		public IProgressMonitor CreateProgressMonitor ()
 		{
-			return new BackgroundProgressMonitor ("Code Completion Database Generation", "md-parser");
+			return new BackgroundProgressMonitor (GettextCatalog.GetString ("Code completion database generation"), "md-parser");
 		}
 	}
 	

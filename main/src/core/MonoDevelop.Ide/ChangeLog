@@ -1,5 +1,10 @@
 2009-10-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added some strings
+	  to the translation database.
+
+2009-10-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: fixed typo
 
 2009-10-02  Mike Krüger  <mkrueger@novell.com>
