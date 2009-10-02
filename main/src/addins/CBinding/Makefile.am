@@ -49,6 +49,7 @@ FILES =  \
 	Gui/GeneralOptionsPanel.cs \
 	Gui/OutputOptionsPanel.cs \
 	Gui/PackageDetails.cs \
+	Gui/SwapSourceHeaderCommand.cs \
 	Navigation/ClassNodeBuilder.cs \
 	Navigation/ClassPadEventArgs.cs \
 	Navigation/EnumerationNodeBuilder.cs \
@@ -66,8 +67,8 @@ FILES =  \
 	Navigation/TypedefNodeBuilder.cs \
 	Navigation/UnionNodeBuilder.cs \
 	Navigation/VariableNodeBuilder.cs \
-	Parser/Class.cs \
 	Parser/CDocumentParser.cs \
+	Parser/Class.cs \
 	Parser/Enumeration.cs \
 	Parser/Enumerator.cs \
 	Parser/Function.cs \

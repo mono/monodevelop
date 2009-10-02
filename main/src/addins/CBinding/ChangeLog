@@ -1,3 +1,14 @@
+2009-10-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* CBinding.csproj:
+	* CBinding.addin.xml:
+	* Gui/CTextEditorExtension.cs:
+	* Gui/SwapSourceHeaderCommand.cs: Only show the swap
+	  source/header command contextually. Fixes "Bug 544022 -
+	  "Swap source/header" is visible in context menu for all
+	  files".
+
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Compiler/GNUCompiler.cs: Fix bug #478735 - Can't link a

@@ -588,44 +588,5 @@ namespace CBinding
 			
 			return whitespaces.ToString ();
 		}
-		
-		/// <summary>
-		/// Swaps the source/header for the active view
-		/// </summary>
-		[CommandHandler (CBinding.CProjectCommands.SwapSourceHeader)]
-		public void SwapSourceHeader ()
-		{
-			CProject cp = Document.Project as CProject;
-			
-			if (null != cp) { 
-				string match = cp.MatchingFile (Document.FileName);
-				
-				if (null != match)
-					IdeApp.Workbench.OpenDocument(match);
-			}
-		}
-		
-		/// <summary>
-		/// Determine whether the SwapSourceHeader command should be enabled
-		/// </summary>
-		/// <param name="info">
-		/// The command
-		/// <see cref="CommandInfo"/>
-		/// </param>
-		[CommandUpdateHandler (CBinding.CProjectCommands.SwapSourceHeader)]
-		protected void OnSwapSourceHeader (CommandInfo info)
-		{
-			CProject cp = Document.Project as CProject;
-			info.Visible = false;
-			
-			if (null != cp) {
-				string filename = Document.FileName;
-				
-				if (CProject.IsHeaderFile (filename) || cp.IsCompileable (filename)) {
-					info.Visible = true;
-					info.Enabled = (null != cp.MatchingFile (Document.FileName));
-				}
-			}
-		}
 	}
 }

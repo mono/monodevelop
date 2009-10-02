@@ -165,6 +165,7 @@
 				_label = "Swap Source/Header"
 				shortcut = "Shift|F12"
 				_description = "Swap source/header file display"
+				defaultHandler="CBinding.Gui.SwapSourceHeaderCommand"
 			/>
 			<Command id = "CBinding.CProjectCommands.ShowPackageDetails" _label = "Details..." />
 		</Category>
