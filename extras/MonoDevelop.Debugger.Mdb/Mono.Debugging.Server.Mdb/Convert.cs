@@ -417,6 +417,18 @@ namespace DebuggerServer
 					throw new NotSupportedException ();
 				return ob;
 			}
+			
+			if (targetType is TargetNullableType) {
+				TargetNullableType ntype = (TargetNullableType) targetType;
+				if (obj.Kind == TargetObjectKind.Null)
+					return obj;
+				else if (obj.Kind != TargetObjectKind.Nullable)
+					return ImplicitConversion (ctx, obj, ntype.ElementType);
+
+				TargetNullableType ntype2 = (TargetNullableType) obj.Type;
+				if (ImplicitConversionExists (ctx, ntype2.ElementType, ntype.ElementType))
+					return obj;
+			}
 
 			TargetClassType ctype = ToClassType (targetType);
 			TargetClassObject source = ToClassObject (ctx, obj);

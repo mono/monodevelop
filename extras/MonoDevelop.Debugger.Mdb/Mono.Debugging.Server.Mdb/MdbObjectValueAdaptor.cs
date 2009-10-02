@@ -137,6 +137,13 @@ namespace DebuggerServer
 						return null;
 					else
 						return new LiteralExp ("{" + oob.TypeName + "}");
+					
+				case TargetObjectKind.Nullable:
+					TargetNullableObject nob = (TargetNullableObject) obj;
+					if (nob.HasValue (ctx.Thread))
+						return TargetObjectToObject (ctx, nob.GetValue (ctx.Thread));
+					else
+						return null;
 			}
 			return new LiteralExp ("?");
 		}
@@ -507,7 +514,7 @@ namespace DebuggerServer
 				return ObjectValue.CreateObject (null, path, "", null, flags | ObjectValueFlags.ReadOnly, null);
 
 			if (obj.HasAddress && obj.GetAddress (ctx.Thread).IsNull)
-				return ObjectValue.CreateObject (null, path, obj.TypeName, "(null)", flags, null);
+				return ObjectValue.CreateObject (null, path, obj.TypeName, ctx.Evaluator.ToExpression (null), flags, null);
 			
 			switch (obj.Kind) {
 				
@@ -524,7 +531,7 @@ namespace DebuggerServer
 						if (!string.IsNullOrEmpty (tdata.ValueDisplayString))
 							tvalue = EvaluateDisplayString (ctx, co, tdata.ValueDisplayString);
 						else
-							tvalue = Server.Instance.Evaluator.TargetObjectToExpression (ctx, obj);
+							tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
 						
 						string tname;
 						if (!string.IsNullOrEmpty (tdata.TypeDisplayString))
@@ -560,6 +567,17 @@ namespace DebuggerServer
 				case TargetObjectKind.Pointer:
 					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
 					
+				case TargetObjectKind.Nullable:
+					TargetNullableObject tn = (TargetNullableObject) obj;
+					if (tn.HasValue (ctx.Thread)) {
+						ObjectValue val = CreateObjectValue (ctx, source, path, tn.GetValue (ctx.Thread), flags);
+						val.TypeName = obj.TypeName;
+						return val;
+					}
+					else {
+						flags |= ObjectValueFlags.Primitive;
+						return ObjectValue.CreateObject (source, path, obj.TypeName, ctx.Evaluator.ToExpression (null), flags, new ObjectValue [0]);
+					}
 				default:
 					return ObjectValue.CreateError (path.LastName, "Unknown value type: " + obj.Kind, flags);
 			}

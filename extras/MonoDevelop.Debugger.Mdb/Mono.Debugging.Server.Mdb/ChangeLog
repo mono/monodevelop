@@ -1,5 +1,11 @@
 2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Convert.cs:
+	* MdbObjectValueAdaptor.cs: Improve support for nullable
+	  types.
+
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* DebuggerServer.cs: Notify the started event before starting
 	  the session. In this way, breakpoints will be inserted
 	  before reaching main. Fixes bug #541727 - Debugger never
