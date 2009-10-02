@@ -168,10 +168,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 				this.AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
-
+				DefaultPartialWord = completionDataList.DefaultCompletionString ?? "";
 				if (text.Length == 0) {
-					text = completionDataList.DefaultCompletionString;
-					SelectEntry (text);
+					UpdateWordSelection ();
 					initialWordLength = completionWidget.SelectedLength;
 					ResetSizes ();
 					ShowAll ();
@@ -181,6 +180,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 				initialWordLength = text.Length + completionWidget.SelectedLength;
 				PartialWord = text;
+				UpdateWordSelection ();
 				
 				//if there is only one matching result we take it by default
 				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {

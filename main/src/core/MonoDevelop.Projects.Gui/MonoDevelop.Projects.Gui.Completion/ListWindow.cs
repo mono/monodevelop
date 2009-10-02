@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public ListWindow () : base(Gtk.WindowType.Popup)
 		{
 			vbox = new VBox ();
-
+			DefaultPartialWord = "";
 			HBox box = new HBox ();
 			list = new ListWidget (this);
 			list.SelectionChanged += new EventHandler (OnSelectionChanged);
@@ -116,8 +116,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		protected void ResetSizes ()
 		{
-			list.CompletionString = word.ToString ();
-			
+			list.CompletionString = PartialWord;
 			if (list.filteredItems.Count == 0 && !list.PreviewCompletionString) {
 				Hide ();
 			} else {
@@ -170,6 +169,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public bool AutoCompleteEmptyMatch {
 			get { return list.AutoCompleteEmptyMatch; }
 			set { list.AutoCompleteEmptyMatch = value; }
+		}
+		
+		public string DefaultPartialWord {
+			get;
+			set;
 		}
 		
 		public string PartialWord {
@@ -313,7 +317,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				word.Insert (curPos, keyChar);
 				
 				bool hasMismatches;
-				int match = FindMatchedEntry (word.ToString (), out hasMismatches);
+				int match = FindMatchedEntry (PartialWord, out hasMismatches);
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
 					ResetSizes ();
 					UpdateWordSelection ();
@@ -332,9 +336,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			return KeyActions.CloseWindow | KeyActions.Process;
 		}
 
-		void UpdateWordSelection ()
+		public void UpdateWordSelection ()
 		{
-			SelectEntry (word.ToString ());
+			SelectEntry (!string.IsNullOrEmpty (PartialWord) ? PartialWord : DefaultPartialWord);
 		}
 
 		//note: finds the full match, or the best partial match
@@ -384,7 +388,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 					}
 				}
 			}
-			
 			return idx;
 		}
 
@@ -410,7 +413,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		public virtual void SelectEntry (string s)
 		{
-			list.CompletionString = s;
+			list.FilterWords ();
 			//when the list is empty, disable the selection or users get annoyed by it accepting
 			//the top entry automatically
 			if (string.IsNullOrEmpty (s)) {
@@ -418,7 +421,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 				list.Selection = 0;
 				return;
 			}
-
 			bool hasMismatches;
 			int matchedIndex = FindMatchedEntry (s, out hasMismatches);
 			ResetSizes ();
