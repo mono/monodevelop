@@ -1,5 +1,10 @@
 2009-10-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Respect
+	  footer size in list window size request.
+
+2009-10-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	  Completion window now respects default selection.

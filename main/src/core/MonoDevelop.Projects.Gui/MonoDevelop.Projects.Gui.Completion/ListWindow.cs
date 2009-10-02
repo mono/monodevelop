@@ -124,9 +124,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 					Show ();
 			}
 			SetScrollbarVisibilty ();
-			SetSizeRequest (this.list.WidthRequest, this.list.HeightRequest);
+			int width = list.WidthRequest;
+			int height = list.HeightRequest + (footer != null ? footer.Allocation.Height : 0);
+			
+			SetSizeRequest (width, height);
 			if (IsRealized) 
-				Resize (this.list.WidthRequest, this.list.HeightRequest);
+				Resize (width, height);
 		}
 
 		protected void SetScrollbarVisibilty ()
