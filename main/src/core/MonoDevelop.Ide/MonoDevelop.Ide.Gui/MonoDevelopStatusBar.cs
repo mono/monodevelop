@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			public string ToolTip {
-				get { return box.tip; }
+				get { return tip; }
 				set {
 					box.TooltipText = tip = value;
 				}
