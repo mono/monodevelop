@@ -1,5 +1,10 @@
 2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MdbObjectValueAdaptor.cs: Use the correct exception to
+	  report target exceptions.
+
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* BacktraceWrapper.cs: Sort locals.
 
 2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>

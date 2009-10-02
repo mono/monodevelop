@@ -1108,7 +1108,7 @@ namespace DebuggerServer
 		public TargetObject ReturnValue {
 			get {
 				if (res.ExceptionMessage != null)
-					throw new Exception (res.ExceptionMessage);
+					throw new EvaluatorException (res.ExceptionMessage);
 				return res.ReturnObject;
 			}
 		}
