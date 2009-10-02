@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide
 			statusBox.PackEnd (fillerLabel, false, false, 0);
 			
 			modeLabel = new Label (" ");
-			statusBox.PackEnd (modeLabel, false, false, 0);
+			statusBox.PackEnd (modeLabel, false, false, 8);
 			
 			cursorLabel = new Label (" ");
 			statusBox.PackEnd (cursorLabel, false, false, 0);
@@ -113,13 +113,14 @@ namespace MonoDevelop.Ide
 		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
 		{
 			DispatchService.AssertGuiThread ();
-			if (selectedChars > 0) {
-				cursorLabel.Text = String.Format ("{0,3} : {1,-3} - {2}", line, column, selectedChars);
-			} else {
-				cursorLabel.Text = String.Format ("{0,3} : {1,-3}", line, column);
-			}
-			string status = isInInsertMode ? GettextCatalog.GetString ("INS") : GettextCatalog.GetString ("OVR");
-			modeLabel.Text = " " + status + " ";
+			
+			string cursorText = selectedChars > 0 ? String.Format ("{0,3} : {1,-3} - {2}", line, column, selectedChars) : String.Format ("{0,3} : {1,-3}", line, column);
+			if (cursorLabel.Text != cursorText)
+				cursorLabel.Text = cursorText;
+			
+			string modeStatusText = isInInsertMode ? GettextCatalog.GetString ("INS") : GettextCatalog.GetString ("OVR");
+			if (modeLabel.Text != modeStatusText)
+				modeLabel.Text = modeStatusText;
 		}
 		
 		public void ClearCaretState ()

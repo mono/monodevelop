@@ -1,3 +1,9 @@
+2009-10-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: No longer set
+	  status texts if they're not updated (=> fewer expose
+	  events). 
+
 2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
