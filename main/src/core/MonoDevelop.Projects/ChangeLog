@@ -3,7 +3,7 @@
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
 	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
 	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
-	  Added some strings to the parser database.
+	  Added some strings to the translation database.
 
 2009-10-01  Mike Krüger  <mkrueger@novell.com>
 
