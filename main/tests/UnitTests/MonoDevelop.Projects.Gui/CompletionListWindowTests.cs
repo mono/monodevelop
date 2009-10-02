@@ -137,6 +137,7 @@ namespace MonoDevelop.Projects.Gui
 			public bool AutoSelect { get; set; }
 			public bool CompleteWithSpaceOrPunctuation { get; set; }
 			public bool AutoCompleteEmptyMatch { get; set; }
+			public string DefaultCompletionString { get; set; }
 			
 			public string[] CompletionData { get; set; }
 		}
@@ -163,7 +164,7 @@ namespace MonoDevelop.Projects.Gui
 			CompletionDataList dataList = new CompletionDataList ();
 			dataList.AutoSelect = settings.AutoSelect;
 			dataList.AddRange (settings.CompletionData);
-			
+			dataList.DefaultCompletionString = settings.DefaultCompletionString;
 			TestCompletionWidget result = new TestCompletionWidget ();
 			CompletionListWindow listWindow = new CompletionListWindow () {
 				CompletionDataList = dataList,
@@ -172,9 +173,10 @@ namespace MonoDevelop.Projects.Gui
 				CodeCompletionContext = new CodeCompletionContext (),
 				CompleteWithSpaceOrPunctuation = settings.CompleteWithSpaceOrPunctuation,
 				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
-				PartialWord = settings.PartialWord
+				PartialWord = settings.PartialWord,
+				DefaultPartialWord = settings.DefaultCompletionString
 			};
-			listWindow.SelectEntry (settings.PartialWord);
+			listWindow.UpdateWordSelection ();
 			SimulateInput (listWindow, settings.SimulatedInput);
 			return result.CompletedWord;
 		}
@@ -432,5 +434,23 @@ namespace MonoDevelop.Projects.Gui
 			output = RunSimulation ("", ",A.b ", true, true, false, punctuationData);
 			Assert.AreEqual (",A.bAb", output);
 		}
+		
+		[Test]
+		public void TestDefaultCompletionString ()
+		{
+			string output = RunSimulation (new SimulationSettings () {
+				PartialWord = "",
+				SimulatedInput = "\t",
+				AutoSelect = true,
+				CompleteWithSpaceOrPunctuation = true,
+				AutoCompleteEmptyMatch = false,
+				CompletionData = new [] { "A", "B", "C"},
+				DefaultCompletionString = "C"
+			});
+			
+			Assert.AreEqual ("C", output);
+		}
+		
+		
 	}
 }
