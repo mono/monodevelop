@@ -243,6 +243,7 @@ namespace MonoDevelop.CSharpBinding.Gui
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					
 					CompletionDataCollector col = new CompletionDataCollector (completionList, Document.CompilationUnit, location);
+					AddPrimitiveTypes (col);
 					foreach (object o in dom.GetNamespaceContents (GetUsedNamespaces (), true, true)) {
 						col.Add (o);
 					}

@@ -1,3 +1,8 @@
+2009-10-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CSharpTextEditorCompletion.cs: Fixed 'typeof (' context
+	  (primitive types were missing).
+
 2009-10-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:
