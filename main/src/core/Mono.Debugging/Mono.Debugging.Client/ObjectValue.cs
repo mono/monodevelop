@@ -179,6 +179,7 @@ namespace Mono.Debugging.Client
 		
 		public string TypeName {
 			get { return typeName; }
+			set { typeName = value; }
 		}
 		
 		public bool HasChildren {

@@ -301,25 +301,26 @@ namespace Mono.Debugging.Evaluation
 			// Look in nested types
 			
 			vtype = ctx.Adapter.GetEnclosingType (ctx);
-			foreach (object ntype in ctx.Adapter.GetNestedTypes (ctx, vtype)) {
-				if (TypeValueReference.GetTypeName (ctx.Adapter.GetTypeName (ctx, ntype)) == name)
-					return new TypeValueReference (ctx, ntype);
-			}
-
-			string[] namespaces = ctx.Adapter.GetImportedNamespaces (ctx);
-			if (namespaces.Length > 0) {
-				// Look in namespaces
-				foreach (string ns in namespaces) {
-					vtype = ctx.Adapter.GetType (ctx, ns + "." + name);
-					if (vtype != null)
-						return new TypeValueReference (ctx, vtype);
+			if (vtype != null) {
+				foreach (object ntype in ctx.Adapter.GetNestedTypes (ctx, vtype)) {
+					if (TypeValueReference.GetTypeName (ctx.Adapter.GetTypeName (ctx, ntype)) == name)
+						return new TypeValueReference (ctx, ntype);
 				}
-				foreach (string ns in namespaces) {
-					if (ns == name || ns.StartsWith (name + "."))
-						return new NamespaceValueReference (ctx, name);
+	
+				string[] namespaces = ctx.Adapter.GetImportedNamespaces (ctx);
+				if (namespaces.Length > 0) {
+					// Look in namespaces
+					foreach (string ns in namespaces) {
+						vtype = ctx.Adapter.GetType (ctx, ns + "." + name);
+						if (vtype != null)
+							return new TypeValueReference (ctx, vtype);
+					}
+					foreach (string ns in namespaces) {
+						if (ns == name || ns.StartsWith (name + "."))
+							return new NamespaceValueReference (ctx, name);
+					}
 				}
 			}
-
 			throw CreateParseError ("Unknown identifier: {0}", name);
 		}
 		

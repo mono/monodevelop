@@ -1,3 +1,11 @@
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/ObjectValue.cs: Allow setting the type
+	  name.
+
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Added null
+	  check.
+
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation\ObjectValueAdaptor.cs: Add missing
