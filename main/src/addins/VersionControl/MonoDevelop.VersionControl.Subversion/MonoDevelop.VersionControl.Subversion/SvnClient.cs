@@ -924,7 +924,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			
 			if (msg == null)
-				msg = "Unknown error";
+				msg = GettextCatalog.GetString ("Unknown error");
 			
 			throw new SubversionException (msg);
 		}
