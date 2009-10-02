@@ -1,3 +1,7 @@
+2009-10-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MakefileData.cs: Handled the required packages references.
+
 2009-10-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SimpleProjectMakefileHandler.cs: Avoid variable name

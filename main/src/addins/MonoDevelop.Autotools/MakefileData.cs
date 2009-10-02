@@ -989,7 +989,7 @@ namespace MonoDevelop.Autotools
 				}
 
 				string pkgVarName = rname.Substring (2, rname.Length - 3).Replace ("_LIBS", String.Empty);
-				List<string> pkgNames = ConfiguredPackages.GetNamesFromVarName (pkgVarName);
+				List<PackageContent> pkgNames = ConfiguredPackages.GetPackageContentFromVarName (pkgVarName);
 				if (pkgNames == null) {
 					 LoggingService.LogWarning  ("Package named '{0}' not found in configure.in. Ignoring reference to '{1}'.",
 						pkgVarName, rname);
@@ -998,16 +998,18 @@ namespace MonoDevelop.Autotools
 				}
 
 				bool added = false;
-				foreach (string pkgName in pkgNames) {
-					if (ReferencedPackages.Contains (pkgName)) {
+				foreach (PackageContent packageContent in pkgNames) {
+					if (ReferencedPackages.Contains (packageContent.Name)) {
 						added = true;
 						continue;
 					}
 
 					// Add all successfully added packages to ReferencedPackages
-					if (LoadPackageReference (pkgName, project, refVar.Prefix)) {
-						ReferencedPackages.Add (pkgName);
-						added = true;
+					foreach (string referencedName in packageContent.AllReferencedNames) {
+						if (LoadPackageReference (referencedName, project, refVar.Prefix)) {
+							ReferencedPackages.Add (referencedName);
+							added = true;
+						}
 					}
 				}
 
@@ -1645,7 +1647,7 @@ namespace MonoDevelop.Autotools
 
 	public class ConfiguredPackagesManager
 	{
-		Dictionary<string, List<string>> pkgVarNameToPkgName;
+		Dictionary<string, List<PackageContent>> pkgVarNameToPkgName;
 		Dictionary<string, string> pkgNameToPkgVarName;
 
 		//This dict has entries for all vars that have a
@@ -1669,13 +1671,29 @@ namespace MonoDevelop.Autotools
 		}
 
 		//Gets the pkg-config name from the makefile (or autoconf?) var name
+		// TODO: Remove me, if unused.
+		[Obsolete("Use 'GetPackageContentFromVarName' instead.")]
 		public List<string> GetNamesFromVarName (string varname)
 		{
 			if (!pkgVarNameToPkgName.ContainsKey (varname)) {
 				LoggingService.LogDebug ("pkg-config variable {0} not found in pkgVarNameToPkgName.", varname);
 				return null;
 			}
-
+			List<string> result = new List<string> ();
+			foreach (PackageContent content in pkgVarNameToPkgName [varname]) {
+				result.Add (content.Name);
+			}
+			return result;
+		}
+		
+		//Gets the pkg-config PackageContent from the makefile (or autoconf?) var name
+		public List<PackageContent> GetPackageContentFromVarName (string varname)
+		{
+			if (!pkgVarNameToPkgName.ContainsKey (varname)) {
+				LoggingService.LogDebug ("pkg-config variable {0} not found in pkgVarNameToPkgName.", varname);
+				return null;
+			}
+			
 			return pkgVarNameToPkgName [varname];
 		}
 
@@ -1694,10 +1712,11 @@ namespace MonoDevelop.Autotools
 		{
 			return varNameAcSubst.ContainsKey (varname);
 		}
-
+		
+		
 		void ReadPackagesList ()
 		{
-			pkgVarNameToPkgName = new Dictionary<string, List<string>> ();
+			pkgVarNameToPkgName = new Dictionary<string, List<PackageContent>> ();
 			pkgNameToPkgVarName = new Dictionary<string, string> ();
 			varNameAcSubst = new Dictionary<string, string> ();
 
@@ -1710,7 +1729,7 @@ namespace MonoDevelop.Autotools
 				if (!match.Success)
 					continue;
 
-				List<string> pkgs = new List<string> ();
+				List<PackageContent> pkgs = new List<PackageContent> ();
 				string pkgId = match.Groups ["pkgId"].Value;
 				if (pkgId.Length > 2 && pkgId [0] == '[' && pkgId [pkgId.Length - 1] == ']')
 					// Remove [] used for quoting
@@ -1724,11 +1743,11 @@ namespace MonoDevelop.Autotools
 					if (s.Length > 2 && s [0] == '[' && s [s.Length - 1] == ']')
 						// Remove [] used for quoting
 						s = s.Substring (1, s.Length - 2);
-					pkgs.Add (s);
+					PackageContent packageContent = new PackageContent (s);
+					pkgs.Add (packageContent);
 					pkgNameToPkgVarName [s] = pkgId;
-					AddRequiredPackages (assemblyContext, pkgId, s);
+					AddRequiredPackages (assemblyContext, pkgId, s, packageContent);
 				}
-
 				pkgVarNameToPkgName [pkgId] = pkgs;
 			}
 			
@@ -1741,10 +1760,10 @@ namespace MonoDevelop.Autotools
 					continue;
 
 				string pkgVarName = s.Replace ("_LIBS", String.Empty);
-				List<string> l = GetNamesFromVarName (pkgVarName);
-
+				List<PackageContent> l = GetPackageContentFromVarName (pkgVarName);
+				
 				IAssemblyContext r = MakefileData.GetMonoRuntimeContext ();
-				if (l != null && l.Count == 1 && r.GetPackage (l [0]) != null) {
+				if (l != null && l.Count == 1 && r.GetPackage (l [0].Name) != null) {
 					//PKG_CHECK_MODULES for pkgVarName was found
 					//and it references only a single managed package
 					//
@@ -1756,14 +1775,16 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
-		void AddRequiredPackages (IAssemblyContext assemblyContext, string variableName, string packageName)
+		void AddRequiredPackages (IAssemblyContext assemblyContext, string variableName, string packageName, PackageContent packageContent)
 		{
 			SystemPackage package = assemblyContext.GetPackage (packageName);
 			if (package != null && !string.IsNullOrEmpty (package.Requires)) {
 				foreach (string requiredPackageName in package.Requires.Split (' ')) {
-					if (!pkgNameToPkgVarName.ContainsKey (requiredPackageName))
+					if (!pkgNameToPkgVarName.ContainsKey (requiredPackageName)) {
 						pkgNameToPkgVarName[requiredPackageName] = variableName;
-					AddRequiredPackages (assemblyContext, variableName, requiredPackageName);
+						packageContent.RequiredPackages.Add (requiredPackageName);
+					}
+					AddRequiredPackages (assemblyContext, variableName, requiredPackageName, packageContent);
 				}
 			}
 		}
@@ -1791,5 +1812,30 @@ namespace MonoDevelop.Autotools
 			}
 		}
 	}
-
+	
+	public class PackageContent
+	{
+		public string Name { get; set; }
+		
+		System.Collections.Generic.List<string> requiredPackages = new System.Collections.Generic.List<string> ();
+		public List<string> RequiredPackages { 
+			get {
+				return requiredPackages; 
+			}
+		}
+		
+		public IEnumerable<string> AllReferencedNames {
+			get {
+				yield return Name;
+				foreach (string name in requiredPackages) {
+					yield return name;
+				}
+			}
+		}
+		
+		public PackageContent (string name)
+		{
+			this.Name = name;
+		}
+	}
 }
