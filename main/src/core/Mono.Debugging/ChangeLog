@@ -1,5 +1,12 @@
 2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Don't show
+	  the static/non-public groups if they don't contain elements.
+	  Fixes bug #543782 - Debug tooltip always shows Static
+	  members group.
+
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Evaluation/ValueReference.cs:
 	* Mono.Debugging.Evaluation/TypeValueReference.cs:
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:

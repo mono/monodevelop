@@ -156,8 +156,10 @@ namespace Mono.Debugging.Evaluation
 					values.AddRange (agroup.GetChildren ());
 				}
 				else {
-					values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public));
-					values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic));
+					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public))
+						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public));
+					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic))
+						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic));
 				}
 			}
 			return values.ToArray ();
@@ -344,6 +346,11 @@ namespace Mono.Debugging.Evaluation
 				return v1.Name.CompareTo (v2.Name);
 			});
 			return list;
+		}
+		
+		public bool HasMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags)
+		{
+			return GetMembers (ctx, t, co, bindingFlags).Any ();
 		}
 		
 		public abstract IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags);
