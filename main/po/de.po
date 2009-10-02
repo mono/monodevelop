@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-10-02 15:15:09+0200\n"
-"PO-Revision-Date: 2009-10-02 15:20:40+0200\n"
+"PO-Revision-Date: 2009-10-02 18:39:54+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -14768,7 +14768,7 @@ msgstr "Sprache"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:88
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:28
 msgid "Call Stack"
-msgstr "Call Stack"
+msgstr "Aufrufliste"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:135
 msgid "Click here to add a new watch"
@@ -14826,7 +14826,7 @@ msgstr "Wollen sie den den Debugger vom Prozess lösen?"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:236
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:74
 msgid "Detach"
-msgstr "Lösen"
+msgstr "Trennen"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs:57
 msgid "Exceptions"
@@ -14952,7 +14952,7 @@ msgstr "Stoppuhr"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:27
 msgid "Locals"
-msgstr "Locale Variablen"
+msgstr "Lokale Variablen"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:30
 msgid "Threads"
@@ -14960,7 +14960,7 @@ msgstr "Threads"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:31
 msgid "Immediate"
-msgstr "Sofort"
+msgstr "Konsole"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:55
 msgid "_Debug"
@@ -14993,17 +14993,17 @@ msgstr "Ausführung unterbrechen"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:83
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:84
 msgid "Step Over"
-msgstr "Schritt über"
+msgstr "Prozedurschritt"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:89
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:90
 msgid "Step Into"
-msgstr "Schritt rein"
+msgstr "Einzelschritt"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:95
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:96
 msgid "Step Out"
-msgstr "Schritt raus"
+msgstr "Ausführen bis Rücksprung"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:101
 msgid "New Breakpoint..."
@@ -15019,7 +15019,7 @@ msgstr "Lesezeichen an-/ausschalten"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:115
 msgid "Enable/Disable Breakpoint"
-msgstr "Haltepunkt aktivieren/deaktivieren"
+msgstr "Haltepunkt an-/ausschalten"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:120
 msgid "Disable All Breakpoints"
@@ -17479,10 +17479,8 @@ msgstr "T4 Schablone"
 #~ msgstr "Ab_wärts"
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
-
 #~ msgid "Question"
 #~ msgstr "Frage"
-
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
 
