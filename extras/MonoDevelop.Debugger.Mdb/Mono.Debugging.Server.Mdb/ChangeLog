@@ -1,5 +1,9 @@
 2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* BacktraceWrapper.cs: Sort locals.
+
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Convert.cs:
 	* MdbObjectValueAdaptor.cs: Improve support for nullable
 	  types.

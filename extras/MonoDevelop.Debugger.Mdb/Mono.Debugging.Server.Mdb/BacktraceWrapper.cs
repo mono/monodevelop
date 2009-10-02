@@ -107,13 +107,16 @@ namespace DebuggerServer
 		{
 			List<ObjectValue> locals = new List<ObjectValue> ();
 
-			ObjectValue thisObj = GetThisReference (frameIndex, timeout);
-			if (thisObj != null)
-				locals.Add (thisObj);
-
 			locals.AddRange (GetLocalVariables (frameIndex, timeout));
 			locals.AddRange (GetParameters (frameIndex, timeout));
+			locals.Sort (delegate (ObjectValue v1, ObjectValue v2) {
+				return v1.Name.CompareTo (v2.Name);
+			});
 
+			ObjectValue thisObj = GetThisReference (frameIndex, timeout);
+			if (thisObj != null)
+				locals.Insert (0, thisObj);
+			
 			return locals.ToArray ();
 		}
 
