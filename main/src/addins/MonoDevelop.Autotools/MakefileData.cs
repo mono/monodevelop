@@ -1063,21 +1063,23 @@ namespace MonoDevelop.Autotools
 				if (TryGetExistingGacRef (fullpath) != null)
 					continue;
 
-				// Check that its a valid assembly
-				string fullname = null;
-				try {
-					fullname = AssemblyName.GetAssemblyName (fullpath).FullName;
-				} catch (FileNotFoundException) {
-				} catch (BadImageFormatException) {
-				}
+				if (refname.IndexOf (Path.DirectorySeparatorChar) < 0) {
+					// Check that its a valid assembly
+					string fullname = null;
+					try {
+						fullname = AssemblyName.GetAssemblyName (fullpath).FullName;
+					} catch (FileNotFoundException) {
+					} catch (BadImageFormatException) {
+					}
 
-				// Valid assembly, From a package, add as Gac
-				SystemPackage pkg = assemblyContext.GetPackageFromPath (fullpath);
-				if (fullname != null && pkg != null) {
-					SystemAssembly sa = assemblyContext.GetAssemblyFromFullName (fullname, pkg.Name, project.TargetFramework);
-					if (sa != null) {
-						AddNewGacReference (project, sa);
-						continue;
+					// Valid assembly, From a package, add as Gac
+					SystemPackage pkg = assemblyContext.GetPackageFromPath (fullpath);
+					if (fullname != null && pkg != null) {
+						SystemAssembly sa = assemblyContext.GetAssemblyFromFullName (fullname, pkg.Name, project.TargetFramework);
+						if (sa != null) {
+							AddNewGacReference (project, sa);
+							continue;
+						}
 					}
 				}
 
