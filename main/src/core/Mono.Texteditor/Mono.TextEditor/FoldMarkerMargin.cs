@@ -167,10 +167,9 @@ namespace Mono.TextEditor
 		
 		void DrawDashedVLine (Gdk.Drawable win, int x, int top, int bottom, int nline)
 		{
-			if ((nline % 2 == 1) && ((bottom - top) % 2 == 1)) {
+			if ((top + (int)editor.VAdjustment.Value) % 2 != 0)
 				top++;
-				bottom--;
-			}
+			
 			win.DrawLine (foldDashedLineGC, x, top, x, bottom);
 		}
 		
