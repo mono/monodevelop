@@ -512,7 +512,7 @@ namespace MonoDevelop.AspNet
 				
 				//hunt our way to the assemblies element, creating elements if necessary
 				XmlElement configElement = doc.DocumentElement;
-				if (configElement == null || string.Compare (configElement.Name, "configuration", StringComparison.InvariantCultureIgnoreCase) != 0) {
+				if (configElement == null || string.Compare (configElement.Name, "configuration", StringComparison.OrdinalIgnoreCase) != 0) {
 					configElement = (XmlElement) doc.AppendChild (doc.CreateNode (XmlNodeType.Document, "configuration", null));
 				}
 				XmlElement webElement = GetNamedXmlElement (doc, configElement, "system.web");			
@@ -521,7 +521,7 @@ namespace MonoDevelop.AspNet
 				
 				List<XmlNode> existingAdds = new List<XmlNode> ();
 				foreach (XmlNode node in assembliesNode)
-					if (string.Compare (node.Name, "add", StringComparison.InvariantCultureIgnoreCase) == 0)
+					if (string.Compare (node.Name, "add", StringComparison.OrdinalIgnoreCase) == 0)
 					    existingAdds.Add (node);
 				
 				//add refs to the doc if they're not in it
@@ -576,7 +576,7 @@ namespace MonoDevelop.AspNet
 			XmlElement result = null;
 			foreach (XmlNode node in parent.ChildNodes) {
 				XmlElement elem = node as XmlElement;
-				if (elem != null && string.Compare (elem.Name, name, StringComparison.InvariantCultureIgnoreCase) == 0) {
+				if (elem != null && string.Compare (elem.Name, name, StringComparison.OrdinalIgnoreCase) == 0) {
 					result = elem;
 					break;
 				}

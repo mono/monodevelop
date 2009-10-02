@@ -115,12 +115,12 @@ namespace MonoDevelop.AspNet
 		
 		public bool PrefixMatches (string prefix)
 		{
-			 return 0 == string.Compare (TagPrefix, prefix, StringComparison.InvariantCultureIgnoreCase);
+			 return 0 == string.Compare (TagPrefix, prefix, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public bool NameMatches (string name)
 		{
-			 return 0 == string.Compare (TagName, name, StringComparison.InvariantCultureIgnoreCase);
+			 return 0 == string.Compare (TagName, name, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public RegistrationInfo (string configFile, string tagPrefix, string _namespace, string assembly, string tagName, string src)

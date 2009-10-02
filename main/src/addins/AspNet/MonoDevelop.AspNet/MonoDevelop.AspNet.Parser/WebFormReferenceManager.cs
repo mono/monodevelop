@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet.Parser
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
 				
 				if (ard != null)
-					if (string.Compare (ard.Namespace, objectType.Namespace, true, CultureInfo.InvariantCulture) == 0)
+					if (string.Compare (ard.Namespace, objectType.Namespace, StringComparison.OrdinalIgnoreCase) == 0)
 						return directive.TagPrefix;
 			}
 			
@@ -115,10 +115,10 @@ namespace MonoDevelop.AspNet.Parser
 
 			//check namespace is not already registered			foreach (RegisterDirective directive in pageRefsList) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
-				if (0 == string.Compare (ard.Namespace, type.Namespace, false, CultureInfo.InvariantCulture))
+				if (0 == string.Compare (ard.Namespace, type.Namespace, StringComparison.Ordinal))
 					throw new Exception ("That namespace is already registered with another prefix");
 				
-				if (0 == string.Compare (directive.TagPrefix, prefix, true, CultureInfo.InvariantCulture)) {
+				if (0 == string.Compare (directive.TagPrefix, prefix, StringComparison.OrdinalIgnoreCase)) {
 					//duplicate prefix; generate a new one.
 					//FIXME: possibility of stack overflow with too many default prefixes in existing document
 					AddReference (type);
@@ -147,8 +147,8 @@ namespace MonoDevelop.AspNet.Parser
 			//check if there's a prefix for this namespace in the assembly
 			TagPrefixAttribute[] atts = (TagPrefixAttribute[]) type.Assembly.GetCustomAttributes (typeof (TagPrefixAttribute), true);
 			foreach (TagPrefixAttribute tpa in atts)
-					if (0 == string.Compare (tpa.NamespaceName, type.Namespace, false, CultureInfo.InvariantCulture))
-						prefix = tpa.TagPrefix;
+				if (0 == string.Compare (tpa.NamespaceName, type.Namespace, StringComparison.Ordinal))
+					prefix = tpa.TagPrefix;
 			
 			//generate default prefix
 			if (prefix == null) {
@@ -166,10 +166,9 @@ namespace MonoDevelop.AspNet.Parser
 			foreach (RegisterDirective directive in pageRefsList) {
 				ControlRegisterDirective crd = directive as ControlRegisterDirective;
 				
-				if (crd != null)
-					if ((string.Compare (crd.TagPrefix, tagPrefix, true, CultureInfo.InvariantCulture) == 0)
-							&& (string.Compare (crd.TagName, tagName, true, CultureInfo.InvariantCulture) == 0))
-						return crd.Src;
+				if (crd != null && (string.Compare (crd.TagPrefix, tagPrefix, StringComparison.OrdinalIgnoreCase) == 0)
+						&& (string.Compare (crd.TagName, tagName, StringComparison.OrdinalIgnoreCase) == 0))
+					return crd.Src;
 			}
 			
 			throw new Exception ("That tag has not been registered");
