@@ -237,7 +237,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		protected override void ParseFile (string fileName, IProgressMonitor monitor)
 		{
-			if (monitor != null) monitor.BeginTask ("Parsing file: " + Path.GetFileName (fileName), 1);
+			if (monitor != null) monitor.BeginTask (string.Format (GettextCatalog.GetString ("Parsing file: {0}"), Path.GetFileName (fileName)), 1);
 			
 			try {
 				ProjectDomService.Parse (this.project,

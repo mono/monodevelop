@@ -209,8 +209,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				if (parentMonitor == null)
 					monitor = ProjectDomService.GetParseProgressMonitor ();
 				parsing = true;
+				
 				if (monitor != null)
-					monitor.BeginTask ("Parsing assembly: " + Path.GetFileName (fileName), 1);
+					monitor.BeginTask (string.Format (GettextCatalog.GetString ("Parsing assembly: {0}"), Path.GetFileName (fileName)), 1);
 				if (useExternalProcess)
 				{
 					using (DatabaseGenerator helper = GetGenerator (true))

@@ -855,7 +855,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				do {
 					if (pending > 5 && monitor == null) {
 						monitor = GetParseProgressMonitor ();
-						monitor.BeginTask ("Generating database", 0);
+						monitor.BeginTask (GettextCatalog.GetString ("Generating database"), 0);
 					}
 					
 					ParsingJob job = DequeueParseJob ();
