@@ -113,10 +113,17 @@ namespace Mono.Debugging.Evaluation
 		{
 			try {
 				List<ObjectValue> list = new List<ObjectValue> ();
-				foreach (ValueReference val in Context.Adapter.GetMembers (Context, type, null, BindingFlags.Public | BindingFlags.Static))
+				foreach (ValueReference val in Context.Adapter.GetMembersSorted (Context, type, null, BindingFlags.Public | BindingFlags.Static))
 					list.Add (val.CreateObjectValue ());
+				List<ObjectValue> nestedTypes = new List<ObjectValue> ();
 				foreach (object t in Context.Adapter.GetNestedTypes (Context, type))
-					list.Add (new TypeValueReference (Context, t).CreateObjectValue ());
+					nestedTypes.Add (new TypeValueReference (Context, t).CreateObjectValue ());
+				
+				nestedTypes.Sort (delegate (ObjectValue v1, ObjectValue v2) {
+					return v1.Name.CompareTo (v2.Name);
+				});
+				list.AddRange (nestedTypes);
+				
 				list.Add (FilteredMembersSource.CreateNode (Context, type, null, BindingFlags.NonPublic | BindingFlags.Static));
 				return list.ToArray ();
 			} catch (Exception ex) {
@@ -130,10 +137,16 @@ namespace Mono.Debugging.Evaluation
 		{
 			try {
 				List<ValueReference> list = new List<ValueReference> ();
-				foreach (ValueReference v in Context.Adapter.GetMembers (Context, type, null, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
-					list.Add (v);
+				list.AddRange (Context.Adapter.GetMembersSorted (Context, type, null, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static));
+				
+				List<ValueReference> nestedTypes = new List<ValueReference> ();
 				foreach (object t in Context.Adapter.GetNestedTypes (Context, type))
-					list.Add (new TypeValueReference (Context, t));
+					nestedTypes.Add (new TypeValueReference (Context, t));
+				
+				nestedTypes.Sort (delegate (ValueReference v1, ValueReference v2) {
+					return v1.Name.CompareTo (v2.Name);
+				});
+				list.AddRange (nestedTypes);
 				return list;
 			} catch (Exception ex) {
 				Console.WriteLine (ex);

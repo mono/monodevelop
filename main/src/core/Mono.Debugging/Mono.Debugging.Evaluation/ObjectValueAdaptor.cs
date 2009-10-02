@@ -117,7 +117,7 @@ namespace Mono.Debugging.Evaluation
 			// Load all members to a list before creating the object values,
 			// to avoid problems with objects being invalidated due to evaluations in the target,
 			List<ValueReference> list = new List<ValueReference> ();
-			list.AddRange (GetMembers (ctx, GetValueType (ctx, proxy), proxy, access));
+			list.AddRange (GetMembersSorted (ctx, GetValueType (ctx, proxy), proxy, access));
 
 			foreach (ValueReference val in list) {
 				try {
@@ -331,6 +331,21 @@ namespace Mono.Debugging.Evaluation
 			return null;
 		}
 
+		internal IEnumerable<ValueReference> GetMembersSorted (EvaluationContext ctx, object t, object co)
+		{
+			return GetMembersSorted (ctx, t, co, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+		}
+		
+		internal IEnumerable<ValueReference> GetMembersSorted (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags)
+		{
+			List<ValueReference> list = new List<ValueReference> ();
+			list.AddRange (GetMembers (ctx, t, co, bindingFlags));
+			list.Sort (delegate (ValueReference v1, ValueReference v2) {
+				return v1.Name.CompareTo (v2.Name);
+			});
+			return list;
+		}
+		
 		public abstract IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags);
 
 		public virtual IEnumerable<object> GetNestedTypes (EvaluationContext ctx, object type)

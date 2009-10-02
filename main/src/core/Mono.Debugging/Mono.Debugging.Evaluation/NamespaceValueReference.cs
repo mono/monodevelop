@@ -123,15 +123,26 @@ namespace Mono.Debugging.Evaluation
 
 			Context.Adapter.GetNamespaceContents (Context, namspace, out childNamespaces, out childTypes);
 
+			List<ValueReference> list = new List<ValueReference> ();
 			foreach (string typeName in childTypes) {
 				object tt = Context.Adapter.GetType (Context, typeName);
 				if (tt != null)
-					yield return new TypeValueReference (Context, tt);
+					list.Add (new TypeValueReference (Context, tt));
 			}
+			list.Sort (delegate (ValueReference v1, ValueReference v2) {
+				return v1.Name.CompareTo (v2.Name);
+			});
 			
 			// Child namespaces
+			
+			List<ValueReference> listNs = new List<ValueReference> ();
 			foreach (string ns in childNamespaces)
-				yield return new NamespaceValueReference (Context, ns);
+				listNs.Add (new NamespaceValueReference (Context, ns));
+			listNs.Sort (delegate (ValueReference v1, ValueReference v2) {
+				return v1.Name.CompareTo (v2.Name);
+			});
+			list.AddRange (listNs);
+			return list;
 		}
 
 		protected override Mono.Debugging.Client.ObjectValue OnCreateObjectValue ()

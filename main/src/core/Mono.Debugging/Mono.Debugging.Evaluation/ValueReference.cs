@@ -155,7 +155,7 @@ namespace Mono.Debugging.Evaluation
 			try {
 				object val = Value;
 				if (ctx.Adapter.IsClassInstance (Context, val))
-					return ctx.Adapter.GetMembers (GetChildrenContext (), ctx.Adapter.GetValueType (Context, val), val);
+					return ctx.Adapter.GetMembersSorted (GetChildrenContext (), ctx.Adapter.GetValueType (Context, val), val);
 			} catch {
 				// Ignore
 			}

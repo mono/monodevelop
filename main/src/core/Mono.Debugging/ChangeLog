@@ -1,5 +1,15 @@
 2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/TypeValueReference.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs:
+	* Mono.Debugging.Evaluation/NamespaceValueReference.cs:
+	  Alphabetically sort members of types. Fixes bug #543780 -
+	  Debug tooltip shows members in random order.
+
+2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Client/ObjectValue.cs: Allow setting the type
 	  name.
 

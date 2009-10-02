@@ -38,7 +38,7 @@ namespace Mono.Debugging.Evaluation
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
 			List<ObjectValue> list = new List<ObjectValue> ();
-			foreach (ValueReference val in ctx.Adapter.GetMembers (ctx, type, obj, bindingFlags)) {
+			foreach (ValueReference val in ctx.Adapter.GetMembersSorted (ctx, type, obj, bindingFlags)) {
 				list.Add (val.CreateObjectValue ());
 			}
 			if ((bindingFlags & BindingFlags.NonPublic) == 0) {
