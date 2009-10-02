@@ -210,19 +210,21 @@ namespace Mono.TextEditor
 			                          0, to, 
 			                          Allocation.Width, Allocation.Height - from - to);
 			if (delta > 0) {
+				delta += LineHeight;
 				RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta));
 			} else {
+				delta -= LineHeight;
 				RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta));
 			}
 			Caret.IsVisible = true;
 			TextViewMargin.VAdjustmentValueChanged ();
-			
-			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
+			QueueDraw ();
+/*			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
 			                        buffer,
 			                        0, 0, 
 			                        0, 0, 
 			                        Allocation.Width, Allocation.Height);
-			PaintCaret (GdkWindow);
+			PaintCaret (GdkWindow);*/
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
@@ -1133,6 +1135,7 @@ namespace Mono.TextEditor
 				AllocateWindowBuffer (Allocation);
 			SetAdjustments (Allocation);
 			Repaint ();
+			textViewMargin.SetClip ();
 		}
 		
 		protected override void OnMapped ()
@@ -1233,7 +1236,6 @@ namespace Mono.TextEditor
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				LineSegment line = Document.GetLine (logicalLineNumber);
-				
 				foreach (Margin margin in marginsToRender) {
 					try {
 						margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);

@@ -56,6 +56,20 @@ namespace Mono.TextEditor
 		public override int Width {
 			get { return -1; }
 		}
+		
+		int xOffset;
+		public override int XOffset {
+			get { 
+				return xOffset; 
+			}
+			internal set { 
+				if (xOffset != value) {
+					xOffset = value; 
+					SetClip (); 
+				}
+			}
+		}
+		
 
 		Caret Caret {
 			get { return textEditor.Caret; }
@@ -616,7 +630,7 @@ namespace Mono.TextEditor
 				descriptor.Dispose ();
 				layoutDict.Remove (line);
 			}
-
+			
 			LayoutWrapper wrapper = new LayoutWrapper (new Pango.Layout (textEditor.PangoContext));
 			wrapper.IsUncached = containsPreedit;
 			createNew (wrapper);
@@ -1013,7 +1027,6 @@ namespace Mono.TextEditor
 			if (DecorateLineBg != null)
 				DecorateLineBg (win, layout.Layout, offset, length, xPos, y, selectionStart, selectionEnd);
 
-			//			if (drawText)
 			win.DrawLayout (GetGC (ColorStyle.Default.Color), xPos, y, layout.Layout);
 
 			if (DecorateLineFg != null)
@@ -1589,10 +1602,9 @@ namespace Mono.TextEditor
 		List<ISegment> selectedRegions = new List<ISegment> ();
 		Gdk.Color defaultBgColor;
 		Gdk.Rectangle clipRectangle;
-
-		protected internal override void BeginRender (Drawable win, Rectangle area, int x)
+		
+		internal void SetClip ()
 		{
-			base.BeginRender (win, area, x);
 			SetClip (new Gdk.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height));
 		}
 

@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 		public bool IsVisible { get; set; }
 		
 		// set by the text editor
-		public int XOffset {
+		public virtual int XOffset {
 			get;
 			internal set;
 		}
