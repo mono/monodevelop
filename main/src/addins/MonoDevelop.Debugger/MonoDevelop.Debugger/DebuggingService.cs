@@ -285,10 +285,12 @@ namespace MonoDevelop.Debugger
 					console.Log.Write (text);
 			};
 			session.ExceptionHandler = delegate (Exception ex) {
-				if (ex is DebuggerException)
-					MessageService.ShowError (ex.Message);
-				else
-					MessageService.ShowException (ex);
+				Gtk.Application.Invoke (delegate {
+					if (ex is DebuggerException)
+						MessageService.ShowError (ex.Message);
+					else
+						MessageService.ShowException (ex);
+				});
 				return true;
 			};
 
