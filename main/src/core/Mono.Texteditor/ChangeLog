@@ -1,5 +1,10 @@
 2009-10-02  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Scrolling redraw is done in
+	  the scroll event again.
+
+2009-10-02  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Fixed code
 	  segment preview window sizing.

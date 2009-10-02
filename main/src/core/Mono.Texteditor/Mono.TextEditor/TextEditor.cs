@@ -218,13 +218,13 @@ namespace Mono.TextEditor
 			}
 			Caret.IsVisible = true;
 			TextViewMargin.VAdjustmentValueChanged ();
-			QueueDraw ();
-/*			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
+//			QueueDraw ();
+			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
 			                        buffer,
 			                        0, 0, 
 			                        0, 0, 
 			                        Allocation.Width, Allocation.Height);
-			PaintCaret (GdkWindow);*/
+			PaintCaret (GdkWindow);
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
