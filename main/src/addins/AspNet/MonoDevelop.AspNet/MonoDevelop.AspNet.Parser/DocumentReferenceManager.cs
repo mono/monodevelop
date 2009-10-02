@@ -80,10 +80,12 @@ namespace MonoDevelop.AspNet.Parser
 					return systemType;
 			}
 			
-			foreach (RegisterDirective directive in pageRefsList) {
-				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
-				if (ard != null && ard.TagPrefix == tagPrefix) {
-					
+			foreach (RegisterDirective rd in pageRefsList) {
+				if (string.Compare (rd.TagPrefix, tagPrefix, StringComparison.OrdinalIgnoreCase) != 0)
+					continue;
+				
+				var ard = rd as AssemblyRegisterDirective;
+				if (ard != null) {
 					ProjectDom dom = WebTypeManager.ResolveAssembly (doc.Project, ard.Assembly);
 					if (dom == null)
 						continue;
@@ -93,8 +95,8 @@ namespace MonoDevelop.AspNet.Parser
 						return fullName;
 				}
 				
-				ControlRegisterDirective crd = directive as ControlRegisterDirective;
-				if (crd != null && crd.TagPrefix == tagPrefix) {
+				var crd = rd as ControlRegisterDirective;
+				if (crd != null && string.Compare (crd.TagName, tagName, StringComparison.OrdinalIgnoreCase) == 0) {
 					string fullName =  WebTypeManager.GetUserControlTypeName (doc.Project, crd.Src, doc.FilePath);
 					if (fullName != null)
 						return fullName;

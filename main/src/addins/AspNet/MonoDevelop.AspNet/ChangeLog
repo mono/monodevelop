@@ -1,3 +1,11 @@
+2009-10-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Take
+	  tag name into account when resolving type from control
+	  registration directives. Only compare prefix once per
+	  directive, and use case-insensitive ordinal comparisons.
+	  Fixes bug #543727.
+
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/WebTypeManager.cs:
