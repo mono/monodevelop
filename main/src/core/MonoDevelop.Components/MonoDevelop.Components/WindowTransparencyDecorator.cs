@@ -47,10 +47,10 @@ namespace MonoDevelop.Components
 		WindowTransparencyDecorator (Gtk.Window window)
 		{
 			this.window = window;
+			//HACK: Workaround for GTK# crasher bug where GC collects internal wrapper delegates
 			snoopFunc = TryBindGtkInternals (this);
 			
-			//FIXME: access this property directly when we use GTK# 2.12
-			if (CanSetOpacity && snoopFunc != null) {
+			if (snoopFunc != null) {
 				window.Shown += ShownHandler;
 				window.Hidden += HiddenHandler;
 				window.Destroyed += DestroyedHandler;
@@ -122,7 +122,7 @@ namespace MonoDevelop.Components
 			set {
 				if (semiTransparent != value) {
 					semiTransparent = value;
-					TrySetTransparency (window, semiTransparent? opacity : 1.0);
+					window.Opacity = semiTransparent? opacity : 1.0;
 				}
 			}
 		}
@@ -174,56 +174,6 @@ namespace MonoDevelop.Components
 			internalBindingWorks = false;
 			MonoDevelop.Core.LoggingService.LogWarning ("GTK# API has changed, and control-transparency will not be available for popups");
 			return null;
-		}
-		
-		#endregion
-			
-		#region Static setter reflecting code -- property is only in GTK+ 2.12
-		
-		[DllImport("libgobject-2.0.so.0")]
-		static extern IntPtr g_type_class_peek (IntPtr gtype);
-
-		[DllImport("libgobject-2.0.so.0")]
-		static extern IntPtr g_object_class_find_property (IntPtr klass, string name);
-
-		[DllImport("libgobject-2.0.so.0")]
-		static extern void g_object_set (IntPtr obj, string property, double value, IntPtr nullarg);
-		
-		static bool triedToFindSetters = false;
-		
-		//if we have GTK# 2.12 we can use Mono reflection
-		static System.Reflection.PropertyInfo opacityProp = null;
-		
-		//if we have GTK+ 2.12 but an older GTK#, we can use GObject reflection
-		static IntPtr opacityMeth = IntPtr.Zero;
-		
-		static bool CanSetOpacity {
-			get {
-				if (triedToFindSetters)
-					return (opacityMeth != IntPtr.Zero || opacityProp != null);
-				
-				triedToFindSetters = true;
-				
-				opacityProp = typeof (Gtk.Window).GetProperty ("Opacity");
-				if (opacityProp != null)
-					return true;
-				
-				GLib.GType gtype = (GLib.GType) typeof (Gtk.Window);
-				try {
-					IntPtr klass = g_type_class_peek (gtype.Val);
-					opacityMeth = g_object_class_find_property (klass, "opacity");
-				} catch (DllNotFoundException) {}
-				
-				return opacityMeth != IntPtr.Zero;
-			}
-		}
-		
-		static void TrySetTransparency (Gtk.Window window, double opacity)
-		{
-			if (opacityMeth != IntPtr.Zero)
-				g_object_set (window.Handle, "opacity", opacity, IntPtr.Zero);
-			else if (opacityProp != null)
-				opacityProp.SetValue (window, opacity, null);
 		}
 		
 		#endregion
