@@ -1,3 +1,9 @@
+2009-10-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Added
+	  test for 'Bug 543923 - Completion window should deselect
+	  when word is deleted'.
+
 2009-10-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Added

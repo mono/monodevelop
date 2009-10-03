@@ -451,6 +451,14 @@ namespace MonoDevelop.Projects.Gui
 			Assert.AreEqual ("C", output);
 		}
 		
-		
+		/// <summary>
+		/// Bug 543923 - Completion window should deselect when word is deleted
+		/// </summary>
+		[Test]
+		public void TestBug543923 ()
+		{
+			string output = RunSimulation ("", "i\b ", true, true, false, new [] { "#if", "if", "other" });
+			Assert.IsTrue (string.IsNullOrEmpty (output));
+		}
 	}
 }
