@@ -197,7 +197,7 @@ namespace MonoDevelop.IPhone
 			
 			FilePath icon = proj.BundleIcon.ToRelative (proj.BaseDirectory);
 			if (!(icon.IsNullOrEmpty || icon.ToString () == "."))
-				SetIfNotPresent (dict, "CFBundleIconFile", icon.ToString ());
+				SetIfNotPresent (dict, "CFBundleIconFile", icon.FileName);
 			
 			SetIfNotPresent (dict, "CFBundleIdentifier", proj.BundleIdentifier ?? ("com.yourcompany." + proj.Name));
 			SetIfNotPresent (dict, "CFBundleInfoDictionaryVersion", "6.0");
