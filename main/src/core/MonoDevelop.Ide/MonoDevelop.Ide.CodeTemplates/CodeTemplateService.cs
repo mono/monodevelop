@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public static void AddCompletionDataForFileName (string fileName, CompletionDataList list)
 		{
 			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-			AddCompletionDataForFileName (mimeType, list);
+			AddCompletionDataForMime (mimeType, list);
 		}
 		
 		public static void AddCompletionDataForMime (string mimeType, CompletionDataList list)
