@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			this.win = win;
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask;
-		
+			this.EnableSelection = true;
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
 			FontDescription des = this.Style.FontDescription.Copy ();
@@ -133,9 +133,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set;
 		}
 		
+		public bool EnableSelection {
+			get;
+			set;
+		}
+		
 		public bool SelectionEnabled {
 			get {
-				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));
+				return EnableSelection && AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));
 			}
 		}
 		

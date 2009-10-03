@@ -422,8 +422,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (string.IsNullOrEmpty (s)) {
 				ResetSizes ();
 				list.Selection = 0;
+				list.EnableSelection = list.AutoCompleteEmptyMatch;
 				return;
 			}
+			list.EnableSelection = true;
 			bool hasMismatches;
 			int matchedIndex = FindMatchedEntry (s, out hasMismatches);
 			ResetSizes ();
