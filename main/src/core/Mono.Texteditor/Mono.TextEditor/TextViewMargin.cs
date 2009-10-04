@@ -203,7 +203,8 @@ namespace Mono.TextEditor
 			int offset = Caret.Offset - 1;
 			if (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset)))
 				offset++;
-			if (offset >= Document.Length) {
+			offset = System.Math.Max (0, offset);
+			if (offset >= Document.Length || !Document.IsBracket (Document.GetCharAt (offset))) {
 				int old = highlightBracketOffset;
 				highlightBracketOffset = -1;
 				if (old >= 0)
