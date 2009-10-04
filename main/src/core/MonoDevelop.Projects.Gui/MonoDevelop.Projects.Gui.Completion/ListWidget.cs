@@ -60,6 +60,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
+		public string DefaultCompletionString {
+			get;
+			set;
+		}
+		
 		public bool PreviewCompletionString {
 			get;
 			set;
@@ -69,6 +74,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			this.win = win;
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask;
+			DefaultCompletionString = "";
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
 			FontDescription des = this.Style.FontDescription.Copy ();
@@ -134,7 +140,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public bool SelectionEnabled {
 			get {
-				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));
+				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString) || !string.IsNullOrEmpty (DefaultCompletionString));
 			}
 		}
 		

@@ -55,15 +55,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		StringBuilder word = new StringBuilder();
 		int curPos;
-
+		
+		public List<int> FilteredItems {
+			get {
+				return list.filteredItems;
+			}
+		}
+		
 		public ListWindow () : base(Gtk.WindowType.Popup)
 		{
 			vbox = new VBox ();
-			DefaultPartialWord = "";
 			HBox box = new HBox ();
 			list = new ListWidget (this);
 			list.SelectionChanged += new EventHandler (OnSelectionChanged);
 			list.ScrollEvent += new ScrollEventHandler (OnScrolled);
+			
 			box.PackStart (list, true, true, 0);
 			this.BorderWidth = 1;
 
@@ -113,10 +119,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		}
 		
 		protected int curXPos, curYPos;
-
-		protected void ResetSizes ()
+		
+		public void ResetSizes ()
 		{
-			list.CompletionString = CurrentPartialWord;
+			list.CompletionString = PartialWord;
 			if (list.filteredItems.Count == 0 && !list.PreviewCompletionString) {
 				Hide ();
 			} else {
@@ -178,9 +184,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set { list.AutoCompleteEmptyMatch = value; }
 		}
 		
-		public string DefaultPartialWord {
-			get;
-			set;
+		public string DefaultCompletionString {
+			get {
+				return list.DefaultCompletionString;
+			}
+			set {
+				list.DefaultCompletionString = value;
+			}
 		}
 		
 		public string PartialWord {
@@ -199,7 +209,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	
 		public string CurrentPartialWord {
 			get {
-				return !string.IsNullOrEmpty (PartialWord) ? PartialWord : DefaultPartialWord;
+				return !string.IsNullOrEmpty (PartialWord) ? PartialWord : DefaultCompletionString;
 			}
 		}
 

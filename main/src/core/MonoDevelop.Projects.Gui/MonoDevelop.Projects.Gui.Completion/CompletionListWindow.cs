@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get;
 			set;
 		}
+		
 		public ICompletionWidget CompletionWidget {
 			get;
 			set;
@@ -168,7 +169,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				this.AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
-				DefaultPartialWord = completionDataList.DefaultCompletionString ?? "";
+				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
 				if (text.Length == 0) {
 					UpdateWordSelection ();
 					initialWordLength = completionWidget.SelectedLength;
@@ -351,7 +352,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			// no selection, try to find a selection
 			if (List.SelectionIndex < 0 || List.SelectionIndex >= completionDataList.Count) {
-				List.CompletionString = CurrentPartialWord;
+				List.CompletionString = PartialWord;
 				bool hasMismatches;
 				List.Selection = FindMatchedEntry (List.CompletionString, out hasMismatches);
 			}

@@ -2,6 +2,14 @@
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Added some refactorings required for some more deep unit
+	  tests.
+
+2009-10-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	  Fixed 'Bug 543938 - Completion list up/down broken with
