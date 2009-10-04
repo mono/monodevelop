@@ -69,7 +69,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			this.win = win;
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask;
-			this.EnableSelection = true;
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
 			FontDescription des = this.Style.FontDescription.Copy ();
@@ -133,14 +132,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set;
 		}
 		
-		public bool EnableSelection {
-			get;
-			set;
-		}
-		
 		public bool SelectionEnabled {
 			get {
-				return EnableSelection && AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));
+				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));
 			}
 		}
 		
@@ -221,7 +215,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					layout.SetText (win.DataProvider.GetText (filteredItems[page + n]) ?? "<null>");
 				}
 				string text = win.DataProvider.GetText (filteredItems[page + n]);
-				if ((!SelectionEnabled || page + n != selection) && !string.IsNullOrEmpty (text) && !string.IsNullOrEmpty (CompletionString)) {
+				if ((!SelectionEnabled || page + n != selection) && !string.IsNullOrEmpty (text)) {
 					int[] matchIndices = Match (CompletionString, text);
 					if (matchIndices != null) {
 						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();

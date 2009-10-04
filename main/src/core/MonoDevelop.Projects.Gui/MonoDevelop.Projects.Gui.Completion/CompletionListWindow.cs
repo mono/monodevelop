@@ -351,7 +351,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			// no selection, try to find a selection
 			if (List.SelectionIndex < 0 || List.SelectionIndex >= completionDataList.Count) {
-				List.CompletionString = PartialWord;
+				List.CompletionString = CurrentPartialWord;
 				bool hasMismatches;
 				List.Selection = FindMatchedEntry (List.CompletionString, out hasMismatches);
 			}

@@ -116,7 +116,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		protected void ResetSizes ()
 		{
-			list.CompletionString = PartialWord;
+			list.CompletionString = CurrentPartialWord;
 			if (list.filteredItems.Count == 0 && !list.PreviewCompletionString) {
 				Hide ();
 			} else {
@@ -169,6 +169,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set { list.AutoSelect = value; }
 		}
 		
+		public bool SelectionEnabled {
+			get { return list.SelectionEnabled; }
+		}
+		
 		public bool AutoCompleteEmptyMatch {
 			get { return list.AutoCompleteEmptyMatch; }
 			set { list.AutoCompleteEmptyMatch = value; }
@@ -192,13 +196,19 @@ namespace MonoDevelop.Projects.Gui.Completion
 				}
 			}
 		}
+	
+		public string CurrentPartialWord {
+			get {
+				return !string.IsNullOrEmpty (PartialWord) ? PartialWord : DefaultPartialWord;
+			}
+		}
 
 		public bool IsUniqueMatch {
 			get {
 				int pos = list.Selection + 1;
 				if (DataProvider.ItemCount > pos && 
-					DataProvider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ()) || 
-					!(DataProvider.GetText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
+					DataProvider.GetText (pos).ToLower ().StartsWith (CurrentPartialWord.ToLower ()) || 
+					!(DataProvider.GetText (list.Selection).ToLower ().StartsWith (CurrentPartialWord.ToLower ())))
 					return false;
 
 				return true;
@@ -218,20 +228,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			switch (key) {
 			case Gdk.Key.Up:
-				if (list.filteredItems.Count < 2)
+				if (SelectionEnabled && list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
-				if (!AutoSelect) {
-					AutoSelect = true;
+				if (!SelectionEnabled) {
+					AutoCompleteEmptyMatch = AutoSelect = true;
 				} else {
 					list.Selection--;
 				}
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Down:
-				if (list.filteredItems.Count < 2)
+				if (SelectionEnabled && list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
-				if (!AutoSelect) {
-					AutoSelect = true;
+				if (!SelectionEnabled) {
+					AutoCompleteEmptyMatch = AutoSelect = true;
 				} else {
 					list.Selection++;
 				}
@@ -320,7 +330,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				word.Insert (curPos, keyChar);
 				
 				bool hasMismatches;
-				int match = FindMatchedEntry (PartialWord, out hasMismatches);
+				int match = FindMatchedEntry (CurrentPartialWord, out hasMismatches);
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
 					ResetSizes ();
 					UpdateWordSelection ();
@@ -341,7 +351,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		public void UpdateWordSelection ()
 		{
-			SelectEntry (!string.IsNullOrEmpty (PartialWord) ? PartialWord : DefaultPartialWord);
+			SelectEntry (CurrentPartialWord);
 		}
 
 		//note: finds the full match, or the best partial match
@@ -422,10 +432,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (string.IsNullOrEmpty (s)) {
 				ResetSizes ();
 				list.Selection = 0;
-				list.EnableSelection = list.AutoCompleteEmptyMatch;
 				return;
 			}
-			list.EnableSelection = true;
 			bool hasMismatches;
 			int matchedIndex = FindMatchedEntry (s, out hasMismatches);
 			ResetSizes ();

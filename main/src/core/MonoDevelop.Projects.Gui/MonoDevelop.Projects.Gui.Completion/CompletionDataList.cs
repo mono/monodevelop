@@ -63,13 +63,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public CompletionDataList ()
 		{
 			this.AutoSelect = true;
-			this.AutoCompleteEmptyMatch = true;
 		}
 		
 		public CompletionDataList (IEnumerable<ICompletionData> data) : base(data)
 		{
 			this.AutoSelect = true;
-			this.AutoCompleteEmptyMatch = true;
 		}
 		
 		public CompletionData Add (string text)
