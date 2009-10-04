@@ -161,25 +161,33 @@ namespace MonoDevelop.Projects.Gui
 		
 		static string RunSimulation (SimulationSettings settings)
 		{
+			CompletionListWindow listWindow = CreateListWindow (settings);
+			SimulateInput (listWindow, settings.SimulatedInput);
+			return ((TestCompletionWidget)listWindow.CompletionWidget).CompletedWord;
+		}
+
+		static CompletionListWindow CreateListWindow (CompletionListWindowTests.SimulationSettings settings)
+		{
 			CompletionDataList dataList = new CompletionDataList ();
 			dataList.AutoSelect = settings.AutoSelect;
 			dataList.AddRange (settings.CompletionData);
 			dataList.DefaultCompletionString = settings.DefaultCompletionString;
-			TestCompletionWidget result = new TestCompletionWidget ();
-			CompletionListWindow listWindow = new CompletionListWindow () {
+			
+			CompletionListWindow listWindow = new CompletionListWindow {
 				CompletionDataList = dataList,
-				CompletionWidget = result,
+				CompletionWidget = new TestCompletionWidget (),
 				AutoSelect = settings.AutoSelect,
 				CodeCompletionContext = new CodeCompletionContext (),
 				CompleteWithSpaceOrPunctuation = settings.CompleteWithSpaceOrPunctuation,
 				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
 				PartialWord = settings.PartialWord,
-				DefaultPartialWord = settings.DefaultCompletionString
+				DefaultCompletionString = settings.DefaultCompletionString
 			};
 			listWindow.UpdateWordSelection ();
-			SimulateInput (listWindow, settings.SimulatedInput);
-			return result.CompletedWord;
+			listWindow.ResetSizes ();
+			return listWindow;
 		}
+
 		
 		[Test()]
 		public void TestPunctuationCompletion ()
@@ -388,6 +396,7 @@ namespace MonoDevelop.Projects.Gui
 				"AbAbAbAb");
 			
 			Assert.AreEqual ("AbAb", output);
+			
 		}
 		
 		string[] punctuationData = {
@@ -438,17 +447,56 @@ namespace MonoDevelop.Projects.Gui
 		[Test]
 		public void TestDefaultCompletionString ()
 		{
-			string output = RunSimulation (new SimulationSettings () {
+			string output = RunSimulation (new SimulationSettings {
 				PartialWord = "",
 				SimulatedInput = "\t",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
 				AutoCompleteEmptyMatch = false,
-				CompletionData = new [] { "A", "B", "C"},
+				CompletionData = new[] {
+					"A",
+					"B",
+					"C"
+				},
 				DefaultCompletionString = "C"
 			});
 			
 			Assert.AreEqual ("C", output);
+			
+			output = RunSimulation (new SimulationSettings {
+				PartialWord = "",
+				SimulatedInput = " ",
+				AutoSelect = true,
+				CompleteWithSpaceOrPunctuation = true,
+				AutoCompleteEmptyMatch = false,
+				CompletionData = new[] {
+					"A",
+					"B",
+					"C"
+				},
+				DefaultCompletionString = "C"
+			});
+			
+			Assert.AreEqual ("C", output);
+		}
+		
+		[Test]
+		public void TestDefaultCompletionStringList ()
+		{
+			CompletionListWindow listWindow = CreateListWindow (new SimulationSettings {
+				PartialWord = "",
+				SimulatedInput = "\t",
+				AutoSelect = true,
+				CompleteWithSpaceOrPunctuation = true,
+				AutoCompleteEmptyMatch = false,
+				CompletionData = new[] {
+					"A",
+					"B",
+					"C"
+				},
+				DefaultCompletionString = "C"
+			});
+			Assert.AreEqual (3, listWindow.FilteredItems.Count);
 		}
 		
 		/// <summary>
@@ -457,8 +505,38 @@ namespace MonoDevelop.Projects.Gui
 		[Test]
 		public void TestBug543923 ()
 		{
-			string output = RunSimulation ("", "i\b ", true, true, false, new [] { "#if", "if", "other" });
+			string output = RunSimulation (new SimulationSettings {
+				PartialWord = "",
+				SimulatedInput = "i\b ",
+				AutoSelect = true,
+				CompleteWithSpaceOrPunctuation = true,
+				AutoCompleteEmptyMatch = false,
+				CompletionData = new[] { "#if", "if", "other" }
+			});
 			Assert.IsTrue (string.IsNullOrEmpty (output));
+		}
+		
+		
+		/// <summary>
+		/// Bug 543938 - Completion list up/down broken with single entry
+		/// </summary>
+		[Test]
+		public void TestBug543938 ()
+		{
+			string output = RunSimulation ("", "2 ", true, true, false, "singleEntry");
+			
+			Assert.AreEqual ("singleEntry", output);
+			
+			output = RunSimulation ("", " ", true, true, false, "singleEntry");
+			Assert.IsTrue (string.IsNullOrEmpty (output));
+		}
+		
+				
+		
+		[TestFixtureSetUp] 
+		public void SetUp()
+		{
+			Gtk.Application.Init ();
 		}
 	}
 }
