@@ -1241,10 +1241,10 @@ namespace Mono.TextEditor
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				LineSegment line = Document.GetLine (logicalLineNumber);
 				foreach (Margin margin in marginsToRender) {
-					if (margin.Width > 0 && area.Left > margin.XOffset + margin.Width)
+/*					if (margin.Width > 0 && area.Left > margin.XOffset + margin.Width)
 						continue;
 					if (area.Right <= margin.XOffset)
-						break;
+						break;*/
 					//Console.WriteLine ("Render margin :" + margin);
 					try {
 						margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
