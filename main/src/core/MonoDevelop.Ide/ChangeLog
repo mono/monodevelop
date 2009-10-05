@@ -1,3 +1,10 @@
+2009-10-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs: Include
+	  the "save current file" checkbox in the controls that are
+	  made insensitive when the is no selected tool. Fix some GTK
+	  warnings. 
+
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Ensure that the

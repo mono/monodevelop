@@ -122,7 +122,9 @@ namespace MonoDevelop.Ide.ExternalTools
 				workingDirTextBox, promptArgsCheckBox, useOutputPadCheckBox, 
 				titleLabel, argumentLabel, commandLabel, 
 				workingDirLabel, browseButton, argumentQuickInsertButton, 
-				workingDirQuickInsertButton, moveUpButton, moveDownButton};
+				workingDirQuickInsertButton, moveUpButton, moveDownButton,
+				saveCurrentFileCheckBox
+			};
 			 
 			foreach (ExternalTool tool in ExternalToolService.Tools) {
 				toolListBoxStore.AppendValues (tool.MenuCommand, tool);
@@ -233,13 +235,18 @@ namespace MonoDevelop.Ide.ExternalTools
 			SetEnabledStatus (externalTool != null, dependendControls);
 			lockStoreValues = true;
 			try {
-				titleTextBox.Text              = externalTool != null ? externalTool.MenuCommand : "";
-				browseButton.Path              = externalTool != null ? externalTool.Command : "";
-				argumentTextBox.Text           = externalTool != null ? externalTool.Arguments : "";
-				workingDirTextBox.Text         = externalTool != null ? externalTool.InitialDirectory : "";
-				promptArgsCheckBox.Active      = externalTool != null && externalTool.PromptForArguments ;
-				useOutputPadCheckBox.Active    = externalTool != null && externalTool.UseOutputPad;
-				saveCurrentFileCheckBox.Active = externalTool != null && externalTool.SaveCurrentFile;
+				if (externalTool != null) {
+					titleTextBox.Text              = externalTool.MenuCommand ?? "";
+					browseButton.Path              = externalTool.Command ?? "";
+					argumentTextBox.Text           = externalTool.Arguments ?? "";
+					workingDirTextBox.Text         = externalTool.InitialDirectory ?? "";
+					promptArgsCheckBox.Active      = externalTool.PromptForArguments ;
+					useOutputPadCheckBox.Active    = externalTool.UseOutputPad;
+					saveCurrentFileCheckBox.Active = externalTool.SaveCurrentFile;
+				} else {
+					titleTextBox.Text = browseButton.Path = argumentTextBox.Text = workingDirTextBox.Text = "";
+					promptArgsCheckBox.Active = useOutputPadCheckBox.Active = saveCurrentFileCheckBox.Active = false;
+				}
 			} finally {
 				lockStoreValues = false;
 			}
