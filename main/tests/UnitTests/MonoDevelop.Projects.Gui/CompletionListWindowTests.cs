@@ -531,7 +531,15 @@ namespace MonoDevelop.Projects.Gui
 			Assert.IsTrue (string.IsNullOrEmpty (output));
 		}
 		
-				
+		/// <summary>
+		/// Bug 543984 – Completion window should only accept punctuation when it's an exact match
+		/// </summary>
+		[Test]
+		public void TestBug543984 ()
+		{
+			string output = RunSimulation ("", "foo b ", true, true, false, "foo bar", "foo bar baz");
+			Assert.AreEqual ("foo bar", output);
+		}
 		
 		[TestFixtureSetUp] 
 		public void SetUp()
