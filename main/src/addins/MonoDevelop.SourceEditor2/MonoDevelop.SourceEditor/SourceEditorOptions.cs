@@ -385,6 +385,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void SetWordFindStrategy ()
 		{
+			if (useViModes) {
+				this.wordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
+				return;
+			}
+			
 			switch (ControlLeftRightMode) {
 			case ControlLeftRightMode.MonoDevelop:
 				this.wordFindStrategy = new EmacsWordFindStrategy (true);
