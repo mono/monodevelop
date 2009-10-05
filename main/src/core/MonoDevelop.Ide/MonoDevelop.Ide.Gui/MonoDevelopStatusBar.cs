@@ -189,6 +189,8 @@ namespace MonoDevelop.Ide
 			
 			Gtk.Image image = new Gtk.Image (pixbuf);
 			image.SetPadding (0, 0);
+			if (eventBox.Child != null)
+				icon.EventBox.Remove (eventBox.Child);
 			eventBox.Child = image;
 			
 			eventBox.ShowAll ();
@@ -260,9 +262,10 @@ namespace MonoDevelop.Ide
 			public void Dispose ()
 			{
 				statusBar.HideStatusIcon (this);
-				if (icon != null) {
-					icon.Dispose ();
-					icon = null;
+				if (images != null) {
+					foreach (Gtk.Image img in images) {
+						img.Dispose ();
+					}
 				}
 			}
 			
