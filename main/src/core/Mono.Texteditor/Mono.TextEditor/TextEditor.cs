@@ -177,7 +177,6 @@ namespace Mono.TextEditor
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			
-			lastCaretLine = DocumentLocation.Empty;
 			if (buffer == null)
 				AllocateWindowBuffer (this.Allocation);
 			
@@ -189,6 +188,12 @@ namespace Mono.TextEditor
 			
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
 			oldVadjustment = this.textEditorData.VAdjustment.Value;
+			
+			// update pending redraws
+			if (redrawList.Count > 0)
+				redrawList = new List<Rectangle> (redrawList.Select (rectangle => { rectangle.Y -= delta; return rectangle;}));
+			TextViewMargin.caretY -= delta;
+			
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
 				this.Repaint ();
 				return;
@@ -203,12 +208,12 @@ namespace Mono.TextEditor
 			}
 			
 			DoFlipBuffer ();
-			Caret.IsVisible = false;
 			this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
 			                          this.flipBuffer,
 			                          0, from, 
 			                          0, to, 
 			                          Allocation.Width, Allocation.Height - from - to);
+			
 			if (delta > 0) {
 				delta += LineHeight;
 				RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta));
@@ -216,15 +221,14 @@ namespace Mono.TextEditor
 				delta -= LineHeight;
 				RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta));
 			}
-			Caret.IsVisible = true;
 			TextViewMargin.VAdjustmentValueChanged ();
-//			QueueDraw ();
-			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
+			QueueDraw ();
+/*			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
 			                        buffer,
 			                        0, 0, 
 			                        0, 0, 
 			                        Allocation.Width, Allocation.Height);
-			PaintCaret (GdkWindow);
+			PaintCaret (GdkWindow);*/
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
@@ -352,14 +356,11 @@ namespace Mono.TextEditor
 //			Rectangle rectangle = textViewMargin.GetCaretRectangle (Caret.Mode);
 			
 			textViewMargin.ResetCaretBlink ();
-			textViewMargin.caretBlink = true;
 			
-			if (args.Location.Line != Caret.Line) {
-				if (!IsSomethingSelected)
-					RedrawLine (args.Location.Line);
-			} else {
-				if (!IsSomethingSelected)
-					RedrawLine (Caret.Line);
+			if (!IsSomethingSelected) {
+				if (Options.HighlightCaretLine && args.Location.Line != Caret.Line) 
+					RedrawMarginLine (TextViewMargin, args.Location.Line);
+				RedrawMarginLine (TextViewMargin, Caret.Line);
 			}
 		}
 		
@@ -624,6 +625,7 @@ namespace Mono.TextEditor
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
+//				Console.WriteLine ("Redraw line:" + logicalLine);
 				this.RepaintArea (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
 			}
 		}
@@ -633,9 +635,9 @@ namespace Mono.TextEditor
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
+//				Console.WriteLine ("Redraw position: logicalLine={0}, logicalColumn={1}", logicalLine, logicalColumn);
 				RedrawLine (logicalLine);
 			}
-//			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, LineHeight);
 		}
 		
 		internal void RedrawMarginLines (Margin margin, int start, int end)
@@ -671,6 +673,7 @@ namespace Mono.TextEditor
 		
 		public void RedrawFromLine (int logicalLine)
 		{
+//			Console.WriteLine ("Redraw from line: logicalLine={0}", logicalLine);
 			lock (disposeLock) {
 				if (isDisposed)
 					return;
@@ -1233,10 +1236,16 @@ namespace Mono.TextEditor
 			int startY = startLine * this.LineHeight - reminder;
 			int curY = startY;
 			bool setLongestLine = false;
+//			Console.WriteLine ("Render margins: startLine={0}, endLine={1}, area={2}", startLine, endLine, area);
 			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				LineSegment line = Document.GetLine (logicalLineNumber);
 				foreach (Margin margin in marginsToRender) {
+					if (margin.Width > 0 && area.Left > margin.XOffset + margin.Width)
+						continue;
+					if (area.Right <= margin.XOffset)
+						break;
+					//Console.WriteLine ("Render margin :" + margin);
 					try {
 						margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
 					} catch (Exception e) {
@@ -1321,37 +1330,28 @@ namespace Mono.TextEditor
 		{
 			if (this.isDisposed)
 				return true;
-			
+//			Console.WriteLine ("Expose:" + e.Area);
+//			Console.WriteLine (Environment.StackTrace);
 			lock (disposeLock) {
 				UpdateAdjustments ();
-				lock (redrawList) {
-					foreach (Gdk.Rectangle updateRect in redrawList.ToArray ()) {
-						RenderMargins (this.buffer, updateRect);
-						e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-							buffer,
-							updateRect.X, updateRect.Y, updateRect.X, updateRect.Y,
-							updateRect.Width, updateRect.Height);
-					}
-					redrawList.Clear ();
-				}
-				
+				RenderPendingUpdates (e.Window);
 				e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
 				                       buffer,
 				                       e.Area.X, e.Area.Y, e.Area.X, e.Area.Y,
 				                       e.Area.Width, e.Area.Height + 1);
-				PaintCaret (e.Window);
+				textViewMargin.DrawCaret (e.Window);
 			}
 			return true;
 		}
-		DocumentLocation lastCaretLine = DocumentLocation.Empty;
-		void PaintCaret (Gdk.Drawable drawable)
+
+		void RenderPendingUpdates (Gdk.Window window)
 		{
-			if (lastCaretLine != Caret.Location) {
-				lastCaretLine = Caret.Location;
-				RenderMargins (this.buffer, new Gdk.Rectangle (this.textViewMargin.XOffset, Document.LogicalToVisualLine (lastCaretLine.Line) * LineHeight - (int)this.textEditorData.VAdjustment.Value, GetMarginWidth(textViewMargin), LineHeight));
+//			Console.WriteLine ("Pending updates: " + redrawList.Count);
+			foreach (Gdk.Rectangle updateRect in redrawList.ToArray ()) {
+				RenderMargins (this.buffer, updateRect);
+				window.DrawDrawable (Style.BackgroundGC (StateType.Normal), buffer, updateRect.X, updateRect.Y, updateRect.X, updateRect.Y, updateRect.Width, updateRect.Height);
 			}
-			
-			textViewMargin.DrawCaret (drawable);
+			redrawList.Clear ();
 		}
 		
 		#region TextEditorData functions

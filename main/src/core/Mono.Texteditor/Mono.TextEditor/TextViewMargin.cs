@@ -145,7 +145,6 @@ namespace Mono.TextEditor
 			linesToRemove.Clear ();
 
 			ResetCaretBlink ();
-			caretBlink = true;
 		}
 		
 		void HandleSearchChanged (object sender, EventArgs args)
@@ -207,8 +206,9 @@ namespace Mono.TextEditor
 			if (offset >= Document.Length || !Document.IsBracket (Document.GetCharAt (offset))) {
 				int old = highlightBracketOffset;
 				highlightBracketOffset = -1;
-				if (old >= 0)
+				if (old >= 0) {
 					textEditor.RedrawLine (Document.OffsetToLineNumber (old));
+				}
 				return;
 			}
 			if (offset < 0)
@@ -360,7 +360,7 @@ namespace Mono.TextEditor
 
 		#region Caret blinking
 		Timer caretTimer = null;
-		internal bool caretBlink = true;
+		bool caretBlink = true;
 		int caretBlinkStatus;
 
 		public void ResetCaretBlink ()
@@ -372,9 +372,14 @@ namespace Mono.TextEditor
 			} else {
 				caretTimer.Stop ();
 			}
+			bool shouldRedraw = !caretBlink;
+			caretBlink = true; 
+			caretBlinkStatus = 0;
+			if (shouldRedraw)
+				textEditor.RedrawMarginLine (this, Caret.Line);
 			caretTimer.Start ();
 		}
-
+		
 		void UpdateCaret (object sender, EventArgs args)
 		{
 			bool newCaretBlink = caretBlinkStatus < 4 || (caretBlinkStatus - 4) % 3 != 0;
@@ -393,7 +398,7 @@ namespace Mono.TextEditor
 
 //		char caretChar;
 		internal int caretX;
-		int caretY;
+		internal int caretY;
 		Gdk.GC caretGc;
 		
 		void SetVisibleCaretPosition (Gdk.Drawable win, char ch, int x, int y)
