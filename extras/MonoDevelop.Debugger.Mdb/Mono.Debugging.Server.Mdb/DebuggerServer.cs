@@ -174,7 +174,7 @@ namespace DebuggerServer
 			}
 		}
 		
-		public void AttachToProcess (int pid)
+		public void AttachToProcess (long pid)
 		{
 			Report.Initialize ();
 
@@ -189,7 +189,7 @@ namespace DebuggerServer
 			session = new MD.DebuggerSession (config, options, "main", (IExpressionParser) null);
 			mdbAdaptor.Session = session;
 			
-			Process proc = debugger.Attach (session, pid);
+			Process proc = debugger.Attach (session, (int)pid);
 			OnInitialized (debugger, proc);
 			
 			ST.ThreadPool.QueueUserWorkItem (delegate {
@@ -466,7 +466,7 @@ namespace DebuggerServer
 				controller.UpdateBreakpoint (eventHandle, hitCount, lastTrace);
 		}
 
-		public ThreadInfo[] GetThreads (int processId)
+		public ThreadInfo[] GetThreads (long processId)
 		{
 			MD.Process p = GetProcess (processId);
 			if (p == null)
@@ -498,7 +498,7 @@ namespace DebuggerServer
 			return new ThreadInfo (t.Process.ID, t.ID, t.Name, loc);
 		}
 		
-		public DL.Backtrace GetThreadBacktrace (int processId, int threadId)
+		public DL.Backtrace GetThreadBacktrace (long processId, long threadId)
 		{
 			MD.Thread t = GetThread (processId, threadId);
 			if (t != null && t.IsStopped)
@@ -507,27 +507,27 @@ namespace DebuggerServer
 				return null;
 		}
 		
-		public void SetActiveThread (int processId, int threadId)
+		public void SetActiveThread (long processId, long threadId)
 		{
 			activeThread = GetThread (processId, threadId);
 		}
 
-		MD.Thread GetThread (int procId, int threadId)
+		MD.Thread GetThread (long procId, long threadId)
 		{
 			MD.Process proc = GetProcess (procId);
 			if (proc != null) {
 				foreach (MD.Thread t in proc.GetThreads ()) {
-					if (t.ID == threadId)
+					if (t.ID == (int)threadId)
 						return t;
 				}
 			}
 			return null;
 		}
 		
-		MD.Process GetProcess (int id)
+		MD.Process GetProcess (long id)
 		{
 			foreach (MD.Process p in debugger.Processes) {
-				if (p.ID == id)
+				if (p.ID == (int)id)
 					return p;
 			}
 			return null;

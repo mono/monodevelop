@@ -38,7 +38,7 @@ namespace Mono.Debugging.Backend.Mdb
 
 		void Stop ();
 		
-		void AttachToProcess (int id);
+		void AttachToProcess (long id);
 		
 		void Detach ();
 		
@@ -72,15 +72,15 @@ namespace Mono.Debugging.Backend.Mdb
 		
 		void Continue ();
 		
-		ThreadInfo[] GetThreads (int processId);
+		ThreadInfo[] GetThreads (long processId);
 		
 		ProcessInfo[] GetPocesses ();
 		
-		Backtrace GetThreadBacktrace (int processId, int threadId);
+		Backtrace GetThreadBacktrace (long processId, long threadId);
 		
 		AssemblyLine[] DisassembleFile (string file);
 		
-		void SetActiveThread (int processId, int threadId);
+		void SetActiveThread (long processId, long threadId);
 		
 		bool AllowBreakpointChanges { get; }
 	}

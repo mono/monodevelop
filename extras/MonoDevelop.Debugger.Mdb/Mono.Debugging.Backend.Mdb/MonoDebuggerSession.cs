@@ -70,7 +70,7 @@ namespace Mono.Debugging.Backend.Mdb
 			detectedMdbVersions [prefix] = mdbVersion;
 		}
 
-		protected override void OnAttachToProcess (int processId)
+		protected override void OnAttachToProcess (long processId)
 		{
 			started = true;
 			controller.StartDebugger (null);
@@ -147,7 +147,7 @@ namespace Mono.Debugging.Backend.Mdb
 			controller.DebuggerServer.Continue ();
 		}
 		
-		protected override ThreadInfo[] OnGetThreads (int processId)
+		protected override ThreadInfo[] OnGetThreads (long processId)
 		{
 			return controller.DebuggerServer.GetThreads (processId);
 		}
@@ -157,12 +157,12 @@ namespace Mono.Debugging.Backend.Mdb
 			return controller.DebuggerServer.GetPocesses ();
 		}
 		
-		protected override Backtrace OnGetThreadBacktrace (int processId, int threadId)
+		protected override Backtrace OnGetThreadBacktrace (long processId, long threadId)
 		{
 			return controller.DebuggerServer.GetThreadBacktrace (processId, threadId);
 		}
 		
-		protected override void OnSetActiveThread (int processId, int threadId)
+		protected override void OnSetActiveThread (long processId, long threadId)
 		{
 			controller.DebuggerServer.SetActiveThread (processId, threadId);
 		}
