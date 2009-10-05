@@ -168,6 +168,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public ISearchProgressMonitor GetSearchProgressMonitor (bool bringToFront)
 		{
+			return GetSearchProgressMonitor (bringToFront, false);
+		}
+		
+		public ISearchProgressMonitor GetSearchProgressMonitor (bool bringToFront, bool focusPad)
+		{
 			Pad pad = null;
 			string title = GettextCatalog.GetString ("Search Results");
 			
@@ -186,7 +191,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			if (pad != null) {
-				if (bringToFront) pad.BringToFront ();
+				if (bringToFront) pad.BringToFront (focusPad);
 				return new SearchProgressMonitor ((SearchResultPad) pad.Content, pad.Title);
 			}
 			
