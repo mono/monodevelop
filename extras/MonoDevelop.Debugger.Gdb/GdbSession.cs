@@ -52,8 +52,8 @@ namespace MonoDevelop.Debugger.Gdb
 		GdbCommandResult lastResult;
 		bool running;
 		Thread thread;
-		int currentThread = -1;
-		int activeThread = -1;
+		long currentThread = -1;
+		long activeThread = -1;
 		bool isMonoProcess;
 		string currentProcessName;
 		List<string> tempVariableObjects = new List<string> ();
@@ -126,7 +126,7 @@ namespace MonoDevelop.Debugger.Gdb
 			}
 		}
 		
-		protected override void OnAttachToProcess (int processId)
+		protected override void OnAttachToProcess (long processId)
 		{
 			lock (gdbLock) {
 				StartGdb ();
@@ -184,7 +184,7 @@ namespace MonoDevelop.Debugger.Gdb
 				thread.Abort ();
 		}
 		
-		protected override void OnSetActiveThread (int processId, int threadId)
+		protected override void OnSetActiveThread (long processId, long threadId)
 		{
 			activeThread = threadId;
 		}
@@ -444,12 +444,12 @@ namespace MonoDevelop.Debugger.Gdb
 			RunCommand ("-exec-continue");
 		}
 		
-		protected override ThreadInfo[] OnGetThreads (int processId)
+		protected override ThreadInfo[] OnGetThreads (long processId)
 		{
 			List<ThreadInfo> list = new List<ThreadInfo> ();
 			ResultData data = RunCommand ("-thread-list-ids").GetObject ("thread-ids");
 			foreach (string id in data.GetAllValues ("thread-id"))
-				list.Add (GetThread (int.Parse (id)));
+				list.Add (GetThread (long.Parse (id)));
 			return list.ToArray ();
 		}
 		
@@ -459,12 +459,12 @@ namespace MonoDevelop.Debugger.Gdb
 			return new ProcessInfo [] { p };
 		}
 		
-		ThreadInfo GetThread (int id)
+		ThreadInfo GetThread (long id)
 		{
 			return new ThreadInfo (0, id, "Thread #" + id, null);
 		}
 		
-		protected override Backtrace OnGetThreadBacktrace (int processId, int threadId)
+		protected override Backtrace OnGetThreadBacktrace (long processId, long threadId)
 		{
 			ResultData data = SelectThread (threadId);
 			GdbCommandResult res = RunCommand ("-stack-info-depth");
@@ -506,7 +506,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return lines.ToArray ();
 		}
 		
-		public ResultData SelectThread (int id)
+		public ResultData SelectThread (long id)
 		{
 			if (id == currentThread)
 				return null;

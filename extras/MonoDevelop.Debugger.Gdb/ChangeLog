@@ -1,3 +1,8 @@
+2009-10-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GdbSession.cs:
+	* GdbBacktrace.cs: Use long for thread and process id.
+
 2009-10-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.Gdb.sln: 

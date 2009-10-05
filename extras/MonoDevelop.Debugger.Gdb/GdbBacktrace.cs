@@ -42,9 +42,9 @@ namespace MonoDevelop.Debugger.Gdb
 		GdbSession session;
 		DissassemblyBuffer[] disBuffers;
 		int currentFrame = -1;
-		int threadId;
+		long threadId;
 		
-		public GdbBacktrace (GdbSession session, int threadId, int count, ResultData firstFrame)
+		public GdbBacktrace (GdbSession session, long threadId, int count, ResultData firstFrame)
 		{
 			fcount = count;
 			this.threadId = threadId;
