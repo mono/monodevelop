@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			if (bringToFront)
-			    pad.BringToFront ();
+				pad.BringToFront (focusPad);
 
 			return new SearchProgressMonitor (monitorPad, pad.Title);
 		}

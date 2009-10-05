@@ -1,5 +1,10 @@
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: added focuspad
+	  option for new search monitors.
+
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: Added grabFocus
 	  option to GetSearchProgressMonitor.
 
