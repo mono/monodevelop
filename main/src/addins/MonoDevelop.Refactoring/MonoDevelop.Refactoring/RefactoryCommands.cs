@@ -606,7 +606,7 @@ namespace MonoDevelop.Refactoring
 		{
 			if (item is CompoundType) {
 				CompoundType compoundType = (CompoundType)item;
-				monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
+				monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 				using (monitor) {
 					foreach (IType part in compoundType.Parts) {
 						FileProvider provider = new FileProvider (part.CompilationUnit.FileName);
@@ -622,6 +622,7 @@ namespace MonoDevelop.Refactoring
 						}
 						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length));
 					}
+					
 				}
 				
 				return;
@@ -631,7 +632,7 @@ namespace MonoDevelop.Refactoring
 		
 		public void FindReferences ()
 		{
-			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
+			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			Thread t = new Thread (new ThreadStart (FindReferencesThread));
 			t.IsBackground = true;
 			t.Start ();
@@ -703,7 +704,7 @@ namespace MonoDevelop.Refactoring
 		
 		public void FindDerivedClasses ()
 		{
-			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
+			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			Thread t = new Thread (new ThreadStart (FindDerivedThread));
 			t.IsBackground = true;
 			t.Start ();
