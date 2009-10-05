@@ -114,7 +114,9 @@ namespace MonoDevelop.Projects.Dom
 					}
 					for (int j = 0; j < returnType.ArrayDimensions; j++) {
 						result.Append ("[");
-						result.Append (new string (',', returnType.GetDimension (j)));
+						int dimension = returnType.GetDimension (j);
+						if (dimension > 0)
+							result.Append (new string (',', dimension));
 						result.Append ("]");
 					}
 					result.Append (new string ('*', returnType.PointerNestingLevel));
