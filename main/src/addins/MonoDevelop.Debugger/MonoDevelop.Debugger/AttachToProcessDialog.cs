@@ -37,7 +37,7 @@ namespace MonoDevelop.Debugger
 	public partial class AttachToProcessDialog : Gtk.Dialog
 	{
 		List<IDebuggerEngine> currentDebEngines;
-		Dictionary<int, List<IDebuggerEngine>> procEngines = new Dictionary<int,List<IDebuggerEngine>> ();
+		Dictionary<long, List<IDebuggerEngine>> procEngines = new Dictionary<long,List<IDebuggerEngine>> ();
 		List<ProcessInfo> procs = new List<ProcessInfo> ();
 		Gtk.ListStore store;
 		TreeViewState state;

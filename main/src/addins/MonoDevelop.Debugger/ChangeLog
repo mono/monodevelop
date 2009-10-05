@@ -1,3 +1,8 @@
+2009-10-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/AttachToProcessDialog.cs: Track api
+	  changes.
+
 2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Avoid deadlock by
