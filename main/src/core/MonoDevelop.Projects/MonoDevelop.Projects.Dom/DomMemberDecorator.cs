@@ -319,6 +319,14 @@ namespace MonoDevelop.Projects.Dom
 			this.member = member;
 		}
 
+		public virtual void Dispose ()
+		{
+			if (member != null) {
+				member.Dispose ();
+				member = null;
+			}
+		}
+
 		#region INode implementation 
 		
 		public virtual S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)

@@ -45,11 +45,40 @@ namespace MonoDevelop.Projects.Dom
 		static readonly ReadOnlyCollection<IReturnType> emptyTypeList = new List<IReturnType> ().AsReadOnly ();
 		
 		List<ITypeParameter> typeParameters      = null;
-		List<IMember> members                   = new List<IMember> ();
+		List<IMember> members                    = new List<IMember> ();
 		List<IReturnType> implementedInterfaces = null;
 		
 		protected ClassType classType = ClassType.Unknown;
 		protected string nameSpace;
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			sourceProjectDom = null;
+			compilationUnit = null;
+			
+			if (baseType != null) {
+				baseType.Dispose ();
+				baseType = null;
+			}
+			if (typeParameters != null) {
+				typeParameters.ForEach (p => p.Dispose ());
+				typeParameters.Clear ();
+				typeParameters = null;
+			}
+			
+			if (members != null) {
+				members.ForEach (m => m.Dispose ());
+				members.Clear ();
+				members = null;
+			}
+			
+			if (implementedInterfaces != null) {
+				implementedInterfaces.ForEach (i => i.Dispose ());
+				implementedInterfaces.Clear ();
+				implementedInterfaces = null;
+			}
+		}
 
 		public override MemberType MemberType {
 			get {

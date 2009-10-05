@@ -112,8 +112,19 @@ namespace MonoDevelop.Projects.Dom
 			this.DeclaringMember = declaringMember;
 			this.ReturnType      = returnType;
 		}
-		
-		
+		public virtual void Dispose ()
+		{
+			DeclaringMember = null;
+			if (ReturnType != null) {
+				ReturnType.Dispose ();
+				ReturnType = null;
+			}
+			if (attributes != null) {
+				attributes.ForEach (attr => attr.Dispose ());
+				attributes.Clear ();
+				attributes = null;
+			}
+		}
 		
 		public void Add (IAttribute attribute)
 		{

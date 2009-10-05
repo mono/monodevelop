@@ -83,6 +83,16 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		
+		public void Dispose ()
+		{
+			if (genericArguments != null) {
+				genericArguments.ForEach (arg => arg.Dispose ());
+				genericArguments.Clear ();
+				genericArguments = null;
+			}
+		}
+		
 		public string ToInvariantString ()
 		{
 			if (genericArguments != null && genericArguments.Count > 0) {
@@ -166,6 +176,7 @@ namespace MonoDevelop.Projects.Dom
 				return parts[parts.Count - 1].GenericArguments;
 			}
 		}
+		
 		public void AddTypeParameter (IReturnType type)
 		{
 			Debug.Assert (parts.Count > 0);
@@ -226,7 +237,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-
 		public string Namespace {
 			get {
 				return nspace;
@@ -332,6 +342,15 @@ namespace MonoDevelop.Projects.Dom
 			} while (curType != null);
 		}
 		
+		public virtual void Dispose ()
+		{
+			if (parts != null) {
+				parts.ForEach (p => p.Dispose ());
+				parts.Clear ();
+				parts = null;
+			}
+			this.type = null;
+		}
 		public override bool Equals (object obj)
 		{
 			DomReturnType type = obj as DomReturnType;

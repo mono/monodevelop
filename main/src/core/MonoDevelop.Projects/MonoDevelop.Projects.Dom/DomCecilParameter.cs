@@ -72,5 +72,12 @@ namespace MonoDevelop.Projects.Dom
 				}
 			}
 		}
+		
+		public override void Dispose ()
+		{
+			CleanCecilDefinitions ();
+			base.Dispose ();
+		}
+		
 	}
 }

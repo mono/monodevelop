@@ -36,10 +36,9 @@ namespace MonoDevelop.Projects.Dom
 {
 	public abstract class AbstractMember : IMember
 	{
-		
 		protected List<IReturnType> explicitInterfaces = null;
 		
-		protected IType  declaringType;
+		protected IType declaringType;
 		
 		public abstract MemberType MemberType {
 			get;
@@ -151,6 +150,25 @@ namespace MonoDevelop.Projects.Dom
 		public virtual IEnumerable<IAttribute> Attributes {
 			get {
 				return (IEnumerable<IAttribute>)attributes ?? emptyAttributes;
+			}
+		}
+		
+		
+		public virtual void Dispose ()
+		{
+			if (explicitInterfaces != null) {
+				explicitInterfaces.ForEach (i => i.Dispose ());
+				explicitInterfaces.Clear ();
+				explicitInterfaces = null;
+			}
+			declaringType = null;
+			if (attributes != null) {
+				attributes.ForEach (i => i.Dispose ());
+				attributes.Clear ();
+			}
+			if (ReturnType != null) {
+				ReturnType.Dispose ();
+				ReturnType = null;
 			}
 		}
 		

@@ -117,6 +117,16 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (parameters != null) {
+				parameters.ForEach (p => p.Dispose ());
+				parameters.Clear ();
+				parameters = null;
+			}
+		}
+
 		
 		public override int CompareTo (object obj)
 		{

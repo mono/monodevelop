@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IBaseMember : INode
+	public interface IBaseMember : INode, IDisposable
 	{
 		MemberType MemberType { get; }
 		string Name { get; }

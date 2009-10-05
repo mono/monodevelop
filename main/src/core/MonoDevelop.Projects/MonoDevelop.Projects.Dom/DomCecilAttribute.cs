@@ -65,5 +65,12 @@ namespace MonoDevelop.Projects.Dom
 			foreach (System.Collections.DictionaryEntry entry in customAttribute.Fields)
 				AddNamedArgument ((string)entry.Key, new System.CodeDom.CodePrimitiveExpression (entry.Value));
 		}
+		
+		public override void Dispose ()
+		{
+			customAttribute = null;
+			base.Dispose ();
+		}
+
 	}
 }

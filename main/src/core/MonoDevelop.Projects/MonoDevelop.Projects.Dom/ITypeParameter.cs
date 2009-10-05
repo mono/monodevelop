@@ -31,7 +31,7 @@ using System.Collections.Generic;
 namespace MonoDevelop.Projects.Dom
 {
 	public enum TypeParameterVariance { None, Out, In }
-	public interface ITypeParameter
+	public interface ITypeParameter : IDisposable
 	{
 		string Name { get; }
 

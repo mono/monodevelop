@@ -44,10 +44,8 @@ namespace MonoDevelop.Projects.Dom
 		public void CleanCecilDefinitions ()
 		{
 			methodDefinition = null;
-			foreach (DomCecilParameter parameter in base.parameters) {
-				parameter.CleanCecilDefinitions ();
-			}
 		}
+		
 		/*
 			// Check if 'type' has some decorations applied to it
 				if (type is Mono.Cecil.TypeSpecification) {
@@ -171,6 +169,12 @@ namespace MonoDevelop.Projects.Dom
 					continue; 
 				AddExplicitInterface (GetReturnType (overrideRef.DeclaringType));
 			}
+		}
+		
+		public override void Dispose ()
+		{
+			CleanCecilDefinitions ();
+			base.Dispose ();
 		}
 	}
 }

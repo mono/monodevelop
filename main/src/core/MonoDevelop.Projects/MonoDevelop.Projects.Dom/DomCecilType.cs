@@ -67,6 +67,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public override void Dispose ()
+		{
+			CleanCecilDefinitions ();
+			base.Dispose ();
+		}
+		
 		public static string RemoveGenericParamSuffix (string name)
 		{
 			name = name.Replace ('/', '.'); // nested classes are represented as A/Nested and in the dom it's just A.Nested

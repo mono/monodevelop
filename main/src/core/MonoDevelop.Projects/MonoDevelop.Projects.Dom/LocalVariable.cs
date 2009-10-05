@@ -60,8 +60,7 @@ namespace MonoDevelop.Projects.Dom
 				return MemberType.LocalVariable;
 			}
 		}
-
-			
+		
 		public IMember DeclaringMember {
 			get;
 			private set;
@@ -95,6 +94,15 @@ namespace MonoDevelop.Projects.Dom
 			this.ReturnType = type;
 			this.Region = region;
 			this.Location = region.Start;
+		}
+		
+		public void Dispose ()
+		{
+			DeclaringMember = null;
+			if (ReturnType != null) {
+				ReturnType.Dispose ();
+				ReturnType = null;
+			}
 		}
 		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{

@@ -80,6 +80,23 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (addMethod != null) {
+				addMethod.Dispose ();
+				addMethod = null;
+			}
+			if (removeMethod != null) {
+				removeMethod.Dispose ();
+				removeMethod = null;
+			}
+			if (raiseMethod != null) {
+				raiseMethod.Dispose ();
+				raiseMethod = null;
+			}
+		}
+
 		public DomEvent (string name, Modifiers modifiers, DomLocation location, IReturnType returnType)
 		{
 			this.Name = name;

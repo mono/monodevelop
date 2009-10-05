@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects.Dom
 		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
 		static readonly ReadOnlyCollection<ITypeParameter> emptyGenericParameters = new ReadOnlyCollection<ITypeParameter> (new ITypeParameter [0]);
 		
+		
 		public override MemberType MemberType {
 			get {
 				return MemberType.Method;
@@ -173,6 +174,21 @@ namespace MonoDevelop.Projects.Dom
 			this.BodyRegion     = bodyRegion;
 			this.ReturnType     = returnType;
 			this.MethodModifier = MethodModifier;
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (parameters != null) {
+				parameters.ForEach (p => p.Dispose ());
+				parameters.Clear ();
+				parameters = null;
+			}
+			if (genericParameters != null) {
+				genericParameters.ForEach (p => p.Dispose ());
+				genericParameters.Clear ();
+				genericParameters = null;
+			}
 		}
 		
 		public static IMethod CreateInstantiatedGenericMethod (IMethod method, IList<IReturnType> genericArguments, IList<IReturnType> methodArguments)

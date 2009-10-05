@@ -147,6 +147,17 @@ namespace MonoDevelop.Projects.Dom
 			this.OriginalMethod = originalMethod;
 		}
 		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (method != null) {
+				method.Dispose ();
+				method = null;
+			}
+			ExtensionType = null;
+			OriginalMethod = null;
+		}
+		
 		public ExtensionMethod (IType extenisonType, IMethod originalMethod, IList<IReturnType> genericArguments, IEnumerable<IReturnType> methodArguments)
 		{
 			this.DeclaringType = extenisonType;

@@ -71,6 +71,19 @@ namespace MonoDevelop.Projects.Dom
 				return namedArguments != null ? new ReadOnlyDictionary<string, CodeExpression> (namedArguments) : emptyNamedArguments;
 			}
 		}
+		
+		public virtual void Dispose ()
+		{
+			if (positionalArguments != null) {
+				positionalArguments.Clear ();
+				positionalArguments = null;
+			}
+			
+			if (namedArguments != null) {
+				namedArguments.Clear ();
+				namedArguments = null;
+			}
+		}
 
 		public void AddPositionalArgument (CodeExpression exp)
 		{

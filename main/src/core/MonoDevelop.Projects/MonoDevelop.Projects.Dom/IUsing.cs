@@ -33,7 +33,7 @@ using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IUsing : INode
+	public interface IUsing : INode, IDisposable
 	{
 		DomRegion Region {
 			get;

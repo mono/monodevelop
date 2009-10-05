@@ -50,6 +50,17 @@ namespace MonoDevelop.Projects.Dom
 //		{
 //		}
 		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (xmlDocumentation != null) {
+				xmlDocumentation.Clear ();
+				xmlDocumentation = null;
+			}
+			assemblyDefinition = null;
+			xmlDocumentation = null;
+		}
+
 		public DomCecilCompilationUnit (bool keepDefinitions, string xmlFileName, bool loadInternals, AssemblyDefinition assemblyDefinition) : base (assemblyDefinition.Name.FullName)
 		{
 			if (keepDefinitions)
@@ -140,8 +151,8 @@ namespace MonoDevelop.Projects.Dom
 //				if (type.Name == "SimplePropertyDescriptor")
 //					System.Console.WriteLine(type.Attributes + "/" + DomCecilType.GetModifiers (type.Attributes) + "/" + IsInternal (DomCecilType.GetModifiers (type.Attributes)));
 				DomCecilType loadType = new DomCecilType (keepDefinitions, loadInternal, type);
-				
 				Add ((IType)resolver.Visit (loadType, null));
+				loadType.Dispose ();
 			}
 		}
 		
@@ -154,6 +165,7 @@ namespace MonoDevelop.Projects.Dom
 			{
 				this.xmlDocumentation = xmlDocumentation;
 			}
+			
 			void AddDocumentation (IMember member)
 			{
 				if (xmlDocumentation == null || member == null)
