@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-10-02 20:22:53+0200\n"
-"PO-Revision-Date: 2009-10-02 20:23:41+0200\n"
+"PO-Revision-Date: 2009-10-05 14:17:16+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -7325,11 +7325,11 @@ msgstr "Suche nach lokalen und Remote-Änderungen..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:375
 msgid "No files have local modifications."
-msgstr "Keine Dateien haben lokale Veränderungen."
+msgstr "Keine Dateien haben lokale Änderungen."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:377
 msgid "No files have local or remote modifications."
-msgstr "Keine Dateien haben lokale oder entfernte Veränderungen."
+msgstr "Keine Dateien haben lokale oder entfernte Änderungen."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:483
 msgid "Commit message for file '{0}':"
@@ -16306,7 +16306,7 @@ msgid ""
 "Indicates that this tag should be able to be\n"
 "manipulated programmatically on the web server."
 msgstr ""
-"Gibt vor das das Tag per Programm verändert werden kann auf dem Webserver."
+"Gibt vor das das Tag auf dem Webserver per Programm verändert werden kann."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:319
 msgid ""
@@ -17495,7 +17495,6 @@ msgstr "T4 Schablone"
 #~ msgstr "Ab_wärts"
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
-
 #~ msgid "Question"
 #~ msgstr "Frage"
 
