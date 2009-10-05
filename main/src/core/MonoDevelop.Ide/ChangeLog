@@ -1,5 +1,11 @@
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Handled an
+	  exception that could happen, when the code completion
+	  database is corrupted.
+
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: added focuspad
 	  option for new search monitors.
 

@@ -242,7 +242,12 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			string fileName;
 			if (member is MonoDevelop.Projects.Dom.IType) {
-				fileName = ((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName;
+				try {
+					fileName = ((MonoDevelop.Projects.Dom.IType)member).CompilationUnit.FileName;
+				} catch (Exception e) {
+					LoggingService.LogError ("Can't get file name for type:" + member + ". Try to restart monodevelop.", e);
+					fileName = null;
+				}
 			} else {
 				if (member.DeclaringType == null) 
 					return;
