@@ -67,6 +67,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"Alfonso Santos Luaces",
 			"Andrés G. Aragoneses",
 			"Andre Filipe de Assuncao e Brito",
+			"Andrea Krüger",
 			"Andrew Jorgensen",
 			"Antonio Ognio",
 			"Ankit Jain",

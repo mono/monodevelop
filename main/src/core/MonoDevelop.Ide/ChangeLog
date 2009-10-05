@@ -1,3 +1,8 @@
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Added
+	  andrea to the about dialog.
+
 2009-10-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs: Fix
