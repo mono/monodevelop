@@ -418,21 +418,45 @@ namespace MonoDevelop.Debugger.Soft
 			foreach (CustomAttributeDataMirror attr in t.GetCustomAttributes (true)) {
 				string attName = attr.Constructor.DeclaringType.FullName;
 				if (attName == "System.Diagnostics.DebuggerDisplayAttribute") {
-					DebuggerDisplayAttribute at = (DebuggerDisplayAttribute) BuildAttribute (attr, typeof(DebuggerDisplayAttribute));
+					DebuggerDisplayAttribute at = BuildAttribute<DebuggerDisplayAttribute> (attr);
 					td.NameDisplayString = at.Name;
 					td.TypeDisplayString = at.Type;
 					td.ValueDisplayString = at.Value;
 				}
 				else if (attName == "System.Diagnostics.DebuggerTypeProxyAttribute") {
-					DebuggerTypeProxyAttribute at = (DebuggerTypeProxyAttribute) BuildAttribute (attr, typeof(DebuggerTypeProxyAttribute));
+					DebuggerTypeProxyAttribute at = BuildAttribute<DebuggerTypeProxyAttribute> (attr);
 					td.IsProxyType = true;
 					td.ProxyType = at.ProxyTypeName;
 					if (!string.IsNullOrEmpty (td.ProxyType))
 						ForceLoadType (ctx, t, td.ProxyType);
 				}
 			}
-			// TODO custom attributes for fields and properties
+			foreach (FieldInfoMirror fi in t.GetFields ()) {
+				DebuggerBrowsableAttribute att = GetAttribute <DebuggerBrowsableAttribute> (fi.GetCustomAttributes (true));
+				if (att != null) {
+					if (td.MemberData == null)
+						td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
+					td.MemberData [fi.Name] = att.State;
+				}
+			}
+			foreach (PropertyInfoMirror pi in t.GetProperties ()) {
+				DebuggerBrowsableAttribute att = GetAttribute <DebuggerBrowsableAttribute> (pi.GetCustomAttributes (true));
+				if (att != null) {
+					if (td.MemberData == null)
+						td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
+					td.MemberData [pi.Name] = att.State;
+				}
+			}
 			return td;
+		}
+					    
+		T GetAttribute<T> (CustomAttributeDataMirror[] attrs)
+		{
+			foreach (CustomAttributeDataMirror attr in attrs) {
+				if (attr.Constructor.DeclaringType.FullName == typeof(T).FullName)
+					return BuildAttribute<T> (attr);
+			}
+			return default(T);
 		}
 		
 		void ForceLoadType (SoftEvaluationContext ctx, TypeMirror helperType, string typeName)
@@ -445,13 +469,14 @@ namespace MonoDevelop.Debugger.Soft
 			tm.InvokeMethod (ctx.Thread, met, new Value[] {(Value) CreateValue (ctx, typeName)});
 		}
 		
-		object BuildAttribute (CustomAttributeDataMirror attr, Type type)
+		T BuildAttribute<T> (CustomAttributeDataMirror attr)
 		{
 			List<object> args = new List<object> ();
 			foreach (CustomAttributeTypedArgumentMirror arg in attr.ConstructorArguments) {
 				Console.WriteLine ("pp arg:" + arg.Value + " tt:" + arg.ArgumentType);
 				args.Add (arg.Value);
 			}
+			Type type = typeof(T);
 			object at = Activator.CreateInstance (type, args.ToArray ());
 			foreach (CustomAttributeNamedArgumentMirror arg in attr.NamedArguments) {
 				object val = arg.TypedValue.Value;
@@ -463,7 +488,7 @@ namespace MonoDevelop.Debugger.Soft
 				else if (arg.Property != null)
 					type.GetProperty (arg.Property.Name + postFix).SetValue (at, val, null);
 			}
-			return at;
+			return (T) at;
 		}
 		
 		TypeMirror ToTypeMirror (EvaluationContext ctx, object type)
@@ -612,10 +637,10 @@ namespace MonoDevelop.Debugger.Soft
 				ArrayMirror arr = (ArrayMirror) obj;
 				StringBuilder tn = new StringBuilder (arr.Type.GetElementType ().FullName);
 				tn.Append ("[");
-				for (int n=0; n<arr.Dimensions.Length; n++) {
+				for (int n=0; n<arr.Rank; n++) {
 					if (n>0)
 						tn.Append (',');
-					tn.Append (arr.Dimensions [n]);
+					tn.Append (arr.GetLength (n));
 				}
 				tn.Append ("]");
 				return new LiteralExp (tn.ToString ());

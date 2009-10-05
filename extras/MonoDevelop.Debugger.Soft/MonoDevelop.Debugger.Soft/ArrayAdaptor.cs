@@ -33,6 +33,7 @@ namespace MonoDevelop.Debugger.Soft
 	public class ArrayAdaptor: ICollectionAdaptor
 	{
 		ArrayMirror array;
+		int[] dimensions;
 		
 		public ArrayAdaptor (ArrayMirror array)
 		{
@@ -41,9 +42,12 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public int[] GetDimensions ()
 		{
-			// TODO wating for a Dimensions property
-			int i = array.Length;
-			return array.lengths;
+			if (dimensions == null) {
+				dimensions = new int [array.Rank];
+				for (int n=0; n<array.Rank; n++)
+					dimensions [n] = array.GetLength (n);
+			}
+			return dimensions;
 		}
 		
 		public object GetElement (int[] indices)

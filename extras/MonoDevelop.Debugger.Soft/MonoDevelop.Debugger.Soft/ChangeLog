@@ -1,3 +1,10 @@
+2009-10-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ArrayAdaptor.cs:
+	* Mono.Debugger.dll:
+	* SoftDebuggerAdaptor.cs:
+	* SoftDebuggerSession.cs: Ongoing work.
+
 2009-09-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ArrayAdaptor.cs:

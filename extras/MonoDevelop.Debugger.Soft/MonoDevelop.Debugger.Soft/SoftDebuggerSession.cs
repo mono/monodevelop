@@ -136,7 +136,7 @@ namespace MonoDevelop.Debugger.Soft
 			}
 		}
 
-		protected override void OnAttachToProcess (int processId)
+		protected override void OnAttachToProcess (long processId)
 		{
 			throw new System.NotImplementedException ();
 		}
@@ -175,7 +175,7 @@ namespace MonoDevelop.Debugger.Soft
 			return procs;
 		}
 
-		protected override Backtrace OnGetThreadBacktrace (int processId, int threadId)
+		protected override Backtrace OnGetThreadBacktrace (long processId, long threadId)
 		{
 			return GetThreadBacktrace (GetThread (processId, threadId));
 		}
@@ -186,24 +186,33 @@ namespace MonoDevelop.Debugger.Soft
 			return new Backtrace (new SoftDebuggerBacktrace (this, frames));
 		}
 
-		protected override ThreadInfo[] OnGetThreads (int processId)
+		protected override ThreadInfo[] OnGetThreads (long processId)
 		{
 			if (current_threads == null) {
-				ThreadInfo ti = new ThreadInfo (processId, 1, current_thread.Name, "");
-				current_threads = new ThreadInfo[] { ti };
+				List<ThreadInfo> threads = new List<ThreadInfo> ();
+				foreach (ThreadMirror t in vm.GetThreads ())
+					threads.Add (new ThreadInfo (processId, t.Id, t.Name, null));
+				current_threads = threads.ToArray ();
 			}
 			return current_threads;
 		}
 		
-		ThreadMirror GetThread (int processId, int threadId)
+		ThreadMirror GetThread (long processId, long threadId)
 		{
-			return current_thread;
+			foreach (ThreadMirror t in vm.GetThreads ())
+				if (t.Id == threadId)
+					return t;
+			return null;
 		}
 		
 		ThreadInfo GetThread (ThreadMirror thread)
 		{
-			OnGetThreads (0);
-			return current_threads [0];
+			if (current_threads == null)
+				return null;
+			foreach (ThreadInfo t in current_threads)
+				if (t.Id == thread.Id)
+					return t;
+			return null;
 		}
 
 		protected override object OnInsertBreakEvent (BreakEvent be, bool activate)
@@ -419,7 +428,7 @@ namespace MonoDevelop.Debugger.Soft
 			OnDebuggerOutput (isError, msg);
 		}
 		
-		protected override void OnSetActiveThread (int processId, int threadId)
+		protected override void OnSetActiveThread (long processId, long threadId)
 		{
 		}
 
