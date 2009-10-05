@@ -32,9 +32,9 @@ namespace Mono.Debugging.Client
 	[Serializable]
 	public class ThreadInfo
 	{
-		int id;
+		long id;
 		string name;
-		int processId;
+		long processId;
 		string location;
 		Backtrace backtrace;
 		
@@ -46,7 +46,7 @@ namespace Mono.Debugging.Client
 			this.session = session;
 		}
 		
-		public int Id {
+		public long Id {
 			get {
 				return id;
 			}
@@ -69,7 +69,7 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		internal int ProcessId {
+		internal long ProcessId {
 			get { return processId; }
 		}
 
@@ -86,11 +86,11 @@ namespace Mono.Debugging.Client
 			session.ActiveThread = this;
 		}
 		
-		public ThreadInfo (int processId, int id, string name, string location): this (processId, id, name, location, null)
+		public ThreadInfo (long processId, long id, string name, string location): this (processId, id, name, location, null)
 		{
 		}
 		
-		public ThreadInfo (int processId, int id, string name, string location, Backtrace backtrace)
+		public ThreadInfo (long processId, long id, string name, string location, Backtrace backtrace)
 		{
 			this.id = id;
 			this.name = name;
@@ -109,7 +109,9 @@ namespace Mono.Debugging.Client
 		
 		public override int GetHashCode ()
 		{
-			return id + processId*1000;
+			unchecked {
+				return (int) (id + processId*1000);
+			}
 		}
 		
 		public static bool operator == (ThreadInfo t1, ThreadInfo t2)

@@ -32,7 +32,7 @@ namespace Mono.Debugging.Client
 	[Serializable]
 	public class ProcessInfo
 	{
-		int id;
+		long id;
 		string name;
 		
 		[NonSerialized]
@@ -50,7 +50,7 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		public int Id {
+		public long Id {
 			get {
 				return id;
 			}
@@ -62,7 +62,7 @@ namespace Mono.Debugging.Client
 			}
 		}
 
-		public ProcessInfo (int id, string name)
+		public ProcessInfo (long id, string name)
 		{
 			this.id = id;
 			this.name = name;

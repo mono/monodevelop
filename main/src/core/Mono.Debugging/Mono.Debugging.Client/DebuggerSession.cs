@@ -509,7 +509,7 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		internal ThreadInfo[] GetThreads (int processId)
+		internal ThreadInfo[] GetThreads (long processId)
 		{
 			lock (slock) {
 				ThreadInfo[] threads = OnGetThreads (processId);
@@ -519,7 +519,7 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		internal Backtrace GetBacktrace (int processId, int threadId)
+		internal Backtrace GetBacktrace (long processId, long threadId)
 		{
 			lock (slock) {
 				Backtrace bt = OnGetThreadBacktrace (processId, threadId);
@@ -714,11 +714,11 @@ namespace Mono.Debugging.Client
 		
 		protected abstract void OnRun (DebuggerStartInfo startInfo);
 
-		protected abstract void OnAttachToProcess (int processId);
+		protected abstract void OnAttachToProcess (long processId);
 		
 		protected abstract void OnDetach ();
 		
-		protected abstract void OnSetActiveThread (int processId, int threadId);
+		protected abstract void OnSetActiveThread (long processId, long threadId);
 
 		protected abstract void OnStop ();
 		
@@ -754,11 +754,11 @@ namespace Mono.Debugging.Client
 
 		protected abstract void OnContinue ();
 		
-		protected abstract ThreadInfo[] OnGetThreads (int processId);
+		protected abstract ThreadInfo[] OnGetThreads (long processId);
 		
 		protected abstract ProcessInfo[] OnGetPocesses ();
 		
-		protected abstract Backtrace OnGetThreadBacktrace (int processId, int threadId);
+		protected abstract Backtrace OnGetThreadBacktrace (long processId, long threadId);
 
 		protected virtual AssemblyLine[] OnDisassembleFile (string file)
 		{
