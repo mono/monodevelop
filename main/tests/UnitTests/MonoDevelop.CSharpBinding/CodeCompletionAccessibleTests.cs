@@ -53,7 +53,19 @@ public class TestClass
 	protected int ProtField;
 	protected int ProtProperty { get; set; }
 	protected void ProtMethod () { }
+
+	internal protected int ProtOrInternalField;
+	internal protected int ProtOrInternalProperty { get; set; }
+	internal protected void ProtOrInternalMethod () { }
 	
+	protected internal int ProtAndInternalField;
+	protected internal int ProtAndInternalProperty { get; set; }
+	protected internal void ProtAndInternalMethod () { }
+
+	internal int InternalField;
+	internal int InternalProperty { get; set; }
+	internal void InternalMethod () { }
+
 	private int PrivField;
 	private int PrivProperty { get; set; }
 	private void PrivMethod () { }
@@ -94,6 +106,55 @@ public class TestClass
 			Assert.IsNotNull (provider.Find ("PrivField"));
 			Assert.IsNotNull (provider.Find ("PrivProperty"));
 			Assert.IsNotNull (provider.Find ("PrivMethod"));
+		}
+		
+		[Test()]
+		public void TestInternalAccess ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (testClass +
+@"
+	void TestMethod () 
+	{
+		$this.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			
+			Assert.IsNotNull (provider.Find ("InternalField"));
+			Assert.IsNotNull (provider.Find ("InternalProperty"));
+			Assert.IsNotNull (provider.Find ("InternalMethod"));
+			
+			Assert.IsNotNull (provider.Find ("ProtAndInternalField"));
+			Assert.IsNotNull (provider.Find ("ProtAndInternalProperty"));
+			Assert.IsNotNull (provider.Find ("ProtAndInternalMethod"));
+			
+			Assert.IsNotNull (provider.Find ("ProtOrInternalField"));
+			Assert.IsNotNull (provider.Find ("ProtOrInternalProperty"));
+			Assert.IsNotNull (provider.Find ("ProtOrInternalMethod"));
+		}
+		
+		[Test()]
+		public void TestInternalAccessOutside ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (testClass +
+@"
+} 
+class Test2 {
+	void TestMethod () 
+	{
+		TestClass tc;
+		$tc.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			
+			Assert.IsNotNull (provider.Find ("InternalField"), "InternalField == null");
+			Assert.IsNotNull (provider.Find ("InternalProperty"), "InternalProperty == null");
+			Assert.IsNotNull (provider.Find ("InternalMethod"), "InternalMethod == null");
+			
+			Assert.IsNotNull (provider.Find ("ProtOrInternalField"), "ProtOrInternalField == null");
+			Assert.IsNotNull (provider.Find ("ProtOrInternalProperty"), "ProtOrInternalProperty == null");
+			Assert.IsNotNull (provider.Find ("ProtOrInternalMethod"), "ProtOrInternalMethod == null");
 		}
 		
 		[Test()]

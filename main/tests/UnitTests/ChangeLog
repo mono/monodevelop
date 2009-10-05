@@ -1,5 +1,11 @@
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  added tests for protected or internal / protected and
+	  internal / internal.
+
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: added
 	  test for 'Bug 543984 – Completion window should only accept
 	  punctuation when it's an exact match'.
