@@ -53,20 +53,7 @@ namespace MonoDevelop.Projects.Dom
 		public void CleanCecilDefinitions ()
 		{
 			typeDefinition = null;
-			foreach (DomCecilField field in Fields) {
-				field.CleanCecilDefinitions ();
-			}
-			foreach (DomCecilMethod method in Methods) {
-				method.CleanCecilDefinitions ();
-			}
-			foreach (DomCecilProperty property in Properties) {
-				property.CleanCecilDefinitions ();
-			}
-			foreach (DomCecilEvent evt in Events) {
-				evt.CleanCecilDefinitions ();
-			}
 		}
-		
 		public override void Dispose ()
 		{
 			CleanCecilDefinitions ();
