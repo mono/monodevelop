@@ -33,7 +33,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class Namespace
+	public class Namespace : IDisposable
 	{
 		List<IType> types = new List<IType> ();
 		
@@ -51,6 +51,15 @@ namespace MonoDevelop.AssemblyBrowser
 		public Namespace (string name)
 		{
 			this.Name = name;
+		}
+		
+		public void Dispose ()
+		{
+			if (types != null) {
+				types.ForEach (t => t.Dispose ());
+				types.Clear ();
+				types = null;
+			}
 		}
 		
 		public override string ToString ()

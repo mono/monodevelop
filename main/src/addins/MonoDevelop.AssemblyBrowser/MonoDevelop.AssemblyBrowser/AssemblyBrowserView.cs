@@ -73,8 +73,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			base.Dispose ();
 		}
-
-
+		
 		#region IUrlHandler implementation 
 		
 		public void Open (string url)

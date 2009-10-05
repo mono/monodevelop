@@ -30,7 +30,7 @@ using System;
 using MonoDevelop.Projects.Dom;
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class BaseTypeFolder
+	public class BaseTypeFolder : IDisposable
 	{
 		public IType Type {
 			get;
@@ -40,6 +40,12 @@ namespace MonoDevelop.AssemblyBrowser
 		public BaseTypeFolder (IType type)
 		{
 			this.Type = type;
+		}
+		
+		public void Dispose ()
+		{
+			Type = null;
+			Console.WriteLine ("dispose base type folder!");
 		}
 	}
 }

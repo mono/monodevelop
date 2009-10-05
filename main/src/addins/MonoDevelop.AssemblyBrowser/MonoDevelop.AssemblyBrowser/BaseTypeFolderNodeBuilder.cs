@@ -60,7 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			BaseTypeFolder baseTypeFolder = (BaseTypeFolder)dataObject;
-			if (baseTypeFolder.Type.BaseType != null)
+			if (baseTypeFolder.Type != null && baseTypeFolder.Type.BaseType != null)
 				ctx.AddChild (baseTypeFolder.Type.BaseType);
 			// Todo: show implemented interfaces.
 			/*foreach (IReturnType type in baseTypeFolder.Type.ImplementedInterfaces) {

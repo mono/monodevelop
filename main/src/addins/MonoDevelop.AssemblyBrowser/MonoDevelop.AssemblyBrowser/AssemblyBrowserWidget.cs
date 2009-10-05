@@ -53,18 +53,16 @@ namespace MonoDevelop.AssemblyBrowser
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class AssemblyBrowserWidget : Gtk.Bin
 	{
-		ExtensibleTreeView treeView;
-		
 		public ExtensibleTreeView TreeView {
-			get {
-				return treeView;
-			}
+			get;
+			private set;
 		}
+		
 		Mono.TextEditor.TextEditor inspectEditor = new Mono.TextEditor.TextEditor ();
 		public AssemblyBrowserWidget ()
 		{
 			this.Build();
-			treeView = new ExtensibleTreeView (new NodeBuilder[] { 
+			TreeView = new ExtensibleTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
 				new AssemblyNodeBuilder (),
 				new ModuleReferenceNodeBuilder (),
@@ -84,10 +82,10 @@ namespace MonoDevelop.AssemblyBrowser
 				}, new TreePadOption [] {
 					new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), PropertyService.Get ("AssemblyBrowser.ShowPublicOnly", true)),
 				});
-			treeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
-			treeView.Tree.CursorChanged += HandleCursorChanged;
+			TreeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
+			TreeView.Tree.CursorChanged += HandleCursorChanged;
 				
-			scrolledwindow2.AddWithViewport (treeView);
+			scrolledwindow2.AddWithViewport (TreeView);
 			scrolledwindow2.ShowAll ();
 			
 //			this.descriptionLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
@@ -134,7 +132,7 @@ namespace MonoDevelop.AssemblyBrowser
 //				this.inspectLabel.Selectable = false;
 			};
 			this.notebook1.GetNthPage (0).Hide ();
-			treeView.Tree.CursorChanged += delegate {
+			TreeView.Tree.CursorChanged += delegate {
 				CreateOutput ();
 			};
 			this.languageCombobox.AppendText (GettextCatalog.GetString ("IL"));
@@ -203,7 +201,7 @@ namespace MonoDevelop.AssemblyBrowser
 			};
 			
 			this.Realized += delegate {
-				treeView.GrabFocus ();
+				TreeView.GrabFocus ();
 			};
 		}
 		public MonoDevelop.Projects.Dom.IMember ActiveMember  {
@@ -212,6 +210,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}	
 		protected override void OnDestroyed ()
 		{
+			ActiveMember = null;
 			if (memberListStore != null) {
 				memberListStore.Dispose ();
 				memberListStore = null;
@@ -239,7 +238,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 		ITreeNavigator SearchMember (string helpUrl)
 		{
-			return SearchMember (treeView.GetRootNode (), helpUrl);
+			return SearchMember (TreeView.GetRootNode (), helpUrl);
 		}
 		
 		static bool IsMatch (ITreeNavigator nav, string helpUrl)
@@ -724,7 +723,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		void FillInspectLabel ()
 		{
-			ITreeNavigator nav = treeView.GetSelectedNode ();
+			ITreeNavigator nav = TreeView.GetSelectedNode ();
 			if (nav == null)
 				return;
 			IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
@@ -750,7 +749,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 		void CreateOutput ()
 		{
-			ITreeNavigator nav = treeView.GetSelectedNode ();
+			ITreeNavigator nav = TreeView.GetSelectedNode ();
 			
 			if (nav != null) {
 				IMember member = nav.DataItem as IMember;
@@ -832,7 +831,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (cu == null)
 				return;
 			
-			ITreeNavigator nav = treeView.GetRootNode ();
+			ITreeNavigator nav = TreeView.GetRootNode ();
 			do {
 				if (nav.DataItem == cu.AssemblyDefinition) {
 					nav.ExpandToNode ();
@@ -842,7 +841,31 @@ namespace MonoDevelop.AssemblyBrowser
 			} while (nav.MoveNext());
 					
 		}
-		
+		void Dispose (ITreeNavigator nav)
+		{
+			IDisposable d = nav.DataItem as IDisposable;
+			if (d != null) 
+				d.Dispose ();
+			if (nav.HasChildren ()) {
+				nav.MoveToFirstChild ();
+				do {
+					Dispose (nav);
+				} while (nav.MoveNext ());
+				nav.MoveToParent ();
+			}
+		}
+		public override void Destroy ()
+		{
+			Dispose (TreeView.GetRootNode ());
+			this.TreeView.Clear ();
+			base.Destroy ();
+			if (definitions != null) {
+				definitions.ForEach (def => def.Dispose ());
+				definitions.Clear ();
+				definitions = null;
+			}
+		}
+
 		List<DomCecilCompilationUnit> definitions = new List<DomCecilCompilationUnit> ();
 		public AssemblyDefinition AddReference (string fileName)
 		{
@@ -852,12 +875,12 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			DomCecilCompilationUnit newUnit = DomCecilCompilationUnit.Load (fileName);
 			definitions.Add (newUnit);
+			
 			ITreeBuilder builder;
 			if (definitions.Count == 1) {
-				builder = treeView.LoadTree (newUnit.AssemblyDefinition);
-				
+				builder = TreeView.LoadTree (newUnit.AssemblyDefinition);
 			} else {
-				builder = treeView.AddChild (newUnit.AssemblyDefinition);
+				builder = TreeView.AddChild (newUnit.AssemblyDefinition);
 			}
 			builder.MoveToFirstChild ();
 			builder.Expanded = true;
@@ -882,7 +905,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (!inNavigationOperation) {
 				if (currentItem != null)
 					navigationBackwardHistory.Push (currentItem);
-				currentItem = treeView.GetSelectedNode ();
+				currentItem = TreeView.GetSelectedNode ();
 				ActiveMember = currentItem.DataItem as IMember;
 				navigationForwardHistory.Clear ();
 			}

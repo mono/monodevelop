@@ -31,7 +31,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ReferenceFolder
+	public class ReferenceFolder : IDisposable
 	{
 		public ModuleDefinition ModuleDefinition {
 			get;
@@ -42,5 +42,11 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			this.ModuleDefinition = moduleDefinition;
 		}
+		
+		public void Dispose ()
+		{
+			ModuleDefinition = null;
+		}
+		
 	}
 }

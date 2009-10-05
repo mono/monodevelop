@@ -68,21 +68,23 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			ReferenceFolder referenceFolder = (ReferenceFolder)dataObject;
-			foreach (AssemblyNameReference assemblyNameReference in referenceFolder.ModuleDefinition.AssemblyReferences) {
-//				AssemblyDefinition assembly = null;
-				try {
-					string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyNameReference.FullName, null);
-					if (assemblyFile != null && System.IO.File.Exists (assemblyFile)) {
-						ctx.AddChild (new Reference (assemblyFile));
-					} else {
-						ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Can't load:") + assemblyNameReference.FullName));
+			if (referenceFolder.ModuleDefinition != null) {
+				foreach (AssemblyNameReference assemblyNameReference in referenceFolder.ModuleDefinition.AssemblyReferences) {
+	//				AssemblyDefinition assembly = null;
+					try {
+						string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyNameReference.FullName, null);
+						if (assemblyFile != null && System.IO.File.Exists (assemblyFile)) {
+							ctx.AddChild (new Reference (assemblyFile));
+						} else {
+							ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Can't load:") + assemblyNameReference.FullName));
+						}
+					} catch (Exception) {
+					//	ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Error while loading:") + assemblyNameReference.FullName + "/" + e.Message));
 					}
-				} catch (Exception) {
-				//	ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Error while loading:") + assemblyNameReference.FullName + "/" + e.Message));
 				}
-			}
-			foreach (ModuleReference moduleRef in referenceFolder.ModuleDefinition.ModuleReferences) {
-				ctx.AddChild (moduleRef);
+				foreach (ModuleReference moduleRef in referenceFolder.ModuleDefinition.ModuleReferences) {
+					ctx.AddChild (moduleRef);
+				}
 			}
 		}
 		
