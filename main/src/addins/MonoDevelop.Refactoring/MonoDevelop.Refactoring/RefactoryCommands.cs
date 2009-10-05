@@ -210,7 +210,7 @@ namespace MonoDevelop.Refactoring
 				SelectedItem = null
 			};
 			
-			if (doc.CompilationUnit.Usings.Any (u => !u.IsFromNamespace && u.Region.Contains (doc.TextEditor.CursorLine, doc.TextEditor.CursorColumn))) {
+			if (doc.CompilationUnit != null && !doc.CompilationUnit.Usings.Any (u => !u.IsFromNamespace && u.Region.Contains (doc.TextEditor.CursorLine, doc.TextEditor.CursorColumn))) {
 				CommandInfoSet organizeUsingsMenu = new CommandInfoSet ();
 				organizeUsingsMenu.Text = GettextCatalog.GetString ("_Organize Usings");
 				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.RemoveUnusedImports, null), new RefactoryOperation (delegate {

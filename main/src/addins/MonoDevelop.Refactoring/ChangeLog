@@ -1,5 +1,10 @@
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: added null
+	  check.
+
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.addin.xml:
 	* MonoDevelop.Refactoring/RefactoryCommands.cs:
 	* MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs:
