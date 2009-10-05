@@ -53,7 +53,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-
 		public override DomLocation Location {
 			get {
 				return method.Location;
@@ -191,5 +190,11 @@ namespace MonoDevelop.Projects.Dom
 			//Console.WriteLine (this);
 			//Console.WriteLine ("oOoOoOoOoOoOoOoOoOoOoOoOoOoO");
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[ExtensionMethod: this={0}, ExtensionType={1}, OriginalMethod={2}]", method, ExtensionType, OriginalMethod);
+		}
+		
 	}
 }

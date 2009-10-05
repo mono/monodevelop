@@ -298,7 +298,7 @@ namespace MonoDevelop.Projects.Dom
 				return null;
 			}
 //			Console.WriteLine ("Test Method: " + Name);
-			string extensionTableKey = FullName + "." + Parameters[0].ReturnType.ToInvariantString () + "/" + type.FullName;
+			string extensionTableKey = this.HelpUrl + "/" + type.FullName;
 //			Console.WriteLine ("table key:" + extensionTableKey);
 			lock (extensionTable) {
 				if (extensionTable.ContainsKey (extensionTableKey))
@@ -312,7 +312,7 @@ namespace MonoDevelop.Projects.Dom
 						}
 					}
 					if (elementType != null) {
-						IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { elementType });DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { elementType });
+						IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { elementType });
 						instMethod = new ExtensionMethod (type , instMethod, null, null);
 						extensionTable.Add (extensionTableKey, instMethod);
 						return instMethod;
@@ -325,7 +325,7 @@ namespace MonoDevelop.Projects.Dom
 //					Console.WriteLine (instMethod.Parameters[0].ReturnType.FullName + " === " + baseTypeFullName);
 					if (instMethod.Parameters[0].ReturnType.FullName == baseTypeFullName) {
 						//ExtensionMethod result = new ExtensionMethod (baseType, this, null, null);
-						instMethod = new ExtensionMethod (type , instMethod, null, null);
+						instMethod = new ExtensionMethod (type, instMethod, null, null);
 						extensionTable.Add (extensionTableKey, instMethod);
 //						Console.WriteLine (result.Parameters[0]);
 						return instMethod;

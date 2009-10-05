@@ -338,7 +338,7 @@ namespace MonoDevelop.Projects.Dom
 		public ReadOnlyCollection<IMethod> Methods {
 			get {
 				return methods.AsReadOnly ();
-					}
+			}
 		}
 		public override IMember ResolvedMember {
 			get {
@@ -427,6 +427,7 @@ namespace MonoDevelop.Projects.Dom
 				}
 			}
 		}
+		
 		public void ResolveExtensionMethods ()
 		{
 //			Console.WriteLine (" --- Resolve extension");
