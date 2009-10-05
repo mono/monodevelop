@@ -242,15 +242,14 @@ namespace MonoDevelop.Projects.Dom
 				return IsPublic | IsProtected;
 	//		if (member.IsStatic && !IsStatic)
 	//			return false;
-			if (IsPublic || calledType != null && calledType.ClassType == ClassType.Interface)
+			if (IsPublic || calledType != null && calledType.ClassType == ClassType.Interface && !IsProtected)
 				return true;
 			
 			if (this.DeclaringType != null && this.DeclaringType.ClassType == ClassType.Interface) 
 				return this.DeclaringType.IsAccessibleFrom (dom, calledType, member, includeProtected);
 			
-			if (IsProtected && !(IsProtectedOrInternal && !includeProtected)) {
+			if (IsProtected && !(IsProtectedOrInternal && !includeProtected))
 				return includeProtected;
-			}
 			
 			if (IsInternal || IsProtectedAndInternal) {
 				IType type1 = this is IType ? (IType)this : DeclaringType;
@@ -267,10 +266,6 @@ namespace MonoDevelop.Projects.Dom
 				} else {
 					// should never happen !
 					result = true;
-				}
-				if (IsProtectedOrInternal) {
-					Console.WriteLine ("---------");
-					Console.WriteLine (Environment.StackTrace);
 				}
 				return IsProtectedAndInternal ? includeProtected && result : result;
 			}
