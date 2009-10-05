@@ -1,5 +1,10 @@
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed markup syntax mode
+	  'link' click.
+
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: added repaint when caret line
 	  changes.
 

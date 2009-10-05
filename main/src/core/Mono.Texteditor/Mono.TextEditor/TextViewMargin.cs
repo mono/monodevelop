@@ -1307,12 +1307,15 @@ namespace Mono.TextEditor
 
 			Chunk chunk = GetCachedChunks (mode, Document, style, line, line.Offset, line.EditableLength);
 			if (chunk != null) {
-				int offset = Document.LocationToOffset (VisualToDocumentLocation (args.X, args.Y));
+				DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
+				int column = 0;
 				for (; chunk != null; chunk = chunk.Next) {
-					if (chunk.Offset <= offset && offset < chunk.EndOffset) {
+					if (column <= loc.Column && loc.Column < column + chunk.Length) {
 						ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
+						
 						return chunkStyle != null ? chunkStyle.Link : null;
 					}
+					column += chunk.Length;
 				}
 			}
 			return null;
