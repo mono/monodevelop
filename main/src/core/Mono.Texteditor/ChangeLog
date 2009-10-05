@@ -1,5 +1,10 @@
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: added repaint when caret line
+	  changes.
+
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Render all margings in a
 	  line.
 

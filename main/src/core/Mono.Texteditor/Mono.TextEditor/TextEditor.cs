@@ -358,7 +358,7 @@ namespace Mono.TextEditor
 			textViewMargin.ResetCaretBlink ();
 			
 			if (!IsSomethingSelected) {
-				if (Options.HighlightCaretLine && args.Location.Line != Caret.Line) 
+				if (/*Options.HighlightCaretLine && */args.Location.Line != Caret.Line) 
 					RedrawMarginLine (TextViewMargin, args.Location.Line);
 				RedrawMarginLine (TextViewMargin, Caret.Line);
 			}
