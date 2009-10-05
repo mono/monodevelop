@@ -1169,9 +1169,11 @@ namespace MonoDevelop.CSharpBinding.Gui
 			foreach (IType t in this.dom.GetInheritanceTree (searchType)) {
 				//System.Console.WriteLine("t:" + t);
 				foreach (IMember m in t.Members) {
-					//System.Console.WriteLine ("scan:" + m);
-					if (m.IsSpecialName || m.IsInternal && searchType.SourceProject != Document.Project)
+					if (!m.IsAccessibleFrom (dom, type, type, true))
 						continue;
+					//System.Console.WriteLine ("scan:" + m);
+					//if (m.IsSpecialName || (m.IsInternal && !m.IsProtectedOrInternal) || && searchType.SourceProject != Document.Project)
+					//	continue;
 					if (t.ClassType == ClassType.Interface || (isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !type.HasOverriden (m))) {
 						// filter out the "Finalize" methods, because finalizers should be done with destructors.
 						if (m is IMethod && m.Name == "Finalize")
