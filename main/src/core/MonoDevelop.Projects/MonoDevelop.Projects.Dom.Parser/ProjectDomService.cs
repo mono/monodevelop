@@ -48,9 +48,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 	public static class ProjectDomService
 	{
 		static List<IParser> parsers = new List<IParser>();
-		static RootTree helpTree;
 		static IParserDatabase parserDatabase = new MonoDevelop.Projects.Dom.Serialization.ParserDatabase ();
 		//static IParserDatabase parserDatabase = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
+		
+		static RootTree helpTree;
+		static bool helpTreeInitialized;
+		static object helpTreeLock = new object ();
+		
 		
 		static bool threadRunning;
 		static bool trackingFileChanges;
@@ -96,16 +100,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static ProjectDomService ()
 		{
-			ThreadPool.QueueUserWorkItem (delegate {
-				// Load the help tree asynchronously. Reduces startup time.
-				try {
-					helpTree = RootTree.LoadTree ();
-				} catch (Exception ex) {
-					if (!(ex is ThreadAbortException) && !(ex.InnerException is ThreadAbortException))
-						LoggingService.LogError ("Monodoc documentation tree could not be loaded.", ex);
-				}
-			});
-			
 			codeCompletionPath = GetDefaultCompletionFileLocation ();
 			// for unit tests it may not have been initialized.
 			if (AddinManager.IsInitialized) {
@@ -122,10 +116,38 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			parserDatabase.Initialize ();
 		}
+		
+		public static void AsyncInitialize ()
+		{
+			ThreadPool.QueueUserWorkItem (delegate {
+				// Load the help tree asynchronously. Reduces startup time.
+				InitializeHelpTree ();
+			});
+		}
+		
+		static void InitializeHelpTree ()
+		{
+			lock (helpTreeLock) {
+				if (helpTreeInitialized)
+					return;
+				try {
+					helpTree = RootTree.LoadTree ();
+				} catch (Exception ex) {
+					if (!(ex is ThreadAbortException) && !(ex.InnerException is ThreadAbortException))
+						LoggingService.LogError ("Monodoc documentation tree could not be loaded.", ex);
+				} finally {
+					helpTreeInitialized = true;
+				}
+			}
+		}
 
 		public static RootTree HelpTree {
 			get {
-				return helpTree;
+				lock (helpTreeLock) {
+					if (!helpTreeInitialized)
+						InitializeHelpTree ();
+					return helpTree;
+				}
 			}
 		}
 		

@@ -1,3 +1,15 @@
+2009-10-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Don't
+	  initialize the help tree if not requested.
+
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs:
+	  Use a custom binary serializer to serialize CodeExpression
+	  objects. Fixes issues with Mono changing internal fields.
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Bump database version.
+
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/AbstractMember.cs: Fixed failing

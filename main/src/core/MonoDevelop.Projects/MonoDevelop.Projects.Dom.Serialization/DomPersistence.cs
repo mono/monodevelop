@@ -1,6 +1,4 @@
 //
-// DomPersistence.cs 
-//
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
 //
@@ -27,18 +25,27 @@
 //
 
 using System;
+using System.Xml;
 using System.Globalization;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using MonoDevelop.Core.Serialization;
+using System.Reflection;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {
 	public static class DomPersistence
 	{
+		static BinaryDataSerializer serializer;
+		
+		static DomPersistence ()
+		{
+			serializer = new BinaryDataSerializer (new CodeDomDataContext ());
+		}
+		
 		public static DomLocation ReadLocation (BinaryReader reader, INameDecoder nameTable)
 		{
 			if (ReadNull (reader)) 
@@ -576,45 +583,37 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, CodeExpression[] exps)
 		{
-			if (exps.Length == 0) {
-				writer.Write (0);
-				return;
-			}
-			
-			bool mustSerialize = false;
+			writer.Write (exps.Length);
 			foreach (CodeExpression exp in exps) {
-				if (!(exp is CodePrimitiveExpression)) {
-					mustSerialize = true;
-					break;
-				}
-			}
-			if (mustSerialize) {
-				writer.Write (-1);
-				SerializeObject (writer, exps);
-			} else {
-				writer.Write (exps.Length);
-				foreach (CodePrimitiveExpression exp in exps) {
-					Write (writer, nameTable, exp);		
-				}
+				Write (writer, nameTable, exp);		
 			}
 		}
-
-		public static void Write (BinaryWriter writer, INameEncoder nameTable, CodePrimitiveExpression exp)
+		
+		public static void Write (BinaryWriter writer, INameEncoder nameTable, CodeExpression cexp)
 		{
-			if(exp.Value == null) {
-				writer.Write ((int)TypeCode.DBNull);
+			if (cexp is CodePrimitiveExpression) {
+				CodePrimitiveExpression exp = (CodePrimitiveExpression) cexp;
+				if(exp.Value == null) {
+					writer.Write ((int)TypeCode.DBNull);
+				}
+				else {
+					writer.Write ((int)Type.GetTypeCode (exp.Value.GetType ()));
+					WriteString (Convert.ToString (exp.Value, CultureInfo.InvariantCulture), writer, nameTable);
+				}
 			}
 			else {
-				writer.Write ((int)Type.GetTypeCode (exp.Value.GetType ()));
-				WriteString (Convert.ToString (exp.Value, CultureInfo.InvariantCulture), writer, nameTable);
+				writer.Write ((int)TypeCode.Object);
+				serializer.Serialize (writer, cexp, typeof(CodeExpression));
 			}
 		}
 
 		public static CodeExpression ReadExpression (BinaryReader reader, INameDecoder nameTable)
 		{
 			TypeCode code = (TypeCode)reader.ReadInt32 ();
-			if(code == TypeCode.DBNull)
+			if (code == TypeCode.DBNull)
 				return new CodePrimitiveExpression (null);
+			else if (code == TypeCode.Object)
+				return (CodeExpression) serializer.Deserialize (reader, typeof(CodeExpression));
 			else
 				return new CodePrimitiveExpression (Convert.ChangeType (ReadString (reader, nameTable), code, CultureInfo.InvariantCulture));
 		}
@@ -624,8 +623,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			int count = reader.ReadInt32 ();
 			if (count == 0) {
 				return new CodeExpression[0];
-			} else if (count == -1) {
-				return (CodeExpression[]) DeserializeObject (reader);
 			} else {
 				CodeExpression[] exps = new CodeExpression[count];
 				for (int n=0; n<count; n++) {
@@ -694,31 +691,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 		
 		
-		static BinaryFormatter formatter = new BinaryFormatter ();
-		
-		public static void SerializeObject (BinaryWriter writer, object obj)
-		{
-			if (obj == null)
-				writer.Write (0);
-			else {
-				MemoryStream ms = new MemoryStream ();
-				formatter.Serialize (ms, obj);
-				byte[] data = ms.ToArray ();
-				writer.Write (data.Length);
-				writer.Write (data);
-			}
-		}
-		
-		public static object DeserializeObject (BinaryReader reader)
-		{
-			int len = reader.ReadInt32 ();
-			if (len == 0) return null;
-			byte[] data = reader.ReadBytes (len);
-			MemoryStream ms = new MemoryStream (data);
-			object ob = formatter.Deserialize (ms);
-			return ob;
-		}
-		
 		static bool ReadNull (BinaryReader reader)
 		{
 			return reader.ReadBoolean ();
@@ -741,5 +713,68 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 		
 #endregion
+
+#region Custom serializer
+		
+		class CodeDomAttributeProvider: ISerializationAttributeProvider
+		{
+			public object GetCustomAttribute (object ob, Type type, bool inherit)
+			{
+				object[] atts = GetCustomAttributes (ob, type, inherit);
+				return atts.Length > 0 ? atts [0] : null;
+			}
+			
+			public object[] GetCustomAttributes (object ob, Type type, bool inherit)
+			{
+				List<object> atts = new List<object> (2);
+				if (type.IsAssignableFrom (typeof(ItemPropertyAttribute))) {
+					PropertyInfo prop = ob as PropertyInfo;
+					if (prop != null && prop.CanRead && prop.CanWrite && prop.GetGetMethod ().IsPublic && prop.GetSetMethod ().IsPublic) {
+						atts.Add (new ItemPropertyAttribute ());
+					}
+				}
+				if (type.IsAssignableFrom (typeof(DataItemAttribute)) && (ob is Type)) {
+					Type t = (Type) ob;
+					if (t.Name.StartsWith ("Code"))
+						atts.Add (new DataItemAttribute (t.Name.Substring (4)));
+				}
+				return atts.ToArray ();
+			}
+			
+			public bool IsDefined (object ob, Type type, bool inherit)
+			{
+				return GetCustomAttribute (ob, type, inherit) != null;
+			}
+			
+			public ICustomDataItem GetCustomDataItem (object ob)
+			{
+				return null;
+			}
+			
+			public ItemMember[] GetItemMembers (Type type)
+			{
+				return new ItemMember [0];
+			}
+		}
+		
+		class CodeDomDataContext: DataContext
+		{
+			public CodeDomDataContext()
+			{
+				AttributeProvider = new CodeDomAttributeProvider ();
+			}
+			
+			public override DataType GetConfigurationDataType (string typeName)
+			{
+				Type t = typeof(System.CodeDom.CodeExpression).Assembly.GetType ("System.CodeDom.Code" + typeName);
+				if (t != null)
+					return GetConfigurationDataType (t);
+				else
+					return base.GetConfigurationDataType (typeName);
+			}
+
+		}
+#endregion		
+
 	}
 }
