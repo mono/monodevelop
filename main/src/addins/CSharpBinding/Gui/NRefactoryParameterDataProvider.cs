@@ -271,23 +271,17 @@ namespace MonoDevelop.CSharpBinding
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
-			if (!this.staticResolve && methods[overload].IsExtension)
-				paramIndex++;
-
-			if (methods[overload].Parameters == null || paramIndex < 0 || paramIndex >= methods[overload].Parameters.Count)
+			IMethod method = methods[overload];
+			
+			if (paramIndex < 0 || paramIndex >= method.Parameters.Count)
 				return "";
 			
-			return ambience.GetString (methods[overload].Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
+			return ambience.GetString (method.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
 		}
 		
 		public int GetParameterCount (int overload)
 		{
-			if (overload < 0 || overload >= OverloadCount)
-				return 0;
-			int result = methods[overload].Parameters != null ? methods[overload].Parameters.Count : 0;
-			if (!this.staticResolve && methods[overload].IsExtension)
-				result--;
-			return result;
+			return methods[overload].Parameters.Count;
 		}
 		
 		public int OverloadCount {
