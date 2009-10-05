@@ -40,11 +40,14 @@ namespace ICSharpCode.NRefactory.Ast
 		Extern     = 0x2000,
 		Volatile   = 0x4000,
 		Unsafe     = 0x8000,
+		
+		
 		Overloads  = 0x10000, // VB specific
 		WithEvents = 0x20000, // VB specific
 		Default    = 0x40000, // VB specific
 		Fixed      = 0x80000, // C# specific (fixed size arrays in unsafe structs)
 		
+		ProtectedAndInternal = 0x100000, // C# specific
 		/// <summary>Generated code, not part of parsed code</summary>
 		Synthetic  = 0x200000,
 		/// <summary>Only for VB properties.</summary>

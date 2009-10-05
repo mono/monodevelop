@@ -1,3 +1,9 @@
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Ast/Enums.cs:
+	* Src/Parser/ModifierList.cs: Added support for protected AND
+	  internal modifier.
+
 2009-09-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Fixed 'Bug

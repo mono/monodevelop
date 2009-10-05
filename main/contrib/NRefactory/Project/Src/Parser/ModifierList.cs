@@ -18,6 +18,9 @@ namespace ICSharpCode.NRefactory.Parser
 			get {
 				return cur;
 			}
+			set {
+				cur = value;
+			}
 		}
 		
 		public Location GetDeclarationLocation(Location keywordLocation)
@@ -49,7 +52,10 @@ namespace ICSharpCode.NRefactory.Parser
 			if(location.IsEmpty) {
 				location = tokenLocation;
 			}
-			
+			if (m == Modifiers.Internal && (cur & Modifiers.Protected) != 0) {
+				cur = Modifiers.ProtectedAndInternal;
+				return;
+			}
 			if ((cur & m) == 0) {
 				cur |= m;
 			} else {
