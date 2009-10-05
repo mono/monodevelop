@@ -314,15 +314,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 			List<int> matchIndices = new List<int> ();
 			bool wasMatch = false;
 			int j = 0;
+			
 			for (int i = 0; i < text.Length && j < filterText.Length; i++) {
 				char ch1 = char.ToUpper (text[i]);
 				char ch2 = char.ToUpper (filterText[j]);
+				
 				if (ch1 == ch2) {
 					j++;
 					matchIndices.Add (i);
 					wasMatch = true;
 					continue;
 				}
+				
+				if (char.IsPunctuation (ch2) || char.IsWhiteSpace (ch2)) {
+					wasMatch = false;
+					break;
+				}
+				
 				if (wasMatch) {
 					wasMatch = false;
 					bool match = false;
@@ -338,6 +346,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				}
 				break;
 			}
+			
 			return j == filterText.Length ? matchIndices.ToArray () : null;
 		}
 		

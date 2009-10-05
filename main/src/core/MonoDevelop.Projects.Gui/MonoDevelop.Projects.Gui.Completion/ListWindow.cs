@@ -338,9 +338,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 				
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
-				
+
 				bool hasMismatches;
 				int match = FindMatchedEntry (CurrentPartialWord, out hasMismatches);
+				
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
 					ResetSizes ();
 					UpdateWordSelection ();
@@ -349,10 +350,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				} else {
 					word.Remove (curPos, 1);
 				}
-				
-				if (CompleteWithSpaceOrPunctuation && list.SelectionEnabled) 
+				if (CompleteWithSpaceOrPunctuation && list.SelectionEnabled)
 					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
-				
 				return KeyActions.CloseWindow | KeyActions.Process;
 			}
 
@@ -375,7 +374,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return i;
 				}
 			}
-
+			
 			// default - word with highest match rating in the list.
 			hasMismatches = true;
 			int idx = -1;

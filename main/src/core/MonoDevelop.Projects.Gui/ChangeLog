@@ -1,3 +1,10 @@
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: fixed
+	  'Bug 543984 – Completion window should only accept
+	  punctuation when it's an exact match'.
+
 2009-10-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
