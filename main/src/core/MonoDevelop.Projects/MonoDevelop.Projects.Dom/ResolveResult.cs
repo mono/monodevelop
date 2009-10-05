@@ -275,8 +275,9 @@ namespace MonoDevelop.Projects.Dom
 				foreach (IMember member in curType.Members) {
 					if (callingMember != null && !member.IsAccessibleFrom (dom, type, callingMember, includeProtected))
 						continue;
-					if (member.IsProtected && !includeProtected)
-						continue;
+// handled by member.IsAccessibleFrom
+//					if (member.IsProtected && !includeProtected)
+//						continue;
 					if (member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsFinalizer))
 						continue;
 					if (!showStatic && member is IType)

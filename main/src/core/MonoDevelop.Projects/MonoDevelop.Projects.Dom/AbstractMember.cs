@@ -248,32 +248,36 @@ namespace MonoDevelop.Projects.Dom
 			if (this.DeclaringType != null && this.DeclaringType.ClassType == ClassType.Interface) 
 				return this.DeclaringType.IsAccessibleFrom (dom, calledType, member, includeProtected);
 			
-			if (IsInternal) {
+			if (IsProtected && !(IsProtectedOrInternal && !includeProtected)) {
+				return includeProtected;
+			}
+			
+			if (IsInternal || IsProtectedAndInternal) {
 				IType type1 = this is IType ? (IType)this : DeclaringType;
 				IType type2 = member is IType ? (IType)member : member.DeclaringType;
+				bool result;
 				// easy case, projects are the same
-				if (type1.SourceProjectDom == type2.SourceProjectDom)
-					return true;
-				// maybe type2 hasn't project dom set (may occur in some cases), check if the file is in the project
-				if (type1.SourceProjectDom != null && type1.SourceProjectDom.Project != null)
-					return type1.SourceProjectDom.Project.GetProjectFile (type2.CompilationUnit.FileName) != null;
-				if (type2.SourceProjectDom != null && type2.SourceProjectDom.Project != null)
-					return type2.SourceProjectDom.Project.GetProjectFile (type1.CompilationUnit.FileName) != null;
-				return true;
+				if (type1.SourceProjectDom == type2.SourceProjectDom) {
+					result = true;
+				} else if (type1.SourceProjectDom != null && type1.SourceProjectDom.Project != null) {
+					// maybe type2 hasn't project dom set (may occur in some cases), check if the file is in the project
+					result = type1.SourceProjectDom.Project.GetProjectFile (type2.CompilationUnit.FileName) != null;
+				} else if (type2.SourceProjectDom != null && type2.SourceProjectDom.Project != null) {
+					result = type2.SourceProjectDom.Project.GetProjectFile (type1.CompilationUnit.FileName) != null;
+				} else {
+					// should never happen !
+					result = true;
+				}
+				if (IsProtectedOrInternal) {
+					Console.WriteLine ("---------");
+					Console.WriteLine (Environment.StackTrace);
+				}
+				return IsProtectedAndInternal ? includeProtected && result : result;
 			}
+			
 			if (!(member is IType) && (member.DeclaringType == null || DeclaringType == null))
 				return false;
 			
-			if (IsProtected) {
-				
-/*				foreach (IType type in dom.GetInheritanceTree (calledType)) {
-					if (type.FullName == member.DeclaringType.FullName) {
-						protectedTable[protectedTableKey] = true;
-						return true;
-					}
-				}*/
-				return includeProtected;
-			}
 			// inner class 
 			IType declaringType = member.DeclaringType;
 			while (declaringType != null) {

@@ -1,5 +1,13 @@
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/Modifiers.cs:
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs: Added support
+	  for protected and internal / protected or internal
+	  modifiers.
+
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs:
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:

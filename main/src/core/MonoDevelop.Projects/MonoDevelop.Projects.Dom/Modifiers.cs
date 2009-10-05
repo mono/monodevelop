@@ -59,10 +59,10 @@ namespace MonoDevelop.Projects.Dom
 		Default    = 0x40000,
 		Fixed      = 0x80000,
 		
-		ProtectedAndInternal = Internal | Protected,
-		ProtectedOrInternal = 0x8000,
-		SpecialName         = 0x20000,
-		Final               = 0x40000,
-		Literal             = 0x80000,
+		ProtectedOrInternal  = Internal | Protected,
+		ProtectedAndInternal = 0x100000,
+		SpecialName          = 0x200000,
+		Final                = 0x400000,
+		Literal              = 0x800000,
 		VisibilityMask = Private | Internal | Protected | Public,
 	}}
