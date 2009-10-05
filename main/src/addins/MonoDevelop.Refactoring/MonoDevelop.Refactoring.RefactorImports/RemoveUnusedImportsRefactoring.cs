@@ -64,11 +64,13 @@ namespace MonoDevelop.Refactoring.RefactorImports
 					usedUsings.Add (type.Namespace);
 				}
 			}
+			
 			Mono.TextEditor.TextEditorData textEditorData = options.GetTextEditorData ();
+			HashSet<string> currentUsings = new HashSet<string> ();
 			foreach (IUsing u in compilationUnit.Usings) {
 				if (u.IsFromNamespace)
 					continue;
-				if (!u.Aliases.Any () && u.Namespaces.All (name => !usedUsings.Contains (name))) {
+				if (!u.Aliases.Any () && u.Namespaces.All (name => currentUsings.Contains (name) || !usedUsings.Contains (name)) ) {
 					TextReplaceChange change = new TextReplaceChange ();
 					change.FileName = options.Document.FileName;
 					change.Offset = textEditorData.Document.LocationToOffset (u.Region.Start.Line - 1, u.Region.Start.Column - 1);
@@ -78,6 +80,8 @@ namespace MonoDevelop.Refactoring.RefactorImports
 						change.RemovedChars += line.DelimiterLength;
 					result.Add (change);
 				}
+				foreach (string nspace in u.Namespaces)
+					currentUsings.Add (nspace);
 			}
 			
 			return result;

@@ -120,12 +120,12 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-		<SeparatorItem id = "OrganizeUsingsSeparator" />
+<!--		<SeparatorItem id = "OrganizeUsingsSeparator" />
 		<ItemSet id = "OrganizeUsings" _label = "_Organize Usings">
 			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveUnusedImports"/>
 			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.SortImports"/>
 			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveSortImports"/>
-		</ItemSet>
+		</ItemSet>-->
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 	</Extension>
 </Addin>

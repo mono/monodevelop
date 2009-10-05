@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.CodeDom;
@@ -45,6 +46,7 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Refactoring;
+using MonoDevelop.Refactoring.RefactorImports;
 
 namespace MonoDevelop.Refactoring
 {
@@ -200,12 +202,30 @@ namespace MonoDevelop.Refactoring
 						ainfo.Add (resolveMenu, null);
 				}
 			}
+			
 			RefactoringOptions options = new RefactoringOptions () {
 				Document = doc,
 				Dom = ctx,
 				ResolveResult = resolveResult,
 				SelectedItem = null
 			};
+			
+			if (doc.CompilationUnit.Usings.Any (u => !u.IsFromNamespace && u.Region.Contains (doc.TextEditor.CursorLine, doc.TextEditor.CursorColumn))) {
+				CommandInfoSet organizeUsingsMenu = new CommandInfoSet ();
+				organizeUsingsMenu.Text = GettextCatalog.GetString ("_Organize Usings");
+				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.RemoveUnusedImports, null), new RefactoryOperation (delegate {
+					new RemoveUnusedImportsHandler ().Start (options);
+				}));
+				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Refactoring.RefactoryCommands.SortImports, null), new RefactoryOperation (delegate {
+					new SortImportsHandler ().Start (options);
+				}));
+				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Refactoring.RefactoryCommands.RemoveSortImports, null), new RefactoryOperation (delegate {
+					new RemoveSortImportsHandler ().Start (options);
+				}));
+				ainfo.Add (organizeUsingsMenu, null);
+				added = true;
+			}
+			
 			CommandInfoSet ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 			foreach (var refactoring in RefactoringService.Refactorings) {

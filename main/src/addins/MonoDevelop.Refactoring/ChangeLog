@@ -1,5 +1,14 @@
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs:
+	  Fixed 'Bug 544027 - "Organize Usings" commands should only
+	  be visible in usings section'.
+
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/RefactoryCommands.cs: Fixed "Bug
 	  543970 - "Goto class part" pad is not focused".
 

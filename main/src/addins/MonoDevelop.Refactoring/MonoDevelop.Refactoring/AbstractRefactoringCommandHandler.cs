@@ -36,7 +36,10 @@ namespace MonoDevelop.Refactoring
 	public abstract class AbstractRefactoringCommandHandler : CommandHandler
 	{
 		protected abstract void Run (RefactoringOptions options);
-		
+		public void Start (object data)
+		{
+			Run (data);
+		}
 		protected override void Run (object data)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
