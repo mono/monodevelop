@@ -1,3 +1,8 @@
+2009-10-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Explicitly initialize the dom
+	  service.
+
 2009-10-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs: Include
