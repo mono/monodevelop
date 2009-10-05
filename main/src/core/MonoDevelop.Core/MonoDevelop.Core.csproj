@@ -191,6 +191,7 @@
     <Compile Include="MonoDevelop.Core.Instrumentation\TimeCounter.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PlatformCondition.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AggregatedAsyncOperation.cs" />
+    <Compile Include="MonoDevelop.Core.Serialization\BinaryDataSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

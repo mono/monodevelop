@@ -32,6 +32,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Serialization
 {
+	[Serializable]
 	public class DataCollection: IEnumerable
 	{
 		List<DataNode> list = new List<DataNode> ();

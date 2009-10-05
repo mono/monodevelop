@@ -37,7 +37,7 @@ namespace MonoDevelop.Core.Serialization
 	{
 		Hashtable properties = new Hashtable ();
 		List<ItemProperty> sortedPoperties = new List<ItemProperty> ();
-		ArrayList subtypes;
+		List<ClassDataType> subtypes;
 		Type fallbackType;
 		
 		public ClassDataType (Type propType): base (propType)
@@ -174,7 +174,7 @@ namespace MonoDevelop.Core.Serialization
 		private void AddSubtype (ClassDataType subtype)
 		{
 			if (subtypes == null)
-				subtypes = new ArrayList ();
+				subtypes = new List<ClassDataType> ();
 			subtypes.Add (subtype); 
 		}
 
@@ -276,7 +276,13 @@ namespace MonoDevelop.Core.Serialization
 				}
 				if (ctype == null) {
 					DataType subtype = Context.GetConfigurationDataType (obj.GetType ());
-					DataItem it = (DataItem) subtype.Serialize (serCtx, mapData, obj);
+					DataNode n = subtype.Serialize (serCtx, mapData, obj);
+					DataItem it = n as DataItem;
+					if (it == null) {
+						it = new DataItem ();
+						n.Name = "Value";
+						it.ItemData.Add (n);
+					}
 					it.ItemData.Add (new DataValue ("ctype", subtype.Name));
 					it.Name = Name;
 					return it;
@@ -377,7 +383,13 @@ namespace MonoDevelop.Core.Serialization
 				}
 				
 				if (stype != null) {
-					object sobj = stype.Deserialize (serCtx, mapData, data);
+					DataNode desData = data;
+					if (stype.IsSimpleType) {
+						desData = item.ItemData ["Value"];
+						if (desData == null)
+							throw new InvalidOperationException ("Value node not found");
+					}
+					object sobj = stype.Deserialize (serCtx, mapData, desData);
 					
 					// Store the original data type, so it can be serialized back
 					if (isFallbackType && sobj is IExtendedDataItem) {
@@ -533,7 +545,7 @@ namespace MonoDevelop.Core.Serialization
 		{
 			isFallbackType = false;
 			if (subtypes != null) {
-				foreach (ClassDataType stype in subtypes) {
+				foreach (ClassDataType stype in new List<ClassDataType> (subtypes)) {
 					if (stype.Name == name) 
 						return stype;
 						
@@ -549,6 +561,9 @@ namespace MonoDevelop.Core.Serialization
 				isFallbackType = true;
 				return Context.GetConfigurationDataType ((Type)mapData);
 			}
+			DataType dt = Context.GetConfigurationDataType (name);
+			if (ValueType.IsAssignableFrom (dt.ValueType))
+				return dt;
 			
 			if (fallbackType != null) {
 				isFallbackType = true;

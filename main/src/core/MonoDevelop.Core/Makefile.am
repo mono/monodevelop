@@ -94,6 +94,7 @@ FILES =  \
 	MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs \
 	MonoDevelop.Core.Serialization/ArrayHandler.cs \
 	MonoDevelop.Core.Serialization/ArrayListHandler.cs \
+	MonoDevelop.Core.Serialization/BinaryDataSerializer.cs \
 	MonoDevelop.Core.Serialization/ClassDataType.cs \
 	MonoDevelop.Core.Serialization/CollectionDataType.cs \
 	MonoDevelop.Core.Serialization/DataCollection.cs \

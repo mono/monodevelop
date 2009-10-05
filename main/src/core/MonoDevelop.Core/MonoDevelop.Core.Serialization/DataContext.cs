@@ -140,11 +140,14 @@ namespace MonoDevelop.Core.Serialization
 			get { return configurationTypes.Values; }
 		}
 		
-		public DataType GetConfigurationDataType (string typeName)
+		public virtual DataType GetConfigurationDataType (string typeName)
 		{
 			foreach (DataType dt in configurationTypes.Values)
 				if (dt.Name == typeName)
 					return dt;
+			Type t = Type.GetType ("System." + typeName);
+			if (t != null)
+				return GetConfigurationDataType (t);
 			return null;
 		}
 		

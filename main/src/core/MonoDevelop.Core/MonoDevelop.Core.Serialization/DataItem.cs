@@ -30,6 +30,7 @@ using System;
 
 namespace MonoDevelop.Core.Serialization
 {
+	[Serializable]
 	public class DataItem: DataNode
 	{
 		DataCollection data;

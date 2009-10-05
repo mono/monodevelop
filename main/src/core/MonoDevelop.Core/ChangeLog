@@ -1,3 +1,25 @@
+2009-10-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/DataNode.cs:
+	* MonoDevelop.Core.Serialization/DataItem.cs:
+	* MonoDevelop.Core.Serialization/DataValue.cs:
+	* MonoDevelop.Core.Serialization/DataCollection.cs: Made
+	  serializable.
+
+	* MonoDevelop.Core.Serialization/DataContext.cs:
+	* MonoDevelop.Core.Serialization/ClassDataType.cs: Improved
+	  the way types are resolved from deserialized names. Now a
+	  context can provide a custom resolver method. Also added
+	  support for serializing boxed primitive types.
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.Serialization/BinaryDataSerializer.cs:
+	  Implemented a binary serializer.
+
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: Use
+	  cecil to read assembly names.
+
 2009-10-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
