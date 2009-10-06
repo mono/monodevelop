@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-10-06 12:36:01+0200\n"
-"PO-Revision-Date: 2009-10-06 12:36:34+0200\n"
+"PO-Revision-Date: 2009-10-06 13:33:40+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15222,7 +15222,7 @@ msgstr "Testlauf abbrechen"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:266
 msgid "Summary"
-msgstr "Zusammenfasung"
+msgstr "Zusammenfassung"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:291
 msgid "Regressions"
@@ -17503,7 +17503,6 @@ msgstr "T4 Schablone"
 #~ msgstr "Ab_wärts"
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
-
 #~ msgid "Question"
 #~ msgstr "Frage"
 
