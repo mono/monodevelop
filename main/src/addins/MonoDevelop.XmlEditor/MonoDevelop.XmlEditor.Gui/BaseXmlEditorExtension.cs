@@ -315,8 +315,7 @@ namespace MonoDevelop.XmlEditor.Gui
 					if (!forced)
 						triggerWordLength = 1;
 					
-					Dictionary<string, string> existingAtts = new Dictionary<string,string>
-						(StringComparer.InvariantCultureIgnoreCase);
+					var existingAtts = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase);
 					
 					foreach (XAttribute att in attributedOb.Attributes) {
 						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;

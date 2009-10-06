@@ -1,5 +1,10 @@
 2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Use
+	  ordinal comparer.
+
+2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* Icons/XPathQueryPad.png:
 	* MonoDevelop.XmlEditor.csproj:
