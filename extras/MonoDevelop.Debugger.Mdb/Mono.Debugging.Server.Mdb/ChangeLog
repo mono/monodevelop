@@ -1,3 +1,8 @@
+2009-10-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MdbAdaptor-2-4-2.cs: Add missing null check. Fixes bug
+	  #544137 - Exception while run command.
+
 2009-10-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DebuggerServer.cs: Use long for thread and process id.

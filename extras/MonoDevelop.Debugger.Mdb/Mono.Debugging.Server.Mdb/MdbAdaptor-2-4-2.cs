@@ -67,7 +67,7 @@ namespace DebuggerServer
 		
 		public override bool AllowBreakEventChanges {
 			get {
-				return Process.MainThread.IsStopped;
+				return Process == null || Process.MainThread.IsStopped;
 			}
 		}
 		
