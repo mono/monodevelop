@@ -95,7 +95,6 @@ DATA_FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
-	Icons/XPathQueryPad.png \
 	MonoDevelop.XmlEditor.addin.xml \
 	XmlEditor.glade
 

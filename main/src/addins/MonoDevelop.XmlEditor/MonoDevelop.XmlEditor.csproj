@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.XmlEditor</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.XmlEditor</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -177,10 +178,11 @@
     <Compile Include="MonoDevelop.Xml.Formatting\XmlFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="XmlEditor.glade" />
-    <EmbeddedResource Include="MonoDevelop.XmlEditor.addin.xml" />
-    <EmbeddedResource Include="Icons\XPathQueryPad.png">
-      <LogicalName>XPathQueryPad.png</LogicalName>
+    <EmbeddedResource Include="XmlEditor.glade">
+      <LogicalName>XmlEditor.glade</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.XmlEditor.addin.xml">
+      <LogicalName>MonoDevelop.XmlEditor.addin.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
@@ -249,5 +251,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="MonoDevelop.Xml.Formatting\" />
+    <Folder Include="Icons\" />
   </ItemGroup>
 </Project>

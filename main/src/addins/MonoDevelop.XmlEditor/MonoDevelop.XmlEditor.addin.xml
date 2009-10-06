@@ -123,7 +123,6 @@
 		<Pad id = "MonoDevelop.XmlEditor.XPathQueryPad" 
 		     class = "MonoDevelop.XmlEditor.XPathQueryPad"
 		     defaultPlacement = "Bottom"
-		     icon = "MonoDevelop.XmlEditor.XPathQueryPad"
 		     _label = "XPath Query"/>
 	</Extension>-->
 	
@@ -131,10 +130,6 @@
 	<!--<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
 		<ContextPad id = "MonoDevelop.XmlEditor.XPathQueryPad"/>
 	</Extension>-->
-	
-	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "MonoDevelop.XmlEditor.XPathQueryPad" resource = "XPathQueryPad.png" />
-	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Class class = "MonoDevelop.XmlEditor.XmlDocumentParser" id = "XmlParser" />

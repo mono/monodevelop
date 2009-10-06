@@ -1,5 +1,13 @@
 2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* Icons/XPathQueryPad.png:
+	* MonoDevelop.XmlEditor.csproj:
+	* MonoDevelop.XmlEditor.addin.xml: Remove icon of unknown
+	  provenance.
+
+2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Tweak
 	  API so classes can return completion lists instead of
