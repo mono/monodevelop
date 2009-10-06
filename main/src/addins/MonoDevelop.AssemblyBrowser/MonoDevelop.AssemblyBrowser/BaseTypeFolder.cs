@@ -45,7 +45,6 @@ namespace MonoDevelop.AssemblyBrowser
 		public void Dispose ()
 		{
 			Type = null;
-			Console.WriteLine ("dispose base type folder!");
 		}
 	}
 }

@@ -252,6 +252,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (IsMatch (nav, helpUrl))
 					return nav;
 				if (!SkipChildren (nav, helpUrl) && nav.HasChildren ()) {
+					DispatchService.RunPendingEvents ();
 					nav.MoveToFirstChild ();
 					ITreeNavigator result = SearchMember (nav, helpUrl);
 					if (result != null)
@@ -784,26 +785,23 @@ namespace MonoDevelop.AssemblyBrowser
 			
 		public void Open (string url)
 		{
-			GLib.Timeout.Add (100, delegate {
-				ITreeNavigator nav = SearchMember (url);
-				if (nav == null) {
-					foreach (DomCecilCompilationUnit definition in definitions.ToArray ()) {
-						foreach (AssemblyNameReference assemblyNameReference in definition.AssemblyDefinition.MainModule.AssemblyReferences) {
-							string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyNameReference.FullName, null);
-							if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
-								AddReference (assemblyFile);
-						}
+			ITreeNavigator nav = SearchMember (url);
+			if (nav == null) {
+				foreach (DomCecilCompilationUnit definition in definitions.ToArray ()) {
+					foreach (AssemblyNameReference assemblyNameReference in definition.AssemblyDefinition.MainModule.AssemblyReferences) {
+						string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyNameReference.FullName, null);
+						if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
+							AddReference (assemblyFile);
 					}
-					nav = SearchMember (url);
 				}
-				if (nav != null) {
-					nav.ExpandToNode ();
-					nav.Selected = true;
-				} else {
-					LoggingService.LogError ("Can't open: " + url + " (not found).");
-				}
-				return false;
-			});
+				nav = SearchMember (url);
+			}
+			if (nav != null) {
+				nav.ExpandToNode ();
+				nav.Selected = true;
+			} else {
+				LoggingService.LogError ("Can't open: " + url + " (not found).");
+			}
 		}
 		
 		public void SelectAssembly (string fileName)
@@ -844,7 +842,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		protected override void OnDestroyed ()
 		{
-			Dispose (TreeView.GetRootNode ());
+//			Dispose (TreeView.GetRootNode ());
 			this.TreeView.Clear ();
 			base.Destroy ();
 			if (definitions != null) {

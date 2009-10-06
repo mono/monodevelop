@@ -1,5 +1,11 @@
 2009-10-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AssemblyBrowser/BaseTypeFolder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: turned
+	  off tree disposing.
+
+2009-10-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AssemblyBrowser/Namespace.cs: took out type
 	  dispose.
 
