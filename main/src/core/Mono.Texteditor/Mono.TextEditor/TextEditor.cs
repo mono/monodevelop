@@ -600,7 +600,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		internal void RedrawMarginLine (Margin margin, int logicalLine)
+		public void RedrawMarginLine (Margin margin, int logicalLine)
 		{
 			lock (disposeLock) {
 				if (isDisposed)
