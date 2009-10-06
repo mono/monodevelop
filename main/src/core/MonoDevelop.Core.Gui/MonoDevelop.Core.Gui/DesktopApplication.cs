@@ -61,20 +61,20 @@ namespace MonoDevelop.Core.Gui
 			// TODO: implement all other cases
 			if (command.IndexOf ("%f") != -1) {
 				foreach (string s in files) {
-					string cmd = command.Replace ("%f", s);
+					string cmd = command.Replace ("%f", "\"" + s + "\"");
 					Process.Start (cmd);
 				}
 			}
 			else if (command.IndexOf ("%F") != -1) {
 				string[] fs = new string [files.Length];
 				for (int n=0; n<files.Length; n++) {
-					fs [n] = files [n].Replace (" ", "\\ ");
+					fs [n] = "\"" + files [n] + "\"";
 				}
 				string cmd = command.Replace ("%F", string.Join (" ", fs));
 				Process.Start (cmd);
 			} else {
 				foreach (string s in files) {
-					Process.Start (command + " " + s);
+					Process.Start (command + " \"" + s + "\"");
 				}
 			}
 		}
