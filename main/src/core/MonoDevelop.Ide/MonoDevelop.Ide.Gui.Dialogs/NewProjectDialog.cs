@@ -425,6 +425,27 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			cinfo.ProjectBasePath = ProjectLocation;
 			cinfo.ProjectName     = txt_name.Text;
 			cinfo.SolutionName     = CreateSolutionDirectory ? txt_subdirectory.Text : txt_name.Text;
+			
+			// Guess a good default platform for the project
+			
+			if (parentFolder != null && parentFolder.ParentSolution != null) {
+				ItemConfiguration conf = parentFolder.ParentSolution.Configurations [IdeApp.Workspace.ActiveConfiguration];
+				if (conf != null)
+					cinfo.DefaultPlatform = conf.Platform;
+				else {
+					string curName, curPlatform;
+					ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfiguration, out curName, out curPlatform);
+					foreach (ItemConfiguration ic in parentFolder.ParentSolution.Configurations) {
+						if (ic.Platform == curPlatform) {
+							cinfo.DefaultPlatform = curPlatform;
+							break;
+						}
+						if (ic.Name == curName)
+							cinfo.DefaultPlatform = ic.Platform;
+					}
+				}
+			}
+			
 			return cinfo;
 		}
 

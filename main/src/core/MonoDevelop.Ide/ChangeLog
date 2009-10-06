@@ -1,5 +1,12 @@
 2009-10-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: When adding
+	  a project to an existing solution, try to guess the best
+	  platform for the new project, based on the existing
+	  configurations.
+
+2009-10-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Fix logic
 	  for filtering out workspace templates. Fixes bug #543941 -
 	  Can't create a new workspace.
