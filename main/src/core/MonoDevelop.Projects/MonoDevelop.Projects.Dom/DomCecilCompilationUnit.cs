@@ -50,17 +50,6 @@ namespace MonoDevelop.Projects.Dom
 //		{
 //		}
 		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			if (xmlDocumentation != null) {
-				xmlDocumentation.Clear ();
-				xmlDocumentation = null;
-			}
-			assemblyDefinition = null;
-			xmlDocumentation = null;
-		}
-
 		public DomCecilCompilationUnit (bool keepDefinitions, string xmlFileName, bool loadInternals, AssemblyDefinition assemblyDefinition) : base (assemblyDefinition.Name.FullName)
 		{
 			if (keepDefinitions)

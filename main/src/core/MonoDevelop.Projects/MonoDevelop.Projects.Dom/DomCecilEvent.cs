@@ -57,12 +57,5 @@ namespace MonoDevelop.Projects.Dom
 			if (!eventDefinition.IsSpecialName)
 				base.Modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 		}
-		
-		public override void Dispose ()
-		{
-			CleanCecilDefinitions ();
-			base.Dispose ();
-		}
-
 	}
 }

@@ -39,7 +39,7 @@ namespace MonoDevelop.Projects.Dom
 		Nullable = 2
 	}
 	
-	public interface IReturnTypePart : IDisposable
+	public interface IReturnTypePart
 	{
 		string Name {
 			get;

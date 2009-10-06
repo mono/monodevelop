@@ -72,19 +72,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.name = name;
 		}
-		public virtual void Dispose ()
-		{
-			if (attributes != null) {
-				attributes.ForEach (a => a.Dispose ());
-				attributes.Clear ();
-				attributes = null;
-			}
-			if (constraints != null) {
-				constraints.ForEach (c => c.Dispose ());
-				constraints.Clear ();
-				constraints = null;
-			}
-		}
+		
 		public override string ToString ()
 		{
 			return string.Format("[TypeParameter: Name={0}, ConstructorRequired={1}, ClassRequired={2}, ValueTypeRequired={3}, Attributes={4}, Constraints={5}]", Name, ConstructorRequired, ClassRequired, ValueTypeRequired, Attributes, Constraints);

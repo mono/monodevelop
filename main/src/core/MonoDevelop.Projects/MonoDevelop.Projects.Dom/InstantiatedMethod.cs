@@ -36,17 +36,5 @@ namespace MonoDevelop.Projects.Dom
 			get;
 			set;
 		}
-		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			if (GenericParameters != null) {
-				foreach (IReturnType par in GenericParameters) {
-					par.Dispose ();
-				}
-				GenericParameters = null;
-			}
-		}
-
 	}
 }

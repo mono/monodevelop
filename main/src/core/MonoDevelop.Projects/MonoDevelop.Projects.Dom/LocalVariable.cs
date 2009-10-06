@@ -96,14 +96,6 @@ namespace MonoDevelop.Projects.Dom
 			this.Location = region.Start;
 		}
 		
-		public void Dispose ()
-		{
-			DeclaringMember = null;
-			if (ReturnType != null) {
-				ReturnType.Dispose ();
-				ReturnType = null;
-			}
-		}
 		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);

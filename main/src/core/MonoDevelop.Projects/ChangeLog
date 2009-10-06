@@ -1,5 +1,41 @@
 2009-10-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/IUsing.cs:
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomUsing.cs:
+	* MonoDevelop.Projects.Dom/DomEvent.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/IParameter.cs:
+	* MonoDevelop.Projects.Dom/IAttribute.cs:
+	* MonoDevelop.Projects.Dom/DomProperty.cs:
+	* MonoDevelop.Projects.Dom/IReturnType.cs:
+	* MonoDevelop.Projects.Dom/IBaseMember.cs:
+	* MonoDevelop.Projects.Dom/DomAttribute.cs:
+	* MonoDevelop.Projects.Dom/CompoundType.cs:
+	* MonoDevelop.Projects.Dom/DomParameter.cs:
+	* MonoDevelop.Projects.Dom/DomCecilType.cs:
+	* MonoDevelop.Projects.Dom/TypeParameter.cs:
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom/LocalVariable.cs:
+	* MonoDevelop.Projects.Dom/DomCecilEvent.cs:
+	* MonoDevelop.Projects.Dom/DomCecilField.cs:
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:
+	* MonoDevelop.Projects.Dom/ITypeParameter.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs:
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
+	* MonoDevelop.Projects.Dom/ExtensionMethod.cs:
+	* MonoDevelop.Projects.Dom/ICompilationUnit.cs:
+	* MonoDevelop.Projects.Dom/DomCecilProperty.cs:
+	* MonoDevelop.Projects.Dom/DomCecilParameter.cs:
+	* MonoDevelop.Projects.Dom/DomCecilAttribute.cs:
+	* MonoDevelop.Projects.Dom/InstantiatedMethod.cs:
+	* MonoDevelop.Projects.Dom/DomMemberDecorator.cs:
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: Took
+	  out the dispose chain - doesn't solve the huge chunk of
+	  memory allocation :/
+
+2009-10-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomReturnType.cs:
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: Fixed
 	  type parameter conversion.

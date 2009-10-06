@@ -34,7 +34,7 @@ using System.CodeDom;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IAttribute : INode, IDisposable
+	public interface IAttribute : INode
 	{
 		string Name {
 			get;

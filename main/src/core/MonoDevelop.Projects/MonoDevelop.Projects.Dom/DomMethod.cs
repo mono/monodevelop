@@ -176,21 +176,6 @@ namespace MonoDevelop.Projects.Dom
 			this.MethodModifier = MethodModifier;
 		}
 		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			if (parameters != null) {
-				parameters.ForEach (p => p.Dispose ());
-				parameters.Clear ();
-				parameters = null;
-			}
-			if (genericParameters != null) {
-				genericParameters.ForEach (p => p.Dispose ());
-				genericParameters.Clear ();
-				genericParameters = null;
-			}
-		}
-		
 		public static IMethod CreateInstantiatedGenericMethod (IMethod method, IList<IReturnType> genericArguments, IList<IReturnType> methodArguments)
 		{
 		//	System.Console.WriteLine("----");

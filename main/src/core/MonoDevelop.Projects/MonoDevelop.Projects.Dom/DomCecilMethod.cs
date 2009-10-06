@@ -170,11 +170,5 @@ namespace MonoDevelop.Projects.Dom
 				AddExplicitInterface (GetReturnType (overrideRef.DeclaringType));
 			}
 		}
-		
-		public override void Dispose ()
-		{
-			CleanCecilDefinitions ();
-			base.Dispose ();
-		}
 	}
 }

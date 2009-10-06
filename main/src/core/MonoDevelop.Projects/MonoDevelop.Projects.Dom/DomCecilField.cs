@@ -56,11 +56,5 @@ namespace MonoDevelop.Projects.Dom
 			base.ReturnType      = DomCecilMethod.GetReturnType (fieldDefinition.FieldType);
 			DomCecilMethod.AddAttributes (this, fieldDefinition.CustomAttributes);
 		}
-		
-		public override void Dispose ()
-		{
-			CleanCecilDefinitions ();
-			base.Dispose ();
-		}
 	}
 }

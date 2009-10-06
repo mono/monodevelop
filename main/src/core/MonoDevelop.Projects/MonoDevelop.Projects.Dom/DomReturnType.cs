@@ -83,16 +83,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		
-		public void Dispose ()
-		{
-			if (genericArguments != null) {
-				genericArguments.ForEach (arg => arg.Dispose ());
-				genericArguments.Clear ();
-				genericArguments = null;
-			}
-		}
-		
 		public string ToInvariantString ()
 		{
 			if (genericArguments != null && genericArguments.Count > 0) {
@@ -348,15 +338,6 @@ namespace MonoDevelop.Projects.Dom
 			} while (curType != null);
 		}
 		
-		public virtual void Dispose ()
-		{
-			if (parts != null) {
-				parts.ForEach (p => p.Dispose ());
-				parts.Clear ();
-				parts = null;
-			}
-			this.type = null;
-		}
 		public override bool Equals (object obj)
 		{
 			DomReturnType type = obj as DomReturnType;

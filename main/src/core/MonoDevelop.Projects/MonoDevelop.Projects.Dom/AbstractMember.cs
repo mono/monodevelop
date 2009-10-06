@@ -153,25 +153,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		
-		public virtual void Dispose ()
-		{
-			if (explicitInterfaces != null) {
-				explicitInterfaces.ForEach (i => i.Dispose ());
-				explicitInterfaces.Clear ();
-				explicitInterfaces = null;
-			}
-			declaringType = null;
-			if (attributes != null) {
-				attributes.ForEach (i => i.Dispose ());
-				attributes.Clear ();
-			}
-			if (ReturnType != null) {
-				ReturnType.Dispose ();
-				ReturnType = null;
-			}
-		}
-		
 		public void AddExplicitInterface (IReturnType iface)
 		{
 			if (explicitInterfaces == null) 

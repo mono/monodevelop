@@ -54,11 +54,6 @@ namespace MonoDevelop.Projects.Dom
 		{
 			typeDefinition = null;
 		}
-		public override void Dispose ()
-		{
-			CleanCecilDefinitions ();
-			base.Dispose ();
-		}
 		
 		public static string RemoveGenericParamSuffix (string name)
 		{

@@ -81,21 +81,6 @@ namespace MonoDevelop.Projects.Dom
 			Add (nspace);
 		}
 		
-		public virtual void Dispose ()
-		{
-			if (namespaces != null) {
-				namespaces.Clear ();
-				namespaces = null;
-			}
-			if (aliases != null) {
-				foreach (IReturnType t in aliases.Values) {
-					t.Dispose ();
-				}
-				aliases.Clear ();
-				aliases = null;
-			}
-		}
-		
 		public void Add (string nspace)
 		{
 			if (namespaces == null || namespaces == emptyNamespaces)

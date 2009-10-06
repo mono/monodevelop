@@ -120,27 +120,6 @@ namespace MonoDevelop.Projects.Dom
 			return type != null ? type.GetMemberAt (line, column) : null;
 		}
 		
-		public virtual void Dispose ()
-		{
-			if (usings != null) {
-				usings.ForEach (u => u.Dispose ());
-				usings.Clear ();
-				usings = null;
-			}
-			
-			if (attributes != null) {
-				attributes.ForEach (a => a.Dispose ());
-				attributes.Clear ();
-				attributes = null;
-			}
-			
-			if (types != null) {
-				types.ForEach (t => t.Dispose ());
-				types.Clear ();
-				types = null;
-			}
-		}
-		
 		public void Add (IUsing newUsing)
 		{
 			usings.Add (newUsing);

@@ -40,16 +40,6 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			if (parts != null) {
-				parts.ForEach (part => part.Dispose ());
-				parts.Clear ();
-				parts = null;
-			}
-		}
-		
 		public override string ToString ()
 		{
 			StringBuilder partsString = new StringBuilder ();

@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface ICompilationUnit : IDisposable, INode
+	public interface ICompilationUnit : INode
 	{
 		FilePath FileName {
 			get;

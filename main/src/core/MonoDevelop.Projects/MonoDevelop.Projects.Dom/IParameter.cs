@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public interface IParameter : IBaseMember, IDisposable
+	public interface IParameter : IBaseMember
 	{
 		ParameterModifiers ParameterModifiers {
 			get;

@@ -43,43 +43,15 @@ namespace MonoDevelop.Projects.Dom
 		
 		static readonly ReadOnlyCollection<ITypeParameter> emptyParamList = new List<ITypeParameter> ().AsReadOnly ();
 		static readonly ReadOnlyCollection<IReturnType> emptyTypeList = new List<IReturnType> ().AsReadOnly ();
+		static readonly IList<IMember> emptyMembers = new List<IMember> ();
 		
 		List<ITypeParameter> typeParameters      = null;
-		List<IMember> members                    = new List<IMember> ();
-		List<IReturnType> implementedInterfaces = null;
+		List<IMember> members                    = null;
+		List<IReturnType> implementedInterfaces  = null;
 		
 		protected ClassType classType = ClassType.Unknown;
 		protected string nameSpace;
 		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			sourceProjectDom = null;
-			compilationUnit = null;
-			
-			if (baseType != null) {
-				baseType.Dispose ();
-				baseType = null;
-			}
-			if (typeParameters != null) {
-				typeParameters.ForEach (p => p.Dispose ());
-				typeParameters.Clear ();
-				typeParameters = null;
-			}
-			
-			if (members != null) {
-				members.ForEach (m => m.Dispose ());
-				members.Clear ();
-				members = null;
-			}
-			
-			if (implementedInterfaces != null) {
-				implementedInterfaces.ForEach (i => i.Dispose ());
-				implementedInterfaces.Clear ();
-				implementedInterfaces = null;
-			}
-		}
-
 		public override MemberType MemberType {
 			get {
 				return MemberType.Type;
@@ -215,7 +187,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual IEnumerable<IMember> Members {
 			get {
-				return members;
+				return members ?? emptyMembers;
 			}
 		}
 		
@@ -479,8 +451,7 @@ namespace MonoDevelop.Projects.Dom
 			result.classType = MonoDevelop.Projects.Dom.ClassType.Delegate;
 			DomMethod delegateMethod = new DomMethod ("Invoke", Modifiers.None, MethodModifier.None, location, DomRegion.Empty, type);
 			delegateMethod.Add (parameters);
-			result.members.Add (delegateMethod);
-			result.methodCount = 1;
+			result.Add (delegateMethod);
 			return result;
 		}
 		
@@ -528,69 +499,40 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public void Add (IField member)
-		{
-			fieldCount++;
-			((AbstractMember)member).DeclaringType = this;
-			this.members.Add (member);
-		}
-		
-		public void Add (IMethod member)
-		{
-			if (member.IsConstructor) {
-				constructorCount++;
-			} else {
-				methodCount++;
-			}
-			((AbstractMember)member).DeclaringType = this;
-			this.members.Add (member);
-		}
-		
-		public void Add (IProperty member)
-		{
-			if (member.IsIndexer) {
-				indexerCount++;
-			} else {
-				propertyCount++;
-			}
-			((AbstractMember)member).DeclaringType = this;
-			this.members.Add (member);
-		}
-		public void Add (IEvent member)
-		{
-			eventCount++;
-			((AbstractMember)member).DeclaringType = this;
-			this.members.Add (member);
-		}
-		public void Add (IType member)
-		{
-			innerTypeCount++;
-			((AbstractMember)member).DeclaringType = this;
-			this.members.Add (member);
-		}
-		
 		public void Add (IMember member)
 		{
-			switch (member.MemberType)
-			{
+			member.DeclaringType = this;
+			
+			switch (member.MemberType) {
 				case MemberType.Field:
-					Add ((IField) member);
+					fieldCount++;
 					break;
 				case MemberType.Method:
-					Add ((IMethod) member);
+					if (((IMethod)member).IsConstructor) {
+						constructorCount++;
+					} else {
+						methodCount++;
+					}
 					break;
 				case MemberType.Property:
-					Add ((IProperty) member);
+					if (((IProperty)member).IsIndexer) {
+						indexerCount++;
+					} else {
+						propertyCount++;
+					}
 					break;
 				case MemberType.Event:
-					Add ((IEvent) member);
+					eventCount++;
 					break;
 				case MemberType.Type:
-					Add ((IType) member);
+					innerTypeCount++;
 					break;
 				default:
 					throw new InvalidOperationException ();
 			}
+			if (this.members == null)
+				this.members = new List<IMember> ();
+			this.members.Add (member);
 		}
 		
 		protected void ClearInterfaceImplementations ()

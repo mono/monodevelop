@@ -72,19 +72,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public virtual void Dispose ()
-		{
-			if (positionalArguments != null) {
-				positionalArguments.Clear ();
-				positionalArguments = null;
-			}
-			
-			if (namedArguments != null) {
-				namedArguments.Clear ();
-				namedArguments = null;
-			}
-		}
-
 		public void AddPositionalArgument (CodeExpression exp)
 		{
 			if (positionalArguments == null)
