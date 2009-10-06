@@ -110,7 +110,7 @@ namespace MonoDevelop.Platform
 					ShadowType = ShadowType.In
 				};
 				updateBox.BorderWidth = 6;
-				productBox.Spacing = 4;
+				productBox.Spacing = 2;
 				productBox.PackStart (f, false, false, 0);
 				f.ShowAll ();
 				
