@@ -537,19 +537,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		private void InitializeTemplates ()
 		{
 			foreach (ProjectTemplate projectTemplate in ProjectTemplate.ProjectTemplates) {
-				if (newSolution && (projectTemplate.SolutionDescriptor.EntryDescriptors != null) && (projectTemplate.SolutionDescriptor.EntryDescriptors.Length == 0))
+				if (!newSolution && projectTemplate.SolutionDescriptor.EntryDescriptors.Length == 0)
 					continue;
-	            else {
-	            	
-				} {
-					TemplateItem templateItem = new TemplateItem (projectTemplate);
-					
-					Category category = GetCategory(templateItem.Template.Category);
-					if (category != null )
-						category.Templates.Add(templateItem);
-					
-					alltemplates.Add(templateItem);
-				}
+				TemplateItem templateItem = new TemplateItem (projectTemplate);
+				
+				Category category = GetCategory(templateItem.Template.Category);
+				if (category != null )
+					category.Templates.Add(templateItem);
+				
+				alltemplates.Add(templateItem);
 			}
 			
 			InitializeComponents ();

@@ -1,3 +1,9 @@
+2009-10-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Fix logic
+	  for filtering out workspace templates. Fixes bug #543941 -
+	  Can't create a new workspace.
+
 2009-10-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs: Explicitly initialize the dom
