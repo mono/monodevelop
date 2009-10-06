@@ -165,6 +165,8 @@ namespace MonoDevelop.VersionControl.Views
 			
 			editor.Document.TextReplacing += EditorDocumentTextReplacing;
 			editor.Document.LineChanged += EditorDocumentLineChanged;
+			editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
+
 			doc.Saved += UpdateAnnotations;
 			
 			layout = new Pango.Layout (editor.PangoContext);
@@ -251,6 +253,17 @@ namespace MonoDevelop.VersionControl.Views
 			SetAnnotation (startLine, locallyModified);
 		}
 
+		/// <summary>
+		/// Force line repaint on line change
+		/// </summary>
+		private void EditorCarethandlePositionChanged (object sender, DocumentLocationEventArgs e) 
+		{
+			if (e.Location.Line == editor.Caret.Line)
+				return;
+			editor.RedrawMarginLine (this, e.Location.Line);
+			editor.RedrawMarginLine (this, editor.Caret.Line);
+		}
+	
 		/// <summary>
 		/// Calculate the maximum width required to render annotations
 		/// </summary>
