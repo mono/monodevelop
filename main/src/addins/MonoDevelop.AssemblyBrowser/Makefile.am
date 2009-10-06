@@ -31,6 +31,7 @@ FILES =  \
 	MonoDevelop.AssemblyBrowser/ReferenceNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/ResourceFolder.cs \
 	MonoDevelop.AssemblyBrowser/ResourceFolderNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/DocumentationPanel.cs \
 	MonoDevelop.AssemblyBrowser/ResourceNodeBuilder.cs
 
 RES =  \

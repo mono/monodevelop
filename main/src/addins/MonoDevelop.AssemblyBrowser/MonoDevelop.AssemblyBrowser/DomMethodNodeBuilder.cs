@@ -265,6 +265,26 @@ namespace MonoDevelop.AssemblyBrowser
 			result.Append (Disassemble (method, true));
 			return result.ToString ();
 		}
+		
+		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
+		{
+			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
+			StringBuilder result = new StringBuilder ();
+			result.Append ("<big>");
+			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.Append ("</big>");
+			result.AppendLine ();
+			
+			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
+			options.MaxLineLength = -1;
+			options.BigHeadings = true;
+			options.Ambience = AmbienceService.GetAmbience ("text/x-csharp");
+			result.AppendLine ();
+			
+			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (method), options));
+			
+			return result.ToString ();
+		}
 		#endregion
 
 	}

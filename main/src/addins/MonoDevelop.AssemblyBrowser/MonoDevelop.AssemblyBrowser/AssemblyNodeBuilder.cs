@@ -131,6 +131,11 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return GetDisassembly (navigator);
 		}
+		
+		public string GetDocumentationMarkup (ITreeNavigator navigator)
+		{
+			return null;
+		}
 		#endregion
 	}
 }

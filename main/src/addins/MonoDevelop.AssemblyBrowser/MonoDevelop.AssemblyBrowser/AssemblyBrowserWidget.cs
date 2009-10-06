@@ -57,7 +57,7 @@ namespace MonoDevelop.AssemblyBrowser
 			get;
 			private set;
 		}
-		
+		DocumentationPanel documentationPanel = new DocumentationPanel ();
 		Mono.TextEditor.TextEditor inspectEditor = new Mono.TextEditor.TextEditor ();
 		public AssemblyBrowserWidget ()
 		{
@@ -120,8 +120,7 @@ namespace MonoDevelop.AssemblyBrowser
 					this.Open (args.Link);
 				}
 			};
-			this.scrolledwindow3.Child = inspectEditor;
-			this.scrolledwindow3.ShowAll ();
+			SetInpectWidget ();
 			
 //			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
 			
@@ -135,11 +134,13 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.Tree.CursorChanged += delegate {
 				CreateOutput ();
 			};
+			this.languageCombobox.AppendText (GettextCatalog.GetString ("Summary"));
 			this.languageCombobox.AppendText (GettextCatalog.GetString ("IL"));
 			this.languageCombobox.AppendText (GettextCatalog.GetString ("C#"));
 			this.languageCombobox.Active = PropertyService.Get ("AssemblyBrowser.InspectLanguage", 0);
 			this.languageCombobox.Changed += delegate {
 				PropertyService.Set ("AssemblyBrowser.InspectLanguage", this.languageCombobox.Active);
+				SetInpectWidget ();
 				FillInspectLabel ();
 			};
 			
@@ -707,6 +708,23 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
+		void SetInpectWidget ()
+		{
+			if (this.scrolledwindow3.Child != null)
+				this.scrolledwindow3.Remove (this.scrolledwindow3.Child);
+			if (this.languageCombobox.Active <= 0) {
+				documentationPanel.Markup = "No Documentation Available";
+				if (documentationPanel.Parent != null) {
+					this.scrolledwindow3.Child = documentationPanel.Parent;
+				} else {
+					this.scrolledwindow3.AddWithViewport (documentationPanel);
+				}
+			} else {
+				this.scrolledwindow3.Child = inspectEditor;
+			}
+			this.scrolledwindow3.ShowAll ();
+		}
+		
 		void FillInspectLabel ()
 		{
 			ITreeNavigator nav = TreeView.GetSelectedNode ();
@@ -717,20 +735,22 @@ namespace MonoDevelop.AssemblyBrowser
 				this.inspectEditor.Document.Text = "";
 				return;
 			}
-			//this.inspectLabel.Selectable = false;
+			
 			switch (this.languageCombobox.Active) {
 			case 0:
-				this.inspectEditor.Document.Text = builder.GetDisassembly (nav);
+				this.documentationPanel.Markup = builder.GetDocumentationMarkup (nav);
 				break;
 			case 1:
+				this.inspectEditor.Document.Text = builder.GetDisassembly (nav);
+				break;
+			case 2:
 				this.inspectEditor.Document.Text = builder.GetDecompiledCode (nav);
 				break;
 			default:
 				this.inspectEditor.Document.Text = "Invalid combobox value: " + this.languageCombobox.Active;
 				break;
 			}
-			this.inspectEditor.QueueDraw ();
-//			this.inspectLabel.Selectable = true;
+			this.scrolledwindow3.QueueDraw ();
 		}
 			
 		void CreateOutput ()

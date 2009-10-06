@@ -34,6 +34,7 @@ namespace MonoDevelop.AssemblyBrowser
 {
 	public interface IAssemblyBrowserNodeBuilder
 	{
+		string GetDocumentationMarkup (ITreeNavigator navigator);
 		string GetDescription (ITreeNavigator navigator);
 		string GetDisassembly (ITreeNavigator navigator);
 		string GetDecompiledCode (ITreeNavigator navigator);
