@@ -90,10 +90,18 @@ namespace MonoDevelop.NUnit.External
 		NunitTestInfo BuildTestInfo (Test test)
 		{
 			NunitTestInfo ti = new NunitTestInfo ();
-			ti.Name = test.TestName.Name;
+			
+			// The name of inherited tests include the base class name as prefix.
+			// That prefix has to be removed
+			string tname = test.TestName.Name;
+			int i = tname.LastIndexOf ('.');
+			if (i != -1)
+				tname = tname.Substring (i + 1);
+			
+			ti.Name = tname;
 
 			// Trim short name from end of full name to get the path
-			string testNameWithDelimiter = "." + test.TestName.Name;
+			string testNameWithDelimiter = "." + tname;
 			if (test.TestName.FullName.EndsWith (testNameWithDelimiter)) {
 				int pathLength = test.TestName.FullName.Length - testNameWithDelimiter.Length;
 				ti.PathName = test.TestName.FullName.Substring(0, pathLength );

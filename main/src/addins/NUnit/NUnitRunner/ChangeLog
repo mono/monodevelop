@@ -1,3 +1,10 @@
+2009-10-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NUnitTestRunner.cs: The name of inherited tests include the
+	  base class name as prefix. That prefix has to be removed.
+	  Fixes bug #543772 - derived TestFixtures are visible but not
+	  being run.
+
 2009-06-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* NUnitTestRunner.cs: In some cases MS.NET can't properly
