@@ -1,5 +1,9 @@
 2009-10-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Mono.TextEditor/TextEditor.cs: Expose RedrawMarginLines.
+
+2009-10-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Mono.TextEditor/TextEditor.cs: Expose RedrawMarginLine.
 
 2009-10-06  Mike Krüger  <mkrueger@novell.com>
