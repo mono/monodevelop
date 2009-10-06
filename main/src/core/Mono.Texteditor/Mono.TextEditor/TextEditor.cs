@@ -1172,6 +1172,8 @@ namespace Mono.TextEditor
 		
 		void SetHAdjustment ()
 		{
+			if (textEditorData.HAdjustment == null)
+				return;
 			textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
 			if (longestLine != null && this.textEditorData.HAdjustment != null) {
 				int maxX = longestLineWidth + 2 * this.textViewMargin.CharWidth;

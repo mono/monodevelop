@@ -1,3 +1,8 @@
+2009-10-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: text editor can now be
+	  reparented.
+
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed markup syntax mode
