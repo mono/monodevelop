@@ -1,5 +1,11 @@
 2009-10-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom.Output/Ambience.cs:
+	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: Worked
+	  on documentation output.
+
+2009-10-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/IUsing.cs:
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomUsing.cs:

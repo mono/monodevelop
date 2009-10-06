@@ -68,6 +68,11 @@ namespace MonoDevelop.Projects.Dom.Output
 			this.mimeTypes = mimeTypes ?? "";
 		}
 		
+		public virtual string ConvertTypeName (string typeName)
+		{
+			return typeName;
+		}
+		
 		public virtual bool IsValidFor (string fileName)
 		{
 			return false;
