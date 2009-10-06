@@ -1,5 +1,44 @@
 2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.XmlEditor.csproj:
+	* MonoDevelop.XmlEditor.addin.xml:
+	* MonoDevelop.XmlEditor/Commands.cs:
+	* MonoDevelop.XmlEditor/XmlParser.cs:
+	* MonoDevelop.XmlEditor/XmlNamespace.cs:
+	* MonoDevelop.XmlEditor/QualifiedName.cs:
+	* MonoDevelop.XmlEditor/XmlElementPath.cs:
+	* MonoDevelop.XmlEditor/XmlEditorService.cs:
+	* MonoDevelop.XmlEditor/XmlSchemaManager.cs:
+	* MonoDevelop.XmlEditor/XmlFileExtensions.cs:
+	* MonoDevelop.XmlEditor.XPath/XPathQueryPad.cs:
+	* MonoDevelop.XmlEditor/EncodedStringWriter.cs:
+	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs:
+	* MonoDevelop.XmlEditor.XPath/XPathNodeMatch.cs:
+	* MonoDevelop.XmlEditor/XmlFileExtensionNode.cs:
+	* MonoDevelop.XmlEditor/XmlSchemaAssociation.cs:
+	* MonoDevelop.XmlEditor/DeclarationViewWindow.cs:
+	* MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs:
+	* MonoDevelop.XmlEditor/OpenStylesheetCommand.cs:
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
+	* MonoDevelop.XmlEditor.XPath/XPathQueryWidget.cs:
+	* MonoDevelop.XmlEditor.XPath/XPathHistoryList.cs:
+	* MonoDevelop.XmlEditor/QualifiedNameCollection.cs:
+	* MonoDevelop.XmlEditor/OpenXPathQueryPadCommand.cs:
+	* MonoDevelop.XmlEditor.XPath/XPathNamespaceList.cs:
+	* MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanel.cs:
+	* MonoDevelop.XmlEditor.XPath/XPathNodeTextMarker.cs:
+	* MonoDevelop.XmlEditor.XPath/XPathQueryPadOptions.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs:
+	* MonoDevelop.XmlEditor/RemoveXPathHighlightingCommand.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionDataCollection.cs:
+	  Changed license to MIT/X11.
+
+	* gtk-gui/gui.stetic: Flush.
+
+2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.XmlEditor.csproj:
 	* MonoDevelop.Xml.Formatting/XmlChar.cs:

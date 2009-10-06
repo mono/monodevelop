@@ -191,7 +191,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MonoDevelop.XmlEditor\DeclarationViewWindow.cs" />
     <None Include="MonoDevelop.XmlEditor\OpenStylesheetCommand.cs" />
     <None Include="MonoDevelop.XmlEditor\OpenXPathQueryPadCommand.cs" />
     <None Include="MonoDevelop.XmlEditor\RemoveXPathHighlightingCommand.cs" />
