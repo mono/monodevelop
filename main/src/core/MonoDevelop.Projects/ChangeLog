@@ -1,3 +1,9 @@
+2009-10-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: Fixed
+	  type parameter conversion.
+
 2009-10-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomCecilType.cs: dispose already

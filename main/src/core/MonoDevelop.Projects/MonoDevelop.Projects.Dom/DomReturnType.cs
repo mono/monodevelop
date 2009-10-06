@@ -126,7 +126,7 @@ namespace MonoDevelop.Projects.Dom
 		List<IReturnTypePart> parts = new List<IReturnTypePart> ();
 		
 		// TODO dom: free unused return types
-		static Dictionary<string, IReturnType> returnTypeCache;
+//		static Dictionary<string, IReturnType> returnTypeCache;
 		
 		public static readonly IReturnType Void;
 		public static readonly IReturnType Object;
@@ -142,7 +142,7 @@ namespace MonoDevelop.Projects.Dom
 			// ensure that the returnTypeCache dictionary us properly initialized
 			// when calling GetSharedReturnType.
 
-			returnTypeCache = new Dictionary<string, IReturnType> ();
+//			returnTypeCache = new Dictionary<string, IReturnType> ();
 
 			Void = GetSharedReturnType ("System.Void");
 			String = GetSharedReturnType ("System.String");
@@ -327,8 +327,14 @@ namespace MonoDevelop.Projects.Dom
 		
 		public DomReturnType (IType type)
 		{
+			SetType (type);
+		}
+		
+		public void SetType (IType type)
+		{
 			if (type == null)
 				throw new ArgumentNullException ("type was null");
+			this.parts.Clear ();
 			this.type = type;
 			this.nspace = type is InstantiatedType ? ((InstantiatedType)type).UninstantiatedType.Namespace : type.Namespace;
 			IType curType = type;
@@ -516,7 +522,8 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (string.IsNullOrEmpty (invariantString))
 				return null;
-			lock (returnTypeCache) {
+			return new DomReturnType (invariantString);
+		/*	lock (returnTypeCache) {
 				IReturnType type;
 				if (!returnTypeCache.TryGetValue (invariantString, out type)) {
 					DomReturnType newType = new DomReturnType (invariantString);
@@ -524,12 +531,13 @@ namespace MonoDevelop.Projects.Dom
 					return newType;
 				}
 				return type;
-			}
+			}*/
 		}
 		
 		public static IReturnType GetSharedReturnType (IReturnType returnType)
 		{
-			if (returnType == null)
+			return returnType;
+/*			if (returnType == null)
 				return null;
 			string invariantString = returnType.ToInvariantString();
 			lock (returnTypeCache) {
@@ -539,7 +547,7 @@ namespace MonoDevelop.Projects.Dom
 					return returnType;
 				}
 				return type;
-			}
+			}*/
 		}
 #endregion
 	}

@@ -129,10 +129,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return (mods & MonoDevelop.Projects.Dom.Modifiers.Internal) == MonoDevelop.Projects.Dom.Modifiers.Internal ||
 			       (mods & MonoDevelop.Projects.Dom.Modifiers.Private) == MonoDevelop.Projects.Dom.Modifiers.Private ||
-			       (mods & MonoDevelop.Projects.Dom.Modifiers.ProtectedAndInternal) == MonoDevelop.Projects.Dom.Modifiers.ProtectedAndInternal
-/*					||
-			       (mods & MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal) == MonoDevelop.Projects.Dom.Modifiers.ProtectedOrInternal ||
-			       (mods & MonoDevelop.Projects.Dom.Modifiers.SpecialName) == MonoDevelop.Projects.Dom.Modifiers.SpecialName*/;
+			       (mods & MonoDevelop.Projects.Dom.Modifiers.ProtectedAndInternal) == MonoDevelop.Projects.Dom.Modifiers.ProtectedAndInternal;
 		}
 		
 		void AddModuleDefinition (bool keepDefinitions, bool loadInternal, ModuleDefinition moduleDefinition)
@@ -151,19 +148,25 @@ namespace MonoDevelop.Projects.Dom
 //				if (type.Name == "SimplePropertyDescriptor")
 //					System.Console.WriteLine(type.Attributes + "/" + DomCecilType.GetModifiers (type.Attributes) + "/" + IsInternal (DomCecilType.GetModifiers (type.Attributes)));
 				DomCecilType loadType = new DomCecilType (keepDefinitions, loadInternal, type);
-				Add ((IType)resolver.Visit (loadType, null));
-				loadType.Dispose ();
+				resolver.Visit (loadType, null);
+				resolver.ClearTypes ();
+				Add (loadType);
 			}
 		}
 		
-		class InstantiatedParamResolver: CopyDomVisitor<object>
+		class InstantiatedParamResolver : AbstractDomVistitor<object, object>
 		{
 			Dictionary<string, string> xmlDocumentation;
-			Dictionary<string, IType> argTypes;
+			Dictionary<string, IType> argTypes = new Dictionary<string, IType> ();
 			
 			public InstantiatedParamResolver (Dictionary<string, string> xmlDocumentation)
 			{
 				this.xmlDocumentation = xmlDocumentation;
+			}
+			
+			public void ClearTypes ()
+			{
+				this.argTypes.Clear ();
 			}
 			
 			void AddDocumentation (IMember member)
@@ -175,36 +178,58 @@ namespace MonoDevelop.Projects.Dom
 					member.Documentation = doc;
 			}
 				
-			public override INode Visit (IType type, object data)
+			public override object Visit (IType type, object data)
 			{
-				if (type.TypeParameters.Count > 0) {
-					var oldTypes = argTypes;
-					argTypes = oldTypes != null ? new Dictionary<string, IType> (oldTypes) : new Dictionary<string, IType> ();
-					foreach (TypeParameter p in type.TypeParameters)
-						argTypes[p.Name] = type;
-					argTypes = oldTypes;
-				}
-				IType result = (IType)base.Visit (type, data);
-				AddDocumentation (result);
-				foreach (IMember member in result.Members) {
+				foreach (TypeParameter p in type.TypeParameters)
+					argTypes[p.Name] = type;
+				AddDocumentation (type);
+				foreach (IMember member in type.Members) {
 					AddDocumentation (member);
+					CheckReturnType (member.ReturnType);
+					member.AcceptVisitor (this, data);
 				}
-				return result;
+				return null;
 			}
 			
-			public override INode Visit (IReturnType type, object data)
+			public override object Visit (IEvent evt, object data)
 			{
-				if (argTypes != null) {
-					IType res;
-					if (argTypes.TryGetValue (type.FullName, out res)) {
-						DomReturnType rt = new DomReturnType (res);
-						rt.Parts.Add (new ReturnTypePart (type.FullName, null));
-						rt.PointerNestingLevel = type.PointerNestingLevel;
-						rt.SetDimensions (type.GetDimensions ());
-						return rt;
-					}
+				return null;
+			}
+			
+			public override object Visit (IField field, object data)
+			{
+				return null;
+			}
+
+			public override object Visit (IMethod method, object data)
+			{
+				foreach (IParameter param in method.Parameters) {
+					CheckReturnType (param.ReturnType);
 				}
-				return base.Visit (type, data);
+				return null;
+			}
+
+			public override object Visit (IProperty property, object data)
+			{
+				foreach (IParameter param in property.Parameters) {
+					CheckReturnType (param.ReturnType);
+				}
+				return null;
+			}
+			
+			void CheckReturnType (IReturnType type)
+			{
+				if (type == null) 
+					return;
+				IType resultType;
+				if (argTypes.TryGetValue (type.FullName, out resultType)) {
+					DomReturnType returnType = (DomReturnType)type;
+//					Console.Write ("Convert:" + returnType);
+					string returnTypeName = returnType.FullName;
+					returnType.SetType (resultType);
+					returnType.Parts.Add (new ReturnTypePart (returnTypeName, null));
+//					Console.WriteLine (" to:" + returnType);
+				}
 			}
 		}
 	}
