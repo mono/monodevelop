@@ -207,23 +207,8 @@ namespace MonoDevelop.AssemblyBrowser
 		public MonoDevelop.Projects.Dom.IMember ActiveMember  {
 			get;
 			set;
-		}	
-		protected override void OnDestroyed ()
-		{
-			ActiveMember = null;
-			if (memberListStore != null) {
-				memberListStore.Dispose ();
-				memberListStore = null;
-			}
-			
-			if (typeListStore != null) {
-				typeListStore.Dispose ();
-				typeListStore = null;
-			}
-			
-			PropertyService.PropertyChanged -= HandlePropertyChanged;
-			base.OnDestroyed ();
 		}
+		
 		
 		void HandlePropertyChanged(object sender, MonoDevelop.Core.PropertyChangedEventArgs e)
 		{
@@ -839,10 +824,12 @@ namespace MonoDevelop.AssemblyBrowser
 					return;
 				}
 			} while (nav.MoveNext());
-					
 		}
+		
 		void Dispose (ITreeNavigator nav)
 		{
+			if (nav == null)
+				return;
 			IDisposable d = nav.DataItem as IDisposable;
 			if (d != null) 
 				d.Dispose ();
@@ -854,17 +841,32 @@ namespace MonoDevelop.AssemblyBrowser
 				nav.MoveToParent ();
 			}
 		}
-		public override void Destroy ()
+		
+		protected override void OnDestroyed ()
 		{
 			Dispose (TreeView.GetRootNode ());
 			this.TreeView.Clear ();
 			base.Destroy ();
 			if (definitions != null) {
-				definitions.ForEach (def => def.Dispose ());
 				definitions.Clear ();
 				definitions = null;
 			}
+			
+			ActiveMember = null;
+			if (memberListStore != null) {
+				memberListStore.Dispose ();
+				memberListStore = null;
+			}
+			
+			if (typeListStore != null) {
+				typeListStore.Dispose ();
+				typeListStore = null;
+			}
+			
+			PropertyService.PropertyChanged -= HandlePropertyChanged;
+			base.OnDestroyed ();
 		}
+		
 
 		List<DomCecilCompilationUnit> definitions = new List<DomCecilCompilationUnit> ();
 		public AssemblyDefinition AddReference (string fileName)
@@ -875,7 +877,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			DomCecilCompilationUnit newUnit = DomCecilCompilationUnit.Load (fileName);
 			definitions.Add (newUnit);
-			
+		
 			ITreeBuilder builder;
 			if (definitions.Count == 1) {
 				builder = TreeView.LoadTree (newUnit.AssemblyDefinition);
