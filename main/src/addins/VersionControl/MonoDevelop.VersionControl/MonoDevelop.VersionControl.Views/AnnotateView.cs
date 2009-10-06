@@ -201,9 +201,11 @@ namespace MonoDevelop.VersionControl.Views
 			int  startLine = editor.Document.OffsetToLineNumber (e.Line.Offset),
 			     endLine = editor.Document.OffsetToLineNumber (e.Line.EndOffset);
 			
+			if (startLine == endLine) {
+				SetAnnotation (startLine, locallyModified);
+			}
 			for (int i=startLine; i<endLine; ++i) {
-				if (i >= annotations.Count){ annotations.Add (locallyModified); }
-				else{ annotations[i] = locallyModified; }
+				SetAnnotation (i, locallyModified);
 			}
 		}
 
@@ -217,7 +219,7 @@ namespace MonoDevelop.VersionControl.Views
 			     lineCount = 0;
 			string[] tokens = null;
 			
-			if (startLine != endLine) {
+			if (startLine < endLine) {
 				// change crosses line boundary
 				
 				lineCount = endLine - startLine;
@@ -241,9 +243,12 @@ namespace MonoDevelop.VersionControl.Views
 					for (int i=0; i<lineCount; ++i) {
 						annotations.Insert (startLine+1, locallyModified);
 					}
+			} else if (startLine > endLine) {
+				// revert
+				return;
 			}
 			
-			annotations[startLine] = locallyModified;
+			SetAnnotation (startLine, locallyModified);
 		}
 
 		/// <summary>
@@ -288,6 +293,30 @@ namespace MonoDevelop.VersionControl.Views
 			    (line < annotations.Count)) {
 				layout.SetText (annotations[line]);
 				drawable.DrawLayout ((editor.Caret.Line == line)? lineNumberHighlightGC: lineNumberGC, x + 1, y, layout);
+			}
+		}
+		
+		/// <summary>
+		/// Sets a given annotation line, 
+		/// accounting for end-of-buffer overrun.
+		/// </summary>
+		/// <param name="index">
+		/// A <see cref="System.Int32"/>: The index of the item to be set.
+		/// </param>
+		/// <param name="text">
+		/// A <see cref="System.String"/>: The annotation to be used.
+		/// </param>
+		void SetAnnotation (int index, string text)
+		{
+			int difference = index - annotations.Count;
+			
+			if (0 > difference) {
+				annotations[index] = text;
+			} else {
+				for (int i=0; i<difference; ++i) {
+					annotations.Add (locallyModified);
+				}
+				annotations.Add (text);
 			}
 		}
 	}
