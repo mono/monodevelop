@@ -412,7 +412,7 @@ namespace DebuggerServer
 		public override IEnumerable<ValueReference> GetMembers (EvaluationContext gctx, object tt, object ob, BindingFlags bindingFlags)
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext)gctx;
-			TargetStructObject co = (TargetStructObject)ctx.GetRealObject (ob);
+			TargetStructObject co = ctx.GetRealObject (ob) as TargetStructObject; // It can be a TargetObjectObject
 			TargetType t = (TargetType)tt;
 			if (co == null) {
 				bindingFlags |= BindingFlags.Static;

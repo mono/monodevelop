@@ -1,5 +1,11 @@
 2009-10-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MdbObjectValueAdaptor.cs: Avoid cast exception in GetMembers
+	  when the object is of type TargetObjectObject. Fixes bug
+	  #543805.
+
+2009-10-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MdbAdaptor-2-4-2.cs: Add missing null check. Fixes bug
 	  #544137 - Exception while run command.
 
