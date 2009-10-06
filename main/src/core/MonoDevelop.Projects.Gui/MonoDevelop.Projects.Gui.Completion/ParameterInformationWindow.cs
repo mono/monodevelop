@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			desc = new Gtk.Label ("");
 			desc.Xalign = 0;
+			desc.Wrap = true;
 			count = new Gtk.Label ("");
 
 			mainBox = new HBox (false, 2);
@@ -84,8 +85,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				paramText [i] = txt;
 			}
 			string text = provider.GetMethodMarkup (overload, paramText, currentParam);
-
 			desc.Markup = text;
+			
 			if (provider.OverloadCount > 1) {
 				count.Show ();
 				goPrev.Show ();
