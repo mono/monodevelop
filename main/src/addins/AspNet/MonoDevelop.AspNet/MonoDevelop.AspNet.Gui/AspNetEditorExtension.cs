@@ -137,6 +137,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
 		}
+		
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (Tracker.Engine.CurrentState is AspNetExpressionState) {
@@ -302,10 +303,10 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 		
-		protected override void GetAttributeCompletions (CompletionDataList list, S.IAttributedXObject attributedOb,
+		protected override CompletionDataList GetAttributeCompletions (S.IAttributedXObject attributedOb,
 		                                                 Dictionary<string, string> existingAtts)
 		{
-			base.GetAttributeCompletions (list, attributedOb, existingAtts);
+			var list = base.GetAttributeCompletions (attributedOb, existingAtts) ?? new CompletionDataList ();
 			if (attributedOb is S.XElement) {
 				
 				if (!existingAtts.ContainsKey ("runat"))
@@ -328,14 +329,15 @@ namespace MonoDevelop.AspNet.Gui
 					AddAspAttributeCompletionData (list, AspDocument, attributedOb.Name, existingAtts);
 				}
 				
-			}  else if (attributedOb is AspNetDirective) {
-				DirectiveCompletion.GetAttributes (list, attributedOb.Name.FullName, ProjClrVersion, existingAtts);
+			} else if (attributedOb is AspNetDirective) {
+				return DirectiveCompletion.GetAttributes (Project, attributedOb.Name.FullName, existingAtts);
 			}
+			return list.Count > 0? list : null;
 		}
 		
-		protected override void GetAttributeValueCompletions (CompletionDataList list, S.IAttributedXObject ob, S.XAttribute att)
+		protected override CompletionDataList GetAttributeValueCompletions (S.IAttributedXObject ob, S.XAttribute att)
 		{
-			base.GetAttributeValueCompletions (list, ob, att);
+			var list = base.GetAttributeValueCompletions (ob, att) ?? new CompletionDataList ();
 			if (ob is S.XElement) {
 				if (ob.Name.HasPrefix) {
 					S.XAttribute idAtt = ob.Attributes[new S.XName ("id")];
@@ -345,14 +347,21 @@ namespace MonoDevelop.AspNet.Gui
 					AddAspAttributeValueCompletionData (list, AspCU, ob.Name, att.Name, id);
 				}
 			} else if (ob is AspNetDirective) {
-				DirectiveCompletion.GetAttributeValues (list, ob.Name.FullName, att.Name.FullName, ProjClrVersion);
+				return DirectiveCompletion.GetAttributeValues (Project, Document.FileName, ob.Name.FullName, att.Name.FullName);
 			}
+			return list.Count > 0? list : null;
 		}
 		
 		ClrVersion ProjClrVersion {
 			get {
-				var proj = this.Document.Project as AspNetAppProject;
+				var proj = Project;
 				return proj != null? proj.TargetFramework.ClrVersion : ClrVersion.Net_2_0;
+			}
+		}
+		
+		public AspNetAppProject Project {
+			get {
+				return this.Document.Project as AspNetAppProject;
 			}
 		}
 		

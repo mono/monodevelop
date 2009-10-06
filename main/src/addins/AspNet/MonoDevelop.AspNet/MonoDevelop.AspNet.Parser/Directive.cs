@@ -48,7 +48,7 @@ namespace MonoDevelop.AspNet.Parser
 		// NOTE: MS' documentation for directives is at http://msdn.microsoft.com/en-us/library/t8syafc7.aspx
 		//
 		// FIXME: gettextise this
-		public static ICompletionDataList GetDirectives (WebSubtype type)
+		public static CompletionDataList GetDirectives (WebSubtype type)
 		{
 			CompletionDataList list = new CompletionDataList ();
 			
@@ -82,24 +82,27 @@ namespace MonoDevelop.AspNet.Parser
 		}
 		
 
-		public static void GetAttributeValues (CompletionDataList list, string directiveName, string attribute, ClrVersion clrVersion)
+		public static CompletionDataList GetAttributeValues (AspNetAppProject project, FilePath fromFile, string directiveName, string attribute)
 		{
-			switch (directiveName.ToLower ()) {
+			switch (directiveName.ToLowerInvariant ()) {
 			case "page":
-				GetPageAttributeValues (list, attribute, clrVersion);
-				break;
+				return GetPageAttributeValues (project, fromFile, attribute);
+			case "register":
+				return GetRegisterAttributeValues (project, fromFile, attribute);
 			}
+			return null;
 		}
 		
-		public static void GetAttributes (CompletionDataList list, string directiveName,
-		                                  ClrVersion clrVersion, Dictionary<string, string> existingAtts)
+		public static CompletionDataList GetAttributes (AspNetAppProject project, string directiveName,
+			Dictionary<string, string> existingAtts)
 		{
-			bool net20 = clrVersion != ClrVersion.Net_1_1;
+			var list = new CompletionDataList ();
+			bool net20 = project == null || project.TargetFramework.ClrVersion != ClrVersion.Net_1_1;
 			
 			//FIXME: detect whether the page is VB
 			bool vb = false;
 			
-			switch (directiveName.ToLower ()) {
+			switch (directiveName.ToLowerInvariant ()) {
 			case "page":
 				ExclusiveAdd (list, existingAtts, page11Attributes);
 				if (net20)
@@ -140,11 +143,15 @@ namespace MonoDevelop.AspNet.Parser
 				break;
 				
 			case "register":
-				foreach (string s in registerAssemblyAttributes)
-					if (existingAtts.ContainsKey (s))
-						
-				
 				ExclusiveAdd (list, existingAtts, registerAttributes);
+				if (existingAtts.Keys.Intersect (registerAssemblyAttributes, StringComparer.OrdinalIgnoreCase).Any ()) {
+					ExclusiveAdd (list, existingAtts, registerAssemblyAttributes);
+				} else if (existingAtts.Keys.Intersect (registerUserControlAttributes, StringComparer.OrdinalIgnoreCase).Any ()) {
+					ExclusiveAdd (list, existingAtts, registerUserControlAttributes);
+				} else {
+					list.AddRange (registerAssemblyAttributes);
+					list.AddRange (registerUserControlAttributes);
+				}
 				break;
 				
 			case "outputcache":
@@ -159,10 +166,11 @@ namespace MonoDevelop.AspNet.Parser
 				ExclusiveAdd (list, existingAtts, implementsAttributes);
 				break;
 			}
+			return list.Count > 0? list : null;
 		}
 		
 		static void ExclusiveAdd (CompletionDataList list, Dictionary<string, string> existingAtts,
-		                                        IEnumerable<string> values)
+		                          IEnumerable<string> values)
 		{
 			foreach (string s in values)
 				if (!existingAtts.ContainsKey (s))
@@ -170,7 +178,7 @@ namespace MonoDevelop.AspNet.Parser
 		}
 		
 		static void MutexAdd (CompletionDataList list, Dictionary<string, string> existingAtts,
-		                                    IEnumerable<string> mutexValues)
+		                      IEnumerable<string> mutexValues)
 		{
 			foreach (string s in mutexValues)
 				if (existingAtts.ContainsKey (s))
@@ -179,9 +187,10 @@ namespace MonoDevelop.AspNet.Parser
 				list.Add (s);
 		}
 		
-		static void GetPageAttributeValues (CompletionDataList list, string attribute, ClrVersion clrVersion)
+		static CompletionDataList GetPageAttributeValues (AspNetAppProject project, FilePath fromFile, string attribute)
 		{
-			switch (attribute.ToLower ()) {
+			var list = new CompletionDataList ();
+			switch (attribute.ToLowerInvariant ()) {
 			
 			//
 			//boolean, default to false
@@ -195,7 +204,7 @@ namespace MonoDevelop.AspNet.Parser
 			case "strict": //VB ONLY 
 			case "trace":
 				SimpleList.AddBoolean (list, false);
-				return;
+				break;
 			
 			//
 			//boolean, default to true
@@ -210,7 +219,7 @@ namespace MonoDevelop.AspNet.Parser
 			case "validaterequest": //enabled in machine.config
 			case "debug":
 				SimpleList.AddBoolean (list, true);
-				return;
+				break;
 			
 			//
 			//specialised hard value list completions
@@ -218,34 +227,34 @@ namespace MonoDevelop.AspNet.Parser
 			case "codepage":
 				list.AddRange (from e in Encoding.GetEncodings () select e.CodePage.ToString ());
 				list.DefaultCompletionString = Encoding.UTF8.CodePage.ToString ();
-				return;
+				break;
 				
 			case "compilationmode":
 				SimpleList.AddEnum (list, System.Web.UI.CompilationMode.Always);
-				return;
+				break;
 				
 			case "culture":
 				list.AddRange (from c in CultureInfo.GetCultures (CultureTypes.AllCultures) select c.Name);
 				list.DefaultCompletionString = CultureInfo.CurrentCulture.Name;
-				return;
+				break;
 			
 			case "lcid":
 				//  locale ID, MUTUALLY EXCLUSIVE with Culture
 				list.AddRange (from c in CultureInfo.GetCultures (CultureTypes.AllCultures)
 				               select c.LCID.ToString ());
 				list.DefaultCompletionString = CultureInfo.CurrentCulture.LCID.ToString ();
-				return;
+				break;
 			
 			case "responseencoding":
 				list.AddRange (from e in Encoding.GetEncodings () select e.Name);
 				list.DefaultCompletionString = Encoding.UTF8.EncodingName;
-				return;
+				break;
 			
 			case "tracemode":
 				list.Add ("SortByTime");
 				list.Add ("SortByCategory");
 				list.DefaultCompletionString = "SortByTime";
-				return;
+				break;
 			
 			case "transaction":
 				list.Add ("Disabled");
@@ -253,16 +262,22 @@ namespace MonoDevelop.AspNet.Parser
 				list.Add ("Required");
 				list.Add ("RequiresNew");
 				list.DefaultCompletionString = "Disabled";
-				return;
+				break;
 			
 			case "viewstateencryptionmode":
 				SimpleList.AddEnum (list, ViewStateEncryptionMode.Auto);
-				return;
+				break;
 				
 			case "warninglevel":
 				list.AddRange (new string[] {"0", "1", "2", "3", "4"});
 				list.DefaultCompletionString = "0";
-				return;
+				break;
+				
+			case "masterpagefile":
+				return project != null
+					? MonoDevelop.Html.PathCompletion.GetPathCompletion (project, "*.master", fromFile,
+						x => "~/" + x.RelativePath.ToString ().Replace (System.IO.Path.PathSeparator, '/')) 
+					: null;
 			
 			//
 			//we can probably complete these using info from the project, but not yet
@@ -280,9 +295,7 @@ namespace MonoDevelop.AspNet.Parser
 			case "Inherits":
 				//  IType : Page. defaults to namespace from ClassName 
 			case "Language":
-				//  string, any available .NET langauge	
-			case "MasterPageFile":
-				//  master page path
+				//  string, any available .NET language
 			case "Src":
 				//  string, extra source code for page
 			case "StyleSheetTheme":
@@ -314,8 +327,24 @@ namespace MonoDevelop.AspNet.Parser
 			case "Title":
 				//  string for <title>
 			*/	
+			default:
+				return null;
 			}
+			
+			return list.Count > 0? list : null;
 		}
+		
+		static CompletionDataList GetRegisterAttributeValues (AspNetAppProject project, FilePath fromFile, string attribute)
+		{
+			switch (attribute.ToLowerInvariant ()) {
+			case "src":
+				return project != null
+					? MonoDevelop.Html.PathCompletion.GetPathCompletion (project, "*.ascx", fromFile,
+						x => "~/" + x.RelativePath.ToString ().Replace (System.IO.Path.PathSeparator, '/')) 
+					: null;
+			}
+			return null;
+		}	
 		
 		#region Attribute lists
 		

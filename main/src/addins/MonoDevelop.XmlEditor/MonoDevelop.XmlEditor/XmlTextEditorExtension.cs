@@ -152,8 +152,8 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		protected override void GetAttributeCompletions (CompletionDataList list, IAttributedXObject attributedOb, 
-		                                                 Dictionary<string, string> existingAtts)
+		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
+			Dictionary<string, string> existingAtts)
 		{
 			XmlElementPath path = GetCurrentPath ();
 			if (path.Elements.Count > 0) {
@@ -163,13 +163,13 @@ namespace MonoDevelop.XmlEditor
 				if (schema != null) {
 					ICompletionData[] completionData = schema.GetAttributeCompletionData (path);
 					if (completionData != null)
-						list.AddRange (completionData);
+						return new CompletionDataList (completionData);
 				}
 			}
+			return null;
 		}
 		
-		protected override void GetAttributeValueCompletions (CompletionDataList list, IAttributedXObject attributedOb,
-		                                                      XAttribute att)
+		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att)
 		{
 			XmlElementPath path = GetCurrentPath ();
 			if (path.Elements.Count > 0) {
@@ -177,9 +177,10 @@ namespace MonoDevelop.XmlEditor
 				if (schema != null) {
 					ICompletionData[] completionData = schema.GetAttributeValueCompletionData (path, att.Name.FullName);
 					if (completionData != null)
-						list.AddRange (completionData);
+						return new CompletionDataList (completionData);
 				}
 			}
+			return null;
 		}
 		
 		#endregion

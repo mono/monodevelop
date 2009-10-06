@@ -168,22 +168,22 @@ namespace MonoDevelop.Moonlight
 //			return project == null? MonoDevelop.Core.TargetFramework.Default : project.TargetFramework;
 //		}
 		
-		protected override void GetAttributeCompletions (CompletionDataList list, IAttributedXObject attributedOb, 
-		                                                 Dictionary<string, string> existingAtts)
+		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb, 
+			Dictionary<string, string> existingAtts)
 		{
-			base.GetAttributeCompletions (list, attributedOb, existingAtts);
+			var list = base.GetAttributeCompletions (attributedOb, existingAtts) ?? new CompletionDataList ();
 			if (!existingAtts.ContainsKey ("x:Name"))
 				list.Add ("x:Name");
 			
 			GetType (attributedOb, delegate (IType type, ProjectDom dom) {
 				AddControlMembers (list, dom, type, existingAtts);
 			});
+			return list.Count > 0? list : null;
 		}
 		
-		protected override void GetAttributeValueCompletions (CompletionDataList list, IAttributedXObject attributedOb, 
-		                                                      XAttribute att)
+		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att)
 		{
-			base.GetAttributeValueCompletions (list, attributedOb, att);
+			var list = base.GetAttributeValueCompletions (attributedOb, att) ?? new CompletionDataList ();
 			
 			GetType (attributedOb, delegate (IType type, ProjectDom dom) {
 				foreach (IProperty prop in GetAllProperties (dom, type)) {
@@ -219,6 +219,7 @@ namespace MonoDevelop.Moonlight
 					}
 				}
 			});
+			return list.Count > 0? list : null;
 		}
 		
 		#endregion

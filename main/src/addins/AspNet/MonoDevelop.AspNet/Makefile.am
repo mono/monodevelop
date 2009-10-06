@@ -130,7 +130,8 @@ FILES =  \
 	MonoDevelop.Html/HtmlCompletionDataProvider.cs \
 	MonoDevelop.Html/HtmlParser.cs \
 	MonoDevelop.Html/HtmlSchema.cs \
-	MonoDevelop.Html/HtmlSchemaService.cs
+	MonoDevelop.Html/HtmlSchemaService.cs \
+	MonoDevelop.Html/PathCompletion.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

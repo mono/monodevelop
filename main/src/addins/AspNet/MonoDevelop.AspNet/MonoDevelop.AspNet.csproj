@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.AspNet</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.AspNet</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -126,7 +127,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.AspNet.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.AspNet.addin.xml">
+      <LogicalName>MonoDevelop.AspNet.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Templates\WebForm-Empty.xft.xml">
       <LogicalName>WebForm-Empty.xft.xml</LogicalName>
     </EmbeddedResource>
@@ -304,6 +307,7 @@
     <Compile Include="MonoDevelop.AspNet\AspNetExecutionHandler.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetSyntaxMode.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetMSBuildImportProvider.cs" />
+    <Compile Include="MonoDevelop.Html\PathCompletion.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

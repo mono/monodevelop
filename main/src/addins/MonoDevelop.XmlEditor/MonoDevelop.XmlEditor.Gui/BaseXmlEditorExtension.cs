@@ -322,9 +322,7 @@ namespace MonoDevelop.XmlEditor.Gui
 						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
 					}
 					
-					CompletionDataList list = new CompletionDataList ();
-					GetAttributeCompletions (list, attributedOb, existingAtts);
-					return list.Count > 0? list : null;
+					return GetAttributeCompletions (attributedOb, existingAtts);
 				}
 			}
 			
@@ -358,9 +356,7 @@ namespace MonoDevelop.XmlEditor.Gui
 						if (Tracker.Engine.CurrentStateLength == 1)
 							triggerWordLength = 1;
 						
-						CompletionDataList list = new CompletionDataList ();
-						GetAttributeValueCompletions (list, attributedOb, att);	
-						return list.Count > 0? list : null;
+						return GetAttributeValueCompletions (attributedOb, att);
 					}
 				}
 				
@@ -384,15 +380,15 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 		}
 		
-		protected virtual void GetAttributeCompletions (CompletionDataList list, IAttributedXObject attributedOb,
-		                                                Dictionary<string, string> existingAtts)
+		protected virtual CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
+			Dictionary<string, string> existingAtts)
 		{
+			return null;
 		}
 		
-		protected virtual void GetAttributeValueCompletions (CompletionDataList list,
-		                                                     IAttributedXObject attributedOb,
-		                                                     XAttribute att)
+		protected virtual CompletionDataList GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att)
 		{
+			return null;
 		}
 		
 		protected virtual void GetEntityCompletions (CompletionDataList list)

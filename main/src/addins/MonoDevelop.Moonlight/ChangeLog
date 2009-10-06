@@ -1,3 +1,9 @@
+2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightEditorExtension.cs: Tweak API
+	  so classes can return completion lists instead of modifying
+	  one they're given.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic: Update gtk# dependency.

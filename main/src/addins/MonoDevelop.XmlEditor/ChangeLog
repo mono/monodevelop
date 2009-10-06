@@ -1,3 +1,10 @@
+2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Tweak
+	  API so classes can return completion lists instead of
+	  modifying one they're given.
+
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

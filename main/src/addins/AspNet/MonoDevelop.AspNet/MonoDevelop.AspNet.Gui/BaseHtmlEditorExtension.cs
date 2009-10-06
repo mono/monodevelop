@@ -117,17 +117,25 @@ namespace MonoDevelop.AspNet.Gui
 			                               select (ICompletionData) dat);
 		}
 		
-		protected override void GetAttributeCompletions (CompletionDataList list, IAttributedXObject attributedOb,
-		                                                 Dictionary<string, string> existingAtts)
+		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
+			Dictionary<string, string> existingAtts)
 		{
-			if (attributedOb is XElement && !attributedOb.Name.HasPrefix)
+			if (attributedOb is XElement && !attributedOb.Name.HasPrefix) {
+				var list = new CompletionDataList ();
 				AddHtmlAttributeCompletionData (list, Schema, attributedOb.Name, existingAtts);
+				return list;
+			}
+			return null;
 		}
 		
-		protected override void GetAttributeValueCompletions (CompletionDataList list, IAttributedXObject ob, XAttribute att)
+		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject ob, XAttribute att)
 		{
-			if (ob is XElement && !ob.Name.HasPrefix)
+			if (ob is XElement && !ob.Name.HasPrefix) {
+				var list = new CompletionDataList ();
 				AddHtmlAttributeValueCompletionData (list, Schema, ob.Name, att.Name);
+				return list;
+			}
+			return null;
 		}
 		
 		#region HTML data

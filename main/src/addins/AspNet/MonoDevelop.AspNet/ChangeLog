@@ -1,3 +1,20 @@
+2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.AspNet.csproj: Update.
+
+	* MonoDevelop.Html/PathCompletion.cs: Creates completion lists
+	  for picking file paths.
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs: Tweak API
+	  so classes can return completion lists instead of modifying
+	  one they're given.
+
+	* MonoDevelop.AspNet.Parser/Directive.cs: Complete paths for
+	  register src and for masterpagefile. Finally fix the
+	  register directive attribute completion too.
+
 2009-10-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs:
