@@ -56,7 +56,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public void Dispose ()
 		{
 			if (types != null) {
-				types.ForEach (t => t.Dispose ());
+			//	types.ForEach (t => t.Dispose ());
 				types.Clear ();
 				types = null;
 			}

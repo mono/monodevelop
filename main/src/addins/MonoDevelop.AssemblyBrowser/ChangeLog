@@ -1,5 +1,10 @@
 2009-10-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AssemblyBrowser/Namespace.cs: took out type
+	  dispose.
+
+2009-10-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: took
 	  out dom dispose chain.
 
