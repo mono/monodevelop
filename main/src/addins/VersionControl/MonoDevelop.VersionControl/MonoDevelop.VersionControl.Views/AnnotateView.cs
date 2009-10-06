@@ -247,6 +247,8 @@ namespace MonoDevelop.VersionControl.Views
 					}
 			} else if (startLine > endLine) {
 				// revert
+				UpdateAnnotations (null, null);
+				editor.RedrawMarginLines (this, 0, -1);
 				return;
 			}
 			

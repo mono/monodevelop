@@ -1,6 +1,11 @@
 2009-10-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Update
+	  annotations on revert.
+
+2009-10-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Update
 	  annotation margin while editing.
 
 2009-10-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
