@@ -53,19 +53,26 @@ namespace MonoDevelop.Projects
 		
 		public ItemConfiguration (string id)
 		{
-			int i = id.IndexOf ('|');
-			if (i < 0)
-				name = id;
-			else {
-				name = id.Substring (0, i);
-				platform = id.Substring (i+1);
-			}
+			ParseConfigurationId (id, out name, out platform);
 		}
 		
 		public ItemConfiguration (string name, string platform)
 		{
 			this.name = name;
 			this.platform = platform;
+		}
+		
+		public static void ParseConfigurationId (string id, out string name, out string platform)
+		{
+			int i = id.IndexOf ('|');
+			if (i < 0) {
+				name = id;
+				platform = string.Empty;
+			}
+			else {
+				name = id.Substring (0, i);
+				platform = id.Substring (i+1);
+			}
 		}
 		
 		public string Name {
@@ -81,14 +88,7 @@ namespace MonoDevelop.Projects
 					return name + "|" + platform;
 			}
 			set {
-				int i = value.IndexOf ('|');
-				if (i == -1) {
-					name = value;
-					platform = null;
-				} else {
-					name = value.Substring (0, i);
-					platform = value.Substring (i+1);
-				}
+				ParseConfigurationId (value, out name, out platform);
 			}
 		}
 		

@@ -330,11 +330,17 @@ namespace MonoDevelop.Projects
 			if (eitem != null && createSolutionConfigurations) {
 				// Create new solution configurations for item configurations
 				foreach (ItemConfiguration iconf in eitem.Configurations) {
-					SolutionConfiguration conf = ParentSolution.Configurations [iconf.Id];
-					if (conf == null) {
-						conf = new SolutionConfiguration (iconf.Id);
-						conf.AddItem (eitem);
-						ParentSolution.Configurations.Add (conf);
+					bool found = false;
+					foreach (SolutionConfiguration conf in ParentSolution.Configurations) {
+						if (conf.Name == iconf.Name && (iconf.Platform == conf.Platform || iconf.Platform.Length == 0)) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						SolutionConfiguration sconf = new SolutionConfiguration (iconf.Id);
+						sconf.AddItem (eitem);
+						ParentSolution.Configurations.Add (sconf);
 					}
 				}
 			}

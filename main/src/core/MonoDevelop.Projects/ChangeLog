@@ -1,3 +1,16 @@
+2009-10-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/ItemConfiguration.cs:
+	* MonoDevelop.Projects/ProjectCreateInformation.cs: Added
+	  support for specifying a default platform for projects.
+
+	* MonoDevelop.Projects/SolutionFolder.cs: When adding an item
+	  with createSolutionConfigurations option, don't create
+	  configuration if the config name matches, even if the
+	  platform doesn't.
+
 2009-10-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/Ambience.cs:

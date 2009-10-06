@@ -91,28 +91,43 @@ namespace MonoDevelop.Projects
 
 		public DotNetProject (string languageName, ProjectCreateInformation projectCreateInfo, XmlElement projectOptions) : this(languageName)
 		{
+			if ((projectOptions != null) && (projectOptions.Attributes["Target"] != null))
+				CompileTarget = (CompileTarget)Enum.Parse (typeof(CompileTarget), projectOptions.Attributes["Target"].Value);
+			else if (IsLibraryBasedProjectType)
+				CompileTarget = CompileTarget.Library;
+
 			if (this.LanguageBinding != null) {
 				LanguageParameters = languageBinding.CreateProjectParameters (projectOptions);
 
-				if (projectOptions != null)
+				string platform = null;
+				if (projectOptions != null) {
 					projectOptions.SetAttribute ("DefineDebug", "True");
-				DotNetProjectConfiguration configDebug = CreateConfiguration ("Debug") as DotNetProjectConfiguration;
+					if (!projectOptions.HasAttribute ("Platform")) {
+						if (CompileTarget == CompileTarget.Library)
+						    platform = string.Empty;
+						else if (projectCreateInfo.DefaultPlatform != null)
+							platform = projectCreateInfo.DefaultPlatform;
+						else
+							platform = Services.ProjectService.DefaultPlatformTarget;
+						// Clone the element since we are going to change it
+						projectOptions = (XmlElement) projectOptions.CloneNode (true);
+						projectOptions.SetAttribute ("Platform", platform);
+					} else
+						platform = projectOptions.GetAttribute ("Platform");
+				}
+				string platformSuffix = string.IsNullOrEmpty (platform) ? string.Empty : "|" + platform;
+				DotNetProjectConfiguration configDebug = CreateConfiguration ("Debug" + platformSuffix) as DotNetProjectConfiguration;
 				configDebug.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
 				configDebug.DebugMode = true;
 				Configurations.Add (configDebug);
 
-				DotNetProjectConfiguration configRelease = CreateConfiguration ("Release") as DotNetProjectConfiguration;
+				DotNetProjectConfiguration configRelease = CreateConfiguration ("Release" + platformSuffix) as DotNetProjectConfiguration;
 				if (projectOptions != null)
 					projectOptions.SetAttribute ("DefineDebug", "False");
 				configRelease.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
 				configRelease.DebugMode = false;
 				Configurations.Add (configRelease);
 			}
-
-			if ((projectOptions != null) && (projectOptions.Attributes["Target"] != null))
-				CompileTarget = (CompileTarget)Enum.Parse (typeof(CompileTarget), projectOptions.Attributes["Target"].Value);
-			else if (IsLibraryBasedProjectType)
-				CompileTarget = CompileTarget.Library;
 
 			if ((projectOptions != null) && (projectOptions.Attributes["TargetFrameworkVersion"] != null))
 				targetFrameworkVersion = projectOptions.Attributes["TargetFrameworkVersion"].Value;
@@ -126,7 +141,7 @@ namespace MonoDevelop.Projects
 				binPath = ".";
 
 			foreach (DotNetProjectConfiguration dotNetProjectConfig in Configurations) {
-				dotNetProjectConfig.OutputDirectory = Path.Combine (binPath, dotNetProjectConfig.Id);
+				dotNetProjectConfig.OutputDirectory = Path.Combine (binPath, dotNetProjectConfig.Name);
 
 				if ((projectOptions != null) && (projectOptions.Attributes["PauseConsoleOutput"] != null))
 					dotNetProjectConfig.PauseConsoleOutput = Boolean.Parse (projectOptions.Attributes["PauseConsoleOutput"].Value);
@@ -578,8 +593,15 @@ namespace MonoDevelop.Projects
 
 			conf.OutputDirectory = String.IsNullOrEmpty (BaseDirectory) ? dir : Path.Combine (BaseDirectory, dir);
 			conf.OutputAssembly = Name;
-			if (LanguageBinding != null)
-				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
+			if (LanguageBinding != null) {
+				XmlElement xconf = null;
+				if (!string.IsNullOrEmpty (conf.Platform)) {
+					XmlDocument doc = new XmlDocument ();
+					xconf = doc.CreateElement ("Options");
+					xconf.SetAttribute ("Platform", conf.Platform);
+				}
+				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (xconf);
+			}
 			return conf;
 		}
 

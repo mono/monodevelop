@@ -59,6 +59,7 @@ namespace MonoDevelop.Projects
 		FileFormat defaultFormat;
 		TargetFramework defaultTargetFramework;
 		
+		string defaultPlatformTarget = "x86";
 		public const string DefaultTargetFrameworkId = "3.5";
 		
 		public const string BuildTarget = "Build";
@@ -95,6 +96,11 @@ namespace MonoDevelop.Projects
 		
 		internal ProjectServiceExtension ExtensionChain {
 			get { return extensionChain; }
+		}
+		
+		public string DefaultPlatformTarget {
+			get { return defaultPlatformTarget; }
+			set { defaultPlatformTarget = value; }
 		}
 
 		public TargetFramework DefaultTargetFramework {

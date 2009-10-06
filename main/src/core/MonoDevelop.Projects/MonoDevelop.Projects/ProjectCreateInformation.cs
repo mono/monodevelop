@@ -59,6 +59,8 @@ namespace MonoDevelop.Projects
 			get { return projectBasePath; }
 			set { projectBasePath = value; }
 		}
+		
+		public string DefaultPlatform { get; set; }
 
 		public ProjectCreateInformation ()
 		{
@@ -70,6 +72,7 @@ namespace MonoDevelop.Projects
 			solutionName = projectCreateInformation.SolutionName;
 			solutionPath = projectCreateInformation.SolutionPath;
 			projectBasePath = projectCreateInformation.ProjectBasePath;
+			DefaultPlatform = projectCreateInformation.DefaultPlatform;
 		}
 	}
 }
