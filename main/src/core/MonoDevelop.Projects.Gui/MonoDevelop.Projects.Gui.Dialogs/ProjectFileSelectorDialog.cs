@@ -77,6 +77,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			projectTree.AppendColumn (projectCol);
 			TreeIter projectIter = dirStore.AppendValues ("");
 			InitDirs (projectIter);
+			projectTree.ExpandAll ();
+			projectTree.RowActivated += delegate {
+				fileList.GrabFocus ();
+			};
+			projectTree.KeyPressEvent += ProjectListKeyPressEvent;
 			
 			TreeViewColumn fileCol = new TreeViewColumn ();
 			CellRendererPixbuf filePixRenderer = new CellRendererPixbuf ();
@@ -87,11 +92,60 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			fileCol.SetCellDataFunc (txtRenderer, new TreeCellDataFunc (TxtFileDataFunc));
 			fileList.Model = fileStore;
 			fileList.AppendColumn (fileCol);
+			fileList.RowActivated += delegate {
+				TreeIter iter;
+				if (fileList.Selection.GetSelected (out iter))
+					Respond (ResponseType.Ok);
+			};
+			fileList.KeyPressEvent += FileListKeyPressEvent;
+			fileList.KeyReleaseEvent += FileListKeyReleaseEvent;
+			
+			TreeIter root;
+			if (dirStore.GetIterFirst (out root))
+				projectTree.Selection.SelectIter (root);
 			
 			UpdateFileList (null, null);
 			
 			projectTree.Selection.Changed += UpdateFileList;
 			fileList.Selection.Changed += UpdateSensitivity;
+			
+			
+			this.DefaultResponse = ResponseType.Cancel;
+		}
+
+		[GLib.ConnectBefore]
+		void FileListKeyReleaseEvent (object o, KeyReleaseEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Escape) {
+				args.RetVal = true;
+			}
+		}
+		
+		const Gdk.ModifierType modifiers =
+			Gdk.ModifierType.ControlMask | 
+			Gdk.ModifierType.ShiftMask |
+			Gdk.ModifierType.Mod1Mask |
+			Gdk.ModifierType.SuperMask |
+			Gdk.ModifierType.HyperMask |
+			Gdk.ModifierType.MetaMask;
+
+		[GLib.ConnectBefore]
+		void FileListKeyPressEvent (object o, KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Escape || args.Event.Key == Gdk.Key.BackSpace
+			    || (args.Event.Key == Gdk.Key.Left && (args.Event.State & modifiers) == 0)) {
+				args.RetVal = true;
+				projectTree.GrabFocus ();
+			}
+		}
+		
+		[GLib.ConnectBefore]
+		void ProjectListKeyPressEvent (object o, KeyPressEventArgs args)
+		{
+			if (args.Event.Key == Gdk.Key.Right && (args.Event.State & modifiers) == 0) {
+				args.RetVal = true;
+				fileList.GrabFocus ();
+			}
 		}
 		
 		//FIXME: this is horribly inefficient
@@ -208,6 +262,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 					fileStore.AppendValues (pf, DesktopService.GetPixbufForFile (pf.FilePath, Gtk.IconSize.Menu));
 			}
 			
+			TreeIter root;
+			if (fileStore.GetIterFirst (out root))
+				fileList.Selection.SelectIter (root);
+			
 			UpdateSensitivity (null, null);
 		}
 		
@@ -216,6 +274,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			TreeIter iter;
 			bool selected = fileList.Selection.GetSelected (out iter);
 			buttonOk.Sensitive = selected;
+			this.DefaultResponse = selected? ResponseType.Ok : ResponseType.Cancel;
 			SelectedFile = selected? (ProjectFile) fileStore.GetValue (iter, 0) : null;
 		}
 	}
