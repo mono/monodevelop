@@ -1,3 +1,9 @@
+2009-10-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	  Fix #544054: Exception in svn addin.
+
 2009-10-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: Added

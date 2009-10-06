@@ -475,7 +475,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				if (!hunk.Same) {
 					original = hunk.Original ();
 					local = hunk.Changes (0);
-					annotations.RemoveRange (original.Start, original.Count);
+					annotations.RemoveRange (local.Start, original.Count);
 					for (int i=0; i<local.Count; ++i) {
 						annotations.Insert (local.Start, nextRev);
 					}
