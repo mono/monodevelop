@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-02 20:22:53+0200\n"
-"PO-Revision-Date: 2009-10-05 14:17:16+0200\n"
+"POT-Creation-Date: 2009-10-06 12:36:01+0200\n"
+"PO-Revision-Date: 2009-10-06 12:36:34+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -420,7 +420,7 @@ msgid "_Reload"
 msgstr "_Neu laden"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:47
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1100
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1105
 msgid "_Move"
 msgstr "_Verschieben"
 
@@ -550,14 +550,14 @@ msgstr "Lade Adresse"
 #: ../src/core/MonoDevelop.Components/MonoDevelop.Components.PropertyGrid/DefaultPropertyTab.cs:48
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs:56
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:68
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:271
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:272
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:87
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/PropertyGenerator.cs:54
 msgid "Properties"
 msgstr "Eigenschaften"
 
 #: ../src/core/MonoDevelop.Components/MonoDevelop.Components.PropertyGrid/EventPropertyTab.cs:47
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:219
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:220
 msgid "Events"
 msgstr "Ereignisse"
 
@@ -1557,7 +1557,7 @@ msgid "Focus current document"
 msgstr "Aktuelles Dokument fokussieren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:737
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:136
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:138
 msgid "Tools"
 msgstr "Werkzeuge"
 
@@ -1652,7 +1652,7 @@ msgstr "Info Dialog anzeigen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:819
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1384
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:160
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:158
 msgid "Search"
 msgstr "Suchen"
 
@@ -2067,7 +2067,7 @@ msgstr "Benutzerdefinierte Aufgaben"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1201
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:57
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:82
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:87
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:470
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:668
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:167
@@ -2115,7 +2115,7 @@ msgid "Group members by member type"
 msgstr "Gruppiere Member nach Typ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1229
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:84
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:82
 msgid "Show public members only"
 msgstr "Zeige nur öffentliche Member"
 
@@ -2388,7 +2388,7 @@ msgstr "Mono Projekt"
 #: ../src/addins/CSharpBinding/templates/Library.xpt.xml:8
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:72
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:86
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:140
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:138
 msgid "C#"
 msgstr "C#"
 
@@ -2977,7 +2977,7 @@ msgid "Activate window '{0}'"
 msgstr "Aktiviere Fenster '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:111
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:285
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:292
 msgid "New Tool"
 msgstr "Neues Werkzeug"
 
@@ -3026,17 +3026,17 @@ msgstr ""
 "Falls Sie nicht speichern, gehen alle vorgenommenen Änderungen unwiderruflich "
 "verloren."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:143
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:144
 msgid ""
 "<b>Ported and developed by:</b>\n"
 msgstr ""
 "<b>Entwickelt von:</b>\n"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:152
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:153
 msgid "translator-credits"
 msgstr "Übersetzter-Credits"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:154
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:155
 msgid ""
 "\n"
 "\n"
@@ -3046,11 +3046,11 @@ msgstr ""
 "\n"
 "<b>Übersetzt von:</b>\n"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:265
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:266
 msgid "About MonoDevelop"
 msgstr "Über MonoDevelop"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:281
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:282
 msgid "Version Info"
 msgstr "Versionsinfo"
 
@@ -3164,8 +3164,8 @@ msgstr "Datei '{0}' ist keine gültige .NET Assembly "
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:63
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:190
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:53
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:328
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:345
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:312
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:329
 msgid "Assembly"
 msgstr "Assembly"
 
@@ -3211,7 +3211,7 @@ msgstr "Verweis"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:61
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:47
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:49
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:334
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:318
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:66
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:119
 msgid "Type"
@@ -3353,7 +3353,7 @@ msgstr "Speichern fehlgeschlagen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:289
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:343
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1248
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1253
 msgid "Copying files..."
 msgstr "Kopiere Dateien..."
 
@@ -3577,36 +3577,36 @@ msgstr ""
 msgid "Loading Workbench"
 msgstr "Lade Arbeitsfläche"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:283
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:288
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs:40
 msgid "Export Project"
 msgstr "Projekt exportieren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:318
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:323
 msgid "Project saved."
 msgstr "Projekt gespeichert."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:320
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:341
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:396
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:424
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:325
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:346
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:401
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:429
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:293
 msgid "Save failed."
 msgstr "Speichern fehlgeschlagen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:339
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:344
 msgid "Solution saved."
 msgstr "Projektmappe gespeichert."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:394
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:399
 msgid "Items saved."
 msgstr "Element gespeichert."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:422
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:427
 msgid "Item saved."
 msgstr "Element gespeichert."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:434
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:439
 msgid ""
 "Some project files have been changed from outside MonoDevelop. Do you want to "
 "overwrite them?"
@@ -3614,98 +3614,98 @@ msgstr ""
 "Einige Projektdateien wurden ausserhalb von MonoDevelop verändert. Sollen sie "
 "überschreiben werden?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:435
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:440
 msgid "Changes done in those files will be overwritten by MonoDevelop."
 msgstr ""
 "Änderungen in diesen Dateien werden von MonoDevelop überschrieben werden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:593
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:598
 msgid "Add to Workspace"
 msgstr "Zum Arbeitsbereich zufügen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:602
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:647
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:607
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:652
 msgid "The file '{0}' could not be loaded."
 msgstr "Die Datei '{0}' konnte nicht geladen werden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:638
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:643
 msgid "Add to Solution"
 msgstr "Zur Projektmappe hinzufügen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:745
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:750
 msgid "Do you really want to remove project '{0}' from '{1}'?"
 msgstr "Wollen Sie wirklich Projekt '{0}' von '{1}' entfernen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:746
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:751
 msgid "The Delete option physically removes the project files from disc."
 msgstr "Die Löschen Option entfernt die Projektdateien vom Datenträger."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:769
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:774
 msgid "Deleting Files..."
 msgstr "Lösche Dateien..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:777
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:782
 msgid "The file or directory '{0}' could not be deleted."
 msgstr "Die Datei oder das Verzeichnis '{0}' konnte nicht gelöscht werden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:848
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:853
 msgid "Execution failed."
 msgstr "Ausführung fehlgeschlagen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:867
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:872
 msgid "The file {0} can't be compiled."
 msgstr "Die Datei {0} kann nicht kompiliert werden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:880
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:922
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:885
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:927
 msgid "No runnable executable found."
 msgstr "Keine ausführbare Datei gefunden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:963
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1039
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:968
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1044
 msgid "Build failed."
 msgstr "Erstellung fehlgeschlagen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:982
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:987
 msgid "Save changed documents before building?"
 msgstr "Geänderte Dokument vor dem Erstellen speichern?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:983
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:988
 msgid "Some of the open documents have unsaved changes."
 msgstr "Einige der offenen Dokumente haben ungespeicherte Änderungen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1019
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1024
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:188
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:150
 msgid "---------------------- Done ----------------------"
 msgstr "--------------------- Fertig ---------------------"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1033
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1038
 msgid "Build successful."
 msgstr "Erstellung erfolgreich."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1035
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1037
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1040
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1042
 msgid "Build: "
 msgstr "Erstellung: "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1068
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1073
 msgid "Adding files..."
 msgstr "Füge Dateien hinzu..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1085
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1090
 msgid "{0} is outside the project directory, what should I do?"
 msgstr "{0} ist ist außerhalb des Projektordners, was soll ich machen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1090
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1095
 msgid "Use the same action for all selected files."
 msgstr "Benutze die selbe Aktion für alle ausgewählten Dateien."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1098
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1103
 msgid "_Link"
 msgstr "_Link"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1120
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1125
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
@@ -3713,39 +3713,39 @@ msgstr ""
 "Während des Versuchs die Datei zu bewegen/kopieren ist ein Fehler "
 "aufgetreten. Bitte überprüfen Sie ihre Rechte."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1144
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1149
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "Die Datei '{0}' existiert bereits. Wollen Sie sie ersetzen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1193
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1198
 msgid "Could not get any file from '{0}'."
 msgstr "Konnte keine Datei von '{0}' bekommen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1223
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1228
 msgid "Could not create directory '{0}'."
 msgstr "Konnte Ordner {0} nicht erstellen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1243
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1248
 msgid "Directory '{0}' could not be moved."
 msgstr "Ordner '{0}' konnte nicht verschoben werden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1266
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1271
 msgid "File '{0}' could not be created."
 msgstr "Datei '{0}' konnte nicht erstellt werden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1329
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1334
 msgid ""
 "The project '{0}' is currently running. It will have to be stopped. Do you "
 "want to continue?"
 msgstr ""
 "Das Projekt '{0}' läuft bereits. Es wird gestoppt. Soll fortgefahren werden?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1378
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1383
 msgid "Code completion database generation"
 msgstr "Erstelle Code-Completion Datenbank"
 
 # msgid_plural "{0} errors"
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1029
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1034
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:290
 msgid "{0} error"
 msgid_plural "{0} errors"
@@ -3753,7 +3753,7 @@ msgstr[0] "{0} Fehler"
 msgstr[1] "{0} Fehler"
 
 # msgstr[1] "{0} Fehler"
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1030
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1035
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:291
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -3823,7 +3823,7 @@ msgstr "Anwendungs-Ausgabe"
 msgid "Saving..."
 msgstr "Speichern..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:171
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:176
 msgid "Search Results"
 msgstr "Suchergebnisse"
 
@@ -4559,15 +4559,15 @@ msgstr "Projektmappen-Dateiname"
 msgid "MonoDevelop Startup Directory"
 msgstr "MonoDevelop Startordner"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:321
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:328
 msgid "Control not found!"
 msgstr "Kontrolle nicht gefunden!"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:341
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:348
 msgid "The command of tool \"{0}\" is invalid."
 msgstr "Der Befehl des Werkzeugs \"{0}\" ist ungültig."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:346
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:353
 msgid "The working directory of tool \"{0}\" is invalid."
 msgstr "Der Arbeitsordner des externen Programs \"{0}\" ist ungültig."
 
@@ -6361,7 +6361,7 @@ msgstr "Projekt mit guid '{0}' nicht gefunden."
 msgid "Item with guid '{0}' is not a folder."
 msgstr "Element mit guid '{0}' ist kein Ordner."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:857
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:879
 msgid "Generating database"
 msgstr "Generiere Datenbank"
 
@@ -6503,7 +6503,7 @@ msgstr "Ungültiger Ausgabeordner: {0}"
 msgid "Solution Options"
 msgstr "Projekt-Einstellungen"
 
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:469
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:470
 msgid "Gathering class information..."
 msgstr "Sammle Klasseninformationen..."
 
@@ -6812,7 +6812,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:149
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs:50
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:343
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:327
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:61
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:120
 msgid "Namespace"
@@ -6923,11 +6923,11 @@ msgstr "Projektdatei auswählen..."
 msgid "File _type:"
 msgstr "_Dateitypen:"
 
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/ListWidget.cs:189
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/ListWidget.cs:194
 msgid "Select template"
 msgstr "Wähle Vorlage"
 
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/ListWidget.cs:202
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/ListWidget.cs:207
 msgid "No suggestions"
 msgstr "Keine Vorschläge"
 
@@ -7879,7 +7879,7 @@ msgstr ""
 "Subversion-Repository zuzugreifen.</b>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.addin.xml:28
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:183
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:185
 msgid "Resolve"
 msgstr "Auflösen"
 
@@ -9004,7 +9004,7 @@ msgid "Configure user data"
 msgstr "Konfiguriere Benutzerdate"
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:108
-#: ../src/addins/CBinding/CBinding.addin.xml:168
+#: ../src/addins/CBinding/CBinding.addin.xml:169
 msgid "Details..."
 msgstr "Details..."
 
@@ -10872,91 +10872,91 @@ msgstr "Ungültige Codepage-Nummer."
 msgid "Creates anonymous delegate."
 msgstr "Erzeugt ein anonymes Delegate."
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1753
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1755
 msgid "Set text in a code-like font"
 msgstr "Setzt den Text in einer Quelltext ähnlichen Schriftart"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1754
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1756
 msgid "Set one or more lines of source code or program output"
 msgstr "Setzt eine oder mehrere Zeilen Quelltext oder Programmausgabe"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1755
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1757
 msgid "Indicate an example"
 msgstr "Markiert ein Beispiel"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1756
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1758
 msgid "Identifies the exceptions a method can throw"
 msgstr "Erläutert die möglichen Ausnahmen, die geworfen werden können"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1757
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1759
 msgid "Includes comments from a external file"
 msgstr "Schliesst Kommentare aus externer Datei mit ein"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1758
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1760
 msgid "Create a list or table"
 msgstr "Erstellt eine Liste oder Tabelle."
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1760
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1762
 msgid "Define the heading row"
 msgstr "Definiert eine Titelzeile"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1761
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1763
 msgid "Defines list or table item"
 msgstr "Definiere eine Liste oder Tabelle."
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1762
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1764
 msgid "A term to define"
 msgstr "Ein Term zum definieren."
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1763
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1765
 msgid "Describes a list item"
 msgstr "Definiert einen Listeneintrag"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1764
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1766
 msgid "Permit structure to be added to text"
 msgstr "Erzeigt einen neuen Absatz"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1766
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1768
 msgid "Describe a parameter for a method or constructor"
 msgstr "Beschreibt einen Parameter"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1767
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1769
 msgid "Identify that a word is a parameter name"
 msgstr "Markiert ein Wort als Parameternamen"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1769
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1771
 msgid "Document the security accessibility of a member"
 msgstr "Dokumentiert den Sicherheitszugriff eines Members"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1770
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1772
 msgid "Describe a type"
 msgstr "Beschreibt einen Typ"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1771
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1773
 msgid "Describe the return value of a method"
 msgstr "Beschreibt einen Methodenrückgabewert"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1772
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1774
 msgid "Specify a link"
 msgstr "Spezifiziert einen Link"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1773
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1775
 msgid "Generate a See Also entry"
 msgstr "Erzeugt einen \"Siehe auch\" Eintrag"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1774
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1776
 msgid "Describe a member of a type"
 msgstr "Beschreibt einen Member eines Typs."
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1775
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1777
 msgid "Describe a type parameter for a generic type or method"
 msgstr "Beschreibt einen Typparameter für einen generischen Typen oder Methode"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1776
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1778
 msgid "Identify that a word is a type parameter name"
 msgstr "Identifiziert ein Wort als Typparameter-Namen"
 
-#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1777
+#: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1779
 msgid "Describe a property"
 msgstr "Beschreibt eine Eigenschaft"
 
@@ -13066,60 +13066,60 @@ msgstr "Syntax-Hervorhebung"
 msgid "Assembly Browser"
 msgstr "Assembly-Browser"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:139
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:137
 msgid "IL"
 msgstr "IL"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:147
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:145
 msgid "Types"
 msgstr "Typen"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:148
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:146
 msgid "Members"
 msgstr "Member"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:149
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:147
 msgid "Disassembler"
 msgstr "Disassembler"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:150
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:148
 msgid "Decompiler"
 msgstr "Decompiler"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:158
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:156
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:159
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:157
 msgid "Inspect"
 msgstr "Anzeigen"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:317
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:301
 msgid "Member"
 msgstr "Member"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:326
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:310
 msgid "Declaring Type"
 msgstr "Deklarierender Typ"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:360
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:344
 msgid "Searching member..."
 msgstr "Suche Member..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:363
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:428
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:347
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:412
 msgid "Searching string in disassembled code..."
 msgstr "Suche in disassembliertem Code..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:366
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:350
 msgid "Searching string in decompiled code..."
 msgstr "Suche im decompilierten Code..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:369
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:353
 msgid "Searching type..."
 msgstr "Suche Typ..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:756
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:740
 msgid "No documentation available."
 msgstr "Keine Dokumentation verfügbar."
 
@@ -13137,7 +13137,7 @@ msgid "Application"
 msgstr "Anwendung"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:108
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:155
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:156
 msgid "<b>Name:</b>\t{0}"
 msgstr "<b>Name:</b>\t{0}"
 
@@ -13153,23 +13153,23 @@ msgstr "Modul <b>{0}</b>"
 msgid "<b>Version:</b>\t{0}"
 msgstr "<b>Version:</b>\t{0}"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:141
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:142
 msgid "<b>Assembly:</b>\t{0}, Version={1}"
 msgstr "<b>Assembly:</b>\t{0}, Version={1}"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:203
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:204
 msgid "Fields"
 msgstr "Felder"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:237
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:238
 msgid "Constructors"
 msgstr "Konstruktor"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:255
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:256
 msgid "Methods"
 msgstr "Methoden"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:77
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:78
 msgid "Can't load:"
 msgstr "Konnte nicht geladen werden:"
 
@@ -14602,31 +14602,31 @@ msgstr "XML Stylesheet auswählen"
 msgid "Select XML Schema"
 msgstr "XML Schema auswählen"
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:613
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:614
 msgid "Creating schema..."
 msgstr "Erzeuge Schema..."
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:618
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:619
 msgid "Schema created."
 msgstr "Schema erzeugt."
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:620
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:621
 msgid "Error creating XML schema."
 msgstr "Konnte XML Schema nicht erstellen."
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:708
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:709
 msgid "Error reading file '{0}'."
 msgstr "Fehler beim Lesen der Datei '{0}'."
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:722
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:723
 msgid "Executing transform..."
 msgstr "Führe Transformation aus..."
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:728
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:729
 msgid "Transform completed."
 msgstr "Transformation abgeschlossen."
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:731
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:732
 msgid "Could not run transform."
 msgstr "Konnte Transformation nicht ausführen."
 
@@ -14683,15 +14683,15 @@ msgstr "<b>Standard Datei Zuweisungen</b>"
 msgid "Unhandled error saving schema changes."
 msgstr "Unbehandelter Fehler während dem Speichern der Schemaänderungen."
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:459
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:455
 msgid "Closing tag for '{0}'"
 msgstr "Schliesszeichen für '{0}':"
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:473
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:469
 msgid "Comment"
 msgstr "Kommentar"
 
-#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:474
+#: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:470
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs:109
 msgid "Character data"
 msgstr "Zeichendaten"
@@ -15432,103 +15432,107 @@ msgstr "Nach Aktualisierungen für MonoDevelop und benötigten Paketen suchen"
 msgid "(Line:{0}, Column:{1})"
 msgstr "(Zeile:{0}, Spalte:{1})"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:209
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:214
+msgid "_Organize Usings"
+msgstr "U_sings organisieren"
+
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:229
 msgid "Refactor"
 msgstr "Refaktorisieren"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:422
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:442
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:78
 msgid "_Go to declaration"
 msgstr "_Zur Deklaration gehen"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:426
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:446
 msgid "{0}, Line {1}"
 msgstr "{0}, Zeile {1}"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:468
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:488
 msgid "Enum <b>{0}</b>"
 msgstr "Aufzählung <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:470
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:490
 msgid "Struct <b>{0}</b>"
 msgstr "Struktur <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:472
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:492
 msgid "Interface <b>{0}</b>"
 msgstr "Schnittstelle <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:474
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:494
 msgid "Delegate <b>{0}</b>"
 msgstr "Delegate <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:476
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:496
 msgid "Class <b>{0}</b>"
 msgstr "Klasse <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:482
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:554
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:502
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:574
 msgid "Go to _base"
 msgstr "Gehe zum _Basistyp"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:489
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:509
 msgid "Find _derived classes"
 msgstr "_Hergeleitete Klassen suchen"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:489
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:509
 msgid "Find _implementor classes"
 msgstr "_Implementierende Klassen suchen"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:493
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:513
 msgid "_Encapsulate Fields..."
 msgstr "_Eigenschaften für Felder generieren..."
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:494
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:514
 msgid "Override/Implement members..."
 msgstr "Member implementieren/überschreiben..."
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:504
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:523
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:524
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:543
 msgid "Implement Interface (implicit)"
 msgstr "Implementiere Schnittstelle (Implizit)"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:505
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:526
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:525
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:546
 msgid "Implement Interface (explicit)"
 msgstr "Implementierte Schnittstelle (Explizit)"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:531
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:551
 msgid "Field <b>{0}</b>"
 msgstr "Feld <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:534
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:554
 msgid "_Encapsulate Field..."
 msgstr "_Eigenschaft für Feld generieren..."
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:539
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:559
 msgid "Indexer <b>{0}</b>"
 msgstr "Indexer <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:541
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:561
 msgid "Property <b>{0}</b>"
 msgstr "Eigenschaft <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:545
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:565
 msgid "Event <b>{0}</b>"
 msgstr "Ereignis <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:550
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:570
 msgid "Constructor <b>{0}</b>"
 msgstr "Konstruktor <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:552
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:572
 msgid "Method <b>{0}</b>"
 msgstr "Methode <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:557
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:577
 msgid "Parameter <b>{0}</b>"
 msgstr "Parameter <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:562
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:582
 msgid "Variable <b>{0}</b>"
 msgstr "Variable <b>{0}</b>"
 
@@ -15848,10 +15852,6 @@ msgstr "U_sings sortieren"
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:117
 msgid "R_emove and Sort usings"
 msgstr "Us_ings optimieren"
-
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:123
-msgid "_Organize Usings"
-msgstr "U_sings organisieren"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.addin.xml:105
 msgid "ASP.NET Files"
@@ -16295,26 +16295,26 @@ msgstr "Schlüssel-Ort:"
 msgid "Certificate location:"
 msgstr "Zertifikat-Ort:"
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:312
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:313
 msgid ""
 "Required for ASP.NET controls.\n"
 msgstr ""
 "Benötigt für ASP.NET Controls\n"
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:313
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:314
 msgid ""
 "Indicates that this tag should be able to be\n"
 "manipulated programmatically on the web server."
 msgstr ""
 "Gibt vor das das Tag auf dem Webserver per Programm verändert werden kann."
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:319
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:320
 msgid ""
 "Unique identifier.\n"
 msgstr ""
 "Einzigartiger Bezeichner.\n"
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:320
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:321
 msgid ""
 "An identifier that is unique within the document.\n"
 "If the tag is a server control, this will be used \n"
@@ -16324,31 +16324,31 @@ msgstr ""
 "Wenn der Bezeichner ein Servercontrol ist, wird es benutzt\n"
 "für den zugehörigen Variablennamen im CodeBehind."
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:400
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:409
 msgid "ASP.NET render block"
 msgstr "ASP.NET Renderblock"
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:401
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:410
 msgid "ASP.NET render expression"
 msgstr "ASP.NET Render-Ausdruck"
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:402
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:411
 msgid "ASP.NET directive"
 msgstr "ASP.NET Direktive"
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:403
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:412
 msgid "ASP.NET databinding expression"
 msgstr "ASP.NET Datenbindungs-Ausdruck"
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:404
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:413
 msgid "ASP.NET server-side comment"
 msgstr "ASP.NET Serverseitiger Kommentar"
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:408
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:417
 msgid "ASP.NET resource expression"
 msgstr "ASP.NET Ressource-Ausdruck"
 
-#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:505
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:514
 msgid "A compatible method in the CodeBehind class"
 msgstr "Eine kompatible Methode in der CodeBehind-Klasse"
 
@@ -16378,6 +16378,14 @@ msgstr "ASP.NET Controls"
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Gui/AddViewDialog.cs:159
 msgid "Select a Master Page..."
 msgstr "Master-Page auswählen..."
+
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.Html/PathCompletion.cs:125
+msgid "Choose file..."
+msgstr "Datei auswählen..."
+
+#: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.Html/PathCompletion.cs:129
+msgid "Choose a file from the project."
+msgstr "Eine Datei aus Projekt wählen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/gtk-gui/MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.cs:75
 msgid "Add View"
@@ -17495,6 +17503,7 @@ msgstr "T4 Schablone"
 #~ msgstr "Ab_wärts"
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
+
 #~ msgid "Question"
 #~ msgstr "Frage"
 
