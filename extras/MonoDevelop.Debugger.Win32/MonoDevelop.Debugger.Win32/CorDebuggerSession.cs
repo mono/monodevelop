@@ -325,7 +325,7 @@ namespace MonoDevelop.Debugger.Win32
 			e.Continue = true;
 		}
 
-		protected override void OnAttachToProcess (int processId)
+		protected override void OnAttachToProcess (long processId)
 		{
 		}
 
@@ -373,7 +373,7 @@ namespace MonoDevelop.Debugger.Win32
 			return new ProcessInfo[] { GetPocess (process) };
 		}
 
-		protected override Mono.Debugging.Client.Backtrace OnGetThreadBacktrace (int processId, int threadId)
+		protected override Mono.Debugging.Client.Backtrace OnGetThreadBacktrace (long processId, long threadId)
 		{
 			foreach (CorThread t in process.Threads) {
 				if (t.Id == threadId) {
@@ -383,7 +383,7 @@ namespace MonoDevelop.Debugger.Win32
 			return null;
 		}
 
-		protected override ThreadInfo[] OnGetThreads (int processId)
+		protected override ThreadInfo[] OnGetThreads (long processId)
 		{
 			List<ThreadInfo> list = new List<ThreadInfo> ();
 			foreach (CorThread t in process.Threads)
@@ -532,7 +532,7 @@ namespace MonoDevelop.Debugger.Win32
 		}
 
 
-		protected override void OnSetActiveThread (int processId, int threadId)
+		protected override void OnSetActiveThread (long processId, long threadId)
 		{
 			activeThread = null;
 			stepper = null;
