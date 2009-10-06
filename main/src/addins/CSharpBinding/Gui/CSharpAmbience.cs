@@ -58,6 +58,11 @@ namespace MonoDevelop.CSharpBinding
 			netToCSharpTypes["System.Decimal"] = "decimal";
 			netToCSharpTypes["System.String"]  = "string";
 		}
+		
+		public override string ConvertTypeName (string typeName)
+		{
+			return NetToCSharpTypeName (typeName);
+		}
 
 		public static string NetToCSharpTypeName (string netTypeName)
 		{

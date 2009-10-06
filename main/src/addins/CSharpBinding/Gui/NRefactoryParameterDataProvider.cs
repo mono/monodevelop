@@ -246,25 +246,26 @@ namespace MonoDevelop.CSharpBinding
 			}
 			IParameter curParameter = currentParameter >= 0 && currentParameter < methods[overload].Parameters.Count ? methods[overload].Parameters[currentParameter] : null;
 
-			if (curParameter != null) {
-				string docText = AmbienceService.GetDocumentation (methods[overload]);
+			string docText = AmbienceService.GetDocumentation (methods[overload]);
 
-				if (!string.IsNullOrEmpty (docText)) {
+			if (!string.IsNullOrEmpty (docText)) {
+				string text = docText;
+				if (curParameter != null) {
 					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
 					Match match = paramRegex.Match (docText);
 					if (match.Success) {
-						sb.AppendLine ();
-						string text = match.Groups[1].Value;
+						text = match.Groups[1].Value;
 						text = "<summary>" + AmbienceService.GetDocumentationSummary (methods[overload]) + "</summary>" + text;
-						sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
-							HighlightParameter = curParameter.Name,
-							MaxLineLength = 60
-						}));
 					}
+				} else {
+					text = "<summary>" + AmbienceService.GetDocumentationSummary (methods[overload]) + "</summary>";
 				}
-			} else {
 				sb.AppendLine ();
-				sb.Append (AmbienceService.GetSummaryMarkup (methods[overload]));
+				sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
+					HighlightParameter = curParameter != null ? curParameter.Name : null,
+					Ambience = ambience,
+					SmallText = true
+				}));
 			}
 			return sb.ToString ();
 		}
