@@ -1,5 +1,13 @@
 2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.XmlEditor.csproj:
+	* MonoDevelop.Xml.Formatting/XmlChar.cs:
+	* MonoDevelop.Xml.Formatting/XmlFormatterWriter.cs: Remove
+	  duplicate imported XmlChar file.
+
+2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Use
 	  ordinal comparer.
 

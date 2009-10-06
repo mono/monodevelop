@@ -30,7 +30,6 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs \
-	MonoDevelop.Xml.Formatting/XmlChar.cs \
 	MonoDevelop.Xml.Formatting/XmlFormatter.cs \
 	MonoDevelop.Xml.Formatting/XmlFormatterWriter.cs \
 	MonoDevelop.Xml.Formatting/XmlFormattingPolicy.cs \

@@ -35,6 +35,8 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
+using MonoDevelop.Xml.StateEngine; // for XmlChar
+
 namespace MonoDevelop.Xml.Formatting
 {
 	internal class XmlFormatterWriter : XmlWriter
