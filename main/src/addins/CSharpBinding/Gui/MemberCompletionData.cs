@@ -130,7 +130,9 @@ namespace MonoDevelop.CSharpBinding
 					sb.AppendLine ();
 					sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 				}
-				string docMarkup = AmbienceService.GetSummaryMarkup (Member as IMember);
+				string docMarkup = AmbienceService.GetDocumentationMarkup ("<summary>" + AmbienceService.GetDocumentationSummary ((IMember)Member) + "</summary>", new AmbienceService.DocumentationFormatOptions {
+					Ambience = ambience
+				});
 				if (!string.IsNullOrEmpty (docMarkup)) {
 					sb.AppendLine ();
 					sb.Append (docMarkup);

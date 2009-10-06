@@ -1,5 +1,10 @@
 2009-10-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Gui/MemberCompletionData.cs: Added ambience to documentation
+	  output.
+
+2009-10-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs:
 	* Gui/NRefactoryParameterDataProvider.cs: Worked on
 	  documentation output.
