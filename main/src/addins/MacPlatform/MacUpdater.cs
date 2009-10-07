@@ -47,13 +47,14 @@ namespace MonoDevelop.Platform
 		public static UpdateInfo[] DefaultUpdateInfos {
 			get {
 				if (updateInfos == null) {
-					var list = new List<UpdateInfo> ();
 					var files = new string[] {
 						"/Developer/MonoTouch/updateinfo",
 						"/Library/Frameworks/Mono.framework/Versions/Current/updateinfo",
+						"/Library/Frameworks/Mono.framework/Versions/Current/updateinfo.csdk",
 						Path.GetDirectoryName (typeof (MacPlatform).Assembly.Location) + "/../../../updateinfo",
 					}.Where (File.Exists);
 					
+					var list = new List<UpdateInfo> ();
 					foreach (string file in files) {
 						try {
 							list.Add (UpdateInfo.FromFile (file));
@@ -61,12 +62,6 @@ namespace MonoDevelop.Platform
 							LoggingService.LogError ("Error reading update info file '" + file + "'", ex);
 						}
 					}
-					
-					//FIXME: workaround for older 2.4.x Mono not having updateinfo.
-					// Remove this when MD launch script forces Mono 2.6
-					if (!File.Exists ("/Library/Frameworks/Mono.framework/Versions/Current/updateinfo"))
-						list.Add (new UpdateInfo (new Guid ("432959f9-ce1b-47a7-94d3-eb99cb2e1aa8=0"), 0));
-					
 					updateInfos = list.ToArray ();
 				}
 				

@@ -1,5 +1,11 @@
 2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MacUpdater.cs: Add csdk updateinfo file. Remove the hack for
+	  forcing Mono updateinfos as it won't work with the
+	  architectural variations of the Mono packages.
+
+2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Commands.cs:
 	* MacUpdater.cs:
 	* UpdateDialog.cs: Add workaround for updating older versions
