@@ -189,9 +189,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void Reset ()
 		{
-			foreach (var doc in documents.Values) {
-				doc.Dispose ();
-			}
 			ResultCount = 0;
 			documents.Clear ();
 			store.Clear ();
