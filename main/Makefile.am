@@ -25,7 +25,7 @@ gen-vcrevision:
 $(buildinfo): gen-vcrevision
 	@mkdir -p "$(top_builddir)/build/bin"
 	@cp "$(top_srcdir)/vcrevision" "$@"
-	@echo "Build date: $$(date --rfc-3339=seconds)" >> "$@"
+	@echo "Build date: $$(date -u +'%Y-%m-%d %H:%M:%S%z')" >> "$@"
 	@echo "Updated build information"
 	@cat $(buildinfo)
 
