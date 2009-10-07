@@ -1,5 +1,11 @@
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* CSharpLanguageBinding.cs:
+	* Gui/CodeGenerationPanel.cs: Assign the target plaform when
+	  creating compilation parameters. Add some counters.
+
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AssemblyInfo.cs:
 	* CSharpBinding.addin.xml: Bump MD version.
 

@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Resources;
 using System.Xml;
@@ -40,6 +41,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Instrumentation;
 
 using CSharpBinding.Parser;
 
@@ -49,6 +51,9 @@ namespace CSharpBinding
 	{
 		CSharpCodeProvider provider;
 		
+		// Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
+		public static IList<string> SupportedPlatforms = new string[] { "anycpu", "x86", "x64", "itanium" };
+	
 		public string Language {
 			get {
 				return "C#";
@@ -75,6 +80,9 @@ namespace CSharpBinding
 		{
 			CSharpCompilerParameters pars = new CSharpCompilerParameters ();
 			if (projectOptions != null) {
+				string platform = projectOptions.GetAttribute ("Platform");
+				if (SupportedPlatforms.Contains (platform))
+					pars.PlatformTarget = platform;
 				string debugAtt = projectOptions.GetAttribute ("DefineDebug");
 				if (string.Compare ("True", debugAtt, true) == 0)
 					pars.DefineSymbols = "DEBUG";
@@ -125,5 +133,10 @@ namespace CSharpBinding
 				ClrVersion.Net_4_0
 			};
 		}
+	}
+	
+	internal static class Counters
+	{
+		public static Counter ResolveTime = InstrumentationService.CreateCounter ("Resolve Time", "Timing");
 	}
 }

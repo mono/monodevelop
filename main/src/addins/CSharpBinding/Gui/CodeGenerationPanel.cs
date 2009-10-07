@@ -36,8 +36,7 @@ namespace CSharpBinding
 	{
 		DotNetProjectConfiguration configuration;
 		CSharpCompilerParameters compilerParameters = null;
-		string[] platforms = new string[] { "anycpu", "x86", "x64", "itanium" };
-
+		
 		public CodeGenerationPanelWidget ()
 		{
 			Build ();
@@ -58,7 +57,7 @@ namespace CSharpBinding
 			additionalArgsEntry.Text                   = compilerParameters.AdditionalArguments;
 			ignoreWarningsEntry.Text                   = compilerParameters.NoWarnings;
 			
-			int i = Array.IndexOf (platforms, compilerParameters.PlatformTarget);
+			int i = CSharpLanguageBinding.SupportedPlatforms.IndexOf (compilerParameters.PlatformTarget);
 			comboPlatforms.Active = i != -1 ? i : 0;
 		}
 
@@ -76,7 +75,7 @@ namespace CSharpBinding
 			compilerParameters.WarningLevel             = warningLevelSpinButton.ValueAsInt;
 			compilerParameters.AdditionalArguments      = additionalArgsEntry.Text;
 			compilerParameters.NoWarnings               = ignoreWarningsEntry.Text;
-			compilerParameters.PlatformTarget           = platforms [comboPlatforms.Active];
+			compilerParameters.PlatformTarget           = CSharpLanguageBinding.SupportedPlatforms [comboPlatforms.Active];
 		}
 	}
 	
