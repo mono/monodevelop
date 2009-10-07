@@ -152,11 +152,13 @@ namespace MonoDevelop.CSharpBinding.Gui
 		bool tryToForceCompletion = false;
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
+			IDisposable timer = null;
 		try {
 			if (dom == null /*|| Document.CompilationUnit == null*/)
 				return null;
 			if (completionChar != '#' && stateTracker.Engine.IsInsidePreprocessorDirective)
 				return null;
+			timer = Counters.ResolveTime.BeginTiming ();
 			DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 1);
 			stateTracker.UpdateEngine ();
 			ExpressionResult result;
@@ -499,6 +501,9 @@ namespace MonoDevelop.CSharpBinding.Gui
 			}
 			} catch (Exception e) {
 				System.Console.WriteLine("cce: " +e);
+			} finally {
+				if (timer != null)
+					timer.Dispose ();
 			}
 			return null;
 		}
