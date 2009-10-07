@@ -58,10 +58,10 @@ namespace MonoDevelop.AssemblyBrowser
 			get;
 			private set;
 		}
-		Ambience ambience = AmbienceService.GetAmbience ("text/x-csharp");
 		
+		Ambience ambience = AmbienceService.GetAmbience ("text/x-csharp");
 		public Ambience Ambience {
-			get { return this.ambience; }
+			get { return ambience; }
 		}
 		
 		DocumentationPanel documentationPanel = new DocumentationPanel ();
@@ -212,11 +212,11 @@ namespace MonoDevelop.AssemblyBrowser
 				TreeView.GrabFocus ();
 			};
 		}
+		
 		public MonoDevelop.Projects.Dom.IMember ActiveMember  {
 			get;
 			set;
 		}
-		
 		
 		void HandlePropertyChanged(object sender, MonoDevelop.Core.PropertyChangedEventArgs e)
 		{
@@ -869,6 +869,12 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		protected override void OnDestroyed ()
 		{
+			if (searchBackgoundWorker != null && searchBackgoundWorker.IsBusy) {
+				searchBackgoundWorker.CancelAsync ();
+				searchBackgoundWorker.Dispose ();
+				searchBackgoundWorker = null;
+			}
+			
 			if (this.TreeView != null) {
 			//	Dispose (TreeView.GetRootNode ());
 				this.TreeView.Clear ();
@@ -891,9 +897,17 @@ namespace MonoDevelop.AssemblyBrowser
 				typeListStore = null;
 			}
 			
+			if (documentationPanel != null) {
+				documentationPanel.Destroy ();
+				documentationPanel = null;
+			}
+			if (inspectEditor != null) {
+				inspectEditor.Destroy ();
+				inspectEditor = null;
+			}
+			
 			PropertyService.PropertyChanged -= HandlePropertyChanged;
 			base.OnDestroyed ();
-			GC.Collect (GC.MaxGeneration, GCCollectionMode.Forced);
 		}
 		
 		List<DomCecilCompilationUnit> definitions = new List<DomCecilCompilationUnit> ();

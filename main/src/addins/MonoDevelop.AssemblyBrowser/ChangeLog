@@ -1,5 +1,11 @@
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserView.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: cancel
+	  search worken on destroy.
+
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: Track
 	  API changes.

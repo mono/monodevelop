@@ -65,13 +65,11 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		public override void Dispose ()
-		{
+		{ 
 			IsDisposed = true;
-			if (widget != null) {
-				widget.Destroy ();
-				widget = null;
-			}
 			base.Dispose ();
+			widget = null;
+			GC.Collect ();
 		}
 		
 		#region IUrlHandler implementation 
