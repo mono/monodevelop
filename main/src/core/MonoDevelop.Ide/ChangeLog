@@ -1,3 +1,8 @@
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Ide.addin.xml: Update license.
+
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs:

@@ -2,7 +2,7 @@
        namespace   = "MonoDevelop"
        name        = "MonoDevelop Ide"
        author      = "Todd Berman, Pedro Abelleira Seco, John Luke, Daniel Kornhauser, Alex Graveley, nricciar, John Bou Antoun, Ben Maurer, Jeroen Zwartepoorte, Gustavo Giráldez, Miguel de Icaza, Inigo Illan, Iain McCoy, Nick Drochak, Paweł Różański, Richard Torkar, Paco Martinez, Lluis Sanchez Gual, Christian Hergert, Mike Krueger"
-       copyright   = "GPL"
+       copyright   = "LGPL"
        url         = "http://www.monodevelop.com"
        description = "The MonoDevelop IDE application."
        category    = "MonoDevelop Core"

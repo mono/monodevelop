@@ -2,7 +2,7 @@
        namespace   = "MonoDevelop"
        name        = "MonoDevelop Project Services"
        author      = "Todd Berman, John Luke, John Bou Antoun, Lluis Sanchez Gual, Christian Hergert, Mike Krueger"
-       copyright   = "GPL"
+       copyright   = "LGPL"
        url         = "http://www.monodevelop.com"
        description = "Provides support for loading and building MonoDevelop projects."
 	   category    = "MonoDevelop Core"

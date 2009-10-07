@@ -2,7 +2,7 @@
        namespace   = "MonoDevelop"
        name        = "MonoDevelop Components"
        author      = "Lluis Sanchez, Todd Berman, John Luke, Mike Krueger"
-       copyright   = "GPL"
+       copyright   = "LGPL"
        url         = "http://www.monodevelop.com"
 	   category    = "MonoDevelop Core"
 	   isroot      = "true"
