@@ -1,5 +1,9 @@
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* COPYING: Updated license. MonoDevelop is now LGPL.
+
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* configure.in: Bump MD version.
 
 2009-09-15  Lluis Sanchez Gual  <lluis@novell.com>
