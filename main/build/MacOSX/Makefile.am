@@ -1,4 +1,5 @@
-BUNDLE_VERSION=0.0.5
+if ENABLE_MACBUNDLE
+cBUNDLE_VERSION=0.0.5
 MAC_APP_DIR=MonoDevelop.app
 MACOS=$(MAC_APP_DIR)/Contents/MacOS
 MAC_APP_LIB_DIR=$(MACOS)/lib/monodevelop
@@ -77,4 +78,5 @@ MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* 
 
 MonoDevelop.app.zip: MonoDevelop.app
 	zip -r9uq MonoDevelop.app.zip MonoDevelop.app
+endif
 
