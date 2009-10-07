@@ -1,6 +1,11 @@
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
+	* VersionControl.addin.xml: Update license.
+
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
 	* VersionControl.addin.xml: Bump MD version.
 
 2009-10-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>

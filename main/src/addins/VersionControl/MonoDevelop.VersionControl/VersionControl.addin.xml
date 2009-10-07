@@ -2,7 +2,7 @@
        namespace   = "MonoDevelop"
        name      = "Version Control Support"
        author    = "Joshua Tauberer"
-       copyright = "GPL"
+       copyright = "LGPL"
        url       = "http://taubz.for.net/code/diff"
        description = "A MonoDevelop addin for using version control systems like Subversion"
        category    = "Version Control"

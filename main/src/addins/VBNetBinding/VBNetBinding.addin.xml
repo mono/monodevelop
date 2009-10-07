@@ -2,7 +2,7 @@
        namespace   = "MonoDevelop"
        name        = "VB.NET Language Binding"
        author      = "Levi Bard"
-       copyright   = "GPL"
+       copyright   = "LGPL"
        url         = "http://bard.sytes.net/vbnetbinding"
        description = "VB.NET Language Binding"
 	   category    = "Language bindings"

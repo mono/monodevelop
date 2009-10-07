@@ -6,4 +6,4 @@ using System.Reflection;
 [assembly: AssemblyTitle ("VB.NET Language Binding")]
 [assembly: AssemblyDescription ("VB.NET Language Binding")]
 [assembly: AssemblyVersion ("2.1.1")]
-[assembly: AssemblyCopyright ("GPL")]
+[assembly: AssemblyCopyright ("LGPL")]

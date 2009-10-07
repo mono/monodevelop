@@ -6,4 +6,4 @@ using System.Reflection;
 [assembly: AssemblyTitle ("Visual Studio .NET Project Support")]
 [assembly: AssemblyDescription ("Importer for VS2003 projects")]
 [assembly: AssemblyVersion ("2.1.1")]
-[assembly: AssemblyCopyright ("GPL")]
+[assembly: AssemblyCopyright ("LGPL")]

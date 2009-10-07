@@ -1,5 +1,10 @@
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl.Subversion.addin.xml: Update
+	  license.
+
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AssemblyInfo.cs:
 	* MonoDevelop.VersionControl.Subversion.addin.xml: Bump MD
 	  version.

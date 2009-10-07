@@ -1,6 +1,11 @@
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
+	* VBNetBinding.addin.xml: Update license.
+
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
 	* VBNetBinding.addin.xml: Bump MD version.
 
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>

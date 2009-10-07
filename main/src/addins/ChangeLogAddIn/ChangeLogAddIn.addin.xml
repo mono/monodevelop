@@ -2,7 +2,7 @@
         namespace   = "MonoDevelop"
         name        = "ChangeLog Add-in"
         author      = "Jacob Ilsø Christensen"
-        copyright   = "GPL"
+        copyright   = "LGPL"
         url         = "http://monodevelop.com"
         description = "Add-in for working with ChangeLog files"
         category    = "Version Control"

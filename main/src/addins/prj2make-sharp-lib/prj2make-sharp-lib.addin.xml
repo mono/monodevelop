@@ -2,7 +2,7 @@
        namespace   = "MonoDevelop"
        name	 = "Visual Studio .NET Project Support"
        author	 = "Francisco 'Paco' Martinez, Ankit Jain"
-       copyright = "GPL"
+       copyright = "LGPL"
        url       = ""
        description = "Importer for VS2003 projects"
        category    = "Project Import and Export"
