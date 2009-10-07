@@ -41,6 +41,7 @@ using Gdk;
 using Gtk;
 using GLib;
 using Pango;
+using System.IO;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -61,7 +62,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		string[] authors = new string[] {
 			"Lluis Sanchez Gual",
 			"Michael Hutchinson",
-			"Mike Krueger",
+			"Mike Krüger",
 			"Mike Kestner",
 			"Ankit Jain",
 			"Jonathan Pobst",
@@ -74,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"Jérémie Laval",
 			"Luciano N. Callero",
 			"Zach Lute",
-			"Andrea Krüeger"
+			"Andrea Krüger"
 		};
 		
 		string[] oldAuthors = new string[] {
@@ -85,7 +86,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"Alex Graveley",
 			"Alfonso Santos Luaces",
 			"Andre Filipe de Assuncao e Brito",
-			"Andrea Krüeger",
+			"Andrea Krüger",
 			"Andrés G. Aragoneses",
 			"Andrew Jorgensen",
 			"Ankit Jain",
@@ -312,6 +313,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			notebook.BorderWidth = 6;
 			notebook.AppendPage (new AboutMonoDevelopTabPage (), new Label (Title));
 			notebook.AppendPage (new VersionInformationTabPage (), new Label (GettextCatalog.GetString ("Version Info")));
+			var buildInfo = LoadBuildInfo ();
+			if (buildInfo != null)
+				notebook.AppendPage (buildInfo, new Label (GettextCatalog.GetString ("Build Info")));
 			VBox.PackStart (notebook, true, true, 4);
 
 			AddButton (Gtk.Stock.Close, (int)ResponseType.Close);
@@ -338,6 +342,35 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			int tmp = base.Run ();
 			GLib.Source.Remove (aboutPictureScrollBox.TimerHandle);
 			return tmp;
+		}
+		
+		Widget LoadBuildInfo ()
+		{
+			var biFile = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (GetType ().Assembly.Location), "buildinfo");
+			if (!File.Exists (biFile)) {
+				LoggingService.LogWarning ("Could not find build information file '" + biFile + "'");
+				return null;
+			}
+			
+			try {
+				var buf = new TextBuffer (null);
+				buf.Text = File.ReadAllText (biFile);
+				
+				return new ScrolledWindow () {
+					BorderWidth = 6,
+					ShadowType = ShadowType.EtchedIn,
+					Child = new TextView (buf) {
+						Editable = false,
+						LeftMargin = 4,
+						RightMargin = 4,
+						PixelsAboveLines = 4,
+						PixelsBelowLines = 4
+					}
+				};
+			} catch (IOException ex) {
+				LoggingService.LogError ("Could not read build information", ex);
+				return null;
+			}
 		}
 	}
 }

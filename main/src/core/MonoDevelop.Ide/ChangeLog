@@ -1,3 +1,9 @@
+2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Add a tab
+	  with the contents of the buildinfo file, if it exists. Fixed
+	  some accents on names.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Fixed monodevelop
