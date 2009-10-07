@@ -289,7 +289,6 @@ namespace MonoDevelop.AddinAuthoring
 			Hashtable addinRefs = new Hashtable ();
 			foreach (AddinDependency adep in CachedAddinManifest.MainModule.Dependencies) {
 				bool found = false;
-				Console.WriteLine (" r:" + adep.FullAddinId);
 				foreach (ProjectReference pr in Project.References) {
 					if ((pr is AddinProjectReference) && pr.Reference == adep.FullAddinId) {
 						found = true;

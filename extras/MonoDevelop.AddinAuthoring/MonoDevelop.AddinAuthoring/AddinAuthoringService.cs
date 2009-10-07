@@ -35,9 +35,11 @@ using Mono.Addins.Setup;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Xml.Formatting;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -297,6 +299,31 @@ namespace MonoDevelop.AddinAuthoring
 				}
 			}
 			return false;
+		}
+		
+		public static void SaveFormatted (AddinDescription adesc)
+		{
+			XmlDocument doc = adesc.SaveToXml ();
+			XmlFormatter formatter = new XmlFormatter ();
+			
+			TextStylePolicy textPolicy = new TextStylePolicy (80, 4, false, false, true, EolMarker.Unix);
+			XmlFormattingPolicy xmlPolicy = new XmlFormattingPolicy ();
+			
+			XmlFormatingSettings f = new XmlFormatingSettings ();
+			f.ScopeXPath.Add ("*/*");
+			f.EmptyLinesBeforeStart = 1;
+			f.EmptyLinesAfterEnd = 1;
+			xmlPolicy.Formats.Add (f);
+			
+			f = new XmlFormatingSettings ();
+			f.ScopeXPath.Add ("Addin");
+			f.AttributesInNewLine = true;
+			f.AlignAttributes = true;
+			f.AttributesInNewLine = false;
+			xmlPolicy.Formats.Add (f);
+				
+			string xml = formatter.FormatXml (textPolicy, xmlPolicy, doc.OuterXml);
+			File.WriteAllText (adesc.FileName, xml);
 		}
 	}
 	

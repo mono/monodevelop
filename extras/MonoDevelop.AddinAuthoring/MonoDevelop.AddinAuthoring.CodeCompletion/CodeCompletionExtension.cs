@@ -124,22 +124,26 @@ namespace MonoDevelop.AddinAuthoring.CodeCompletion
 			}
 		}
 
-		protected override void GetAttributeCompletions(CompletionDataList list, IAttributedXObject attributedOb, Dictionary<string, string> existingAtts)
+		protected override CompletionDataList GetAttributeCompletions(IAttributedXObject attributedOb, Dictionary<string, string> existingAtts)
 		{
+			CompletionDataList list = new CompletionDataList ();
 			CompletionContext ctx = GetCompletionContext (1);
 			if (ctx != null) {
 				ctx.SetCompletionAction (CompletionAction.AttributeStart, null);
 				ctx.AddCompletionData (list);
 			}
+			return list;
 		}
 
-		protected override void GetAttributeValueCompletions(CompletionDataList list, IAttributedXObject attributedOb, XAttribute att)
+		protected override CompletionDataList GetAttributeValueCompletions(IAttributedXObject attributedOb, XAttribute att)
 		{
+			CompletionDataList list = new CompletionDataList ();
 			CompletionContext ctx = GetCompletionContext (1);
 			if (ctx != null) {
 				ctx.SetCompletionAction (CompletionAction.AttributeValue, att.Name.Name);
 				ctx.AddCompletionData (list);
 			}
+			return list;
 		}
 
 

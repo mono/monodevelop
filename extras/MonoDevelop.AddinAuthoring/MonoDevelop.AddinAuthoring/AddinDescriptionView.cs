@@ -74,7 +74,7 @@ namespace MonoDevelop.AddinAuthoring
 		public override void Save ()
 		{
 			descWidget.Save ();
-			adesc.Save ();
+			AddinAuthoringService.SaveFormatted (adesc);
 			IsDirty = false;
 			data.NotifyChanged (true);
 		}
