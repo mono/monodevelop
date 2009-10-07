@@ -58,11 +58,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override void Dispose ()
-		{
-			buffer = null;
-		}
-		
 		public override char GetCharAt (int offset)
 		{
 #if DEBUG

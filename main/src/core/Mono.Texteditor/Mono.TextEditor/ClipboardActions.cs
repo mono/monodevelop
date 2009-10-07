@@ -257,14 +257,8 @@ namespace Mono.TextEditor
 			
 			void CopyData (TextEditorData data, Selection selection)
 			{
-				if (copiedDocument != null) {
-					copiedDocument.Dispose ();
-					copiedDocument = null;
-				}
-				if (monoDocument != null) {
-					monoDocument.Dispose ();
-					monoDocument = null;
-				}
+				copiedDocument = null;
+				monoDocument = null;
 				if (selection != null && data != null && data.Document != null) {
 					copiedDocument = new Document ();
 					monoDocument = new Document ();

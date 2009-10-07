@@ -35,7 +35,7 @@ using System.Linq;
 
 namespace Mono.TextEditor
 {
-	public class Document : IBuffer, IDisposable
+	public class Document : IBuffer
 	{
 		IBuffer      buffer;
 		LineSplitter splitter;
@@ -98,27 +98,6 @@ namespace Mono.TextEditor
 		
 		public event EventHandler<LineEventArgs> LineChanged;
 	//	public event EventHandler<LineEventArgs> LineInserted;
-		
-		
-		public void Dispose ()
-		{
-			buffer = buffer.Kill ();
-			splitter = splitter.Kill ();
-			if (undoStack != null) {
-				undoStack.Clear ();
-				undoStack = null;
-			}
-			if (redoStack != null) {
-				redoStack.Clear ();
-				redoStack = null;
-			}
-			currentAtomicOperation = null;
-			
-			/*if (foldSegments != null) {
-				foldSegments.Clear ();
-				foldSegments = null;
-			}*/
-		}
 		
 		#region Buffer implementation
 		public int Length {
@@ -195,9 +174,6 @@ namespace Mono.TextEditor
 					OnBeginUndo ();
 					undoStack.Push (operation);
 					OnEndUndo (new UndoOperationEventArgs (operation));
-				}
-				foreach (UndoOperation redoOp in redoStack) {
-					redoOp.Dispose ();
 				}
 				redoStack.Clear ();
 			}
@@ -312,7 +288,7 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region Undo/Redo operations
-		public class UndoOperation : IDisposable
+		public class UndoOperation
 		{
 			ReplaceEventArgs args;
 			string text;
@@ -322,11 +298,18 @@ namespace Mono.TextEditor
 					return text;
 				}
 			}
+			
 			public virtual ReplaceEventArgs Args {
 				get {
 					return args;
 				}
 			}
+			
+			public object Tag {
+				get;
+				set;
+			}
+			
 			protected UndoOperation()
 			{
 			}
@@ -373,13 +356,6 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			public virtual void Dispose ()
-			{
-				args = null;
-				if (Disposed != null) 
-					Disposed (this, EventArgs.Empty);
-			}
-			
 			public virtual void Undo (Document doc)
 			{
 				if (args.Value != null && args.Value.Length > 0)
@@ -408,8 +384,6 @@ namespace Mono.TextEditor
 					RedoDone (this, EventArgs.Empty);
 			}
 			public event EventHandler RedoDone;
-			
-			public event EventHandler Disposed;
 		}
 		
 		class AtomicUndoOperation : UndoOperation
@@ -433,20 +407,10 @@ namespace Mono.TextEditor
 				}
 			}
 			
+			
 			internal override void InformTextReplace (ReplaceEventArgs args)
 			{
 				operations.ForEach (o => o.InformTextReplace (args));
-			}
-			
-			public override void Dispose ()
-			{
-				if (operations != null) {
-					foreach (UndoOperation operation in operations) {
-						operation.Dispose ();
-					}
-					operations = null;
-				}
-				base.Dispose ();
 			}
 			
 			public override bool ChangedLine (LineSegment line)
@@ -472,6 +436,7 @@ namespace Mono.TextEditor
 			{
 				for (int i = operations.Count - 1; i >= 0; i--) {
 					operations[i].Undo (doc);
+					doc.OnUndone (new UndoOperationEventArgs (operations[i]));
 				}
 				OnUndoDone ();
 			}
@@ -480,6 +445,7 @@ namespace Mono.TextEditor
 			{
 				foreach (UndoOperation operation in this.operations) {
 					operation.Redo (doc);
+					doc.OnRedone (new UndoOperationEventArgs (operation));
 				}
 				OnRedoDone ();
 			}
@@ -645,14 +611,24 @@ namespace Mono.TextEditor
 			if (undoStack.Count <= 0)
 				return;
 			isInUndo = true;
-			UndoOperation chunk = undoStack.Pop ();
-			redoStack.Push (chunk);
-			chunk.Undo (this);
+			UndoOperation operation = undoStack.Pop ();
+			redoStack.Push (operation);
+			operation.Undo (this);
 			isInUndo = false;
+			OnUndone (new UndoOperationEventArgs (operation));
 			this.RequestUpdate (new UpdateAll ());
 			this.CommitDocumentUpdate ();
 		}
-				
+		
+		internal protected virtual void OnUndone (UndoOperationEventArgs e)
+		{
+			EventHandler<UndoOperationEventArgs> handler = this.Undone;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler<UndoOperationEventArgs> Undone;
+		
 		public bool CanRedo {
 			get {
 				return this.redoStack.Count > 0;
@@ -664,13 +640,24 @@ namespace Mono.TextEditor
 			if (redoStack.Count <= 0)
 				return;
 			isInUndo = true;
-			UndoOperation chunk = redoStack.Pop ();
-			undoStack.Push (chunk);
-			chunk.Redo (this);
+			UndoOperation operation = redoStack.Pop ();
+			undoStack.Push (operation);
+			operation.Redo (this);
 			isInUndo = false;
+			OnRedone (new UndoOperationEventArgs (operation));
 			this.RequestUpdate (new UpdateAll ());
 			this.CommitDocumentUpdate ();
 		}
+		
+		internal protected virtual void OnRedone (UndoOperationEventArgs e)
+		{
+			EventHandler<UndoOperationEventArgs> handler = this.Redone;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler<UndoOperationEventArgs> Redone;
+		
 		int atomicUndoLevel;
 		public void BeginAtomicUndo ()
 		{

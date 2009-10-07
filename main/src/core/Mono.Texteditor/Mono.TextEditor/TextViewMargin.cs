@@ -159,34 +159,36 @@ namespace Mono.TextEditor
 				}
 				searchPatternWorker = new System.ComponentModel.BackgroundWorker ();
 				searchPatternWorker.WorkerSupportsCancellation = true;
-				searchPatternWorker.DoWork += delegate(object s, System.ComponentModel.DoWorkEventArgs e) {
-					System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)s;
-					List<ISegment> newRegions = new List<ISegment> ();
-					int offset = 0;
-					do {
-						if (worker.CancellationPending)
-							return;
-						SearchResult result = null;
-						try {
-							result = this.textEditor.GetTextEditorData ().SearchEngine.SearchForward (offset);
-						} catch (Exception ex) {
-							Console.WriteLine ("Got exception while search forward:" + ex);
-							break;
-						}
-						if (result == null || result.SearchWrapped)
-							break;
-						offset = result.EndOffset;
-						newRegions.Add (result);
-					} while (true);
-					Application.Invoke (delegate {
-						this.selectedRegions = newRegions;
-						DisposeLayoutDict ();
-						textEditor.RedrawMargin (this);
-					});
-					
-				};
+				searchPatternWorker.DoWork += SearchPatternWorkerDoWork;
 				searchPatternWorker.RunWorkerAsync ();
 			}
+		}
+
+		void SearchPatternWorkerDoWork (object sender, System.ComponentModel.DoWorkEventArgs e)
+		{
+			System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)sender;
+			List<ISegment> newRegions = new List<ISegment> ();
+			int offset = 0;
+			do {
+				if (worker.CancellationPending)
+					return;
+				SearchResult result = null;
+				try {
+					result = this.textEditor.GetTextEditorData ().SearchEngine.SearchForward (offset);
+				} catch (Exception ex) {
+					Console.WriteLine ("Got exception while search forward:" + ex);
+					break;
+				}
+				if (result == null || result.SearchWrapped)
+					break;
+				offset = result.EndOffset;
+				newRegions.Add (result);
+			} while (true);
+			Application.Invoke (delegate {
+				this.selectedRegions = newRegions;
+				DisposeLayoutDict ();
+				textEditor.RedrawMargin (this);
+			});
 		}
 
 		void DisposeSearchPatternWorker ()
@@ -195,6 +197,7 @@ namespace Mono.TextEditor
 				return;
 			if (searchPatternWorker.IsBusy)
 				searchPatternWorker.CancelAsync ();
+			searchPatternWorker.DoWork -= SearchPatternWorkerDoWork;
 			searchPatternWorker.Dispose ();
 			searchPatternWorker = null;
 		}

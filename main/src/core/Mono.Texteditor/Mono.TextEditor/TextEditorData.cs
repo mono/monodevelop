@@ -103,9 +103,12 @@ namespace Mono.TextEditor
 				caret.PositionChanged += CaretPositionChanged;
 				this.document.BeginUndo += OnBeginUndo;
 				this.document.EndUndo += OnEndUndo;
+				
+				this.document.Undone += DocumentHandleUndone;
+				this.document.Redone += DocumentHandleRedone;
 			}
 		}
-		
+
 		/// <value>
 		/// The eol mark used in this document - it's taken from the first line in the document,
 		/// if no eol mark is found it's using the default (Environment.NewLine).
@@ -212,12 +215,6 @@ namespace Mono.TextEditor
 		
 		public void Dispose ()
 		{
-			if (this.states != null) {
-				foreach (IDisposable disposeable in this.states) {
-					disposeable.Dispose ();
-				}
-				this.states = null;
-			}
 			options = options.Kill ();
 			
 			if (document != null) {
@@ -277,7 +274,7 @@ namespace Mono.TextEditor
 		#region undo/redo handling
 		int       savedCaretPos;
 		Selection savedSelection;
-		List<TextEditorDataState> states = new List<TextEditorDataState> ();
+		//List<TextEditorDataState> states = new List<TextEditorDataState> ();
 		
 		void OnBeginUndo (object sender, EventArgs args)
 		{
@@ -289,12 +286,24 @@ namespace Mono.TextEditor
 		{
 			if (e == null)
 				return;
-			TextEditorDataState state = new TextEditorDataState (this, e.Operation, savedCaretPos, savedSelection);
-			state.Attach ();
-			states.Add (state);
+			e.Operation.Tag = new TextEditorDataState (this, savedCaretPos, savedSelection);
+		}
+
+		void DocumentHandleUndone (object sender, Document.UndoOperationEventArgs e)
+		{
+			TextEditorDataState state = e.Operation.Tag as TextEditorDataState;
+			if (state != null)
+				state.UndoState ();
+		}
+
+		void DocumentHandleRedone (object sender, Document.UndoOperationEventArgs e)
+		{
+			TextEditorDataState state = e.Operation.Tag as TextEditorDataState;
+			if (state != null)
+				state.RedoState ();
 		}
 		
-		class TextEditorDataState : IDisposable
+		class TextEditorDataState
 		{
 			int      undoCaretPos;
 			Selection undoSelection;
@@ -302,55 +311,26 @@ namespace Mono.TextEditor
 			int      redoCaretPos;
 			Selection redoSelection;
 			
-			Document.UndoOperation operation;
 			TextEditorData editor;
 			
-			public TextEditorDataState (TextEditorData editor, Document.UndoOperation operation, int caretPos, Selection selection)
+			public TextEditorDataState (TextEditorData editor, int caretPos, Selection selection)
 			{
 				this.editor        = editor;
 				this.undoCaretPos  = caretPos;
 				this.undoSelection = selection;
-				this.operation     = operation;
+				
 				this.redoCaretPos  = editor.Caret.Offset;
 				this.redoSelection = Mono.TextEditor.Selection.Clone (editor.MainSelection);
-				this.operation.Disposed += delegate {
-					if (editor != null)
-						editor.states.Remove (this);
-					Dispose ();
-				};
 			}
 			
-			public void Attach ()
+			public void UndoState ()
 			{
-				if (operation == null)
-					return;
-				operation.UndoDone += UndoDone;
-				operation.RedoDone += RedoDone;
-			}
-			
-			public void Dispose ()
-			{
-				if (operation != null) {
-					operation.UndoDone -= UndoDone;
-					operation.RedoDone -= RedoDone;
-					operation = null;
-				}
-				editor = null;
-				undoSelection = redoSelection = null;
-			}
-			
-			void UndoDone (object sender, EventArgs args)
-			{
-				if (editor == null)
-					return;
 				editor.Caret.Offset   = this.undoCaretPos;
 				editor.MainSelection = this.undoSelection;
 			}
 			
-			void RedoDone (object sender, EventArgs args)
+			public void RedoState ()
 			{
-				if (editor == null)
-					return;
 				editor.Caret.Offset   = this.redoCaretPos;
 				editor.MainSelection = this.redoSelection;
 			}

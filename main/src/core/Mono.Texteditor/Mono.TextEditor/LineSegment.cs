@@ -33,7 +33,7 @@ using System.Collections.ObjectModel;
 
 namespace Mono.TextEditor
 {	
-	public class LineSegment : ISegment, IDisposable
+	public class LineSegment : ISegment
 	{
 		RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeNode treeNode;
 		
@@ -225,7 +225,6 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		
 		public bool Contains (int offset)
 		{
 			return Offset <= offset && offset < EndOffset;
@@ -239,16 +238,6 @@ namespace Mono.TextEditor
 		public override string ToString ()
 		{
 			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", this.Offset, this.Length, this.DelimiterLength, StartSpan == null ? "null" : StartSpan.Length.ToString());
-		}
-		
-		public void Dispose ()
-		{
-			this.startSpan = null;
-			if (markers != null) {
-				markers.Clear ();
-				markers = null;
-			}
-			treeNode = null;
 		}
 	}
 }

@@ -30,7 +30,7 @@ using System.Diagnostics;
 
 namespace Mono.TextEditor
 {
-	public class LineSegmentTree : IDisposable 
+	public class LineSegmentTree
 	{
 		public class TreeNode : LineSegment
 		{
@@ -77,11 +77,6 @@ namespace Mono.TextEditor
 				UpdateNode (args.Node);
 				UpdateNode (args.Node.parent);
 			};
-		}
-		
-		public void Dispose ()
-		{
-			tree = tree.Kill ();
 		}
 		
 		void UpdateNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)

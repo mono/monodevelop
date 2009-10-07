@@ -118,6 +118,7 @@ namespace Mono.TextEditor.Highlighting
 //			}
 //		}
 		Widget widget;
+		
 		public DefaultStyle (Widget widget)
 		{
 			this.PopulateDefaults ();
@@ -134,8 +135,8 @@ namespace Mono.TextEditor.Highlighting
 		void WidgethandleDestroyed (object sender, EventArgs e)
 		{
 			Widget widget = (Widget)sender;
-			this.widget.StyleSet -= WidgethandleStyleSet;
-			this.widget.Destroyed -= WidgethandleDestroyed;
+			widget.StyleSet -= WidgethandleStyleSet;
+			widget.Destroyed -= WidgethandleDestroyed;
 		}
 
 		void WidgethandleStyleSet (object o, StyleSetArgs args)
