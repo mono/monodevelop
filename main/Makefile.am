@@ -10,7 +10,7 @@ gen-vcrevision:
 	@if test -d ./.svn; then \
 		version=$$( \
 			LANG=C; export LANG; \
-			svn info | sed -n -e '/Revision/ s/.*: //p'; \
+			svn info | sed -n -e '/Last Changed Rev/ s/.*: //p'; \
 		); \
 		modified=$$( \
 			LANG=C; export LANG; \
