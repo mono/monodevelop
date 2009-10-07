@@ -578,7 +578,7 @@ namespace Mono.TextEditor
 				get;
 				private set;
 			}
-			public int SpanLength {
+			public Mono.TextEditor.Highlighting.Span[] Spans {
 				get;
 				private set;
 			}
@@ -588,13 +588,12 @@ namespace Mono.TextEditor
 				this.Offset = offset;
 				this.Length = length;
 				this.MarkerLength = line.MarkerCount;
-				if (line.StartSpan != null)
-					this.SpanLength = line.StartSpan.Length;
+				this.Spans = line.StartSpan;
 			}
 
 			public bool Equals (LineSegment line, int offset, int length, out bool isInvalid)
 			{
-				isInvalid = MarkerLength != line.MarkerCount || SpanLength != (line.StartSpan == null ? 0 : line.StartSpan.Length);
+				isInvalid = MarkerLength != line.MarkerCount || line.StartSpan != Spans;
 				return offset == Offset && Length == length && !isInvalid;
 			}
 		}
@@ -643,7 +642,7 @@ namespace Mono.TextEditor
 				if (obj.GetType () != typeof(LayoutDescriptor))
 					return false;
 				Mono.TextEditor.TextViewMargin.LayoutDescriptor other = (Mono.TextEditor.TextViewMargin.LayoutDescriptor)obj;
-				return MarkerLength == other.MarkerLength && Offset == other.Offset && Length == other.Length && SpanLength == other.SpanLength  && SelectionStart == other.SelectionStart && SelectionEnd == other.SelectionEnd;
+				return MarkerLength == other.MarkerLength && Offset == other.Offset && Length == other.Length && Spans == other.Spans  && SelectionStart == other.SelectionStart && SelectionEnd == other.SelectionEnd;
 			}
 
 			public override int GetHashCode ()
