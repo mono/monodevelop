@@ -1,5 +1,10 @@
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Fixed monodevelop
+	  --version.
+
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AssemblyInfo.cs:
 	* MonoDevelop.Ide.addin.xml: Update license.
 

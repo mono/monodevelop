@@ -50,6 +50,8 @@ using MonoDevelop.Projects.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
 
+[assembly:Mono.About ("http://monodevelop.com")]
+[assembly:Mono.Author ("MonoDevelop Team")]
 
 namespace MonoDevelop.Ide.Gui
 {
