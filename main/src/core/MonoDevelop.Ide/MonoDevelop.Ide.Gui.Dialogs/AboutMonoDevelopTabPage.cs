@@ -1,4 +1,4 @@
-﻿// AboutMonoDevelopTabPage.cs
+// AboutMonoDevelopTabPage.cs
 //
 // Author:
 //   Viktoria Dudka (viktoriad@remobjects.com)
@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
             label = null;
             label = new Label ();
-            label.Markup = GettextCatalog.GetString ("<b>License</b>\n    {0}", GettextCatalog.GetString ("Released under the GNU General Public license."));
+            label.Markup = GettextCatalog.GetString ("<b>License</b>\n    {0}", GettextCatalog.GetString ("Released under the GNU Lesser General Public License."));
             HBox hBoxLicense = new HBox ();
             hBoxLicense.PackStart (label, false, false, 5);
             this.PackStart (hBoxLicense, false, true, 5);

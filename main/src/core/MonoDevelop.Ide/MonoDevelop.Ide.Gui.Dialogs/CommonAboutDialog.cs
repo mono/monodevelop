@@ -59,27 +59,46 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		internal uint TimerHandle;
 
 		string[] authors = new string[] {
+			"Lluis Sanchez Gual",
+			"Michael Hutchinson",
+			"Mike Krueger",
+			"Mike Kestner",
+			"Ankit Jain",
+			"Jonathan Pobst",
+			"Christian Hergert",
+			"Levi Bard",
+			"Carlo Kok",
+			"Viktoria Dudka",
+			"Marc Christensen",
+			"Andrew Jorgensen",
+			"Jérémie Laval",
+			"Luciano N. Callero",
+			"Zach Lute",
+			"Andrea Krüeger"
+		};
+		
+		string[] oldAuthors = new string[] {
 			"Aaron Bockover",
 			"Alberto Paro",
 			"Alejandro Serrano",
 			"Alexandre Gomes",
 			"Alex Graveley",
 			"Alfonso Santos Luaces",
-			"Andrés G. Aragoneses",
 			"Andre Filipe de Assuncao e Brito",
-			"Andrea Krüger",
+			"Andrea Krüeger",
+			"Andrés G. Aragoneses",
 			"Andrew Jorgensen",
-			"Antonio Ognio",
 			"Ankit Jain",
+			"Antonio Ognio",
 			"Ben Maurer",
 			"Ben Motmans",
+			"Carlo Kok",
 			"Christian Hergert",
 			"Daniel Kornhauser",
 			"Daniel Morgan",
 			"David Makovský",
 			"Eric Butler",
 			"Erik Dasque",
-			"Franciso Martinez",
 			"Geoff Norton",
 			"Gustavo Giráldez",
 			"Iain McCoy",
@@ -93,8 +112,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"John Luke",
 			"Joshua Tauberer",
 			"Jonathan Hernández Velasco",
+			"Jonathan Pobst",
 			"Levi Bard",
 			"Lluis Sanchez Gual",
+			"Luciano N. Callero",
 			"Marc Christensen",
 			"Marcos David Marín Amador",
 			"Martin Willemoes Hansen",
@@ -122,6 +143,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"Todd Berman",
 			"Vincent Daron",
 			"Vinicius Depizzol",
+			"Viktoria Dudka",
 			"Wade Berrier",
 			"Yan-ren Tsai",
 			"Zach Lute"
@@ -142,7 +164,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		string CreditText {
 			get {
 				StringBuilder sb = new StringBuilder ();
-				sb.Append (GettextCatalog.GetString ("<b>Ported and developed by:</b>\n"));
+				sb.Append (GettextCatalog.GetString ("<b>Contributors to this Release</b>\n\n"));
 
 				for (int n = 0; n < authors.Length; n++) {
 					sb.Append (authors[n]);
@@ -151,14 +173,23 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						sb.Append (",  ");
 				}
 
+				sb.Append ("\n\n<b>" + GettextCatalog.GetString ("Previous Contributors") + "</b>\n\n");
+				for (int n = 0; n < oldAuthors.Length; n++) {
+					sb.Append (oldAuthors[n]);
+					if (n % 2 == 1)
+						sb.Append ("\n"); else
+						sb.Append (",  ");
+				}
+
 				string trans = GettextCatalog.GetString ("translator-credits");
 				if (trans != "translator-credits") {
-					sb.Append (GettextCatalog.GetString ("\n\n<b>Translated by:</b>\n"));
+					sb.Append (GettextCatalog.GetString ("\n\n<b>Translated by:</b>\n\n"));
 					sb.Append (trans);
 				}
 				sb.AppendLine ();
 				sb.AppendLine ();
-				sb.AppendLine ("Using some icons from:");
+				sb.AppendLine (GettextCatalog.GetString ("<b>Using some icons from:</b>"));
+				sb.AppendLine ();
 				sb.Append ("http://www.famfamfam.com/lab/icons/silk");
 				return sb.ToString ();
 			}
