@@ -6,7 +6,7 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Designer Module"
 	category    = "Database"
-	version		= "2.1.0">
+	version		= "2.1.1">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Designer.dll"/>
@@ -15,10 +15,10 @@
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.1.0"/>
-		<Addin id="Core.Gui" version="2.1.0"/>
-		<Addin id="Ide" version="2.1.0"/>
-		<Addin id="Database.Sql" version="2.1.0"/>
+		<Addin id="Core" version="2.1.1"/>
+		<Addin id="Core.Gui" version="2.1.1"/>
+		<Addin id="Ide" version="2.1.1"/>
+		<Addin id="Database.Sql" version="2.1.1"/>
 	</Dependencies>
 
 </Addin>

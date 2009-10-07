@@ -6,17 +6,17 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing and deploying iPhone applications using Mono."
        category    = "Mac Development"
-       version     = "2.1.0">
+       version     = "2.1.1">
 	
 	<Runtime>
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.1.0"/>
-		<Addin id="Core.Gui" version="2.1.0"/>
-		<Addin id="Projects" version="2.1.0"/>
-		<Addin id="Projects.Gui" version="2.1.0"/>
-		<Addin id="Ide" version="2.1.0"/>
+		<Addin id="Core" version="2.1.1"/>
+		<Addin id="Core.Gui" version="2.1.1"/>
+		<Addin id="Projects" version="2.1.1"/>
+		<Addin id="Projects.Gui" version="2.1.1"/>
+		<Addin id="Ide" version="2.1.1"/>
 	</Dependencies>
 	
 	<ConditionType id="MonoTouchInstalled" type="MonoDevelop.IPhone.MonoTouchInstalledCondition" />

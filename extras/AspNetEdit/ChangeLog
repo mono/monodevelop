@@ -1,3 +1,9 @@
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure:
+	* AssemblyInfo.cs:
+	* AspNetEdit.addin.xml: Bump MD version.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure: We now depend on gtk# 2.12.8, Mono 2.4, and

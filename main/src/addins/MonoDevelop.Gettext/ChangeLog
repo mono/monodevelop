@@ -1,3 +1,8 @@
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Gettext.addin.xml: Bump MD version.
+
 2009-10-01  David Makovský  <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: fixed

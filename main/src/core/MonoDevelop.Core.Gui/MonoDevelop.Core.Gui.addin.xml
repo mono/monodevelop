@@ -6,13 +6,13 @@
        url         = "http://www.monodevelop.com"
        description = "Provides basic GUI services"
 	   category    = "MonoDevelop Core"
-       version     = "2.1.0"
+       version     = "2.1.1"
 	   isroot      = "true"
-       compatVersion = "2.1.0">
+       compatVersion = "2.1.1">
 
 	<Dependencies>
-		<Addin id="Core" version="2.1.0"/>
-		<Addin id="Components" version="2.1.0"/>
+		<Addin id="Core" version="2.1.1"/>
+		<Addin id="Components" version="2.1.1"/>
 	</Dependencies>
 	
 	<!-- Extension points -->

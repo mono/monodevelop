@@ -1,3 +1,7 @@
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs: Bump MD version.
+
 2009-09-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* app.config: Added version redirect for SharpZipLib. Monodoc

@@ -6,18 +6,18 @@
        url         = "http://www.monodevelop.com"
        description = "Lua Language Binding"
        category    = "Language bindings"
-       version     = "2.1.0">
+       version     = "2.1.1">
 
 	<Runtime>
 		<Import assembly = "LuaBinding.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.1.0"/>
-		<Addin id="Core.Gui" version="2.1.0"/>
-		<Addin id="Projects" version="2.1.0"/>
-		<Addin id="Projects.Gui" version="2.1.0"/>
-		<Addin id="Ide" version="2.1.0"/>
+		<Addin id="Core" version="2.1.1"/>
+		<Addin id="Core.Gui" version="2.1.1"/>
+		<Addin id="Projects" version="2.1.1"/>
+		<Addin id="Projects.Gui" version="2.1.1"/>
+		<Addin id="Ide" version="2.1.1"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">

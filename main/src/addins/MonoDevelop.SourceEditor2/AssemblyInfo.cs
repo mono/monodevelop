@@ -5,4 +5,4 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Source Editor")]
 [assembly: AssemblyDescription ("Provides a text editor for the MonoDevelop based on Mono.TextEditor")]
-[assembly: AssemblyVersion ("2.1.0")]
+[assembly: AssemblyVersion ("2.1.1")]

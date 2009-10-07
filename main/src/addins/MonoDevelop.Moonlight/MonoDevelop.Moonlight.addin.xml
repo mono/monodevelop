@@ -6,17 +6,17 @@
        url         = "http://www.monodevelop.com/"
        description = "Support for editing, compiling, and running Moonlight/Silverlight projects."
        category    = "Web Development"
-       version     = "2.1.0">
+       version     = "2.1.1">
 	
 	<Dependencies>
-		<Addin id="Core" version="2.1.0"/>
-		<Addin id="Core.Gui" version="2.1.0"/>
-		<Addin id="Projects" version="2.1.0"/>
-		<Addin id="Projects.Gui" version="2.1.0"/>
-		<Addin id="Ide" version="2.1.0"/>
-		<Addin id="DesignerSupport" version="2.1.0"/>
-		<Addin id="Deployment" version="2.1.0"/>
-		<Addin id="AspNet" version="2.1.0" />
+		<Addin id="Core" version="2.1.1"/>
+		<Addin id="Core.Gui" version="2.1.1"/>
+		<Addin id="Projects" version="2.1.1"/>
+		<Addin id="Projects.Gui" version="2.1.1"/>
+		<Addin id="Ide" version="2.1.1"/>
+		<Addin id="DesignerSupport" version="2.1.1"/>
+		<Addin id="Deployment" version="2.1.1"/>
+		<Addin id="AspNet" version="2.1.1" />
 	</Dependencies>
 	
 	<Runtime>

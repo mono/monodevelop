@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("GNOME Platform Support")]
 [assembly: AssemblyDescription ("GNOME Platform Support for MonoDevelop")]
-[assembly: AssemblyVersion ("2.1.0")]
+[assembly: AssemblyVersion ("2.1.1")]
 [assembly: AssemblyCopyright ("MIT X11")]

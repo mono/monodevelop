@@ -1,5 +1,11 @@
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* configure:
+	* AssemblyInfo.cs:
+	* MonoDevelop.AddinAuthoring.addin.xml: Bump MD version.
+
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.AddinAuthoring/AddinDescriptionView.cs:
 	* MonoDevelop.AddinAuthoring/AddinAuthoringService.cs: Improve
 	formatting of saved .addin files.

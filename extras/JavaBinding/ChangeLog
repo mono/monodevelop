@@ -1,3 +1,9 @@
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure:
+	* AssemblyInfo.cs:
+	* JavaBinding.addin.xml: Bump MD version.
+
 2009-09-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* JavaLanguageBinding.cs: Add support for CLR 2.0.

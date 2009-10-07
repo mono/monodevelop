@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("ILAsm Language Binding")]
 [assembly: AssemblyDescription ("ILAsm Language Binding")]
-[assembly: AssemblyVersion ("2.1.0")]
-[assembly: AssemblyCopyright ("GPL")]
+[assembly: AssemblyVersion ("2.1.1")]
+[assembly: AssemblyCopyright ("MIT X11")]

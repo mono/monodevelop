@@ -7,15 +7,15 @@
        description = "GNOME Platform Support for MonoDevelop"
        category    = "MonoDevelop Core"
        flags       = "CantUninstall,CantDisable"
-       version     = "2.1.0">
+       version     = "2.1.1">
 	
 	<Runtime>
 		<Import assembly="GnomePlatform.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.1.0"/>
-		<Addin id="Core.Gui" version="2.1.0"/>
+		<Addin id="Core" version="2.1.1"/>
+		<Addin id="Core.Gui" version="2.1.1"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">

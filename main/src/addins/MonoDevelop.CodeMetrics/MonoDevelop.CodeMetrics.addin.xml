@@ -7,16 +7,16 @@
         url = "http://www.monodevelop.com/"
         description = "Provides code metric support for monodevelop"
         category = "IDE extensions"
-        version = "2.1.0">
+        version = "2.1.1">
 	
 	<Runtime>
 		<Import assembly = "MonoDevelop.CodeMetrics.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.1.0"/>
-		<Addin id="Core.Gui" version="2.1.0"/>
-		<Addin id="Ide" version="2.1.0"/>
+		<Addin id="Core" version="2.1.1"/>
+		<Addin id="Core.Gui" version="2.1.1"/>
+		<Addin id="Ide" version="2.1.1"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">

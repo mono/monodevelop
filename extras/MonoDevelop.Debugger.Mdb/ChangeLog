@@ -1,3 +1,7 @@
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure: Bump MD version.
+
 2009-08-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.Mdb.sln: Updated.

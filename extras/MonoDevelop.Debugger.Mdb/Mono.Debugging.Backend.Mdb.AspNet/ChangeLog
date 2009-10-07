@@ -1,3 +1,8 @@
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* Manifest.addin.xml: Bump MD version.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Backend.Mdb.AspNet.csproj: We now depend on

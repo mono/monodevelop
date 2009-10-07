@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Visual Studio .NET Project Support")]
-[assembly: AssemblyDescription ("Support for VS2005 or MSBuild based projects and importer for VS2003 projects")]
-[assembly: AssemblyVersion ("2.1.0")]
+[assembly: AssemblyDescription ("Importer for VS2003 projects")]
+[assembly: AssemblyVersion ("2.1.1")]
 [assembly: AssemblyCopyright ("GPL")]

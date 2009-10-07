@@ -1,3 +1,8 @@
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Deployment.addin.xml: Bump MD version.
+
 2009-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment.Gui/DeployFileListWidget.cs: Fix
