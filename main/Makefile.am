@@ -2,7 +2,35 @@ SUBDIRS = contrib src po man theme-icons build tests
 
 bin_SCRIPTS = monodevelop mdtool
 
+buildinfo = $(top_builddir)/build/bin/buildinfo
+
 all:
+
+gen-vcrevision:
+	@if test -d ./.svn; then \
+		version=$$( \
+			LANG=C; export LANG; \
+			svn info | sed -n -e '/Revision/ s/.*: //p'; \
+		); \
+		modified=$$( \
+			LANG=C; export LANG; \
+			svn st | grep -v ^\? | wc -l; \
+		); \
+		if test "$$modified" != "0"; then \
+			version="SVN revision: $$version (modified)"; \
+		fi; \
+		echo "$$version" > "vcrevision"; \
+	fi
+
+$(buildinfo): gen-vcrevision
+	@mkdir -p "$(top_builddir)/build/bin"
+	@cp "$(top_srcdir)/vcrevision" "$@"
+	@echo "Build date: $$(date --rfc-3339=seconds)" >> "$@"
+	@echo "Updated build information"
+	@cat $(buildinfo)
+
+buildinfodir = $(MD_ASSEMBLY_DIR)
+buildinfo_DATA = $(buildinfo)
 
 desktopdir = $(datadir)/applications
 desktop_DATA = monodevelop.desktop
@@ -107,7 +135,7 @@ app-dir: all
 
 # we can't use the variables that are conditionally defined
 EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
-	monodevelop.xml $(pkgconfig_in_files)
+	monodevelop.xml $(pkgconfig_in_files) vcrevision
 
 DISTCLEANFILES = monodevelop intltool-extract intltool-merge intltool-update \
 	$(pkgconfig_DATA) 
@@ -127,3 +155,5 @@ distuninstallcheck_listfiles  = find . -type f -print 		# automake-1.9 setting
 distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required filtering
 distcleancheck_listfiles      = find . -type f -print		# automake-1.9 setting
 distcleancheck_listfiles     += $(filter_stale_buildfiles)	# amend by required filtering
+
+.PHONY: gen-vcrevision

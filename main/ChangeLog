@@ -1,5 +1,10 @@
 2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am: Generate a buildinfo file with svn revision and date,
+	  and include in the distribution.
+
+2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* build/MacOSX/Makefile.am: Include the svn addin.
 
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
