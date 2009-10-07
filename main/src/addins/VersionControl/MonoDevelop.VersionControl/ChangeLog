@@ -1,3 +1,9 @@
+2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs: Construct
+	  Refresh and Open buttons explicitly to work around Mac GTK+
+	  issue with stock buttons.
+
 2009-10-07  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Only

@@ -117,7 +117,7 @@ namespace MonoDevelop.VersionControl.Views
 			buttonCommit.Clicked += new EventHandler (OnCommitClicked);
 			commandbar.Insert (buttonCommit, -1);
 			
-			Gtk.ToolButton btnRefresh = new Gtk.ToolButton (Gtk.Stock.Refresh);
+			Gtk.ToolButton btnRefresh = new Gtk.ToolButton (new Gtk.Image (Gtk.Stock.Refresh, IconSize.Menu), GettextCatalog.GetString ("Refresh"));
 			btnRefresh.IsImportant = true;
 			btnRefresh.Clicked += new EventHandler (OnRefresh);
 			commandbar.Insert (btnRefresh, -1);
@@ -139,7 +139,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			commandbar.Insert (new Gtk.SeparatorToolItem (), -1);
 			
-			Gtk.ToolButton btnOpen = new Gtk.ToolButton (Gtk.Stock.Open);
+			Gtk.ToolButton btnOpen = new Gtk.ToolButton (new Gtk.Image (Gtk.Stock.Open, IconSize.Menu), GettextCatalog.GetString ("Open"));
 			btnOpen.IsImportant = true;
 			btnOpen.Clicked += new EventHandler (OnOpen);
 			commandbar.Insert (btnOpen, -1);

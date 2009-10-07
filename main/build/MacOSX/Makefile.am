@@ -51,7 +51,6 @@ MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* 
 	rm -rf  $(ADDINS)/GnomePlatform* \
 	  $(ADDINS)/WindowsPlatform* \
 	  $(ADDINS)/MonoDevelop.GtkCore* \
-	  $(ADDINS)/VersionControl/MonoDevelop.VersionControl.Subversion* \
 	  $(ADDINS)/MonoDevelop.Gettext/*
 	
 # remove stuff we don't need
