@@ -1,5 +1,10 @@
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs:
+	  fixed 'Bug 541730 - Classbrowser gives crash'.
+
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
 	  Fixed 'Bug 544395 - Format document operation should be an
 	  atomic undo'.

@@ -188,7 +188,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 				return;
 			foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
 				ProjectDom dom = ProjectDomService.GetProjectDom (project);
-//				foreach (CompilationUnit unit in dom.CompilationUnits) {
+				if (dom == null)
+					continue;
 				foreach (IType type in dom.Types) {
 					if (ShouldAdd (type)) {
 						lock (searchResults) {
@@ -197,7 +198,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 						}
 					}
 				}
-//				}
 			}
 		}
 		
