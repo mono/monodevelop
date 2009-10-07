@@ -1,5 +1,10 @@
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Took
+	  out dispose overwrite.
+
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Fixed
 	  some leaks.

@@ -381,28 +381,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			return foundHandler;
 		}
 
-
-		public override void Dispose ()
-		{
-			if (store != null) {
-				Clear ();
-				store.Dispose ();
-				store = null;
-			}
-			
-			if (builders != null) {
-				foreach (NodeBuilder nb in builders) {
-					try {
-						nb.Dispose ();
-					} catch (Exception ex) {
-						LoggingService.LogError (ex.ToString ());
-					}
-				}
-				builders = null;
-			}
-			builderChains.Clear ();
-		}
-
 		internal void LockUpdates ()
 		{
 			if (++updateLockCount == 1)
@@ -1752,7 +1730,25 @@ namespace MonoDevelop.Ide.Gui.Components
 				text_render.Destroy ();
 				text_render = null;
 			}
-			Dispose ();
+			
+			if (store != null) {
+				Clear ();
+				store.Dispose ();
+				store = null;
+			}
+			
+			if (builders != null) {
+				foreach (NodeBuilder nb in builders) {
+					try {
+						nb.Dispose ();
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
+					}
+				}
+				builders = null;
+			}
+			builderChains.Clear ();
+			
 			base.OnDestroyed ();
 		}
 		
