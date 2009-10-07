@@ -50,7 +50,7 @@ namespace MonoDevelop.Platform
 						"/Developer/MonoTouch/updateinfo",
 						"/Library/Frameworks/Mono.framework/Versions/Current/updateinfo",
 						Path.GetDirectoryName (typeof (MacPlatform).Assembly.Location) + "/../../../updateinfo"
-					}.Where (x => File.Exists (x)).ToArray () ?? new string [0];
+					}.Where (File.Exists).ToArray ();
 				}
 				return updatePaths;
 			}
@@ -58,10 +58,10 @@ namespace MonoDevelop.Platform
 		
 		public static bool CheckAutomatically {
 			get {
-				return MonoDevelop.Core.PropertyService.Get<bool> (updateAutoPropertyKey, true);
+				return PropertyService.Get<bool> (updateAutoPropertyKey, true);
 			}
 			set {
-				MonoDevelop.Core.PropertyService.Set (updateAutoPropertyKey, value);
+				PropertyService.Set (updateAutoPropertyKey, value);
 			}
 		}
 		
@@ -80,7 +80,7 @@ namespace MonoDevelop.Platform
 			
 			bool foundInfo = false;
 			
-			foreach (var name in updateInfos.Where (x => File.Exists (x))) {
+			foreach (var name in updateInfos.Where (File.Exists)) {
 				try {
 					using (var f = File.OpenText (name)) {
 						var s = f.ReadLine ();
