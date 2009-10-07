@@ -1,4 +1,0 @@
-2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
-
-	* Tools.mds: Migrated to MSBuild file format.
-

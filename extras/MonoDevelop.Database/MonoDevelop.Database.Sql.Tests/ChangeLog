@@ -1,6 +1,0 @@
-2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
-
- * MonoDevelop.Database.Sql.Tests.mdp:
- * MonoDevelop.Database.Sql.Tests.csproj: Migrated to MSBuild file
-   format.
-

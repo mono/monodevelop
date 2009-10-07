@@ -1,8 +1,0 @@
-Name: monodevelop-database
-Description: MonoDevelop.Database Add-in
-Version: 0.1
-
-libdir=@prefix@/lib/monodevelop
-
-Requires: 
-Libs: -r:${libdir}/AddIns/MonoDevelop.Database/MonoDevelop.Database.ConnectionManager.dll -r:${libdir}/AddIns/MonoDevelop.Database/MonoDevelop.Database.Components.dll -r:${libdir}/AddIns/MonoDevelop.Database/MonoDevelop.Database.ConnectionManager.dll -r:${libdir}/AddIns/MonoDevelop.Database/MonoDevelop.Database.Designer.dll -r:${libdir}/AddIns/MonoDevelop.Database/MonoDevelop.Database.Query.dll -r:${libdir}/AddIns/MonoDevelop.Database/MonoDevelop.Database.CodeGenerator.dll -r:${libdir}/AddIns/MonoDevelop.Database/MonoDevelop.Database.Sql.dll
