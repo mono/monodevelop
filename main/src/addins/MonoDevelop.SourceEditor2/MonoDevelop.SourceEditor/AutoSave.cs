@@ -33,18 +33,27 @@ namespace MonoDevelop.SourceEditor
 {
 	public class AutoSave : IDisposable
 	{
+		static string autoSavePath = Path.Combine (PropertyService.Get<string> ("MonoDevelop.CodeCompletion.DataDirectory", String.Empty), "AutoSave");
+		
+		static AutoSave ()
+		{
+			if (!Directory.Exists (autoSavePath))
+				Directory.CreateDirectory (autoSavePath);
+		}
+		
 		static string GetAutoSaveFileName (string fileName)
 		{
 			if (fileName == null)
 				return null;
-			return Path.Combine (Path.GetDirectoryName (fileName),
-			                     "." + Path.GetFileNameWithoutExtension (fileName) + "~" + Path.GetExtension (fileName));
+			string newFileName = Path.Combine (Path.GetDirectoryName (fileName), Path.GetFileNameWithoutExtension (fileName) + Path.GetExtension (fileName) + "~");
+			newFileName = Path.Combine (autoSavePath, newFileName.Replace(',','_').Replace(" ","").Replace (":","").Replace (Path.DirectorySeparatorChar, '_').Replace (Path.AltDirectorySeparatorChar, '_'));
+			return newFileName;
 		}
+		
 		public static bool AutoSaveExists (string fileName)
 		{
 			return File.Exists (GetAutoSaveFileName (fileName));
 		}
-		
 		
 		static void CreateAutoSave (string fileName, string content)
 		{

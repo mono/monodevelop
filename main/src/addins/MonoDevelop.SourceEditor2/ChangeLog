@@ -1,3 +1,9 @@
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/AutoSave.cs: fixed 'Bug 541726 -
+	  using nant beside monodevelop gives errors because of backup
+	  files'.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
