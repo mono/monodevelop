@@ -45,6 +45,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
@@ -57,6 +58,12 @@ namespace MonoDevelop.AssemblyBrowser
 			get;
 			private set;
 		}
+		Ambience ambience = AmbienceService.GetAmbience ("text/x-csharp");
+		
+		public Ambience Ambience {
+			get { return this.ambience; }
+		}
+		
 		DocumentationPanel documentationPanel = new DocumentationPanel ();
 		Mono.TextEditor.TextEditor inspectEditor = new Mono.TextEditor.TextEditor ();
 		public AssemblyBrowserWidget ()
@@ -64,20 +71,20 @@ namespace MonoDevelop.AssemblyBrowser
 			this.Build();
 			TreeView = new ExtensibleTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
-				new AssemblyNodeBuilder (),
+				new AssemblyNodeBuilder (this),
 				new ModuleReferenceNodeBuilder (),
-				new ModuleDefinitionNodeBuilder (),
+				new ModuleDefinitionNodeBuilder (this),
 				new ReferenceFolderNodeBuilder (this),
 				new ResourceFolderNodeBuilder (),
 				new ResourceNodeBuilder (),
-				new NamespaceBuilder (),
-				new DomTypeNodeBuilder (/*this*/),
-				new DomMethodNodeBuilder (),
-				new DomFieldNodeBuilder (),
-				new DomEventNodeBuilder (),
-				new DomPropertyNodeBuilder (),
-				new BaseTypeFolderNodeBuilder (),
-				new DomReturnTypeNodeBuilder (),
+				new NamespaceBuilder (this),
+				new DomTypeNodeBuilder (this),
+				new DomMethodNodeBuilder (this),
+				new DomFieldNodeBuilder (this),
+				new DomEventNodeBuilder (this),
+				new DomPropertyNodeBuilder (this),
+				new BaseTypeFolderNodeBuilder (this),
+				new DomReturnTypeNodeBuilder (this),
 				new ReferenceNodeBuilder (this),
 				}, new TreePadOption [] {
 					new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), PropertyService.Get ("AssemblyBrowser.ShowPublicOnly", true)),
@@ -862,9 +869,12 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		protected override void OnDestroyed ()
 		{
-//			Dispose (TreeView.GetRootNode ());
-			this.TreeView.Clear ();
-			base.Destroy ();
+			if (this.TreeView != null) {
+			//	Dispose (TreeView.GetRootNode ());
+				this.TreeView.Clear ();
+				this.TreeView = null;
+			}
+			
 			if (definitions != null) {
 				definitions.Clear ();
 				definitions = null;
@@ -883,9 +893,9 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			PropertyService.PropertyChanged -= HandlePropertyChanged;
 			base.OnDestroyed ();
+			GC.Collect (GC.MaxGeneration, GCCollectionMode.Forced);
 		}
 		
-
 		List<DomCecilCompilationUnit> definitions = new List<DomCecilCompilationUnit> ();
 		public AssemblyDefinition AddReference (string fileName)
 		{
@@ -898,9 +908,9 @@ namespace MonoDevelop.AssemblyBrowser
 		
 			ITreeBuilder builder;
 			if (definitions.Count == 1) {
-				builder = TreeView.LoadTree (newUnit.AssemblyDefinition);
+				builder = TreeView.LoadTree (newUnit);
 			} else {
-				builder = TreeView.AddChild (newUnit.AssemblyDefinition);
+				builder = TreeView.AddChild (newUnit);
 			}
 			builder.MoveToFirstChild ();
 			builder.Expanded = true;

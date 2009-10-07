@@ -42,10 +42,15 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class NamespaceBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	public class NamespaceBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(Namespace); }
+		}
+		
+		public NamespaceBuilder (AssemblyBrowserWidget widget) : base (widget)
+		{
+			
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -81,7 +86,7 @@ namespace MonoDevelop.AssemblyBrowser
 			StringBuilder result = new StringBuilder ();
 			if (!String.IsNullOrEmpty (ns.Name)) {
 				result.Append ("<span font_family=\"monospace\">");
-				result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
+				result.Append (Ambience.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
 				result.Append ("</span>");
 				result.AppendLine ();
 			}
@@ -93,20 +98,19 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Namespace ns = (Namespace)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			Ambience ambience = DomTypeNodeBuilder.ambience;
 			if (!String.IsNullOrEmpty (ns.Name)) {
-				
 				result.Append ("<span style=\"keyword.namespace\">namespace</span> ");
 				result.Append ("<span style=\"text\">");
 				result.Append (ns.Name);
 				result.Append ("</span>");
 				result.AppendLine ();
-				result.Append ("<span style=\"text\">{</span>");result.AppendLine ();
+				result.Append ("<span style=\"text\">{</span>");
+				result.AppendLine ();
 			}
 			foreach (IType type in ns.Types) {
 				if (!String.IsNullOrEmpty (ns.Name))
 					result.Append ("\t");
-				result.Append (ambience.GetString (type, DomTypeNodeBuilder.settings));
+				result.Append (Ambience.GetString (type, DomTypeNodeBuilder.settings));
 				result.AppendLine ();
 			}
 			if (!String.IsNullOrEmpty (ns.Name)) {

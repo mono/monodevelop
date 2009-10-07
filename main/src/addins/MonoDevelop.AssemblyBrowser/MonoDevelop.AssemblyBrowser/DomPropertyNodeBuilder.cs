@@ -40,10 +40,15 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomPropertyNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	public class DomPropertyNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(IProperty); }
+		}
+		
+		public DomPropertyNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		{
+			
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -55,7 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IProperty property = (IProperty)dataObject;
-			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (property, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+			label = Ambience.GetString (property, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
 			if (property.IsPrivate || property.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = ImageService.GetPixbuf (property.StockIcon, Gtk.IconSize.Menu);
@@ -93,7 +98,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IProperty property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
@@ -126,8 +131,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IProperty property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (DomMethodNodeBuilder.GetAttributes (property.Attributes));
-			result.Append (DomTypeNodeBuilder.ambience.GetString (property, DomTypeNodeBuilder.settings));
+			result.Append (DomMethodNodeBuilder.GetAttributes (Ambience, property.Attributes));
+			result.Append (Ambience.GetString (property, DomTypeNodeBuilder.settings));
 			result.Append ("{");result.AppendLine ();
 			DomCecilProperty cecilProperty = property as DomCecilProperty;
 			if (property.HasGet) {
@@ -149,14 +154,14 @@ namespace MonoDevelop.AssemblyBrowser
 			IProperty property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (property, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (property, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
 			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
 			options.MaxLineLength = -1;
 			options.BigHeadings = true;
-			options.Ambience = AmbienceService.GetAmbience ("text/x-csharp");
+			options.Ambience = Ambience;
 			result.AppendLine ();
 			
 			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (property), options));

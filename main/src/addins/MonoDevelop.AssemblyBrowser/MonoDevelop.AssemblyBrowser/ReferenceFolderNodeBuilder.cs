@@ -40,13 +40,10 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ReferenceFolderNodeBuilder : TypeNodeBuilder
+	public class ReferenceFolderNodeBuilder : AssemblyBrowserTypeNodeBuilder
 	{
-//		AssemblyBrowserWidget widget;
-		
-		public ReferenceFolderNodeBuilder (AssemblyBrowserWidget widget)
+		public ReferenceFolderNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
 		{
-//			this.widget = widget;
 		}
 		
 		public override Type NodeDataType {

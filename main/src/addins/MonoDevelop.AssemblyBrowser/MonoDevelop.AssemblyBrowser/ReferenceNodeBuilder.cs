@@ -40,11 +40,10 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ReferenceNodeBuilder : TypeNodeBuilder
+	public class ReferenceNodeBuilder : AssemblyBrowserTypeNodeBuilder
 	{
-		public ReferenceNodeBuilder (AssemblyBrowserWidget widget)
+		public ReferenceNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
 		{
-			this.Widget = widget;
 		}
 				
 		public override Type NodeDataType {
@@ -53,11 +52,6 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override Type CommandHandlerType {
 			get { return typeof(ReferenceNodeCommandHandler); }
-		}
-
-		public AssemblyBrowserWidget Widget {
-			get;
-			private set;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

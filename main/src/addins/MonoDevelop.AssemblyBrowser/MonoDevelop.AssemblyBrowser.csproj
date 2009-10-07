@@ -138,6 +138,7 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\Reference.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\ReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\DocumentationPanel.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserTypeNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

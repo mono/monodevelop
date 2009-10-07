@@ -5,6 +5,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs \
+	MonoDevelop.AssemblyBrowser/AssemblyBrowserTypeNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/AssemblyBrowserView.cs \
 	MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs \
 	MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs \
@@ -12,6 +13,7 @@ FILES =  \
 	MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/Decompiler.cs \
 	MonoDevelop.AssemblyBrowser/DisplayBinding.cs \
+	MonoDevelop.AssemblyBrowser/DocumentationPanel.cs \
 	MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs \
@@ -31,7 +33,6 @@ FILES =  \
 	MonoDevelop.AssemblyBrowser/ReferenceNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/ResourceFolder.cs \
 	MonoDevelop.AssemblyBrowser/ResourceFolderNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/DocumentationPanel.cs \
 	MonoDevelop.AssemblyBrowser/ResourceNodeBuilder.cs
 
 RES =  \

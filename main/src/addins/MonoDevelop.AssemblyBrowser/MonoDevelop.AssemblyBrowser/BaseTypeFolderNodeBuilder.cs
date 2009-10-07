@@ -34,15 +34,20 @@ using Mono.Cecil;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class BaseTypeFolderNodeBuilder : TypeNodeBuilder
+	public class BaseTypeFolderNodeBuilder : AssemblyBrowserTypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(BaseTypeFolder); }
+		}
+		
+		public BaseTypeFolderNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		{
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

@@ -44,7 +44,7 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomTypeNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	public class DomTypeNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(IType); }
@@ -54,13 +54,17 @@ namespace MonoDevelop.AssemblyBrowser
 			get { return "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu"; }
 		}
 		
+		public DomTypeNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		{
+			
+		}
+		
 /*		AssemblyBrowserWidget widget;
 		
 		public DomTypeNodeBuilder (AssemblyBrowserWidget widget)
 		{
 			this.widget = widget;
 		}*/
-		internal static Ambience ambience;
 		internal static OutputSettings settings;
 		static SyntaxMode mode = SyntaxModeService.GetSyntaxMode ("text/x-csharp");
 
@@ -78,7 +82,6 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		static DomTypeNodeBuilder ()
 		{
-			ambience = AmbienceService.GetAmbience ("text/x-csharp");
 			DomTypeNodeBuilder.settings = new OutputSettings (OutputFlags.AssemblyBrowserDescription);
 			
 			DomTypeNodeBuilder.settings.MarkupCallback += delegate (string text) {
@@ -113,7 +116,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IType type = (IType)dataObject;
-			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (type, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
+			label = Ambience.GetString (type, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
 			if (type.IsPrivate || type.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = ImageService.GetPixbuf (type.StockIcon, Gtk.IconSize.Menu);
@@ -124,8 +127,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)dataObject;
 			ctx.AddChild (new BaseTypeFolder (type));
 			bool publicOnly = ctx.Options ["PublicApiOnly"];
-			if (type.Members != null)
-				ctx.AddChildren (type.Members.Where (member => !(member.IsSpecialName && !(member is IMethod && ((IMethod)member).IsConstructor)) && !(publicOnly && !member.IsPublic)));
+			ctx.AddChildren (type.Members.Where (member => !(member.IsSpecialName && !(member is IMethod && ((IMethod)member).IsConstructor)) && !(publicOnly && !member.IsPublic)));
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -151,7 +153,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (type, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"),
@@ -165,8 +167,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (DomMethodNodeBuilder.GetAttributes (type.Attributes));
-			result.Append (ambience.GetString (type, settings));
+			result.Append (DomMethodNodeBuilder.GetAttributes (Ambience, type.Attributes));
+			result.Append (Ambience.GetString (type, settings));
 			bool first = true;
 			
 			if (type.ClassType == ClassType.Enum) {
@@ -202,13 +204,13 @@ namespace MonoDevelop.AssemblyBrowser
 					result.AppendLine ();
 					result.Append ("\t");
 					result.Append (commentSpan);
-					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Fields")));
+					result.Append (Ambience.SingleLineComment (GettextCatalog.GetString ("Fields")));
 					result.Append ("</span>");
 					result.AppendLine ();
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (ambience.GetString (field, settings));
+				result.Append (Ambience.GetString (field, settings));
 				result.Append ("<span style=\"text\">;</span>");
 				result.AppendLine ();
 			}
@@ -218,13 +220,13 @@ namespace MonoDevelop.AssemblyBrowser
 					result.AppendLine ();
 					result.Append ("\t");
 					result.Append (commentSpan);
-					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Events")));
+					result.Append (Ambience.SingleLineComment (GettextCatalog.GetString ("Events")));
 					result.Append ("</span>");
 					result.AppendLine ();
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (ambience.GetString (evt, settings));
+				result.Append (Ambience.GetString (evt, settings));
 				result.Append ("<span style=\"text\">;</span>");
 				result.AppendLine ();
 			}
@@ -236,13 +238,13 @@ namespace MonoDevelop.AssemblyBrowser
 					result.AppendLine ();
 					result.Append ("\t");
 					result.Append (commentSpan);
-					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Constructors")));
+					result.Append (Ambience.SingleLineComment (GettextCatalog.GetString ("Constructors")));
 					result.Append ("</span>");
 					result.AppendLine ();
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (ambience.GetString (method, settings));
+				result.Append (Ambience.GetString (method, settings));
 				result.Append ("<span style=\"text\">;</span>");
 				result.AppendLine ();
 			}
@@ -254,13 +256,13 @@ namespace MonoDevelop.AssemblyBrowser
 					result.AppendLine ();
 					result.Append ("\t");
 					result.Append (commentSpan);
-					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Methods")));
+					result.Append (Ambience.SingleLineComment (GettextCatalog.GetString ("Methods")));
 					result.Append ("</span>");
 					result.AppendLine ();
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (ambience.GetString (method, settings));
+				result.Append (Ambience.GetString (method, settings));
 				result.Append ("<span style=\"text\">;</span>");
 				result.AppendLine ();
 			}
@@ -270,13 +272,13 @@ namespace MonoDevelop.AssemblyBrowser
 					result.AppendLine ();
 					result.Append ("\t");
 					result.Append (commentSpan);
-					result.Append (ambience.SingleLineComment (GettextCatalog.GetString ("Properties")));
+					result.Append (Ambience.SingleLineComment (GettextCatalog.GetString ("Properties")));
 					result.Append ("</span>");
 					result.AppendLine ();
 				}
 				first = false;
 				result.Append ("\t");
-				result.Append (ambience.GetString (property, settings));
+				result.Append (Ambience.GetString (property, settings));
 				result.Append (" <span style=\"text\">{</span>");
 				if (property.HasGet)
 					result.Append (" <span style=\"keyword.property\">get</span><span style=\"text\">;</span>");
@@ -300,14 +302,14 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (type, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (type, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
 			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
 			options.MaxLineLength = -1;
 			options.BigHeadings = true;
-			options.Ambience = AmbienceService.GetAmbience ("text/x-csharp");
+			options.Ambience = Ambience;
 			result.AppendLine ();
 			
 			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (type), options));

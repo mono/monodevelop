@@ -39,10 +39,14 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomReturnTypeNodeBuilder : TypeNodeBuilder
+	public class DomReturnTypeNodeBuilder : AssemblyBrowserTypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(IReturnType); }
+		}
+		
+		public DomReturnTypeNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		{
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -54,7 +58,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IReturnType returnType = (IReturnType)dataObject;
-			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (returnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+			label = Ambience.GetString (returnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
 			icon = Context.GetIcon (Stock.Class);
 		}
 	}

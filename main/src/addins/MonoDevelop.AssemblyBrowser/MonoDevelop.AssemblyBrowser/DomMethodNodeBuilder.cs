@@ -43,10 +43,15 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomMethodNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	public class DomMethodNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(IMethod); }
+		}
+		
+		public DomMethodNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		{
+			
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -64,7 +69,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IMethod method = (IMethod)dataObject;
 			
-			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (method, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
+			label = Ambience.GetString (method, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
 			if (method.IsPrivate || method.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			
@@ -97,7 +102,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IMethod method = (IMethod)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			PrintDeclaringType (result, navigator);
@@ -130,13 +135,13 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		internal static string GetAttributes (IEnumerable<IAttribute> attributes)
+		internal static string GetAttributes (Ambience ambience, IEnumerable<IAttribute> attributes)
 		{
 			StringBuilder result = new StringBuilder ();
 			foreach (IAttribute attr in attributes) {
 				if (result.Length > 0)
 					result.AppendLine ();
-				result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (attr, OutputFlags.AssemblyBrowserDescription));
+				result.Append (ambience.GetString (attr, OutputFlags.AssemblyBrowserDescription));
 			}
 			if (result.Length > 0)
 				result.AppendLine ();
@@ -150,10 +155,11 @@ namespace MonoDevelop.AssemblyBrowser
 				return "";
 			
 			StringBuilder result = new StringBuilder ();
-			result.Append (GetAttributes (method.Attributes));
-			result.Append (DomTypeNodeBuilder.ambience.GetString (method, DomTypeNodeBuilder.settings));
+			result.Append (GetAttributes (Ambience, method.Attributes));
+			result.Append (Ambience.GetString (method, DomTypeNodeBuilder.settings));
 			result.AppendLine ();
-			result.Append ("{");result.AppendLine ();
+			result.Append ("{");
+			result.AppendLine ();
 			result.Append (Decompile (method, true));
 			result.Append ("}");
 			return result.ToString ();
@@ -271,14 +277,14 @@ namespace MonoDevelop.AssemblyBrowser
 			DomCecilMethod method = navigator.DataItem as DomCecilMethod;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (method, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (method, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
 			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
 			options.MaxLineLength = -1;
 			options.BigHeadings = true;
-			options.Ambience = AmbienceService.GetAmbience ("text/x-csharp");
+			options.Ambience = Ambience;
 			result.AppendLine ();
 			
 			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (method), options));

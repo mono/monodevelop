@@ -40,10 +40,15 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomFieldNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	public class DomFieldNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(IField); }
+		}
+		
+		public DomFieldNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		{
+			
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -55,7 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			IField field = (IField)dataObject;
-			label = AmbienceService.GetAmbience ("text/x-csharp").GetString (field, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+			label = Ambience.GetString (field, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
 			if (field.IsPrivate || field.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = ImageService.GetPixbuf (field.StockIcon, Gtk.IconSize.Menu);
@@ -80,7 +85,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IField field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (field, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</span>");
 			result.AppendLine ();
 			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
@@ -92,15 +97,15 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IField field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (DomTypeNodeBuilder.ambience.GetString (field, DomTypeNodeBuilder.settings));
+			result.Append (Ambience.GetString (field, DomTypeNodeBuilder.settings));
 			return result.ToString ();
 		}
 		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
 		{
 			IField field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			result.Append (DomMethodNodeBuilder.GetAttributes (field.Attributes));
-			result.Append (DomTypeNodeBuilder.ambience.GetString (field, DomTypeNodeBuilder.settings));
+			result.Append (DomMethodNodeBuilder.GetAttributes (Ambience, field.Attributes));
+			result.Append (Ambience.GetString (field, DomTypeNodeBuilder.settings));
 			result.Append (";");
 			return result.ToString ();
 		}
@@ -110,14 +115,14 @@ namespace MonoDevelop.AssemblyBrowser
 			IField field = (IField)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (field, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.GetString (field, OutputFlags.AssemblyBrowserDescription));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
 			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
 			options.MaxLineLength = -1;
 			options.BigHeadings = true;
-			options.Ambience = AmbienceService.GetAmbience ("text/x-csharp");
+			options.Ambience = Ambience;
 			result.AppendLine ();
 			
 			result.Append (AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentation (field), options));

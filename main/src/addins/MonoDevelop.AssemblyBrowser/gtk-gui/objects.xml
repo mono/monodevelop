@@ -3,4 +3,12 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.AssemblyBrowser.DocumentationPanel" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
+    <itemgroups>
+      <itemgroup label="DocumentationPanel Properties">
+        <property name="Markup" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
 </objects>

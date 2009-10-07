@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Text;
 
 using Mono.Cecil;
@@ -41,45 +42,49 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class AssemblyNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	public class AssemblyNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(AssemblyDefinition); }
+			get { return typeof(DomCecilCompilationUnit); }
+		}
+		
+		public AssemblyNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		{
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			AssemblyDefinition assemblyDefinition = (AssemblyDefinition)dataObject;
-			return assemblyDefinition.Name.Name;
+			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)dataObject;
+			return compilationUnit.AssemblyDefinition.Name.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			AssemblyDefinition assemblyDefinition = (AssemblyDefinition)dataObject;
-			label = assemblyDefinition.Name.Name;
+			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)dataObject;
+			label = compilationUnit.AssemblyDefinition.Name.Name;
 			icon = Context.GetIcon (Stock.Reference);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			AssemblyDefinition assemblyDefinition = (AssemblyDefinition)dataObject;
+			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)dataObject;
 			
-			foreach (ModuleDefinition moduleDefinition in assemblyDefinition.Modules) {
-				ctx.AddChild (moduleDefinition);
+			foreach (var module in compilationUnit.Modules) {
+				ctx.AddChild (module);
 			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			AssemblyDefinition assemblyDefinition = (AssemblyDefinition)dataObject;
-			return assemblyDefinition.Modules.Count > 0;
+			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)dataObject;
+			return compilationUnit.Modules.Any ();
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
-		static void PrintAssemblyHeader (StringBuilder result, AssemblyDefinition assemblyDefinition)
+		void PrintAssemblyHeader (StringBuilder result, AssemblyDefinition assemblyDefinition)
 		{
 			result.Append ("<span style=\"comment\">");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").SingleLineComment (
+			result.Append (Ambience.SingleLineComment (
                                String.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
 			                                  assemblyDefinition.Name.Name,
 			                                  assemblyDefinition.Name.Version)));
@@ -102,26 +107,26 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			AssemblyDefinition assemblyDefinition = (AssemblyDefinition)navigator.DataItem;
+			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			PrintAssemblyHeader (result, assemblyDefinition);
+			PrintAssemblyHeader (result, compilationUnit.AssemblyDefinition);
 			
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"),
-			                              assemblyDefinition.Name.FullName));
+			                              compilationUnit.AssemblyDefinition.Name.FullName));
 			result.AppendLine ();
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Type:</b>\t{0}"),
-			                              GetTypeString (assemblyDefinition.Kind)));
+			                              GetTypeString (compilationUnit.AssemblyDefinition.Kind)));
 			result.AppendLine ();
 			return result.ToString ();
 		}
 		
 		public string GetDisassembly (ITreeNavigator navigator)
 		{
-			AssemblyDefinition assemblyDefinition = (AssemblyDefinition)navigator.DataItem;
+			DomCecilCompilationUnit compilationUnit = (DomCecilCompilationUnit)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			PrintAssemblyHeader (result, assemblyDefinition);
-			foreach (CustomAttribute attr in assemblyDefinition.CustomAttributes) {
-				result.Append (AmbienceService.GetAmbience ("text/x-csharp").GetString (new DomCecilAttribute (attr), OutputFlags.AssemblyBrowserDescription));
+			PrintAssemblyHeader (result, compilationUnit.AssemblyDefinition);
+			foreach (IAttribute attr in compilationUnit.Attributes) {
+				result.Append (Ambience.GetString (attr, OutputFlags.AssemblyBrowserDescription));
 				result.AppendLine ();
 			}
 			return result.ToString ();

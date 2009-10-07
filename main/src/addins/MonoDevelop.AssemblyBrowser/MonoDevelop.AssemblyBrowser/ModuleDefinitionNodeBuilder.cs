@@ -42,10 +42,15 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ModuleDefinitionNodeBuilder : TypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	public class ModuleDefinitionNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(ModuleDefinition); }
+			get { return typeof(DomCecilCompilationUnit.Module); }
+		}
+		
+		public ModuleDefinitionNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		{
+			
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -55,29 +60,27 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			ModuleDefinition moduleDefinition = (ModuleDefinition)dataObject;
-			label = moduleDefinition.Name;
+			DomCecilCompilationUnit.Module module = (DomCecilCompilationUnit.Module)dataObject;
+			label      = module.ModuleDefinition.Name;
 			icon       = Context.GetIcon (Stock.OpenFolder);
 			closedIcon = Context.GetIcon (Stock.ClosedFolder);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			ModuleDefinition moduleDefinition = (ModuleDefinition)dataObject;
+			DomCecilCompilationUnit.Module module = (DomCecilCompilationUnit.Module)dataObject;
 			Dictionary<string, Namespace> namespaces = new Dictionary<string, Namespace> ();
 			bool publicOnly = ctx.Options ["PublicApiOnly"];
-			foreach (TypeDefinition type in moduleDefinition.Types) {
-				if (publicOnly && (type.Attributes & TypeAttributes.Public) != TypeAttributes.Public)
-					continue;
-				if ((type.Attributes & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate)
+			foreach (IType type in module.Types) {
+				if (publicOnly && !type.IsPublic)
 					continue;
 				if (!namespaces.ContainsKey (type.Namespace))
 					namespaces [type.Namespace] = new Namespace (type.Namespace);
-				namespaces [type.Namespace].Types.Add (new DomCecilType (true, true, type));
+				namespaces [type.Namespace].Types.Add (type);
 			}
-			ctx.AddChild (new ReferenceFolder (moduleDefinition));
-			if (moduleDefinition.Resources.Count > 0)
-				ctx.AddChild (new ResourceFolder (moduleDefinition));
+			ctx.AddChild (new ReferenceFolder (module.ModuleDefinition));
+			if (module.ModuleDefinition.Resources.Count > 0)
+				ctx.AddChild (new ResourceFolder (module.ModuleDefinition));
 			foreach (Namespace ns in namespaces.Values) {
 				ctx.AddChild (ns);
 			}
@@ -89,24 +92,24 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
-		static void PrintModuleHeader (StringBuilder result, ModuleDefinition moduleDefinition)
+		void PrintModuleHeader (StringBuilder result, DomCecilCompilationUnit.Module module)
 		{
 			result.Append ("<span style=\"comment\">");
-			result.Append (AmbienceService.GetAmbience ("text/x-csharp").SingleLineComment (
+			result.Append (Ambience.SingleLineComment (
 			                    String.Format (GettextCatalog.GetString ("Module <b>{0}</b>"),
-			                    moduleDefinition.Name)));
+			                    module.ModuleDefinition.Name)));
 			result.Append ("</span>");
 			result.AppendLine ();
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			ModuleDefinition moduleDefinition = (ModuleDefinition)navigator.DataItem;
+			DomCecilCompilationUnit.Module module = (DomCecilCompilationUnit.Module)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			PrintModuleHeader (result, moduleDefinition);
+			PrintModuleHeader (result, module);
 			
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Version:</b>\t{0}"),
-			                              moduleDefinition.Mvid));
+			                              module.ModuleDefinition.Mvid));
 			result.AppendLine ();
 			
 			return result.ToString ();
@@ -114,19 +117,20 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public string GetDisassembly (ITreeNavigator navigator)
 		{
-			ModuleDefinition moduleDefinition = (ModuleDefinition)navigator.DataItem;
+			DomCecilCompilationUnit.Module module = (DomCecilCompilationUnit.Module)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
-			PrintModuleHeader (result, moduleDefinition);
+			PrintModuleHeader (result, module);
 			
 			HashSet<string> namespaces = new HashSet<string> ();
 			
-			foreach (TypeDefinition type in moduleDefinition.Types) {
-				if ((type.Attributes & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate)
-					continue;
+			foreach (IType type in module.Types) {
+/*				if ((type.Attributes & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate)
+					continue;*/
 				if (String.IsNullOrEmpty (type.Namespace))
 					continue;
 				namespaces.Add (type.Namespace);
 			}
+			
 			foreach (string ns in namespaces) {
 				result.Append ("<span style=\"keyword.namespace\">namespace</span> ");
 				result.Append ("<span style=\"text\">");
@@ -143,8 +147,8 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		public string GetDocumentationMarkup (ITreeNavigator navigator)
 		{
-			ModuleDefinition moduleDefinition = (ModuleDefinition)navigator.DataItem;
-			return "<big>" + String.Format (GettextCatalog.GetString ("Module <b>{0}</b>"), moduleDefinition.Name) + "</big>";
+			DomCecilCompilationUnit.Module module = (DomCecilCompilationUnit.Module)navigator.DataItem;
+			return "<big>" + String.Format (GettextCatalog.GetString ("Module <b>{0}</b>"), module.ModuleDefinition.Name) + "</big>";
 		}
 		#endregion
 	}
