@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			Dictionary<string, bool> namespaces = new Dictionary<string, bool> ();
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
-				ICompilationUnit unit = DomCecilCompilationUnit.Load (fileName);
+				ICompilationUnit unit = DomCecilCompilationUnit.Load (fileName, false, true);
 				if (unit == null)
 					continue;
 				foreach (IType type in unit.Types) {
