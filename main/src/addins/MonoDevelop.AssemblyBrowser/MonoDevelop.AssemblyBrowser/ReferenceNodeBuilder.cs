@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ReferenceNodeBuilder : AssemblyBrowserTypeNodeBuilder
+	class ReferenceNodeBuilder : AssemblyBrowserTypeNodeBuilder
 	{
 		public ReferenceNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
 		{

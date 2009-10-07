@@ -1,3 +1,25 @@
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.AssemblyBrowser/DisplayBinding.cs:
+	* MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/ReferenceNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomReturnTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs:
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserTypeNodeBuilder.cs:
+	  Worked on memory leaks.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

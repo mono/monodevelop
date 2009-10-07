@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomReturnTypeNodeBuilder : AssemblyBrowserTypeNodeBuilder
+	class DomReturnTypeNodeBuilder : AssemblyBrowserTypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(IReturnType); }

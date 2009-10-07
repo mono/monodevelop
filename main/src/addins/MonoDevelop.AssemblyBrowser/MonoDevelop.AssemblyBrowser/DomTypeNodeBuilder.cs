@@ -44,7 +44,7 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DomTypeNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
+	class DomTypeNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(IType); }

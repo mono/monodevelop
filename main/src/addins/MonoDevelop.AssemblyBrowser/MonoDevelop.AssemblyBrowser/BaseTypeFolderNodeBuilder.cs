@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class BaseTypeFolderNodeBuilder : AssemblyBrowserTypeNodeBuilder
+	class BaseTypeFolderNodeBuilder : AssemblyBrowserTypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(BaseTypeFolder); }

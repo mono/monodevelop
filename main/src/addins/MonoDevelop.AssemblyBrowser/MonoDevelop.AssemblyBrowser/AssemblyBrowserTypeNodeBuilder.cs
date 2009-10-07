@@ -29,9 +29,9 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public abstract class AssemblyBrowserTypeNodeBuilder : TypeNodeBuilder
+	abstract class AssemblyBrowserTypeNodeBuilder : TypeNodeBuilder
 	{
-		public AssemblyBrowserWidget Widget {
+		internal AssemblyBrowserWidget Widget {
 			get; 
 			private set; 
 		}

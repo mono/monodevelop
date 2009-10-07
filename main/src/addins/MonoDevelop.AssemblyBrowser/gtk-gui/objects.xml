@@ -1,8 +1,4 @@
 <objects attr-sync="on">
-  <object type="MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget" palette-category="MonoDevelop.AssemblyBrowser" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
   <object type="MonoDevelop.AssemblyBrowser.DocumentationPanel" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
     <itemgroups>
       <itemgroup label="DocumentationPanel Properties">
