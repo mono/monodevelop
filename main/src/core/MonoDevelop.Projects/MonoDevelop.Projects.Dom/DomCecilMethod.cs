@@ -41,11 +41,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public void CleanCecilDefinitions ()
-		{
-			methodDefinition = null;
-		}
-		
 		/*
 			// Check if 'type' has some decorations applied to it
 				if (type is Mono.Cecil.TypeSpecification) {
@@ -128,18 +123,14 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 				
-		public DomCecilMethod (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, MethodDefinition methodDefinition)
+		public DomCecilMethod (MethodDefinition methodDefinition)
 		{
-			this.declaringType    = declaringType;
-			if (keepDefinitions)
-				this.methodDefinition = methodDefinition;
-			
+			this.methodDefinition = methodDefinition;
+			this.name = methodDefinition.Name;
 			if (methodDefinition.Name == ".ctor") {
-				this.name = declaringType.Name;
 				MethodModifier |= MethodModifier.IsConstructor;
-			} else {
-				this.name = methodDefinition.Name;
 			}
+			
 			foreach (GenericParameter param in methodDefinition.GenericParameters) {
 				TypeParameter tp = new TypeParameter (param.FullName);
 				tp.Variance = (TypeParameterVariance)(((uint)param.Attributes) & 3);

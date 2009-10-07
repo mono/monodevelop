@@ -50,11 +50,6 @@ namespace MonoDevelop.Projects.Dom
 			return ClassType.Class;
 		}
 		
-		public void CleanCecilDefinitions ()
-		{
-			typeDefinition = null;
-		}
-		
 		public static string RemoveGenericParamSuffix (string name)
 		{
 			name = name.Replace ('/', '.'); // nested classes are represented as A/Nested and in the dom it's just A.Nested
@@ -65,7 +60,14 @@ namespace MonoDevelop.Projects.Dom
 			return name;
 		}
 		
-		public DomCecilType (TypeDefinition typeDefinition) : this (true, true, typeDefinition)
+		public override IEnumerable<IMember> Members {
+			get {
+				CheckInitialization ();
+				return base.Members;
+			}
+		}
+
+		public DomCecilType (TypeDefinition typeDefinition) : this (typeDefinition, true)
 		{
 		}
 		
@@ -77,10 +79,10 @@ namespace MonoDevelop.Projects.Dom
 			this.Namespace = typeReference.Namespace;
 		}
 		
-		public DomCecilType (bool keepDefinitions, bool loadInternal, TypeDefinition typeDefinition)
+		public DomCecilType (TypeDefinition typeDefinition, bool loadInternal)
 		{
-			if (keepDefinitions)
-				this.typeDefinition = typeDefinition;
+			this.typeDefinition = typeDefinition;
+			this.loadInternal   = loadInternal;
 			this.classType      = GetClassType (typeDefinition);
 			
 			this.Name           = DomCecilType.RemoveGenericParamSuffix (typeDefinition.Name);
@@ -95,15 +97,25 @@ namespace MonoDevelop.Projects.Dom
 			foreach (TypeReference interfaceReference in typeDefinition.Interfaces) {
 				this.AddInterfaceImplementation (DomCecilMethod.GetReturnType (interfaceReference));
 			}
+			
+		}
+		bool loadInternal;
+		bool isInitialized = false;
+		void CheckInitialization ()
+		{
+			if (isInitialized)
+				return;
+			isInitialized = true;
+			
 			foreach (FieldDefinition fieldDefinition in typeDefinition.Fields) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (fieldDefinition)))
 					continue;
-				base.Add (new DomCecilField (this, keepDefinitions, fieldDefinition));
+				base.Add (new DomCecilField (fieldDefinition));
 			}
 			foreach (MethodDefinition methodDefinition in typeDefinition.Methods) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition)))
 					continue;
-				base.Add (new DomCecilMethod (this, keepDefinitions, methodDefinition));
+				base.Add (new DomCecilMethod (methodDefinition));
 			}
 			
 			bool internalOnly    = true;
@@ -113,7 +125,7 @@ namespace MonoDevelop.Projects.Dom
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition)))
 					continue;
 				internalOnly = false;
-				base.Add (new DomCecilMethod (this, keepDefinitions, methodDefinition));
+				base.Add (new DomCecilMethod (methodDefinition));
 			}
 			if (hasConstructors && internalOnly) 
 				base.TypeModifier |= TypeModifier.HasOnlyHiddenConstructors;
@@ -121,18 +133,18 @@ namespace MonoDevelop.Projects.Dom
 			foreach (PropertyDefinition propertyDefinition in typeDefinition.Properties) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (propertyDefinition.Attributes)))
 					continue;
-				base.Add (new DomCecilProperty (this, keepDefinitions, propertyDefinition));
+				base.Add (new DomCecilProperty (propertyDefinition));
 			}
 			foreach (EventDefinition eventDefinition in typeDefinition.Events) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (eventDefinition.Attributes)))
 					continue;
-				base.Add (new DomCecilEvent (this, keepDefinitions,eventDefinition));
+				base.Add (new DomCecilEvent (eventDefinition));
 			}
 			
 			foreach (TypeDefinition nestedType in typeDefinition.NestedTypes) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (nestedType.Attributes)))
 					continue;
-				base.Add (new DomCecilType (keepDefinitions, loadInternal, nestedType));
+				base.Add (new DomCecilType (nestedType, loadInternal));
 			}
 			
 			foreach (GenericParameter parameter in typeDefinition.GenericParameters) {

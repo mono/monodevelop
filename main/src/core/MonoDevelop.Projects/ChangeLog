@@ -1,5 +1,19 @@
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomCecilType.cs:
+	* MonoDevelop.Projects.Dom/DomCecilField.cs:
+	* MonoDevelop.Projects.Dom/DomCecilEvent.cs:
+	* MonoDevelop.Projects.Dom/DomCecilMethod.cs:
+	* MonoDevelop.Projects.Dom/DomCecilProperty.cs:
+	* MonoDevelop.Projects.Dom/DomCecilParameter.cs:
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/AssemblyProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Optimized cecil loading.
+
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: Cecil
 	  compilation unit now preserves module information.
 

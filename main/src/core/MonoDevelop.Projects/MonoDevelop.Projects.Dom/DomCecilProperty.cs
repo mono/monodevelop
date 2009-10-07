@@ -40,11 +40,6 @@ namespace MonoDevelop.Projects.Dom
 				return propertyDefinition;
 			}
 		}
-		
-		public void CleanCecilDefinitions ()
-		{
-			propertyDefinition = null;
-		}
 
 		public const string GetMethodPrefix = "get_";
 		public const string SetMethodPrefix = "set_";
@@ -72,11 +67,9 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public DomCecilProperty (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, PropertyDefinition propertyDefinition)
+		public DomCecilProperty (PropertyDefinition propertyDefinition)
 		{
-			this.declaringType = declaringType;
-			if (keepDefinitions)
-				this.propertyDefinition = propertyDefinition;
+			this.propertyDefinition = propertyDefinition;
 			base.name = propertyDefinition.Name;
 			if (propertyDefinition.Parameters.Count > 0) {
 				this.PropertyModifier |= PropertyModifier.IsIndexer;

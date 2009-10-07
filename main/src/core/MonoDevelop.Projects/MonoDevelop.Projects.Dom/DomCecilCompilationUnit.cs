@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
+	
 	public class DomCecilCompilationUnit : CompilationUnit
 	{
 		AssemblyDefinition assemblyDefinition;
@@ -78,10 +79,9 @@ namespace MonoDevelop.Projects.Dom
 //		{
 //		}
 		
-		public DomCecilCompilationUnit (bool keepDefinitions, string xmlFileName, bool loadInternals, AssemblyDefinition assemblyDefinition) : base (assemblyDefinition.Name.FullName)
+		public DomCecilCompilationUnit (AssemblyDefinition assemblyDefinition, string xmlFileName, bool loadInternals, bool instantiateTypeParameter) : base (assemblyDefinition.Name.FullName)
 		{
-			if (keepDefinitions)
-				this.assemblyDefinition = assemblyDefinition;
+			this.assemblyDefinition = assemblyDefinition;
 			if (xmlFileName != null && File.Exists (xmlFileName)) {
 				xmlDocumentation = new Dictionary<string, string> ();
 				try {
@@ -100,25 +100,14 @@ namespace MonoDevelop.Projects.Dom
 				}
 			}
 			foreach (ModuleDefinition moduleDefinition in assemblyDefinition.Modules) {
-				AddModuleDefinition (keepDefinitions, loadInternals, moduleDefinition);
+				AddModuleDefinition (moduleDefinition, loadInternals, instantiateTypeParameter);
 			}
 			foreach (CustomAttribute attr in assemblyDefinition.CustomAttributes) {
 				Add (new DomCecilAttribute (attr));
 			}
 		}
 		
-		public void CleanCecilDefinitions ()
-		{
-			assemblyDefinition = null;
-			foreach (IType type in Types) {
-				DomCecilType cecilType = type as DomCecilType;
-				if (cecilType != null) 
-					cecilType.CleanCecilDefinitions ();
-			}
-			System.GC.Collect ();
-		}
-		
-		public static DomCecilCompilationUnit Load (string fileName)
+/*		public static DomCecilCompilationUnit Load (string fileName)
 		{
 			return Load (fileName, true);
 		}
@@ -130,16 +119,15 @@ namespace MonoDevelop.Projects.Dom
 		{
 			return Load (fileName, true, true, false);
 		}
+		*/
 		
-		public static DomCecilCompilationUnit Load (string fileName, bool keepDefinitions, bool loadInternals, bool loadXmlDocumentation)
+		public static DomCecilCompilationUnit Load (string fileName, bool loadInternals, bool instantiateTypeParameter)
 		{
 			if (String.IsNullOrEmpty (fileName))
 				return null;
-			string xmlFileName = null;
-			if (loadXmlDocumentation)
-				xmlFileName = System.IO.Path.ChangeExtension (fileName, ".xml");
+			string xmlFileName = System.IO.Path.ChangeExtension (fileName, ".xml");
 			//FIXME: should assign a custom resolver to the AssemblyDefinition so that it resolves from the correct GAC
-			DomCecilCompilationUnit result = new DomCecilCompilationUnit (keepDefinitions, xmlFileName, loadInternals, AssemblyFactory.GetAssembly (fileName));
+			DomCecilCompilationUnit result = new DomCecilCompilationUnit (AssemblyFactory.GetAssembly (fileName), xmlFileName, loadInternals, instantiateTypeParameter);
 			result.fileName = fileName;
 			return result;
 		}
@@ -151,7 +139,7 @@ namespace MonoDevelop.Projects.Dom
 			       (mods & MonoDevelop.Projects.Dom.Modifiers.ProtectedAndInternal) == MonoDevelop.Projects.Dom.Modifiers.ProtectedAndInternal;
 		}
 		
-		void AddModuleDefinition (bool keepDefinitions, bool loadInternal, ModuleDefinition moduleDefinition)
+		void AddModuleDefinition (ModuleDefinition moduleDefinition, bool loadInternal, bool instantiateTypeParameter)
 		{
 			InstantiatedParamResolver resolver = new InstantiatedParamResolver (xmlDocumentation);
 			Module module = new Module (moduleDefinition);
@@ -167,9 +155,11 @@ namespace MonoDevelop.Projects.Dom
 					continue;
 //				if (type.Name == "SimplePropertyDescriptor")
 //					System.Console.WriteLine(type.Attributes + "/" + DomCecilType.GetModifiers (type.Attributes) + "/" + IsInternal (DomCecilType.GetModifiers (type.Attributes)));
-				DomCecilType loadType = new DomCecilType (keepDefinitions, loadInternal, type);
-				resolver.Visit (loadType, null);
-				resolver.ClearTypes ();
+				DomCecilType loadType = new DomCecilType (type, loadInternal);
+				if (instantiateTypeParameter) {
+					resolver.Visit (loadType, null);
+					resolver.ClearTypes ();
+				}
 				Add (loadType);
 				module.Types.Add (loadType);
 			}

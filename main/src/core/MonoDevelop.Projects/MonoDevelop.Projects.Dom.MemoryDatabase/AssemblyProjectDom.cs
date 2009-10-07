@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		public AssemblyProjectDom (string fileName)
 		{
 //			this.fileName = fileName;
-			UpdateFromParseInfo (DomCecilCompilationUnit.Load (fileName, false, false));
+			UpdateFromParseInfo (DomCecilCompilationUnit.Load (fileName, false, true));
 		}
 	}
 }

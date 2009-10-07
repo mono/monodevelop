@@ -74,20 +74,27 @@ namespace MonoDevelop.Projects.Dom
 			base.fullNameIsDirty = false;
 			if (DeclaringType != null) 
 				return DeclaringType.FullName + "." + Name;
-			return !String.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
+			return !string.IsNullOrEmpty (Namespace) ? Namespace + "." + Name : Name;
 		}
 		
 		public string DecoratedFullName {
 			get {
-				string res;
-				if (DeclaringType != null)
-					res = ((DomType)DeclaringType).DecoratedFullName + "." + Name;
-				else
-					res = FullName;
-				if (TypeParameters.Count > 0)
-					return res + "`" + TypeParameters.Count;
-				else
-					return res;
+				StringBuilder result = new StringBuilder ();
+				if (DeclaringType != null) {
+					result.Append (DeclaringType.DecoratedFullName);
+				} else {
+					if (!string.IsNullOrEmpty (Namespace))
+						result.Append (Namespace);
+				}
+				if (result.Length > 0)
+					result.Append (".");
+				result.Append (Name);
+				if (TypeParameters.Count > 0) {
+					result.Append ('`');
+					result.Append (TypeParameters.Count);
+				}
+				
+				return result.ToString ();
 			}
 		}
 		protected void SetName (string fullName)
@@ -788,7 +795,7 @@ namespace MonoDevelop.Projects.Dom
 		public override int GetHashCode ()
 		{
 			IType a = this is InstantiatedType ? ((InstantiatedType)this).UninstantiatedType : this;
-			return a.ToString ().GetHashCode ();
+			return a.DecoratedFullName.GetHashCode ();
 		}
 		
 		public static IReturnType GetComponentType (ProjectDom dom, IReturnType returnType)

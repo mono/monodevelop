@@ -33,24 +33,17 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomCecilField : MonoDevelop.Projects.Dom.DomField
 	{
-		FieldDefinition fieldDefinition;
+/*		FieldDefinition fieldDefinition;
 		
 		public FieldDefinition FieldDefinition {
 			get {
 				return fieldDefinition;
 			}
 		}
+		*/
 		
-		public void CleanCecilDefinitions ()
+		public DomCecilField (FieldDefinition fieldDefinition)
 		{
-			fieldDefinition = null;
-		}
-		
-		public DomCecilField (MonoDevelop.Projects.Dom.IType declaringType, bool keepDefinitions, FieldDefinition fieldDefinition)
-		{
-			this.declaringType   = declaringType;
-			if (keepDefinitions)
-				this.fieldDefinition = fieldDefinition;
 			base.name            = fieldDefinition.Name;
 			base.Modifiers       = DomCecilType.GetModifiers (fieldDefinition);
 			base.ReturnType      = DomCecilMethod.GetReturnType (fieldDefinition.FieldType);
