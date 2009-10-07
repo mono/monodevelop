@@ -195,8 +195,8 @@ namespace MonoDevelop.VersionControl.Views
 			ThreadPool.QueueUserWorkItem (delegate {
 				annotations = new List<string> (repo.GetAnnotations (editor.Document.FileName));
 				bool redrawAll = (0 == width);
-				UpdateWidth ();
 				DispatchService.GuiDispatch (delegate {
+					UpdateWidth ();
 					if (redrawAll) {
 						editor.RedrawFromLine (0);
 					} else {
