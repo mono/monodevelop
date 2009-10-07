@@ -903,7 +903,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (unit.FileName == fileName) 
 					return unit.AssemblyDefinition;
 			}
-			DomCecilCompilationUnit newUnit = DomCecilCompilationUnit.Load (fileName);
+			DomCecilCompilationUnit newUnit = DomCecilCompilationUnit.Load (fileName, true, false);
 			definitions.Add (newUnit);
 		
 			ITreeBuilder builder;

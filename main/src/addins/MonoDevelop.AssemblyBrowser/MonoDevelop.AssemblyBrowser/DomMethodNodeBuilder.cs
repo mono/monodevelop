@@ -207,17 +207,17 @@ namespace MonoDevelop.AssemblyBrowser
 					} else if (instruction.Operand is Mono.Cecil.MethodDefinition) {
 						Mono.Cecil.MethodDefinition md = instruction.Operand as Mono.Cecil.MethodDefinition;
 						AppendLink (result, 
-						            new DomCecilMethod (new DomCecilType (md.DeclaringType), true, md).HelpUrl,
+						            new DomCecilMethod (md) { DeclaringType = new DomCecilType (md.DeclaringType) } .HelpUrl, 
 						            instruction.Operand.ToString ());
 					} else if (instruction.Operand is Mono.Cecil.FieldDefinition) {
 						Mono.Cecil.FieldDefinition fd = instruction.Operand as Mono.Cecil.FieldDefinition;
 						AppendLink (result, 
-						            new DomCecilField (new DomCecilType (fd.DeclaringType), true, fd).HelpUrl,
+						            new DomCecilField (fd) { DeclaringType = new DomCecilType (fd.DeclaringType) }.HelpUrl,  
 						            instruction.Operand.ToString ());
 					} else if (instruction.Operand is Mono.Cecil.PropertyDefinition) {
 						Mono.Cecil.PropertyDefinition pd = instruction.Operand as Mono.Cecil.PropertyDefinition;
 						AppendLink (result, 
-						            new DomCecilProperty (new DomCecilType (pd.DeclaringType), true, pd).HelpUrl,
+						            new DomCecilProperty (pd) { DeclaringType = new DomCecilType (pd.DeclaringType) } .HelpUrl, 
 						            instruction.Operand.ToString ());
 					} else if (instruction.Operand is Mono.Cecil.TypeReference) {
 						AppendLink (result, 
