@@ -60,12 +60,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal const int FilledColumn       = 5;
 		
 		NodeBuilder[] builders;
-		Hashtable builderChains = new Hashtable ();
+		Dictionary<Type, NodeBuilder[]> builderChains = new Dictionary<Type, NodeBuilder[]> ();
 		Hashtable nodeHash = new Hashtable ();
 		
 		Gtk.TreeView tree = new Gtk.TreeView ();
 		Gtk.TreeStore store;
 		internal Gtk.TreeViewColumn complete_column;
+		internal Gtk.CellRendererPixbuf pix_render;
 		internal Gtk.CellRendererText text_render;
 		TreeBuilderContext builderContext;
 		Hashtable callbacks = new Hashtable ();
@@ -182,7 +183,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			complete_column = new Gtk.TreeViewColumn ();
 			complete_column.Title = "column";
 
-			Gtk.CellRendererPixbuf pix_render = new Gtk.CellRendererPixbuf ();
+			pix_render = new Gtk.CellRendererPixbuf ();
 			complete_column.PackStart (pix_render, false);
 			complete_column.AddAttribute (pix_render, "pixbuf", OpenIconColumn);
 			complete_column.AddAttribute (pix_render, "pixbuf-expander-open", OpenIconColumn);
@@ -196,32 +197,32 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 			text_render.Ypad = 1;
 			PropertyService.PropertyChanged += PropertyChanged;
-			text_render.Edited += new Gtk.EditedHandler (HandleOnEdit);
-			text_render.EditingCanceled += new EventHandler (HandleOnEditCancelled);
+			text_render.Edited += HandleOnEdit;
+			text_render.EditingCanceled += HandleOnEditCancelled;
 			
 			complete_column.PackStart (text_render, true);
 			complete_column.AddAttribute (text_render, "markup", TextColumn);
 			
 			tree.AppendColumn (complete_column);
 			
-			tree.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
-			tree.RowActivated += new Gtk.RowActivatedHandler(OnNodeActivated);
+			tree.TestExpandRow += OnTestExpandRow;
+			tree.RowActivated += OnNodeActivated;
 			
-			tree.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler (OnButtonRelease);
-			tree.ButtonPressEvent += new Gtk.ButtonPressEventHandler (OnButtonPress);
+			tree.ButtonReleaseEvent += OnButtonRelease;
+			tree.ButtonPressEvent += OnButtonPress;
 			
-			tree.PopupMenu += new Gtk.PopupMenuHandler (OnPopupMenu);
+			tree.PopupMenu += OnPopupMenu;
 			workNode = new TreeNodeNavigator (this);
 			compareNode1 = new TreeNodeNavigator (this);
 			compareNode2 = new TreeNodeNavigator (this);
 			
-			tree.DragBegin += new Gtk.DragBeginHandler (OnDragBegin);
-			tree.DragDataReceived += new Gtk.DragDataReceivedHandler (OnDragDataReceived);
-			tree.DragDrop += new Gtk.DragDropHandler (OnDragDrop);
-			tree.DragEnd += new Gtk.DragEndHandler (OnDragEnd);
-			tree.DragMotion += new Gtk.DragMotionHandler (OnDragMotion);
+			tree.DragBegin += OnDragBegin;
+			tree.DragDataReceived += OnDragDataReceived;
+			tree.DragDrop += OnDragDrop;
+			tree.DragEnd += OnDragEnd;
+			tree.DragMotion += OnDragMotion;
 			
-			tree.CursorChanged += new EventHandler (OnSelectionChanged);
+			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;
 				
 			this.Add (tree);
@@ -383,14 +384,23 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public override void Dispose ()
 		{
-			Clear ();
-			foreach (NodeBuilder nb in builders) {
-				try {
-					nb.Dispose ();
-				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
-				}
+			if (store != null) {
+				Clear ();
+				store.Dispose ();
+				store = null;
 			}
+			
+			if (builders != null) {
+				foreach (NodeBuilder nb in builders) {
+					try {
+						nb.Dispose ();
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
+					}
+				}
+				builders = null;
+			}
+			builderChains.Clear ();
 		}
 
 		internal void LockUpdates ()
@@ -1097,10 +1107,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		public NodeBuilder[] GetBuilderChain (Type type)
 		{
-			NodeBuilder[] chain = builderChains [type] as NodeBuilder[];
-			if (chain == null)
-			{
-				ArrayList list = new ArrayList ();
+			NodeBuilder[] chain;
+			builderChains.TryGetValue (type, out chain);
+			if (chain == null) {
+				List<NodeBuilder> list = new List<NodeBuilder> ();
 				
 				// Find the most specific node builder type.
 				TypeNodeBuilder bestTypeNodeBuilder = null;
@@ -1115,8 +1125,7 @@ namespace MonoDevelop.Ide.Gui.Components
 								bestTypeNodeBuilder = tnb;
 							}
 						}
-					}
-					else {
+					} else {
 						try {
 							if (((NodeBuilderExtension)nb).CanBuildNode (type))
 								list.Add (nb);
@@ -1128,7 +1137,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				
 				if (bestTypeNodeBuilder != null) {
 					list.Insert (0, bestTypeNodeBuilder);
-					chain = (NodeBuilder[]) list.ToArray (typeof(NodeBuilder));
+					chain = list.ToArray ();
 				} else
 					chain = null;
 				
@@ -1731,6 +1740,19 @@ namespace MonoDevelop.Ide.Gui.Components
 		protected override void OnDestroyed ()
 		{
 			PropertyService.PropertyChanged -= PropertyChanged;
+			if (pix_render != null) {
+				pix_render.Destroy ();
+				pix_render = null;
+			}
+			if (complete_column != null) {
+				complete_column.Destroy ();
+				complete_column = null;
+			}
+			if (text_render != null) {
+				text_render.Destroy ();
+				text_render = null;
+			}
+			Dispose ();
 			base.OnDestroyed ();
 		}
 		

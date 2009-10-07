@@ -1,3 +1,9 @@
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Fixed
+	  some leaks.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

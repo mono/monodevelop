@@ -695,6 +695,7 @@ namespace MonoDevelop.Ide.Gui
 				if (e.WasActive && !SelectLastActiveWindow (f))
 					ActiveMdiChanged(this, null);
 			}
+			lastActiveWindows.Remove (f);
 		}
 		
 		public IWorkbenchWindow ShowView (IViewContent content)
