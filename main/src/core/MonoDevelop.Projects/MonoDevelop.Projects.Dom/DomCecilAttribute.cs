@@ -33,17 +33,17 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class DomCecilAttribute : MonoDevelop.Projects.Dom.DomAttribute
 	{
-		CustomAttribute customAttribute;
+		/*CustomAttribute customAttribute;
 		
 		public CustomAttribute CustomAttribute {
 			get {
 				return customAttribute;
 			}
-		}
+		}*/
 		
 		public DomCecilAttribute (CustomAttribute customAttribute)
 		{
-			this.customAttribute = customAttribute;
+			//this.customAttribute = customAttribute;
 			base.AttributeType = DomCecilMethod.GetReturnType (customAttribute.Constructor);
 			base.Name          = customAttribute.Constructor.DeclaringType.FullName;
 			

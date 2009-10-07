@@ -1,3 +1,11 @@
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: Cecil
+	  compilation unit now preserves module information.
+
+	* MonoDevelop.Projects.Dom/DomCecilAttribute.cs: No need to
+	  hold the cecil attribute, all information is extracted.
+
 2009-10-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs:

@@ -45,6 +45,34 @@ namespace MonoDevelop.Projects.Dom
 				return assemblyDefinition;
 			}
 		}
+		
+		public class Module 
+		{
+			public ModuleDefinition ModuleDefinition {
+				get;
+				set;
+			}
+			
+			List<IType> types = new List<IType> ();
+			public List<IType> Types {
+				get {
+					return types;
+				}
+			}
+			
+			public Module (ModuleDefinition moduleDefinition)
+			{
+				this.ModuleDefinition = moduleDefinition;
+			}
+		}
+		
+		List<Module> modules = new List<Module> ();
+		public IEnumerable<Module> Modules {
+			get {
+				return modules;
+			}
+		}
+		
 //		
 //		public DomCecilCompilationUnit (AssemblyDefinition assemblyDefinition) : this (true, true, assemblyDefinition)
 //		{
@@ -74,7 +102,9 @@ namespace MonoDevelop.Projects.Dom
 			foreach (ModuleDefinition moduleDefinition in assemblyDefinition.Modules) {
 				AddModuleDefinition (keepDefinitions, loadInternals, moduleDefinition);
 			}
-			
+			foreach (CustomAttribute attr in assemblyDefinition.CustomAttributes) {
+				Add (new DomCecilAttribute (attr));
+			}
 		}
 		
 		public void CleanCecilDefinitions ()
@@ -124,6 +154,7 @@ namespace MonoDevelop.Projects.Dom
 		void AddModuleDefinition (bool keepDefinitions, bool loadInternal, ModuleDefinition moduleDefinition)
 		{
 			InstantiatedParamResolver resolver = new InstantiatedParamResolver (xmlDocumentation);
+			Module module = new Module (moduleDefinition);
 			foreach (TypeDefinition type in moduleDefinition.Types) {
 				// filter nested types, they're handled in DomCecilType.
 				if ((type.Attributes & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic ||
@@ -140,7 +171,9 @@ namespace MonoDevelop.Projects.Dom
 				resolver.Visit (loadType, null);
 				resolver.ClearTypes ();
 				Add (loadType);
+				module.Types.Add (loadType);
 			}
+			this.modules.Add (module);
 		}
 		
 		class InstantiatedParamResolver : AbstractDomVistitor<object, object>
