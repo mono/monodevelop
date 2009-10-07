@@ -1,5 +1,10 @@
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs: Call Destroy
+	  (), Dispose () is broken for gtk widgets.
+
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ReferenceNodeBuilder.cs:
 	  Track API changes.
 
