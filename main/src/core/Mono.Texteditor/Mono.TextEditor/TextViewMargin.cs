@@ -227,37 +227,50 @@ namespace Mono.TextEditor
 			if (offset < 0)
 				offset = 0;
 			
-			if (highlightBracketWorker != null && highlightBracketWorker.IsBusy)
-				highlightBracketWorker.CancelAsync ();
+			DisposeHighightBackgroundWorker ();
 			
 			highlightBracketWorker = new System.ComponentModel.BackgroundWorker ();
 			highlightBracketWorker.WorkerSupportsCancellation = true;
-			highlightBracketWorker.DoWork += delegate(object s, System.ComponentModel.DoWorkEventArgs ea) {
-				System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)s;
-				int oldIndex = highlightBracketOffset;
-				int caretOffset = Caret.Offset;
-				int matchingBracket;
-				matchingBracket = Document.GetMatchingBracketOffset (worker, offset);
-				if (matchingBracket == caretOffset && offset + 1 < Document.Length)
-					matchingBracket = Document.GetMatchingBracketOffset (worker, offset + 1);
-				if (matchingBracket == caretOffset)
-					matchingBracket = -1;
-				if (worker.CancellationPending)
-					return;
-				if (matchingBracket != oldIndex) {
-					highlightBracketOffset = matchingBracket;
-					int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
-					int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
-					Application.Invoke (delegate {
-						if (line1 >= 0)
-							textEditor.RedrawLine (line1);
-						if (line1 != line2 && line2 >= 0)
-							textEditor.RedrawLine (line2);
-					});
-				}
-				
-			};
-			highlightBracketWorker.RunWorkerAsync ();
+			highlightBracketWorker.DoWork += HighlightBracketWorkerDoWork;
+			highlightBracketWorker.RunWorkerAsync (offset);
+		}
+
+		void HighlightBracketWorkerDoWork (object sender, System.ComponentModel.DoWorkEventArgs e)
+		{
+			System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)sender;
+			int offset = (int)e.Argument;
+			int oldIndex = highlightBracketOffset;
+			int caretOffset = Caret.Offset;
+			int matchingBracket;
+			matchingBracket = Document.GetMatchingBracketOffset (worker, offset);
+			if (matchingBracket == caretOffset && offset + 1 < Document.Length)
+				matchingBracket = Document.GetMatchingBracketOffset (worker, offset + 1);
+			if (matchingBracket == caretOffset)
+				matchingBracket = -1;
+			if (worker.CancellationPending)
+				return;
+			if (matchingBracket != oldIndex) {
+				highlightBracketOffset = matchingBracket;
+				int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
+				int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
+				Application.Invoke (delegate {
+					if (line1 >= 0)
+						textEditor.RedrawLine (line1);
+					if (line1 != line2 && line2 >= 0)
+						textEditor.RedrawLine (line2);
+				});
+			}
+		}
+
+		void DisposeHighightBackgroundWorker ()
+		{
+			if (highlightBracketWorker == null)
+				return;
+			if (highlightBracketWorker.IsBusy)
+				highlightBracketWorker.CancelAsync ();
+			highlightBracketWorker.DoWork -= HighlightBracketWorkerDoWork;
+			highlightBracketWorker.Dispose ();
+			highlightBracketWorker = null;
 		}
 
 		protected internal override void OptionsChanged ()
@@ -338,6 +351,7 @@ namespace Mono.TextEditor
 			if (arrowCursor == null)
 				return;
 			
+			DisposeHighightBackgroundWorker ();
 			DisposeSearchPatternWorker ();
 			
 			caretTimer.Stop ();
@@ -400,12 +414,15 @@ namespace Mono.TextEditor
 			bool newCaretBlink = caretBlinkStatus < 4 || (caretBlinkStatus - 4) % 3 != 0;
 			if (newCaretBlink != caretBlink) {
 				caretBlink = newCaretBlink;
+				
 				Application.Invoke (delegate {
 					try {
 						textEditor.RedrawMarginLine (this, Caret.Line);
 					} catch (Exception) {
+						
 					}
 				});
+				Document.CommitLineUpdate (Caret.Line);
 			}
 			caretBlinkStatus++;
 		}

@@ -373,17 +373,17 @@ namespace Mono.TextEditor.Highlighting
 				if (!file.EndsWith (".xml")) 
 					continue;
 				if (file.EndsWith ("SyntaxMode.xml")) {
-					XmlTextReader reader =  new XmlTextReader (file);
-					string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
-					foreach (string mimeType in mimeTypes.Split (';')) {
-						syntaxModeLookup [mimeType] = new UrlXmlProvider (file);
+					using (XmlTextReader reader =  new XmlTextReader (file)) {
+						string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
+						foreach (string mimeType in mimeTypes.Split (';')) {
+							syntaxModeLookup [mimeType] = new UrlXmlProvider (file);
+						}
 					}
-					reader.Close ();
 				} else if (file.EndsWith ("Style.xml")) {
-					XmlTextReader reader =  new XmlTextReader (file);
-					string styleName = Scan (reader, Style.NameAttribute);
-					styleLookup [styleName] = new UrlXmlProvider (file);
-					reader.Close ();
+					using (XmlTextReader reader =  new XmlTextReader (file)) {
+						string styleName = Scan (reader, Style.NameAttribute);
+						styleLookup [styleName] = new UrlXmlProvider (file);
+					}
 				}
 			}
 		}
@@ -393,21 +393,19 @@ namespace Mono.TextEditor.Highlighting
 				if (!resource.EndsWith (".xml")) 
 					continue;
 				if (resource.EndsWith ("SyntaxMode.xml")) {
-					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
-						XmlTextReader reader =  new XmlTextReader (stream);
+					using (Stream stream = assembly.GetManifestResourceStream (resource)) 
+					using (XmlTextReader reader =  new XmlTextReader (stream)) {
 						string mimeTypes = Scan (reader, SyntaxMode.MimeTypesAttribute);
 						ResourceXmlProvider provider = new ResourceXmlProvider (assembly, resource);
 						foreach (string mimeType in mimeTypes.Split (';')) {
 							syntaxModeLookup [mimeType] = provider;
 						}
-						reader.Close ();
 					}
 				} else if (resource.EndsWith ("Style.xml")) {
-					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
-						XmlTextReader reader = new XmlTextReader (stream);
+					using (Stream stream = assembly.GetManifestResourceStream (resource)) 
+					using (XmlTextReader reader = new XmlTextReader (stream)) {
 						string styleName = Scan (reader, Style.NameAttribute);
 						styleLookup [styleName] = new ResourceXmlProvider (assembly, resource);
-						reader.Close ();
 					}
 				}
 			}
