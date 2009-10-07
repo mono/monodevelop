@@ -1,5 +1,12 @@
 2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Commands.cs:
+	* MacUpdater.cs:
+	* UpdateDialog.cs: Add workaround for updating older versions
+	  of Mono that don't have updateinfo file. Clean up API.
+
+2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MacUpdater.cs: Tidy up.
 
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>

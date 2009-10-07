@@ -36,23 +36,41 @@ using System.Collections.Generic;
 namespace MonoDevelop.Platform
 {
 
-	public static class MacUpdater
+	public static class AppUpdater
 	{
 		const int formatVersion = 1;
-		const string updateAutoPropertyKey = "MacUpdater.CheckAutomatically";
+		const string updateAutoPropertyKey = "AppUpdater.CheckAutomatically";
 		
-		static string[] updatePaths = null;
+		static UpdateInfo[] updateInfos;
 		
-		public static string[] UpdateInfoPaths {
+		//FIXME: populate from an extension point
+		public static UpdateInfo[] DefaultUpdateInfos {
 			get {
-				if (updatePaths == null) {
-					updatePaths = new string[] {
+				if (updateInfos == null) {
+					var list = new List<UpdateInfo> ();
+					var files = new string[] {
 						"/Developer/MonoTouch/updateinfo",
 						"/Library/Frameworks/Mono.framework/Versions/Current/updateinfo",
-						Path.GetDirectoryName (typeof (MacPlatform).Assembly.Location) + "/../../../updateinfo"
-					}.Where (File.Exists).ToArray ();
+						Path.GetDirectoryName (typeof (MacPlatform).Assembly.Location) + "/../../../updateinfo",
+					}.Where (File.Exists);
+					
+					foreach (string file in files) {
+						try {
+							list.Add (UpdateInfo.FromFile (file));
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error reading update info file '" + file + "'", ex);
+						}
+					}
+					
+					//FIXME: workaround for older 2.4.x Mono not having updateinfo.
+					// Remove this when MD launch script forces Mono 2.6
+					if (!File.Exists ("/Library/Frameworks/Mono.framework/Versions/Current/updateinfo"))
+						list.Add (new UpdateInfo (new Guid ("432959f9-ce1b-47a7-94d3-eb99cb2e1aa8=0"), 0));
+					
+					updateInfos = list.ToArray ();
 				}
-				return updatePaths;
+				
+				return updateInfos;
 			}
 		}
 		
@@ -67,36 +85,18 @@ namespace MonoDevelop.Platform
 		
 		public static void RunCheck (bool automatic)
 		{
-			RunCheck (UpdateInfoPaths, automatic);
+			RunCheck (DefaultUpdateInfos, automatic);
 		}
 		
-		public static void RunCheck (string[] updateInfos, bool automatic)
+		public static void RunCheck (UpdateInfo[] updateInfos, bool automatic)
 		{
-			if (updateInfos.Length == 0 || (automatic && !CheckAutomatically))
+			if (updateInfos == null || updateInfos.Length == 0 || (automatic && !CheckAutomatically))
 				return;
 			
 			var query = new StringBuilder ("http://go-mono.com/macupdate/update?v=");
 			query.Append (formatVersion);
-			
-			bool foundInfo = false;
-			
-			foreach (var name in updateInfos.Where (File.Exists)) {
-				try {
-					using (var f = File.OpenText (name)) {
-						var s = f.ReadLine ();
-						var parts = s.Split (' ');
-						Guid guid = new Guid (parts[0]);
-						long version = long.Parse (parts[1]);
-						query.AppendFormat ("&{0}={1}", guid, version);
-						foundInfo = true;
-					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error reading update info file '" + name + "'", ex);
-				}
-			}
-			
-			if (!foundInfo)
-				return;
+			foreach (var info in updateInfos)
+				query.AppendFormat ("&{0}={1}", info.AppId, info.VersionId);
 			
 			if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATER_TEST")))
 				query.Append ("&test=1");
@@ -164,6 +164,31 @@ namespace MonoDevelop.Platform
 			public string Version;
 			public DateTime Date;
 			public string Notes;
+		}
+		
+		public class UpdateInfo
+		{
+			UpdateInfo ()
+			{
+			}
+			
+			public UpdateInfo (Guid appId, long versionId)
+			{
+				this.AppId = appId;
+				this.VersionId = versionId;
+			}
+			
+			public readonly Guid AppId;
+			public readonly long VersionId;
+			
+			public static UpdateInfo FromFile (string fileName)
+			{
+				using (var f = File.OpenText (fileName)) {
+					var s = f.ReadLine ();
+					var parts = s.Split (' ');
+					return new UpdateInfo (new Guid (parts[0]), long.Parse (parts[1]));
+				}
+			}
 		}
 	}
 }

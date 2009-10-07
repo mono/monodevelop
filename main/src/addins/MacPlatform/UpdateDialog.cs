@@ -38,12 +38,12 @@ namespace MonoDevelop.Platform
 	partial class UpdateDialog : Gtk.Dialog
 	{
 
-		public UpdateDialog (List<MacUpdater.Update> updates)
+		public UpdateDialog (List<AppUpdater.Update> updates)
 		{
 			this.Build ();
-			checkAutomaticallyCheck.Active = MacUpdater.CheckAutomatically;
+			checkAutomaticallyCheck.Active = AppUpdater.CheckAutomatically;
 			checkAutomaticallyCheck.Toggled += delegate {
-				MacUpdater.CheckAutomatically = checkAutomaticallyCheck.Active;
+				AppUpdater.CheckAutomatically = checkAutomaticallyCheck.Active;
 			};
 			
 			if (updates == null || updates.Count == 0) {
