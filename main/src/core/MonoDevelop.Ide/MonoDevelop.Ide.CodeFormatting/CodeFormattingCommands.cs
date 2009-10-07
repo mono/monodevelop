@@ -60,8 +60,10 @@ namespace MonoDevelop.Ide.CodeFormatting
 			IPrettyPrinter printer = TextFileService.GetPrettyPrinter (mt);
 			if (printer == null)
 				return;
+			doc.TextEditor.BeginAtomicUndo ();
 			doc.TextEditor.Select (0, doc.TextEditor.TextLength);
 			doc.TextEditor.SelectedText = printer.FormatText (doc.Project, mt, doc.TextEditor.Text);
+			doc.TextEditor.EndAtomicUndo ();
 		}
 	}
 }

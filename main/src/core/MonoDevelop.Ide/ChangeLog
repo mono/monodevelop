@@ -1,5 +1,11 @@
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
+	  Fixed 'Bug 544395 - Format document operation should be an
+	  atomic undo'.
+
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Track API
 	  changes.
 
