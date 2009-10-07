@@ -150,8 +150,7 @@ namespace Mono.TextEditor
 		void HandleSearchChanged (object sender, EventArgs args)
 		{
 			if (textEditor.HighlightSearchPattern) {
-				if (searchPatternWorker != null && searchPatternWorker.IsBusy)
-					searchPatternWorker.CancelAsync ();
+				DisposeSearchPatternWorker ();
 				if (string.IsNullOrEmpty (this.textEditor.SearchPattern)) {
 					selectedRegions.Clear ();
 					DisposeLayoutDict ();
@@ -189,6 +188,17 @@ namespace Mono.TextEditor
 				searchPatternWorker.RunWorkerAsync ();
 			}
 		}
+
+		void DisposeSearchPatternWorker ()
+		{
+			if (searchPatternWorker == null)
+				return;
+			if (searchPatternWorker.IsBusy)
+				searchPatternWorker.CancelAsync ();
+			searchPatternWorker.Dispose ();
+			searchPatternWorker = null;
+		}
+
 
 		System.ComponentModel.BackgroundWorker searchPatternWorker;
 		System.ComponentModel.BackgroundWorker highlightBracketWorker;
@@ -324,7 +334,9 @@ namespace Mono.TextEditor
 		{
 			if (arrowCursor == null)
 				return;
-
+			
+			DisposeSearchPatternWorker ();
+			
 			caretTimer.Stop ();
 			caretTimer.Dispose ();
 
@@ -1509,6 +1521,7 @@ namespace Mono.TextEditor
 			layout.Attributes = attributes;
 			Pango.Rectangle ink_rect, logical_rect;
 			layout.GetExtents (out ink_rect, out logical_rect);
+			attributes.Dispose ();
 			layout.Dispose ();
 			return (int)((logical_rect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale);
 		}

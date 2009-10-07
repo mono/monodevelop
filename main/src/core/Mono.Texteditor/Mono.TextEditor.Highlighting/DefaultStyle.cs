@@ -100,7 +100,7 @@ namespace Mono.TextEditor.Highlighting
 				return new Gdk.Color (172, 168, 153);
 			}
 		}
-
+		
 //		public override Color WhitespaceMarker {
 //			get {
 //				return whitespaceMarker;
@@ -124,10 +124,18 @@ namespace Mono.TextEditor.Highlighting
 			this.widget = widget;
 			if (widget != null) {
 				this.widget.StyleSet += WidgethandleStyleSet;
+				this.widget.Destroyed += WidgethandleDestroyed;
 				WidgethandleStyleSet (null, null);
 			} else {
 				SetStyle (Gtk.Widget.DefaultStyle);
 			}
+		}
+
+		void WidgethandleDestroyed (object sender, EventArgs e)
+		{
+			Widget widget = (Widget)sender;
+			this.widget.StyleSet -= WidgethandleStyleSet;
+			this.widget.Destroyed -= WidgethandleDestroyed;
 		}
 
 		void WidgethandleStyleSet (object o, StyleSetArgs args)
