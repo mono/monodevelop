@@ -1,3 +1,13 @@
+2009-10-07  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Only
+	  update width in the GUI thread.
+
+2009-10-07  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Do
+	  whole-file updates asynchronously.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

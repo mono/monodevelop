@@ -122,14 +122,19 @@ namespace Mono.TextEditor
 					HandleSearchChanged (this, EventArgs.Empty);
 				}
 			};
-			
+			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 			markerLayout = new Pango.Layout (textEditor.PangoContext);
 			
 			textEditor.Document.EndUndo += UpdateBracketHighlighting;
 			Caret.PositionChanged += UpdateBracketHighlighting;
 		}
-
+		
+		void TextEditorDocumentLineChanged (object sender, LineEventArgs e)
+		{
+			RemoveCachedLine (e.Line);
+		}
+		
 		List<LineSegment> linesToRemove = new List<LineSegment> ();
 		internal void VAdjustmentValueChanged ()
 		{

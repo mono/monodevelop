@@ -1,5 +1,10 @@
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed document update
+	  bug.
+
+2009-10-07  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Compare real spans for
 	  the cache - span length is sometimes not enough.
 

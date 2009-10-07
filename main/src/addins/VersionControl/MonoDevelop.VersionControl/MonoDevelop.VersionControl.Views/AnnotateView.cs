@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -161,6 +162,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.repo = repo;
 			this.width = 0;
 			this.editor = editor;
+			annotations = new List<string> ();
 			UpdateAnnotations (null, null);
 			
 			editor.Document.TextReplacing += EditorDocumentTextReplacing;
@@ -171,8 +173,6 @@ namespace MonoDevelop.VersionControl.Views
 			
 			layout = new Pango.Layout (editor.PangoContext);
 			layout.FontDescription = editor.Options.Font;
-			
-			UpdateWidth ();
 			
 			lineNumberBgGC = new Gdk.GC (editor.GdkWindow);
 			lineNumberBgGC.RgbFgColor = editor.ColorStyle.LineNumber.BackgroundColor;
@@ -192,7 +192,18 @@ namespace MonoDevelop.VersionControl.Views
 		/// </summary>
 		private void UpdateAnnotations (object sender, EventArgs e)
 		{
-			annotations = new List<string> (repo.GetAnnotations (editor.Document.FileName));
+			ThreadPool.QueueUserWorkItem (delegate {
+				annotations = new List<string> (repo.GetAnnotations (editor.Document.FileName));
+				bool redrawAll = (0 == width);
+				DispatchService.GuiDispatch (delegate {
+					UpdateWidth ();
+					if (redrawAll) {
+						editor.RedrawFromLine (0);
+					} else {
+						editor.RedrawMarginLines (this, 0, -1);
+					}
+				});
+			});
 		}
 
 		/// <summary>
@@ -248,7 +259,6 @@ namespace MonoDevelop.VersionControl.Views
 			} else if (startLine > endLine) {
 				// revert
 				UpdateAnnotations (null, null);
-				editor.RedrawMarginLines (this, 0, -1);
 				return;
 			}
 			
