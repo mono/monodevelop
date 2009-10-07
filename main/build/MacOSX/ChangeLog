@@ -1,5 +1,10 @@
 2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* monodevelop: Make the user download a new Mono if the updateinfo
+	  file does not exist.
+
+2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am: Fix make dist.
 
 2009-10-01  Michael Hutchinson  <mhutchinson@novell.com>
