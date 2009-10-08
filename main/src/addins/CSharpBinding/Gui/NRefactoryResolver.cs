@@ -476,10 +476,12 @@ namespace MonoDevelop.CSharpBinding
 		
 		IReturnType ResolveType (ICompilationUnit unit, IReturnType type)
 		{
+			if (type == null)
+				return DomReturnType.Void;
 			if (type.Type != null) // type known (possible anonymous type), no resolving needed
 				return type;
 			
-			return type != null ? (IReturnType)new TypeResolverVisitor (dom, unit).Visit (type, this.CallingType) : DomReturnType.Void;
+			return (IReturnType)new TypeResolverVisitor (dom, unit).Visit (type, this.CallingType);
 		}
 		
 		ResolveResult GetFunctionParameterType (ResolveResult resolveResult)

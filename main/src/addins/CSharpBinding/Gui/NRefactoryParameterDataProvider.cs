@@ -46,12 +46,12 @@ namespace MonoDevelop.CSharpBinding
 		List<IMethod> methods = new List<IMethod> ();
 		CSharpAmbience ambience = new CSharpAmbience ();
 		
-		bool staticResolve = false;
+		//bool staticResolve = false;
 		
 		public NRefactoryParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, MethodResolveResult resolveResult)
 		{
 			this.editor = editor;
-			this.staticResolve = resolveResult.StaticResolve;
+			//this.staticResolve = resolveResult.StaticResolve;
 			bool includeProtected = true;
 			
 			HashSet<string> alreadyAdded = new HashSet<string> ();
