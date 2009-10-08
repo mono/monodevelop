@@ -1,5 +1,10 @@
 2009-10-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Parser/FindMemberAstVisitor.cs: Fixed 'Bug 545361 - Method
+	  -> Rename doesn't update instance in delegate constructor'.
+
+2009-10-08  Mike Krüger  <mkrueger@novell.com>
+
 	* Syntax/HighlightCSharpSemanticRule.cs: Fixed "Bug 545332 -
 	  Crashing monodevelop".
 

@@ -627,6 +627,9 @@ namespace MonoDevelop.CSharpBinding
 						}
 					}
 				}
+				invokeExp.Arguments.ForEach (o => o.AcceptVisitor(this, data));
+				// for method searches the identifier expression of the invocation is NOT visited
+				// we've already checked the method.
 				return true;
 			}
 			invokeExp.Arguments.ForEach (o => o.AcceptVisitor(this, data));
