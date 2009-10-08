@@ -557,6 +557,24 @@ SolutionEventArgs e)
 ");
 		}
 		
+		/// <summary>
+		/// Bug 545361 - Method -> Rename doesn't update instance in delegate constructor
+		/// </summary>
+		[Test()]
+		public void TestBug545361 ()
+		{
+			RunTest (
+@"class TestClass {
+	public void $@FlyZoomInCallback ()
+	{
+	}
+	public void TestMethod (int a)
+	{
+		GLib.Idle.Add(new GLib.IdleHandler(@FlyZoomInCallback));
+	}
+}
+");
+		}
 		
 		/*
 		[Test()]
