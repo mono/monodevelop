@@ -215,29 +215,31 @@ namespace MonoDevelop.CSharpBinding
 			if (!settings.UseNETTypeNames && netToCSharpTypes.ContainsKey (returnType.FullName)) {
 				result.Append (settings.EmitName (returnType, netToCSharpTypes[returnType.FullName]));
 			} else {
-				if (settings.UseFullName) {
-					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (returnType.FullName))));
-				} else {
-					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (returnType.Name))));
-				}
-			}
-			if (settings.IncludeGenerics) {
-				if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0) {
-					result.Append (settings.Markup ("<"));
-					if (!settings.HideGenericParameterNames) {
-						bool hideArrays = settings.HideArrayBrackets;
-						settings.OutputFlags &= ~OutputFlags.HideArrayBrackets;
-						for (int i = 0; i < returnType.GenericArguments.Count; i++) {
-							if (i > 0)
-								result.Append (settings.Markup (", "));
-							result.Append (GetString (returnType.GenericArguments[i], settings));
+				if (settings.UseFullName) 
+					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (returnType.Namespace))));
+				
+				foreach (ReturnTypePart part in returnType.Parts) {
+					if (result.Length > 0)
+						result.Append (settings.EmitName (returnType, "."));
+					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (part.Name))));
+					if (settings.IncludeGenerics && part.GenericArguments.Count > 0) {
+						result.Append (settings.Markup ("<"));
+						if (!settings.HideGenericParameterNames) {
+							bool hideArrays = settings.HideArrayBrackets;
+							settings.OutputFlags &= ~OutputFlags.HideArrayBrackets;
+							for (int i = 0; i < part.GenericArguments.Count; i++) {
+								if (i > 0)
+									result.Append (settings.Markup (", "));
+								result.Append (GetString (part.GenericArguments[i], settings));
+							}
+							if (hideArrays)
+								settings.OutputFlags |= OutputFlags.HideArrayBrackets;
 						}
-						if (hideArrays)
-							settings.OutputFlags |= OutputFlags.HideArrayBrackets;
+						result.Append (settings.Markup (">"));
 					}
-					result.Append (settings.Markup (">"));
 				}
 			}
+			
 			if (!settings.HideArrayBrackets && returnType.ArrayDimensions > 0) {
 				for (int i = 0; i < returnType.ArrayDimensions; i++) {
 					result.Append (settings.Markup ("["));
