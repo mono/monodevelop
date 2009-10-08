@@ -42,7 +42,6 @@ namespace MonoDevelop.Components.Commands
 		bool useMarkup;
 		bool bypass;
 		bool checkedInconsistent;
-		internal bool IsArraySeparator;
 		internal object UpdateHandlerData;
 		
 		internal CommandInfo (Command cmd)
@@ -126,6 +125,10 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		public object DataItem {
+			get; internal set;
+		}
+		
+		public bool IsArraySeparator {
 			get; internal set;
 		}
 	}
