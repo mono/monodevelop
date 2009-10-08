@@ -1,3 +1,7 @@
+2009-10-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Menus/OSXMenu.cs: Fix separators in dynamic submenus.
+
 2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacUpdater.cs: Add csdk updateinfo file. Remove the hack for

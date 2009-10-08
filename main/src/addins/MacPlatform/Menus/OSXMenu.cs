@@ -485,8 +485,12 @@ namespace OSXIntegration
 			ushort count = (ushort) cinfoSet.CommandInfos.Count;
 			for (ushort i = 1, j = 0; i <= count; i++) {
 				CommandInfo ci = cinfoSet.CommandInfos[j++];
-				HIToolbox.AppendMenuItem (menuRef, ci.Text, 0, macCmdID);
-				UpdateMenuItem (rootMenu, menuRef, ref i, ref count, macCmdID, ci);
+				if (ci.Text == "-") {
+					HIToolbox.AppendMenuSeparator (menuRef);
+				} else {
+					HIToolbox.AppendMenuItem (menuRef, ci.Text, 0, macCmdID);
+					UpdateMenuItem (rootMenu, menuRef, ref i, ref count, macCmdID, ci);
+				}
 			}
 		}
 		
