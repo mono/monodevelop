@@ -838,6 +838,8 @@ namespace MonoDevelop.Projects
 				// If the file format has a default resource handler different from the one
 				// choosen for this project, then all resource ids must be converted
 				foreach (ProjectFile file in Files) {
+					if (file.Subtype == Subtype.Directory)
+						continue;
 					string oldId = file.GetResourceId (oldHandler);
 					string newId = file.GetResourceId (newHandler);
 					string newDefault = newHandler.GetDefaultResourceId (file);

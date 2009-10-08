@@ -1,3 +1,10 @@
+2009-10-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Don't try to update
+	  resource ids for directories.
+
+	* MonoDevelop.Projects.csproj: Flush.
+
 2009-10-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
