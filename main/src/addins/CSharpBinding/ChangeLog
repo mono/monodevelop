@@ -1,5 +1,10 @@
 2009-10-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Syntax/HighlightCSharpSemanticRule.cs: Fixed "Bug 545332 -
+	  Crashing monodevelop".
+
+2009-10-08  Mike Krüger  <mkrueger@novell.com>
+
 	* Gui/CSharpAmbience.cs: fixed ambience output for some return
 	  types.
 

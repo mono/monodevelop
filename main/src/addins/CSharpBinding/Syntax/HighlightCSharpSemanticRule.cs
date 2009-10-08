@@ -91,7 +91,8 @@ namespace MonoDevelop.CSharpBinding
 			ctx = GetParserContext (doc);
 			int lineNumber = doc.OffsetToLineNumber (line.Offset);
 			ParsedDocument parsedDocument = ProjectDomService.GetParsedDocument (ctx, doc.FileName);
-			if (parsedDocument == null || parsedDocument.CompilationUnit == null)
+			ICompilationUnit unit = parsedDocument != null ? parsedDocument.CompilationUnit : null;
+			if (unit == null)
 				return;
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk.Next) {
 				if (chunk.Style != "text")
@@ -185,7 +186,7 @@ namespace MonoDevelop.CSharpBinding
 					nameSegments.Add (new Segment (i, nameEndOffset - i));
 
 					int column = i - line.Offset;
-					IType callingType = parsedDocument.CompilationUnit.GetTypeAt (lineNumber, column);
+					IType callingType = unit.GetTypeAt (lineNumber, column);
 					List<IReturnType> genericParams = null;
 					if (genericCount > 0) {
 						genericParams = new List<IReturnType> ();
@@ -193,7 +194,7 @@ namespace MonoDevelop.CSharpBinding
 							genericParams.Add (new DomReturnType ("A"));
 					}
 					
-					IType type = ctx.SearchType (new SearchTypeRequest (parsedDocument.CompilationUnit, returnType, callingType));
+					IType type = ctx != null ? ctx.SearchType (new SearchTypeRequest (unit, returnType, callingType)) : unit.GetType (returnType.FullName, returnType.GenericArguments.Count);
 					if (type != null)
 						nameSegments.ForEach (segment => HighlightSegment (startChunk, segment, "keyword.semantic.type"));
 				}
