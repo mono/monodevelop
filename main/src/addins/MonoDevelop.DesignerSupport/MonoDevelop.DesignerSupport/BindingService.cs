@@ -180,7 +180,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			IList<IType>[] pars = new IList<IType>[matchMeth.Parameters.Count];
 			for (int i = 0; i < matchMeth.Parameters.Count; i++) {
-				IType t = ctx.GetType (matchMeth.Parameters[i].ReturnType, true);
+				IType t = ctx.GetType (matchMeth.Parameters[i].ReturnType);
 				if (t != null)
 					pars[i] = new List<IType> (ctx.GetInheritanceTree (t));
 				else
