@@ -116,7 +116,6 @@ namespace MonoDevelop.AssemblyBrowser
 			this.inspectEditor.Document.ReadOnly = true;
 			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
-			SetInpectWidget ();
 			
 //			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
 			
@@ -159,6 +158,7 @@ namespace MonoDevelop.AssemblyBrowser
 				                               typeof (IMember)
 			                                  );
 			CreateColumns ();
+			SetInpectWidget ();
 			this.searchEntry.Changed += SearchEntryhandleChanged;
 			this.searchTreeview.RowActivated += SearchTreeviewhandleRowActivated;
 		}
