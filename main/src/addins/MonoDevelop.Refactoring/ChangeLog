@@ -1,5 +1,10 @@
 2009-10-08  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  fixed naming of new methods.
+
+2009-10-08  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
 	  declare local now generates a more .NET like name.
 

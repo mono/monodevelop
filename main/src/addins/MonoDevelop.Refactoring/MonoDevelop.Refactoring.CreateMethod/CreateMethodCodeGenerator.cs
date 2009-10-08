@@ -117,6 +117,17 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			}
 		}
 		
+		static bool IsValidIdentifier (string name)
+		{
+			if (string.IsNullOrEmpty (name) || !(name[0] == '_' || char.IsLetter (name[0])))
+				return false;
+			for (int i = 1; i < name.Length; i++) {
+				if (!(name[i] == '_' || char.IsLetter (name[i])))
+					return false;
+			}
+			return true;
+		}
+		
 		string fileName;
 		int selectionStart;
 		int selectionEnd;
@@ -190,12 +201,11 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				i++;
 				string output = provider.OutputNode (options.Dom, expression);
 
-				string parameterName;
-				if (Char.IsLetter (output[0]) || output[0] == '_') {
-					parameterName = output;
-				} else {
-					parameterName = "par" + i;
-				}
+				string parameterName = "par" + i;
+				int idx = output.LastIndexOf ('.');
+				string lastName = output.Substring (idx + 1); // start from 0, if '.' wasn't found
+				if (IsValidIdentifier (lastName)) 
+					parameterName = lastName;
 
 				ResolveResult resolveResult2 = resolver.Resolve (new ExpressionResult (output), options.ResolveResult.ResolvedExpression.Region.Start);
 				TypeReference typeReference = new TypeReference ((resolveResult2 != null && resolveResult2.ResolvedType != null) ? resolveResult2.ResolvedType.ToInvariantString () : "System.Object");
