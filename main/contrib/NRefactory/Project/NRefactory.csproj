@@ -132,6 +132,7 @@
     <Compile Include="Src\Ast\TypeReference.cs" />
     <Compile Include="Src\Parser\VBNet\ParamModifierList.cs" />
     <Compile Include="Src\Visitors\NodeTrackingAstVisitor.cs" />
+    <None Include="Src\Parser\gen.sh" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />

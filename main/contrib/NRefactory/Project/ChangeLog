@@ -1,3 +1,10 @@
+2009-10-08  Mike Krüger  <mkrueger@novell.com>
+
+	* NRefactory.csproj:
+	* Src/Parser/gen.sh:
+	* Src/Parser/CSharp/CSharpParser.cs: Fixed 'Bug 545291 - wrong
+	  inline compilation errors when using nullable'.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Configuration/AssemblyInfo.cs: Bump MD version.

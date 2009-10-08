@@ -456,14 +456,19 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			if (IsYieldStatement ()) {
 				return false;
 			}
-		
+			
 			if ((Tokens.TypeKW[la.kind] && Peek (1).kind != Tokens.Dot) || la.kind == Tokens.Void) {
 				return true;
 			}
 			
 			StartPeek ();
 			Token pt = la;
-			return IsTypeNameOrKWForTypeCast (ref pt) && IsIdentifierToken (pt) && Peek (1).kind != Tokens.Question;
+			bool result = IsTypeNameOrKWForTypeCast (ref pt) && IsIdentifierToken (pt);
+			if (Peek (1).kind == Tokens.Question) {
+				result &= Peek (2).kind == Tokens.Identifier;
+				result &= Peek (3).kind == Tokens.Semicolon || Peek (3).kind == Tokens.Comma || Peek (3).kind == Tokens.Assign;
+			}
+			return result;
 		}
 
 		/* True if lookahead is a type argument list (<...>) followed by
