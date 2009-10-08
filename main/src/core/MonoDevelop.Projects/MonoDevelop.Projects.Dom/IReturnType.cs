@@ -50,6 +50,11 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		object Tag {
+			get;
+			set;
+		}
+		
 		void AddTypeParameter (IReturnType type);
 	}
 	
@@ -96,8 +101,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 
-		ReturnTypeModifiers Modifiers
-		{
+		ReturnTypeModifiers Modifiers {
 			get;
 		}
 		
@@ -106,8 +110,11 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		string ToInvariantString ();
+		
 		int GetDimension (int arrayDimension);
+		
 		int[] GetDimensions ();
+		
 		string DecoratedFullName {
 			get;
 		}

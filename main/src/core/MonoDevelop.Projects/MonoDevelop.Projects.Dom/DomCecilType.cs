@@ -27,9 +27,11 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Mono.Cecil;
 using MonoDevelop.Projects.Dom;
+using System.Text;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -55,8 +57,21 @@ namespace MonoDevelop.Projects.Dom
 			name = name.Replace ('/', '.'); // nested classes are represented as A/Nested and in the dom it's just A.Nested
 			int idx = name.IndexOf('`');
 			
-			if (idx > 0)
-				return name.Substring (0, idx);
+			if (idx > 0) {
+				StringBuilder result = new StringBuilder ();
+				bool gotTypeParams = false;
+				foreach (char ch in name) {
+					if (ch == '`') {
+						gotTypeParams = true;
+						continue;
+					}
+					if (gotTypeParams && Char.IsDigit (ch))
+						continue;
+					gotTypeParams = false;
+					result.Append (ch);
+				}
+				return result.ToString ();
+			}
 			return name;
 		}
 		
@@ -97,8 +112,15 @@ namespace MonoDevelop.Projects.Dom
 			foreach (TypeReference interfaceReference in typeDefinition.Interfaces) {
 				this.AddInterfaceImplementation (DomCecilMethod.GetReturnType (interfaceReference));
 			}
-			
+			foreach (GenericParameter parameter in typeDefinition.GenericParameters) {
+				TypeParameter tp = new TypeParameter (parameter.FullName);
+				tp.Variance = (TypeParameterVariance)(((uint)parameter.Attributes) & 3);
+				foreach (TypeReference tr in parameter.Constraints)
+					tp.AddConstraint (DomCecilMethod.GetReturnType (tr));
+				AddTypeParameter (tp);
+			}
 		}
+		
 		bool loadInternal;
 		bool isInitialized = false;
 		void CheckInitialization ()
@@ -144,15 +166,10 @@ namespace MonoDevelop.Projects.Dom
 			foreach (TypeDefinition nestedType in typeDefinition.NestedTypes) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (nestedType.Attributes)))
 					continue;
-				base.Add (new DomCecilType (nestedType, loadInternal));
-			}
-			
-			foreach (GenericParameter parameter in typeDefinition.GenericParameters) {
-				TypeParameter tp = new TypeParameter (parameter.FullName);
-				tp.Variance = (TypeParameterVariance)(((uint)parameter.Attributes) & 3);
-				foreach (TypeReference tr in parameter.Constraints)
-					tp.AddConstraint (DomCecilMethod.GetReturnType (tr));
-				AddTypeParameter (tp);
+				DomCecilType innerType = new DomCecilType (nestedType, loadInternal);
+				base.Add (innerType);
+				if (typeParameters != null && innerType.typeParameters != null)
+					innerType.typeParameters.RemoveAll (para => typeParameters.Any (myPara => myPara.Name == para.Name));
 			}
 		}
 		
@@ -161,7 +178,6 @@ namespace MonoDevelop.Projects.Dom
 				return typeDefinition;
 			}
 		}
-				
 		
 		public static MonoDevelop.Projects.Dom.Modifiers GetModifiers (Mono.Cecil.TypeAttributes attr)
 		{

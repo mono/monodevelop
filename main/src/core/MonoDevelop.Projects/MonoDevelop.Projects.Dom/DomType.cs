@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects.Dom
 		static readonly ReadOnlyCollection<IReturnType> emptyTypeList = new List<IReturnType> ().AsReadOnly ();
 		static readonly IList<IMember> emptyMembers = new List<IMember> ();
 		
-		List<ITypeParameter> typeParameters      = null;
+		protected List<ITypeParameter> typeParameters      = null;
 		List<IMember> members                    = null;
 		List<IReturnType> implementedInterfaces  = null;
 		

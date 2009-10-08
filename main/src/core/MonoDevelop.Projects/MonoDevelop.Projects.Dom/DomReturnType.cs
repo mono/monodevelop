@@ -50,6 +50,13 @@ namespace MonoDevelop.Projects.Dom
 				return genericArguments.AsReadOnly ();
 			}
 		}
+		
+		
+		public object Tag {
+			get;
+			set;
+		}
+		
 		public ReturnTypePart ()
 		{
 		}
@@ -125,6 +132,15 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly IReturnType String;
 		public static readonly IReturnType Char;
 		public static readonly IReturnType Bool;
+		
+		public object Tag {
+			get {
+				return parts[parts.Count - 1].Tag;
+			}
+			set {
+				parts[parts.Count - 1].Tag = value;
+			}
+		}
 		
 		static DomReturnType ()
 		{

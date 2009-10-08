@@ -80,8 +80,23 @@ namespace MonoDevelop.Projects.Dom
 			if (typeReference is Mono.Cecil.GenericInstanceType) {
 				Mono.Cecil.GenericInstanceType genType = (Mono.Cecil.GenericInstanceType)typeReference;
 				DomReturnType result = GetReturnType (genType.ElementType);
+				
 				foreach (TypeReference typeRef in genType.GenericArguments) {
-					result.AddTypeParameter (GetReturnType (typeRef));
+					DomReturnType param = GetReturnType (typeRef);
+					
+					foreach (IReturnTypePart part in result.Parts) {
+						if (part.Tag is TypeDefinition) {
+							TypeDefinition typeDef = (TypeDefinition)part.Tag;
+							foreach (TypeReference typeParam in typeDef.GenericParameters) {
+								if (typeParam.Name == param.Name) {
+									part.AddTypeParameter (param);
+									goto skip;
+								}
+							}
+						}
+					}
+					result.AddTypeParameter (param);
+				skip:;
 				}
 				return result;
 			}
@@ -105,6 +120,21 @@ namespace MonoDevelop.Projects.Dom
 			}
 			if (typeReference is Mono.Cecil.ReferenceType)
 				return GetReturnType (((Mono.Cecil.ReferenceType)typeReference).ElementType);
+			
+			if (typeReference is Mono.Cecil.TypeDefinition) {
+				Mono.Cecil.TypeDefinition typeDefinition = (Mono.Cecil.TypeDefinition)typeReference;
+				DomReturnType result;
+				if (typeDefinition.DeclaringType != null) {
+					result = GetReturnType (typeDefinition.DeclaringType);
+					result.Parts.Add (new ReturnTypePart (typeDefinition.Name));
+					result.Tag = typeDefinition;
+				} else {
+					result = new DomReturnType (typeDefinition.Name);
+					result.Namespace = typeDefinition.Namespace;
+					result.Tag = typeDefinition;
+				}
+				return result;
+			}
 			
 			return new DomReturnType (DomCecilType.RemoveGenericParamSuffix (typeReference.FullName)); 
 		}
