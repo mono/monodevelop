@@ -1923,5 +1923,33 @@ namespace TestMe
 		}
 		
 		
+		/// <summary>
+		/// Bug 545189 - C# resolver bug
+		/// </summary>
+		[Test()]
+		public void TestBug545189A ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+class A<T>
+{
+	class B
+	{
+		public T field;
+	}
+}
+
+public class Foo
+{
+	public void Bar ()
+	{
+		A<Bar>.B baz = new A<Bar>.B ();
+		$baz.field.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
+		}
 	}
 }
