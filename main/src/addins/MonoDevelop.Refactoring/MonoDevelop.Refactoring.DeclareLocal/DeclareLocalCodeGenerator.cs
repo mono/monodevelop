@@ -291,8 +291,10 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		static string CreateVariableName (MonoDevelop.Projects.Dom.IReturnType returnType)
 		{
 			if (returnType == null)
-				return "aVar";
-			return "a" + returnType.Name;
+				return "i";
+			if (Char.IsLower (returnType.Name[0]))
+				return "a" + returnType.Name;
+			return Char.ToLower (returnType.Name[0]) + returnType.Name.Substring (1);
 		}
 
 	}
