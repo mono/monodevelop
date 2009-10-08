@@ -1,3 +1,7 @@
+2009-10-08  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: removed line update.
+
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed document update

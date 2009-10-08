@@ -427,7 +427,6 @@ namespace Mono.TextEditor
 						
 					}
 				});
-				Document.CommitLineUpdate (Caret.Line);
 			}
 			caretBlinkStatus++;
 		}
