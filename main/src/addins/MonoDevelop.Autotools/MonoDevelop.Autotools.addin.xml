@@ -47,19 +47,23 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Category _name = "Autotools" id = "Autotools">
-		<Command id = "MonoDevelop.Autotools.Commands.GenerateFiles"
-			_label = "Generate Makefiles..."
-			description="Generate Makefiles for a solution"/>
-		<Command id = "MonoDevelop.Autotools.Commands.SynchWithMakefile"
-			type="check"
-			_label = "Include in Synchronized Makefile" />
-		</Category>
+		<Condition id="Platform" value="!windows">
+			<Category _name = "Autotools" id = "Autotools">
+			<Command id = "MonoDevelop.Autotools.Commands.GenerateFiles"
+				_label = "Generate Makefiles..."
+				description="Generate Makefiles for a solution"/>
+			<Command id = "MonoDevelop.Autotools.Commands.SynchWithMakefile"
+				type="check"
+				_label = "Include in Synchronized Makefile" />
+			</Category>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
 		<Condition id="ItemType" value="Solution|Project">
-			<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
+			<Condition id="Platform" value="!windows">
+				<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
+			</Condition>
 		</Condition>
 	</Extension>
 
@@ -78,11 +82,15 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/DeployService/PackageBuilders">
-		<Class class="MonoDevelop.Autotools.TarballDeployTarget" />
+		<Condition id="Platform" value="!windows">
+			<Class class="MonoDevelop.Autotools.TarballDeployTarget" />
+		</Condition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Deployment/PackageBuilderEditors">
-		<Class class="MonoDevelop.Autotools.TarballTargetEditor" />
+		<Condition id="Platform" value="!windows">
+			<Class class="MonoDevelop.Autotools.TarballTargetEditor" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
@@ -106,7 +114,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
-		<Application id = "generate-makefiles" class = "MonoDevelop.Autotools.MakefileGeneratorTool" description = "Makefile generator tool"/>
+		<Condition id="Platform" value="!windows">
+			<Application id = "generate-makefiles" class = "MonoDevelop.Autotools.MakefileGeneratorTool" description = "Makefile generator tool"/>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Autotools/MakefileHandlers">

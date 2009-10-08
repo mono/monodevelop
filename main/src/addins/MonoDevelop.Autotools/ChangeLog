@@ -1,3 +1,8 @@
+2009-10-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Autotools.addin.xml: Disabled autotools and
+	  makefile generation on windows.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
