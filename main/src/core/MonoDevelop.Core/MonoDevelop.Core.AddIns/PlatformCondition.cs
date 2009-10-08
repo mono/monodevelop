@@ -34,20 +34,27 @@ namespace MonoDevelop.Core.AddIns
 		public override bool Evaluate (NodeElement conditionNode)
 		{
 			string plat = conditionNode.GetAttribute ("value");
+			bool negate = false;
+			if (plat.StartsWith ("!")) {
+				plat = plat.Substring (1);
+				negate = true;
+			}
+			bool result;
 			switch (plat.ToLower ()) {
 				case "windows":
 				case "win32":
-					return PropertyService.IsWindows;
+					result = PropertyService.IsWindows; break;
 				case "mac":
 				case "macos":
 				case "macosx":
-					return PropertyService.IsMac;
+					result = PropertyService.IsMac; break;
 				case "unix":
 				case "linux":
-					return !PropertyService.IsMac && !PropertyService.IsWindows;
+					result = !PropertyService.IsMac && !PropertyService.IsWindows; break;
 				default:
-					return false;
+					result = false; break;
 			}
+			return negate ? !result : result;
 		}
 	}
 }
