@@ -40,8 +40,7 @@ MONO_VERSION_MAJOR="$(echo $MONO_VERSION | cut -f1 -d.)"
 MONO_VERSION_MINOR="$(echo $MONO_VERSION | cut -f2 -d.)"
 if [ -z "$MONO_VERSION" ] \
 	|| [ $MONO_VERSION_MAJOR -lt $REQUIRED_MAJOR ] \
-	|| [ $MONO_VERSION_MAJOR -eq $REQUIRED_MAJOR -a $MONO_VERSION_MINOR -lt $REQUIRED_MINOR ] \
-	|| [ ! -f '/Library/Frameworks/Mono.framework/Versions/Current/updateinfo' ]
+	|| [ $MONO_VERSION_MAJOR -eq $REQUIRED_MAJOR -a $MONO_VERSION_MINOR -lt $REQUIRED_MINOR ] 
 then
 	osascript \
 	-e "set question to display dialog \"$VERSION_MSG\" with title \"$VERSION_TITLE\" buttons {\"Cancel\", \"Download...\"} default button 2" \
@@ -50,6 +49,18 @@ then
 	echo "$VERSION_MSG"
 	exit 1
 fi
+
+# this check should be removed when we require 2.6, which will have an updateinfo
+if [ ! -f '/Library/Frameworks/Mono.framework/Versions/Current/updateinfo' ]; then \
+	STABILITY_MSG="MonoDevelop requires Mono version 2.4.2.3_6 or later for important stability fixes."
+	osascript \
+	-e "set question to display dialog \"$STABILITY_MSG\" with title \"$VERSION_TITLE\" buttons {\"Cancel\", \"Download...\"} default button 2" \
+	-e "if button returned of question is equal to \"Download...\" then open location \"$DOWNLOAD_URL\""
+	echo "$VERSION_TITLE"
+	echo "$VERSION_MSG"
+	exit 1
+fi
+
 
 ## use an app-specific registry if possible
 #if [ -w "$DIR" ]; then
