@@ -1,3 +1,8 @@
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
+	* po.mdproj: Add Empty "Build" and "Clean" targets,
+	workarounds to make it work with xbuild.
+
 2009-10-06  Mike Krüger  <mkrueger@novell.com>
 
 	* de.po: Fixed typo.

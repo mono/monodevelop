@@ -1,3 +1,8 @@
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
+	* libsteticui.csproj: Mark Mono.Cecil project referece
+	as private.
+
 2009-09-10  Christian Hergert  <chris@dronelabs.com>
 
 	* libsteticui/libsteticui.dll.config: Use quartz on osx.

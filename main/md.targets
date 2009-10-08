@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+	<ItemGroup>
+		<SearchPathFiles Include="$(SolutionDir)\build\AddIns\**\*.dll"/>
+	</ItemGroup>
+
+	<Target Name="BeforeResolveReferences">
+		<RemoveDuplicates Inputs="@(SearchPathFiles->'%(RootDir)%(Directory)')">
+			<Output TaskParameter="Filtered" ItemName="SearchPath" />
+		</RemoveDuplicates>
+
+		<CreateProperty Value="@(SearchPath);$(SolutionDir)\build\bin;$(AssemblySearchPaths)">
+			<Output TaskParameter="Value" PropertyName="AssemblySearchPaths" />
+		</CreateProperty>
+	</Target>
+</Project>

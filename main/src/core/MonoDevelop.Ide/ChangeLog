@@ -1,3 +1,9 @@
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.csproj: Add options/* as "Data" items,
+	and add a "AfterBuild" target to copy them to build\data.
+	This matches the makefile behavior.
+
 2009-10-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Add a tab

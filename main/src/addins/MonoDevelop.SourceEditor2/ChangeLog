@@ -1,3 +1,7 @@
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.SourceEditor.csproj: Add md.targets .
+
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/AutoSave.cs: fixed 'Bug 541726 -

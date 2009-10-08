@@ -580,6 +580,25 @@
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
+
+	<Data Include="options/DefaultEditingLayout.xml">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Data>
+	<Data Include="options/MonoDevelopProperties.xml">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Data>
+	<Data Include="options/MonoDevelop-templates.xml ">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Data>
+	<Data Include="options/MonoDevelop-tools.xml">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Data>
+	<Data Include="options/StandardHeader.xml">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Data>
+	<Data Include="options/TipsOfTheDay.xml">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Data>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -597,6 +616,9 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <Target Name="AfterBuild">
+	<Copy SourceFiles="@(Data)" DestinationFolder="..\..\..\build\data\%(Data.RelativeDir)"/>
+  </Target>
   <ItemGroup>
     <Folder Include="MonoDevelop.Ide.CodeFormatting\" />
     <Folder Include="MonoDevelop.Ide.Execution\" />

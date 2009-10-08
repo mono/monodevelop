@@ -1,3 +1,9 @@
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
+	* GnomePlatform.csproj: Mark gtk-sharp/pango-sharp with
+	SpecificVersion=false. Add 'GnomePlatform.dll.config' to
+	the project, this is already there in the makefile.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

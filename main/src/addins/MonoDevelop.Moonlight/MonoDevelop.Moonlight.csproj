@@ -168,4 +168,5 @@
     </MonoDevelop>
     <VisualStudio />
   </ProjectExtensions>
+  <Import Project="..\..\..\md.targets"/>
 </Project>

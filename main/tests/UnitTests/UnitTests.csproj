@@ -217,6 +217,7 @@
     <Compile Include="MonoDevelop.AspNet\AspNetTesting.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="../../md.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

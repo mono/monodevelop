@@ -1,3 +1,8 @@
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.AssemblyBrowser.csproj: Mark the Refactoring
+	project reference as Private.
+
 2009-10-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs: set

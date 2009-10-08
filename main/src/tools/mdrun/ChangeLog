@@ -1,3 +1,7 @@
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
+	* mdrun.csproj: Add 'app.config'.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* src/mdrun.cs: Disable logging if verbose is not specified.

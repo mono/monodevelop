@@ -179,4 +179,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Import Project="..\..\..\..\md.targets"/>
 </Project>
