@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public abstract class ProjectDom
 	{	
-		protected List<ProjectDom> references;
+		protected List<ProjectDom> references; 
 		Dictionary<string, IType> instantiatedTypeCache = new Dictionary<string, IType> ();
 		
 		public Project Project;
@@ -497,11 +497,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			if (returnType.Type != null)  {
-				if (returnType.GenericArguments.Count == 0)
+				if (!returnType.Parts.Any (part => part.GenericArguments.Count != 0))
 					return returnType.Type;
-				return CreateInstantiatedGenericType (returnType.Type, returnType.GenericArguments);
+				List<IReturnType> aggregatedGenerics = new List<IReturnType> ();
+				foreach (IReturnTypePart part in returnType.Parts) {
+					aggregatedGenerics.AddRange (part.GenericArguments);
+				}
+				return CreateInstantiatedGenericType (returnType.Type, aggregatedGenerics);
 			}
-			
+/*			
 			IReturnTypePart part = returnType.Parts [0];
 			string name = !string.IsNullOrEmpty (returnType.Namespace) ? returnType.Namespace + "." + part.Name : part.Name;
 			IType ptype = GetType (name, part.GenericArguments, true, true);
@@ -518,11 +522,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 					ptype = CreateInstantiatedGenericType (ptype, part.GenericArguments);
 			}
 			return ptype;
-			
-			/*
-			IType result = GetType (((DomReturnType)returnType).DecoratedFullName, returnType.GenericArguments, true, true);
-			return result;
 			*/
+			return GetType (((DomReturnType)returnType).DecoratedFullName, returnType.GenericArguments, true, true);
 			
 		}
 		/*

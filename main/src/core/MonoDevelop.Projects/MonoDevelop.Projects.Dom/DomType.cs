@@ -616,15 +616,20 @@ namespace MonoDevelop.Projects.Dom
 		{
 			// This method is now internal. The public one has been moved to ProjectDom, which take cares of caching
 			// instantiated generic types.
-			
 			if (type is InstantiatedType)
 				return type;
 			string name = GetInstantiatedTypeName (type.Name, genericArguments);
 			GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver ();
 			if (genericArguments != null) {
-				string fullTypeName = ((DomType)type).DecoratedFullName;
-				for (int i = 0; i < type.TypeParameters.Count && i < genericArguments.Count; i++)
-					resolver.Add (fullTypeName + "." + type.TypeParameters[i].Name, genericArguments[i]);
+				int j = genericArguments.Count - 1;
+				IType curType = type;
+				while (curType != null) {
+					string fullTypeName = curType.DecoratedFullName;
+					for (int i = curType.TypeParameters.Count - 1; i >= 0 && j >= 0; i--, j--) {
+						resolver.Add (fullTypeName + "." + curType.TypeParameters[i].Name, genericArguments[j]);
+					}
+					curType = curType.DeclaringType;
+				}
 			}
 			InstantiatedType result = (InstantiatedType) type.AcceptVisitor (resolver, type);
 			if (result.typeParameters != null)

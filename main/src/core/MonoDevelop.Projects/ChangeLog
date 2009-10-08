@@ -1,6 +1,12 @@
 2009-10-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed unit
+	  tests / worked on 545189
+
+2009-10-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/IReturnType.cs:
 	* MonoDevelop.Projects.Dom/DomCecilType.cs:
 	* MonoDevelop.Projects.Dom/DomReturnType.cs:
