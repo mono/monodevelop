@@ -119,6 +119,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}
 		
+		public static void SaveTemplate (CodeTemplate template)
+		{
+			if (!Directory.Exists (TemplatePath))
+				Directory.CreateDirectory (TemplatePath);
+			SaveTemplate (template, Path.Combine (TemplatePath, template.Shortcut + ".template.xml"));
+		}
+		/*
 		public static void SaveTemplates ()
 		{
 			if (!Directory.Exists (TemplatePath))
@@ -133,7 +140,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				SaveTemplate (template, Path.Combine (TemplatePath, template.Shortcut + ".template.xml"));
 			}
-		}
+		}*/
 		
 		static List<CodeTemplate> LoadTemplates (XmlReader reader)
 		{

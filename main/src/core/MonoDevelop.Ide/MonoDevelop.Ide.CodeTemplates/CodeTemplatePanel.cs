@@ -119,14 +119,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 			}
 		}
-
+		List<CodeTemplate> templatesToSave = new List<CodeTemplate> ();
 		void ButtonEditClicked (object sender, EventArgs e)
 		{
 			var template = GetSelectedTemplate ();
 			if (template != null) {
+				templatesToSave.Add (template);
 				var editDialog = new EditTemplateDialog (template, false);
 				editDialog.TransientFor = this.Toplevel as Gtk.Window;
-				editDialog.Run ();
+				if (ResponseType.Ok == (ResponseType)editDialog.Run ())
+					templatesToSave.Add (template);
 				editDialog.Destroy ();
 			}
 		}
@@ -149,14 +151,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (ResponseType.Ok == (ResponseType)editDialog.Run ()) {
 				InsertTemplate (newTemplate);
 				templates.Add (newTemplate);
+				templatesToSave.Add (newTemplate);
 			}
 			editDialog.Destroy ();
 		}
 		
 		public void Store ()
 		{
+			templatesToSave.ForEach (template => CodeTemplateService.SaveTemplate (template));
+			templatesToSave.Clear ();
 			CodeTemplateService.Templates = templates;
-			CodeTemplateService.SaveTemplates ();
 		}
 		
 		void RenderIcon (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)

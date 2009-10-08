@@ -1,3 +1,9 @@
+2009-10-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs: Only
+	  changed templates are saved by the panel.
+
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.csproj: Add options/* as "Data" items,
