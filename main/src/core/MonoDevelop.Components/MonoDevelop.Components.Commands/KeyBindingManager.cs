@@ -805,7 +805,7 @@ namespace MonoDevelop.Components.Commands
 			return (char)0;
 		}
 		
-		static Gdk.Key AppleMapSymbolToKey (char ch)
+/*		static Gdk.Key AppleMapSymbolToKey (char ch)
 		{
 			// unicode codes from http://macbiblioblog.blogspot.com/2005/05/special-key-symbols.html
 			// unmapped:
@@ -860,7 +860,7 @@ namespace MonoDevelop.Components.Commands
 			}
 			return (Gdk.Key)0;
 		}
-		
+		*/
 		#endregion
 	}
 	

@@ -54,7 +54,6 @@ namespace MonoDevelop.Components.Commands
 		Stack delegatorStack = new Stack ();
 		
 		HashSet<object> visitedTargets = new HashSet<object> ();
-		bool inGlobalChain;
 		
 		bool disposed;
 		bool toolbarUpdaterRunning;
@@ -887,7 +886,6 @@ namespace MonoDevelop.Components.Commands
 		{
 			delegatorStack.Clear ();
 			visitedTargets.Clear ();
-			inGlobalChain = false;
 			handlerFoundInMulticast = false;
 			object cmdTarget;
 			if (initialTarget != null)
@@ -895,7 +893,6 @@ namespace MonoDevelop.Components.Commands
 			else {
 				cmdTarget = GetActiveWidget (rootWidget);
 				if (cmdTarget == null) {
-					inGlobalChain = true;
 					cmdTarget = globalHandlerChain;
 				}
 			}
@@ -923,9 +920,6 @@ namespace MonoDevelop.Components.Commands
 			else
 				cmdTarget = null;
 			
-//			if (cmdTarget != null && visitedTargets.Contains (cmdTarget) && !inGlobalChain)
-//				Console.WriteLine ("target already visited:" + cmdTarget);
-			
 			if (cmdTarget == null || !visitedTargets.Add (cmdTarget)) {
 				if (delegatorStack.Count > 0) {
 					ICommandDelegatorRouter del = (ICommandDelegatorRouter) delegatorStack.Pop ();
@@ -935,7 +929,6 @@ namespace MonoDevelop.Components.Commands
 					if (cmdTarget != null)
 						return cmdTarget;
 				}
-				inGlobalChain = true;
 				return globalHandlerChain;
 			} else
 				return cmdTarget;

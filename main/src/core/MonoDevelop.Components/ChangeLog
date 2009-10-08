@@ -1,3 +1,11 @@
+2009-10-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/ConsoleView.cs:
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.PropertyGrid/PropertyGrid.cs:
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Fix
+	  warnings.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

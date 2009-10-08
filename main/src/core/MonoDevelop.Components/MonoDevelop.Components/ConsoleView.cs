@@ -43,7 +43,6 @@ namespace MonoDevelop.Components
 		bool inBlock = false;
 		string blockText = "";
 	
-		bool reset_clears_history;
 		bool auto_indent;
 		
 		TextView textView;

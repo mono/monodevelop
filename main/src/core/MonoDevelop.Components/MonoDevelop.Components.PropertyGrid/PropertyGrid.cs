@@ -376,16 +376,6 @@ namespace MonoDevelop.Components.PropertyGrid
 		}
 		
 		#endregion
-		
-		//for PropertyTab images
-		private Gdk.Pixbuf ImageToPixbuf(System.Drawing.Image image)
-		{
-			using (MemoryStream stream = new MemoryStream ()) {
-				image.Save (stream, System.Drawing.Imaging.ImageFormat.Png);
-				stream.Position = 0;
-				return new Gdk.Pixbuf (stream);
-			}
-		}
 	}
 	
 	class TabRadioToolButton: RadioToolButton
