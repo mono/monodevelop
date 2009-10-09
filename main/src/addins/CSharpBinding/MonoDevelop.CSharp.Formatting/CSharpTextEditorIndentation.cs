@@ -86,11 +86,13 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		void RunFormatterAt (int offset)
 		{
-			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null) {
+			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null && Document != null) {
 				//	textEditorData.Document.TextReplaced -= TextCut;
 				ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
 				if (dom == null)
 					dom = ProjectDomService.GetFileDom (Document.FileName);
+				if (dom == null)
+					return;
 				DocumentLocation loc = textEditorData.Document.OffsetToLocation (offset);
 				DomLocation location = new DomLocation (loc.Line, loc.Column);
 				CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
