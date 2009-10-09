@@ -99,6 +99,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			modifiers.AppendValues ("protected");
 			modifiers.AppendValues ("internal");
 			comboboxModifiers.Model = modifiers;
+			comboboxModifiers.Active = PropertyService.Get<int> ("MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.DefaultModifier");
 		}
 		
 		void FillStore ()
@@ -153,6 +154,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				properties.Modifiers = ICSharpCode.NRefactory.Ast.Modifiers.Internal;
 				break;
 			}
+			PropertyService.Set ("MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.DefaultModifier", comboboxModifiers.Active);
 		}
 		
 		void OnOKClicked (object sender, EventArgs e)
@@ -161,6 +163,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			List<Change> changes = extractMethod.PerformChanges (options, properties);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
 			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+			
 			((Widget)this).Destroy ();
 		}
 		
