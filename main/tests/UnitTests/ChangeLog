@@ -1,5 +1,10 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/DeclareLocalTests.cs: Updated
+	  declare local test.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects/MSBuildTests.cs:
 	* MonoDevelop.CSharpBinding/MemberTests.cs:
 	* MonoDevelop.CSharpBinding/TopLevelTests.cs:
