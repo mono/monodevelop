@@ -47,6 +47,7 @@ using MonoDevelop.DesignerSupport;
 //I initially aliased this as SE, which (unintentionally) looked a little odd with the XDOM types :-)
 using S = MonoDevelop.Xml.StateEngine; 
 using MonoDevelop.AspNet.StateEngine;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -115,7 +116,7 @@ namespace MonoDevelop.AspNet.Gui
 
 			//simple completion for ASP.NET expressions
 			if (Tracker.Engine.CurrentState is AspNetExpressionState) {
-				using (var completion = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument)) {
+				using (var completion = new CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument)) {
 					return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
 				}
 /*				AspNetExpression expr = Tracker.Engine.Nodes.Peek () as AspNetExpression;
@@ -141,7 +142,7 @@ namespace MonoDevelop.AspNet.Gui
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (Tracker.Engine.CurrentState is AspNetExpressionState) {
-				using (var completion = new MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument)) {
+				using (var completion = new CSharpTextEditorCompletion (MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument)) {
 					return completion.HandleParameterCompletion (completionContext, completionChar);
 				}
 			}

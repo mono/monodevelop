@@ -1,3 +1,8 @@
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Track
+	  namespace renamings.
+
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.AspNet.csproj: Mark *-sharp references,
