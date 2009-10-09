@@ -816,7 +816,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 			sb.Length = 0;
 			StringBuilder curWord = new StringBuilder();
-			
 			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
@@ -833,9 +832,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					curWord.Length = 0;
 					if (specialCommentHash.ContainsKey(tag)) {
 						Location p = new Location(Col, Line);
-						string comment = ch + ReadToEndOfLine();
+						string comment = ch + ReadToEndOfLine(false);
 						this.TagComments.Add(new TagComment(tag, comment, isAtLineBegin, p, new Location(Col, Line)));
-						sb.Append(comment);
 						break;
 					}
 				}

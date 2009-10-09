@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -299,7 +299,12 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected string ReadToEndOfLine()
 		{
-			sb.Length = 0;
+			return ReadToEndOfLine (true);
+		}
+		protected string ReadToEndOfLine(bool resetBuilder)
+		{
+			if (resetBuilder)
+				sb.Length = 0;
 			int nextChar;
 			while ((nextChar = reader.Read()) != -1) {
 				char ch = (char)nextChar;

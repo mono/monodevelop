@@ -1,3 +1,9 @@
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Lexer/CSharp/Lexer.cs:
+	* Src/Lexer/AbstractLexer.cs: Fixed comment text, when comment
+	  contains a tag.
+
 2009-10-08  Mike Krüger  <mkrueger@novell.com>
 
 	* NRefactory.csproj:
