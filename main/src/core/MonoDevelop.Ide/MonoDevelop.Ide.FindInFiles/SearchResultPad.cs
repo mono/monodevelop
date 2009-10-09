@@ -63,7 +63,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				widget.AsyncOperation = value;
 			}
 		}
-		
+		public bool FocusPad {
+			get;
+			set;
+		}
 		public int InstanceNum {
 			get;
 			set;
@@ -115,6 +118,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			widget.ShowStatus (" " + GettextCatalog.GetString("Search completed") + " - " + 
 				string.Format (GettextCatalog.GetPluralString("{0} match.", "{0} matches.", widget.ResultCount), widget.ResultCount));
 			widget.EndProgress ();
+			if (FocusPad) 
+				widget.FocusPad ();
 		}
 		
 		public void WriteText (string text)

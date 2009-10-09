@@ -1,3 +1,10 @@
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Select
+	  first search result, if pad is auto focused.
+
 2009-10-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:

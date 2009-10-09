@@ -185,6 +185,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			store.SetSortFunc (1, new TreeIterCompareFunc (CompareLineNumbers));
 			store.SetSortFunc (3, new TreeIterCompareFunc (CompareFilePaths));
 			treeviewSearchResults.ThawChildNotify ();
+			
+		}
+		public void FocusPad ()
+		{
+			treeviewSearchResults.GrabFocus ();
+			Gtk.TreeIter iter;
+			if (store.GetIterFirst (out iter)) 
+				treeviewSearchResults.Selection.SelectIter (iter);
 		}
 		
 		public void Reset ()

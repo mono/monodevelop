@@ -203,7 +203,8 @@ namespace MonoDevelop.Ide.Gui
 			if (instanceNum > 0)
 				title += " (" + (instanceNum+1) + ")";
 			
-			SearchResultPad monitorPad = new SearchResultPad (instanceNum);
+			SearchResultPad monitorPad = new SearchResultPad (instanceNum) { FocusPad = focusPad };
+			
 			pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", MonoDevelop.Core.Gui.Stock.FindIcon);
 			pad.Sticky = true;
 			searchMonitors.Add (pad);
