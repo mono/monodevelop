@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.doc      = doc;
 			this.template = template;
 			this.CompletionText = "test";
-			this.Icon        = "md-template";
+			this.Icon        = template.Icon;
 			this.DisplayText = template.Shortcut;
 			this.Description = template.Shortcut + Environment.NewLine + template.Description;
 		}

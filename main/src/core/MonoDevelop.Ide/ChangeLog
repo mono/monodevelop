@@ -1,5 +1,12 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
+	  Added icon for code surround with templates.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.addin.xml:
 	* MonoDevelop.Ide.Commands/TextEditorCommands.cs:
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:

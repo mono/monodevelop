@@ -99,6 +99,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
+		public string Icon {
+			get {
+				return Code.Contains ("$selected$") ? "md-template-surroundwith" : "md-template";
+			}
+		}
+		
 		Dictionary<string, CodeTemplateVariable> variableDecarations = new Dictionary<string, CodeTemplateVariable> ();
 		
 		public IEnumerable<CodeTemplateVariable> Variables {
