@@ -197,6 +197,7 @@ RES =  \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
 	icons/template-16.png \
+	icons/template-surroundwith-16.png \
 	icons/uncomment.png \
 	icons/user-package.png \
 	icons/visibility-internal-16.png \

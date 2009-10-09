@@ -1,3 +1,10 @@
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* icons/template-surroundwith-16.png: Added new icon.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

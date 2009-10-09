@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Core.Gui</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Core.Gui</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,30 +41,39 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="Mono.Addins.Gui, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>mono-addins-gui</Package>
     </Reference>
     <Reference Include="Mono.Addins.Setup, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>mono-addins-setup</Package>
     </Reference>
     <Reference Include="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glade-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>pango-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>atk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gdk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -84,7 +94,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Base.glade" />
+    <EmbeddedResource Include="Base.glade">
+      <LogicalName>Base.glade</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\ExecutionMarker.png">
       <LogicalName>ExecutionMarker.png</LogicalName>
     </EmbeddedResource>
@@ -211,7 +223,9 @@
     <EmbeddedResource Include="icons\visual-studio.png">
       <LogicalName>visual-studio.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Core.Gui.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Core.Gui.addin.xml">
+      <LogicalName>MonoDevelop.Core.Gui.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\Icons.24x24.SaveAllIcon">
       <LogicalName>Icons.24x24.SaveAllIcon</LogicalName>
     </EmbeddedResource>
@@ -478,6 +492,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\sort-namespace-16.png">
       <LogicalName>sort-namespace-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\template-surroundwith-16.png">
+      <LogicalName>template-surroundwith-16.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
