@@ -1,5 +1,11 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Fixed 'Bug 545632 - The flag 'generate method comment' in
+	  refactoring Create method does nothing'.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:
 	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: Fixed
 	  'Bug 545671 - Class rename changes wrong filename/classname
