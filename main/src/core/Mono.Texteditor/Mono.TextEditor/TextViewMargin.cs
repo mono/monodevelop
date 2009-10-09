@@ -127,6 +127,12 @@ namespace Mono.TextEditor
 			markerLayout = new Pango.Layout (textEditor.PangoContext);
 			
 			textEditor.Document.EndUndo += UpdateBracketHighlighting;
+			textEditor.Document.Undone += delegate {
+				UpdateBracketHighlighting (this, EventArgs.Empty);
+			};
+			textEditor.Document.Redone += delegate {
+				UpdateBracketHighlighting (this, EventArgs.Empty);
+			};
 			Caret.PositionChanged += UpdateBracketHighlighting;
 		}
 		

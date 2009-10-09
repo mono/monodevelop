@@ -1,3 +1,8 @@
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Update bracket
+	  highlighting on undo/redo.
+
 2009-10-08  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: removed line update.
