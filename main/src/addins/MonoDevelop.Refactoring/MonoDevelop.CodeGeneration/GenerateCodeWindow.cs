@@ -76,7 +76,6 @@ namespace MonoDevelop.CodeGeneration
 		GenerateCodeWindow (CodeGenerationOptions options, MonoDevelop.Projects.Gui.Completion.CodeCompletionContext completionContext) : base(Gtk.WindowType.Toplevel)
 		{
 			this.options = options;
-			Move (completionContext.TriggerXCoord, completionContext.TriggerYCoord);
 			this.Build ();
 			scrolledwindow1.Child = treeviewGenerateActions;
 			scrolledwindow1.ShowAll ();
@@ -125,6 +124,8 @@ namespace MonoDevelop.CodeGeneration
 			BorderBox messageArea = new BorderBox ();
 			messageArea.Add (vbox1);
 			this.Add (messageArea);
+			this.ShowAll ();
+			Move (completionContext.TriggerXCoord, completionContext.TriggerYCoord);
 		}
 		
 		void Populate (List<ICodeGenerator> validGenerators)
@@ -170,7 +171,6 @@ namespace MonoDevelop.CodeGeneration
 			
 			var window = new GenerateCodeWindow (options, completionContext);
 			window.Populate (validGenerators);
-			window.ShowAll ();
 		}
 		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)

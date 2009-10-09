@@ -1,5 +1,10 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs: Call move
+	  after show.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
 	  Fixed 'Bug 545119 - Refactor -> "Extract Method..." removes
 	  comments and new lines'.
