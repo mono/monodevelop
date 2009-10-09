@@ -158,7 +158,7 @@ namespace MonoDevelop.SourceEditor
 
 				if (!string.IsNullOrEmpty (doc)) {
 					s.Append ("\n<small>");
-					s.Append (AmbienceService.GetDocumentationMarkup (doc));
+					s.Append (AmbienceService.GetDocumentationMarkup ( "<summary>" + doc +  "</summary>"));
 					s.Append ("</small>");
 				}
 			}

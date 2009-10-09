@@ -1,5 +1,10 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Fixed xml
+	  documentation summary markup.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor.addin.xml: Merged code template
 	  windows.
 
