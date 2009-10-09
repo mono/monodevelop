@@ -6,4 +6,4 @@ using System.Reflection;
 [assembly: AssemblyTitle ("Subversion support for the Version Control Add-in")]
 [assembly: AssemblyDescription ("Subversion support for the Version Control Add-in")]
 [assembly: AssemblyVersion ("2.1.1")]
-[assembly: AssemblyCopyright ("GPL")]
+[assembly: AssemblyCopyright ("LGPL")]
