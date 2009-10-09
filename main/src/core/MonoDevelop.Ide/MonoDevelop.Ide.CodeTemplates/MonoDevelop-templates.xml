@@ -834,7 +834,7 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="object" isIdentifier="true">
+			<Variable name="expression" isIdentifier="true">
 				<Default>this</Default>
 				<_ToolTip>Object to lock</_ToolTip>
 			</Variable>

@@ -1,5 +1,11 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
+	  Fixed 'Bug 545652 - Surround with 'lock' is not setting
+	  focus in 'lock' itself to add the lock object'.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs:
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
