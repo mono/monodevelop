@@ -28,35 +28,19 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
-	CSharpBindingCompilerManager.cs \
-	CSharpEnhancedCodeProvider.cs \
-	CSharpLanguageBinding.cs \
-	FormattingStrategy/CSharpFormattingPolicy.cs \
-	FormattingStrategy/CSharpFormattingPolicyPanel.cs \
-	FormattingStrategy/CSharpFormattingProperties.cs \
-	FormattingStrategy/CSharpIndentEngine.cs \
-	FormattingStrategy/CSharpIndentEngineStack.cs \
-	gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs \
-	gtk-gui/CSharpBinding.CompilerOptionsPanelWidget.cs \
-	gtk-gui/CSharpBinding.FormattingPanelWidget.cs \
 	gtk-gui/generated.cs \
-	Gui/CodeGenerationPanel.cs \
-	Gui/CompilerOptionsPanelWidget.cs \
-	Gui/CSharpAmbience.cs \
-	Gui/CSharpTextEditorCompletion.cs \
-	Gui/CSharpTextEditorIndentation.cs \
-	Gui/EventCreationCompletionData.cs \
-	Gui/FormattingPanel.cs \
-	Gui/MemberCompletionData.cs \
-	Gui/NewCSharpExpressionFinder.cs \
-	Gui/NewOverrideCompletionData.cs \
-	Gui/NRefactoryDocumentMetaInformation.cs \
-	Gui/NRefactoryIndexerParameterDataProvider.cs \
-	Gui/NRefactoryParameterDataProvider.cs \
-	Gui/NRefactoryResolver.cs \
-	Gui/NRefactoryTemplateParameterDataProvider.cs \
-	Gui/ResolveVisitor.cs \
+	gtk-gui/MonoDevelop.CSharp.Formatting.FormattingPanelWidget.cs \
+	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
+	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
+	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
+	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
+	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \
+	MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs \
+	MonoDevelop.CSharp.Completion/NRefactoryIndexerParameterDataProvider.cs \
+	MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs \
+	MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs \
 	MonoDevelop.CSharp.Dom/AbstractCSharpNode.cs \
+	MonoDevelop.CSharp.Dom/CSharpAmbience.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AssignmentExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/BaseReferenceExpression.cs \
@@ -126,21 +110,36 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/TypeMembers/OperatorDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/PropertyDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/VariableInitializer.cs \
+	MonoDevelop.CSharp.Formatting/CSharpFormatter.cs \
+	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs \
+	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicyPanel.cs \
+	MonoDevelop.CSharp.Formatting/CSharpFormattingProperties.cs \
+	MonoDevelop.CSharp.Formatting/CSharpIndentEngine.cs \
+	MonoDevelop.CSharp.Formatting/CSharpIndentEngineStack.cs \
+	MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs \
+	MonoDevelop.CSharp.Formatting/FormattingPanel.cs \
+	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
+	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \
 	MonoDevelop.CSharp.Parser/CSharpParser.cs \
-	Parser/CodeGenerator.cs \
-	Parser/CSharpFormatter.cs \
-	Parser/CSharpNRefactoryASTProvider.cs \
-	Parser/FindMemberAstVisitor.cs \
-	Parser/NRefactoryParser.cs \
-	Project/CSharpCompilerParameters.cs \
-	Project/CSharpProjectParameters.cs \
-	Project/CSharpResourceIdBuilder.cs \
-	Syntax/CSharpSyntaxMode.cs \
-	Syntax/HighlightCSharpSemanticRule.cs
+	MonoDevelop.CSharp.Parser/NRefactoryParser.cs \
+	MonoDevelop.CSharp.Project/CodeGenerationPanel.cs \
+	MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs \
+	MonoDevelop.CSharp.Project/CSharpCompilerParameters.cs \
+	MonoDevelop.CSharp.Project/CSharpProjectParameters.cs \
+	MonoDevelop.CSharp.Project/CSharpResourceIdBuilder.cs \
+	MonoDevelop.CSharp.Refactoring/CodeGenerator.cs \
+	MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs \
+	MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs \
+	MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs \
+	MonoDevelop.CSharp.Resolver/NRefactoryDocumentMetaInformation.cs \
+	MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs \
+	MonoDevelop.CSharp.Resolver/ResolveVisitor.cs \
+	MonoDevelop.CSharp/CSharpBindingCompilerManager.cs \
+	MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs \
+	MonoDevelop.CSharp/CSharpLanguageBinding.cs
 
 RES =  \
 	CSharpBinding.addin.xml \
-	FormattingStrategy/CSharpFormattingPolicy.xml \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	icons/C\#.FileIcon \
@@ -148,6 +147,7 @@ RES =  \
 	icons/csharp-project-16.png \
 	md1format.xml \
 	MonoCSharpPolicy.xml \
+	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml \
 	templates/AssemblyInfo.xft.xml \
 	templates/ConsoleProject.xpt.xml \
 	templates/EmptyCSharpFile.xft.xml \

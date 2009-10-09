@@ -13,7 +13,7 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="CSharpBinding.CodeGenerationPanelWidget" design-size="365 448">
+  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Project.CodeGenerationPanelWidget" design-size="365 448">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -492,7 +492,7 @@ Itanium</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CSharpBinding.FormattingPanelWidget" design-size="375 240">
+  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Formatting.FormattingPanelWidget" design-size="375 240">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -674,7 +674,7 @@ Itanium</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="CSharpBinding.CompilerOptionsPanelWidget" design-size="471 438">
+  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget" design-size="471 438">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">

@@ -19,7 +19,6 @@
     <DefineConstants>GMCS_SOURCE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AssemblyKeyFile>.</AssemblyKeyFile>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />
@@ -33,7 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <AssemblyKeyFile>.</AssemblyKeyFile>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -158,53 +156,16 @@
     <EmbeddedResource Include="icons\csharp-project-16.png">
       <LogicalName>csharp-project-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormattingStrategy\CSharpFormattingPolicy.xml">
-      <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoCSharpPolicy.xml">
       <LogicalName>MonoCSharpPolicy.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.xml">
+      <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\FormattingPanel.cs" />
-    <Compile Include="Gui\CodeGenerationPanel.cs" />
-    <Compile Include="Parser\CodeGenerator.cs" />
-    <Compile Include="Project\CSharpCompilerParameters.cs" />
-    <Compile Include="CSharpLanguageBinding.cs" />
-    <Compile Include="CSharpBindingCompilerManager.cs" />
-    <Compile Include="CSharpEnhancedCodeProvider.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="FormattingStrategy\CSharpIndentEngine.cs" />
-    <Compile Include="FormattingStrategy\CSharpIndentEngineStack.cs" />
-    <Compile Include="FormattingStrategy\CSharpFormattingProperties.cs" />
-    <Compile Include="FormattingStrategy\CSharpFormattingPolicy.cs" />
-    <Compile Include="gtk-gui\CSharpBinding.CodeGenerationPanelWidget.cs" />
-    <Compile Include="gtk-gui\CSharpBinding.FormattingPanelWidget.cs" />
-    <Compile Include="gtk-gui\CSharpBinding.CompilerOptionsPanelWidget.cs" />
-    <Compile Include="Gui\CompilerOptionsPanelWidget.cs" />
-    <Compile Include="Project\CSharpResourceIdBuilder.cs" />
-    <Compile Include="Gui\CSharpTextEditorCompletion.cs" />
-    <Compile Include="Gui\NRefactoryResolver.cs" />
-    <Compile Include="Gui\ResolveVisitor.cs" />
-    <Compile Include="Gui\NRefactoryParameterDataProvider.cs" />
-    <Compile Include="Gui\NewCSharpExpressionFinder.cs" />
-    <Compile Include="Gui\NewOverrideCompletionData.cs" />
-    <Compile Include="Gui\CSharpAmbience.cs" />
-    <Compile Include="Gui\NRefactoryDocumentMetaInformation.cs" />
-    <Compile Include="Gui\MemberCompletionData.cs" />
-    <Compile Include="Gui\CSharpTextEditorIndentation.cs" />
-    <Compile Include="Parser\NRefactoryParser.cs" />
-    <Compile Include="Gui\EventCreationCompletionData.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Parser\FindMemberAstVisitor.cs" />
-    <Compile Include="Project\CSharpProjectParameters.cs" />
-    <Compile Include="Parser\CSharpFormatter.cs" />
-    <Compile Include="Gui\NRefactoryTemplateParameterDataProvider.cs" />
-    <Compile Include="Syntax\CSharpSyntaxMode.cs" />
-    <Compile Include="Syntax\HighlightCSharpSemanticRule.cs" />
-    <Compile Include="FormattingStrategy\CSharpFormattingPolicyPanel.cs" />
-    <Compile Include="Parser\CSharpNRefactoryASTProvider.cs" />
-    <Compile Include="Gui\NRefactoryIndexerParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\Attribute.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\AttributeSection.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\NamespaceDeclaration.cs" />
@@ -276,6 +237,43 @@
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\QueryExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpParser.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\EnumDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\NRefactoryResolver.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\ResolveVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\NewCSharpExpressionFinder.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\NRefactoryDocumentMetaInformation.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSyntaxMode.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\HighlightCSharpSemanticRule.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextEditorIndentation.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\FormattingPanel.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicyPanel.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProperties.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngine.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngineStack.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormatter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\NRefactoryParser.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpNRefactoryASTProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\FindMemberAstVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\CSharpAmbience.cs" />
+    <Compile Include="MonoDevelop.CSharp.Project\CSharpCompilerParameters.cs" />
+    <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectParameters.cs" />
+    <Compile Include="MonoDevelop.CSharp.Project\CSharpResourceIdBuilder.cs" />
+    <Compile Include="MonoDevelop.CSharp.Project\CodeGenerationPanel.cs" />
+    <Compile Include="MonoDevelop.CSharp.Project\CompilerOptionsPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.FormattingPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpBindingCompilerManager.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpEnhancedCodeProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpLanguageBinding.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CSharpTextEditorCompletion.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -305,5 +303,12 @@
     <Folder Include="MonoDevelop.CSharp.Dom\Statements\" />
     <Folder Include="MonoDevelop.CSharp.Dom\Expressions\" />
     <Folder Include="MonoDevelop.CSharp.Parser\" />
+    <Folder Include="MonoDevelop.CSharp.Resolver\" />
+    <Folder Include="MonoDevelop.CSharp.Highlighting\" />
+    <Folder Include="MonoDevelop.CSharp.Formatting\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring\" />
+    <Folder Include="MonoDevelop.CSharp.Project\" />
+    <Folder Include="MonoDevelop.CSharp\" />
+    <Folder Include="MonoDevelop.CSharp.Completion\" />
   </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@
 			extension="csproj" 
 			guid="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
 			import="$(MSBuildBinPath)\Microsoft.CSharp.targets"
-			resourceHandler="CSharpBinding.CSharpResourceIdBuilder"
+			resourceHandler="MonoDevelop.CSharp.Project.CSharpResourceIdBuilder"
 			/>
 	</Extension>
 
@@ -71,7 +71,7 @@
 		<Condition id="ActiveLanguage" value="C#">
 			<Panel id = "CSharpCompilerOptionsPanel"
 			             _label = "C#"
-			             class = "CSharpBinding.CompilerOptionsPanel"/>
+			             class = "MonoDevelop.CSharp.Project.CompilerOptionsPanel"/>
 		</Condition>
 	</Extension>
 
@@ -79,28 +79,28 @@
 		<Condition id="ActiveLanguage" value="C#">
 			<Panel id = "CSharpCodeGenerationPanel"
 			             _label = "Compiler"
-			             class = "CSharpBinding.CodeGenerationPanel"/>
+			             class = "MonoDevelop.CSharp.Project.CodeGenerationPanel"/>
 		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Formatting">
-		<Section _label = "C#" class = "CSharpBinding.FormattingPanel"/>
+		<Section _label = "C#" class = "MonoDevelop.CSharp.Formatting.FormattingPanel"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding id    = "CSharp"
 		                 supportedextensions = ".cs"
-		                 class = "CSharpBinding.CSharpLanguageBinding" />
+		                 class = "MonoDevelop.CSharp.CSharpLanguageBinding" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "CSharpBinding.CSharpCompilerParameters" />
-		<DataType class = "CSharpBinding.CSharpProjectParameters" />
+		<DataType class = "MonoDevelop.CSharp.Project.CSharpCompilerParameters" />
+		<DataType class = "MonoDevelop.CSharp.Project.CSharpProjectParameters" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.CSharpBinding.Gui.CSharpTextEditorCompletion" />
-		<Class class = "MonoDevelop.CSharpBinding.Gui.CSharpTextEditorIndentation" />
+		<Class class = "MonoDevelop.CSharp.Completion.CSharpTextEditorCompletion" />
+		<Class class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
@@ -108,12 +108,12 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-<!--	<Class class = "MonoDevelop.CSharpBinding.DomParser" /> -->
-		<Class class = "MonoDevelop.CSharpBinding.NRefactoryParser" />
+<!--	<Class class = "MonoDevelop.CSharp.Parser.DomParser" /> -->
+		<Class class = "MonoDevelop.CSharp.Parser.NRefactoryParser" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
-		<Class id = "C#" class = "MonoDevelop.CSharpBinding.CSharpAmbience" />
+		<Class id = "C#" class = "MonoDevelop.CSharp.Dom.CSharpAmbience" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -132,15 +132,15 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/TextPrettyPrinters">
-		<Class class="CSharpBinding.Parser.CSharpFormatter" />
+		<Class class="MonoDevelop.CSharp.Formatting.CSharpFormatter" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
-		<SyntaxMode mimeTypes="text/x-csharp" class="MonoDevelop.CSharpBinding.CSharpSyntaxMode"/>
+		<SyntaxMode mimeTypes="text/x-csharp" class="MonoDevelop.CSharp.Highlighting.CSharpSyntaxMode"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
-		<PolicyType id="DotNetNamingPolicy" class="FormattingStrategy.CSharpFormattingPolicy" />
+		<PolicyType id="DotNetNamingPolicy" class="MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
@@ -148,11 +148,11 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
-		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "FormattingStrategy.CSharpFormattingPolicyPanel" />
+		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanel" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Refactoring/ASTProvider">
-		<Class class = "CSharpBinding.Parser.CSharpNRefactoryASTProvider" />
+		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider" />
 	</Extension>
 	
 	<Module>
