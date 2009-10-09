@@ -1,3 +1,27 @@
+2009-10-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* pt.po:
+	* da.po:
+	* sl.po:
+	* ca.po:
+	* tr.po:
+	* ja.po:
+	* id.po:
+	* ru.po:
+	* sv.po:
+	* it.po:
+	* es.po:
+	* fr.po:
+	* gl.po:
+	* cs.po:
+	* pl.po:
+	* hu.po:
+	* nl.po:
+	* zh_CN.po:
+	* zh_TW.po:
+	* pt_BR.po:
+	* messages.po: Updated.
+
 2009-10-08  Mike Krüger  <mkrueger@novell.com>
 
 	* de.po: worked on german translation.
