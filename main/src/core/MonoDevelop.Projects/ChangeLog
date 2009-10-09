@@ -1,5 +1,10 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs: Exposed
+	  builtintypes.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs:
 	* MonoDevelop.Projects.Dom/DomReturnType.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:

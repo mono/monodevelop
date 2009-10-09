@@ -178,6 +178,13 @@ namespace MonoDevelop.Projects.Dom
 			return new ShortenTypeNameVistior (this, location).Visit (fullyQualfiedType, null) as IReturnType;
 		}
 		
+		public readonly static HashSet<string> BuiltInTypes = new HashSet<string> (new string[] {
+			"System.Void", "System.Object","System.Boolean","System.Byte", "System.SByte",
+			"System.Char", "System.Enum", "System.Int16", "System.Int32", "System.Int64", 
+			"System.UInt16", "System.UInt32", "System.UInt64", "System.Single", "System.Double", "System.Decimal",
+			"System.String"
+		});
+			
 		class ShortenTypeNameVistior : CopyDomVisitor<object>
 		{
 			ICompilationUnit unit;
@@ -189,17 +196,10 @@ namespace MonoDevelop.Projects.Dom
 				this.location = location;
 			}
 			
-			static HashSet<string> builtInTypes = new HashSet<string> (new string[] {
-				"System.Void", "System.Object","System.Boolean","System.Byte", "System.SByte",
-				"System.Char", "System.Enum", "System.Int16", "System.Int32", "System.Int64", 
-				"System.UInt16", "System.UInt32", "System.UInt64", "System.Single", "System.Double", "System.Decimal",
-				"System.String"
-			});
-			
 			public override INode Visit (IReturnType type, object data)
 			{
 				IReturnType returnType = (IReturnType)base.Visit (type, data);
-				if (builtInTypes.Contains (returnType.FullName))
+				if (BuiltInTypes.Contains (returnType.FullName))
 					return returnType;
 				
 				string longest = "";
