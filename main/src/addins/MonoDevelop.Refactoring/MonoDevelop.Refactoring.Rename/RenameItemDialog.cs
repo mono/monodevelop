@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 
 using Gtk;
 
@@ -54,7 +55,8 @@ namespace MonoDevelop.Refactoring.Rename
 				IType type = (IType)options.SelectedItem;
 				if (type.IsPublic) {
 					this.renameFileFlag.Visible = true;
-					this.renameFileFlag.Active = true;
+					this.renameFileFlag.Sensitive = type.Parts.Count () == 1;
+					this.renameFileFlag.Active = this.renameFileFlag.Sensitive;
 				}
 				if (type.ClassType == ClassType.Interface)
 					this.Title = GettextCatalog.GetString ("Rename Interface"); else
@@ -107,6 +109,7 @@ namespace MonoDevelop.Refactoring.Rename
 			buttonPreview.Clicked += OnPreviewClicked;
 			entry.Changed += delegate { buttonPreview.Sensitive = buttonOk.Sensitive = ValidateName (); };
 			ValidateName ();
+			
 		}
 
 		bool ValidateName ()

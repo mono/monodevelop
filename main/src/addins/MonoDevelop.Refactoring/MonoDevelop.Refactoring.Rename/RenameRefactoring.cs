@@ -154,11 +154,12 @@ namespace MonoDevelop.Refactoring.Rename
 				IType cls = (IType)options.SelectedItem;
 				if (cls.IsPublic) {
 					foreach (IType part in cls.Parts) {
-						if (System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName) == cls.Name) {
+						// only supported for classes wher cls.Parts.Count == 1
+//						if (System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName) == cls.Name) {
 							string newFileName = System.IO.Path.HasExtension (part.CompilationUnit.FileName) ? properties.NewName + System.IO.Path.GetExtension (part.CompilationUnit.FileName) : properties.NewName;
 							newFileName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (part.CompilationUnit.FileName), newFileName);
 							result.Add (new RenameFileChange (part.CompilationUnit.FileName, newFileName));
-						}
+//						}
 					}
 				}
 			}
