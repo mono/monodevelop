@@ -1,3 +1,10 @@
+2009-10-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/FileCommands.cs: In OpenFile, get
+	  the encoding from the dialog before destroying it.
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Fix warning.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Fixed monodevelop
