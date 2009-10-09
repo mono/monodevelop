@@ -442,6 +442,7 @@ namespace Mono.TextEditor
 			lock (lockObject) {
 				if (caretTimer != null)
 					caretTimer.Stop ();
+				caretBlink = false; 
 			}
 		}
 		
