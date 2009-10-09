@@ -146,10 +146,14 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				resolveResult = resolver.Resolve (expressionResult, new DomLocation (data.Caret.Line, data.Caret.Column));
 				if (resolveResult == null)
 					return result;
-				varName = CreateVariableName (resolveResult.ResolvedType);
+				IReturnType resolvedType = resolveResult.ResolvedType;
+				if (resolvedType == null || string.IsNullOrEmpty (resolvedType.Name))
+					resolvedType = DomReturnType.Object;
+				varName = CreateVariableName (resolvedType);
 				TypeReference returnType;
-				if (resolveResult.ResolvedType == null) {
+				if (resolveResult.ResolvedType == null || string.IsNullOrEmpty (resolveResult.ResolvedType.Name)) {
 					returnType = new TypeReference ("var");
+					returnType.IsKeyword = true;
 				} else {
 					returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
 				}
@@ -290,10 +294,9 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		
 		static string CreateVariableName (MonoDevelop.Projects.Dom.IReturnType returnType)
 		{
-			if (returnType == null)
-				return "i";
-			if (Char.IsLower (returnType.Name[0]))
-				return "a" + returnType.Name;
+			if (Char.IsLower (returnType.Name[0]) || MonoDevelop.Projects.Dom.CompilationUnit.BuiltInTypes.Contains (returnType.FullName))
+				return "a" + Char.ToUpper (returnType.Name[0]) + returnType.Name.Substring (1);
+			
 			return Char.ToLower (returnType.Name[0]) + returnType.Name.Substring (1);
 		}
 

@@ -1,5 +1,11 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Fixed 'Bug 545631 - Extract method gives exception'.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
 	* MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs:
 	  Fixed unit test.

@@ -63,7 +63,10 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				if (doc != null && doc.CompilationUnit != null) {
 					int line, column;
 					buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out column);
-					return doc.CompilationUnit.GetMemberAt (line, column) != null;
+					if (doc.CompilationUnit.GetMemberAt (line, column) == null)
+						return false;
+					ExtractMethodParameters param = CreateParameters (options);
+					return Analyze (options, param, false) != null && param.VariablesToGenerate != null;
 				}
 			}
 			return false;
@@ -227,6 +230,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			
 				int startOffset = data.Document.LocationToOffset (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
 				int endOffset = data.Document.LocationToOffset (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
+				if (data.SelectionRange.Offset < startOffset || endOffset < data.SelectionRange.EndOffset)
+					return null;
 				text = data.Document.GetTextBetween (startOffset, data.SelectionRange.Offset) + data.Document.GetTextBetween (data.SelectionRange.EndOffset, endOffset);
 				ICSharpCode.NRefactory.Ast.INode parsedNode = provider.ParseText (text);
 				visitor = new VariableLookupVisitor (resolver, param.Location);
@@ -251,7 +256,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					param.VariablesToDefine = new List<VariableDescriptor> ();
 				}
 			}
-			
 			return result;
 		}
 		
@@ -263,7 +267,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			IResolver resolver = options.GetResolver ();
 			ICSharpCode.NRefactory.Ast.INode node = Analyze (options, param, false);
-			
 			if (param.VariablesToGenerate.Count > 0) {
 				TextReplaceChange varGen = new TextReplaceChange ();
 				varGen.Description = GettextCatalog.GetString ("Generate some temporary variables");
@@ -277,7 +280,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				}
 				result.Add (varGen);
 			}
-			
 			InvocationExpression invocation = new InvocationExpression (new IdentifierExpression (param.Name));
 			foreach (VariableDescriptor var in param.Parameters) {
 				if (!param.OneChangedVariable && param.ChangedVariables.Contains (var.Name)) {
@@ -292,7 +294,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					invocation.Arguments.Add (new IdentifierExpression (var.Name));
 				}
 			}
-			
 		//	string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
 			TypeReference returnType = new TypeReference ("System.Void", true);
 
