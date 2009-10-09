@@ -1,6 +1,12 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Enter accepts now extract method/escape closes dialog.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs:
 	  Fixed 'Bug 545635 - In refactoring window the enter key does
 	  not hit OK' (means that the extract method dialog remembers
 	  the modifier setting).

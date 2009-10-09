@@ -84,7 +84,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				return;
 			ExtractMethodDialog dialog = new ExtractMethodDialog (options, this, param);
 			dialog.TransientFor = IdeApp.Workbench.RootWindow;
-			dialog.Show ();
+			dialog.Run ();
 		}
 		
 		public ExtractMethodParameters CreateParameters (RefactoringOptions options)

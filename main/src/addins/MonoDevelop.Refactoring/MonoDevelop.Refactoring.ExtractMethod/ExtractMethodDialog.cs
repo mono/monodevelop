@@ -100,6 +100,10 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			modifiers.AppendValues ("internal");
 			comboboxModifiers.Model = modifiers;
 			comboboxModifiers.Active = PropertyService.Get<int> ("MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.DefaultModifier");
+			entry.Activated += delegate {
+				if (buttonOk.Sensitive)
+					buttonOk.Click ();
+			};
 		}
 		
 		void FillStore ()
