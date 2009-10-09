@@ -311,11 +311,7 @@ namespace Mono.TextEditor
 				tabArray = null;
 			}
 			
-			if (caretGc == null) {
-				caretGc = new Gdk.GC (textEditor.GdkWindow);
-				caretGc.RgbFgColor = new Color (255, 255, 255);
-				caretGc.Function = Gdk.Function.Xor;
-			}
+			EnsureCaretGc ();
 			
 			Pango.Layout tabWidthLayout = new Pango.Layout (textEditor.PangoContext);
 			tabWidthLayout.Alignment = Pango.Alignment.Left;
@@ -331,6 +327,15 @@ namespace Mono.TextEditor
 			chunkDict.Clear ();
 		}
 
+		void EnsureCaretGc ()
+		{
+			if (caretGc != null) 
+				return;
+			caretGc = new Gdk.GC (textEditor.GdkWindow);
+			caretGc.RgbFgColor = new Color (255, 255, 255);
+			caretGc.Function = Gdk.Function.Xor;
+		}
+		
 		void DisposeGCs ()
 		{
 			ShowTooltip (null, Gdk.Rectangle.Zero);
@@ -1816,6 +1821,7 @@ namespace Mono.TextEditor
 		void SetClip (Gdk.Rectangle rect)
 		{
 			clipRectangle = rect;
+			EnsureCaretGc ();
 			caretGc.ClipRectangle = rect;
 			foreach (Gdk.GC gc in gcDictionary.Values)
 				gc.ClipRectangle = rect;
