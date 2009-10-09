@@ -329,7 +329,7 @@ namespace MonoDevelop.Refactoring.Tests
 }
 ");
 		}
-		
+		/* Currently not possible to implement, would cause serve bugs:
 		[Test()]
 		public void ExtractMethodMultiVariableWithLocalReturnVariableTest ()
 		{
@@ -368,7 +368,7 @@ namespace MonoDevelop.Refactoring.Tests
 }
 ");
 		}
-		
+		*/
 		
 		
 		

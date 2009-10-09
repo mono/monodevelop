@@ -1,5 +1,10 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs: Took out unit
+	  test.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: fixed
 	  unit test.
 
