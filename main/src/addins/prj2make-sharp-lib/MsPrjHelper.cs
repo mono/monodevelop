@@ -12,8 +12,8 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
-using CSharpBinding;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.CSharp.Project;
 
 
 namespace MonoDevelop.Prj2Make
