@@ -415,7 +415,7 @@ namespace Mono.TextEditor
 		#region Caret blinking
 		Timer caretTimer = null;
 		bool caretBlink = true;
-		bool firstBlink = true;
+//		bool firstBlink = true;
 		object lockObject = new object ();
 		
 		public void ResetCaretBlink ()
@@ -432,7 +432,7 @@ namespace Mono.TextEditor
 				caretBlink = true; 
 				if (shouldRedraw)
 					textEditor.RedrawMarginLine (this, Caret.Line);
-				firstBlink = true;
+//				firstBlink = true;
 				caretTimer.Start ();
 			}
 		}
@@ -449,10 +449,10 @@ namespace Mono.TextEditor
 		void UpdateCaret (object sender, EventArgs args)
 		{
 			lock (lockObject) {
-				if (firstBlink) {
+			/*	if (firstBlink) {
 					firstBlink = false;
 					return;
-				}
+				}*/
 				caretBlink = !caretBlink;
 				if (Caret.IsVisible) {
 					Application.Invoke (delegate {
