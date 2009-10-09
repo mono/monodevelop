@@ -203,32 +203,6 @@ namespace MonoDevelop.Ide.Gui.Content
 				currentCompletionContext = null;
 		}
 		
-		[CommandHandler (TextEditorCommands.ShowCodeSurroundingsWindow)]
-		public virtual void RunShowCodeSurroundingsWindow ()
-		{
-			ICompletionDataList completionList = null;
-			int cpos, wlen;
-			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
-				cpos = Editor.CursorPosition;
-				wlen = 0;
-			}
-			
-			currentCompletionContext = completionWidget.CreateCodeCompletionContext (cpos);
-			currentCompletionContext.TriggerWordLength = wlen;
-			completionList = ShowCodeSurroundingsCommand (currentCompletionContext);
-			//Console.WriteLine ("comp list:" + completionList);
-			if (completionList != null)
-				CompletionWindowManager.ShowWindow ((char)0, completionList, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
-			else
-				currentCompletionContext = null;
-		}
-		
-		[CommandUpdateHandler (TextEditorCommands.ShowCodeSurroundingsWindow)]
-		internal void OnUpdateShowCodeSurroundingsWindow (CommandInfo info)
-		{
-			info.Bypass = !CanRunCompletionCommand ();
-		}
-		
 		[CommandHandler (TextEditorCommands.ShowCodeTemplateWindow)]
 		public virtual void RunShowCodeTemplatesWindow ()
 		{
@@ -241,8 +215,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			currentCompletionContext = completionWidget.CreateCodeCompletionContext (cpos);
 			currentCompletionContext.TriggerWordLength = wlen;
-			completionList = ShowCodeTemplatesCommand (currentCompletionContext);
-				
+			completionList = Document.TextEditor.SelectionStartPosition != Document.TextEditor.SelectionEndPosition ? ShowCodeSurroundingsCommand (currentCompletionContext) : ShowCodeTemplatesCommand (currentCompletionContext);
+			
 			if (completionList != null)
 				CompletionWindowManager.ShowWindow ((char)0, completionList, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
 			else
@@ -253,6 +227,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		internal void OnUpdateShowCodeTemplatesWindow (CommandInfo info)
 		{
 			info.Bypass = !CanRunCompletionCommand ();
+			info.Text = Document.TextEditor.SelectionStartPosition != Document.TextEditor.SelectionEndPosition ? GettextCatalog.GetString ("_Surround With...") : GettextCatalog.GetString ("I_nsert Template...");
 		}
 	
 		
@@ -354,6 +329,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual ICompletionDataList ShowCodeTemplatesCommand (CodeCompletionContext completionContext)
 		{
 			CompletionDataList list = new CompletionDataList ();
+			list.CompletionSelectionMode = CompletionSelectionMode.OwnTextField;
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (Document.FileName)) {
 				if (template.CodeTemplateType != CodeTemplateType.SurroundsWith)  {
 					list.Add (new CodeTemplateCompletionData (Document, template));

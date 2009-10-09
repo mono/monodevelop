@@ -1,3 +1,10 @@
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/TextEditorCommands.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Merged insert templates/surround with commands.
+
 2009-10-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs: In OpenFile, get

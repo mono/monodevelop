@@ -927,9 +927,6 @@
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
 				_label = "I_nsert Template..." 
 				shortcut = "Control|t" />
-		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow"
-				_label = "_Surround With..." 
-				shortcut = "Control|Alt|t" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
 				_label = "Go to end of line" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineStart"
@@ -1492,7 +1489,6 @@
 			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" />
 			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 			<SeparatorItem id = "Separator5" />
