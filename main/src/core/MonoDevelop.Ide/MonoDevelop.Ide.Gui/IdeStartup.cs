@@ -399,6 +399,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 	}
 	
+#pragma warning disable 0618
 	public class MonoDevelopOptions : Options
 	{
 		public MonoDevelopOptions ()
@@ -419,6 +420,7 @@ namespace MonoDevelop.Ide.Gui
 		[Option ("Do not open in an existing instance of MonoDevelop")]
 		public bool newwindow;
 	}	
+#pragma warning restore 0618
 	
 	public class AddinError
 	{

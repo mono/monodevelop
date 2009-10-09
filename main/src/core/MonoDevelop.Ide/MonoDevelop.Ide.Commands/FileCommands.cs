@@ -1,4 +1,4 @@
-﻿// NewFileCommands.cs
+// NewFileCommands.cs
 //
 // Author:
 //   Carlo Kok (ck@remobjects.com)
@@ -81,11 +81,13 @@ namespace MonoDevelop.Ide.Commands
 			FileSelectorDialog dlg = new FileSelectorDialog (GettextCatalog.GetString ("File to Open"));
 			string filename;
 			FileViewer viewer;
+			string encoding = null;
 			try {
 				dlg.TransientFor = IdeApp.Workbench.RootWindow;
 				if(((ResponseType)dlg.Run ()) == ResponseType.Ok) {
 					filename = dlg.Filename;
 					viewer = dlg.SelectedViewer;
+					encoding = dlg.Encoding;
 					if (string.IsNullOrEmpty (filename)) {
 						if(dlg.Uri != null)
 							MessageService.ShowError (GettextCatalog.GetString ("Only local files can be opened."));
@@ -100,15 +102,15 @@ namespace MonoDevelop.Ide.Commands
 				dlg.Destroy (); // destroy, as dispose doesn't actually remove the window.
 			}
 			// Have to make sure that the FileSelectordialog is not a top level window, else it throws MissingMethodException errors deep in GTK.
-			if (viewer == null) { 
+			if (viewer == null) {
 				if(Services.ProjectService.IsWorkspaceItemFile (filename) || Services.ProjectService.IsSolutionItemFile (filename)) {
 					IdeApp.Workspace.OpenWorkspaceItem (filename, dlg.CloseCurrentWorkspace);
 				}
 				else
-					IdeApp.Workbench.OpenDocument (filename);
+					IdeApp.Workbench.OpenDocument (filename, encoding);
 			}
 			else {
-				viewer.OpenFile (filename, dlg.Encoding);
+				viewer.OpenFile (filename, encoding);
 			}
 
 		}
