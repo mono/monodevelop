@@ -1,5 +1,9 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* md1format.xml: track namespace changes.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
 	  Fixed 'Bug 545667 - Exception when autoformatting'.
 

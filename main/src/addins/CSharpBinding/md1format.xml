@@ -1,5 +1,5 @@
 <SerializationMap>
-	<DataItem class = "CSharpBinding.CSharpCompilerParameters">
+	<DataItem class = "MonoDevelop.CSharp.Project.CSharpCompilerParameters">
 		<LiteralProperty name="compiler" value="Mcs" />
 		<ItemProperty member="warninglevel" name = "warninglevel"/>
 		<ItemProperty member="noWarnings" name="nowarn" defaultValue=""/>
