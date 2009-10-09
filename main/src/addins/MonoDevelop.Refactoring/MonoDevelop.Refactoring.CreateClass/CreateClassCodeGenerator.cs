@@ -79,6 +79,8 @@ namespace MonoDevelop.Refactoring.CreateClass
 					char ch = data.Document.GetCharAt (pos);
 					if (ch == '(') {
 						int offset = data.Document.GetMatchingBracketOffset (pos);
+						if (offset < startPos)
+							return null;
 						expression = data.Document.GetTextAt (startPos, offset - startPos + 1);
 						break;
 					}

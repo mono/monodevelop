@@ -171,9 +171,14 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 
 		MemberReferenceCollection GetReferences (RefactoringOptions options, IMember member)
 		{
-			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			if (options.TestFileProvider != null)
+			CodeRefactorer refactorer;
+			
+			if (options.TestFileProvider == null) {
+				refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+			} else {
+				refactorer = new CodeRefactorer ();
 				refactorer.TextFileProvider = options.TestFileProvider;
+			}
 			IProgressMonitor monitor = IdeApp.Workbench != null ? IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null) : new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ();
 			return refactorer.FindMemberReferences (monitor, member.DeclaringType, member, true);
 		}
