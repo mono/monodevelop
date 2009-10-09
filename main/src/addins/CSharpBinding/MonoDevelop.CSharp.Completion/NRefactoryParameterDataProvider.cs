@@ -216,7 +216,7 @@ namespace MonoDevelop.CSharp.Completion
 			string name = (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics) : methods[overload].Name));
 			StringBuilder parameters = new StringBuilder ();
 			int curLen = 0;
-			string prefix = ambience.GetString (methods[overload].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) + " ";
+			string prefix = !methods[overload].IsConstructor ? ambience.GetString (methods[overload].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) + " " : "";
 
 			foreach (string parameter in parameterMarkup) {
 				if (parameters.Length > 0)
