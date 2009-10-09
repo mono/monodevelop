@@ -28,13 +28,15 @@
 
 using System;
 using NUnit.Framework;
-using MonoDevelop.CSharpBinding.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.CSharp.Parser;
+using MonoDevelop.CSharp.Resolver;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {

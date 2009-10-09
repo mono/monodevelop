@@ -33,6 +33,7 @@ using NUnit.Framework;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharpBinding;
+using MonoDevelop.CSharp.Parser;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {

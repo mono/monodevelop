@@ -32,7 +32,7 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
-using CSharpBinding;
+using MonoDevelop.CSharp.Project;
 
 namespace MonoDevelop.Projects
 {

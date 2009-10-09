@@ -1,5 +1,23 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects/MSBuildTests.cs:
+	* MonoDevelop.CSharpBinding/MemberTests.cs:
+	* MonoDevelop.CSharpBinding/TopLevelTests.cs:
+	* MonoDevelop.Projects/TestProjectsChecks.cs:
+	* MonoDevelop.CSharpBinding/ProjectDomTests.cs:
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs:
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs:
+	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs:
+	  Track namespace renamings.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/ExtractMethodTests.cs: Took out unit
 	  test.
 

@@ -26,8 +26,6 @@
 
 using System;
 using NUnit.Framework;
-using MonoDevelop.CSharpBinding.Gui;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
@@ -38,6 +36,9 @@ using System.Collections.Generic;
 using MonoDevelop.CSharpBinding;
 using System.Text;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.CSharp.Resolver;
+using MonoDevelop.CSharp.Parser;
 
 namespace MonoDevelop.Refactoring.Tests
 {

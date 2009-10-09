@@ -26,7 +26,6 @@
 
 using System;
 using NUnit.Framework;
-using MonoDevelop.CSharpBinding.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;

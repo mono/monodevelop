@@ -30,7 +30,7 @@ using System.IO;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Projects.Extensions;
-using CSharpBinding;
+using MonoDevelop.CSharp.Project;
 
 namespace MonoDevelop.Projects
 {
