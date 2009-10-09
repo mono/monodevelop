@@ -1,3 +1,8 @@
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor.addin.xml: Merged code template
+	  windows.
+
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.SourceEditor.csproj: Add md.targets .
