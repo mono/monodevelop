@@ -1,5 +1,10 @@
 2009-10-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* JavaBinding.sln:
+	* gtk-gui/gui.stetic: Flush.
+
+2009-10-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* IKVMCompilerManager.cs: Improve error message when the java
 	  compiler is not found.
 
