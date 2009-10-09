@@ -121,6 +121,11 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				set;
 			}
 			
+			public string Text {
+				get;
+				set;
+			}
+			
 			public bool GenerateComment {
 				get;
 				set;
@@ -190,7 +195,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				return null;
 
 			string text = options.Document.TextEditor.GetText (options.Document.TextEditor.SelectionStartPosition, options.Document.TextEditor.SelectionEndPosition);
-
+			param.Text = text;
 			ICSharpCode.NRefactory.Ast.INode result = provider.ParseText (text);
 
 			VariableLookupVisitor visitor = new VariableLookupVisitor (resolver, param.Location);
@@ -343,7 +348,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			if (!param.ReferencesMember)
 				methodDecl.Modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
 			if (node is BlockStatement) {
-				methodDecl.Body = (BlockStatement)node;
+				methodDecl.Body = new BlockStatement ();
+				methodDecl.Body.AddChild (new EmptyStatement ());
 				if (param.OneChangedVariable)
 					methodDecl.Body.AddChild (new ReturnStatement (new IdentifierExpression (param.ChangedVariables.First ())));
 			} else if (node is Expression) {
@@ -384,8 +390,17 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;
 				methodDecl.Parameters.Add (pde);
 			}*/
-			
-			insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember));
+			if (node is BlockStatement) {
+				string indent = options.GetIndent (param.DeclaringMember);
+				string text = provider.OutputNode (options.Dom, methodDecl, indent);
+				int emptyStatementMarker = text.LastIndexOf (';');
+				if (param.OneChangedVariable)
+					emptyStatementMarker = text.LastIndexOf (';', emptyStatementMarker - 1);
+				text = text.Substring (0, emptyStatementMarker) + param.Text + text.Substring (emptyStatementMarker + 1);
+				insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + text;
+			} else {
+				insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember));
+			}
 			result.Add (insertNewMethod);
 
 			return result;

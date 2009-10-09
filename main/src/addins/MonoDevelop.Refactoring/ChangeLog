@@ -1,3 +1,9 @@
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Fixed 'Bug 545119 - Refactor -> "Extract Method..." removes
+	  comments and new lines'.
+
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Refactoring.csproj: Mark the *-sharp references
