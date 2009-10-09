@@ -113,6 +113,11 @@ namespace MonoDevelop.Projects.Dom
 				genericArguments = new List<IReturnType> ();
 			this.genericArguments.Add (type);
 		}
+		public override string ToString ()
+		{
+			return string.Format ("[ReturnTypePart: Name={0}, #GenericArguments={1}]", Name, GenericArguments.Count);
+		}
+		
 	}
 	
 	public class DomReturnType : IReturnType

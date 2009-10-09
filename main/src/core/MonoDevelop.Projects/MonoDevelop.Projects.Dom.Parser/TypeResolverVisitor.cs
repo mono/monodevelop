@@ -72,25 +72,26 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			if (currentMethod != null) {
 				foreach (ITypeParameter t in currentMethod.TypeParameters) {
+					
 					if (t.Name == type.Name) {
 						return type;
 					}
 				}
 			}
 			
-			IReturnTypePart firstPart = type.Parts[0];
-			string name = !string.IsNullOrEmpty (type.Namespace) ? type.Namespace + "." + firstPart.Name : firstPart.Name;
-			if (firstPart.GenericArguments.Count > 0)
-				name += "`" + firstPart.GenericArguments.Count;
-			IType c = db.SearchType (new SearchTypeRequest (unit, contextType, name));
+//			IReturnTypePart firstPart = type.Parts[0];
+			string name = type.DecoratedFullName; //!string.IsNullOrEmpty (type.Namespace) ? type.Namespace + "." + firstPart.Name : firstPart.Name;
+//			if (firstPart.GenericArguments.Count > 0)
+//				name += "`" + firstPart.GenericArguments.Count;
+			IType lookupType = db.SearchType (new SearchTypeRequest (unit, contextType, name));
 			
-			if (c == null) {
+			if (lookupType == null) {
 				unresolvedCount++;
 				return db.GetSharedReturnType (type);
 			}
-
+			
 			List<IReturnTypePart> parts = new List<IReturnTypePart> (type.Parts.Count);
-			IType curType = c.DeclaringType;
+			IType curType = lookupType.DeclaringType;
 			while (curType != null) {
 				ReturnTypePart newPart = new ReturnTypePart {Name = curType.Name};
 				for (int n=curType.TypeParameters.Count - 1; n >= 0; n--)
@@ -107,7 +108,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				parts.Add (newPart);
 			}
 			
-			DomReturnType rt = new DomReturnType (c.Namespace, parts);
+			DomReturnType rt = new DomReturnType (lookupType.Namespace, parts);
 			
 			// Make sure the whole type is resolved
 			if (parts.Count > 1 && db.SearchType (new SearchTypeRequest (unit, rt, contextType)) == null) {

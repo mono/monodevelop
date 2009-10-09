@@ -245,7 +245,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		internal static void AddType (ProjectDom dom, List<object> result, IType type, IMember callingMember, bool showStatic)
 		{
-		//	System.Console.WriteLine("Add Type:" + type);
+//			System.Console.WriteLine("Add Type:" + type);
 			if (type == null)
 				return;
 			
@@ -270,6 +270,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 			
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
+				
 				if (curType.ClassType == ClassType.Interface && type.ClassType != ClassType.Interface)
 					continue;
 				foreach (IMember member in curType.Members) {

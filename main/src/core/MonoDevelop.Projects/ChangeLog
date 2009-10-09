@@ -1,3 +1,12 @@
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom/InstantiatedParameterType.cs:
+	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
+	  Fixed 'Bug 545189 - C# resolver bug'.
+
 2009-10-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Don't try to update

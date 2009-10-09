@@ -36,8 +36,7 @@ namespace MonoDevelop.Projects.Dom
 	{
 		TypeParameter typeparam;
 
-		public override TypeKind Kind
-		{
+		public override TypeKind Kind {
 			get {
 				return TypeKind.GenericParameter;
 			}
@@ -129,14 +128,18 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public TypeParameterVariance Variance
-		{
-			get
-			{
+		public TypeParameterVariance Variance {
+			get {
 				return typeparam.Variance;
 			}
 		}
 
 		#endregion
+		
+		public override string ToString ()
+		{
+			return string.Format ("[InstantiatedParameterType: typeparam={0}, #Constraints={1}]", typeparam, Constraints.Count);
+		}
+		
 	}
 }

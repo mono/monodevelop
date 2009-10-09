@@ -496,15 +496,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return GetArrayType (newType);
 			}
 			
-			if (returnType.Type != null)  {
+			IType type = returnType.Type ?? GetType (((DomReturnType)returnType).DecoratedFullName, returnType.GenericArguments, true, true);
+			if (type != null)  {
+				if (type.Kind == TypeKind.GenericInstantiation || type.Kind == TypeKind.GenericParameter)
+					return type;
 				if (!returnType.Parts.Any (part => part.GenericArguments.Count != 0))
-					return returnType.Type;
+					return type;
 				List<IReturnType> aggregatedGenerics = new List<IReturnType> ();
 				foreach (IReturnTypePart part in returnType.Parts) {
 					aggregatedGenerics.AddRange (part.GenericArguments);
 				}
-				return CreateInstantiatedGenericType (returnType.Type, aggregatedGenerics);
+				
+				return CreateInstantiatedGenericType (type, aggregatedGenerics);
 			}
+			return type;
 /*			
 			IReturnTypePart part = returnType.Parts [0];
 			string name = !string.IsNullOrEmpty (returnType.Namespace) ? returnType.Namespace + "." + part.Name : part.Name;
@@ -523,7 +528,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			return ptype;
 			*/
-			return GetType (((DomReturnType)returnType).DecoratedFullName, returnType.GenericArguments, true, true);
+			
 			
 		}
 		/*
