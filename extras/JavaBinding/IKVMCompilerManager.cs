@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
+using Mono.Addins;
 
 namespace JavaBinding
 {
@@ -93,9 +94,17 @@ namespace JavaBinding
 			CompilerResults results = new CompilerResults (new TempFileCollection ());
 			StringWriter output = new StringWriter ();
 			StringWriter error = new StringWriter ();
-			
-			bool success = Compile (monitor, compiler, args.ToString (), configuration, parameters, output, error);
-			ParseJavaOutput (parameters.Compiler, error.ToString(), results);
+
+			bool success;
+			try {
+				success = Compile (monitor, compiler, args.ToString (), configuration, parameters, output, error);
+				ParseJavaOutput (parameters.Compiler, error.ToString(), results);
+			} catch (Exception ex) {
+				string errorMsg = AddinManager.CurrentLocalizer.GetString ("Execution on '{0}' failed. Make sure the Java compiler is properly installed", compiler);
+				monitor.ReportError (errorMsg, ex);
+				success = false;
+				results.Errors.Add (new CompilerError ("", 0, 0, "", errorMsg));
+			}
 			
 			if (success) {
 				output = new StringWriter ();
@@ -131,6 +140,7 @@ namespace JavaBinding
 				string outputName = Path.Combine (configuration.OutputDirectory, name + ".jar");
 				if (!System.IO.File.Exists (outputName)) {
 					monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Generating {0} reference stub ..."), name));
+					monitor.Log.WriteLine ("ikvmstub \"" + fileName + "\"");
 					ProcessWrapper p = Runtime.ProcessService.StartProcess ("ikvmstub", "\"" + fileName + "\"", configuration.OutputDirectory, monitor.Log, monitor.Log, null);
 					p.WaitForExit ();
 					if (p.ExitCode != 0) {
@@ -193,6 +203,7 @@ namespace JavaBinding
 				args.Append (" -r:"); args.Append (fileName);
 			}
 			
+			monitor.Log.WriteLine ("ikvmc " + args);
 			Process process = Runtime.ProcessService.StartProcess ("ikvmc", args.ToString (), configuration.OutputDirectory, chainedOutput, chainedError, null);
 			process.WaitForExit ();
 		}
@@ -208,6 +219,7 @@ namespace JavaBinding
 			chainedOutput.ChainWriter (output);
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Compiling Java source code ..."));
+			monitor.Log.WriteLine (compiler + " " + args);
 			
 			Process process = Runtime.ProcessService.StartProcess (compiler, args, null, chainedOutput, chainedError, null);
 			process.WaitForExit ();

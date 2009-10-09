@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>JavaBinding</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>JavaBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -126,7 +127,9 @@
     <EmbeddedResource Include="icons\Java.FileIcon">
       <LogicalName>Java.FileIcon</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="JavaBinding.addin.xml" />
+    <EmbeddedResource Include="JavaBinding.addin.xml">
+      <LogicalName>JavaBinding.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\java-icon-32.png">
       <LogicalName>java-icon-32.png</LogicalName>
     </EmbeddedResource>
@@ -139,7 +142,9 @@
     <EmbeddedResource Include="icons\java-22.png">
       <LogicalName>java-22.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="md1format.xml" />
+    <EmbeddedResource Include="md1format.xml">
+      <LogicalName>md1format.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gui\ProjectConfigurationPropertyPanel.cs" />
