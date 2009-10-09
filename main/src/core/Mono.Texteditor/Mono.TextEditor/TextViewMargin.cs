@@ -98,7 +98,6 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException ("textEditor");
 			this.textEditor = textEditor;
 			
-			ResetCaretBlink ();
 			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
 				if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
 					int delta = -e.Count;
@@ -155,7 +154,7 @@ namespace Mono.TextEditor
 			linesToRemove.ForEach (line => RemoveCachedLine (line));
 			linesToRemove.Clear ();
 
-			ResetCaretBlink ();
+			textEditor.RequestResetCaretBlink ();
 		}
 		
 		void HandleSearchChanged (object sender, EventArgs args)
@@ -223,6 +222,7 @@ namespace Mono.TextEditor
 		{
 			if (!textEditor.Options.HighlightMatchingBracket)
 				return;
+			
 			int offset = Caret.Offset - 1;
 			if (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset)))
 				offset++;
@@ -311,6 +311,11 @@ namespace Mono.TextEditor
 				tabArray = null;
 			}
 			
+			if (caretGc == null) {
+				caretGc = new Gdk.GC (textEditor.GdkWindow);
+				caretGc.RgbFgColor = new Color (255, 255, 255);
+				caretGc.Function = Gdk.Function.Xor;
+			}
 			
 			Pango.Layout tabWidthLayout = new Pango.Layout (textEditor.PangoContext);
 			tabWidthLayout.Alignment = Pango.Alignment.Left;
@@ -364,10 +369,14 @@ namespace Mono.TextEditor
 			
 			DisposeHighightBackgroundWorker ();
 			DisposeSearchPatternWorker ();
+			lock (lockObject) {
+				if (caretTimer != null) {
+					StopCaretThread ();
+					caretTimer.Dispose ();
+					caretTimer = null;
+				}
+			}
 			
-			caretTimer.Stop ();
-			caretTimer.Dispose ();
-
 			textEditor.Document.EndUndo -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
 
@@ -401,40 +410,54 @@ namespace Mono.TextEditor
 		#region Caret blinking
 		Timer caretTimer = null;
 		bool caretBlink = true;
-		int caretBlinkStatus;
-
+		bool firstBlink = true;
+		object lockObject = new object ();
+		
 		public void ResetCaretBlink ()
 		{
-			if (caretTimer == null) {
-				caretTimer = new Timer ();
-				caretTimer.Elapsed += UpdateCaret;
-				caretTimer.Interval = (uint)Gtk.Settings.Default.CursorBlinkTime / 2;
-			} else {
-				caretTimer.Stop ();
+			lock (lockObject) {
+				if (caretTimer != null)
+					StopCaretThread ();
+				
+				if (caretTimer == null) {
+					caretTimer = new Timer (Gtk.Settings.Default.CursorBlinkTime / 2);
+					caretTimer.Elapsed += UpdateCaret;
+				}
+				bool shouldRedraw = !caretBlink;
+				caretBlink = true; 
+				if (shouldRedraw)
+					textEditor.RedrawMarginLine (this, Caret.Line);
+				firstBlink = true;
+				caretTimer.Start ();
 			}
-			bool shouldRedraw = !caretBlink;
-			caretBlink = true; 
-			caretBlinkStatus = 0;
-			if (shouldRedraw)
-				textEditor.RedrawMarginLine (this, Caret.Line);
-			caretTimer.Start ();
+		}
+
+		internal void StopCaretThread ()
+		{
+			lock (lockObject) {
+				if (caretTimer != null)
+					caretTimer.Stop ();
+			}
 		}
 		
 		void UpdateCaret (object sender, EventArgs args)
 		{
-			bool newCaretBlink = caretBlinkStatus < 4 || (caretBlinkStatus - 4) % 3 != 0;
-			if (newCaretBlink != caretBlink) {
-				caretBlink = newCaretBlink;
-				
-				Application.Invoke (delegate {
-					try {
-						textEditor.RedrawMarginLine (this, Caret.Line);
-					} catch (Exception) {
-						
-					}
-				});
+			lock (lockObject) {
+				if (firstBlink) {
+					firstBlink = false;
+					return;
+				}
+				caretBlink = !caretBlink;
+				if (Caret.IsVisible) {
+					Application.Invoke (delegate {
+						try {
+							textEditor.RedrawMarginLine (this, Caret.Line);
+						} catch (Exception) {
+							
+						}
+					});
+				}
 			}
-			caretBlinkStatus++;
 		}
 		#endregion
 
@@ -451,38 +474,22 @@ namespace Mono.TextEditor
 		}
 		
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
-		public Gdk.Rectangle DrawCaret (Gdk.Drawable win)
+		public void DrawCaret (Gdk.Drawable win)
 		{
 			if (!this.textEditor.IsInDrag) {
-				if (!(this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0)))
-					return EmptyRectangle;
-				if (!textEditor.HasFocus)
-					return EmptyRectangle;
+				if (!(this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0))) {
+					return;
+				}
 			}
-			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink))
-				return EmptyRectangle;
-			if (caretGc == null) {
-				caretGc = new Gdk.GC (win);
-				caretGc.RgbFgColor = new Color (255, 255, 255);
-				caretGc.Function = Gdk.Function.Xor;
+			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink)) {
+				return;
 			}
-			// Unlike the clip region for the backing store buffer, this needs
-			// to be clipped to the range of the visible area of the widget to
-			// prevent drawing outside the widget on some Gdk backends.
-			Gdk.Rectangle caretClipRectangle = GetCaretRectangle (Caret.Mode);
-			int width, height;
-			win.GetSize (out width, out height);
-			caretClipRectangle.Intersect (new Gdk.Rectangle (0, 0, width, height));
-			caretGc.ClipRectangle = caretClipRectangle;
+			
 			switch (Caret.Mode) {
 			case CaretMode.Insert:
-				if (caretX < this.XOffset || caretClipRectangle == Gdk.Rectangle.Zero)
-					return EmptyRectangle;
 				win.DrawLine (caretGc, caretX, caretY, caretX, caretY + LineHeight - 1);
 				break;
 			case CaretMode.Block:
-				if (caretX + this.charWidth < this.XOffset)
-					return EmptyRectangle;
 				win.DrawRectangle (caretGc, true, new Gdk.Rectangle (caretX, caretY, this.charWidth, LineHeight));
 				/*					textRenderer.BeginDraw (win);
 //				textRenderer.SetClip (clipRectangle);
@@ -492,13 +499,10 @@ namespace Mono.TextEditor
 					textRenderer.EndDraw ();*/
 				break;
 			case CaretMode.Underscore:
-				if (caretX + this.charWidth < this.XOffset)
-					return EmptyRectangle;
 				int bottom = caretY + lineHeight;
 				win.DrawLine (caretGc, caretX, bottom, caretX + this.charWidth, bottom);
-					break;
+				break;
 			}
-			return caretClipRectangle;
 		}
 
 		public Gdk.Rectangle GetCaretRectangle (Mono.TextEditor.CaretMode mode)
@@ -1235,7 +1239,7 @@ namespace Mono.TextEditor
 						textEditor.ClearSelection ();
 						Caret.Location = clickLocation;
 					}
-					ResetCaretBlink ();
+					textEditor.RequestResetCaretBlink ();
 				}
 			}
 
@@ -1812,6 +1816,7 @@ namespace Mono.TextEditor
 		void SetClip (Gdk.Rectangle rect)
 		{
 			clipRectangle = rect;
+			caretGc.ClipRectangle = rect;
 			foreach (Gdk.GC gc in gcDictionary.Values)
 				gc.ClipRectangle = rect;
 		}

@@ -62,7 +62,6 @@ namespace Mono.TextEditor
 		int oldRequest = -1;
 		
 		bool isDisposed = false;
-		object disposeLock = new object ();
 		IMMulticontext imContext;
 		Gdk.EventKey lastIMEvent;
 		bool imContextActive;
@@ -355,7 +354,7 @@ namespace Mono.TextEditor
 			
 //			Rectangle rectangle = textViewMargin.GetCaretRectangle (Caret.Mode);
 			
-			textViewMargin.ResetCaretBlink ();
+			RequestResetCaretBlink ();
 			
 			if (!IsSomethingSelected) {
 				if (/*Options.HighlightCaretLine && */args.Location.Line != Caret.Line) 
@@ -470,6 +469,7 @@ namespace Mono.TextEditor
 		protected override bool OnFocusInEvent (EventFocus evnt)
 		{
 			IMContext.FocusIn ();
+			RequestResetCaretBlink ();
 			return base.OnFocusInEvent (evnt);
 		}
 		
@@ -477,6 +477,7 @@ namespace Mono.TextEditor
 		{
 			imContext.FocusOut ();
 			HideTooltip ();
+			TextViewMargin.StopCaretThread ();
 			return base.OnFocusOutEvent (evnt);
 		}
 		
@@ -544,72 +545,66 @@ namespace Mono.TextEditor
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			lock (disposeLock) {
-				if (isDisposed)
-					return;
-				this.isDisposed = true;
-				RemoveScrollWindowTimer ();
-				if (invisibleCursor != null) {
-					invisibleCursor.Dispose ();
-					invisibleCursor = null;
-				}
-				Caret.PositionChanged -= CaretPositionChanged;
-				
-				Document.DocumentUpdated -= DocumentUpdatedHandler;
-				if (textEditorData.Options != null)
-					textEditorData.Options.Changed -= OptionsChanged;
-
-				imContext = imContext.Kill (x => x.Commit -= IMCommit);
-
-				if (this.textEditorData.HAdjustment != null) {
-					this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
-					this.textEditorData.HAdjustment = null;
-				}
-				if (this.textEditorData.VAdjustment != null) {
-					this.textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
-					this.textEditorData.VAdjustment = null;
-				}
-				
-				if (margins != null) {
-					foreach (Margin margin in this.margins) {
-						if (margin is IDisposable)
-							((IDisposable)margin).Dispose ();
-					}
-					this.margins = null;
-				}
-
-				// Dispose the buffer after disposing the margins. Gdk will crash when trying to dispose
-				// a drawable if a Win32 hdc is bound to it.
-				DisposeBgBuffer ();
-				
-				iconMargin = null; 
-				gutterMargin = null;
-				foldMarkerMargin = null;
-				textViewMargin = null;
-				this.textEditorData = this.textEditorData.Kill (x => x.SelectionChanged -= TextEditorDataSelectionChanged);
-				this.Realized -= OptionsChanged;
+			if (isDisposed)
+				return;
+			this.isDisposed = true;
+			RemoveScrollWindowTimer ();
+			if (invisibleCursor != null) {
+				invisibleCursor.Dispose ();
+				invisibleCursor = null;
 			}
+			Caret.PositionChanged -= CaretPositionChanged;
+			
+			Document.DocumentUpdated -= DocumentUpdatedHandler;
+			if (textEditorData.Options != null)
+				textEditorData.Options.Changed -= OptionsChanged;
+
+			imContext = imContext.Kill (x => x.Commit -= IMCommit);
+
+			if (this.textEditorData.HAdjustment != null) {
+				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
+				this.textEditorData.HAdjustment = null;
+			}
+			if (this.textEditorData.VAdjustment != null) {
+				this.textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
+				this.textEditorData.VAdjustment = null;
+			}
+			
+			if (margins != null) {
+				foreach (Margin margin in this.margins) {
+					if (margin is IDisposable)
+						((IDisposable)margin).Dispose ();
+				}
+				this.margins = null;
+			}
+
+			// Dispose the buffer after disposing the margins. Gdk will crash when trying to dispose
+			// a drawable if a Win32 hdc is bound to it.
+			DisposeBgBuffer ();
+			
+			iconMargin = null; 
+			gutterMargin = null;
+			foldMarkerMargin = null;
+			textViewMargin = null;
+			this.textEditorData = this.textEditorData.Kill (x => x.SelectionChanged -= TextEditorDataSelectionChanged);
+			this.Realized -= OptionsChanged;
 		}
 		
 		internal void RedrawMargin (Margin margin)
 		{
-			lock (disposeLock) {
-				if (isDisposed)
-					return;
-				this.RepaintArea (margin.XOffset, 0, GetMarginWidth (margin),  this.Allocation.Height);
-			}
+			if (isDisposed)
+				return;
+			this.RepaintArea (margin.XOffset, 0, GetMarginWidth (margin),  this.Allocation.Height);
 		}
 		
 		public void RedrawMarginLine (Margin margin, int logicalLine)
 		{
-			lock (disposeLock) {
-				if (isDisposed)
-					return;
-				this.RepaintArea (margin.XOffset, 
-				                  Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value, 
-				                  GetMarginWidth (margin), 
-				                  LineHeight);
-			}
+			if (isDisposed)
+				return;
+			this.RepaintArea (margin.XOffset, 
+			                  Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value, 
+			                  GetMarginWidth (margin), 
+			                  LineHeight);
 		}
 
 		int GetMarginWidth (Margin margin)
@@ -622,63 +617,53 @@ namespace Mono.TextEditor
 		
 		internal void RedrawLine (int logicalLine)
 		{
-			lock (disposeLock) {
-				if (isDisposed)
-					return;
+			if (isDisposed)
+				return;
 //				Console.WriteLine ("Redraw line:" + logicalLine);
-				this.RepaintArea (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
-			}
+			this.RepaintArea (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
 		}
 		
 		internal void RedrawPosition (int logicalLine, int logicalColumn)
 		{
-			lock (disposeLock) {
-				if (isDisposed)
-					return;
+			if (isDisposed)
+				return;
 //				Console.WriteLine ("Redraw position: logicalLine={0}, logicalColumn={1}", logicalLine, logicalColumn);
-				RedrawLine (logicalLine);
-			}
+			RedrawLine (logicalLine);
 		}
 		
 		public void RedrawMarginLines (Margin margin, int start, int end)
 		{
-			lock (disposeLock) {
-				if (isDisposed)
-					return;
-				if (start < 0)
-					start = 0;
-				int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
-				if (end < 0)
-					end = Document.LineCount - 1;
-				int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
-				this.RepaintArea (margin.XOffset, visualStart, GetMarginWidth (margin), visualEnd - visualStart );
-			}
+			if (isDisposed)
+				return;
+			if (start < 0)
+				start = 0;
+			int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
+			if (end < 0)
+				end = Document.LineCount - 1;
+			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
+			this.RepaintArea (margin.XOffset, visualStart, GetMarginWidth (margin), visualEnd - visualStart );
 		}
 			
 		internal void RedrawLines (int start, int end)
 		{
 //			Console.WriteLine ("redraw lines: start={0}, end={1}", start, end);
-			lock (disposeLock) {
-				if (isDisposed)
-					return;
-				if (start < 0)
-					start = 0;
-				int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
-				if (end < 0)
-					end = Document.LineCount - 1;
-				int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
-				this.RepaintArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
-			}
+			if (isDisposed)
+				return;
+			if (start < 0)
+				start = 0;
+			int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
+			if (end < 0)
+				end = Document.LineCount - 1;
+			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
+			this.RepaintArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
 		}
 		
 		public void RedrawFromLine (int logicalLine)
 		{
 //			Console.WriteLine ("Redraw from line: logicalLine={0}", logicalLine);
-			lock (disposeLock) {
-				if (isDisposed)
-					return;
-				this.RepaintArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
-			}
+			if (isDisposed)
+				return;
+			this.RepaintArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
 		}
 		
 		public void RunAction (Action<TextEditorData> action)
@@ -702,7 +687,7 @@ namespace Mono.TextEditor
 				unicodeChar = 0;
 			
 			CurrentMode.InternalHandleKeypress (this, textEditorData, key, unicodeChar, filteredModifiers);
-			textViewMargin.ResetCaretBlink ();
+			RequestResetCaretBlink ();
 		}
 		
 		bool IMFilterKeyPress (Gdk.EventKey evt)
@@ -1293,7 +1278,7 @@ namespace Mono.TextEditor
 		}
 		
 		List<Gdk.Rectangle> redrawList = new List<Gdk.Rectangle> ();
-		
+
 		public void RepaintArea (int x, int y, int width, int height)
 		{
 			if (this.buffer == null)
@@ -1333,16 +1318,18 @@ namespace Mono.TextEditor
 			if (this.isDisposed)
 				return true;
 //			Console.WriteLine ("Expose:" + e.Area);
-//			Console.WriteLine (Environment.StackTrace);
-			lock (disposeLock) {
-				UpdateAdjustments ();
-				RenderPendingUpdates (e.Window);
-				e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-				                       buffer,
-				                       e.Area.X, e.Area.Y, e.Area.X, e.Area.Y,
-				                       e.Area.Width, e.Area.Height + 1);
-				textViewMargin.DrawCaret (e.Window);
+			UpdateAdjustments ();
+			RenderPendingUpdates (e.Window);
+			e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
+			                       buffer,
+			                       e.Area.X, e.Area.Y, e.Area.X, e.Area.Y,
+			                       e.Area.Width, e.Area.Height + 1);
+			if (requestResetCaretBlink) {
+				textViewMargin.ResetCaretBlink ();
+				requestResetCaretBlink = false;
 			}
+			if (e.Area.Contains (TextViewMargin.caretX, TextViewMargin.caretY))
+				textViewMargin.DrawCaret (e.Window);
 			return true;
 		}
 
@@ -1825,6 +1812,11 @@ namespace Mono.TextEditor
 		public Margin GetMargin (Type marginType)
 		{
 			return margins.Find((margin) => { return marginType.IsAssignableFrom (margin.GetType ()); });
+		}
+		bool requestResetCaretBlink = false;
+		public void RequestResetCaretBlink ()
+		{
+			requestResetCaretBlink = true;
 		}
 	}
 	

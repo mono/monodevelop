@@ -1,5 +1,11 @@
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Secured caret blinking
+	  thread.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Update bracket
 	  highlighting on undo/redo.
 
