@@ -1943,7 +1943,7 @@ public class Foo
 {
 	public void Bar ()
 	{
-		A<Bar>.B baz = new A<Bar>.B ();
+		A<Foo>.B baz = new A<Foo>.B ();
 		$baz.field.$
 	}
 }

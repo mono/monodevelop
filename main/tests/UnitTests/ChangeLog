@@ -1,3 +1,8 @@
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: fixed
+	  unit test.
+
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
 	* UnitTests.csproj: Add md.targets .
