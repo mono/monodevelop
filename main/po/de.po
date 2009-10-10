@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-10-08 22:23:01+0200\n"
-"PO-Revision-Date: 2009-10-08 22:30:51+0200\n"
+"PO-Revision-Date: 2009-10-10 14:53:45+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -673,7 +673,7 @@ msgstr "Verschiedenes"
 
 #: ../src/core/MonoDevelop.Ide/templates/AppConfigFile.xft.xml:8
 msgid "Creates a .NET application configuration file."
-msgstr "Erzeugt eine .NET-Anwendungs-Konfigurationsdatei."
+msgstr ".NET-Anwendungs-Konfigurationsdatei erstellen."
 
 #: ../src/core/MonoDevelop.Ide/templates/BlankCombine.xpt.xml:7
 msgid "Blank Solution"
@@ -689,7 +689,7 @@ msgstr "Leere Klasse"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyClass.xft.xml:8
 msgid "Creates an empty class."
-msgstr "Erzeugt eine leere Klasse."
+msgstr "Leere Klasse erstellen."
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyEnum.xft.xml:4
 msgid "Empty Enumeration"
@@ -697,7 +697,7 @@ msgstr "Leere Aufzählung"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyEnum.xft.xml:8
 msgid "Creates an empty enum."
-msgstr "Erzeugt eine leere Aufzählung."
+msgstr "Leere Aufzählung erstellen."
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:4
 msgid "Empty HTML File"
@@ -709,7 +709,7 @@ msgstr "Web"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml:7
 msgid "Creates an empty HTML file."
-msgstr "Erzeugt eine leere HTML Datei."
+msgstr "Leere HTML Datei erstellen."
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyInterface.xft.xml:4
 msgid "Empty Interface"
@@ -717,7 +717,7 @@ msgstr "Leere Schnittstelle"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyInterface.xft.xml:8
 msgid "Creates an empty interface."
-msgstr "Erzeugt eine leere Schnittstelle."
+msgstr "Leere Schnittstelle erstellen."
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyResourceFile.xft.xml:4
 msgid "Empty Resource File"
@@ -725,7 +725,7 @@ msgstr "Leere Ressourcendatei"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyResourceFile.xft.xml:8
 msgid "Creates an empty resource file."
-msgstr "Erzeugt eine leere Ressourcendatei."
+msgstr "Leere Ressourcendatei erstellen."
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyStruct.xft.xml:4
 msgid "Empty Struct"
@@ -733,7 +733,7 @@ msgstr "Leere Struktur"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyStruct.xft.xml:8
 msgid "Creates an empty struct."
-msgstr "Erzeugt ein leere Struktur."
+msgstr "Leere Struktur erstellen."
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml:4
 msgid "Empty Text File"
@@ -741,7 +741,7 @@ msgstr "Leere Textdatei"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml:7
 msgid "Creates an empty text file."
-msgstr "Erzeugt eine leere Textdatei."
+msgstr "Leere Textdatei erstellen."
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml:4
 msgid "Empty XML File"
@@ -754,7 +754,7 @@ msgstr "XML"
 
 #: ../src/core/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml:7
 msgid "Creates an empty XML file."
-msgstr "Erzeugt eine leere XML Datei."
+msgstr "Leere XML Datei erstellen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:223
 msgid "Edit"
@@ -1227,7 +1227,7 @@ msgstr "_Projektmappe..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:513
 msgid "Create a new solution"
-msgstr "Neue Projektmappe erzeugen"
+msgstr "Neue Projektmappe erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:518
 msgid "_Workspace..."
@@ -1235,7 +1235,7 @@ msgstr "_Arbeitsbereich...."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:520
 msgid "Create a new workspace"
-msgstr "Erstelle neuen Arbeitsbereich"
+msgstr "Neuen Arbeitsbereich erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:522
 msgid "_Close File"
@@ -1414,7 +1414,7 @@ msgstr "_Neues Layout..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:642
 msgid "Create new layout"
-msgstr "Erstelle neues Layout"
+msgstr "Neues Layout erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:645
 msgid "_Delete Current Layout"
@@ -2428,7 +2428,7 @@ msgstr "Allgemeines Projekt"
 
 #: ../src/core/MonoDevelop.Ide/templates/GenericProject.xpt.xml:10
 msgid "Creates a project which can contain any kind of file."
-msgstr "Kreire ein Projekt das jeden Dateityp beinhalten kann."
+msgstr "Ein Projekt das jeden Dateityp beinhalten kann erstellen."
 
 #: ../src/core/MonoDevelop.Ide/templates/Workspace.xpt.xml:5
 msgid "Workspace"
@@ -4059,7 +4059,7 @@ msgstr "Neue Aufgabe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:121
 msgid "Create New Task"
-msgstr "Neue Aufgabe erzeugen"
+msgstr "Neue Aufgabe erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:123
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:126
@@ -5226,7 +5226,7 @@ msgstr "Zeige Ausgabe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:131
 msgid "Pin results pad"
-msgstr "Pinne erzeugt Pad"
+msgstr "Pinne Suchergebnisse"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs:43
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs:44
@@ -5393,7 +5393,7 @@ msgstr "Warnmaske"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:255
 msgid "Serializer Generation"
-msgstr "Serializer Erzeugung"
+msgstr "Serializer Generierung"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:268
 msgid "Mono Configuration Directory"
@@ -7089,7 +7089,7 @@ msgstr "ILAsm"
 
 #: ../src/addins/ILAsmBinding/ILAsmConsoleProject.xpt.xml:11
 msgid "ILAsm Console Project"
-msgstr "ILAsm Terminal-Projekt"
+msgstr "ILAsm Terminal-Projekt erstellen."
 
 #: ../src/addins/ILAsmBinding/ILAsmBinding.addin.xml:26
 msgid "ILAsm Files"
@@ -7963,12 +7963,12 @@ msgstr "Gtk"
 #: ../src/addins/MonoDevelop.GtkCore/templates/Dialog.xft.xml:8
 #: ../src/addins/MonoDevelop.GtkCore/templates/DialogPartial.xft.xml:8
 msgid "Creates a Gtk dialog."
-msgstr "Erzeugt einen Gtk-Dialog."
+msgstr "Gtk-Dialog erstellen."
 
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:8
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:8
 msgid "Creates a Gtk Window"
-msgstr "Erzeugt ein Gtk-Fenster"
+msgstr "Gtk-Fenster erstellen."
 
 #: ../src/addins/MonoDevelop.GtkCore/templates/Widget.xft.xml:4
 #: ../src/addins/MonoDevelop.GtkCore/templates/WidgetPartial.xft.xml:4
@@ -7978,7 +7978,7 @@ msgstr "Widget"
 #: ../src/addins/MonoDevelop.GtkCore/templates/Widget.xft.xml:8
 #: ../src/addins/MonoDevelop.GtkCore/templates/WidgetPartial.xft.xml:8
 msgid "Creates a custom Gtk Widget."
-msgstr "Erzeugt ein benutzerdefiniertes Gtk-Widget."
+msgstr "Benutzerdefiniertes Gtk-Widget erstellen."
 
 #: ../src/addins/MonoDevelop.GtkCore/templates/ActionGroup.xft.xml:4
 #: ../src/addins/MonoDevelop.GtkCore/templates/ActionGroupPartial.xft.xml:4
@@ -7988,7 +7988,7 @@ msgstr "Aktions-Gruppe"
 #: ../src/addins/MonoDevelop.GtkCore/templates/ActionGroup.xft.xml:8
 #: ../src/addins/MonoDevelop.GtkCore/templates/ActionGroupPartial.xft.xml:8
 msgid "Creates a global Action Group."
-msgstr "Erzeugt eine globale Aktions-Gruppe."
+msgstr "Globale Aktions-Gruppe erstellen."
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:8
 msgid "GUI Designer"
@@ -8042,7 +8042,7 @@ msgstr "Benutzersteuerelement"
 
 #: ../src/addins/MonoDevelop.GtkCore/templates/DrawingArea.xft.xml:7
 msgid "Creates a custom Gtk.DrawingArea subclass."
-msgstr "Erzeugt eine benutzerdefinierte Gtk.DrawingArea Unterklasse."
+msgstr "Benutzerdefinierte Gtk.DrawingArea Subklasse erstellen."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:97
 msgid "The GUI designer project file '{0}' could not be loaded."
@@ -8934,7 +8934,7 @@ msgstr "Leere Datei"
 
 #: ../src/addins/VBNetBinding/templates/EmptyVBFile.xft.xml:8
 msgid "Creates an empty VB.Net file."
-msgstr "Erzeugt eine leere VB.Net-Datei."
+msgstr "Leere VB.Net-Datei erstellen."
 
 #: ../src/addins/VBNetBinding/templates/EmptyVBProject.xpt.xml:7
 #: ../src/addins/CSharpBinding/templates/EmptyProject.xpt.xml:7
@@ -8949,11 +8949,11 @@ msgstr "VBNet"
 
 #: ../src/addins/VBNetBinding/templates/EmptyVBProject.xpt.xml:11
 msgid "Creates an empty VB.Net solution."
-msgstr "Erzeugt eine leere VB.Net-Projektmappe."
+msgstr "Leere VB.Net-Projektmappe erstellen."
 
 #: ../src/addins/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml:11
 msgid "Create a console VB.Net project"
-msgstr "Erzeugt ein VB.Net-Terminal-Projekt"
+msgstr "VB.Net-Terminal-Projekt erstellen."
 
 #: ../src/addins/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml:7
 #: ../src/addins/CSharpBinding/templates/GtkSharp2Project.xpt.xml:7
@@ -8962,7 +8962,7 @@ msgstr "Gtk#-2.0-Projekt"
 
 #: ../src/addins/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml:11
 msgid "Creates a VB.NET Gtk# 2.0 project."
-msgstr "Erzeugt ein VB.NET Gtk# 2.0 Projekt."
+msgstr "VB.NET Gtk# 2.0 Projekt erstellen."
 
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:34
 msgid "VB.NET Files"
@@ -9449,7 +9449,7 @@ msgstr "Elemente hinzufügen..."
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:72
 msgid "_Generate Makefiles"
-msgstr "_Makefiles erzeugen"
+msgstr "_Makefiles generieren"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:73
 msgid ""
@@ -9530,12 +9530,12 @@ msgstr "Erstelle rules.make"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:135
 msgid "{0} were successfully generated."
-msgstr "{0} wurden erfolgreich erzeugt."
+msgstr "{0} wurden erfolgreich erstellt."
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:140
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:141
 msgid "{0} could not be generated: "
-msgstr "{0} konnte nicht erzeugt werden: "
+msgstr "{0} konnte nicht erstellt werden: "
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:159
 msgid "Deploying Solution to Tarball"
@@ -9627,7 +9627,7 @@ msgstr "Lade Projektmappen-Datei {0}"
 msgid ""
 "Error: Makefile generation supported only for solutions.\n"
 msgstr ""
-"Fehler: Makefile-Erzeugung nur für Projektmappen unterstützt.\n"
+"Fehler: Makefile-Generierung nur für Projektmappen unterstützt.\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
 msgid ""
@@ -9657,7 +9657,7 @@ msgid ""
 "configuration scripts."
 msgstr ""
 " --simple-makefiles -s\n"
-"\tErzeugt eine Menge von Makefiles mit den häufigsten Zielen, und ein "
+"\tGeneriere eine Menge von Makefiles mit den häufigsten Zielen, und ein "
 "Konfigurationsskript das eine grundlegende Überprüfung von Paket-Abhängigkeiten "
 "vornimmt. Standard ist eine auf Autotools basierende Makefile-Struktur mit den "
 "Standard-Zielen und -Konfigurationsskripten zu erzeugen."
@@ -9729,7 +9729,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:381
 msgid "Generate Makefile..."
-msgstr "Makefiles erzeugen..."
+msgstr "Makefiles generieren..."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:744
 msgid "Error while trying to read the specified Makefile"
@@ -9778,7 +9778,7 @@ msgstr "Projekt konnte nicht erstellt werden: "
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:201
 msgid "Build failed. See Build Output panel."
-msgstr "Erzeugung fehlgeschlagen. Siehe Erzeugungs-Ausgabe-Feld."
+msgstr "Erstellen fehlgeschlagen. Siehe Erstellungsausgabe."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:345
 msgid "Cleaning project"
@@ -10072,7 +10072,7 @@ msgstr "Bestehende Makefiles benutzen"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:113
 msgid "Generate new Makefiles"
-msgstr "Neue Makefiles erzeugen"
+msgstr "Neue Makefiles generieren"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:144
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:148
@@ -10081,7 +10081,7 @@ msgstr "Standard-Konfiguration:"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:177
 msgid "Select the kind of Makefile to generate:"
-msgstr "Wähle die zu erzeugende Makefile-Art:"
+msgstr "Wähle die zu generierende Makefile-Art:"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:202
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:96
@@ -10096,7 +10096,7 @@ msgid ""
 "and configuration scripts."
 msgstr ""
 "<b>Autotools-basiertes Makefile</b>\n"
-"Erzeugt eine auf den Autotools basierende Makefile-Struktur mit den "
+"Generiert eine auf den Autotools basierende Makefile-Struktur mit den "
 "Standard-Zielen und -Konfigurationsskripten."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:240
@@ -10112,7 +10112,7 @@ msgid ""
 "script that does a basic check of package dependencies."
 msgstr ""
 "<b>Einfaches Makefile</b>\n"
-"Erzeugt eine Menge von Makefiles mit den häufigsten Zielen, und ein "
+"Generiert eine Menge von Makefiles mit den häufigsten Zielen, und ein "
 "Konfigurationsskript das eine grundlegende Überprüfung von Paket-Abhängigkeiten "
 "vornimmt."
 
@@ -10130,11 +10130,11 @@ msgstr "Diese Datei in synchronisiertes Makefile aufnehmen"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:47
 msgid "Generate Makefiles"
-msgstr "Makefiles erzeugen"
+msgstr "Makefiles generieren"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:64
 msgid "Select the kind of Makefile you want to generate:"
-msgstr "Wählen sie die Art von Makefile die sie erzeugen wollen:"
+msgstr "Wählen sie die Art von Makefile die sie generieren wollen:"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:134
 msgid ""
@@ -10170,7 +10170,7 @@ msgstr "Autotools"
 
 #: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:52
 msgid "Generate Makefiles..."
-msgstr "Makefiles erzeugen..."
+msgstr "Makefiles generieren..."
 
 #: ../src/addins/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml:56
 msgid "Include in Synchronized Makefile"
@@ -10243,15 +10243,15 @@ msgstr "Alle löschen"
 
 #: ../src/addins/CSharpBinding/templates/ConsoleProject.xpt.xml:11
 msgid "Creates a new C# console project."
-msgstr "Erstelle ein neues C# Terminal-Projekt."
+msgstr "C# Terminal-Projekt erstellen."
 
 #: ../src/addins/CSharpBinding/templates/EmptyCSharpFile.xft.xml:8
 msgid "Creates an empty C# file."
-msgstr "Erzeugt eine leere C# Datei."
+msgstr "Leere C# Datei erstellen."
 
 #: ../src/addins/CSharpBinding/templates/EmptyProject.xpt.xml:11
 msgid "Creates an empty C# project."
-msgstr "Erzeug ein leeres C# Projekt."
+msgstr "Leeres C# Projekt erstellen."
 
 #: ../src/addins/CSharpBinding/templates/GladeSharp2Project.xpt.xml:7
 msgid "Glade# 2.0 Project"
@@ -10272,15 +10272,15 @@ msgstr "Gnome#-2.0-Projekt"
 
 #: ../src/addins/CSharpBinding/templates/GnomeSharp2Project.xpt.xml:11
 msgid "Creates a Gnome# 2.0 project"
-msgstr "Erzeugt ein Gnome#-2.0-Projekt"
+msgstr "Gnome#-2.0-Projekt erstellen."
 
 #: ../src/addins/CSharpBinding/templates/GtkSharp2Project.xpt.xml:11
 msgid "Creates a Gtk# 2.0 project."
-msgstr "Erzeugt ein Gtk#-2.0-Projekt."
+msgstr "Gtk#-2.0-Projekt erstellen."
 
 #: ../src/addins/CSharpBinding/templates/Library.xpt.xml:11
 msgid "Creates an empty C# class library"
-msgstr "Erzeugt eine leere C#-Bibliothek."
+msgstr "Leere C#-Bibliothek erstellen."
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:47
 msgid "CSharp Files"
@@ -10890,7 +10890,7 @@ msgstr "Ungültige Codepage-Nummer."
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:421
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:429
 msgid "Creates anonymous delegate."
-msgstr "Erzeugt ein anonymes Delegate."
+msgstr "Anonymes Delegate erstellen."
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1760
 msgid "Set text in a code-like font"
@@ -10962,7 +10962,7 @@ msgstr "Spezifiziert einen Link"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1780
 msgid "Generate a See Also entry"
-msgstr "Erzeugt einen \"Siehe auch\" Eintrag"
+msgstr "Generiert einen \"Siehe auch\" Eintrag"
 
 #: ../src/addins/CSharpBinding/Gui/CSharpTextEditorCompletion.cs:1781
 msgid "Describe a member of a type"
@@ -11042,7 +11042,7 @@ msgstr "_Bugzilla-URL:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:198
 msgid "Creation date:"
-msgstr "Erzeugungs-Datum:"
+msgstr "Erstellungs-Datum:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs:251
 msgid "Project settings"
@@ -11344,7 +11344,7 @@ msgid ""
 "set of PO files for the new project."
 msgstr ""
 "Füge ein Überstzungsprojekt zur Projektmappe hinzu, das gettext benutzen wird "
-"um eine Anzahl an PO-Dateien für das neue Projekt zu erzeugen."
+"um eine Anzahl an PO-Dateien für das neue Projekt zu generieren."
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs:47
 msgid ""
@@ -11405,7 +11405,7 @@ msgstr "Übersetzungs-Projekt"
 
 #: ../src/addins/MonoDevelop.Gettext/templates/TranslationProject.xpt.xml:8
 msgid "Creates a translation project."
-msgstr "Erzeugt ein Übersetzungs-Projekt."
+msgstr "Ein Übersetzungs-Projekt erstellen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs:56
 msgid "Update done."
@@ -12408,7 +12408,7 @@ msgstr "C/C++"
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:397
 #: ../src/addins/AspNet/MonoDevelop.AspNet/gtk-gui/MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs:40
 msgid "Code Generation"
-msgstr "Quelltext-Erzeugung"
+msgstr "Quelltext-Generierung"
 
 #: ../src/addins/CBinding/CBinding.addin.xml:161
 msgid "Edit Packages..."
@@ -12439,7 +12439,7 @@ msgstr "C"
 
 #: ../src/addins/CBinding/templates/EmptyCProject.xpt.xml:12
 msgid "Creates an empty C solution."
-msgstr "Erzeugt eine leeres C-Projekt."
+msgstr "Leeres C-Projekt erstellen."
 
 #: ../src/addins/CBinding/templates/EmptyCSourceFile.xft.xml:8
 msgid "Empty C Source File"
@@ -12447,7 +12447,7 @@ msgstr "Leere C-Quelltext-Datei"
 
 #: ../src/addins/CBinding/templates/EmptyCSourceFile.xft.xml:12
 msgid "Creates an empty C source file."
-msgstr "Erzeugt eine leere C-Quelltext-Datei."
+msgstr "Leere C-Quelltext-Datei erstellen."
 
 #: ../src/addins/CBinding/templates/EmptyCppProject.xpt.xml:8
 msgid "Empty C++ Project"
@@ -12455,7 +12455,7 @@ msgstr "Leeres C++-Projekt"
 
 #: ../src/addins/CBinding/templates/EmptyCppProject.xpt.xml:12
 msgid "Creates an empty C++ solution."
-msgstr "Erzeugt ein leeres C++-Projekt."
+msgstr "Leeres C++-Projekt erstellen."
 
 #: ../src/addins/CBinding/templates/EmptyCHeaderFile.xft.xml:8
 msgid "Empty C Header File"
@@ -12463,7 +12463,7 @@ msgstr "Leere C Header-Datei."
 
 #: ../src/addins/CBinding/templates/EmptyCHeaderFile.xft.xml:12
 msgid "Creates an empty C header file."
-msgstr "Erzeugt eine leere C Header-Datei."
+msgstr "Leere C Header-Datei erstellen."
 
 #: ../src/addins/CBinding/templates/EmptyCppHeaderFile.xft.xml:8
 msgid "Empty C++ Header File"
@@ -12471,7 +12471,7 @@ msgstr "Leere C++ Header-Datei"
 
 #: ../src/addins/CBinding/templates/EmptyCppHeaderFile.xft.xml:12
 msgid "Creates an empty C++ header file."
-msgstr "Erzeugt eine leere C++ Header-Datei."
+msgstr "Leere C++ Header-Datei erstellen."
 
 #: ../src/addins/CBinding/templates/EmptyCppSourceFile.xft.xml:8
 msgid "Empty C++ Source File"
@@ -12479,7 +12479,7 @@ msgstr "Leere C++-Quelltext-Datei"
 
 #: ../src/addins/CBinding/templates/EmptyCppSourceFile.xft.xml:12
 msgid "Creates an empty C++ source file."
-msgstr "Erzeugt eine leere C++-Quelltext-Datei."
+msgstr "Leere C++-Quelltext-Datei erstellen."
 
 #: ../src/addins/CBinding/templates/SharedLibraryCProject.xpt.xml:8
 #: ../src/addins/CBinding/templates/SharedLibraryCppProject.xpt.xml:8
@@ -12488,11 +12488,11 @@ msgstr "Dynamische Bibliothek"
 
 #: ../src/addins/CBinding/templates/SharedLibraryCProject.xpt.xml:12
 msgid "Creates simple shared library C project."
-msgstr "Erzeugt ein einfaches C-Projekt für eine dynamische Bibliothek."
+msgstr "C-Projekt für eine dynamische Bibliothek erstellen."
 
 #: ../src/addins/CBinding/templates/SharedLibraryCppProject.xpt.xml:12
 msgid "Creates simple shared library C++ project."
-msgstr "Erzeugt ein einfaches C++-Projekt für eine dynamische Bibliothek."
+msgstr "C++-Projekt für eine dynamische Bibliothek erstellen."
 
 #: ../src/addins/CBinding/templates/StaticLibraryCProject.xpt.xml:8
 #: ../src/addins/CBinding/templates/StaticLibraryCppProject.xpt.xml:8
@@ -12502,19 +12502,19 @@ msgstr "Statische Bibliothek"
 
 #: ../src/addins/CBinding/templates/StaticLibraryCProject.xpt.xml:12
 msgid "Creates simple static library C project."
-msgstr "Erzeugt ein einfaches C-Projekt für eine statische Bibliothek."
+msgstr "C-Projekt für eine statische Bibliothek erstellen."
 
 #: ../src/addins/CBinding/templates/StaticLibraryCppProject.xpt.xml:12
 msgid "Creates simple static library C++ project."
-msgstr "Erzeugt ein einfaches C++-Projekt für eine statische Bibliothek."
+msgstr "C++-Projekt für eine statische Bibliothek erstellen."
 
 #: ../src/addins/CBinding/templates/ConsoleCProject.xpt.xml:12
 msgid "Creates simple hello world C project."
-msgstr "Erzeugt ein einfaches Hallo-Welt-C-Projekt."
+msgstr "Hallo-Welt-C-Projekt erstellen."
 
 #: ../src/addins/CBinding/templates/ConsoleCppProject.xpt.xml:12
 msgid "Creates simple hello world C++ project."
-msgstr "Erzeugt ein einfaches Hallo-Welt-C++-Projekt."
+msgstr "Hallo-Welt-C++-Projekt erstellen."
 
 #: ../src/addins/CBinding/Gui/CodeGenerationPanel.cs:52
 msgid "_Root Solution Directory"
@@ -12555,7 +12555,7 @@ msgstr "Warnung"
 
 #: ../src/addins/CBinding/Compiler/GNUCompiler.cs:802
 msgid "Build failed - check build output for details"
-msgstr "Erzeugung fehlgeschlagen - siehe Ausgabe für Details"
+msgstr "Erstellen fehlgeschlagen - siehe Ausgabe für Details"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:162
 msgid "Warning Level:"
@@ -14338,7 +14338,7 @@ msgstr "Desktop-Anwendungsstarter"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/app.desktop.xft.xml:7
 msgid "Creates a Desktop Entry file."
-msgstr "Erzeugt eine Desktop-Eintrag-Datei."
+msgstr "Desktop-Eintrag-Datei erstellen."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs:42
 msgid "Script name not provided"
@@ -14386,7 +14386,7 @@ msgstr "Skriptname:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:104
 msgid "Generate .desktop file"
-msgstr ".desktop-Datei erzeugen"
+msgstr ".desktop-Datei generieren"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:124
 msgid "Generate .pc file for the library"
@@ -14509,7 +14509,7 @@ msgstr "C#/Moonlight"
 
 #: ../src/addins/MonoDevelop.Moonlight/Templates/Moonlight-ApplicationProject.xpt.xml:11
 msgid "Creates a Moonlight application project."
-msgstr "Erzeugt ein Moonlight-Anwendungs Projekt."
+msgstr "Moonlight-Anwendungs Projekt erstellen."
 
 #: ../src/addins/MonoDevelop.Moonlight/Templates/Moonlight-ApplicationXaml.xft.xml:7
 msgid "Moonlight Application"
@@ -14533,7 +14533,7 @@ msgstr "Moonlight-Bibliothek-Projekt"
 
 #: ../src/addins/MonoDevelop.Moonlight/Templates/Moonlight-LibraryProject.xpt.xml:11
 msgid "Creates a Moonlight class library project."
-msgstr "Erzeugt ein Moonlight-Bibliotheks Projekt."
+msgstr "Moonlight-Bibliotheks Projekt erstellen."
 
 #: ../src/addins/MonoDevelop.Moonlight/MonoDevelop.Moonlight/MoonlightProject.cs:149
 msgid "Could not find test HTML file '{0}'."
@@ -14545,7 +14545,7 @@ msgstr "Konnte Testseite in Browser nicht öffnen."
 
 #: ../src/addins/MonoDevelop.Moonlight/gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:92
 msgid "<b>XAP Generation</b>"
-msgstr "<b>XAP-Erzeugung</b>"
+msgstr "<b>XAP-Generierung</b>"
 
 #: ../src/addins/MonoDevelop.Moonlight/gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:114
 msgid "XAP _filename:"
@@ -14553,7 +14553,7 @@ msgstr "_XAP-Dateiname:"
 
 #: ../src/addins/MonoDevelop.Moonlight/gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:146
 msgid "_Generate manifest"
-msgstr "_Manifest erzeugen"
+msgstr "_Manifest generieren"
 
 #: ../src/addins/MonoDevelop.Moonlight/gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:177
 msgid "Entry _point:"
@@ -14631,11 +14631,11 @@ msgstr "XML Schema auswählen"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:628
 msgid "Creating schema..."
-msgstr "Erzeuge Schema..."
+msgstr "Schema generieren..."
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:633
 msgid "Schema created."
-msgstr "Schema erzeugt."
+msgstr "Schema generiert."
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:635
 msgid "Error creating XML schema."
@@ -14778,7 +14778,7 @@ msgstr "XmlEditor"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:57
 msgid "Create _Schema"
-msgstr "_Schema erzeugen"
+msgstr "_Schema generieren"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:60
 msgid "_Validate"
@@ -15129,7 +15129,7 @@ msgstr "NUnit"
 
 #: ../src/addins/NUnit/templates/NUnitAssemblyGroup.xpt.xml:10
 msgid "Create an NUnit assembly test collection"
-msgstr "Erzeugt eine NUnit Assembly Test-Sammlung."
+msgstr "NUnit Assembly Test-Collection erstellen."
 
 #: ../src/addins/NUnit/templates/NUnitTestClass.xft.xml:4
 msgid "Test Fixture"
@@ -15137,7 +15137,7 @@ msgstr "Test-Vorrichtung"
 
 #: ../src/addins/NUnit/templates/NUnitTestClass.xft.xml:8
 msgid "Creates a Test Fixture."
-msgstr "Erzeugt eine Test-Vorrichtung."
+msgstr "Test-Fixture erstellen."
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:80
 msgid "Unit Tests"
@@ -15230,7 +15230,7 @@ msgstr "NUnit-Bibliothek-Projekt"
 
 #: ../src/addins/NUnit/templates/NUnitProject.xpt.xml:8
 msgid "Creates an NUnit library"
-msgstr "Erzeugt eine NUnit-Bibliothek."
+msgstr "NUnit-Bibliothek erstellen."
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:109
 #: ../src/addins/NUnit/Gui/TestPad.cs:110
@@ -15723,7 +15723,7 @@ msgstr "_Konstante einführen..."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs:181
 msgid "Generate constant '{0}'"
-msgstr "Konstanten erzeugen '{0}'"
+msgstr "Konstanten '{0}' generieren"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs:188
 msgid "Replace expression with constant '{0}'"
@@ -15971,7 +15971,7 @@ msgstr "Internet Form"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebForm-Empty.xft.xml:12
 msgid "Creates an ASP.NET Web Form."
-msgstr "Erzeugt eine ASP.NET Web-Form."
+msgstr "ASP.NET Web-Form erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebHandler-Empty.xft.xml:7
 msgid "Web Handler"
@@ -15979,7 +15979,7 @@ msgstr "Web-Handler"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebHandler-Empty.xft.xml:12
 msgid "Creates an ASP.NET Web Handler."
-msgstr "Erzeugt einen ASP.NET Web-Handler."
+msgstr "ASP.NET Web-Handler erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebControl-Empty.xft.xml:7
 msgid "User Control"
@@ -15987,7 +15987,7 @@ msgstr "Benutzerkontrolle"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebControl-Empty.xft.xml:12
 msgid "Creates an empty ASP.NET user control."
-msgstr "Erzeugt eine leere ASP.NET Benutzer-Kontrolle."
+msgstr "Leere ASP.NET Benutzer-Kontrolle erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebControl-CodeBehind.xft.xml:7
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebControl-CodeBehindNonPartial.xft.xml:7
@@ -16023,7 +16023,7 @@ msgstr "Webanwendung"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebApplication.xpt.xml:11
 msgid "Creates a new ASP.NET Web Application project."
-msgstr "Erzeugt ein neues ASP.NET-Webanwengunsprojekt."
+msgstr "Neues ASP.NET-Webanwendungsprojekt erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebService-Empty.xft.xml:7
 msgid "Web Service"
@@ -16031,7 +16031,7 @@ msgstr "Web Service"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebService-Empty.xft.xml:12
 msgid "Creates an ASP.NET web service."
-msgstr "Erzeugt einen ASP.NET Web-Service."
+msgstr "ASP.NET Web-Service erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebService-CodeBehind.xft.xml:7
 msgid "Web Service with CodeBehind"
@@ -16057,7 +16057,7 @@ msgstr "MasterPage ohne CodeBehind"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/MasterPage-Empty.xft.xml:12
 msgid "Creates an ASP.NET Master Page."
-msgstr "Erzeugt einen ASP.NET Web-Handler."
+msgstr "ASP.NET Web-Handler erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/GlobalAsax-CodeBehind.xft.xml:7
 msgid "Global.asax with CodeBehind"
@@ -16073,7 +16073,7 @@ msgstr "Global.asax"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/GlobalAsax-Empty.xft.xml:13
 msgid "Creates an ASP.NET Global.asax file."
-msgstr "Erzeugt eine ASP.NET Global.asax-Datei."
+msgstr "ASP.NET Global.asax-Datei erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebApplication-Empty.xpt.xml:7
 msgid "Empty Web Application"
@@ -16081,7 +16081,7 @@ msgstr "Leere Webanwendung"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebApplication-Empty.xpt.xml:11
 msgid "Creates an empty ASP.NET Web Application project."
-msgstr "Erzeugt ein leeres ASP.NET-Webanwendungsprojekt."
+msgstr "Leeres ASP.NET-Webanwendungsprojekt erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebConfig-Application.xft.xml:8
 msgid "Web Application Configuration"
@@ -16089,7 +16089,7 @@ msgstr "Webanwendungs-Konfiguration"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebConfig-Application.xft.xml:14
 msgid "Creates an ASP.NET web.config file for an application."
-msgstr "Erzeugt eine ASP.NET web.config-Datei für eine Anwendung."
+msgstr "ASP.NET web.config-Datei für eine Anwendung erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebConfig-SubDir.xft.xml:8
 msgid "Subdirectory Web Configuration"
@@ -16097,7 +16097,7 @@ msgstr "Unterordner Webkonfiguration"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebConfig-SubDir.xft.xml:14
 msgid "Creates an ASP.NET web.config file for a subdirectory."
-msgstr "Erzeugt eine ASP.NET web.config-Datei für einen Unterordner."
+msgstr "ASP.NET web.config-Datei für einen Unterordner erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/WebContentForm-CodeBehind.xft.xml:7
 msgid "Web Content Form with CodeBehind"
@@ -16115,7 +16115,7 @@ msgstr "Verschachtelte Master-Page"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/NestedMasterPage.xft.xml:11
 msgid "Creates an ASP.NET Nested Master Page."
-msgstr "Erzeugt eine ASP.NET Master-Page."
+msgstr "ASP.NET Master-Page erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/Templates/NestedMasterPage-CodeBehind.xft.xml:7
 msgid "Nested Master Page with CodeBehind"
@@ -16475,7 +16475,7 @@ msgstr "ASP.NET MVC"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/Controller.xft.xml:12
 msgid "Creates an ASP.NET MVC Controller."
-msgstr "Erzeugt einenen ASP.NET MVC Controller."
+msgstr "ASP.NET MVC Controller erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/EmptyProject.xpt.xml:7
 msgid "Empty ASP.NET MVC Project"
@@ -16488,7 +16488,7 @@ msgstr "C#/ASP.NET"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/EmptyProject.xpt.xml:11
 msgid "Creates an empty ASP.NET MVC Web Project."
-msgstr "Erzeugt ein leeres ASP.NET MVC-Webprojekt."
+msgstr "Leeres ASP.NET MVC-Webprojekt erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/GlobalAsax.xft.xml:7
 msgid "ASP.NET Global.asax"
@@ -16496,7 +16496,7 @@ msgstr "ASP.NET Global.asax"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/GlobalAsax.xft.xml:13
 msgid "Creates an ASP.NET MVC Global.asax file."
-msgstr "Erzeugt eine ASP.NET MVC Global.asax-Datei."
+msgstr "ASP.NET MVC Global.asax-Datei erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/Project.xpt.xml:7
 msgid "ASP.NET MVC Project"
@@ -16504,7 +16504,7 @@ msgstr "ASP.NET MVC Projekt"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/Project.xpt.xml:11
 msgid "Creates an ASP.NET MVC Web Project."
-msgstr "Erzeugt ein ASP.NET Web-Projekt."
+msgstr "ASP.NET Web-Projekt erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/UserControl.xft.xml:7
 msgid "ASP.NET MVC View User Control"
@@ -16512,7 +16512,7 @@ msgstr "ASP.NET MVC View-Benutzercontrol"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/UserControl.xft.xml:12
 msgid "Creates an ASP.NET MVC User Control."
-msgstr "Erzeugt eine ASP.NET MVC Benutzer-Kontrolle."
+msgstr "ASP.NET MVC Benutzer-Kontrolle erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/ViewContentPage.xft.xml:7
 msgid "ASP.NET MVC View Content"
@@ -16520,7 +16520,7 @@ msgstr "ASP.NET MVC View Content"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/ViewContentPage.xft.xml:12
 msgid "Creates an ASP.NET MVC View Content page."
-msgstr "Erzeugt eine ASP.NET MVC View Content Seite."
+msgstr "ASP.NET MVC View-Content-Page erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/ViewMasterPage.xft.xml:7
 msgid "ASP.NET MVC Master Page"
@@ -16528,7 +16528,7 @@ msgstr "ASP.NET MVC Hauptseite"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/ViewMasterPage.xft.xml:12
 msgid "Creates an ASP.NET MVC Master Page."
-msgstr "Erzeugt eine ASP.NET MVC Hauptseite."
+msgstr "ASP.NET MVC Master-Page erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/ViewPage.xft.xml:7
 msgid "ASP.NET MVC View Page"
@@ -16536,7 +16536,7 @@ msgstr "ASP.NET MVC View Seite"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/ViewPage.xft.xml:12
 msgid "Creates an MVC View page."
-msgstr "Erzeugt eine MVC View Seite."
+msgstr "MVC View-Page erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/WebConfigApp.xft.xml:8
 msgid "ASP.NET MVC Application Configuration"
@@ -16544,7 +16544,7 @@ msgstr "ASP.NET MVC Application Configuration"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/WebConfigApp.xft.xml:14
 msgid "Creates an ASP.NET MVC Web.config file for an application."
-msgstr "Erzeugt eine ASP.NET MVC web.config-Datei für eine Anwendung."
+msgstr "ASP.NET MVC web.config-Datei für eine Anwendung erstellen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/Templates/WebConfigViews.xft.xml:8
 msgid "ASP.NET MVC Views Configuration"
@@ -17528,10 +17528,8 @@ msgstr "T4 Schablone"
 #~ msgstr "Fehler aufgetreten: {0}"
 #~ msgid "Question"
 #~ msgstr "Frage"
-
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
-
 #~ msgid "Do you want to save the current changes?"
 #~ msgstr "Wollen sie die aktuellen Änderungen speichern?"
 
