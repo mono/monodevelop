@@ -1,3 +1,15 @@
+2009-10-11  Mike Krüger  <mkrueger@novell.com>
+
+	* ChangeLog: 
+
+	* MonoDevelop.Refactoring/Change.cs: Update visible documents
+	  after refactoring.
+
+2009-10-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/Change.cs: Update visible documents
+	  after refactoring.
+
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:

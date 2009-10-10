@@ -78,6 +78,7 @@ namespace MonoDevelop.Refactoring
 		{
 			foreach (TextEditorData data in textEditorDatas) {
 				data.Document.EndAtomicUndo ();
+				data.Document.CommitUpdateAll ();
 			}
 			textEditorDatas.Clear ();
 		}
