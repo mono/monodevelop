@@ -42,7 +42,7 @@ namespace Mono.TextEditor
 		SyntaxMode   syntaxMode = null;
 		
 		string mimeType;
-		string fileName;
+		
 		bool   readOnly;
 		ReadOnlyCheckDelegate readOnlyCheckDelegate;
 		
@@ -59,12 +59,8 @@ namespace Mono.TextEditor
 		}
 		
 		public string FileName {
-			get {
-				return fileName;
-			}
-			set {
-				fileName = value;
-			}
+			get;
+			set;
 		}
 		
 		public SyntaxMode SyntaxMode {

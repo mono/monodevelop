@@ -107,82 +107,70 @@ namespace Mono.TextEditor
 	
 	public class MarginMouseEventArgs : EventArgs
 	{
-		int button;
-		int x;
-		int y;
-		Gdk.EventType type;
-		Gdk.ModifierType modifierState;
-		TextEditor editor;
-		
-		LineSegment line;
-		int lineNumber = -2; // -2 means that line number has not yet been calculated
-		
-		public MarginMouseEventArgs (TextEditor editor, int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
-		{
-			this.editor = editor;
-			this.button = button;
-			this.x = x;
-			this.y = y;
-			this.type = type;
-			this.modifierState = modifierState;
+		public int X {
+			get;
+			private set;
 		}
 		
 		public int Y {
-			get {
-				return y;
-			}
-		}
-		
-		public int X {
-			get {
-				return x;
-			}
+			get;
+			private set;
 		}
 		
 		public Gdk.EventType Type {
-			get {
-				return type;
-			}
+			get;
+			private set;
 		}
 		
 		public Gdk.ModifierType ModifierState {
-			get {
-				return modifierState;
-			}
+			get;
+			private set;
 		}
 		
 		public int Button {
-			get {
-				return button;
-			}
+			get;
+			private set;
 		}
 		
+		int lineNumber = -2; // -2 means that line number has not yet been calculated
 		public int LineNumber {
 			get {
 				if (lineNumber == -2) {
-					lineNumber = Editor.Document.VisualToLogicalLine ((int)((y + editor.VAdjustment.Value) / editor.LineHeight));
-					if (lineNumber >= editor.Document.LineCount)
+					lineNumber = Editor.Document.VisualToLogicalLine ((int)((Y + Editor.VAdjustment.Value) / Editor.LineHeight));
+					if (lineNumber >= Editor.Document.LineCount)
 						lineNumber = -1;
 				}
 				return lineNumber;
 			}
 		}
-
+		
+		LineSegment line;
 		public LineSegment LineSegment {
 			get {
 				if (line == null) {
 					if (LineNumber == -1)
 						return null;
-					line = editor.Document.GetLine (lineNumber);
+					line = Editor.Document.GetLine (lineNumber);
 				}
 				return line;
 			}
 		}
 
 		public TextEditor Editor {
-			get {
-				return editor;
-			}
+			get;
+			private set;
 		}
+		
+		public MarginMouseEventArgs (TextEditor editor, int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
+		{
+			this.Editor = editor;
+			this.Button = button;
+			this.X = x;
+			this.Y = y;
+			this.Type = type;
+			this.ModifierState = modifierState;
+		}
+		
+		
 	}
 }

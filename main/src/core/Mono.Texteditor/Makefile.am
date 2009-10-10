@@ -48,6 +48,7 @@ FILES =  \
 	Mono.TextEditor/CaretMoveActions.cs \
 	Mono.TextEditor/ClipboardActions.cs \
 	Mono.TextEditor/CodeSegmentPreviewWindow.cs \
+	Mono.TextEditor/DashedLineMargin.cs \
 	Mono.TextEditor/DefaultEditActions.cs \
 	Mono.TextEditor/DeleteActions.cs \
 	Mono.TextEditor/Document.cs \

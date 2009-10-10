@@ -30,8 +30,6 @@ using System;
 
 namespace Mono.TextEditor
 {
-	
-	
 	public abstract class EditMode
 	{
 		//NOTE: the behaviour of this class is actually stateless; these variables are used to make the API

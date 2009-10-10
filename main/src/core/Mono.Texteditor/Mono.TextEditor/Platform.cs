@@ -31,8 +31,6 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
-	
-	
 	public static class Platform
 	{
 		internal const Gdk.ModifierType META_MASK = (Gdk.ModifierType) 0x10000000; //FIXME GTK+ 2.12: Gdk.ModifierType.MetaMask;

@@ -34,28 +34,21 @@ namespace Mono.TextEditor
 {
 	public class RedBlackTree<T> : ICollection<T>
 	{
-		int count;
-		RedBlackTreeNode root;
-		
 		public RedBlackTreeNode Root {
-			get {
-				return root;
-			}
-			set {
-				root = value;
-			}
+			get;
+			set;
 		}
 		
 		public void Add (RedBlackTreeNode node)
 		{
-			count++;
-			if (root == null) {
-				root = node;
+			Count++;
+			if (Root == null) {
+				Root = node;
 				FixTreeOnInsert (node);
 				return;
 			}
 			
-			RedBlackTreeNode parent = root;
+			RedBlackTreeNode parent = Root;
 			
 			while (true) {
 				if (((IComparable)parent.value).CompareTo (node.value) <= 0) {
@@ -88,7 +81,7 @@ namespace Mono.TextEditor
 			
 			this.OnChildrenChanged (new RedBlackTreeNodeEventArgs (parent));
 			FixTreeOnInsert (node);
-			count++;
+			Count++;
 			return new RedBlackTreeIterator (node); 
 		}
 		
@@ -171,7 +164,7 @@ namespace Mono.TextEditor
 			if (newNode != null)
 				newNode.parent = oldNode.parent;
 			if (oldNode.parent == null) {
-				root = newNode;
+				Root = newNode;
 			} else {
 				if (oldNode.parent.left == oldNode)
 					oldNode.parent.left = newNode;
@@ -199,7 +192,7 @@ namespace Mono.TextEditor
 				this.OnChildrenChanged (new RedBlackTreeNodeEventArgs (outerLeft));
 				return;
 			}
-			count--;
+			Count--;
 			// node has only one child
 			RedBlackTreeNode child = node.left ?? node.right;
 			
@@ -302,8 +295,8 @@ namespace Mono.TextEditor
 		
 #region ICollection<T> implementation
 		public int Count {
-			get { return count; }
-			set { count = value; }
+			get;
+			set;
 		}
 		
 		public void Add(T item)
@@ -313,13 +306,13 @@ namespace Mono.TextEditor
 		
 		public void Clear()
 		{
-			root = null;
-			count = 0;
+			Root = null;
+			Count = 0;
 		}
 		
 		public bool Contains(T item)
 		{
-			RedBlackTreeIterator iter = new RedBlackTreeIterator (this.root.OuterLeft);
+			RedBlackTreeIterator iter = new RedBlackTreeIterator (Root.OuterLeft);
 			while (iter.IsValid) {
 				if (iter.Current.Equals (item)) 
 					return true;
@@ -330,7 +323,7 @@ namespace Mono.TextEditor
 		
 		public bool Remove(T item)
 		{
-			RedBlackTreeIterator iter = new RedBlackTreeIterator (this.root.OuterLeft);
+			RedBlackTreeIterator iter = new RedBlackTreeIterator (Root.OuterLeft);
 			while (iter.IsValid) {
 				if (iter.Current.Equals (item)) {
 					this.RemoveAt (iter);
@@ -367,10 +360,10 @@ namespace Mono.TextEditor
 		
 		public RedBlackTreeIterator GetEnumerator()
 		{
-			if (root == null) 
+			if (Root == null) 
 				return null;
 			RedBlackTreeNode dummyNode = new RedBlackTreeNode (default(T));
-			dummyNode.right = root;
+			dummyNode.right = Root;
 			return new RedBlackTreeIterator (dummyNode);
 		}
 #endregion
@@ -398,17 +391,14 @@ namespace Mono.TextEditor
 
 		public class RedBlackTreeNodeEventArgs : EventArgs
 		{
-			RedBlackTreeNode node;
-			
 			public RedBlackTreeNode Node {
-				get {
-					return node;
-				}
+				get;
+				private set;
 			}
 			
 			public RedBlackTreeNodeEventArgs (RedBlackTreeNode node)
 			{
-				this.node = node;
+				this.Node = node;
 			}
 		}
 		
@@ -441,7 +431,7 @@ namespace Mono.TextEditor
 		public override string ToString ()
 		{
 			StringBuilder result = new StringBuilder ();
-			AppendNode (result, root, 0);
+			AppendNode (result, Root, 0);
 			return result.ToString ();
 		}
 		

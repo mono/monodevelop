@@ -61,7 +61,6 @@ namespace Mono.TextEditor
 			get {
 				return tree.Root.value.totalLength;
 			}
-		
 		}
 		
 		public LineSegmentTree()

@@ -129,57 +129,44 @@ namespace Mono.TextEditor
 	
 	public class BookmarkMarginDrawEventArgs : EventArgs
 	{
-		TextEditor editor;
-		Gdk.Drawable win;
-		LineSegment lineSegment;
-		int line;
-		int x;
-		int y;
-		
 		public TextEditor Editor {
-			get {
-				return editor;
-			}
+			get;
+			private set;
 		}
 
 		public Drawable Win {
-			get {
-				return win;
-			}
+			get;
+			private set;
 		}
 
 		public int Line {
-			get {
-				return line;
-			}
+			get;
+			private set;
 		}
 
 		public int X {
-			get {
-				return x;
-			}
+			get;
+			private set;
 		}
 
 		public int Y {
-			get {
-				return y;
-			}
+			get;
+			private set;
 		}
 
 		public LineSegment LineSegment {
-			get {
-				return lineSegment;
-			}
+			get;
+			private set;
 		}
 		
 		public BookmarkMarginDrawEventArgs (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int xPos, int yPos)
 		{
-			this.editor = editor;
-			this.win    = win;
-			this.lineSegment = line;
-			this.line   = lineNumber;
-			this.x      = xPos;
-			this.y      = yPos;
+			this.Editor = editor;
+			this.Win    = win;
+			this.LineSegment = line;
+			this.Line   = lineNumber;
+			this.X      = xPos;
+			this.Y      = yPos;
 		}
 	}
 	

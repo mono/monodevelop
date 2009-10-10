@@ -52,6 +52,7 @@ namespace Mono.TextEditor
 		
 		protected IconMargin       iconMargin;
 		protected GutterMargin     gutterMargin;
+		protected DashedLineMargin dashedLineMargin;
 		protected FoldMarkerMargin foldMarkerMargin;
 		protected TextViewMargin   textViewMargin;
 		
@@ -222,12 +223,6 @@ namespace Mono.TextEditor
 			}
 			TextViewMargin.VAdjustmentValueChanged ();
 			QueueDraw ();
-/*			GdkWindow.DrawDrawable (Style.BackgroundGC (StateType.Normal),
-			                        buffer,
-			                        0, 0, 
-			                        0, 0, 
-			                        Allocation.Width, Allocation.Height);
-			PaintCaret (GdkWindow);*/
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
@@ -273,11 +268,13 @@ namespace Mono.TextEditor
 
 			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
+			dashedLineMargin = new DashedLineMargin (this);
 			foldMarkerMargin = new FoldMarkerMargin (this);
 			textViewMargin = new TextViewMargin (this);
 
 			margins.Add (iconMargin);
 			margins.Add (gutterMargin);
+			margins.Add (dashedLineMargin);
 			margins.Add (foldMarkerMargin);
 			margins.Add (textViewMargin);
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged; 
@@ -523,7 +520,7 @@ namespace Mono.TextEditor
 			
 			iconMargin.IsVisible   = Options.ShowIconMargin;
 			gutterMargin.IsVisible     = Options.ShowLineNumberMargin;
-			foldMarkerMargin.IsVisible = Options.ShowFoldMargin;
+			dashedLineMargin.IsVisible = foldMarkerMargin.IsVisible = Options.ShowFoldMargin;
 			
 			foreach (Margin margin in this.margins) {
 				margin.OptionsChanged ();
@@ -584,6 +581,7 @@ namespace Mono.TextEditor
 			
 			iconMargin = null; 
 			gutterMargin = null;
+			dashedLineMargin = null;
 			foldMarkerMargin = null;
 			textViewMargin = null;
 			this.textEditorData = this.textEditorData.Kill (x => x.SelectionChanged -= TextEditorDataSelectionChanged);

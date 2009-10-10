@@ -37,8 +37,6 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	
-	
 	public static class DeleteActions
 	{
 		public static Action<TextEditorData> FromMoveAction (Action<TextEditorData> moveAction)

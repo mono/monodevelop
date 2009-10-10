@@ -32,10 +32,9 @@ namespace Mono.TextEditor
 	public class Caret : IDisposable
 	{
 		DocumentLocation location;
-		bool preserveSelection = false;
+		
 		bool isInInsertMode = true;
 		bool autoScrollToCaret = true;
-		bool isVisible = true;
 		
 		Document document;
 		TextEditorData editor;
@@ -102,12 +101,8 @@ namespace Mono.TextEditor
 		}
 
 		public bool PreserveSelection {
-			get {
-				return preserveSelection;
-			}
-			set {
-				preserveSelection = value;
-			}
+			get;
+			set;
 		}
 
 		public bool IsInInsertMode {
@@ -147,12 +142,8 @@ namespace Mono.TextEditor
 		}
 
 		public bool IsVisible {
-			get {
-				return isVisible;
-			}
-			set {
-				isVisible = value;
-			}
+			get;
+			set;
 		}
 
 		public bool AllowCaretBehindLineEnd {
@@ -169,7 +160,8 @@ namespace Mono.TextEditor
 		{
 			this.editor = editor;
 			this.document = document;
-			AllowCaretBehindLineEnd = false;
+			this.IsVisible = true;
+			this.AllowCaretBehindLineEnd = false;
 		}
 		
 		public void Dispose ()

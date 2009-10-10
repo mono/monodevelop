@@ -113,10 +113,7 @@ namespace Mono.TextEditor
 			lineStateDirtyGC = new Gdk.GC (editor.GdkWindow);
 			lineStateDirtyGC.RgbFgColor = new Gdk.Color (255, 238, 98);
 
-			foldDashedLineGC = new Gdk.GC (editor.GdkWindow);
-			foldDashedLineGC.RgbBgColor = editor.ColorStyle.FoldLine.Color;
-			foldDashedLineGC.SetLineAttributes (1, Gdk.LineStyle.OnOffDash, Gdk.CapStyle.NotLast, Gdk.JoinStyle.Bevel);
-			foldDashedLineGC.SetDashes (0, new sbyte[] { 1, 1 }, 2);
+			
 			
 			layout.FontDescription = editor.Options.Font;
 			layout.SetText ("!");
@@ -124,12 +121,14 @@ namespace Mono.TextEditor
 			layout.GetPixelSize (out tmp, out this.marginWidth);
 			marginWidth *= 8;
 			marginWidth /= 10;
+			marginWidth--; // was dashed line.
 		}
 		
-		Gdk.GC foldBgGC, foldLineGC, foldLineHighlightedGC, foldToggleMarkerGC, foldDashedLineGC;
+		Gdk.GC foldBgGC, foldLineGC, foldLineHighlightedGC, foldToggleMarkerGC;
 		Gdk.GC lineStateChangedGC, lineStateDirtyGC;
 		public override void Dispose ()
 		{
+			base.Dispose ();
 			layout = layout.Kill ();
 			DisposeGCs ();
 		}
@@ -142,7 +141,6 @@ namespace Mono.TextEditor
 			foldToggleMarkerGC = foldToggleMarkerGC.Kill ();
 			lineStateChangedGC = lineStateChangedGC.Kill ();
 			lineStateDirtyGC = lineStateDirtyGC.Kill ();
-			foldDashedLineGC = foldDashedLineGC.Kill ();
 		}
 		
 		void DrawFoldSegment (Gdk.Drawable win, int x, int y, bool isOpen, bool isSelected)
@@ -165,13 +163,6 @@ namespace Mono.TextEditor
 				              drawArea.Bottom - drawArea.Height * 3 / 10);
 		}
 		
-		void DrawDashedVLine (Gdk.Drawable win, int x, int top, int bottom, int nline)
-		{
-			if ((top + (int)editor.VAdjustment.Value) % 2 != 0)
-				top++;
-			
-			win.DrawLine (foldDashedLineGC, x, top, x, bottom);
-		}
 		
 		bool IsMouseHover (IEnumerable<FoldSegment> foldings)
 		{
@@ -199,7 +190,6 @@ namespace Mono.TextEditor
 			} else {
 				win.DrawRectangle (foldBgGC, true, drawArea);
 			}
-			DrawDashedVLine (win, x, drawArea.Top, drawArea.Bottom, line);
 			
 			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);

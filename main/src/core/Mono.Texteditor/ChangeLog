@@ -1,3 +1,21 @@
+2009-10-11  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/Margin.cs:
+	* Mono.TextEditor/Platform.cs:
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/IconMargin.cs:
+	* Mono.TextEditor/RedBlackTree.cs:
+	* Mono.TextEditor/DeleteActions.cs:
+	* Mono.TextEditor/LineSegmentTree.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs:
+	* Mono.TextEditor/DashedLineMargin.cs: Removed some backing
+	  stores. Dashed line is now an own margin.
+
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:

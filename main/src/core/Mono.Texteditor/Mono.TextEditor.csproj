@@ -67,6 +67,7 @@
     <Compile Include="Mono.TextEditor\ReplaceEventArgs.cs" />
     <Compile Include="Mono.TextEditor\DefaultEditActions.cs" />
     <Compile Include="Mono.TextEditor\DocumentLocation.cs" />
+    <Compile Include="Mono.TextEditor\DashedLineMargin.cs" />
     <Compile Include="Mono.TextEditor\Document.cs" />
     <Compile Include="Mono.TextEditor\LineSegmentTree.cs" />
     <Compile Include="Mono.TextEditor\RedBlackTree.cs" />
