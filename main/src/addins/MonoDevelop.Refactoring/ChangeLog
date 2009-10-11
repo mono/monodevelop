@@ -1,5 +1,10 @@
 2009-10-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  check extract method on start, not on menu popup (speed!).
+
+2009-10-11  Mike Krüger  <mkrueger@novell.com>
+
 	* ChangeLog: 
 
 	* MonoDevelop.Refactoring/Change.cs: Update visible documents

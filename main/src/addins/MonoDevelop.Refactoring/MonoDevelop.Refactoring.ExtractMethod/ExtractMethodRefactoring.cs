@@ -66,8 +66,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out column);
 					if (doc.CompilationUnit.GetMemberAt (line, column) == null)
 						return false;
-					ExtractMethodParameters param = CreateParameters (options);
-					return Analyze (options, param, false) != null && param.VariablesToGenerate != null;
+					return true;
 				}
 			}
 			return false;
@@ -82,6 +81,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		{
 			ExtractMethodParameters param = CreateParameters (options);
 			if (param == null)
+				return;
+			if (Analyze (options, param, false) == null || param.VariablesToGenerate == null)
 				return;
 			ExtractMethodDialog dialog = new ExtractMethodDialog (options, this, param);
 			dialog.TransientFor = IdeApp.Workbench.RootWindow;
