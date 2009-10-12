@@ -1,3 +1,9 @@
+2009-10-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
+	  fixed 'Bug 545883 - Editor problem when using "Format
+	  document"'.
+
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:

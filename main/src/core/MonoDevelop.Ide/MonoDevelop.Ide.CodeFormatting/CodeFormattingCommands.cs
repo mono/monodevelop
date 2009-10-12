@@ -61,8 +61,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 			if (printer == null)
 				return;
 			doc.TextEditor.BeginAtomicUndo ();
+			int line = doc.TextEditor.CursorLine;
+			int column = doc.TextEditor.CursorColumn;
 			doc.TextEditor.Select (0, doc.TextEditor.TextLength);
 			doc.TextEditor.SelectedText = printer.FormatText (doc.Project, mt, doc.TextEditor.Text);
+			doc.TextEditor.CursorLine = line ;
+			doc.TextEditor.CursorColumn = column;
 			doc.TextEditor.EndAtomicUndo ();
 		}
 	}
