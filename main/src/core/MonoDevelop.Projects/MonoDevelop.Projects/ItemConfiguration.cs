@@ -64,6 +64,12 @@ namespace MonoDevelop.Projects
 		
 		public static void ParseConfigurationId (string id, out string name, out string platform)
 		{
+			if (string.IsNullOrEmpty (id)) {
+				name = "";
+				platform = "";
+				return;
+			}
+			
 			int i = id.IndexOf ('|');
 			if (i < 0) {
 				name = id;
