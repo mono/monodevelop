@@ -184,9 +184,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			
 			if (treeviewCodeTemplates.Selection.IterIsSelected (iter)) {
-				templateCellRenderer.Markup = template.Shortcut + " (" + GettextCatalog.GetString (template.Description) + ")";
+				templateCellRenderer.Markup = GLib.Markup.EscapeText (template.Shortcut) + " (" + 
+					GLib.Markup.EscapeText (GettextCatalog.GetString (template.Description)) + ")";
 			} else {
-				templateCellRenderer.Markup = template.Shortcut + " <span foreground=\"" + GetColorString (Style.Text (StateType.Insensitive)) + "\">(" + GettextCatalog.GetString (template.Description) + ")</span>";
+				templateCellRenderer.Markup =  GLib.Markup.EscapeText (template.Shortcut) + " <span foreground=\"" + 
+					GetColorString (Style.Text (StateType.Insensitive)) + "\">(" 
+					+ GLib.Markup.EscapeText (GettextCatalog.GetString (template.Description)) + ")</span>";
 			}
 		}
 		

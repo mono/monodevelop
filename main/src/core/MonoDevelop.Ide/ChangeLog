@@ -1,3 +1,8 @@
+2009-10-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs: Escape
+	  markup to fix GTK errors and list misrendering.
+
 2009-10-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
