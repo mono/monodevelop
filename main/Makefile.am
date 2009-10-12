@@ -20,6 +20,8 @@ gen-vcrevision:
 			version="SVN revision: $$version (modified)"; \
 		fi; \
 		echo "$$version" > "vcrevision"; \
+	else \
+		echo "0" > "vcrevision"; \
 	fi
 
 $(buildinfo): gen-vcrevision
