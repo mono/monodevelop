@@ -207,7 +207,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			foreach (AttributeSection section in attributes) {
 				TrackVisit(section, data);
 			}
+			bool formatSection = true;
+			if (data is bool)
+				formatSection = (bool)data;
+			if (!formatSection)
+				outputFormatter.Space ();
 		}
+		
 		void PrintFormattedComma()
 		{
 			if (this.prettyPrintOptions.SpacesBeforeComma) {
@@ -230,7 +236,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitAttributeSection(AttributeSection attributeSection, object data)
 		{
-			outputFormatter.Indent();
+			bool formatSection = true;
+			if (data is bool)
+				formatSection = (bool)data;
+			if (formatSection)
+				outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.OpenSquareBracket);
 			if (this.prettyPrintOptions.SpacesWithinBrackets) {
 				outputFormatter.Space();
@@ -251,7 +261,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseSquareBracket);
-			outputFormatter.NewLine();
+			if (formatSection) {
+				outputFormatter.NewLine();
+			}
 			return null;
 		}
 		
@@ -737,7 +749,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
-			VisitAttributes(parameterDeclarationExpression.Attributes, data);
+			VisitAttributes(parameterDeclarationExpression.Attributes, false);
 			if (!parameterDeclarationExpression.DefaultValue.IsNull) {
 				outputFormatter.PrintText("[System.Runtime.InteropServices.OptionalAttribute, System.Runtime.InteropServices.DefaultParameterValueAttribute(");
 				TrackVisit(parameterDeclarationExpression.DefaultValue, data);
