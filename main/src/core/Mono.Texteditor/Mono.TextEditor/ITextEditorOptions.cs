@@ -29,8 +29,6 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	
-	
 	public interface ITextEditorOptions : IDisposable
 	{
 		double Zoom { get; set; }

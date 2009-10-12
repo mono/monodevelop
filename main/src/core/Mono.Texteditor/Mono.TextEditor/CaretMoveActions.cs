@@ -37,7 +37,6 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	
 	public static class CaretMoveActions
 	{
 		public static void Left (TextEditorData data)

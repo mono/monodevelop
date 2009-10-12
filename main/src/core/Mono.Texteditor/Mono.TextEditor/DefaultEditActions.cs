@@ -35,7 +35,6 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	
 	public static class ScrollActions
 	{
 		public static void Up (TextEditorData data)
