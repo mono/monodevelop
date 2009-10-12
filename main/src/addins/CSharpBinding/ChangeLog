@@ -1,3 +1,9 @@
+2009-10-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 546016 - EventHandler code completion not working
+	  if there is no space after +='.
+
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
 	* md1format.xml: track namespace changes.

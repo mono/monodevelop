@@ -385,7 +385,7 @@ namespace MonoDevelop.CSharp.Completion
 				case "-=":
 					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 						return null;
-					result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset - 1);
+					result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset);
 					resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
 					resolveResult = resolver.Resolve (result, location);
 					
