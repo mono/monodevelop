@@ -859,7 +859,7 @@ namespace MonoDevelop.Projects.Dom
 	
 	internal sealed class Stock 
 	{
-		public static readonly string Error = "gtk-error";
+		public static readonly string Error = "gtk-dialog-error";
 		public static readonly string Class = "md-class";
 		public static readonly string Enum = "md-enum";
 		public static readonly string Event = "md-event";
