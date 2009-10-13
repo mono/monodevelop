@@ -440,6 +440,7 @@ namespace Mono.TextEditor
 		internal void StopCaretThread ()
 		{
 			lock (lockObject) {
+				
 				if (caretTimer != null)
 					caretTimer.Stop ();
 				caretBlink = false; 

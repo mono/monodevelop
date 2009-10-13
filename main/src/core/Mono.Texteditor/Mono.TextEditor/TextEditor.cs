@@ -80,7 +80,7 @@ namespace Mono.TextEditor
 		List<ITooltipProvider> tooltipProviders = new List<ITooltipProvider> ();
 		ITooltipProvider currentTooltipProvider;
 		double mx, my;
-		
+		System.Timers.Timer animationTimer;
 		public Document Document {
 			get {
 				return textEditorData.Document;
@@ -320,6 +320,8 @@ namespace Mono.TextEditor
 			using (Pixmap inv = new Pixmap (null, 1, 1, 1)) {
 				invisibleCursor = new Cursor (inv, inv, Gdk.Color.Zero, Gdk.Color.Zero, 0, 0);
 			}
+			animationTimer = new System.Timers.Timer (50);
+			animationTimer.Elapsed += AnimationTimer;
 		}
 
 		void TextEditorDatahandleUpdateAdjustmentsRequested (object sender, EventArgs e)
@@ -546,6 +548,7 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 			this.isDisposed = true;
+			
 			RemoveScrollWindowTimer ();
 			if (invisibleCursor != null) {
 				invisibleCursor.Dispose ();
@@ -1330,6 +1333,8 @@ namespace Mono.TextEditor
 				textViewMargin.ResetCaretBlink ();
 				requestResetCaretBlink = false;
 			}
+			if (animation != null)
+				animation.Draw (e.Window);
 			if (e.Area.Contains (TextViewMargin.caretX, TextViewMargin.caretY))
 				textViewMargin.DrawCaret (e.Window);
 			return true;
@@ -1586,14 +1591,106 @@ namespace Mono.TextEditor
 			return textEditorData.SearchBackward (fromOffset);
 		}
 		
+		Animation animation = null;
+		class Animation 
+		{
+			const int MaxLifeTime = 5;
+			TextEditor editor;
+			SearchResult result;
+			
+			public int LifeTime {
+				get;
+				set;
+			}
+			
+			public Animation (TextEditor editor, SearchResult result)
+			{
+				LifeTime = MaxLifeTime;
+				this.editor = editor;
+				this.result = result;
+			}
+			
+			public void Draw (Drawable drawable)
+			{
+				LineSegment line = editor.Document.GetLineByOffset (result.Offset);
+				int lineNr = editor.Document.OffsetToLineNumber (result.Offset);
+				SyntaxMode mode = editor.Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? editor.Document.SyntaxMode : SyntaxMode.Default;
+				
+				TextViewMargin.LayoutWrapper lineLayout = editor.textViewMargin.CreateLinePartLayout (mode, line, line.Offset, line.EditableLength, -1, -1);
+				if (lineLayout == null)
+					return;
+				int l, x1, x2;
+				lineLayout.Layout.IndexToLineX (result.Offset - line.Offset - 1, true, out l, out x1);
+				lineLayout.Layout.IndexToLineX (result.Offset - line.Offset + result.Length - 1, true, out l, out x2);
+				x1 /= (int)Pango.Scale.PangoScale;
+				x2 /= (int)Pango.Scale.PangoScale;
+				int y = editor.Document.LogicalToVisualLine (lineNr) * editor.LineHeight - (int)editor.VAdjustment.Value;
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
+					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Selection.BackgroundColor);
+					color.A = 0.5;
+					cr.Color = color;
+					
+//					cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.SearchTextBg);
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
+					                                                    editor.TextViewMargin.XOffset + x1 - LifeTime, 
+					                                                    y - LifeTime, 
+					                                                    10, 
+					                                                    x2 - x1 +  2  * LifeTime , 
+					                                                    editor.LineHeight + 2 * LifeTime);
+					cr.Stroke ();
+				}
+				if (lineLayout.IsUncached) 
+					lineLayout.Dispose ();
+			}
+		}
+		
+		
+		void AnimationTimer (object sender, EventArgs args)
+		{
+			if (animation != null) {
+				animation.LifeTime--;
+				if (animation.LifeTime < 0)
+					animation = null;
+				Application.Invoke (delegate {
+					QueueDraw ();
+				});
+			} else {
+				animationTimer.Stop ();
+			}
+			/*
+			lock (animations) {
+				if (animations.Count > 0) {
+					animations.ForEach (anim => anim.LifeTime--);
+					animations.RemoveAll (anim => anim.LifeTime < 0);
+					Application.Invoke (delegate {
+						QueueDraw ();
+					});
+				} else {
+					animationTimer.Stop ();
+				}
+			}*/
+		}
+
 		public SearchResult FindNext ()
 		{
-			return textEditorData.FindNext ();
+			SearchResult result = textEditorData.FindNext ();
+			if (result != null) {
+				animationTimer.Stop ();
+				animation = new TextEditor.Animation (this, result);
+				animationTimer.Start ();
+			}
+			return result;
 		}
 		
 		public SearchResult FindPrevious ()
 		{
-			return textEditorData.FindPrevious ();
+			SearchResult result = textEditorData.FindPrevious ();
+			if (result != null) {
+				animationTimer.Stop ();
+				animation = new TextEditor.Animation (this, result);
+				animationTimer.Start ();
+			}
+			return result;
 		}
 		
 		public bool Replace (string withPattern)
