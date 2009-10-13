@@ -1,8 +1,3 @@
-2009-10-13  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
-
-	* Cui/CTextEditorExtension.cs: 
-	  Disable smart indent pending post-2.2 rework.
-
 2009-10-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Project/CProject.cs:

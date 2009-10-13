@@ -155,8 +155,6 @@ namespace CBinding
 			int lineCursorIndex = (Editor.CursorPosition - lineBegins) - 1;
 			string lineText = Editor.GetLineText (line);
 			
-			/*
-			 * Needs rework post-2.2.
 			// Smart Indentation
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart)
 			{
@@ -223,8 +221,6 @@ namespace CBinding
 						break;
 				}
 			}
-			 * Needs rework post-2.2.
-			 */
 			
 			return base.KeyPress (key, keyChar, modifier);
 		}
