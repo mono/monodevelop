@@ -4,6 +4,10 @@
 
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
+	* Autotools.csproj: Use \ instead of '/' in the Import.
+
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
 	* Autotools.csproj: Add md.targets .
 
 2009-08-10  Lluis Sanchez Gual  <lluis@novell.com>

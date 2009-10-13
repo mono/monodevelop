@@ -10,6 +10,11 @@
 
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
+	* MonoDevelop.SourceEditor.csproj: Use \ instead of '/'
+	in the Import.
+
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
 	* MonoDevelop.SourceEditor.csproj: Add md.targets .
 
 2009-10-07  Mike Krüger  <mkrueger@novell.com>

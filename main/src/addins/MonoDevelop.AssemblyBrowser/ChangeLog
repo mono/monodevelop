@@ -6,6 +6,11 @@
 
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
+	* MonoDevelop.AssemblyBrowser.csproj: Use \ instead of '/'
+	in the Import.
+
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
 	* MonoDevelop.AssemblyBrowser.csproj: Mark the Refactoring
 	project reference as Private.
 
