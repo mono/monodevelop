@@ -492,6 +492,10 @@ namespace OSXIntegration
 				} else {
 					HIToolbox.AppendMenuItem (menuRef, ci.Text, 0, macCmdID);
 					UpdateMenuItem (rootMenu, menuRef, ref i, ref count, macCmdID, ci);
+					
+					objectsToDestroyOnMenuClose.Add (ci.DataItem);
+					uint refcon = (uint)objectsToDestroyOnMenuClose.Count;
+					SetMenuItemAttributes (new HIMenuItem (menuRef, index), ci, refcon);
 				}
 			}
 		}
