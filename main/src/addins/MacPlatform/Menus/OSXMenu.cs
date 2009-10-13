@@ -302,7 +302,9 @@ namespace OSXIntegration
 			MenuItemData data = new MenuItemData ();
 			IntPtr text = IntPtr.Zero;
 			try {
-				if (!ci.Visible) {
+				if (ci.IsArraySeparator) {
+					data.Attributes |= MenuItemAttributes.Separator;
+				} else if (!ci.Visible) {
 					data.Attributes |= MenuItemAttributes.Hidden;
 				} else {
 					data.Attributes &= ~MenuItemAttributes.Hidden;
