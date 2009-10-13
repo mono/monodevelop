@@ -917,9 +917,13 @@ namespace Mono.TextEditor
 				while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
 					HandleSelection (line, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
 						Pango.AttrBackground backGround = new Pango.AttrBackground (ColorStyle.SearchTextBg.Red, ColorStyle.SearchTextBg.Green, ColorStyle.SearchTextBg.Blue);
-						backGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(start - offset), ref curIndex, ref byteIndex);
-						backGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(end - offset), ref curIndex, ref byteIndex);
-						wrapper.Add (backGround);
+						uint startIndex = (uint)(start - offset);
+						uint endIndex = (uint)(end - offset);
+						if (startIndex < endIndex && endIndex < lineChars.Length) {
+							backGround.StartIndex = TranslateToUTF8Index (lineChars, startIndex, ref curIndex, ref byteIndex);
+							backGround.EndIndex = TranslateToUTF8Index (lineChars, endIndex, ref curIndex, ref byteIndex);
+							wrapper.Add (backGround);
+						}
 					}, null);
 
 					o = System.Math.Max (firstSearch.EndOffset, o + 1);
@@ -1055,6 +1059,7 @@ namespace Mono.TextEditor
 				Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos + (int)(rect.X / Pango.Scale.PangoScale), y, (int)(rect.Width / Pango.Scale.PangoScale) - 1, (int)(rect.Height / Pango.Scale.PangoScale) - 1);
 				if (BackgroundRenderer == null)
 					win.DrawRectangle (GetGC (this.ColorStyle.BracketHighlightRectangle.BackgroundColor), true, bracketMatch);
+				
 				win.DrawRectangle (GetGC (this.ColorStyle.BracketHighlightRectangle.Color), false, bracketMatch);
 			}
 		}
@@ -1736,6 +1741,18 @@ namespace Mono.TextEditor
 					Rectangle foldingRectangle = new Rectangle (xPos, y, width - 1, this.LineHeight - 1);
 					if (BackgroundRenderer == null)
 						win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.Selection.BackgroundColor : defaultBgColor), true, foldingRectangle);
+					/*
+					using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
+						cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (isFoldingSelected ? ColorStyle.Selection.Color : ColorStyle.FoldLine.Color);
+						cr.LineWidth = textEditor.Options.Zoom;
+						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
+						                                                    foldingRectangle.X, 
+						                                                    foldingRectangle.Y, 
+						                                                    textEditor.LineHeight / 2, 
+						                                                    foldingRectangle.Width, 
+						                                                    foldingRectangle.Height);
+						cr.Stroke ();
+					}*/
 					win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.Selection.Color : ColorStyle.FoldLine.Color), false, foldingRectangle);
 					win.DrawLayout (GetGC (isFoldingSelected ? ColorStyle.Selection.Color : ColorStyle.FoldLine.Color), xPos, y, markerLayout);
 					
