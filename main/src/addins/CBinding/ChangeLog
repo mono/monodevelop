@@ -1,3 +1,9 @@
+2009-10-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/CProject.cs:
+	* Project/CProjectServiceExtension.cs: Properly resolve active
+	  configuration.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

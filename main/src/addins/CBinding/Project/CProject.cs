@@ -221,7 +221,7 @@ namespace CBinding
 		{
 			string pkgfile = Path.Combine (BaseDirectory, Name + ".md.pc");
 			
-			CProjectConfiguration config = (CProjectConfiguration)GetConfiguration (configuration);
+			CProjectConfiguration config = (CProjectConfiguration)GetActiveConfiguration (configuration);
 			
 			List<string> headerDirectories = new List<string> ();
 			
@@ -290,7 +290,7 @@ namespace CBinding
 		
 		protected override BuildResult DoBuild (IProgressMonitor monitor, string configuration)
 		{
-			CProjectConfiguration pc = (CProjectConfiguration) GetConfiguration (configuration);
+			CProjectConfiguration pc = (CProjectConfiguration) GetActiveConfiguration (configuration);
 			pc.SourceDirectory = BaseDirectory;
 			
 			return compiler_manager.Compile (this,
@@ -311,14 +311,14 @@ namespace CBinding
 
 		protected override bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
 		{
-			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (solutionConfiguration);
+			CProjectConfiguration conf = (CProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
 			ExecutionCommand cmd = CreateExecutionCommand (conf);
 			return (target == CBinding.CompileTarget.Bin) && context.ExecutionHandler.CanExecute (cmd);
 		}
 
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
-			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
+			CProjectConfiguration conf = (CProjectConfiguration) GetActiveConfiguration (configuration);
 			bool pause = conf.PauseConsoleOutput;
 			IConsole console;
 			
@@ -359,7 +359,7 @@ namespace CBinding
 		
 		protected override FilePath OnGetOutputFileName (string configuration)
 		{
-			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
+			CProjectConfiguration conf = (CProjectConfiguration) GetActiveConfiguration (configuration);
 			return conf.OutputDirectory.Combine (conf.CompiledOutputName);
 		}
 		
