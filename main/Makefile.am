@@ -16,7 +16,7 @@ gen-vcrevision:
 			LANG=C; export LANG; \
 			svn st | grep -v ^\? | wc -l; \
 		); \
-		if test "$$modified" != "0"; then \
+		if test $$modified != 0; then \
 			version="SVN revision: $$version (modified)"; \
 		fi; \
 		echo "$$version" > "vcrevision"; \
