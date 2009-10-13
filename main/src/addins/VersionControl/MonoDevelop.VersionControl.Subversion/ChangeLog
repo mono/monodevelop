@@ -1,3 +1,7 @@
+2009-10-13  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion.csproj: Import md.targets
+
 2009-10-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs: Updated license.

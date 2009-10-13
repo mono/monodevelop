@@ -117,6 +117,7 @@
     <None Include="ChangeLog" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\..\md.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

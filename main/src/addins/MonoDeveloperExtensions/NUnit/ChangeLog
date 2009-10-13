@@ -1,3 +1,7 @@
+2009-10-13  Ankit Jain  <jankit@novell.com>
+
+	* NUnit.csproj: Import md.targets .
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* NUnit.mdp:
