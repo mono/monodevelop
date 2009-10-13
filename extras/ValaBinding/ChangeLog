@@ -1,3 +1,8 @@
+2009-10-13  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Gui/ValaTextEditorExtension.cs: Disable smart indent pending
+	  post-2.2 rework.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in:

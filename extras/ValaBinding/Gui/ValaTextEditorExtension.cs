@@ -77,6 +77,8 @@ namespace MonoDevelop.ValaBinding
 			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
 			string lineText = Editor.GetLineText (line);
 			
+			/*
+			 * Needs to be reworked post-2.2
 			// smart formatting strategy
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				if (key == Gdk.Key.Return) {
@@ -93,6 +95,8 @@ namespace MonoDevelop.ValaBinding
 					return false;
 				}
 			}
+			 * Needs to be reworked post-2.2
+			 */
 			
 			return base.KeyPress (key, keyChar, modifier);
 		}
