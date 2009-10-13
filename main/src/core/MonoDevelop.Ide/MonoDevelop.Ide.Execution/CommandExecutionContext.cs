@@ -33,22 +33,22 @@ namespace MonoDevelop.Ide.Execution
 	public class CommandExecutionContext
 	{
 		CanExecuteDelegate runCheckDelegate;
-		Project project;
+		SolutionEntityItem project;
 		ExecutionCommand cmd;
 		
-		public CommandExecutionContext (Project project, CanExecuteDelegate runCheckDelegate)
+		public CommandExecutionContext (SolutionEntityItem project, CanExecuteDelegate runCheckDelegate)
 		{
 			this.project = project;
 			this.runCheckDelegate = runCheckDelegate;
 		}
 		
-		public CommandExecutionContext (Project project, ExecutionCommand cmd)
+		public CommandExecutionContext (SolutionEntityItem project, ExecutionCommand cmd)
 		{
 			this.project = project;
 			this.cmd = cmd;
 		}
 		
-		public Project Project {
+		public SolutionEntityItem Project {
 			get { return project; }
 		}
 		

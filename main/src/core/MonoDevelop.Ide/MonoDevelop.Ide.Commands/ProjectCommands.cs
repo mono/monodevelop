@@ -76,6 +76,7 @@ namespace MonoDevelop.Ide.Commands
 		Run,
 		RunWithList,
 		RunEntry,
+		RunEntryWithList,
 		Clean,
 		CleanSolution,
 		LocalCopyReference,
@@ -312,10 +313,13 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			ExecutionModeCommandService.GenerateExecutionModeCommands (
-			    IdeApp.ProjectOperations.CurrentSelectedProject,
-			    RunHandler.CanRun,
-			    info);
+			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (sol != null) {
+				ExecutionModeCommandService.GenerateExecutionModeCommands (
+				    sol.StartupItem as Project,
+				    RunHandler.CanRun,
+				    info);
+			}
 		}
 
 		protected override void Run (object dataItem)
@@ -344,6 +348,41 @@ namespace MonoDevelop.Ide.Commands
 				{
 					if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
                         IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+				};
+			}
+		}
+	}
+
+	internal class RunEntryWithHandler : CommandHandler
+	{
+		protected override void Update (CommandArrayInfo info)
+		{
+			SolutionEntityItem item = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as SolutionEntityItem;
+			if (item != null) {
+				ExecutionModeCommandService.GenerateExecutionModeCommands (
+				    item,
+				    delegate (IExecutionHandler h) {
+						return IdeApp.ProjectOperations.CanExecute (item, h);
+					},
+				    info);
+			}
+		}
+
+		protected override void Run (object dataItem)
+		{
+			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (dataItem);
+			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			if (h == null || !IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
+				return;
+			
+			if (!IdeApp.Preferences.BuildBeforeExecuting)
+				IdeApp.ProjectOperations.Execute (target, h);
+			else {
+				IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (target);
+				asyncOperation.Completed += delegate
+				{
+					if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
+						IdeApp.ProjectOperations.Execute (target, h);
 				};
 			}
 		}

@@ -440,6 +440,11 @@
 				icon = "gtk-execute"
 				_description = "Run current project"
 				_label = "_Run Item" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntryWithList"
+				defaultHandler = "MonoDevelop.Ide.Commands.RunEntryWithHandler"
+				type="array"
+				_description = "Run With List"
+				_label = "Run With List" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean"
 				defaultHandler = "MonoDevelop.Ide.Commands.CleanHandler"
 				_description = "Clean the selected project or solution"
@@ -1088,7 +1093,7 @@
 		<Condition id="ItemType" value="IBuildTarget">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 			<ItemSet id = "RunWith" _label = "Run With" autohide="True">
-				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntryWithList" />
 			</ItemSet>
 		</Condition>
 		<Condition id="ItemType" value="Project">

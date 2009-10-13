@@ -586,7 +586,7 @@
 	<Data Include="options/MonoDevelopProperties.xml">
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</Data>
-	<Data Include="options/MonoDevelop-templates.xml ">
+	<Data Include="options/MonoDevelop-templates.xml">
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</Data>
 	<Data Include="options/MonoDevelop-tools.xml">

@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Execution
 		[ItemProperty (DefaultValue=false)]
 		public bool PromptForParameters { get; set; }
 		
-		public Project Project { get; set; }
+		public SolutionEntityItem Project { get; set; }
 		
 		public CustomModeScope Scope { get; set; }
 		

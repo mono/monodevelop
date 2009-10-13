@@ -1,3 +1,17 @@
+2009-10-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Implemented Run
+	  Entry With command.
+
+	* MonoDevelop.Ide.Execution/CustomExecutionMode.cs:
+	* MonoDevelop.Ide.Execution/CommandExecutionContext.cs:
+	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:
+	  Generalized a bit. Custom modes can now be stored for any
+	  SolutionEntityItem.
+
+	* MonoDevelop.Ide.csproj: Fix typo in file name.
+
 2009-10-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

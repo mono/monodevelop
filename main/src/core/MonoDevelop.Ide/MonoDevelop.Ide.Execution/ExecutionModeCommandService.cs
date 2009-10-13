@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Execution
 			return null;
 		}
 		
-		public static void GenerateExecutionModeCommands (Project project, CanExecuteDelegate runCheckDelegate, CommandArrayInfo info)
+		public static void GenerateExecutionModeCommands (SolutionEntityItem project, CanExecuteDelegate runCheckDelegate, CommandArrayInfo info)
 		{
 			CommandExecutionContext ctx = new CommandExecutionContext (project, runCheckDelegate);
 			
@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.Execution
 			}
 		}
 		
-		internal static void SaveCustomCommand (Project project, CustomExecutionMode cmode)
+		internal static void SaveCustomCommand (SolutionEntityItem project, CustomExecutionMode cmode)
 		{
 			CustomExecutionModes modes = GetCustomExecutionModeList (project, cmode.Scope);
 			bool found = false;
@@ -269,7 +269,7 @@ namespace MonoDevelop.Ide.Execution
 				Ide.Gui.IdeApp.Workspace.SavePreferences ();
 		}
 		
-		static CustomExecutionModes GetCustomExecutionModeList (Project project, CustomModeScope scope)
+		static CustomExecutionModes GetCustomExecutionModeList (SolutionEntityItem project, CustomModeScope scope)
 		{
 			CustomExecutionModes modes;
 			if (scope == CustomModeScope.Global) {
@@ -292,7 +292,7 @@ namespace MonoDevelop.Ide.Execution
 			return modes;
 		}
 		
-		internal static void RemoveCustomCommand (Project project, CustomExecutionMode cmode)
+		internal static void RemoveCustomCommand (SolutionEntityItem project, CustomExecutionMode cmode)
 		{
 			CustomExecutionModes modes = GetCustomExecutionModeList (project, cmode.Scope);
 			modes.Data.Remove (cmode);
