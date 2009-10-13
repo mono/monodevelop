@@ -1,5 +1,10 @@
 2009-10-13  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: made the
+	  folding background marker a lot lighter.
+
+2009-10-13  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Mono.TextEditor/Margin.cs:

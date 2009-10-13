@@ -86,9 +86,9 @@ namespace Mono.TextEditor
 				for (int segment = -1; segment <= foundSegment; segment++) {
 					HslColor hslColor = new HslColor (editor.ColorStyle.Default.BackgroundColor);
 					if (brightness < 0.5) {
-						hslColor.L = hslColor.L * 3 / 4 + (hslColor.L) / 4 * (foldSegments.Count - segment + 1) / foldSegments.Count;
+						hslColor.L = hslColor.L * 0.9 + hslColor.L * 0.1 * (foldSegments.Count - segment + 1) / foldSegments.Count;
 					} else {
-						hslColor.L = hslColor.L * 3 / 4 + hslColor.L / 4 * (segment + 1) / foldSegments.Count;
+						hslColor.L = hslColor.L * 0.9 + hslColor.L * 0.1 * (segment + 1) / foldSegments.Count;
 					}
 					
 					Roles role = Roles.Between;
