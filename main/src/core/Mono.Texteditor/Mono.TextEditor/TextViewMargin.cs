@@ -1069,7 +1069,11 @@ namespace Mono.TextEditor
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			int selectionStart;
 			int selectionEnd;
-			GetSelectionOffsets (line, out selectionStart, out selectionEnd);
+			if (BackgroundRenderer != null)  {
+				selectionStart = selectionEnd = -1;
+			} else {
+				GetSelectionOffsets (line, out selectionStart, out selectionEnd);
+			}
 
 			// ---- new renderer
 			LayoutWrapper layout = CreateLinePartLayout (mode, line, offset, length, selectionStart, selectionEnd);
