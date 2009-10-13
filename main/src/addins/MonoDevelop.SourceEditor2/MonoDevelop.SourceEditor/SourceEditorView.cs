@@ -805,18 +805,14 @@ namespace MonoDevelop.SourceEditor
 		#region IEditableTextFile
 		public int InsertText (int position, string text)
 		{
-			int offset = this.widget.TextEditor.Caret.Offset;
 			int length = this.widget.TextEditor.Insert (position, text);
-			if (text != null && offset >= position) 
-				this.widget.TextEditor.Caret.Offset = offset + length;
+			this.widget.TextEditor.Caret.Offset = position + length;
 			return length;
 		}
 		public void DeleteText (int position, int length)
 		{
-			int offset = this.widget.TextEditor.Caret.Offset;
 			this.widget.TextEditor.Remove (position, length);
-			if (offset >= position) 
-				this.widget.TextEditor.Caret.Offset = offset + length;
+			this.widget.TextEditor.Caret.Offset = position;
 		}
 		#endregion 
 		

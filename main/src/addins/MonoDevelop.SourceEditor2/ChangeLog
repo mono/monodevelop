@@ -1,3 +1,8 @@
+2009-10-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed C/Vala
+	  bindings.
+
 2009-10-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/AutoSave.cs: fixed 'Bug 541726 -
