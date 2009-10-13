@@ -1,3 +1,8 @@
+2009-10-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs:
+	  Fixed 'Bug 546392 - exception in highlighting'.
+
 2009-10-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:

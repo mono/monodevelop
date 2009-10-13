@@ -195,7 +195,11 @@ namespace MonoDevelop.CSharp.Highlighting
 							genericParams.Add (new DomReturnType ("A"));
 					}
 					
-					IType type = ctx != null ? ctx.SearchType (new SearchTypeRequest (unit, returnType, callingType)) : unit.GetType (returnType.FullName, returnType.GenericArguments.Count);
+					IType type = null;
+					if (ctx != null)
+						type = ctx.SearchType (new SearchTypeRequest (unit, returnType, callingType));
+					if (type == null && unit != null && returnType != null)
+						type = unit.GetType (returnType.FullName, returnType.GenericArguments.Count);
 					if (type != null)
 						nameSegments.ForEach (segment => HighlightSegment (startChunk, segment, "keyword.semantic.type"));
 				}
