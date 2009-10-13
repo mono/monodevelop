@@ -182,12 +182,12 @@ namespace Mono.TextEditor.Highlighting
 			int max = offset + length - 1;
 			uint idx;
 			for (int i = offset; i < max; i++) {
-				idx = (uint)doc.GetCharAt (i);
+				idx = (uint)(IgnoreCase ? Char.ToUpper (doc.GetCharAt (i)) : doc.GetCharAt (i));
 				if (idx >= curTable.Length || curTable[idx] == null)
 					return null;
 				curTable = curTable[idx].table;
 			}
-			idx = (uint)doc.GetCharAt (max);
+			idx = (uint)(IgnoreCase ? Char.ToUpper (doc.GetCharAt (max)) : doc.GetCharAt (max));
 			if (idx > 255 || curTable[idx] == null)
 				return null;
 			return curTable[idx].keywords;
@@ -218,20 +218,8 @@ namespace Mono.TextEditor.Highlighting
 			case Mono.TextEditor.Highlighting.Keywords.Node:
 				Keywords keywords = Mono.TextEditor.Highlighting.Keywords.Read (reader, IgnoreCase);
 				this.keywords.Add (keywords);
-				if (keywords.IgnoreCase) {
-					foreach (string wordStr in keywords.Words) {
-						char[] word = wordStr.ToCharArray ();
-						for (int i = 0; i < (1 << word.Length); i++) {
-							for (int j = 0; j < word.Length; j++) {
-								word[j] = (i & (1 << j)) == (1 << j) ? Char.ToLower (word[j]) : Char.ToUpper (word[j]);
-							}
-							AddToTable (keywords, word);
-						}
-					}
-				} else {
-					foreach (string word in keywords.Words) {
-						AddToTable (keywords, word.ToCharArray ());
-					}
+				foreach (string word in keywords.Words) {
+					AddToTable (keywords, (keywords.IgnoreCase ? word.ToUpper () :  word).ToCharArray ());
 				}
 				return true;
 			case Marker.PrevMarker:

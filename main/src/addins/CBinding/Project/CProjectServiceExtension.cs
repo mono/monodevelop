@@ -50,7 +50,7 @@ namespace CBinding
 			if (project == null)
 				return base.Build (monitor, entry, configuration);
 			
-			CProjectConfiguration conf = (CProjectConfiguration) project.GetConfiguration (configuration);
+			CProjectConfiguration conf = (CProjectConfiguration) project.GetActiveConfiguration (configuration);
 			if (conf.CompileTarget != CompileTarget.Bin)
 				project.WriteMDPkgPackage (configuration);
 			
