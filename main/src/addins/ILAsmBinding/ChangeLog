@@ -1,3 +1,8 @@
+2009-10-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ILAsmConsoleProject.xpt.xml: Track language binding id
+	  change.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

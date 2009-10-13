@@ -6,10 +6,10 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
-		<_Category>ILAsm</_Category>
+		<_Category>IL</_Category>
 		<Icon>md-project</Icon>
-		<LanguageName>ILAsm</LanguageName>
-		<_Description>ILAsm Console Project</_Description>
+		<LanguageName>IL</LanguageName>
+		<_Description>IL Console Project</_Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
