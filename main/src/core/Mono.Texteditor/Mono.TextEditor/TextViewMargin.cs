@@ -831,7 +831,7 @@ namespace Mono.TextEditor
 			return Encoding.UTF8.GetString (bytes, 0, index).Length;
 		}
 	
-		class LayoutWrapper : IDisposable
+		public class LayoutWrapper : IDisposable
 		{
 			public Pango.Layout Layout {
 				get;
@@ -883,7 +883,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		LayoutWrapper CreateLinePartLayout (SyntaxMode mode, LineSegment line, int offset, int length, int selectionStart, int selectionEnd)
+		public LayoutWrapper CreateLinePartLayout (SyntaxMode mode, LineSegment line, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			return GetCachedLayout (line, offset, length, selectionStart, selectionEnd, delegate(LayoutWrapper wrapper) {
 				wrapper.Layout.Alignment = Pango.Alignment.Left;
@@ -1042,7 +1042,7 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-
+		
 		void DecorateMatchingBracket (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
@@ -1050,14 +1050,14 @@ namespace Mono.TextEditor
 			if (offset <= highlightBracketOffset && highlightBracketOffset <= offset + length) {
 				int index = highlightBracketOffset - offset;
 				Pango.Rectangle rect = layout.IndexToPos ((int)TranslateToUTF8Index (lineText.ToCharArray (), (uint)index, ref curIndex, ref byteIndex));
-
+				
 				Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos + (int)(rect.X / Pango.Scale.PangoScale), y, (int)(rect.Width / Pango.Scale.PangoScale) - 1, (int)(rect.Height / Pango.Scale.PangoScale) - 1);
-				win.DrawRectangle (GetGC (this.ColorStyle.BracketHighlightRectangle.BackgroundColor), true, bracketMatch);
+				if (BackgroundRenderer == null)
+					win.DrawRectangle (GetGC (this.ColorStyle.BracketHighlightRectangle.BackgroundColor), true, bracketMatch);
 				win.DrawRectangle (GetGC (this.ColorStyle.BracketHighlightRectangle.Color), false, bracketMatch);
 			}
 		}
-
-
+		
 		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y, int maxX)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
@@ -1597,6 +1597,8 @@ namespace Mono.TextEditor
 		
 		void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color, bool drawDefaultBackground)
 		{
+			if (BackgroundRenderer != null)
+				return;
 			bool isDefaultColor = (color.Red == defaultBgColor.Red && color.Green == defaultBgColor.Green && color.Blue == defaultBgColor.Blue);
 			if (isDefaultColor && !drawDefaultBackground)
 				return;
@@ -1685,6 +1687,9 @@ namespace Mono.TextEditor
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
 			
+			if (BackgroundRenderer != null)
+				BackgroundRenderer.Draw (win, area, line, x, y);
+			
 			if (textEditor.Options.HighlightCaretLine && Caret.Line == lineNr)
 				defaultBgColor = ColorStyle.LineMarker;
 			else
@@ -1728,7 +1733,8 @@ namespace Mono.TextEditor
 					markerLayout.GetPixelSize (out width, out height);
 					bool isFoldingSelected = textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
 					Rectangle foldingRectangle = new Rectangle (xPos, y, width - 1, this.LineHeight - 1);
-					win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.Selection.BackgroundColor : defaultBgColor), true, foldingRectangle);
+					if (BackgroundRenderer == null)
+						win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.Selection.BackgroundColor : defaultBgColor), true, foldingRectangle);
 					win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.Selection.Color : ColorStyle.FoldLine.Color), false, foldingRectangle);
 					win.DrawLayout (GetGC (isFoldingSelected ? ColorStyle.Selection.Color : ColorStyle.FoldLine.Color), xPos, y, markerLayout);
 					
@@ -1816,6 +1822,12 @@ namespace Mono.TextEditor
 			}
 			lastLineRenderWidth = xPos;
 		}
+		
+		internal IBackgroundRenderer BackgroundRenderer {
+			get;
+			set;
+		} 
+		
 		internal int lastLineRenderWidth = 0;
 		
 		

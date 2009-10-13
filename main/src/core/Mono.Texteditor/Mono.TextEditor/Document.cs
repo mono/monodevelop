@@ -1041,7 +1041,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		
 		public IEnumerable<FoldSegment> GetFoldingsFromOffset (int offset)
 		{
 			if (offset < 0 || offset >= Length)
@@ -1105,7 +1104,6 @@ namespace Mono.TextEditor
 		}
 		#endregion
 		
-
 		public void AddMarker (int lineNumber, TextMarker marker)
 		{
 			AddMarker (this.GetLine (lineNumber), marker);

@@ -79,7 +79,27 @@ namespace Mono.TextEditor
 				}
 			} 
 			lineHover = lineSegment;
-			
+			bool found = false;
+			foreach (FoldSegment segment in editor.Document.GetFoldingContaining (lineSegment)) {
+				if (segment.StartLine.Offset == lineSegment.Offset) {
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, editor.Document.GetFoldingContaining (lineSegment));
+				editor.Repaint ();
+			} else {
+				RemoveBackgroundRenderer ();
+			}
+		}
+
+		void RemoveBackgroundRenderer ()
+		{
+			if (editor.TextViewMargin.BackgroundRenderer != null) {
+				editor.TextViewMargin.BackgroundRenderer = null;
+				editor.Repaint ();
+			}
 		}
 		
 		internal protected override void MouseLeft ()
@@ -90,6 +110,7 @@ namespace Mono.TextEditor
 				lineHover = null;
 				editor.RedrawMargin (this);
 			}
+			RemoveBackgroundRenderer ();
 		}
 		
 		internal protected override void OptionsChanged ()

@@ -81,7 +81,9 @@ namespace Mono.TextEditor
 			cr.NewPath ();
 			cr.MoveTo (x + radius_x, y);
 			cr.RelLineTo (w - 2 * radius_x, 0.0);
-			cr.RelCurveTo (c1, 0.0, radius_x, c2, radius_x, radius_y);
+			cr.RelCurveTo (c1, 0.0, 
+			               radius_x, c2, 
+			               radius_x, radius_y);
 			cr.RelLineTo (0, h - 2 * radius_y);
 			cr.RelCurveTo (0.0, c2, c1 - radius_x, radius_y, -radius_x, radius_y);
 			cr.RelLineTo (-w + 2 * radius_x, 0);

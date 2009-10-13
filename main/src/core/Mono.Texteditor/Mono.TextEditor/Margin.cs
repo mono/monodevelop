@@ -63,7 +63,7 @@ namespace Mono.TextEditor
 		internal protected virtual void EndRender (Gdk.Drawable drawable, Gdk.Rectangle area, int x)
 		{
 		}
-	
+		
 		internal protected abstract void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y);
 		
 		internal protected virtual void OptionsChanged ()

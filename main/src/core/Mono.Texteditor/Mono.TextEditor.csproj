@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.TextEditor</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>Mono.TextEditor</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -18,7 +19,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <AssemblyKeyFile>.</AssemblyKeyFile>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -141,6 +141,9 @@
     <Compile Include="Mono.TextEditor\IBracketMatcher.cs" />
     <Compile Include="Mono.TextEditor\FoldActions.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViWordFindStrategy.cs" />
+    <Compile Include="Mono.TextEditor\FoldingScreenbackgroundRenderer.cs" />
+    <Compile Include="Mono.TextEditor\HslColor.cs" />
+    <Compile Include="Mono.TextEditor\IBackgroundRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

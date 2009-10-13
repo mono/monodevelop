@@ -57,12 +57,15 @@ FILES =  \
 	Mono.TextEditor/EditMode.cs \
 	Mono.TextEditor/EmacsWordFindStrategy.cs \
 	Mono.TextEditor/FoldActions.cs \
+	Mono.TextEditor/FoldingScreenbackgroundRenderer.cs \
 	Mono.TextEditor/FoldingType.cs \
 	Mono.TextEditor/FoldMarkerMargin.cs \
 	Mono.TextEditor/FoldSegment.cs \
 	Mono.TextEditor/GapBuffer.cs \
 	Mono.TextEditor/GutterMargin.cs \
 	Mono.TextEditor/HelperMethods.cs \
+	Mono.TextEditor/HslColor.cs \
+	Mono.TextEditor/IBackgroundRenderer.cs \
 	Mono.TextEditor/IBracketMatcher.cs \
 	Mono.TextEditor/IBuffer.cs \
 	Mono.TextEditor/IconMargin.cs \

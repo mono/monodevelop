@@ -184,6 +184,7 @@ namespace Mono.TextEditor
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 				return;
 			}
+			FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 			textViewMargin.VAdjustmentValueChanged ();
 			
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
@@ -717,7 +718,7 @@ namespace Mono.TextEditor
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
 				return true;
 			}
-			    
+			
 			uint unicodeChar = Gdk.Keyval.ToUnicode (evt.KeyValue);
 			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
 				ResetIMContext ();	
@@ -945,8 +946,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		Gdk.ModifierType lastState = ModifierType.None;
 		void FireMotionEvent (double x, double y, Gdk.ModifierType state)
 		{
+			lastState = state;
 			mx = x - textViewMargin.XOffset;
 			my = y;
 
@@ -1148,6 +1151,7 @@ namespace Mono.TextEditor
 				else 
 					Options.ZoomOut ();
 				this.Repaint ();
+				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 				return true;
 			}
 			return base.OnScrollEvent (evnt); 
