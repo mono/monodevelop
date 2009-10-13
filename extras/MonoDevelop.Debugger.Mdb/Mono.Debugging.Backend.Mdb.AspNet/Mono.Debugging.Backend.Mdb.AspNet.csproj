@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Debugging.Backend.Mdb.AspNet</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>Mono.Debugging.Backend.Mdb.AspNet</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -114,7 +115,9 @@
     <Compile Include="MonoXspDebuggerSessionFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Manifest.addin.xml" />
+    <EmbeddedResource Include="Manifest.addin.xml">
+      <LogicalName>Manifest.addin.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Debugging.Backend.Mdb\Mono.Debugging.Backend.Mdb.csproj">

@@ -99,6 +99,9 @@ namespace DebuggerServer
 				}
 				
 				pinfo.Arguments = args;
+				pinfo.RedirectStandardError = true;
+				pinfo.RedirectStandardOutput = true;
+				pinfo.UseShellExecute = false;
 				Process proc = Process.Start (pinfo);
 				proc.WaitForExit ();
 				if (proc.ExitCode != 0)

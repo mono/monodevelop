@@ -53,6 +53,5 @@ Global
 		$7.inheritsSet = Mono
 		$7.inheritsScope = text/x-csharp
 		$7.scope = text/x-csharp
-		version = 0.1
 	EndGlobalSection
 EndGlobal
