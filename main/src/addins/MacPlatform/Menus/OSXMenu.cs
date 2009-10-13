@@ -495,7 +495,7 @@ namespace OSXIntegration
 					
 					objectsToDestroyOnMenuClose.Add (ci.DataItem);
 					uint refcon = (uint)objectsToDestroyOnMenuClose.Count;
-					SetMenuItemAttributes (new HIMenuItem (menuRef, index), ci, refcon);
+					HIToolbox.SetMenuItemReferenceConstant (new HIMenuItem (menuRef, i), refcon);
 				}
 			}
 		}

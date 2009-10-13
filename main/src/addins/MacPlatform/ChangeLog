@@ -1,5 +1,11 @@
 2009-10-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Menus/OSXMenu.cs: Oops, fix menu item index. With last few
+	  commits, fixes Bug 545151 - Dynamic submenus in Mac main
+	  menu don't work.
+
+2009-10-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Menus/OSXMenu.cs: Set the refcon in dynamic submenus, so the
 	  command can be run.
 
