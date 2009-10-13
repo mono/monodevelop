@@ -17,9 +17,9 @@ gen-vcrevision:
 			svn st | grep -v ^\? | wc -l; \
 		); \
 		if test $$modified != 0; then \
-			version="SVN revision: $$version (modified)"; \
+			version="$$version (modified)"; \
 		fi; \
-		echo "$$version" > "vcrevision"; \
+		echo "SVN revision: $$version" > "vcrevision"; \
 	else \
 		echo "0" > "vcrevision"; \
 	fi
