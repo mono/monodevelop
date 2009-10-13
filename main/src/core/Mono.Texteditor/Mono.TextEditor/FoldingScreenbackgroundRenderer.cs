@@ -92,7 +92,7 @@ namespace Mono.TextEditor
 					if (brightness < 0.5) {
 						hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.25 * (colorCount - colorPosition) / colorCount;
 					} else {
-						hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.15 * colorPosition / colorCount;
+						hslColor.L = hslColor.L * 0.9 + hslColor.L * 0.1 * colorPosition / colorCount;
 					}
 					
 					Roles role = Roles.Between;
