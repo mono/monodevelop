@@ -220,23 +220,15 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		static double Brightness (Gdk.Color c)
+		Gdk.Color AdjustColor (Gdk.Color baseColor, Gdk.Color color)
 		{
-			double r = c.Red / (double)ushort.MaxValue;
-			double g = c.Green / (double)ushort.MaxValue;
-			double b = c.Blue / (double)ushort.MaxValue;
-			return Math.Sqrt (r * .241 + g * .691 + b * .068) / 1000.0;
-		}
-		
-		Gdk.Color AdjustColor (Gdk.Color color)
-		{
-			double b1 = Brightness (color);
-			double b2 = Brightness (Style.Base (StateType.Normal));
+			double b1 = HslColor.Brightness (color);
+			double b2 = HslColor.Brightness (baseColor);
 			double delta = Math.Abs (b1 - b2);
-			if (delta < 1e-4) {
+			if (delta < 0.1) {
 				HslColor color1 = color;
 				color1.L -= 0.5;
-				if (Math.Abs (Brightness (color1) - b2) < delta) {
+				if (Math.Abs (HslColor.Brightness (color1) - b2) < delta) {
 					color1 = color;
 					color1.L += 0.5;
 				}
@@ -262,7 +254,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				
 				Gdk.Color color = Gdk.Color.Zero;
 				if (Gdk.Color.Parse (colorStr, ref color)) {
-					colorStr = SyntaxMode.ColorToPangoMarkup (AdjustColor (color));
+					colorStr = SyntaxMode.ColorToPangoMarkup (AdjustColor (Style.Base (StateType.Normal), color));
 				}
 				result.Append (colorStr);
 				idx = markup.IndexOf ("foreground=\"", idx);
@@ -384,10 +376,10 @@ namespace MonoDevelop.Ide.FindInFiles
 						markup = markup.Insert (pos2, "</span>");
 					}
 					Gdk.Color searchColor = style.SearchTextBg;
-					double b1 = Brightness (searchColor);
-					double b2 = Brightness (AdjustColor (style.Default.Color));
+					double b1 = HslColor.Brightness (searchColor);
+					double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), style.Default.Color));
 					double delta = Math.Abs (b1 - b2);
-					if (delta < 0.0001) {
+					if (delta < 0.1) {
 						HslColor color1 = style.SearchTextBg;
 						if (color1.L + 0.5 > 1.0) {
 							color1.L -= 0.5;

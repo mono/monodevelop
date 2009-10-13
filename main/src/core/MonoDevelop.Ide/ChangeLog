@@ -1,3 +1,12 @@
+2009-10-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.FindInFiles/HslColor.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Moved hsl
+	  color & brightness into the text edior. (removed brightness
+	  * 1e-3, it correctly ranges now 0.0-1.0);
+
 2009-10-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs: Escape

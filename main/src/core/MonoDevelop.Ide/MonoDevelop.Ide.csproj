@@ -537,7 +537,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\ISearchProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Ide.FindInFiles\HslColor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\IncludeNewFilesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.IncludeNewFilesDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\IAttachableDisplayBinding.cs" />
