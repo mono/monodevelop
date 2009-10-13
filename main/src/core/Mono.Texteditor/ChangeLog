@@ -1,5 +1,10 @@
 2009-10-13  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: Made the
+	  fold marker highlighting a bit more obvious.
+
+2009-10-13  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/Rule.cs: Case insensitive
 	  languages take fewer memory.
 

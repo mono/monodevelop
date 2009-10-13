@@ -82,13 +82,17 @@ namespace Mono.TextEditor
 			TextViewMargin.LayoutWrapper lineLayout = null;
 			double brightness = HslColor.Brightness (editor.ColorStyle.Default.BackgroundColor);
 			
+			int colorCount = foldSegments.Count + 2;
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
-				for (int segment = -1; segment <= foundSegment; segment++) {
+ 				for (int segment = -1; segment <= foundSegment; segment++) {
 					HslColor hslColor = new HslColor (editor.ColorStyle.Default.BackgroundColor);
+					int colorPosition = segment + 1;
+					if (segment == foldSegments.Count - 1)
+						colorPosition += 2;
 					if (brightness < 0.5) {
-						hslColor.L = hslColor.L * 0.9 + hslColor.L * 0.1 * (foldSegments.Count - segment + 1) / foldSegments.Count;
+						hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.25 * (colorCount - colorPosition) / colorCount;
 					} else {
-						hslColor.L = hslColor.L * 0.9 + hslColor.L * 0.1 * (segment + 1) / foldSegments.Count;
+						hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.15 * colorPosition / colorCount;
 					}
 					
 					Roles role = Roles.Between;
