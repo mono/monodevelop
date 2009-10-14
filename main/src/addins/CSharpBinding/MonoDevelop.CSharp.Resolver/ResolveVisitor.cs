@@ -579,7 +579,28 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
 			targetResult.StaticResolve = false; // invocation result is never static
-			//System.Console.WriteLine("target:" + targetResult);
+			
+			if (targetResult is ThisResolveResult && this.resolver.CallingType != null) {
+				targetResult = new MethodResolveResult (this.resolver.CallingType.Methods.Where (method => method.IsConstructor));
+				((MethodResolveResult)targetResult).Type = this.resolver.CallingType;
+				targetResult.CallingType   = resolver.CallingType;
+				targetResult.CallingMember = resolver.CallingMember;
+			}
+			
+			if (targetResult is BaseResolveResult && this.resolver.CallingType != null) {
+				System.Collections.IEnumerable baseConstructors = null;
+				foreach (IType baseType in resolver.Dom.GetInheritanceTree (this.resolver.CallingType)) {
+					if (baseType.DecoratedFullName == this.resolver.CallingType.DecoratedFullName || baseType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface)
+						continue;
+					baseConstructors = baseType.Methods.Where (method => method.IsConstructor);
+					break;
+				}
+				targetResult = new MethodResolveResult (baseConstructors);
+				((MethodResolveResult)targetResult).Type = this.resolver.CallingType;
+				targetResult.CallingType   = resolver.CallingType;
+				targetResult.CallingMember = resolver.CallingMember;
+			}
+			
 			MethodResolveResult methodResult = targetResult as MethodResolveResult;
 			if (methodResult != null) {
 //				Console.WriteLine ("--------------------");
