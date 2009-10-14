@@ -395,9 +395,13 @@ But I leave it in in the case I've missed something. Mike
 					widget.TextEditor.ClearSelection ();
 					return;
 				}
+//				int oldOffset = widget.TextEditor.Caret.Offset;
 				widget.TextEditor.Caret.Offset = result.EndOffset;
+				var oldRange = widget.TextEditor.SelectionRange;
 				widget.TextEditor.SelectionRange = result;
 				widget.TextEditor.CenterToCaret ();
+				if (oldRange == null || oldRange.Offset != result.Offset)
+					widget.TextEditor.AnimateSearchResult (result);
 			} catch (System.Exception) { 
 			}
 		}

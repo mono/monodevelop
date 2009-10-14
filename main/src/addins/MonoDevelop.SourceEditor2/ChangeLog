@@ -1,5 +1,12 @@
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Search
+	  pattern is now set when search widget is first opened/added
+	  animated search results.
+
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed
 	  method overloading when no space is used before '('.
 

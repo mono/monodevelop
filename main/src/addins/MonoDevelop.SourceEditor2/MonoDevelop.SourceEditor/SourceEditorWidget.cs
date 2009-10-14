@@ -985,6 +985,9 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			searchAndReplaceWidget.Focus ();
+			this.textEditor.SearchPattern = ""; // reset pattern, to force an update
+			SetSearchOptions ();
+			
 		}
 		
 		[CommandHandler (SearchCommands.GotoLineNumber)]
