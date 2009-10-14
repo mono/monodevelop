@@ -378,18 +378,47 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		void OnUpdateButtonClick (object sender, EventArgs e)
 		{
-			TreeSelection sel = keyTreeView.Selection;
 			TreeIter iter;
-			
-			if (sel.GetSelected (out iter)) {
-				Command cmd = (Command) keyStore.GetValue (iter, commandCol);
-				if (cmd != null) {
-					keyStore.SetValue (iter, bindingCol, CurrentBinding);
-					currentBindings.SetBinding (cmd, CurrentBinding);
-					SelectCurrentScheme ();
-				}
+			Command cmd;
+			if (GetSelectedCommandIter (out iter, out cmd)) {
+				keyStore.SetValue (iter, bindingCol, CurrentBinding);
+				currentBindings.SetBinding (cmd, CurrentBinding);
+				SelectCurrentScheme ();
 			}
 			UpdateGlobalWarningLabel ();
+		}
+		
+		bool GetSelectedCommandIter (out TreeIter iter, out Command cmd)
+		{
+			TreeSelection sel = keyTreeView.Selection;
+			TreeIter filteredIter;
+			if (!sel.GetSelected (out iter)) {
+				cmd = null;
+				return false;
+			}
+			
+			cmd = (Command)filterModel.GetValue (iter, commandCol);
+			if (cmd == null)
+				return false;
+			
+			if (keyStore.GetIterFirst (out iter) && FindIterForCommand (cmd, iter, out iter))
+				return true;
+			
+			throw new Exception ("Did not find command in underlying model");
+		}
+		
+		bool FindIterForCommand (object cmd, TreeIter iter, out TreeIter found)
+		{
+			do {
+				TreeIter child;
+				if (keyStore.IterChildren (out child, iter) && FindIterForCommand (cmd, child, out found))
+					return true;
+				if (keyStore.GetValue (iter, commandCol) == cmd) {
+					found = iter;
+					return true;
+				}
+			} while (keyStore.IterNext (ref iter));
+			return false;
 		}
 
 		void UpdateGlobalWarningLabel ()
