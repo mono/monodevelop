@@ -183,7 +183,8 @@ namespace MonoDevelop.Projects.Dom
 			DomParameter result = new DomParameter ();
 			result.Name               = source.Name;
 			result.ParameterModifiers = source.ParameterModifiers;
-			result.ReturnType         = (IReturnType) source.ReturnType.AcceptVisitor (this, data);
+            if (source.ReturnType != null)
+			    result.ReturnType         = (IReturnType) source.ReturnType.AcceptVisitor (this, data);
 			foreach (IAttribute attr in source.Attributes)
 				result.Add ((IAttribute) attr.AcceptVisitor (this, data));
 			return result;

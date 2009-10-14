@@ -1,3 +1,8 @@
+2009-10-14  Carlo Kok  <ck@remobjects.com>
+
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs: Make sure 
+	  parameter type is assigned before visiting it.
+
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: generalized API.
