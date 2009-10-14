@@ -34,11 +34,34 @@ using Mono.TextEditor;
 using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Project;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
 	public class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{
+		public bool DisableConditionalHighlighting {
+			get;
+			set;
+		}
+		
+		static CSharpSyntaxMode ()
+		{
+			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += (EventHandler<MonoDevelop.Ide.Gui.DocumentEventArgs>)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<MonoDevelop.Ide.Gui.DocumentEventArgs> (OnDisableConditionalCompilation));
+		}
+		
+		static void OnDisableConditionalCompilation (object s, MonoDevelop.Ide.Gui.DocumentEventArgs e)
+		{
+			ITextEditorDataProvider provider = e.Document.GetContent<ITextEditorDataProvider> ();
+			if (provider == null)
+				return;
+			CSharpSyntaxMode mode = provider.GetTextEditorData ().Document.SyntaxMode as CSharpSyntaxMode;
+			if (mode == null)
+				return;
+			mode.DisableConditionalHighlighting = true;
+			provider.GetTextEditorData ().Document.CommitUpdateAll ();
+		}
+		
 		public CSharpSyntaxMode ()
 		{
 			ResourceXmlProvider provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, "CSharpSyntaxMode.xml");
@@ -146,6 +169,11 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		protected class CSharpSpanParser : SpanParser
 		{
+			CSharpSyntaxMode CSharpSyntaxMode {
+				get {
+					return (CSharpSyntaxMode)mode;
+				}
+			}
 			class ConditinalExpressionEvaluator : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
 			{
 				HashSet<string> symbols = new HashSet<string> ();
@@ -206,6 +234,10 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			protected override void ScanSpan (ref int i)
 			{
+				if (CSharpSyntaxMode.DisableConditionalHighlighting) {
+					base.ScanSpan (ref i);
+					return;
+				}
 				if (i + 5 < doc.Length && doc.GetTextAt (i, 5) == "#else" && spanStack.Any (span => span is IfBlockSpan)) {
 					bool previousResult = false;
 					foreach (Span span in spanStack.ToArray ().Reverse ()) {
