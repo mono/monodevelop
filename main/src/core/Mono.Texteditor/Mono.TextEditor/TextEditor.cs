@@ -1629,14 +1629,13 @@ namespace Mono.TextEditor
 					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Selection.BackgroundColor);
 					color.A = 0.5;
 					cr.Color = color;
-					
-//					cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.SearchTextBg);
+					cr.LineWidth = editor.Options.Zoom * 2;
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
-					                                                    editor.TextViewMargin.XOffset + x1 - LifeTime, 
-					                                                    y - LifeTime, 
+					                                                    (int)(editor.TextViewMargin.XOffset + x1 - LifeTime * editor.Options.Zoom), 
+					                                                    (int)(y - LifeTime * editor.Options.Zoom), 
 					                                                    10, 
-					                                                    x2 - x1 +  2  * LifeTime , 
-					                                                    editor.LineHeight + 2 * LifeTime);
+					                                                    (int)(x2 - x1 +  2  * LifeTime * editor.Options.Zoom), 
+					                                                    (int)(editor.LineHeight + 2 * LifeTime * editor.Options.Zoom));
 					cr.Stroke ();
 				}
 				if (lineLayout.IsUncached) 
@@ -1644,7 +1643,43 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		
+		class CaretPulseAnimation : IAnimation
+		{
+			const int MaxLifeTime = 5;
+			TextEditor editor;
+			
+			public int LifeTime {
+				get;
+				set;
+			}
+			
+			public CaretPulseAnimation (TextEditor editor)
+			{
+				LifeTime = MaxLifeTime;
+				this.editor = editor;
+			}
+			
+			public void Draw (Drawable drawable)
+			{
+				int x = editor.TextViewMargin.caretX;
+				int y = editor.TextViewMargin.caretY;
+				if (editor.Caret.Mode != CaretMode.Block)
+					x -= editor.TextViewMargin.charWidth / 2;
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
+					                                                    (int)(x - (MaxLifeTime - LifeTime) * editor.Options.Zoom / 2), 
+					                                                    (int)(y - (MaxLifeTime - LifeTime) * editor.Options.Zoom), 
+					                                                    editor.TextViewMargin.charWidth / 2,
+					                                                    (int)(editor.TextViewMargin.charWidth + 2 * (MaxLifeTime - LifeTime) * editor.Options.Zoom / 2),
+					                                                    (int)(editor.LineHeight + 2 * (MaxLifeTime - LifeTime) * editor.Options.Zoom));
+					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Caret.Color);
+					color.A = 0.5;
+					cr.LineWidth = editor.Options.Zoom;
+					cr.Color = color;
+					cr.Stroke ();
+				}
+			}
+		}
 		void AnimationTimer (object sender, EventArgs args)
 		{
 			if (animation != null) {
@@ -1657,18 +1692,6 @@ namespace Mono.TextEditor
 			} else {
 				animationTimer.Stop ();
 			}
-			/*
-			lock (animations) {
-				if (animations.Count > 0) {
-					animations.ForEach (anim => anim.LifeTime--);
-					animations.RemoveAll (anim => anim.LifeTime < 0);
-					Application.Invoke (delegate {
-						QueueDraw ();
-					});
-				} else {
-					animationTimer.Stop ();
-				}
-			}*/
 		}
 
 		public SearchResult FindNext ()
@@ -1678,6 +1701,13 @@ namespace Mono.TextEditor
 			return result;
 		}
 
+		public void StartCaretPulseAnimation ()
+		{
+			animationTimer.Stop ();
+			animation = new TextEditor.CaretPulseAnimation (this);
+			animationTimer.Start ();
+		}
+		
 		public void AnimateSearchResult (SearchResult result)
 		{
 			if (result != null) {

@@ -44,7 +44,7 @@ namespace Mono.TextEditor
 		readonly TextEditor textEditor;
 		Pango.TabArray tabArray = null;
 		Pango.Layout markerLayout = null;
-		int charWidth;
+		internal int charWidth;
 
 		int lineHeight = 16;
 		int highlightBracketOffset = -1;

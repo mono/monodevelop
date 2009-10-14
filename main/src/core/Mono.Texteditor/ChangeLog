@@ -1,5 +1,11 @@
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Added caret pulse
+	  animation.
+
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: fixed background drawing
 	  bug in conjunction with the current line marker.
 
