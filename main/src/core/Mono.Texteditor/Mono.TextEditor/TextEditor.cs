@@ -1591,8 +1591,8 @@ namespace Mono.TextEditor
 			return textEditorData.SearchBackward (fromOffset);
 		}
 		
-		Animation animation = null;
-		class Animation 
+		IAnimation animation = null;
+		class HighlightSearchResultAnimation : IAnimation
 		{
 			const int MaxLifeTime = 5;
 			TextEditor editor;
@@ -1603,7 +1603,7 @@ namespace Mono.TextEditor
 				set;
 			}
 			
-			public Animation (TextEditor editor, SearchResult result)
+			public HighlightSearchResultAnimation (TextEditor editor, SearchResult result)
 			{
 				LifeTime = MaxLifeTime;
 				this.editor = editor;
@@ -1682,11 +1682,11 @@ namespace Mono.TextEditor
 		{
 			if (result != null) {
 				animationTimer.Stop ();
-				animation = new TextEditor.Animation (this, result);
+				animation = new TextEditor.HighlightSearchResultAnimation (this, result);
 				animationTimer.Start ();
 			}
 		}
-
+		
 		
 		public SearchResult FindPrevious ()
 		{

@@ -1,5 +1,13 @@
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/IAnimation.cs: Added IAnimation interface
+	  for adding more animation effects.
+
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Added caret line
 	  highlighting.
 
