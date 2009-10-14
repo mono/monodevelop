@@ -339,6 +339,10 @@ namespace MonoDevelop.Ide.Gui
 
 		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding)
 		{
+			return OpenDocument (fileName, line, column, bringToFront, encoding, binding, true);
+		}
+		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding, bool highlightCaretLine)
+		{
 			NavigationHistoryService.LogActiveDocument ();
 			
 			foreach (Document doc in Documents) {
@@ -364,7 +368,7 @@ namespace MonoDevelop.Ide.Gui
 					
 					IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
 					if (line >= 1 && ipos != null) {
-						ipos.SetCaretTo (line, column >= 1 ? column : 1);
+						ipos.SetCaretTo (line, column >= 1 ? column : 1, highlightCaretLine);
 					}
 					
 					NavigationHistoryService.LogActiveDocument ();
@@ -789,7 +793,7 @@ namespace MonoDevelop.Ide.Gui
 			foreach (DocumentUserPrefs doc in prefs.Files) {
 				FilePath fileName = args.Item.BaseDirectory.Combine (doc.FileName).FullPath;
 				if (File.Exists (fileName))
-					IdeApp.Workbench.OpenDocument (fileName, doc.Line, doc.Column, fileName == currentFileName);
+					IdeApp.Workbench.OpenDocument (fileName, doc.Line, doc.Column, fileName == currentFileName, null, null, false);
 			}
 			
 			foreach (PadUserPrefs pi in prefs.Pads) {

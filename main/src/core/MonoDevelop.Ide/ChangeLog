@@ -1,5 +1,11 @@
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs: Added
+	  caret line highlighting when position is set.
+
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Document.cs: Added DocumentEventArgs.
 
 2009-10-13  Michael Hutchinson  <mhutchinson@novell.com>
