@@ -67,10 +67,11 @@ namespace MonoDevelop.Refactoring
 			string itemName = null;
 			if (item is IMember)
 				itemName = ((IMember)item).Name;
-			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
+			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IField) && !(eitem is IMethod)))) {
 				item = eitem;
 				eitem = null;
 			}
+			
 			IType eclass = null;
 			if (item is IType) {
 				if (((IType)item).ClassType == ClassType.Interface)

@@ -1,3 +1,8 @@
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/GotoDeclarationHandler.cs: Special
+	  handling for field types & names (same as properties).
+
 2009-10-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
