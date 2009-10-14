@@ -84,7 +84,13 @@
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.DynamicAbbrev"
 				defaultHandler = "MonoDevelop.SourceEditor.DynamicAbbrevHandler"
 				_label = "Dynamic abbrev"
+				_description = "Cycles completing the current word from matching words in all open files"
 				shortcut = "Alt|/" />
+		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.PulseCaret"
+				_label = "Find caret"
+				_description = "Animates the text editor caret to help find it"
+				shortcut = "Ctrl|Shift||"
+				macShortcut = "Super|Shift||" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
