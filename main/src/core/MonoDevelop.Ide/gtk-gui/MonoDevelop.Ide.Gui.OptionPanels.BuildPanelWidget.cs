@@ -141,6 +141,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             // Container child vbox67.Gtk.Box+BoxChild
             this.saveChangesRadioButton = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("_Save changes to open documents"));
             this.saveChangesRadioButton.Name = "saveChangesRadioButton";
+            this.saveChangesRadioButton.Active = true;
             this.saveChangesRadioButton.DrawIndicator = true;
             this.saveChangesRadioButton.UseUnderline = true;
             this.saveChangesRadioButton.Group = new GLib.SList(System.IntPtr.Zero);

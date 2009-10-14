@@ -1,3 +1,15 @@
+2009-10-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:
+	  Implement a filter entry for the keybindings panel.
+
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:
+	  Flush.
+
 2009-10-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml:

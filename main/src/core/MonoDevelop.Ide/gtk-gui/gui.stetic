@@ -1271,7 +1271,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" design-size="491 460">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" design-size="720 460">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox">
@@ -1316,13 +1316,26 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.VBox" id="globalWarningBox">
+          <widget class="Gtk.HSeparator" id="hseparator2">
             <property name="MemberName" />
-            <property name="Visible">False</property>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HBox" id="hbox2">
+            <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.HSeparator" id="hseparator1">
+              <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">_Search:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">searchEntry</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -1332,60 +1345,115 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.HBox" id="warningBox">
+              <widget class="Gtk.Entry" id="searchEntry">
                 <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <widget class="Gtk.Image" id="image3">
-                    <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-dialog-warning Menu</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Label" id="label2">
-                    <property name="MemberName" />
-                    <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">The current scheme has conflicting key bindings</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="MonoDevelop.Components.MenuButton" id="conflicButton">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextOnly</property>
-                    <property name="Label">View Conflicts</property>
-                    <property name="UseUnderline">True</property>
-                    <property name="UseMarkup">False</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">2</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
+                <property name="CanFocus">True</property>
+                <property name="IsEditable">True</property>
+                <property name="InvisibleChar">●</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
                 <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Button" id="clearFilterButton">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Type">Custom</property>
+                <child>
+                  <widget class="Gtk.Image" id="image25">
+                    <property name="MemberName" />
+                    <property name="Pixbuf">stock:gtk-clear Menu</property>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">False</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
               </packing>
             </child>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">2</property>
             <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.VBox" id="globalWarningBox">
+            <property name="MemberName" />
+            <property name="Visible">False</property>
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.Frame" id="frame1">
+                <property name="MemberName" />
+                <child>
+                  <widget class="Gtk.Alignment" id="alignment1">
+                    <property name="MemberName" />
+                    <property name="BorderWidth">2</property>
+                    <child>
+                      <widget class="Gtk.HBox" id="warningBox">
+                        <property name="MemberName" />
+                        <property name="Spacing">6</property>
+                        <child>
+                          <widget class="Gtk.Image" id="image3">
+                            <property name="MemberName" />
+                            <property name="Pixbuf">stock:gtk-dialog-warning Menu</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">0</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Label" id="label2">
+                            <property name="MemberName" />
+                            <property name="Xalign">0</property>
+                            <property name="LabelProp" translatable="yes">The current scheme has conflicting key bindings</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">1</property>
+                            <property name="AutoSize">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="MonoDevelop.Components.MenuButton" id="conflicButton">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Type">TextOnly</property>
+                            <property name="Label">View Conflicts</property>
+                            <property name="UseUnderline">True</property>
+                            <property name="UseMarkup">False</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">2</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">3</property>
+            <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
@@ -1403,7 +1471,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">4</property>
             <property name="AutoSize">True</property>
           </packing>
         </child>
@@ -1415,7 +1483,7 @@
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
-            <property name="Position">3</property>
+            <property name="Position">5</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -1467,7 +1535,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">4</property>
+            <property name="Position">6</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>

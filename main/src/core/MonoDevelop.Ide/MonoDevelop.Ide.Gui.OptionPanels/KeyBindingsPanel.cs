@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -48,6 +49,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		static readonly int boldCol = 4;
 		static readonly int iconCol = 5;
 		static readonly int iconVisibleCol = 6;
+		static readonly int visibleCol = 7;
 		
 		bool accelIncomplete = false;
 		bool accelComplete = false;
@@ -57,12 +59,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		bool internalUpdate;
 		List<KeyBindingScheme> schemes;
 		
+		TreeModelFilter filterModel;
+		bool filterChanged;
+		string[] processedFilterTerms;
+		bool filterTimeoutRunning;
+		
 		public KeyBindingsPanel ()
 		{
 			this.Build ();
 			
-			keyStore = new TreeStore (typeof (Command), typeof (string), typeof (string), typeof (string), typeof (int), typeof(string), typeof(bool));
-			keyTreeView.Model = keyStore;
+			keyStore = new TreeStore (typeof (Command), typeof (string), typeof (string), typeof (string), typeof (int), typeof(string), typeof(bool), typeof (bool));
+			keyTreeView.Model = filterModel = new TreeModelFilter (keyStore, null);
+			filterModel.VisibleColumn = visibleCol;
 			
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Command");
@@ -76,7 +84,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			col.AddAttribute (crt, "text", labelCol);
 			col.AddAttribute (crt, "weight", boldCol);
 			keyTreeView.AppendColumn (col);
-			
 			
 			TreeViewColumn bindingTVCol = new TreeViewColumn ();
 			bindingTVCol.Title = GettextCatalog.GetString ("Key Binding");
@@ -111,6 +118,81 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 			SelectCurrentScheme ();
 			schemeCombo.Changed += OnKeyBindingSchemeChanged;
+			
+			searchEntry.Changed += delegate {
+				processedFilterTerms = searchEntry.Text.Split (new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+					.Select (s => s.ToLower ()).ToArray ();;
+				filterChanged = true;
+				if (!filterTimeoutRunning) {
+					filterTimeoutRunning = true;
+					GLib.Timeout.Add (300, delegate {
+						if (!filterChanged) {
+							if (filterTimeoutRunning)
+								Refilter ();
+							filterTimeoutRunning = false;
+							return false;
+						}
+						filterChanged = false;
+						return true;
+					});
+				};
+			};
+			
+			clearFilterButton.Clicked += delegate {
+				searchEntry.Text = "";
+				Refilter ();
+				//stop the timeout from refiltering, if it's already running
+				filterTimeoutRunning = false;
+			};
+		}
+		
+		void Refilter ()
+		{
+			keyTreeView.Model = null;
+			TreeIter iter;
+			bool allVisible = processedFilterTerms == null || processedFilterTerms.Length == 0;
+			if (keyStore.GetIterFirst (out iter))
+				Refilter (iter, allVisible);
+			keyTreeView.Model = filterModel;
+			keyTreeView.ExpandAll ();
+			keyTreeView.ColumnsAutosize ();
+		}
+		
+		bool Refilter (TreeIter iter, bool allVisible)
+		{
+			int visibleCount = 0;
+			
+			do {
+				TreeIter child;
+				if (keyStore.IterChildren (out child, iter)) {
+					bool catAllVisible = allVisible || IsSearchMatch ((string) keyStore.GetValue (iter, labelCol));
+					bool childVisible = Refilter (child, catAllVisible);
+					keyStore.SetValue (iter, visibleCol, childVisible);
+					if (childVisible)
+						visibleCount++;
+				} else {
+					bool visible = allVisible
+						|| IsSearchMatch ((string) keyStore.GetValue (iter, labelCol))
+						|| IsSearchMatch ((string) keyStore.GetValue (iter, descCol));
+					keyStore.SetValue (iter, visibleCol, visible);
+					if (visible)
+						visibleCount++;
+				}
+			} while (keyStore.IterNext (ref iter));
+			
+			return visibleCount > 0;
+		}
+		
+		bool IsSearchMatch (string cmp)
+		{
+			if (cmp == null)
+				return false;
+			
+			var lower = cmp.ToLower ();
+			foreach (var term in processedFilterTerms)
+				if (!lower.Contains (term))
+					return false;
+			return true;
 		}
 
 		void SelectCurrentScheme ()
@@ -180,12 +262,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				if (currentCat != cmd.Category) {
 					currentCat = cmd.Category;
 					string name = currentCat.Length == 0? translatedOther : currentCat;
-					icat = keyStore.AppendValues (null, name, String.Empty, String.Empty, (int) Pango.Weight.Bold, null, false);
+					icat = keyStore.AppendValues (null, name, String.Empty, String.Empty, (int) Pango.Weight.Bold, null, false, true);
 				}
 				string label = cmd.Text.Replace ("_", String.Empty);
-				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, cmd.Icon, true);
+				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, cmd.Icon, true, true);
 			}
 			UpdateGlobalWarningLabel ();
+			Refilter ();
 			return this;
 		}
 		

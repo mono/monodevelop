@@ -127,8 +127,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.vbox70.Name = "vbox70";
             // Container child vbox70.Gtk.Box+BoxChild
             this.RemoveReferenceButton = new Gtk.Button();
-            Gtk.Tooltips w7 = new Gtk.Tooltips();
-            w7.SetTip(this.RemoveReferenceButton, "Remove", "Remove");
+            this.RemoveReferenceButton.TooltipMarkup = "Remove";
             this.RemoveReferenceButton.Name = "RemoveReferenceButton";
             // Container child RemoveReferenceButton.Gtk.Container+ContainerChild
             this.but = new Gtk.Image();
@@ -139,33 +138,33 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.RemoveReferenceButton.Add(this.but);
             this.RemoveReferenceButton.Label = null;
             this.vbox70.Add(this.RemoveReferenceButton);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox70[this.RemoveReferenceButton]));
-            w9.Position = 0;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox70[this.RemoveReferenceButton]));
+            w8.Position = 0;
+            w8.Expand = false;
+            w8.Fill = false;
+            this.hbox4.Add(this.vbox70);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox4[this.vbox70]));
+            w9.Position = 1;
             w9.Expand = false;
             w9.Fill = false;
-            this.hbox4.Add(this.vbox70);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox4[this.vbox70]));
-            w10.Position = 1;
-            w10.Expand = false;
-            w10.Fill = false;
             this.vbox76.Add(this.hbox4);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox76[this.hbox4]));
-            w11.Position = 1;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox76[this.hbox4]));
+            w10.Position = 1;
             this.vpaned1.Add(this.vbox76);
-            Gtk.Paned.PanedChild w12 = ((Gtk.Paned.PanedChild)(this.vpaned1[this.vbox76]));
-            w12.Resize = false;
+            Gtk.Paned.PanedChild w11 = ((Gtk.Paned.PanedChild)(this.vpaned1[this.vbox76]));
+            w11.Resize = false;
             this.vbox5.Add(this.vpaned1);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox5[this.vpaned1]));
-            w13.Position = 0;
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox5[this.vpaned1]));
+            w12.Position = 0;
             w1.Add(this.vbox5);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(w1[this.vbox5]));
-            w14.Position = 0;
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(w1[this.vbox5]));
+            w13.Position = 0;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.ActionArea
-            Gtk.HButtonBox w15 = this.ActionArea;
-            w15.Name = "dialog-action_area2";
-            w15.Spacing = 10;
-            w15.BorderWidth = ((uint)(5));
-            w15.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w14 = this.ActionArea;
+            w14.Name = "dialog-action_area2";
+            w14.Spacing = 10;
+            w14.BorderWidth = ((uint)(5));
+            w14.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area2.Gtk.ButtonBox+ButtonBoxChild
             this.cancelbutton = new Gtk.Button();
             this.cancelbutton.Name = "cancelbutton";
@@ -180,8 +179,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.okbutton.UseUnderline = true;
             this.okbutton.Label = "gtk-ok";
             this.AddActionWidget(this.okbutton, -5);
-            Gtk.ButtonBox.ButtonBoxChild w17 = ((Gtk.ButtonBox.ButtonBoxChild)(w15[this.okbutton]));
-            w17.Position = 1;
+            Gtk.ButtonBox.ButtonBoxChild w16 = ((Gtk.ButtonBox.ButtonBoxChild)(w14[this.okbutton]));
+            w16.Position = 1;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }

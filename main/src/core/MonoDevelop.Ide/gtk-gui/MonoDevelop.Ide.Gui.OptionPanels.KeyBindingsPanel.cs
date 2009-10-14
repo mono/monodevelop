@@ -21,9 +21,23 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
         
         private Gtk.ComboBox schemeCombo;
         
+        private Gtk.HSeparator hseparator2;
+        
+        private Gtk.HBox hbox2;
+        
+        private Gtk.Label label1;
+        
+        private Gtk.Entry searchEntry;
+        
+        private Gtk.Button clearFilterButton;
+        
+        private Gtk.Image image25;
+        
         private Gtk.VBox globalWarningBox;
         
-        private Gtk.HSeparator hseparator1;
+        private Gtk.Frame frame1;
+        
+        private Gtk.Alignment alignment1;
         
         private Gtk.HBox warningBox;
         
@@ -84,18 +98,68 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             w3.Expand = false;
             w3.Fill = false;
             // Container child vbox.Gtk.Box+BoxChild
+            this.hseparator2 = new Gtk.HSeparator();
+            this.hseparator2.Name = "hseparator2";
+            this.vbox.Add(this.hseparator2);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox[this.hseparator2]));
+            w4.Position = 1;
+            w4.Expand = false;
+            w4.Fill = false;
+            // Container child vbox.Gtk.Box+BoxChild
+            this.hbox2 = new Gtk.HBox();
+            this.hbox2.Name = "hbox2";
+            this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.label1 = new Gtk.Label();
+            this.label1.Name = "label1";
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("_Search:");
+            this.label1.UseUnderline = true;
+            this.hbox2.Add(this.label1);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox2[this.label1]));
+            w5.Position = 0;
+            w5.Expand = false;
+            w5.Fill = false;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.searchEntry = new Gtk.Entry();
+            this.searchEntry.CanFocus = true;
+            this.searchEntry.Name = "searchEntry";
+            this.searchEntry.IsEditable = true;
+            this.searchEntry.InvisibleChar = '●';
+            this.hbox2.Add(this.searchEntry);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.hbox2[this.searchEntry]));
+            w6.Position = 1;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.clearFilterButton = new Gtk.Button();
+            this.clearFilterButton.CanFocus = true;
+            this.clearFilterButton.Name = "clearFilterButton";
+            // Container child clearFilterButton.Gtk.Container+ContainerChild
+            this.image25 = new Gtk.Image();
+            this.image25.Name = "image25";
+            this.image25.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-clear", Gtk.IconSize.Menu, 16);
+            this.clearFilterButton.Add(this.image25);
+            this.clearFilterButton.Label = null;
+            this.hbox2.Add(this.clearFilterButton);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox2[this.clearFilterButton]));
+            w8.Position = 2;
+            w8.Expand = false;
+            w8.Fill = false;
+            this.vbox.Add(this.hbox2);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox[this.hbox2]));
+            w9.Position = 2;
+            w9.Expand = false;
+            w9.Fill = false;
+            // Container child vbox.Gtk.Box+BoxChild
             this.globalWarningBox = new Gtk.VBox();
             this.globalWarningBox.Name = "globalWarningBox";
             this.globalWarningBox.Spacing = 6;
             // Container child globalWarningBox.Gtk.Box+BoxChild
-            this.hseparator1 = new Gtk.HSeparator();
-            this.hseparator1.Name = "hseparator1";
-            this.globalWarningBox.Add(this.hseparator1);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.globalWarningBox[this.hseparator1]));
-            w4.Position = 0;
-            w4.Expand = false;
-            w4.Fill = false;
-            // Container child globalWarningBox.Gtk.Box+BoxChild
+            this.frame1 = new Gtk.Frame();
+            this.frame1.Name = "frame1";
+            // Container child frame1.Gtk.Container+ContainerChild
+            this.alignment1 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            this.alignment1.Name = "alignment1";
+            this.alignment1.BorderWidth = ((uint)(2));
+            // Container child alignment1.Gtk.Container+ContainerChild
             this.warningBox = new Gtk.HBox();
             this.warningBox.Name = "warningBox";
             this.warningBox.Spacing = 6;
@@ -104,18 +168,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.image3.Name = "image3";
             this.image3.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-dialog-warning", Gtk.IconSize.Menu, 16);
             this.warningBox.Add(this.image3);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.warningBox[this.image3]));
-            w5.Position = 0;
-            w5.Expand = false;
-            w5.Fill = false;
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.warningBox[this.image3]));
+            w10.Position = 0;
+            w10.Expand = false;
+            w10.Fill = false;
             // Container child warningBox.Gtk.Box+BoxChild
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
             this.label2.Xalign = 0F;
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("The current scheme has conflicting key bindings");
             this.warningBox.Add(this.label2);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.warningBox[this.label2]));
-            w6.Position = 1;
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.warningBox[this.label2]));
+            w11.Position = 1;
             // Container child warningBox.Gtk.Box+BoxChild
             this.conflicButton = new MonoDevelop.Components.MenuButton();
             this.conflicButton.CanFocus = true;
@@ -124,20 +188,22 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.conflicButton.UseMarkup = false;
             this.conflicButton.Label = "View Conflicts";
             this.warningBox.Add(this.conflicButton);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.warningBox[this.conflicButton]));
-            w7.Position = 2;
-            w7.Expand = false;
-            w7.Fill = false;
-            this.globalWarningBox.Add(this.warningBox);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.globalWarningBox[this.warningBox]));
-            w8.Position = 1;
-            w8.Expand = false;
-            w8.Fill = false;
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.warningBox[this.conflicButton]));
+            w12.Position = 2;
+            w12.Expand = false;
+            w12.Fill = false;
+            this.alignment1.Add(this.warningBox);
+            this.frame1.Add(this.alignment1);
+            this.globalWarningBox.Add(this.frame1);
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.globalWarningBox[this.frame1]));
+            w15.Position = 0;
+            w15.Expand = false;
+            w15.Fill = false;
             this.vbox.Add(this.globalWarningBox);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox[this.globalWarningBox]));
-            w9.Position = 1;
-            w9.Expand = false;
-            w9.Fill = false;
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.vbox[this.globalWarningBox]));
+            w16.Position = 3;
+            w16.Expand = false;
+            w16.Fill = false;
             // Container child vbox.Gtk.Box+BoxChild
             this.scrolledwindow = new Gtk.ScrolledWindow();
             this.scrolledwindow.CanFocus = true;
@@ -149,18 +215,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.keyTreeView.Name = "keyTreeView";
             this.scrolledwindow.Add(this.keyTreeView);
             this.vbox.Add(this.scrolledwindow);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox[this.scrolledwindow]));
-            w11.Position = 2;
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox[this.scrolledwindow]));
+            w18.Position = 4;
             // Container child vbox.Gtk.Box+BoxChild
             this.labelMessage = new Gtk.Label();
             this.labelMessage.Name = "labelMessage";
             this.labelMessage.Xalign = 0F;
             this.labelMessage.UseMarkup = true;
             this.vbox.Add(this.labelMessage);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox[this.labelMessage]));
-            w12.Position = 3;
-            w12.Expand = false;
-            w12.Fill = false;
+            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.vbox[this.labelMessage]));
+            w19.Position = 5;
+            w19.Expand = false;
+            w19.Fill = false;
             // Container child vbox.Gtk.Box+BoxChild
             this.hbox = new Gtk.HBox();
             this.hbox.Name = "hbox";
@@ -170,10 +236,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.labelEditBinding.Name = "labelEditBinding";
             this.labelEditBinding.LabelProp = Mono.Unix.Catalog.GetString("Edit Binding");
             this.hbox.Add(this.labelEditBinding);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox[this.labelEditBinding]));
-            w13.Position = 0;
-            w13.Expand = false;
-            w13.Fill = false;
+            Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox[this.labelEditBinding]));
+            w20.Position = 0;
+            w20.Expand = false;
+            w20.Fill = false;
             // Container child hbox.Gtk.Box+BoxChild
             this.accelEntry = new Gtk.Entry();
             this.accelEntry.CanFocus = true;
@@ -181,43 +247,44 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.accelEntry.IsEditable = true;
             this.accelEntry.InvisibleChar = '●';
             this.hbox.Add(this.accelEntry);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.hbox[this.accelEntry]));
-            w14.Position = 1;
+            Gtk.Box.BoxChild w21 = ((Gtk.Box.BoxChild)(this.hbox[this.accelEntry]));
+            w21.Position = 1;
             // Container child hbox.Gtk.Box+BoxChild
             this.updateButton = new Gtk.Button();
             this.updateButton.CanFocus = true;
             this.updateButton.Name = "updateButton";
             this.updateButton.UseUnderline = true;
             // Container child updateButton.Gtk.Container+ContainerChild
-            Gtk.Alignment w15 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w22 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w16 = new Gtk.HBox();
-            w16.Spacing = 2;
+            Gtk.HBox w23 = new Gtk.HBox();
+            w23.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w17 = new Gtk.Image();
-            w17.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Button, 20);
-            w16.Add(w17);
+            Gtk.Image w24 = new Gtk.Image();
+            w24.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-apply", Gtk.IconSize.Button, 20);
+            w23.Add(w24);
             // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w19 = new Gtk.Label();
-            w19.LabelProp = Mono.Unix.Catalog.GetString("Apply");
-            w19.UseUnderline = true;
-            w16.Add(w19);
-            w15.Add(w16);
-            this.updateButton.Add(w15);
+            Gtk.Label w26 = new Gtk.Label();
+            w26.LabelProp = Mono.Unix.Catalog.GetString("Apply");
+            w26.UseUnderline = true;
+            w23.Add(w26);
+            w22.Add(w23);
+            this.updateButton.Add(w22);
             this.hbox.Add(this.updateButton);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.hbox[this.updateButton]));
-            w23.Position = 2;
-            w23.Expand = false;
-            w23.Fill = false;
+            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(this.hbox[this.updateButton]));
+            w30.Position = 2;
+            w30.Expand = false;
+            w30.Fill = false;
             this.vbox.Add(this.hbox);
-            Gtk.Box.BoxChild w24 = ((Gtk.Box.BoxChild)(this.vbox[this.hbox]));
-            w24.Position = 4;
-            w24.Expand = false;
-            w24.Fill = false;
+            Gtk.Box.BoxChild w31 = ((Gtk.Box.BoxChild)(this.vbox[this.hbox]));
+            w31.Position = 6;
+            w31.Expand = false;
+            w31.Fill = false;
             this.Add(this.vbox);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.label1.MnemonicWidget = this.searchEntry;
             this.globalWarningBox.Hide();
             this.labelMessage.Hide();
             this.Show();
