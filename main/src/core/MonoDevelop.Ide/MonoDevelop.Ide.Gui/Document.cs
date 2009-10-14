@@ -597,5 +597,19 @@ namespace MonoDevelop.Ide.Gui
 		
 		public event EventHandler DocumentParsed;
 	}
+	
+	
+	[Serializable]
+	public sealed class DocumentEventArgs : EventArgs
+	{
+		public Document Document {
+			get;
+			set;
+		}
+		public DocumentEventArgs (Document document)
+		{
+			this.Document = document;
+		}
+	}
 }
 
