@@ -549,7 +549,15 @@ namespace MonoDevelop.SourceEditor
 			// To resolve method overloads the full expression must be parsed.
 			// ex.: Overload (1)/ Overload("one") - parsing "Overload" gives just a MethodResolveResult
 			if (this.resolveResult is MethodResolveResult && ((MethodResolveResult)resolveResult).Methods.Count > 1) {
+				// put the search offset at the end of the invocation to be able to find the full expression
+				// the resolver finds it itself if spaces are between the method name and the argument opening parentheses.
+				if (txt[wordEnd] == '(') {
+					int matchingBracket = Document.GetMatchingBracketOffset (wordEnd);
+					if (matchingBracket > 0)
+						wordEnd = matchingBracket;
+				}
 				ResolveResult possibleResult = resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? this.resolveResult;
+				
 				if (possibleResult is MethodResolveResult)
 					this.resolveResult = possibleResult;
 			}
