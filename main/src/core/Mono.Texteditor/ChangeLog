@@ -1,5 +1,10 @@
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Added caret line
+	  highlighting.
+
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/SearchRequest.cs:
 	* Mono.TextEditor/TextEditorData.cs: Animate search result is

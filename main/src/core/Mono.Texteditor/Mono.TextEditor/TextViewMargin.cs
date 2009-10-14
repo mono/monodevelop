@@ -70,6 +70,21 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		/// <summary>
+		/// Set to true to highlight the caret line temporarly. It's
+		/// the same as the option, but is unset when the caret moves.
+		/// </summary>
+		bool highlightCaretLine;
+		public bool HighlightCaretLine {
+			get { 
+				return highlightCaretLine; 
+			}
+			set {
+				highlightCaretLine = value; 
+				RemoveCachedLine (Document.GetLine (Caret.Line)); 
+				Document.CommitLineUpdate (Caret.Line);
+			}
+		}
 
 		Caret Caret {
 			get { return textEditor.Caret; }
@@ -220,6 +235,7 @@ namespace Mono.TextEditor
 		
 		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
+			HighlightCaretLine = false;
 			if (!textEditor.Options.HighlightMatchingBracket)
 				return;
 			
@@ -1700,7 +1716,7 @@ namespace Mono.TextEditor
 			if (BackgroundRenderer != null)
 				BackgroundRenderer.Draw (win, area, line, x, y);
 			
-			if (textEditor.Options.HighlightCaretLine && Caret.Line == lineNr)
+			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNr)
 				defaultBgColor = ColorStyle.LineMarker;
 			else
 				defaultBgColor = ColorStyle.Default.BackgroundColor;
