@@ -1,8 +1,8 @@
 <Addin id = "MonoDevelop.Debugger.Soft"
-       name	     = "Support for Mono Soft Debugger"
+       name	     = "Mono Soft Debugger Support"
        author	 = "Lluis Sanchez"
        url       = "http://www.mono-project.com"
-       description = "GNU Debugger support for Mono.Debugging"
+       description = "Mono Soft Debugger Support"
        copyright   = "MIT X11"
        category = "Debugging"
        version   = "2.1.1">

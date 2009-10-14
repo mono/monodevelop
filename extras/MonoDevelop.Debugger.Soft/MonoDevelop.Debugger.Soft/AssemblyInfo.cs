@@ -3,7 +3,7 @@
 using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
-[assembly: AssemblyTitle ("Support for Mono Soft Debugger")]
-[assembly: AssemblyDescription ("GNU Debugger support for Mono.Debugging")]
+[assembly: AssemblyTitle ("Mono Soft Debugger Support")]
+[assembly: AssemblyDescription ("Mono Soft Debugger Support")]
 [assembly: AssemblyVersion ("2.1.1")]
 [assembly: AssemblyCopyright ("MIT X11")]
