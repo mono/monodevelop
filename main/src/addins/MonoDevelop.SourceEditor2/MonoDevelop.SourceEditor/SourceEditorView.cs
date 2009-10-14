@@ -632,12 +632,14 @@ namespace MonoDevelop.SourceEditor
 		{
 			SourceEditorView view;
 			int line, column;
+			bool highlightCaretLine;
 			
-			public SetCaret (SourceEditorView view, int line, int column)
+			public SetCaret (SourceEditorView view, int line, int column, bool highlightCaretLine)
 			{
 				this.view = view;
 				this.line = line;
 				this.column = column;
+				this.highlightCaretLine = highlightCaretLine;
 			}
 			
 			public void Run (object sender, ExposeEventArgs e)
@@ -648,13 +650,14 @@ namespace MonoDevelop.SourceEditor
 				view.widget.TextEditor.Caret.AutoScrollToCaret = false;
 				try {
 					view.widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
-	
 					view.widget.TextEditor.GrabFocus ();
 					view.widget.TextEditor.CenterToCaret ();
 					view.OnCaretPositionSet (EventArgs.Empty);
 					view.widget.ExposeEvent -= Run;
 				} finally {
 					view.widget.TextEditor.Caret.AutoScrollToCaret = true;
+					if (highlightCaretLine)
+						view.widget.TextEditor.TextViewMargin.HighlightCaretLine = true;
 				}
 			}
 			
@@ -662,12 +665,17 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SetCaretTo (int line, int column)
 		{
+			SetCaretTo (line, column, true);
+		}
+		
+		public void SetCaretTo (int line, int column, bool highlight)
+		{
 			if (widget.Allocation.Width <= 1) {
-				SetCaret setCaret = new SetCaret (this, line, column);
+				SetCaret setCaret = new SetCaret (this, line, column, highlight);
 				widget.ExposeEvent += setCaret.Run;
 			} else {
 				GLib.Timeout.Add (20, delegate {
-					new SetCaret (this, line, column).Run (null, null);
+					new SetCaret (this, line, column, highlight).Run (null, null);
 					return false;
 				});
 			}
