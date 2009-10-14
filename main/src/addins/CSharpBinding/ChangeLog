@@ -1,3 +1,9 @@
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Special
+	  handling of field names & typenames (same as for
+	  properties).
+
 2009-10-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs:

@@ -140,7 +140,7 @@ namespace MonoDevelop.CSharp.Resolver
 		internal static IMember GetMemberAt (IType type, DomLocation location)
 		{
 			foreach (IMember member in type.Members) {
-				if (!(member is IMethod || member is IProperty || member is IEvent))
+				if (!(member is IMethod || member is IProperty || member is IEvent || member is IField))
 					continue;
 //				Console.WriteLine (member.Location.Line  + " --- " + location.Line);
 				if (member.Location.Line == location.Line || member.BodyRegion.Contains (location)) {
@@ -681,25 +681,26 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 			}
 			if (this.callingMember != null) {
-				
-				// special handling of property return types, they can have the same name as the return type
-				// ex.: MyType MyType { get; set; }
-				if (callingMember is IProperty && identifier == callingMember.Name) {
+				// special handling of property or field return types, they can have the same name as the return type
+				// ex.: MyType MyType { get; set; }  Type1 Type1;
+				if ((callingMember is IProperty || callingMember is IField) && identifier == callingMember.Name) {
 					int pos = editor.GetPositionFromLineColumn (resolvePosition.Line, resolvePosition.Column);
 					while (pos < editor.TextLength && !Char.IsWhiteSpace (editor.GetCharAt (pos)))
 						pos++;
 					while (pos < editor.TextLength && Char.IsWhiteSpace (editor.GetCharAt (pos)))
 						pos++;
 					StringBuilder memberName = new StringBuilder ();
-					while (pos < editor.TextLength && !Char.IsWhiteSpace (editor.GetCharAt (pos))) {
+					while (pos < editor.TextLength && (Char.IsLetterOrDigit (editor.GetCharAt (pos)) || editor.GetCharAt (pos) == '_') ) {
 						memberName.Append (editor.GetCharAt (pos));
 						pos++;
 					}
+					//Console.WriteLine ("id: '" + identifier + "' : '" + memberName.ToString () +"'" + (memberName.ToString () == identifier));
 					if (memberName.ToString () == identifier) {
 						result = visitor.CreateResult (callingMember.ReturnType);
 						goto end;
 					}
 				}
+				
 				if (identifier == "value" && this.callingMember is IProperty) {
 					result = new MemberResolveResult (this.callingMember);
 					result.UnresolvedType = ((IProperty)this.callingMember).ReturnType;
