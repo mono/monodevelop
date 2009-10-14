@@ -1631,7 +1631,7 @@ namespace Mono.TextEditor
 					cr.Color = color;
 					cr.LineWidth = editor.Options.Zoom * 2;
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
-					                                                    (int)(editor.TextViewMargin.XOffset + x1 - LifeTime * editor.Options.Zoom), 
+					                                                    (int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - LifeTime * editor.Options.Zoom), 
 					                                                    (int)(y - LifeTime * editor.Options.Zoom), 
 					                                                    10, 
 					                                                    (int)(x2 - x1 +  2  * LifeTime * editor.Options.Zoom), 
