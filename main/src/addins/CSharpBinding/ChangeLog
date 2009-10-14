@@ -1,3 +1,8 @@
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: worked on
+	  constructor initalizer resolving.
+
 2009-10-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
