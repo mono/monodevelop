@@ -164,6 +164,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 		public void SetCaretTo (int line, int column)
 		{
 		}
+		public void SetCaretTo (int line, int column, bool highlightCaretLine)
+		{
+		}
 		
 		public void Undo()
 		{
