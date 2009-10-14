@@ -99,6 +99,8 @@ namespace Mono.TextEditor.Highlighting
 			XmlReader reader = styleLookup [name].Open ();
 			try {
 				styles [name] = Style.LoadFrom (reader);
+			} catch (Exception e) {
+				throw new IOException ("Error while loading style :" + name, e);
 			} finally {
 				reader.Close ();
 			}
@@ -114,6 +116,8 @@ namespace Mono.TextEditor.Highlighting
 				foreach (string mime in mode.MimeType.Split (';')) {
 					syntaxModes [mime] = mode;
 				}
+			} catch (Exception e) {
+				throw new IOException ("Error while syntax mode for mime:" + mimeType, e);
 			} finally {
 				reader.Close ();
 			}

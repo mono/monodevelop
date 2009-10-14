@@ -1,3 +1,11 @@
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/FoldMarkerMargin.cs: Improved code focus -
+	  see 'Bug 546676 - Usability of code focus'.
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Added
+	  more descriptive exceptions for loading styles & mode files.
+
 2009-10-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Hide selection drawing

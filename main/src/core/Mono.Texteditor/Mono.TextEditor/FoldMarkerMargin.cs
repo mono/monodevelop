@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Gtk;
+using System.Timers;
 
 namespace Mono.TextEditor
 {
@@ -50,7 +51,11 @@ namespace Mono.TextEditor
 		{
 			this.editor = editor;
 			layout = new Pango.Layout (editor.PangoContext);
+			delayTimer = new Timer (150);
+			delayTimer.AutoReset = false;
+			delayTimer.Elapsed += DelayTimerElapsed;
 		}
+
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
@@ -86,14 +91,24 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
+			
+			delayTimer.Stop ();
 			if (found) {
-				editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, editor.Document.GetFoldingContaining (lineSegment));
-				editor.Repaint ();
+				foldings = editor.Document.GetFoldingContaining (lineSegment);
+				delayTimer.Start ();
 			} else {
 				RemoveBackgroundRenderer ();
 			}
 		}
-
+		
+		Timer delayTimer;
+		IEnumerable<FoldSegment> foldings;
+		void DelayTimerElapsed (object sender, ElapsedEventArgs e)
+		{
+			editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, foldings);
+			editor.Repaint ();
+		}
+		
 		void RemoveBackgroundRenderer ()
 		{
 			if (editor.TextViewMargin.BackgroundRenderer != null) {
@@ -110,6 +125,7 @@ namespace Mono.TextEditor
 				lineHover = null;
 				editor.RedrawMargin (this);
 			}
+			delayTimer.Stop ();
 			RemoveBackgroundRenderer ();
 		}
 		
@@ -124,6 +140,17 @@ namespace Mono.TextEditor
 			
 			foldLineHighlightedGC = new Gdk.GC (editor.GdkWindow);
 			foldLineHighlightedGC.RgbFgColor = editor.ColorStyle.FoldLineHighlighted;
+			
+			HslColor hslColor = new HslColor (editor.ColorStyle.Default.BackgroundColor);
+			double brightness = HslColor.Brightness (editor.ColorStyle.Default.BackgroundColor);
+			if (brightness < 0.5) {
+				hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.25;
+			} else {
+				hslColor.L = hslColor.L * 0.9;
+			}
+			
+			foldLineHighlightedGCBg = new Gdk.GC (editor.GdkWindow);
+			foldLineHighlightedGCBg.RgbFgColor = hslColor;
 			
 			foldToggleMarkerGC = new Gdk.GC (editor.GdkWindow);
 			foldToggleMarkerGC.RgbFgColor = editor.ColorStyle.FoldToggleMarker;
@@ -145,11 +172,16 @@ namespace Mono.TextEditor
 			marginWidth--; // was dashed line.
 		}
 		
-		Gdk.GC foldBgGC, foldLineGC, foldLineHighlightedGC, foldToggleMarkerGC;
+		Gdk.GC foldBgGC, foldLineGC, foldLineHighlightedGC, foldLineHighlightedGCBg, foldToggleMarkerGC;
 		Gdk.GC lineStateChangedGC, lineStateDirtyGC;
 		public override void Dispose ()
 		{
 			base.Dispose ();
+			if (delayTimer != null) {
+				delayTimer.Stop ();
+				delayTimer.Dispose ();
+				delayTimer = null;
+			}
 			layout = layout.Kill ();
 			DisposeGCs ();
 		}
@@ -159,6 +191,7 @@ namespace Mono.TextEditor
 			foldBgGC = foldBgGC.Kill ();
 			foldLineGC = foldLineGC.Kill ();
 			foldLineHighlightedGC = foldLineHighlightedGC.Kill ();
+			foldLineHighlightedGCBg = foldLineHighlightedGCBg.Kill ();
 			foldToggleMarkerGC = foldToggleMarkerGC.Kill ();
 			lineStateChangedGC = lineStateChangedGC.Kill ();
 			lineStateDirtyGC = lineStateDirtyGC.Kill ();
@@ -202,15 +235,13 @@ namespace Mono.TextEditor
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
 			Document.LineState state = editor.Document.GetLineState (line);
 			
-			if (state == Document.LineState.Changed) {
-				win.DrawRectangle (lineStateChangedGC, true, x , y, 4, editor.LineHeight);
-				win.DrawRectangle (foldBgGC, true, x + 3 , y, Width, editor.LineHeight);
-			} else if (state == Document.LineState.Dirty) {
-				win.DrawRectangle (lineStateDirtyGC, true, x , y, 4, editor.LineHeight);
-				win.DrawRectangle (foldBgGC, true, x + 3 , y, Width, editor.LineHeight);
-			} else {
-				win.DrawRectangle (foldBgGC, true, drawArea);
-			}
+			bool isFoldStart = false;
+			bool isContaining = false;
+			bool isFoldEnd = false;
+			
+			bool isStartSelected = false;
+			bool isContainingSelected = false;
+			bool isEndSelected = false;
 			
 			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
@@ -227,13 +258,35 @@ namespace Mono.TextEditor
 					}
 				}
 				
-				bool isFoldStart  = startFoldings.Count > 0;
-				bool isContaining = containingFoldings.Count > 0;
-				bool isFoldEnd    = endFoldings.Count > 0;
+				isFoldStart  = startFoldings.Count > 0;
+				isContaining = containingFoldings.Count > 0;
+				isFoldEnd    = endFoldings.Count > 0;
 				
-				bool isStartSelected      = this.lineHover != null && IsMouseHover (startFoldings);
-				bool isContainingSelected = this.lineHover != null && IsMouseHover (containingFoldings);
-				bool isEndSelected        = this.lineHover != null && IsMouseHover (endFoldings);
+				isStartSelected      = this.lineHover != null && IsMouseHover (startFoldings);
+				isContainingSelected = this.lineHover != null && IsMouseHover (containingFoldings);
+				isEndSelected        = this.lineHover != null && IsMouseHover (endFoldings);
+			}
+			
+			Gdk.GC bgGC = foldBgGC;
+			if (editor.TextViewMargin.BackgroundRenderer != null) {
+				if (isContainingSelected || isStartSelected || isEndSelected) {
+					bgGC = foldBgGC;
+				} else {
+					bgGC = foldLineHighlightedGCBg;
+				}
+			}
+			
+			if (state == Document.LineState.Changed) {
+				win.DrawRectangle (lineStateChangedGC, true, x , y, 4, editor.LineHeight);
+				win.DrawRectangle (bgGC, true, x + 3 , y, Width, editor.LineHeight);
+			} else if (state == Document.LineState.Dirty) {
+				win.DrawRectangle (lineStateDirtyGC, true, x , y, 4, editor.LineHeight);
+				win.DrawRectangle (bgGC, true, x + 3 , y, Width, editor.LineHeight);
+			} else {
+				win.DrawRectangle (bgGC, true, drawArea);
+			}
+			
+			if (line < editor.Document.LineCount) {
 			
 				int foldSegmentYPos = y + (editor.LineHeight - foldSegmentSize) / 2;
 				int xPos = x + Width / 2;
