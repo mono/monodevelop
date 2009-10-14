@@ -973,7 +973,7 @@ namespace Mono.TextEditor
 							foreGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							wrapper.Add (foreGround);
 
-							if (!chunkStyle.TransparentBackround) {
+							if (!chunkStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (chunkStyle.BackgroundColor)) {
 								Pango.AttrBackground backGround = new Pango.AttrBackground (chunkStyle.BackgroundColor.Red, chunkStyle.BackgroundColor.Green, chunkStyle.BackgroundColor.Blue);
 								backGround.StartIndex = foreGround.StartIndex;
 								backGround.EndIndex = foreGround.EndIndex;
