@@ -1,3 +1,7 @@
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: generalized API.
+
 2009-10-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: Fix stock icon id.

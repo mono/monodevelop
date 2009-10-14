@@ -415,7 +415,7 @@ namespace MonoDevelop.Projects.Dom
 			AddMethods (new IMethod [] { method });
 		}
 		
-		public MethodResolveResult (List<IMember> members)
+		public MethodResolveResult (IEnumerable members)
 		{
 			AddMethods (members);
 		}
