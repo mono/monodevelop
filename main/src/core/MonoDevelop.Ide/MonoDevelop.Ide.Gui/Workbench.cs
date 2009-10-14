@@ -385,6 +385,7 @@ namespace MonoDevelop.Ide.Gui
 			openFileInfo.Column = column;
 			openFileInfo.DisplayBinding = binding;
 			openFileInfo.Encoding = encoding;
+			openFileInfo.HighlightCaretLine = highlightCaretLine;
 			RealOpenFile (openFileInfo);
 			
 			if (!pm.AsyncOperation.Success)
@@ -684,7 +685,7 @@ namespace MonoDevelop.Ide.Gui
 							doc.Select ();
 							IEditableTextBuffer ipos = doc.GetContent <IEditableTextBuffer> ();
 							if (oFileInfo.Line != -1 && ipos != null) {
-								ipos.SetCaretTo (oFileInfo.Line, oFileInfo.Column != -1 ? oFileInfo.Column : 0);
+								ipos.SetCaretTo (oFileInfo.Line, oFileInfo.Column != -1 ? oFileInfo.Column : 0, oFileInfo.HighlightCaretLine);
 							}
 						}
 						oFileInfo.NewContent = doc.Window.ViewContent;
@@ -937,6 +938,7 @@ namespace MonoDevelop.Ide.Gui
 		public IDisplayBinding DisplayBinding;
 		public IViewContent NewContent;
 		public string Encoding;
+		public bool HighlightCaretLine;
 	}
 	
 	class LoadFileWrapper
@@ -1014,7 +1016,7 @@ namespace MonoDevelop.Ide.Gui
 		public bool JumpToLine ()
 		{
 			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
-			ipos.SetCaretTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column));
+			ipos.SetCaretTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column), fileInfo.HighlightCaretLine);
 			return false;
 		}
 	}

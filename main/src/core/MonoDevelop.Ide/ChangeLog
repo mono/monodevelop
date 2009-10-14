@@ -1,6 +1,12 @@
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Don't highlight caret
+	  line on first open.
+
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
 	* MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs: Added
 	  caret line highlighting when position is set.
 

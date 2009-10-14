@@ -533,8 +533,9 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			if (closedDocs != null) {
-				foreach (string doc in closedDocs)
+				foreach (string doc in closedDocs) {
 					IdeApp.Workbench.OpenDocument (doc, false);
+				}
 			}
 		}
 		
