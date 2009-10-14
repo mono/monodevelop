@@ -640,7 +640,7 @@ namespace MonoDevelop.SourceEditor
 				this.line = line;
 				this.column = column;
 				this.highlightCaretLine = highlightCaretLine;
-			}
+ 			}
 			
 			public void Run (object sender, ExposeEventArgs e)
 			{
@@ -656,8 +656,10 @@ namespace MonoDevelop.SourceEditor
 					view.widget.ExposeEvent -= Run;
 				} finally {
 					view.widget.TextEditor.Caret.AutoScrollToCaret = true;
-					if (highlightCaretLine)
+					if (highlightCaretLine) {
 						view.widget.TextEditor.TextViewMargin.HighlightCaretLine = true;
+						view.widget.TextEditor.StartCaretPulseAnimation ();
+					}
 				}
 			}
 			
