@@ -90,7 +90,7 @@
 				_label = "Find caret"
 				_description = "Animates the text editor caret to help find it"
 				shortcut = "Ctrl|Shift||"
-				macShortcut = "Super|Shift||" />
+				macShortcut = "Meta|Shift||" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
