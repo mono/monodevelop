@@ -1594,7 +1594,7 @@ namespace Mono.TextEditor
 		IAnimation animation = null;
 		class HighlightSearchResultAnimation : IAnimation
 		{
-			const int MaxLifeTime = 5;
+			const int MaxLifeTime = 8;
 			TextEditor editor;
 			SearchResult result;
 			
@@ -1627,7 +1627,7 @@ namespace Mono.TextEditor
 				int y = editor.Document.LogicalToVisualLine (lineNr) * editor.LineHeight - (int)editor.VAdjustment.Value;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
 					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Selection.BackgroundColor);
-					color.A = 0.5;
+					color.A = 0.8;
 					cr.Color = color;
 					cr.LineWidth = editor.Options.Zoom * 2;
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
@@ -1645,7 +1645,7 @@ namespace Mono.TextEditor
 		
 		class CaretPulseAnimation : IAnimation
 		{
-			const int MaxLifeTime = 5;
+			const int MaxLifeTime = 8;
 			TextEditor editor;
 			
 			public int LifeTime {
@@ -1673,13 +1673,14 @@ namespace Mono.TextEditor
 					                                                    (int)(editor.TextViewMargin.charWidth + 2 * (MaxLifeTime - LifeTime) * editor.Options.Zoom / 2),
 					                                                    (int)(editor.LineHeight + 2 * (MaxLifeTime - LifeTime) * editor.Options.Zoom));
 					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Caret.Color);
-					color.A = 0.5;
+					color.A = 0.8;
 					cr.LineWidth = editor.Options.Zoom;
 					cr.Color = color;
 					cr.Stroke ();
 				}
 			}
 		}
+		
 		void AnimationTimer (object sender, EventArgs args)
 		{
 			if (animation != null) {
