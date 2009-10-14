@@ -1,3 +1,8 @@
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Added new event to
+	  disable conditional compilation for a document.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

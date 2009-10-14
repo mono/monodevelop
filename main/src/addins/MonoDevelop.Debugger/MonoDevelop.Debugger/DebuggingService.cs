@@ -73,7 +73,8 @@ namespace MonoDevelop.Debugger
 		static public event EventHandler CurrentFrameChanged;
 		static public event EventHandler ExecutionLocationChanged;
 		static public event EventHandler DisassemblyRequested;
-
+		static public event EventHandler<DocumentEventArgs> DisableConditionalCompilation;
+			
 		static DebuggingService()
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
@@ -342,7 +343,13 @@ namespace MonoDevelop.Debugger
 			} catch (Exception e) {
 				Console.WriteLine ("OnTargetEvent, {0}", e.ToString ());
 			}
-
+		}
+		
+		static void OnDisableConditionalCompilation (DocumentEventArgs e)
+		{
+			EventHandler<DocumentEventArgs> handler = DisableConditionalCompilation;
+			if (handler != null)
+				handler (null, e);
 		}
 
 		static void NotifyPaused ()
@@ -508,7 +515,8 @@ namespace MonoDevelop.Debugger
 				for (int n=0; n<currentBacktrace.FrameCount; n++) {
 					StackFrame sf = currentBacktrace.GetFrame (n);
 					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
-						IdeApp.Workbench.OpenDocument (sf.SourceLocation.Filename, sf.SourceLocation.Line, 1, true);
+						Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.Filename, sf.SourceLocation.Line, 1, true);
+						OnDisableConditionalCompilation (new DocumentEventArgs (document));
 						return;
 					}
 				}
