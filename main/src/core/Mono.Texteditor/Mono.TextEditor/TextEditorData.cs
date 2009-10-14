@@ -391,7 +391,8 @@ namespace Mono.TextEditor
 				return MainSelection != null ? MainSelection.SelectionMode : SelectionMode.Normal;
 			}
 			set {
-				MainSelection.SelectionMode = value;
+				if (MainSelection != null)
+					MainSelection.SelectionMode = value;
 			}
 		}
 		

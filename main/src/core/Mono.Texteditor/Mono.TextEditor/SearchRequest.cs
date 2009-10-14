@@ -71,6 +71,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		
 		void OnChanged ()
 		{
 			if (Changed != null)

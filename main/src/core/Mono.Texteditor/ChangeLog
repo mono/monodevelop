@@ -1,5 +1,12 @@
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/SearchRequest.cs:
+	* Mono.TextEditor/TextEditorData.cs: Animate search result is
+	  now exposed.
+
+2009-10-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/FoldMarkerMargin.cs: Improved code focus -
 	  see 'Bug 546676 - Usability of code focus'.
 

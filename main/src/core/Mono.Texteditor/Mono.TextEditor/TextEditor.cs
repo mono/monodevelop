@@ -1674,22 +1674,24 @@ namespace Mono.TextEditor
 		public SearchResult FindNext ()
 		{
 			SearchResult result = textEditorData.FindNext ();
+			AnimateSearchResult (result);
+			return result;
+		}
+
+		public void AnimateSearchResult (SearchResult result)
+		{
 			if (result != null) {
 				animationTimer.Stop ();
 				animation = new TextEditor.Animation (this, result);
 				animationTimer.Start ();
 			}
-			return result;
 		}
+
 		
 		public SearchResult FindPrevious ()
 		{
 			SearchResult result = textEditorData.FindPrevious ();
-			if (result != null) {
-				animationTimer.Stop ();
-				animation = new TextEditor.Animation (this, result);
-				animationTimer.Start ();
-			}
+			AnimateSearchResult (result);
 			return result;
 		}
 		
