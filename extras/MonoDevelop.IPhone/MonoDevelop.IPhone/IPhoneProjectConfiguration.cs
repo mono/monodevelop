@@ -87,13 +87,8 @@ namespace MonoDevelop.IPhone
 		[ItemProperty ("CodesignExtraArgs")]
 		public string CodesignExtraArgs { get; set; }
 		
-		//if this is "null" i.e. not present, we magically create/migrate settings
-		[ItemProperty ("MtouchDebug", WriteOnly = true, DefaultValue = null)]
-		bool? mtouchDebug = false;
-		public bool MtouchDebug {
-			get { return mtouchDebug ?? false; }
-			set { mtouchDebug = value; }
-		}
+		//this has special serialization handling as a trigger for magically migrating settings
+		public bool MtouchDebug { get; set; }
 		
 		[ItemProperty ("MtouchLink", DefaultValue = MtouchLinkMode.SdkOnly)]
 		MtouchLinkMode mtouchLink = MtouchLinkMode.SdkOnly;
@@ -133,12 +128,15 @@ namespace MonoDevelop.IPhone
 			MtouchLink = cfg.MtouchLink;
 		}
 		
+		//always set the MtouchDebug element
 		public DataCollection Serialize (ITypeSerializer handler)
 		{
-			return handler.Serialize (this);
+			var collection = handler.Serialize (this);
+			collection.Add (new DataValue ("MtouchDebug", MtouchDebug.ToString ()));
+			return collection;
 		}
 		
-		//if MtouchDebug is not present, this handler migrates args
+		// if MtouchDebug element is not present, this handler migrates args
 		// and sets default values for the new Mtouch* properties
 		public void Deserialize (ITypeSerializer handler, DataCollection data)
 		{

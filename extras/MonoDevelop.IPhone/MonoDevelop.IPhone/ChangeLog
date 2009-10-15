@@ -1,5 +1,10 @@
 2009-10-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProjectConfiguration.cs: Fix serialization of the
+	  MtouchDebug migration trigger.
+
+2009-10-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* Gui/IPhoneBuildOptionsPanel.cs:
 	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanelWidget.cs:
