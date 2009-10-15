@@ -1,3 +1,9 @@
+2009-10-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs:
+	  Fixed 'Bug 546143 - Semantic Type Highlighting does not work
+	  on attributes.'.
+
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: worked on

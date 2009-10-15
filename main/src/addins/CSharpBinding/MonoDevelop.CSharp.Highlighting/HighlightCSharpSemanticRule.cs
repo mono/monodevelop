@@ -175,7 +175,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						continue;
 					string typeString = doc.GetTextBetween (start, end);
 					IReturnType returnType = NRefactoryResolver.ParseReturnType (new ExpressionResult (typeString));
-					
+						
 					int nameEndOffset = start;
 					for (; nameEndOffset < end; nameEndOffset++) {
 						char ch = doc.GetCharAt (nameEndOffset);
@@ -200,6 +200,10 @@ namespace MonoDevelop.CSharp.Highlighting
 						type = ctx.SearchType (new SearchTypeRequest (unit, returnType, callingType));
 					if (type == null && unit != null && returnType != null)
 						type = unit.GetType (returnType.FullName, returnType.GenericArguments.Count);
+					if (type == null && returnType != null) {
+						returnType.Name += "Attribute";
+						type = ctx.SearchType (new SearchTypeRequest (unit, returnType, callingType));
+					}
 					if (type != null)
 						nameSegments.ForEach (segment => HighlightSegment (startChunk, segment, "keyword.semantic.type"));
 				}
