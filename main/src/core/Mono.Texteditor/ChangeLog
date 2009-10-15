@@ -1,3 +1,9 @@
+2009-10-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: Fixed
+	  'Bug 547093 - Code focus misaligned with wrapped method
+	  signature'.
+
 2009-10-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Make the animations a bit

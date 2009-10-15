@@ -103,6 +103,12 @@ namespace Mono.TextEditor
 						lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentStartLine, segmentStartLine.Offset, segmentStartLine.EditableLength, -1, -1);
 						Pango.Rectangle rectangle = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
 						xPos = System.Math.Max (textViewMargin.XOffset, (int)(textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value));
+						
+						LineSegment segmentEndLine = foldSegments[segment].EndLine;
+						lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentEndLine, segmentEndLine.Offset, segmentEndLine.EditableLength, -1, -1);
+						rectangle = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
+						xPos = System.Math.Min (xPos ,System.Math.Max (textViewMargin.XOffset, (int)(textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value)));
+						
 						int width = editor.Allocation.Width;
 						if (editor.HAdjustment.Upper > width) {
 							width = (int)(textViewMargin.XOffset + editor.HAdjustment.Upper - editor.HAdjustment.Value);
