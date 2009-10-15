@@ -80,6 +80,7 @@ namespace Mono.TextEditor
 		
 		protected void InsertCharacter (uint unicodeKey)
 		{
+			Editor.HideMouseCursor ();
 			Document.BeginAtomicUndo ();
 			if (textEditorData.CanEditSelection)
 				textEditorData.DeleteSelectedText ();
@@ -113,6 +114,7 @@ namespace Mono.TextEditor
 		}
 		protected void RunAction (Action<TextEditorData> action)
 		{
+			Editor.HideMouseCursor ();
 			try {
 				Document.BeginAtomicUndo ();
 				action (this.textEditorData);
@@ -124,6 +126,7 @@ namespace Mono.TextEditor
 		
 		protected void RunActions (Action<TextEditorData> action1, Action<TextEditorData> action2)
 		{
+			Editor.HideMouseCursor ();
 			try {
 				Document.BeginAtomicUndo ();
 				action1 (this.textEditorData);

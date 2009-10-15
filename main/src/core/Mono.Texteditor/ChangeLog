@@ -1,5 +1,11 @@
 2009-10-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 547092 - Text
+	  editor hides mouse pointer during keyboard shortcuts'.
+
+2009-10-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: Fixed
 	  'Bug 547093 - Code focus misaligned with wrapped method
 	  signature'.

@@ -709,13 +709,18 @@ namespace Mono.TextEditor
 		}
 		
 		Gdk.Cursor invisibleCursor;
+		
+		internal void HideMouseCursor ()
+		{
+			GdkWindow.Cursor = invisibleCursor;
+		}
+		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
 			ModifierType mod;
 			Gdk.Key key;
 			Platform.MapRawKeys (evt, out key, out mod);
 			
-			GdkWindow.Cursor = invisibleCursor;
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				Point p = textViewMargin.LocationToDisplayCoordinates (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
