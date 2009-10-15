@@ -1,3 +1,8 @@
+2009-10-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeBehindGenerator.cs: Disable the CS0169 unused member
+	  warning in generated C# code.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

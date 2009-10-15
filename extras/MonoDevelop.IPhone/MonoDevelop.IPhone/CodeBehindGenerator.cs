@@ -127,6 +127,8 @@ namespace MonoDevelop.IPhone
 						new CodeAttributeDeclaration ("MonoTouch.Foundation.Register",
 							new CodeAttributeArgument (new CodePrimitiveExpression (name))));
 					
+					AddWarningDisablePragmas (type, provider);
+					
 					//FIXME: implement proper base class resolution. I'm not sure where the info is - it might need some
 					// inference rules
 					
@@ -150,7 +152,6 @@ namespace MonoDevelop.IPhone
 					types.Add (objId.Value, type);
 				}
 			}
-			
 			
 			foreach (KeyValuePair<int,List<IBConnectionRecord>> typeRecord in typeRecords) {
 				CodeTypeDeclaration type;
@@ -206,6 +207,13 @@ namespace MonoDevelop.IPhone
 			}
 			
 			return types.Values;
+		}
+		
+		static void AddWarningDisablePragmas (CodeTypeDeclaration type, CodeDomProvider provider)
+		{
+			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
+				type.Members.Add (new CodeSnippetTypeMember ("#pragma warning disable 0169")); // unused member
+			}
 		}
 
 		static void GenerateAction (CodeTypeDeclaration type, string name, CodeTypeReference senderType, CodeDomProvider provider,
