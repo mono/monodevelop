@@ -1,5 +1,12 @@
 2009-10-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProjectConfiguration.cs: Better migration strategy.
+	  Fix enum order to match GUI's combo indices.
+
+	* IPhoneProject.cs: Set nolink for all new sim configs.
+
+2009-10-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Use SDK version for mtouchpack
 	  default entitlements.
 

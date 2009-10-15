@@ -87,8 +87,13 @@ namespace MonoDevelop.IPhone
 		[ItemProperty ("CodesignExtraArgs")]
 		public string CodesignExtraArgs { get; set; }
 		
-		[ItemProperty ("MtouchDebug")]
-		public bool MtouchDebug { get; set; }
+		//if this is "null" i.e. not present, we magically create/migrate settings
+		[ItemProperty ("MtouchDebug", WriteOnly = true, DefaultValue = null)]
+		bool? mtouchDebug = false;
+		public bool MtouchDebug {
+			get { return mtouchDebug ?? false; }
+			set { mtouchDebug = value; }
+		}
 		
 		[ItemProperty ("MtouchLink", DefaultValue = MtouchLinkMode.SdkOnly)]
 		MtouchLinkMode mtouchLink = MtouchLinkMode.SdkOnly;
@@ -97,7 +102,7 @@ namespace MonoDevelop.IPhone
 			set { mtouchLink = value; }
 		}
 		
-		[ItemProperty ("MtouchSdkVersion", DefaultValue = "3.0")]
+		[ItemProperty ("MtouchSdkVersion")]
 		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
 		string mtouchSdkVersion = "3.0";
 		public string MtouchSdkVersion {
@@ -128,43 +133,44 @@ namespace MonoDevelop.IPhone
 			MtouchLink = cfg.MtouchLink;
 		}
 		
-		void MigrateExtraMtouchArgs (string value)
-		{
-			if (string.IsNullOrEmpty (value))
-					return;
-			
-			if (value.Contains ("-debug") || Name == "Debug")
-				MtouchDebug = true;
-			
-			if (value.Contains ("-nolink") || (Name == "Debug" && Platform == IPhoneProject.PLAT_SIM))
-				MtouchLink = MtouchLinkMode.None;
-			
-			var sb = new StringBuilder (value);
-			sb.Replace ("-nolink", "");
-			sb.Replace ("-linksdkonly", "");
-			sb.Replace ("-debug", "");
-			sb.Replace ("  ", " ");
-			MtouchExtraArgs = sb.ToString ();
-		}
-		
 		public DataCollection Serialize (ITypeSerializer handler)
 		{
 			return handler.Serialize (this);
 		}
 		
+		//if MtouchDebug is not present, this handler migrates args
+		// and sets default values for the new Mtouch* properties
 		public void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			var argsToMigrate = data.Extract ("ExtraMtouchArgs") as DataValue;
+			var mtouchDebugData = data.Extract ("MtouchDebug") as DataValue;
 			handler.Deserialize (this, data);
-			if (argsToMigrate != null)
-				MigrateExtraMtouchArgs (argsToMigrate.Value);
+			
+			if (mtouchDebugData == null || string.IsNullOrEmpty (mtouchDebugData.Value)) {
+				if (Name == "Debug") {
+					MtouchDebug = true;
+					if (Platform == IPhoneProject.PLAT_SIM)
+						MtouchLink = MtouchLinkMode.None;
+				}
+				if (argsToMigrate != null && string.IsNullOrEmpty (argsToMigrate.Value)) {
+					if (argsToMigrate.Value.Contains ("-debug"))
+						MtouchDebug = true;
+					if (argsToMigrate.Value.Contains ("-nolink"))
+						MtouchLink = MtouchLinkMode.None;
+					MtouchExtraArgs = new StringBuilder (argsToMigrate.Value)
+						.Replace ("-nolink", "").Replace ("-linksdkonly", "").Replace ("-debug", "").Replace ("  ", " ")
+						.ToString ();
+				}
+			} else {
+				MtouchDebug = mtouchDebugData.Value.Equals ("true", StringComparison.OrdinalIgnoreCase);
+			}
 		}
 	}
 	
 	public enum MtouchLinkMode
 	{
 		None = 0,
-		Full,
 		SdkOnly,
+		Full,
 	}
 }

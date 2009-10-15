@@ -172,11 +172,10 @@ namespace MonoDevelop.IPhone
 				deviceConf.CodesignKey = Keychain.DEV_CERT_PREFIX;
 				Configurations.Add (deviceConf);
 				
-				if (simConf.Name == "Debug") {
-					simConf.MtouchDebug = true;
-					simConf.MtouchLink = MtouchLinkMode.None;
-					deviceConf.MtouchDebug = true;
-				}
+				if (simConf.Name == "Debug")
+					simConf.MtouchDebug = deviceConf.MtouchDebug = true;
+				
+				simConf.MtouchLink = MtouchLinkMode.None;
 				
 				simConf.OutputDirectory = binPath.Combine (simConf.Platform, simConf.Name);
 				deviceConf.OutputDirectory = binPath.Combine (deviceConf.Platform, deviceConf.Name);
@@ -209,8 +208,11 @@ namespace MonoDevelop.IPhone
 			
 			conf.OutputDirectory = BaseDirectory.IsNullOrEmpty? dir : BaseDirectory.Combine (dir);
 			conf.OutputAssembly = Name;
-			if (conf.Platform == PLAT_IPHONE)
+			if (conf.Platform == PLAT_IPHONE) {
 				conf.CodesignKey = Keychain.DEV_CERT_PREFIX;
+			} else if (conf.Platform == PLAT_SIM) {
+				conf.MtouchLink = MtouchLinkMode.None;
+			}
 			
 			if (LanguageBinding != null)
 				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
