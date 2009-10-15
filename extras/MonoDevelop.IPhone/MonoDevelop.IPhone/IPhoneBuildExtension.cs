@@ -535,8 +535,13 @@ namespace MonoDevelop.IPhone
 				xcentName = Path.ChangeExtension (conf.CompiledOutputName, ".xcent");
 				
 				mtouchpack.Arguments = string.Format ("-genxcent \"{0}\" -appid=\"{1}\"", xcentName, appid);
-				if(!string.IsNullOrEmpty (conf.CodesignEntitlements))
-					mtouchpack.Arguments = mtouchpack.Arguments + string.Format (" -entitlements \"{0}\"", conf.CodesignEntitlements);
+				
+				if (!string.IsNullOrEmpty (conf.CodesignEntitlements))
+					mtouchpack.Arguments += string.Format (" -entitlements \"{0}\"", conf.CodesignEntitlements);
+				else if (conf.MtouchSdkVersion != "3.0")
+					mtouchpack.Arguments += string.Format (
+						" -entitlements \"Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS{0}.sdk/" +
+						"Entitlements.plist\"", conf.MtouchSdkVersion);
 				
 				monitor.Log.WriteLine ("mtouchpack " + mtouchpack.Arguments);
 				code = ExecuteCommand (monitor, mtouchpack, out errorOutput);
