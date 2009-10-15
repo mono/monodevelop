@@ -718,6 +718,8 @@ namespace Mono.TextEditor
 
 		public void RemoveCachedLine (LineSegment line)
 		{
+			if (line == null)
+				return;
 			LayoutDescriptor descriptor;
 			if (layoutDict.TryGetValue (line, out descriptor)) {
 				descriptor.Dispose ();

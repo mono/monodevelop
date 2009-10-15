@@ -1,5 +1,10 @@
 2009-10-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed possible null
+	  reference.
+
+2009-10-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: set maximum radius.
 
 2009-10-15  Mike Krüger  <mkrueger@novell.com>
