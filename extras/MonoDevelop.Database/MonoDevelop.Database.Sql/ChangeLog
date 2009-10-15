@@ -1,3 +1,6 @@
+2009-10-14 Luciano N. Callero <lnc19@hotmail.com>
+	* ConnectionPool/DefaultConnectionPool.cs: Fix pool Release bug. 
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

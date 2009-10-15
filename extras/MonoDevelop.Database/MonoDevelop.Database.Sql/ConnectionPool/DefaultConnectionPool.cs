@@ -170,7 +170,7 @@ namespace MonoDevelop.Database.Sql
 			} else {
 				if (Grow ())
 					conn = Request ();
-				else
+				else 
 					conn = null;
 			}
 			return conn;
@@ -182,7 +182,7 @@ namespace MonoDevelop.Database.Sql
 				return;
 			
 			lock (sync) {
-				if (freeConnections.Contains (connection))
+				if (!freeConnections.Contains (connection))
 					return;
 				
 				if (connectionProvider.CheckConnection (connection, context.ConnectionSettings))
