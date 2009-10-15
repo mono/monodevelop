@@ -680,7 +680,7 @@
                       <widget class="Gtk.Label" id="label3">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
-                        <property name="LabelProp" translatable="yes">_Link assemblies:</property>
+                        <property name="LabelProp" translatable="yes">_Linker behavior:</property>
                         <property name="UseUnderline">True</property>
                         <property name="MnemonicWidget">linkCombo</property>
                       </widget>

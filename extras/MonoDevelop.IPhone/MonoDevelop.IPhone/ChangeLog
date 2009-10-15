@@ -1,5 +1,12 @@
 2009-10-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* Gui/IPhoneBuildOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanelWidget.cs:
+	  Make linker GUI text more explicit.
+
+2009-10-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProjectConfiguration.cs: Better migration strategy.
 	  Fix enum order to match GUI's combo indices.
 

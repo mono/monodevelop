@@ -78,8 +78,8 @@ namespace MonoDevelop.IPhone.Gui
 			extraArgsEntry.AddOptions (menuOptions);
 			
 			linkCombo.AppendText ("Don't link"); //MtouchLinkMode.None
-			linkCombo.AppendText ("SDK only"); //MtouchLinkMode.SdkOnly
-			linkCombo.AppendText ("All assemblies"); //MtouchLinkMode.All
+			linkCombo.AppendText ("Link SDK assemblies only"); //MtouchLinkMode.SdkOnly
+			linkCombo.AppendText ("Link all assemblies"); //MtouchLinkMode.All
 			
 			sdkComboEntry.AppendText ("3.0");
 			sdkComboEntry.AppendText ("3.1");

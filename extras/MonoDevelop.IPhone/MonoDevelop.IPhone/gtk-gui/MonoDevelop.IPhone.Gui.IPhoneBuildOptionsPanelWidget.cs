@@ -108,7 +108,7 @@ namespace MonoDevelop.IPhone.Gui {
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("_Link assemblies:");
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString("_Linker behavior:");
             this.label3.UseUnderline = true;
             this.table1.Add(this.label3);
             Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.table1[this.label3]));
