@@ -1,5 +1,11 @@
 2009-10-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneBuildExtension.cs: Use the SDK version string in the
+	  plist and use default ResourceRules.plist from the correct
+	  SDK.
+
+2009-10-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* Gui/IPhoneBuildOptionsPanel.cs:
 	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanelWidget.cs:

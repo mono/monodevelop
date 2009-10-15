@@ -228,12 +228,12 @@ namespace MonoDevelop.IPhone
 				new PropertyList.PlistArray () { sim? "iphonesimulator" : "iphoneos" });
 			SetIfNotPresent (dict, "CFBundleVersion", proj.BundleVersion ?? "1.0");
 			SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
-			SetIfNotPresent (dict, "DTSDKName", sim? "iphonesimulator3.0" : "iphoneos3.0");
+			SetIfNotPresent (dict, "DTSDKName", (sim? "iphonesimulator" : "iphoneos")  + conf.MtouchSdkVersion);
 			SetIfNotPresent (dict,  "LSRequiresIPhoneOS", true);
 			
 			if (!sim)
 				//FIXME allow user to choose version?
-				SetIfNotPresent (dict, "MinimumOSVersion", "3.0");
+				SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchSdkVersion);
 			
 			if (!String.IsNullOrEmpty (proj.MainNibFile.ToString ())) {
 				string mainNib = proj.MainNibFile.ToRelative (proj.BaseDirectory);
@@ -555,7 +555,8 @@ namespace MonoDevelop.IPhone
 				File.Delete (resRulesFile);
 			
 			string resRulesSrc = String.IsNullOrEmpty (conf.CodesignResourceRules)
-				? "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/ResourceRules.plist"
+				? "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS"
+					+ conf.MtouchSdkVersion + ".sdk/ResourceRules.plist"
 				: (string) conf.CodesignResourceRules;
 			if (File.Exists (resRulesSrc))
 				File.Copy (resRulesSrc, resRulesFile);
