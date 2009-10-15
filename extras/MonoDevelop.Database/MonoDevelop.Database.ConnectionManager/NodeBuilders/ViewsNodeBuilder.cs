@@ -42,12 +42,10 @@ namespace MonoDevelop.Database.ConnectionManager
 {
 	public class ViewsNodeBuilder : TypeNodeBuilder
 	{
-		private EventHandler RefreshHandler;
 		
 		public ViewsNodeBuilder ()
 			: base ()
 		{
-			RefreshHandler = new EventHandler (OnRefreshEvent);
 		}
 		
 		public override Type NodeDataType {
@@ -73,7 +71,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			icon = Context.GetIcon ("md-db-views");
 			
 			BaseNode node = (BaseNode) dataObject;
-			node.RefreshEvent += (EventHandler)(DispatchService.GuiDispatch (RefreshHandler));
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -104,13 +101,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			return true;
 		}
 		
-		private void OnRefreshEvent (object sender, EventArgs args)
-		{
-			ITreeBuilder builder = Context.GetTreeBuilder (sender);
-			
-			builder.UpdateChildren ();			
-			builder.ExpandToNode ();
-		}
 	}
 	
 	public class ViewsNodeCommandHandler : NodeCommandHandler
@@ -118,13 +108,6 @@ namespace MonoDevelop.Database.ConnectionManager
 		public override DragOperation CanDragNode ()
 		{
 			return DragOperation.None;
-		}
-		
-		[CommandHandler (ConnectionManagerCommands.Refresh)]
-		protected void OnRefresh ()
-		{
-			BaseNode node = CurrentNode.DataItem as BaseNode;
-			node.Refresh ();
 		}
 		
 		[CommandHandler (ConnectionManagerCommands.CreateView)]

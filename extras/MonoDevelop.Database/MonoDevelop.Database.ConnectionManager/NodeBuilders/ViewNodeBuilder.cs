@@ -41,12 +41,10 @@ namespace MonoDevelop.Database.ConnectionManager
 {
 	public class ViewNodeBuilder : TypeNodeBuilder
 	{
-		private EventHandler RefreshHandler;
 
 		public ViewNodeBuilder ()
 			: base ()
 		{
-			RefreshHandler = new EventHandler (OnRefreshEvent);
 		}
 		
 		public override Type NodeDataType {
@@ -75,7 +73,6 @@ namespace MonoDevelop.Database.ConnectionManager
 		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			ViewNode node = dataObject as ViewNode;
-			node.RefreshEvent += (EventHandler)DispatchService.GuiDispatch (RefreshHandler);
 
 			label = node.View.Name;
 			icon = Context.GetIcon ("md-db-view");
@@ -105,11 +102,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			return node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.ViewColumn, SchemaActions.Schema);
 		}
 		
-		private void OnRefreshEvent (object sender, EventArgs args)
-		{
-			ITreeBuilder builder = Context.GetTreeBuilder (sender);
-			builder.Update ();
-		}
 	}
 	
 	public class ViewNodeCommandHandler : NodeCommandHandler
@@ -145,13 +137,6 @@ namespace MonoDevelop.Database.ConnectionManager
 					));
 				});
 			}
-			node.Refresh ();
-		}
-		
-		[CommandHandler (ConnectionManagerCommands.Refresh)]
-		protected void OnRefresh ()
-		{
-			BaseNode node = CurrentNode.DataItem as BaseNode;
 			node.Refresh ();
 		}
 		

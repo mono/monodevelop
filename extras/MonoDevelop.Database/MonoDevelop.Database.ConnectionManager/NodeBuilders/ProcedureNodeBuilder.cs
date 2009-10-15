@@ -40,12 +40,9 @@ namespace MonoDevelop.Database.ConnectionManager
 {
 	public class ProcedureNodeBuilder : TypeNodeBuilder
 	{
-		private EventHandler RefreshHandler;
-
 		public ProcedureNodeBuilder ()
 			: base ()
 		{
-			RefreshHandler = new EventHandler (OnRefreshEvent);
 		}
 		
 		public override Type NodeDataType {
@@ -74,7 +71,6 @@ namespace MonoDevelop.Database.ConnectionManager
 		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			ProcedureNode node = dataObject as ProcedureNode;
-			node.RefreshEvent += (EventHandler)DispatchService.GuiDispatch (RefreshHandler);
 			
 			label = node.Procedure.Name;
 			if (node.Procedure.IsFunction)
@@ -107,11 +103,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			return node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SchemaType.ProcedureParameter, SchemaActions.Schema);
 		}
 		
-		private void OnRefreshEvent (object sender, EventArgs args)
-		{
-			ITreeBuilder builder = Context.GetTreeBuilder (sender);
-			builder.Update ();
-		}
 	}
 	
 	public class ProcedureNodeCommandHandler : NodeCommandHandler
@@ -147,13 +138,6 @@ namespace MonoDevelop.Database.ConnectionManager
 					));
 				});
 			}
-			node.Refresh ();
-		}
-		
-		[CommandHandler (ConnectionManagerCommands.Refresh)]
-		protected void OnRefresh ()
-		{
-			BaseNode node = CurrentNode.DataItem as BaseNode;
 			node.Refresh ();
 		}
 		

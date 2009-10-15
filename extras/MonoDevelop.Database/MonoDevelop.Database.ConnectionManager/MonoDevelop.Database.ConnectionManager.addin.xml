@@ -181,9 +181,6 @@
 		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.RemoveConnection"
 			_label = "Remove"
 			icon = "gtk-remove"/>
-		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Refresh"
-			_label = "Refresh"
-			icon = "gtk-refresh"/>
 		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.ConnectConnection"
 			_label = "Connect"
 			icon = "gtk-connect"/>

@@ -49,7 +49,6 @@ namespace MonoDevelop.Database.ConnectionManager
 		DisconnectConnection,
 
 		Query,
-		Refresh,
 		SelectAll,
 		SelectColumns,
 		EmptyTable,

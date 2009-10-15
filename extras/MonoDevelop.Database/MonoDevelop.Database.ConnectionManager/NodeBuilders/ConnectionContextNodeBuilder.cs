@@ -43,12 +43,10 @@ namespace MonoDevelop.Database.ConnectionManager
 {
 	public class ConnectionContextNodeBuilder : TypeNodeBuilder
 	{
-		private EventHandler RefreshHandler;
 		
 		public ConnectionContextNodeBuilder ()
 			: base ()
 		{
-			RefreshHandler = new EventHandler (OnRefreshEvent);
 		}
 		
 		public override Type NodeDataType {
@@ -77,7 +75,6 @@ namespace MonoDevelop.Database.ConnectionManager
 		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			DatabaseConnectionContext context = dataObject as DatabaseConnectionContext;
-			context.RefreshEvent += (EventHandler)DispatchService.GuiDispatch (RefreshHandler);
 			
 			label = context.ConnectionSettings.Name;
 			if (context.HasConnectionPool) {
@@ -135,12 +132,6 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			return true;
 		}
-		
-		private void OnRefreshEvent (object sender, EventArgs args)
-		{
-			ITreeBuilder builder = Context.GetTreeBuilder (sender);
-			builder.Update ();
-		}
 	}
 	
 	public class ConnectionContextCommandHandler : NodeCommandHandler
@@ -156,7 +147,7 @@ namespace MonoDevelop.Database.ConnectionManager
 					));
 				} else {
 					context.ConnectionSettings.Name = newName;
-					OnRefreshConnection ();
+					context.Refresh ();
 				}
 			}
 		}
@@ -180,16 +171,9 @@ namespace MonoDevelop.Database.ConnectionManager
 
 			if (dlg.Run () == (int)ResponseType.Ok) {
 				ConnectionContextService.EditDatabaseConnectionContext (context);
-				OnRefreshConnection ();
+				context.Refresh ();
 			}
 			dlg.Destroy ();
-		}
-		
-		[CommandHandler (ConnectionManagerCommands.Refresh)]
-		protected void OnRefreshConnection ()
-		{
-			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
-			context.Refresh ();
 		}
 		
 		[CommandHandler (ConnectionManagerCommands.DisconnectConnection)]
@@ -261,7 +245,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			
 			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)context.SchemaProvider;
 			schemaProvider.DropDatabase (db);
-			DispatchService.GuiDispatch (delegate () { OnRefreshConnection (); });
+			// DispatchService.GuiDispatch (delegate () { OnRefreshConnection (); });
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.DropDatabase)]

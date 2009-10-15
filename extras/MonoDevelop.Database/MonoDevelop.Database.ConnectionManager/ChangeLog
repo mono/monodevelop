@@ -1,3 +1,29 @@
+2009-10-14 Luciano N. Callero <lnc19@hotmail.com>
+	* NodeBuilders/UsersNodeBuilder.cs:
+	* NodeBuilders/ParametersNodeBuilder.cs:
+	* NodeBuilders/TypesNodeBuilder.cs:
+	* NodeBuilders/ConnectionContextNodeBuilder.cs:
+	* NodeBuilders/LanguagesNodeBuilder.cs:
+	* NodeBuilders/ConstraintsNodeBuilder.cs:
+	* NodeBuilders/AggregatesNodeBuilder.cs:
+	* NodeBuilders/ViewNodeBuilder.cs:
+	* NodeBuilders/TablesNodeBuilder.cs:
+	* NodeBuilders/ProceduresNodeBuilder.cs:
+	* NodeBuilders/UserNodeBuilder.cs:
+	* NodeBuilders/OperatorsNodeBuilder.cs:
+	* NodeBuilders/GroupsNodeBuilder.cs:
+	* NodeBuilders/ColumnsNodeBuilder.cs:
+	* NodeBuilders/RolesNodeBuilder.cs:
+	* NodeBuilders/TriggersNodeBuilder.cs:
+	* NodeBuilders/TableNodeBuilder.cs:
+	* NodeBuilders/ProcedureNodeBuilder.cs:
+	* NodeBuilders/RulesNodeBuilder.cs:
+	* NodeBuilders/SequencesNodeBuilder.cs:
+	* NodeBuilders/ViewsNodeBuilder.cs:
+	* MonoDevelop.Database.ConnectionManager.addin.xml:
+	* Commands/ConnectionManagerCommands.cs: Refresh command
+	  isn't needed, MD core already have a built-in refresh menu.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
