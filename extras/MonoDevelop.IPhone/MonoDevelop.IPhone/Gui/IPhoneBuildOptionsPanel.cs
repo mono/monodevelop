@@ -72,26 +72,35 @@ namespace MonoDevelop.IPhone.Gui
 			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
 		};
 		
-		MenuButtonEntry mbe;
-		
 		public IPhoneBuildOptionsPanelWidget ()
 		{
 			this.Build ();
-			mbe = new MenuButtonEntry ();
-			contentsAlignment.Add (mbe);
-			mbe.AddOptions (menuOptions);
+			extraArgsEntry.AddOptions (menuOptions);
+			
+			linkCombo.AppendText ("Don't link"); //MtouchLinkMode.None
+			linkCombo.AppendText ("SDK only"); //MtouchLinkMode.SdkOnly
+			linkCombo.AppendText ("All assemblies"); //MtouchLinkMode.All
+			
+			sdkComboEntry.AppendText ("3.0");
+			sdkComboEntry.AppendText ("3.1");
 			
 			this.ShowAll ();
 		}
 		
 		public void LoadPanelContents (IPhoneProjectConfiguration cfg)
 		{
-			mbe.Entry.Text = cfg.ExtraMtouchArgs ?? "";
+			extraArgsEntry.Entry.Text = cfg.MtouchExtraArgs ?? "";
+			debugCheck.Active = cfg.MtouchDebug;
+			linkCombo.Active = (int) cfg.MtouchLink;
+			sdkComboEntry.Entry.Text = cfg.MtouchSdkVersion;
 		}
 		
 		public void StorePanelContents (IPhoneProjectConfiguration cfg)
 		{
-			cfg.ExtraMtouchArgs = NullIfEmpty (mbe.Entry.Text);
+			cfg.MtouchExtraArgs = NullIfEmpty (extraArgsEntry.Entry.Text);
+			cfg.MtouchSdkVersion = sdkComboEntry.Entry.Text; //FIXME: validate this?
+			cfg.MtouchDebug = debugCheck.Active;
+			cfg.MtouchLink = (MtouchLinkMode) linkCombo.Active;
 		}
 		
 		string NullIfEmpty (string s)

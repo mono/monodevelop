@@ -29,14 +29,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using System.IO;
-
-
+using System.Text;
 
 namespace MonoDevelop.IPhone
 {
 	
 	
-	public class IPhoneProjectConfiguration : DotNetProjectConfiguration
+	public class IPhoneProjectConfiguration : DotNetProjectConfiguration, ICustomDataItem
 	{
 		public IPhoneProjectConfiguration () : base ()
 		{
@@ -64,10 +63,7 @@ namespace MonoDevelop.IPhone
 				return null;
 			}
 		}
-		
-		[ItemProperty ("ExtraMtouchArgs")]
-		public string ExtraMtouchArgs { get; set; }
-		
+				
 		[ItemProperty ("CodesignProvision")]
 		public string CodesignProvision { get; set; }
 		
@@ -91,16 +87,84 @@ namespace MonoDevelop.IPhone
 		[ItemProperty ("CodesignExtraArgs")]
 		public string CodesignExtraArgs { get; set; }
 		
+		[ItemProperty ("MtouchDebug")]
+		public bool MtouchDebug { get; set; }
+		
+		[ItemProperty ("MtouchLink", DefaultValue = MtouchLinkMode.SdkOnly)]
+		MtouchLinkMode mtouchLink = MtouchLinkMode.SdkOnly;
+		public MtouchLinkMode MtouchLink {
+			get { return mtouchLink; }
+			set { mtouchLink = value; }
+		}
+		
+		[ItemProperty ("MtouchSdkVersion", DefaultValue = "3.0")]
+		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
+		string mtouchSdkVersion = "3.0";
+		public string MtouchSdkVersion {
+			get { return mtouchSdkVersion; }
+			set {
+				if (string.IsNullOrEmpty (value))
+					value = "3.0";
+				mtouchSdkVersion = value;
+			}
+		}
+		
+		[ItemProperty ("MtouchExtraArgs")]
+		public string MtouchExtraArgs { get; set; }
+		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			var cfg = (IPhoneProjectConfiguration) configuration;
 			base.CopyFrom (configuration);
-			ExtraMtouchArgs = cfg.ExtraMtouchArgs;
+			
 			CodesignProvision = cfg.CodesignProvision;
 			CodesignKey = cfg.CodesignKey;
 			CodesignEntitlements = cfg.CodesignEntitlements;
 			CodesignResourceRules = cfg.CodesignResourceRules;
 			CodesignExtraArgs = cfg.CodesignExtraArgs;
+			
+			MtouchExtraArgs = cfg.MtouchExtraArgs;
+			MtouchDebug = cfg.MtouchDebug;
+			MtouchLink = cfg.MtouchLink;
 		}
+		
+		void MigrateExtraMtouchArgs (string value)
+		{
+			if (string.IsNullOrEmpty (value))
+					return;
+			
+			if (value.Contains ("-debug") || Name == "Debug")
+				MtouchDebug = true;
+			
+			if (value.Contains ("-nolink") || (Name == "Debug" && Platform == IPhoneProject.PLAT_SIM))
+				MtouchLink = MtouchLinkMode.None;
+			
+			var sb = new StringBuilder (value);
+			sb.Replace ("-nolink", "");
+			sb.Replace ("-linksdkonly", "");
+			sb.Replace ("-debug", "");
+			sb.Replace ("  ", " ");
+			MtouchExtraArgs = sb.ToString ();
+		}
+		
+		public DataCollection Serialize (ITypeSerializer handler)
+		{
+			return handler.Serialize (this);
+		}
+		
+		public void Deserialize (ITypeSerializer handler, DataCollection data)
+		{
+			var argsToMigrate = data.Extract ("ExtraMtouchArgs") as DataValue;
+			handler.Deserialize (this, data);
+			if (argsToMigrate != null)
+				MigrateExtraMtouchArgs (argsToMigrate.Value);
+		}
+	}
+	
+	public enum MtouchLinkMode
+	{
+		None = 0,
+		Full,
+		SdkOnly,
 	}
 }

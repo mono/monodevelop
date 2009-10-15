@@ -144,7 +144,25 @@ namespace MonoDevelop.IPhone
 
 		static internal void AppendExtrasMtouchArgs (StringBuilder args, IPhoneProject proj, IPhoneProjectConfiguration conf)
 		{
-			AppendExtraArgs (args, conf.ExtraMtouchArgs, proj, conf);
+			if (conf.MtouchDebug)
+				args.Append (" -debug");
+			
+			switch (conf.MtouchLink) {
+			case MtouchLinkMode.SdkOnly:
+				args.Append (" -linksdkonly");
+				break;
+			case MtouchLinkMode.None:
+				args.Append (" -nolink");
+				break;
+			case MtouchLinkMode.Full:
+			default:
+				break;
+			}
+			
+			if (conf.MtouchSdkVersion != "3.0")
+				args.AppendFormat (" -sdk=\"{0}\"", conf.MtouchSdkVersion);
+			
+			AppendExtraArgs (args, conf.MtouchExtraArgs, proj, conf);
 		}
 		
 		static void AppendExtraArgs (StringBuilder args, string extraArgs, IPhoneProject proj, IPhoneProjectConfiguration conf)

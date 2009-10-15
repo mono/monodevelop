@@ -165,15 +165,21 @@ namespace MonoDevelop.IPhone
 			
 			int confCount = Configurations.Count;
 			for (int i = 0; i < confCount; i++) {
-				var conf = (IPhoneProjectConfiguration)Configurations[i];
-				conf.Platform = PLAT_SIM;
-				var c2 = (IPhoneProjectConfiguration) conf.Clone ();
-				c2.Platform = PLAT_IPHONE;
-				c2.CodesignKey = Keychain.DEV_CERT_PREFIX;
-				Configurations.Add (c2);
+				var simConf = (IPhoneProjectConfiguration)Configurations[i];
+				simConf.Platform = PLAT_SIM;
+				var deviceConf = (IPhoneProjectConfiguration) simConf.Clone ();
+				deviceConf.Platform = PLAT_IPHONE;
+				deviceConf.CodesignKey = Keychain.DEV_CERT_PREFIX;
+				Configurations.Add (deviceConf);
 				
-				conf.OutputDirectory = binPath.Combine (conf.Platform, conf.Name);
-				c2.OutputDirectory = binPath.Combine (c2.Platform, c2.Name);
+				if (simConf.Name == "Debug") {
+					simConf.MtouchDebug = true;
+					simConf.MtouchLink = MtouchLinkMode.None;
+					deviceConf.MtouchDebug = true;
+				}
+				
+				simConf.OutputDirectory = binPath.Combine (simConf.Platform, simConf.Name);
+				deviceConf.OutputDirectory = binPath.Combine (deviceConf.Platform, deviceConf.Name);
 			}
 		}
 		
