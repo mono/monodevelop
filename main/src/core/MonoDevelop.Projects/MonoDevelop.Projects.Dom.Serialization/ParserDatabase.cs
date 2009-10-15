@@ -247,7 +247,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			{
 				SerializationCodeCompletionDatabase cdb = GetDatabase (re.Uri);
 				if (cdb == null) continue;
-				c = DeepGetClassRec (visitedDbs, cdb, typeName, genericArguments, caseSensitive);
+				// deep get class should only go to depth 1, to prevent type lookup errors in the form:
+				// A -> B -> C v1.0 / A -> C v2.0 & getTypeName from assembly C. If C isn't referenced directly
+				// it's impossible to get types from assembly A, therefore DeepGetClassRec is incorrect here.
+				c = cdb.GetClass (typeName, genericArguments, caseSensitive);
+//				c = DeepGetClassRec (visitedDbs, cdb, typeName, genericArguments, caseSensitive);
 				if (c != null) return c;
 			}
 			return null;

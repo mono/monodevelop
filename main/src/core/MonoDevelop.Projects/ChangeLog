@@ -1,3 +1,9 @@
+2009-10-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:
+	  Fixed 'Bug 547178 - Missing intellisense item XmlReader
+	  .ReadSubtree'.
+
 2009-10-14  Carlo Kok  <ck@remobjects.com>
 
 	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs: Make sure 
