@@ -1,5 +1,9 @@
 2009-10-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: set maximum radius.
+
+2009-10-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/EditMode.cs:
 	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 547092 - Text
 	  editor hides mouse pointer during keyboard shortcuts'.

@@ -1635,11 +1635,12 @@ namespace Mono.TextEditor
 					color.A = 0.8;
 					cr.Color = color;
 					cr.LineWidth = editor.Options.Zoom * 2;
+					int width = (int)(x2 - x1 + 2 * LifeTime * editor.Options.Zoom);
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
 					                                                    (int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - LifeTime * editor.Options.Zoom), 
 					                                                    (int)(y - LifeTime * editor.Options.Zoom), 
-					                                                    10, 
-					                                                    (int)(x2 - x1 +  2  * LifeTime * editor.Options.Zoom), 
+					                                                    System.Math.Min (10, width), 
+					                                                    width, 
 					                                                    (int)(editor.LineHeight + 2 * LifeTime * editor.Options.Zoom));
 					cr.Stroke ();
 				}
@@ -1671,11 +1672,12 @@ namespace Mono.TextEditor
 				if (editor.Caret.Mode != CaretMode.Block)
 					x -= editor.TextViewMargin.charWidth / 2;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
+					int width = (int)(editor.TextViewMargin.charWidth + 2 * (MaxLifeTime - LifeTime) * editor.Options.Zoom / 2);
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
 					                                                    (int)(x - (MaxLifeTime - LifeTime) * editor.Options.Zoom / 2), 
 					                                                    (int)(y - (MaxLifeTime - LifeTime) * editor.Options.Zoom), 
-					                                                    editor.TextViewMargin.charWidth / 2,
-					                                                    (int)(editor.TextViewMargin.charWidth + 2 * (MaxLifeTime - LifeTime) * editor.Options.Zoom / 2),
+					                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
+					                                                    width,
 					                                                    (int)(editor.LineHeight + 2 * (MaxLifeTime - LifeTime) * editor.Options.Zoom));
 					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Caret.Color);
 					color.A = 0.8;
