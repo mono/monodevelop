@@ -1,3 +1,8 @@
+2009-10-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl/VersionControlService.cs: Handled
+	  icon loading errors.
+
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.VersionControl.csproj: Use \ instead of '/'
