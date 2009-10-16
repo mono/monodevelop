@@ -480,7 +480,14 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.ExportProjectHandler"
 				_description = "Convert selected project or solution to another format"
 				_label = "_Export..." />
-
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveConfiguration"
+				type = "radio|array"
+				defaultHandler = "MonoDevelop.Ide.Commands.SelectActiveConfigurationHandler"
+				_label = "Active Configuration" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveRuntime"
+				type = "radio|array"
+				defaultHandler="MonoDevelop.Ide.Commands.SelectActiveRuntimeHandler"
+				_label = "Active Runtime" />
 		</Category>
 
 
@@ -1569,6 +1576,13 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
 			<SeparatorItem id = "ExportSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
+			<SeparatorItem id = "OptionsSeparator" />
+			<ItemSet id = "SelectActiveConfiguration" _label = "Active Configuration">
+				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveConfiguration" />
+			</ItemSet>
+			<ItemSet id = "SelectActiveRuntime" _label = "Active Runtime" autohide = "true">
+				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveRuntime" />
+			</ItemSet>
 			<SeparatorItem id = "OptionsSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SolutionOptions" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ProjectOptions" />

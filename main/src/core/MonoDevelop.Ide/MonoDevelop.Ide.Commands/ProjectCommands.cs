@@ -32,6 +32,7 @@
 
 
 using System;
+using System.Linq;
 using System.Threading;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
@@ -85,7 +86,9 @@ namespace MonoDevelop.Ide.Commands
 		CustomCommandList,
 		Reload,
 		ExportProject,
-		SpecificAssemblyVersion
+		SpecificAssemblyVersion,
+		SelectActiveConfiguration,
+		SelectActiveRuntime
 	}
 
 	internal class SolutionOptionsHandler : CommandHandler
@@ -486,6 +489,44 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			IdeApp.ProjectOperations.Export (((IWorkspaceObject)IdeApp.ProjectOperations.CurrentSelectedItem), null);
+		}
+	}
+	
+	internal class SelectActiveConfigurationHandler : CommandHandler
+	{
+		protected override void Update (CommandArrayInfo info)
+		{
+			if (IdeApp.Workspace.IsOpen) {
+				foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
+					var i = info.Add (conf, conf);
+					if (conf == IdeApp.Workspace.ActiveConfiguration)
+						i.Checked  = true;
+				}
+			}
+		}
+
+		protected override void Run (object dataItem)
+		{
+			IdeApp.Workspace.ActiveConfiguration = (string) dataItem;
+		}
+	}
+	
+	internal class SelectActiveRuntimeHandler : CommandHandler
+	{
+		protected override void Update (CommandArrayInfo info)
+		{
+			if (IdeApp.Workspace.IsOpen && Runtime.SystemAssemblyService.GetTargetRuntimes ().Count () > 1) {
+				foreach (var tr in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
+					var item = info.Add (tr.DisplayName, tr);
+					if (tr == IdeApp.Workspace.ActiveRuntime)
+						item.Checked = true;
+				}
+			}
+		}
+
+		protected override void Run (object dataItem)
+		{
+			IdeApp.Workspace.ActiveRuntime = (MonoDevelop.Core.Assemblies.TargetRuntime) dataItem;
 		}
 	}
 }
