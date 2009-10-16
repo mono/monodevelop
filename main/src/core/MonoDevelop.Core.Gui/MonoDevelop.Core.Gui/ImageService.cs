@@ -51,11 +51,26 @@ namespace MonoDevelop.Core.Gui
 				case ExtensionChange.Add:
 					if (!string.IsNullOrEmpty (iconCodon.Resource)) {
 						using (System.IO.Stream stream = iconCodon.Addin.GetResource (iconCodon.Resource)) {
-							if (stream != null)
-								AddToIconFactory (iconCodon.StockId, new Gdk.Pixbuf (stream), iconCodon.IconSize);
+							if (stream != null) {
+								Gdk.Pixbuf pixbuf = null;
+								try {
+									pixbuf = new Gdk.Pixbuf (stream);
+								} catch (Exception) {
+									pixbuf = GetColourBlock ("red", iconCodon.IconSize);
+								}
+								if (pixbuf != null)
+									AddToIconFactory (iconCodon.StockId, pixbuf, iconCodon.IconSize);
+							}
 						}
 					} else if (!string.IsNullOrEmpty (iconCodon.IconId)) {
-						AddToIconFactory (iconCodon.StockId, GetPixbuf (InternalGetStockId (args.ExtensionNode.Addin, iconCodon.IconId, iconCodon.IconSize), iconCodon.IconSize), iconCodon.IconSize);
+						Gdk.Pixbuf pixbuf = null;
+						try {
+							pixbuf = GetPixbuf (InternalGetStockId (args.ExtensionNode.Addin, iconCodon.IconId, iconCodon.IconSize), iconCodon.IconSize);
+						} catch (Exception) {
+							pixbuf = GetColourBlock ("red", iconCodon.IconSize);
+						}
+						if (pixbuf != null)
+							AddToIconFactory (iconCodon.StockId, pixbuf, iconCodon.IconSize);
 					}
 					break;
 				}

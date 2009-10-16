@@ -1,3 +1,8 @@
+2009-10-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs: Handled pixbuf loading
+	  failure.
+
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
