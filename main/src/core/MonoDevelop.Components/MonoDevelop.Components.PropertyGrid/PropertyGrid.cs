@@ -87,8 +87,14 @@ namespace MonoDevelop.Components.PropertyGrid
 			base.PackStart (toolbar, false, false, 0);
 			
 			catButton = new RadioToolButton (new GLib.SList (IntPtr.Zero));
-			catButton.IconWidget = new Gtk.Image (new Gdk.Pixbuf (typeof (PropertyGrid).Assembly,
-				"MonoDevelop.Components.PropertyGrid.SortByCat.png"));
+			Gdk.Pixbuf pixbuf = null;
+			try {
+				pixbuf = new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "MonoDevelop.Components.PropertyGrid.SortByCat.png");
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't create pixbuf from resource: MonoDevelop.Components.PropertyGrid.SortByCat.png", e);
+			}
+			if (pixbuf != null)
+				catButton.IconWidget = new Gtk.Image (pixbuf);
 			catButton.TooltipText = GettextCatalog.GetString ("Sort in categories");
 			catButton.Toggled += new EventHandler (toolbarClick);
 			toolbar.Insert (catButton, 0);

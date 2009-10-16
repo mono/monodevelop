@@ -1,3 +1,10 @@
+2009-10-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components/TabLabel.cs:
+	* MonoDevelop.Components.PropertyGrid/PropertyGrid.cs:
+	* MonoDevelop.Components.PropertyGrid/DefaultPropertyTab.cs:
+	  Handled pixbuf loading failure.
+
 2009-10-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandInfo.cs: Expose

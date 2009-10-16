@@ -20,7 +20,11 @@ namespace MonoDevelop.Components
 		
 		static TabLabel ()
 		{
-			closeImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.png");
+			try {
+				closeImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.png");
+			} catch (Exception e) {
+				MonoDevelop.Core.LoggingService.LogError ("Can't create pixbuf from resource: MonoDevelop.Close.png", e);
+			}
 		}
 		
 		protected TabLabel (IntPtr p): base (p)
