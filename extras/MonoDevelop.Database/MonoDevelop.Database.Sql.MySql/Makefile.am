@@ -37,7 +37,7 @@ MYSQL_FILES = \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
-	MonoDevelop.Database.Sql.MySql.addin.xml,MonoDevelop.Database.Sql.MySql.MonoDevelop.Database.Sql.MySql.addin.xml
+	MonoDevelop.Database.Sql.MySql.addin.xml
 
 SRC_MYSQL_FILES = $(addprefix $(top_srcdir)/contrib/MySql/, $(MYSQL_FILES))
 BUILD_MYSQL_FILES = $(addprefix $(ADDIN_BUILD)/, $(notdir $(MYSQL_FILES)))
