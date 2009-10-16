@@ -1,3 +1,7 @@
+2009-10-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CircleImage.cs: Handled icon loading error.
+
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
 	* md1format.xml: Track namespace changes.

@@ -36,13 +36,28 @@ namespace MonoDevelop.NUnit
 {
 	static class CircleImage
 	{
-		internal static Gdk.Pixbuf Running = Gdk.Pixbuf.LoadFromResource("NUnit.Running.png");
-		internal static Gdk.Pixbuf Failure = Gdk.Pixbuf.LoadFromResource("NUnit.Failed.png");
-		internal static Gdk.Pixbuf None = Gdk.Pixbuf.LoadFromResource("NUnit.None.png");
-		internal static Gdk.Pixbuf NotRun = Gdk.Pixbuf.LoadFromResource("NUnit.NotRun.png");
-		internal static Gdk.Pixbuf Success = Gdk.Pixbuf.LoadFromResource("NUnit.Success.png");
-		internal static Gdk.Pixbuf SuccessAndFailure = Gdk.Pixbuf.LoadFromResource("NUnit.SuccessAndFailed.png");
-		internal static Gdk.Pixbuf Loading = Gdk.Pixbuf.LoadFromResource("NUnit.Loading.png");
+		internal static Gdk.Pixbuf Running;
+		internal static Gdk.Pixbuf Failure;
+		internal static Gdk.Pixbuf None;
+		internal static Gdk.Pixbuf NotRun;
+		internal static Gdk.Pixbuf Success;
+		internal static Gdk.Pixbuf SuccessAndFailure;
+		internal static Gdk.Pixbuf Loading;
+		
+		static CircleImage ()
+		{
+			try {
+				Running = Gdk.Pixbuf.LoadFromResource("NUnit.Running.png");
+				Failure = Gdk.Pixbuf.LoadFromResource("NUnit.Failed.png");
+				None = Gdk.Pixbuf.LoadFromResource("NUnit.None.png");
+				NotRun = Gdk.Pixbuf.LoadFromResource("NUnit.NotRun.png");
+				Success = Gdk.Pixbuf.LoadFromResource("NUnit.Success.png");
+				SuccessAndFailure = Gdk.Pixbuf.LoadFromResource("NUnit.SuccessAndFailed.png");
+				Loading = Gdk.Pixbuf.LoadFromResource("NUnit.Loading.png");
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while loading icons.", e);
+			}
+		}
 	}
 }
 
