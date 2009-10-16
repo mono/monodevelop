@@ -58,9 +58,12 @@ namespace MonoDevelop.Components.Docking
 		
 		static DockItemContainer ()
 		{
-			pixClose = Gdk.Pixbuf.LoadFromResource ("stock-close-12.png");
-			pixAutoHide = Gdk.Pixbuf.LoadFromResource ("stock-auto-hide.png");
-			pixDock = Gdk.Pixbuf.LoadFromResource ("stock-dock.png");
+			try {
+				pixClose = Gdk.Pixbuf.LoadFromResource ("stock-close-12.png");
+				pixAutoHide = Gdk.Pixbuf.LoadFromResource ("stock-auto-hide.png");
+				pixDock = Gdk.Pixbuf.LoadFromResource ("stock-dock.png");
+			} catch (Exception) {
+			}
 		}
 		
 		public DockItemContainer (DockFrame frame, DockItem item)

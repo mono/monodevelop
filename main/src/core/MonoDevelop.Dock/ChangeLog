@@ -1,3 +1,7 @@
+2009-10-16  Mike Krüger  <mkrueger@novell.com>
+
+	* DockItemContainer.cs: Handled icon loading error.
+
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DockItem.cs:
