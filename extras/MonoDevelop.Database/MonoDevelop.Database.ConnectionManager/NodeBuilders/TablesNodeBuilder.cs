@@ -43,10 +43,12 @@ namespace MonoDevelop.Database.ConnectionManager
 {
 	public class TablesNodeBuilder : TypeNodeBuilder
 	{
+		private EventHandler RefreshHandler;
 		
 		public TablesNodeBuilder ()
 			: base ()
 		{
+			RefreshHandler += new EventHandler(OnRefreshEvent);
 		}
 		
 		public override Type NodeDataType {
@@ -70,8 +72,8 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			label = AddinCatalog.GetString ("Tables");
 			icon = Context.GetIcon ("md-db-tables");
-			
 			BaseNode node = (BaseNode) dataObject;
+			node.RefreshEvent += RefreshHandler;
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -101,6 +103,16 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			return true;
 		}
+		
+ 		private void OnRefreshEvent (object sender, EventArgs args)
+	 	{
+			DispatchService.GuiDispatch (delegate {
+	 			ITreeBuilder builder = Context.GetTreeBuilder (sender);
+				builder.UpdateChildren ();
+		 		// builder.UpdateChildren ();
+		 		// builder.ExpandToNode ();
+			});
+	 	}
 		
 	}
 	
@@ -157,8 +169,8 @@ namespace MonoDevelop.Database.ConnectionManager
 			IPooledDbConnection conn = provider.ConnectionPool.Request ();
 			conn.ExecuteNonQuery (table.Definition);
 			conn.Release ();
-			
 			node.Refresh ();
+			
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.CreateTable)]
