@@ -36,7 +36,7 @@ namespace MonoDevelop.Debugger
 		string Name { get; }
 		bool CanDebugCommand (ExecutionCommand cmd);
 		DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand cmd);
-		ProcessInfo[] GetAttachablePocesses ();
+		ProcessInfo[] GetAttachableProcesses ();
 		DebuggerSession CreateSession ();
 		DebuggerFeatures SupportedFeatures { get; }
 	}

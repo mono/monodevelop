@@ -56,7 +56,7 @@ namespace MonoDevelop.Debugger
 				if ((de.SupportedFeatures & DebuggerFeatures.Attaching) == 0)
 					continue;
 				try {
-					foreach (ProcessInfo pi in de.GetAttachablePocesses ()) {
+					foreach (ProcessInfo pi in de.GetAttachableProcesses ()) {
 						List<IDebuggerEngine> engs;
 						if (!procEngines.TryGetValue (pi.Id, out engs)) {
 							engs = new List<IDebuggerEngine> ();

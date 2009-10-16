@@ -124,7 +124,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return ds;
 		}
 		
-		public ProcessInfo[] GetAttachablePocesses ()
+		public ProcessInfo[] GetAttachableProcesses ()
 		{
 			List<ProcessInfo> procs = new List<ProcessInfo> ();
 			foreach (string dir in Directory.GetDirectories ("/proc")) {

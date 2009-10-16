@@ -94,7 +94,7 @@ namespace MonoDevelop.Debugger.Mdb
 			return ds;
 		}
 		
-		public ProcessInfo[] GetAttachablePocesses ()
+		public ProcessInfo[] GetAttachableProcesses ()
 		{
 			return new ProcessInfo[0];
 		}
