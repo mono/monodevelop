@@ -42,10 +42,11 @@ namespace MonoDevelop.Database.ConnectionManager
 {
 	public class UsersNodeBuilder : TypeNodeBuilder
 	{
-		
+		private EventHandler RefreshHandler;
 		public UsersNodeBuilder ()
 			: base ()
 		{
+			RefreshHandler += new EventHandler(OnRefreshEvent);
 		}
 		
 		public override Type NodeDataType {
@@ -71,6 +72,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			icon = Context.GetIcon ("md-db-users");
 			
 			BaseNode node = (BaseNode) dataObject;
+			RefreshHandler += new EventHandler(OnRefreshEvent);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -95,7 +97,14 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			return true;
 		}
-		
+
+ 		private void OnRefreshEvent (object sender, EventArgs args)
+	 	{
+			DispatchService.GuiDispatch (delegate {
+	 			ITreeBuilder builder = Context.GetTreeBuilder (sender);
+				builder.UpdateChildren ();
+			});
+	 	}
 	}
 	
 	public class UsersNodeCommandHandler : NodeCommandHandler

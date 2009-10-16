@@ -42,9 +42,11 @@ namespace MonoDevelop.Database.ConnectionManager
 {
 	public class ProceduresNodeBuilder : TypeNodeBuilder
 	{
+		private EventHandler RefreshHandler;
 		public ProceduresNodeBuilder ()
 			: base ()
 		{
+			RefreshHandler += new EventHandler(OnRefreshEvent);
 		}
 		
 		public override Type NodeDataType {
@@ -70,6 +72,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			icon = Context.GetIcon ("md-db-procedure");
 			
 			BaseNode node = (BaseNode) dataObject;
+			node.RefreshEvent += RefreshHandler;
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -100,6 +103,13 @@ namespace MonoDevelop.Database.ConnectionManager
 			return true;
 		}
 		
+ 		private void OnRefreshEvent (object sender, EventArgs args)
+	 	{
+			DispatchService.GuiDispatch (delegate {
+	 			ITreeBuilder builder = Context.GetTreeBuilder (sender);
+				builder.UpdateChildren ();
+			});
+	 	}
 	}
 	
 	public class ProceduresNodeCommandHandler : NodeCommandHandler

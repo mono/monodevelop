@@ -42,10 +42,11 @@ namespace MonoDevelop.Database.ConnectionManager
 {
 	public class ViewsNodeBuilder : TypeNodeBuilder
 	{
-		
+		private EventHandler RefreshHandler;
 		public ViewsNodeBuilder ()
 			: base ()
 		{
+			RefreshHandler += new EventHandler(OnRefreshEvent);
 		}
 		
 		public override Type NodeDataType {
@@ -71,6 +72,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			icon = Context.GetIcon ("md-db-views");
 			
 			BaseNode node = (BaseNode) dataObject;
+			
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -100,7 +102,14 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			return true;
 		}
-		
+
+ 		private void OnRefreshEvent (object sender, EventArgs args)
+	 	{
+			DispatchService.GuiDispatch (delegate {
+	 			ITreeBuilder builder = Context.GetTreeBuilder (sender);
+				builder.UpdateChildren ();
+			});
+	 	}
 	}
 	
 	public class ViewsNodeCommandHandler : NodeCommandHandler

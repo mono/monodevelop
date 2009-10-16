@@ -1,4 +1,11 @@
 2009-10-15 Luciano N. Callero <lnc19@hotmail.com>
+	* NodeBuilders/UsersNodeBuilder.cs:
+	* NodeBuilders/ProceduresNodeBuilder.cs:
+	* NodeBuilders/ViewsNodeBuilder.cs: Users, Procedures,
+	  Views refresh Operation is now responsive. Fix 
+	  Multi-thread bugs refreshing.
+
+2009-10-15 Luciano N. Callero <lnc19@hotmail.com>
 	* NodeBuilders/TablesNodeBuilder.cs:Tables refresh
           Operation is now responsive. Fix Multi-thread bugs refreshing.
 	* MonoDevelop.Database.ConnectionManager.addin.xml: Refresh
