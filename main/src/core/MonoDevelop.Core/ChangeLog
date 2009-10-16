@@ -1,3 +1,9 @@
+2009-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/PcFileCache.cs: It seems that
+	  the share pkgconfig directory should come before lib by
+	  default.
+
 2009-10-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.AddIns/PlatformCondition.cs: Allow negating

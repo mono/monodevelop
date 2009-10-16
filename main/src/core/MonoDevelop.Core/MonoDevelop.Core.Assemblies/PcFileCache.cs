@@ -395,10 +395,11 @@ namespace Mono.PkgConfig
 					yield return dir;
 			} else if (systemPrefixes != null) {
 				string[] suffixes = new string [] {
+					//FIXME: is this the correct order? share should be before lib but not sure about others.
+					Path.Combine ("share", "pkgconfig"),
 					Path.Combine ("lib", "pkgconfig"),
 					Path.Combine ("lib64", "pkgconfig"),
 					Path.Combine ("libdata", "pkgconfig"),
-					Path.Combine ("share", "pkgconfig"),
 				};
 				foreach (string prefix in systemPrefixes)
 					foreach (string suffix in suffixes)
