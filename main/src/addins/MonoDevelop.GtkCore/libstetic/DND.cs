@@ -14,7 +14,12 @@ namespace Stetic {
 
 		static DND ()
 		{
-			widgetIcon = Gdk.Pixbuf.LoadFromResource ("widget.png");
+			try {
+				widgetIcon = Gdk.Pixbuf.LoadFromResource ("widget.png");
+			} catch (Exception e) {
+				Console.WriteLine ("Error while loading pixbuf 'widget.png': " + e);
+			}
+			
 			steticWidgetType = Gdk.Atom.Intern ("application/x-stetic-widget", false);
 
 			targets = new Gtk.TargetEntry[2];

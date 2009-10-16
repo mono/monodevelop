@@ -1,3 +1,7 @@
+2009-10-16  Mike Krüger  <mkrueger@novell.com>
+
+	* ActionComponent.cs: Handled icon loading failures.
+
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
 	* libsteticui.csproj: Mark Mono.Cecil project referece

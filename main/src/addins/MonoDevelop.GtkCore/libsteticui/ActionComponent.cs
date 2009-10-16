@@ -12,7 +12,11 @@ namespace Stetic
 		
 		static ActionComponent ()
 		{
-			DefaultActionIcon = Gdk.Pixbuf.LoadFromResource ("action.png");
+			try {
+				DefaultActionIcon = Gdk.Pixbuf.LoadFromResource ("action.png");
+			} catch (Exception e) {
+				Console.WriteLine ("Error while loading pixbuf 'action.png': " + e);
+			}
 		}
 		
 		public ActionComponent (Application owner, object backend, string name): base (owner, backend, name, owner.GetComponentType ("Gtk.Action"))

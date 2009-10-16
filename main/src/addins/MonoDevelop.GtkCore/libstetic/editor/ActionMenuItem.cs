@@ -20,8 +20,12 @@ namespace Stetic.Editor
 		
 		static ActionMenuItem ()
 		{
-			addMenuImage = Gdk.Pixbuf.LoadFromResource ("add-menu.png");
-			removeMenuImage = Gdk.Pixbuf.LoadFromResource ("remove-menu.png");
+			try {
+				addMenuImage = Gdk.Pixbuf.LoadFromResource ("add-menu.png");
+				removeMenuImage = Gdk.Pixbuf.LoadFromResource ("remove-menu.png");
+			} catch (Exception e) {
+				Console.WriteLine ("Error while loading pixbuf: " + e);
+			}
 		}
 		
 		internal ActionMenuItem (Widget wrapper, IMenuItemContainer parent, ActionTreeNode node)

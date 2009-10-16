@@ -282,8 +282,13 @@ namespace Stetic
 					try {
 						missingIcon = Gtk.IconTheme.Default.LoadIcon ("gtk-missing-image", 16, 0);
 					} catch {}
-					if (missingIcon == null)
-						missingIcon = Gdk.Pixbuf.LoadFromResource ("missing.png");
+					if (missingIcon == null) {
+						try {
+							missingIcon = Gdk.Pixbuf.LoadFromResource ("missing.png");
+						} catch (Exception e) {
+							Console.WriteLine ("Error while loading pixbuf 'missing.png': " + e);
+						}
+					}
 				}
 				return missingIcon;
 			}

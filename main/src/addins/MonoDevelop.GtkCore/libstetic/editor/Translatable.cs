@@ -31,8 +31,12 @@ namespace Stetic.Editor {
 				return;
 
 			button = new Gtk.Button ();
-			globe = Gdk.Pixbuf.LoadFromResource ("globe.png");
-			globe_not = Gdk.Pixbuf.LoadFromResource ("globe-not.png");
+			try {
+				globe = Gdk.Pixbuf.LoadFromResource ("globe.png");
+				globe_not = Gdk.Pixbuf.LoadFromResource ("globe-not.png");
+			} catch (Exception e) {
+				Console.WriteLine ("Error while loading pixbuf: " + e);
+			}
 			image = new Gtk.Image (globe);
 			button.Add (image);
 			button.ButtonPressEvent += ButtonPressed;

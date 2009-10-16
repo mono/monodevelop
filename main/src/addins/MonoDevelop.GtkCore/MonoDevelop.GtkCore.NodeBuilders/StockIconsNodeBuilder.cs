@@ -23,7 +23,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	
 	public class StockIconsNodeBuilder: TypeNodeBuilder
 	{
-		Pixbuf iconsIcon = Pixbuf.LoadFromResource ("image-x-generic.png");
+		Pixbuf iconsIcon;
 		
 		public override Type NodeDataType {
 			get { return typeof(StockIconsNode); }
@@ -36,7 +36,14 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.StockIcons"; }
 		}
-
+		public StockIconsNodeBuilder ()
+		{
+			try {
+				iconsIcon = Pixbuf.LoadFromResource ("image-x-generic.png");
+			} catch (Exception e) {
+				Console.WriteLine ("Error while loading pixbuf 'image-x-generic.png': " + e);
+			}
+		}
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
 			return -1;

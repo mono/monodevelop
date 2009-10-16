@@ -80,7 +80,14 @@ namespace Stetic {
 				if (s == null)
 					return null;
 				using (s) {
-					return new Gtk.Image (new Gdk.Pixbuf (s));
+					Gdk.Pixbuf pixbuf;
+					try {
+						pixbuf = new Gdk.Pixbuf (s);
+					} catch (Exception e) {
+						Console.WriteLine ("Error while loading pixbuf '" + icon.Substring (4) + "': " + e);
+						return null;
+					}
+					return new Gtk.Image (pixbuf);
 				}
 			} else {
 				return new Gtk.Image (icon, Gtk.IconSize.Menu);

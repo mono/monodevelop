@@ -1,3 +1,11 @@
+2009-10-16  Mike Krüger  <mkrueger@novell.com>
+
+	* DND.cs:
+	* WidgetUtils.cs:
+	* CommandDescriptor.cs:
+	* editor/Translatable.cs:
+	* editor/ActionMenuItem.cs: Handled icon loading failures.
+
 2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* wrapper/Paned.cs: Avoid unnecessary Changed event.
