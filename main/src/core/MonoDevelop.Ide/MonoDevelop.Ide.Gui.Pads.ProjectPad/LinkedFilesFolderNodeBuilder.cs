@@ -49,7 +49,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			overlay = Gdk.Pixbuf.LoadFromResource ("Icons.16x16.LinkOverlay.png");
+			try {
+				overlay = Gdk.Pixbuf.LoadFromResource ("Icons.16x16.LinkOverlay.png");
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while loading pixbuf 'Icons.16x16.LinkOverlay.png'.", e);
+			}
 			openFolder = ImageService.GetPixbuf (Stock.OpenFolder, Gtk.IconSize.Menu).Copy ();
 			closedFolder = ImageService.GetPixbuf (Stock.ClosedFolder, Gtk.IconSize.Menu).Copy ();
 			

@@ -32,8 +32,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			this.Decorated = false;
 			this.WindowPosition = WindowPosition.Center;
 			this.TypeHint = Gdk.WindowTypeHint.Splashscreen;
-			bitmap = new Gdk.Pixbuf(Assembly.GetCallingAssembly(), "SplashScreen.png");
-
+			try {
+				bitmap = new Gdk.Pixbuf(Assembly.GetCallingAssembly(), "SplashScreen.png");
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't load splash screen pixbuf 'SplashScreen.png'.", e);
+			}
 			progress = new ProgressBar();
 			progress.Fraction = 0.00;
 			progress.HeightRequest = 6;
@@ -46,22 +49,24 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			vbox.PackEnd (progress, false, true, 0);
 			vbox.PackEnd (label, false, true, 3);
 			this.Add (vbox);
-			
-			this.Resize (bitmap.Width, bitmap.Height);
+			if (bitmap != null)
+				this.Resize (bitmap.Width, bitmap.Height);
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evt)
 		{
-			Gdk.GC gc = Style.LightGC (StateType.Normal);
-			GdkWindow.DrawPixbuf (gc, bitmap, 0, 0, 0, 0, bitmap.Width, bitmap.Height, Gdk.RgbDither.None, 0, 0);
+			if (bitmap != null) {
+				Gdk.GC gc = Style.LightGC (StateType.Normal);
+				GdkWindow.DrawPixbuf (gc, bitmap, 0, 0, 0, 0, bitmap.Width, bitmap.Height, Gdk.RgbDither.None, 0, 0);
 
-			Pango.Layout pl = new Pango.Layout (PangoContext);
-			Pango.FontDescription des = this.Style.FontDescription.Copy();
-			pl.FontDescription = des;
-			pl.SetMarkup("<b><span foreground='#cccccc'>" + BuildVariables.PackageVersionLabel + "</span></b>");
-			int w,h;
-			pl.GetPixelSize (out w, out h);
-			GdkWindow.DrawLayout (gc, bitmap.Width - w - 75, 90, pl);
+				Pango.Layout pl = new Pango.Layout (PangoContext);
+				Pango.FontDescription des = this.Style.FontDescription.Copy();
+				pl.FontDescription = des;
+				pl.SetMarkup("<b><span foreground='#cccccc'>" + BuildVariables.PackageVersionLabel + "</span></b>");
+				int w,h;
+				pl.GetPixelSize (out w, out h);
+				GdkWindow.DrawLayout (gc, bitmap.Width - w - 75, 90, pl);
+			}
 			return base.OnExposeEvent (evt);
 		}
 		
@@ -71,9 +76,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			RunMainLoop ();
 		}
 
-		public static void SetMessage (string Message)
+		public void SetMessage (string Message)
 		{
-			label.Markup = "<span size='small' foreground='white'>" + Message + "</span>";
+			if (bitmap == null) {
+				label.Text = Message;
+			} else {
+				label.Markup = "<span size='small' foreground='white'>" + Message + "</span>";
+			}
 			RunMainLoop ();
 		}
 		
