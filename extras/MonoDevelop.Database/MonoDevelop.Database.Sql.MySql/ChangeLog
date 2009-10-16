@@ -1,3 +1,6 @@
+2009-10-15 Luciano N. Callero <lnc19@hotmail.com>
+	* MySqlSchemaProvider.cs: Get Views bugfix.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

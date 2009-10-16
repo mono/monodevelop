@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //	Christian Hergert  <chris@mosaix.net>
 //	Daniel Morgan <danielmorgan@verizon.net>
@@ -220,7 +220,7 @@ namespace MonoDevelop.Database.Sql.MySql
 		{
 			ViewSchemaCollection views = new ViewSchemaCollection ();
 			using (IPooledDbConnection conn = connectionPool.Request ())  {
-				using (IDbCommand command = conn.CreateCommand (string.Concat (
+				using (IDbCommand command = conn.CreateCommand (string.Format (
 																	@"SELECT 
 				                                                        TABLE_NAME, 
 				                                                        TABLE_SCHEMA 
