@@ -33,8 +33,9 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.IPhone;
 using Mono.Debugging.Client;
 using MonoDevelop.Debugger.Soft;
+using System.Net;
 
-namespace Mono.Debugger.Soft.IPhone
+namespace MonoDevelop.Debugger.Soft.IPhone
 {
 	public class IPhoneSoftDebuggerEngine: IDebuggerEngine
 	{
@@ -48,7 +49,7 @@ namespace Mono.Debugger.Soft.IPhone
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
 			var cmd = (IPhoneExecutionCommand) command;
-			var startInfo = new DebuggerStartInfo ();
+			var startInfo = new IPhoneDebuggerStartInfo (new IPEndPoint (IPAddress.Any, 10000), cmd);
 			return startInfo;
 		}
 
@@ -63,10 +64,10 @@ namespace Mono.Debugger.Soft.IPhone
 		
 		public DebuggerSession CreateSession ()
 		{
-			return new SoftDebuggerSession ();
+			return new IPhoneDebuggerSession ();
 		}
 		
-		public ProcessInfo[] GetAttachablePocesses ()
+		public ProcessInfo[] GetAttachableProcesses ()
 		{
 			return new ProcessInfo[0];
 		}
@@ -76,5 +77,17 @@ namespace Mono.Debugger.Soft.IPhone
 				return "Mono Soft Debugger";
 			}
 		}
+	}
+	
+	class IPhoneDebuggerStartInfo : DebuggerStartInfo
+	{
+		public IPEndPoint Endpoint { get; private set; }
+		public IPhoneExecutionCommand ExecutionCommand {  get; private set; }
+		
+		public IPhoneDebuggerStartInfo (IPEndPoint endpoint, IPhoneExecutionCommand command)
+		{
+			this.Endpoint = endpoint;
+			this.ExecutionCommand = command;
+		}		
 	}
 }

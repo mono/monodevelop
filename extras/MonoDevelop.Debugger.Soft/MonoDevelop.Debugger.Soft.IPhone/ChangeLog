@@ -1,5 +1,11 @@
 2009-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDebuggerSession.cs:
+	* IPhoneSoftDebuggerEngine.cs:
+	* MonoDevelop.Debugger.Soft.IPhone.csproj: Connect stuff up.
+
+2009-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Manifest.addin.xml:
 	* IPhoneSoftDebuggerEngine.cs:
 	* MonoDevelop.Debugger.Soft.IPhone.csproj: Stubbed. Not
