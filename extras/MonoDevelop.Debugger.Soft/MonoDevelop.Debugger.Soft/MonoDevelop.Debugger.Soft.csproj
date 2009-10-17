@@ -32,12 +32,15 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="MonoDevelop.Core, Version=2.1.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="Mono.Debugger, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -48,18 +51,23 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="MonoDevelop.Components, Version=2.1.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=2.1.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=2.1.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core.Gui, Version=2.1.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
   </ItemGroup>
