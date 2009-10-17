@@ -1688,6 +1688,99 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public enum PulseKind {
+			In, Out, Bounce
+		}
+		
+		public class RegionPulseAnimation : IAnimation
+		{
+			const int MaxLifeTime = 8;
+			TextEditor editor;
+			
+			public PulseKind Kind { get; set; }
+			public int LifeTime { get; set; }
+			
+			Gdk.Rectangle region;
+			
+			public RegionPulseAnimation (TextEditor editor, Gdk.Point position, Gdk.Size size)
+				: this (editor, new Gdk.Rectangle (position, size)) {}
+			
+			public RegionPulseAnimation (TextEditor editor, Gdk.Rectangle region)
+			{
+				if (region.X < 0 || region.Y < 0 || region.Width < 0 || region.Height < 0)
+					throw new ArgumentException ("region is invalid");
+				
+				LifeTime = MaxLifeTime;
+				this.editor = editor;
+				this.region = region;
+			}
+			
+			public void Draw (Drawable drawable)
+			{
+				int x = region.X;
+				int y = region.Y;
+				int animationPosition;
+				
+				switch (Kind) {
+				case PulseKind.In:
+					animationPosition = MaxLifeTime - LifeTime;
+					break;
+				case PulseKind.Bounce:
+					if (LifeTime > (MaxLifeTime / 2))
+						animationPosition = MaxLifeTime - LifeTime;
+					else
+						animationPosition = LifeTime;
+					animationPosition /= 2;
+					break;
+				case PulseKind.Out:
+				default:
+					animationPosition = LifeTime;
+					break;
+				}
+					
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
+					int width = (int)(region.Width + 2 * animationPosition * editor.Options.Zoom / 2);
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
+					                                                    (int)(x - animationPosition * editor.Options.Zoom / 2), 
+					                                                    (int)(y - animationPosition * editor.Options.Zoom), 
+					                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
+					                                                    width,
+					                                                    (int)(region.Height + 2 * animationPosition * editor.Options.Zoom));
+					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Caret.Color);
+					color.A = 0.8;
+					cr.LineWidth = editor.Options.Zoom;
+					cr.Color = color;
+					cr.Stroke ();
+				}
+			}
+		}
+		
+		Gdk.Rectangle RangeToRectangle (int offset, int length)
+		{
+			DocumentLocation startLocation = Document.OffsetToLocation (offset);
+			DocumentLocation endLocation = Document.OffsetToLocation (offset + length);
+			
+			if (startLocation.Column < 0 || startLocation.Line < 0 || endLocation.Column < 0 || endLocation.Line < 0)
+				return Gdk.Rectangle.Zero;
+			
+			return RangeToRectangle (startLocation, endLocation);
+		}
+				
+		Gdk.Rectangle RangeToRectangle (DocumentLocation start, DocumentLocation end)
+		{
+			if (start.Column < 0 || start.Line < 0 || end.Column < 0 || end.Line < 0)
+				return Gdk.Rectangle.Zero;
+			
+			Gdk.Point startPt = this.textViewMargin.LocationToDisplayCoordinates (start);
+			Gdk.Point endPt = this.textViewMargin.LocationToDisplayCoordinates (end);
+			int width = endPt.X - startPt.X;
+			
+			if (startPt.Y != endPt.Y || startPt.X < 0 || startPt.Y < 0 || width < 0)
+				return Gdk.Rectangle.Zero;
+			
+			return new Gdk.Rectangle (startPt.X, startPt.Y, width, this.textViewMargin.LineHeight);
+		}
+		
 		void AnimationTimer (object sender, EventArgs args)
 		{
 			if (animation != null) {
@@ -1700,6 +1793,27 @@ namespace Mono.TextEditor
 			} else {
 				animationTimer.Stop ();
 			}
+		}
+		
+		/// <summary>
+		/// Initiate a pulse at the specified document location
+		/// </summary>
+		/// <param name="pulseLocation">
+		/// A <see cref="DocumentLocation"/>
+		/// </param>
+		public void PulseCharacter (DocumentLocation pulseStart)
+		{
+			if (pulseStart.Column < 0 || pulseStart.Line < 0)
+				return;
+			var rect = RangeToRectangle (pulseStart, new DocumentLocation (pulseStart.Line, pulseStart.Column + 1));
+			if (rect.X < 0 || rect.Y < 0 || System.Math.Max (rect.Width, rect.Height) <= 0)
+				return;
+			
+			animationTimer.Stop (); 
+			animation = new RegionPulseAnimation (this, rect) {
+				Kind = PulseKind.Bounce
+			};
+			animationTimer.Start ();
 		}
 
 		public SearchResult FindNext ()

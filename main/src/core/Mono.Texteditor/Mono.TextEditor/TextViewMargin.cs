@@ -148,7 +148,13 @@ namespace Mono.TextEditor
 				UpdateBracketHighlighting (this, EventArgs.Empty);
 			};
 			Caret.PositionChanged += UpdateBracketHighlighting;
+			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
+				if (e != null && e.Value != null && e.Value.Length == 1 && "})]".IndexOf(e.Value) >= 0)
+					pulseMatch = true;
+			};
 		}
+		
+		bool pulseMatch = false;
 		
 		void TextEditorDocumentLineChanged (object sender, LineEventArgs e)
 		{
@@ -280,11 +286,16 @@ namespace Mono.TextEditor
 				highlightBracketOffset = matchingBracket;
 				int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
 				int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
+				DocumentLocation matchingBracketLocation = Document.OffsetToLocation (matchingBracket);
 				Application.Invoke (delegate {
 					if (line1 >= 0)
 						textEditor.RedrawLine (line1);
 					if (line1 != line2 && line2 >= 0)
 						textEditor.RedrawLine (line2);
+					if (pulseMatch) {
+						textEditor.PulseCharacter (matchingBracketLocation);
+						pulseMatch = false;
+					}					
 				});
 			}
 		}
