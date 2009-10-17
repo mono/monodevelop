@@ -83,12 +83,18 @@ namespace MonoDevelop.Debugger.Soft
 			/* Wait for the VMStart event */
 			vm.GetNextEvent ();
 			
-			eventHandler = new Thread (EventHandler);
-			eventHandler.Start ();
+			InitEventHandler ();
 			
 			OnResumed ();
 			vm.Resume ();
 		}
+
+		protected void InitEventHandler ()
+		{
+			eventHandler = new Thread (EventHandler);
+			eventHandler.Start ();
+		}
+
 
 		void ReadOutput (System.IO.StreamReader reader, bool isError)
 		{
@@ -103,13 +109,14 @@ namespace MonoDevelop.Debugger.Soft
 			}
 		}
 
-		void OnResumed ()
+		protected void OnResumed ()
 		{
 			current_threads = null;
 		}
 		
 		public VirtualMachine VirtualMachine {
 			get { return vm; }
+			protected set { vm = value; }
 		}
 		
 		public TypeMirror GetType (string fullName)
