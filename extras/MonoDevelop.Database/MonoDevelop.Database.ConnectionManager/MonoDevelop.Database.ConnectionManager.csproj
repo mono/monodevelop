@@ -139,6 +139,9 @@
     <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
+    <Reference Include="MonoDevelop.Refactoring, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Database.Components\MonoDevelop.Database.Components.csproj">
@@ -196,13 +199,14 @@
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.Database.ConnectionManager.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Database.ConnectionManager.addin.xml">
+      <LogicalName>MonoDevelop.Database.ConnectionManager.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -221,10 +225,5 @@
   </ProjectExtensions>
   <ItemGroup>
     <None Include="ChangeLog" />
-  </ItemGroup>
-  <ItemGroup>
-    <AddinReference Include="MonoDevelop.Core,2.1.1" />
-    <AddinReference Include="MonoDevelop.Core.Gui,2.1.1" />
-    <AddinReference Include="MonoDevelop.Ide,2.1.1" />
   </ItemGroup>
 </Project>

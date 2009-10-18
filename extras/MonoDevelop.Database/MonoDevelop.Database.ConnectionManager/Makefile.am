@@ -50,7 +50,7 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	MonoDevelop.Database.ConnectionManager.addin.xml,MonoDevelop.Database.ConnectionManager.MonoDevelop.Database.ConnectionManager.addin.xml
+	MonoDevelop.Database.ConnectionManager.addin.xml
 
 all: $(ASSEMBLY)
 

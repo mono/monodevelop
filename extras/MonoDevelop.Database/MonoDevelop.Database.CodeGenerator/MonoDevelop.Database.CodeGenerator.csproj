@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Database.CodeGenerator</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Database.CodeGenerator</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -115,7 +116,9 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Database.CodeGenerator.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Database.CodeGenerator.addin.xml">
+      <LogicalName>MonoDevelop.Database.CodeGenerator.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\objects.xml">
       <LogicalName>objects.xml</LogicalName>
     </EmbeddedResource>

@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Database.Components</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Database.Components</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -17,7 +18,6 @@
     <OutputPath>..\build</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AssemblyKeyFile>.</AssemblyKeyFile>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />
@@ -153,11 +153,15 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Database.Components.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Database.Components.addin.xml">
+      <LogicalName>MonoDevelop.Database.Components.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\objects.xml">
       <LogicalName>objects.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="SqlSyntaxMode.xml" />
+    <EmbeddedResource Include="SqlSyntaxMode.xml">
+      <LogicalName>SqlSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
