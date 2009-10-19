@@ -81,7 +81,9 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			CompletionWindowManager.PostProcessKeyEvent (ka);
 			
-			if ((modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)
+			var ignoreMods = Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
+				| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask;
+			if ((modifier & ignoreMods) != 0)
 				return res;
 			
 			int posChange = Editor.CursorPosition - oldPos;
