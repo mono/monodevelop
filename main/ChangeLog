@@ -1,3 +1,8 @@
+2009-10-19  Michael Hutchinson   <mhutchinson@novell.com>
+
+	* monodevelop.pc.in:
+	* monodevelop-core-addins.pc.in: Make relocatable.
+
 2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Main.sln: Disable another project for win32.
