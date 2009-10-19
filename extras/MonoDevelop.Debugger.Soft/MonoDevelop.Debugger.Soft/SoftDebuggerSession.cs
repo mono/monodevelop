@@ -83,7 +83,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		protected void MarkAsExited ()
 		{
-			if (exited) {
+			if (!exited) {
 				exited = true;
 				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 			}

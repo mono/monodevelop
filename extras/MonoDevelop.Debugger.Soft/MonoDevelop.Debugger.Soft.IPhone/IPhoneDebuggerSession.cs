@@ -46,7 +46,6 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		protected override VirtualMachine LaunchVirtualMachine (DebuggerStartInfo startInfo, out bool startsSuspended)
 		{
 			startsSuspended = false;
-			
 			var dsi = (IPhoneDebuggerStartInfo) startInfo;
 			
 			appName = dsi.ExecutionCommand.AppPath.FileNameWithoutExtension;
@@ -101,6 +100,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			if (response == (int) Gtk.ResponseType.Ok) {
 				return vm;
 			} else {
+				EndSimProcess ();
 				if (listenThread != null && listenThread.IsAlive)
 					listenThread.Abort ();
 				return null;
