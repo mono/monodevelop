@@ -1,3 +1,9 @@
+2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
+	  Improve conflict detection. Fixes bug #547993 - composite
+	  keybinding hide more simple keybindings.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/IdePreferences.cs: Make

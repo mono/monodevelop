@@ -391,7 +391,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		bool GetSelectedCommandIter (out TreeIter iter, out Command cmd)
 		{
 			TreeSelection sel = keyTreeView.Selection;
-			TreeIter filteredIter;
 			if (!sel.GetSelected (out iter)) {
 				cmd = null;
 				return false;
@@ -513,13 +512,26 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				model.IterChildren (out citer, iter);
 				do {
 					string binding = (string) model.GetValue (citer, bindingCol);
-					if (binding == accel) {
+					if (Conflicts (binding, accel)) {
 						Command command = (Command) model.GetValue (citer, commandCol);
 						bindings.Add (command);
 					}
 				} while (model.IterNext (ref citer));
 			} while (model.IterNext (ref iter));
 			return bindings;
+		}
+		
+		bool Conflicts (string b1, string b2)
+		{
+			// Control+X conflicts with Control+X, Control+X|Y
+			// Control+X|Y conflicts with Control+X|Y, Control+X
+			if (b1 == b2)
+				return true;
+			int i = b1.IndexOf ('|');
+			if (i == -1)
+				return b2.StartsWith (b1 + "|");
+			else
+				return b1.Substring (0, i) == b2;
 		}
 		
 		public bool ValidateChanges ()
