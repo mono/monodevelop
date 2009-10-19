@@ -1594,5 +1594,182 @@ namespace Mono.CSharp
 			"decimal","int","sbyte","short","double","long","string","void",
 			"partial", "yield", "where"
 		};
+		
+		
+		#region MonoDevelop patch to remove whitespace before first type
+		
+		//NOTE: This is all lifted from Mono's CodeGenerator.cs
+		// The *only* thing functionally changed is GenerateTypes, to skip the first newline.
+		// All the rest is required to support this. Minor changes have been made to:
+		//  * Check types instead of using member.Accept, which is not visible (see the FIXME)
+		//  * Use Output and Options properties instead of fields
+		//  * Make CurrentMemberName/CurrentTypeName "new" so that we can set them for the rest 
+		//    of this class to access.
+		
+		protected new void GenerateTypes (CodeNamespace e)
+		{
+			bool first = true;
+			foreach (CodeTypeDeclaration type in e.Types) {
+				if (first) {
+					first = false;
+				} else {
+					if (Options.BlankLinesBetweenMembers)
+						Output.WriteLine ();
+				}
+				GenerateType (type);
+			}
+		}
+		
+		CodeTypeMember currentMember;
+		CodeTypeDeclaration currentType;
+		static Type [] memberTypes = {
+			typeof (CodeMemberField),
+			typeof (CodeSnippetTypeMember),
+			typeof (CodeTypeConstructor),
+			typeof (CodeConstructor),
+			typeof (CodeMemberProperty),
+			typeof (CodeMemberEvent),
+			typeof (CodeMemberMethod),
+			typeof (CodeTypeDeclaration),
+			typeof (CodeEntryPointMethod)
+		};
+		
+		new protected string CurrentMemberName {
+			get {
+				if (currentMember == null)
+					return "<% unknown %>";
+				return currentMember.Name;
+			}
+		}
+
+		new protected string CurrentTypeName {
+			get {
+				if (currentType == null)
+					return "<% unknown %>";
+				return currentType.Name;
+			}
+		}
+		
+		protected virtual void GenerateNamespace (CodeNamespace ns)
+		{
+			foreach (CodeCommentStatement statement in ns.Comments)
+				GenerateCommentStatement (statement);
+
+			GenerateNamespaceStart (ns);
+
+			foreach (CodeNamespaceImport import in ns.Imports) {
+				if (import.LinePragma != null)
+					GenerateLinePragmaStart (import.LinePragma);
+
+				GenerateNamespaceImport (import);
+
+				if (import.LinePragma != null)
+					GenerateLinePragmaEnd (import.LinePragma);
+			}
+
+			Output.WriteLine();
+
+			GenerateTypes (ns);
+
+			GenerateNamespaceEnd (ns);
+		}
+		
+		private void GenerateType (CodeTypeDeclaration type)
+		{
+			this.currentType = type;
+
+			if (type.StartDirectives.Count > 0)
+				GenerateDirectives (type.StartDirectives);
+			foreach (CodeCommentStatement statement in type.Comments)
+				GenerateCommentStatement (statement);
+
+			if (type.LinePragma != null)
+				GenerateLinePragmaStart (type.LinePragma);
+
+			GenerateTypeStart (type);
+
+			CodeTypeMember[] members = new CodeTypeMember[type.Members.Count];
+			type.Members.CopyTo (members, 0);
+
+			if (!Options.VerbatimOrder) {
+				int[] order = new int[members.Length];
+				for (int n = 0; n < members.Length; n++)
+					order[n] = Array.IndexOf (memberTypes, members[n].GetType ()) * members.Length + n;
+
+				Array.Sort (order, members);
+			}
+
+			// WARNING: if anything is missing in the foreach loop and you add it, add the type in
+			// its corresponding place in CodeTypeMemberComparer class (below)
+
+			CodeTypeDeclaration subtype = null;
+			foreach (CodeTypeMember member in members) {
+				CodeTypeMember prevMember = this.currentMember;
+				this.currentMember = member;
+
+				if (prevMember != null && subtype == null) {
+					if (prevMember.LinePragma != null)
+						GenerateLinePragmaEnd (prevMember.LinePragma);
+					if (prevMember.EndDirectives.Count > 0)
+						GenerateDirectives (prevMember.EndDirectives);
+				}
+
+				if (Options.BlankLinesBetweenMembers)
+					Output.WriteLine ();
+
+				subtype = member as CodeTypeDeclaration;
+				if (subtype != null) {
+					GenerateType (subtype);
+					this.currentType = type;
+					continue;
+				}
+
+				if (currentMember.StartDirectives.Count > 0)
+					GenerateDirectives (currentMember.StartDirectives);
+				foreach (CodeCommentStatement statement in member.Comments)
+					GenerateCommentStatement (statement);
+
+				if (member.LinePragma != null)
+					GenerateLinePragmaStart (member.LinePragma);
+
+				//HACK: MD patch since we can't access Mono's member.Accept
+				if (member is CodeMemberProperty) {
+					GenerateProperty ((CodeMemberProperty)member, type);
+				} else if (member is CodeMemberEvent) {
+					GenerateEvent ((CodeMemberEvent)member, type);
+				} else if (member is CodeMemberMethod) {
+					if (member is CodeConstructor) {
+						GenerateConstructor ((CodeConstructor)member, type);
+					} else {
+						GenerateMethod ((CodeMemberMethod)member, type);
+					}
+				} else if (member is CodeMemberField) {
+					GenerateField ((CodeMemberField)member);
+				} else {
+					throw new ArgumentException ("Element type " + member.GetType () + " is not supported.");
+				}
+
+			}
+
+			// Hack because of previous continue usage
+			if (currentMember != null && !(currentMember is CodeTypeDeclaration)) {
+				if (currentMember.LinePragma != null)
+					GenerateLinePragmaEnd (currentMember.LinePragma);
+				if (currentMember.EndDirectives.Count > 0)
+					GenerateDirectives (currentMember.EndDirectives);
+			}
+
+			this.currentType = type;
+			GenerateTypeEnd (type);
+
+			if (type.LinePragma != null)
+				GenerateLinePragmaEnd (type.LinePragma);
+
+			if (type.EndDirectives.Count > 0)
+				GenerateDirectives (type.EndDirectives);
+		}
+		
+		#endregion
+
 	}
 }
