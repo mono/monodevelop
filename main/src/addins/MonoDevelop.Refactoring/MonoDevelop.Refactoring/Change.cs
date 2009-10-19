@@ -63,9 +63,16 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
+		int removedChars;
 		public int RemovedChars {
-			get;
-			set;
+			get { 
+				return removedChars; 
+			}
+			set {
+				if (value < 0)
+					throw new ArgumentOutOfRangeException ("RemovedChars", "needs to be >= 0");
+				removedChars = value; 
+			}
 		}
 		
 		public string InsertedText {
@@ -117,6 +124,7 @@ namespace MonoDevelop.Refactoring
 					rctx.Save ();
 				}
 			} else if (textEditorData != null) {
+				Console.WriteLine ("offset:" + Offset);
 				textEditorData.Replace (Offset, RemovedChars, InsertedText);
 			}
 		}

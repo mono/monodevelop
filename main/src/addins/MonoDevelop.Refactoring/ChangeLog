@@ -1,3 +1,10 @@
+2009-10-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RefactorImportsHandler.cs:
+	  fixed 'Bug 547985 - Remove & Sort using throws exception
+	  when when no usings are necessary.'.
+
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/GotoDeclarationHandler.cs: Special

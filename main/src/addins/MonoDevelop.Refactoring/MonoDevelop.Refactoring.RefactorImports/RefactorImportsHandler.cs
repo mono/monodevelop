@@ -73,8 +73,8 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			RemoveUnusedImportsRefactoring removeUnusedImportsRefactoring = new RemoveUnusedImportsRefactoring ();
 			SortImportsRefactoring sortImportsRefactoring = new SortImportsRefactoring ();
 			if (removeUnusedImportsRefactoring.IsValid (options) && sortImportsRefactoring.IsValid (options)) {
-				removeUnusedImportsRefactoring.Run (options);
 				sortImportsRefactoring.Run (options);
+				removeUnusedImportsRefactoring.Run (options);
 			}
 		}
 	}
