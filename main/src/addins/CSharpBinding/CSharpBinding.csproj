@@ -282,6 +282,7 @@
     <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp\CustomCSharpCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

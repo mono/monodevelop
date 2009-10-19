@@ -1,5 +1,15 @@
 2009-10-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs:
+	* MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs: Added
+	  custom C# CodeDOM provider (fixing Bug 547947 - the default
+	  text when creating a new class has too many newlines and an
+	  issue with explicit interface member name generation).
+
+2009-10-19  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
 	  Fixed 'Bug 547645 - Intellisense in Object-Initializer does
 	  not work if Namespace is used'.
