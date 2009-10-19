@@ -14,5 +14,6 @@
     <Item>AspNetEdit/AspNetEdit.sln</Item>
     <Item>MonoDevelop.IPhone/MonoDevelop.IPhone.sln</Item>
     <Item>MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.sln</Item>
+    <Item>MonoDevelop.Debugger.Win32/MonoDevelop.Debugger.Win32.sln</Item>
   </Items>
 </WorkspaceItem>
