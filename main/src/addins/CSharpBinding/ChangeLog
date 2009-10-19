@@ -1,5 +1,11 @@
 2009-10-19  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	  Fixed 'Bug 547611 - renaming a variable does not rename in
+	  this() invocation'.
+
+2009-10-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* CSharpBinding.csproj:
 	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs:

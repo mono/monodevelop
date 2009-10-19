@@ -416,8 +416,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (parent != null &&
 				    parent.StartLocation.Line == searchedVariable.DeclaringMember.Location.Line && 
 				    parent.StartLocation.Column == searchedVariable.DeclaringMember.Location.Column &&
-				    searchedVariable.Region.Start.Line  == localVariableDeclaration.StartLocation.Line - 1 && 
-				    searchedVariable.Region.Start.Column  == localVariableDeclaration.StartLocation.Column - 1) {
+				    searchedVariable.Region.Start != ConvertLocation (localVariableDeclaration.StartLocation)) {
 					foreach (VariableDeclaration decl in localVariableDeclaration.Variables) {
 						if (decl.Name == searchedMemberName) 
 							AddUniqueReference (decl.StartLocation.Y, decl.StartLocation.X, searchedMemberName);
@@ -465,11 +464,16 @@ namespace MonoDevelop.CSharp.Refactoring
 			return base.VisitVariableDeclaration(variableDeclaration, data);
 		}
 		
+		DomLocation ConvertLocation (Location loc)
+		{
+			return new DomLocation (loc.Line, loc.Column);
+		}
+		
 		public override object VisitObjectCreateExpression (ICSharpCode.NRefactory.Ast.ObjectCreateExpression objectCreateExpression, object data)
 		{
 			IMethod method = searchedMember as IMethod;
 			if (method != null && method.IsConstructor) {
-				ResolveResult resolveResult = resolver.ResolveExpression (objectCreateExpression, new DomLocation (objectCreateExpression.StartLocation.Y - 1, objectCreateExpression.StartLocation.X - 1));
+				ResolveResult resolveResult = resolver.ResolveExpression (objectCreateExpression, ConvertLocation (objectCreateExpression.StartLocation));
 				if (resolveResult != null && resolveResult.ResolvedType != null) {
 					IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
 					int pCount = objectCreateExpression.Parameters != null ? objectCreateExpression.Parameters.Count : 0;
@@ -491,7 +495,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						continue;
 					LocalVariable searchedVariable = (LocalVariable)searchedMember;
 					
-					if (catchClause.TypeReference != null && catchClause.VariableName == searchedMemberName && searchedVariable.Region.Start.Line == catchClause.StartLocation.Line - 1 && searchedVariable.Region.Start.Column == catchClause.StartLocation.Column - 1) {
+					if (catchClause.TypeReference != null && catchClause.VariableName == searchedMemberName && searchedVariable.Region.Start == ConvertLocation (catchClause.StartLocation)) {
 						int line, col;
 						SearchText (searchedMemberName, catchClause.StartLocation.Line, catchClause.StartLocation.Column, out line, out col);
 						AddUniqueReference (line, col, searchedMemberName);
@@ -517,7 +521,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (idExp.Identifier == searchedMemberName) {
 				int line = idExp.StartLocation.Y;
 				int col = idExp.StartLocation.X;
-				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, new DomLocation (line - 1, col - 1));
+				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, ConvertLocation (idExp.StartLocation));
 				//Console.WriteLine ("result:" + result);
 				if (searchedMember is IType) {
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
@@ -561,7 +565,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				int line = typeReference.StartLocation.Y;
 				int col  = typeReference.StartLocation.X;
 				ExpressionResult res = new ExpressionResult ("new " + typeReference.ToString () + "()");
-				ResolveResult resolveResult = resolver.Resolve (res, new DomLocation (line - 1, col - 1));
+				ResolveResult resolveResult = resolver.Resolve (res, ConvertLocation (typeReference.StartLocation));
 				
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				IType resolvedType = cls != null ? resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, cls, resolver.CallingType)) : null;
@@ -574,7 +578,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override object VisitMemberReferenceExpression (MemberReferenceExpression fieldExp, object data)
 		{
 			if (!(searchedMember is IParameter) && fieldExp.MemberName == searchedMemberName) {
-				ResolveResult resolveResult= resolver.ResolveExpression (fieldExp, new DomLocation (fieldExp.EndLocation.Y - 1, fieldExp.EndLocation.X - 1));
+				ResolveResult resolveResult= resolver.ResolveExpression (fieldExp, ConvertLocation (fieldExp.EndLocation));
 				MemberResolveResult mrr = resolveResult as MemberResolveResult;
 				if (mrr != null) {
 					if (mrr.ResolvedMember != null && mrr.ResolvedMember.Location == searchedMemberLocation && mrr.ResolvedMember.DeclaringType.FullName == ((IMember)searchedMember).DeclaringType.FullName) {
@@ -612,7 +616,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (searchedMember is IMethod) {
 				IMethod method = (IMethod)searchedMember;
 				if (MightBeInvocation (invokeExp.TargetObject, method) && invokeExp.Arguments.Count == method.Parameters.Count) {
-					ResolveResult resolveResult = resolver.ResolveExpression (invokeExp, new DomLocation (invokeExp.StartLocation.Y - 1, invokeExp.StartLocation.X - 1));
+					ResolveResult resolveResult = resolver.ResolveExpression (invokeExp, ConvertLocation (invokeExp.StartLocation));
 					IMethod resolvedMethod = null;
 					if (resolveResult is MethodResolveResult) {
 						MethodResolveResult mrr = (MethodResolveResult)resolveResult;
