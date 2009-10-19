@@ -215,13 +215,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		public bool IsUniqueMatch {
 			get {
-				int pos = list.Selection + 1;
+/*				int pos = list.Selection + 1;
 				if (DataProvider.ItemCount > pos && 
 					DataProvider.GetText (pos).ToLower ().StartsWith (CurrentPartialWord.ToLower ()) || 
 					!(DataProvider.GetText (list.Selection).ToLower ().StartsWith (CurrentPartialWord.ToLower ())))
 					return false;
-
-				return true;
+				*/
+				return list.filteredItems.Count == 1;
 			}
 		}
 

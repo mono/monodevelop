@@ -176,6 +176,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 					ResetSizes ();
 					ShowAll ();
 					SetScrollbarVisibilty ();
+					//if there is only one matching result we take it by default
+					if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
+						CompleteWord ();
+						CompletionWindowManager.HideWindow ();
+					}
 					return true;
 				}
 

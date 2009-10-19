@@ -1,3 +1,10 @@
+2009-10-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed 'Bug 547819 - Ctrl-space with single entry does not
+	  commit it'.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Don't
