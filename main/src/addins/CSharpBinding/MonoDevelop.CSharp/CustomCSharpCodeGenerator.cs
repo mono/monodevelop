@@ -1735,20 +1735,18 @@ namespace Mono.CSharp
 				//HACK: MD patch since we can't access Mono's member.Accept
 				if (member is CodeMemberProperty) {
 					GenerateProperty ((CodeMemberProperty)member, type);
-				} else if (member is CodeMemberEvent) {
-					GenerateEvent ((CodeMemberEvent)member, type);
-				} else if (member is CodeMemberMethod) {
-					if (member is CodeConstructor) {
-						GenerateConstructor ((CodeConstructor)member, type);
-					} else {
-						GenerateMethod ((CodeMemberMethod)member, type);
-					}
 				} else if (member is CodeMemberField) {
 					GenerateField ((CodeMemberField)member);
+				} else if (member is CodeMemberEvent) {
+					GenerateEvent ((CodeMemberEvent)member, type);
+				} else if (member is CodeEntryPointMethod) {
+					GenerateEntryPointMethod ((CodeEntryPointMethod)member, null);
+				} else if (member is CodeConstructor) {
+					GenerateConstructor ((CodeConstructor)member, type);
+				} else if (member is CodeMemberMethod) {
+					GenerateMethod ((CodeMemberMethod)member, type);
 				} else if (member is CodeSnippetTypeMember) {
 					GenerateSnippetMember ((CodeSnippetTypeMember)member);
-				} else if (member is CodeEntryPointMethod) {
-					GenerateEntryPointMethod ((CodeEntryPointMethod)member);
 				} else {
 					throw new ArgumentException ("Element type " + member.GetType () + " is not supported.");
 				}

@@ -1,5 +1,10 @@
 2009-10-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs: Tidy and
+	  fix compilation.
+
+2009-10-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs: Restore
 	  support for snippet and entry point members.
 
