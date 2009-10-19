@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public bool ShowOutputPadWhenBuildStarts {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputWindowAtBuild", true); }
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputWindowAtBuild", false); }
 			set { PropertyService.Set ("MonoDevelop.Ide.ShowOutputWindowAtBuild", value); }
 		}
 
