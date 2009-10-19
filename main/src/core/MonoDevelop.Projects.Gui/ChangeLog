@@ -1,3 +1,13 @@
+2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Moved Startup Options
+	  panel to Run section.
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Properly check if a project can be executed or not. Fixes
+	  bug #547939 - Solution option "Startup Project" always not
+	  selectable.
+
 2009-10-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:

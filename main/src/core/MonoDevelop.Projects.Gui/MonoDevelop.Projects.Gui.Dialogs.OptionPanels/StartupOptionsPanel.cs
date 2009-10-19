@@ -50,17 +50,18 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			startupItems = new List<SolutionEntityItem> ();
 			foreach (SolutionEntityItem it in sol.GetAllSolutionItems<SolutionEntityItem> ()) {
 				// Include in the list if it can run in any of the existing execution modes and configurations
-				foreach (object m in Runtime.ProcessService.GetExecutionModes ()) {
-					IExecutionMode mode = m as IExecutionMode;
-					if (mode == null)
-						continue;
+				foreach (IExecutionModeSet mset in Runtime.ProcessService.GetExecutionModes ()) {
 					bool matched = false;
-					foreach (string sc in sol.GetConfigurations ()) {
-						if (it.CanExecute (new ExecutionContext (mode, null), sc)) {
-							startupItems.Add (it);
-							matched = true;
-							break;
+					foreach (IExecutionMode mode in mset.ExecutionModes) {
+						foreach (string sc in sol.GetConfigurations ()) {
+							if (it.CanExecute (new ExecutionContext (mode, null), sc)) {
+								startupItems.Add (it);
+								matched = true;
+								break;
+							}
 						}
+						if (matched)
+							break;
 					}
 					if (matched)
 						break;

@@ -59,9 +59,6 @@
 			<Condition id="ItemType" value="SolutionEntityItem">
 				<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
 			</Condition>
-			<Condition id="ItemType" value="Solution">
-				<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanel"/>
-			</Condition>
 		</Section>
 		<Section id="Build" _label="Build">
 			<Section id="General" _label="General" icon="md-build-combine">
@@ -91,6 +88,9 @@
 					<Panel id = "RunOptionsPanel" _label = "Run" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanel"/>
 				</Condition>
 			</Section>
+			<Condition id="ItemType" value="Solution">
+				<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanel"/>
+			</Condition>
 		</Section>
 		<Section id="SourceCode" _label="Source Code">
 			<Section id="DotNetNamingPolicies" _label=".NET Naming Policies">
