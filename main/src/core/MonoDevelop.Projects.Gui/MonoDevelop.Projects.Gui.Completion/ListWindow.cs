@@ -327,7 +327,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			if (keyChar == ' ' && (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
 				return KeyActions.CloseWindow | KeyActions.Process;
-
+			
+			//don't input letters/punctuation etc when non-shift modifiers are active
+			bool nonShiftModifierActive = ((Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
+				| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask)
+				& modifier) != 0;
+			if (nonShiftModifierActive)
+				return KeyActions.Ignore;
+			
 			if (System.Char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
