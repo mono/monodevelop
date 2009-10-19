@@ -226,6 +226,14 @@ namespace MonoDevelop.IPhone
 					               name, provider.CreateValidIdentifier (name.TrimEnd (':')), senderType.BaseType)));
 				return;
 			}
+			else if (provider.FileExtension == "pas") {
+				type.Members.Add (new CodeSnippetTypeMember ("[MonoTouch.Foundation.Export('" + name + "')]"));
+				type.Members.Add (new CodeSnippetTypeMember (
+					String.Format ("method {1} (sender: {2}); partial; empty;\n",
+					               name, provider.CreateValidIdentifier (name.TrimEnd (':')), senderType.BaseType)));
+				return;
+			}
+			
 			
 			var meth = CreateEventMethod (name, senderType);
 			

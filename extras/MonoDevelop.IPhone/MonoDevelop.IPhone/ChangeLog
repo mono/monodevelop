@@ -1,3 +1,7 @@
+2009-10-06  marc hoffman  <mh@remobjects.com>
+
+	* Added support for Partial Methods in Delphi Prism codegen.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneCommands.cs: Fall back to trying startup project when
