@@ -1,5 +1,9 @@
 2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Main.sln: Disable another project for win32.
+
+2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Main.sln: Disable the C and autotools add-ins in windows.
 
 2009-10-08  Ankit Jain  <jankit@novell.com>
