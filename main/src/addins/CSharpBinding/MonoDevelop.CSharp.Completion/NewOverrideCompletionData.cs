@@ -309,7 +309,7 @@ namespace MonoDevelop.CSharp.Completion
 				
 			if (member.IsProtectedAndInternal) 
 				return "protected internal ";
-			if (member.IsProtectedOrInternal) 
+			if (member.IsProtectedOrInternal && type.SourceProjectDom == member.DeclaringType.SourceProjectDom) 
 				return "internal protected ";
 			
 			if (member.IsProtected) 

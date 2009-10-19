@@ -1,3 +1,9 @@
+2009-10-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
+	  Fixed 'Bug 547470 - Override completion for "protected
+	  internal" is wrong'.
+
 2009-10-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs:
