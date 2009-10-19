@@ -57,10 +57,12 @@ namespace MonoDevelop.CSharp
 			return ParseInternal (codeStream);
 		}
 		
+		/*
 		public override ICodeGenerator CreateGenerator()
 		{
 			return new CustomCSharpCodeGenerator ();
 		}
+		*/
 		
 		static CodeCompileUnit ParseInternal (TextReader codeStream)
 		{

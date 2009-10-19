@@ -1,3 +1,12 @@
+2009-10-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs: Disable
+	  the custom generator for now, as it's broken.
+
+	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs: Revert to a
+	  clean import (except the MonoTODO -> //TODO) so that it's
+	  easier to see what changes we've made to the original.
+
 2009-10-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
