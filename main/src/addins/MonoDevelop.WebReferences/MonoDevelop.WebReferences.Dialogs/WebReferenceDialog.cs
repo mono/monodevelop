@@ -78,10 +78,26 @@ namespace MonoDevelop.WebReferences.Dialogs
 			{
 				Uri discoveryUri = new Uri(this.ServiceUrl);
 				if (discoveryUri != null)
-					return discoveryUri.Host;
+					return MakeValidId (discoveryUri.Host);
 				else
 					return String.Empty;
 			}
+		}
+		
+		string MakeValidId (string name)
+		{
+			bool isWordStart = true;
+			for (int n=0; n<name.Length; n++) {
+				char c = name [n];
+				if (char.IsNumber (c) && isWordStart) {
+					if (n == 0)
+						return "n" + name.Replace ('.','_');
+					else
+						return name.Replace ('.','_');
+				}
+				isWordStart = c == '.';
+			}
+			return name;
 		}
 		
 		/// <summary>Gets the name for the web reference.</summary>
@@ -148,11 +164,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				browser.LoadUrl(this.homeUrl);
 				browserWidget.Show();
 			} else {
-				btnNext.Sensitive = false;
-				btnBack.Sensitive = false;
-				btnRefresh.Sensitive = false;
-				btnStop.Sensitive = false;
-				btnHome.Sensitive = false;
+				tlbNavigate.Visible = false;
 				
 				ScrolledWindow sw = new ScrolledWindow ();
 				sw.ShadowType = ShadowType.In;

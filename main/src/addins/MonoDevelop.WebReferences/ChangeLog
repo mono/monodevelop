@@ -1,3 +1,9 @@
+2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:
+	  Don't generate invalid namespace names. Hide the navigation
+	  toolbar if we have no browser.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
