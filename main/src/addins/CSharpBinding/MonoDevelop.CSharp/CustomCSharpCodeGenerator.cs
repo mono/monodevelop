@@ -1,4 +1,10 @@
 //
+// NOTE: THIS WAS IMPORTED FROM THE MONO CLASSLIBS.
+//       PLEASE KEEP CHANGES MINIMAL AND AVOID FORMATTING CHANGES,
+//       SO THAT WE CAN SYNC CHANGES BACK FROM THE ORIGINAL
+//
+
+//
 // Mono.CSharp CSharpCodeProvider Class implementation
 //
 // Author:
@@ -7,7 +13,6 @@
 //
 // (C) 2002 Ximian, Inc.
 //
-
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the

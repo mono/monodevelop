@@ -1,5 +1,14 @@
 2009-10-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs: Re-enable
+	  the custom generator.
+
+	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs: Add
+	  comments to header about minimising changes so we can sync
+	  from original.
+
+2009-10-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs: Disable
 	  the custom generator for now, as it's broken.
 
