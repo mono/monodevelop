@@ -1,5 +1,10 @@
 2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Fix
+	  build.
+
+2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
 	  Improve conflict detection. Fixes bug #547993 - composite
 	  keybinding hide more simple keybindings.

@@ -417,6 +417,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					return true;
 				}
 			} while (keyStore.IterNext (ref iter));
+			found = TreeIter.Zero;
 			return false;
 		}
 
