@@ -401,7 +401,6 @@ Global
 		{7B57882B-AD46-469B-84E7-06DF98D11468}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{7B57882B-AD46-469B-84E7-06DF98D11468}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{7B57882B-AD46-469B-84E7-06DF98D11468}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
-		{7B57882B-AD46-469B-84E7-06DF98D11468}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{7B57882B-AD46-469B-84E7-06DF98D11468}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B57882B-AD46-469B-84E7-06DF98D11468}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7FCDB0D9-AA7D-44E4-BE74-55312B432389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -476,7 +475,6 @@ Global
 		{9A415695-CF80-4845-AA80-0DA26CF1E256}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{9A415695-CF80-4845-AA80-0DA26CF1E256}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{9A415695-CF80-4845-AA80-0DA26CF1E256}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
-		{9A415695-CF80-4845-AA80-0DA26CF1E256}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{9A415695-CF80-4845-AA80-0DA26CF1E256}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A415695-CF80-4845-AA80-0DA26CF1E256}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9BC670A8-1851-40EC-9685-279F4C98433D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -552,7 +550,6 @@ Global
 		{B841F25D-4F6D-4E0D-885F-212B54381F28}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{B841F25D-4F6D-4E0D-885F-212B54381F28}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{B841F25D-4F6D-4E0D-885F-212B54381F28}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
-		{B841F25D-4F6D-4E0D-885F-212B54381F28}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{B841F25D-4F6D-4E0D-885F-212B54381F28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B841F25D-4F6D-4E0D-885F-212B54381F28}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BA9020AD-A2D1-47C8-9A7C-756162C38296}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -632,7 +629,6 @@ Global
 		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
-		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -726,7 +722,6 @@ Global
 		{1497D0A8-AFF1-4938-BC22-BE79B358BA5B} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		outputpath = build\bin\
 		StartupItem = src\core\MonoDevelop.Startup\MonoDevelop.Startup.csproj
 		Policies = $0
 		$0.StandardHeader = $1
@@ -760,6 +755,7 @@ Global
 		$0.TextStylePolicy = $9
 		$9.inheritsSet = null
 		$9.scope = application/x-addin+xml
+		outputpath = build\bin\
 		MakePkgConfig = False
 		MakeLibPC = True
 	EndGlobalSection
