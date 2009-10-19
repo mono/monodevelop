@@ -1745,6 +1745,10 @@ namespace Mono.CSharp
 					}
 				} else if (member is CodeMemberField) {
 					GenerateField ((CodeMemberField)member);
+				} else if (member is CodeSnippetTypeMember) {
+					GenerateSnippetMember ((CodeSnippetTypeMember)member);
+				} else if (member is CodeEntryPointMethod) {
+					GenerateEntryPointMethod ((CodeEntryPointMethod)member);
 				} else {
 					throw new ArgumentException ("Element type " + member.GetType () + " is not supported.");
 				}
