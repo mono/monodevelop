@@ -47,8 +47,8 @@ namespace MonoDevelop.IPhone
 	{
 		protected override void Update (MonoDevelop.Components.Commands.CommandInfo info)
 		{
-			var proj = GetActiveProject ();
-			info.Visible = proj != null && proj.CompileTarget == CompileTarget.Exe;
+			var proj = GetActiveExecutableIPhoneProject ();
+			info.Visible = proj != null;
 			if (info.Visible && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) {
 					var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
 					info.Enabled = conf != null && conf.Platform == IPhoneProject.PLAT_IPHONE;
@@ -64,7 +64,7 @@ namespace MonoDevelop.IPhone
 				return;
 			}
 			
-			var proj = GetActiveProject ();
+			var proj = GetActiveExecutableIPhoneProject ();
 			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			
 			if (!IdeApp.Preferences.BuildBeforeExecuting) {
@@ -98,14 +98,17 @@ namespace MonoDevelop.IPhone
 		}
 
 		
-		public static IPhoneProject GetActiveProject ()
+		public static IPhoneProject GetActiveExecutableIPhoneProject ()
 		{
-			var proj = IdeApp.ProjectOperations.CurrentSelectedProject;
-			if (proj != null)
-				return proj as IPhoneProject;
+			var proj = IdeApp.ProjectOperations.CurrentSelectedProject as IPhoneProject;
+			if (proj != null && proj.CompileTarget == CompileTarget.Exe)
+				return proj;
 			var sln = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			if (sln != null)
-				return sln.StartupItem as IPhoneProject;
+			if (sln != null) {
+				proj = sln.StartupItem as IPhoneProject;
+				if (proj != null && proj.CompileTarget == CompileTarget.Exe)
+					return proj;
+			}
 			return null;
 		}
 	}
@@ -114,8 +117,8 @@ namespace MonoDevelop.IPhone
 	{
 		protected override void Update (MonoDevelop.Components.Commands.CommandInfo info)
 		{
-			var proj = DefaultUploadToDeviceHandler.GetActiveProject ();
-			info.Visible = proj != null && proj.CompileTarget == CompileTarget.Exe;
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableIPhoneProject ();
+			info.Visible = proj != null;
 			if (info.Visible) {
 				var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
 				info.Enabled = conf != null && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
@@ -129,7 +132,7 @@ namespace MonoDevelop.IPhone
 				return;
 			}
 			
-			var proj = DefaultUploadToDeviceHandler.GetActiveProject ();
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableIPhoneProject ();
 			var slnConf = IdeApp.Workspace.ActiveConfiguration;
 			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (slnConf);
 			

@@ -1,3 +1,8 @@
+2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneCommands.cs: Fall back to trying startup project when
+	  selected project is iphone project but not executable.
+
 2009-10-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneProjectConfiguration.cs: Fix serialization of the
