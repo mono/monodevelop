@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -19,7 +19,6 @@
     <property name="BorderWidth">3</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />

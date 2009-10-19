@@ -1,3 +1,10 @@
+2009-10-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.addin.xml: Add Mac shortcuts.
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger.csproj: Flush.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger/ThreadsPad.cs: Fix Pocess/Process

@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Debugger</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Debugger</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -133,7 +134,9 @@
     <Compile Include="MonoDevelop.Debugger\ImmediatePad.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
+      <LogicalName>MonoDevelop.Debugger.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
