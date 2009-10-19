@@ -158,7 +158,7 @@ namespace MonoDevelop.Debugger.Win32
 			e.Continue = false;
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetInterrupted);
-			args.Process = GetPocess (process);
+			args.Process = GetProcess (process);
 			args.Thread = GetThread (e.Thread);
 			args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
 			OnTargetEvent (args);
@@ -176,7 +176,7 @@ namespace MonoDevelop.Debugger.Win32
 			e.Continue = false;
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetStopped);
-			args.Process = GetPocess (process);
+			args.Process = GetProcess (process);
 			args.Thread = GetThread (e.Thread);
 			args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
 			OnTargetEvent (args);
@@ -204,7 +204,7 @@ namespace MonoDevelop.Debugger.Win32
 				stepper.Deactivate ();
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
-			args.Process = GetPocess (process);
+			args.Process = GetProcess (process);
 			args.Thread = GetThread (e.Thread);
 			args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
 			OnTargetEvent (args);
@@ -368,9 +368,9 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		protected override ProcessInfo[] OnGetPocesses ( )
+		protected override ProcessInfo[] OnGetProcesses ( )
 		{
-			return new ProcessInfo[] { GetPocess (process) };
+			return new ProcessInfo[] { GetProcess (process) };
 		}
 
 		protected override Mono.Debugging.Client.Backtrace OnGetThreadBacktrace (long processId, long threadId)
@@ -571,7 +571,7 @@ namespace MonoDevelop.Debugger.Win32
 				break;
 			}
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetStopped);
-			args.Process = GetPocess (process);
+			args.Process = GetProcess (process);
 			args.Thread = GetThread (currentThread);
 			args.Backtrace = new Backtrace (new CorBacktrace (currentThread, this));
 			OnTargetEvent (args);
@@ -715,7 +715,7 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		ProcessInfo GetPocess (CorProcess proc)
+		ProcessInfo GetProcess (CorProcess proc)
 		{
 			ProcessInfo info;
 			lock (processes) {

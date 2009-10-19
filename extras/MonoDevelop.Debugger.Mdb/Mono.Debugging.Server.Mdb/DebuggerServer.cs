@@ -479,7 +479,7 @@ namespace DebuggerServer
 			return list.ToArray ();
 		}
 		
-		public ProcessInfo[] GetPocesses ()
+		public ProcessInfo[] GetProcesses ()
 		{
 			List<DL.ProcessInfo> list = new List<DL.ProcessInfo> ();
 			foreach (MD.Process p in debugger.Processes)

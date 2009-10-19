@@ -66,7 +66,7 @@ namespace MonoDevelop.Debugger.Win32
 			return new CorDebuggerSession ();
 		}
 
-		public ProcessInfo[] GetAttachablePocesses ( )
+		public ProcessInfo[] GetAttachableProcesses ( )
 		{
 			return new ProcessInfo[0];
 		}

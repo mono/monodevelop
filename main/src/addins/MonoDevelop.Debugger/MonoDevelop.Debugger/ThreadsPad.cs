@@ -148,7 +148,7 @@ namespace MonoDevelop.Debugger
 			if (DebuggingService.DebuggerSession == null || DebuggingService.DebuggerSession.IsRunning)
 				return;
 			
-			ProcessInfo[] currentProcesses = DebuggingService.DebuggerSession.GetPocesses ();
+			ProcessInfo[] currentProcesses = DebuggingService.DebuggerSession.GetProcesses ();
 			
 			if (currentProcesses.Length == 1) {
 				AppendThreads (TreeIter.Zero, currentProcesses [0]);

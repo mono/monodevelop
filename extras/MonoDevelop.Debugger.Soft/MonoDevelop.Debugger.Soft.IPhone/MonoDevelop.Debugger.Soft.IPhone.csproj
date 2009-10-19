@@ -30,11 +30,9 @@
   <ItemGroup>
     <Reference Include="MonoDevelop.Core, Version=2.1.1.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Debugger, Version=2.1.1.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.IPhone, Version=2.1.1.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
@@ -43,7 +41,6 @@
     </Reference>
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Debugger, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
@@ -59,27 +56,27 @@
     </Reference>
     <Reference Include="MonoDevelop.Components, Version=2.1.1.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=2.1.1.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=2.1.1.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core.Gui, Version=2.1.1.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
     </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Manifest.addin.xml" />
+    <EmbeddedResource Include="Manifest.addin.xml">
+      <LogicalName>Manifest.addin.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

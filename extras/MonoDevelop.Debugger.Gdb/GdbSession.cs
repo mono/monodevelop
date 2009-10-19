@@ -453,7 +453,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return list.ToArray ();
 		}
 		
-		protected override ProcessInfo[] OnGetPocesses ()
+		protected override ProcessInfo[] OnGetProcesses ()
 		{
 			ProcessInfo p = new ProcessInfo (0, currentProcessName);
 			return new ProcessInfo [] { p };

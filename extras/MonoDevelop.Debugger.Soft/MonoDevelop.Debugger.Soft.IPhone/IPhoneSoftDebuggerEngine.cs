@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			var cmd = command as IPhoneExecutionCommand;
-			return cmd != null && cmd.Simulator;
+			return cmd != null && cmd.DebugMode;
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)

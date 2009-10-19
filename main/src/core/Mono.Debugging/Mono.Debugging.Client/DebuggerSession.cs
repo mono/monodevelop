@@ -466,17 +466,15 @@ namespace Mono.Debugging.Client
 
 		public bool IsRunning {
 			get {
-				lock (slock) {
-					return isRunning;
-				}
+				return isRunning;
 			}
 		}
 		
-		public ProcessInfo[] GetPocesses ()
+		public ProcessInfo[] GetProcesses ()
 		{
 			lock (slock) {
 				if (currentProcesses == null) {
-					currentProcesses = OnGetPocesses ();
+					currentProcesses = OnGetProcesses ();
 					foreach (ProcessInfo p in currentProcesses)
 						p.Attach (this);
 				}
@@ -756,7 +754,7 @@ namespace Mono.Debugging.Client
 		
 		protected abstract ThreadInfo[] OnGetThreads (long processId);
 		
-		protected abstract ProcessInfo[] OnGetPocesses ();
+		protected abstract ProcessInfo[] OnGetProcesses ();
 		
 		protected abstract Backtrace OnGetThreadBacktrace (long processId, long threadId);
 

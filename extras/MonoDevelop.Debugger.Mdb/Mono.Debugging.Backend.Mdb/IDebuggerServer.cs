@@ -74,7 +74,7 @@ namespace Mono.Debugging.Backend.Mdb
 		
 		ThreadInfo[] GetThreads (long processId);
 		
-		ProcessInfo[] GetPocesses ();
+		ProcessInfo[] GetProcesses ();
 		
 		Backtrace GetThreadBacktrace (long processId, long threadId);
 		

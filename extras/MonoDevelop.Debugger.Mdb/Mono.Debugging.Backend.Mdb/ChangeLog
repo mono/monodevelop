@@ -1,3 +1,8 @@
+2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IDebuggerServer.cs:
+	* MonoDebuggerSession.cs: Fix Pocess/Process spelling.
+
 2009-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDebuggerSessionFactory.cs: Fix spelling of

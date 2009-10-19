@@ -55,6 +55,44 @@ namespace MonoDevelop.Debugger.Soft
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
+			bool startsSuspended;
+			vm = LaunchVirtualMachine (startInfo, out startsSuspended);
+			
+			if (vm == null) {
+				MarkAsExited ();
+				return;
+			}
+			
+			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath);
+			
+			OnStarted ();
+			started = true;
+			
+			/* Wait for the VMStart event */
+			HandleEvent (vm.GetNextEvent ());
+			
+			eventHandler = new Thread (EventHandler);
+			eventHandler.Start ();
+			
+			//FIXME: why is this necessary when we do Launch but explodes with Listen? 
+			if (startsSuspended) {
+				OnResumed ();
+				vm.Resume ();
+			}
+		}
+		
+		protected void MarkAsExited ()
+		{
+			if (exited) {
+				exited = true;
+				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
+			}
+		}
+		
+		protected virtual VirtualMachine LaunchVirtualMachine (DebuggerStartInfo startInfo, out bool startsSuspended)
+		{
+			startsSuspended = true;
+			
 			string[] vmargs = new string[startInfo.Arguments.Length + 1];
 			vmargs[0] = startInfo.Command;
 			Array.Copy (startInfo.Arguments.Split (' '), 0, vmargs, 1, startInfo.Arguments.Length);
@@ -62,9 +100,8 @@ namespace MonoDevelop.Debugger.Soft
 			LaunchOptions options = new LaunchOptions ();
 			options.RedirectStandardOutput = true;
 			
-			vm = VirtualMachineManager.Launch (vmargs, options);
-			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath);
-
+			var vm = VirtualMachineManager.Launch (vmargs, options);
+			
 			outputReader = new Thread (delegate () {
 				ReadOutput (vm.Process.StandardOutput, false);
 			});
@@ -77,24 +114,8 @@ namespace MonoDevelop.Debugger.Soft
 			errorReader.IsBackground = true;
 			errorReader.Start ();
 			
-			OnStarted ();
-			started = true;
-			
-			/* Wait for the VMStart event */
-			vm.GetNextEvent ();
-			
-			InitEventHandler ();
-			
-			OnResumed ();
-			vm.Resume ();
+			return vm;
 		}
-
-		protected void InitEventHandler ()
-		{
-			eventHandler = new Thread (EventHandler);
-			eventHandler.Start ();
-		}
-
 
 		void ReadOutput (System.IO.StreamReader reader, bool isError)
 		{
@@ -116,7 +137,6 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public VirtualMachine VirtualMachine {
 			get { return vm; }
-			protected set { vm = value; }
 		}
 		
 		public TypeMirror GetType (string fullName)
@@ -175,7 +195,7 @@ namespace MonoDevelop.Debugger.Soft
 			vm.Resume ();
 		}
 
-		protected override ProcessInfo[] OnGetPocesses ()
+		protected override ProcessInfo[] OnGetProcesses ()
 		{
 			if (procs == null)
 				procs = new ProcessInfo[] { new ProcessInfo (vm.Process.Id, vm.Process.ProcessName) };
@@ -391,7 +411,8 @@ namespace MonoDevelop.Debugger.Soft
 			
 			if (e is ThreadStartEvent) {
 				ThreadStartEvent ts = (ThreadStartEvent)e;
-				OnDebuggerOutput (false, "Thread started: " + ts.Thread.Name);
+				// FIXME: This currently crashes
+				// OnDebuggerOutput (false, "Thread started: " + ts.Thread.Name);
 			}
 			
 			if (resume)
@@ -399,7 +420,7 @@ namespace MonoDevelop.Debugger.Soft
 			else {
 				current_thread = e.Thread;
 				TargetEventArgs args = new TargetEventArgs (etype);
-				args.Process = OnGetPocesses () [0];
+				args.Process = OnGetProcesses () [0];
 				args.Thread = GetThread (current_thread);
 				args.Backtrace = GetThreadBacktrace (current_thread);
 				OnTargetEvent (args);
