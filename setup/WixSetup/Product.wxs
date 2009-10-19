@@ -511,12 +511,13 @@
                 <File Name="MonoDevelop.XmlEditor.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.dll" />
               </Component>
             </Directory>
-            <Directory Id="MonoDeveloperExtensions" Name="MonoDeveloperExtensions">
+<!--            <Directory Id="MonoDeveloperExtensions" Name="MonoDeveloperExtensions">
               <Component Id="MonoDevelop_AddIns_MonoDeveloperExtensions" Guid="2c95f1b4-112f-4c57-b195-63e05a9c4f6a">
                 <File Name="MonoDeveloperExtensions.dll" Source="$(var.BuildRoot)\AddIns\MonoDeveloperExtensions\MonoDeveloperExtensions.dll" />
                 <File Name="MonoDeveloperExtensions_nunit.dll" Source="$(var.BuildRoot)\AddIns\MonoDeveloperExtensions\MonoDeveloperExtensions_nunit.dll" />
               </Component>
             </Directory>
+-->
             <Directory Id="NUnit" Name="NUnit">
               <Component Id="MonoDevelop_AddIns_NUnit" Guid="97b2cd9f-32ae-4db4-997c-6232bc5d67dd">
                 <File Name="MonoDevelop.NUnit.dll" Source="$(var.BuildRoot)\AddIns\NUnit\MonoDevelop.NUnit.dll" />
@@ -590,7 +591,7 @@
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_WebReferences" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_XmlEditor_schemas" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_XmlEditor" />
-      <ComponentRef Id="MonoDevelop_AddIns_MonoDeveloperExtensions" />
+<!--      <ComponentRef Id="MonoDevelop_AddIns_MonoDeveloperExtensions" />-->
       <ComponentRef Id="MonoDevelop_AddIns_NUnit" />
       <ComponentRef Id="MonoDevelop_AddIns_VersionControl" />
       <ComponentRef Id="MonoDevelop_AddIns_WelcomePage" />
