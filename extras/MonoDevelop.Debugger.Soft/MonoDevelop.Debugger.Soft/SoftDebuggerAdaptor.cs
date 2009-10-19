@@ -707,6 +707,8 @@ namespace MonoDevelop.Debugger.Soft
 						result = ((TypeMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects);
 				} catch (InvocationException ex) {
 					exception = ex;
+				} catch (Exception ex) {
+					MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
 				}
 			});
 			thread.IsBackground = true;
