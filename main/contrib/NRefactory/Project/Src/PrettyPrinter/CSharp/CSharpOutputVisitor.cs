@@ -1544,20 +1544,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
-			if (prettyPrintOptions.IndentSwitchBody)
-				++outputFormatter.IndentationLevel;
 			
+			outputFormatter.BeginBrace(prettyPrintOptions.StatementBraceStyle, prettyPrintOptions.IndentSwitchBody);
 			foreach (SwitchSection section in switchStatement.SwitchSections) {
 				TrackVisit(section, data);
 			}
-			
-			if (prettyPrintOptions.IndentSwitchBody)
-				--outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			outputFormatter.EndBrace (prettyPrintOptions.IndentSwitchBody);
 			return null;
 		}
 		
