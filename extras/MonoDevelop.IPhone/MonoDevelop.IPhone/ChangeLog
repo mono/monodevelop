@@ -1,3 +1,7 @@
+2009-10-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* framework_IPhone.xml: Add assemblies.
+
 2009-10-06  marc hoffman  <mh@remobjects.com>
 
 	* Added support for Partial Methods in Delphi Prism codegen.
