@@ -1,0 +1,185 @@
+<!-- CssSyntaxMode.xml
+
+ Author:
+   Martin Lundberg <martin.lundberg@gmail.com>
+
+ Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+ 
+<SyntaxMode name = "CSS" mimeTypes="text/x-css">
+	<Delimiters>&amp;&lt;&gt;~!@%^*()+=|\#/{}[]:;"' ,	?</Delimiters>
+	
+	<Property name="BlockCommentStart">/*</Property>
+	<Property name="BlockCommentEnd">*/</Property>
+	<Property name="StringQuote">"</Property>
+	<Property name="StringQuote">'</Property>
+	
+	
+	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+		<Begin>/*</Begin>
+		<End>*/</End>
+	</Span>
+	
+	<Span rule="Ruleset">
+		<Begin>{</Begin>
+		<End>}</End>
+	</Span>
+	
+	<Rule name="Ruleset">
+		
+		<Span color = "string.double" rule="String" stopateol = "true" escape='\'>
+			<Begin>"</Begin>
+			<End>"</End>
+		</Span>
+		
+		<Span color = "string.single" rule="String" stopateol = "true" escape='\'>
+			<Begin>'</Begin>
+			<End>'</End>
+		</Span>
+		
+		<Match color="constant.digit">\s*\d+\s*</Match>
+		
+		<Keywords color = "keyword">
+			<Word>azimuth</Word>
+			<Word>background</Word>
+			<Word>background-attachment</Word>
+			<Word>background-color</Word>
+			<Word>background-image</Word>
+			<Word>background-position</Word>
+			<Word>background-repeat</Word>
+			<Word>border</Word>
+			<Word>border-collapse</Word>
+			<Word>border-spacing</Word>
+			<Word>border-style</Word>
+			<Word>border-width</Word>
+			<Word>border-top</Word>
+			<Word>border-right</Word>
+			<Word>border-bottom</Word>
+			<Word>border-left</Word>
+			<Word>border-top-color</Word>
+			<Word>border-top-style</Word>
+			<Word>border-top-width</Word>
+			<Word>border-right-color</Word>
+			<Word>border-right-style</Word>
+			<Word>border-right-width</Word>
+			<Word>border-bottom-color</Word>
+			<Word>border-bottom-style</Word>
+			<Word>border-bottom-width</Word>
+			<Word>border-left-color</Word>
+			<Word>border-left-width</Word>
+			<Word>border-left-style</Word>
+			<Word>bottom</Word>
+			<Word>caption-side</Word>
+			<Word>clear</Word>
+			<Word>clip</Word>
+			<Word>color</Word>
+			<Word>content</Word>
+			<Word>counter-increment</Word>
+			<Word>counter-reset</Word>
+			<Word>cue</Word>
+			<Word>cue-after</Word>
+			<Word>cue-before</Word>
+			<Word>cursor</Word>
+			<Word>direction</Word>
+			<Word>display</Word>
+			<Word>elevation</Word>
+			<Word>empty-cells</Word>
+			<Word>float</Word>
+			<Word>font</Word>
+			<Word>font-family</Word>
+			<Word>font-size</Word>
+			<Word>font-style</Word>
+			<Word>font-variant</Word>
+			<Word>font-weight</Word>
+			<Word>height</Word>
+			<Word>left</Word>
+			<Word>letter-spacing</Word>
+			<Word>line-height</Word>
+			<Word>list-style</Word>
+			<Word>list-style-image</Word>
+			<Word>list-style-position</Word>
+			<Word>list-style-type</Word>
+			<Word>margin</Word>
+			<Word>margin-right</Word>
+			<Word>margin-left</Word>
+			<Word>margin-top</Word>
+			<Word>margin-bottom</Word>
+			<Word>max-height</Word>
+			<Word>max-width</Word>
+			<Word>min-height</Word>
+			<Word>min-width</Word>
+			<Word>orphans</Word>
+			<Word>outline</Word>
+			<Word>outline-color</Word>
+			<Word>outline-style</Word>
+			<Word>outline-width</Word>
+			<Word>overflow</Word>
+			<Word>padding</Word>
+			<Word>padding-top</Word>
+			<Word>padding-right</Word>
+			<Word>padding-bottom</Word>
+			<Word>padding-left</Word>
+			<Word>page-break-after</Word>
+			<Word>page-break-before</Word>
+			<Word>page-break-inside</Word>
+			<Word>pause</Word>
+			<Word>pause-after</Word>
+			<Word>pause-before</Word>
+			<Word>pitch</Word>
+			<Word>pitch-range</Word>
+			<Word>play-during</Word>
+			<Word>position</Word>
+			<Word>quotes</Word>
+			<Word>richness</Word>
+			<Word>right</Word>
+			<Word>speak</Word>
+			<Word>speak-header</Word>
+			<Word>speak-numeral</Word>
+			<Word>speak-punctuation</Word>
+			<Word>speech-rate</Word>
+			<Word>stress</Word>
+			<Word>table-layout</Word>
+			<Word>text-align</Word>
+			<Word>text-decoration</Word>
+			<Word>text-indent</Word>
+			<Word>text-transform</Word>
+			<Word>top</Word>
+			<Word>unicode-bidi</Word>
+			<Word>vertical-align</Word>
+			<Word>visibility</Word>
+			<Word>voice-family</Word>
+			<Word>volume</Word>
+			<Word>white-space</Word>
+			<Word>widows</Word>
+			<Word>width</Word>
+			<Word>word-spacing</Word>
+			<Word>z-index</Word>
+		</Keywords>
+	</Rule>
+	
+	<Rule name = "Comment">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
+			<Word>TODO</Word>
+			<Word>FIXME</Word>
+			<Word>HACK</Word>
+			<Word>UNDONE</Word>
+		</Keywords>	
+	</Rule>
+</SyntaxMode>

@@ -118,9 +118,12 @@ namespace Mono.TextEditor.Highlighting
 			protected set;
 		}
 		
+		string delimiter;
 		public string Delimiter {
-			get;
-			protected set;
+			get { 
+				return string.IsNullOrEmpty (delimiter) ? mode.Delimiter : delimiter; 
+			}
+			protected set { delimiter = value; }
 		}
 
 		public Marker[] PrevMarker {
@@ -134,7 +137,6 @@ namespace Mono.TextEditor.Highlighting
 		public Rule (SyntaxMode mode)
 		{
 			this.mode = mode;
-			this.Delimiter = "&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?";
 		}
 		
 		public virtual Rule GetRule (string name)

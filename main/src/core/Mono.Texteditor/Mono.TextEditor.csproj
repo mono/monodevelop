@@ -225,6 +225,9 @@
     <EmbeddedResource Include="Styles\Styles.xsd">
       <LogicalName>Styles.xsd</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\CssSyntaxMode.xml">
+      <LogicalName>CssSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -121,6 +121,7 @@ RES =  \
 	SyntaxModes/ChangeLogSyntaxMode.xml \
 	SyntaxModes/CPPSyntaxMode.xml \
 	SyntaxModes/CSharpSyntaxMode.xml \
+	SyntaxModes/CssSyntaxMode.xml \
 	SyntaxModes/CSyntaxMode.xml \
 	SyntaxModes/DiffSyntaxMode.xml \
 	SyntaxModes/ILSyntaxMode.xml \

@@ -55,6 +55,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			DefaultColor = "text";
 			Name = "<root>";
+			this.Delimiter = "&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?";
 		}
 		
 		public bool Validate (Style style)
