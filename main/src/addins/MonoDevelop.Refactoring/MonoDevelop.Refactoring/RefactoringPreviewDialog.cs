@@ -181,7 +181,11 @@ namespace MonoDevelop.Refactoring
 		{
 			foreach (Change change in changes) {
 				TreeIter iter = GetFile (change);
-				iter = store.AppendValues (iter, ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
+				if (iter.Equals (TreeIter.Zero)) {
+					iter = store.AppendValues (ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
+				} else {
+					iter = store.AppendValues (iter, ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
+				}
 				TextReplaceChange replaceChange = change as TextReplaceChange;
 				if (replaceChange != null && replaceChange.Offset >= 0)
 					store.AppendValues (iter, null, null, change, false);
