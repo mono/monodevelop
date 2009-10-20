@@ -308,6 +308,16 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			if (node == null || node.StartLocation.IsEmpty)
 				return false;
+			
+			if (searchedMember is CompoundType) {
+				foreach (IType part in ((CompoundType)searchedMember).Parts) {
+					if (file.Name == part.CompilationUnit.FileName &&
+					    node.StartLocation.Line == part.Location.Line && 
+					    node.StartLocation.Column == part.Location.Column)
+						return true;
+				}
+			}
+			
 			return (string.IsNullOrEmpty (searchedMemberFile) || file.Name == searchedMemberFile) && 
 			       node.StartLocation.Line == this.searchedMemberLocation.Line && 
 			       node.StartLocation.Column == this.searchedMemberLocation.Column;
@@ -343,6 +353,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 			}
 		}
+		
 		string CurrentTypeFullName {
 			get {
 				if (typeStack.Count == 0)
@@ -447,6 +458,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
 			CheckNode (typeDeclaration);
+			
 			typeStack.Push (typeDeclaration);
 			object result =  base.VisitTypeDeclaration (typeDeclaration, data);
 			typeStack.Pop ();
