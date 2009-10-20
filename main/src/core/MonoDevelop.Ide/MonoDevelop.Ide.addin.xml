@@ -332,6 +332,10 @@
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions"
 				_label = "Show _Definitions Only" 
 				_description = "Folds all method and property bodies."/>
+				
+		<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer"
+				defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
+				_label = "_Format Document" />
 		</Category>
 
 		<!-- ProjectCommands -->
@@ -758,10 +762,6 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.ToolListHandler"
 				type="array"
 				_label = "Tool List" />
-				
-		<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer"
-				defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
-				_label = "_Format Document" />
 				
 		<Command id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer"
 				defaultHandler = "MonoDevelop.Ide.Commands.InstrumentationViewerHandler"

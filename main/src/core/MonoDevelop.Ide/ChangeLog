@@ -1,3 +1,8 @@
+2009-10-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: Moved Format Document command to
+	  the Edit category.
+
 2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Fix
