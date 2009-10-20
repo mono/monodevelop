@@ -1,3 +1,8 @@
+2009-10-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: fixed
+	  'Bug 548239 - Code completion offers incorrect items'.
+
 2009-10-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:

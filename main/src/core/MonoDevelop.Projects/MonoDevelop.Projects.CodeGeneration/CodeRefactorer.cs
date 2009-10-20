@@ -196,7 +196,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				foreach (IMethod m in baseCls.Methods) {
 					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
 						continue;
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !IsOverridenMethod (motherClass, m)))
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSpecialName && !m.IsSealed && (includeOverriden || !IsOverridenMethod (motherClass, m)))
 						list.Add (m);
 				}
 				foreach (IProperty m in baseCls.Properties) {
@@ -204,7 +204,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 						continue;
 					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
 						continue;
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !IsOverridenProperty (motherClass, m)))
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSpecialName && !m.IsSealed && (includeOverriden || !IsOverridenProperty (motherClass, m)))
 						list.Add (m);
 				}
 				foreach (IProperty m in baseCls.Properties) {
@@ -212,13 +212,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 						continue;
 					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
 						continue;
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed && (includeOverriden || !IsOverridenIndexer (motherClass, m)))
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSpecialName && !m.IsSealed && (includeOverriden || !IsOverridenIndexer (motherClass, m)))
 						list.Add (m);
 				}
 				foreach (IEvent m in baseCls.Events) {
 					if (m.IsInternal && motherClass.SourceProject != null && motherClass.SourceProject != m.DeclaringType.SourceProject)
 						continue;
-					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSpecialName && !m.IsSealed)
 						list.Add (m);
 				}
 
