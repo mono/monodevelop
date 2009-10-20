@@ -102,6 +102,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 					smv.FoundMember = ((LocalVariableResolveResult)resolveResult).LocalVariable;
 			}
 			Assert.IsNotNull (smv.FoundMember, "Member to search not found.");
+			if (smv.FoundMember is IType) {
+				smv.FoundMember = dom.GetType (((IType)smv.FoundMember).FullName, 
+				                               ((IType)smv.FoundMember).TypeParameters.Count,
+				                               true);
+			}
 			FindMemberAstVisitor astVisitor = new FindMemberAstVisitor (resolver, testViewContent, smv.FoundMember);
 			astVisitor.RunVisitor ();
 			
@@ -578,6 +583,37 @@ SolutionEventArgs e)
 }
 ");
 		}
+		
+		
+		/// <summary>
+		/// Bug 547949 - Rename partial classes does not rename both classes
+		/// </summary>
+		[Test()]
+		public void TestBug547949 ()
+		{
+			RunTest (
+@"partial class $@MyTest
+{
+	void Test1 ()
+	{
+		@MyTest test;
+	}
+	
+	public @MyTest (int a)
+	{
+	}
+}
+
+partial class @MyTest
+{
+	public @MyTest ()
+	{
+	}
+}
+");
+		}
+
+
 		
 		/*
 		[Test()]

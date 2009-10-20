@@ -1,3 +1,9 @@
+2009-10-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added
+	  test for 'Bug 547949 - Rename partial classes does not
+	  rename both classes'.
+
 2009-10-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestViewContent.cs: Track API
