@@ -71,11 +71,16 @@ namespace MonoDevelop.Core.Assemblies
 			runtimes = new List<TargetRuntime> ();
 			foreach (ITargetRuntimeFactory factory in AddinManager.GetExtensionObjects ("/MonoDevelop/Core/Runtimes", typeof(ITargetRuntimeFactory))) {
 				foreach (TargetRuntime runtime in factory.CreateRuntimes ()) {
-					RegisterRuntime (runtime);
+					runtimes.Add (runtime);
 					if (runtime.IsRunning)
 						DefaultRuntime = CurrentRuntime = runtime;
 				}
 			}
+			
+			// Don't initialize until Current and Default Runtimes are set
+			foreach (TargetRuntime runtime in runtimes)
+				runtime.StartInitialization ();
+			
 			if (CurrentRuntime == null)
 				LoggingService.LogFatalError ("Could not create runtime info for current runtime");
 			

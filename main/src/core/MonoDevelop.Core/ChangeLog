@@ -1,3 +1,9 @@
+2009-10-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: Fix
+	  race in runtime initialization. Fixes bug #524337 -
+	  PackageNotInstalled NRE error starting MonoDevelop.
+
 2009-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/PcFileCache.cs: It seems that
