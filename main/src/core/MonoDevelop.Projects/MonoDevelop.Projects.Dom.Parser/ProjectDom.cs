@@ -795,18 +795,23 @@ namespace MonoDevelop.Projects.Dom.Parser
 			int i = typeName.IndexOf ('`');
 			if (i != -1)
 				typeName = typeName.Substring (0, i);
+			List<IType> result = new List<IType> ();
 			Stack<IType> typeStack = new Stack<IType> ();
 			foreach (IType curType in Types) {
 				typeStack.Push (curType);
 				while (typeStack.Count > 0) {
 					IType type = typeStack.Pop ();
-					if (type.FullName == typeName) 
-						return type;
+					if (type.FullName == typeName)
+						result.Add (type);
 					foreach (IType inner in type.InnerTypes) {
 						typeStack.Push (inner);
 					}
 				}
 			}
+			if (result.Count == 1)
+				return result[0];
+			if (result.Count > 1)
+				return new CompoundType (result);
 			return null;
 		}
 

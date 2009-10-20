@@ -40,6 +40,15 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
+		public CompoundType(IEnumerable<IType> parts)
+		{
+			if (parts == null)
+				return;
+			foreach (IType part in parts) {
+				AddPart (part);
+			}
+		}
+		
 		public override string ToString ()
 		{
 			StringBuilder partsString = new StringBuilder ();
