@@ -1,5 +1,11 @@
 2009-10-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed
+	  'Bug 547938 - class override/implement puts method in the
+	  wrong position and indentation'.
+
+2009-10-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/CompoundType.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed 'Bug
 	  547949 - Rename partial classes does not rename both

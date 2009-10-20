@@ -116,7 +116,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			int line, col;
 			buffer.GetLineColumnFromPosition (pos, out line, out col);
 			
-			string indent = GetLineIndent (buffer, line);
+			string indent = GetLineIndent (buffer, cls.Location.Line) + "\t";
 			code = Indent (code, indent, false);
 			
 			buffer.InsertText (pos, code);
