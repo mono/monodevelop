@@ -1,5 +1,10 @@
 2009-10-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs: Fixed
+	  private implementation type output again.
+
+2009-10-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  Filter out special names from override completion.
 

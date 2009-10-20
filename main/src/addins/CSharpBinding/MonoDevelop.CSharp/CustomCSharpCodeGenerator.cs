@@ -576,7 +576,7 @@ namespace Mono.CSharp
 
 			if (eventRef.PrivateImplementationType != null) {
 				OutputTypeNamePair (eventRef.Type,
-					eventRef.PrivateImplementationType.BaseType + "." + 
+					GetTypeOutput (eventRef.PrivateImplementationType) + "." + 
 					eventRef.Name);
 			} else {
 				OutputTypeNamePair (eventRef.Type, GetSafeName (eventRef.Name));
@@ -668,7 +668,7 @@ namespace Mono.CSharp
 
 			CodeTypeReference privateType = method.PrivateImplementationType;
 			if (privateType != null) {
-				output.Write (privateType.BaseType);
+				output.Write (GetTypeOutput (privateType));
 				output.Write ('.');
 			}
 			output.Write (GetSafeName (method.Name));
@@ -724,7 +724,7 @@ namespace Mono.CSharp
 			output.Write (' ');
 
 			if (!IsCurrentInterface && property.PrivateImplementationType != null) {
-				output.Write (property.PrivateImplementationType.BaseType);
+				output.Write (GetTypeOutput (property.PrivateImplementationType));
 				output.Write ('.');
 			}
 
