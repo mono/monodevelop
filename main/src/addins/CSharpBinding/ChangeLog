@@ -1,3 +1,8 @@
+2009-10-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Filter out special names from override completion.
+
 2009-10-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs: Tidy and

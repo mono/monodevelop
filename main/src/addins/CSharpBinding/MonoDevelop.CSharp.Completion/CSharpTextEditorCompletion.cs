@@ -1172,7 +1172,7 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (IType t in this.dom.GetInheritanceTree (searchType)) {
 				//System.Console.WriteLine("t:" + t);
 				foreach (IMember m in t.Members) {
-					if (!m.IsAccessibleFrom (dom, type, type, true))
+					if (!m.IsAccessibleFrom (dom, type, type, true) || m.IsSpecialName)
 						continue;
 					//System.Console.WriteLine ("scan:" + m);
 					//if (m.IsSpecialName || (m.IsInternal && !m.IsProtectedOrInternal) || && searchType.SourceProject != Document.Project)
