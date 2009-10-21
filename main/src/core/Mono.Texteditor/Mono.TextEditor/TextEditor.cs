@@ -1808,14 +1808,20 @@ namespace Mono.TextEditor
 			var rect = RangeToRectangle (pulseStart, new DocumentLocation (pulseStart.Line, pulseStart.Column + 1));
 			if (rect.X < 0 || rect.Y < 0 || System.Math.Max (rect.Width, rect.Height) <= 0)
 				return;
-			
-			animationTimer.Stop (); 
-			animation = new RegionPulseAnimation (this, rect) {
+			StartAnimation (new RegionPulseAnimation (this, rect) {
 				Kind = PulseKind.Bounce
-			};
-			animationTimer.Start ();
+			});
 		}
 
+		void StartAnimation (IAnimation animation)
+		{
+			if (!Options.EnableAnimations)
+				return;
+			animationTimer.Stop ();
+			this.animation = animation;
+			animationTimer.Start ();
+		}
+		
 		public SearchResult FindNext ()
 		{
 			SearchResult result = textEditorData.FindNext ();
@@ -1825,21 +1831,15 @@ namespace Mono.TextEditor
 
 		public void StartCaretPulseAnimation ()
 		{
-			animationTimer.Stop ();
-			animation = new TextEditor.CaretPulseAnimation (this);
-			animationTimer.Start ();
+			StartAnimation (new TextEditor.CaretPulseAnimation (this));
 		}
 		
 		public void AnimateSearchResult (SearchResult result)
 		{
-			if (result != null) {
-				animationTimer.Stop ();
-				animation = new TextEditor.HighlightSearchResultAnimation (this, result);
-				animationTimer.Start ();
-			}
+			if (result != null) 
+				StartAnimation (new TextEditor.HighlightSearchResultAnimation (this, result));
 		}
-		
-		
+	
 		public SearchResult FindPrevious ()
 		{
 			SearchResult result = textEditorData.FindPrevious ();

@@ -368,6 +368,20 @@ namespace Mono.TextEditor
 				OnChanged (EventArgs.Empty);
 			}
 		}
+		
+		bool enableAnimations = true;
+		public virtual bool EnableAnimations {
+			get { 
+				return enableAnimations; 
+			}
+			set {
+				if (enableAnimations != value) {
+					enableAnimations = value; 
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
 		public virtual Style GetColorStyle (Gtk.Widget widget)
 		{
 			return SyntaxModeService.GetColorStyle (widget, ColorScheme);
@@ -396,6 +410,7 @@ namespace Mono.TextEditor
 			ColorScheme = other.ColorScheme;
 			OverrideDocumentEolMarker = other.OverrideDocumentEolMarker;
 			DefaultEolMarker = other.DefaultEolMarker;
+			EnableAnimations = other.EnableAnimations;
 		}
 		
 		public virtual void Dispose ()
