@@ -1,6 +1,11 @@
 2009-10-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs:
+	  handled in extract method.
+
+2009-10-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs:
 	  Fixed 'Bug 548367 - Extract method adds an unwanted newline
 	  at the end'.
 

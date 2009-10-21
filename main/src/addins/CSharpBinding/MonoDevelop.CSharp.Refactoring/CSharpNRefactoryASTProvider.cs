@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			int col = CSharpFormatter.GetColumn (indent, 0, 4);
 			outputVisitor.OutputFormatter.IndentationLevel = System.Math.Max (0, col / 4);
 			node.AcceptVisitor (outputVisitor, null);
-			return outputVisitor.Text.Trim ();
+			return outputVisitor.Text;
 		}
 		
 		public Expression ParseExpression (string expressionText)
