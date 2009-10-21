@@ -1,3 +1,12 @@
+2009-10-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.addin.xml: Wrap long lines.
+
+	* gtk-gui/gui.stetic: Flush.
+
+	* IPhoneCommands.cs: Don't preserve relative path for Pages
+	  (i.e. xibs/nibs) when outputting to Xcode projects.
+
 2009-10-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* framework_IPhone.xml: Add assemblies.

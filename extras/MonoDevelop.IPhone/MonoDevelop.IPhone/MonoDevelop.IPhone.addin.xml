@@ -75,7 +75,8 @@
 			<File pattern="*.plist" />
 		</MimeType>
 		
-		<MimeType id="application/vnd.apple-interface-builder" _description="Interface Builder file" isText="false" icon="application-vnd-apple-interface-builder">
+		<MimeType id="application/vnd.apple-interface-builder" _description="Interface Builder file"
+		          isText="false" icon="application-vnd-apple-interface-builder">
 			<File pattern="*.xib" />
 		</MimeType>
 	</Extension>
@@ -141,10 +142,14 @@
 		<StockIcon stockid = "phone-apple-iphone" resource = "phone-apple-iphone-32.png" size="Dnd" />
 		<StockIcon stockid = "phone-apple-iphone" resource = "phone-apple-iphone-48.png" size="Dialog" />
 		<StockIcon stockid = "md-project-iphone" icon = "md-project|res:iphone-project-overlay.png" size="Dnd" />
-		<StockIcon stockid = "application-vnd-apple-interface-builder" resource = "application-x-mono-develop-xib-16.png" size="Menu" />
-		<StockIcon stockid = "application-vnd-apple-interface-builder" resource = "application-x-mono-develop-xib-22.png" size="Button" />
-		<StockIcon stockid = "application-vnd-apple-interface-builder" resource = "application-x-mono-develop-xib-32.png" size="Dnd" />
-		<StockIcon stockid = "application-vnd-apple-interface-builder" resource = "application-x-mono-develop-xib-48.png" size="Dialog" />
+		<StockIcon stockid = "application-vnd-apple-interface-builder"
+		           resource = "application-x-mono-develop-xib-16.png" size="Menu" />
+		<StockIcon stockid = "application-vnd-apple-interface-builder"
+		           resource = "application-x-mono-develop-xib-22.png" size="Button" />
+		<StockIcon stockid = "application-vnd-apple-interface-builder"
+		           resource = "application-x-mono-develop-xib-32.png" size="Dnd" />
+		<StockIcon stockid = "application-vnd-apple-interface-builder"
+		           resource = "application-x-mono-develop-xib-48.png" size="Dialog" />
 		<StockIcon stockid = "iphone-project-options-panel" resource = "iphone-project-options-panel-16.png" size="Menu" />
 		<StockIcon stockid = "iphone-project-options-panel" resource = "iphone-project-options-panel-24.png" size="Button" />
 	</Extension>

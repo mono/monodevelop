@@ -160,7 +160,7 @@ namespace MonoDevelop.IPhone
 			var args = new System.Text.StringBuilder ();
 			args.AppendFormat ("-xcode=\"{0}\" -v", xcodeDir);
 			foreach (ProjectFile pf in proj.Files) {
-				if (pf.BuildAction == BuildAction.Content || pf.BuildAction == BuildAction.Page) {
+				if (pf.BuildAction == BuildAction.Content) {
 					FilePath rel = pf.IsExternalToProject? pf.FilePath.FileName : (string)pf.RelativePath;
 					args.AppendFormat (" -res=\"{0}\",\"{1}\"", pf.FilePath, (string)rel);
 					
@@ -176,6 +176,8 @@ namespace MonoDevelop.IPhone
 						MessageService.ShowException (ex, "Failed to create directory '" + subdir +"' for Xcode project");
 						return;
 					}
+				} else if (pf.BuildAction == BuildAction.Page) {
+					args.AppendFormat (" -res=\"{0}\"", pf.FilePath);
 				}
 			}
 			
