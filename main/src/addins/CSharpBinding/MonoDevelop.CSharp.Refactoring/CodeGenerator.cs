@@ -624,10 +624,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			string indent = buffer.GetText (buffer.GetPositionFromLineColumn (line, 1), pos);
 			
 			string pre = "#region " + regionName + eolMarker;
-			string post = eolMarker + indent + "#endregion" + eolMarker;
+			string post = indent + "#endregion" + eolMarker;
 			
-			buffer.InsertText (pos, pre + indent + post);
-			return pos + indent.Length + pre.Length;
+			buffer.InsertText (pos, pre + post);
+			return pos + pre.Length;
 		}
 		
 		protected override CodeGeneratorOptions GetOptions (bool isMethod)
@@ -653,7 +653,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					result = result.Substring (0, result.Length - 1) + " {" + Environment.NewLine +
 						"\tadd { /* TODO */ }" + Environment.NewLine +
 						"\tremove { /* TODO */ }" + Environment.NewLine +
-					"}";
+					"}\n\n";
 				}
 			}
 			return result;

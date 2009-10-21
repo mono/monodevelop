@@ -1,3 +1,8 @@
+2009-10-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Refactoring/CodeGenerator.cs: Overworked
+	  new member positioning code.
+
 2009-10-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs:
