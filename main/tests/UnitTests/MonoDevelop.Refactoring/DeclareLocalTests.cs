@@ -58,7 +58,7 @@ namespace MonoDevelop.Refactoring.Tests
 {
 	void Test ()
 	{
-		int int32 = 345;
+		int i = 345;
 	}
 }
 ");
@@ -78,8 +78,8 @@ namespace MonoDevelop.Refactoring.Tests
 {
 	void Test ()
 	{
-		int int32 = 9;
-		Console.WriteLine (1 + int32 + 5);
+		int i = 9;
+		Console.WriteLine (1 + i + 5);
 	}
 }
 ");
