@@ -38,6 +38,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
+using System.Text;
 
 namespace MonoDevelop.Projects.CodeGeneration
 {
@@ -118,7 +119,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			string indent = GetLineIndent (buffer, cls.Location.Line) + "\t";
 			code = Indent (code, indent, false);
-			
+//			code = code.Trim (' ', '\t');
+			code += "\n";
 			buffer.InsertText (pos, code);
 			
 			return FindGeneratedMember (ctx, buffer, cls, member, line);
@@ -134,8 +136,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		public virtual void AddMembers (RefactorerContext ctx, IType cls, 
-		                                                IEnumerable<CodeTypeMember> members, string foldingRegionName)
+		public virtual void AddMembers (RefactorerContext ctx, IType cls, IEnumerable<CodeTypeMember> members, string foldingRegionName)
 		{
 			//no region name, so distribute them with like members
 			if (string.IsNullOrEmpty (foldingRegionName)) {
@@ -156,7 +157,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 			} else {
 				pos = AddFoldingRegion (ctx, cls, foldingRegionName);
 			}
-			
 			AddMembersAtPosition (ctx, cls, members, buffer, pos);
 		}
 		
@@ -167,22 +167,20 @@ namespace MonoDevelop.Projects.CodeGeneration
 			buffer.GetLineColumnFromPosition (pos, out line, out col);
 			
 			string indent = GetLineIndent (buffer, line);
-			List<int> positions = new List<int> ();
 			
-			bool first = true;
+			StringBuilder generatedString = new StringBuilder ();
+			bool isFirst = true;
 			foreach (CodeTypeMember member in members) {
-				positions.Add (pos);
-				string code = GenerateCodeFromMember (member);
-					//spacing between inserted members
-				if (first)
-					first = false;
-				else
-					code = "\n\n" + code;
-				
-				code = Indent (code, indent, false);
-				buffer.InsertText (pos, code);
-				pos += code.Length;
+				generatedString.Append (Indent (GenerateCodeFromMember (member), indent, isFirst));
+				generatedString.AppendLine ();
+				generatedString.Append (indent);
+				isFirst = false;
 			}
+			// remove last new line + indent
+			generatedString.Length -= indent.Length + Environment.NewLine.Length;
+			// remove indent from last generated code member
+			generatedString.Length -= indent.Length;
+			buffer.InsertText (pos, generatedString.ToString ());
 		}
 		
 		public virtual int AddFoldingRegion (RefactorerContext ctx, IType cls, string regionName)
@@ -795,6 +793,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			CodeDomProvider provider = GetCodeDomProvider ();
 			StringWriter sw = new StringWriter ();
 			provider.GenerateCodeFromType (type, sw, GetOptions (member is CodeMemberMethod));
+			
 			string code = sw.ToString ();
 			int i = code.IndexOf ('{');
 			int j = code.LastIndexOf ('}');
@@ -802,7 +801,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (member is CodeMemberMethod)
 				if ((i = code.IndexOf ('(')) != -1)
 					code = code.Insert (i, " ");
-			return RemoveIndent (code);
+			return RemoveIndent (code) + "\n";
 		}
 		
 
@@ -894,11 +893,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		protected string Indent (string code, string indent, bool indentFirstLine)
 		{
-			code = code.Replace ("\n", "\n" + indent);
+			StringBuilder result = new StringBuilder ();
 			if (indentFirstLine)
-				return indent + code;
-			else
-				return code;
+				result.Append (indent);
+			for (int i = 0; i < code.Length; i++) {
+				result.Append (code[i]);
+				if (code[i] == '\n')
+					result.Append (indent);
+			}
+			return result.ToString ();
 		}
 		
 		protected int EnsurePositionIsNotInRegionsAndIndented (Project p, IEditableTextFile buffer, string indent, int position)
@@ -915,13 +918,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			
 			int result = buffer.GetPositionFromLineColumn (line, column);
-			string eolMarker = Environment.NewLine;
-			buffer.InsertText (result, eolMarker);
-			result += eolMarker.Length;
+			
+			if (column != 1) {
+				string eolMarker = Environment.NewLine;
+				buffer.InsertText (result, eolMarker);
+				result += eolMarker.Length;
+			}
+			
 			buffer.InsertText (result, indent);
-			buffer.GetLineColumnFromPosition (result + indent.Length, out line, out column);
-
-			return result + indent.Length;
+			result += indent.Length;
+			
+			return result;
 		}
 		
 		protected virtual int GetNewMemberPosition (IEditableTextFile buffer, IType cls, CodeTypeMember member)
@@ -929,7 +936,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (member is CodeMemberField)
 				return GetNewFieldPosition (buffer, cls);
 			else if (member is CodeMemberMethod)
-				return  GetNewMethodPosition (buffer, cls);
+				return GetNewMethodPosition (buffer, cls);
 			else if (member is CodeMemberEvent)
 				return GetNewEventPosition (buffer, cls);
 			else if (member is CodeMemberProperty)
@@ -973,7 +980,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					string s = buffer.GetText (sp, ep);
 					int i = s.IndexOf ('}');
 					if (i == -1) return -1;
-					buffer.InsertText (sp + i, "\n" + ind + "\t\n" + ind);
+//					buffer.InsertText (sp + i, "\n" + ind + "\t\n" + ind);
 					pos = sp + i + ind.Length + 2;
 				} else {
 					pos = GetNextLine (buffer, pos);
@@ -1000,15 +1007,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 				int pos;
 				if (!m.BodyRegion.IsEmpty && m.BodyRegion.End.Line > 0) {
 					pos = buffer.GetPositionFromLineColumn (m.BodyRegion.End.Line, m.BodyRegion.End.Column);
+					pos = GetNextLine (buffer, pos);
+					pos = SkipBlankLine (buffer, pos);
 				} else {
 					// Abstract or P/Inboke methods don't have a body
 					pos = buffer.GetPositionFromLineColumn (m.Location.Line, m.Location.Column);
 					pos = GetNextLine (buffer, pos);
 				}
 				
-				buffer.InsertText (pos++, "\n");
+//				buffer.InsertText (pos++, "\n");
 				string ind = GetLineIndent (buffer, m.Location.Line);
-				return EnsurePositionIsNotInRegionsAndIndented (cls.SourceProject as Project, buffer, ind, pos);
+				pos = EnsurePositionIsNotInRegionsAndIndented (cls.SourceProject as Project, buffer, ind, pos);
+				
+				return pos;
 			}
 		}
 		
@@ -1027,7 +1038,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 				IProperty m = cls.Properties.Last ();
 				
 				int pos = buffer.GetPositionFromLineColumn (m.BodyRegion.End.Line, m.BodyRegion.End.Column);
-				buffer.InsertText (pos++, "\n");
+				pos = GetNextLine (buffer, pos);
+				pos = SkipBlankLine (buffer, pos);
 				string indent = GetLineIndent (buffer, m.Location.Line);
 				return EnsurePositionIsNotInRegionsAndIndented (cls.SourceProject as Project, buffer, indent, pos);
 			}
@@ -1048,34 +1060,56 @@ namespace MonoDevelop.Projects.CodeGeneration
 				IEvent m = GetMainPart (cls).Events.Last ();
 				
 				int pos;
-				if (!m.BodyRegion.IsEmpty)
+				if (!m.BodyRegion.IsEmpty) {
 					pos = buffer.GetPositionFromLineColumn (m.BodyRegion.End.Line, m.BodyRegion.End.Column);
-				else {
+					pos = GetNextLine (buffer, pos);
+					pos = SkipBlankLine (buffer, pos);
+				} else {
 					pos = buffer.GetPositionFromLineColumn (m.Location.Line, m.Location.Column);
 					pos = GetNextLine (buffer, pos);
 				}
 
-				buffer.InsertText (pos++, "\n");
+//				buffer.InsertText (pos++, "\n");
 				string ind = GetLineIndent (buffer, m.Location.Line);
 				return EnsurePositionIsNotInRegionsAndIndented (cls.SourceProject as Project, buffer, ind, pos);
 			}
 		}
 		
+		protected virtual int SkipBlankLine (IEditableTextFile buffer, int pos)
+		{
+			int i = pos;
+			while (i < buffer.Length) {
+				char ch = buffer.GetCharAt (i);
+				Console.WriteLine ("ch:" + (int)ch + ":"+ ch);
+				switch (ch) {
+				case '\n':
+					return i + 1;
+				case ' ':
+				case '\t':
+					i++;
+					break;
+				default:
+					return pos;
+				}
+			}
+			return pos;
+		}
+		
 		protected virtual int GetNextLine (IEditableTextFile buffer, int pos)
 		{
 			while (pos < buffer.Length) {
-				string s = buffer.GetText (pos, pos + 1);
-				if (s == "\n") {
-//					buffer.InsertText (pos + 1, "\n");
+				char ch = buffer.GetCharAt (pos);
+				switch (ch) {
+				case '\n':
 					return pos + 1;
+/*				case ' ':
+				case '\t':
+					pos++;
+					break;*/
+				default:
+					pos++;
+					continue;
 				}
-				if (s != " " && s == "\t") {
-//					buffer.InsertText (pos, "\n\n");
-					return pos + 1;
-				}
-				if (s == "}")
-					return pos;
-				pos++;
 			}
 			return pos;
 		}
@@ -1083,13 +1117,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 		protected string GetLineIndent (IEditableTextFile buffer, int line)
 		{
 			int pos = buffer.GetPositionFromLineColumn (line, 1);
-			int ipos = pos;
-			string s = buffer.GetText (pos, pos + 1);
-			while ((s == " " || s == "\t") && pos < buffer.Length) {
-				pos++;
-				s = buffer.GetText (pos, pos + 1);
+			StringBuilder result = new StringBuilder ();
+			while (pos < buffer.Length) {
+				char ch = buffer.GetCharAt (pos);
+				if (ch == ' ' || ch == '\t') {
+					result.Append (ch);
+					pos++;
+					continue;
+				} 
+				break;
 			}
-			return buffer.GetText (ipos, pos);
+			return result.ToString ();
 		}
 		
 		protected virtual CodeGeneratorOptions GetOptions (bool isMethod)
