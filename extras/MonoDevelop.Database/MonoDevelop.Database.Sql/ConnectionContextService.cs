@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Christian Hergert <chris@mosaix.net>
 //   Ben Motmans  <ben.motmans@gmail.com>
@@ -32,6 +32,7 @@ using System.Xml.Serialization;
 using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Database.Sql
 {
@@ -71,12 +72,21 @@ namespace MonoDevelop.Database.Sql
 			if (context == null)
 				throw new ArgumentNullException ("context");
 			
-			if (!contexts.Contains (context)) {
+			if (!DatabaseConnectionContextExist (context.ConnectionSettings)) {
 				contexts.Add (context);
 				Save ();
 				if (ConnectionContextAdded != null)
 					ConnectionContextAdded (null, new DatabaseConnectionContextEventArgs (context));
-			}
+			} else
+				throw new DuplicatedConnectionContextException (context.ConnectionSettings.Name);
+		}
+		
+		public static bool DatabaseConnectionContextExist (DatabaseConnectionSettings settings)
+		{
+			var existsContext = from c in contexts 
+				where c.ConnectionSettings.Name.ToLower () == settings.Name.ToLower ()
+				select c;
+			return existsContext.Count () > 0;
 		}
 		
 		public static void RemoveDatabaseConnectionContext (DatabaseConnectionContext context)

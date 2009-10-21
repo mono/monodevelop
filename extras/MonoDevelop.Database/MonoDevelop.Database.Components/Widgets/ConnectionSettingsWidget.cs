@@ -68,7 +68,6 @@ namespace MonoDevelop.Database.Components
 			checkCustom.Toggled += new EventHandler (CustomConnectionStringActivated);
 			
 			storeDatabases = comboDatabase.Model as ListStore;
-			comboDatabase.TextColumn = 0;
 			comboDatabase.Entry.Changed += new EventHandler (DatabaseChanged);
 			
 			EnableServerEntry = true;
@@ -83,6 +82,7 @@ namespace MonoDevelop.Database.Components
 			get {
 				if (settings == null)
 					settings = CreateDatabaseConnectionSettings ();
+				FillDatabaseConnectionSettings (settings);
 				return settings;
 			}
 		}
@@ -162,7 +162,7 @@ namespace MonoDevelop.Database.Components
 			settings.SavePassword = checkSavePassword.Active;
 		}
 		
-		protected internal virtual void ShowSettings (DatabaseConnectionSettings settings)
+		public virtual void ShowSettings (DatabaseConnectionSettings settings)
 		{
 			checkCustom.Active = settings.UseConnectionString;
 			entryName.Text = String.IsNullOrEmpty (settings.Name) ? String.Empty : settings.Name;
@@ -174,6 +174,7 @@ namespace MonoDevelop.Database.Components
 			comboDatabase.Entry.Text = String.IsNullOrEmpty (settings.Database) ? String.Empty : settings.Database;
 			spinMinPoolSize.Value = settings.MinPoolSize;
 			spinMaxPoolSize.Value = settings.MaxPoolSize;
+			FillDatabaseConnectionSettings (settings);
 		}
 		
 		protected internal virtual void AppendDatabase (DatabaseConnectionSettings settings)
@@ -242,7 +243,6 @@ namespace MonoDevelop.Database.Components
 			if (isDatabaseListEmpty && comboDatabase.Entry.Text == AddinCatalog.GetString ("No databases found!")) {
 				comboDatabase.Entry.Text = String.Empty;
 			}
-			
 			CheckSettings (true);
 		}
 
@@ -262,11 +262,18 @@ namespace MonoDevelop.Database.Components
 			if (checkCustom.Active) {
 				ok = textConnectionString.Buffer.Text.Length > 0;
 			} else {
+				bool alreadyExists = ConnectionContextService.DatabaseConnectionContextExist (ConnectionSettings);
 				TreeIter iter;
 				ok = entryName.Text.Length > 0
 					&& (entryServer.Text.Length > 0 || !enableServerEntry)
 					&& (entryUsername.Text.Length > 0 || !enableUsernameEntry)
-					&& (comboDatabase.Entry.Text.Length > 0);
+					&& (comboDatabase.Entry.Text.Length > 0)
+					&& !alreadyExists;
+				if (alreadyExists)
+					labelMessage.Markup = string.Concat ("<i>", 
+									AddinCatalog.GetString ("Connection Name Already used, choose another."),"</i>");
+				else
+					labelMessage.Markup = "";
 			}
 			return ok;
 		}

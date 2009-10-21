@@ -55,6 +55,7 @@ FILES =  \
 	Configuration/DatabaseConnectionContextEventArgs.cs \
 	Configuration/DatabaseConnectionSettings.cs \
 	Configuration/DatabaseConnectionSettingsCollection.cs \
+	Configuration/DuplicatedConnectionContextException.cs \
 	ConnectionContextService.cs \
 	ConnectionPool/AbstractPooledDbConnection.cs \
 	ConnectionPool/DefaultConnectionPool.cs \
@@ -100,6 +101,7 @@ FILES =  \
 	Dialect/Statements/DropStatementType.cs \
 	Dialect/Statements/InsertStatement.cs \
 	Dialect/Statements/IStatement.cs \
+	Dialect/Statements/LineStatement.cs \
 	Dialect/Statements/SelectStatement.cs \
 	Dialect/Statements/TruncateStatement.cs \
 	Dialect/Statements/UpdateStatement.cs \

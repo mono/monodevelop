@@ -1,3 +1,14 @@
+2009-10-21 Luciano N.Callero <lnc19@hotmail.com>
+	* Dialogs/MySqlCreateDatabaseDialog.cs: 
+	* MySqlGuiProvider.cs: 
+	* MonoDevelop.Database.Sql.MySql.csproj:
+	* MySqlSchemaProvider.cs:
+	* Widgets/MySqlCreateDatabaseWidget.cs:
+	* gtk-gui/objects.xml:
+	* gtk-gui/gui.stetic:
+	* MySqlDbFactory.cs:
+	* Makefile.am: Implemented Database CreationOperation. 	
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Sql.MySql.csproj: Fix the build & flush

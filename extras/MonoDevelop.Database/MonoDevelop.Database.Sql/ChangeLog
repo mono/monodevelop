@@ -1,3 +1,17 @@
+2009-10-21  Luciano N. Callero <lnc19@hotmail.com>
+	* MonoDevelop.Database.Sql.csproj:
+	* ConnectionContextService.cs: Added a new way to detect 
+	  duplicated connection.
+	* Schema/DatabaseSchema.cs: Added new property to set 
+	  additional creation data.
+	* Dialect/Statements/LineStatement.cs: Line Statement.
+	* Configuration/DuplicatedConnectionContextException.cs: 
+	  Duplicated connection exception.
+	* Makefile.am:	
+	* ConnectionPool/AbstractPooledDbConnection.cs:  
+	* Providers/AbstractSchemaProvider.cs: Raise exception when 
+	  executing query.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Sql.csproj: Fix the build & flush

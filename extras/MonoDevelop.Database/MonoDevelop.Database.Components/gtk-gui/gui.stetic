@@ -1,30 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.Core.Gui, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.Ide, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.Components, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.VersionControl, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.NUnit, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.XmlEditor, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.AspNet, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.Gettext, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.Deployment, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.Deployment.Linux, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.GtkCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.DesignerSupport, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.VBNetBinding, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.CBinding, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.CSharpBinding, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.Autotools, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.SourceEditor2, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral, PublicKeyToken=" />
-    <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=" />
+    <widget-library name="MonoDevelop.Core.Gui, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Components, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.VersionControl, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.NUnit, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.XmlEditor, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.AspNet, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Gettext, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment.Linux, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.GtkCore, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.DesignerSupport, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.VBNetBinding, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.CBinding, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.CSharpBinding, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Autotools, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.SourceEditor2, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Debugger, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Refactoring, Version=2.1.1.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.Database.Components.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Database.Components.SelectColumnDialog" design-size="400 300">
@@ -36,7 +37,6 @@
     <property name="SkipTaskbarHint">True</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="Dialog_Vbox">
         <property name="MemberName">vbox</property>
@@ -162,7 +162,6 @@
                 <property name="CanDefault">True</property>
                 <property name="CanFocus">True</property>
                 <property name="EnableSearch">False</property>
-                <property name="HeadersClickable">True</property>
               </widget>
             </child>
           </widget>
@@ -304,7 +303,6 @@
     <property name="SkipTaskbarHint">True</property>
     <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -404,7 +402,6 @@
     <property name="SkipTaskbarHint">True</property>
     <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="vbox">
         <property name="MemberName">vbox</property>
@@ -454,7 +451,6 @@
     <property name="SkipTaskbarHint">True</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -607,12 +603,12 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Database.Components.ConnectionSettingsWidget" design-size="466 273">
+  <widget class="Gtk.Bin" id="MonoDevelop.Database.Components.ConnectionSettingsWidget" design-size="466 296">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.Table" id="table">
         <property name="MemberName" />
-        <property name="NRows">8</property>
+        <property name="NRows">9</property>
         <property name="NColumns">2</property>
         <property name="RowSpacing">6</property>
         <property name="ColumnSpacing">6</property>
@@ -1116,7 +1112,6 @@
           <widget class="Gtk.Label" id="labelTest">
             <property name="MemberName" />
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes" />
             <property name="Wrap">True</property>
           </widget>
           <packing>
@@ -1180,6 +1175,36 @@
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.VBox" id="VBoxMain">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.Label" id="labelMessage">
+                <property name="MemberName" />
+                <property name="UseMarkup">True</property>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="TopAttach">8</property>
+            <property name="BottomAttach">9</property>
+            <property name="RightAttach">2</property>
+            <property name="AutoSize">False</property>
+            <property name="XOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">True</property>
             <property name="YFill">True</property>
             <property name="YShrink">False</property>
           </packing>

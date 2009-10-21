@@ -180,13 +180,7 @@ namespace MonoDevelop.Database.Sql
 		{
 			if (command == null)
 				throw new ArgumentNullException ("command");
-
-			try {
-				return command.ExecuteNonQuery ();
-			} catch (Exception e) {
-				QueryService.RaiseException (e);
-				return -1;
-			}
+			return command.ExecuteNonQuery ();
 		}
 
 		public virtual object ExecuteScalar (IDbCommand command)

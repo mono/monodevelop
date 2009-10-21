@@ -129,6 +129,7 @@
     <Compile Include="Collections\MySqlCharacterSetSchemaCollection.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Dialogs\MySqlCreateDatabaseDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Database.Sql.MySql.addin.xml">

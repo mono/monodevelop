@@ -43,24 +43,6 @@
     <itemgroups />
     <signals />
   </object>
-  <object type="MonoDevelop.Database.Components.ConnectionSettingsWidget" palette-category="MonoDevelop.Database.Components" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups>
-      <itemgroup label="ConnectionSettingsWidget Properties">
-        <property name="EnableServerEntry" />
-        <property name="EnablePortEntry" />
-        <property name="EnableUsernameEntry" />
-        <property name="EnablePasswordEntry" />
-        <property name="EnableRefreshButton" />
-        <property name="EnableOpenButton" />
-        <property name="EnableTestButton" />
-      </itemgroup>
-    </itemgroups>
-    <signals>
-      <itemgroup label="ConnectionSettingsWidget Signals">
-        <signal name="NeedsValidation" />
-      </itemgroup>
-    </signals>
-  </object>
   <object type="MonoDevelop.Database.Components.SqlEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="SqlEditorWidget Properties">

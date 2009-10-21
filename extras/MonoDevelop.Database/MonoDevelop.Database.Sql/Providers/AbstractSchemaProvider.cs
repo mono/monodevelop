@@ -76,6 +76,15 @@ namespace MonoDevelop.Database.Sql
 			this.supportedActions = new Dictionary<SchemaType, SchemaActions> ();
 		}
 		
+		public virtual string GetComentSeparator ()
+		{
+			return "--";
+		}
+		
+		public virtual bool CanComment {
+			get { return true; }
+		}
+			
 		public virtual bool CanEdit
 		{
 			get { return true; }
@@ -789,10 +798,12 @@ namespace MonoDevelop.Database.Sql
 		
 		protected virtual int ExecuteNonQuery (string sql)
 		{
-			IPooledDbConnection conn = connectionPool.Request ();
-			int result = conn.ExecuteNonQuery (sql);
-			conn.Release ();
-			return result;
+			using (IPooledDbConnection conn = connectionPool.Request ())
+			{
+				int result = conn.ExecuteNonQuery (sql);
+				conn.Release ();
+				return result;
+			}
 		}
 	}
 }

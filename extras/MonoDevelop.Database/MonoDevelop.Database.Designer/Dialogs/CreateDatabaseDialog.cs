@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -39,7 +39,7 @@ namespace MonoDevelop.Database.Designer
 		private DatabaseConnectionContext context;
 		
 		private ConnectionSettingsWidget settingsWidget;
-
+		
 		public CreateDatabaseDialog (IDbFactory factory)
 		{
 			this.Build();
@@ -51,13 +51,13 @@ namespace MonoDevelop.Database.Designer
 			settingsWidget.EnableOpenButton = false;
 			settingsWidget.EnableRefreshButton = false;
 			
-			//TODO: hide the border if only 1 tab page exists
-			
 			ShowAll ();
 		}
 		
 		public DatabaseConnectionContext DatabaseConnection {
 			get { return context; }
+			set { context = value; }
+			
 		}
 		
 		protected internal Notebook Notebook {
@@ -71,22 +71,31 @@ namespace MonoDevelop.Database.Designer
 		
 		protected virtual void OkClicked (object sender, EventArgs e)
 		{
-//			context = comboConnections.DatabaseConnection;
-//			if (context.IsTemporary) {
-//				//make it a real connection context and fill in the database
-//				context.ConnectionSettings.Database = entryDatabase.Text;
-//				context.ConnectionSettings.Name = entryName.Text;
-//				context.IsTemporary = false;
-//			} else {
-//				//create a copy of the settings and create a new context
-//				DatabaseConnectionSettings settings = new DatabaseConnectionSettings (context.ConnectionSettings);
-//				settings.Database = entryDatabase.Text;
-//				settings.Name = entryName.Text;
-//				context = new DatabaseConnectionContext (settings);
-//			}
-//
-//			Respond (ResponseType.Ok);
-//			Destroy ();
+			if (context.IsTemporary) {
+				try {
+					//make it a real connection context and fill in the database
+					IConnectionPool pool = DbFactoryService.CreateConnectionPool (DatabaseConnection);
+					pool.Initialize ();
+					ISchemaProvider provider = DbFactoryService.CreateSchemaProvider (DatabaseConnection, 
+					                                                                               pool);
+					DatabaseSchema db = new DatabaseSchema (provider);
+					db.Name = settingsWidget.ConnectionSettings.Database;
+					OnBeforeDatabaseCreation (db);
+					((AbstractEditSchemaProvider)provider).CreateDatabase (db);
+					
+					context.ConnectionSettings.Database = settingsWidget.ConnectionSettings.Database;
+					context.ConnectionSettings.Name = settingsWidget.ConnectionSettings.Name;
+					context.IsTemporary = false;
+					MessageService.ShowMessage (AddinCatalog.GetString ("Database has been created."));
+					ConnectionContextService.AddDatabaseConnectionContext (context);
+				} catch (Exception ex) {
+					QueryService.RaiseException (ex);
+					Respond (ResponseType.Close);
+					return;
+				}
+			}
+			Respond (ResponseType.Ok);
+			
 		}
 
 		protected virtual void CancelClicked (object sender, EventArgs e)
@@ -98,6 +107,11 @@ namespace MonoDevelop.Database.Designer
 		protected virtual void Validate (object sender, EventArgs e)
 		{
 			buttonOk.Sensitive = settingsWidget.ValidateFields ();
+		}
+		
+		protected virtual void OnBeforeDatabaseCreation (DatabaseSchema schema)
+		{
+			
 		}
 	}
 }

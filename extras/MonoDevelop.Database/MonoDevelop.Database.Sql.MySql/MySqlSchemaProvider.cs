@@ -644,6 +644,13 @@ namespace MonoDevelop.Database.Sql.MySql
 			}
 			return characterSets;
 		}
+
+		public MySqlCollationSchemaCollection GetCollations ()
+		{
+			MySqlCharacterSetSchema sch = new MySqlCharacterSetSchema (this);
+			sch.Name = "";
+			return GetCollations (sch);
+		}
 		
 		public MySqlCollationSchemaCollection GetCollations (MySqlCharacterSetSchema characterSet)
 		{
@@ -660,8 +667,8 @@ namespace MonoDevelop.Database.Sql.MySql
 								collation.Name = r.GetString (0);
 								collation.CharacterSetName = r.GetString (1);
 								collation.Id = r.GetInt32 (2);
-								collation.IsDefaultCollation = r.GetBoolean (3);
-								collation.IsCompiled = r.GetBoolean (4);
+								collation.IsDefaultCollation = r.GetString (3) == "Yes" ? true : false;
+								collation.IsCompiled = r.GetString (4) == "Yes" ? true : false;
 								collation.SortLength = r.GetInt32 (5);
 								collations.Add (collation);
 							}
@@ -680,7 +687,11 @@ namespace MonoDevelop.Database.Sql.MySql
 		//http://dev.mysql.com/doc/refman/5.1/en/create-database.html
 		public override void CreateDatabase (DatabaseSchema database)
 		{
-			ExecuteNonQuery (string.Concat("CREATE DATABASE ", database.Name));
+			StringBuilder sql = new StringBuilder ();
+			sql.AppendFormat ("CREATE DATABASE {0}", database.Name);
+			foreach (LineStatement statement in database.AfterCreationStatements)
+				sql.AppendFormat ("\n {0}", statement.GetStatement ());
+			ExecuteNonQuery (sql.ToString ());
 		}
 
 		//http://dev.mysql.com/doc/refman/5.1/en/create-table.html

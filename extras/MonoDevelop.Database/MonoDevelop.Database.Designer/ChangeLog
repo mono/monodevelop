@@ -1,3 +1,7 @@
+2009-10-21  Luciano N. Callero <lnc19@hotmail.com>
+	* Dialogs/CreateDatabaseDialog.cs: Create Database operations 
+	  dialog.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Designer.csproj: Fix the build & flush

@@ -34,9 +34,14 @@ namespace MonoDevelop.Database.Sql
 	/// </summary>
 	public class DatabaseSchema : AbstractSchema
 	{
+		public System.Collections.Generic.List<LineStatement> AfterCreationStatements = new 
+			System.Collections.Generic.List<LineStatement>();
+		
+		
 		public DatabaseSchema (ISchemaProvider schemaProvider)
 			: base (schemaProvider)
 		{
+			
 		}
 		
 		public DatabaseSchema (DatabaseSchema schema)
@@ -48,5 +53,6 @@ namespace MonoDevelop.Database.Sql
 		{
 			return new DatabaseSchema (this);
 		}
+		
 	}
 }

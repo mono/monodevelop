@@ -15,6 +15,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	Collections/MySqlCharacterSetSchemaCollection.cs \
 	Collections/MySqlCollationSchemaCollection.cs \
+	Dialogs/MySqlCreateDatabaseDialog.cs \
 	Dialogs/MySqlTableEditorDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlColumnEditorWidget.cs \

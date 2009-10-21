@@ -223,6 +223,8 @@
     <Compile Include="AlterSchema\Alterations\IndexAlterations.cs" />
     <Compile Include="AlterSchema\Alterations\ColumnAlterations.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Dialect\Statements\LineStatement.cs" />
+    <Compile Include="Configuration\DuplicatedConnectionContextException.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Database.Sql.addin.xml">

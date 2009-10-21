@@ -35,7 +35,21 @@ using MonoDevelop.Database.Components;
 	{
 		public bool ShowCreateDatabaseDialog (IDbFactory factory)
 		{
-			return false;
+			MySqlCreateDatabaseDialog dialog = new MySqlCreateDatabaseDialog (factory);
+			int resp;
+			do {
+				resp = dialog.Run ();
+				Console.WriteLine (resp);
+			} while (resp != (int)ResponseType.Cancel && 
+				    	     resp != (int)ResponseType.Ok && 
+				    		resp != (int)ResponseType.DeleteEvent);
+			dialog.Destroy ();
+			if (resp == (int)ResponseType.Ok)
+				return true;
+			else
+				return false;
+		
+			// return (RunDialog (new MySqlCreateDatabaseDialog (factory)));
 		}
 
 		public bool ShowAddConnectionDialog (IDbFactory factory)

@@ -73,13 +73,17 @@ namespace MonoDevelop.Database.Components {
         
         private Gtk.SpinButton spinPort;
         
+        private Gtk.VBox VBoxMain;
+        
+        private Gtk.Label labelMessage;
+        
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
             // Widget MonoDevelop.Database.Components.ConnectionSettingsWidget
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Database.Components.ConnectionSettingsWidget";
             // Container child MonoDevelop.Database.Components.ConnectionSettingsWidget.Gtk.Container+ContainerChild
-            this.table = new Gtk.Table(((uint)(8)), ((uint)(2)), false);
+            this.table = new Gtk.Table(((uint)(9)), ((uint)(2)), false);
             this.table.Name = "table";
             this.table.RowSpacing = ((uint)(6));
             this.table.ColumnSpacing = ((uint)(6));
@@ -424,6 +428,25 @@ namespace MonoDevelop.Database.Components {
             w36.RightAttach = ((uint)(2));
             w36.XOptions = ((Gtk.AttachOptions)(4));
             w36.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table.Gtk.Table+TableChild
+            this.VBoxMain = new Gtk.VBox();
+            this.VBoxMain.Name = "VBoxMain";
+            this.VBoxMain.Spacing = 6;
+            // Container child VBoxMain.Gtk.Box+BoxChild
+            this.labelMessage = new Gtk.Label();
+            this.labelMessage.Name = "labelMessage";
+            this.labelMessage.UseMarkup = true;
+            this.VBoxMain.Add(this.labelMessage);
+            Gtk.Box.BoxChild w37 = ((Gtk.Box.BoxChild)(this.VBoxMain[this.labelMessage]));
+            w37.Position = 0;
+            w37.Expand = false;
+            w37.Fill = false;
+            this.table.Add(this.VBoxMain);
+            Gtk.Table.TableChild w38 = ((Gtk.Table.TableChild)(this.table[this.VBoxMain]));
+            w38.TopAttach = ((uint)(8));
+            w38.BottomAttach = ((uint)(9));
+            w38.RightAttach = ((uint)(2));
+            w38.XOptions = ((Gtk.AttachOptions)(4));
             this.Add(this.table);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
