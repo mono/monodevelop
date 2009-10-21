@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.GtkCore.Dialogs {
     
-    
     public partial class GtkDesignerOptionsPanelWidget {
         
         private Gtk.VBox vbox2;

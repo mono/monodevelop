@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AssemblyName>libsteticui</AssemblyName>
+    <RootNamespace>libsteticui</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -138,8 +139,12 @@
     <Compile Include="Windows\WindowsTheme.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="action.png" />
-    <EmbeddedResource Include="missing.png" />
+    <EmbeddedResource Include="action.png">
+      <LogicalName>action.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="missing.png">
+      <LogicalName>missing.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="libsteticui.dll.config">

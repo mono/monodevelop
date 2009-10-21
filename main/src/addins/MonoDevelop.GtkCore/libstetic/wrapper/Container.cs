@@ -302,10 +302,15 @@ namespace Stetic.Wrapper
 				}
 			}
 			
-			ReadActionGroups (reader, elem);
-			ReadProperties (reader, elem);
-			ReadChildren (reader, elem);
-			DoSync ();
+			try {
+				Loading = true;
+				ReadActionGroups (reader, elem);
+				ReadProperties (reader, elem);
+				ReadChildren (reader, elem);
+				DoSync ();
+			} finally {
+				Loading = false;
+			}
 		}
 		
 		protected virtual void ReadChildren (ObjectReader reader, XmlElement elem)

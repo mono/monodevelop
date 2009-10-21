@@ -883,7 +883,8 @@ namespace Stetic.Wrapper {
 						
 					string on = oldName;
 					oldName = Wrapped.Name;
-					OnNameChanged (new WidgetNameChangedArgs (this, on, Wrapped.Name));
+					if (!Loading)
+						OnNameChanged (new WidgetNameChangedArgs (this, on, Wrapped.Name));
 					
 					// Keep the member name in sync with the widget name
 					if (on == MemberName)
@@ -895,7 +896,8 @@ namespace Stetic.Wrapper {
 					base.EmitNotify (propertyName);
 					string on = oldMemberName;
 					oldMemberName = MemberName;
-					OnMemberNameChanged (new WidgetNameChangedArgs (this, on, MemberName));
+					if (!Loading)
+						OnMemberNameChanged (new WidgetNameChangedArgs (this, on, MemberName));
 				}
 			}
 			else {

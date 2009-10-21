@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.GtkCore</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.GtkCore</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -121,7 +122,9 @@
     <None Include="icons\dialog.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.GtkCore.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.GtkCore.addin.xml">
+      <LogicalName>MonoDevelop.GtkCore.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="templates\Dialog.xft.xml">
       <LogicalName>Dialog.xft.xml</LogicalName>
     </EmbeddedResource>
@@ -134,7 +137,9 @@
     <EmbeddedResource Include="templates\ActionGroup.xft.xml">
       <LogicalName>ActionGroup.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gui.glade" />
+    <EmbeddedResource Include="gui.glade">
+      <LogicalName>gui.glade</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="templates\ActionGroupPartial.xft.xml">
       <LogicalName>ActionGroupPartial.xft.xml</LogicalName>
     </EmbeddedResource>

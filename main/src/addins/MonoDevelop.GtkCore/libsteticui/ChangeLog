@@ -1,3 +1,7 @@
+2009-10-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui.csproj: Flush.
+
 2009-10-16  Mike Krüger  <mkrueger@novell.com>
 
 	* ActionComponent.cs: Handled icon loading failures.

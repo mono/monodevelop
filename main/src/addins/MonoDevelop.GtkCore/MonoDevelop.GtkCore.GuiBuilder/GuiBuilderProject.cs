@@ -52,7 +52,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		internal object MemoryProbe = Counters.GuiProjectsInMemory.CreateMemoryProbe ();
 		
-		ArrayList formInfos;
+		List<GuiBuilderWindow> formInfos;
 		Stetic.Project gproject;
 		DotNetProject project;
 		string fileName;
@@ -84,7 +84,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 			
 			gproject = GuiBuilderService.SteticApp.CreateProject ();
-			formInfos = new ArrayList ();
+			formInfos = new List<GuiBuilderWindow> ();
 			
 			if (!System.IO.File.Exists (fileName)) {
 				// Regenerate the gtk-gui folder if the stetic project
@@ -223,7 +223,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		public ICollection Windows {
+		public ICollection<GuiBuilderWindow> Windows {
 			get {
 				Load ();
 				return formInfos; 

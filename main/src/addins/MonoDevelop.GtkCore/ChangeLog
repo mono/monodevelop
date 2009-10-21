@@ -1,3 +1,13 @@
+2009-10-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* MonoDevelop.GtkCore.csproj:
+	* gtk-gui/MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs:
+	  Flush.
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Use
+	  typed collection instead of ArrayList.
+
 2009-10-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs:
