@@ -788,6 +788,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				if (node.Deleted) {
 					Gtk.TreeIter it = node.NodeIter;
+					tree.RemoveChildren (it);
 					tree.UnregisterNode (node.DataItem, it, node.BuilderChain);
 					if (tree.Store.IterIsValid (it))
 						tree.Store.Remove (ref it);

@@ -1,3 +1,13 @@
+2009-10-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/TreeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Moved
+	  RemoveChildren method to the tree view, to make it reusable.
+
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs:
+	  When deleting a node, unregister and remove all its children
+	  too.
+
 2009-10-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Moved Format Document command to

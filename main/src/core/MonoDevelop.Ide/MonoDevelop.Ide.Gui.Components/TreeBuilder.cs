@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			public void ResetState ()
 			{
 				Update ();
-				RemoveChildren (currentIter);
+				pad.RemoveChildren (currentIter);
 
 				object data = store.GetValue (currentIter, ExtensibleTreeView.DataItemColumn);
 				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, ExtensibleTreeView.BuilderChainColumn);
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (!HasChildNodes (this, chain, data))
 					FillNode ();
 				else {
-					RemoveChildren (currentIter);
+					pad.RemoveChildren (currentIter);
 					store.AppendNode (currentIter);	// Dummy node
 					store.SetValue (currentIter, ExtensibleTreeView.FilledColumn, false);
 				}
@@ -112,21 +112,9 @@ namespace MonoDevelop.Ide.Gui.Components
 				RestoreState (ns);
 			}
 			
-			void RemoveChildren (Gtk.TreeIter it)
-			{
-				Gtk.TreeIter child;
-				while (store.IterChildren (out child, it)) {
-					RemoveChildren (child);
-					object childData = store.GetValue (child, ExtensibleTreeView.DataItemColumn);
-					if (childData != null)
-						pad.UnregisterNode (childData, child, null);
-					store.Remove (ref child);
-				}
-			}
-			
 			public void Remove ()
 			{
-				RemoveChildren (currentIter);
+				pad.RemoveChildren (currentIter);
 				object data = store.GetValue (currentIter, ExtensibleTreeView.DataItemColumn);
 				pad.UnregisterNode (data, currentIter, null);
 				Gtk.TreeIter it = currentIter;

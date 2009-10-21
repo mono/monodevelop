@@ -1284,6 +1284,18 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
+		internal void RemoveChildren (Gtk.TreeIter it)
+		{
+			Gtk.TreeIter child;
+			while (store.IterChildren (out child, it)) {
+				RemoveChildren (child);
+				object childData = store.GetValue (child, ExtensibleTreeView.DataItemColumn);
+				if (childData != null)
+					UnregisterNode (childData, child, null);
+				store.Remove (ref child);
+			}
+		}
+		
 		internal void CleanupNodeOptions ()
 		{
 			Dictionary<Gtk.TreeIter, TreeOptions> newOps = new Dictionary<Gtk.TreeIter, TreeOptions> ();
