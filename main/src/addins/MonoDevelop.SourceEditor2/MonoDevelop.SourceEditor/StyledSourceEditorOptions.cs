@@ -246,6 +246,11 @@ namespace MonoDevelop.SourceEditor
 			get { return DefaultSourceEditorOptions.Instance.ShowTabs; }
 			set { throw new NotSupportedException (); }
 		}
+		
+		public bool EnableAnimations {
+			get { return DefaultSourceEditorOptions.Instance.EnableAnimations; }
+			set { throw new NotSupportedException (); }
+		}
 
 		public Mono.TextEditor.IWordFindStrategy WordFindStrategy {
 			get { return DefaultSourceEditorOptions.Instance.WordFindStrategy; }

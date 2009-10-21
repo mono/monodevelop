@@ -43,11 +43,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.underlineErrorsCheckbutton.Active = DefaultSourceEditorOptions.Instance.UnderlineErrors;
 			this.highlightMatchingBracketCheckbutton.Active = DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
 			this.highlightCurrentLineCheckbutton.Active = DefaultSourceEditorOptions.Instance.HighlightCaretLine;
-			this.showRulerCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowRuler;
+			this.enableAnimationCheckbutton1.Active = DefaultSourceEditorOptions.Instance.ShowRuler;
 			this.showInvLinesCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowInvalidLines;
 			this.showSpacesCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowSpaces;
 			this.showTabsCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowTabs;
 			this.showEolCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowEolMarkers;
+			this.enableAnimationCheckbutton1.Active = DefaultSourceEditorOptions.Instance.EnableAnimations;
 			return this;
 		}
 		
@@ -57,11 +58,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.UnderlineErrors = this.underlineErrorsCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.HighlightMatchingBracket = this.highlightMatchingBracketCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.HighlightCaretLine = this.highlightCurrentLineCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.ShowRuler = this.showRulerCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ShowRuler = this.enableAnimationCheckbutton1.Active;
 			DefaultSourceEditorOptions.Instance.ShowInvalidLines = this.showInvLinesCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ShowSpaces = this.showSpacesCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ShowTabs = this.showTabsCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ShowEolMarkers = this.showEolCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EnableAnimations = this.enableAnimationCheckbutton1.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)
