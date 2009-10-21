@@ -1,3 +1,21 @@
+2009-10-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs:
+	  Implement interface is now atomic.
+
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Fixed 'Bug 548367 - Extract method adds an unwanted newline
+	  at the end'.
+
+	* MonoDevelop.Refactoring.MoveTypeToFile/TypeSearchVisitor.cs:
+	* MonoDevelop.Refactoring.MoveTypeToFile/TypeFilterTransformer.cs:
+	* MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs:
+	  Fixed 'Bug 545270 - Move type to another file'.
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj: 
+
 2009-10-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs: Fixed

@@ -70,7 +70,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
 			IType interfaceType = options.Dom.GetType (options.ResolveResult.ResolvedType);
 			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line + 1, location.Column + 1);
-			
+			options.Document.TextEditor.BeginAtomicUndo ();
 			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			refactorer.ImplementInterface (options.Document.CompilationUnit,
 			                               declaringType,
@@ -78,6 +78,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			                               true, 
 			                               interfaceType, 
 			                               options.ResolveResult.ResolvedType);
+			options.Document.TextEditor.EndAtomicUndo ();
 		}
 	}
 }

@@ -385,33 +385,37 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				
 				methodDecl.Parameters.Add (pde);
 			}
-			StringBuilder comment = new StringBuilder ();
+			
+			string indent = options.GetIndent (param.DeclaringMember);
+			StringBuilder methodText = new StringBuilder ();
+			methodText.AppendLine ();
+			methodText.Append (indent);
+			methodText.AppendLine ();
 			if (param.GenerateComment) {
-				string indent = options.GetIndent (param.DeclaringMember);
-				comment.Append (indent);
-				comment.AppendLine ("/// <summary>");
-				comment.Append (indent);
-				comment.AppendLine ("/// TODO: write a comment.");
-				comment.Append (indent);
-				comment.AppendLine ("/// </summary>");
+				methodText.Append (indent);
+				methodText.AppendLine ("/// <summary>");
+				methodText.Append (indent);
+				methodText.AppendLine ("/// TODO: write a comment.");
+				methodText.Append (indent);
+				methodText.AppendLine ("/// </summary>");
 				Ambience ambience = AmbienceService.GetAmbienceForFile (options.Document.FileName);
 				foreach (ParameterDeclarationExpression pde in methodDecl.Parameters) {
-						comment.Append (indent);
-					comment.Append ("/// <param name=\"");
-					comment.Append (pde.ParameterName);
-					comment.Append ("\"> A ");
-					comment.Append (ambience.GetString (pde.TypeReference.ConvertToReturnType (), OutputFlags.IncludeGenerics | OutputFlags.UseFullName) );
-					comment.Append (" </param>");
-					comment.AppendLine ();
+						methodText.Append (indent);
+					methodText.Append ("/// <param name=\"");
+					methodText.Append (pde.ParameterName);
+					methodText.Append ("\"> A ");
+					methodText.Append (ambience.GetString (pde.TypeReference.ConvertToReturnType (), OutputFlags.IncludeGenerics | OutputFlags.UseFullName) );
+					methodText.Append (" </param>");
+					methodText.AppendLine ();
 				}
 				if (methodDecl.TypeReference.Type != "System.Void") {
-					comment.Append (indent);
-					comment.AppendLine ("/// <returns>");
-					comment.Append (indent);
-					comment.Append ("/// A ");
-					comment.AppendLine (ambience.GetString (methodDecl.TypeReference.ConvertToReturnType (), OutputFlags.IncludeGenerics | OutputFlags.UseFullName) );
-					comment.Append (indent);
-					comment.AppendLine ("/// </returns>");
+					methodText.Append (indent);
+					methodText.AppendLine ("/// <returns>");
+					methodText.Append (indent);
+					methodText.Append ("/// A ");
+					methodText.AppendLine (ambience.GetString (methodDecl.TypeReference.ConvertToReturnType (), OutputFlags.IncludeGenerics | OutputFlags.UseFullName) );
+					methodText.Append (indent);
+					methodText.AppendLine ("/// </returns>");
 				}
 			}
 	/*		foreach (VariableDescriptor var in variablesToOutput) {
@@ -421,17 +425,19 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;
 				methodDecl.Parameters.Add (pde);
 			}*/
+			
+			methodText.Append (indent);
 			if (node is BlockStatement) {
-				string indent = options.GetIndent (param.DeclaringMember);
 				string text = provider.OutputNode (options.Dom, methodDecl, indent);
 				int emptyStatementMarker = text.LastIndexOf (';');
 				if (param.OneChangedVariable)
 					emptyStatementMarker = text.LastIndexOf (';', emptyStatementMarker - 1);
 				text = text.Substring (0, emptyStatementMarker) + param.Text + text.Substring (emptyStatementMarker + 1);
-				insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + comment + text;
+				methodText.Append (text);
 			} else {
-				insertNewMethod.InsertedText = Environment.NewLine + Environment.NewLine + comment + provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember));
+				methodText.Append (provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember)));
 			}
+			insertNewMethod.InsertedText = methodText.ToString ();
 			result.Add (insertNewMethod);
 
 			return result;

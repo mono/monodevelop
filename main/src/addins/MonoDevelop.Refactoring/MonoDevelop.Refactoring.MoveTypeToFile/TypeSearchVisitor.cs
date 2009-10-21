@@ -30,28 +30,16 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Refactoring.MoveTypeToFile
 {
-	public class TypeFilterTransformer : AbstractAstTransformer
+	public class TypeSearchVisitor : AbstractAstVisitor
 	{
-		string fullName;
-		public ICSharpCode.NRefactory.Ast.TypeDeclaration TypeDeclaration {
-			get;
-			set;
+		List<ICSharpCode.NRefactory.Ast.TypeDeclaration> types = new List<ICSharpCode.NRefactory.Ast.TypeDeclaration> ();
+		public List<ICSharpCode.NRefactory.Ast.TypeDeclaration> Types {
+			get { return this.types; }
 		}
-		public TypeFilterTransformer (string fullName)
-		{
-			this.fullName = fullName;
-		}
-		
 		public override object VisitTypeDeclaration (ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration, object data)
 		{
-			if (typeDeclaration.Name != fullName) {
-				RemoveCurrentNode ();
-				return null;
-			}
-			TypeDeclaration = typeDeclaration;
+			types.Add (typeDeclaration);
 			return base.VisitTypeDeclaration (typeDeclaration, data);
 		}
 	}
-	
-	
 }

@@ -73,21 +73,54 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				result.Add (new RenameFileChange (type.CompilationUnit.FileName, newName));
 			} else {
 				StringBuilder content = new StringBuilder ();
+				
 				if (options.Dom.Project is DotNetProject)
 					content.Append (StandardHeaderService.GetHeader (options.Dom.Project, ((DotNetProject)options.Dom.Project).LanguageName, type.CompilationUnit.FileName, true) + Environment.NewLine);
+				
 				INRefactoryASTProvider provider = options.GetASTProvider ();
 				Mono.TextEditor.TextEditorData data = options.GetTextEditorData ();
 				ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (options.Document.TextEditor.Text);
 				TypeFilterTransformer typeFilterTransformer = new TypeFilterTransformer (type.Name);
 				unit.AcceptVisitor (typeFilterTransformer, null);
-
-				content.Append (provider.OutputNode (options.Dom, unit));
+				Mono.TextEditor.Document generatedDocument = new Mono.TextEditor.Document ();
+				generatedDocument.Text = provider.OutputNode (options.Dom, unit);
+				
+				int startLine = -1;
+				for (int i = typeFilterTransformer.TypeDeclaration.StartLocation.Line - 2; i >= 0; i--) {
+					string lineText = data.Document.GetTextAt (data.Document.GetLine (i)).Trim ();
+					if (string.IsNullOrEmpty (lineText))
+						continue;
+					if (lineText.StartsWith ("///")) {
+						startLine = i;
+					} else {
+						break;
+					}
+				}
+				
+				int start;
+				if (startLine >= 0) {
+					start = data.Document.GetLine (startLine).Offset;
+				} else {
+					start = data.Document.LocationToOffset (typeFilterTransformer.TypeDeclaration.StartLocation.Line - 1, typeFilterTransformer.TypeDeclaration.StartLocation.Column - 1);
+				}
+				int length = data.Document.LocationToOffset (typeFilterTransformer.TypeDeclaration.EndLocation.Line - 1, typeFilterTransformer.TypeDeclaration.EndLocation.Column) - start;
+				
+				ICSharpCode.NRefactory.Ast.CompilationUnit generatedCompilationUnit = provider.ParseFile (generatedDocument.Text);
+				TypeSearchVisitor typeSearchVisitor = new TypeSearchVisitor ();
+				generatedCompilationUnit.AcceptVisitor (typeSearchVisitor, null);
+					
+				int genStart = generatedDocument.LocationToOffset (typeSearchVisitor.Types[0].StartLocation.Line - 1, 0);
+				int genEnd   = generatedDocument.LocationToOffset (typeSearchVisitor.Types[0].EndLocation.Line - 1, typeSearchVisitor.Types[0].EndLocation.Column - 1);
+				((Mono.TextEditor.IBuffer)generatedDocument).Replace (genStart, genEnd - genStart, data.Document.GetTextAt (start, length));
+				content.Append (generatedDocument.Text);
+				
 				result.Add (new CreateFileChange (newName, content.ToString ()));
+				
 				TextReplaceChange removeDeclaration = new TextReplaceChange ();
 				removeDeclaration.Description = "Remove type declaration";
 				removeDeclaration.FileName = type.CompilationUnit.FileName;
-				removeDeclaration.Offset = data.Document.LocationToOffset (typeFilterTransformer.TypeDeclaration.StartLocation.Line - 1, typeFilterTransformer.TypeDeclaration.StartLocation.Column - 1);
-				removeDeclaration.RemovedChars = data.Document.LocationToOffset (typeFilterTransformer.TypeDeclaration.EndLocation.Line - 1, typeFilterTransformer.TypeDeclaration.EndLocation.Column) - removeDeclaration.Offset;
+				removeDeclaration.Offset = start;
+				removeDeclaration.RemovedChars = length;
 				result.Add (removeDeclaration);
 
 			}

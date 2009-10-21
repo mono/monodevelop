@@ -66,6 +66,7 @@ FILES =  \
 	MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs \
 	MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs \
 	MonoDevelop.Refactoring.MoveTypeToFile/TypeFilterTransformer.cs \
+	MonoDevelop.Refactoring.MoveTypeToFile/TypeSearchVisitor.cs \
 	MonoDevelop.Refactoring.RefactorImports/FindTypeReferencesVisitor.cs \
 	MonoDevelop.Refactoring.RefactorImports/RefactorImportsHandler.cs \
 	MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs \
