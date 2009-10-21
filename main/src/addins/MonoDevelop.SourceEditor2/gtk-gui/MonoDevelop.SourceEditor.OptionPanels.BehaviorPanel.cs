@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.SourceEditor.OptionPanels {
     
-    
     public partial class BehaviorPanel {
         
         private Gtk.VBox vbox1;

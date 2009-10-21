@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.SourceEditor {
     
-    
     internal partial class SearchAndReplaceWidget {
         
         private Gtk.HBox containerBox;

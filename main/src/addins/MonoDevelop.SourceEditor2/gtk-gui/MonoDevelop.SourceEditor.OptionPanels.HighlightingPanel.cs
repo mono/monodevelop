@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.SourceEditor.OptionPanels {
     
-    
     public partial class HighlightingPanel {
         
         private Gtk.VBox vbox4;
