@@ -1,5 +1,13 @@
 2009-10-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Declare local now generates better variable names.
+
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Extract method now trims the strings itself.
+
+2009-10-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs:
 	* MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs:
 	  Implement interface is now atomic.

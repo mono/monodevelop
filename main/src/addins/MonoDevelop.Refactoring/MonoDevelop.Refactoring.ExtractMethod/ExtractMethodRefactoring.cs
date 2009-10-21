@@ -278,7 +278,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				varGen.InsertedText = Environment.NewLine + options.GetWhitespaces (line.Offset);
 				foreach (VariableDescriptor var in param.VariablesToGenerate) {
 					TypeReference tr = options.ShortenTypeName (var.ReturnType).ConvertToTypeReference ();
-					varGen.InsertedText += provider.OutputNode (options.Dom, new LocalVariableDeclaration (new VariableDeclaration (var.Name, null, tr)));
+					varGen.InsertedText += provider.OutputNode (options.Dom, new LocalVariableDeclaration (new VariableDeclaration (var.Name, null, tr))).Trim ();
 				}
 				result.Add (varGen);
 			}
@@ -326,7 +326,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				}
 			}
 			
-			replacement.InsertedText = options.GetWhitespaces (options.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (options.Dom, outputNode);
+			replacement.InsertedText = options.GetWhitespaces (options.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (options.Dom, outputNode).Trim ();
 			
 			result.Add (replacement);
 
@@ -428,14 +428,14 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			
 			methodText.Append (indent);
 			if (node is BlockStatement) {
-				string text = provider.OutputNode (options.Dom, methodDecl, indent);
+				string text = provider.OutputNode (options.Dom, methodDecl, indent).Trim ();
 				int emptyStatementMarker = text.LastIndexOf (';');
 				if (param.OneChangedVariable)
 					emptyStatementMarker = text.LastIndexOf (';', emptyStatementMarker - 1);
 				text = text.Substring (0, emptyStatementMarker) + param.Text + text.Substring (emptyStatementMarker + 1);
 				methodText.Append (text);
 			} else {
-				methodText.Append (provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember)));
+				methodText.Append (provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember)).Trim ());
 			}
 			insertNewMethod.InsertedText = methodText.ToString ();
 			result.Add (insertNewMethod);
