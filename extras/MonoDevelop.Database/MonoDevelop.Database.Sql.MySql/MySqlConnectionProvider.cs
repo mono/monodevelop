@@ -35,7 +35,9 @@ using System.Collections.Generic;
 {
 	public class MySqlConnectionProvider : AbstractConnectionProvider
 	{
-		public override IPooledDbConnection CreateConnection (IConnectionPool pool, DatabaseConnectionSettings settings, out string error)
+		public override IPooledDbConnection CreateConnection (IConnectionPool pool, 
+		                                                      DatabaseConnectionSettings settings, 
+		                                                      out string error)
 		{
 			string connStr = null;
 			try {	
@@ -44,7 +46,7 @@ using System.Collections.Generic;
 				} else {
 					//"Server=Server;Port=1234;Database=Test;Uid=UserName;Pwd=asdasd;"
 					//Default port is 3306. Enter value -1 to use a named pipe connection. 
-					if (port > 0)
+					if (settings.Port > 0)
 						connStr = String.Format ("Server={0};Port={1};Database={2};Uid={3};Pwd={4};",
 							settings.Server, settings.Port, settings.Database, settings.Username, settings.Password);
 					else

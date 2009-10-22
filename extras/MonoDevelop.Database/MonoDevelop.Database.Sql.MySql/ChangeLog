@@ -1,3 +1,6 @@
+2009-10-22 Luciano N. Callero <lnc19@hotmail.com>
+	* Fix build problem.
+
 2009-10-22  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* MySqlGuiProvider.cs: Common Database API update. 
