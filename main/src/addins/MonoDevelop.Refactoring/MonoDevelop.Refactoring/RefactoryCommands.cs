@@ -336,7 +336,12 @@ namespace MonoDevelop.Refactoring
 			public void AddImport ()
 			{
 				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-				refactorer.AddNamespaceImport (ctx, doc.FileName, ns);
+				
+				if (resolveResult is NamespaceResolveResult) {
+					refactorer.AddLocalNamespaceImport (ctx, doc.FileName, ns, resolveResult.ResolvedExpression.Region.Start);
+				} else {
+					refactorer.AddGlobalNamespaceImport (ctx, doc.FileName, ns);
+				}
 			}
 			
 			public void ResolveName ()
