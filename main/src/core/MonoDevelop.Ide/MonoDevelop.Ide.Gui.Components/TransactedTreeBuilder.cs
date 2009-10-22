@@ -685,6 +685,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			public bool Deleted;
 			public bool Modified;
 			public bool Reset;
+			public bool DeleteDone;
+			public bool ChildrenDeleted;
 
 			public bool HasIter {
 				get { return !NodeIter.Equals (Gtk.TreeIter.Zero); }
@@ -693,13 +695,14 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		internal class TransactedNodeStore
 		{
-			Dictionary<Gtk.TreeIter, TreeNode> iterToNode = new Dictionary<Gtk.TreeIter,TreeNode> ();
+			Dictionary<Gtk.TreeIter, TreeNode> iterToNode;
 			Dictionary<object, List<TreeNode>> objects = new Dictionary<object,List<TreeNode>> ();
 			ExtensibleTreeView tree;
 			
 			public TransactedNodeStore (ExtensibleTreeView tree)
 			{
 				this.tree = tree;
+				iterToNode = new Dictionary<Gtk.TreeIter,TreeNode> (new IterComparer (tree.store));
 			}
 			
 			public TreeNode GetNode (Gtk.TreeIter it)
@@ -780,18 +783,26 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public void CommitChanges ()
 			{
-				foreach (TreeNode node in iterToNode.Values)
+				// First of all, mark as deleted the children of deleted nodes
+				// This avoids trying to delete nodes that have already been deleted (it set DeletedDone flag)
+				foreach (TreeNode node in iterToNode.Values) {
+					if (node.Deleted)
+						MarkChildrenDeleted (node);
+				}
+				foreach (TreeNode node in iterToNode.Values) {
 					CommitNode (node);
+				}
 			}
 
 			void CommitNode (TreeNode node)
 			{
 				if (node.Deleted) {
-					Gtk.TreeIter it = node.NodeIter;
-					tree.RemoveChildren (it);
-					tree.UnregisterNode (node.DataItem, it, node.BuilderChain);
-					if (tree.Store.IterIsValid (it))
-						tree.Store.Remove (ref it);
+					if (node.DeleteDone)
+						// It means that a parent node has been deleted, so we can skip this one
+						return;
+					
+					MarkDeleted (node);
+					tree.Store.Remove (ref it);
 					return;
 				}
 				else if (node.Modified) {
@@ -824,6 +835,51 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 				if (node.Expanded)
 					tree.Tree.ExpandToPath (tree.Store.GetPath (node.NodeIter));
+			}
+			
+			void MarkDeleted (TreeNode node)
+			{
+				// Marks the node as deleted and unregisters it from the store
+				// It also marks is children as deleted
+				if (node.DeleteDone)
+					return;
+				node.DeleteDone = true;
+				tree.UnregisterNode (node.DataItem, node.NodeIter, node.BuilderChain);
+				MarkChildrenDeleted (node);
+			}
+			
+			void MarkChildrenDeleted (TreeNode node)
+			{
+				// Marks all the children of the node as deleted, and unregisters them from the store
+				if (node.ChildrenDeleted)
+					return;
+				node.ChildrenDeleted = true;
+				if (node.Children != null) {
+					foreach (TreeNode cn in node.Children)
+						MarkDeleted (cn);
+				}
+				// It may have children not instantiated as TreeNode
+				if (!node.NodeIter.Equals (Gtk.TreeIter.Zero))
+					MarkChildrenDeleted (node.NodeIter);
+			}
+			
+			void MarkChildrenDeleted (Gtk.TreeIter it)
+			{
+				Gtk.TreeIter child;
+				if (!tree.store.IterChildren (out child, it))
+					return;
+				do {
+					TreeNode node;
+					if (iterToNode.TryGetValue (child, out node)) {
+						MarkDeleted (node);
+					} else {
+						MarkChildrenDeleted (child);
+						object childData = tree.store.GetValue (child, ExtensibleTreeView.DataItemColumn);
+						if (childData != null)
+							tree.UnregisterNode (childData, child, null);
+					}
+				}
+				while (tree.store.IterNext (ref child));
 			}
 		}
 	}

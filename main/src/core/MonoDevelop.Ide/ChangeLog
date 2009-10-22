@@ -1,3 +1,9 @@
+2009-10-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs:
+	  Improve handling of deleted nodes. Avoid deleting a children
+	  if a parent node has already been deleted.
+
 2009-10-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/TreeBuilder.cs:
