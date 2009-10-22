@@ -1,3 +1,10 @@
+2009-10-22  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* MySqlGuiProvider.cs: Common Database API update. 
+
+	* MySqlConnectionProvider.cs: Implement Use Default port (to
+	  use the default port without specifing it). 
+
 2009-10-21 Luciano N.Callero <lnc19@hotmail.com>
 	* Dialogs/MySqlCreateDatabaseDialog.cs: 
 	* MySqlGuiProvider.cs: 

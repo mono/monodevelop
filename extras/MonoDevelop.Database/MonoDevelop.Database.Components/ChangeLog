@@ -1,3 +1,15 @@
+2009-10-22  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* gtk-gui/generated.cs:
+	* Widgets/ConnectionSettingsWidget.cs:
+	* Dialogs/DatabaseConnectionSettingsDialog.cs:
+	* gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:
+	* gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs:
+	  Implement Use Default port (to use the default port without
+	  specifing it). Implement Integrated Security Connection.
+
 2009-10-21  Luciano N. Callero <lnc19@hotmail.com>
 	* Widgets/ConnectionSettingsWidget.cs:
 	* gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:

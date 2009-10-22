@@ -1,3 +1,11 @@
+2009-10-22  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* NodeBuilders/ConnectionContextNodeBuilder.cs: Fixed Remove
+	  Database bugs and complete edit database connection. 
+
+	* NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:
+	  Fixed Remove Database bug.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

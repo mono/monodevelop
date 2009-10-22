@@ -44,6 +44,7 @@ namespace MonoDevelop.Database.Components
 
 		protected ListStore storeDatabases;
 		protected bool isDatabaseListEmpty;
+		protected bool isEditMode = false;
 		
 		protected bool enablePasswordEntry;
 		protected bool enableUsernameEntry;
@@ -52,9 +53,12 @@ namespace MonoDevelop.Database.Components
 		protected bool enableRefreshButton;
 		protected bool enableOpenButton;
 		protected bool enableTestButton;
+		protected bool enableIntegratedSecurity;
 		
 		protected IDbFactory factory;
 		protected DatabaseConnectionSettings settings;
+		
+		
 
 		public ConnectionSettingsWidget (IDbFactory factory)
 		{
@@ -76,6 +80,11 @@ namespace MonoDevelop.Database.Components
 			EnablePasswordEntry = true;
 			EnableRefreshButton = true;
 			EnableOpenButton = false;
+		}
+		
+		public ConnectionSettingsWidget (IDbFactory factory, bool isEditMode):this(factory)
+		{
+			this.isEditMode = isEditMode;
 		}
 		
 		public DatabaseConnectionSettings ConnectionSettings {
@@ -100,6 +109,14 @@ namespace MonoDevelop.Database.Components
 			set {
 				enablePortEntry = value;
 				spinPort.Sensitive = value;
+				checkDefaultPort.Sensitive = value;
+			}
+		}
+		
+		public bool EnableIntegratedSecurity {
+			get { return enableIntegratedSecurity; }
+			set {
+				enableIntegratedSecurity = value;
 			}
 		}
 		
@@ -154,10 +171,19 @@ namespace MonoDevelop.Database.Components
 			settings.MinPoolSize = (int)spinMinPoolSize.Value;
 			settings.MaxPoolSize = (int)spinMaxPoolSize.Value;
 			settings.Name = entryName.Text;
-			settings.Username = entryUsername.Text;
-			settings.Password = entryPassword.Text;
+			if (!checkIntegratedSecurity.Active) {
+				settings.Username = entryUsername.Text;
+				settings.Password = entryPassword.Text;
+				settings.UseIntegratedSecurity = false;
+			} else {
+				settings.UseIntegratedSecurity = true;
+			}
 			settings.Server = entryServer.Text;
-			settings.Port = (int)spinPort.Value;
+			if (spinPort.Sensitive)
+				settings.Port = (int)spinPort.Value;
+			else
+				settings.Port = 0;
+			
 			settings.Database = comboDatabase.Entry.Text;
 			settings.SavePassword = checkSavePassword.Active;
 		}
@@ -174,6 +200,11 @@ namespace MonoDevelop.Database.Components
 			comboDatabase.Entry.Text = String.IsNullOrEmpty (settings.Database) ? String.Empty : settings.Database;
 			spinMinPoolSize.Value = settings.MinPoolSize;
 			spinMaxPoolSize.Value = settings.MaxPoolSize;
+			checkIntegratedSecurity.Sensitive = settings.CanUseIntegratedSecurity;
+			if (settings.UseIntegratedSecurity)
+				checkIntegratedSecurity.Active = true;
+			else
+				checkIntegratedSecurity.Active = false;
 			FillDatabaseConnectionSettings (settings);
 		}
 		
@@ -228,9 +259,12 @@ namespace MonoDevelop.Database.Components
 			entryUsername.Sensitive = sens && enableUsernameEntry;
 			entryServer.Sensitive = sens && enableServerEntry;
 			spinPort.Sensitive = sens && enablePortEntry;
+			checkDefaultPort.Sensitive = sens && enablePortEntry;
+			checkIntegratedSecurity.Sensitive = sens && enableIntegratedSecurity;
 			comboDatabase.Sensitive = sens;
 			buttonRefresh.Sensitive = sens && enableRefreshButton;
 			scrolledwindow.Sensitive = !sens;
+			
 		}
 		
 		protected virtual void ConnectionStringChanged (object sender, EventArgs e)
@@ -268,8 +302,8 @@ namespace MonoDevelop.Database.Components
 					&& (entryServer.Text.Length > 0 || !enableServerEntry)
 					&& (entryUsername.Text.Length > 0 || !enableUsernameEntry)
 					&& (comboDatabase.Entry.Text.Length > 0)
-					&& !alreadyExists;
-				if (alreadyExists)
+					&& (!alreadyExists || (isEditMode && ConnectionSettings.Name == entryName.Text));
+				if (alreadyExists && !isEditMode)
 					labelMessage.Markup = string.Concat ("<i>", 
 									AddinCatalog.GetString ("Connection Name Already used, choose another."),"</i>");
 				else
@@ -382,5 +416,26 @@ namespace MonoDevelop.Database.Components
 					labelTest.Text = AddinCatalog.GetString ("Test Failed: {0}.", error);
 			});
 		}
+		
+		protected virtual void OnCheckDefaultPortToggled (object sender, System.EventArgs e)
+		{
+			if (checkDefaultPort.Active)
+				spinPort.Sensitive = false;
+			else
+				spinPort.Sensitive = true;
+		}
+		protected virtual void OnCheckIntegratedSecurityToggled (object sender, System.EventArgs e)
+		{
+			if (checkIntegratedSecurity.Active) {
+				entryUsername.Sensitive = false;
+				entryPassword.Sensitive = false;
+				checkSavePassword.Sensitive = false;
+			} else {
+				entryUsername.Sensitive = true;
+				entryPassword.Sensitive = true;
+				checkSavePassword.Sensitive = true;				
+			}
+		}
+	
 	}
 }

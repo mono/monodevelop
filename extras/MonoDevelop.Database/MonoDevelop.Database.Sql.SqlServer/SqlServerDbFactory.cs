@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -87,7 +87,12 @@ using MonoDevelop.Database.Components;
 			settings.Port = 1433;
 			settings.Username = "sa";
 			settings.MaxPoolSize = 5;
-			
+			settings.CanUseIntegratedSecurity = true;
+	        int p = (int) Environment.OSVersion.Platform;
+			if ((p == 4) || (p == 6) || (p == 128))
+				settings.UseIntegratedSecurity = false;
+			else
+				settings.UseIntegratedSecurity = true;
 			return settings;
 		}
 	}

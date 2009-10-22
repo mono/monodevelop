@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //	Christian Hergert  <chris@mosaix.net>
 //	Ben Motmans  <ben.motmans@gmail.com>
@@ -35,6 +35,7 @@ using System.Collections.Generic;
 	{
 		public override IPooledDbConnection CreateConnection (IConnectionPool pool, DatabaseConnectionSettings settings, out string error)
 		{
+			
 			SqlConnectionStringBuilder builder = null;
 			try {	
 				if (settings.UseConnectionString) {
@@ -42,12 +43,20 @@ using System.Collections.Generic;
 				} else {
 					builder = new SqlConnectionStringBuilder ();
 					builder.InitialCatalog = settings.Database;
-					builder.UserID = settings.Username;
-					builder.Password = settings.Password;
-					builder.DataSource = String.Concat (settings.Server, ",", settings.Port);
+					if (settings.UseIntegratedSecurity) {
+						builder.IntegratedSecurity = true;
+					} else {
+						builder.UserID = settings.Username;
+						builder.Password = settings.Password;
+					}
+					if (settings.Port == 0) // Don't assign default port
+						builder.DataSource = String.Concat (settings.Server, ",", settings.Port);
+					else
+						builder.DataSource = String.Concat (settings.Server, ",", settings.Port);
 					//builder.NetworkLibrary = "DBMSSOCN";
 				}
 				builder.Pooling = false;
+				Console.WriteLine ("---> {0}", builder.ToString ());
 				SqlConnection connection = new SqlConnection (builder.ToString ());
 				connection.Open ();
 				

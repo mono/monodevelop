@@ -44,10 +44,17 @@ using MonoDevelop.Database.Components;
 			return RunDialog (dlg);
 		}
 		
-		public bool ShowEditConnectionDialog (IDbFactory factory, DatabaseConnectionSettings settings)
+		public bool ShowEditConnectionDialog (IDbFactory factory, 
+		                                      DatabaseConnectionSettings settings, 
+		                                      out DatabaseConnectionSettings newSettings)
 		{
 			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (factory, settings);
-			return RunDialog (dlg);
+			bool result = RunDialog (dlg);
+			if (result)
+				newSettings = dlg.ConnectionSettings;
+			else
+				newSettings = null;			
+			return result;
 		}
 
 		public bool ShowTableEditorDialog (IEditSchemaProvider schemaProvider, TableSchema table, bool create)

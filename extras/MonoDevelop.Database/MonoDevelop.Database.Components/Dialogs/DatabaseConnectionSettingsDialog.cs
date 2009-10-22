@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -38,6 +38,7 @@ namespace MonoDevelop.Database.Components
 	{
 		protected ConnectionSettingsWidget settingsWidget;
 		protected bool isEditMode;
+		protected DatabaseConnectionSettings settings;
 		
 		protected DatabaseConnectionSettingsDialog (IDbFactory factory, bool isEditMode)
 		{
@@ -75,7 +76,12 @@ namespace MonoDevelop.Database.Components
 		}
 		
 		public DatabaseConnectionSettings ConnectionSettings {
-			get { return settingsWidget.ConnectionSettings; }
+			get { 
+				if (settings == null)
+					return settingsWidget.ConnectionSettings;
+				else
+					return settings;
+			}
 		}
 		
 		public ConnectionSettingsWidget ConnectionSettingsWidget {
@@ -84,13 +90,14 @@ namespace MonoDevelop.Database.Components
 		
 		protected virtual ConnectionSettingsWidget CreateConnectionSettingsWidget (IDbFactory factory, bool isEditMode)
 		{
-			return new ConnectionSettingsWidget (factory);
+			return new ConnectionSettingsWidget (factory, isEditMode);
 		}
 
 		protected virtual void OnOkClicked (object sender, System.EventArgs e)
 		{
 			if (!isEditMode)
 				ConnectionContextService.AddDatabaseConnectionContext (ConnectionSettings);
+			settings = settingsWidget.ConnectionSettings;
 			
 			Respond (ResponseType.Ok);
 			Hide ();

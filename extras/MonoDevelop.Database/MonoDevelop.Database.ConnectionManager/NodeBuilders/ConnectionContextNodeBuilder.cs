@@ -167,13 +167,16 @@ namespace MonoDevelop.Database.ConnectionManager
 		protected void OnEditConnection ()
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
-			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (context.DbFactory, context.ConnectionSettings);
-
-			if (dlg.Run () == (int)ResponseType.Ok) {
-				ConnectionContextService.EditDatabaseConnectionContext (context);
-				context.Refresh ();
+			DatabaseConnectionSettings newSettings;
+			if (context.DbFactory.GuiProvider.ShowEditConnectionDialog (context.DbFactory,
+			                                                            context.ConnectionSettings,
+			                                                            out newSettings)) {
+				DatabaseConnectionContext newContext = new DatabaseConnectionContext (newSettings);
+				ConnectionContextService.RemoveDatabaseConnectionContext (context);
+				ConnectionContextService.AddDatabaseConnectionContext (newContext);
+				newContext.Refresh ();
 			}
-			dlg.Destroy ();
+			
 		}
 		
 		[CommandHandler (ConnectionManagerCommands.DisconnectConnection)]

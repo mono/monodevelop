@@ -86,9 +86,17 @@ using MonoDevelop.Database.Components;
 			return RunDialog (new SqliteDatabaseConnectionSettingsDialog (factory));
 		}
 		
-		public bool ShowEditConnectionDialog (IDbFactory factory, DatabaseConnectionSettings settings)
+		public bool ShowEditConnectionDialog (IDbFactory factory, 
+		                                      DatabaseConnectionSettings settings, 
+		                                      out DatabaseConnectionSettings newSettings)
 		{
-			return RunDialog (new SqliteDatabaseConnectionSettingsDialog (factory, settings));
+			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (factory, settings);
+			bool result = RunDialog (dlg);
+			if (result)
+				newSettings = dlg.ConnectionSettings;
+			else
+				newSettings = null;			
+			return result;
 		}
 
 		public bool ShowTableEditorDialog (IEditSchemaProvider schemaProvider, TableSchema table, bool create)

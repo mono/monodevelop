@@ -1,3 +1,14 @@
+2009-10-22  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* SqlServerConnectionProvider.cs: Implement Use Default port
+	  (to use the default port without specifing it). Implement
+	  Integrated Security Connection.
+
+	* SqlServerDbFactory.cs: Use Integrated security by default
+	  when running non Linux machine.
+
+	* SqlServerGuiProvider.cs: Common Database API update.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Sql.SqlServer.csproj: Fix the build &

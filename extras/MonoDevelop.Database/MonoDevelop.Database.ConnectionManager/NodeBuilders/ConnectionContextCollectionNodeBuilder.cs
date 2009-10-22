@@ -72,6 +72,7 @@ namespace MonoDevelop.Database.ConnectionManager
 		{
 			label = AddinCatalog.GetString ("Database Connections");
 			icon = Context.GetIcon ("md-db-connection");
+			
 			this.builder = builder;
 		}
 		
@@ -99,9 +100,11 @@ namespace MonoDevelop.Database.ConnectionManager
 		
 		private void OnConnectionRemoved (object sender, DatabaseConnectionContextEventArgs args)
 		{
+			ITreeBuilder builder = Context.GetTreeBuilder (args.ConnectionContext);
 			if (builder.MoveToObject (args.ConnectionContext)) {
 				builder.Remove ();
 				builder.MoveToParent ();
+				builder.UpdateAll ();
 			}
 		}
 	}

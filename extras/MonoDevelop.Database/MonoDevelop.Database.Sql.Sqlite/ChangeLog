@@ -1,3 +1,7 @@
+2009-10-22  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* SqliteGuiProvider.cs: Common Database API update.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Sql.Sqlite.csproj: Fix the build &

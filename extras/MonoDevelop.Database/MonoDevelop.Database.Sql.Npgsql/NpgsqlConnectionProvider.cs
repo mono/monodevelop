@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //	Christian Hergert  <chris@mosaix.net>
 //	Ben Motmans  <ben.motmans@gmail.com>
@@ -41,8 +41,13 @@ using System.Collections.Generic;
 					connStr = settings.ConnectionString;
 				} else {
 					//User ID=root;Password=myPassword;Host=localhost;Port=5432;Database=myDataBase;Pooling=true;Min Pool Size=0;Max Pool Size=100;Connection Lifetime=0;
-					connStr = String.Format ("User ID={0};Password={1};Host={2};Port={3};Database={4};",
-						settings.Username, settings.Password, settings.Server, settings.Port, settings.Database);
+					if (settings.Port > 0)
+						connStr = String.Format ("User ID={0};Password={1};Host={2};Port={3};Database={4};",
+							settings.Username, settings.Password, settings.Server, settings.Port, settings.Database);
+					else
+						connStr = String.Format ("User ID={0};Password={1};Host={2};Database={3};",
+							settings.Username, settings.Password, settings.Server, settings.Database);
+						
 				}
 				connStr = SetConnectionStringParameter (connStr, String.Empty, "Pooling", "false");
 				NpgsqlConnection connection = new NpgsqlConnection (connStr);

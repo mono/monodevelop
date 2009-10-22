@@ -1,3 +1,10 @@
+2009-10-22  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* NpgsqlGuiProvider.cs: Common Database API update.
+
+	* NpgsqlConnectionProvider.cs: Implement Use Default port (to
+	  use the default port without specifing it). 
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Sql.Npgsql.csproj: Fix the build &

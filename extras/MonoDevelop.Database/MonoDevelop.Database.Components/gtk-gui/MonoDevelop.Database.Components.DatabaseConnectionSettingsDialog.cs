@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Components {
     
-    
     public partial class DatabaseConnectionSettingsDialog {
         
         private Gtk.VBox vbox;

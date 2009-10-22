@@ -31,22 +31,24 @@ namespace MonoDevelop.Database.Sql
 	[Serializable]
 	public class DatabaseConnectionSettings
 	{
-		private string name;
-		private string providerIdentifier;
+		string name;
+		string providerIdentifier;
 		
-		private string server;
-		private int port;
+		string server;
+		int port;
 		
-		private string database;
-		private string username;
-		private string password;
-		private bool savePassword;
+		string database;
+		string username;
+		string password;
+		bool savePassword;
 
-		private int minPoolSize;
-		private int maxPoolSize;
+		int minPoolSize;
+		int maxPoolSize;
 		
-		private string connectionString;
-		private bool useConnectionString;
+		string connectionString;
+		bool useConnectionString;
+		bool useIntegratedSecurity;
+		bool canUseIntegratedSecurity;
 		
 		public DatabaseConnectionSettings ()
 		{
@@ -66,6 +68,8 @@ namespace MonoDevelop.Database.Sql
 			maxPoolSize = copy.MaxPoolSize;
 			useConnectionString = copy.UseConnectionString;
 			connectionString = copy.ConnectionString;
+			useIntegratedSecurity = copy.UseIntegratedSecurity;
+			canUseIntegratedSecurity = copy.canUseIntegratedSecurity;
 		}
 		
 		public string ProviderIdentifier {
@@ -127,5 +131,16 @@ namespace MonoDevelop.Database.Sql
 			get { return useConnectionString; }
 			set { useConnectionString = value; }
 		}
+		public bool UseIntegratedSecurity {
+			get {return useIntegratedSecurity;}
+			set {useIntegratedSecurity = value;}
+		}
+		
+		public bool CanUseIntegratedSecurity {
+			get {return canUseIntegratedSecurity;}
+			set {canUseIntegratedSecurity = value;}
+		}
+		
+		
 	}
 }

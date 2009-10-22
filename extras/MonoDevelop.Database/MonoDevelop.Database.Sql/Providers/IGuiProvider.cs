@@ -34,7 +34,9 @@ namespace MonoDevelop.Database.Sql
 		bool ShowCreateDatabaseDialog (IDbFactory factory);
 		
 		bool ShowAddConnectionDialog (IDbFactory factory);
-		bool ShowEditConnectionDialog (IDbFactory factory, DatabaseConnectionSettings settings);
+		bool ShowEditConnectionDialog (IDbFactory factory, 
+		                               DatabaseConnectionSettings settings, 
+		                               out DatabaseConnectionSettings newSettings);
 	
 		bool ShowTableEditorDialog (IEditSchemaProvider schemaProvider, TableSchema table, bool create);
 		

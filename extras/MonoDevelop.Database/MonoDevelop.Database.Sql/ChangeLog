@@ -1,3 +1,11 @@
+2009-10-22  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* Configuration/DatabaseConnectionSettings.cs: Implement Use
+	  Default port (to use the default port without specifing it).
+	  Implement Integrated Security Connection.
+
+	* Providers/IGuiProvider.cs: * Fixed Edit Database bugs.
+
 2009-10-21  Luciano N. Callero <lnc19@hotmail.com>
 	* MonoDevelop.Database.Sql.csproj:
 	* ConnectionContextService.cs: Added a new way to detect 
