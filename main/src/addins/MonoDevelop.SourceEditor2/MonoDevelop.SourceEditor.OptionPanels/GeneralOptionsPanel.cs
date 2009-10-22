@@ -41,7 +41,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void HandleCodeCompletioncheckbuttonToggled (object sender, EventArgs e)
 		{
-			this.enableParameterInsightCheckbutton.Sensitive = this.spaceOrPunctiuationCheckbutton.Sensitive = this.codeCompletioncheckbutton.Active;
+			this.enableParameterInsightCheckbutton.Sensitive = 
+				this.autoCodeCompletionCheckbutton.Sensitive = 
+					this.spaceOrPunctiuationCheckbutton.Sensitive = 
+						this.codeCompletioncheckbutton.Active;
 		}
 		
 		void CheckFontSelection (object sender, EventArgs args)
@@ -59,6 +62,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableParameterInsightCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
 			this.spaceOrPunctiuationCheckbutton.Active = DefaultSourceEditorOptions.Instance.CompleteWithSpaceOrPunctuation;
 			this.enableParameterInsightCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableParameterInsight;
+			this.autoCodeCompletionCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
 			
 			this.radiobutton1.Active              = DefaultSourceEditorOptions.Instance.EditorFontType == EditorFontType.DefaultMonospace;
 			this.radiobutton2.Active              = DefaultSourceEditorOptions.Instance.EditorFontType == EditorFontType.UserSpecified;
@@ -77,7 +81,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.FontName = this.fontselection.FontName;
 			DefaultSourceEditorOptions.Instance.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion = this.enableParameterInsightCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion = this.autoCodeCompletionCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.CompleteWithSpaceOrPunctuation = this.spaceOrPunctiuationCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.EnableParameterInsight = this.enableParameterInsightCheckbutton.Active;
 		}

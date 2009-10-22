@@ -1,6 +1,13 @@
 2009-10-22  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:
+	* MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
+	  Fixed the dialog.
+
+2009-10-22  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
 	* MonoDevelop.SourceEditor/SourceEditorOptions.cs:
 	* MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:
 	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
