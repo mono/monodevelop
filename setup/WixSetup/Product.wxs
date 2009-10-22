@@ -397,7 +397,7 @@
                 <File Name="MonoDevelop.AspNet.Mvc.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.AspNet.Mvc\MonoDevelop.AspNet.Mvc.dll" />
               </Component>
             </Directory>
-<!--            <Directory Id="MonoDevelop.Autotools" Name="MonoDevelop.Autotools">
+            <Directory Id="MonoDevelop.Autotools" Name="MonoDevelop.Autotools">
               <Directory Id="templates" Name="templates">
                 <Component Id="MonoDevelop_AddIns_MonoDevelop_Autotools_templates" Guid="e83dc765-18b6-4de6-8dc2-a8bbe69fd3c1">
                   <File Name="autogen.sh.template" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\templates\autogen.sh.template" />
@@ -418,7 +418,6 @@
                 <File Name="MonoDevelop.Autotools.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Autotools\MonoDevelop.Autotools.dll" />
               </Component>
             </Directory>
--->
             <Directory Id="MonoDevelop.CodeMetrics" Name="MonoDevelop.CodeMetrics">
               <Component Id="MonoDevelop_AddIns_MonoDevelop_CodeMetrics" Guid="59768b85-97fc-42f9-9afc-5dac181759f6">
                 <File Name="MonoDevelop.CodeMetrics.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.CodeMetrics\MonoDevelop.CodeMetrics.dll" />
@@ -574,8 +573,8 @@
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_AspNet_Mvc_CodeTemplates_AddView" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_AspNet_Mvc_Templates" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_AspNet_Mvc" />
-<!--      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Autotools_templates" />
-      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Autotools" />-->
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Autotools_templates" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Autotools" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_CodeMetrics" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Debugger" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Deployment" />
