@@ -242,17 +242,24 @@ namespace MonoDevelop.CSharp.Refactoring
 			return caretLocation;
 		}
 		
-		public override void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName)
+		public override void AddGlobalNamespaceImport (RefactorerContext ctx, string fileName, string nsName)
 		{
 			IEditableTextFile file = ctx.GetFile (fileName);
 			int pos = 0;
 			ParsedDocument parsedDocument = parser.Parse (ctx.ParserContext, fileName, file.Text);
 			StringBuilder text = new StringBuilder ();
 			if (parsedDocument.CompilationUnit != null) {
-				IUsing lastUsing = parsedDocument.CompilationUnit.Usings.Where (u => !u.IsFromNamespace).LastOrDefault ();
+				IUsing lastUsing = null;
+				foreach (IUsing u in parsedDocument.CompilationUnit.Usings) {
+					if (u.IsFromNamespace)
+						break;
+					lastUsing = u;
+				}
+				
 				if (lastUsing != null)
 					pos = file.GetPositionFromLineColumn (lastUsing.Region.End.Line, lastUsing.Region.End.Column);
 			}
+			
 			if (pos != 0)
 				text.AppendLine ();
 			text.Append ("using ");
@@ -261,9 +268,80 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (pos == 0)
 				text.AppendLine ();
 			file.InsertText (pos, text.ToString ());
-			
 		}
 		
+		public override void AddLocalNamespaceImport (RefactorerContext ctx, string fileName, string nsName, DomLocation caretLocation)
+		{
+			IEditableTextFile file = ctx.GetFile (fileName);
+			int pos = 0;
+			ParsedDocument parsedDocument = parser.Parse (ctx.ParserContext, fileName, file.Text);
+			StringBuilder text = new StringBuilder ();
+			string indent = "";
+			if (parsedDocument.CompilationUnit != null) {
+				IUsing containingUsing = null;
+				foreach (IUsing u in parsedDocument.CompilationUnit.Usings) {
+					if (u.IsFromNamespace && u.Region.Contains (caretLocation)) {
+						containingUsing = u;
+					}
+				}
+				
+				if (containingUsing != null) {
+					indent = GetLineIndent (file, containingUsing.Region.Start.Line);
+					
+					IUsing lastUsing = null;
+					foreach (IUsing u in parsedDocument.CompilationUnit.Usings) {
+						if (u == containingUsing)
+							continue;
+						if (containingUsing.Region.Contains (u.Region)) {
+							if (u.IsFromNamespace)
+								break;
+							lastUsing = u;
+						}
+					}
+					
+					if (lastUsing != null) {
+						pos = file.GetPositionFromLineColumn (lastUsing.Region.End.Line, lastUsing.Region.End.Column);
+					} else {
+						pos = file.GetPositionFromLineColumn (containingUsing.ValidRegion.Start.Line, containingUsing.ValidRegion.Start.Column);
+						// search line end
+						while (pos < file.Length) {
+							char ch = file.GetCharAt (pos);
+							if (ch == '\n') {
+								if (file.GetCharAt (pos + 1) == '\r')
+									pos++;
+								break;
+							} else if (ch == '\r') {
+								break;
+							}
+							pos++;
+						}
+					}
+					
+				} else {
+					AddGlobalNamespaceImport (ctx, fileName, nsName);
+					return;
+				}
+			}
+			if (pos != 0)
+				text.AppendLine ();
+			text.Append (indent);
+			text.Append ("\t");
+			text.Append ("using ");
+			text.Append (nsName);
+			text.Append (";");
+			if (pos == 0)
+				text.AppendLine ();
+			if (file is Mono.TextEditor.ITextEditorDataProvider) {
+				Mono.TextEditor.TextEditorData data = ((Mono.TextEditor.ITextEditorDataProvider)file).GetTextEditorData ();
+				int caretOffset = data.Caret.Offset;
+				int insertedChars = data.Insert (pos, text.ToString ());
+				if (pos < caretOffset) {
+					data.Caret.Offset = caretOffset + insertedChars;
+				}
+			} else {
+				file.InsertText (pos, text.ToString ());
+			} 
+		}
 		//TODO
 		//static CodeStatement ThrowNewNotImplementedException ()
 		//{
