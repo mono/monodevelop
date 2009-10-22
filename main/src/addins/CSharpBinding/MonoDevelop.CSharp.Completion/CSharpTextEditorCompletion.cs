@@ -133,7 +133,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			if (keyChar == ',' && CanRunParameterCompletionCommand ()) 
+			if (PropertyService.Get ("EnableParameterInsight", true) && keyChar == ',' && CanRunParameterCompletionCommand ()) 
 				base.RunParameterCompletionCommand ();
 			bool result = base.KeyPress (key, keyChar, modifier);
 			
