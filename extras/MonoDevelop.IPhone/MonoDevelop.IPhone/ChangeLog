@@ -1,3 +1,8 @@
+2009-10-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* framework_IPhone.xml: Track Mono.Data.Sqlite assembly
+	  version.
+
 2009-10-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.IPhone.addin.xml: Wrap long lines.
