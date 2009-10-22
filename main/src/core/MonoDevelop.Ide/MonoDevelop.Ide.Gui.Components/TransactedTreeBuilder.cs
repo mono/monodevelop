@@ -802,6 +802,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						return;
 					
 					MarkDeleted (node);
+					Gtk.TreeIter it = node.NodeIter;
 					tree.Store.Remove (ref it);
 					return;
 				}
