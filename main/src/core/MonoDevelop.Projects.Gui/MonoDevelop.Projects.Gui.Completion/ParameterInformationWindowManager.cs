@@ -76,7 +76,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			return false;
 		}
 		
-		
 		public static void PostProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			// Called after the key has been processed by the editor
@@ -168,11 +167,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		static void UpdateWindow ()
+		internal static void UpdateWindow ()
 		{
 			// Updates the parameter information window from the information
 			// of the current method overload
-			if (window == null && methods.Count > 0) 
+			if (window == null && methods.Count > 0)
 				window = new ParameterInformationWindow ();
 			
 			if (methods.Count == 0) {
@@ -182,12 +181,22 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return;
 			}
 			
-			MethodData md = methods [methods.Count - 1];
+			MethodData md = methods[methods.Count - 1];
 			int cparam = md.MethodProvider.GetCurrentParameterIndex (md.CompletionContext);
 			Gtk.Requisition reqSize = window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1);
 			
 			int x = md.CompletionContext.TriggerXCoord;
-			int y = CurrentCodeCompletionContext.TriggerYCoord - md.CompletionContext.TriggerTextHeight - reqSize.Height - 10;
+			int y;
+			
+			if (CompletionWindowManager.IsVisible) {
+				// place above
+				y = CurrentCodeCompletionContext.TriggerYCoord - md.CompletionContext.TriggerTextHeight - reqSize.Height - 10;
+			} else {
+				// place below
+				y = CurrentCodeCompletionContext.TriggerYCoord;
+			}
+			
+			
 			
 			if (x + reqSize.Width > window.Screen.Width)
 				x = window.Screen.Width - reqSize.Width;

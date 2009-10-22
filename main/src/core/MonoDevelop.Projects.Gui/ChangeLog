@@ -1,3 +1,10 @@
+2009-10-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Worked on 'Bug 533564 - Intellisense DropDown and Tooltips
+	  overlap'.
+
 2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.addin.xml: Moved Startup Options

@@ -38,25 +38,35 @@ namespace MonoDevelop.Projects.Gui.Completion
 	{
 		static CompletionListWindow wnd;
 		
+		public static bool IsVisible {
+			get {
+				return wnd != null;
+			}
+		}
+		
 		static CompletionWindowManager ()
 		{
 		}
 		
 		public static bool ShowWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext, System.Action closedDelegate)
 		{
-			if (wnd == null)
-				wnd = new CompletionListWindow ();
 			try {
-				if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext, closedDelegate)) {
-					if (list is IDisposable)
-						((IDisposable)list).Dispose ();
-					DestroyWindow ();
+				if (wnd == null)
+					wnd = new CompletionListWindow ();
+				try {
+					if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext, closedDelegate)) {
+						if (list is IDisposable)
+							((IDisposable)list).Dispose ();
+						DestroyWindow ();
+						return false;
+					}
+					return true;
+				} catch (Exception ex) {
+					LoggingService.LogError (ex.ToString ());
 					return false;
 				}
-				return true;
-			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-				return false;
+			} finally {
+				ParameterInformationWindowManager.UpdateWindow ();
 			}
 		}
 		
@@ -66,6 +76,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				wnd.Destroy ();
 				wnd = null;
 			}
+			ParameterInformationWindowManager.UpdateWindow ();
 		}
 		
 		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions ka)
