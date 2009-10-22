@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (string.IsNullOrEmpty (varName))
 				varName = "handle";
-			this.DisplayText   = Char.ToUpper (varName[0]) + varName.Substring (1) + evt.Name;
+			this.DisplayText   = "Handle" + Char.ToUpper (varName[0]) + varName.Substring (1) + evt.Name;
 			
 			if (declaringType.SearchMember (this.DisplayText, true).Count > 0) {
 				for (int i = 1; i < 10000; i++) {
