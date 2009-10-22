@@ -1,3 +1,8 @@
+2009-10-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 548734 - drag &
+	  drop code does not in the correct position'.
+
 2009-10-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:

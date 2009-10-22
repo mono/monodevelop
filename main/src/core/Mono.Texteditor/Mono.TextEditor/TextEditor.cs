@@ -858,8 +858,12 @@ namespace Mono.TextEditor
 		protected override void OnDragDataReceived (DragContext context, int x, int y, SelectionData selection_data, uint info, uint time_)
 		{
 			textEditorData.Document.BeginAtomicUndo ();
+			int dragOffset = Document.LocationToOffset (dragCaretPos);
 			if (context.Action == DragAction.Move) {
 				if (CanEdit (Caret.Line) && selection != null) {
+					ISegment selectionRange = selection.GetSelectionRange (textEditorData);
+					if (selectionRange.Offset < dragOffset)
+						dragOffset -= selectionRange.Length;
 					Caret.PreserveSelection = true;
 					textEditorData.DeleteSelection (selection);
 					Caret.PreserveSelection = false;
@@ -872,7 +876,7 @@ namespace Mono.TextEditor
 				}
 			}
 			if (selection_data.Length > 0 && selection_data.Format == 8) {
-				Caret.Location = dragCaretPos;
+				Caret.Offset = dragOffset;
 				if (CanEdit (dragCaretPos.Line)) {
 					int offset = Caret.Offset;
 					if (selection != null && selection.GetSelectionRange (textEditorData).Offset >= offset)
