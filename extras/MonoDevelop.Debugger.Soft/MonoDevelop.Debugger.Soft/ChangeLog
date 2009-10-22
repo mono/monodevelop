@@ -1,3 +1,9 @@
+2009-10-21  Geoff Norton  <gnorton@novell.com>
+
+	* SoftDebuggerSession.cs: Fix the formatting in the output pad.
+	Dont call .Enable() directly as this could result in duplicate
+	entries in the target.
+
 2009-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerSession.cs: Expose some API for subclasses to

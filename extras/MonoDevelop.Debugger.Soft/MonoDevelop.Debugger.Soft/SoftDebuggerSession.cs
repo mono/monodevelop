@@ -190,7 +190,7 @@ namespace MonoDevelop.Debugger.Soft
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Out;
 			req.Size = StepSize.Line;
-			req.Enable ();
+			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
 		}
@@ -259,7 +259,7 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			BreakInfo bi = (BreakInfo) handle;
 			if (bi.Req != null)
-				bi.Req.Disable ();
+				bi.Req.Enabled = false;
 		}
 
 		protected override void OnEnableBreakEvent (object handle, bool enable)
@@ -267,10 +267,7 @@ namespace MonoDevelop.Debugger.Soft
 			BreakInfo bi = (BreakInfo) handle;
 			bi.Enabled = enable;
 			if (bi.Req != null) {
-				if (enable)
-					bi.Req.Enable ();
-				else
-					bi.Req.Disable ();
+				bi.Req.Enabled = enable;
 			}
 		}
 
@@ -282,10 +279,7 @@ namespace MonoDevelop.Debugger.Soft
 		void InsertBreakpoint (Breakpoint bp, BreakInfo bi)
 		{
 			bi.Req = vm.SetBreakpoint (bi.Location.Method, bi.Location.ILOffset);
-			if (!bi.Enabled)
-				bi.Req.Disable ();
-			else
-				bi.Req.Enable ();
+			bi.Req.Enabled = bi.Enabled;
 		}
 		
 		Location FindLocation (string file, int line)
@@ -325,7 +319,7 @@ namespace MonoDevelop.Debugger.Soft
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Over;
 			req.Size = StepSize.Line;
-			req.Enable ();
+			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
 		}
@@ -361,7 +355,7 @@ namespace MonoDevelop.Debugger.Soft
 			
 			if (e is AssemblyLoadEvent) {
 				AssemblyLoadEvent ae = (AssemblyLoadEvent)e;
-				OnDebuggerOutput (false, "Loaded assembly: " + ae.Assembly.Location);
+				OnDebuggerOutput (false, string.Format ("Loaded assembly: {0}\n", ae.Assembly.Location));
 			}
 			
 			if (e is TypeLoadEvent) {
@@ -385,7 +379,7 @@ namespace MonoDevelop.Debugger.Soft
 						if (System.IO.Path.GetFileName (bp.FileName) == s) {
 							Location l = GetLocFromType (te.Type, s, bp.Line);
 							if (l != null) {
-								OnDebuggerOutput (false, "Resolved pending breakpoint at '" + s + ":" + bp.Line + "' to " + l.Method.FullName + ":" + l.ILOffset + ".");
+								OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2}:{3}.\n", s, bp.Line, l.Method.FullName, l.ILOffset));
 								ResolvePendingBreakpoint (bp, l);
 								resolved.Add (bp);
 							}
@@ -404,15 +398,14 @@ namespace MonoDevelop.Debugger.Soft
 			
 			if (e is StepEvent) {
 				StepEventRequest req = (StepEventRequest)e.Request;
-				req.Disable ();
+				req.Enabled = false;
 				etype = TargetEventType.TargetStopped;
 				resume = false;
 			}
 			
 			if (e is ThreadStartEvent) {
 				ThreadStartEvent ts = (ThreadStartEvent)e;
-				// FIXME: This currently crashes
-				// OnDebuggerOutput (false, "Thread started: " + ts.Thread.Name);
+				OnDebuggerOutput (false, string.Format ("Thread started: {0}\n", ts.Thread.Name));
 			}
 			
 			if (resume)
@@ -470,7 +463,7 @@ namespace MonoDevelop.Debugger.Soft
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Into;
 			req.Size = StepSize.Line;
-			req.Enable ();
+			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
 		}
