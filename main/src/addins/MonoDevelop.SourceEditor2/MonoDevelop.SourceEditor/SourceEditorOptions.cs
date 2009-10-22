@@ -120,6 +120,7 @@ namespace MonoDevelop.SourceEditor
 			//			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
 			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", false);
 			this.enableCodeCompletion = PropertyService.Get ("EnableCodeCompletion", true);
+			this.enableParameterInsight = PropertyService.Get ("EnableParameterInsight", true);
 			this.enableQuickFinder = PropertyService.Get ("EnableQuickFinder", true);
 			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
 			this.indentStyle = PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
@@ -259,13 +260,23 @@ namespace MonoDevelop.SourceEditor
 		
 		bool enableCodeCompletion;
 		public bool EnableCodeCompletion {
-			get {
-				return enableCodeCompletion;
-			}
+			get { return enableCodeCompletion; }
 			set {
 				if (value != this.enableCodeCompletion) {
 					this.enableCodeCompletion = value;
 					PropertyService.Set ("EnableCodeCompletion", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		bool enableParameterInsight;
+		public bool EnableParameterInsight {
+			get { return enableParameterInsight; }
+			set {
+				if (value != this.enableParameterInsight) {
+					this.enableParameterInsight = value;
+					PropertyService.Set ("EnableParameterInsight", value);
 					OnChanged (EventArgs.Empty);
 				}
 			}

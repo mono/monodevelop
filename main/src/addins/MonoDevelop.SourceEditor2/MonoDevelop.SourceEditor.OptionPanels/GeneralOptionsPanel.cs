@@ -41,7 +41,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void HandleCodeCompletioncheckbuttonToggled (object sender, EventArgs e)
 		{
-			this.spaceOrPunctiuationCheckbutton.Sensitive = this.codeCompletioncheckbutton.Active;
+			this.enableParameterInsightCheckbutton.Sensitive = this.spaceOrPunctiuationCheckbutton.Sensitive = this.codeCompletioncheckbutton.Active;
 		}
 		
 		void CheckFontSelection (object sender, EventArgs args)
@@ -52,12 +52,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
 			this.codeCompletioncheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableCodeCompletion;
-			this.quickFinderCheckbutton.Active    = DefaultSourceEditorOptions.Instance.EnableQuickFinder;
-			this.foldingCheckbutton.Active        = DefaultSourceEditorOptions.Instance.ShowFoldMargin;
-			this.foldregionsCheckbutton.Active    = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
-			this.foldCommentsCheckbutton.Active   = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
-			this.autoCodeCompletionCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
+			this.quickFinderCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableQuickFinder;
+			this.foldingCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowFoldMargin;
+			this.foldregionsCheckbutton.Active = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
+			this.foldCommentsCheckbutton.Active = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
+			this.enableParameterInsightCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
 			this.spaceOrPunctiuationCheckbutton.Active = DefaultSourceEditorOptions.Instance.CompleteWithSpaceOrPunctuation;
+			this.enableParameterInsightCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableParameterInsight;
 			
 			this.radiobutton1.Active              = DefaultSourceEditorOptions.Instance.EditorFontType == EditorFontType.DefaultMonospace;
 			this.radiobutton2.Active              = DefaultSourceEditorOptions.Instance.EditorFontType == EditorFontType.UserSpecified;
@@ -70,14 +71,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public virtual void ApplyChanges ()
 		{
 			DefaultSourceEditorOptions.Instance.EnableCodeCompletion = this.codeCompletioncheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnableQuickFinder    = this.quickFinderCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.ShowFoldMargin       = this.foldingCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EditorFontType       = this.radiobutton1.Active ? EditorFontType.DefaultMonospace : EditorFontType.UserSpecified;
-			DefaultSourceEditorOptions.Instance.FontName             = this.fontselection.FontName;
+			DefaultSourceEditorOptions.Instance.EnableQuickFinder = this.quickFinderCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ShowFoldMargin = this.foldingCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EditorFontType = this.radiobutton1.Active ? EditorFontType.DefaultMonospace : EditorFontType.UserSpecified;
+			DefaultSourceEditorOptions.Instance.FontName = this.fontselection.FontName;
 			DefaultSourceEditorOptions.Instance.DefaultRegionsFolding = this.foldregionsCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.DefaultCommentFolding = this.foldCommentsCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion = this.autoCodeCompletionCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion = this.enableParameterInsightCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.CompleteWithSpaceOrPunctuation = this.spaceOrPunctiuationCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.EnableParameterInsight = this.enableParameterInsightCheckbutton.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)
