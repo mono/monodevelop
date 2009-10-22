@@ -41,6 +41,7 @@ namespace MonoDevelop.Debugger.Soft
 		Dictionary<string, List<TypeMirror>> source_to_type = new Dictionary<string, List<TypeMirror>> ();
 		Dictionary<string,TypeMirror> types = new Dictionary<string, TypeMirror> ();
 		List<Breakpoint> pending_bps = new List<Breakpoint> ();
+		ThreadMirror first_thread;
 		ThreadMirror current_thread;
 		ProcessInfo[] procs;
 		ThreadInfo[] current_threads;
@@ -408,6 +409,10 @@ namespace MonoDevelop.Debugger.Soft
 				OnDebuggerOutput (false, string.Format ("Thread started: {0}\n", ts.Thread.Name));
 			}
 			
+			if (e is VMStartEvent) {
+				first_thread = e.Thread;
+			}
+			
 			if (resume)
 				vm.Resume ();
 			else {
@@ -471,6 +476,30 @@ namespace MonoDevelop.Debugger.Soft
 		protected override void OnStop ()
 		{
 			vm.Suspend ();
+			
+			//emit a stop event at the current position of the most recent thread
+			EnsureCurrentThreadIsValid ();
+			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetStopped) {
+				Process = OnGetProcesses () [0],
+				Thread = GetThread (current_thread),
+				Backtrace = GetThreadBacktrace (current_thread)});
+		}
+		
+		void EnsureCurrentThreadIsValid ()
+		{
+			if (!ThreadIsAlive (current_thread)) {
+				current_thread = first_thread;
+				if (!ThreadIsAlive (current_thread))
+					current_thread = vm.GetThreads ()[0];
+			}
+		}
+		
+		static bool ThreadIsAlive (ThreadMirror thread)
+		{
+			if (thread == null)
+				return false;
+			var state = thread.ThreadState;
+			return state != ThreadState.Stopped && state != ThreadState.Aborted;
 		}
 		
 		BreakInfo GetBreakInfo (BreakEvent bp)

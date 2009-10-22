@@ -1,3 +1,10 @@
+2009-10-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Debugger.dll: Updated.
+
+	* SoftDebuggerSession.cs: Stop at most recent thread when
+	  stopping.
+
 2009-10-21  Geoff Norton  <gnorton@novell.com>
 
 	* SoftDebuggerSession.cs: Fix the formatting in the output pad.
