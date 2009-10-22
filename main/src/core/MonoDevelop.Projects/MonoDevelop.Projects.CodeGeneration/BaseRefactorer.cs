@@ -1138,7 +1138,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 				ops.BracingStyle = "C";
 			return ops;
 		}
-		public abstract void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName);
+		public abstract void AddGlobalNamespaceImport (RefactorerContext ctx, string fileName, string nsName);
+		public abstract void AddLocalNamespaceImport (RefactorerContext ctx, string fileName, string nsName, DomLocation caretLocation);
 		public abstract DomLocation CompleteStatement (RefactorerContext ctx, string fileName, DomLocation caretLocation);
 		public abstract ValidationResult ValidateName (INode visitable, string name);
 	}

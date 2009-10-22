@@ -73,7 +73,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		IMember EncapsulateField (RefactorerContext ctx, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter);
 		
 		string ConvertToLanguageTypeName (string netTypeName);
-		void AddNamespaceImport (RefactorerContext ctx, string fileName, string nsName);
+		void AddGlobalNamespaceImport (RefactorerContext ctx, string fileName, string nsName);
+		void AddLocalNamespaceImport (RefactorerContext ctx, string fileName, string nsName, DomLocation caretLocation);
 		DomLocation CompleteStatement (RefactorerContext ctx, string fileName, DomLocation caretLocation);
 	}
 	

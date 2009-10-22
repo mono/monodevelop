@@ -297,12 +297,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public void AddNamespaceImport (ProjectDom dom, string fileName, string nsName)
+		public void AddGlobalNamespaceImport (ProjectDom dom, string fileName, string nsName)
 		{
 			IRefactorer refactorer = LanguageBindingService.GetRefactorerForFile (fileName);
-			refactorer.AddNamespaceImport (new RefactorerContext (dom, fileProvider, null), fileName, nsName);
+			refactorer.AddGlobalNamespaceImport (new RefactorerContext (dom, fileProvider, null), fileName, nsName);
 		}
-		
+
+		public void AddLocalNamespaceImport (ProjectDom dom, string fileName, string nsName, DomLocation caretLocation)
+		{
+			IRefactorer refactorer = LanguageBindingService.GetRefactorerForFile (fileName);
+			refactorer.AddLocalNamespaceImport (new RefactorerContext (dom, fileProvider, null), fileName, nsName, caretLocation);
+		}
+
+	
 		public DomLocation CompleteStatement (ProjectDom dom, string fileName, DomLocation caretLocation)
 		{
 			IRefactorer refactorer = LanguageBindingService.GetRefactorerForFile (fileName);
