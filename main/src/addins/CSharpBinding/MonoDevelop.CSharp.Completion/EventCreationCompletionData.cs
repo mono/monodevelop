@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -42,10 +43,10 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		string parameterList;
 		IMember callingMember;
-		MonoDevelop.Ide.Gui.TextEditor editor;
+		TextEditorData editor;
 		int initialOffset;
 		
-		public EventCreationCompletionData (MonoDevelop.Ide.Gui.TextEditor editor, string varName, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
+		public EventCreationCompletionData (TextEditorData editor, string varName, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
 		{
 			if (string.IsNullOrEmpty (varName))
 				varName = "handle";
@@ -63,68 +64,28 @@ namespace MonoDevelop.CSharp.Completion
 			this.parameterList = parameterList;
 			this.callingMember = callingMember;
 			this.Icon          = "md-newmethod";
-			this.initialOffset = editor.CursorPosition;
+			this.initialOffset = editor.Caret.Offset;
 		}
 		
-		static int SearchMatchingBracket (TextEditor editor, int offset, char openBracket, char closingBracket, int direction)
-		{
-			bool isInString       = false;
-			bool isInChar         = false;	
-			bool isInBlockComment = false;
-			int depth = direction;
-			while (offset >= 0 && offset < editor.TextLength) {
-				char ch = editor.GetCharAt (offset);
-				switch (ch) {
-					case '/':
-						if (isInBlockComment) {
-							isInBlockComment = editor.GetCharAt (offset - direction) != '*';
-						} else if (!isInString && !isInChar && offset - direction < editor.TextLength) {
-							isInBlockComment = offset + 1 < editor.TextLength && editor.GetCharAt (offset + direction) == '*';
-						}
-						break;
-					case '"':
-						if (!isInChar && !isInBlockComment) 
-							isInString = !isInString;
-						break;
-					case '\'':
-						if (!isInString && !isInBlockComment) 
-							isInChar = !isInChar;
-						break;
-					default :
-						if (ch == closingBracket) {
-							if (!(isInString || isInChar || isInBlockComment)) 
-								--depth;
-						} else if (ch == openBracket) {
-							if (!(isInString || isInChar || isInBlockComment)) {
-								++depth;
-							}
-						}
-						if (depth == 0) 
-							return offset;
-					
-						break;
-				}
-				offset += direction;
-			}
-			return -1;
-		}
 		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
 		{
 			// insert add/remove event handler code after +=/-=
-			editor.DeleteText (initialOffset, editor.CursorPosition - initialOffset);
-			editor.InsertText (editor.CursorPosition, this.DisplayText + ";");
+			editor.Replace (initialOffset, editor.Caret.Offset - initialOffset, this.DisplayText + ";");
 			
 			// Search opening bracket of member
-			int pos = editor.GetPositionFromLineColumn (callingMember.BodyRegion.Start.Line, callingMember.BodyRegion.Start.Column);
-			pos = Math.Max (pos, editor.SearchChar (pos, '{'));
+			int pos = editor.Document.LocationToOffset (callingMember.BodyRegion.Start.Line - 1, callingMember.BodyRegion.Start.Column - 1);
+			while (pos < editor.Document.Length && editor.Document.GetCharAt (pos) != '{') {
+				pos++;
+			}
 			
 			// Search closing bracket of member
-			pos = SearchMatchingBracket (editor, pos + 1, '{', '}', 1) + 1;
+			pos = editor.Document.GetMatchingBracketOffset (pos) + 1;
 			
-			pos = Math.Min (pos, editor.TextLength - 1);
+			pos = Math.Max (0, Math.Min (pos, editor.Document.Length - 1));
 			
 			// Insert new event handler after closing bracket
-			string indent = NewOverrideCompletionData.GetIndentString (editor, editor.GetPositionFromLineColumn (callingMember.Location.Line + 1, 0));
+			string indent = editor.Document.GetLine (callingMember.Location.Line).GetIndentation (editor.Document);
+			
 			StringBuilder sb = new StringBuilder ();
 			sb.AppendLine ();
 			sb.AppendLine ();
@@ -137,8 +98,8 @@ namespace MonoDevelop.CSharp.Completion
 			int cursorPos = pos + sb.Length;
 			sb.AppendLine ();
 			sb.Append (indent);sb.Append ("}");
-			editor.InsertText (pos, sb.ToString ());
-			editor.CursorPosition = cursorPos;
+			editor.Insert (pos, sb.ToString ());
+			editor.Caret.Offset = cursorPos;
 		}
 		
 	}

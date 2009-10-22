@@ -422,7 +422,9 @@ namespace MonoDevelop.CSharp.Completion
 							for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
 								if (k > 0)
 									sb.Append (", ");
-								sb.Append (CompletionDataCollector.ambience.GetString (delegateMethod.Parameters[k], OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName));
+								sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (delegateMethod.Parameters[k].ReturnType, Document.TextEditor.CursorLine, Document.TextEditor.CursorColumn), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName));
+								sb.Append (" ");
+								sb.Append (delegateMethod.Parameters[k].Name);
 							}
 							sb.Append (")");
 							completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
@@ -446,7 +448,8 @@ namespace MonoDevelop.CSharp.Completion
 								}
 								varName = String.Join ("", names.ToArray ());
 							}
-							completionList.Add (new EventCreationCompletionData (Editor, varName, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
+								
+							completionList.Add (new EventCreationCompletionData (((Mono.TextEditor.ITextEditorDataProvider)Document.GetContent<Mono.TextEditor.ITextEditorDataProvider> ()).GetTextEditorData (), varName, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
 						}
 						return completionList;
 					}
