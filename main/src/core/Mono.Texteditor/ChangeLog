@@ -1,5 +1,13 @@
 2009-10-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs: Only generate motion
+	  events, when the mouse is inside the text area (code focus
+	  did sometimes pop up during text editor open without a mouse
+	  hover).
+
+2009-10-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 548734 - drag &
 	  drop code does not in the correct position'.
 

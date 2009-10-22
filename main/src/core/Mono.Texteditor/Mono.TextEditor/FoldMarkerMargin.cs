@@ -95,7 +95,11 @@ namespace Mono.TextEditor
 			delayTimer.Stop ();
 			if (found) {
 				foldings = editor.Document.GetFoldingContaining (lineSegment);
-				delayTimer.Start ();
+				if (editor.TextViewMargin.BackgroundRenderer == null) {
+					delayTimer.Start ();
+				} else {
+					DelayTimerElapsed (this, null);
+				}
 			} else {
 				RemoveBackgroundRenderer ();
 			}

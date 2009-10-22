@@ -184,7 +184,8 @@ namespace Mono.TextEditor
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 				return;
 			}
-			FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
+			if (isMouseTrapped)
+				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 			textViewMargin.VAdjustmentValueChanged ();
 			
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
@@ -1008,9 +1009,17 @@ namespace Mono.TextEditor
 			customText = null;
 		}
 		#endregion
+		bool isMouseTrapped = false;
+		
+		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
+		{
+			isMouseTrapped = true;
+			return base.OnEnterNotifyEvent (evnt);
+		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
+			isMouseTrapped = false;
 			if (tipWindow != null && currentTooltipProvider.IsInteractive (this, tipWindow))
 				DelayedHideTooltip ();
 			else
@@ -1160,10 +1169,11 @@ namespace Mono.TextEditor
 			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
 				if (evnt.Direction == ScrollDirection.Down)
 					Options.ZoomIn ();
-				else 
+				else
 					Options.ZoomOut ();
 				this.Repaint ();
-				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
+				if (isMouseTrapped)
+					FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 				return true;
 			}
 			return base.OnScrollEvent (evnt); 
