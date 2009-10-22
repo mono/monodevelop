@@ -1,3 +1,10 @@
+2009-10-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Autotools.csproj: Flush.
+
+	* MonoDevelop.Autotools.addin.xml: Disable autotools features
+	  on windows.
+
 2009-10-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Autotools.addin.xml: Disabled autotools and

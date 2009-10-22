@@ -43,7 +43,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class class = "MonoDevelop.Autotools.MakefileProjectServiceExtension" id="MakefileProjectServiceExtension" insertafter="FinalStep"/>
+		<Condition id="Platform" value="!windows">
+			<Class class = "MonoDevelop.Autotools.MakefileProjectServiceExtension" id="MakefileProjectServiceExtension" insertafter="FinalStep"/>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -68,28 +70,38 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
-		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+		<Condition id="Platform" value="!windows">
+			<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/QuickProperties">
-		<Condition id="ItemType" value="ProjectFile">
-			<CommandItem id = "MonoDevelop.Autotools.Commands.SynchWithMakefile" />
+		<Condition id="Platform" value="!windows">
+			<Condition id="ItemType" value="ProjectFile">
+				<CommandItem id = "MonoDevelop.Autotools.Commands.SynchWithMakefile" />
+			</Condition>
 		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
-		<NodeBuilder class = "MonoDevelop.Autotools.FileNodeBuilderExtension"/>
+		<Condition id="Platform" value="!windows">
+			<NodeBuilder class = "MonoDevelop.Autotools.FileNodeBuilderExtension"/>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/DeployService/PackageBuilders">
 		<Condition id="Platform" value="!windows">
-			<Class class="MonoDevelop.Autotools.TarballDeployTarget" />
+			<Condition id="Platform" value="!windows">
+				<Class class="MonoDevelop.Autotools.TarballDeployTarget" />
+			</Condition>
 		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Deployment/PackageBuilderEditors">
 		<Condition id="Platform" value="!windows">
-			<Class class="MonoDevelop.Autotools.TarballTargetEditor" />
+			<Condition id="Platform" value="!windows">
+				<Class class="MonoDevelop.Autotools.TarballTargetEditor" />
+			</Condition>
 		</Condition>
 	</Extension>
 	
@@ -98,9 +110,11 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
-		<Condition id="ItemType" value="Project">
-			<Section id= "Makefile" _label = "Makefile Integration"
-				class = "MonoDevelop.Autotools.MakefileOptionPanel" />
+		<Condition id="Platform" value="!windows">
+			<Condition id="ItemType" value="Project">
+				<Section id= "Makefile" _label = "Makefile Integration"
+					class = "MonoDevelop.Autotools.MakefileOptionPanel" />
+			</Condition>
 		</Condition>
 	</Extension>
 
@@ -110,7 +124,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">
-		<Class class = "MonoDevelop.Autotools.PropertyProvider"/>
+		<Condition id="Platform" value="!windows">
+			<Class class = "MonoDevelop.Autotools.PropertyProvider"/>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -120,8 +136,10 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Autotools/MakefileHandlers">
-		<Class class = "MonoDevelop.Autotools.SolutionMakefileHandler"/>
-		<Class class = "MonoDevelop.Autotools.SimpleProjectMakefileHandler"/>
+		<Condition id="Platform" value="!windows">
+			<Class class = "MonoDevelop.Autotools.SolutionMakefileHandler"/>
+			<Class class = "MonoDevelop.Autotools.SimpleProjectMakefileHandler"/>
+		</Condition>
 	</Extension>
 	
 <!--
