@@ -670,7 +670,16 @@ namespace MonoDevelop.Refactoring
 					references = refactorer.FindParameterReferences (monitor, (IParameter)item, true);
 				} else if (item is IMember) {
 					IMember member = (IMember)item;
-					references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, true);
+		//			if (member.DeclaringType.ClassType == ClassType.Interface || member.IsAbstract || member.IsVirtual) {
+						references = new MemberReferenceCollection ();
+						foreach (IMember m in MonoDevelop.Refactoring.Rename.RenameRefactoring.CollectMembers (member.DeclaringType.SourceProjectDom, member)) {
+							foreach (MemberReference r in refactorer.FindMemberReferences (monitor, m.DeclaringType, m, true)) {
+								references.Add (r);
+							}
+						}
+		/*			} else {
+						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, true);
+					}*/
 				}
 				if (references != null) {
 					foreach (MemberReference mref in references) {
