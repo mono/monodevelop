@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		ICompletionWidget completionWidget;
 		bool autoHideCompletionWindow = true;
 		bool enableCodeCompletion = false;
+		bool enableParameterInsight = false;
 		protected ICompletionWidget CompletionWidget {
 			get {
 				return completionWidget;
@@ -105,12 +106,12 @@ namespace MonoDevelop.Ide.Gui.Content
 				int triggerWordLength = currentCompletionContext.TriggerWordLength;
 				ICompletionDataList completionList = HandleCodeCompletion (currentCompletionContext, keyChar,
 				                                                           ref triggerWordLength);
-
+				
 				if (triggerWordLength > 0 && (triggerWordLength < Editor.CursorPosition
 				                              || (triggerWordLength == 1 && Editor.CursorPosition == 1)))
 				{
 					currentCompletionContext
-						= completionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);	
+						= completionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				
@@ -123,6 +124,8 @@ namespace MonoDevelop.Ide.Gui.Content
 				}
 			}
 			
+			if (!enableParameterInsight)
+				return res;
 			// Handle parameter completion
 			
 			if (ParameterInformationWindowManager.IsWindowVisible) {
@@ -387,6 +390,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			base.Initialize ();
 
 			enableCodeCompletion = (bool)PropertyService.Get ("EnableCodeCompletion", true);
+			enableParameterInsight = (bool)PropertyService.Get ("EnableParameterInsight", true);
+			
 			PropertyService.PropertyChanged += OnPropertyUpdated;
 			completionWidget = Document.GetContent <ICompletionWidget> ();
 			if (completionWidget != null)
@@ -408,7 +413,9 @@ namespace MonoDevelop.Ide.Gui.Content
 		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == "EnableCodeCompletion" && e.NewValue != e.OldValue)
-				enableCodeCompletion  = (bool)e.NewValue;
+				enableCodeCompletion = (bool)e.NewValue;
+			if (e.Key == "EnableParameterInsight" && e.NewValue != e.OldValue)
+				enableParameterInsight = (bool)e.NewValue;
 		}	
 	}
 	public interface ITypeNameResolver
