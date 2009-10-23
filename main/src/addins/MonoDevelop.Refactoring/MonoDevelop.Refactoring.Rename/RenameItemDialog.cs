@@ -46,20 +46,23 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public RenameItemDialog (RefactoringOptions options, RenameRefactoring rename)
 		{
-			this.options  = options;
+			this.options = options;
 			this.rename = rename;
 
 			this.Build ();
 
 			if (options.SelectedItem is IType) {
 				IType type = (IType)options.SelectedItem;
-				if (type.IsPublic) {
+				if (type.DeclaringType == null) {
+					// not supported for inner types
 					this.renameFileFlag.Visible = true;
-					this.renameFileFlag.Sensitive = type.Parts.Count () == 1;
-					this.renameFileFlag.Active = this.renameFileFlag.Sensitive;
+					this.renameFileFlag.Active = true;
+				} else {
+					this.renameFileFlag.Active = false;
 				}
 				if (type.ClassType == ClassType.Interface)
-					this.Title = GettextCatalog.GetString ("Rename Interface"); else
+					this.Title = GettextCatalog.GetString ("Rename Interface");
+				else
 					this.Title = GettextCatalog.GetString ("Rename Class");
 				this.fileName = type.CompilationUnit.FileName;
 			} else if (options.SelectedItem is IField) {
@@ -99,17 +102,16 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			}
 			entry.SelectRegion (0, -1);
-
+			
 			buttonPreview.Sensitive = buttonOk.Sensitive = false;
 			entry.Changed += OnEntryChanged;
 			entry.Activated += OnEntryActivated;
-
+			
 			buttonOk.Clicked += OnOKClicked;
 			buttonCancel.Clicked += OnCancelClicked;
 			buttonPreview.Clicked += OnPreviewClicked;
 			entry.Changed += delegate { buttonPreview.Sensitive = buttonOk.Sensitive = ValidateName (); };
 			ValidateName ();
-			
 		}
 
 		bool ValidateName ()
@@ -150,7 +152,7 @@ namespace MonoDevelop.Refactoring.Rename
 			get {
 				return new RenameRefactoring.RenameProperties () {
 					NewName = entry.Text,
-					RenameFile = renameFileFlag.Active
+					RenameFile = renameFileFlag.Visible && renameFileFlag.Active
 				};
 			}
 		}

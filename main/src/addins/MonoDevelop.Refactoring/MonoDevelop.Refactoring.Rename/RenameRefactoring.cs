@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
 using Mono.TextEditor.PopupWindow;
+using System.Text;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -152,15 +153,29 @@ namespace MonoDevelop.Refactoring.Rename
 			
 			if (properties.RenameFile && options.SelectedItem is IType) {
 				IType cls = (IType)options.SelectedItem;
-				if (cls.IsPublic) {
-					foreach (IType part in cls.Parts) {
-						// only supported for classes wher cls.Parts.Count == 1
-//						if (System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName) == cls.Name) {
-							string newFileName = System.IO.Path.HasExtension (part.CompilationUnit.FileName) ? properties.NewName + System.IO.Path.GetExtension (part.CompilationUnit.FileName) : properties.NewName;
-							newFileName = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (part.CompilationUnit.FileName), newFileName);
-							result.Add (new RenameFileChange (part.CompilationUnit.FileName, newFileName));
-//						}
+				int currentPart = 1;
+				HashSet<string> alreadyRenamed = new HashSet<string> ();
+				foreach (IType part in cls.Parts) {
+					if (alreadyRenamed.Contains (part.CompilationUnit.FileName))
+						continue;
+					alreadyRenamed.Add (part.CompilationUnit.FileName);
+					
+					string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName);
+					string newFileName;
+					
+					int idx = oldFileName.IndexOf (cls.Name);
+					if (idx >= 0) {
+						newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + cls.Name.Length);
+					} else {
+						newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
+						currentPart++;
 					}
+					
+					int t = 0;
+					while (System.IO.File.Exists (GetFullFileName (newFileName, part.CompilationUnit.FileName, t))) {
+						t++;
+					}
+					result.Add (new RenameFileChange (part.CompilationUnit.FileName, GetFullFileName (newFileName, part.CompilationUnit.FileName, t)));
 				}
 			}
 			
@@ -174,6 +189,19 @@ namespace MonoDevelop.Refactoring.Rename
 				result.Add (change);
 			}
 			return result;
+		}
+		
+		static string GetFullFileName (string fileName, string oldFullFileName, int tryCount)
+		{
+			StringBuilder name = new StringBuilder (fileName);
+			if (tryCount > 0) {
+				name.Append ("_");
+				name.Append (tryCount.ToString ());
+			}
+			if (System.IO.Path.HasExtension (oldFullFileName))
+				name.Append (System.IO.Path.GetExtension (oldFullFileName));
+			
+			return System.IO.Path.Combine (System.IO.Path.GetDirectoryName (oldFullFileName), name.ToString ());
 		}
 		
 		MemberReferenceCollection GetReferences (RefactoringOptions options)
