@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
@@ -40,7 +41,7 @@ namespace MonoDevelop.Debugger.Soft
 		Thread eventHandler;
 		Dictionary<string, List<TypeMirror>> source_to_type = new Dictionary<string, List<TypeMirror>> ();
 		Dictionary<string,TypeMirror> types = new Dictionary<string, TypeMirror> ();
-		List<Breakpoint> pending_bps = new List<Breakpoint> ();
+		List<BreakEvent> pending_bes = new List<BreakEvent> ();
 		ThreadMirror first_thread;
 		ThreadMirror current_thread;
 		ProcessInfo[] procs;
@@ -110,7 +111,7 @@ namespace MonoDevelop.Debugger.Soft
 			outputReader.Start ();
 			
 			errorReader = new Thread (delegate () {
-				ReadOutput (vm.Process.StandardOutput, true);
+				ReadOutput (vm.Process.StandardError, true);
 			});
 			errorReader.IsBackground = true;
 			errorReader.Start ();
@@ -246,13 +247,24 @@ namespace MonoDevelop.Debugger.Soft
 		protected override object OnInsertBreakEvent (BreakEvent be, bool activate)
 		{
 			BreakInfo bi = new BreakInfo ();
-			Breakpoint bp = (Breakpoint) be;
-			bi.Location = FindLocation (bp.FileName, bp.Line);
 			bi.Enabled = activate;
-			if (bi.Location != null)
-				InsertBreakpoint (bp, bi);
-			else
-				pending_bps.Add (bp);
+			
+			if (be is Breakpoint) {
+				Breakpoint bp = (Breakpoint) be;
+				bi.Location = FindLocation (bp.FileName, bp.Line);
+				if (bi.Location != null)
+					InsertBreakpoint (bp, bi);
+				else
+					pending_bes.Add (bp);
+			} else if (be is Catchpoint) {
+				var cp = (Catchpoint) be;
+				TypeMirror type;
+				if (types.TryGetValue (cp.ExceptionName, out type)) {
+					InsertCatchpoint (cp, bi, type);
+				} else {
+					pending_bes.Add (be);
+				}
+			}
 			return bi;
 		}
 
@@ -281,6 +293,13 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			bi.Req = vm.SetBreakpoint (bi.Location.Method, bi.Location.ILOffset);
 			bi.Req.Enabled = bi.Enabled;
+		}
+		
+		void InsertCatchpoint (Catchpoint cp, BreakInfo bi, TypeMirror excType)
+		{
+			var request = bi.Req = vm.CreateExceptionRequest (excType);
+			bi.Req.Enabled = bi.Enabled;
+			request.Count = cp.HitCount;
 		}
 		
 		Location FindLocation (string file, int line)
@@ -361,9 +380,13 @@ namespace MonoDevelop.Debugger.Soft
 			
 			if (e is TypeLoadEvent) {
 				TypeLoadEvent te = (TypeLoadEvent)e;
-				types [te.Type.FullName] = te.Type;
+				string typeName = te.Type.FullName;
+				types [typeName] = te.Type;
 				
 				/* Handle pending breakpoints */
+				
+				var resolved = new List<BreakEvent> ();
+				
 				foreach (string s in te.Type.GetSourceFiles ()) {
 					List<TypeMirror> typesList;
 					
@@ -375,8 +398,8 @@ namespace MonoDevelop.Debugger.Soft
 						source_to_type[s] = typesList;
 					}
 					
-					List<Breakpoint> resolved = new List<Breakpoint> ();
-					foreach (Breakpoint bp in pending_bps) {
+					
+					foreach (var bp in pending_bes.OfType<Breakpoint> ()) {
 						if (System.IO.Path.GetFileName (bp.FileName) == s) {
 							Location l = GetLocFromType (te.Type, s, bp.Line);
 							if (l != null) {
@@ -387,13 +410,30 @@ namespace MonoDevelop.Debugger.Soft
 						}
 					}
 					
-					foreach (Breakpoint bp in resolved)
-						pending_bps.Remove (bp);
+					foreach (var be in resolved)
+						pending_bes.Remove (be);
+					resolved.Clear ();
 				}
+				
+				//handle pending catchpoints
+				
+				foreach (var cp in pending_bes.OfType<Catchpoint> ()) {
+					if (cp.ExceptionName == typeName) {
+						ResolvePendingCatchpoint (cp, te.Type);
+						resolved.Add (cp);
+					}
+				}
+				foreach (var be in resolved)
+					pending_bes.Remove (be);
 			}
 			
 			if (e is BreakpointEvent) {
 				etype = TargetEventType.TargetHitBreakpoint;
+				resume = false;
+			}
+			
+			if (e is ExceptionEvent) {
+				etype = TargetEventType.ExceptionThrown;
 				resume = false;
 			}
 			
@@ -447,6 +487,12 @@ namespace MonoDevelop.Debugger.Soft
 			BreakInfo bi = GetBreakInfo (bp);
 			bi.Location = l;
 			InsertBreakpoint (bp, bi);
+		}
+				
+		void ResolvePendingCatchpoint (Catchpoint cp, TypeMirror type)
+		{
+			BreakInfo bi = GetBreakInfo (cp);
+			InsertCatchpoint (cp, bi, type);
 		}
 		
 		internal void WriteDebuggerOutput (bool isError, string msg)
@@ -502,10 +548,10 @@ namespace MonoDevelop.Debugger.Soft
 			return state != ThreadState.Stopped && state != ThreadState.Aborted;
 		}
 		
-		BreakInfo GetBreakInfo (BreakEvent bp)
+		BreakInfo GetBreakInfo (BreakEvent be)
 		{
 			object bi;
-			if (GetBreakpointHandle (bp, out bi))
+			if (GetBreakpointHandle (be, out bi))
 				return (BreakInfo) bi;
 			else
 				return null;
@@ -516,6 +562,6 @@ namespace MonoDevelop.Debugger.Soft
 	{
 		public bool Enabled { get; set; }
 		public Location Location { get; set; }
-		public BreakpointEventRequest Req { get; set; }
+		public EventRequest Req { get; set; }
 	}
 }

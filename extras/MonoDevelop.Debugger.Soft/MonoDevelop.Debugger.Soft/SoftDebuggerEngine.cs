@@ -72,7 +72,8 @@ namespace MonoDevelop.Debugger.Soft
 				return DebuggerFeatures.Breakpoints | 
 					   DebuggerFeatures.Pause | 
 					   DebuggerFeatures.Stepping | 
-					   DebuggerFeatures.DebugFile;
+					   DebuggerFeatures.DebugFile |
+					   DebuggerFeatures.Catchpoints;
 			}
 		}
 	}
