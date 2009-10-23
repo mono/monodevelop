@@ -1,3 +1,7 @@
+2009-10-22  Luciano N. Callero <lnc19@hotmail.com>
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Fixed NullReferenceException
+	when Context Key pressed without node selected.
+
 2009-10-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:

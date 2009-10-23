@@ -1546,6 +1546,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		void ShowPopup ()
 		{
 			ITreeNavigator tnav = GetSelectedNode ();
+			if (tnav == null)
+				return;
 			TypeNodeBuilder nb = GetTypeNodeBuilder (tnav.CurrentPosition._iter);
 			string menuPath = nb != null && nb.ContextMenuAddinPath != null ? nb.ContextMenuAddinPath : contextMenuPath;
 			if (menuPath == null) {
