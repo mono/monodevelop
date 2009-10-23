@@ -153,7 +153,11 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		{
 			if (simProcess == null)
 				return;
-			simProcess.StandardInput.WriteLine ();
+			if (!simProcess.HasExited) {
+				try {
+					simProcess.StandardInput.WriteLine ();
+				} catch {}
+			}
 			GLib.Timeout.Add (10000, delegate {
 				if (!simProcess.HasExited)
 					simProcess.Kill ();

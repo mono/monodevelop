@@ -183,7 +183,8 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnExit ()
 		{
-			vm.Exit (0);
+			if (vm != null)
+				vm.Exit (0);
 			exited = true;
 		}
 
