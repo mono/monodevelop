@@ -1,3 +1,7 @@
+2009-10-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Generate debug settings plist.
+
 2009-10-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* framework_IPhone.xml: Track Mono.Data.Sqlite assembly

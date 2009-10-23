@@ -125,9 +125,27 @@ namespace MonoDevelop.IPhone
 			var plistOut = conf.AppDirectory.Combine ("Info.plist");
 			ProjectFile appInfoIn = proj.Files.GetFile (proj.BaseDirectory.Combine ("Info.plist"));
 			if (new FilePair (proj.FileName, plistOut).NeedsBuilding () ||
-			    	(appInfoIn != null && new FilePair (appInfoIn.FilePath, plistOut).NeedsBuilding ()))
-				if (result.Append (UpdateInfoPlist (monitor, proj, conf, appInfoIn)).ErrorCount > 0)
+			    	(appInfoIn != null && new FilePair (appInfoIn.FilePath, plistOut).NeedsBuilding ())) {
+				try {
+					monitor.BeginTask (GettextCatalog.GetString ("Updating application manifest"), 0);
+					if (result.Append (UpdateInfoPlist (monitor, proj, conf, appInfoIn, plistOut)).ErrorCount > 0)
+						return result;
+				} finally {
+					monitor.EndTask ();
+				}
+			}
+			
+			//create the Setting.bundle plist for debug settings, merging in the template if it exists
+			try {
+				monitor.BeginTask (GettextCatalog.GetString ("Updating debug settings manifest"), 0);
+				var sbRootRel = Path.Combine ("Settings.bundle", "Root.plist");
+				var sbRootOut = conf.AppDirectory.Combine (sbRootRel);
+				var sbRootIn  = proj.Files.GetFile (proj.BaseDirectory.Combine (sbRootRel));
+				if (result.Append (UpdateDebugSettingsPlist (monitor, conf, sbRootIn, sbRootOut)).ErrorCount > 0)
 					return result;
+			} finally {
+				monitor.EndTask ();
+			}
 			
 			try {
 				if (result.Append (ProcessPackaging (monitor, proj, conf)).ErrorCount > 0)
@@ -165,7 +183,8 @@ namespace MonoDevelop.IPhone
 			AppendExtraArgs (args, conf.MtouchExtraArgs, proj, conf);
 		}
 		
-		static void AppendExtraArgs (StringBuilder args, string extraArgs, IPhoneProject proj, IPhoneProjectConfiguration conf)
+		static void AppendExtraArgs (StringBuilder args, string extraArgs, IPhoneProject proj,
+		                             IPhoneProjectConfiguration conf)
 		{
 			if (!String.IsNullOrEmpty (extraArgs)) {
 				args.Append (" ");
@@ -184,84 +203,58 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
-		BuildResult UpdateInfoPlist (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf, ProjectFile template)
+		BuildResult UpdateInfoPlist (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf,
+		                             ProjectFile template, string plistOut)
 		{
-			var doc = new PlistDocument ();
-			if (template != null) {
-				try {
-					doc.LoadFromXmlFile (template.FilePath);
-				} catch (Exception ex) {
-					var result = new BuildResult ();
-					if (ex is XmlException)
-						result.AddError (template.FilePath, ((XmlException)ex).LineNumber, ((XmlException)ex).LinePosition, null, ex.Message);
-					else
-						result.AddError (template.FilePath, 0, 0, null, ex.Message);
-					monitor.ReportError (GettextCatalog.GetString ("Could not load Info.plist template: {0}", ex.Message), null);
-					return result;
-				}
-			}
-			
-			var dict = doc.Root as PlistDictionary;
-			if (dict == null)
-				doc.Root = dict = new PropertyList.PlistDictionary ();
-			
-			bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
-			
-			SetIfNotPresent (dict, "CFBundleDevelopmentRegion",
-				String.IsNullOrEmpty (proj.BundleDevelopmentRegion)? "English" : proj.BundleDevelopmentRegion);
-			
-			SetIfNotPresent (dict, "CFBundleDisplayName", proj.BundleDisplayName ?? proj.Name);
-			SetIfNotPresent (dict, "CFBundleExecutable", conf.NativeExe.FileName);
-			
-			FilePath icon = proj.BundleIcon.ToRelative (proj.BaseDirectory);
-			if (!(icon.IsNullOrEmpty || icon.ToString () == "."))
-				SetIfNotPresent (dict, "CFBundleIconFile", icon.FileName);
-			
-			SetIfNotPresent (dict, "CFBundleIdentifier", proj.BundleIdentifier ?? ("com.yourcompany." + proj.Name));
-			SetIfNotPresent (dict, "CFBundleInfoDictionaryVersion", "6.0");
-			SetIfNotPresent (dict, "CFBundleName", proj.Name);
-			SetIfNotPresent (dict, "CFBundlePackageType", "APPL");
-			if (!sim)
-				dict["CFBundleResourceSpecification"] = "ResourceRules.plist";
-			SetIfNotPresent (dict, "CFBundleSignature", "????");
-			SetIfNotPresent (dict,  "CFBundleSupportedPlatforms",
-				new PropertyList.PlistArray () { sim? "iphonesimulator" : "iphoneos" });
-			SetIfNotPresent (dict, "CFBundleVersion", proj.BundleVersion ?? "1.0");
-			SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
-			SetIfNotPresent (dict, "DTSDKName", (sim? "iphonesimulator" : "iphoneos")  + conf.MtouchSdkVersion);
-			SetIfNotPresent (dict,  "LSRequiresIPhoneOS", true);
-			
-			if (!sim)
-				//FIXME allow user to choose version?
-				SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchSdkVersion);
-			
-			if (!String.IsNullOrEmpty (proj.MainNibFile.ToString ())) {
-				string mainNib = proj.MainNibFile.ToRelative (proj.BaseDirectory);
-				if (mainNib.EndsWith (".nib") || mainNib.EndsWith (".xib"))
-				    mainNib = mainNib.Substring (0, mainNib.Length - 4).Replace ('\\', '/');
-				SetIfNotPresent (dict, "NSMainNibFile", mainNib);
-			}
-			
-			var plistOut = conf.AppDirectory.Combine ("Info.plist");
-			try {
-				monitor.BeginTask (GettextCatalog.GetString ("Updating application manifest"), 0);
-				using (XmlTextWriter writer = new XmlTextWriter (plistOut, Encoding.UTF8)) {
-					writer.Formatting = Formatting.Indented;
-					doc.Write (writer);
-				}
-			} catch (Exception ex) {
-				var result = new BuildResult ();
-				result.AddError (plistOut, 0, 0, null, ex.Message);
-				monitor.ReportError (GettextCatalog.GetString ("Could not write file '{0}'", plistOut), ex);
-				return result;
-			} finally {
-				monitor.EndTask ();
-			}
-			
-			return null;
+			return CreateMergedPlist (monitor, conf, template, plistOut, 
+				(IPhoneProjectConfiguration config, PlistDocument doc) => 
+			{
+				var dict = doc.Root as PlistDictionary;
+				if (dict == null)
+					doc.Root = dict = new PropertyList.PlistDictionary ();
+				
+				bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
+				
+				SetIfNotPresent (dict, "CFBundleDevelopmentRegion",
+					String.IsNullOrEmpty (proj.BundleDevelopmentRegion)? "English" : proj.BundleDevelopmentRegion);
+				
+				SetIfNotPresent (dict, "CFBundleDisplayName", proj.BundleDisplayName ?? proj.Name);
+				SetIfNotPresent (dict, "CFBundleExecutable", conf.NativeExe.FileName);
+				
+				FilePath icon = proj.BundleIcon.ToRelative (proj.BaseDirectory);
+				if (!(icon.IsNullOrEmpty || icon.ToString () == "."))
+					SetIfNotPresent (dict, "CFBundleIconFile", icon.FileName);
+				
+				SetIfNotPresent (dict, "CFBundleIdentifier", proj.BundleIdentifier ?? ("com.yourcompany." + proj.Name));
+				SetIfNotPresent (dict, "CFBundleInfoDictionaryVersion", "6.0");
+				SetIfNotPresent (dict, "CFBundleName", proj.Name);
+				SetIfNotPresent (dict, "CFBundlePackageType", "APPL");
+				if (!sim)
+					dict["CFBundleResourceSpecification"] = "ResourceRules.plist";
+				SetIfNotPresent (dict, "CFBundleSignature", "????");
+				SetIfNotPresent (dict,  "CFBundleSupportedPlatforms",
+					new PropertyList.PlistArray () { sim? "iphonesimulator" : "iphoneos" });
+				SetIfNotPresent (dict, "CFBundleVersion", proj.BundleVersion ?? "1.0");
+				SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
+				SetIfNotPresent (dict, "DTSDKName", (sim? "iphonesimulator" : "iphoneos")  + conf.MtouchSdkVersion);
+				SetIfNotPresent (dict,  "LSRequiresIPhoneOS", true);
+				
+				if (!sim)
+					//FIXME allow user to choose version?
+					SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchSdkVersion);
+				
+				if (!String.IsNullOrEmpty (proj.MainNibFile.ToString ())) {
+					string mainNib = proj.MainNibFile.ToRelative (proj.BaseDirectory);
+					if (mainNib.EndsWith (".nib") || mainNib.EndsWith (".xib"))
+					    mainNib = mainNib.Substring (0, mainNib.Length - 4).Replace ('\\', '/');
+					SetIfNotPresent (dict, "NSMainNibFile", mainNib);
+				};
+				
+				return null;
+			});
 		}
 		
-		void SetIfNotPresent (PlistDictionary dict, string key, PlistObjectBase value)
+		static void SetIfNotPresent (PlistDictionary dict, string key, PlistObjectBase value)
 		{
 			if (!dict.ContainsKey (key))
 				dict[key] = value;
@@ -272,7 +265,8 @@ namespace MonoDevelop.IPhone
 			return GetTool ("mtouch", project, monitor, out error);
 		}
 		
-		internal ProcessStartInfo GetTool (string tool, IPhoneProject project, IProgressMonitor monitor, out BuildResult error)
+		internal ProcessStartInfo GetTool (string tool, IPhoneProject project, IProgressMonitor monitor,
+		                                   out BuildResult error)
 		{
 			var toolPath = project.TargetRuntime.GetToolPath (project.TargetFramework, tool);
 			if (String.IsNullOrEmpty (toolPath)) {
@@ -373,7 +367,8 @@ namespace MonoDevelop.IPhone
 				if (cbWriter.WrittenCount > 0)
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Updated {0} CodeBehind files", cbWriter.WrittenCount));
 			} else {
-				monitor.ReportWarning ("Cannot generate designer code, because CodeDom provider does not support partial classes.");
+				monitor.ReportWarning ("Cannot generate designer code, because CodeDom " +
+					"provider does not support partial classes.");
 			}
 			monitor.EndTask ();
 			
@@ -391,7 +386,9 @@ namespace MonoDevelop.IPhone
 				monitor.BeginTask (GettextCatalog.GetString ("Compiling interface definitions"), 0);	
 				foreach (var file in ibfiles) {
 					file.EnsureOutputDirectory ();
-					var psi = new ProcessStartInfo ("ibtool", String.Format ("\"{0}\" --compile \"{1}\"", file.Input, file.Output));
+					var psi = new ProcessStartInfo ("ibtool",
+						String.Format ("\"{0}\" --compile \"{1}\"", file.Input, file.Output)
+					);
 					monitor.Log.WriteLine (psi.FileName + " " + psi.Arguments);
 					psi.WorkingDirectory = cfg.OutputDirectory;
 					string errorOutput;
@@ -404,7 +401,8 @@ namespace MonoDevelop.IPhone
 				monitor.EndTask ();
 			}
 			
-			var contentFiles = GetContentFilePairs (buildData.Items.OfType<ProjectFile> (), appDir).Where (NeedsBuilding).ToList ();
+			var contentFiles = GetContentFilePairs (buildData.Items.OfType<ProjectFile> (), appDir)
+				.Where (NeedsBuilding).ToList ();
 			
 			if (!proj.BundleIcon.IsNullOrEmpty) {
 				FilePair icon = new FilePair (proj.BundleIcon, cfg.AppDirectory.Combine (proj.BundleIcon.FileName));
@@ -432,7 +430,8 @@ namespace MonoDevelop.IPhone
 		BuildResult ProcessPackaging (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf)
 		{
 			bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
-			bool dist = !sim && !string.IsNullOrEmpty (conf.CodesignKey) && conf.CodesignKey.StartsWith (Keychain.DIST_CERT_PREFIX);
+			bool dist = !sim && !string.IsNullOrEmpty (conf.CodesignKey)
+				&& conf.CodesignKey.StartsWith (Keychain.DIST_CERT_PREFIX);
 			BuildResult result = new BuildResult ();
 			
 			//don't bother signing in the sim
@@ -473,7 +472,9 @@ namespace MonoDevelop.IPhone
 					return result;
 				}
 				
-				string provisionFile = MobileProvision.ProfileDirectory.Combine (conf.CodesignProvision).ChangeExtension (".mobileprovision");
+				string provisionFile = MobileProvision.ProfileDirectory.Combine (conf.CodesignProvision)
+					.ChangeExtension (".mobileprovision");
+				
 				if (!File.Exists (provisionFile)) {
 					string err = string.Format ("The provisioning profile '{0}' could not be found", conf.CodesignProvision);
 					result.AddError (err);
@@ -630,7 +631,8 @@ namespace MonoDevelop.IPhone
 			};
 			
 			monitor.Log.WriteLine ("codesign " + psi.Arguments);
-			psi.EnvironmentVariables.Add ("CODESIGN_ALLOCATE", "/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate");
+			psi.EnvironmentVariables.Add ("CODESIGN_ALLOCATE",
+				"/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate");
 			string output;
 			if ((signResultCode = ExecuteCommand (monitor, psi, out output)) != 0) {
 				result.AddError (string.Format ("Code signing failed with error code {0}: {1}", signResultCode, output));
@@ -643,7 +645,8 @@ namespace MonoDevelop.IPhone
 		
 		IEnumerable<FilePair> GetIBFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
 		{
-			return allItems.OfType<ProjectFile> ().Where (pf => pf.BuildAction == BuildAction.Page && pf.FilePath.Extension == ".xib")
+			return allItems.OfType<ProjectFile> ()
+				.Where (pf => pf.BuildAction == BuildAction.Page && pf.FilePath.Extension == ".xib")
 				.Select (pf => {
 					string[] splits = ((string)pf.RelativePath).Split (Path.DirectorySeparatorChar);
 					FilePath name = splits.Last ();
@@ -719,6 +722,144 @@ namespace MonoDevelop.IPhone
 			}
 			
 			return exitCode;
+		}
+		
+		static BuildResult CreateMergedPlist (IProgressMonitor monitor, IPhoneProjectConfiguration conf,
+			ProjectFile template, string outPath,
+			Func<IPhoneProjectConfiguration, PlistDocument,BuildResult> merge)
+		{
+			var result = new BuildResult ();
+			
+			var doc = new PlistDocument ();
+			if (template != null) {
+				try {
+					doc.LoadFromXmlFile (template.FilePath);
+				} catch (Exception ex) {
+					if (ex is XmlException)
+						result.AddError (template.FilePath, ((XmlException)ex).LineNumber,
+						                 ((XmlException)ex).LinePosition, null, ex.Message);
+					else
+						result.AddError (template.FilePath, 0, 0, null, ex.Message);
+					monitor.ReportError (GettextCatalog.GetString ("Could not load file '{0}': {1}",
+					                                               template.FilePath, ex.Message), null);
+					return result;
+				}
+			}
+			
+			if (result.Append (merge (conf, doc)).ErrorCount > 0)
+				return result;
+			
+			try {
+				EnsureDirectoryForFile (outPath);
+				using (XmlTextWriter writer = new XmlTextWriter (outPath, Encoding.UTF8)) {
+					writer.Formatting = Formatting.Indented;
+					doc.Write (writer);
+				}
+			} catch (Exception ex) {
+				result.AddError (outPath, 0, 0, null, ex.Message);
+				monitor.ReportError (GettextCatalog.GetString ("Could not write file '{0}'", outPath), ex);
+			}
+			return result;
+		}
+		
+		static void EnsureDirectoryForFile (string filename)
+		{
+			string dir = Path.GetDirectoryName (filename);
+			if (!Directory.Exists (dir))
+				Directory.CreateDirectory (dir);
+		}
+		
+		static BuildResult UpdateDebugSettingsPlist (IProgressMonitor monitor, IPhoneProjectConfiguration conf,
+		                                             ProjectFile template, string target)
+		{
+			if (template != null && template.BuildAction != BuildAction.Content)
+				template = null;
+			
+			//if not in debug mode, make sure that the settings file is either
+			//copied cleanly or deleted
+			if (!conf.DebugMode) {
+				if (template != null) {
+					EnsureDirectoryForFile (target);
+					File.Copy (template.FilePath, target);
+				} else if (File.Exists (target)) {
+					File.Delete (target);
+				}
+				return null;
+			}
+			
+			return CreateMergedPlist (monitor, conf, template, target,
+				(IPhoneProjectConfiguration config, PlistDocument doc) =>
+			{
+				bool sim = config.Platform == IPhoneProject.PLAT_SIM;
+				
+				var dict = doc.Root as PlistDictionary;
+				if (dict == null)
+					doc.Root = dict = new PropertyList.PlistDictionary ();
+				
+				SetIfNotPresent (dict, "Title", "AppSettings");
+				SetIfNotPresent (dict, "StringsTable", "Root");
+				
+				var arr = dict.TryGetValue ("PreferenceSpecifiers") as PlistArray;
+				if (arr == null)
+					dict["PreferenceSpecifiers"] = arr = new PlistArray ();
+				
+				arr.Add (new PlistDictionary (true) {
+					{ "Type", "PSGroupSpecifier" },
+					{ "Title", "Debug Settings" }
+				});
+				
+				arr.Add (new PlistDictionary (true) {
+					{ "Type", "PSToggleSwitchSpecifier" },
+					{ "Title", "Enabled" },
+					{ "Key", "__monotouch_debug_enabled" },
+					{ "DefaultValue", "1" },
+					{ "TrueValue", "1" },
+					{ "FalseValue", "0" }
+				});
+				
+				arr.Add (new PlistDictionary (true) {
+					{ "Type", "PSTextFieldSpecifier" },
+					{ "Title", "Debugger Host" },
+					{ "Key", "__monotouch_debug_host" },
+					{ "AutocapitalizationType", "None" },
+					{ "AutocorrectionType", "No" },
+					{ "DefaultValue", sim? "127.0.0.1" : GetDefaultIP () }
+				});
+					
+				arr.Add (new PlistDictionary (true) {
+					{ "Type", "PSTextFieldSpecifier" },
+					{ "Title", "Debugger Port" },
+					{ "Key", "__monotouch_debug_port" },
+					{ "AutocapitalizationType", "None" },
+					{ "AutocorrectionType", "No" },
+					{ "DefaultValue", "10000" }
+				});
+					
+				arr.Add (new PlistDictionary (true) {
+					{ "Type", "PSTextFieldSpecifier" },
+					{ "Title", "Standard Output Port" },
+					{ "Key", "__monotouch_stdout_port" },
+					{ "AutocapitalizationType", "None" },
+					{ "AutocorrectionType", "No" },
+					{ "DefaultValue", "10001" }
+				});
+					
+				arr.Add (new PlistDictionary (true) {
+					{ "Type", "PSTextFieldSpecifier" },
+					{ "Title", "Standard Error Port" },
+					{ "Key", "__monotouch_stderr_port" },
+					{ "AutocapitalizationType" , "None" },
+					{ "AutocorrectionType", "No" },
+					{ "DefaultValue", "10002" },
+				});
+				
+				return null;
+			});
+		}
+		
+		static string GetDefaultIP ()
+		{
+			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).ToString ();
 		}
 	}
 }
