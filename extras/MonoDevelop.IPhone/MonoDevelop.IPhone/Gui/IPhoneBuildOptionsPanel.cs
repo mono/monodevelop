@@ -84,6 +84,19 @@ namespace MonoDevelop.IPhone.Gui
 			sdkComboEntry.AppendText ("3.0");
 			sdkComboEntry.AppendText ("3.1");
 			
+			ListStore store = new ListStore (typeof (string), typeof (bool));
+			i18nTreeView.Model = store;
+			
+			store.AppendValues ("cjk", false);
+			store.AppendValues ("mideast", false);
+			store.AppendValues ("other", false);
+			store.AppendValues ("rare", false);
+			store.AppendValues ("west", false);
+			
+			i18nTreeView.AppendColumn ("", new CellRendererToggle (), "active", 1);
+			i18nTreeView.AppendColumn ("", new CellRendererText (), "text", 0);
+			i18nTreeView.HeadersVisible = false;
+			
 			this.ShowAll ();
 		}
 		
