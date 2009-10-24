@@ -112,14 +112,19 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected void ConnectOutput (System.IO.StreamReader reader, bool error)
 		{
-			Thread t = (error ? outputReader : errorReader);
+			Thread t = (error ? errorReader : outputReader);
 			if (t != null)
 				return;
 			t = new Thread (delegate () {
-				ReadOutput (reader, true);
+				ReadOutput (reader, error);
 			});
 			t.IsBackground = true;
 			t.Start ();
+
+			if (error)
+				errorReader = t;	
+			else
+				outputReader = t;
 		}
 
 		void ReadOutput (System.IO.StreamReader reader, bool isError)
