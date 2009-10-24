@@ -104,19 +104,22 @@ namespace MonoDevelop.Debugger.Soft
 			
 			var vm = VirtualMachineManager.Launch (vmargs, options);
 			
-			outputReader = new Thread (delegate () {
-				ReadOutput (vm.Process.StandardOutput, false);
-			});
-			outputReader.IsBackground = true;
-			outputReader.Start ();
-			
-			errorReader = new Thread (delegate () {
-				ReadOutput (vm.Process.StandardError, true);
-			});
-			errorReader.IsBackground = true;
-			errorReader.Start ();
+			ConnectOutput (vm.StandardOutput, false);
+			ConnectOutput (vm.StandardError, true);
 			
 			return vm;
+		}
+
+		protected void ConnectOutput (System.IO.StreamReader reader, bool error)
+		{
+			Thread t = (error ? outputReader : errorReader);
+			if (t != null)
+				return;
+			t = new Thread (delegate () {
+				ReadOutput (reader, true);
+			});
+			t.IsBackground = true;
+			t.Start ();
 		}
 
 		void ReadOutput (System.IO.StreamReader reader, bool isError)
