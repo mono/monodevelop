@@ -890,7 +890,7 @@ namespace Mono.CSharp
 			if (name != null && name.Length != 0) {
 				output.Write ("namespace ");
 				output.Write (GetSafeName (name));
-				OutputStartBrace (false);
+				OutputStartBrace ();
 				++Indent;
 			}
 		}
@@ -925,19 +925,12 @@ namespace Mono.CSharp
 
 		private void OutputStartBrace ()
 		{
-			OutputStartBrace (true);
-		}
-		
-		private void OutputStartBrace (bool appendNewLine)
-		{
 			if (Options.BracingStyle == "C") {
 				Output.WriteLine ("");
-				Output.Write ("{");
+				Output.WriteLine ("{");
 			} else {
-				Output.Write (" {");
+				Output.WriteLine (" {");
 			}
-			if (appendNewLine)
-				Output.WriteLine ();
 		}
 
 		private void OutputAttributes (CodeAttributeDeclarationCollection attributes, string prefix, bool inline)
@@ -1674,7 +1667,7 @@ namespace Mono.CSharp
 					GenerateLinePragmaEnd (import.LinePragma);
 			}
 
-//			Output.WriteLine();
+			Output.WriteLine();
 
 			GenerateTypes (ns);
 
@@ -1708,22 +1701,21 @@ namespace Mono.CSharp
 
 			// WARNING: if anything is missing in the foreach loop and you add it, add the type in
 			// its corresponding place in CodeTypeMemberComparer class (below)
-			bool isFirst = true;
+
 			CodeTypeDeclaration subtype = null;
 			foreach (CodeTypeMember member in members) {
 				CodeTypeMember prevMember = this.currentMember;
 				this.currentMember = member;
-				
+
 				if (prevMember != null && subtype == null) {
 					if (prevMember.LinePragma != null)
 						GenerateLinePragmaEnd (prevMember.LinePragma);
 					if (prevMember.EndDirectives.Count > 0)
 						GenerateDirectives (prevMember.EndDirectives);
 				}
-				
-				if (!isFirst && Options.BlankLinesBetweenMembers)
+
+				if (Options.BlankLinesBetweenMembers)
 					Output.WriteLine ();
-				isFirst = false;
 
 				subtype = member as CodeTypeDeclaration;
 				if (subtype != null) {
