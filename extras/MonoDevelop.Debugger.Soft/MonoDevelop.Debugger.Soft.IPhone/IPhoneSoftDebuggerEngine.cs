@@ -50,8 +50,9 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		{
 			var cmd = (IPhoneExecutionCommand) command;
 			
-			var ep = new IPEndPoint (MonoDevelop.IPhone.IPhoneBuildExtension.GetDefaultDebuggerIP (cmd.Simulator), 10000);
-			var startInfo = new IPhoneDebuggerStartInfo (ep, cmd);
+			var startInfo = new IPhoneDebuggerStartInfo (IPhoneBuildExtension.GetDebuggerIP (cmd.Simulator),
+								     IPhoneBuildExtension.DebuggerPort,
+								     IPhoneBuildExtension.DebuggerOutputPort, cmd);
 			return startInfo;
 		}
 
@@ -84,12 +85,16 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 	
 	class IPhoneDebuggerStartInfo : DebuggerStartInfo
 	{
-		public IPEndPoint Endpoint { get; private set; }
+		public IPAddress Address { get; private set; }
+		public int DebugPort { get; private set; }
+		public int OutputPort { get; private set; }
 		public IPhoneExecutionCommand ExecutionCommand {  get; private set; }
 		
-		public IPhoneDebuggerStartInfo (IPEndPoint endpoint, IPhoneExecutionCommand command)
+		public IPhoneDebuggerStartInfo (IPAddress address, int debug_port, int output_port, IPhoneExecutionCommand command)
 		{
-			this.Endpoint = endpoint;
+			this.Address = address;
+			this.DebugPort = debug_port;
+			this.OutputPort = output_port;
 			this.ExecutionCommand = command;
 		}		
 	}

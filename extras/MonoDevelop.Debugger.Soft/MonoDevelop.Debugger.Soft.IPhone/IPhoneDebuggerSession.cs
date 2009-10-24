@@ -42,15 +42,13 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		string appName;
 		ProcessInfo[] procs;
 		Process simProcess;
-		
+
 		protected override VirtualMachine LaunchVirtualMachine (DebuggerStartInfo startInfo, out bool startsSuspended)
 		{
 			startsSuspended = false;
 			var dsi = (IPhoneDebuggerStartInfo) startInfo;
 			
 			appName = dsi.ExecutionCommand.AppPath.FileNameWithoutExtension;
-			
-			DoMdbCopyHack (dsi.ExecutionCommand);
 			
 			if (dsi.ExecutionCommand.Simulator) {
 				StartSimulatorProcess (dsi.ExecutionCommand);
@@ -63,7 +61,9 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			VirtualMachine vm = null;
 			Thread listenThread = new Thread (new ThreadStart (delegate {
 				try {
-					vm = VirtualMachineManager.Listen (dsi.Endpoint);
+					vm = VirtualMachineManager.Listen (dsi.Address, dsi.DebugPort, dsi.OutputPort);
+					ConnectOutput (vm.StandardOutput, false);
+
 					Gtk.Application.Invoke (delegate {
 						if (dialog != null)
 							dialog.Respond (Gtk.ResponseType.Ok);
@@ -114,16 +114,6 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			return procs;
 		}
 		
-		//HACK because mtouch doesn't copy mdbs yet
-		void DoMdbCopyHack (IPhoneExecutionCommand cmd)
-		{
-			foreach (var f in Directory.GetFiles (cmd.AppPath.ParentDirectory, "*.mdb")) {
-				var fout = cmd.AppPath.Combine (Path.GetFileName (f));
-				if (File.Exists (fout))
-					File.Delete (fout);
-				File.Copy (f, fout);
-			}
-		}
 
 		//FIXME: hook up the app's stdin and stdout
 		void StartSimulatorProcess (IPhoneExecutionCommand cmd)
