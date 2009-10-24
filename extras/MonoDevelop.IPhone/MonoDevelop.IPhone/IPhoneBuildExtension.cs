@@ -795,7 +795,7 @@ namespace MonoDevelop.IPhone
 				bool sim = config.Platform == IPhoneProject.PLAT_SIM;
 				
 				try {
-					debuggerIP = GetDefaultDebuggerIP (sim);
+					debuggerIP = GetDebuggerIP (sim);
 				} catch {
 					br.AddWarning (GettextCatalog.GetString ("Could not resolve host IP for debugger settings"));
 				}
@@ -831,7 +831,7 @@ namespace MonoDevelop.IPhone
 					{ "Key", "__monotouch_debug_host" },
 					{ "AutocapitalizationType", "None" },
 					{ "AutocorrectionType", "No" },
-					{ "DefaultValue", sim? "127.0.0.1" : debuggerIP.ToString () }
+					{ "DefaultValue", debuggerIP.ToString () }
 				});
 					
 				arr.Add (new PlistDictionary (true) {
@@ -840,27 +840,44 @@ namespace MonoDevelop.IPhone
 					{ "Key", "__monotouch_debug_port" },
 					{ "AutocapitalizationType", "None" },
 					{ "AutocorrectionType", "No" },
-					{ "DefaultValue", "10000" }
+					{ "DefaultValue", DebuggerPort.ToString () }
 				});
 					
 				arr.Add (new PlistDictionary (true) {
 					{ "Type", "PSTextFieldSpecifier" },
-					{ "Title", "Standard Output Port" },
-					{ "Key", "__monotouch_stdout_port" },
+					{ "Title", "Output Port" },
+					{ "Key", "__monotouch_output_port" },
 					{ "AutocapitalizationType", "None" },
 					{ "AutocorrectionType", "No" },
-					{ "DefaultValue", "10001" }
+					{ "DefaultValue", DebuggerOutputPort.ToString () }
 				});
 				
 				return br;
 			});
 		}
 		
-		public static System.Net.IPAddress GetDefaultDebuggerIP (bool simulator)
+		public static System.Net.IPAddress GetDebuggerIP (bool simulator)
 		{
-			return simulator
-				? System.Net.IPAddress.Loopback
-				: System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList[0];
+			if (simulator)
+				return System.Net.IPAddress.Loopback;
+			
+			var ipStr = MonoDevelop.Core.PropertyService.Get<long> ("MonoTouch.Debugger.HostIP", -1);
+			if (ipStr > 0)
+				return new System.Net.IPAddress (ipStr);
+			
+			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList[0];
+		}
+		
+		public static int DebuggerPort {
+			get {
+				return MonoDevelop.Core.PropertyService.Get<int> ("MonoTouch.Debugger.Port", 10000);
+			}
+		}
+		
+		public static int DebuggerOutputPort {
+			get {
+				return MonoDevelop.Core.PropertyService.Get<int> ("MonoTouch.Debugger.OutputPort", 10001);
+			}
 		}
 	}
 }

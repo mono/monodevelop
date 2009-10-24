@@ -1,5 +1,11 @@
 2009-10-23  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneBuildExtension.cs: Track debug settings key name
+	  changes. Make port and IP configurable with property
+	  service.
+
+2009-10-23  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Fix build.
 
 2009-10-23  Michael Hutchinson  <mhutchinson@novell.com>
