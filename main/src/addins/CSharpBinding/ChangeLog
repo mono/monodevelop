@@ -1,10 +1,5 @@
 2009-10-23  Mike Krüger  <mkrueger@novell.com>
 
-	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs: Remove
-	  unwanted newline.
-
-2009-10-23  Mike Krüger  <mkrueger@novell.com>
-
 	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs: Re-applied
 	  some patches to remove unwanted newlines.
 
