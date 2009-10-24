@@ -1,5 +1,10 @@
 2009-10-23  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneSoftDebuggerEngine.cs: Use the same default IP that
+	  the IPhoneBuildExtension used.
+
+2009-10-23  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneDebuggerSession.cs: Make exiting more robust.
 
 2009-10-23  Michael Hutchinson  <mhutchinson@novell.com>

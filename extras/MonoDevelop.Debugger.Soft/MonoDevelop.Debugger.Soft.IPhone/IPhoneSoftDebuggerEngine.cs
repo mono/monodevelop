@@ -49,7 +49,9 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
 			var cmd = (IPhoneExecutionCommand) command;
-			var startInfo = new IPhoneDebuggerStartInfo (new IPEndPoint (IPAddress.Any, 10000), cmd);
+			
+			var ep = new IPEndPoint (MonoDevelop.IPhone.IPhoneBuildExtension.GetDefaultDebuggerIP (cmd.Simulator), 10000);
+			var startInfo = new IPhoneDebuggerStartInfo (ep, cmd);
 			return startInfo;
 		}
 
