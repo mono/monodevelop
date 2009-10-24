@@ -792,14 +792,13 @@ namespace MonoDevelop.IPhone
 			{
 				var br = new BuildResult ();
 				var debuggerIP = System.Net.IPAddress.Any;
+				bool sim = config.Platform == IPhoneProject.PLAT_SIM;
 				
 				try {
-					debuggerIP = GetDefaultDebuggerEndpointIP ();
-				} catch (Exception ex) {
+					debuggerIP = GetDefaultDebuggerIP (sim);
+				} catch {
 					br.AddWarning (GettextCatalog.GetString ("Could not resolve host IP for debugger settings"));
 				}
-				
-				bool sim = config.Platform == IPhoneProject.PLAT_SIM;
 				
 				var dict = doc.Root as PlistDictionary;
 				if (dict == null)
@@ -857,7 +856,7 @@ namespace MonoDevelop.IPhone
 			});
 		}
 		
-		public static string GetDefaultDebuggerEndpointIP (bool simulator)
+		public static System.Net.IPAddress GetDefaultDebuggerIP (bool simulator)
 		{
 			return simulator
 				? System.Net.IPAddress.Loopback
