@@ -790,6 +790,15 @@ namespace MonoDevelop.IPhone
 			return CreateMergedPlist (monitor, conf, template, target,
 				(IPhoneProjectConfiguration config, PlistDocument doc) =>
 			{
+				var br = new BuildResult ();
+				var debuggerIP = System.Net.IPAddress.Any;
+				
+				try {
+					debuggerIP = GetDefaultDebuggerEndpointIP ();
+				} catch (Exception ex) {
+					br.AddWarning (GettextCatalog.GetString ("Could not resolve host IP for debugger settings"));
+				}
+				
 				bool sim = config.Platform == IPhoneProject.PLAT_SIM;
 				
 				var dict = doc.Root as PlistDictionary;
@@ -823,7 +832,7 @@ namespace MonoDevelop.IPhone
 					{ "Key", "__monotouch_debug_host" },
 					{ "AutocapitalizationType", "None" },
 					{ "AutocorrectionType", "No" },
-					{ "DefaultValue", sim? "127.0.0.1" : GetDefaultIP () }
+					{ "DefaultValue", sim? "127.0.0.1" : debuggerIP.ToString () }
 				});
 					
 				arr.Add (new PlistDictionary (true) {
@@ -843,23 +852,16 @@ namespace MonoDevelop.IPhone
 					{ "AutocorrectionType", "No" },
 					{ "DefaultValue", "10001" }
 				});
-					
-				arr.Add (new PlistDictionary (true) {
-					{ "Type", "PSTextFieldSpecifier" },
-					{ "Title", "Standard Error Port" },
-					{ "Key", "__monotouch_stderr_port" },
-					{ "AutocapitalizationType" , "None" },
-					{ "AutocorrectionType", "No" },
-					{ "DefaultValue", "10002" },
-				});
 				
-				return null;
+				return br;
 			});
 		}
 		
-		static string GetDefaultIP ()
+		public static string GetDefaultDebuggerEndpointIP (bool simulator)
 		{
-			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).ToString ();
+			return simulator
+				? System.Net.IPAddress.Loopback
+				: System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList[0];
 		}
 	}
 }

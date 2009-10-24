@@ -1,5 +1,9 @@
 2009-10-23  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneBuildExtension.cs: Set debugger IP properly.
+
+2009-10-23  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Generate debug settings plist.
 
 2009-10-22  Michael Hutchinson  <mhutchinson@novell.com>
