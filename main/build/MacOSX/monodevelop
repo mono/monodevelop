@@ -30,18 +30,11 @@ fi
 REQUIRED_MAJOR=2
 REQUIRED_MINOR=4
 APPNAME="MonoDevelop"
-
 VERSION_TITLE="Cannot launch $APPNAME"
 VERSION_MSG="$APPNAME requires the Mono Framework version $REQUIRED_MAJOR.$REQUIRED_MINOR or later."
 DOWNLOAD_URL="http://www.go-mono.com/mono-downloads/download.html"
 
-MONO_VERSION="$(mono --version | grep 'Mono JIT compiler version ' |  cut -f5 -d\ )"
-MONO_VERSION_MAJOR="$(echo $MONO_VERSION | cut -f1 -d.)"
-MONO_VERSION_MINOR="$(echo $MONO_VERSION | cut -f2 -d.)"
-if [ -z "$MONO_VERSION" ] \
-	|| [ $MONO_VERSION_MAJOR -lt $REQUIRED_MAJOR ] \
-	|| [ $MONO_VERSION_MAJOR -eq $REQUIRED_MAJOR -a $MONO_VERSION_MINOR -lt $REQUIRED_MINOR ] 
-then
+if ! /Library/Frameworks/Mono.framework/Versions/Current/bin/pkg-config --atleast-version=$REQUIRED_MAJOR.$REQUIRED_MINOR mono; then
 	osascript \
 	-e "set question to display dialog \"$VERSION_MSG\" with title \"$VERSION_TITLE\" buttons {\"Cancel\", \"Download...\"} default button 2" \
 	-e "if button returned of question is equal to \"Download...\" then open location \"$DOWNLOAD_URL\""
@@ -51,15 +44,19 @@ then
 fi
 
 # this check should be removed when we require 2.6, which will have an updateinfo
-if [ ! -f '/Library/Frameworks/Mono.framework/Versions/Current/updateinfo' ]; then \
-	STABILITY_MSG="MonoDevelop requires Mono version 2.4.2.3_6 or later for important stability fixes."
-	osascript \
-	-e "set question to display dialog \"$STABILITY_MSG\" with title \"$VERSION_TITLE\" buttons {\"Cancel\", \"Download...\"} default button 2" \
-	-e "if button returned of question is equal to \"Download...\" then open location \"$DOWNLOAD_URL\""
-	echo "$VERSION_TITLE"
-	echo "$VERSION_MSG"
-	exit 1
-fi
+# This check is broken if you upgrade Mono to 2.6, or if you have your own Mono,
+#
+# Do not enable this code without getting approval from Miguel
+#
+#if [ ! -f '/Library/Frameworks/Mono.framework/Versions/Current/updateinfo' ]; then \
+#	STABILITY_MSG="MonoDevelop requires Mono version 2.4.2.3_6 or later for important stability fixes."
+#	osascript \
+#	-e "set question to display dialog \"$STABILITY_MSG\" with title \"$VERSION_TITLE\" buttons {\"Cancel\", \"Download...\"} default button 2" \
+#	-e "if button returned of question is equal to \"Download...\" then open location \"$DOWNLOAD_URL\""
+#	echo "$VERSION_TITLE"
+#	echo "$VERSION_MSG"
+#	exit 1
+#fi
 
 
 ## use an app-specific registry if possible
