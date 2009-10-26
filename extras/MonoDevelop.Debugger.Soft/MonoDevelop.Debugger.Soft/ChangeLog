@@ -1,3 +1,7 @@
+2009-10-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerEngine.cs: Disable sdb for Mono 2.4/2.5/2.6.
+
 2009-10-23  Geoff Norton  <gnorton@novell.com>
 
 	* SoftDebuggerSession.cs: Add a ConnectOutput call that is

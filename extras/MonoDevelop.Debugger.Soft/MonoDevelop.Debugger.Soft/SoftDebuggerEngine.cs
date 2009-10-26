@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -35,7 +36,13 @@ namespace MonoDevelop.Debugger.Soft
 	{
 		public bool CanDebugCommand (ExecutionCommand cmd)
 		{
-			return cmd is DotNetExecutionCommand;
+			var netCmd = cmd as DotNetExecutionCommand;
+			if (netCmd == null || ! (netCmd.TargetRuntime is MonoTargetRuntime))
+				return false;
+			
+			//assume that 2.8 has sdb support
+			string v = ((MonoTargetRuntime)netCmd.TargetRuntime).Version;
+			return !v.StartsWith ("2.4") && !v.StartsWith ("2.5") && !v.StartsWith ("2.6");
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
