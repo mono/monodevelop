@@ -1,3 +1,9 @@
+2009-10-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  unit test for 'Bug 549864 - Intellisense does not work
+	  properly with expressions'.
+
 2009-10-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/DeclareLocalTests.cs: Updated unit

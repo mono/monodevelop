@@ -1953,5 +1953,36 @@ public class Foo
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 549864 - Intellisense does not work properly with expressions
+		/// </summary>
+		[Test()]
+		public void TestBug549864 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+delegate T MyFunc<S, T> (S t);
+
+class TestClass
+{
+    public string Value
+    {
+        get;
+        set;
+    }
+	
+    public static object GetProperty<TType> (MyFunc<TType, object> expression)
+	{
+		return null;
+    }
+    private static object ValueProperty = TestClass.GetProperty<TestClass> ($x => x.$);
+
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Value"), "property 'Value' not found.");
+		}
 	}
 }
