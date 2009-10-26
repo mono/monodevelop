@@ -37,12 +37,8 @@ using System.Diagnostics;
 using PropertyList;
 using System.CodeDom.Compiler;
 
-
-
-
 namespace MonoDevelop.IPhone
 {
-	
 	
 	public class IPhoneBuildExtension : ProjectServiceExtension
 	{
@@ -175,6 +171,11 @@ namespace MonoDevelop.IPhone
 			case MtouchLinkMode.Full:
 			default:
 				break;
+			}
+			
+			if (!string.IsNullOrEmpty (conf.MtouchI18n)) {
+				args.Append (" -i18n=");
+				args.Append (conf.MtouchI18n);
 			}
 			
 			if (conf.MtouchSdkVersion != "3.0")

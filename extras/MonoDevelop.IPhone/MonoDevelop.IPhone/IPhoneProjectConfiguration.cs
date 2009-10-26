@@ -112,6 +112,17 @@ namespace MonoDevelop.IPhone
 		[ItemProperty ("MtouchExtraArgs")]
 		public string MtouchExtraArgs { get; set; }
 		
+		[ItemProperty ("MtouchI18n", DefaultValue = null)]
+		string mtouchI18n;
+		public string MtouchI18n {
+			get { return mtouchI18n; }
+			set {
+				if (string.IsNullOrEmpty (value))
+					mtouchI18n = null;
+				mtouchI18n = value;
+			}
+		}
+		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			var cfg = (IPhoneProjectConfiguration) configuration;

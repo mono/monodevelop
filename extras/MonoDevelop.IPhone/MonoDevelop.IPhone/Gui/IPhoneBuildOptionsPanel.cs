@@ -25,11 +25,14 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using Gtk;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using System.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.IPhone.Gui
 {
@@ -72,6 +75,10 @@ namespace MonoDevelop.IPhone.Gui
 			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
 		};
 		
+		string[] i18n = { "cjk", "mideast", "other", "rare", "west" };
+		
+		ListStore store;
+		
 		public IPhoneBuildOptionsPanelWidget ()
 		{
 			this.Build ();
@@ -84,18 +91,18 @@ namespace MonoDevelop.IPhone.Gui
 			sdkComboEntry.AppendText ("3.0");
 			sdkComboEntry.AppendText ("3.1");
 			
-			ListStore store = new ListStore (typeof (string), typeof (bool));
+			store = new ListStore (typeof (string), typeof (bool));
 			i18nTreeView.Model = store;
 			
-			store.AppendValues ("cjk", false);
-			store.AppendValues ("mideast", false);
-			store.AppendValues ("other", false);
-			store.AppendValues ("rare", false);
-			store.AppendValues ("west", false);
-			
-			i18nTreeView.AppendColumn ("", new CellRendererToggle (), "active", 1);
+			var toggle = new CellRendererToggle ();
+			i18nTreeView.AppendColumn ("", toggle, "active", 1);
 			i18nTreeView.AppendColumn ("", new CellRendererText (), "text", 0);
 			i18nTreeView.HeadersVisible = false;
+			toggle.Toggled += delegate (object o, ToggledArgs args) {
+				TreeIter iter;
+				if (store.GetIter (out iter, new TreePath (args.Path)))
+					store.SetValue (iter, 1, !(bool)store.GetValue (iter, 1));
+			};
 			
 			this.ShowAll ();
 		}
@@ -106,6 +113,7 @@ namespace MonoDevelop.IPhone.Gui
 			debugCheck.Active = cfg.MtouchDebug;
 			linkCombo.Active = (int) cfg.MtouchLink;
 			sdkComboEntry.Entry.Text = cfg.MtouchSdkVersion;
+			LoadI18nValues (cfg.MtouchI18n);
 		}
 		
 		public void StorePanelContents (IPhoneProjectConfiguration cfg)
@@ -114,6 +122,35 @@ namespace MonoDevelop.IPhone.Gui
 			cfg.MtouchSdkVersion = sdkComboEntry.Entry.Text; //FIXME: validate this?
 			cfg.MtouchDebug = debugCheck.Active;
 			cfg.MtouchLink = (MtouchLinkMode) linkCombo.Active;
+			cfg.MtouchI18n = GetI18nValues ();
+		}
+		
+		void LoadI18nValues (string values)
+		{
+			store.Clear ();
+			
+			if (values == null)
+				return;
+			var arr = values.Split (',');
+			
+			foreach (string s in i18n)
+				store.AppendValues (s, arr.Contains (s));
+		}
+		
+		string GetI18nValues ()
+		{
+			var sb = new StringBuilder ();
+			TreeIter iter;
+			if (store.GetIterFirst (out iter)) {
+				do {
+					if ((bool)store.GetValue (iter, 1)) {
+						if (sb.Length == 0)
+							sb.Append (",");
+						sb.Append ((string)store.GetValue (iter, 0));
+					}
+				} while (store.IterNext (ref iter));
+			}
+			return sb.ToString ();
 		}
 		
 		string NullIfEmpty (string s)

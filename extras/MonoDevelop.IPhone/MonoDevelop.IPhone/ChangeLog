@@ -1,3 +1,16 @@
+2009-10-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs:
+	* IPhoneProjectConfiguration.cs:
+	* Gui/IPhoneBuildOptionsPanel.cs: Implement support for mtouch
+	  i18n arg.
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanelWidget.cs:
+	  Flush.
+
 2009-10-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:

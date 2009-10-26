@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.IPhone.Gui {
     
-    
     internal partial class IPhoneSigningKeyPanelWidget {
         
         private Gtk.VBox vbox1;
