@@ -189,7 +189,7 @@ namespace MonoDevelop.CSharp.Resolver
 		int lookupVariableLine = 0;
 		internal void SetupParsedCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit unit)
 		{
-			lookupVariableLine = -1; // all compilation unit lines are 1 based
+			lookupVariableLine = 0; // all compilation unit lines are 1 based
 			memberCompilationUnit = unit;
 			lookupTableVisitor.VisitCompilationUnit (unit, null);
 			setupLookupTableVisitor = true;
@@ -609,16 +609,16 @@ namespace MonoDevelop.CSharp.Resolver
 		
 		Dictionary<string, ResolveResult> resultTable = new Dictionary<string, ResolveResult> ();
  		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
-		{
-			ResolveResult result = null;
-			if (resultTable.TryGetValue (identifier, out result))
-				return result;
-			resultTable[identifier] = result;
-			
+ 		{
+ 			ResolveResult result = null;
+ 			if (resultTable.TryGetValue (identifier, out result))
+ 				return result;
+ 			resultTable[identifier] = result;
+ 		
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
-				if (identifier == pair.Key) {
-					LocalLookupVariable var = null;
-					//Console.WriteLine ("--- RP:" + this.resolvePosition + "/" + pair.Value.Count);
+ 				if (identifier == pair.Key) {
+ 					LocalLookupVariable var = null;
+// 					Console.WriteLine ("--- RP:" + this.resolvePosition + "/" + pair.Value.Count);
 					foreach (LocalLookupVariable v2 in pair.Value) {
 						DomLocation varStartPos = new DomLocation (lookupVariableLine + v2.StartPos.Line, v2.StartPos.Column - 1);
 						DomLocation varEndPos   = new DomLocation (lookupVariableLine + v2.EndPos.Line, v2.EndPos.Column - 1);

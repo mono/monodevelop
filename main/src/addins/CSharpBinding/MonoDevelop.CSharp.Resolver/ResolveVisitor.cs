@@ -121,9 +121,9 @@ namespace MonoDevelop.CSharp.Resolver
 				result.StaticResolve = true;
 				return result;
 			}
-//			Console.WriteLine ("visit id: " + identifierExpression.Identifier);
+			//Console.WriteLine ("visit id: " + identifierExpression.Identifier);
 			var res = resolver.ResolveIdentifier (this, identifierExpression.Identifier.TrimEnd ('.'));
-//			Console.WriteLine ("result: " + res.ResolvedType);
+			//Console.WriteLine ("result: " + res);
 			return res;
 		}
 		

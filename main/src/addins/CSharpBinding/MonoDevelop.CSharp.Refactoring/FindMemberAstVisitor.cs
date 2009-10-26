@@ -590,9 +590,11 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override object VisitMemberReferenceExpression (MemberReferenceExpression fieldExp, object data)
 		{
 			if (!(searchedMember is IParameter) && fieldExp.MemberName == searchedMemberName) {
-				ResolveResult resolveResult= resolver.ResolveExpression (fieldExp, ConvertLocation (fieldExp.EndLocation));
+				ResolveResult resolveResult = resolver.ResolveExpression (fieldExp, ConvertLocation (fieldExp.StartLocation));
 				MemberResolveResult mrr = resolveResult as MemberResolveResult;
+				//Console.WriteLine ("RR:" + resolveResult);
 				if (mrr != null) {
+					//Console.WriteLine ("resolved member:" + mrr.ResolvedMember);
 					if (mrr.ResolvedMember != null && mrr.ResolvedMember.Location == searchedMemberLocation && mrr.ResolvedMember.DeclaringType.FullName == ((IMember)searchedMember).DeclaringType.FullName) {
 						int line, column;
 						if (SearchText (searchedMemberName, fieldExp.StartLocation.Line, fieldExp.StartLocation.Column, out line, out column))

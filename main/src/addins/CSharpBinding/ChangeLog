@@ -1,5 +1,13 @@
 2009-10-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	  Fixed 'Bug 549858 - Refactoring does not change properties
+	  in lambda expressions'.
+
+2009-10-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Refactoring/CodeGenerator.cs: fixed Bug
 	  550024 - "resolve using" moves cursor to the added using.
 
