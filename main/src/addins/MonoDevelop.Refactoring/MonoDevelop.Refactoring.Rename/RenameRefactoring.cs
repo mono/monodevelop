@@ -234,7 +234,7 @@ namespace MonoDevelop.Refactoring.Rename
 			// for members we need to collect the whole 'class' of members (overloads & implementing types)
 			HashSet<string> alreadyVisitedTypes = new HashSet<string> ();
 			foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
-				if (type.ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract) {
+				if (type.ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract || type.DecoratedFullName == member.DeclaringType.DecoratedFullName) {
 					// search in the class for the member
 					foreach (IMember interfaceMember in type.SearchMember (member.Name, true)) {
 						if (interfaceMember.MemberType == member.MemberType)

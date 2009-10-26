@@ -1,3 +1,8 @@
+2009-10-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: Fixed
+	  issue in CollectMembers.
+
 2009-10-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.Rename/RenameItemDialog.cs:
