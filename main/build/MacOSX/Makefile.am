@@ -19,9 +19,6 @@ clean-local:
 	rm -rf MonoDevelop.dmg
 	rm -f MonoDevelop.app.zip
 
-copy:
-	-cp ../../../extras/MonoDevelop.IPhone/build/*  $(ADDINS)
-
 MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* ../locale/*/*/* mdtool monodevelop 
 	mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/{lib,share}
@@ -30,7 +27,6 @@ MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* 
 	cp -pR ../data $(MAC_APP_LIB_DIR)
 	cp -pR ../bin $(MAC_APP_LIB_DIR)
 	cp -pR ../locale $(MAC_APP_DIR)/Contents/MacOS/share
-	-cp ../../../extras/MonoDevelop.IPhone/build/*  $(ADDINS)
 	
 	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@ASSEMBLY_VERSION@/$(ASSEMBLY_VERSION)/" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
 	cp ../../theme-icons/Mac/monodevelop.icns $(MAC_APP_DIR)/Contents/Resources
