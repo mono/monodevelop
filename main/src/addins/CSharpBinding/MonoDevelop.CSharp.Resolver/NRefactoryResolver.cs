@@ -210,7 +210,7 @@ namespace MonoDevelop.CSharp.Resolver
 				AddParameterList (col, method.Parameters);
 			}
 			IProperty property = callingMember as IProperty;
-			if (property != null && property.Parameters != null) 
+			if (property != null && property.Parameters != null)
 				AddParameterList (col, property.Parameters);
 			if (CallingType == null)
 				return;
@@ -224,7 +224,7 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 			}
 			
-			if (CallingMember != null) {
+			if (context != ExpressionContext.TypeDeclaration && CallingMember != null) {
 				bool includeProtected = DomType.IncludeProtected (dom, CallingType, CallingMember.DeclaringType);
 				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
 					foreach (IMember member in type.Members) {
