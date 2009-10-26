@@ -1,5 +1,11 @@
 2009-10-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added
+	  test for 'Bug 549858 - Refactoring does not change
+	  properties in lambda expressions'.
+
+2009-10-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
 	  unit test for 'Bug 549864 - Intellisense does not work
 	  properly with expressions'.

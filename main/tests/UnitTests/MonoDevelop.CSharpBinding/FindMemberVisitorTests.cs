@@ -613,6 +613,31 @@ partial class @MyTest
 ");
 		}
 
+		/// <summary>
+		/// Bug 549858 - Refactoring does not change properties in lambda expressions
+		/// </summary>
+		[Test()]
+		public void TestBug549858 ()
+		{
+			RunTest (
+@"public delegate S MyFunc<T, S> (T t);
+
+public static class TypeManager
+{
+	public static object GetProperty<TType> (MyFunc<TType, object> expression)
+	{
+		return null;
+	}
+}
+
+class TestClass
+{
+	public string $@Value { get; set; }
+	
+	static object ValueProperty = TypeManager.GetProperty<TestClass> (x => x.@Value);
+}
+");
+		}
 
 		
 		/*
