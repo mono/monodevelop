@@ -1,5 +1,11 @@
 2009-10-26  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs: Use the mtouch debug flag to determine
+	  whether we're in debug mode when creating the execution
+	  command.
+
+2009-10-26  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Enable overwrite in File.Copy
 	  calls.
 

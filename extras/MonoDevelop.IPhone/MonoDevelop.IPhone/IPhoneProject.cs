@@ -227,7 +227,7 @@ namespace MonoDevelop.IPhone
 		{
 			var conf = (IPhoneProjectConfiguration) configuration;
 			return new IPhoneExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
-			                                   conf.Platform != PLAT_IPHONE, conf.DebugMode);
+			                                   conf.Platform != PLAT_IPHONE, conf.DebugMode && conf.MtouchDebug);
 		}
 		
 		#endregion
