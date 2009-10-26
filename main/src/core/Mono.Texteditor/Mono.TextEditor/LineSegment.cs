@@ -76,6 +76,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public bool WasChanged {
+			get;
+			set;
+		}
+		
 		Mono.TextEditor.Highlighting.Span[] startSpan = null;
 		public Highlighting.Span[] StartSpan {
 			get {

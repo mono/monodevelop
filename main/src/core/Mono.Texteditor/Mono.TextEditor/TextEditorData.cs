@@ -87,9 +87,12 @@ namespace Mono.TextEditor
 			Caret.PositionChanged += delegate(object sender, DocumentLocationEventArgs e) {
 				if (Options.RemoveTrailingWhitespaces && e.Location.Line != Caret.Line) {
 					LineSegment line = Document.GetLine (e.Location.Line);
-					if (line != null)
+					if (line != null && line.WasChanged)
 						Document.RemoveTrailingWhitespaces (this, line);
 				}
+			};
+			doc.LineChanged += delegate(object sender, LineEventArgs e) {
+				e.Line.WasChanged = true;
 			};
 		}
 		

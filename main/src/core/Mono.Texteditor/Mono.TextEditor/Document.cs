@@ -1337,7 +1337,7 @@ namespace Mono.TextEditor
 			if (line == null)
 				return;
 			int whitespaces = 0;
-			for (int i = line.EditableLength - 1; i >= 0 ; i--) {
+			for (int i = line.EditableLength - 1; i >= 0; i--) {
 				if (Char.IsWhiteSpace (data.Document.GetCharAt (line.Offset + i))) {
 					whitespaces++;
 				} else {
@@ -1347,9 +1347,10 @@ namespace Mono.TextEditor
 			
 			if (whitespaces > 0) {
 				int offset = line.Offset + line.EditableLength - whitespaces;
-				if (data.Caret.Offset > offset)
-					data.Caret.Offset -= whitespaces;
+				int caretOffset = data.Caret.Offset;
 				data.Remove (offset, whitespaces);
+				if (caretOffset > offset)
+					data.Caret.Offset = caretOffset - whitespaces;
 			}
 		}
 		#endregion
