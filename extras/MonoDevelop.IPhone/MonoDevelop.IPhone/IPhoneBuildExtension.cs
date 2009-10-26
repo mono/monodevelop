@@ -566,7 +566,7 @@ namespace MonoDevelop.IPhone
 					+ conf.MtouchSdkVersion + ".sdk/ResourceRules.plist"
 				: (string) conf.CodesignResourceRules;
 			if (File.Exists (resRulesSrc))
-				File.Copy (resRulesSrc, resRulesFile);
+				File.Copy (resRulesSrc, resRulesFile, true);
 			else
 				result.AddWarning ("Resources rules file \"" + conf.CodesignResourceRules + "\" not found. Using default.");
 			
@@ -781,7 +781,7 @@ namespace MonoDevelop.IPhone
 			if (!conf.DebugMode) {
 				if (template != null) {
 					EnsureDirectoryForFile (target);
-					File.Copy (template.FilePath, target);
+					File.Copy (template.FilePath, target, true);
 				} else if (File.Exists (target)) {
 					File.Delete (target);
 				}
