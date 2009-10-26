@@ -609,15 +609,17 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitLambdaExpression(LambdaExpression lambdaExpression, object data) {
-			Debug.Assert((lambdaExpression != null));
-			Debug.Assert((lambdaExpression.Parameters != null));
-			Debug.Assert((lambdaExpression.StatementBody != null));
-			Debug.Assert((lambdaExpression.ExpressionBody != null));
+		public virtual object VisitLambdaExpression (LambdaExpression lambdaExpression, object data)
+		{
+			Debug.Assert ((lambdaExpression != null));
+			Debug.Assert ((lambdaExpression.Parameters != null));
+			Debug.Assert ((lambdaExpression.StatementBody != null));
+			Debug.Assert ((lambdaExpression.ExpressionBody != null));
 			foreach (ParameterDeclarationExpression o in lambdaExpression.Parameters) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
+				Debug.Assert (o != null);
+				o.AcceptVisitor (this, data);
 			}
+			lambdaExpression.ExpressionBody.AcceptVisitor (this, data);
 			lambdaExpression.StatementBody.AcceptVisitor(this, data);
 			return lambdaExpression.ExpressionBody.AcceptVisitor(this, data);
 		}
