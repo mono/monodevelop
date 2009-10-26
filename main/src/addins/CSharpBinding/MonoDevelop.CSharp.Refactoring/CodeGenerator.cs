@@ -267,7 +267,16 @@ namespace MonoDevelop.CSharp.Refactoring
 			text.Append (";");
 			if (pos == 0)
 				text.AppendLine ();
-			file.InsertText (pos, text.ToString ());
+			if (file is Mono.TextEditor.ITextEditorDataProvider) {
+				Mono.TextEditor.TextEditorData data = ((Mono.TextEditor.ITextEditorDataProvider)file).GetTextEditorData ();
+				int caretOffset = data.Caret.Offset;
+				int insertedChars = data.Insert (pos, text.ToString ());
+				if (pos < caretOffset) {
+					data.Caret.Offset = caretOffset + insertedChars;
+				}
+			} else {
+				file.InsertText (pos, text.ToString ());
+			}
 		}
 		
 		public override void AddLocalNamespaceImport (RefactorerContext ctx, string fileName, string nsName, DomLocation caretLocation)

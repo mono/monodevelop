@@ -1,5 +1,10 @@
 2009-10-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Refactoring/CodeGenerator.cs: fixed Bug
+	  550024 - "resolve using" moves cursor to the added using.
+
+2009-10-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Fixed
 	  'Bug 549864 - Intellisense does not work properly with
 	  expressions'.
