@@ -450,7 +450,7 @@ namespace MonoDevelop.Projects.Dom
 			return base.IsAccessibleFrom (dom, calledType, member, includeProtected);
 		}
 
-		public static DomType CreateDelegate (ICompilationUnit compilationUnit, string name, DomLocation location, IReturnType type, List<IParameter> parameters)
+		public static DomType CreateDelegate (ICompilationUnit compilationUnit, string name, DomLocation location, IReturnType type, IEnumerable<IParameter> parameters)
 		{
 			DomType result = new DomType ();
 			result.compilationUnit = compilationUnit;

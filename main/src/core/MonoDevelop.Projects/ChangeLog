@@ -1,3 +1,9 @@
+2009-10-26	Rodrigo B. de Oliveira <rbo@acm.org>
+
+	* MonoDevelop.Projects.Dom/DomType.cs: made DomType.CreateDelegate
+		more generally applicable by using IEnumerable<IParameter>
+		insteaof of List<IParameter>
+
 2009-10-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs:
