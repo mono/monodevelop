@@ -510,14 +510,14 @@ namespace MonoDevelop.CSharp.Resolver
 
 		public ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
 		{
-//			Console.WriteLine ("oOoOoOoOoO");
-//			Console.WriteLine ("lambda expr:" + lambdaExpression);
-//			Console.WriteLine ("Parent:" + lambdaExpression.Parent);
-			if (lambdaExpression.Parent is LambdaExpression) 
+			//			Console.WriteLine ("oOoOoOoOoO");
+			//			Console.WriteLine ("lambda expr:" + lambdaExpression);
+			//			Console.WriteLine ("Parent:" + lambdaExpression.Parent);
+			if (lambdaExpression.Parent is LambdaExpression)
 				return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
-			if (lambdaExpression.Parent is ParenthesizedExpression) 
+			if (lambdaExpression.Parent is ParenthesizedExpression)
 				return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
-			if (lambdaExpression.Parent is AssignmentExpression) 
+			if (lambdaExpression.Parent is AssignmentExpression)
 				return visitor.Resolve (((AssignmentExpression)lambdaExpression.Parent).Left);
 			if (lambdaExpression.Parent is CastExpression)
 				return visitor.Resolve (((CastExpression)lambdaExpression.Parent));
@@ -531,14 +531,19 @@ namespace MonoDevelop.CSharp.Resolver
 				if (result == null) {
 					MonoDevelop.Core.LoggingService.LogWarning ("No compatible method found :" + invocation.TargetObject);
 					return null;
-				} 
+				}
 				result.ResolveExtensionMethods ();
+				// todo! - not 100% correct, but it's a best-fit until the dom contains token information
+				// This code assumes that the lambda expression is the first parameter of the method.
 				for (int i = 0; i < invocation.Arguments.Count; i++) {
-					if (invocation.Arguments [i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
-						IParameter parameterType = result.MostLikelyMethod.Parameters [i];
-						if (parameterType.ReturnType.Name == "Func" && parameterType.ReturnType.GenericArguments.Count > 0) {
-							return visitor.CreateResult (parameterType.ReturnType.GenericArguments[0]);
+					if (invocation.Arguments[i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
+						IParameter parameter = result.MostLikelyMethod.Parameters[i];
+						IReturnType returnType = parameter.ReturnType;
+						
+						while (returnType.GenericArguments.Count > 0) {
+							returnType = returnType.GenericArguments[0];
 						}
+						return visitor.CreateResult (returnType);
 					}
 				}
 				

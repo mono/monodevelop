@@ -1,6 +1,12 @@
 2009-10-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Fixed
+	  'Bug 549864 - Intellisense does not work properly with
+	  expressions'.
+
+2009-10-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Fixed
 	  faling unit test.
 
 2009-10-22  Mike Krüger  <mkrueger@novell.com>
