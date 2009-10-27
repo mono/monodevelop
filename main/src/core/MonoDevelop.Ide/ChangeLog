@@ -1,3 +1,12 @@
+2009-10-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Revert
+	  r138616. It doesn't seem to be necessary any more, as after
+	  removing it, I couldn't reproduce the bug it purported to
+	  fix. Also, it broke Moonlight projects' default references
+	  when the Moonlight desktop assemblies' package was
+	  installed.
+
 2009-10-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Added new overload for

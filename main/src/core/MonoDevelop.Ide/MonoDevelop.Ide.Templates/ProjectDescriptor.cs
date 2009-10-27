@@ -95,16 +95,7 @@ namespace MonoDevelop.Ide.Templates
 					ProjectReference projectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), elem.GetAttribute ("type")), elem.GetAttribute ("refto"));
 					string specificVersion = elem.GetAttribute ("SpecificVersion");
 					if (!string.IsNullOrEmpty (specificVersion))
-						projectReference.SpecificVersion = bool.Parse (specificVersion); else {
-						// If SpecificVersion is not specified, then make sure the reference is
-						// valid for the default runtime
-						if (projectReference.ReferenceType == ReferenceType.Gac) {
-							string newRef = IdeApp.Workspace.ActiveRuntime.AssemblyContext.FindInstalledAssembly (projectReference.Reference, null, IdeApp.Services.ProjectService.DefaultTargetFramework);
-							if (newRef != projectReference.Reference && newRef != null)
-								projectReference = new ProjectReference (ReferenceType.Gac, newRef);
-						}
-					}
-
+						projectReference.SpecificVersion = bool.Parse (specificVersion);
 					projectDescriptor.references.Add (projectReference);
 				}
 			}
