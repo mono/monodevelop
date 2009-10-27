@@ -515,7 +515,7 @@ namespace MonoDevelop.Debugger
 				for (int n=0; n<currentBacktrace.FrameCount; n++) {
 					StackFrame sf = currentBacktrace.GetFrame (n);
 					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
-						Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.Filename, sf.SourceLocation.Line, 1, true);
+						Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.Filename, sf.SourceLocation.Line, 1, true, false);
 						OnDisableConditionalCompilation (new DocumentEventArgs (document));
 						return;
 					}

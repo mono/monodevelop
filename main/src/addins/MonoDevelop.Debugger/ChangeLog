@@ -1,3 +1,8 @@
+2009-10-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Fixed 'Bug 550179
+	  - Caret should not pulse when debugger stepping'.
+
 2009-10-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger.addin.xml: Add Mac shortcuts.
