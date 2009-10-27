@@ -1,3 +1,8 @@
+2009-10-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Added new overload for
+	  opendocument.
+
 2009-10-22  Luciano N. Callero <lnc19@hotmail.com>
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Fixed NullReferenceException
 	when Context Key pressed without node selected.

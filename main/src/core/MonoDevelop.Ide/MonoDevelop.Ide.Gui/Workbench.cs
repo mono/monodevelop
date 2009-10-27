@@ -331,6 +331,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return OpenDocument (fileName, line, column, bringToFront, null, null);
 		}
+		
+		public Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, bool highlightCaretLine)
+		{
+			return OpenDocument (fileName, line, column, bringToFront, null, null, highlightCaretLine);
+		}
 
 		public Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding)
 		{
@@ -341,6 +346,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return OpenDocument (fileName, line, column, bringToFront, encoding, binding, true);
 		}
+		
 		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding, bool highlightCaretLine)
 		{
 			NavigationHistoryService.LogActiveDocument ();
