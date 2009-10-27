@@ -1,3 +1,9 @@
+2009-10-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs: Fixed 'Bug
+	  549703 - Customised XML file extensions are no longer
+	  syntax-highlighted'.
+
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.XmlEditor.csproj: Use \ instead of '/'
