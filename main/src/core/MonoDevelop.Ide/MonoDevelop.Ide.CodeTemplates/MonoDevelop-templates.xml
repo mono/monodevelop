@@ -923,7 +923,7 @@ $selected$$end$
 			<_Group>C#</_Group>
 			<Version>1.0</Version>
 			<MimeType>text/x-csharp</MimeType>
-			<Shortcut>try</Shortcut>
+			<Shortcut>tryf</Shortcut>
 			<_Description>Template for try...finally</_Description>
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>

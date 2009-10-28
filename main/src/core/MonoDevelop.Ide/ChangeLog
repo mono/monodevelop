@@ -1,3 +1,8 @@
+2009-10-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml: Fix
+	  duplicate try shortcut.
+
 2009-10-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:
