@@ -1,3 +1,7 @@
+2009-10-28  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* SqlQueryView.cs: Set the Clear Button Tooltip.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Database.Query.csproj: Fix the build & flush

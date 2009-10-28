@@ -89,6 +89,7 @@ namespace MonoDevelop.Database.Query
 			
 			buttonClear = new ToolButton (ImageService.GetImage ("gtk-clear", IconSize.Button), 
 			                              AddinCatalog.GetString ("Clear Results"));
+			buttonClear.TooltipText = AddinCatalog.GetString ("Clear Results");
 			buttonClear.Clicked += new EventHandler (ClearClicked);
 			
 			comboConnections = new DatabaseConnectionContextComboBox ();
