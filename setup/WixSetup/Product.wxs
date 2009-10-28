@@ -556,6 +556,15 @@
               <File Name="WindowsPlatform.dll" Source="$(var.BuildRoot)\AddIns\WindowsPlatform.dll" />
             </Component>
           </Directory>
+
+          <Directory Id="data" Name="data">
+            <Directory Id="options" Name="options">
+              <Component Id="MonoDevelop_data_options" Guid="1f6096d8-389b-49f0-98ad-444d98713dcc">
+                <File Name="TipsOfTheDay.xml" Source="$(var.BuildRoot)\data\options\TipsOfTheDay.xml" />
+              </Component>
+            </Directory>
+          </Directory>
+          
         </Directory>
       </Directory>
 
@@ -595,6 +604,7 @@
       <ComponentRef Id="MonoDevelop_AddIns_VersionControl" />
       <ComponentRef Id="MonoDevelop_AddIns_WelcomePage" />
       <ComponentRef Id="MonoDevelop_AddIns" />
+      <ComponentRef Id="MonoDevelop_data_options" />
 
       <ComponentRef Id="comp199" />
       <ComponentRef Id="comp203" />
