@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
-    
     public partial class SelectFileFormatDialog {
         
         private Gtk.HBox hbox1;

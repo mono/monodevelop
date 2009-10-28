@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.FindInFiles {
     
-    
     public partial class FindInFilesDialog {
         
         private Gtk.VBox vbox2;
@@ -245,14 +244,14 @@ namespace MonoDevelop.Ide.FindInFiles {
             this.buttonReplace.UseUnderline = true;
             // Container child buttonReplace.Gtk.Container+ContainerChild
             Gtk.Alignment w19 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment2.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w20 = new Gtk.HBox();
             w20.Spacing = 2;
-            // Container child GtkHBox5.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w21 = new Gtk.Image();
             w21.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-find-and-replace", Gtk.IconSize.Menu, 16);
             w20.Add(w21);
-            // Container child GtkHBox5.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w23 = new Gtk.Label();
             w23.LabelProp = Mono.Unix.Catalog.GetString("R_eplace");
             w23.UseUnderline = true;

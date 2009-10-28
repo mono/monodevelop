@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.CodeFormatting {
     
-    
     public partial class CodeFormattingPolicyPanelWidget {
         
         private Gtk.VBox vbox2;

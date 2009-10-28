@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
-    
     public partial class IDEStyleOptionsPanelWidget {
         
         private Gtk.VBox vbox13;

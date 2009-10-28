@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
-    
     public partial class FeatureSelectorDialog {
         
         private Gtk.VBox vbox5;

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
-    
     public partial class CustomExecutionModeManagerDialog {
         
         private Gtk.VBox vbox2;

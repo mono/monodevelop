@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
-    
     internal partial class MaintenanceOptionsPanelWidget {
         
         private Gtk.VBox vbox2;

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.StandardHeader {
     
-    
     internal partial class StandardHeaderPolicyPanelWidget {
         
         private Gtk.VBox vbox2;

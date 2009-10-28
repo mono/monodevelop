@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
-    
     internal partial class LoadSavePanelWidget {
         
         private Gtk.VBox vbox17;

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide {
     
-    
     internal partial class SelectEncodingsDialog {
         
         private Gtk.Table table5;
@@ -162,14 +161,14 @@ namespace MonoDevelop.Ide {
             this.btnRemove.Name = "btnRemove";
             // Container child btnRemove.Gtk.Container+ContainerChild
             Gtk.Alignment w18 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment1.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w19 = new Gtk.HBox();
             w19.Spacing = 2;
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w20 = new Gtk.Image();
             w20.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-back", Gtk.IconSize.SmallToolbar, 18);
             w19.Add(w20);
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w22 = new Gtk.Label();
             w19.Add(w22);
             w18.Add(w19);

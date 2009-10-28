@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide {
     
-    
     public partial class OverridesImplementsDialog {
         
         private Gtk.VBox vbox2;

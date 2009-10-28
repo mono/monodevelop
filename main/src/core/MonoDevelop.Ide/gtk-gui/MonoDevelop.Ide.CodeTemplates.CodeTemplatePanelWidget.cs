@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.CodeTemplates {
     
-    
     internal partial class CodeTemplatePanelWidget {
         
         private Gtk.VPaned vpaned1;

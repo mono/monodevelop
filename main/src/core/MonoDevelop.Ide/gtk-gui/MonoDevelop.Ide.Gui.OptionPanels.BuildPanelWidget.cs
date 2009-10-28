@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
-    
     internal partial class BuildPanelWidget {
         
         private Gtk.VBox vbox66;

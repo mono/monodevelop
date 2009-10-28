@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.ExternalTools {
     
-    
     public partial class ExternalToolPanelWidget {
         
         private Gtk.VBox vbox32;

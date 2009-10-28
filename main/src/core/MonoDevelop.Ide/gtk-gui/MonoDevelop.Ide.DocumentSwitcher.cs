@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide {
     
-    
     public partial class DocumentSwitcher {
         
         private Gtk.VBox vbox1;

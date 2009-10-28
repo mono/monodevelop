@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
-    
     internal partial class AuthorInformationPanelWidget {
         
         private Gtk.VBox vbox1;

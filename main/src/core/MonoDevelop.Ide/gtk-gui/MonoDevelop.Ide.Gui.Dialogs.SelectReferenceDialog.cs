@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
-    
     internal partial class SelectReferenceDialog {
         
         private Gtk.VBox vbox5;

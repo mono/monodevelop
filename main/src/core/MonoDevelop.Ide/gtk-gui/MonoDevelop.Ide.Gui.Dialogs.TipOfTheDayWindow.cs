@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
-    
     internal partial class TipOfTheDayWindow {
         
         private Gtk.VBox vbox2;

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Ide.Gui.Components {
     
-    
     public partial class ExecutionModeComboBox {
         
         private Gtk.ComboBox comboMode;
