@@ -165,7 +165,7 @@ namespace MonoDevelop.Projects.Dom.Output
 				} else {
 					result = member.Documentation;
 				}
-				return !IsEmptyDocumentation (member.Documentation) ? result : null;
+				return CleanEmpty (result);
 			}
 			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
 			if (node != null) {
@@ -187,10 +187,15 @@ namespace MonoDevelop.Projects.Dom.Output
 						break;
 					}
 				}
-				return sb.ToString ();
+				return CleanEmpty (sb.ToString ());
 			}
 			
-			return !IsEmptyDocumentation (member.Documentation) ? member.Documentation : null;
+			return CleanEmpty (member.Documentation);
+		}
+		
+		static string CleanEmpty (string doc)
+		{
+			return IsEmptyDocumentation (doc)? null : doc;
 		}
 
 		static bool IsEmptyDocumentation (string documentation)
@@ -203,11 +208,11 @@ namespace MonoDevelop.Projects.Dom.Output
 			if (member == null)
 				return null;
 			if (!string.IsNullOrEmpty (member.Documentation))
-				return !IsEmptyDocumentation (member.Documentation) ? member.Documentation : null;
+				return CleanEmpty (member.Documentation);
 			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
 			if (node != null) {
 				string result = (node.InnerXml ?? "").Trim ();
-				return !IsEmptyDocumentation (result) ? result : null;
+				return CleanEmpty (result);
 			}
 			return null;
 		}
@@ -314,6 +319,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		{
 			return GetDocumentationMarkup (doc, DocumentationFormatOptions.Empty);
 		}
+		
 		static string ParseBody (XmlTextReader xml, string endTagName, DocumentationFormatOptions options)
 		{
 			StringBuilder result = new StringBuilder (); 
@@ -348,6 +354,8 @@ namespace MonoDevelop.Projects.Dom.Output
 				case XmlNodeType.Text:
 					StringBuilder textBuilder = new StringBuilder ();
 					bool wasWhiteSpace = true;
+					if (IsEmptyDocumentation (xml.Value))
+						break;
 					foreach (char ch in xml.Value) {
 						if (Char.IsWhiteSpace (ch)) {
 							if (!wasWhiteSpace)
