@@ -1984,5 +1984,39 @@ class TestClass
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Value"), "property 'Value' not found.");
 		}
+		
+		
+		/// <summary>
+		/// Bug 550185 - Intellisence for extension methods
+		/// </summary>
+		[Test()]
+		public void TestBug550185 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+public interface IMyinterface<T> {
+	T Foo ();
+}
+
+public static class ExtMethods {
+	public static int MyCountMethod(this IMyinterface<string> i)
+	{
+		return 0;
+	}
+}
+
+class TestClass
+{
+	void Test ()
+	{
+		IMyinterface<int> test;
+		$test.$
+	}
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("MyCountMet2hod"), "method 'MyCountMethod' found, but shouldn't.");
+		}
 	}
 }
