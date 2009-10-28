@@ -294,13 +294,13 @@ namespace MonoDevelop.Projects.Dom
 		static Dictionary<string, IMethod> extensionTable = new Dictionary<string, IMethod> ();
 		
 		public IMethod Extends (ProjectDom dom, IType type)
-		{ 
+		{
 			if (dom == null || type == null || Parameters.Count == 0 || !IsExtension) {
 				return null;
 			}
-//			Console.WriteLine ("Test Method: " + Name);
+			//Console.WriteLine ("Ext.Type: " + type);
 			string extensionTableKey = this.HelpUrl + "/" + type.FullName;
-//			Console.WriteLine ("table key:" + extensionTableKey);
+			//Console.WriteLine ("table key:" + extensionTableKey);
 			lock (extensionTable) {
 				if (extensionTable.ContainsKey (extensionTableKey))
 					return extensionTable[extensionTableKey];
@@ -323,12 +323,29 @@ namespace MonoDevelop.Projects.Dom
 				foreach (IType baseType in dom.GetInheritanceTree (type)) {
 					IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { new DomReturnType (baseType) });
 					string baseTypeFullName = baseType is InstantiatedType ? ((InstantiatedType)baseType).UninstantiatedType.FullName : baseType.FullName;
-//					Console.WriteLine (instMethod.Parameters[0].ReturnType.FullName + " === " + baseTypeFullName);
+					
+					// compare the generic arguments.
 					if (instMethod.Parameters[0].ReturnType.FullName == baseTypeFullName) {
+						if (instMethod.Parameters[0].ReturnType.GenericArguments.Count > 0) {
+							InstantiatedType instType = baseType as InstantiatedType;
+							if (instType == null || instType.GenericParameters.Count != instMethod.Parameters[0].ReturnType.GenericArguments.Count)
+								continue;
+							bool genericArgumentsAreEqual = true;
+							for (int i = 0; i < instMethod.Parameters[0].ReturnType.GenericArguments.Count; i++) {
+								//Console.WriteLine (instMethod.Parameters[0].ReturnType.GenericArguments[i].DecoratedFullName + " --- " + instType.GenericParameters[i].DecoratedFullName);
+								if (instMethod.Parameters[0].ReturnType.GenericArguments[i].DecoratedFullName != instType.GenericParameters[i].DecoratedFullName) {
+									genericArgumentsAreEqual = false;
+									break;
+								}
+							}
+							if (!genericArgumentsAreEqual)
+								continue;
+						}
+						
 						//ExtensionMethod result = new ExtensionMethod (baseType, this, null, null);
 						instMethod = new ExtensionMethod (type, instMethod, null, null);
 						extensionTable.Add (extensionTableKey, instMethod);
-//						Console.WriteLine (result.Parameters[0]);
+						//Console.WriteLine ("ext. method:" + instMethod);
 						return instMethod;
 					}
 				}

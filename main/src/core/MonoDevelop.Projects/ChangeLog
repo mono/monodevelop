@@ -1,3 +1,8 @@
+2009-10-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomMethod.cs: Fixed 'Bug 550185 -
+	  Intellisence for extension methods'.
+
 2009-10-26	Rodrigo B. de Oliveira <rbo@acm.org>
 
 	* MonoDevelop.Projects.Dom/DomType.cs: made DomType.CreateDelegate
