@@ -1,3 +1,7 @@
+2009-10-28  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* SqlSyntaxMode.xml: Fix syntax case sensitive problem.
+
 2009-10-22  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* gtk-gui/gui.stetic:

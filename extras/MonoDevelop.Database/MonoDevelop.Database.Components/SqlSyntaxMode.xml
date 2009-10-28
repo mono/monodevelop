@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Sql" mimeTypes="text/x-sql">
+<SyntaxMode name = "Sql" mimeTypes="text/x-sql" ignorecase="true">
 
 	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">-</EolSpan>
 	
