@@ -33,6 +33,7 @@ using System.Collections;
 
 namespace MonoDevelop.Projects
 {
+	[DataItem (FallbackType=typeof(UnknownConfiguration))]
 	public class SolutionItemConfiguration : ItemConfiguration
 	{
 		SolutionEntityItem parentItem;

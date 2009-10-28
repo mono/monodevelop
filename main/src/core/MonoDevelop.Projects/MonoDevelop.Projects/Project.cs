@@ -690,6 +690,18 @@ namespace MonoDevelop.Projects
 		{
 			return null;
 		}
+		
+		internal protected override bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
+		{
+			return false;
+		}
+		
+		internal protected override BuildResult OnBuild (IProgressMonitor monitor, string solutionConfiguration)
+		{
+			BuildResult res = new BuildResult ();
+			res.AddError ("Unknown project type");
+			return res;
+		}
 	}
 
 	public delegate void ProjectEventHandler (Object sender, ProjectEventArgs e);

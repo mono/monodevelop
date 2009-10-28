@@ -1,3 +1,12 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* md1format.xml:
+	* MonoDevelop.Projects/SolutionItemConfiguration.cs: Add
+	  missing fallback types.
+
+	* MonoDevelop.Projects/Project.cs: Unknown projects can't be
+	  built nor executed.
+
 2009-10-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: More

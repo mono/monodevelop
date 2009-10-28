@@ -21,7 +21,7 @@
 	<DataItem class = "MonoDevelop.Projects.SolutionItem">
 		<ItemProperty member="Policies" skipEmpty="true" />
 	</DataItem>
-	<DataItem class = "MonoDevelop.Projects.SolutionEntityItem" name="CombineEntry" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
+	<DataItem class = "MonoDevelop.Projects.SolutionEntityItem" name="CombineEntry" fallbackType="MonoDevelop.Projects.UnknownSolutionItem" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
 		<ItemProperty member="releaseVersion" name = "releaseVersion" defaultValue="0.1"/>
 		<ItemProperty member="syncReleaseVersion" name = "syncReleaseVersion" defaultValue="true"/>
 		<ItemProperty member="Name" name="name"/>
@@ -29,7 +29,7 @@
 		<ItemProperty member="Configurations"/>
 		<ItemProperty member="Configurations" scope="*" name="Configuration" valueType="MonoDevelop.Projects.SolutionItemConfiguration"/>
 	</DataItem>
-	<DataItem class = "MonoDevelop.Projects.Project">
+	<DataItem class = "MonoDevelop.Projects.Project" fallbackType="MonoDevelop.Projects.UnknownProject">
 		<ItemProperty member="description" defaultValue=""/>
 		<ItemProperty member="newFileSearch" name="newfilesearch" defaultValue="None" />
 		<ItemProperty member="Files" name="Contents" />
@@ -80,7 +80,7 @@
 		<ItemProperty member="contentType" name="contentType" defaultValue=""/>
 		<ItemProperty member="generator" name="generator" defaultValue=""/>
 	</DataItem>
-	<DataItem class = "MonoDevelop.Projects.ProjectReference" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
+	<DataItem class = "MonoDevelop.Projects.ProjectReference" fallbackType="MonoDevelop.Projects.UnknownProjectReference" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
 		<ItemProperty member="referenceType" name="type" />
 		<ItemProperty member="localCopy" name="localcopy" />
 		<ItemProperty member="SpecificVersion" name="specificVersion" defaultValue="True"/>
