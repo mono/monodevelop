@@ -1,5 +1,10 @@
 2009-10-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:
+	  Name the caught exception in try template.
+
+2009-10-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml: Fix
 	  duplicate try shortcut.
 

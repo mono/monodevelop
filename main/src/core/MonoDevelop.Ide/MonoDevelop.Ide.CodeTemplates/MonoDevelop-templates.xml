@@ -881,9 +881,8 @@ $selected$$end$
 		</Variables>
 		<Code><![CDATA[try {
 	$selected$
-} catch ($SystemException$) {
+} catch ($SystemException$ ex) {
 	$end$
-	throw;
 }]]></Code>
 	</CodeTemplate>
 	
