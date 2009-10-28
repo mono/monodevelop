@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 
 using Gtk;
+using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -374,10 +375,30 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Task task = SelectedTask;
 			if (task != null) {
+				StringBuilder text = new StringBuilder ();
+				if (!string.IsNullOrEmpty (task.FileName)) {
+					text.Append (task.FileName);
+					if (task.Line >= 1) {
+						text.Append ("(").Append (task.Column);
+						if (task.Column >= 0)
+							text.Append (",").Append (task.Column);
+						text.Append (")");
+					}
+					text.Append (": ");
+				}
+				text.Append (task.Severity);
+				if (!string.IsNullOrEmpty (task.Code)) {
+					text.Append (" ").Append (task.Code);
+				}
+				text.Append (": ");
+				text.Append (task.Description);
+				if (task.WorkspaceObject != null)
+					text.Append (" (").Append (task.WorkspaceObject.Name).Append (")");
+				
 				clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-				clipboard.Text = task.ToString ();
+				clipboard.Text = text.ToString ();
 				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-				clipboard.Text = task.ToString ();
+				clipboard.Text = text.ToString ();
 			}
 		}
 

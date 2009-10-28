@@ -1,3 +1,8 @@
+2009-10-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Improve Copy
+	  command. Fixes bug #548942.
+
 2009-10-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Revert
