@@ -1,3 +1,8 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/ClassDataType.cs: Add missing
+	  null check. Fixes bug #549712.
+
 2009-10-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: Fix

@@ -562,7 +562,7 @@ namespace MonoDevelop.Core.Serialization
 				return Context.GetConfigurationDataType ((Type)mapData);
 			}
 			DataType dt = Context.GetConfigurationDataType (name);
-			if (ValueType.IsAssignableFrom (dt.ValueType))
+			if (dt != null && ValueType.IsAssignableFrom (dt.ValueType))
 				return dt;
 			
 			if (fallbackType != null) {
