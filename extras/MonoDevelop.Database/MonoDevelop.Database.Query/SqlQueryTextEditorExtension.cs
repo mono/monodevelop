@@ -26,23 +26,46 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui;
 	
 namespace MonoDevelop.Database.Query
 {
 	public class SqlQueryTextEditorExtension:TextEditorExtension
 	{
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		// public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		// {
+		// }
+		
+	}
+	
+	internal class QueryInitializer {
+		
+		public QueryInitializer ()
 		{
-			if ((this.Document.ActiveView is ISqlQueryEditorView)) {
-				if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask)
-					((ISqlQueryEditorView)this.Document.ActiveView).RunQuery ();
-				if (key == Gdk.Key.Escape)
-					return true;
-				return true;
-			} else {
-				return base.KeyPress (key, keyChar, modifier);
-			}
-			
+			IdeApp.CommandService.RegisterGlobalHandler (new DatabaseCommandHandler ());
+		}
+	}
+	
+	internal class DatabaseCommandHandler {
+		
+		[CommandHandler (MonoDevelop.Debugger.DebugCommands.Debug)]
+		protected void Run ()
+		{
+			if (IdeApp.Workbench.ActiveDocument != null && 
+			    IdeApp.Workbench.ActiveDocument.ActiveView is ISqlQueryEditorView)
+				((ISqlQueryEditorView)IdeApp.Workbench.ActiveDocument.ActiveView).RunQuery ();
+		}
+
+		[CommandUpdateHandler (MonoDevelop.Debugger.DebugCommands.Debug)]
+		protected void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.ActiveView is ISqlQueryEditorView) {
+				info.Icon = "md-db-execute";
+				info.Text = "Execute _Query";
+				return;
+			} else
+				info.Bypass = true;
 		}
 		
 	}

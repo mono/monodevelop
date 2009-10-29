@@ -34,6 +34,7 @@
 			defaultHandler = "MonoDevelop.Database.Query.QueryHandler"
 			_label = "Query Database"
 			icon = "md-db-execute"/>
+			
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
@@ -89,6 +90,10 @@
 		<MimeType id="text/x-sql" _description="Sql Files" icon="md-db-connection" isText="true">
 			<File pattern="*.sql" />
 		</MimeType>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
+		<Class class="MonoDevelop.Database.Query.QueryInitializer" />
 	</Extension>
 
 </Addin>
