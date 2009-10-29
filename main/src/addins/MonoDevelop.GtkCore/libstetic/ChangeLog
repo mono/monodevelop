@@ -1,3 +1,8 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* libstetic.csproj: Reference mono-cairo package.
+
 2009-10-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* wrapper/Widget.cs: Don't fire the name changed event while
