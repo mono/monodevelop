@@ -494,8 +494,10 @@ namespace MonoDevelop.SourceEditor
 					widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
 				lastDebugLine = DebuggingService.CurrentLineNumber;
 				currentLineSegment = widget.TextEditor.Document.GetLine (lastDebugLine-1);
-				widget.TextEditor.Document.AddMarker (currentLineSegment, currentDebugLineMarker);
-				widget.TextEditor.QueueDraw ();
+				if (currentLineSegment != null) {
+					widget.TextEditor.Document.AddMarker (currentLineSegment, currentDebugLineMarker);
+					widget.TextEditor.QueueDraw ();
+				}
 			} else if (currentLineSegment != null) {
 				widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
 				lastDebugLine = -1;
