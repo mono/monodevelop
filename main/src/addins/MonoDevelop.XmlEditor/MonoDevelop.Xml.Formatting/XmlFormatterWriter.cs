@@ -947,11 +947,11 @@ namespace MonoDevelop.Xml.Formatting
 						    elements [open_count - 1].NS != value)
 							throw new XmlException (String.Format ("Cannot redefine the namespace for prefix '{0}' used at current element", preserved_name));
 
-						if (elements [open_count - 1].NS == String.Empty &&
-						    elements [open_count - 1].Prefix == preserved_name)
-						    	; // do nothing
-						else if (existing != value)
-							nsmanager.AddNamespace (preserved_name, value);
+						if (elements [open_count - 1].NS != String.Empty ||
+						    elements [open_count - 1].Prefix != preserved_name) {
+							if (existing != value)
+								nsmanager.AddNamespace (preserved_name, value);
+						}
 					}
 				} else {
 					switch (preserved_name) {

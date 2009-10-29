@@ -158,7 +158,10 @@ namespace MonoDevelop.XmlEditor.Completion
 				using (StreamReader reader = new StreamReader (fileName, true))
 					ReadSchema (baseUri, reader);
 			
-			schema.Compile (new ValidationEventHandler (SchemaValidation));
+			XmlSchemaSet sset = new XmlSchemaSet ();
+			sset.Add (schema);
+			sset.ValidationEventHandler += SchemaValidation;
+			sset.Compile ();
 			loaded = true;
 		}
 		#endregion

@@ -350,7 +350,10 @@ namespace MonoDevelop.XmlEditor
 					    (args.Severity == XmlSeverityType.Warning)? TaskSeverity.Warning : TaskSeverity.Error);
 				};
 				schema = XmlSchema.Read (xmlReader, callback);
-				schema.Compile (callback);
+				XmlSchemaSet sset = new XmlSchemaSet ();
+				sset.Add (schema);
+				sset.ValidationEventHandler += callback;
+				sset.Compile ();
 			} 
 			catch (XmlSchemaException ex) {
 				monitor.ReportError (ex.Message, ex);

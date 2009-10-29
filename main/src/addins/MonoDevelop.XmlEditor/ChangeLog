@@ -1,5 +1,12 @@
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.XmlEditor/XmlEditorService.cs:
+	* MonoDevelop.Xml.Formatting/XmlFormatterWriter.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs:
+	  Fix warnings.
+
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/generated.cs:
 	* gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs:
 	* gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs:
