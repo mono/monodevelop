@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.AspNet.Deployment {
     
-    
     public partial class WebDeployTargetEditor {
         
         private Gtk.Label label1;

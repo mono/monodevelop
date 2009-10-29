@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.AspNet.Deployment {
     
-    
     public partial class WebDeployOptionsPanelWidget {
         
         private Gtk.HBox hbox1;

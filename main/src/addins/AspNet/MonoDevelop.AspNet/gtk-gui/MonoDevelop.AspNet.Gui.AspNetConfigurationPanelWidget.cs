@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.AspNet.Gui {
     
-    
     internal partial class AspNetConfigurationPanelWidget {
         
         private Gtk.VBox vbox1;

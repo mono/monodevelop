@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.AspNet.Deployment {
     
-    
     public partial class WebTargetEditor {
         
         protected virtual void Build() {

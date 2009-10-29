@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.AspNet.Deployment {
     
-    
     public partial class WebDeployLaunchDialog {
         
         private Gtk.Label titleLabel;
@@ -124,14 +123,14 @@ namespace MonoDevelop.AspNet.Deployment {
             this.buttonDeploy.UseUnderline = true;
             // Container child buttonDeploy.Gtk.Container+ContainerChild
             Gtk.Alignment w17 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment2.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w18 = new Gtk.HBox();
             w18.Spacing = 2;
-            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w19 = new Gtk.Image();
             w19.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-ok", Gtk.IconSize.Menu, 16);
             w18.Add(w19);
-            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w21 = new Gtk.Label();
             w21.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("_Deploy");
             w21.UseUnderline = true;

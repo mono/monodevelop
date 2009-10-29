@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.AspNet.Gui {
     
-    
     public partial class XspOptionsPanelWidget {
         
         private Gtk.VBox vbox1;
