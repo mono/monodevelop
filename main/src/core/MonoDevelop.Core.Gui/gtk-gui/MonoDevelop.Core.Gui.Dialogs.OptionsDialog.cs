@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Core.Gui.Dialogs {
     
-    
     public partial class OptionsDialog {
         
         private Gtk.HBox hbox1;

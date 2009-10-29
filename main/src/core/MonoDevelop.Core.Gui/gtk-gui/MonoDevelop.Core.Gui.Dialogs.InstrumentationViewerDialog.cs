@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Core.Gui.Dialogs {
     
-    
     public partial class InstrumentationViewerDialog {
         
         private Gtk.VBox vbox2;
@@ -112,11 +111,11 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w5 = new Gtk.HBox();
             w5.Spacing = 2;
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w6 = new Gtk.Image();
             w6.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-save", Gtk.IconSize.Button, 20);
             w5.Add(w6);
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w8 = new Gtk.Label();
             w5.Add(w8);
             w4.Add(w5);
@@ -133,14 +132,14 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.buttonSaveAs.UseUnderline = true;
             // Container child buttonSaveAs.Gtk.Container+ContainerChild
             Gtk.Alignment w13 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment1.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w14 = new Gtk.HBox();
             w14.Spacing = 2;
-            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w15 = new Gtk.Image();
             w15.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-save-as", Gtk.IconSize.Button, 20);
             w14.Add(w15);
-            // Container child GtkHBox2.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w17 = new Gtk.Label();
             w14.Add(w17);
             w13.Add(w14);
@@ -157,14 +156,14 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.buttonDelete.UseUnderline = true;
             // Container child buttonDelete.Gtk.Container+ContainerChild
             Gtk.Alignment w22 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment2.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w23 = new Gtk.HBox();
             w23.Spacing = 2;
-            // Container child GtkHBox3.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w24 = new Gtk.Image();
             w24.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-delete", Gtk.IconSize.Button, 20);
             w23.Add(w24);
-            // Container child GtkHBox3.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w26 = new Gtk.Label();
             w23.Add(w26);
             w22.Add(w23);
@@ -299,14 +298,14 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.buttonZoomOut.UseUnderline = true;
             // Container child buttonZoomOut.Gtk.Container+ContainerChild
             Gtk.Alignment w43 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment4.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w44 = new Gtk.HBox();
             w44.Spacing = 2;
-            // Container child GtkHBox5.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w45 = new Gtk.Image();
             w45.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-zoom-out", Gtk.IconSize.Menu, 16);
             w44.Add(w45);
-            // Container child GtkHBox5.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w47 = new Gtk.Label();
             w44.Add(w47);
             w43.Add(w44);
@@ -324,14 +323,14 @@ namespace MonoDevelop.Core.Gui.Dialogs {
             this.buttonZoomIn.UseUnderline = true;
             // Container child buttonZoomIn.Gtk.Container+ContainerChild
             Gtk.Alignment w52 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment3.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w53 = new Gtk.HBox();
             w53.Spacing = 2;
-            // Container child GtkHBox4.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w54 = new Gtk.Image();
             w54.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-zoom-in", Gtk.IconSize.Menu, 16);
             w53.Add(w54);
-            // Container child GtkHBox4.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w56 = new Gtk.Label();
             w53.Add(w56);
             w52.Add(w53);

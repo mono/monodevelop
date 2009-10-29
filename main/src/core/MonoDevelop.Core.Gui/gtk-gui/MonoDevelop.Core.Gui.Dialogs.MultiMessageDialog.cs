@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Core.Gui.Dialogs {
     
-    
     public partial class MultiMessageDialog {
         
         private Gtk.ScrolledWindow scrolled;

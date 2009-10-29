@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Core.Gui.Dialogs {
     
-    
     internal partial class MultiTaskProgressDialog {
         
         private Gtk.Label title;
