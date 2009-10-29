@@ -1,3 +1,8 @@
+2009-10-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
+	  550882 - ArgumentNull Exception when removing a breakpoint'.
+
 2009-10-22  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:
