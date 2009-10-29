@@ -77,11 +77,11 @@ namespace MonoDevelop.Debugger
 			int line = DebuggingService.CurrentLineNumber;
 			
 			if (!file.IsNullOrEmpty && System.IO.File.Exists (file) && line != -1) {
-				Document doc = IdeApp.Workbench.OpenDocument (file, line, 1, !disassemblyCurrent);
+				Document doc = IdeApp.Workbench.OpenDocument (file, line, 1, !disassemblyCurrent, null, false);
 				if (doc != null)
 					return;
 			}
-			if (!DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
+			if (!DebuggingService.CurrentSessionSupportsFeature (DebuggerFeatures.Disassembly))
 				return;
 			if (disassemblyDoc == null)
 				OnShowDisassembly (null, null);

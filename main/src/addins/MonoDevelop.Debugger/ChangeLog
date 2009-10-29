@@ -1,5 +1,17 @@
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Debugger.csproj: Reference the mono-cairo
+	  package.
+
+	* MonoDevelop.Debugger/Initializer.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs: Properly check
+	  debugger features while in a debug session.
+
+	* MonoDevelop.Debugger/ThreadsPad.cs: Improve error handling.
+
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/generated.cs:
 	* gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs:
 	* gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs:

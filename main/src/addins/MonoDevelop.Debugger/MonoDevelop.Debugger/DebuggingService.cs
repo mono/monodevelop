@@ -61,6 +61,7 @@ namespace MonoDevelop.Debugger
 		static IConsole console;
 		static DebugExecutionHandlerFactory executionHandlerFactory;
 		
+		static IDebuggerEngine currentEngine;
 		static DebuggerSession session;
 		static Backtrace currentBacktrace;
 		static int currentFrame;
@@ -119,6 +120,11 @@ namespace MonoDevelop.Debugger
 			get {
 				return GetDebuggerEngines ().Length > 0;
 			}
+		}
+
+		public static bool CurrentSessionSupportsFeature (DebuggerFeatures feature)
+		{
+			return (currentEngine.SupportedFeatures & feature) == feature;
 		}
 
 		public static bool IsFeatureSupported (DebuggerFeatures feature)
@@ -228,6 +234,7 @@ namespace MonoDevelop.Debugger
 		
 		public static IAsyncOperation AttachToProcess (IDebuggerEngine debugger, ProcessInfo proc)
 		{
+			currentEngine = debugger;
 			session = debugger.CreateSession ();
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			console = monitor as IConsole;
@@ -254,6 +261,7 @@ namespace MonoDevelop.Debugger
 			}
 			
 			DebuggerStartInfo startInfo = factory.CreateDebuggerStartInfo (cmd);
+			currentEngine = factory;
 			session = factory.CreateSession ();
 			session.Initialize ();
 			console = c;

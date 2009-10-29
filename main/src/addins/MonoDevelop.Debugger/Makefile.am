@@ -16,7 +16,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:Mono.Cairo \
+	$(MONO_CAIRO_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \

@@ -148,17 +148,22 @@ namespace MonoDevelop.Debugger
 			if (DebuggingService.DebuggerSession == null || DebuggingService.DebuggerSession.IsRunning)
 				return;
 			
-			ProcessInfo[] currentProcesses = DebuggingService.DebuggerSession.GetProcesses ();
-			
-			if (currentProcesses.Length == 1) {
-				AppendThreads (TreeIter.Zero, currentProcesses [0]);
-			}
-			else {
-				foreach (ProcessInfo p in currentProcesses) {
-					TreeIter it = store.AppendValues (null, p.Id.ToString (), p.Name, p, (int) Pango.Weight.Normal, "");
-					AppendThreads (it, p);
+			try {
+				ProcessInfo[] currentProcesses = DebuggingService.DebuggerSession.GetProcesses ();
+				
+				if (currentProcesses.Length == 1) {
+					AppendThreads (TreeIter.Zero, currentProcesses [0]);
 				}
+				else {
+					foreach (ProcessInfo p in currentProcesses) {
+						TreeIter it = store.AppendValues (null, p.Id.ToString (), p.Name, p, (int) Pango.Weight.Normal, "");
+						AppendThreads (it, p);
+					}
+				}
+			} catch (Exception ex) {
+				MessageService.ShowException (ex);
 			}
+			
 			tree.ExpandAll ();
 			
 			treeViewState.Load ();
