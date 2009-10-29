@@ -1549,6 +1549,8 @@ namespace Mono.TextEditor
 			set {
 				if (this.textEditorData.SearchRequest.SearchPattern != value) {
 					this.textEditorData.SearchRequest.SearchPattern = value;
+					this.textViewMargin.ClearSearchMaker ();
+					this.textViewMargin.DisposeLayoutDict ();
 					this.QueueDraw ();
 				}
 			}

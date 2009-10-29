@@ -178,6 +178,11 @@ namespace Mono.TextEditor
 			textEditor.RequestResetCaretBlink ();
 		}
 		
+		internal void ClearSearchMaker ()
+		{
+			selectedRegions.Clear ();
+		}
+		
 		void HandleSearchChanged (object sender, EventArgs args)
 		{
 			if (textEditor.HighlightSearchPattern) {
