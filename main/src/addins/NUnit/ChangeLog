@@ -1,5 +1,10 @@
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Gui/TestPad.cs:
+	* Gui/TestResultsPad.cs: Fix warnings.
+
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.NUnit.csproj: Reference the mono-cairo package.
 

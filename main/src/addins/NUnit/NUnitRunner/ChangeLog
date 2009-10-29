@@ -1,3 +1,7 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NUnitRunner.csproj: Flush.
+
 2009-10-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* NUnitTestRunner.cs: The name of inherited tests include the

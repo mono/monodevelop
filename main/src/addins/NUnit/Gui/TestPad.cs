@@ -65,7 +65,6 @@ namespace MonoDevelop.NUnit
 		ListStore regressionStore;
 		TreeView failedTree;
 		ListStore failedStore;
-		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		
 		int TestSummaryPage;
 		int TestRegressionsPage;
@@ -106,26 +105,20 @@ namespace MonoDevelop.NUnit
 			buttonRunAll.IsImportant = true;
 			buttonRunAll.Clicked += new EventHandler (OnRunAllClicked);
 			buttonRunAll.Sensitive = true;
-			buttonRunAll.SetTooltip (tips, 
-			                     GettextCatalog.GetString ("Run all tests"), 
-			                     GettextCatalog.GetString ("Run all tests"));
+			buttonRunAll.TooltipText = GettextCatalog.GetString ("Run all tests");
 			topToolbar.Insert (buttonRunAll, -1);
 			
 			buttonRun = new ToolButton (new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu), null);
 			buttonRun.IsImportant = true;
 			buttonRun.Clicked += new EventHandler (OnRunClicked);
 			buttonRun.Sensitive = true;
-			buttonRun.SetTooltip (tips, 
-			                     GettextCatalog.GetString ("Run test"), 
-			                     GettextCatalog.GetString ("Run test"));
+			buttonRun.TooltipText = GettextCatalog.GetString ("Run test");
 			topToolbar.Insert (buttonRun, -1);
 			
 			buttonStop = new ToolButton (Gtk.Stock.Stop);
 			buttonStop.Clicked += new EventHandler (OnStopClicked);
 			buttonStop.Sensitive = false;
-			buttonStop.SetTooltip (tips, 
-			                     GettextCatalog.GetString ("Cancel running test"), 
-			                     GettextCatalog.GetString ("Cancel running test"));
+			buttonStop.TooltipText = GettextCatalog.GetString ("Cancel running test");
 			topToolbar.Insert (buttonStop, -1);
 			
 			vbox.PackEnd (base.Control, true, true, 0);

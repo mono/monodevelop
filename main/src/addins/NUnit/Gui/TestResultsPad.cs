@@ -51,7 +51,6 @@ namespace MonoDevelop.NUnit
 		IPadWindow window;
 		VBox panel;
 		HPaned book;
-		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		
 		Label infoFailed = new Label (GettextCatalog.GetString ("<b>Failed</b>: {0}", 0));
 		Label infoIgnored = new Label (GettextCatalog.GetString ("<b>Ignored</b>: {0}", 0));
@@ -113,7 +112,7 @@ namespace MonoDevelop.NUnit
 			buttonSuccess.IconWidget = new Gtk.Image (CircleImage.Success);
 			buttonSuccess.IsImportant = true;
 			buttonSuccess.Toggled += new EventHandler (OnShowSuccessfulToggled);
-			buttonSuccess.SetTooltip (tips, GettextCatalog.GetString ("Show Successful Tests"), GettextCatalog.GetString ("Show Successful Tests"));
+			buttonSuccess.TooltipText = GettextCatalog.GetString ("Show Successful Tests");
 			toolbar.Insert (buttonSuccess, -1);
 			
 			buttonFailures = new ToggleToolButton ();
@@ -122,7 +121,7 @@ namespace MonoDevelop.NUnit
 			buttonFailures.IconWidget = new Gtk.Image (CircleImage.Failure);
 			buttonFailures.IsImportant = true;
 			buttonFailures.Toggled += new EventHandler (OnShowFailuresToggled);
-			buttonFailures.SetTooltip (tips, GettextCatalog.GetString ("Show Failed Tests"), GettextCatalog.GetString ("Show Failed Tests"));
+			buttonFailures.TooltipText = GettextCatalog.GetString ("Show Failed Tests");
 			toolbar.Insert (buttonFailures, -1);
 			
 			buttonIgnored = new ToggleToolButton ();
@@ -131,7 +130,7 @@ namespace MonoDevelop.NUnit
 			buttonIgnored.IconWidget = new Gtk.Image (CircleImage.NotRun);
 			buttonIgnored.Toggled += new EventHandler (OnShowIgnoredToggled);
 			buttonIgnored.IsImportant = true;
-			buttonIgnored.SetTooltip (tips, GettextCatalog.GetString( "Show Ignored Tests"), GettextCatalog.GetString ("Show Ignored Tests"));
+			buttonIgnored.TooltipText = GettextCatalog.GetString( "Show Ignored Tests");
 			toolbar.Insert (buttonIgnored, -1);
 			
 			buttonOutput = new ToggleToolButton ();
@@ -140,7 +139,7 @@ namespace MonoDevelop.NUnit
 			buttonOutput.IconWidget = ImageService.GetImage (MonoDevelop.Core.Gui.Stock.OutputIcon, IconSize.Menu);
 			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
 			buttonOutput.IsImportant = true;
-			buttonOutput.SetTooltip (tips, GettextCatalog.GetString ("Show Output"), GettextCatalog.GetString ("Show Output"));
+			buttonOutput.TooltipText = GettextCatalog.GetString ("Show Output");
 			toolbar.Insert (buttonOutput, -1);
 			
 			toolbar.Insert (new SeparatorToolItem (), -1);
