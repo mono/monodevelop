@@ -78,12 +78,12 @@ namespace MonoDevelop.Database.Query
 			                                AddinCatalog.GetString ("_Execute"));
 			buttonExecute.Label = AddinCatalog.GetString ("Execute");
 			buttonExecute.Sensitive = false;
-			buttonExecute.TooltipMarkup = string.Concat (AddinCatalog.GetString ("Execute Query"), 
-			                                             " <b>(Ctrl + Return)</b>");
+			buttonExecute.TooltipMarkup = AddinCatalog.GetString ("Execute Query");
 			buttonExecute.IsImportant = true;
 			buttonExecute.Clicked += new EventHandler (ExecuteClicked);
 
 			buttonStop = new ToolButton ("gtk-stop");
+			buttonStop.TooltipText = AddinCatalog.GetString ("Stop Query Execution");
 			buttonStop.Sensitive = false;
 			buttonStop.Clicked += new EventHandler (StopClicked);
 			
