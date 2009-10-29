@@ -10,7 +10,6 @@
 
 namespace ILAsmBinding {
     
-    
     public partial class CompilerParametersPanelWidget {
         
         private Gtk.VBox vbox1;
