@@ -342,6 +342,11 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (fileName, line, column, bringToFront, encoding, null);
 		}
 
+		public Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, bool highlightCaretLine)
+		{
+			return OpenDocument (fileName, line, column, bringToFront, encoding, null, highlightCaretLine);
+		}
+
 		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding)
 		{
 			return OpenDocument (fileName, line, column, bringToFront, encoding, binding, true);

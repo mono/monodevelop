@@ -1,5 +1,10 @@
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs: New overload for
+	  OpenDocument.
+
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
 	  Show an error message when displaying an unknown project.
 
