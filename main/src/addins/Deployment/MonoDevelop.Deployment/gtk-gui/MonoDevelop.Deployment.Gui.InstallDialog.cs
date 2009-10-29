@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment.Gui {
     
-    
     internal partial class InstallDialog {
         
         private Gtk.VBox vbox1;

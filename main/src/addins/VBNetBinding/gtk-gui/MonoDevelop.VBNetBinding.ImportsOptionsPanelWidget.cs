@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.VBNetBinding {
     
-    
     public partial class ImportsOptionsPanelWidget {
         
         private Gtk.Table table3;

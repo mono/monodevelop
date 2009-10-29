@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Deployment.Linux</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Deployment.Linux</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -105,8 +106,12 @@
     <EmbeddedResource Include="MonoDevelop.Deployment.Linux\DesktopInfo.xml">
       <LogicalName>DesktopInfo.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Deployment.Linux.addin.xml" />
-    <EmbeddedResource Include="app.desktop.xft.xml" />
+    <EmbeddedResource Include="MonoDevelop.Deployment.Linux.addin.xml">
+      <LogicalName>MonoDevelop.Deployment.Linux.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="app.desktop.xft.xml">
+      <LogicalName>app.desktop.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />

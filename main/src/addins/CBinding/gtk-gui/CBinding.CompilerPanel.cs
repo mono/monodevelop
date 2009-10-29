@@ -10,7 +10,6 @@
 
 namespace CBinding {
     
-    
     public partial class CompilerPanel {
         
         private Gtk.Table table2;

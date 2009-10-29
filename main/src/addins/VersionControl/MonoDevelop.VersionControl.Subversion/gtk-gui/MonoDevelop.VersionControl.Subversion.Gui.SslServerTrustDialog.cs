@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.VersionControl.Subversion.Gui {
     
-    
     public partial class SslServerTrustDialog {
         
         private Gtk.HBox hbox1;

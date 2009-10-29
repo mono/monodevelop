@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Autotools {
     
-    
     public partial class MakefileOptionPanelWidget {
         
         private Gtk.Notebook notebook1;

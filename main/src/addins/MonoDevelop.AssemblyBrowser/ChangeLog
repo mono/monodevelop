@@ -1,3 +1,10 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* MonoDevelop.AssemblyBrowser.csproj:
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:
+	  Flush.
+
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:

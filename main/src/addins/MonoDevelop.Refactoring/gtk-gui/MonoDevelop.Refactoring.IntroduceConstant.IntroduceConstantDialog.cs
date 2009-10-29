@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Refactoring.IntroduceConstant {
     
-    
     public partial class IntroduceConstantDialog {
         
         private Gtk.VBox vbox2;

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.VersionControl {
     
-    
     public partial class CommitMessageStylePanelWidget {
         
         private Gtk.VBox vbox1;

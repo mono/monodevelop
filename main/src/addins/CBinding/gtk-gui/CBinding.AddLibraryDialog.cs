@@ -10,7 +10,6 @@
 
 namespace CBinding {
     
-    
     public partial class AddLibraryDialog {
         
         private Gtk.FileChooserWidget file_chooser_widget;

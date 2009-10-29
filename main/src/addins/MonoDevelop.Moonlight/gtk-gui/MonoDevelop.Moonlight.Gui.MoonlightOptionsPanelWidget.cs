@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Moonlight.Gui {
     
-    
     public partial class MoonlightOptionsPanelWidget {
         
         private Gtk.VBox vbox1;

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Autotools {
     
-    
     public partial class MakefileSwitchEditorWidget {
         
         private Gtk.VBox dialog1_VBox;

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment.Gui {
     
-    
     internal partial class SourcesZipEditorWidget {
         
         private Gtk.VBox vbox2;

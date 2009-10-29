@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Moonlight</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Moonlight</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -110,7 +111,9 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Moonlight.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Moonlight.addin.xml">
+      <LogicalName>MonoDevelop.Moonlight.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Templates\Moonlight-ApplicationProject.xpt.xml">
       <LogicalName>Moonlight-ApplicationProject.xpt.xml</LogicalName>
     </EmbeddedResource>
@@ -168,5 +171,4 @@
     </MonoDevelop>
     <VisualStudio />
   </ProjectExtensions>
-  <Import Project="..\..\..\md.targets"/>
 </Project>

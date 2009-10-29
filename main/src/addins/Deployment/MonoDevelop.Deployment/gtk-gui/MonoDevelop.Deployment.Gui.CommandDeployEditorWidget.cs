@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment.Gui {
     
-    
     internal partial class CommandDeployEditorWidget {
         
         private Gtk.VBox vbox1;

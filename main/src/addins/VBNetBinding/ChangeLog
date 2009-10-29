@@ -1,3 +1,13 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/objects.xml:
+	* VBNetBinding.csproj:
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:
+	  Flush.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

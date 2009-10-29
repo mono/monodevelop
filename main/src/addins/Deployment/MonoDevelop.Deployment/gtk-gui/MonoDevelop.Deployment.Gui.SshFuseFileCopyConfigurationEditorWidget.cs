@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment.Gui {
     
-    
     internal partial class SshFuseFileCopyConfigurationEditorWidget {
         
         private Gtk.Table table1;

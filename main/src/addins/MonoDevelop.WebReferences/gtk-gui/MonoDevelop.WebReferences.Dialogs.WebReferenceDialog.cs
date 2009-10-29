@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.WebReferences.Dialogs {
     
-    
     internal partial class WebReferenceDialog {
         
         private Gtk.UIManager UIManager;

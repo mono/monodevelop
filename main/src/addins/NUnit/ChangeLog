@@ -1,3 +1,7 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs: Flush.
+
 2009-10-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/CircleImage.cs: Handled icon loading error.

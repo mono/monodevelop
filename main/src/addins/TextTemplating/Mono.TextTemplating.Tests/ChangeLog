@@ -1,3 +1,7 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextTemplating.Tests.csproj: Flush.
+
 2009-08-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DummyHost.cs: Fix windows build.

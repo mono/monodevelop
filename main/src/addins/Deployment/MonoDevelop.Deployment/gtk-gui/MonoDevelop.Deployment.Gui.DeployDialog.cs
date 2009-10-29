@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment.Gui {
     
-    
     internal partial class DeployDialog {
         
         private Gtk.HBox hbox1;

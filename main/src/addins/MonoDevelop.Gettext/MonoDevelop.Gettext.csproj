@@ -10,6 +10,7 @@
     <AssemblyName>MonoDevelop.Gettext</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <CodePage>65001</CodePage>
+    <RootNamespace>MonoDevelop.Gettext</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -162,7 +163,9 @@
     <EmbeddedResource Include="gtk-gui\objects.xml">
       <LogicalName>objects.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Gettext.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Gettext.addin.xml">
+      <LogicalName>MonoDevelop.Gettext.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\locale_22x22.png">
       <LogicalName>locale_22x22.png</LogicalName>
     </EmbeddedResource>

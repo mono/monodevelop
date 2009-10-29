@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.CSharp.Project {
     
-    
     public partial class CompilerOptionsPanelWidget {
         
         private Gtk.VBox vbox1;

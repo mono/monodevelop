@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Autotools {
     
-    
     public partial class GenerateMakefilesDialog {
         
         private Gtk.VBox vbox2;

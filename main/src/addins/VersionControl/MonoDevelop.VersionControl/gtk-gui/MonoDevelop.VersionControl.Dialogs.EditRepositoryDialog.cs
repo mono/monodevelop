@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.VersionControl.Dialogs {
     
-    
     internal partial class EditRepositoryDialog {
         
         private Gtk.VBox vbox1;

@@ -10,7 +10,6 @@
 
 namespace CBinding {
     
-    
     public partial class EditPackagesDialog {
         
         private Gtk.VPaned vpaned1;
@@ -188,8 +187,7 @@ namespace CBinding {
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
             this.removeButton = new Gtk.Button();
-            Gtk.Tooltips w14 = new Gtk.Tooltips();
-            w14.SetTip(this.removeButton, "Remove selected package from the project.", "Remove selected package from the project.");
+            this.removeButton.TooltipMarkup = "Remove selected package from the project.";
             this.removeButton.WidthRequest = 33;
             this.removeButton.HeightRequest = 33;
             this.removeButton.Sensitive = false;
@@ -197,42 +195,42 @@ namespace CBinding {
             this.removeButton.Name = "removeButton";
             this.removeButton.UseUnderline = true;
             // Container child removeButton.Gtk.Container+ContainerChild
-            Gtk.Alignment w15 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            Gtk.Alignment w14 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
             // Container child GtkAlignment.Gtk.Container+ContainerChild
-            Gtk.HBox w16 = new Gtk.HBox();
-            w16.Spacing = 2;
+            Gtk.HBox w15 = new Gtk.HBox();
+            w15.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Image w17 = new Gtk.Image();
-            w17.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-remove", Gtk.IconSize.Menu, 16);
-            w16.Add(w17);
-            // Container child GtkHBox.Gtk.Container+ContainerChild
-            Gtk.Label w19 = new Gtk.Label();
-            w16.Add(w19);
+            Gtk.Image w16 = new Gtk.Image();
+            w16.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-remove", Gtk.IconSize.Menu, 16);
             w15.Add(w16);
-            this.removeButton.Add(w15);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w18 = new Gtk.Label();
+            w15.Add(w18);
+            w14.Add(w15);
+            this.removeButton.Add(w14);
             this.vbox2.Add(this.removeButton);
-            Gtk.Box.BoxChild w23 = ((Gtk.Box.BoxChild)(this.vbox2[this.removeButton]));
-            w23.Position = 0;
-            w23.Expand = false;
-            w23.Fill = false;
+            Gtk.Box.BoxChild w22 = ((Gtk.Box.BoxChild)(this.vbox2[this.removeButton]));
+            w22.Position = 0;
+            w22.Expand = false;
+            w22.Fill = false;
             this.table1.Add(this.vbox2);
-            Gtk.Table.TableChild w24 = ((Gtk.Table.TableChild)(this.table1[this.vbox2]));
-            w24.TopAttach = ((uint)(1));
-            w24.BottomAttach = ((uint)(2));
-            w24.LeftAttach = ((uint)(1));
-            w24.RightAttach = ((uint)(2));
-            w24.XOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w23 = ((Gtk.Table.TableChild)(this.table1[this.vbox2]));
+            w23.TopAttach = ((uint)(1));
+            w23.BottomAttach = ((uint)(2));
+            w23.LeftAttach = ((uint)(1));
+            w23.RightAttach = ((uint)(2));
+            w23.XOptions = ((Gtk.AttachOptions)(4));
             this.vpaned1.Add(this.table1);
             w1.Add(this.vpaned1);
-            Gtk.Box.BoxChild w26 = ((Gtk.Box.BoxChild)(w1[this.vpaned1]));
-            w26.Position = 0;
-            w26.Padding = ((uint)(3));
+            Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(w1[this.vpaned1]));
+            w25.Position = 0;
+            w25.Padding = ((uint)(3));
             // Internal child CBinding.EditPackagesDialog.ActionArea
-            Gtk.HButtonBox w27 = this.ActionArea;
-            w27.Name = "dialog1_ActionArea";
-            w27.Spacing = 6;
-            w27.BorderWidth = ((uint)(5));
-            w27.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+            Gtk.HButtonBox w26 = this.ActionArea;
+            w26.Name = "dialog1_ActionArea";
+            w26.Spacing = 6;
+            w26.BorderWidth = ((uint)(5));
+            w26.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
@@ -242,9 +240,9 @@ namespace CBinding {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w28 = ((Gtk.ButtonBox.ButtonBoxChild)(w27[this.buttonCancel]));
-            w28.Expand = false;
-            w28.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w27 = ((Gtk.ButtonBox.ButtonBoxChild)(w26[this.buttonCancel]));
+            w27.Expand = false;
+            w27.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.CanDefault = true;
@@ -254,10 +252,10 @@ namespace CBinding {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w29 = ((Gtk.ButtonBox.ButtonBoxChild)(w27[this.buttonOk]));
-            w29.Position = 1;
-            w29.Expand = false;
-            w29.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w28 = ((Gtk.ButtonBox.ButtonBoxChild)(w26[this.buttonOk]));
+            w28.Position = 1;
+            w28.Expand = false;
+            w28.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }

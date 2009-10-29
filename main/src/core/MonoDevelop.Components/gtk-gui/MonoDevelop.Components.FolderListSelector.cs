@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Components {
     
-    
     public partial class FolderListSelector {
         
         private Gtk.HBox hbox1;

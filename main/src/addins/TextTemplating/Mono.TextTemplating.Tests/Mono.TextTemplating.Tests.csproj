@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.TextTemplating.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>Mono.TextTemplating.Tests</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

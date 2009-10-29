@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Autotools {
     
-    
     public partial class MakefileSwitchEditor {
         
         private Gtk.Alignment align;

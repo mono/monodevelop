@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.CodeGeneration {
     
-    
     public partial class GenerateCodeWindow {
         
         private Gtk.VBox vbox1;

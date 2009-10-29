@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Refactoring {
     
-    
     public partial class RefactoringPreviewDialog {
         
         private Gtk.VBox vbox2;

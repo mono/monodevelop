@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Deployment</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Deployment</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -188,14 +189,18 @@
     <EmbeddedResource Include="templates\PackagingProject.xpt.xml">
       <LogicalName>PackagingProject.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Deployment.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Deployment.addin.xml">
+      <LogicalName>MonoDevelop.Deployment.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\packaging-32.png">
       <LogicalName>packaging-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\packaging-16.png">
       <LogicalName>packaging-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="md1format.xml" />
+    <EmbeddedResource Include="md1format.xml">
+      <LogicalName>md1format.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

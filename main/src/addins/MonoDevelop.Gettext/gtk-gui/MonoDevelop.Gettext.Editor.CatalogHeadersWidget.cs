@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Gettext.Editor {
     
-    
     internal partial class CatalogHeadersWidget {
         
         private Gtk.Notebook notebook1;

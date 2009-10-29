@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.WebReferences</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.WebReferences</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -112,7 +113,9 @@
     <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.WebReferences.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.WebReferences.addin.xml">
+      <LogicalName>MonoDevelop.WebReferences.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.WebReferences.Resources\disco.html">
       <LogicalName>disco.html</LogicalName>
     </EmbeddedResource>

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.XmlEditor.Gui {
     
-    
     public partial class XmlEditorOptionsPanelWidget {
         
         private Gtk.VBox vbox1;

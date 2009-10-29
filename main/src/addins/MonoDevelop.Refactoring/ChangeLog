@@ -1,3 +1,14 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Refactoring.csproj:
+	* gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs:
+	* gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs:
+	* gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs:
+	* gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs:
+	* gtk-gui/MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs:
+	  Flush.
+
 2009-10-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: Fixed

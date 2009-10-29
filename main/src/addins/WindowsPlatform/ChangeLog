@@ -1,3 +1,7 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WindowsPlatform.csproj: Flush.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

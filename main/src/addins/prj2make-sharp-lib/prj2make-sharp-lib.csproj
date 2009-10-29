@@ -8,6 +8,7 @@
     <ProjectGuid>{0F57E572-2359-4BAF-B302-6478C2E42FA2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>prj2makesharplib</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -125,14 +126,15 @@
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="prj2make-sharp-lib.addin.xml" />
+    <EmbeddedResource Include="prj2make-sharp-lib.addin.xml">
+      <LogicalName>prj2make-sharp-lib.addin.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="ChangeLog" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\..\md.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

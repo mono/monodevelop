@@ -1,3 +1,7 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CBinding.Autotools.csproj: Flush.
+
 2009-10-13  Ankit Jain  <jankit@novell.com>
 
 	* CBinding.Autotools.csproj: Import md.targets .

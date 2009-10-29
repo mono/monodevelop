@@ -1,3 +1,10 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WelcomePage.csproj:
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs:
+	  Flush.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

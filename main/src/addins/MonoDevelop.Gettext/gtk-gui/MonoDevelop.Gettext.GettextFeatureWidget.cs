@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Gettext {
     
-    
     public partial class GettextFeatureWidget {
         
         private Gtk.VBox vbox2;

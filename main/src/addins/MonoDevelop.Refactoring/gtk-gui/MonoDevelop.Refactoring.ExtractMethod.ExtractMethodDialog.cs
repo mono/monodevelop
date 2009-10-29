@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Refactoring.ExtractMethod {
     
-    
     public partial class ExtractMethodDialog {
         
         private Gtk.VBox vbox2;

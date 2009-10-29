@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Refactoring.Rename {
     
-    
     public partial class RenameItemDialog {
         
         private Gtk.VBox vbox;

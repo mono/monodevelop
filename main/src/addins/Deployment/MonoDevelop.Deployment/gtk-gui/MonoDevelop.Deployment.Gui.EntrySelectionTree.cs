@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment.Gui {
     
-    
     internal partial class EntrySelectionTree {
         
         private Gtk.ScrolledWindow scrolledwindow1;

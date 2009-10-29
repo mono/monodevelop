@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -57,7 +57,6 @@
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dlgWindow">
         <property name="MemberName" />
@@ -90,7 +89,6 @@
             <child>
               <widget class="Gtk.Table" id="tblWebReferenceUrl">
                 <property name="MemberName" />
-                <property name="NRows">1</property>
                 <property name="NColumns">3</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>

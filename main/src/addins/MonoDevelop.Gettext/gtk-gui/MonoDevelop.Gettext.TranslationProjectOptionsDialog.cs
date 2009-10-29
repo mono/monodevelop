@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Gettext {
     
-    
     public partial class TranslationProjectOptionsDialog {
         
         private Gtk.Notebook notebook1;

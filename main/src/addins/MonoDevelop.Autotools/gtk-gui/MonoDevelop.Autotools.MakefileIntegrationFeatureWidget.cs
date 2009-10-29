@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Autotools {
     
-    
     public partial class MakefileIntegrationFeatureWidget {
         
         protected virtual void Build() {

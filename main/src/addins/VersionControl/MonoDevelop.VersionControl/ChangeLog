@@ -1,3 +1,14 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* MonoDevelop.VersionControl.csproj:
+	* gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:
+	* gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:
+	* gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs:
+	* gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:
+	* gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:
+	  Flush.
+
 2009-10-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl/VersionControlService.cs: Handled

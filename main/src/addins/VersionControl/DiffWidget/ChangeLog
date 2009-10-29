@@ -1,3 +1,7 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DiffWidget.csproj: Flush.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DiffWidget.csproj: Updated dependencies. We now depend on

@@ -1,3 +1,12 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:
+	  Flush.
+
 2009-10-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Fixed 'Bug 550179

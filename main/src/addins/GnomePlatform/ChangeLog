@@ -1,3 +1,7 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GnomePlatform.csproj: Flush.
+
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
 	* GnomePlatform.csproj: Mark gtk-sharp/pango-sharp with

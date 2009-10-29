@@ -9,6 +9,8 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Cecil.Mdb</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>Mono.Cecil.Mdb</RootNamespace>
+    <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -17,7 +19,6 @@
     <OutputPath>..\..\build\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AssemblyKeyFile>.</AssemblyKeyFile>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_1_1" />
@@ -30,7 +31,6 @@
     <OutputPath>..\..\build\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AssemblyKeyFile>.</AssemblyKeyFile>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_1_1" />

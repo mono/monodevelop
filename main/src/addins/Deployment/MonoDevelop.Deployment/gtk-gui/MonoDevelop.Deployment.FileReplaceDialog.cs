@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment {
     
-    
     public partial class FileReplaceDialog {
         
         private Gtk.HBox hbox1;
@@ -473,7 +472,6 @@ namespace MonoDevelop.Deployment {
             }
             this.DefaultWidth = 425;
             this.DefaultHeight = 420;
-            this.okButton.HasDefault = true;
             this.Show();
             this.DeleteEvent += new Gtk.DeleteEventHandler(this.DeleteActivated);
             this.cancelButton.Clicked += new System.EventHandler(this.CancelClicked);

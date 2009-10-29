@@ -1,3 +1,15 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditor.cs:
+	* gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs:
+	  Flush.
+
 2009-10-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Autotools.csproj: Flush.

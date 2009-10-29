@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.AssemblyBrowser {
     
-    
     internal partial class AssemblyBrowserWidget {
         
         private Gtk.UIManager UIManager;

@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>WelcomePage</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>WelcomePage</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -94,9 +95,15 @@
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="WelcomePage.addin.xml" />
-    <EmbeddedResource Include="WelcomePage.xsl" />
-    <EmbeddedResource Include="WelcomePageContent.xml" />
+    <EmbeddedResource Include="WelcomePage.addin.xml">
+      <LogicalName>WelcomePage.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WelcomePage.xsl">
+      <LogicalName>WelcomePage.xsl</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WelcomePageContent.xml">
+      <LogicalName>WelcomePageContent.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>

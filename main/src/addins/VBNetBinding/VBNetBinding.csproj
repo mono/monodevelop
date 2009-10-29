@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.VBNetBinding</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>VBNetBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,7 +92,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="NRefactory, Version=2.1.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="NRefactory, Version=2.1.1.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\build\bin\NRefactory.dll</HintPath>
       <Private>False</Private>
@@ -134,7 +135,9 @@
     <EmbeddedResource Include="icons\VB.FileIcon">
       <LogicalName>VB.FileIcon</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="VBNetBinding.addin.xml" />
+    <EmbeddedResource Include="VBNetBinding.addin.xml">
+      <LogicalName>VBNetBinding.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\vb-icon-32.png">
       <LogicalName>vb-icon-32.png</LogicalName>
     </EmbeddedResource>
@@ -147,7 +150,9 @@
     <EmbeddedResource Include="gtk-gui\objects.xml">
       <LogicalName>objects.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="md1format.xml" />
+    <EmbeddedResource Include="md1format.xml">
+      <LogicalName>md1format.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

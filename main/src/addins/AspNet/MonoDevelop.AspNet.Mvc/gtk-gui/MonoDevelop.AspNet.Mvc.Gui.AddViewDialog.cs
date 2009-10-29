@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.AspNet.Mvc.Gui {
     
-    
     public partial class AddViewDialog {
         
         private Gtk.VBox vbox2;

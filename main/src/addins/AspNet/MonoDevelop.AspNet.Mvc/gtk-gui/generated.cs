@@ -10,7 +10,6 @@
 
 namespace Stetic {
     
-    
     internal class Gui {
         
         private static bool initialized;

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Gettext.Translator {
     
-    
     public partial class LanguageChooserDialog {
         
         private Gtk.VBox vbox2;

@@ -1,3 +1,10 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Moonlight.csproj:
+	* gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:
+	  Flush.
+
 2009-10-08  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Moonlight.csproj: Import md.targets .

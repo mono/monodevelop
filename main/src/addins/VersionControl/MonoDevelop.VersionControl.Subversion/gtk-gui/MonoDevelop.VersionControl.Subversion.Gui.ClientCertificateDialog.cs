@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.VersionControl.Subversion.Gui {
     
-    
     public partial class ClientCertificateDialog {
         
         private Gtk.VBox vbox2;

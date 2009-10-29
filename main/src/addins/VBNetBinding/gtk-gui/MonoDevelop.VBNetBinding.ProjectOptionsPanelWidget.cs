@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.VBNetBinding {
     
-    
     public partial class ProjectOptionsPanelWidget {
         
         private Gtk.VBox vbox5;

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Debugger {
     
-    
     public partial class ExceptionsDialog {
         
         private Gtk.HBox hbox1;
@@ -165,14 +164,14 @@ namespace MonoDevelop.Debugger {
             this.buttonRemove.UseUnderline = true;
             // Container child buttonRemove.Gtk.Container+ContainerChild
             Gtk.Alignment w19 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            // Container child GtkAlignment1.Gtk.Container+ContainerChild
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w20 = new Gtk.HBox();
             w20.Spacing = 2;
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w21 = new Gtk.Image();
             w21.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-back", Gtk.IconSize.Menu, 16);
             w20.Add(w21);
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w23 = new Gtk.Label();
             w20.Add(w23);
             w19.Add(w20);

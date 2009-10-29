@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.RegexToolkit {
     
-    
     public partial class UpdateInProgressDialog {
         
         private Gtk.EventBox eventbox1;

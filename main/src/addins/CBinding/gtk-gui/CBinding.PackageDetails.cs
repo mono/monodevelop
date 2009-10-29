@@ -10,7 +10,6 @@
 
 namespace CBinding {
     
-    
     public partial class PackageDetails {
         
         private Gtk.VBox vbox3;

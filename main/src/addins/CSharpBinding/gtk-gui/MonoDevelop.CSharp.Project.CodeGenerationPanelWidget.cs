@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.CSharp.Project {
     
-    
     internal partial class CodeGenerationPanelWidget {
         
         private Gtk.VBox vbox62;

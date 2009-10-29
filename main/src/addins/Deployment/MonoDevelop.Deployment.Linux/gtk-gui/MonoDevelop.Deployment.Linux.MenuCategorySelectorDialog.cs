@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment.Linux {
     
-    
     public partial class MenuCategorySelectorDialog {
         
         private Gtk.VBox vbox5;

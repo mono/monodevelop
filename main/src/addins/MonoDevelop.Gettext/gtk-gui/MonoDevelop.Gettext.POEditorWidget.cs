@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Gettext {
     
-    
     public partial class POEditorWidget {
         
         private Gtk.UIManager UIManager;

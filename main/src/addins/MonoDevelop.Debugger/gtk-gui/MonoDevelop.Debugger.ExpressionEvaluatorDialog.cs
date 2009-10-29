@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Debugger {
     
-    
     public partial class ExpressionEvaluatorDialog {
         
         private Gtk.VBox vbox2;

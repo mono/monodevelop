@@ -1,3 +1,13 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* MonoDevelop.VersionControl.Subversion.csproj:
+	* gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs:
+	* gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs:
+	* gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs:
+	* gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs:
+	  Flush.
+
 2009-10-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion.dll.config: Add

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment.Linux {
     
-    
     public partial class BasicOptionPanelWidget {
         
         private Gtk.VBox vbox2;

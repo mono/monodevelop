@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.RegexToolkit {
     
-    
     public partial class RegexLibraryWindow {
         
         private Gtk.VBox vbox2;

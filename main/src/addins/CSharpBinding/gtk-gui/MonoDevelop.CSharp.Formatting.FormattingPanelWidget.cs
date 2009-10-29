@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.CSharp.Formatting {
     
-    
     internal partial class FormattingPanelWidget {
         
         private Gtk.VBox container;

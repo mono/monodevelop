@@ -9,6 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

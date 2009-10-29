@@ -9,6 +9,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AssemblyName>MonoDevelop</AssemblyName>
+    <RootNamespace>MonoDevelop.Startup</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment {
     
-    
     internal partial class DeployFileListWidget {
         
         private Gtk.VBox vbox2;

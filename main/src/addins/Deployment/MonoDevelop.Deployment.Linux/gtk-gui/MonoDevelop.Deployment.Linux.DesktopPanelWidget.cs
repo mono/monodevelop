@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Deployment.Linux {
     
-    
     public partial class DesktopPanelWidget {
         
         private Gtk.Notebook notebook2;

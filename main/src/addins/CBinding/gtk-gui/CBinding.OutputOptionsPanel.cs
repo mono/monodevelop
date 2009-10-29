@@ -10,7 +10,6 @@
 
 namespace CBinding {
     
-    
     public partial class OutputOptionsPanel {
         
         private Gtk.VBox vbox2;

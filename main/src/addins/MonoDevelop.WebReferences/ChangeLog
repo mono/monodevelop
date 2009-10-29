@@ -1,3 +1,11 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.WebReferences.csproj:
+	* gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:
+	  Flush.
+
 2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:

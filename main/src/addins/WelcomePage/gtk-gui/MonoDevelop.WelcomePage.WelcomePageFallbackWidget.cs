@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.WelcomePage {
     
-    
     public partial class WelcomePageFallbackWidget {
         
         private Gtk.Alignment alignment1;

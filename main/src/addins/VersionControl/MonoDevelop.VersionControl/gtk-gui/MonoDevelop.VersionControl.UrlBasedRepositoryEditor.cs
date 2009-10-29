@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.VersionControl {
     
-    
     public partial class UrlBasedRepositoryEditor {
         
         private Gtk.Table table1;
