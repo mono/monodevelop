@@ -1,3 +1,11 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* ChangeLogAddIn.csproj:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:
+	* gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:
+	  Flush.
+
 2009-10-13  Ankit Jain  <jankit@novell.com>
 
 	* ChangeLogAddIn.csproj: Import md.targets .

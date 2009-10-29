@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.ChangeLogAddIn {
     
-    
     internal partial class ProjectOptionPanelWidget {
         
         private Gtk.Notebook notebook1;

@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.ChangeLogAddIn {
     
-    
     internal partial class AddLogEntryDialog {
         
         private Gtk.VBox vbox1;
