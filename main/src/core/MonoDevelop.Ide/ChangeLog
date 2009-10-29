@@ -1,5 +1,10 @@
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj: Reference the mono-cairo package.
+
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/Workbench.cs: New overload for
 	  OpenDocument.
 

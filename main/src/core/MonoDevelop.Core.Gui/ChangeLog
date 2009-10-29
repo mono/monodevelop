@@ -1,5 +1,11 @@
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj: Reference the mono-cairo
+	  package.
+
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/generated.cs:
 	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs:
 	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs:

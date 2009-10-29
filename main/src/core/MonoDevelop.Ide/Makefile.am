@@ -15,9 +15,9 @@ REFS =  \
 	$(MONO_ADDINS_GUI_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
+	$(MONO_CAIRO_LIBS) \
 	$(MONODOC_LIBS) \
 	-r:ICSharpCode.SharpZipLib \
-	-r:Mono.Cairo \
 	-r:Mono.GetOptions \
 	-r:Mono.Posix \
 	-r:System \
