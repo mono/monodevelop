@@ -1,5 +1,12 @@
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Execution/IExecutionCommandCustomizer.cs:
+	* MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs:
+	* MonoDevelop.Ide.Execution/IExecutionConfigurationEditor.cs:
+	  Add some docs.
+
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj: Reference the mono-cairo package.
 

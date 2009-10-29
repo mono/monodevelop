@@ -30,10 +30,26 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Ide.Execution
 {
+	/// <summary>
+	/// This interface can be used to allow the user to customize a command.
+	/// A customizer can for example set environment variables or modify the
+	/// arguments of a command.
+	/// </summary>
 	public interface IExecutionCommandCustomizer
 	{
+		/// <summary>
+		/// Must return true if the customizer can customize the provided command
+		/// </summary>
 		bool CanCustomize (ExecutionCommand cmd);
+		
+		/// <summary>
+		/// Customizes the command with the provided data.
+		/// </summary>
 		void Customize (ExecutionCommand cmd, object data);
+		
+		/// <summary>
+		/// Creates the editor to be used to enter the customization parameters
+		/// </summary>
 		IExecutionConfigurationEditor CreateEditor ();
 	}
 }

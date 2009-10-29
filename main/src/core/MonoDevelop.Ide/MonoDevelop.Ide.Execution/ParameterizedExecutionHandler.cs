@@ -34,6 +34,10 @@ namespace MonoDevelop.Ide.Execution
 {
 	public delegate bool CanExecuteDelegate (IExecutionHandler handler);
 		
+	/// <summary>
+	/// This class can be used to implement an execution handler that needs
+	/// arguments to run.
+	/// </summary>
 	public abstract class ParameterizedExecutionHandler: IExecutionHandler
 	{
 		public abstract bool CanExecute (ExecutionCommand command);
@@ -52,8 +56,29 @@ namespace MonoDevelop.Ide.Execution
 			return cmode.Execute (command, console, false, false);
 		}
 
+		/// <summary>
+		/// Runs a command
+		/// </summary>
+		/// <param name="command">
+		/// Command to run
+		/// </param>
+		/// <param name="console">
+		/// The console where to redirect the output
+		/// </param>
+		/// <param name="ctx">
+		/// Context with execution information
+		/// </param>
+		/// <param name="configurationData">
+		/// Configuration information. Created by the IExecutionConfigurationEditor object.
+		/// </param>
 		public abstract IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console, CommandExecutionContext ctx, object configurationData);
 		
+		/// <summary>
+		/// Creates an editor to be used to edit the execution handler arguments.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="IExecutionConfigurationEditor"/>
+		/// </returns>
 		public abstract IExecutionConfigurationEditor CreateEditor ();
 	}
 	
