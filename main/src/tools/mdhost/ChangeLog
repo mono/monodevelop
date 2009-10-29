@@ -1,3 +1,7 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* mdhost.csproj: Flush.
+
 2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* mdhost.csproj:
