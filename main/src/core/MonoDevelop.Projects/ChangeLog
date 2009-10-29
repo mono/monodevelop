@@ -1,5 +1,11 @@
 2009-10-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Added type nucc
+	  check (extension methods can be called directly without
+	  extension).
+
+2009-10-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/ExtensionMethod.cs: added argument
 	  checks.
 
