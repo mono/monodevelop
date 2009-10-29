@@ -1,6 +1,7 @@
 prefix=${pcfiledir}/../..
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib/monodevelop
+AddinsPath=${libdir}/AddIns
 GacPackage=false
 MonoAddinsRoot=${libdir}/bin
 MonoAddinsRegistry=[ApplicationData]/MonoDevelop
@@ -9,5 +10,4 @@ MonoAddinsTestCommand=MonoDevelop.exe
 Name: MonoDevelop
 Description: Free .NET Development Environment
 Version: @VERSION@
-AddinsPath: ${libdir}/AddIns
 Libs: -r:${libdir}/bin/MonoDevelop.Core.dll -r:${libdir}/bin/MonoDevelop.Core.Gui.dll -r:${libdir}/bin/MonoDevelop.Projects.dll -r:${libdir}/bin/MonoDevelop.Projects.Gui.dll -r:${libdir}/bin/MonoDevelop.Ide.dll -r:${libdir}/bin/MonoDevelop.Components.dll -r:${libdir}/bin/NRefactory.dll -r:${libdir}/bin/Mono.Cecil.dll -r:${libdir}/bin/Mono.TextEditor.dll -r:${libdir}/bin/Mono.Debugging.dll
