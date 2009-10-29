@@ -1,5 +1,9 @@
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MakefileOptionPanelWidget.cs: Improve error handling.
+
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/generated.cs:
 	* gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditor.cs:
