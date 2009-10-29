@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
     
-    
     public partial class BaseDirectoryPanelWidget {
         
         private Gtk.VBox vbox2;

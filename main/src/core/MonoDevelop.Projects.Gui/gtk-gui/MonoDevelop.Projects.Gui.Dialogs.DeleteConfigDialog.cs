@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Projects.Gui.Dialogs {
     
-    
     internal partial class DeleteConfigDialog {
         
         private Gtk.HBox hbox64;

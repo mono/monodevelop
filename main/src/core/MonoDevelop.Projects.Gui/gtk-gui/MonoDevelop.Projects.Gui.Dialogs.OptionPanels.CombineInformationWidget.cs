@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
     
-    
     internal partial class CombineInformationWidget {
         
         private Gtk.VBox vbox86;

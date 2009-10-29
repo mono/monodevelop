@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
     
-    
     public partial class RunOptionsPanelWidget {
         
         private Gtk.VBox vbox67;

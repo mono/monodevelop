@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
     
-    
     internal partial class CodeFormattingPanelWidget {
         
         private Gtk.VBox vbox1;

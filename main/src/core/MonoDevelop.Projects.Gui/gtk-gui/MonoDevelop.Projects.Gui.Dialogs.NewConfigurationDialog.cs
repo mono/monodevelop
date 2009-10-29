@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Projects.Gui.Dialogs {
     
-    
     internal partial class NewConfigurationDialog {
         
         private Gtk.VBox vbox77;

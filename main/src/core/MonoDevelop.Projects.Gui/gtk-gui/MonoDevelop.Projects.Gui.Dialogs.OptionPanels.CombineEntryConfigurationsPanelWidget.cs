@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
     
-    
     internal partial class CombineEntryConfigurationsPanelWidget {
         
         private Gtk.VBox vbox75;

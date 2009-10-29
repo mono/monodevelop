@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Projects.Gui.Dialogs {
     
-    
     internal partial class RenameConfigDialog {
         
         private Gtk.VBox vbox79;

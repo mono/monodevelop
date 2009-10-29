@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Projects.Gui.Dialogs {
     
-    
     internal partial class AddMimeTypeDialog {
         
         private Gtk.VBox vbox2;

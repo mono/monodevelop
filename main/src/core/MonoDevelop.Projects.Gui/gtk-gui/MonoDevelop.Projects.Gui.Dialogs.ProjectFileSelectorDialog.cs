@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Projects.Gui.Dialogs {
     
-    
     public partial class ProjectFileSelectorDialog {
         
         private Gtk.VBox vbox2;
