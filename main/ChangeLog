@@ -1,3 +1,8 @@
+2009-10-19  Mike Kestner  <mkestner@novell.com>
+
+	* monodevelop.pc.in: add AddinsPath variable to discover where
+	third party addins need to be installed.
+
 2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Main.sln: Re-enable autotools add-in. It's required for the
