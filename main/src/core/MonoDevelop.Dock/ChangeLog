@@ -1,3 +1,8 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Dock.csproj: Reference the mono-cairo package.
+
 2009-10-16  Mike Krüger  <mkrueger@novell.com>
 
 	* DockItemContainer.cs: Handled icon loading error.
