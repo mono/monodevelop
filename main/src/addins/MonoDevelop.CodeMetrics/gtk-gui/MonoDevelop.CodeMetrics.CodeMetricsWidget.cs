@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.CodeMetrics {
     
-    
     public partial class CodeMetricsWidget {
         
         private Gtk.VBox vbox1;

@@ -1,3 +1,10 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.CodeMetrics.csproj:
+	* gtk-gui/MonoDevelop.CodeMetrics.CodeMetricsWidget.cs: Flush.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
