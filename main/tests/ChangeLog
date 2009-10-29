@@ -1,3 +1,7 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* test-projects/console-project/ConsoleProject.sln: Flush.
+
 2009-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* test-projects/project-ref-with-spaces:

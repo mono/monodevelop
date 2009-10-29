@@ -38,6 +38,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
-  <Target Name="Build"/>
-  <Target Name="Clean"/>
+  <Target Name="Build" />
+  <Target Name="Clean" />
 </Project>
