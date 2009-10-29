@@ -147,28 +147,32 @@ namespace MonoDevelop.Projects.Dom
 			this.OriginalMethod = originalMethod;
 		}
 		
-		public ExtensionMethod (IType extenisonType, IMethod originalMethod, IList<IReturnType> genericArguments, IEnumerable<IReturnType> methodArguments)
+		public ExtensionMethod (IType extensionType, IMethod originalMethod, IList<IReturnType> genericArguments, IEnumerable<IReturnType> methodArguments)
 		{
-			this.DeclaringType = extenisonType;
+			if (extensionType == null)
+				throw new ArgumentNullException ("extensionType");
+			if (originalMethod == null)
+				throw new ArgumentNullException ("originalMethod");
+			this.DeclaringType = extensionType;
 			List<IReturnType> args = new List<IReturnType> ();
-			if (extenisonType.FullName.EndsWith ("[]")) {
-				foreach (IReturnType returnType in extenisonType.BaseTypes) {
+			if (extensionType.FullName.EndsWith ("[]")) {
+				foreach (IReturnType returnType in extensionType.BaseTypes) {
 					if (returnType.FullName == "System.Collections.Generic.IList" && returnType.GenericArguments.Count > 0) {
 						args.Add (returnType.GenericArguments[0]);
 						break;
 					}
 				}
 				if (args.Count == 0)
-					args.Add (new DomReturnType (extenisonType));
-			} else if (extenisonType is InstantiatedType) {
-				InstantiatedType instType = (InstantiatedType)extenisonType;
+					args.Add (new DomReturnType (extensionType));
+			} else if (extensionType is InstantiatedType) {
+				InstantiatedType instType = (InstantiatedType)extensionType;
 				DomReturnType uninstantiatedReturnType = new DomReturnType (instType.UninstantiatedType.FullName);
 				foreach (IReturnType genArg in instType.GenericParameters) {
 					uninstantiatedReturnType.AddTypeParameter (genArg);
 				}
 				args.Add (uninstantiatedReturnType);
 			} else {
-				args.Add (new DomReturnType (extenisonType));
+				args.Add (new DomReturnType (extensionType));
 			}
 			if (methodArguments != null)
 				args.AddRange (methodArguments);
@@ -185,7 +189,7 @@ namespace MonoDevelop.Projects.Dom
 				AddTypeParameter (par);
 			}
 				
-			this.ExtensionType  = extenisonType;
+			this.ExtensionType  = extensionType;
 			this.OriginalMethod = originalMethod;
 			//Console.WriteLine (this);
 			//Console.WriteLine ("oOoOoOoOoOoOoOoOoOoOoOoOoOoO");
