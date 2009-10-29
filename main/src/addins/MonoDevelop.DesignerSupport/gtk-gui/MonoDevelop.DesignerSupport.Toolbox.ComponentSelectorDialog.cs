@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.DesignerSupport.Toolbox {
     
-    
     internal partial class ComponentSelectorDialog {
         
         private Gtk.VBox vbox2;
@@ -88,11 +87,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox {
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w6 = new Gtk.HBox();
             w6.Spacing = 2;
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w7 = new Gtk.Image();
             w7.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-add", Gtk.IconSize.Menu, 16);
             w6.Add(w7);
-            // Container child GtkHBox1.Gtk.Container+ContainerChild
+            // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w9 = new Gtk.Label();
             w9.LabelProp = Mono.Unix.Catalog.GetString("Add Assembly...");
             w9.UseUnderline = true;

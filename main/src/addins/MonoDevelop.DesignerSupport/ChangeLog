@@ -1,3 +1,13 @@
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.DesignerSupport.csproj: Reference mono-cairo
+	  package.
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs:
+	  Flush.
+
 2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
