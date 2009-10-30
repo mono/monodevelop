@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Refactoring.ExtractMethod
 {
@@ -107,12 +108,18 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			}
 		}
 		
+		public Location MemberLocation {
+			get;
+			set;
+		}
+		
 		IResolver resolver;
 		DomLocation position;
 		public VariableLookupVisitor (IResolver resolver, DomLocation position)
 		{
 			this.resolver = resolver;
 			this.position = position;
+			this.MemberLocation = Location.Empty;
 		}
 		
 		static IReturnType ConvertTypeReference (TypeReference typeRef)
@@ -229,6 +236,26 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			
 			return result;
 		}
-
+		
+		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
+		{
+			if (!MemberLocation.IsEmpty && methodDeclaration.StartLocation.Line != MemberLocation.Line)
+				return null;
+			return base.VisitMethodDeclaration (methodDeclaration, data);
+		}
+		
+		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
+		{
+			if (!MemberLocation.IsEmpty && propertyDeclaration.StartLocation.Line != MemberLocation.Line)
+				return null;
+			return base.VisitPropertyDeclaration (propertyDeclaration, data);
+		}
+		
+		public override object VisitEventDeclaration (EventDeclaration eventDeclaration, object data)
+		{
+			if (!MemberLocation.IsEmpty && eventDeclaration.StartLocation.Line != MemberLocation.Line)
+				return null;
+			return base.VisitEventDeclaration (eventDeclaration, data);
+		}
 	}
 }

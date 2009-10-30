@@ -149,6 +149,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			LineSegment lineSegment;
 			ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (data.Document.Text);
 			MonoDevelop.Refactoring.ExtractMethod.VariableLookupVisitor visitor = new MonoDevelop.Refactoring.ExtractMethod.VariableLookupVisitor (resolver, new DomLocation (data.Caret.Line + 1, data.Caret.Column + 1));
+			visitor.MemberLocation = new Location (options.ResolveResult.CallingMember.Location.Column, options.ResolveResult.CallingMember.Location.Line);
 			unit.AcceptVisitor (visitor, null);
 			
 			if (data.IsSomethingSelected) {

@@ -1,3 +1,11 @@
+2009-10-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  declare local/extract method is now much faster on large
+	  files.
+
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:
