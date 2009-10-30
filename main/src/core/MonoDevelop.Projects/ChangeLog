@@ -1,3 +1,9 @@
+2009-10-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: Fixed
+	  'Bug 550928 - Parameters tooltip shows too much
+	  documentation'.
+
 2009-10-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Added type nucc

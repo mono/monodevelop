@@ -409,10 +409,14 @@ namespace MonoDevelop.Projects.Dom.Output
 								summaryEnd = ret.Length;
 							break;
 						case "remarks":
-							ret.AppendLine (options.FormatHeading ("Remarks:"));
-							ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
-							if (summaryEnd < 0)
-								summaryEnd = ret.Length;
+							if (string.IsNullOrEmpty (options.HighlightParameter)) {
+								ret.AppendLine (options.FormatHeading ("Remarks:"));
+								ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
+								if (summaryEnd < 0)
+									summaryEnd = ret.Length;
+							} else {
+								options.FormatBody (ParseBody (xml, xml.Name, options));
+							}
 							break;
 						// skip <example>-nodes
 						case "example":
@@ -433,8 +437,12 @@ namespace MonoDevelop.Projects.Dom.Output
 							exceptions.AppendLine (options.FormatBody (ParseBody (xml, xml.Name, options)));
 							break;
 						case "returns":
-							ret.AppendLine (options.FormatHeading ("Returns:"));
-							ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
+							if (string.IsNullOrEmpty (options.HighlightParameter)) {
+								ret.AppendLine (options.FormatHeading ("Returns:"));
+								ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
+							} else {
+								options.FormatBody (ParseBody (xml, xml.Name, options));
+							}
 							break;
 						case "param":
 							paramCount++;
@@ -457,8 +465,10 @@ namespace MonoDevelop.Projects.Dom.Output
 							ret.AppendLine (options.FormatBody (ParseBody (xml, xml.Name, options)));
 							break;
 						case "seealso":
-							ret.Append (options.FormatHeading ("See also:"));
-							ret.Append (" " + EscapeText (GetCref (xml["cref"]) + xml["langword"]));
+							if (string.IsNullOrEmpty (options.HighlightParameter)) {
+								ret.Append (options.FormatHeading ("See also:"));
+								ret.Append (" " + EscapeText (GetCref (xml["cref"]) + xml["langword"]));
+							}
 							break;
 						}
 					}
@@ -470,7 +480,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 			if (IsEmptyDocumentation (ret.ToString ()))
 				return null;
-			if (exceptionCount > 0)
+			if (string.IsNullOrEmpty (options.HighlightParameter) && exceptionCount > 0)
 				ret.Append (exceptions.ToString ());
 			
 			string result = ret.ToString ();
