@@ -33,6 +33,7 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
@@ -245,7 +246,7 @@ namespace MonoDevelop.VBNetBinding {
 			writer.Close();
 			
 			string output = "";
-			string compilerName = "vbnc";
+			string compilerName = configuration.TargetRuntime.GetToolPath (configuration.TargetFramework, "vbc");
 			string outstr = String.Concat (compilerName, " @", responseFileName);
 			
 			
@@ -254,8 +255,10 @@ namespace MonoDevelop.VBNetBinding {
 				workingDir = configuration.ParentItem.BaseDirectory;
 			int exitCode;
 			
-			monitor.Log.WriteLine (compilerName + " " + string.Join (" ", File.ReadAllLines (responseFileName)));
-			exitCode = DoCompilation (outstr, tf, workingDir, ref output);
+			Dictionary<string,string> envVars = configuration.TargetRuntime.GetToolsEnvironmentVariables (configuration.TargetFramework);
+			
+			monitor.Log.WriteLine (Path.GetFileName (compilerName) + " " + string.Join (" ", File.ReadAllLines (responseFileName)));
+			exitCode = DoCompilation (outstr, tf, workingDir, envVars, ref output);
 			
 			monitor.Log.WriteLine (output);			                                                          
 			BuildResult result = ParseOutput (tf, output);
@@ -355,13 +358,28 @@ namespace MonoDevelop.VBNetBinding {
 			return null;
 		}
 		
-		private int DoCompilation (string outstr, TempFileCollection tf, string working_dir, ref string output)
+		private int DoCompilation (string outstr, TempFileCollection tf, string working_dir, Dictionary<string,string> envVars, ref string output)
 		{
 			StringWriter outwr = new StringWriter ();
 			string[] tokens = outstr.Split (' ');			
 			try {
 				outstr = outstr.Substring (tokens[0].Length+1);
-				ProcessWrapper pw = Runtime.ProcessService.StartProcess (tokens[0], "\"" + outstr + "\"", working_dir, outwr, outwr, null);
+				
+				ProcessStartInfo pinfo = new ProcessStartInfo (tokens[0], "\"" + outstr + "\"");
+				pinfo.WorkingDirectory = working_dir;
+				
+				foreach (KeyValuePair<string,string> ev in envVars) {
+					if (ev.Value == null)
+						pinfo.EnvironmentVariables.Remove (ev.Key);
+					else
+						pinfo.EnvironmentVariables [ev.Key] = ev.Value;
+				}
+			
+				pinfo.UseShellExecute = false;
+				pinfo.RedirectStandardOutput = true;
+				pinfo.RedirectStandardError = true;
+				
+				ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, outwr, null);
 				pw.WaitForOutput ();
 				output = outwr.ToString ();
 				
