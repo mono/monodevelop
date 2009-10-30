@@ -36,6 +36,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNet.Gui;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Moonlight
 {
@@ -106,7 +107,8 @@ namespace MonoDevelop.Moonlight
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
-			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) base.CreateConfiguration (name);
+			var conf = new MoonlightProjectConfiguration ();
+			conf.CopyFrom (base.CreateConfiguration (name));
 			//TODO add environment variable conf.CompilationParameters			
 			return conf;
 		}
@@ -130,27 +132,26 @@ namespace MonoDevelop.Moonlight
 			get { return true; }
 		}
 		
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string configuration)
+		ExecutionCommand CreateExecutionCommand (MoonlightProjectConfiguration configuration)
 		{
-			return silverlightApplication && (!String.IsNullOrEmpty (startPageUrl) || this.CreateTestPage);
+			string url = GetUrl (configuration);
+			if (url != null)
+				return new MoonlightExecutionCommand (url);
+			return null;
 		}
 		
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		string GetUrl (MoonlightProjectConfiguration config)
 		{
-			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetActiveConfiguration (configuration);
+			if (!this.SilverlightApplication || config == null)
+				return null;
 			
-			string url = startPageUrl;
+			string url = this.StartPageUrl;
 			
-			if (String.IsNullOrEmpty (startPageUrl) && this.CreateTestPage) {
+			if (string.IsNullOrEmpty (url) && this.CreateTestPage) {
 				string testPage = this.TestPageFileName;
 				if (String.IsNullOrEmpty (testPage))
 					testPage = "TestPage.html";
-				testPage = Path.Combine (config.OutputDirectory, testPage);
-				if (!File.Exists (testPage)) {
-					monitor.ReportError (GettextCatalog.GetString ("Could not find test HTML file '{0}'.", testPage), null);
-					return;
-				}
-				url = testPage;
+				url = Path.Combine (config.OutputDirectory, testPage);
 			}
 			
 			if (!url.StartsWith ("http://", StringComparison.OrdinalIgnoreCase)
@@ -159,13 +160,24 @@ namespace MonoDevelop.Moonlight
 				url = "file://" + url.Replace (Path.PathSeparator, '/');
 			}
 			
-			using (AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor)) {
-				//launch web browser
-				IAsyncOperation browserLauncher = BrowserLauncher.LaunchWhenReady (url);
-				operationMonitor.AddOperation (browserLauncher);
-				browserLauncher.WaitForCompleted ();
-				if (!browserLauncher.Success)
-					monitor.ReportError (GettextCatalog.GetString ("Failed to open test page in browser."), null);
+			return url;
+		}
+		
+		protected override bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
+		{
+			var conf = GetActiveConfiguration (solutionConfiguration);
+			return context.ExecutionHandler.CanExecute (CreateExecutionCommand ((MoonlightProjectConfiguration) conf));
+		}
+		
+		// do this directly instead of relying on the commands handler
+		// to stop MD from opening an output pad
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		{
+			var conf = (MoonlightProjectConfiguration) GetActiveConfiguration (configuration);
+			var cmd = CreateExecutionCommand (conf);
+			using (var opMon = new AggregatedOperationMonitor (monitor)) {
+				var ex = context.ExecutionHandler.Execute (cmd, null);
+				opMon.AddOperation (ex);
 			}
 		}
 		

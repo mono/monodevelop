@@ -1,3 +1,9 @@
+2009-10-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/BrowserLauncher.cs: Fake a
+	  IProcessAsyncOperation so that is can be returned from an
+	  execution handler.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

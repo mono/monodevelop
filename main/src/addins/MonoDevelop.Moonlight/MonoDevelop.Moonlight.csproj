@@ -147,6 +147,8 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Moonlight\MoonlightBuildExtension.cs" />
     <Compile Include="MonoDevelop.Moonlight\SilverlightFrameworkBackend.cs" />
+    <Compile Include="MonoDevelop.Moonlight\MoonlightExecutionCommand.cs" />
+    <Compile Include="MonoDevelop.Moonlight\MoonlightExecutionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

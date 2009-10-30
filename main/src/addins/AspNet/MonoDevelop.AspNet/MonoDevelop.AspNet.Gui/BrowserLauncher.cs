@@ -30,6 +30,7 @@ using System;
 using System.Threading;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -55,7 +56,7 @@ namespace MonoDevelop.AspNet.Gui
 	
 	public delegate void BrowserLaunchHandler (string url);
 	
-	public class BrowserLauncherOperation : IAsyncOperation 
+	public class BrowserLauncherOperation : IProcessAsyncOperation 
 	{
 		bool completed;
 		bool successful;
@@ -154,6 +155,18 @@ namespace MonoDevelop.AspNet.Gui
 			if (launcherThread != null && launcherThread.IsAlive)
 				launcherThread.Join ();
 		}
+		
+		#region IProcessAsyncOperation implementation
+		
+		int IProcessAsyncOperation.ExitCode {
+			get { return 0; }
+		}
+		
+		int IProcessAsyncOperation.ProcessId {
+			get { return 0; }
+		}
+		
+		#endregion
 		
 		public event OperationHandler Completed {
 			add {

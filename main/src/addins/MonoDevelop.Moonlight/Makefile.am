@@ -30,6 +30,8 @@ FILES =  \
 	MonoDevelop.Moonlight.Gui/MoonlightOptionsPanelWidget.cs \
 	MonoDevelop.Moonlight/MoonlightBuildExtension.cs \
 	MonoDevelop.Moonlight/MoonlightEditorExtension.cs \
+	MonoDevelop.Moonlight/MoonlightExecutionCommand.cs \
+	MonoDevelop.Moonlight/MoonlightExecutionHandler.cs \
 	MonoDevelop.Moonlight/MoonlightParser.cs \
 	MonoDevelop.Moonlight/MoonlightProject.cs \
 	MonoDevelop.Moonlight/MoonlightProjectBinding.cs \

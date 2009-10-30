@@ -1,3 +1,15 @@
+2009-10-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.csproj:
+	* MonoDevelop.Moonlight.addin.xml:
+	* MonoDevelop.Moonlight/MoonlightProject.cs:
+	* MonoDevelop.Moonlight/MoonlightExecutionCommand.cs:
+	* MonoDevelop.Moonlight/MoonlightExecutionHandler.cs:
+	* MonoDevelop.Moonlight/MoonlightProjectConfiguration.cs: Use
+	  an execution handler so that the debugger command doesn't
+	  get enabled.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

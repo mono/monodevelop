@@ -40,5 +40,9 @@ namespace MonoDevelop.Moonlight
 		public MoonlightProjectConfiguration ()
 		{
 		}
+		
+		public MoonlightProjectConfiguration (string name) : base (name)
+		{
+		}
 	}
 }

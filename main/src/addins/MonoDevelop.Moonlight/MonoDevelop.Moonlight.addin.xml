@@ -90,4 +90,8 @@
 			<Backend class="MonoDevelop.Moonlight.SilverlightFrameworkBackend" />
 		</Framework>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
+		<ExecutionHandler id="Moonlight" class = "MonoDevelop.Moonlight.MoonlightExecutionHandler"/>
+	</Extension>
 </Addin>
