@@ -1,3 +1,12 @@
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Deployment\DefaultDeployServiceExtension.cs:
+	  When targetting MS.NET, deploy .pdb files instead of .mdb.
+
+	* MonoDevelop.Deployment.Gui\DialogFileReplacePolicy.cs: Use
+	  better method for making a sync call in the gui thread.
+	  Fixes bug #550806.
+
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:
