@@ -127,13 +127,13 @@ namespace MonoDevelop.Projects.Dom
                 if (res == 0) {
                     res = Parameters.Count.CompareTo(prop.Parameters.Count);
                     if (res == 0) {
-                        for (int i = 0; i < parameters.Count; i++) {
-                            if (parameters [i].ReturnType == null && prop.Parameters [i].ReturnType == null)
+                        for (int i = 0; i < Parameters.Count; i++) {
+                            if (Parameters [i].ReturnType == null && prop.Parameters [i].ReturnType == null)
                                 res = 0;
-                            else if ((res = (parameters [i].ReturnType != null).CompareTo (prop.Parameters [i].ReturnType == null)) == 0)
-                                res = parameters [i].ReturnType.FullName.CompareTo (prop.Parameters [i].ReturnType.FullName);
+                            else if ((res = (Parameters [i].ReturnType != null).CompareTo (prop.Parameters [i].ReturnType == null)) == 0)
+                                res = Parameters [i].ReturnType.FullName.CompareTo (prop.Parameters [i].ReturnType.FullName);
                             if (res != 0) break;
-                            res = parameters [i].ParameterModifiers.CompareTo (prop.Parameters [i].ParameterModifiers);
+                            res = Parameters [i].ParameterModifiers.CompareTo (prop.Parameters [i].ParameterModifiers);
                             if (res != 0) break;
                         }
                         if (res == 0) {
@@ -154,7 +154,7 @@ namespace MonoDevelop.Projects.Dom
             if (prop == null) return false;
 
             if (prop.DeclaringType != DeclaringType ||
-                prop.Parameters.Count != parameters.Count ||
+                prop.Parameters.Count != Parameters.Count ||
                 prop.ReturnType != ReturnType ||
                 prop.FullName != FullName)
                 return false;
@@ -172,7 +172,7 @@ namespace MonoDevelop.Projects.Dom
 
         public override int GetHashCode ()
         {
-            return base.GetHashCode () ^ (parameters.Count << 8);
+            return base.GetHashCode () ^ (Parameters.Count << 8);
         }
 		
 		public DomProperty (string name)
