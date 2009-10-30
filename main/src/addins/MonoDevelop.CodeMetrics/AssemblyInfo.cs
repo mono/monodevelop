@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Code Metrics")]
 [assembly: AssemblyDescription ("Provides code metric support for monodevelop")]
-[assembly: AssemblyVersion ("2.1.1")]
+[assembly: AssemblyVersion ("2.2")]
 [assembly: AssemblyCopyright ("X11")]

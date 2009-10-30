@@ -6,7 +6,7 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
 	category    = "Database"
-	version		= "2.1.1">
+	version		= "2.2">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.Firebird.dll"/>
@@ -15,7 +15,7 @@
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
 	
 	<Dependencies>
-		<Addin id="MonoDevelop.Database.Sql" version="2.1.1"/>
+		<Addin id="MonoDevelop.Database.Sql" version="2.2"/>
 	</Dependencies>
 
 	<Extension path = "/Mono/Data/Sql">

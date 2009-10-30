@@ -1,5 +1,10 @@
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelop.Core.addin.xml: Bump MD version.
+
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* frameworks/framework_NET_4_0.xml:
 	* frameworks/framework_NET_2_0.xml:
 	* frameworks/framework_NET_1_1.xml: Exclude mono-cairo from

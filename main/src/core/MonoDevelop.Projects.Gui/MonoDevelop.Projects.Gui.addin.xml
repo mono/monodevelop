@@ -6,7 +6,7 @@
        description = "Provides GUI resources for managing MonoDevelop projects"
 	   category    = "MonoDevelop Core"
 	   isroot      = "true"
-       version     = "2.1.1">
+       version     = "2.2">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Projects.Gui.dll"/>

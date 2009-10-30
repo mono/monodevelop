@@ -1,3 +1,8 @@
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MacPlatform.addin.xml: Bump MD version.
+
 2009-10-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Menus/OSXMenu.cs: Oops, fix menu item index. With last few

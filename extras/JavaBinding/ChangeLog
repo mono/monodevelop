@@ -1,3 +1,9 @@
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure:
+	* AssemblyInfo.cs:
+	* JavaBinding.addin.xml: Bump MD version.
+
 2009-10-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* JavaBinding.sln:

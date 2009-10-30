@@ -1,3 +1,8 @@
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Database.Query.addin.xml: Bump MD version.
+
 2009-10-29  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* SqlQueryView.cs: Fix tooltip messages.

@@ -1,3 +1,7 @@
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.Win32.addin.xml: Bump MD version.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CorDebuggerEngine.cs:

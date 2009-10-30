@@ -1,3 +1,7 @@
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure: Bump MD version.
+
 2009-10-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger.Soft.sln:

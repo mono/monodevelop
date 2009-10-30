@@ -1,3 +1,8 @@
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* Manifest.addin.xml: Bump MD version.
+
 2009-10-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerEngine.cs: Disable sdb for Mono 2.4/2.5/2.6.

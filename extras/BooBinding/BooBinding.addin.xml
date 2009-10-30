@@ -6,7 +6,7 @@
        url         = "http://boo.codehaus.org"
        description = "Boo Language Binding"
 	   category    = "Language bindings"
-       version     = "2.1.1">
+       version     = "2.2">
 
   <Runtime>
     <Import assembly = "BooBinding.dll"/>
@@ -16,11 +16,11 @@
   <Localizer type="Gettext" catalog="monodevelop-boo"/>
   
   <Dependencies>
-    <Addin id="Core" version="2.1.1"/>
-    <Addin id="Core.Gui" version="2.1.1"/>
-    <Addin id="Projects" version="2.1.1"/>
-    <Addin id="Projects.Gui" version="2.1.1"/>
-    <Addin id="Ide" version="2.1.1"/>
+    <Addin id="Core" version="2.2"/>
+    <Addin id="Core.Gui" version="2.2"/>
+    <Addin id="Projects" version="2.2"/>
+    <Addin id="Projects.Gui" version="2.2"/>
+    <Addin id="Ide" version="2.2"/>
     <Assembly name="Boo.Lang.Compiler, Version=1.0.0.0" package="Boo" />
   </Dependencies>
 

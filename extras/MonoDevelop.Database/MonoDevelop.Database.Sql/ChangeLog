@@ -1,3 +1,8 @@
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Database.Sql.addin.xml: Bump MD version.
+
 2009-10-22  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* Configuration/DatabaseConnectionSettings.cs: Implement Use
