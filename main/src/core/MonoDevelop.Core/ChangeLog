@@ -1,5 +1,12 @@
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* frameworks/framework_NET_4_0.xml:
+	* frameworks/framework_NET_2_0.xml:
+	* frameworks/framework_NET_1_1.xml: Exclude mono-cairo from
+	  the framework list.
+
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies\MonoFrameworkBackend.cs:
 	  Properly resolve the vb compiler for Mono.
 

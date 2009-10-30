@@ -35,7 +35,6 @@
   <Assembly name="Mono.Security" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.WebBrowser" version="0.5.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.CompilerServices.SymbolWriter" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
-  <Assembly name="Mono.Cairo" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Http" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Mozilla" />
   <Assembly name="Mono.Security.Win32" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
