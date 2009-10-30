@@ -1,3 +1,9 @@
+2009-10-30  Carlo Kok  <ck@remobjects.com>
+
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/DomProperty.cs: CompareTo and Equals
+	  on properties and methods take in account the parameters.
+
 2009-10-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed

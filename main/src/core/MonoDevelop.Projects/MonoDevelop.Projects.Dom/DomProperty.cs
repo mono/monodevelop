@@ -121,10 +121,59 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (obj is IMethod)
 				return 1;
-			if (obj is IProperty)
-				return Name.CompareTo (((IProperty)obj).Name);
+            if (obj is IProperty) {
+                IProperty prop = (IProperty) obj;
+                int res = Name.CompareTo (prop.Name);
+                if (res == 0) {
+                    res = Parameters.Count.CompareTo(prop.Parameters.Count);
+                    if (res == 0) {
+                        for (int i = 0; i < parameters.Count; i++) {
+                            if (parameters [i].ReturnType == null && prop.Parameters [i].ReturnType == null)
+                                res = 0;
+                            else if ((res = (parameters [i].ReturnType != null).CompareTo (prop.Parameters [i].ReturnType == null)) == 0)
+                                res = parameters [i].ReturnType.FullName.CompareTo (prop.Parameters [i].ReturnType.FullName);
+                            if (res != 0) break;
+                            res = parameters [i].ParameterModifiers.CompareTo (prop.Parameters [i].ParameterModifiers);
+                            if (res != 0) break;
+                        }
+                        if (res == 0) {
+                            if (ReturnType == null && prop.ReturnType == null)
+                                res = 0;
+                            else if ((res = (ReturnType != null).CompareTo (prop.ReturnType == null)) == 0)
+                                res = ReturnType.FullName.CompareTo (prop.ReturnType.FullName);
+                        }
+                    }
+                }
+            }
 			return -1;
 		}
+
+        public override bool Equals (object obj)
+        {
+            IProperty prop = obj as IProperty;
+            if (prop == null) return false;
+
+            if (prop.DeclaringType != DeclaringType ||
+                prop.Parameters.Count != parameters.Count ||
+                prop.ReturnType != ReturnType ||
+                prop.FullName != FullName)
+                return false;
+
+            for (int i = 0; i < prop.Parameters.Count; i++) {
+                IParameter mpar = prop.Parameters [i];
+                IParameter par = Parameters [i];
+                if (par.ParameterModifiers != mpar.ParameterModifiers ||
+                    par.ReturnType != mpar.ReturnType)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode ()
+        {
+            return base.GetHashCode () ^ (parameters.Count << 8);
+        }
 		
 		public DomProperty (string name)
 		{

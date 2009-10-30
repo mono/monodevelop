@@ -412,13 +412,64 @@ namespace MonoDevelop.Projects.Dom
 			}
 			return null;
 		}
-		
 
+        public override bool Equals (object obj)
+        {
+            IMethod meth = obj as IMethod;
+            if (meth == null) return false;
+
+            if (meth.DeclaringType != DeclaringType ||
+                meth.TypeParameters.Count != TypeParameters.Count ||
+                meth.Parameters.Count != parameters.Count ||
+                meth.ReturnType != ReturnType ||
+                meth.FullName != FullName)
+                return false;
+
+            for (int i = 0; i < meth.Parameters.Count; i++) {
+                IParameter mpar = meth.Parameters [i];
+                IParameter par = Parameters [i];
+                if (par.ParameterModifiers != mpar.ParameterModifiers ||
+                    par.ReturnType != mpar.ReturnType)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode ()
+        {
+            return base.GetHashCode () ^ (parameters.Count << 8) ^ (TypeParameters.Count << 16);
+        }
 		
 		public override int CompareTo (object obj)
 		{
-			if (obj is IMethod)
-				return Name.CompareTo (((IMethod)obj).Name);
+            if (obj is IMethod) {
+                IMethod meth = (IMethod) obj;
+                int res = Name.CompareTo (meth.Name);
+                if (res == 0) {
+                    res = TypeParameters.Count.CompareTo (meth.TypeParameters.Count);
+                    if (res == 0) {
+                        res = Parameters.Count.CompareTo (meth.Parameters.Count);
+                        if (res == 0) {
+                            for (int i = 0; i < parameters.Count; i++) {
+                                if (parameters[i].ReturnType == null && meth.Parameters[i].ReturnType == null)
+                                    res = 0;
+                                else if ((res = (parameters [i].ReturnType != null).CompareTo (meth.Parameters [i].ReturnType == null)) == 0)
+                                    res = parameters [i].ReturnType.FullName.CompareTo (meth.Parameters [i].ReturnType.FullName);
+                                if (res != 0) break;
+                                res = parameters [i].ParameterModifiers.CompareTo (meth.Parameters [i].ParameterModifiers);
+                                if (res != 0) break;
+                            }
+                            if (res == 0) {
+                                if (ReturnType == null && meth.ReturnType == null)
+                                    res = 0;
+                                else if ((res = (ReturnType != null).CompareTo (meth.ReturnType == null)) == 0)
+                                    res = ReturnType.FullName.CompareTo (meth.ReturnType.FullName);
+                            }
+                        }
+                    }
+                }
+            }
 			return -1;
 		}
 		
