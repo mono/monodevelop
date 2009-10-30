@@ -82,8 +82,13 @@
               <!-- Program Menu Shortcut -->
               <RemoveFolder Id='ProgramMenuDir' Directory="ProgramMenuDir" On='uninstall' />
 				
-			  <!-- GTK# path -->
-			  <RegistryValue Root='HKLM' Key='SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\MonoDevelop.exe' Type='string' Name='Path' Value='[GTKSHARPPATH]\bin' />
+              <!-- GTK# path -->
+              <RegistryValue Root='HKLM' Key='SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\MonoDevelop.exe' Type='string' Name='Path' Value='[GTKSHARPPATH]\bin' />
+
+              <!-- Place MD path into registry -->
+              <RegistryValue Root='HKLM' Key='SOFTWARE\Novell\MonoDevelop' Type='string' Name='Version' Value='$(var.ProductVersion)' />
+              <RegistryValue Root='HKLM' Key='SOFTWARE\Novell\MonoDevelop' Type='string' Name='Path' Value='[INSTALLLOCATION]' />
+
             </Component>
 
             <Directory Id="dir196" Name="locale">
