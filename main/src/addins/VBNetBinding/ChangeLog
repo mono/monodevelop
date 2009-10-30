@@ -1,5 +1,13 @@
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* templates/AssemblyInfo.xft.xml: Fix template so that it
+	  works with MS.NET.
+
+	* VBBindingCompilerServices.cs: Improve error message when the
+	  compiler is not found.
+
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* VBBindingCompilerServices.cs: Locate the correct compiler
 	  and set the required env vars for the target runtime object.
 
