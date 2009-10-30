@@ -1,5 +1,9 @@
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* VBBindingCompilerServices.cs: Trim file name.
+
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* templates\VBGtkSharp2Project.xpt.xml: Add missing reference
 	  (vbc requires it).
 

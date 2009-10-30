@@ -349,7 +349,7 @@ namespace MonoDevelop.VBNetBinding {
 				error.IsWarning = match.Result ("${level}").ToLowerInvariant () == "warning";
 				error.ErrorNumber = match.Result("${number}");
 				error.ErrorText = match.Result("${message}");
-				error.FileName = match.Result ("${file}");
+				error.FileName = match.Result ("${file}").Trim ();
 				if (int.TryParse (match.Result ("${line}"), out i))
 					error.Line = i;
 				if (int.TryParse (match.Result ("${column}"), out i))
