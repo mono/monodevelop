@@ -7,7 +7,6 @@
       <ComponentRef Id="C_SSVNLICENSE_Apr" />
       <ComponentRef Id="C_SSVNLICENSE_BerkeleyDB" />
       <ComponentRef Id="C_SSVNLICENSE_Cyrus_Sasl"/>
-      <ComponentRef Id="C_SSVNLICENSE_Expat" />
       <ComponentRef Id="C_SSVNLICENSE_Neon" />
       <ComponentRef Id="C_SSVNLICENSE_OpenSsl" />
       <ComponentRef Id="C_SSVNLICENSE_Serf" />
@@ -40,9 +39,6 @@
       <Component Id="C_SSVNLICENSE_Cyrus_Sasl" Guid="A14954AB-3D8E-499A-80A9-D74407844058">
         <File Id="CF_SSVNLICENSE_Cyrus_Sasl" Name="Cyrus-Sasl-License.txt" Vital="yes" KeyPath="yes"/>
       </Component>
-      <Component Id="C_SSVNLICENSE_Expat" Guid="D7F4D2ED-F428-4030-918C-3B1109A8F44E">
-        <File Id="CF_SSVNLICENSE_Expat" Name="Expat-License.txt" Vital="yes" KeyPath="yes"/>
-      </Component>
       <Component Id="C_SSVNLICENSE_Neon" Guid="EF33BA74-B1AF-4B14-A3AB-245CC0AEC39F">
         <File Id="CF_SSVNLICENSE_Neon" Name="Neon-License.txt" Vital="yes" KeyPath="yes"/>
       </Component>
@@ -56,7 +52,7 @@
         <File Id="CF_SSVNLICENSE_SharpSvn" Name="SharpSvn-License.txt" Vital="yes" KeyPath="yes"/>
       </Component>
       <Component Id="C_SSVNLICENSE_Subversion" Guid="F54C1220-3835-4262-9193-FDC31055BD95">
-        <File Id="C_SSVNLICENSE_Subversion" Name="Subversion-License.txt" Vital="yes" KeyPath="yes"/>
+        <File Id="CF_SSVNLICENSE_Subversion" Name="Subversion-License.txt" Vital="yes" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
   </Fragment>
@@ -70,7 +66,7 @@
   <Fragment>
     <DirectoryRef Id="DIR_SharpSvnLicenses" FileSource="$(sys.SOURCEFILEDIR)">
       <Component Id="C_SSVNLICENSE_GetTextRuntime" Guid="247F2A80-E402-4395-9165-F2479E5689C9">
-        <File Id="C_SSVNLICENSE_GetTextRuntime" Name="GetText-Runtime-License.txt" Vital="yes" KeyPath="yes"/>
+        <File Id="CF_SSVNLICENSE_GetTextRuntime" Name="GetText-Runtime-License.txt" Vital="yes" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
   </Fragment>
