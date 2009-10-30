@@ -109,8 +109,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public virtual IMember AddMember (RefactorerContext ctx, IType cls, CodeTypeMember member)
 		{
 			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
-			// update class information,
-			cls = GetGeneratedClass (ctx, buffer, cls);
+			
 			int pos = GetNewMemberPosition (buffer, cls, member);
 			string code = GenerateCodeFromMember (member);
 			
@@ -813,13 +812,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 			// Don't get the class from the parse results because in that class the types are not resolved.
 			// Get the class from the database instead.
 			ParsedDocument doc = ProjectDomService.Parse (ctx.ParserContext.Project, buffer.Name, null, delegate () { return buffer.Text; });
-			IType result =  ctx.ParserContext.GetType (cls.FullName, cls.TypeParameters.Count, true, true);
+			IType result = ctx.ParserContext.GetType (cls.FullName, cls.TypeParameters.Count, true, true);
 			if (result is CompoundType) {
 				IType hintType = doc.CompilationUnit.GetType (cls.FullName, cls.TypeParameters.Count);
 				if (hintType != null)
 					((CompoundType)result).SetMainPart (buffer.Name, hintType.Location);
 			}
-			
 			return result;
 		}
 		
@@ -1080,7 +1078,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 			int i = pos;
 			while (i < buffer.Length) {
 				char ch = buffer.GetCharAt (i);
-				Console.WriteLine ("ch:" + (int)ch + ":"+ ch);
 				switch (ch) {
 				case '\n':
 					return i + 1;

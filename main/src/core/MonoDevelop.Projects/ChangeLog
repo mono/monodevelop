@@ -1,5 +1,11 @@
 2009-10-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed
+	  'Bug 551327 - Methods incorrectly formatted when adding a
+	  handler'.
+
+2009-10-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: Fixed
 	  'Bug 550928 - Parameters tooltip shows too much
 	  documentation'.
