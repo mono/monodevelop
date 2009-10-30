@@ -1,3 +1,8 @@
+2009-10-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs:
+	  Fixed 'Bug 551068 - Semantic highlighting crashes MD.'.
+
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:
