@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ParameterizedExecutionHandler handler = mode.ExecutionHandler as ParameterizedExecutionHandler;
 			if (handler != null) {
 				IExecutionConfigurationEditor e = handler.CreateEditor ();
-				currentEditors.Add (mode, handler.CreateEditor ());
+				currentEditors.Add (mode, e);
 				object cdata;
 				if (!oldData.TryGetValue (mode, out cdata))
 					cdata = data.Data;
