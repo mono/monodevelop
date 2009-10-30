@@ -1,3 +1,8 @@
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies\MonoFrameworkBackend.cs:
+	  Properly resolve the vb compiler for Mono.
+
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Serialization/ClassDataType.cs: Add missing

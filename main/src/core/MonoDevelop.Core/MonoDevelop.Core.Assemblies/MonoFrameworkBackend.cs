@@ -84,6 +84,8 @@ namespace MonoDevelop.Core.Assemblies
 				else if (framework.ClrVersion == ClrVersion.Net_4_0)
 					toolName = "dmcs";
 			}
+			else if (toolName == "vbc")
+				toolName = "vbnc";
 			else if (toolName == "resgen") {
 				if (framework.ClrVersion == ClrVersion.Net_1_1)
 					toolName = "resgen1";
