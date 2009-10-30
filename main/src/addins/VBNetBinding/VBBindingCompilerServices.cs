@@ -57,7 +57,7 @@ namespace MonoDevelop.VBNetBinding {
 		//matches "/home/path/Default.aspx.vb (40,31) : Error VBNC30205: Expected end of statement."
 		//and "Error : VBNC99999: vbnc crashed nearby this location in the source code."
 		//and "Error : VBNC99999: Unexpected error: Object reference not set to an instance of an object" 
-		static Regex regexError = new Regex (@"^\s*((?<file>.*) \((?<line>\d*),(?<column>\d*)\) : )?(?<level>\w+) :? ?(?<number>[^:]*): (?<message>.*)$",
+		static Regex regexError = new Regex (@"^\s*((?<file>.*)\s?\((?<line>\d*)(,(?<column>\d*))?\) : )?(?<level>\w+) :? ?(?<number>[^:]*): (?<message>.*)$",
 		                                     RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		
 		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, VBProjectParameters projectparameters, string outputFileName)
@@ -70,6 +70,7 @@ namespace MonoDevelop.VBNetBinding {
 			
 			sb.AppendLine ("-nologo");
 			sb.AppendLine ("-utf8output");
+			sb.AppendLine ("-quiet");
 
 			sb.AppendFormat ("-debug:{0}", compilerparameters.DebugType);
 			sb.AppendLine ();

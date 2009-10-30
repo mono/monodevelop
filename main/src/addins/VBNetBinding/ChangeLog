@@ -1,5 +1,14 @@
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* templates\VBGtkSharp2Project.xpt.xml: Add missing reference
+	  (vbc requires it).
+
+	* VBBindingCompilerServices.cs: Fixed error parsing regex so
+	  that it works for MS's vbc. Added -quiet parameter to remove
+	  unrequired output messages.
+
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* templates/AssemblyInfo.xft.xml: Fix template so that it
 	  works with MS.NET.
 
