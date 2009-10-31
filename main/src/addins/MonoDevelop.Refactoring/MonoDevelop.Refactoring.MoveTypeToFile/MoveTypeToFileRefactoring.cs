@@ -122,8 +122,8 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				removeDeclaration.Offset = start;
 				removeDeclaration.RemovedChars = length;
 				result.Add (removeDeclaration);
-
 			}
+			result.Add (new SaveProjectChange (options.Document.Project));
 			
 			return result;
 		}

@@ -1,3 +1,10 @@
+2009-10-31  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs:
+	  fixed 'Bug 551554 - interface rename does not sync project
+	  file'.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

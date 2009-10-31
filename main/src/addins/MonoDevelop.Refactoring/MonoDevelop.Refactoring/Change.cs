@@ -33,6 +33,7 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
+using MonoDevelop.Projects;
 
 
 namespace MonoDevelop.Refactoring
@@ -204,5 +205,26 @@ namespace MonoDevelop.Refactoring
 		{
 			FileService.RenameFile (OldName, NewName);
 		}
+	}
+	
+	public class SaveProjectChange : Change
+	{
+		public Project Project {
+			get;
+			set;
+		}
+		
+		public SaveProjectChange (Project project)
+		{
+			this.Project = project;
+			this.Description = string.Format (GettextCatalog.GetString ("Save project {0}"), project.Name);
+		}
+		
+		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
+		{
+			Console.WriteLine ("SAVE !!!!");
+			IdeApp.ProjectOperations.Save (this.Project);
+		}
+
 	}
 }
