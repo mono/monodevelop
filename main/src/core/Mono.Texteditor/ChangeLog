@@ -1,3 +1,9 @@
+2009-11-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/DashedLineMargin.cs: Fix "Bug 548035 -
+	  Dashed line down left margin is uneven" by rendering solid
+	  background before rendering dashes.
+
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
