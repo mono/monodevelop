@@ -232,7 +232,8 @@ namespace Mono.TextEditor
 			}
 			
 			if (convertTabToSpaces) {
-				int tabWidth = TextViewMargin.GetNextTabstop (data, data.Caret.Column) - data.Caret.Column;
+				DocumentLocation visualLocation = data.Document.LogicalToVisualLocation (data, data.Caret.Location);
+				int tabWidth = TextViewMargin.GetNextTabstop (data, visualLocation.Column) - visualLocation.Column;
 				indentationString = new string (' ', tabWidth);
 			}
 			int length = data.Insert (data.Caret.Offset, indentationString);

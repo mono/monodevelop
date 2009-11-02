@@ -1,3 +1,8 @@
+2009-11-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/DefaultEditActions.cs: fixed 'Bug 551674 -
+	  Tab key doesn't always create correct number of spaces'.
+
 2009-11-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/DashedLineMargin.cs: Fix "Bug 548035 -
