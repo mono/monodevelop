@@ -1,3 +1,8 @@
+2009-11-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Disable pulse on
+	  inserting matching brace.
+
 2009-11-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/DefaultEditActions.cs: fixed 'Bug 551674 -
