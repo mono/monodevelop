@@ -91,6 +91,19 @@ namespace MonoDevelop.Debugger.Soft
 			}
 		}
 		
+		protected void Connected (VirtualMachine vm)
+		{
+			if (this.vm != null)
+				throw new InvalidOperationException ("The VM has already connected");
+			
+			if (vm == null) {
+				MarkAsExited ();
+				return;
+			}
+			
+			
+		}
+		
 		protected virtual VirtualMachine LaunchVirtualMachine (DebuggerStartInfo startInfo, out bool startsSuspended)
 		{
 			startsSuspended = true;
