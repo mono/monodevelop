@@ -390,12 +390,17 @@ namespace MonoDevelop.Ide.Gui
 				layout.RemovePad (codon);
 		}
 		
-		public virtual void BringToFront (PadCodon content)
+		public void BringToFront (PadCodon content)
+		{
+			BringToFront (content, false);
+		}
+		
+		public virtual void BringToFront (PadCodon content, bool giveFocus)
 		{
 			if (!layout.IsVisible (content))
 				layout.ShowPad (content);
 
-			layout.ActivatePad (content, false);
+			layout.ActivatePad (content, giveFocus);
 		}
 		
 		public void RedrawAllComponents()
@@ -755,7 +760,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected override void Run ()
 		{
-			wb.BringToFront (pad);
+			wb.BringToFront (pad, true);
 		}
 	}
 }

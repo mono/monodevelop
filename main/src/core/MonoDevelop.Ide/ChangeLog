@@ -1,3 +1,9 @@
+2009-11-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: When activating a
+	  pad using a keyboard shortcut, set the focus to it. Fixes
+	  bug #544135.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
