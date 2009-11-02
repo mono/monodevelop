@@ -127,8 +127,6 @@ namespace MonoDevelop.IPhone
 						new CodeAttributeDeclaration ("MonoTouch.Foundation.Register",
 							new CodeAttributeArgument (new CodePrimitiveExpression (name))));
 					
-					AddWarningDisablePragmas (type, provider);
-					
 					//FIXME: implement proper base class resolution. I'm not sure where the info is - it might need some
 					// inference rules
 					
@@ -187,6 +185,9 @@ namespace MonoDevelop.IPhone
 						}	
 					}
 					
+					if (type.Members.Count == 0)
+						AddWarningDisablePragmas (type, provider);
+					
 					//create the action method and add it
 					StringWriter actionStubWriter = null;
 					GenerateAction (type, actionGroup.Key, senderType, provider, generatorOptions, ref actionStubWriter);
@@ -202,6 +203,8 @@ namespace MonoDevelop.IPhone
 					var widget = ResolveIfReference (outlet.Destination.Reference) as IBObject;
 					outletType = new CodeTypeReference (GetTypeName (customTypeNames, widget) ?? "System.Object");
 					
+					if (type.Members.Count == 0)
+						AddWarningDisablePragmas (type, provider);
 					type.Members.Add (CreateOutletProperty (outlet.Label, outletType));
 				}
 			}
