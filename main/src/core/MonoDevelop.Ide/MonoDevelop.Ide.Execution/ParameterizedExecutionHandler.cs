@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Execution
 		
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			return InternalExecute (new CommandExecutionContext (null, command), null, command, console);
+			return InternalExecute (new CommandExecutionContext (null, command), new ExecutionMode ("", "", this), command, console);
 		}
 		
 		internal IProcessAsyncOperation InternalExecute (CommandExecutionContext ctx, IExecutionMode mode, ExecutionCommand command, IConsole console)

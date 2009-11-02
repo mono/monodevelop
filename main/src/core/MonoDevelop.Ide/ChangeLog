@@ -1,5 +1,11 @@
 2009-11-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs:
+	  Provide a dummy execution mode when executing a
+	  parameterized handler directly.
+
+2009-11-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: When activating a
 	  pad using a keyboard shortcut, set the focus to it. Fixes
 	  bug #544135.
