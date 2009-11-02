@@ -40,9 +40,12 @@ namespace MonoDevelop.Debugger.Soft
 			if (netCmd == null || ! (netCmd.TargetRuntime is MonoTargetRuntime))
 				return false;
 			
-			//assume that 2.8 has sdb support
-			string v = ((MonoTargetRuntime)netCmd.TargetRuntime).Version;
-			return !v.StartsWith ("2.4") && !v.StartsWith ("2.5") && !v.StartsWith ("2.6");
+			//assume that 2.7.x has sdb support
+			var v = ((MonoTargetRuntime)netCmd.TargetRuntime).Version.Split ('.');
+			int major, minor;
+			return v.Length > 1
+				&& int.TryParse (v[0], out major) && int.TryParse (v[1], out minor)
+				&& major >= 2 && minor >= 7;
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
