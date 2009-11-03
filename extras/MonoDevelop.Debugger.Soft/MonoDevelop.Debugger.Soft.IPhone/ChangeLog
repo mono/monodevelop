@@ -1,5 +1,9 @@
 2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDebuggerSession.cs: More tidying on cancellation.
+
+2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneDebuggerSession.cs: Better handling of the sim process
 	  exiting while listen dialog is open.
 

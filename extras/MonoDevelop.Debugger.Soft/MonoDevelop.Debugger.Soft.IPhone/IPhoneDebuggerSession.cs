@@ -71,9 +71,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			listenThread.Start ();
 			
 			if (dsi.ExecutionCommand.Simulator) {
-				StartSimulatorProcess (dsi.ExecutionCommand, delegate {
-					EndSession ();
-				});
+				StartSimulatorProcess (dsi.ExecutionCommand);
 			} else {
 				//FIXME: upload the app
 			}
@@ -103,7 +101,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				dialog.Destroy ();
 				
 				if (response != (int) Gtk.ResponseType.Ok) {
-					EndSimProcess ();
+					EndSession ();
 					if (listenThread != null && listenThread.IsAlive)
 						listenThread.Abort ();
 				}
@@ -131,7 +129,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		}
 
 		//FIXME: hook up the app's stdin and stdout
-		void StartSimulatorProcess (IPhoneExecutionCommand cmd, Action onExited)
+		void StartSimulatorProcess (IPhoneExecutionCommand cmd)
 		{
 			string mtouchPath = cmd.Runtime.GetToolPath (cmd.Framework, "mtouch");
 			if (string.IsNullOrEmpty (mtouchPath))
@@ -146,7 +144,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			simProcess = Process.Start (psi);
 			
 			simProcess.Exited += delegate {
-				onExited ();
+				EndSession ();
 				simProcess = null;
 			};
 			
