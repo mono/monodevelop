@@ -43,21 +43,14 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		string appName;
 		ProcessInfo[] procs;
 		Process simProcess;
+		Gtk.Dialog dialog;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (IPhoneDebuggerStartInfo) startInfo;
-			
 			appName = dsi.ExecutionCommand.AppPath.FileNameWithoutExtension;
 			
-			if (dsi.ExecutionCommand.Simulator) {
-				StartSimulatorProcess (dsi.ExecutionCommand);
-			} else {
-				//FIXME: upload the app
-			}
-			
 			VirtualMachine vm = null;
-			Gtk.Dialog dialog = null;
 			var listenThread = new Thread (delegate () {
 				try {
 					vm = VirtualMachineManager.Listen (dsi.Address, dsi.DebugPort, dsi.OutputPort);
@@ -69,21 +62,30 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 					});
 				} catch (ThreadAbortException) {
 					Thread.ResetAbort ();
-					MarkAsExited ();
+					EndSession ();
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unexpected error in iphone soft debugger listening thread", ex);
-					MarkAsExited ();
+					EndSession ();
 				}
 			});
 			listenThread.Start ();
 			
+			if (dsi.ExecutionCommand.Simulator) {
+				StartSimulatorProcess (dsi.ExecutionCommand, delegate {
+					EndSession ();
+				});
+			} else {
+				//FIXME: upload the app
+			}
+			
 			Gtk.Application.Invoke (delegate {
-				if (vm != null)
+				if (vm != null || Exited)
 					return;
 				
 				dialog = new Gtk.Dialog () {
 					Title = "Waiting for debugger"
 				};
+				
 				string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
 				if (!dsi.ExecutionCommand.Simulator)
 					message += "\n" + GettextCatalog.GetString ("Please start the application on the device.");
@@ -98,13 +100,27 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				dialog.AddButton ("Cancel", Gtk.ResponseType.Cancel);
 				
 				int response = MonoDevelop.Core.Gui.MessageService.ShowCustomDialog (dialog);
+				dialog.Destroy ();
 				
 				if (response != (int) Gtk.ResponseType.Ok) {
 					EndSimProcess ();
 					if (listenThread != null && listenThread.IsAlive)
 						listenThread.Abort ();
 				}
+				dialog = null;
 			});
+		}
+		
+		protected override void EndSession ()
+		{
+			if (dialog != null) {
+				Gtk.Application.Invoke (delegate {
+					if (dialog != null)
+						dialog.Respond (Gtk.ResponseType.Cancel);
+				});
+			}
+			EndSimProcess ();
+			base.EndSession ();
 		}
 		
 		protected override ProcessInfo[] OnGetProcesses ()
@@ -115,7 +131,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		}
 
 		//FIXME: hook up the app's stdin and stdout
-		void StartSimulatorProcess (IPhoneExecutionCommand cmd)
+		void StartSimulatorProcess (IPhoneExecutionCommand cmd, Action onExited)
 		{
 			string mtouchPath = cmd.Runtime.GetToolPath (cmd.Framework, "mtouch");
 			if (string.IsNullOrEmpty (mtouchPath))
@@ -130,7 +146,8 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			simProcess = Process.Start (psi);
 			
 			simProcess.Exited += delegate {
-				MarkAsExited ();
+				onExited ();
+				simProcess = null;
 			};
 			
 			TargetExited += delegate {

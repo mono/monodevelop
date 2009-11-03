@@ -69,12 +69,16 @@ namespace MonoDevelop.Debugger.Soft
 			OnConnected (vm, true);
 		}
 		
-		protected void MarkAsExited ()
+		protected virtual void EndSession ()
 		{
 			if (!exited) {
 				exited = true;
 				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 			}
+		}
+		
+		protected bool Exited {
+			get { return exited; }
 		}
 		
 		/// <summary>
@@ -87,7 +91,7 @@ namespace MonoDevelop.Debugger.Soft
 				throw new InvalidOperationException ("The VM has already connected");
 			
 			if (vm == null) {
-				MarkAsExited ();
+				EndSession ();
 				return;
 			}
 			

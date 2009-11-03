@@ -1,5 +1,10 @@
 2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDebuggerSession.cs: Better handling of the sim process
+	  exiting while listen dialog is open.
+
+2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneDebuggerSession.cs: Mark as exited if exception occurs
 	  in listen thread. Display IP & port in the listen dialog.
 
