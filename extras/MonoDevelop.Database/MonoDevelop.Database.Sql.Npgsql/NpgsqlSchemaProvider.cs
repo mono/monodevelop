@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 	public class NpgsqlSchemaProvider : AbstractEditSchemaProvider
 	{
 		int lastSystemOID = 0;
+		IConnectionPool pool;
 		
 		public NpgsqlSchemaProvider (IConnectionPool connectionPool): base (connectionPool)
 		{
@@ -53,6 +54,7 @@ using MonoDevelop.Core;
 			AddSupportedSchemaActions (SchemaType.UniqueConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.Constraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.User, SchemaActions.Schema);
+			pool = connectionPool;
 		}
 
 		public override TableSchemaCollection GetTables ()
@@ -1407,7 +1409,34 @@ using MonoDevelop.Core;
 		//http://www.postgresql.org/docs/8.2/interactive/sql-dropdatabase.html
 		public override void DropDatabase (DatabaseSchema database)
 		{
-			ExecuteNonQuery (string.Concat("DROP DATABASE IF EXISTS ", database.Name, ";"));
+			if (String.Compare (database.Name, "template1", true) == 0)
+				throw new ArgumentOutOfRangeException ("Cannot delete template1 database");
+			
+			string connStr = null;
+			// Close the pool, connect to a default DB an delete the other.
+			DatabaseConnectionSettings newSettings = new DatabaseConnectionSettings(pool.ConnectionContext.ConnectionSettings);
+			database.SchemaProvider.ConnectionPool.Close ();
+			database.SchemaProvider.ConnectionPool.ConnectionContext.Refresh ();
+			pool.Close ();
+			
+			newSettings.Database = "template1";
+			if (newSettings.Port > 0)
+				connStr = String.Format ("User ID={0};Password={1};Host={2};Port={3};Database={4};",
+				                         newSettings.Username, newSettings.Password, newSettings.Server, 
+				                         newSettings.Port, newSettings.Database);
+			else
+				connStr = String.Format ("User ID={0};Password={1};Host={2};Database={3};",
+				                         newSettings.Username, newSettings.Password, 
+				                         newSettings.Server, newSettings.Database);
+
+			using (NpgsqlConnection conn = new NpgsqlConnection(connStr)) {
+				conn.Open ();
+				NpgsqlCommand cmd = new NpgsqlCommand (string.Concat("DROP DATABASE IF EXISTS \"", database.Name, "\";"));
+				cmd.Connection = conn;
+				cmd.ExecuteNonQuery ();
+				conn.Close ();
+			}
+			
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-droptable.html
