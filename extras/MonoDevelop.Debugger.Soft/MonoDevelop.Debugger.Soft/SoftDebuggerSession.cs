@@ -57,13 +57,42 @@ namespace MonoDevelop.Debugger.Soft
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			bool startsSuspended;
-			vm = LaunchVirtualMachine (startInfo, out startsSuspended);
+			string[] vmargs = new string[startInfo.Arguments.Length + 1];
+			vmargs[0] = startInfo.Command;
+			Array.Copy (startInfo.Arguments.Split (' '), 0, vmargs, 1, startInfo.Arguments.Length);
+			
+			LaunchOptions options = new LaunchOptions ();
+			options.RedirectStandardOutput = true;
+			
+			var vm = VirtualMachineManager.Launch (vmargs, options);
+			
+			OnConnected (vm, true);
+		}
+		
+		protected void MarkAsExited ()
+		{
+			if (!exited) {
+				exited = true;
+				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
+			}
+		}
+		
+		/// <summary>
+		/// If subclasses do an async connect in OnRun, they should pass the resulting VM to this method.
+		/// If the vm is null, the session will be closed.
+		/// </summary>
+		protected void OnConnected (VirtualMachine vm, bool startsSuspended)
+		{
+			if (this.vm != null)
+				throw new InvalidOperationException ("The VM has already connected");
 			
 			if (vm == null) {
 				MarkAsExited ();
 				return;
 			}
+			
+			ConnectOutput (vm.StandardOutput, false);
+			ConnectOutput (vm.StandardError, true);
 			
 			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath);
 			
@@ -83,50 +112,10 @@ namespace MonoDevelop.Debugger.Soft
 			}
 		}
 		
-		protected void MarkAsExited ()
-		{
-			if (!exited) {
-				exited = true;
-				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
-			}
-		}
-		
-		protected void Connected (VirtualMachine vm)
-		{
-			if (this.vm != null)
-				throw new InvalidOperationException ("The VM has already connected");
-			
-			if (vm == null) {
-				MarkAsExited ();
-				return;
-			}
-			
-			
-		}
-		
-		protected virtual VirtualMachine LaunchVirtualMachine (DebuggerStartInfo startInfo, out bool startsSuspended)
-		{
-			startsSuspended = true;
-			
-			string[] vmargs = new string[startInfo.Arguments.Length + 1];
-			vmargs[0] = startInfo.Command;
-			Array.Copy (startInfo.Arguments.Split (' '), 0, vmargs, 1, startInfo.Arguments.Length);
-			
-			LaunchOptions options = new LaunchOptions ();
-			options.RedirectStandardOutput = true;
-			
-			var vm = VirtualMachineManager.Launch (vmargs, options);
-			
-			ConnectOutput (vm.StandardOutput, false);
-			ConnectOutput (vm.StandardError, true);
-			
-			return vm;
-		}
-
 		protected void ConnectOutput (System.IO.StreamReader reader, bool error)
 		{
 			Thread t = (error ? errorReader : outputReader);
-			if (t != null)
+			if (t != null || reader == null)
 				return;
 			t = new Thread (delegate () {
 				ReadOutput (reader, error);

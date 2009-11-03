@@ -1,3 +1,8 @@
+2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Fix the dispatch dervice deadlock in
+	  the debugger start.
+
 2009-11-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerSession.cs: In progress.
