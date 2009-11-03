@@ -391,7 +391,12 @@ namespace MonoDevelop.Ide.FindInFiles
 					markup = markup.Insert (pos1, "<span background=\"" + SyntaxMode.ColorToPangoMarkup (searchColor) + "\">");
 				}
 			}
-			textRenderer.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
+			string markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
+			try {
+				textRenderer.Markup = markup;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error whil setting the text renderer markup to: " + markup, e);
+			}
 		}
 		
 		static int FindPosition (string markup, int pos, out string tag)

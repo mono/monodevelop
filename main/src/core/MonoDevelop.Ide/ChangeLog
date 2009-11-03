@@ -1,3 +1,10 @@
+2009-11-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Added
+	  some error handling code for 'Bug 552014 - Find in files
+	  dialog (with Directories option) makes MD unresponsive for a
+	  long time'.
+
 2009-11-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs:
