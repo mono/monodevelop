@@ -1293,12 +1293,9 @@
 			<Section id = "MonoRuntime" _label = ".NET Runtimes" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanel" />
 		</Section>
 
-		<Section id = "Coding" _label = "Coding">
-			<Section id = "CodeTemplates" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
-		</Section>
-
 		<Section id = "TextEditor" _label = "Text Editor">
 			<Section id = "Formatting" _label = "Formatting" />
+			<Section id = "CodeTemplates" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
 		</Section>
 
 		<Section id = "VersionControl" _label = "Version Control" />
