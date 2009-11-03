@@ -391,9 +391,9 @@ namespace MonoDevelop.Ide.FindInFiles
 					markup = markup.Insert (pos1, "<span background=\"" + SyntaxMode.ColorToPangoMarkup (searchColor) + "\">");
 				}
 			}
-			string markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
+			string markupText = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
 			try {
-				textRenderer.Markup = markup;
+				textRenderer.Markup = markupText;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error whil setting the text renderer markup to: " + markup, e);
 			}

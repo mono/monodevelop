@@ -1,5 +1,12 @@
 2009-11-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.FindInFiles/Scope.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Worked on
+	  'Bug 552017 - Saner and new default options for Find in
+	  Files -> Directories dialog'.
+
+2009-11-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Added
 	  some error handling code for 'Bug 552014 - Find in files
 	  dialog (with Directories option) makes MD unresponsive for a

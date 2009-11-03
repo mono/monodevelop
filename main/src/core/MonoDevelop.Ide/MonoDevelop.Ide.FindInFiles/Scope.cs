@@ -195,12 +195,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			int result = 0;
-			foreach (string fileMask in filterOptions.FileMask.Split (',', ';')) {
-				string[] files = Directory.GetFiles (path, fileMask, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-				result += files.Length;
-			}
-			return result;
+			return GetFileNames (path, recurse, filterOptions).Count ();
 		}
 		
 		public DirectoryScope (string path, bool recurse)
@@ -209,12 +204,37 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.recurse = recurse;
 		}
 		
-		public override IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions)
+		static IEnumerable<string> GetFileNames (string path, bool recurse, FilterOptions filterOptions)
 		{
 			foreach (string fileMask in filterOptions.FileMask.Split (',', ';')) {
-				foreach (string file in Directory.GetFiles (path, fileMask, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)) {
-					yield return new FileProvider (file);
+				string[] files;
+				try {
+					files = Directory.GetFiles (path, filterOptions.FileMask, SearchOption.TopDirectoryOnly);
+				} catch (Exception e) {
+					LoggingService.LogError ("Can't access path " + path, e);
+					continue;
 				}
+				
+				foreach (string fileName in files) {
+					yield return fileName;
+				}
+				
+				if (recurse) {
+					foreach (string directoryName in Directory.GetDirectories (path)) {
+						if (directoryName.StartsWith ("."))
+							continue;
+						foreach (string fileName in GetFileNames (Path.Combine (path, directoryName), recurse, filterOptions)) {
+							yield return fileName;
+						}
+					}
+				}
+			}
+		}
+		
+		public override IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions)
+		{
+			foreach (string file in GetFileNames (path, recurse, filterOptions)) {
+				yield return new FileProvider (file);
 			}
 		}
 		
