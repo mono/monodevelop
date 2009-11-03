@@ -1,5 +1,10 @@
 2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDebuggerSession.cs: About connection properly using
+	  socket close.
+
+2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneDebuggerSession.cs: More tidying on cancellation.
 
 2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>

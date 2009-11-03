@@ -33,6 +33,8 @@ using System.Diagnostics;
 using MonoDevelop.IPhone;
 using System.IO;
 using MonoDevelop.Core;
+using System.Net.Sockets;
+using System.Net;
 
 namespace MonoDevelop.Debugger.Soft.IPhone
 {
@@ -50,21 +52,26 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			var dsi = (IPhoneDebuggerStartInfo) startInfo;
 			appName = dsi.ExecutionCommand.AppPath.FileNameWithoutExtension;
 			
+			var debugSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			var outputSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			debugSock.Bind (new IPEndPoint (dsi.Address, dsi.DebugPort));
+			outputSock.Bind (new IPEndPoint (dsi.Address, dsi.OutputPort));
+			outputSock.Listen (1000);
+			debugSock.Listen (1000);
+			
 			VirtualMachine vm = null;
 			var listenThread = new Thread (delegate () {
 				try {
-					vm = VirtualMachineManager.Listen (dsi.Address, dsi.DebugPort, dsi.OutputPort);
+					vm = VirtualMachineManager.Listen (outputSock, debugSock);
 					OnConnected (vm, false);
 
 					Gtk.Application.Invoke (delegate {
 						if (dialog != null)
 							dialog.Respond (Gtk.ResponseType.Ok);
 					});
-				} catch (ThreadAbortException) {
-					Thread.ResetAbort ();
-					EndSession ();
 				} catch (Exception ex) {
-					LoggingService.LogError ("Unexpected error in iphone soft debugger listening thread", ex);
+					if (ex is SocketException && ((SocketException)ex).ErrorCode != (int)SocketError.Shutdown)
+						LoggingService.LogError ("Unexpected error in iphone soft debugger listening thread", ex);
 					EndSession ();
 				}
 			});
@@ -102,8 +109,12 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				
 				if (response != (int) Gtk.ResponseType.Ok) {
 					EndSession ();
-					if (listenThread != null && listenThread.IsAlive)
-						listenThread.Abort ();
+					if (listenThread != null && listenThread.IsAlive) {
+						listenThread = null;
+						debugSock.Close (200);
+						outputSock.Close (200);
+						debugSock = outputSock = null;
+					}
 				}
 				dialog = null;
 			});
