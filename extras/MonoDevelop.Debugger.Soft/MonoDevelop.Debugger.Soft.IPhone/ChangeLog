@@ -1,5 +1,10 @@
 2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDebuggerSession.cs: Mark as exited if exception occurs
+	  in listen thread. Display IP & port in the listen dialog.
+
+2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneDebuggerSession.cs: Fix the dispatch dervice deadlock
 	  in the debugger start.
 

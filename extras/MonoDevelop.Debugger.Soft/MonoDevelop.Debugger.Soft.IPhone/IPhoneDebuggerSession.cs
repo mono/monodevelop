@@ -32,6 +32,7 @@ using System.Threading;
 using System.Diagnostics;
 using MonoDevelop.IPhone;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger.Soft.IPhone
 {
@@ -68,8 +69,10 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 					});
 				} catch (ThreadAbortException) {
 					Thread.ResetAbort ();
+					MarkAsExited ();
 				} catch (Exception ex) {
-					MonoDevelop.Core.LoggingService.LogError ("Unexpected error in iphone soft debugger listening thread", ex);
+					LoggingService.LogError ("Unexpected error in iphone soft debugger listening thread", ex);
+					MarkAsExited ();
 				}
 			});
 			listenThread.Start ();
@@ -81,9 +84,9 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				dialog = new Gtk.Dialog () {
 					Title = "Waiting for debugger"
 				};
-				string message = "Waiting for debugger to connect...";
+				string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
 				if (!dsi.ExecutionCommand.Simulator)
-					message += "\nPlease start the application on the device";
+					message += "\n" + GettextCatalog.GetString ("Please start the application on the device.");
 				
 				var label = new Gtk.Alignment (0.5f, 0.5f, 1f, 1f) {
 					Child = new Gtk.Label (message),
