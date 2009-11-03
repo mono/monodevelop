@@ -862,9 +862,13 @@ namespace MonoDevelop.IPhone
 			if (simulator)
 				return System.Net.IPAddress.Loopback;
 			
-			var ipStr = MonoDevelop.Core.PropertyService.Get<long> ("MonoTouch.Debugger.HostIP", -1);
-			if (ipStr > 0)
-				return new System.Net.IPAddress (ipStr);
+			var ipStr = MonoDevelop.Core.PropertyService.Get<string> ("MonoTouch.Debugger.HostIP", "");
+			try {
+				if (!string.IsNullOrEmpty (ipStr))
+					return System.Net.IPAddress.Parse (ipStr);
+			} catch (Exception e) {
+				LoggingService.LogInfo ("Error parsing Debugger HostIP: {0}: {1}", ipStr, e);
+			}
 			
 			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList[0];
 		}
