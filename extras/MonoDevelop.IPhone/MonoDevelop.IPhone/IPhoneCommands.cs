@@ -40,7 +40,7 @@ namespace MonoDevelop.IPhone
 	public enum IPhoneCommands
 	{
 		UploadToDevice,
-		DebugInXcode
+		ExportToXcode
 	}
 	
 	class DefaultUploadToDeviceHandler : CommandHandler
@@ -113,7 +113,7 @@ namespace MonoDevelop.IPhone
 		}
 	}
 	
-	class DebugInXcodeCommandHandler : CommandHandler
+	class ExportToXcodeCommandHandler : CommandHandler
 	{
 		protected override void Update (MonoDevelop.Components.Commands.CommandInfo info)
 		{

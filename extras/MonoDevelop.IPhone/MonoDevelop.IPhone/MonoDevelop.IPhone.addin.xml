@@ -115,24 +115,35 @@
 		</Condition>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+	<Extension path = "/MonoDevelop/Ide/Commands/Run">
 		<Condition id="MonoTouchInstalled">
 			<Command id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice" 
-				_description = "Upload the application to the device" 
+				_description = "Upload the iPhone application to the device" 
 				defaultHandler = "MonoDevelop.IPhone.DefaultUploadToDeviceHandler"
 				_label = "Upload to Device" />
-			<Command id = "MonoDevelop.IPhone.IPhoneCommands.DebugInXcode" 
-				_description = "Exports the project to Xcode"
-				defaultHandler = "MonoDevelop.IPhone.DebugInXcodeCommandHandler"
-				_label = "Export project to Xcode" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Condition id="MonoTouchInstalled">
+			<Command id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode" 
+				_description = "Exports the project to Xcode and opens it"
+				defaultHandler = "MonoDevelop.IPhone.ExportToXcodeCommandHandler"
+				_label = "Open in Xcode" />
 		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<Condition id="MonoTouchInstalled">
-			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.DebugInXcode"
+			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode"
 			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
-			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
+		<Condition id="MonoTouchInstalled">
+			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice"
+			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
 		</Condition>
 	</Extension>
 	
