@@ -1,5 +1,9 @@
 2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.IPhone.addin.xml: Fix bad category ref.
+
+2009-11-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs:
 	* MonoDevelop.IPhone.addin.xml: Rename commands and move them
 	  around so they make more sense.

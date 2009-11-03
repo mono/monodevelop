@@ -115,21 +115,16 @@
 		</Condition>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/Commands/Run">
-		<Condition id="MonoTouchInstalled">
-			<Command id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice" 
-				_description = "Upload the iPhone application to the device" 
-				defaultHandler = "MonoDevelop.IPhone.DefaultUploadToDeviceHandler"
-				_label = "Upload to Device" />
-		</Condition>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
 		<Condition id="MonoTouchInstalled">
 			<Command id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode" 
 				_description = "Exports the project to Xcode and opens it"
 				defaultHandler = "MonoDevelop.IPhone.ExportToXcodeCommandHandler"
 				_label = "Open in Xcode" />
+			<Command id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice" 
+				_description = "Upload the iPhone application to the device" 
+				defaultHandler = "MonoDevelop.IPhone.DefaultUploadToDeviceHandler"
+				_label = "Upload to Device" />
 		</Condition>
 	</Extension>
 	
