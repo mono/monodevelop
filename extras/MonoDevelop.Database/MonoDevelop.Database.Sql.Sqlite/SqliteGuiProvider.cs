@@ -78,7 +78,19 @@ using MonoDevelop.Database.Components;
 		
 		public bool ShowCreateDatabaseDialog (IDbFactory factory)
 		{
-			return RunDialog (new SqliteCreateDatabaseDialog (factory));
+			SqliteCreateDatabaseDialog dialog = new SqliteCreateDatabaseDialog (factory);
+			int resp;
+			do {
+				resp = dialog.Run ();
+			} while (resp != (int)ResponseType.Cancel && 
+				    	     resp != (int)ResponseType.Ok && 
+				    		resp != (int)ResponseType.DeleteEvent);
+			dialog.Destroy ();
+			if (resp == (int)ResponseType.Ok)
+				return true;
+			else
+				return false;
+
 		}
 		
 		public bool ShowAddConnectionDialog (IDbFactory factory)
@@ -90,7 +102,8 @@ using MonoDevelop.Database.Components;
 		                                      DatabaseConnectionSettings settings, 
 		                                      out DatabaseConnectionSettings newSettings)
 		{
-			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (factory, settings);
+			
+			SqliteDatabaseConnectionSettingsDialog dlg = new  SqliteDatabaseConnectionSettingsDialog(factory, settings);
 			bool result = RunDialog (dlg);
 			if (result)
 				newSettings = dlg.ConnectionSettings;

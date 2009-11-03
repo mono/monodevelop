@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Components {
     
-    
     public partial class DataGrid {
         
         private Gtk.VBox vbox;

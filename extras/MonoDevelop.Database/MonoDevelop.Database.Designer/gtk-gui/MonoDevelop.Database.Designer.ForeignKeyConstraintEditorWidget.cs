@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Designer {
     
-    
     public partial class ForeignKeyConstraintEditorWidget {
         
         private Gtk.HPaned hpaned;

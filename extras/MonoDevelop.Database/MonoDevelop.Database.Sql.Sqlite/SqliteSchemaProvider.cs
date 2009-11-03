@@ -302,15 +302,14 @@ namespace MonoDevelop.Database.Sql.Sqlite
 		
 		public override void CreateDatabase (DatabaseSchema database)
 		{
-			if (System.IO.File.Exists (database.Name)) {
-				MonoDevelop.Core.Gui.MessageService.ShowError (
-					AddinCatalog.GetString ("Database '{0}' already exists.", database.Name)
-				);
-				return;
+			if (System.IO.File.Exists (database.Name))
+				throw new SqliteDatabaseAlreadyExistsException (AddinCatalog.GetString 
+				                                                ("Database '{0}' already exists.", database.Name));
+			using (SqliteConnection conn = new SqliteConnection (string.Format ("URI=file:{0};Version=3;",
+			                                                                    database.Name))) {
+				conn.Open ();
+				conn.Close ();
 			}
-			SqliteConnection conn = new SqliteConnection ("URI=file:" + database.Name + ";Version=3;");
-			conn.Open ();
-			conn.Close ();
 		}
 
 		//http://www.sqlite.org/lang_createtable.html

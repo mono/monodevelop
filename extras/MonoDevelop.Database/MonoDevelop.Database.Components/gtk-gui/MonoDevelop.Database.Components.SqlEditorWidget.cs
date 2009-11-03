@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Components {
     
-    
     public partial class SqlEditorWidget {
         
         private Gtk.ScrolledWindow scrolledwindow;

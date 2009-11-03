@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -37,8 +37,20 @@ namespace MonoDevelop.Database.Sql.Sqlite
 {
 	internal class SqliteConnectionSettingsWidget : ConnectionSettingsWidget
 	{
+		
 		internal SqliteConnectionSettingsWidget (IDbFactory factory)
 			: base (factory)
+		{
+			EnableServerEntry = false;
+			EnablePortEntry = false;
+			EnableUsernameEntry = false;
+			EnablePasswordEntry = false;
+			EnableRefreshButton = false;
+			EnableOpenButton = true;
+		}
+		
+		internal SqliteConnectionSettingsWidget (IDbFactory factory, bool isEditMode)
+			: base (factory, isEditMode)
 		{
 			EnableServerEntry = false;
 			EnablePortEntry = false;
@@ -70,6 +82,7 @@ namespace MonoDevelop.Database.Sql.Sqlite
 			filter.AddMimeType ("application/x-sqlite2");
 			filter.AddMimeType ("application/x-sqlite3");
 			filter.AddPattern ("*.db");
+			filter.AddPattern ("*.sqlite");
 			filter.Name = AddinCatalog.GetString ("SQLite databases");
 			FileFilter filterAll = new FileFilter ();
 			filterAll.AddPattern ("*");

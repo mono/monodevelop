@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Components {
     
-    
     public partial class SelectColumnDialog {
         
         private Gtk.HBox hboxContent;
@@ -34,7 +33,6 @@ namespace MonoDevelop.Database.Components {
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.DestroyWithParent = true;
             this.SkipTaskbarHint = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Database.Components.SelectColumnDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "Dialog_Vbox";

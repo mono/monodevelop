@@ -20,6 +20,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	Schema/dummy.cs \
 	SqliteConnectionProvider.cs \
+	SqliteDatabaseAlreadyExistsException.cs \
 	SqliteDbFactory.cs \
 	SqliteDialect.cs \
 	SqliteGuiProvider.cs \

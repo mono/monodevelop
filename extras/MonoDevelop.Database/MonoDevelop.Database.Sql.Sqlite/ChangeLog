@@ -1,3 +1,22 @@
+2009-11-03  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* Dialogs/SqliteDatabaseConnectionSettingsDialog.cs: Fixe edit
+	  connection.
+
+	* SqliteGuiProvider.cs:
+	* Dialogs/SqliteCreateDatabaseDialog.cs:
+	* Widgets/SqliteConnectionSettingsWidget.cs: Implement Sqlite
+	  Create Database.
+
+	* Makefile.am:
+	* MonoDevelop.Database.Sql.Sqlite.csproj:
+	* SqliteDatabaseAlreadyExistsException.cs: Add
+	  SqlieDatabaseAlreadyExistsException to throw when the
+	  database alread exists.
+
+	* SqliteSchemaProvider.cs: Fix overwrite sqlite database
+	  problem.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

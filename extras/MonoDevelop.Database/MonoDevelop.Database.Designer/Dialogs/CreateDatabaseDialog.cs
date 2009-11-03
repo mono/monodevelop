@@ -48,7 +48,6 @@ namespace MonoDevelop.Database.Designer
 			vboxConnection.PackStart (settingsWidget, true, true, 0);
 			
 			settingsWidget.NeedsValidation += Validate;
-			settingsWidget.EnableOpenButton = false;
 			settingsWidget.EnableRefreshButton = false;
 			
 			ShowAll ();
@@ -78,8 +77,8 @@ namespace MonoDevelop.Database.Designer
 					pool.Initialize ();
 					ISchemaProvider provider = DbFactoryService.CreateSchemaProvider (DatabaseConnection, 
 					                                                                               pool);
-					DatabaseSchema db = new DatabaseSchema (provider);
-					db.Name = settingsWidget.ConnectionSettings.Database;
+					
+					DatabaseSchema db = provider.CreateDatabaseSchema (settingsWidget.ConnectionSettings.Database);
 					OnBeforeDatabaseCreation (db);
 					((AbstractEditSchemaProvider)provider).CreateDatabase (db);
 					

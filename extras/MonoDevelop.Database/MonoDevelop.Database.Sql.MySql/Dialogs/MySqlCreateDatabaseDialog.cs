@@ -64,10 +64,10 @@ namespace MonoDevelop.Database.Sql.MySql
 						MySqlCollationSchemaCollection collations = ((MySqlSchemaProvider)DatabaseConnection.SchemaProvider).GetCollations ();
 					
 						foreach (MySqlCharacterSetSchema charset in charsets)
-							createDBWidget.AddCharset (charset.Name, charset.DefaultCollactionName);
+							createDBWidget.AddCharset (charset.Name, charset);
 
 						foreach (MySqlCollationSchema collation in collations)
-							createDBWidget.AddCollation (collation.Name, collation.Name);
+							createDBWidget.AddCollation (collation.Name, collation);
 					}
 			};
 			
@@ -94,7 +94,7 @@ namespace MonoDevelop.Database.Sql.MySql
 	
 		protected override void OnBeforeDatabaseCreation (DatabaseSchema schema)
 		{
-			createDBWidget.SetDatabaseOptions (schema);
+			createDBWidget.SetDatabaseOptions ((MySqlDatabaseSchema)schema);
 			base.OnBeforeDatabaseCreation (schema);
 		}
 

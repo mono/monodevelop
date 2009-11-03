@@ -27,6 +27,7 @@
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<SolutionPad id = "ConnectionManagerPad" class = "MonoDevelop.Database.ConnectionManager.ConnectionManagerPad" defaultPlacement = "Left" _label = "Database Browser" icon = "md-db-database">
 			<PadOption id = "ShowSystemObjects" _label = "Show System Objects" defaultValue = "False"/>
+			<PadOption id = "ShowDatabaseName" _label = "Show Database Name" defaultValue = "False"/>
 			<NodeBuilder id = "AggregatesNodeBuilder" class = "MonoDevelop.Database.ConnectionManager.AggregatesNodeBuilder"/>
 			<NodeBuilder id = "ColumnNodeBuilder" class = "MonoDevelop.Database.ConnectionManager.ColumnNodeBuilder"/>
 			<NodeBuilder id = "ColumnsNodeBuilder" class = "MonoDevelop.Database.ConnectionManager.ColumnsNodeBuilder"/>

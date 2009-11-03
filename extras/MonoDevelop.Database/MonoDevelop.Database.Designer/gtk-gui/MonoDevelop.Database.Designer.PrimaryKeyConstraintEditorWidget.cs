@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Designer {
     
-    
     public partial class PrimaryKeyConstraintEditorWidget {
         
         private Gtk.HPaned hpaned;

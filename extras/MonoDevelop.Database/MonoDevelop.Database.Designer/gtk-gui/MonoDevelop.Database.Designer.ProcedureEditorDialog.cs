@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Designer {
     
-    
     public partial class ProcedureEditorDialog {
         
         private Gtk.VBox vboxContent;
@@ -26,6 +25,10 @@ namespace MonoDevelop.Database.Designer {
         private Gtk.Image imageWarning;
         
         private Gtk.Label labelWarning;
+        
+        private Gtk.Button buttonOpen;
+        
+        private Gtk.Button buttonSave;
         
         private Gtk.Button buttonCancel;
         
@@ -108,6 +111,57 @@ namespace MonoDevelop.Database.Designer {
             w9.BorderWidth = ((uint)(5));
             w9.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+            this.buttonOpen = new Gtk.Button();
+            this.buttonOpen.CanFocus = true;
+            this.buttonOpen.Name = "buttonOpen";
+            this.buttonOpen.UseUnderline = true;
+            // Container child buttonOpen.Gtk.Container+ContainerChild
+            Gtk.Alignment w10 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w11 = new Gtk.HBox();
+            w11.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w12 = new Gtk.Image();
+            w12.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-open", Gtk.IconSize.Menu, 16);
+            w11.Add(w12);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w14 = new Gtk.Label();
+            w14.LabelProp = AddinCatalog.GetString("_Open Script");
+            w14.UseUnderline = true;
+            w11.Add(w14);
+            w10.Add(w11);
+            this.buttonOpen.Add(w10);
+            this.AddActionWidget(this.buttonOpen, -3);
+            Gtk.ButtonBox.ButtonBoxChild w18 = ((Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonOpen]));
+            w18.Expand = false;
+            w18.Fill = false;
+            // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+            this.buttonSave = new Gtk.Button();
+            this.buttonSave.CanFocus = true;
+            this.buttonSave.Name = "buttonSave";
+            this.buttonSave.UseUnderline = true;
+            // Container child buttonSave.Gtk.Container+ContainerChild
+            Gtk.Alignment w19 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
+            // Container child GtkAlignment.Gtk.Container+ContainerChild
+            Gtk.HBox w20 = new Gtk.HBox();
+            w20.Spacing = 2;
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Image w21 = new Gtk.Image();
+            w21.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-save", Gtk.IconSize.Menu, 16);
+            w20.Add(w21);
+            // Container child GtkHBox.Gtk.Container+ContainerChild
+            Gtk.Label w23 = new Gtk.Label();
+            w23.LabelProp = AddinCatalog.GetString("_Save Script");
+            w23.UseUnderline = true;
+            w20.Add(w23);
+            w19.Add(w20);
+            this.buttonSave.Add(w19);
+            this.AddActionWidget(this.buttonSave, -3);
+            Gtk.ButtonBox.ButtonBoxChild w27 = ((Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonSave]));
+            w27.Position = 1;
+            w27.Expand = false;
+            w27.Fill = false;
+            // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();
             this.buttonCancel.CanDefault = true;
             this.buttonCancel.CanFocus = true;
@@ -116,9 +170,10 @@ namespace MonoDevelop.Database.Designer {
             this.buttonCancel.UseUnderline = true;
             this.buttonCancel.Label = "gtk-cancel";
             this.AddActionWidget(this.buttonCancel, -6);
-            Gtk.ButtonBox.ButtonBoxChild w10 = ((Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonCancel]));
-            w10.Expand = false;
-            w10.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w28 = ((Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonCancel]));
+            w28.Position = 2;
+            w28.Expand = false;
+            w28.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonOk = new Gtk.Button();
             this.buttonOk.Sensitive = false;
@@ -129,10 +184,10 @@ namespace MonoDevelop.Database.Designer {
             this.buttonOk.UseUnderline = true;
             this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
-            Gtk.ButtonBox.ButtonBoxChild w11 = ((Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonOk]));
-            w11.Position = 1;
-            w11.Expand = false;
-            w11.Fill = false;
+            Gtk.ButtonBox.ButtonBoxChild w29 = ((Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonOk]));
+            w29.Position = 3;
+            w29.Expand = false;
+            w29.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
@@ -140,6 +195,8 @@ namespace MonoDevelop.Database.Designer {
             this.DefaultHeight = 480;
             this.Show();
             this.entryName.Changed += new System.EventHandler(this.NameChanged);
+            this.buttonOpen.Clicked += new System.EventHandler(this.OnButtonOpenClicked);
+            this.buttonSave.Clicked += new System.EventHandler(this.OnButtonSaveClicked);
             this.buttonCancel.Clicked += new System.EventHandler(this.CancelClicked);
             this.buttonOk.Clicked += new System.EventHandler(this.OkClicked);
         }

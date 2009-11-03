@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -222,12 +222,20 @@ namespace MonoDevelop.Database.Designer
 				// Preview Dialog: If it's canceled the response to the previous dialog should be None to know that it
 				// isn't OK and don't close the table editor dialog.
 				PreviewDialog dlg = new PreviewDialog (table.Definition);
-				if (dlg.Run () == (int)ResponseType.Ok) {
+				int resp = 0;
+				while ((resp = dlg.Run ()) != (int)ResponseType.Ok) 
+					if (resp == (int)ResponseType.Cancel) 
+						break;
+					else
+						Respond (ResponseType.Cancel);
+						
+				if (resp == (int)ResponseType.Ok)  {
 					table.Definition = dlg.Text;
 					Respond (ResponseType.Ok);
 					Hide ();
-				} else
-					 Respond (ResponseType.None);
+				} else 
+					Respond (ResponseType.None);
+				
 				dlg.Destroy ();
 			} else {
 				Respond (ResponseType.Ok);

@@ -122,10 +122,10 @@ namespace MonoDevelop.Database.Components {
             w9.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table.Gtk.Table+TableChild
             this.checkIntegratedSecurity = new Gtk.CheckButton();
-            this.checkIntegratedSecurity.Sensitive = false;
             this.checkIntegratedSecurity.CanFocus = true;
             this.checkIntegratedSecurity.Name = "checkIntegratedSecurity";
             this.checkIntegratedSecurity.Label = AddinCatalog.GetString("Use Integrated security");
+            this.checkIntegratedSecurity.Active = true;
             this.checkIntegratedSecurity.DrawIndicator = true;
             this.checkIntegratedSecurity.UseUnderline = true;
             this.table.Add(this.checkIntegratedSecurity);

@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.Components, Version=2.1.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Core.Gui, Version=2.1.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=2.1.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Components, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Core.Gui, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=2.1.1.0, Culture=neutral" />
     <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=2.1.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=2.1.1.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.Database.Components.dll" />
     <widget-library name="../../build/MonoDevelop.Database.Designer.dll" internal="true" />
   </import>
@@ -673,7 +673,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.Database.Designer.ProcedureEditorDialog" design-size="640 480">
     <property name="MemberName" />
     <property name="WindowPosition">CenterOnParent</property>
-    <property name="Buttons">2</property>
+    <property name="Buttons">4</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
@@ -772,8 +772,41 @@
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
-        <property name="Size">2</property>
+        <property name="Size">4</property>
         <property name="LayoutStyle">End</property>
+        <child>
+          <widget class="Gtk.Button" id="buttonOpen">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextAndIcon</property>
+            <property name="Icon">stock:gtk-open Menu</property>
+            <property name="Label" translatable="yes">_Open Script</property>
+            <property name="UseUnderline">True</property>
+            <property name="ResponseId">-3</property>
+            <signal name="Clicked" handler="OnButtonOpenClicked" />
+          </widget>
+          <packing>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="buttonSave">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextAndIcon</property>
+            <property name="Icon">stock:gtk-save Menu</property>
+            <property name="Label" translatable="yes">_Save Script</property>
+            <property name="UseUnderline">True</property>
+            <property name="ResponseId">-3</property>
+            <signal name="Clicked" handler="OnButtonSaveClicked" />
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
         <child>
           <widget class="Gtk.Button" id="buttonCancel">
             <property name="MemberName" />
@@ -787,6 +820,7 @@
             <property name="label">gtk-cancel</property>
           </widget>
           <packing>
+            <property name="Position">2</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
@@ -805,7 +839,7 @@
             <property name="label">gtk-ok</property>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">3</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
@@ -836,7 +870,7 @@
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">Center</property>
     <property name="SkipTaskbarHint">True</property>
-    <property name="Buttons">2</property>
+    <property name="Buttons">3</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
@@ -870,8 +904,24 @@
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
-        <property name="Size">2</property>
+        <property name="Size">3</property>
         <property name="LayoutStyle">End</property>
+        <child>
+          <widget class="Gtk.Button" id="button21">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextAndIcon</property>
+            <property name="Icon">stock:gtk-save Menu</property>
+            <property name="Label" translatable="yes">_Save Script</property>
+            <property name="UseUnderline">True</property>
+            <property name="ResponseId">-10</property>
+            <signal name="Clicked" handler="OnButton21Clicked" />
+          </widget>
+          <packing>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
         <child>
           <widget class="Gtk.Button" id="buttonCancel">
             <property name="MemberName" />
@@ -885,6 +935,7 @@
             <property name="label">gtk-cancel</property>
           </widget>
           <packing>
+            <property name="Position">1</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
@@ -903,7 +954,7 @@
             <property name="label">gtk-ok</property>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">2</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>

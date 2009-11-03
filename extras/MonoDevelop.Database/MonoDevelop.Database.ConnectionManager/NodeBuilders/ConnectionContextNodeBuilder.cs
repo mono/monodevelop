@@ -43,10 +43,10 @@ namespace MonoDevelop.Database.ConnectionManager
 {
 	public class ConnectionContextNodeBuilder : TypeNodeBuilder
 	{
-		
 		public ConnectionContextNodeBuilder ()
 			: base ()
 		{
+			
 		}
 		
 		public override Type NodeDataType {
@@ -72,11 +72,17 @@ namespace MonoDevelop.Database.ConnectionManager
 			return context.ConnectionSettings.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, 
+		                                ref Gdk.Pixbuf closedIcon)
 		{
 			DatabaseConnectionContext context = dataObject as DatabaseConnectionContext;
+
+			if (((bool)builder.Options["ShowDatabaseName"]))
+				label = string.Format ("{0} - ({1})", 
+				                       context.ConnectionSettings.Name, context.ConnectionSettings.Database);
+			 else
+				label = context.ConnectionSettings.Name;
 			
-			label = context.ConnectionSettings.Name;
 			if (context.HasConnectionPool) {
 				IConnectionPool pool = context.ConnectionPool;
 				if (pool.IsInitialized) {
@@ -243,11 +249,18 @@ namespace MonoDevelop.Database.ConnectionManager
 		private void OnDropDatabaseThreaded (object state)
 		{
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
-			ISchemaProvider provider = context.SchemaProvider;
-			DatabaseSchema db = provider.CreateDatabaseSchema (context.ConnectionSettings.Name);
-			
-			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)context.SchemaProvider;
-			schemaProvider.DropDatabase (db);
+			try {
+				context.ConnectionPool.Initialize ();
+				ISchemaProvider provider = context.SchemaProvider;
+				DatabaseSchema db = provider.CreateDatabaseSchema (context.ConnectionSettings.Database);
+				IEditSchemaProvider schemaProvider = (IEditSchemaProvider)context.SchemaProvider;
+				schemaProvider.DropDatabase (db);
+				ConnectionContextService.RemoveDatabaseConnectionContext (context);
+			} catch (Exception ex) {
+				DispatchService.GuiDispatch (delegate {
+					MessageService.ShowException (ex);
+				});
+			}
 			// DispatchService.GuiDispatch (delegate () { OnRefreshConnection (); });
 		}
 		
@@ -277,5 +290,6 @@ namespace MonoDevelop.Database.ConnectionManager
 			DatabaseConnectionContext context = (DatabaseConnectionContext) CurrentNode.DataItem;
 			//info.Enabled = context.DbFactory.IsActionSupported ("Database", SchemaActions.Rename);
 		}
+	
 	}
 }

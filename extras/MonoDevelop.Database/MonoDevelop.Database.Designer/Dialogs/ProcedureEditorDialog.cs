@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -25,6 +25,7 @@
 
 using Gtk;
 using System;
+using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 using MonoDevelop.Core;
@@ -146,6 +147,81 @@ namespace MonoDevelop.Database.Designer
 				labelWarning.Text = msg;
 			}
 		}
+		protected virtual void OnButtonSaveClicked (object sender, System.EventArgs e)
+		{
+			FileChooserDialog dlg = new FileChooserDialog (
+				AddinCatalog.GetString ("Save Script"), null, FileChooserAction.Save,
+				"gtk-cancel", ResponseType.Cancel,
+				"gtk-save", ResponseType.Accept
+			);
+			dlg.SelectMultiple = false;
+			dlg.LocalOnly = true;
+			dlg.Modal = true;
+		
+			FileFilter filter = new FileFilter ();
+			filter.AddPattern ("*.sql");
+			filter.Name = AddinCatalog.GetString ("SQL Scripts");
+			FileFilter filterAll = new FileFilter ();
+			filterAll.AddPattern ("*");
+			filterAll.Name = AddinCatalog.GetString ("All files");
+			dlg.AddFilter (filter);
+			dlg.AddFilter (filterAll);
+
+			try {
+				if (dlg.Run () == (int)ResponseType.Accept) {
+					if (File.Exists (dlg.Filename)) {
+						if (!MessageService.Confirm (AddinCatalog.GetString (@"File {0} already exists. 
+													Do you want to overwrite\nthe existing file?", dlg.Filename), 
+						                             AlertButton.Yes))
+							return;
+						else
+							File.Delete (dlg.Filename);
+					}
+				 	using (StreamWriter writer =  File.CreateText (dlg.Filename)) {
+						writer.Write (sqlEditor.Text);
+						writer.Close ();
+					}
+					
+				}
+			} finally {
+				dlg.Destroy ();					
+			}
+		}
+		
+		protected virtual void OnButtonOpenClicked (object sender, System.EventArgs e)
+		{
+			FileChooserDialog dlg = new FileChooserDialog (
+				AddinCatalog.GetString ("Open Script"), null, FileChooserAction.Open,
+				"gtk-cancel", ResponseType.Cancel,
+				"gtk-open", ResponseType.Accept
+			);
+			dlg.SelectMultiple = false;
+			dlg.LocalOnly = true;
+			dlg.Modal = true;
+		
+			FileFilter filter = new FileFilter ();
+			filter.AddPattern ("*.sql");
+			filter.Name = AddinCatalog.GetString ("SQL Scripts");
+			FileFilter filterAll = new FileFilter ();
+			filterAll.AddPattern ("*");
+			filterAll.Name = AddinCatalog.GetString ("All files");
+			dlg.AddFilter (filter);
+			dlg.AddFilter (filterAll);
+
+			try {
+				if (dlg.Run () == (int)ResponseType.Accept) {
+					
+				 	using (StreamReader reader =  File.OpenText (dlg.Filename)) {
+						sqlEditor.Text = reader.ReadToEnd ();
+						reader.Close ();
+					}
+					
+				}
+			} finally {
+				dlg.Destroy ();					
+			}
+		}
+		
 	}
 	
 	public class ProcedureEditorSettings

@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -49,7 +49,7 @@ namespace MonoDevelop.Database.Sql.Sqlite
 		
 		protected override ConnectionSettingsWidget CreateConnectionSettingsWidget (IDbFactory factory, bool isEditMode)
 		{
-			return new SqliteConnectionSettingsWidget (factory);
+			return new SqliteConnectionSettingsWidget (factory, isEditMode);
 		}
 	}
 }

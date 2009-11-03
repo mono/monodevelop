@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Components {
     
-    
     public partial class WaitDialog {
         
         private Gtk.VBox vbox;

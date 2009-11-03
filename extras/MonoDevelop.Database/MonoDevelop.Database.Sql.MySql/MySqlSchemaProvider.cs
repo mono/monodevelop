@@ -687,10 +687,13 @@ namespace MonoDevelop.Database.Sql.MySql
 		//http://dev.mysql.com/doc/refman/5.1/en/create-database.html
 		public override void CreateDatabase (DatabaseSchema database)
 		{
+			MySqlDatabaseSchema schema = (MySqlDatabaseSchema)database;
 			StringBuilder sql = new StringBuilder ();
-			sql.AppendFormat ("CREATE DATABASE {0}", database.Name);
-			foreach (LineStatement statement in database.AfterCreationStatements)
-				sql.AppendFormat ("\n {0}", statement.GetStatement ());
+			sql.AppendFormat ("CREATE DATABASE {0} ", schema.Name);
+			if (schema.CharacterSetName != string.Empty)
+				sql.AppendFormat  ("CHARACTER SET {0} ", schema.CharacterSetName);
+			if (schema.CollationName != string.Empty)
+				sql.AppendFormat  ("COLLATE {0}", schema.CollationName);
 			ExecuteNonQuery (sql.ToString ());
 		}
 

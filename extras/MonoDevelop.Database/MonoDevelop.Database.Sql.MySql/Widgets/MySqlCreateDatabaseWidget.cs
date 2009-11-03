@@ -35,8 +35,8 @@ namespace MonoDevelop.Database.Sql.MySql
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class MySqlCreateDatabaseWidget : Bin
 	{
-		ListStore storeCollation = new ListStore (typeof(string), typeof(string));
-		ListStore storeCharset = new ListStore (typeof(string), typeof(string));
+		ListStore storeCollation = new ListStore (typeof(string), typeof(MySqlCollationSchema));
+		ListStore storeCharset = new ListStore (typeof(string), typeof(MySqlCharacterSetSchema));
 		
 		public MySqlCreateDatabaseWidget ()
 		{
@@ -46,11 +46,11 @@ namespace MonoDevelop.Database.Sql.MySql
 
 			CellRendererText text = new Gtk.CellRendererText ();
 			comboCharset.PackStart (text, true);
-			comboCharset.AddAttribute (text, "text", 1);
+			comboCharset.AddAttribute (text, "text", 0);
 			
-			text = new Gtk.CellRendererText ();
-			comboCollation.PackStart (text, true);
-			comboCollation.AddAttribute (text, "text", 1);
+			CellRendererText text2 = new Gtk.CellRendererText ();
+			comboCollation.PackStart (text2, true);
+			comboCollation.AddAttribute (text2, "text", 0);
 			
 		}
 		
@@ -60,28 +60,29 @@ namespace MonoDevelop.Database.Sql.MySql
 			storeCharset.Clear ();
 		}
 		
-		public void AddCollation (string description, string collationValue)
+		public void AddCollation (string description, MySqlCollationSchema collationValue)
 		{
 			storeCollation.AppendValues (description, collationValue);
 		}
 
-		public void AddCharset (string description, string charsetValue)
+		public void AddCharset (string description, MySqlCharacterSetSchema charsetValue)
 		{
 			storeCharset.AppendValues (description, charsetValue);
 			
 		}
 		
-		public void SetDatabaseOptions (DatabaseSchema schema)
+		public void SetDatabaseOptions (MySqlDatabaseSchema schema)
 		{
+			
 			TreeIter iterCharset;
 			TreeIter iterCollation; 
 			if (comboCharset.GetActiveIter (out iterCharset) && comboCollation.GetActiveIter (out iterCollation))
 			{
-				LineStatement ls = new LineStatement (schema.SchemaProvider);
-				ls.Statement = string.Format ("CHARACTER SET {0} COLLATE {1}", 
-				                              storeCharset.GetValue (iterCharset, 1),
-				                              storeCollation.GetValue (iterCollation, 1));
+				schema.CharacterSetName = ((MySqlCharacterSetSchema)storeCharset.GetValue (iterCharset, 1)).Name;
+				schema.CollationName = ((MySqlCollationSchema)storeCollation.GetValue (iterCollation, 1)).Name;
 				schema.Comment = "";
+				// ls.Statement = string.Format ("CHARACTER SET {0} COLLATE {1}", 
+				
 			}
 		}
 	}

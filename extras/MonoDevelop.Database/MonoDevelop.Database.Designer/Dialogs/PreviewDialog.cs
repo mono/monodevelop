@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -25,6 +25,7 @@
 
 using Gtk;
 using System;
+using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 using MonoDevelop.Core;
@@ -66,5 +67,48 @@ namespace MonoDevelop.Database.Designer
 		{
 			buttonOk.Sensitive = sqlEditor.Text.Length > 0;
 		}
+		protected virtual void OnButton21Clicked (object sender, System.EventArgs e)
+		{
+			FileChooserDialog dlg = new FileChooserDialog (
+				AddinCatalog.GetString ("Save Script"), null, FileChooserAction.Save,
+				"gtk-cancel", ResponseType.Cancel,
+				"gtk-save", ResponseType.Accept
+			);
+			dlg.SelectMultiple = false;
+			dlg.LocalOnly = true;
+			dlg.Modal = true;
+		
+			FileFilter filter = new FileFilter ();
+			filter.AddPattern ("*.sql");
+			filter.Name = AddinCatalog.GetString ("SQL Scripts");
+			FileFilter filterAll = new FileFilter ();
+			filterAll.AddPattern ("*");
+			filterAll.Name = AddinCatalog.GetString ("All files");
+			dlg.AddFilter (filter);
+			dlg.AddFilter (filterAll);
+
+			try {
+				if (dlg.Run () == (int)ResponseType.Accept) {
+					if (File.Exists (dlg.Filename)) {
+						if (!MessageService.Confirm (AddinCatalog.GetString (@"File {0} already exists. 
+													Do you want to overwrite\nthe existing file?", dlg.Filename), 
+						                             AlertButton.Yes))
+							return;
+						else
+							File.Delete (dlg.Filename);
+					}
+				 	using (StreamWriter writer =  File.CreateText (dlg.Filename)) {
+						writer.Write (Text);
+						writer.Close ();
+					}
+					
+				}
+			} finally {
+				dlg.Destroy ();					
+			}
+			
+			
+		}
+	
 	}
 }

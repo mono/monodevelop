@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Designer {
     
-    
     public partial class IndicesEditorWidget {
         
         protected virtual void Build() {

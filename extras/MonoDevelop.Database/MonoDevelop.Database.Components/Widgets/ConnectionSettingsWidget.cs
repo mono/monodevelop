@@ -337,6 +337,10 @@ namespace MonoDevelop.Database.Components
 			try {
 				pool = new FakeConnectionPool (fac, fac.ConnectionProvider, context);
 				pool.Initialize ();
+				if (pool.HasErrors) {
+					MessageService.ShowError (pool.Error);
+					return;
+				}
 				
 				ISchemaProvider prov = fac.CreateSchemaProvider (pool);
 				DatabaseSchemaCollection databases = prov.GetDatabases ();

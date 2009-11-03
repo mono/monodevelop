@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Components {
     
-    
     public partial class ShowTextDialog {
         
         private Gtk.VBox vboxContent;
@@ -25,7 +24,6 @@ namespace MonoDevelop.Database.Components {
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.SkipTaskbarHint = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Database.Components.ShowTextDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "vbox";
