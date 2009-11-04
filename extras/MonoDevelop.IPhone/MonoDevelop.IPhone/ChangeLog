@@ -1,5 +1,10 @@
 2009-11-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Expose the upload command on a utility
+	  class for the debugger addin to use.
+
+2009-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Device.cs:
 	* MonoDevelop.IPhone.csproj: Added Geoff's code for accessing
 	  the connected device ID.
