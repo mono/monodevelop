@@ -204,7 +204,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			ICSharpCode.NRefactory.Ast.INode result = provider.ParseText (text);
 
 			VariableLookupVisitor visitor = new VariableLookupVisitor (resolver, param.Location);
-			visitor.MemberLocation = new Location (options.ResolveResult.CallingMember.Location.Column, options.ResolveResult.CallingMember.Location.Line);
+			visitor.MemberLocation = new Location (param.DeclaringMember.Location.Column, param.DeclaringMember.Location.Line);
 			if (fillParameter) {
 				if (result != null)
 					result.AcceptVisitor (visitor, null);
@@ -237,7 +237,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				text = data.Document.GetTextBetween (startOffset, data.SelectionRange.Offset) + data.Document.GetTextBetween (data.SelectionRange.EndOffset, endOffset);
 				ICSharpCode.NRefactory.Ast.INode parsedNode = provider.ParseText (text);
 				visitor = new VariableLookupVisitor (resolver, param.Location);
-				visitor.MemberLocation = new Location (options.ResolveResult.CallingMember.Location.Column, options.ResolveResult.CallingMember.Location.Line);
+				visitor.MemberLocation = new Location (param.DeclaringMember.Location.Column, param.DeclaringMember.Location.Line);
 				if (parsedNode != null)
 					parsedNode.AcceptVisitor (visitor, null);
 				param.VariablesOutside = visitor.Variables;

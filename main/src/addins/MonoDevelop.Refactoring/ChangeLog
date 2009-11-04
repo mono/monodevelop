@@ -1,3 +1,8 @@
+2009-11-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Fixed 'Bug 552140 - Exception on refactor to method'.
+
 2009-10-31  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/Change.cs:
