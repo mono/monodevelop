@@ -555,9 +555,15 @@ namespace MonoDevelop.Debugger
 		{
 			List<Breakpoint> bps = new List<Breakpoint> (breakpoints.GetBreakpoints ());
 			foreach (Breakpoint bp in bps) {
-				if (bp.FileName == a.TextFile.Name && bp.Line >= a.LineNumber) {
-					breakpoints.Remove (bp);
-					breakpoints.Add (bp.FileName, bp.Line + a.LineCount);
+				if (bp.FileName == a.TextFile.Name) {
+					if (bp.Line > a.LineNumber) {
+						// If the line that has the breakpoint is deleted, delete the breakpoint
+						breakpoints.Remove (bp);
+						if (bp.Line + a.LineCount >= a.LineNumber)
+							breakpoints.Add (bp.FileName, bp.Line + a.LineCount);
+					}
+					else if (bp.Line == a.LineNumber && a.LineCount < 0)
+						breakpoints.Remove (bp);
 				}
 			}
 		}
