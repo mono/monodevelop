@@ -1,5 +1,10 @@
 2009-11-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDebuggerSession.cs: Better error handling with socket
+	  errors.
+
+2009-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneDebuggerSession.cs: Fix showing listen dialog when app
 	  has been uploaded.
 

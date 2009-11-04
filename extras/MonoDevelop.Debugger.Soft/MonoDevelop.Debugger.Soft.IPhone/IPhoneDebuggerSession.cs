@@ -91,14 +91,15 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		{
 			var debugSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			var outputSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			debugSock.Bind (new IPEndPoint (dsi.Address, dsi.DebugPort));
-			outputSock.Bind (new IPEndPoint (dsi.Address, dsi.OutputPort));
-			outputSock.Listen (1000);
-			debugSock.Listen (1000);
 			
 			VirtualMachine vm = null;
 			var listenThread = new Thread (delegate () {
 				try {
+					debugSock.Bind (new IPEndPoint (dsi.Address, dsi.DebugPort));
+					outputSock.Bind (new IPEndPoint (dsi.Address, dsi.OutputPort));
+					outputSock.Listen (1000);
+					debugSock.Listen (1000);
+					
 					vm = VirtualMachineManager.Listen (outputSock, debugSock);
 					OnConnected (vm, false);
 
@@ -106,9 +107,14 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 						if (dialog != null)
 							dialog.Respond (Gtk.ResponseType.Ok);
 					});
+				} catch (SocketException sox) {
+					if (sox.ErrorCode != (int)SocketError.Shutdown) {
+						MonoDevelop.Core.Gui.MessageService.ShowException (sox, "Unexpected socket error: \n" + sox.Message);
+						LoggingService.LogError ("Error binding iphone soft debugger socket", sox);
+					}
+					EndSession ();
 				} catch (Exception ex) {
-					if (!(ex is SocketException && ((SocketException)ex).ErrorCode != (int)SocketError.Shutdown))
-						LoggingService.LogError ("Unexpected error in iphone soft debugger listening thread", ex);
+					LoggingService.LogError ("Unexpected error in iphone soft debugger listening thread", ex);
 					EndSession ();
 				}
 			});
