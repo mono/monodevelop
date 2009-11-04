@@ -62,6 +62,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				var markerFile = cmd.AppPath.ParentDirectory.Combine (".monotouch_last_uploaded");
 				if (File.Exists (markerFile) && File.GetLastWriteTime (markerFile) > File.GetLastWriteTime (cmd.AppPath)) {
 					RunListenThread (dsi);
+					ShowListenDialog (dsi);
 				} else {
 					IPhoneUtility.Upload (cmd.Runtime, cmd.Framework, cmd.AppPath).Completed += delegate(IAsyncOperation op) {
 						if (op.Success) {
