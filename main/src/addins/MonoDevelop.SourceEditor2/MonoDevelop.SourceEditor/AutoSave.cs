@@ -69,9 +69,9 @@ namespace MonoDevelop.SourceEditor
 		class FileContent 
 		{
 			public string FileName;
-			public string Content;
+			public Mono.TextEditor.Document Content;
 
-			public FileContent (string fileName, string content)
+			public FileContent (string fileName, Mono.TextEditor.Document content)
 			{
 				this.FileName = fileName;
 				this.Content = content;
@@ -121,7 +121,7 @@ namespace MonoDevelop.SourceEditor
 				resetEvent.WaitOne ();
 				lock (contentLock) {
 					if (fileChanged) {
-						CreateAutoSave (content.FileName, content.Content);
+						CreateAutoSave (content.FileName, content.Content.Text);
 						fileChanged = false;
 					}
 				}
@@ -149,7 +149,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public void InformAutoSaveThread (string content)
+		public void InformAutoSaveThread (Mono.TextEditor.Document content)
 		{
 			if (FileName == null || content == null)
 				return;

@@ -1,3 +1,9 @@
+2009-11-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/AutoSave.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
+	  552173 - Good file for testing texteditor performance'.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

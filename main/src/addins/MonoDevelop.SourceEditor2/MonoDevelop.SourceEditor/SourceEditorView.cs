@@ -132,7 +132,7 @@ namespace MonoDevelop.SourceEditor
 		public override string TabPageLabel {
 			get { return GettextCatalog.GetString ("Source"); }
 		}
-		
+		bool wasEdited = false;
 		public SourceEditorView ()
 		{
 			Counters.LoadedEditors++;
@@ -143,6 +143,7 @@ namespace MonoDevelop.SourceEditor
 			
 			widget = new SourceEditorWidget (this);
 			widget.TextEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs args) {
+				wasEdited = true;
 				int startIndex = args.Offset;
 				int endIndex = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
 				if (TextChanged != null)
@@ -150,8 +151,10 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			widget.TextEditor.Document.EndUndo += delegate {
-				if (!inLoad)
-					autoSave.InformAutoSaveThread (Document.Text);
+				if (!inLoad && wasEdited) {
+					autoSave.InformAutoSaveThread (Document);
+				}
+				wasEdited = false;
 			};
 			
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
