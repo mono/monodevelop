@@ -199,16 +199,13 @@ namespace MonoDevelop.CSharp.Completion
 			int index = memberStart + 1;
 			do {
 				char c = editor.GetCharAt (i - 1);
-				
 				engine.Push (c);
-				
 				if (c == ',' && engine.StackDepth == 1)
 					index++;
-				
 				i++;
 			} while (i <= cursor && engine.StackDepth > 0);
 			
-			return engine.StackDepth == 0 ? -1 : index;
+			return engine.StackDepth != 1 ? -1 : index;
 		}
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)

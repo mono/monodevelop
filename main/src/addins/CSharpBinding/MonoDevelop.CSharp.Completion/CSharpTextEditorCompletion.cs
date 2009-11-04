@@ -566,11 +566,14 @@ namespace MonoDevelop.CSharp.Completion
 			
 			while (cpos > startPos) {
 				char c = Editor.GetCharAt (cpos);
+				
 				if (c == '(' || c == '<') {
 					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1, startPos);
 					if (p != -1) {
 						cpos++;
 						return true;
+					} else {
+						return false;
 					}
 				}
 				cpos--;
