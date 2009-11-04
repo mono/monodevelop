@@ -103,6 +103,7 @@
   <Assembly name="Mono.Data.SybaseClient" />
   <Assembly name="Mono.Data.Tds" />
   <Assembly name="Mono.Data.TdsClient" />
+  <Assembly name="Mono.Debugger.Soft" />
   <Assembly name="Mono.GetOptions" />
   <Assembly name="Mono.Posix" />
   <Assembly name="Mono.Security" />

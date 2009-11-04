@@ -56,6 +56,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/IProcessAsyncOperation.cs \
 	MonoDevelop.Core.Execution/IProcessHost.cs \
 	MonoDevelop.Core.Execution/IProcessHostController.cs \
+	MonoDevelop.Core.Execution/LocalConsole.cs \
 	MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs \
 	MonoDevelop.Core.Execution/MsNetExecutionHandler.cs \
 	MonoDevelop.Core.Execution/NativeExecutionCommand.cs \

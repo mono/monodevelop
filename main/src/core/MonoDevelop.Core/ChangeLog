@@ -1,3 +1,14 @@
+2009-11-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks/framework_NET_4_0.xml:
+	* frameworks/framework_NET_2_0.xml: Add new Mono.Debugger.Soft
+	  assembly.
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.Execution/LocalConsole.cs: Added IConsole
+	  implementation.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
