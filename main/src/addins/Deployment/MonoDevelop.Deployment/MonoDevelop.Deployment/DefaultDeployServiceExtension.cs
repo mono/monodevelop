@@ -55,7 +55,7 @@ namespace MonoDevelop.Deployment
 				DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetActiveConfiguration (solutionConfiguration);
 				if (conf.DebugMode) {
 					string ext = (netProject.TargetRuntime is MonoDevelop.Core.Assemblies.MonoTargetRuntime) ? ".mdb" : ".pdb";
-					string mdbFile = Path.ChangeExtension (conf.CompiledOutputName, ext);
+					string mdbFile = conf.CompiledOutputName + ext;
 					deployFiles.Add (new DeployFile (project, mdbFile, Path.GetFileName (mdbFile), TargetDirectory.ProgramFiles));
 				}
 			}
