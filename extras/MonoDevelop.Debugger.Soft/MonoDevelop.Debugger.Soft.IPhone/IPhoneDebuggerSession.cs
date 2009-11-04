@@ -52,6 +52,25 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			var dsi = (IPhoneDebuggerStartInfo) startInfo;
 			appName = dsi.ExecutionCommand.AppPath.FileNameWithoutExtension;
 			
+			var cmd = dsi.ExecutionCommand;
+			if (cmd.Simulator) {
+				var listenThread = RunListenThread (dsi);
+				StartSimulatorProcess (cmd);
+				ShowListenDialog (dsi, listenThread);
+			} else {
+				IPhoneUtility.Upload (cmd.Runtime, cmd.Framework, cmd.AppPath).Completed += delegate(IAsyncOperation op) {
+					if (op.Success)
+						ShowListenDialog (dsi, RunListenThread (dsi));
+					else
+						EndSession ();
+				};
+			}
+		}
+		
+		/// <summary>Starts a thread listening for the debugger to connect over TCP/IP</summary>
+		/// <returns>An action that can be used to cancel listening</returns>
+		Action RunListenThread (IPhoneDebuggerStartInfo dsi)
+		{
 			var debugSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			var outputSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			debugSock.Bind (new IPEndPoint (dsi.Address, dsi.DebugPort));
@@ -77,14 +96,19 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			});
 			listenThread.Start ();
 			
-			if (dsi.ExecutionCommand.Simulator) {
-				StartSimulatorProcess (dsi.ExecutionCommand);
-			} else {
-				//FIXME: upload the app
-			}
-			
+			return delegate {
+				if (listenThread != null && listenThread.IsAlive) {
+					listenThread = null;
+					debugSock.Close (200);
+					outputSock.Close (200);
+				}
+			};
+		}
+		
+		void ShowListenDialog (IPhoneDebuggerStartInfo dsi, Action cancelListen)
+		{
 			Gtk.Application.Invoke (delegate {
-				if (vm != null || Exited)
+				if (VirtualMachine != null || Exited)
 					return;
 				
 				dialog = new Gtk.Dialog () {
@@ -109,12 +133,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				
 				if (response != (int) Gtk.ResponseType.Ok) {
 					EndSession ();
-					if (listenThread != null && listenThread.IsAlive) {
-						listenThread = null;
-						debugSock.Close (200);
-						outputSock.Close (200);
-						debugSock = outputSock = null;
-					}
+					cancelListen ();
 				}
 				dialog = null;
 			});
