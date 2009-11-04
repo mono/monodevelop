@@ -92,8 +92,4 @@
 		</MimeType>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class="MonoDevelop.Database.Query.QueryInitializer" />
-	</Extension>
-
 </Addin>

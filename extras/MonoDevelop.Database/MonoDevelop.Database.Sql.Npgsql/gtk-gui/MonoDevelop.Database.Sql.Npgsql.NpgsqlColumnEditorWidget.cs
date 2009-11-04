@@ -10,7 +10,6 @@
 
 namespace MonoDevelop.Database.Sql.Npgsql {
     
-    
     public partial class NpgsqlColumnEditorWidget {
         
         protected virtual void Build() {

@@ -1,3 +1,37 @@
+2009-11-04  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* NpgsqlGuiProvider.cs:
+	* Dialogs/NpgsqlCreateDatabaseDialog.cs: Implement Npgsql
+	  Create Database Dialog.
+
+	* Encoding.xml: Set of encoding for Postgresql.
+
+	* MonoDevelop.Database.Sql.Npgsql.csproj: Target runtime
+	  change from 2.0 to 3.5.
+	Flush changes.
+
+	* Schema/NpgsqlEncoding.cs: Implement NpgsqlEncoding schema.
+
+	* Schema/NpgsqlTablespace.cs: Implement NpgsqlTablespace
+	  Schema
+
+	* Schema/NpgsqlDatabaseSchema.cs: Implement
+	  NpgsqlDatabaseschema schema.
+
+	* NpgsqlSchemaProvider.cs: Implement Create Database.
+
+	* Makefile.am:
+	* Collections:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* gtk-gui/generated.cs:
+	* Widgets/NpgsqlCreateDatabaseWidget.cs:
+	* Collections/NpgsqlEncodingCollection.cs:
+	* Collections/NpgsqlTablespaceCollection.cs:
+	* gtk-gui/MonoDevelop.Database.Sql.Npgsql.NpgsqlColumnEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Database.Sql.Npgsql.NpgsqlCreateDatabaseWidget.cs:
+	  Implement Npgsql Create Database.
+
 2009-11-03  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* NpgsqlSchemaProvider.cs: Fix Npgsql Drop Database: Drop the

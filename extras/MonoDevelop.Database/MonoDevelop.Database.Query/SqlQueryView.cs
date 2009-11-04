@@ -39,6 +39,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Database.Components;
 using MonoDevelop.SourceEditor;
 
@@ -134,9 +135,17 @@ namespace MonoDevelop.Database.Query
 		} 
 
 		#region ISqlQueryEditorView implementation
+		[CommandHandler (MonoDevelop.Debugger.DebugCommands.Debug)]
 		public void RunQuery ()
 		{
 			ExecuteClicked (new object (), new EventArgs ());
+		}
+		
+		[CommandUpdateHandler (MonoDevelop.Debugger.DebugCommands.Debug)]		
+		protected void UpdateQueryCommand (CommandInfo info)
+		{
+			info.Icon = "md-db-execute";
+			info.Text ="Execute _Query";
 		}
 		
 		public void StopQuery ()

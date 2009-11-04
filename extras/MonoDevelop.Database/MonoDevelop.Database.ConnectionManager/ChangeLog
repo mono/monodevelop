@@ -1,3 +1,8 @@
+2009-11-04  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* NodeBuilders/ConnectionContextNodeBuilder.cs: Remove
+	  unneeded comments.
+
 2009-11-03  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* NodeBuilders/ConnectionContextNodeBuilder.cs: Fix Drop

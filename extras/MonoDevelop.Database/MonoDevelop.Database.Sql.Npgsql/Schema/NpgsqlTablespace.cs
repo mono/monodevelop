@@ -1,10 +1,10 @@
 // 
-// SqlQueryTextEditorExtension.cs
+// NpgsqlTablespace.cs
 //  
 // Author:
 //       Luciano N. Callero <lnc19@hotmail.com>
 // 
-// Copyright (c) 2009 Luciano N. Callero
+// Copyright (c) 2009 
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,39 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-	
-namespace MonoDevelop.Database.Query
+using MonoDevelop.Database.Sql;
+
+namespace MonoDevelop.Database.Sql.Npgsql
 {
-	public class SqlQueryTextEditorExtension:TextEditorExtension
+
+	public class NpgsqlTablespace:AbstractSchema
 	{
+		int oid;
+		
+		public int Oid {
+			get {
+				return oid;
+			}
+			set {
+				oid = value;
+			}
+		}
+		
+		public NpgsqlTablespace (ISchemaProvider provider):base(provider)
+		{
+		}
+		
+		public NpgsqlTablespace(AbstractSchema schema):base(schema)
+		{
+			oid = ((NpgsqlTablespace)schema).Oid;
+			name = schema.Name;
+		}
+		
+		public override object Clone ()
+		{
+			return new NpgsqlTablespace (this);
+		}
+
+		
 	}
 }

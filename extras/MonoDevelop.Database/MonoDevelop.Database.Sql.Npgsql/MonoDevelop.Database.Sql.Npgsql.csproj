@@ -8,7 +8,7 @@
     <ProjectGuid>{854F4CC1-BFDF-457E-89E0-0B7E20F1FDA3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Database.Sql.Npgsql</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.Database.Sql.Npgsql</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -90,6 +90,12 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Database.Designer\MonoDevelop.Database.Designer.csproj">
@@ -123,6 +129,12 @@
     <Compile Include="Widgets\NpgsqlColumnEditorWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Database.Sql.Npgsql.NpgsqlColumnEditorWidget.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Schema\NpgsqlDatabaseSchema.cs" />
+    <Compile Include="Schema\NpgsqlEncoding.cs" />
+    <Compile Include="Collections\NpgsqlEncodingCollection.cs" />
+    <Compile Include="Schema\NpgsqlTablespace.cs" />
+    <Compile Include="Collections\NpgsqlTablespaceCollection.cs" />
+    <Compile Include="Dialogs\NpgsqlCreateDatabaseDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Database.Sql.Npgsql.addin.xml">
@@ -133,6 +145,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\objects.xml">
       <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Encoding.xml">
+      <LogicalName>Encoding.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -157,4 +172,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="Collections\" />
+  </ItemGroup>
 </Project>

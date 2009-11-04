@@ -1,0 +1,296 @@
+<Encodings>
+	<Encoding Server="False">
+		<Name>BIG5</Name>
+		<Description>Big Five</Description>
+		<Language>Traditional Chinese</Language>
+		<BytesChar>1-2</BytesChar>
+		<Aliases>WIN950, Windows950</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>EUC_CN</Name>
+		<Description>Extended UNIX Code-CN</Description>
+		<Language>Simplified Chinese</Language>
+		<BytesChar>1-3</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>EUC_JP</Name>
+		<Description>Extended UNIX Code-JP</Description>
+		<Language>Japanese</Language>
+		<BytesChar>1-3</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>EUC_JIS_2004</Name>
+		<Description>Extended UNIX Code-JP, JIS X 0213</Description>
+		<Language>Japanese</Language>
+		<BytesChar>1-3</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>EUC_KR</Name>
+		<Description>Extended UNIX Code-KR</Description>
+		<Language>Korean</Language>
+		<BytesChar>1-3</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>EUC_TW</Name>
+		<Description>Extended UNIX Code-TW</Description>
+		<Language>Traditional Chinese, Taiwanese</Language>
+		<BytesChar>1-3</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="False">
+		<Name>GB18030</Name>
+		<Description>National Standard</Description>
+		<Language>Chinese</Language>
+		<BytesChar>1-2</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="False">
+		<Name>GBK</Name>
+		<Description>Extended National Standard</Description>
+		<Language>Simplified Chinese</Language>
+		<BytesChar>1-2</BytesChar>
+		<Aliases>WIN936, Windows936</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>ISO_8859_5</Name>
+		<Description>ISO 8859-5, ECMA 113</Description>
+		<Language>Latin/Cyrillic</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>ISO_8859_6</Name>
+		<Description>ISO 8859-6, ECMA 114</Description>
+		<Language>Latin/Arabic</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>ISO_8859_7</Name>
+		<Description>ISO 8859-7, ECMA 118</Description>
+		<Language>Latin/Greek</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>ISO_8859_8</Name>
+		<Description>ISO 8859-8, ECMA 121</Description>
+		<Language>Latin/Hebrew</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="False">
+		<Name>JOHAB</Name>
+		<Description>JOHAB</Description>
+		<Language>Korean (Hangul)</Language>
+		<BytesChar>1-3</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>KOI8R</Name>
+		<Description>KOI8-R</Description>
+		<Language>Cyrillic (Russian)</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>KOI8</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>KOI8U</Name>
+		<Description>KOI8-U</Description>
+		<Language>Cyrillic (Ukrainian)</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>LATIN1</Name>
+		<Description>ISO 8859-1, ECMA 94</Description>
+		<Language>Western European</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ISO88591</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>LATIN2</Name>
+		<Description>ISO 8859-2, ECMA 94</Description>
+		<Language>Central European</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ISO88592</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>LATIN3</Name>
+		<Description>ISO 8859-3, ECMA 94</Description>
+		<Language>South European</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ISO88593</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>LATIN4</Name>
+		<Description>ISO 8859-4, ECMA 94</Description>
+		<Language>North European</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ISO88594</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>LATIN5</Name>
+		<Description>ISO 8859-9, ECMA 128</Description>
+		<Language>Turkish</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ISO88599</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>LATIN6</Name>
+		<Description>ISO 8859-10, ECMA 144</Description>
+		<Language>Nordic</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ISO885910</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>LATIN7</Name>
+		<Description>ISO 8859-13</Description>
+		<Language>Baltic</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ISO885913</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>LATIN8</Name>
+		<Description>ISO 8859-14</Description>
+		<Language>Celtic</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ISO885914</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>LATIN9</Name>
+		<Description>ISO 8859-15</Description>
+		<Language>LATIN1 with Euro and accents</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ISO885915</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>LATIN10</Name>
+		<Description>ISO 8859-16, ASRO SR 14111</Description>
+		<Language>Romanian</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ISO885916</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>MULE_INTERNAL</Name>
+		<Description>Mule internal code</Description>
+		<Language>Multilingual Emacs</Language>
+		<BytesChar>1-4</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>	
+	<Encoding Server="False">
+		<Name>SJIS</Name>
+		<Description>Shift JIS</Description>
+		<Language>Japanese</Language>
+		<BytesChar>1-2</BytesChar>
+		<Aliases>Mskanji, ShiftJIS, WIN932, Windows932</Aliases>
+	</Encoding>
+	<Encoding Server="False">
+		<Name>SHIFT_JIS_2004</Name>
+		<Description>Shift JIS, JIS X 0213</Description>
+		<Language>Japanese</Language>
+		<BytesChar>1-2</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>SQL_ASCII</Name>
+		<Description>unspecified</Description>
+		<Language>any</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="False">
+		<Name>UHC</Name>
+		<Description>Unified Hangul Code</Description>
+		<Language>Korean</Language>
+		<BytesChar>1-2</BytesChar>
+		<Aliases>WIN949, Windows949</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>UTF8</Name>
+		<Description>Unicode, 8-bit</Description>
+		<Language>all</Language>
+		<BytesChar>1-4</BytesChar>
+		<Aliases>Unicode</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>WIN866</Name>
+		<Description>Windows CP866</Description>
+		<Language>Cyrillic</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ALT</Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>WIN874</Name>
+		<Description>Windows CP874</Description>
+		<Language>Thai</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>WIN1250</Name>
+		<Description>Windows CP1250</Description>
+		<Language>Central European</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>WIN1251</Name>
+		<Description>Windows CP1251</Description>
+		<Language>Cyrillic</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>WIN</Aliases>
+	</Encoding>	
+	<Encoding Server="True">
+		<Name>WIN1252</Name>
+		<Description>Windows CP1252</Description>
+		<Language>Western European</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>	
+	<Encoding Server="True">
+		<Name>WIN1253</Name>
+		<Description>Windows CP1253</Description>
+		<Language>Greek</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>	
+	<Encoding Server="True">
+		<Name>WIN1254</Name>
+		<Description>Windows CP1254</Description>
+		<Language>Turkish</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>	
+	<Encoding Server="True">
+		<Name>WIN1255</Name>
+		<Description>Windows CP1255</Description>
+		<Language>Hebrew</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>	
+	<Encoding Server="True">
+		<Name>WIN1256</Name>
+		<Description>Windows CP1256</Description>
+		<Language>Arabic</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>	
+	<Encoding Server="True">
+		<Name>WIN1257</Name>
+		<Description>Windows CP1257</Description>
+		<Language>Baltic</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases></Aliases>
+	</Encoding>
+	<Encoding Server="True">
+		<Name>WIN1258</Name>
+		<Description>Windows CP1258</Description>
+		<Language>Vietnamese</Language>
+		<BytesChar>1</BytesChar>
+		<Aliases>ABC, TCVN, TCVN5712, VSCII</Aliases>
+	</Encoding>	
+</Encodings>

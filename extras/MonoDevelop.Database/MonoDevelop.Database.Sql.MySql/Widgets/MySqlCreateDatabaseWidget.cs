@@ -42,33 +42,29 @@ namespace MonoDevelop.Database.Sql.MySql
 		{
 			this.Build();
 			comboCharset.Model = storeCharset;
+			comboCharset.TextColumn = 0;
 			comboCollation.Model = storeCollation;
+			comboCollation.TextColumn = 0;
+		}
+		
+		public void Initialize (MySqlSchemaProvider provider)
+		{
+			ClearCombos ();
+			MySqlCharacterSetSchemaCollection charsets = provider.GetCharacterSets ();
+			MySqlCollationSchemaCollection collations = provider.GetCollations ();
+		
+			foreach (MySqlCharacterSetSchema charset in charsets)
+				storeCharset.AppendValues (charset.Name, charset);
 
-			CellRendererText text = new Gtk.CellRendererText ();
-			comboCharset.PackStart (text, true);
-			comboCharset.AddAttribute (text, "text", 0);
-			
-			CellRendererText text2 = new Gtk.CellRendererText ();
-			comboCollation.PackStart (text2, true);
-			comboCollation.AddAttribute (text2, "text", 0);
+			foreach (MySqlCollationSchema collation in collations)
+				storeCollation.AppendValues (collation.Name, collation);
 			
 		}
 		
-		public void ClearCombos ()
+		private void ClearCombos ()
 		{
 			storeCollation.Clear ();
 			storeCharset.Clear ();
-		}
-		
-		public void AddCollation (string description, MySqlCollationSchema collationValue)
-		{
-			storeCollation.AppendValues (description, collationValue);
-		}
-
-		public void AddCharset (string description, MySqlCharacterSetSchema charsetValue)
-		{
-			storeCharset.AppendValues (description, charsetValue);
-			
 		}
 		
 		public void SetDatabaseOptions (MySqlDatabaseSchema schema)
@@ -81,7 +77,6 @@ namespace MonoDevelop.Database.Sql.MySql
 				schema.CharacterSetName = ((MySqlCharacterSetSchema)storeCharset.GetValue (iterCharset, 1)).Name;
 				schema.CollationName = ((MySqlCollationSchema)storeCollation.GetValue (iterCollation, 1)).Name;
 				schema.Comment = "";
-				// ls.Statement = string.Format ("CHARACTER SET {0} COLLATE {1}", 
 				
 			}
 		}

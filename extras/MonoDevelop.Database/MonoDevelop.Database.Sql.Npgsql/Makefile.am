@@ -9,10 +9,15 @@ REFS =  \
 	-r:Mono.Posix \
 	-r:Npgsql \
 	-r:System \
-	-r:System.Data
+	-r:System.Core \
+	-r:System.Data \
+	-r:System.Xml.Linq
 
 FILES =  \
 	AssemblyInfo.cs \
+	Collections/NpgsqlEncodingCollection.cs \
+	Collections/NpgsqlTablespaceCollection.cs \
+	Dialogs/NpgsqlCreateDatabaseDialog.cs \
 	Dialogs/NpgsqlTableEditorDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Database.Sql.Npgsql.NpgsqlColumnEditorWidget.cs \
@@ -24,10 +29,14 @@ FILES =  \
 	NpgsqlPooledDbConnection.cs \
 	NpgsqlSchemaProvider.cs \
 	Schema/dummy.cs \
+	Schema/NpgsqlDatabaseSchema.cs \
+	Schema/NpgsqlEncoding.cs \
+	Schema/NpgsqlTablespace.cs \
 	Widgets/NpgsqlColumnEditorWidget.cs \
 	Widgets/NpgsqlCreateDatabaseWidget.cs
 
 RES =  \
+	Encoding.xml \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	MonoDevelop.Database.Sql.Npgsql.addin.xml

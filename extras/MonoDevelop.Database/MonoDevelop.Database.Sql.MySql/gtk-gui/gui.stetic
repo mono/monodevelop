@@ -11,7 +11,6 @@
     <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Projects.Gui, Version=2.1.1.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.Database.Components.dll" />
-    <widget-library name="../../build/MonoDevelop.Database.Designer.dll" />
     <widget-library name="../../build/MonoDevelop.Database.Sql.MySql.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Database.Sql.MySql.MySqlColumnEditorWidget" design-size="300 300">

@@ -261,7 +261,6 @@ namespace MonoDevelop.Database.ConnectionManager
 					MessageService.ShowException (ex);
 				});
 			}
-			// DispatchService.GuiDispatch (delegate () { OnRefreshConnection (); });
 		}
 		
 		[CommandUpdateHandler (ConnectionManagerCommands.DropDatabase)]

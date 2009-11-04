@@ -35,7 +35,19 @@ using MonoDevelop.Database.Components;
 	{
 		public bool ShowCreateDatabaseDialog (IDbFactory factory)
 		{
-			return false;
+			NpgsqlCreateDatabaseDialog dialog = new NpgsqlCreateDatabaseDialog (factory);
+			int resp;
+			do {
+				resp = dialog.Run ();
+			} while (resp != (int)ResponseType.Cancel && 
+				    	     resp != (int)ResponseType.Ok && 
+				    		resp != (int)ResponseType.DeleteEvent);
+			dialog.Destroy ();
+			if (resp == (int)ResponseType.Ok)
+				return true;
+			else
+				return false;
+
 		}
 
 		public bool ShowAddConnectionDialog (IDbFactory factory)

@@ -26,12 +26,15 @@
 //
 
 using System;
+using System.Xml;
+using System.Linq;
 using System.Data;
 using System.Text;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using Npgsql;
 using MonoDevelop.Core;
+using Npgsql;
 namespace MonoDevelop.Database.Sql.Npgsql
 {
 	public class NpgsqlSchemaProvider : AbstractEditSchemaProvider
@@ -152,6 +155,53 @@ using MonoDevelop.Core;
 				}
 			}
 			return columns;
+		}
+
+		public NpgsqlEncodingCollection GetEncodings ()
+		{
+			NpgsqlEncodingCollection coll = new NpgsqlEncodingCollection ();
+			using (System.IO.Stream stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("Encoding.xml")) {
+				XmlDocument doc = new XmlDocument ();
+				doc.Load (stream);
+				var encodings = doc.GetElementsByTagName ("Encoding");
+				foreach (var enc in encodings) {
+					NpgsqlEncoding newEnc = new NpgsqlEncoding (this);
+					newEnc.Server = Convert.ToBoolean (((XmlNode)enc).Attributes["Server"].Value);
+					newEnc.Name = ((XmlNode)enc).ChildNodes[0].InnerText;
+					newEnc.Description = ((XmlNode)enc).ChildNodes[1].InnerText;
+					newEnc.Language = ((XmlNode)enc).ChildNodes[2].InnerText;
+					newEnc.BytesChar = ((XmlNode)enc).ChildNodes[3].InnerText;
+					newEnc.Aliases = ((XmlNode)enc).ChildNodes[4].InnerText;
+					coll.Add (newEnc);
+				}
+					
+				// This doesn't work until this bug isn't fixed 
+				// 
+//				XmlTextReader reader = new XmlTextReader (stream);
+//				XDocument encodingsDoc = XDocument.Load (reader, LoadOptions.None);
+//				
+//				var encodings = from enc in encodingsDoc.Descendants ("Encodings")
+//					select new {
+//						IsServer = Convert.ToBoolean(enc.Attribute("Server").Value),
+//						Name = enc.Element("Name").Value,
+//						Description = enc.Element("Description").Value,
+//						Language = enc.Element("Language").Value,
+//						BytesChar = enc.Element("BytesChar").Value,
+//						Aliases = enc.Element("Aliases").Value
+//					};
+//				
+//				foreach (var enc in encodings) {
+//					NpgsqlEncoding newEnc = new NpgsqlEncoding (this);
+//					newEnc.Server = enc.IsServer;
+//					newEnc.Name = enc.Name;
+//					newEnc.Description = enc.Description;
+//					newEnc.Language = enc.Language;
+//					newEnc.BytesChar = enc.BytesChar;
+//					newEnc.Aliases = enc.Aliases;
+//					coll.Add (newEnc);
+//				}
+			}
+			return coll;
 		}
 
 		public override ViewSchemaCollection GetViews ()
@@ -573,7 +623,6 @@ using MonoDevelop.Core;
 		public override UserSchemaCollection GetUsers ()
 		{
 			UserSchemaCollection users = new UserSchemaCollection ();
-
 			using (IPooledDbConnection conn = connectionPool.Request ()) {
 				using (IDbCommand command = conn.CreateCommand ("SELECT * FROM pg_user;")) {
 					try {
@@ -1185,10 +1234,47 @@ using MonoDevelop.Core;
 			}
 		}
 		
+		public override DatabaseSchema CreateDatabaseSchema (string name)
+		{
+			NpgsqlDatabaseSchema schema = new NpgsqlDatabaseSchema (this);
+			schema.Name = name;
+			
+			return schema;
+	 	}
+
+		public NpgsqlTablespaceCollection GetTablespaces()
+		{
+			NpgsqlTablespaceCollection tables = new NpgsqlTablespaceCollection ();
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand ("select * from pg_tablespace")) {
+					using (IDataReader r = command.ExecuteReader()) {
+						while (r.Read ()) {
+							NpgsqlTablespace ts = new NpgsqlTablespace (this);
+							ts.Name = r.GetString (r.GetOrdinal ("spcname"));
+							ts.Oid = Convert.ToInt32 (r.GetValue (r.GetOrdinal ("spcowner")));
+							tables.Add (ts);
+						}
+					}
+				}
+			}
+			return tables;
+		}
+		
 		//http://www.postgresql.org/docs/8.2/interactive/sql-createdatabase.html
 		public override void CreateDatabase (DatabaseSchema database)
 		{
-			ExecuteNonQuery (string.Concat("CREATE DATABASE ", database.Name));
+			NpgsqlDatabaseSchema schema = (NpgsqlDatabaseSchema)database;
+			
+			StringBuilder sb = new StringBuilder (string.Concat("CREATE DATABASE ", database.Name));
+			if (schema.Owner != null && schema.Owner.Name != string.Empty)
+				sb.AppendFormat (" OWNER = {0}", schema.Owner.Name);
+			if (schema.Template != null && schema.Template.Name != string.Empty)
+				sb.AppendFormat (" TEMPLATE = {0}", schema.Template.Name);
+			if (schema.Tablespace != null && schema.Tablespace.Name != string.Empty)
+				sb.AppendFormat (" TABLESPACE = {0}", schema.Tablespace.Name);
+			if (schema.Encoding != null && schema.Encoding.Name != string.Empty)
+				sb.AppendFormat (" ENCODING = '{0}'", schema.Encoding.Name);
+			ExecuteNonQuery (sb.ToString ());
 		}
 
 		//http://www.postgresql.org/docs/8.2/interactive/sql-createtable.html
@@ -1375,7 +1461,6 @@ using MonoDevelop.Core;
 			ExecuteNonQuery (procedure.NewSchema.Definition);
 		}
 
-		
 		//http://www.postgresql.org/docs/8.2/interactive/sql-alterdatabase.html
 		public override void AlterDatabase (DatabaseAlterSchema database)
 		{

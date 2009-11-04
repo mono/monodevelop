@@ -1,5 +1,13 @@
 2009-11-04  Luciano N. Callero  <lnc19@hotmail.com>
 
+	* SqlQueryView.cs: Remove handlers
+
+	* SqlQueryTextEditorExtension.cs: Remove handlers.
+
+	* MonoDevelop.Database.Query.addin.xml: Remove handler
+
+2009-11-04  Luciano N. Callero  <lnc19@hotmail.com>
+
 	* SqlQueryTextEditorExtension.cs: Fix: QueryInitializer should
 	  inherit from CommandHandler.
 

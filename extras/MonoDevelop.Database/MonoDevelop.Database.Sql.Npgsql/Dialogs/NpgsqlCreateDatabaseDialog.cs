@@ -1,5 +1,5 @@
 // 
-// MySqlCreateDatabaseDialog.cs
+// NpgsqlCreateDatabaseDialog.cs
 //  
 // Author:
 //       Luciano N. Callero <lnc19@hotmail.com>
@@ -32,18 +32,17 @@ using MonoDevelop.Database.Components;
 using MonoDevelop.Database.Designer;
 using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Database.Sql.MySql
+namespace MonoDevelop.Database.Sql.Npgsql
 {
 
-	public class MySqlCreateDatabaseDialog : CreateDatabaseDialog
+	public class NpgsqlCreateDatabaseDialog:CreateDatabaseDialog
 	{
-
 		ConnectionSettingsWidget connectionWidget;
-		MySqlCreateDatabaseWidget createDBWidget;
-		
-		public MySqlCreateDatabaseDialog (IDbFactory factory):base(factory)
+		NpgsqlCreateDatabaseWidget createDBWidget;
+
+		public NpgsqlCreateDatabaseDialog (IDbFactory factory):base(factory)
 		{
-			createDBWidget = new MySqlCreateDatabaseWidget ();
+			createDBWidget = new NpgsqlCreateDatabaseWidget ();
 			Notebook.AppendPage (createDBWidget, 
 			                     new Label (AddinCatalog.GetString ("Database Properties")));
 			Notebook.ShowTabs = true;
@@ -62,8 +61,8 @@ namespace MonoDevelop.Database.Sql.MySql
 							MessageService.ShowError (DatabaseConnection.ConnectionPool.Error);
 							nb.CurrentPage = 0;
 							return;
-						}					
-						createDBWidget.Initialize ((MySqlSchemaProvider)DatabaseConnection.SchemaProvider);
+						}
+						createDBWidget.Initialize ((NpgsqlSchemaProvider)DatabaseConnection.SchemaProvider);
 					}
 			};
 			
@@ -72,14 +71,15 @@ namespace MonoDevelop.Database.Sql.MySql
 		
 		private void Initialize (IDbFactory factory)
 		{
-			if (DatabaseConnection != null)
+			if (DatabaseConnection != null) 
 				DatabaseConnection.ConnectionPool.Close ();
 			DatabaseConnectionSettings settings = new DatabaseConnectionSettings(connectionWidget.ConnectionSettings);
-			settings.Database = "mysql"; 
+			settings.Database = "postgres"; 
 			// Create Context, Pool, Connection 
 			DatabaseConnectionContext ctx = new DatabaseConnectionContext (settings, true);
 			ctx.ConnectionPool.Initialize ();
-			this.DatabaseConnection = ctx;
+			DatabaseConnection = ctx;
+			
 		}
 		
 		protected override ConnectionSettingsWidget CreateConnectionSettingsWidget (IDbFactory factory)
@@ -92,9 +92,9 @@ namespace MonoDevelop.Database.Sql.MySql
 	
 		protected override void OnBeforeDatabaseCreation (DatabaseSchema schema)
 		{
-			createDBWidget.SetDatabaseOptions ((MySqlDatabaseSchema)schema);
+			createDBWidget.SetDatabaseOptions ((NpgsqlDatabaseSchema)schema);
 			base.OnBeforeDatabaseCreation (schema);
 		}
-
+		
 	}
 }

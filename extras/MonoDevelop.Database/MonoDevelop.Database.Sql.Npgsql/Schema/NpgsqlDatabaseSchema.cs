@@ -1,10 +1,10 @@
 // 
-// SqlQueryTextEditorExtension.cs
+// NpgsqlDatabaseSchema.cs
 //  
 // Author:
 //       Luciano N. Callero <lnc19@hotmail.com>
 // 
-// Copyright (c) 2009 Luciano N. Callero
+// Copyright (c) 2009 
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,62 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-	
-namespace MonoDevelop.Database.Query
+using MonoDevelop.Database.Sql;
+
+namespace MonoDevelop.Database.Sql.Npgsql
 {
-	public class SqlQueryTextEditorExtension:TextEditorExtension
+	
+	public class NpgsqlDatabaseSchema:DatabaseSchema
 	{
+		NpgsqlEncoding encoding;
+		DatabaseSchema template;
+		UserSchema owner;
+		NpgsqlTablespace tablespace;
+		
+		public DatabaseSchema Template {
+			get {
+				return template;
+			}
+			set {
+				template = value;
+			}
+		}
+		
+		public NpgsqlTablespace Tablespace {
+			get {
+				return tablespace;
+			}
+			set {
+				tablespace = value;
+			}
+		}
+		
+		public UserSchema Owner {
+			get {
+				return owner;
+			}
+			set {
+				owner = value;
+			}
+		}
+		
+		public NpgsqlEncoding Encoding {
+			get {
+				return encoding;
+			}
+			set {
+				encoding = value;
+			}
+		}
+		
+		
+		
+		public NpgsqlDatabaseSchema (ISchemaProvider provider):base (provider)
+		{
+			
+			
+		}
+		
+		
 	}
 }

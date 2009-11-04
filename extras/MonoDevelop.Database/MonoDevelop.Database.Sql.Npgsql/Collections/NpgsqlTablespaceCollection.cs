@@ -1,10 +1,10 @@
 // 
-// SqlQueryTextEditorExtension.cs
+// NpgsqlTablespaceCollection.cs
 //  
 // Author:
 //       Luciano N. Callero <lnc19@hotmail.com>
 // 
-// Copyright (c) 2009 Luciano N. Callero
+// Copyright (c) 2009 
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,25 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-	
-namespace MonoDevelop.Database.Query
+using System.Collections;
+using System.Collections.Generic;
+
+namespace MonoDevelop.Database.Sql.Npgsql
 {
-	public class SqlQueryTextEditorExtension:TextEditorExtension
+
+	public class NpgsqlTablespaceCollection:SortedCollectionBase<NpgsqlTablespace>
 	{
+
+		public NpgsqlTablespaceCollection ():base(true)
+		{
+			
+		}
+		
+		public NpgsqlTablespaceCollection (NpgsqlTablespaceCollection collection):base(collection, true)
+		{
+			
+		}
+		
+		
 	}
 }

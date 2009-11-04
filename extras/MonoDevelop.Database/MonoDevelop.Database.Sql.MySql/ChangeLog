@@ -1,3 +1,10 @@
+2009-11-04  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* gtk-gui/gui.stetic:
+	* Widgets/MySqlCreateDatabaseWidget.cs:
+	* Dialogs/MySqlCreateDatabaseDialog.cs: Flush Changes.
+	Refactoring MySql database creation dialog.
+
 2009-11-03  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* MySqlSchemaProvider.cs:
