@@ -95,6 +95,8 @@ namespace MonoDevelop.Debugger.Soft
 				return;
 			}
 			
+			this.vm = vm;
+			
 			ConnectOutput (vm.StandardOutput, false);
 			ConnectOutput (vm.StandardError, true);
 			

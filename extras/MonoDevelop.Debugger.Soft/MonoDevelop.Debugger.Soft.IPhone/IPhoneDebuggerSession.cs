@@ -70,7 +70,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 							dialog.Respond (Gtk.ResponseType.Ok);
 					});
 				} catch (Exception ex) {
-					if (ex is SocketException && ((SocketException)ex).ErrorCode != (int)SocketError.Shutdown)
+					if (!(ex is SocketException && ((SocketException)ex).ErrorCode != (int)SocketError.Shutdown))
 						LoggingService.LogError ("Unexpected error in iphone soft debugger listening thread", ex);
 					EndSession ();
 				}
