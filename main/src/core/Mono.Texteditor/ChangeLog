@@ -1,3 +1,8 @@
+2009-11-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/DashedLineMargin.cs: fixed 'Bug 548035 -
+	  Dashed line down left margin is uneven'.
+
 2009-11-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Disable pulse on

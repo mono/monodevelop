@@ -31,7 +31,7 @@ namespace Mono.TextEditor
 	public class DashedLineMargin : Margin
 	{
 		TextEditor editor;
-		Gdk.GC foldDashedLineGC, foldDashedLineGC2, bgGC;
+		Gdk.GC foldDashedLineGC, foldDashedLineGC2, bgGC, bgGC2;
 
 		public override int Width {
 			get {
@@ -50,7 +50,10 @@ namespace Mono.TextEditor
 			foldDashedLineGC = CreateDashedLineGC (editor.ColorStyle.Default.Color);
 			foldDashedLineGC2 = CreateDashedLineGC (editor.ColorStyle.Default.BackgroundColor);
 			bgGC = new Gdk.GC (this.editor.GdkWindow) {
-				RgbFgColor = editor.ColorStyle.FoldLine.BackgroundColor,
+				RgbFgColor = editor.ColorStyle.Default.BackgroundColor
+			};
+			bgGC2 = new Gdk.GC (this.editor.GdkWindow) {
+				RgbFgColor = editor.ColorStyle.Default.Color
 			};
 		}
 		
@@ -58,7 +61,7 @@ namespace Mono.TextEditor
 		{
 			var gc = new Gdk.GC (editor.GdkWindow);
 			gc.RgbFgColor = fg;
-			gc.SetLineAttributes (1, Gdk.LineStyle.DoubleDash, Gdk.CapStyle.NotLast, Gdk.JoinStyle.Bevel);
+			gc.SetLineAttributes (1, Gdk.LineStyle.OnOffDash, Gdk.CapStyle.NotLast, Gdk.JoinStyle.Bevel);
 			gc.SetDashes (0, new sbyte[] { 1, 1 }, 2);
 			return gc;
 		}
@@ -79,10 +82,10 @@ namespace Mono.TextEditor
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
 		{
 			int top = y;
-			int bottom = top + editor.LineHeight - 1;
-			var isLight = (top + (int)editor.VAdjustment.Value) % 2 != 0 ;
-			win.DrawLine (bgGC, x, top, x, bottom);
-			win.DrawLine (isLight? foldDashedLineGC : foldDashedLineGC2, x, top, x, bottom);
+			int bottom = top + editor.LineHeight;
+			bool isUneven = (top + (int)editor.VAdjustment.Value) % 2 != 0;
+			win.DrawLine (isUneven? bgGC : bgGC2, x, top, x, bottom);
+			win.DrawLine (isUneven? foldDashedLineGC : foldDashedLineGC2, x, top, x, bottom);
 		}
 	}
 }
