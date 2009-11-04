@@ -33,6 +33,7 @@ namespace Mono.TextEditor
 {
 	public class GapBuffer : AbstractBuffer
 	{
+		object lockObj = new object ();
 		char[] buffer = new char[0];
 		
 		int gapBegin  = 0;
@@ -53,8 +54,10 @@ namespace Mono.TextEditor
 				return GetTextAt (0, Length);
 			}
 			set {
-				buffer = value != null ? value.ToCharArray () : new char[0];
-				gapBegin = gapEnd = gapLength = 0;
+				lock (lockObj) {
+					buffer = value != null ? value.ToCharArray () : new char[0];
+					gapBegin = gapEnd = gapLength = 0;
+				}
 			}
 		}
 		
@@ -66,7 +69,9 @@ namespace Mono.TextEditor
 			if (offset >= Length) 
 				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + "." + Environment.NewLine + Environment.StackTrace);
 #endif
-			return buffer[offset < gapBegin ? offset : offset + gapLength];
+			lock (lockObj) {
+				return buffer[offset < gapBegin ? offset : offset + gapLength];
+			}
 		}
 		
 		public override string GetTextAt (int offset, int count)
@@ -82,18 +87,20 @@ namespace Mono.TextEditor
 				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count + Environment.NewLine + Environment.StackTrace);
 #endif
 			
-			int end = offset + count;
-			if (end < gapBegin) 
-				return new string (buffer, offset, count);
-			if (offset > gapBegin) 
-				return new string (buffer, offset + gapLength, count);
-		
-			int leftBlockSize = gapBegin - offset;
-			int rightBlockSize = end - gapBegin;
-			char[] result = new char [leftBlockSize + rightBlockSize];
-			Array.Copy (buffer, offset, result, 0, leftBlockSize);
-			Array.Copy (buffer, gapEnd, result, leftBlockSize, rightBlockSize);
-			return new string (result);
+			lock (lockObj) {
+				int end = offset + count;
+				if (end < gapBegin) 
+					return new string (buffer, offset, count);
+				if (offset > gapBegin) 
+					return new string (buffer, offset + gapLength, count);
+			
+				int leftBlockSize = gapBegin - offset;
+				int rightBlockSize = end - gapBegin;
+				char[] result = new char [leftBlockSize + rightBlockSize];
+				Array.Copy (buffer, offset, result, 0, leftBlockSize);
+				Array.Copy (buffer, gapEnd, result, leftBlockSize, rightBlockSize);
+				return new string (result);
+			}
 		}
 		
 		public override void Replace (int offset, int count, string text)
@@ -108,17 +115,19 @@ namespace Mono.TextEditor
 			if (offset + count > Length) 
 				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count + Environment.NewLine + Environment.StackTrace);
 #endif
-			if (!string.IsNullOrEmpty (text)) { 
-				PlaceGap (offset, text.Length - count);
-				text.CopyTo (0, buffer, offset, text.Length);
-				gapBegin += text.Length;
-			} else {
-				PlaceGap (offset, 0);
+			lock (lockObj) {
+				if (!string.IsNullOrEmpty (text)) { 
+					PlaceGap (offset, text.Length - count);
+					text.CopyTo (0, buffer, offset, text.Length);
+					gapBegin += text.Length;
+				} else {
+					PlaceGap (offset, 0);
+				}
+				gapEnd   += count; 
+				gapLength = gapEnd - gapBegin;
+				if (gapLength > maxGapLength) 
+					CreateBuffer (gapBegin, minGapLength);
 			}
-			gapEnd   += count; 
-			gapLength = gapEnd - gapBegin;
-			if (gapLength > maxGapLength) 
-				CreateBuffer (gapBegin, minGapLength);
 		}
 		
 		void PlaceGap (int newOffset, int minLength)

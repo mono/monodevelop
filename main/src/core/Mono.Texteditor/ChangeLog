@@ -1,5 +1,9 @@
 2009-11-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/GapBuffer.cs: gap buffer is now threadsafe.
+
+2009-11-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/DashedLineMargin.cs: fixed 'Bug 548035 -
 	  Dashed line down left margin is uneven'.
 
