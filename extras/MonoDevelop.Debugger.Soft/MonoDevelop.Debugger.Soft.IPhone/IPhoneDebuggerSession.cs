@@ -98,8 +98,8 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				try {
 					debugSock.Bind (new IPEndPoint (dsi.Address, dsi.DebugPort));
 					outputSock.Bind (new IPEndPoint (dsi.Address, dsi.OutputPort));
-					outputSock.Listen (1000);
-					debugSock.Listen (1000);
+					outputSock.Listen (10);
+					debugSock.Listen (10);
 					
 					vm = VirtualMachineManager.Listen (outputSock, debugSock);
 					OnConnected (vm, false);
@@ -227,10 +227,16 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		
 		void CloseSockets ()
 		{
-			if (debugSock != null)
-				debugSock.Close ();
-			if (outputSock != null)
-				outputSock.Close ();
+			if (debugSock != null) {
+				try {
+					debugSock.Close ();
+				} catch {}
+			}
+			if (outputSock != null) {
+				try {
+					outputSock.Close ();
+				} catch {}
+			}
 			debugSock = outputSock = null;
 			
 			//HACK: we still have to do this because the socket.Close doesn't interrupt socket.Accept on Mono
