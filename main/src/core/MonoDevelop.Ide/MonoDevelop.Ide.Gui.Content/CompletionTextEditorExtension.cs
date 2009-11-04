@@ -123,17 +123,13 @@ namespace MonoDevelop.Ide.Gui.Content
 					currentCompletionContext = null;
 				}
 			}
-			
-			if (!enableParameterInsight)
-				return res;
 			// Handle parameter completion
-			
 			if (ParameterInformationWindowManager.IsWindowVisible) {
 				ParameterInformationWindowManager.CurrentCodeCompletionContext = Editor.CurrentCodeCompletionContext;
 				ParameterInformationWindowManager.PostProcessKeyEvent (key, modifier);
 			}
-
-			if (completionWidget != null) {
+			
+			if (enableParameterInsight && completionWidget != null) {
 				CodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
 				IParameterDataProvider paramProvider = HandleParameterCompletion (ctx, keyChar);
 				if (paramProvider != null)

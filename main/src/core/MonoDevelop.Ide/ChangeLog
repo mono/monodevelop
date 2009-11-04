@@ -1,3 +1,9 @@
+2009-11-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  fixed 'Bug 552331 - Parameter insight does not hide when
+	  ending method call.'.
+
 2009-11-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Move code templates panel under
