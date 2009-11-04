@@ -46,6 +46,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		ProcessInfo[] procs;
 		Process simProcess;
 		Gtk.Dialog dialog;
+		Socket debugSock, outputSock;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
@@ -54,18 +55,19 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			
 			var cmd = dsi.ExecutionCommand;
 			if (cmd.Simulator) {
-				var listenThread = RunListenThread (dsi);
+				RunListenThread (dsi);
 				StartSimulatorProcess (cmd);
-				ShowListenDialog (dsi, listenThread);
+				ShowListenDialog (dsi);
 			} else {
 				var markerFile = cmd.AppPath.ParentDirectory.Combine (".monotouch_last_uploaded");
 				if (File.Exists (markerFile) && File.GetLastWriteTime (markerFile) > File.GetLastWriteTime (cmd.AppPath)) {
-					ShowListenDialog (dsi, RunListenThread (dsi));
+					RunListenThread (dsi);
 				} else {
 					IPhoneUtility.Upload (cmd.Runtime, cmd.Framework, cmd.AppPath).Completed += delegate(IAsyncOperation op) {
 						if (op.Success) {
 							TouchUploadMarker (markerFile);
-							ShowListenDialog (dsi, RunListenThread (dsi));
+							RunListenThread (dsi);
+							ShowListenDialog (dsi);
 						} else {
 							EndSession ();
 						}
@@ -84,7 +86,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		
 		/// <summary>Starts a thread listening for the debugger to connect over TCP/IP</summary>
 		/// <returns>An action that can be used to cancel listening</returns>
-		Action RunListenThread (IPhoneDebuggerStartInfo dsi)
+		void RunListenThread (IPhoneDebuggerStartInfo dsi)
 		{
 			var debugSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			var outputSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -110,17 +112,9 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				}
 			});
 			listenThread.Start ();
-			
-			return delegate {
-				if (listenThread != null && listenThread.IsAlive) {
-					listenThread = null;
-					debugSock.Close (200);
-					outputSock.Close (200);
-				}
-			};
 		}
 		
-		void ShowListenDialog (IPhoneDebuggerStartInfo dsi, Action cancelListen)
+		void ShowListenDialog (IPhoneDebuggerStartInfo dsi)
 		{
 			Gtk.Application.Invoke (delegate {
 				if (VirtualMachine != null || Exited)
@@ -148,7 +142,6 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				
 				if (response != (int) Gtk.ResponseType.Ok) {
 					EndSession ();
-					cancelListen ();
 				}
 				dialog = null;
 			});
@@ -162,6 +155,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 						dialog.Respond (Gtk.ResponseType.Cancel);
 				});
 			}
+			CloseSockets ();
 			EndSimProcess ();
 			base.EndSession ();
 		}
@@ -214,11 +208,20 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			});
 		}
 		
-		
 		protected override void OnExit ()
 		{
 			base.OnExit ();
 			EndSimProcess ();
+			CloseSockets ();
+		}
+		
+		void CloseSockets ()
+		{
+			if (debugSock != null)
+				debugSock.Close (200);
+			if (outputSock != null)
+				outputSock.Close (200);
+			debugSock = outputSock = null;
 		}
 	}
 }
