@@ -89,8 +89,8 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		/// <returns>An action that can be used to cancel listening</returns>
 		void RunListenThread (IPhoneDebuggerStartInfo dsi)
 		{
-			var debugSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			var outputSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			debugSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			outputSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			
 			VirtualMachine vm = null;
 			var listenThread = new Thread (delegate () {
@@ -109,7 +109,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 					});
 				} catch (SocketException sox) {
 					if (sox.ErrorCode != (int)SocketError.Shutdown) {
-						MonoDevelop.Core.Gui.MessageService.ShowException (sox, "Unexpected socket error: \n" + sox.Message);
+						MonoDevelop.Core.Gui.MessageService.ShowException (sox, "Socket error: " + sox.Message);
 						LoggingService.LogError ("Error binding iphone soft debugger socket", sox);
 					}
 					EndSession ();

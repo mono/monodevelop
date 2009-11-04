@@ -1,5 +1,9 @@
 2009-11-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDebuggerSession.cs: Fix closing sockets.
+
+2009-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneDebuggerSession.cs: Better error handling with socket
 	  errors.
 
