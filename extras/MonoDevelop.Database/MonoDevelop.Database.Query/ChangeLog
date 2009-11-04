@@ -1,3 +1,8 @@
+2009-11-04  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* SqlQueryTextEditorExtension.cs: Fix: QueryInitializer should
+	  inherit from CommandHandler.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

@@ -39,7 +39,7 @@ namespace MonoDevelop.Database.Query
 		
 	}
 	
-	internal class QueryInitializer {
+	internal class QueryInitializer:CommandHandler	 {
 		
 		public QueryInitializer ()
 		{
