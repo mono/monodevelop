@@ -110,6 +110,8 @@ namespace MonoDevelop.Core.Assemblies
 			get { return assemblyContext; }
 		}
 		
+		public abstract string GetAssemblyDebugInfoFile (string assemblyPath);
+		
 		public virtual Process ExecuteAssembly (ProcessStartInfo pinfo, TargetFramework fx)
 		{
 			// Make a copy of the ProcessStartInfo because we are going to modify it

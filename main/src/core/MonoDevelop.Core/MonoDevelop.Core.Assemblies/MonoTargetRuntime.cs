@@ -107,6 +107,11 @@ namespace MonoDevelop.Core.Assemblies
 
 		public bool UserDefined { get; internal set; }
 		
+		public override string GetAssemblyDebugInfoFile (string assemblyPath)
+		{
+			return assemblyPath + ".mdb";
+		}
+		
 		protected override TargetFrameworkBackend CreateBackend (TargetFramework fx)
 		{
 			return new MonoFrameworkBackend ();

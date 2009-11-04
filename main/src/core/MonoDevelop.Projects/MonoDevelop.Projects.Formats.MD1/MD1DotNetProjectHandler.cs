@@ -59,8 +59,9 @@ namespace MonoDevelop.Projects.Formats.MD1
 			// Delete the generated debug info
 			string file = project.GetOutputFileName (configuration);
 			if (file != null) {
-				if (File.Exists (file + ".mdb"))
-					FileService.DeleteFile (file + ".mdb");
+				string mdb = conf.TargetRuntime.GetAssemblyDebugInfoFile (file);
+				if (File.Exists (mdb))
+					FileService.DeleteFile (mdb);
 			}
 
 			List<string> cultures = new List<string> ();

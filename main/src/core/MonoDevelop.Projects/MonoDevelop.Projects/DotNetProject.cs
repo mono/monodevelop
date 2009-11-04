@@ -444,8 +444,6 @@ namespace MonoDevelop.Projects
 				list.Add (appConfig.Src, appConfig.CopyOnlyIfNewer, output + ".config");
 			}
 			
-			string debugExt = (TargetRuntime is MonoTargetRuntime) ? ".mdb" : ".pdb";
-
 			//collect all the "local copy" references and their attendant files
 			foreach (ProjectReference projectReference in References) {
 				if (!projectReference.LocalCopy || ParentSolution == null)
@@ -474,7 +472,7 @@ namespace MonoDevelop.Projects
 					DotNetProjectConfiguration refConfig = p.GetActiveConfiguration (solutionConfiguration) as DotNetProjectConfiguration;
 
 					if (refConfig != null && refConfig.DebugMode) {
-						string mdbFile = refOutput + debugExt;
+						string mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (refOutput);
 						if (File.Exists (mdbFile)) {
 							list.Add (mdbFile);
 						}
@@ -487,7 +485,7 @@ namespace MonoDevelop.Projects
 						list.Add (file);
 						if (File.Exists (file + ".config"))
 							list.Add (file + ".config");
-						string mdbFile = file + debugExt;
+						string mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (file);
 						if (File.Exists (mdbFile))
 							list.Add (mdbFile);
 					}

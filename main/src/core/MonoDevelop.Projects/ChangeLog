@@ -1,3 +1,10 @@
+2009-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	  Use a runtime-dependent method for getting the debug info
+	  file of an assembly.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

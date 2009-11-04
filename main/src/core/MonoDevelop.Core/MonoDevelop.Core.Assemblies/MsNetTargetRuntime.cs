@@ -73,6 +73,12 @@ namespace MonoDevelop.Core.Assemblies
 			get { return rootDir; }
 		}
 		
+		public override string GetAssemblyDebugInfoFile (string assemblyPath)
+		{
+			return Path.ChangeExtension (assemblyPath, ".pdb");
+		}
+
+		
 		protected override void OnInitialize ()
 		{
 			RegistryKey foldersKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\AssemblyFolders", false);
