@@ -58,13 +58,28 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				StartSimulatorProcess (cmd);
 				ShowListenDialog (dsi, listenThread);
 			} else {
-				IPhoneUtility.Upload (cmd.Runtime, cmd.Framework, cmd.AppPath).Completed += delegate(IAsyncOperation op) {
-					if (op.Success)
-						ShowListenDialog (dsi, RunListenThread (dsi));
-					else
-						EndSession ();
-				};
+				var markerFile = cmd.AppPath.ParentDirectory.Combine (".monotouch_last_uploaded");
+				if (File.Exists (markerFile) && File.GetLastWriteTime (markerFile) > File.GetLastWriteTime (cmd.AppPath)) {
+					ShowListenDialog (dsi, RunListenThread (dsi));
+				} else {
+					IPhoneUtility.Upload (cmd.Runtime, cmd.Framework, cmd.AppPath).Completed += delegate(IAsyncOperation op) {
+						if (op.Success) {
+							TouchUploadMarker (markerFile);
+							ShowListenDialog (dsi, RunListenThread (dsi));
+						} else {
+							EndSession ();
+						}
+					};
+				}
 			}
+		}
+		
+		void TouchUploadMarker (FilePath markerFile)
+		{
+			if (File.Exists (markerFile))
+				File.SetLastWriteTime (markerFile, DateTime.Now);
+			else
+				File.WriteAllText (markerFile, "This file is used to determine when the app was last uploaded to a device");
 		}
 		
 		/// <summary>Starts a thread listening for the debugger to connect over TCP/IP</summary>
