@@ -47,6 +47,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		Process simProcess;
 		Gtk.Dialog dialog;
 		Socket debugSock, outputSock;
+		Thread listenThread;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
@@ -93,7 +94,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			outputSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			
 			VirtualMachine vm = null;
-			var listenThread = new Thread (delegate () {
+			listenThread = new Thread (delegate () {
 				try {
 					debugSock.Bind (new IPEndPoint (dsi.Address, dsi.DebugPort));
 					outputSock.Bind (new IPEndPoint (dsi.Address, dsi.OutputPort));
@@ -107,6 +108,8 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 						if (dialog != null)
 							dialog.Respond (Gtk.ResponseType.Ok);
 					});
+				} catch (ThreadAbortException) {
+					Thread.ResetAbort ();
 				} catch (SocketException sox) {
 					if (sox.ErrorCode != (int)SocketError.Shutdown) {
 						MonoDevelop.Core.Gui.MessageService.ShowException (sox, "Socket error: " + sox.Message);
@@ -225,10 +228,16 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		void CloseSockets ()
 		{
 			if (debugSock != null)
-				debugSock.Close (200);
+				debugSock.Close ();
 			if (outputSock != null)
-				outputSock.Close (200);
+				outputSock.Close ();
 			debugSock = outputSock = null;
+			
+			//HACK: we still have to do this because the socket.Close doesn't interrupt socket.Accept on Mono
+			if (listenThread != null) {
+				listenThread.Abort ();
+				listenThread = null;
+			}
 		}
 	}
 }

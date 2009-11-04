@@ -1,5 +1,10 @@
 2009-11-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDebuggerSession.cs: Use Thread.Abort again because
+	  socket.Close doesn't interrupt Accept.
+
+2009-11-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneDebuggerSession.cs: Fix closing sockets.
 
 2009-11-04  Michael Hutchinson  <mhutchinson@novell.com>
