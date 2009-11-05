@@ -109,6 +109,7 @@
   <Assembly name="Mono.Security" />
   <Assembly name="Mono.WebBrowser" />
   <Assembly name="Mono.CompilerServices.SymbolWriter" />
+  <Assembly name="Mono.Cairo" />
   <Assembly name="Mono.Http" />
   <Assembly name="Mono.Mozilla" />
   <Assembly name="Mono.Security.Win32" />

@@ -1,5 +1,11 @@
 2009-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* frameworks/framework_NET_4_0.xml:
+	* frameworks/framework_NET_2_0.xml:
+	* frameworks/framework_NET_1_1.xml: Put Mono.Cairo back again.
+
+2009-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
 	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
 	* MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs: Use a
