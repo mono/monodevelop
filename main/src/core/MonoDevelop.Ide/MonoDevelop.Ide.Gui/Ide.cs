@@ -310,7 +310,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (args.Change == ExtensionChange.Add) {
 				try {
-					typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (args.ExtensionObject, null);
+					if (typeof(CommandHandler).IsInstanceOfType (args.ExtensionObject))
+						typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (args.ExtensionObject, null);
+					else
+						LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
 				}

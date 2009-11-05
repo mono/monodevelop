@@ -61,8 +61,10 @@ namespace MonoDevelop.Ide.Gui
 		ProjectReferenceEventHandler referenceRemovedFromProjectHandler;
 		SolutionItemChangeEventHandler itemAddedToSolutionHandler;
 		SolutionItemChangeEventHandler itemRemovedFromSolutionHandler;
+		EventHandler<SolutionItemEventArgs> itemReloadRequiredHandler;
 		EventHandler<WorkspaceItemChangeEventArgs> descendantItemAddedHandler;
 		EventHandler<WorkspaceItemChangeEventArgs> descendantItemRemovedHandler;
+		EventHandler<WorkspaceItemEventArgs> reoadRequiredHandler;
 		EventHandler configurationsChanged;
 		
 		internal RootWorkspace ()
@@ -77,10 +79,13 @@ namespace MonoDevelop.Ide.Gui
 		
 			itemAddedToSolutionHandler = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (NotifyItemAddedToSolution));
 			itemRemovedFromSolutionHandler = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (NotifyItemRemovedFromSolution));
+			itemReloadRequiredHandler =  (EventHandler<SolutionItemEventArgs>) DispatchService.GuiDispatch (new EventHandler<SolutionItemEventArgs> (NotifyItemReloadRequired));
 			
 			descendantItemAddedHandler = (EventHandler<WorkspaceItemChangeEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemChangeEventArgs> (NotifyDescendantItemAdded));
 			descendantItemRemovedHandler = (EventHandler<WorkspaceItemChangeEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemChangeEventArgs> (NotifyDescendantItemRemoved));
 			configurationsChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (NotifyConfigurationsChanged));
+			
+			reoadRequiredHandler = (EventHandler<WorkspaceItemEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemEventArgs> (NotifyReloadRequired));
 			
 			FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (CheckFileRemove));
 			FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (CheckFileRename));
@@ -96,8 +101,6 @@ namespace MonoDevelop.Ide.Gui
 					useDefaultRuntime = true;
 				}
 			};
-			
-			GLib.Timeout.Add (2000, OnRunProjectChecks);
 		}
 		
 		public WorkspaceItemCollection Items {
@@ -840,88 +843,7 @@ namespace MonoDevelop.Ide.Gui
 				CleanItemProperties (props, ((Solution)item).RootFolder, "MonoDevelop.Ide.ItemProperties");
 		}
 		
-		bool OnRunProjectChecks ()
-		{
-			// If any project has been modified, reload it
-			foreach (WorkspaceItem it in new List<WorkspaceItem> (Items))
-				OnCheckWorkspaceItem (it);
-			return true;
-		}
-		
-		void OnCheckWorkspaceItem (WorkspaceItem item)
-		{
-			if (item.NeedsReload) {
-				IEnumerable<string> closedDocs;
-				if (AllowReload (item.GetAllProjects (), out closedDocs)) {
-					if (item.ParentWorkspace == null) {
-						string file = item.FileName;
-						SavePreferences ();
-						CloseWorkspaceItem (item);
-						OpenWorkspaceItem (file, false);
-					}
-					else {
-						using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true)) {
-							item.ParentWorkspace.ReloadItem (m, item);
-							ReattachDocumentProjects (closedDocs);
-						}
-					}
-
-					return;
-				} else
-					item.NeedsReload = false;
-			}
-
-			if (item is Workspace) {
-				Workspace ws = (Workspace) item;
-				List<WorkspaceItem> items = new List<WorkspaceItem> (ws.Items);
-				foreach (WorkspaceItem it in items)
-					OnCheckWorkspaceItem (it);
-			}
-			else if (item is Solution) {
-				Solution sol = (Solution) item;
-				OnCheckProject (sol.RootFolder);
-			}
-		}
-		
-		void OnCheckProject (SolutionItem entry)
-		{
-			if (entry.NeedsReload) {
-				IEnumerable projects = null;
-				if (entry is Project) {
-					projects = new Project [] { (Project) entry };
-				} else if (entry is SolutionFolder) {
-					projects = ((SolutionFolder)entry).GetAllProjects ();
-				}
-				
-				IEnumerable<string> closedDocs;
-				
-				if (AllowReload (projects, out closedDocs)) {
-					using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
-						// Root folders never need to reload
-						entry.ParentFolder.ReloadItem (m, entry);
-						ReattachDocumentProjects (closedDocs);
-					}
-					return;
-				} else
-					entry.NeedsReload = false;
-			}
-			
-			if (entry is SolutionFolder) {
-				ArrayList ens = new ArrayList ();
-				foreach (SolutionItem ce in ((SolutionFolder)entry).Items)
-					ens.Add (ce);
-				foreach (SolutionItem ce in ens)
-					OnCheckProject (ce);
-			}
-		}
-		
-//		bool AllowReload (IEnumerable projects)
-//		{
-//			IEnumerable<string> closedDocs;
-//			return AllowReload (projects, out closedDocs);
-//		}
-		
-		bool AllowReload (IEnumerable projects, out IEnumerable<string> closedDocs)
+		bool AllowReload (IEnumerable<Project> projects, out IEnumerable<string> closedDocs)
 		{
 			closedDocs = null;
 			
@@ -1108,6 +1030,7 @@ namespace MonoDevelop.Ide.Gui
 			sol.ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
 			sol.SolutionItemAdded += itemAddedToSolutionHandler;
 			sol.SolutionItemRemoved += itemRemovedFromSolutionHandler;
+			sol.ItemReloadRequired += itemReloadRequiredHandler;
 		}
 		
 		void UnsubscribeSolution (Solution solution)
@@ -1121,6 +1044,7 @@ namespace MonoDevelop.Ide.Gui
 			solution.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
 			solution.SolutionItemAdded -= itemAddedToSolutionHandler;
 			solution.SolutionItemRemoved -= itemRemovedFromSolutionHandler;
+			solution.ItemReloadRequired -= itemReloadRequiredHandler;
 		}
 		
 		void NotifyConfigurationsChanged (object s, EventArgs a)
@@ -1229,9 +1153,60 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		void NotifyReloadRequired (object s, WorkspaceItemEventArgs args)
+		{
+			// Maybe already reloaded at solution level?
+			if (!args.Item.NeedsReload)
+				return;
+			
+			IEnumerable<string> closedDocs;
+			WorkspaceItem item = args.Item;
+			if (AllowReload (item.GetAllProjects (), out closedDocs)) {
+				if (item.ParentWorkspace == null) {
+					string file = item.FileName;
+					SavePreferences ();
+					CloseWorkspaceItem (item);
+					OpenWorkspaceItem (file, false);
+				}
+				else {
+					using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true)) {
+						item.ParentWorkspace.ReloadItem (m, item);
+						ReattachDocumentProjects (closedDocs);
+					}
+				}
+
+				return;
+			} else
+				item.NeedsReload = false;
+		}
+		
+		void NotifyItemReloadRequired (object o, SolutionItemEventArgs args)
+		{
+			// Maybe already reloaded at solution level?
+			if (!args.SolutionItem.NeedsReload)
+				return;
+			
+			IEnumerable<Project> projects = null;
+			if (args.SolutionItem is Project)
+			projects = new Project [] { (Project) args.SolutionItem };
+			
+			IEnumerable<string> closedDocs;
+			
+			if (AllowReload (projects, out closedDocs)) {
+				using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
+					// Root folders never need to reload
+					args.SolutionItem.ParentFolder.ReloadItem (m, args.SolutionItem);
+					ReattachDocumentProjects (closedDocs);
+				}
+				return;
+			} else
+				args.SolutionItem.NeedsReload = false;
+		}
+		
 		void OnItemLoaded (WorkspaceItem item)
 		{
 			try {
+				item.ReloadRequired += reoadRequiredHandler;
 				if (WorkspaceItemLoaded != null)
 					WorkspaceItemLoaded (this, new WorkspaceItemEventArgs (item));
 				if (item is Solution && SolutionLoaded != null)
@@ -1244,6 +1219,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnItemUnloaded (WorkspaceItem item)
 		{
 			try {
+				item.ReloadRequired -= reoadRequiredHandler;
 				userPrefs.Remove (item);
 				if (WorkspaceItemUnloaded != null)
 					WorkspaceItemUnloaded (this, new WorkspaceItemEventArgs (item));
