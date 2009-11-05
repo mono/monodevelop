@@ -1,3 +1,8 @@
+2009-11-05  Carlo Kok  <ck@remobjects.com>
+
+	* CodeBehindGenerator.cs: fixed support for Partial Methods in 
+	  Delphi Prism codegen.
+
 2009-11-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneCommands.cs: Expose the upload command on a utility

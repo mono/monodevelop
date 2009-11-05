@@ -230,10 +230,15 @@ namespace MonoDevelop.IPhone
 				return;
 			}
 			else if (provider.FileExtension == "pas") {
-				type.Members.Add (new CodeSnippetTypeMember ("[MonoTouch.Foundation.Export('" + name + "')]"));
-				type.Members.Add (new CodeSnippetTypeMember (
-					String.Format ("method {1} (sender: {2}); partial; empty;\n",
-					               name, provider.CreateValidIdentifier (name.TrimEnd (':')), senderType.BaseType)));
+				var m = new CodeMemberMethod ();
+				m.Name = provider.CreateValidIdentifier (name.TrimEnd (':'));
+				m.Parameters.Add (new CodeParameterDeclarationExpression (senderType.BaseType, "sender"));
+				m.UserData ["OxygenePartial"] = "YES";
+				m.UserData ["OxygeneEmpty"] = "YES";
+				var a = new CodeAttributeDeclaration ("MonoTouch.Foundation.Export");
+				a.Arguments.Add (new CodeAttributeArgument (new CodePrimitiveExpression (name)));
+				m.CustomAttributes.Add (a);
+				type.Members.Add (m);
 				return;
 			}
 			
