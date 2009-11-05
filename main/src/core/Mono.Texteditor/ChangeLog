@@ -1,5 +1,10 @@
 2009-11-05  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 552778 - Redraw
+	  issues when scrolling with mouse wheel'.
+
+2009-11-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Only render the lines once in
 	  an update - this should fix many of the slowness complaints.
 

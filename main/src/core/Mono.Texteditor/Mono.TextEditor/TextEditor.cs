@@ -215,7 +215,7 @@ namespace Mono.TextEditor
 			                          0, from, 
 			                          0, to, 
 			                          Allocation.Width, Allocation.Height - from - to);
-			
+			renderedLines.Clear ();
 			if (delta > 0) {
 				delta += LineHeight;
 				RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta));
