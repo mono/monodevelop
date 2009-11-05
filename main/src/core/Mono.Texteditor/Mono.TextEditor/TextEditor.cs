@@ -367,12 +367,12 @@ namespace Mono.TextEditor
 		Selection oldSelection = null;
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
-			ClipboardActions.ClearPrimary ();
+/*			ClipboardActions.ClearPrimary ();
 			if (IsSomethingSelected) {
 				ISegment selectionRange = MainSelection.GetSelectionRange (textEditorData);
 				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.Length)
 					ClipboardActions.CopyToPrimary (this.textEditorData);
-			}
+			}*/
 			// Handle redraw
 			Selection selection = Selection.Clone (MainSelection);
 			int startLine    = selection != null ? selection.Anchor.Line : -1;
@@ -1225,6 +1225,9 @@ namespace Mono.TextEditor
 			return this.textViewMargin.GetWidth (text);
 		}
 		
+		
+		Dictionary<Margin, HashSet<int>> renderedLines = new Dictionary<Margin, HashSet<int>> ();
+		
 		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area)
 		{
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
@@ -1246,6 +1249,8 @@ namespace Mono.TextEditor
 						marginsToRender.Add (margin);
 					}
 					curX += margin.Width;
+					if (!renderedLines.ContainsKey (margin))
+						renderedLines.Add (margin, new HashSet<int> ());
 				}
 			}
 			
@@ -1257,6 +1262,10 @@ namespace Mono.TextEditor
 				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
 				LineSegment line = Document.GetLine (logicalLineNumber);
 				foreach (Margin margin in marginsToRender) {
+					HashSet<int> linesAlreadyRendered = renderedLines[margin];
+					if (linesAlreadyRendered.Contains (logicalLineNumber))
+						continue;
+					linesAlreadyRendered.Add (logicalLineNumber);
 /*					if (margin.Width > 0 && area.Left > margin.XOffset + margin.Width)
 						continue;
 					if (area.Right <= margin.XOffset)
@@ -1367,6 +1376,7 @@ namespace Mono.TextEditor
 		void RenderPendingUpdates (Gdk.Window window)
 		{
 //			Console.WriteLine ("Pending updates: " + redrawList.Count);
+			renderedLines.Clear ();
 			foreach (Gdk.Rectangle updateRect in redrawList.ToArray ()) {
 				RenderMargins (this.buffer, updateRect);
 				window.DrawDrawable (Style.BackgroundGC (StateType.Normal), buffer, updateRect.X, updateRect.Y, updateRect.X, updateRect.Y, updateRect.Width, updateRect.Height);
