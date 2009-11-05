@@ -1,8 +1,0 @@
-2005-01-27  John Luke  <jluke@cfl.rr.com>
-
-	* src/Parser.cs: comment unused line
-	
-2004-04-08  John Luke  <jluke@cfl.rr.com>
-
-	* src/DFA.cs: use Path.Combine not + "\\Scanner.frame";
-
