@@ -1,3 +1,8 @@
+2009-11-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Handled possible endless loop
+	  in ScrollToCaret.
+
 2009-11-04  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/GapBuffer.cs: gap buffer is now threadsafe.
