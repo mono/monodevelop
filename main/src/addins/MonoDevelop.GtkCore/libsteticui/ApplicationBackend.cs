@@ -57,12 +57,12 @@ namespace Stetic
 				Hashtable props = new Hashtable ();
 				props ["path"] = unixPath;
 				props ["name"] = "__internal_unix";
-				ChannelServices.RegisterChannel (new UnixChannel (props, null, formatterSink));
+				ChannelServices.RegisterChannel (new UnixChannel (props, null, formatterSink), false);
 			} else {
 				Hashtable props = new Hashtable ();
 				props ["port"] = 0;
 				props ["name"] = "__internal_tcp";
-				ChannelServices.RegisterChannel (new TcpChannel (props, null, formatterSink));
+				ChannelServices.RegisterChannel (new TcpChannel (props, null, formatterSink), false);
 			}
 			
 			// Read the reference to the application

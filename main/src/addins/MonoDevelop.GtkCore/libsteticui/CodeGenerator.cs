@@ -14,7 +14,6 @@ namespace Stetic
 		{
 			CodeGenerationResult res = GenerateProjectCode (options, projects);
 			
-			ICodeGenerator gen = provider.CreateGenerator ();
 			string basePath = Path.GetDirectoryName (file);
 			
 			foreach (SteticCompilationUnit unit in res.Units) {
@@ -25,7 +24,7 @@ namespace Stetic
 					fname = Path.Combine (basePath, unit.Name);
 				StreamWriter fileStream = new StreamWriter (fname);
 				try {
-					gen.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
+					provider.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
 				} finally {
 					fileStream.Close ();
 				}

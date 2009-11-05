@@ -53,14 +53,14 @@ namespace Stetic
 				remotingChannel = "tcp";
 				IChannel ch = ChannelServices.GetChannel ("tcp");
 				if (ch == null) {
-					ChannelServices.RegisterChannel (new TcpChannel (0));
+					ChannelServices.RegisterChannel (new TcpChannel (0), false);
 				}
 			} else {
 				remotingChannel = "unix";
 				IChannel ch = ChannelServices.GetChannel ("unix");
 				if (ch == null) {
 					string unixRemotingFile = Path.GetTempFileName ();
-					ChannelServices.RegisterChannel (new UnixChannel (unixRemotingFile));
+					ChannelServices.RegisterChannel (new UnixChannel (unixRemotingFile), false);
 				}
 			}
 			return remotingChannel;
@@ -383,7 +383,6 @@ namespace Stetic
 			ArrayList files = new ArrayList ();
 			CodeGenerationResult res = GenerateProjectCode (options, projects);
 			
-			ICodeGenerator gen = provider.CreateGenerator ();
 			string basePath = Path.GetDirectoryName (file);
 			string ext = Path.GetExtension (file);
 			
@@ -397,7 +396,7 @@ namespace Stetic
 				unit.Name = fname;
 				StreamWriter fileStream = new StreamWriter (fname);
 				try {
-					gen.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
+					provider.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
 				} finally {
 					fileStream.Close ();
 				}
