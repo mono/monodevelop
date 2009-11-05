@@ -34,7 +34,7 @@ namespace Stetic.Wrapper
 			base.Dispose ();
 		}
 
-		public static new Gtk.Toolbar CreateInstance ()
+		public static Gtk.Toolbar CreateInstance ()
 		{
 			ActionToolbar t = new ActionToolbar ();
 			return t;

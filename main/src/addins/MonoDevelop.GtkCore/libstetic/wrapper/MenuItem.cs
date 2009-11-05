@@ -5,7 +5,7 @@ namespace Stetic.Wrapper {
 
 	public class MenuItem : Container {
 
-		public static new Gtk.MenuItem CreateInstance ()
+		public static Gtk.MenuItem CreateInstance ()
 		{
 			// Use the ctor that will create an AccelLabel
 			return new Gtk.MenuItem ("");

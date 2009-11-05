@@ -23,7 +23,7 @@ namespace Stetic.Wrapper
 			base.Dispose ();
 		}
 		
-		public static new Gtk.MenuBar CreateInstance ()
+		public static Gtk.MenuBar CreateInstance ()
 		{
 			return new ActionMenuBar ();
 		}

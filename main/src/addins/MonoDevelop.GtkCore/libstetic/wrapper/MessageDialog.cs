@@ -98,7 +98,7 @@ namespace Stetic {
 		}
 
 		Gtk.ButtonsType buttons;
-		public new Gtk.ButtonsType Buttons {
+		public Gtk.ButtonsType Buttons {
 			get {
 				return buttons;
 			}

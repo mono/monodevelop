@@ -7,7 +7,7 @@ namespace Stetic.Wrapper {
 
 	public class Expander : Container {
 
-		public static new Gtk.Expander CreateInstance ()
+		public static Gtk.Expander CreateInstance ()
 		{
 			return new Gtk.Expander ("");
 		}

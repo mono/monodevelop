@@ -6,7 +6,7 @@ namespace Stetic.Wrapper
 {
 	public class Bin: Container
 	{
-		public static new Gtk.Bin CreateInstance (ClassDescriptor klass)
+		public static Gtk.Bin CreateInstance (ClassDescriptor klass)
 		{
 			if (klass.Name == "Gtk.Bin")
 				return new CustomWidget ();

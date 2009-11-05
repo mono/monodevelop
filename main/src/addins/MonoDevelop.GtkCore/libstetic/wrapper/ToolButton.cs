@@ -16,7 +16,7 @@ namespace Stetic.Wrapper {
 			TextAndIcon
 		};
 
-		public static new Gtk.ToolButton CreateInstance ()
+		public static Gtk.ToolButton CreateInstance ()
 		{
 			return new Gtk.ToolButton (Gtk.Stock.New);
 		}
