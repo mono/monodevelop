@@ -18,8 +18,12 @@ endif
 all: update-reg
 	$(MDTOOL) build -c:$(conf)
 
-clean: update-reg
-	$(MDTOOL) build -t:Clean -c:$(conf)
+clean:
+	rm -rf build/*
+
+# this breaks if the local MD has been cleaned
+#clean: update-reg
+#	$(MDTOOL) build -t:Clean -c:$(conf)
 
 install: all
 	mkdir -p  $(installdir)
