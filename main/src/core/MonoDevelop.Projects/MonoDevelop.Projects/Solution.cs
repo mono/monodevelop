@@ -678,6 +678,12 @@ namespace MonoDevelop.Projects
 				EntrySaved (this, args);
 		}
 		
+		internal protected virtual void OnItemReloadRequired (SolutionItemEventArgs args)
+		{
+			if (ItemReloadRequired != null)
+				ItemReloadRequired (this, args);
+		}
+		
 #endregion
 		
 		public event EventHandler StartupItemChanged;
@@ -694,5 +700,6 @@ namespace MonoDevelop.Projects
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		public event SolutionItemEventHandler EntryModified;
 		public event SolutionItemEventHandler EntrySaved;
+		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
 	}
 }

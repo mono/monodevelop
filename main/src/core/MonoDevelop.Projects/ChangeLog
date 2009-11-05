@@ -1,5 +1,14 @@
 2009-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/Solution.cs:
+	* MonoDevelop.Projects/WorkspaceItem.cs:
+	* MonoDevelop.Projects/SolutionFolder.cs:
+	* MonoDevelop.Projects/SolutionEntityItem.cs: Added
+	  ReloadRequired event, which is fired when the NeedsReload
+	  property changes.
+
+2009-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/DotNetProject.cs:
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
 	  Use a runtime-dependent method for getting the debug info

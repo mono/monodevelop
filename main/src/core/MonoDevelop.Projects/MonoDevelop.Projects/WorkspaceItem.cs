@@ -49,13 +49,10 @@ namespace MonoDevelop.Projects
 		FilePath fileName;
 		int loading;
 		PropertyBag userProperties;
+		FileStatusTracker<WorkspaceItemEventArgs> fileStatusTracker;
 		
 		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		FilePath baseDirectory;
-		
-		Dictionary<string,DateTime> lastSaveTime = new Dictionary<string,DateTime> ();
-		Dictionary<string,DateTime> reloadCheckTime = new Dictionary<string,DateTime> ();
-		bool savingFlag;
 		
 		public Workspace ParentWorkspace {
 			get { return parentWorkspace; }
@@ -156,6 +153,7 @@ namespace MonoDevelop.Projects
 		public WorkspaceItem ()
 		{
 			MonoDevelop.Projects.Extensions.ProjectExtensionUtil.LoadControl (this);
+			fileStatusTracker = new FileStatusTracker<WorkspaceItemEventArgs> (this, OnReloadRequired, new WorkspaceItemEventArgs (this));
 		}
 
 		public virtual List<FilePath> GetItemFiles (bool includeReferencedFiles)
@@ -308,86 +306,32 @@ namespace MonoDevelop.Projects
 		public void Save (IProgressMonitor monitor)
 		{
 			try {
-				savingFlag = true;
+				fileStatusTracker.BeginSave ();
 				Services.ProjectService.ExtensionChain.Save (monitor, this);
 				OnSaved (new WorkspaceItemEventArgs (this));
 				
 				// Update save times
-				ResetLoadTimes ();
-				
-				FileService.NotifyFileChanged (FileName);
 			} finally {
-				savingFlag = false;
+				fileStatusTracker.EndSave ();
 			}
-		}
-		
-		void ResetLoadTimes ()
-		{
-			lastSaveTime.Clear ();
-			reloadCheckTime.Clear ();
-			foreach (FilePath file in GetItemFiles (false))
-				lastSaveTime [file] = reloadCheckTime [file] = GetLastWriteTime (file);
+			FileService.NotifyFileChanged (FileName);
 		}
 		
 		public virtual bool NeedsReload {
 			get {
-				if (savingFlag)
-					return false;
-				foreach (FilePath file in GetItemFiles (false))
-					if (GetLastReloadCheckTime (file) != GetLastWriteTime (file))
-						return true;
-				return false;
+				return fileStatusTracker.NeedsReload;
 			}
 			set {
-				reloadCheckTime.Clear ();
-				foreach (FilePath file in GetItemFiles (false)) {
-					if (value)
-						reloadCheckTime [file] = DateTime.MinValue;
-					else
-						reloadCheckTime [file] = GetLastWriteTime (file);
-				}
+				fileStatusTracker.NeedsReload = value;
 			}
 		}
 		
 		public virtual bool ItemFilesChanged {
 			get {
-				if (savingFlag)
-					return false;
-				foreach (FilePath file in GetItemFiles (false))
-					if (GetLastSaveTime (file) != GetLastWriteTime (file))
-						return true;
-				return false;
+				return fileStatusTracker.ItemFilesChanged;
 			}
 		}
 
-		DateTime GetLastWriteTime (FilePath file)
-		{
-			try {
-				if (!file.IsNullOrEmpty && File.Exists (file))
-					return File.GetLastWriteTime (file);
-			} catch {
-			}
-			return GetLastSaveTime (file);
-		}
-
-		DateTime GetLastSaveTime (FilePath file)
-		{
-			DateTime dt;
-			if (lastSaveTime.TryGetValue (file, out dt))
-				return dt;
-			else
-				return DateTime.MinValue;
-		}
-
-		DateTime GetLastReloadCheckTime (FilePath file)
-		{
-			DateTime dt;
-			if (reloadCheckTime.TryGetValue (file, out dt))
-				return dt;
-			else
-				return DateTime.MinValue;
-		}
-		
 		internal protected virtual BuildResult OnRunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
 			if (target == ProjectService.BuildTarget)
@@ -435,7 +379,7 @@ namespace MonoDevelop.Projects
 		void ILoadController.EndLoad ()
 		{
 			loading--;
-			ResetLoadTimes ();
+			fileStatusTracker.ResetLoadTimes ();
 			OnEndLoad ();
 		}
 		
@@ -494,9 +438,189 @@ namespace MonoDevelop.Projects
 				Saved (this, args);
 		}
 		
+		protected virtual void OnReloadRequired (WorkspaceItemEventArgs args)
+		{
+			fileStatusTracker.FireReloadRequired (args);
+		}
+		
 		public event EventHandler ConfigurationsChanged;
 		public event EventHandler<WorkspaceItemRenamedEventArgs> NameChanged;
 		public event EventHandler<WorkspaceItemEventArgs> Modified;
 		public event EventHandler<WorkspaceItemEventArgs> Saved;
+		
+		public event EventHandler<WorkspaceItemEventArgs> ReloadRequired {
+			add {
+				fileStatusTracker.ReloadRequired += value;
+			}
+			remove {
+				fileStatusTracker.ReloadRequired -= value;
+			}
+		}
+	}
+	
+	class FileStatusTracker<TEventArgs> where TEventArgs:EventArgs
+	{
+		Dictionary<string,DateTime> lastSaveTime;
+		Dictionary<string,DateTime> reloadCheckTime;
+		List<FileSystemWatcher> watchers;
+		bool savingFlag;
+		bool needsReload;
+		Action<TEventArgs> onReloadRequired;
+		TEventArgs eventArgs;
+		EventHandler<TEventArgs> reloadRequired;
+		
+		IWorkspaceFileObject item;
+		
+		public FileStatusTracker (IWorkspaceFileObject item, Action<TEventArgs> onReloadRequired, TEventArgs eventArgs)
+		{
+			this.item = item;
+			this.eventArgs = eventArgs;
+			this.onReloadRequired = onReloadRequired;
+			lastSaveTime = new Dictionary<string,DateTime> ();
+			reloadCheckTime = new Dictionary<string,DateTime> ();
+			watchers = null;
+			savingFlag = false;
+			needsReload = false;
+			reloadRequired = null;
+		}
+		
+		public void BeginSave ()
+		{
+			savingFlag = true;
+			needsReload = false;
+			DisposeWatchers ();
+		}
+		
+		public void EndSave ()
+		{
+			ResetLoadTimes ();
+			savingFlag = false;
+		}
+		
+		public void ResetLoadTimes ()
+		{
+			lastSaveTime.Clear ();
+			reloadCheckTime.Clear ();
+			foreach (FilePath file in item.GetItemFiles (false))
+				lastSaveTime [file] = reloadCheckTime [file] = GetLastWriteTime (file);
+			needsReload = false;
+			if (reloadRequired != null)
+				InternalNeedsReload ();
+		}
+		
+		public bool NeedsReload {
+			get {
+				if (savingFlag)
+					return false;
+				return InternalNeedsReload ();
+			}
+			set {
+				needsReload = value;
+				reloadCheckTime.Clear ();
+				foreach (FilePath file in item.GetItemFiles (false)) {
+					if (value)
+						reloadCheckTime [file] = DateTime.MinValue;
+					else
+						reloadCheckTime [file] = GetLastWriteTime (file);
+				}
+			}
+		}
+		
+		public bool ItemFilesChanged {
+			get {
+				if (savingFlag)
+					return false;
+				foreach (FilePath file in item.GetItemFiles (false))
+					if (GetLastSaveTime (file) != GetLastWriteTime (file))
+						return true;
+				return false;
+			}
+		}
+		
+		bool InternalNeedsReload ()
+		{
+			if (needsReload)
+				return true;
+			
+			// Watchers already set? if so, then since needsReload==false, no change has
+			// happened so far
+			if (watchers != null)
+				return false;
+		
+			// Handlers are not set up. Do the check now, and set the handlers.
+			watchers = new List<FileSystemWatcher> ();
+			foreach (FilePath file in item.GetItemFiles (false)) {
+				FileSystemWatcher w = new FileSystemWatcher (file.ParentDirectory, file.FileName);
+				w.IncludeSubdirectories = false;
+				w.Changed += HandleFileChanged;
+				w.EnableRaisingEvents = true;
+				watchers.Add (w);
+				if (GetLastReloadCheckTime (file) != GetLastWriteTime (file))
+					needsReload = true;
+			}
+			return needsReload;
+		}
+		
+		public void DisposeWatchers ()
+		{
+			if (watchers == null)
+				return;
+			foreach (FileSystemWatcher w in watchers)
+				w.Dispose ();
+			watchers = null;
+		}
+
+		void HandleFileChanged (object sender, FileSystemEventArgs e)
+		{
+			if (!savingFlag && !needsReload) {
+				needsReload = true;
+				onReloadRequired (eventArgs);
+			}
+		}
+
+		DateTime GetLastWriteTime (FilePath file)
+		{
+			try {
+				if (!file.IsNullOrEmpty && File.Exists (file))
+					return File.GetLastWriteTime (file);
+			} catch {
+			}
+			return GetLastSaveTime (file);
+		}
+
+		DateTime GetLastSaveTime (FilePath file)
+		{
+			DateTime dt;
+			if (lastSaveTime.TryGetValue (file, out dt))
+				return dt;
+			else
+				return DateTime.MinValue;
+		}
+
+		DateTime GetLastReloadCheckTime (FilePath file)
+		{
+			DateTime dt;
+			if (reloadCheckTime.TryGetValue (file, out dt))
+				return dt;
+			else
+				return DateTime.MinValue;
+		}
+		
+		public event EventHandler<TEventArgs> ReloadRequired {
+			add {
+				reloadRequired += value;
+				if (InternalNeedsReload ())
+					value (this, eventArgs);
+			}
+			remove {
+				reloadRequired -= value;
+			}
+		}
+		
+		public void FireReloadRequired (TEventArgs args)
+		{
+			if (reloadRequired != null)
+				reloadRequired (this, args);
+		}
 	}
 }

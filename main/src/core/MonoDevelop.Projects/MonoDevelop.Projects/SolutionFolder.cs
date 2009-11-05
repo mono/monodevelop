@@ -50,31 +50,11 @@ namespace MonoDevelop.Projects
 	[DataInclude (typeof(SolutionConfiguration))]
 	public class SolutionFolder : SolutionItem
 	{
-		ProjectFileEventHandler fileAddedToProjectHandler;
-		ProjectFileEventHandler fileRemovedFromProjectHandler;
-		ProjectFileEventHandler fileChangedInProjectHandler;
-		ProjectFileEventHandler filePropertyChangedInProjectHandler;
-		ProjectFileRenamedEventHandler fileRenamedInProjectHandler;
-		SolutionItemModifiedEventHandler entryModifiedHandler;
-		SolutionItemEventHandler entrySavedHandler;
-
-		ProjectReferenceEventHandler referenceAddedToProjectHandler;
-		ProjectReferenceEventHandler referenceRemovedFromProjectHandler;
-		
 		SolutionFolderItemCollection items;
 		string name;
 		
 		public SolutionFolder ()
 		{
-			fileAddedToProjectHandler = new ProjectFileEventHandler (NotifyFileAddedToProject);
-			fileChangedInProjectHandler = new ProjectFileEventHandler (NotifyFileChangedInProject);
-			filePropertyChangedInProjectHandler = new ProjectFileEventHandler (NotifyFilePropertyChangedInProject);
-			fileRemovedFromProjectHandler = new ProjectFileEventHandler (NotifyFileRemovedFromProject);
-			fileRenamedInProjectHandler = new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject);
-			referenceAddedToProjectHandler = new ProjectReferenceEventHandler (NotifyReferenceAddedToProject);
-			referenceRemovedFromProjectHandler = new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject);
-			entryModifiedHandler = new SolutionItemModifiedEventHandler (NotifyItemModified);
-			entrySavedHandler = new SolutionItemEventHandler (NotifyItemSaved);
 		}
 		
 		public SolutionFolderItemCollection Items {
@@ -268,34 +248,35 @@ namespace MonoDevelop.Projects
 		
 		void ConnectChildEntryEvents (SolutionItem item)
 		{
-			if (item is Project)
-			{
+			if (item is Project) {
 				Project project = item as Project;
-				project.FileRemovedFromProject += fileRemovedFromProjectHandler;
-				project.FileAddedToProject += fileAddedToProjectHandler;
-				project.FileChangedInProject += fileChangedInProjectHandler;
-				project.FilePropertyChangedInProject += filePropertyChangedInProjectHandler;
-				project.FileRenamedInProject += fileRenamedInProjectHandler;
+				project.FileRemovedFromProject += NotifyFileRemovedFromProject;
+				project.FileAddedToProject += NotifyFileAddedToProject;
+				project.FileChangedInProject += NotifyFileChangedInProject;
+				project.FilePropertyChangedInProject += NotifyFilePropertyChangedInProject;
+				project.FileRenamedInProject += NotifyFileRenamedInProject;
 				if (item is DotNetProject) {
-					((DotNetProject)project).ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
-					((DotNetProject)project).ReferenceAddedToProject += referenceAddedToProjectHandler;
+					((DotNetProject)project).ReferenceRemovedFromProject += NotifyReferenceRemovedFromProject;
+					((DotNetProject)project).ReferenceAddedToProject += NotifyReferenceAddedToProject;
 				}
 			}
-			else if (item is SolutionFolder)
-			{
+			
+			if (item is SolutionFolder) {
 				SolutionFolder folder = item as SolutionFolder;
-				folder.FileRemovedFromProject += fileRemovedFromProjectHandler;
-				folder.FileAddedToProject += fileAddedToProjectHandler;
-				folder.FileChangedInProject += fileChangedInProjectHandler;
-				folder.FilePropertyChangedInProject += filePropertyChangedInProjectHandler;
-				folder.FileRenamedInProject += fileRenamedInProjectHandler;
-				folder.ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
-				folder.ReferenceAddedToProject += referenceAddedToProjectHandler;
+				folder.FileRemovedFromProject += NotifyFileRemovedFromProject;
+				folder.FileAddedToProject += NotifyFileAddedToProject;
+				folder.FileChangedInProject += NotifyFileChangedInProject;
+				folder.FilePropertyChangedInProject += NotifyFilePropertyChangedInProject;
+				folder.FileRenamedInProject += NotifyFileRenamedInProject;
+				folder.ReferenceRemovedFromProject += NotifyReferenceRemovedFromProject;
+				folder.ReferenceAddedToProject += NotifyReferenceAddedToProject;
 			}
-			else if (item is SolutionEntityItem) {
-				((SolutionEntityItem)item).Saved += entrySavedHandler;
+			
+			if (item is SolutionEntityItem) {
+				((SolutionEntityItem)item).Saved += NotifyItemSaved;
+				((SolutionEntityItem)item).ReloadRequired += NotifyItemReloadRequired;
 			}
-			item.Modified += entryModifiedHandler;
+			item.Modified += NotifyItemModified;
 		}
 		
 		public override void Save (IProgressMonitor monitor)
@@ -357,30 +338,33 @@ namespace MonoDevelop.Projects
 		{
 			if (entry is Project) {
 				Project pce = entry as Project;
-				pce.FileRemovedFromProject -= fileRemovedFromProjectHandler;
-				pce.FileAddedToProject -= fileAddedToProjectHandler;
-				pce.FileChangedInProject -= fileChangedInProjectHandler;
-				pce.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
-				pce.FileRenamedInProject -= fileRenamedInProjectHandler;
+				pce.FileRemovedFromProject -= NotifyFileRemovedFromProject;
+				pce.FileAddedToProject -= NotifyFileAddedToProject;
+				pce.FileChangedInProject -= NotifyFileChangedInProject;
+				pce.FilePropertyChangedInProject -= NotifyFilePropertyChangedInProject;
+				pce.FileRenamedInProject -= NotifyFileRenamedInProject;
 				if (pce is DotNetProject) {
-					((DotNetProject)pce).ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
-					((DotNetProject)pce).ReferenceAddedToProject -= referenceAddedToProjectHandler;
+					((DotNetProject)pce).ReferenceRemovedFromProject -= NotifyReferenceRemovedFromProject;
+					((DotNetProject)pce).ReferenceAddedToProject -= NotifyReferenceAddedToProject;
 				}
 			}
-			else if (entry is SolutionFolder) {
+			
+			if (entry is SolutionFolder) {
 				SolutionFolder cce = entry as SolutionFolder;
-				cce.FileRemovedFromProject -= fileRemovedFromProjectHandler;
-				cce.FileAddedToProject -= fileAddedToProjectHandler;
-				cce.FileChangedInProject -= fileChangedInProjectHandler;
-				cce.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
-				cce.FileRenamedInProject -= fileRenamedInProjectHandler;
-				cce.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
-				cce.ReferenceAddedToProject -= referenceAddedToProjectHandler;
+				cce.FileRemovedFromProject -= NotifyFileRemovedFromProject;
+				cce.FileAddedToProject -= NotifyFileAddedToProject;
+				cce.FileChangedInProject -= NotifyFileChangedInProject;
+				cce.FilePropertyChangedInProject -= NotifyFilePropertyChangedInProject;
+				cce.FileRenamedInProject -= NotifyFileRenamedInProject;
+				cce.ReferenceRemovedFromProject -= NotifyReferenceRemovedFromProject;
+				cce.ReferenceAddedToProject -= NotifyReferenceAddedToProject;
 			}
-			else if (entry is SolutionEntityItem) {
-				((SolutionEntityItem)entry).Saved -= entrySavedHandler;
+			
+			if (entry is SolutionEntityItem) {
+				((SolutionEntityItem)entry).Saved -= NotifyItemSaved;
+				((SolutionEntityItem)entry).ReloadRequired -= NotifyItemReloadRequired;
 			}
-			entry.Modified -= entryModifiedHandler;
+			entry.Modified -= NotifyItemModified;
 		}
 		
 		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
@@ -708,6 +692,11 @@ namespace MonoDevelop.Projects
 			OnItemSaved (e);
 		}
 		
+		internal void NotifyItemReloadRequired (object sender, SolutionItemEventArgs e)
+		{
+			OnItemReloadRequired (e);
+		}
+		
 		internal void NotifyItemAddedToFolder (object sender, SolutionItemChangeEventArgs e, bool newToSolution)
 		{
 			if (ParentFolder != null)
@@ -835,6 +824,14 @@ namespace MonoDevelop.Projects
 				ItemSaved (this, e);
 		}
 		
+		protected virtual void OnItemReloadRequired (SolutionItemEventArgs e)
+		{
+			if (ParentFolder == null && ParentSolution != null)
+				ParentSolution.OnItemReloadRequired (e);
+			if (ItemReloadRequired != null)
+				ItemReloadRequired (this, e);
+		}
+		
 		public event SolutionItemChangeEventHandler ItemAdded;
 		public event SolutionItemChangeEventHandler ItemRemoved;
 		public event SolutionItemChangeEventHandler DescendantItemAdded;     // Fires for child folders
@@ -848,6 +845,7 @@ namespace MonoDevelop.Projects
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		public event SolutionItemModifiedEventHandler ItemModified;
 		public event SolutionItemEventHandler ItemSaved;
+		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
 	}
 	
 	class DummySolutionFolderHandler: ISolutionItemHandler

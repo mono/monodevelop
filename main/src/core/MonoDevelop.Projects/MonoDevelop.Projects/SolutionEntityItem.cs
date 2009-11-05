@@ -52,9 +52,7 @@ namespace MonoDevelop.Projects
 		
 		SolutionItemEventArgs thisItemArgs;
 		
-		Dictionary<string,DateTime> lastSaveTime = new Dictionary<string,DateTime> ();
-		Dictionary<string,DateTime> reloadCheckTime = new Dictionary<string,DateTime> ();
-		bool savingFlag;
+		FileStatusTracker<SolutionItemEventArgs> fileStatusTracker;
 
 		FilePath fileName;
 		string name;
@@ -77,6 +75,7 @@ namespace MonoDevelop.Projects
 			configurations.ConfigurationAdded += new ConfigurationEventHandler (OnConfigurationAddedToCollection);
 			configurations.ConfigurationRemoved += new ConfigurationEventHandler (OnConfigurationRemovedFromCollection);
 			Counters.ItemsLoaded++;
+			fileStatusTracker = new FileStatusTracker<SolutionItemEventArgs> (this, OnReloadRequired, new SolutionItemEventArgs (this));
 		}
 		
 		public override void Dispose ()
@@ -222,31 +221,19 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Project does not have a file name");
 			
 			try {
-				savingFlag = true;
+				fileStatusTracker.BeginSave ();
 				Services.ProjectService.ExtensionChain.Save (monitor, this);
 				OnSaved (thisItemArgs);
-				
-				// Update save times
-				ResetLoadTimes ();
-				
-				FileService.NotifyFileChanged (FileName);
 			} finally {
-				savingFlag = false;
+				fileStatusTracker.EndSave ();
 			}
-		}
-		
-		void ResetLoadTimes ()
-		{
-			lastSaveTime.Clear ();
-			reloadCheckTime.Clear ();
-			foreach (FilePath file in GetItemFiles (false))
-				lastSaveTime [file] = reloadCheckTime [file] = GetLastWriteTime (file);
+			FileService.NotifyFileChanged (FileName);
 		}
 		
 		protected override void OnEndLoad ()
 		{
 			base.OnEndLoad ();
-			ResetLoadTimes ();
+			fileStatusTracker.ResetLoadTimes ();
 			
 			if (syncReleaseVersion && ParentSolution != null)
 				releaseVersion = ParentSolution.Version;
@@ -260,62 +247,12 @@ namespace MonoDevelop.Projects
 		}
 		
 		public override bool NeedsReload {
-			get {
-				if (savingFlag)
-					return false;
-				foreach (FilePath file in GetItemFiles (false))
-					if (GetLastReloadCheckTime (file) != GetLastWriteTime (file))
-						return true;
-				return false;
-			}
-			set {
-				reloadCheckTime.Clear ();
-				foreach (FilePath file in GetItemFiles (false)) {
-					if (value)
-						reloadCheckTime [file] = DateTime.MinValue;
-					else
-						reloadCheckTime [file] = GetLastWriteTime (file);
-				}
-			}
+			get { return fileStatusTracker.NeedsReload; }
+			set { fileStatusTracker.NeedsReload = value; }
 		}
 		
 		public virtual bool ItemFilesChanged {
-			get {
-				if (savingFlag)
-					return false;
-				foreach (FilePath file in GetItemFiles (false))
-					if (GetLastSaveTime (file) != GetLastWriteTime (file))
-						return true;
-				return false;
-			}
-		}
-
-		DateTime GetLastWriteTime (FilePath file)
-		{
-			try {
-				if (!file.IsNullOrEmpty && File.Exists (file))
-					return File.GetLastWriteTime (file);
-			} catch {
-			}
-			return GetLastSaveTime (file);
-		}
-
-		DateTime GetLastSaveTime (FilePath file)
-		{
-			DateTime dt;
-			if (lastSaveTime.TryGetValue (file, out dt))
-				return dt;
-			else
-				return DateTime.MinValue;
-		}
-
-		DateTime GetLastReloadCheckTime (FilePath file)
-		{
-			DateTime dt;
-			if (reloadCheckTime.TryGetValue (file, out dt))
-				return dt;
-			else
-				return DateTime.MinValue;
+			get { return fileStatusTracker.ItemFilesChanged; }
 		}
 		
 		protected internal virtual void OnSave (IProgressMonitor monitor)
@@ -538,6 +475,16 @@ namespace MonoDevelop.Projects
 				ConfigurationRemoved (this, args);
 		}
 		
+		protected virtual void OnReloadRequired (SolutionItemEventArgs args)
+		{
+			fileStatusTracker.FireReloadRequired (args);
+		}
+		
 		public event SolutionItemEventHandler Saved;
+		
+		public event EventHandler<SolutionItemEventArgs> ReloadRequired {
+			add { fileStatusTracker.ReloadRequired += value; }
+			remove { fileStatusTracker.ReloadRequired -= value; }
+		}
 	}
 }
