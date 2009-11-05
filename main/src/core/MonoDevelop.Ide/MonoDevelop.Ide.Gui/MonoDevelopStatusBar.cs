@@ -108,6 +108,10 @@ namespace MonoDevelop.Ide
 			
 			originalFrame.HideAll ();
 			progressBar.Visible = false;
+			
+			// the Mac has a resize grip by default, and the GTK+ one breaks it
+			if (MonoDevelop.Core.PropertyService.IsMac)
+				HasResizeGrip = false;
 		}
 		
 		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
