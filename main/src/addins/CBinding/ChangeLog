@@ -1,3 +1,10 @@
+2009-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/CompilerPanel.cs:
+	* Gui/EditPackagesDialog.cs:
+	* ProjectPad/ProjectPackagesFolderNodeBuilder.cs: Use the
+	  correct method for getting the active configuration.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

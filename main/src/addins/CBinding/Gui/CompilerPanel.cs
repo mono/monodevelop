@@ -73,7 +73,7 @@ namespace CBinding
 
 			compilerComboBox.Active = active;
 			
-			useCcacheCheckBox.Active = ((CProjectConfiguration)project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration)).UseCcache;
+			useCcacheCheckBox.Active = ((CProjectConfiguration)project.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration)).UseCcache;
 			
 			Update ();
 		}
