@@ -51,7 +51,9 @@ namespace Mono.TextEditor
 		
 		public override string Text {
 			get {
-				return GetTextAt (0, Length);
+				lock (lockObj) {
+					return GetTextAt (0, Length);
+				}
 			}
 			set {
 				lock (lockObj) {
