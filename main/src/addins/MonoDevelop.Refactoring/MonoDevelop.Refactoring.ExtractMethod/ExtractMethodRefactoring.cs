@@ -319,6 +319,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			replacement.FileName = options.Document.FileName;
 			replacement.Offset = options.Document.TextEditor.SelectionStartPosition;
 			replacement.RemovedChars = options.Document.TextEditor.SelectionEndPosition - options.Document.TextEditor.SelectionStartPosition;
+			replacement.MoveCaretToReplace = true;
+			
 			LineSegment line1 = data.Document.GetLineByOffset (options.Document.TextEditor.SelectionEndPosition);
 			if (options.Document.TextEditor.SelectionEndPosition == line1.Offset) {
 				if (line1.Offset > 0) {

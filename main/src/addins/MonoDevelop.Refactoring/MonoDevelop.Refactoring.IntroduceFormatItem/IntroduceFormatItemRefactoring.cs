@@ -120,6 +120,7 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 			change.Offset = start;
 			change.RemovedChars = end - start + 1;
 			change.InsertedText = provider.OutputNode (options.Dom, formatCall);
+			change.MoveCaretToReplace = true;
 			changes.Add (change);
 			return changes;
 		}
