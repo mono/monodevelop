@@ -1,3 +1,11 @@
+2009-11-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* monodevelop: Don't tee because it leaves zombie processes 
+	  that lock the MD app bundle. Write the log to the standard
+	  Mac log directory.
+	
+	* Makefile.am: Tidy a few things up.
+
 2009-10-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Include the COPYING file in the app bundle.
