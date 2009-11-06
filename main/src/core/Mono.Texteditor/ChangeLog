@@ -1,5 +1,10 @@
 2009-11-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: Fixed 'Bug 553089 - Some text
+	  editor lines are not rendered'.
+
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Handled
 	  possible null reference exception.
 
