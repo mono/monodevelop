@@ -874,16 +874,15 @@ namespace Mono.TextEditor
 			{
 				int result = visualLineNumber;
 				LineSegment line = doc.GetLine (result);
-				if (line == null)
-					return result;
-				foreach (FoldSegment segment in Traverse (x => !(x.IsFolded && x.StartLine.Offset < line.Offset))) {
-					if (segment.IsFolded && segment.StartLine.Offset < line.Offset) {
+				// line == null in that loop means that the current visual line number is after the last line. But it has a correct
+				// logical line number depending on the folds.
+				foreach (FoldSegment segment in Traverse (x => !(x.IsFolded && (line == null || x.StartLine.Offset < line.Offset)))) {
+					if (segment.IsFolded && (line == null || segment.StartLine.Offset < line.Offset)) {
 						result += doc.GetLineCount (segment);
-						line = doc.GetLine (result);
-						if (line == null) 
-							return result;
+						if (line != null)
+							line = doc.GetLine (result);
 					}
-					if (segment.StartLine.Offset > line.Offset)
+					if (line != null && segment.StartLine.Offset > line.Offset)
 						break;
 				}
 				return result;
@@ -1147,8 +1146,6 @@ namespace Mono.TextEditor
 		{
 			if (visualLineNumber <= 0)
 				return 0;
-			if (visualLineNumber >= LineCount)
-				return visualLineNumber;
 			return this.foldSegmentTree.VisualToLogicalLine (this, visualLineNumber);
 		}
 		

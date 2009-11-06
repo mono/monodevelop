@@ -543,6 +543,7 @@ namespace MonoDevelop.CSharp.Resolver
 								((MethodResolveResult)result).AddGenericArgument (typeReference.ConvertToReturnType ());
 							}
 							((MethodResolveResult)result).ResolveExtensionMethods ();
+							
 							//System.Console.WriteLine(result + "/" + result.ResolvedType);
 							return result;
 						}

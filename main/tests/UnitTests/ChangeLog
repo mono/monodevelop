@@ -1,3 +1,9 @@
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  unit test for 'Bug 553101 – Enum completion does not use
+	  type aliases'.
+
 2009-10-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added

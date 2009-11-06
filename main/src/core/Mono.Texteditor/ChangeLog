@@ -1,3 +1,18 @@
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs: Fixed 'Bug 553089 - Some text
+	  editor lines are not rendered'.
+
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Handled
+	  possible null reference exception.
+
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/GapBuffer.cs: Fixed 'Bug 552562 - Crasher in
+	  auto-save thread'.
+
 2009-11-05  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 552778 - Redraw

@@ -232,41 +232,42 @@ namespace Mono.TextEditor.Highlighting
 			{
 				bool doUpdate = false;
 				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.GetLineByOffset (startOffset).Iter;
+				if (iter == null || iter.Current == null)
+					return;
 				Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
 				try { 
-				
-				LineSegment oldLine = iter.Current.Offset > 0 ? doc.GetLineByOffset (iter.Current.Offset - 1) : null;
-				do {
-					LineSegment line = iter.Current;
-					if (line == null || line.Offset < 0)
-						break;
-					
-					List<Span> spanList = new List<Span> (spanStack.ToArray ());
-					spanList.Reverse ();
-					for (int i = 0; i < spanList.Count; i++) {
-						if (!EndsWithContinuation (spanList[i], oldLine)) {
-							spanList.RemoveAt (i);
-							i--;
-						}
-					}
-					Span[] newSpans = spanList.ToArray ();
-					if (line.Offset > endOffset) {
-						bool equal = IsEqual (line.StartSpan, newSpans);
-						doUpdate |= !equal;
-						if (equal) 
+					LineSegment oldLine = iter.Current.Offset > 0 ? doc.GetLineByOffset (iter.Current.Offset - 1) : null;
+					do {
+						LineSegment line = iter.Current;
+						if (line == null || line.Offset < 0)
 							break;
-					}
-					line.StartSpan = newSpans.Length > 0 ? newSpans : null;
-					oldLine = line;
-					Rule rule = mode;
-					if (spanStack.Count > 0 && !String.IsNullOrEmpty (spanStack.Peek ().Rule))
-						rule = mode.GetRule (spanStack.Peek ().Rule) ?? mode;
-					
-					ScanSpansThreaded (doc, rule, spanStack, line.Offset, line.EndOffset);
-					while (spanStack.Count > 0 && !EndsWithContinuation (spanStack.Peek (), line))
-						spanStack.Pop ();
-					
-				} while (iter.MoveNext ());
+						
+						List<Span> spanList = new List<Span> (spanStack.ToArray ());
+						spanList.Reverse ();
+						for (int i = 0; i < spanList.Count; i++) {
+							if (!EndsWithContinuation (spanList[i], oldLine)) {
+								spanList.RemoveAt (i);
+								i--;
+							}
+						}
+						Span[] newSpans = spanList.ToArray ();
+						if (line.Offset > endOffset) {
+							bool equal = IsEqual (line.StartSpan, newSpans);
+							doUpdate |= !equal;
+							if (equal) 
+								break;
+						}
+						line.StartSpan = newSpans.Length > 0 ? newSpans : null;
+						oldLine = line;
+						Rule rule = mode;
+						if (spanStack.Count > 0 && !String.IsNullOrEmpty (spanStack.Peek ().Rule))
+							rule = mode.GetRule (spanStack.Peek ().Rule) ?? mode;
+						
+						ScanSpansThreaded (doc, rule, spanStack, line.Offset, line.EndOffset);
+						while (spanStack.Count > 0 && !EndsWithContinuation (spanStack.Peek (), line))
+							spanStack.Pop ();
+						
+					} while (iter.MoveNext ());
 				} catch (Exception) {}
 				if (doUpdate) {
 					Gtk.Application.Invoke ( delegate {

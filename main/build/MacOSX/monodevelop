@@ -60,10 +60,7 @@ if [ -d "$DIR/lib/MoonSDK" ]; then
         export MOONLIGHT_2_SDK_PATH="$DIR/lib/MoonSDK"
 fi
 
-#### END MAC-SPECIFIC SETUP
-#### Beyond this, all is from the Linux monodevelop.in. Only the values of EXE_PATH and MONO_EXEC differ
-
-_MD_REDIRECT_LOG="${MD_REDIRECT_LOG:-${XDG_CONFIG_HOME:-$HOME/.config}/MonoDevelop/log}"
+_MD_LOG_FILE="${MD_LOG_FILE:-$HOME/Library/Logs/MonoDevelop/MonoDevelop.log}"
 
 # NOTE: remove this for stable releases
 if [ -z "$MD_NO_DEBUG" ]; then
@@ -72,9 +69,9 @@ else
 	_MONO_OPTIONS=$MONO_OPTIONS
 fi
 
-if [ -n "$_MD_REDIRECT_LOG" ]; then
-	mkdir -p `dirname "$_MD_REDIRECT_LOG"`
-	$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $* 2>&1 | tee "$_MD_REDIRECT_LOG"
+if [ -z "$MD_DONT_REDIRECT_OUTPUT" ]; then
+	mkdir -p `dirname "$_MD_LOG_FILE"`
+	$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $* 2>&1 1> "$_MD_LOG_FILE"
 else
 	$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $*
 fi

@@ -64,6 +64,11 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
+		public bool MoveCaretToReplace {
+			get;
+			set;
+		}
+		
 		int removedChars;
 		public int RemovedChars {
 			get { 
@@ -125,8 +130,9 @@ namespace MonoDevelop.Refactoring
 					rctx.Save ();
 				}
 			} else if (textEditorData != null) {
-				Console.WriteLine ("offset:" + Offset);
-				textEditorData.Replace (Offset, RemovedChars, InsertedText);
+				int charsInserted = textEditorData.Replace (Offset, RemovedChars, InsertedText);
+				if (MoveCaretToReplace)
+					textEditorData.Caret.Offset = Offset + charsInserted;
 			}
 		}
 		

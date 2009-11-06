@@ -1,3 +1,17 @@
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs:
+	  fixed 'Bug 553091 - Extract format item on unfinished string
+	  pulls in code in following line'.
+
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	* MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs:
+	  Fixed 'Bug 553122 – Selection has strange offset after
+	  refactoring commands'.
+
 2009-11-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:

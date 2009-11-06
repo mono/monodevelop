@@ -55,7 +55,8 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 					if (span.Color == "string.double") {
 						int start, end;
 						string str = MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantRefactoring.SearchString (data, '"', out start, out end);
-						return str.StartsWith ("\"") && str.EndsWith ("\"");
+						end = System.Math.Min (end, line.Offset + line.EditableLength);
+						return str.StartsWith ("\"") && str.EndsWith ("\"") && data.SelectionRange.Offset < end;
 					}
 				}
 			}
@@ -67,6 +68,15 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 			TextEditorData data = options.GetTextEditorData ();
 			int start, end;
 			MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantRefactoring.SearchString (data, '"', out start, out end);
+			LineSegment line = data.Document.GetLineByOffset (start);
+			
+			int closingTagLength = 1; // length of the closing "
+			
+			if (end > line.Offset + line.EditableLength) { // assume missing closing tag
+				end = line.Offset + line.EditableLength;
+				closingTagLength = 0;
+			}
+			
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 
 			List<Expression> args = new List<Expression> ();
@@ -118,8 +128,9 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 			TextReplaceChange change = new TextReplaceChange ();
 			change.FileName = options.Document.FileName;
 			change.Offset = start;
-			change.RemovedChars = end - start + 1;
+			change.RemovedChars = end - start + closingTagLength;
 			change.InsertedText = provider.OutputNode (options.Dom, formatCall);
+			change.MoveCaretToReplace = true;
 			changes.Add (change);
 			return changes;
 		}
