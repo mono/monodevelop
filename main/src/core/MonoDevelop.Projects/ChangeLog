@@ -1,5 +1,10 @@
 2009-11-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Set a
+	  compilation unit for array types.
+
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Fixed 'Bug 553092
 	  - Go to definition doesn't work on extension methods'.
 

@@ -463,6 +463,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			// Create a fake class which sublcasses System.Array and implements IList<T>
 			DomType t = new DomType (ambience.GetString (elementType, MonoDevelop.Projects.Dom.Output.OutputFlags.UseFullName) + "[]");
+			
+			// set the compilation unit of the array type to that of the element type - it's required for jumping to the declaration of the type.
+			IType eType = GetType (elementType);
+			if (eType != null)
+				t.CompilationUnit = eType.CompilationUnit;
+			
 			t.Resolved = true;
 			t.BaseType = new DomReturnType ("System.Array");
 			t.ClassType = ClassType.Class;
