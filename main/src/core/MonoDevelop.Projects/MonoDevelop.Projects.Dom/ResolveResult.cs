@@ -446,7 +446,9 @@ namespace MonoDevelop.Projects.Dom
 			
 			Debug.Assert (originalMethods.Count == methods.Count);
 			for (int i = 0; i < originalMethods.Count; i++) {
-				if (originalMethods[i].IsExtension && Type != null) {
+				if (originalMethods[i] is ExtensionMethod) { // Extension methods are already resolved & instantiated.
+					methods[i] = originalMethods[i];
+				} else if (originalMethods[i].IsExtension && Type != null) {
 					methods[i] = new ExtensionMethod (Type, originalMethods[i], genericArguments, arguments);
 				} else {
 					methods[i] = DomMethod.CreateInstantiatedGenericMethod (originalMethods[i], genericArguments, arguments);

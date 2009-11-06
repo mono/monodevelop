@@ -1,3 +1,8 @@
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Fixed 'Bug 553092
+	  - Go to definition doesn't work on extension methods'.
+
 2009-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Solution.cs:
