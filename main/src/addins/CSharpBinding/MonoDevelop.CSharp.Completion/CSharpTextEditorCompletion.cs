@@ -360,12 +360,22 @@ namespace MonoDevelop.CSharp.Completion
 						if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
 							CompletionDataList completionList = new ProjectDomCompletionDataList ();
 							CompletionDataCollector cdc = new CompletionDataCollector (completionList, Document.CompilationUnit, location);
-							cdc.Add (resolvedType);
+							IReturnType returnType = new DomReturnType (resolvedType);
+							bool added = false;
+							foreach (IUsing u in Document.CompilationUnit.Usings) {
+								foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+									if (alias.Value.ToInvariantString () == returnType.ToInvariantString ()) {
+										cdc.Add (alias.Key, "md-class");
+										added = true;
+									}
+								}
+							}
+							if (!added)
+								cdc.Add (returnType);
 							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
 								MemberCompletionData memberData = o as MemberCompletionData;
 								if (memberData == null || memberData.Member == null)
 									continue;
-								IReturnType returnType = null;
 								if (memberData.Member is IMember) {
 									returnType = ((IMember)memberData.Member).ReturnType;
 								} else if (memberData.Member is IParameter) {
