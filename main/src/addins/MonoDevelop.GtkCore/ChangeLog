@@ -1,3 +1,9 @@
+2009-11-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.NodeBuilders\WindowsFolder.cs:
+	  Implemented Equals/GetHashCode. Fixes bug #549902 - MD
+	  crashes when adding a new gtk form.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

@@ -1,3 +1,10 @@
+2009-11-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ObjectReader.cs:
+	* ObjectWrapper.cs:
+	* ClassDescriptor.cs: Ensure the Loading flag is set when
+	  loading internal children of a widget.
+
 2009-11-05  Mike Kestner  <mkestner@novell.com>
 
 	* wrapper/*.cs: improper new keyword warning cleanup.

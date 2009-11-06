@@ -61,5 +61,18 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public Project Project {
 			get { return project; }
 		}
+
+		public override bool Equals (object obj)
+		{
+			WindowsFolder wf = obj as WindowsFolder;
+			return wf != null && wf.project == project;
+		}
+
+		public override int GetHashCode ( )
+		{
+			unchecked {
+				return project.GetHashCode () * 234;
+			}
+		}
 	}
 }

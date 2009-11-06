@@ -230,18 +230,24 @@ namespace Stetic {
 			}
 
 			ObjectWrapper ow = CreateWrapper ();
-			ObjectWrapper.Bind (proj, this, ow, ob, !initialize);
+			try {
+				ow.Loading = true;
+				ObjectWrapper.Bind (proj, this, ow, ob, !initialize);
 			
-			// Initialize the properties after creating the wrapper, since some properties
-			// may be implemented in the wrapper
-			
-			foreach (ItemGroup group in groups) {
-				foreach (ItemDescriptor item in group) {
-					PropertyDescriptor prop = item as PropertyDescriptor;
-					if (prop != null && prop.InitWithName) {
-						prop.SetValue (ob, name);
+				// Initialize the properties after creating the wrapper, since some properties
+				// may be implemented in the wrapper
+
+				foreach (ItemGroup group in groups) {
+					foreach (ItemDescriptor item in group) {
+						PropertyDescriptor prop = item as PropertyDescriptor;
+						if (prop != null && prop.InitWithName) {
+							prop.SetValue (ob, name);
+						}
 					}
 				}
+			}
+			finally {
+				ow.Loading = false;
 			}
 			
 			return ob;

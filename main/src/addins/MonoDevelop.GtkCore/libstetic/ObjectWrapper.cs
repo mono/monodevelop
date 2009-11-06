@@ -205,19 +205,26 @@ namespace Stetic {
 			ObjectWrapper wrapper = klass.CreateWrapper ();
 			wrapper.classDescriptor = klass;
 			wrapper.proj = reader.Project;
+			return ReadObject (reader, elem, wrapper);
+		}
+
+		public static ObjectWrapper ReadObject (ObjectReader reader, XmlElement elem, ObjectWrapper wrapper)
+		{
 			try {
 				wrapper.OnBeginRead (reader.Format);
 				wrapper.Read (reader, elem);
-			} catch (Exception ex) {
+				return wrapper;
+			}
+			catch (Exception ex) {
 				Console.WriteLine (ex);
 				ErrorWidget we = new ErrorWidget (ex, elem.GetAttribute ("id"));
 				ErrorWidgetWrapper wrap = (ErrorWidgetWrapper) Create (reader.Project, we);
 				wrap.Read (reader, elem);
 				return wrap;
-			} finally {
+			}
+			finally {
 				wrapper.OnEndRead (reader.Format);
 			}
-			return wrapper;
 		}
 		
 		internal void GenerateInitCode (GeneratorContext ctx, CodeExpression var)
