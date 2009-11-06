@@ -2018,5 +2018,37 @@ class TestClass
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNull (provider.Find ("MyCountMet2hod"), "method 'MyCountMethod' found, but shouldn't.");
 		}
+		
+			
+		/// <summary>
+		/// Bug 553101 – Enum completion does not use type aliases
+		/// </summary>
+		[Test()]
+		public void TestBug553101 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+namespace Some.Type 
+{
+	public enum Name { Foo, Bar }
+}
+
+namespace Test
+{
+	using STN = Some.Type.Name;
+	
+	public class Main
+	{
+		public void TestMe ()
+		{
+			$STN foo = $
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+		}
+		
+		
 	}
 }
