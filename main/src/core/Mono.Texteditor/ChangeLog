@@ -1,5 +1,10 @@
 2009-11-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Handled
+	  possible null reference exception.
+
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/GapBuffer.cs: Fixed 'Bug 552562 - Crasher in
 	  auto-save thread'.
 
