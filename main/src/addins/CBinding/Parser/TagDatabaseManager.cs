@@ -223,29 +223,31 @@ namespace CBinding.Parser
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			List<FileInformation> files;
 			
-			if (!info.IncludedFiles.ContainsKey (filename)) {
-				files = new List<FileInformation> ();
-				info.IncludedFiles.Add (filename, files);
-			} else {
-				files = info.IncludedFiles[filename];
-			}
-			
-			foreach (string includedFile in includedFiles) {
-				bool contains = false;
+			lock (info) {
+				if (!info.IncludedFiles.ContainsKey (filename)) {
+					files = new List<FileInformation> ();
+					info.IncludedFiles.Add (filename, files);
+				} else {
+					files = info.IncludedFiles[filename];
+				}
 				
-				foreach (FileInformation fi in files) {
-					if (fi.FileName == includedFile) {
-						contains = true;
+				foreach (string includedFile in includedFiles) {
+					bool contains = false;
+					
+					foreach (FileInformation fi in files) {
+						if (fi.FileName == includedFile) {
+							contains = true;
+						}
 					}
+					
+					if (!contains) {
+						FileInformation newFileInfo = new FileInformation (project, includedFile);
+						files.Add (newFileInfo);
+						FillFileInformation (newFileInfo);
+					}
+					
+					contains = false;
 				}
-				
-				if (!contains) {
-					FileInformation newFileInfo = new FileInformation (project, includedFile);
-					files.Add (newFileInfo);
-					FillFileInformation (newFileInfo);
-				}
-				
-				contains = false;
 			}
 		}
 		
@@ -399,19 +401,22 @@ namespace CBinding.Parser
 			}
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			info.RemoveFileInfo (filename);
-			string tagEntry;
-
-			using (StringReader reader = new StringReader (ctags_output)) {
-				while ((tagEntry = reader.ReadLine ()) != null) {
-					if (tagEntry.StartsWith ("!_")) continue;
-					
-					Tag tag = ParseTag (tagEntry);
-					
-					if (tag != null)
-						AddInfo (info, tag, ctags_output);
+			
+			lock (info) {
+				info.RemoveFileInfo (filename);
+				string tagEntry;
+	
+				using (StringReader reader = new StringReader (ctags_output)) {
+					while ((tagEntry = reader.ReadLine ()) != null) {
+						if (tagEntry.StartsWith ("!_")) continue;
+						
+						Tag tag = ParseTag (tagEntry);
+						
+						if (tag != null)
+							AddInfo (info, tag, ctags_output);
+					}
 				}
-			}			
+			}
 			
 			OnFileUpdated (new ClassPadEventArgs (project));
 			
@@ -697,7 +702,7 @@ namespace CBinding.Parser
 		public void RemoveFileInfo(Project project, string filename)
 		{
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			info.RemoveFileInfo(filename);
+			lock (info){ info.RemoveFileInfo(filename); }
 			OnFileUpdated(new ClassPadEventArgs (project));
 		}
 		
