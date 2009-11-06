@@ -11,7 +11,7 @@ namespace Algorithm.Diff {
 		IDiff[] diffs;
 		ArrayList hunks = new ArrayList();
 		
-		public Merge(IList original, IList[] changed, IComparer comparer, IHashCodeProvider hashcoder)
+		public Merge(IList original, IList[] changed, IComparer comparer, IEqualityComparer hashcoder)
 		: this(makediffs(original, changed, comparer, hashcoder))
 		{
 		}
@@ -21,7 +21,7 @@ namespace Algorithm.Diff {
 		{
 		}
 
-		private static IDiff[] makediffs(IList original, IList[] changed, IComparer comparer, IHashCodeProvider hashcoder) {
+		private static IDiff[] makediffs(IList original, IList[] changed, IComparer comparer, IEqualityComparer hashcoder) {
 			IDiff[] diffs = new IDiff[changed.Length];
 			for (int i = 0; i < changed.Length; i++)
 				diffs[i] = new Diff(original, changed[i], comparer, hashcoder);
@@ -157,7 +157,7 @@ namespace Algorithm.Diff {
 			return hunks.GetEnumerator();
 		}
 		
-		public static IList MergeLists(IList original, IList[] changed, IComparer comparer, IHashCodeProvider hashcoder) {
+		public static IList MergeLists(IList original, IList[] changed, IComparer comparer, IEqualityComparer hashcoder) {
 			Merge m = new Merge(original, changed, comparer, hashcoder);
 			ArrayList ret = new ArrayList();
 			ArrayList newlines = new ArrayList();

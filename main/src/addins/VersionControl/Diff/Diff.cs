@@ -58,7 +58,7 @@ namespace Algorithm.Diff {
 	public class Diff : IDiff {
 		internal IList left, right;
 		IComparer comparer;
-		IHashCodeProvider hashcoder;
+		IEqualityComparer hashcoder;
 		
 		public IList Left { get { return left; } }
 		public  IList Right { get { return right; } }
@@ -178,7 +178,7 @@ namespace Algorithm.Diff {
 			}
 		}
 	
-		public Diff(IList left, IList right, IComparer comparer, IHashCodeProvider hashcoder) {
+		public Diff(IList left, IList right, IComparer comparer, IEqualityComparer hashcoder) {
 			this.left = left;
 			this.right = right;
 			this.comparer = comparer;
@@ -195,7 +195,7 @@ namespace Algorithm.Diff {
 				StripWhitespace(left, !compareWhitespace),
 				StripWhitespace(right, !compareWhitespace),
 				caseSensitive ? (IComparer)Comparer.Default : (IComparer)CaseInsensitiveComparer.Default,
-				caseSensitive ? null : CaseInsensitiveHashCodeProvider.Default
+				caseSensitive ? null : StringComparer.InvariantCultureIgnoreCase
 				) {
 		}
 		
@@ -270,7 +270,7 @@ namespace Algorithm.Diff {
 		*/
 
 		Hashtable _withPositionsOfInInterval(IList aCollection, int start, int end) {
-			Hashtable d = new Hashtable(hashcoder, comparer);
+			Hashtable d = new Hashtable(hashcoder);
 			for (int index = start; index <= end; index++) {
 				object element = aCollection[index];
 				if (d.ContainsKey(element)) {

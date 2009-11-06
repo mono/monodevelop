@@ -48,7 +48,7 @@ namespace Algorithm.Diff {
 			
 			NodeComparerWrapper comparer = new NodeComparerWrapper(threshold, this);
 			
-			Diff diff = new Diff(left, right, comparer, new HashCodeProvider(this));
+			Diff diff = new Diff(left, right, comparer, comparer);
 			
 			int nitems = 0, ndiffs = 0;
 			
@@ -239,15 +239,7 @@ namespace Algorithm.Diff {
 		void WriteBeginNode(object left, object right, XmlWriter output);
 	}
 	
-	internal class HashCodeProvider : IHashCodeProvider {
-		StructuredDiff differ;
-		public HashCodeProvider(StructuredDiff differ) { this.differ = differ; }
-		public int GetHashCode(object obj) {
-			return differ.GetInterface(obj).GetHashCode(obj);
-		}
-	}
-	
-	internal class NodeComparerWrapper : IComparer {
+	internal class NodeComparerWrapper : IComparer, IEqualityComparer {
 		float threshold;
 		StructuredDiff differ;
 		
@@ -299,6 +291,15 @@ namespace Algorithm.Diff {
 				return 0;
 			else
 				return 1;
+		}
+		
+		bool IEqualityComparer.Equals (object a, object b)
+		{
+			return ((IComparer)this).Compare (a, b) == 0;
+		}
+		
+		int IEqualityComparer.GetHashCode (object obj) {
+			return differ.GetInterface(obj).GetHashCode(obj);
 		}
 	}
 
