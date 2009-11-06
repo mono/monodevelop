@@ -116,7 +116,7 @@ namespace CBinding
 			string prename = null;
 			
 			if (len > 0)
-				prename = function.FullName.Substring (0, len + 2);
+				prename = GLib.Markup.EscapeText (function.FullName.Substring (0, len + 2));
 			
 			string cons = string.Empty;
 			
@@ -131,7 +131,7 @@ namespace CBinding
 		{
 			Function function = functions[overload];
 			
-			return function.Parameters[paramIndex];
+			return GLib.Markup.EscapeText (function.Parameters[paramIndex]);
 		}
 		
 		// Returns the number of parameters of the specified method
