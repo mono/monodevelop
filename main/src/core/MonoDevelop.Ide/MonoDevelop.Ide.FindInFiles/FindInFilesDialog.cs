@@ -508,17 +508,28 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			}
 
-		//	DispatchService.BackgroundDispatch (delegate {
+			DispatchService.BackgroundDispatch (delegate {
 				DateTime timer = DateTime.Now;
 				string errorMessage = null;
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), MonoDevelop.Core.Gui.Stock.FindInFiles, false);
 				
 				try {
+					List<SearchResult> results = new List<SearchResult> ();
 					foreach (SearchResult result in find.FindAll (scope, monitor, pattern, replacePattern, options)) {
 						if (searchMonitor.IsCancelRequested)
 							return;
-						searchMonitor.ReportResult (result);
+						results.Add (result);
+						if (results.Count > 10) {
+							Application.Invoke (delegate {
+								results.ForEach (r => searchMonitor.ReportResult (r));
+								results.Clear ();
+							});
+						}
 					}
+					Application.Invoke (delegate {
+						results.ForEach (r => searchMonitor.ReportResult (r));
+						results.Clear ();
+					});
 				} catch (Exception ex) {
 					errorMessage = ex.Message;
 					LoggingService.LogError ("Error while search", ex);
@@ -543,7 +554,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				lock (searchesInProgress)
 					searchesInProgress.Remove (searchMonitor);
 				UpdateStopButton ();
-	//		});
+			});
 		}
 
 		void OnCancelRequested (IProgressMonitor monitor)

@@ -1,3 +1,9 @@
+2009-11-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Fixed 'Bug
+	  552014 - Find in files dialog (with Directories option)
+	  makes MD unresponsive for a long time'.
+
 2009-11-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Disable the 
