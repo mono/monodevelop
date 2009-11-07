@@ -1,3 +1,9 @@
+2009-11-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs:
+	  Decompose shift from commands as well as opt. Fix ordering
+	  of Apple command symbols.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

@@ -310,8 +310,11 @@ namespace MonoDevelop.Components.Commands
 					mod ^= Gdk.ModifierType.Mod5Mask;
 					mod |= Gdk.ModifierType.Mod1Mask;
 				}
+				
 				if (evt.Group == (byte) 1) {
 					mod |= Gdk.ModifierType.Mod1Mask;
+					key = GetRootKey (evt);
+				} else if ((mod & Gdk.ModifierType.ShiftMask) != 0) {
 					key = GetRootKey (evt);
 				}
 			}
@@ -320,14 +323,21 @@ namespace MonoDevelop.Components.Commands
 		static Dictionary<Gdk.Key,Gdk.Key> hardwareMappings;
 		static Gdk.Keymap keymap;
 		
+		static void InitKeymaps ()
+		{
+			if (keymap != null) 
+				return;
+			
+			keymap = Gdk.Keymap.Default;
+			keymap.KeysChanged += delegate {
+				hardwareMappings.Clear ();
+			};
+			hardwareMappings = new Dictionary<Gdk.Key,Gdk.Key> ();
+		}
+		
 		static Gdk.Key GetRootKey (Gdk.EventKey evt)
 		{
-			if (keymap == null) {
-				keymap = Gdk.Keymap.Default;
-				keymap.KeysChanged += delegate { hardwareMappings.Clear (); };
-				hardwareMappings = new Dictionary<Gdk.Key,Gdk.Key> ();
-			}
-			
+			InitKeymaps ();
 			Gdk.Key ret;
 			if (hardwareMappings.TryGetValue (evt.Key, out ret))
 				return ret;
@@ -726,21 +736,22 @@ namespace MonoDevelop.Components.Commands
 		static string AppleMapModifierToSymbols (Gdk.ModifierType mod)
 		{
 			string ret = "";
-			if ((mod & META_MASK) != 0) {
-				ret += "⌘";
-				mod ^= META_MASK;
-			}
+			
 			if ((mod & Gdk.ModifierType.ControlMask) != 0) {
 				ret += "⌃";
 				mod ^= Gdk.ModifierType.ControlMask;
+			}
+			if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
+				ret += "⌥";
+				mod ^= Gdk.ModifierType.Mod1Mask;
 			}
 			if ((mod & Gdk.ModifierType.ShiftMask) != 0) {
 				ret += "⇧";
 				mod ^= Gdk.ModifierType.ShiftMask;
 			}
-			if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
-				ret += "⌥";
-				mod ^= Gdk.ModifierType.Mod1Mask;
+			if ((mod & META_MASK) != 0) {
+				ret += "⌘";
+				mod ^= META_MASK;
 			}
 			if (mod != 0)
 				throw new InvalidOperationException ();
