@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{325F28AD-2C46-4873-AE54-40FCC74C2695}</ProjectGuid>
+    <ProjectGuid>{F5390DA4-08B7-47E3-B6F3-D50683316AB4}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>MonoDevelop.Debugger.Soft.IPhone</RootNamespace>
-    <AssemblyName>MonoDevelop.Debugger.Soft.IPhone</AssemblyName>
+    <RootNamespace>MonoDevelop.Debugger.Soft.AspNet</RootNamespace>
+    <AssemblyName>MonoDevelop.Debugger.Soft.AspNet</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -35,11 +35,6 @@
     <Reference Include="MonoDevelop.Debugger, Version=2.1.1.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.IPhone, Version=2.2.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\MonoDevelop.IPhone\build\MonoDevelop.IPhone.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
@@ -80,6 +75,9 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Manifest.addin.xml">
@@ -95,7 +93,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IPhoneSoftDebuggerEngine.cs" />
-    <Compile Include="IPhoneDebuggerSession.cs" />
+    <Compile Include="AspNetSoftDebuggerEngine.cs" />
+    <Compile Include="AspNetSoftDebuggerSession.cs" />
   </ItemGroup>
 </Project>
