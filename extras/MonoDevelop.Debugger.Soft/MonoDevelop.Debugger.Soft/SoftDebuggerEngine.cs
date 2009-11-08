@@ -54,7 +54,7 @@ namespace MonoDevelop.Debugger.Soft
 			int major, minor;
 			return v.Length > 1
 				&& int.TryParse (v[0], out major) && int.TryParse (v[1], out minor)
-				&& major >= 2 && minor >= 7;
+				&& major >= 2 && minor >= 6;
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)

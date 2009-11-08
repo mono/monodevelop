@@ -57,11 +57,15 @@ namespace MonoDevelop.Debugger.Soft
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			string[] vmargs = new string[startInfo.Arguments.Length + 1];
+			// FIXME: Doesn't handle arguments with " " in them
+			string[] args = startInfo.Arguments.Split (' ');
+			string[] vmargs = new string[args.Length + 1];
 			vmargs[0] = startInfo.Command;
-			Array.Copy (startInfo.Arguments.Split (' '), 0, vmargs, 1, startInfo.Arguments.Length);
+			if (args.Length > 0)
+				Array.Copy (args, 0, vmargs, 1, args.Length);
 			
 			LaunchOptions options = new LaunchOptions ();
+			options.Runtime = "/opt/mono/bin/mono";
 			options.RedirectStandardOutput = true;
 			
 			var vm = VirtualMachineManager.Launch (vmargs, options);
