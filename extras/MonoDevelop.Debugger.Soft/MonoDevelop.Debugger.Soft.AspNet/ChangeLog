@@ -1,0 +1,10 @@
+2009-11-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* AspNetSoftDebuggerSession.cs: Unneeded.
+
+	* AspNetSoftDebuggerEngine.cs: Implement support for debugging
+	xsp.
+
+	* MonoDevelop.Debugger.Soft.AspNet.csproj: Remove unneeded
+	file.
+

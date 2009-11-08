@@ -1,5 +1,9 @@
 2009-11-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Debugger.Soft.sln: Tweak policy.
+
+2009-11-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Debugger.Soft.sln: Set default policies.
 
 2009-11-05  Michael Hutchinson  <mhutchinson@novell.com>

@@ -37,11 +37,20 @@ namespace MonoDevelop.Debugger.Soft
 		public bool CanDebugCommand (ExecutionCommand cmd)
 		{
 			var netCmd = cmd as DotNetExecutionCommand;
-			if (netCmd == null || ! (netCmd.TargetRuntime is MonoTargetRuntime))
+			if (netCmd == null)
 				return false;
-			
+
+			return CanDebugRuntime (netCmd.TargetRuntime);
+		}
+
+		public static bool CanDebugRuntime (TargetRuntime runtime)
+		{
+			var mrun = runtime as MonoTargetRuntime;
+			if (mrun == null)
+				return false;
+
 			//assume that 2.7.x has sdb support
-			var v = ((MonoTargetRuntime)netCmd.TargetRuntime).Version.Split ('.');
+			var v = mrun.Version.Split ('.');
 			int major, minor;
 			return v.Length > 1
 				&& int.TryParse (v[0], out major) && int.TryParse (v[1], out minor)
@@ -51,13 +60,14 @@ namespace MonoDevelop.Debugger.Soft
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
 		{
 			DotNetExecutionCommand cmd = (DotNetExecutionCommand) c;
-			DebuggerStartInfo dsi = new DebuggerStartInfo ();
-			dsi.Command = cmd.Command;
-			dsi.Arguments = cmd.Arguments;
+			var dsi = new SoftDebuggerStartInfo ((MonoTargetRuntime)cmd.TargetRuntime) {
+				Command = cmd.Command,
+				Arguments = cmd.Arguments,
+				WorkingDirectory = cmd.WorkingDirectory,
+			};
 			
 			foreach (KeyValuePair<string,string> var in cmd.EnvironmentVariables)
 				dsi.EnvironmentVariables [var.Key] = var.Value;
-			dsi.WorkingDirectory = cmd.WorkingDirectory;
 			return dsi;
 		}
 		
@@ -84,6 +94,23 @@ namespace MonoDevelop.Debugger.Soft
 					   DebuggerFeatures.Stepping | 
 					   DebuggerFeatures.DebugFile |
 					   DebuggerFeatures.Catchpoints;
+			}
+		}
+	}
+
+	public class SoftDebuggerStartInfo : DebuggerStartInfo
+	{
+		public SoftDebuggerStartInfo (MonoTargetRuntime runtime)
+		{
+			this.Runtime = runtime;
+		}
+
+		//FIXME: this never actually gets used yet
+		public MonoTargetRuntime Runtime { get; set; }
+
+		public string MonoPrefix {
+			get {
+				return Runtime.Prefix;
 			}
 		}
 	}

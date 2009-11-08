@@ -56,7 +56,6 @@ Global
 		$0.TextStylePolicy = $7
 		$7.FileWidth = 120
 		$7.TabWidth = 4
-		$7.RemoveTrailingWhitespace = True
 		$7.inheritsSet = Mono
 		$7.inheritsScope = text/plain
 		$7.scope = text/x-csharp

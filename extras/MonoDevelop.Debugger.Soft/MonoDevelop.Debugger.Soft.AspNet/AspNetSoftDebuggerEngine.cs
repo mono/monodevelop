@@ -34,6 +34,7 @@ using MonoDevelop.AspNet;
 using Mono.Debugging.Client;
 using MonoDevelop.Debugger.Soft;
 using System.Net;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Debugger.Soft.AspNet
 {
@@ -43,14 +44,26 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			var cmd = command as AspNetExecutionCommand;
-			return false; // cmd != null && cmd.DebugMode;
+			return cmd != null && SoftDebuggerEngine.CanDebugRuntime (cmd.TargetRuntime);
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
-			var cmd = (AspNetExecutionCommand) command;
+			AspNetExecutionCommand cmd = (AspNetExecutionCommand) command;
 			
-			throw new NotImplementedException ();
+			var startInfo = new SoftDebuggerStartInfo ((MonoTargetRuntime)cmd.TargetRuntime) {
+				WorkingDirectory = cmd.BaseDirectory,
+				Arguments = cmd.XspParameters.GetXspParameters ().Trim (),
+			};
+			
+			string xspPath = Path.Combine (startInfo.MonoPrefix, "lib" + Path.DirectorySeparatorChar + "mono" + Path.DirectorySeparatorChar);
+			if (cmd.ClrVersion == ClrVersion.Net_1_1)
+				xspPath += Path.Combine ("1.0","xsp.exe");
+			else
+				xspPath += Path.Combine ("2.0","xsp2.exe");
+			startInfo.Command = xspPath;
+			
+			return startInfo;
 		}
 
 		public DebuggerFeatures SupportedFeatures {
@@ -65,7 +78,7 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 		
 		public DebuggerSession CreateSession ()
 		{
-			return new AspNetSoftDebuggerSession ();
+			return new SoftDebuggerSession ();
 		}
 		
 		public ProcessInfo[] GetAttachableProcesses ()

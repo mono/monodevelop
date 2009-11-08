@@ -94,6 +94,5 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AspNetSoftDebuggerEngine.cs" />
-    <Compile Include="AspNetSoftDebuggerSession.cs" />
   </ItemGroup>
 </Project>
