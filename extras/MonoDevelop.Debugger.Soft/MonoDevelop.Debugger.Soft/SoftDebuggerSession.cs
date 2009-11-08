@@ -65,7 +65,6 @@ namespace MonoDevelop.Debugger.Soft
 				Array.Copy (args, 0, vmargs, 1, args.Length);
 			
 			LaunchOptions options = new LaunchOptions ();
-			options.Runtime = "/opt/mono/bin/mono";
 			options.RedirectStandardOutput = true;
 			
 			var vm = VirtualMachineManager.Launch (vmargs, options);
