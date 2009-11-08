@@ -42,7 +42,7 @@
     </Reference>
     <Reference Include="Mono.Debugger, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MonoDevelop.Debugger.Soft\Mono.Debugger.dll</HintPath>
+      <HintPath>..\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System">

@@ -59,12 +59,14 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			// FIXME: Doesn't handle arguments with " " in them
 			string[] args = startInfo.Arguments.Split (' ');
-			string[] vmargs = new string[args.Length + 1];
+			string[] vmargs = new string[args.Length + 2];
 			vmargs[0] = startInfo.Command;
 			if (args.Length > 0)
 				Array.Copy (args, 0, vmargs, 1, args.Length);
+			vmargs[args.Length-1] = startInfo.WorkingDirectory;
 			
 			LaunchOptions options = new LaunchOptions ();
+			options.Runtime = "/opt/mono/bin/mono";
 			options.RedirectStandardOutput = true;
 			
 			var vm = VirtualMachineManager.Launch (vmargs, options);
