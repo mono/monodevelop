@@ -1,0 +1,9 @@
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Moved soft debug
+	  addin from extras.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Updated.
+
