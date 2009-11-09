@@ -43,7 +43,7 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="Mono.Debugger, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Mono.Debugger.Soft.dll</HintPath>
     </Reference>
@@ -70,6 +70,9 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -82,6 +85,7 @@
     <Compile Include="VariableValueReference.cs" />
     <Compile Include="FieldValueReference.cs" />
     <Compile Include="PropertyValueReference.cs" />
+    <Compile Include="RemoteSoftDebuggerSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Manifest.addin.xml">

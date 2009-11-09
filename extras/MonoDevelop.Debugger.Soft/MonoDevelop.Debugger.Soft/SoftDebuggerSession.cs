@@ -69,7 +69,7 @@ namespace MonoDevelop.Debugger.Soft
 			
 			var vm = VirtualMachineManager.Launch (vmargs, options);
 			
-			OnConnected (vm, true);
+			OnConnected (vm);
 		}
 		
 		protected virtual void EndSession ()
@@ -88,7 +88,7 @@ namespace MonoDevelop.Debugger.Soft
 		/// If subclasses do an async connect in OnRun, they should pass the resulting VM to this method.
 		/// If the vm is null, the session will be closed.
 		/// </summary>
-		protected void OnConnected (VirtualMachine vm, bool startsSuspended)
+		protected void OnConnected (VirtualMachine vm)
 		{
 			if (this.vm != null)
 				throw new InvalidOperationException ("The VM has already connected");
@@ -113,12 +113,6 @@ namespace MonoDevelop.Debugger.Soft
 			
 			eventHandler = new Thread (EventHandler);
 			eventHandler.Start ();
-			
-			//FIXME: why is this necessary when we do Launch but explodes with Listen? 
-			if (startsSuspended) {
-				OnResumed ();
-				vm.Resume ();
-			}
 		}
 		
 		protected void ConnectOutput (System.IO.StreamReader reader, bool error)

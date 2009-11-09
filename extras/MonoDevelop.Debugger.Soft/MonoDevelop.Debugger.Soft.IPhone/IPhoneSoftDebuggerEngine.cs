@@ -82,20 +82,4 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			}
 		}
 	}
-	
-	class IPhoneDebuggerStartInfo : DebuggerStartInfo
-	{
-		public IPAddress Address { get; private set; }
-		public int DebugPort { get; private set; }
-		public int OutputPort { get; private set; }
-		public IPhoneExecutionCommand ExecutionCommand {  get; private set; }
-		
-		public IPhoneDebuggerStartInfo (IPAddress address, int debug_port, int output_port, IPhoneExecutionCommand command)
-		{
-			this.Address = address;
-			this.DebugPort = debug_port;
-			this.OutputPort = output_port;
-			this.ExecutionCommand = command;
-		}		
-	}
 }
