@@ -1,3 +1,10 @@
+2009-11-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks/framework_NET_3_5.xml: Added missing assemblies.
+
+	* MonoDevelop.Core.Assemblies/MonoFrameworkBackend.cs: Look
+	  for 3.5 assemblies in the 3.5 folder.
+
 2009-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* frameworks/framework_NET_4_0.xml:
