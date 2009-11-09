@@ -816,6 +816,23 @@ namespace MonoDevelop.Components.DockToolbars
 			enableAnimations = enable;
 			return r;
 		}
+		
+		protected override bool OnExposeEvent (EventExpose evnt)
+		{
+			//leave this plain unless there are horizontal children, so that the panel matches the toolbars
+			//see DockToolbar.OnExposeEvent
+			if (bars.Count == 0 || this.Orientation != Orientation.Horizontal)
+				return base.OnExposeEvent (evnt);
+			
+			// get a proper GTK+ toolbar style by using one of the children, i.e. a DockToolbar, a subclass of GtkToolbar
+			var styleProvider = (Widget)bars[0];
+			var shadowType = (ShadowType) styleProvider.StyleGetProperty ("shadow-type");
+			Style.PaintBox (styleProvider.Style, evnt.Window, State, shadowType, evnt.Area, styleProvider, "toolbar", 
+			                Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+			foreach (DockToolbar bar in bars)
+				this.PropagateExpose (bar, evnt);
+			return true;
+		}
 	}
 
 

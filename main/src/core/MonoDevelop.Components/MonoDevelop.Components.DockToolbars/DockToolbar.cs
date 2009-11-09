@@ -263,6 +263,13 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
+			//use the base class to paint the background like a toolbar, which may be a gradient
+			// but only if horizontal, else the gradient usually looks really ugly
+			if (this.Orientation == Orientation.Horizontal)
+				return base.OnExposeEvent (evnt);
+			
+			//else we paint a plain flat background to make everything even - see DockToolbarPanel.OnExposeEvent
+			
 		    GdkWindow.DrawRectangle (Style.BackgroundGC (State), true, Allocation);
             
             foreach (Widget child in Children) {
