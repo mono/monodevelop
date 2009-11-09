@@ -66,6 +66,7 @@ namespace MonoDevelop.Debugger.Soft
 			
 			LaunchOptions options = new LaunchOptions ();
 			options.RedirectStandardOutput = true;
+			options.RedirectStandardError = true;
 			
 			var vm = VirtualMachineManager.Launch (vmargs, options);
 			
@@ -361,18 +362,15 @@ namespace MonoDevelop.Debugger.Soft
 		void EventHandler ()
 		{
 			while (true) {
-				Event e = vm.GetNextEvent ();
-				
-				bool disconnected = false;
-				
 				try {
+					Event e = vm.GetNextEvent ();
 					HandleEvent (e);
-				} catch (VMDisconnectedException) {
-					disconnected = true;
-				}
-				
-				if (e is VMDeathEvent || e is VMDisconnectEvent || disconnected)
+					if (e is VMDeathEvent || e is VMDisconnectEvent)
+						break;
+				} catch (VMDisconnectedException ex) {
+					OnDebuggerOutput (true, ex.ToString ());
 					break;
+				}
 			}
 			
 			exited = true;

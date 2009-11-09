@@ -1,3 +1,8 @@
+2009-11-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerSession.cs: Redirect errors. Improve handling of
+	  vm disconnection.
+
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger.Soft.csproj: Added refs to GTK.
