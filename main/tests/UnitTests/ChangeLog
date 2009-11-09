@@ -1,3 +1,11 @@
+2009-11-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* MonoDevelop.Refactoring/BaseRefactorerTests.cs: Added some
+	  tests for the base refactorer indenting / remove indenting
+	  functions.
+
 2009-11-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
