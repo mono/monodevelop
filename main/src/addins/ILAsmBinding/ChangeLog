@@ -1,3 +1,9 @@
+2009-11-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ILAsmCompilerManager.cs: Get the ilasm path using the target
+	  runtime. Should fix bug #553536 - IL Console project
+	  completely broken on windows.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

@@ -87,8 +87,8 @@ namespace ILAsmBinding
 			string output = "";
 			string error  = "";
 			
-			
-			string outstr = "ilasm " + sb.ToString ();
+			string ilasm = configuration.TargetRuntime.GetToolPath (configuration.TargetFramework, "ilasm");
+			string outstr = ilasm + " " + sb.ToString ();
 			monitor.Log.WriteLine (outstr);
 			
 			string workingDir = ".";
@@ -104,8 +104,7 @@ namespace ILAsmBinding
 
 			LoggingService.LogInfo ("ilasm " + sb.ToString ());
 			
-			//FIXME: is Current the real target framework?
-			Dictionary<string,string> envVars = MonoDevelop.Core.Runtime.SystemAssemblyService.CurrentRuntime.GetToolsEnvironmentVariables (configuration.TargetFramework);
+			Dictionary<string,string> envVars = configuration.TargetRuntime.GetToolsEnvironmentVariables (configuration.TargetFramework);
 			int exitCode = DoCompilation (outstr, workingDir, envVars, gacRoots, ref output, ref error);
 			
 			BuildResult result = ParseOutput (output, error);
