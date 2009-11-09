@@ -1,5 +1,10 @@
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Debugger.Soft.csproj: Don't local-copy project
+	  refs.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Debugger.Soft.csproj: Wire the soft debug addin
 	  into the build.
