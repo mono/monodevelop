@@ -18,6 +18,7 @@ SUBDIRS = \
 	VBNetBinding \
 	prj2make-sharp-lib \
 	WelcomePage \
+	MonoDevelop.Debugger.Soft \
 	MonoDevelop.GtkCore \
 	ChangeLogAddIn \
 	MonoDevelop.XmlEditor \
