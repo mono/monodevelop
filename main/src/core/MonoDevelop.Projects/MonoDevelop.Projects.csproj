@@ -47,7 +47,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Microsoft.Build.Utilities" />
+    <Reference Include="Microsoft.Build.Utilities.v3.5" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="Microsoft.Build.Engine" />

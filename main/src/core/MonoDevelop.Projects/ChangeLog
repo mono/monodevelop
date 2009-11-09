@@ -1,3 +1,8 @@
+2009-11-09  Carlo Kok  <ck@remobjects.com>
+
+	* MonoDevelop.Projects.csproj: Fixed project to use the 
+	  3.5 msbuild reference.
+
 2009-11-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed
