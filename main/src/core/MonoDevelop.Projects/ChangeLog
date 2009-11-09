@@ -1,5 +1,11 @@
 2009-11-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed
+	  'Bug 553529 - Stetic created methods are tabbed in too far
+	  on windows'.
+
+2009-11-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Text/TextFile.cs: Added support for
 	  mac/windows line endings.
 
