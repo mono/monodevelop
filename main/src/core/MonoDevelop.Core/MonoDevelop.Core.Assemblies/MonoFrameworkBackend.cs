@@ -44,6 +44,7 @@ namespace MonoDevelop.Core.Assemblies
 					yield return Path.Combine (targetRuntime.MonoDirectory, "3.0");
 					yield break;
 				case "3.5":
+					yield return Path.Combine (targetRuntime.MonoDirectory, "3.5");
 					subdir = "2.0"; break;
 				default:
 					subdir = framework.Id; break;

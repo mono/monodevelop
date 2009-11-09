@@ -26,5 +26,9 @@
   <Assembly name="System.Windows.Presentation" version="3.5.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.WorkflowServices" version="3.5.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Xml.Linq" version="3.5.0.0" publicKeyToken="b77a5c561934e089" />
+  <Assembly name="Microsoft.Build.Engine" version="3.5.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+  <Assembly name="Microsoft.Build.Framework" version="3.5.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+  <Assembly name="Microsoft.Build.Tasks.v3.5" version="3.5.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+  <Assembly name="Microsoft.Build.Utilities.v3.5" version="3.5.0.0" publicKeyToken="b03f5f7f11d50a3a" />
 </Assemblies>
 </TargetFramework>
