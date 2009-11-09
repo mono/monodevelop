@@ -67,25 +67,28 @@ namespace CBinding.Parser
 			IType tmp;
 			IMember member;
 			string[] contentLines = content.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
-			
-			// Add containers to type list
-			foreach (LanguageItem li in pi.Containers ()) {
-				if (null == li.Parent && FilePath.Equals (li.File, fileName)) {
-					tmp = LanguageItemToIMember (pi, li, contentLines) as IType;
-					if (null != tmp){ cu.Add (tmp); }
-				}
-			}
-			
-			// Add global category for unscoped symbols
 			DomType globals = new DomType (cu, ClassType.Unknown, GettextCatalog.GetString ("(Global Scope)"), new DomLocation (1, 1), string.Empty, new DomRegion (1, int.MaxValue), new List<IMember> ());
-			foreach (LanguageItem li in pi.InstanceMembers ()) {
-				if (null == li.Parent && FilePath.Equals (li.File, fileName)) {
-					member = LanguageItemToIMember (pi, li, contentLines);
-					if (null != member) { 
-						globals.Add (member); 
+			
+			lock (pi) {
+				// Add containers to type list
+				foreach (LanguageItem li in pi.Containers ()) {
+					if (null == li.Parent && FilePath.Equals (li.File, fileName)) {
+						tmp = LanguageItemToIMember (pi, li, contentLines) as IType;
+						if (null != tmp){ cu.Add (tmp); }
+					}
+				}
+				
+				// Add global category for unscoped symbols
+				foreach (LanguageItem li in pi.InstanceMembers ()) {
+					if (null == li.Parent && FilePath.Equals (li.File, fileName)) {
+						member = LanguageItemToIMember (pi, li, contentLines);
+						if (null != member) { 
+							globals.Add (member); 
+						}
 					}
 				}
 			}
+			
 			cu.Add (globals);
 			
 			return doc;

@@ -48,9 +48,6 @@ namespace MonoDevelop.Components.Commands
 {
 	public class KeyBindingManager : IDisposable
 	{
-		const Gdk.ModifierType META_MASK = (Gdk.ModifierType) 0x10000000; //FIXME GTK+ 2.12: Gdk.ModifierType.MetaMask;
-		const Gdk.ModifierType SUPER_MASK = (Gdk.ModifierType) 0x40000000; //FIXME GTK+ 2.12: Gdk.ModifierType.SuperMask;
-		
 		static bool isX11 = false;
 		
 		Dictionary<string, List<Command>> bindings = new Dictionary<string, List<Command>> ();
@@ -63,12 +60,12 @@ namespace MonoDevelop.Components.Commands
 			
 			if (isMac) {
 				SelectionModifierAlt = Gdk.ModifierType.Mod5Mask;
-				SelectionModifierControl = Gdk.ModifierType.Mod1Mask | META_MASK;
+				SelectionModifierControl = Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.MetaMask;
 				SelectionModifierSuper = Gdk.ModifierType.ControlMask;
 			} else {
 				SelectionModifierAlt = Gdk.ModifierType.Mod1Mask;
 				SelectionModifierControl = Gdk.ModifierType.ControlMask;
-				SelectionModifierSuper = SUPER_MASK;
+				SelectionModifierSuper = Gdk.ModifierType.SuperMask;
 			}
 		}
 		
@@ -295,39 +292,62 @@ namespace MonoDevelop.Components.Commands
 			
 			if (isX11) {
 				//this is a workaround for a common X mapping issue
-				//where shift-alt is translated to the meta key
+				//where the alt key is mapped to the meta key when the shift modifier is active
 				if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
 					key = Gdk.Key.Alt_L;
 			}
 			
 			//HACK: the MAC GTK+ port currently does some horrible, un-GTK-ish key mappings
+			// so we work around them by playing some tricks to remap and decompose modifiers.
+			// We also decompose keys to the root physical key so that the Mac command 
+			// combinations appear as expected, e.g. shift-{ is treated as shift-[.
 			if (isMac && !isX11) {
+				// Mac GTK+ maps the command key to the Mod1 modifier, which usually means alt/
+				// We map this instead to meta, because the Mac GTK+ has mapped the cmd key
+				// to the meta key (yay inconsistency!). IMO super would have been saner.
 				if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
 					mod ^= Gdk.ModifierType.Mod1Mask;
-					mod |= META_MASK;
+					mod |= Gdk.ModifierType.MetaMask;
 				}
+				
+				// If Mod5 is active it *might* mean that opt/alt is active,
+				// so we can unset this and map it back to the normal modifier.
 				if ((mod & Gdk.ModifierType.Mod5Mask) != 0) {
 					mod ^= Gdk.ModifierType.Mod5Mask;
 					mod |= Gdk.ModifierType.Mod1Mask;
 				}
-				if (evt.Group == (byte) 1) {
-					mod |= Gdk.ModifierType.Mod1Mask;
+				
+				// When shift or opt modifiers are active, we need to decompose keys down to the 
+				// "root" physical key to make the command appear correct for Mac.
+				if (evt.Group == (byte) 1 || (mod & Gdk.ModifierType.ShiftMask) != 0)
 					key = GetRootKey (evt);
-				}
+				
+				// In addition, we can only inspect whether the opt/alt key is pressed by examining
+				// the key's "group", because the Mac GTK+ treats opt as a group modifier and does
+				// not expose it as an actual GDK modifier.
+				if (evt.Group == (byte) 1)
+					mod |= Gdk.ModifierType.Mod1Mask;
 			}
 		}
 		
 		static Dictionary<Gdk.Key,Gdk.Key> hardwareMappings;
 		static Gdk.Keymap keymap;
 		
+		static void InitKeymaps ()
+		{
+			if (keymap != null) 
+				return;
+			
+			keymap = Gdk.Keymap.Default;
+			keymap.KeysChanged += delegate {
+				hardwareMappings.Clear ();
+			};
+			hardwareMappings = new Dictionary<Gdk.Key,Gdk.Key> ();
+		}
+		
 		static Gdk.Key GetRootKey (Gdk.EventKey evt)
 		{
-			if (keymap == null) {
-				keymap = Gdk.Keymap.Default;
-				keymap.KeysChanged += delegate { hardwareMappings.Clear (); };
-				hardwareMappings = new Dictionary<Gdk.Key,Gdk.Key> ();
-			}
-			
+			InitKeymaps ();
 			Gdk.Key ret;
 			if (hardwareMappings.TryGetValue (evt.Key, out ret))
 				return ret;
@@ -360,9 +380,9 @@ namespace MonoDevelop.Components.Commands
 				label += "Alt+";
 			if ((mod & Gdk.ModifierType.ShiftMask) != 0)
 				label += "Shift+";
-			if ((mod & META_MASK) != 0)
+			if ((mod & Gdk.ModifierType.MetaMask) != 0)
 				label += "Meta+";
-			if ((mod & SUPER_MASK) != 0)
+			if ((mod & Gdk.ModifierType.SuperMask) != 0)
 				label += "Super+";
 			
 			keyIsModifier = true;
@@ -438,9 +458,9 @@ namespace MonoDevelop.Components.Commands
 				label += "Alt+";
 			if ((mod & Gdk.ModifierType.ShiftMask) != 0)
 				label += "Shift+";
-			if ((mod & META_MASK) != 0)
+			if ((mod & Gdk.ModifierType.MetaMask) != 0)
 				label += "Meta+";
-			if ((mod & SUPER_MASK) != 0)
+			if ((mod & Gdk.ModifierType.SuperMask) != 0)
 				label += "Super+";
 			
 			return label;
@@ -457,9 +477,9 @@ namespace MonoDevelop.Components.Commands
 			case "Ctrl":
 				return Gdk.ModifierType.ControlMask;
 			case "Meta":
-				return META_MASK;
+				return Gdk.ModifierType.MetaMask;
 			case "Super":
-				return SUPER_MASK;
+				return Gdk.ModifierType.SuperMask;
 			default:
 				return Gdk.ModifierType.None;
 			}
@@ -726,24 +746,25 @@ namespace MonoDevelop.Components.Commands
 		static string AppleMapModifierToSymbols (Gdk.ModifierType mod)
 		{
 			string ret = "";
-			if ((mod & META_MASK) != 0) {
-				ret += "⌘";
-				mod ^= META_MASK;
-			}
+			
 			if ((mod & Gdk.ModifierType.ControlMask) != 0) {
 				ret += "⌃";
 				mod ^= Gdk.ModifierType.ControlMask;
-			}
-			if ((mod & Gdk.ModifierType.ShiftMask) != 0) {
-				ret += "⇧";
-				mod ^= Gdk.ModifierType.ShiftMask;
 			}
 			if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
 				ret += "⌥";
 				mod ^= Gdk.ModifierType.Mod1Mask;
 			}
+			if ((mod & Gdk.ModifierType.ShiftMask) != 0) {
+				ret += "⇧";
+				mod ^= Gdk.ModifierType.ShiftMask;
+			}
+			if ((mod & Gdk.ModifierType.MetaMask) != 0) {
+				ret += "⌘";
+				mod ^= Gdk.ModifierType.MetaMask;
+			}
 			if (mod != 0)
-				throw new InvalidOperationException ();
+				throw new InvalidOperationException ("Unexpected modifiers: " + mod.ToString ());
 			return ret;
 		}
 		

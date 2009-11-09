@@ -194,7 +194,7 @@ namespace CBinding
 			Package package;
 			
 			foreach (SolutionItem c in project.ParentFolder.Items) {
-				if (c is CProject) {
+				if (null != c && c is CProject) {
 					CProject cproj = (CProject)c;
 					CProjectConfiguration conf = (CProjectConfiguration)cproj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
 					if (conf.CompileTarget != CBinding.CompileTarget.Bin) {
@@ -439,17 +439,20 @@ namespace CBinding
 		private bool IsValidPackage (string package)
 		{
 			bool valid = false;
-			StreamReader reader = new StreamReader (package);
-			
-			string line;
-			
-			while ((line = reader.ReadLine ()) != null) {
-				if (line.StartsWith ("Libs:", true, null) && line.Contains (" -l")) {
-					valid = true;
-					break;
+			try {
+				using (StreamReader reader = new StreamReader (package)) {
+					string line;
+					
+					while ((line = reader.ReadLine ()) != null) {
+						if (line.StartsWith ("Libs:", true, null) && line.Contains (" -l")) {
+							valid = true;
+							break;
+						}
+					}
 				}
+			} catch { 
+				// Invalid file, permission error, broken symlink
 			}
-			reader.Close ();
 			
 			return valid;
 		}

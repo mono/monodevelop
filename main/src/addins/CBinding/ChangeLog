@@ -1,5 +1,15 @@
 2009-11-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Parser/CDocumentParser.cs:
+	* Parser/TagDatabaseManager.cs: Lock projectinfo on update.
+
+2009-11-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Gui/EditPackagesDialog.cs: Don't let bad packages break
+	  scanning.
+
+2009-11-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Gui/DataProvider.cs: Escape text for parameter completion.
 
 2009-11-05  Lluis Sanchez Gual  <lluis@novell.com>

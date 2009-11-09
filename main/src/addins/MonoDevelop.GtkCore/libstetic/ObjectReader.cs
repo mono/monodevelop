@@ -32,7 +32,7 @@ namespace Stetic
 		
 		public virtual void ReadObject (ObjectWrapper wrapper, XmlElement elem)
 		{
-			wrapper.Read (this, elem);
+			Stetic.ObjectWrapper.ReadObject (this, elem, wrapper);
 		}
 	}
 }

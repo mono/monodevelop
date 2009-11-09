@@ -807,6 +807,10 @@ namespace MonoDevelop.Ide.Gui.Components
 					return;
 				}
 				else if (node.Modified) {
+					if (!this.tree.store.IterIsValid (node.NodeIter)) {
+						LoggingService.LogError ("Found invalid iter for node. " + node.DataItem);
+						return;
+					}
 					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.TextColumn, node.Text);
 					if (node.Icon != null)
 						tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OpenIconColumn, node.Icon);
