@@ -1,3 +1,9 @@
+2009-11-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs: Fixed
+	  'Bug 553557 - Refactoring preview dialog has double-spaced
+	  lines'.
+
 2009-11-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs:

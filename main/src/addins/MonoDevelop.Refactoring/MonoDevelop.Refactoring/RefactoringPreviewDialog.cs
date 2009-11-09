@@ -144,21 +144,21 @@ namespace MonoDevelop.Refactoring
 				doc.Text = System.IO.File.ReadAllText (replaceChange.FileName);
 				List<string> before = new List<string> ();
 				foreach (var line in doc.Lines) {
-					before.Add (doc.GetTextAt (line));
+					before.Add (doc.GetTextAt (line.Offset, line.EditableLength));
 				}
 				
 				((Mono.TextEditor.IBuffer)doc).Replace (replaceChange.Offset, replaceChange.RemovedChars, replaceChange.InsertedText);
 				
 				List<string> after = new List<string> ();
 				foreach (var line in doc.Lines) {
-					after.Add (doc.GetTextAt (line));
+					after.Add (doc.GetTextAt (line.Offset, line.EditableLength));
 				}
 				
 				Diff diff = new Diff (before.ToArray (), after.ToArray (), true, true);
 				
 				System.IO.StringWriter w = new System.IO.StringWriter();
 				UnifiedDiff.WriteUnifiedDiff (diff, w, replaceChange.FileName, replaceChange.FileName, 2);
-				cellRendererDiff.InitCell (treeviewPreview, true, w.ToString (), replaceChange.FileName);
+				cellRendererDiff.InitCell (treeviewPreview, true, w.ToString ().Trim (), replaceChange.FileName);
 			} catch (Exception e) {
 				Console.WriteLine (e);
 			}
