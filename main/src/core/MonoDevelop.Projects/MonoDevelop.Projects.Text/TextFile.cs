@@ -252,7 +252,11 @@ namespace MonoDevelop.Projects.Text
 			for (int i = 0; i < text.Length && lin <= line; i++) {
 				if (line == lin && column == col)
 					return i;
-				if (text[i] == '\n') {
+				if (text[i] == '\r') {
+					if (i + 1 < text.Length && text[i + 1] == '\n')
+						i++;
+					lin++; col = 1;
+				} else if (text[i] == '\n') {
 					lin++; col = 1;
 				} else
 					col++;
@@ -265,7 +269,11 @@ namespace MonoDevelop.Projects.Text
 			int lin = 1;
 			int col = 1;
 			for (int i = 0; i < position; i++) {
-				if (text[i] == '\n') {
+				if (text[i] == '\r') {
+					if (i + 1 < position && text[i + 1] == '\n')
+						i++;
+					lin++; col = 1;
+				} else if (text[i] == '\n') {
 					lin++; col = 1;
 				} else
 					col++;
@@ -279,7 +287,7 @@ namespace MonoDevelop.Projects.Text
 			int pos = GetPositionFromLineColumn (line, 1);
 			if (pos == -1) return 0;
 			int len = 0;
-			while (pos < text.Length && text [pos] != '\n') {
+			while (pos < text.Length && text [pos] != '\n' && text [pos] != '\r') {
 				pos++;
 				len++;
 			}
