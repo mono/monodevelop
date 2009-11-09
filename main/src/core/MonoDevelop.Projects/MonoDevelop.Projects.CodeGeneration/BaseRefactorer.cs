@@ -800,7 +800,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (member is CodeMemberMethod)
 				if ((i = code.IndexOf ('(')) != -1)
 					code = code.Insert (i, " ");
-			return RemoveIndent (code) + "\n";
+			
+			code = code.TrimEnd ('\n', '\r', ' ', '\t');
+			
+			// remove empty preceeding lines
+			string eol;
+			string[] lines = SplitLines (code, out eol);
+			
+			int firstLine = -1;
+			for (int k = 0; k < lines.Length; k++) {
+				if (lines[k].Trim ().Length != 0)
+					break;
+				firstLine = k + 1;
+			}
+			if (firstLine >= 0) 
+				code = String.Join (eol, lines, firstLine, lines.Length - firstLine);
+			
+			return RemoveIndent (code) + eol;
 		}
 		
 
@@ -848,55 +864,95 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		protected string RemoveIndent (string code)
+		static string[] SplitLines (string code, out string eol)
 		{
-			string[] lines = code.Split ('\n');
-			int minInd = int.MaxValue;
+			List<string> lines = new List<string> ();
+			eol = null;
+			int lastLineOffset = 0;
+			for (int i = 0; i < code.Length; i++) {
+				int additionalEolChars = 0;
+				switch (code[i]) {
+				case '\r':
+					if (i + 1 < code.Length && code[i + 1] == '\n') {
+						i++;
+						if (eol == null)
+							eol = "\r\n";
+						additionalEolChars = 1;
+					}
+					if (eol == null)
+						eol = "\r";
+					break;
+				case '\n':
+					if (eol == null)
+						eol = "\n";
+					break;
+				default:
+					continue;
+				}
+				lines.Add (code.Substring (lastLineOffset, i - lastLineOffset - additionalEolChars));
+				lastLineOffset = i + 1;
+			}
+			if (lastLineOffset < code.Length)
+				lines.Add (code.Substring (lastLineOffset, code.Length - lastLineOffset));
+			if (eol == null)
+				eol = Environment.NewLine;
+			return lines.ToArray ();
+		}
+		
+		static int GetBlockIndent (IEnumerable<string> lines) 
+		{
+			int result = int.MaxValue;
 			
-			for (int n=0; n<lines.Length; n++) {
-				string line = lines [n];
-				for (int i=0; i<line.Length; i++) {
-					char c = line [i];
-					if (c != ' ' && c != '\t') {
-						if (i < minInd)
-							minInd = i;
+			foreach (string line in lines) {
+//				System.Console.WriteLine (">" + line.Replace("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t"));
+				for (int i = 0; i < line.Length; i++) {
+					char ch = line[i];
+					if (ch != ' ' && ch != '\t') {
+						if (i < result)
+							result = i;
 						break;
 					}
 				}
 			}
 			
-			if (minInd == int.MaxValue)
-				minInd = 0;
-			
-			int firstLine = -1, lastLine = -1;
-			
-			for (int n=0; n<lines.Length; n++) {
-				if (minInd >= lines[n].Length)
-					continue;
-					
-				if (lines[n].Trim (' ','\t') != "") {
-					if (firstLine == -1)
-						firstLine = n;
-					lastLine = n;
-				}
-				
-				lines [n] = lines [n].Substring (minInd);
-			}
-			
-			if (firstLine == -1)
-				return "";
-			
-			return string.Join ("\n", lines, firstLine, lastLine - firstLine + 1);
+			return result == int.MaxValue ? 0 : result;
 		}
 		
-		protected string Indent (string code, string indent, bool indentFirstLine)
+		public static string RemoveIndent (string code)
+		{
+			string eol;
+			string[] lines = SplitLines (code, out eol);
+			int minInd = GetBlockIndent (lines);
+			
+			for (int i = 0; i < lines.Length; i++) {
+				if (minInd > lines[i].Length)
+					continue;
+				
+				lines[i] = lines[i].Substring (minInd);
+			}
+			
+			StringBuilder result = new StringBuilder ();
+			foreach (string line in lines) {
+				result.Append (line);
+				result.Append (eol);
+			}
+			return result.ToString ();
+		}
+		
+		public static string Indent (string code, string indent, bool indentFirstLine)
 		{
 			StringBuilder result = new StringBuilder ();
 			if (indentFirstLine)
 				result.Append (indent);
 			for (int i = 0; i < code.Length; i++) {
 				result.Append (code[i]);
-				if (code[i] == '\n')
+				if (code[i] == '\r') {
+					if (i + 1 < code.Length && code[i + 1] == '\n') {
+						result.Append ('\n');
+						i++;
+					}
+					result.Append (indent);
+				} else if (code[i] == '\n')
 					result.Append (indent);
 			}
 			return result.ToString ();
@@ -933,14 +989,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			if (member is CodeMemberField)
 				return GetNewFieldPosition (buffer, cls);
-			else if (member is CodeMemberMethod)
+			if (member is CodeMemberMethod)
 				return GetNewMethodPosition (buffer, cls);
-			else if (member is CodeMemberEvent)
+			if (member is CodeMemberEvent)
 				return GetNewEventPosition (buffer, cls);
-			else if (member is CodeMemberProperty)
+			if (member is CodeMemberProperty)
 				return GetNewPropertyPosition (buffer, cls);
-			else
-				throw new InvalidOperationException ("Invalid member type: " + member);
+			throw new InvalidOperationException ("Invalid member type: " + member);
 		}
 		
 		protected static IType GetMainPart (IType t)
@@ -1081,6 +1136,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 				switch (ch) {
 				case '\n':
 					return i + 1;
+				case '\r':
+					if (i + 1 < buffer.Length && buffer.GetCharAt (i + 1) == '\n')
+						i++;
+					return i + 1;
 				case ' ':
 				case '\t':
 					i++;
@@ -1094,10 +1153,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		protected virtual int GetNextLine (IEditableTextFile buffer, int pos)
 		{
+			if (pos < 0)
+				return 0;
 			while (pos < buffer.Length) {
 				char ch = buffer.GetCharAt (pos);
 				switch (ch) {
 				case '\n':
+					return pos + 1;
+				case '\r':
+					if (pos + 1 < buffer.Length && buffer.GetCharAt (pos + 1) == '\n')
+						pos++;
 					return pos + 1;
 /*				case ' ':
 				case '\t':
@@ -1121,7 +1186,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					result.Append (ch);
 					pos++;
 					continue;
-				} 
+				}
 				break;
 			}
 			return result.ToString ();

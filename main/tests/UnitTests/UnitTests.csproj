@@ -215,6 +215,7 @@
     <Compile Include="MonoDevelop.Projects.Gui\CompletionListWindowTests.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetTesting.cs" />
+    <Compile Include="MonoDevelop.Refactoring\BaseRefactorerTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
