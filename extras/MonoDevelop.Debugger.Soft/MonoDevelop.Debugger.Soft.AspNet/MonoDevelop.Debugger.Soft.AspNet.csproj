@@ -40,7 +40,7 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="Mono.Debugger, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
       <Private>False</Private>
