@@ -1,5 +1,12 @@
 2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Add doc
+	  comments about not using the Version string for version
+	  checks.
+
+2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Handle
 	  "/trunk/mono" in version string.
 
