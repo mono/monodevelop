@@ -1,0 +1,25 @@
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Add makefiles to
+	  project files.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Don't local-copy
+	  project refs.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Wire the soft
+	  debug addin into the build.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Moved soft debug
+	  addin from extras.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Updated.
+

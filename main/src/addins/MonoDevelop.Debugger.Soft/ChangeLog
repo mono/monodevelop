@@ -1,0 +1,45 @@
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Wire the soft debug addin into the build.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.sln:
+	* MonoDevelop.Debugger.Soft.IPhone:
+	* MonoDevelop.Debugger.Soft.IPhone/ChangeLog:
+	* MonoDevelop.Debugger.Soft.IPhone/Manifest.addin.xml:
+	* MonoDevelop.Debugger.Soft.IPhone/IPhoneDebuggerSession.cs:
+	* MonoDevelop.Debugger.Soft.IPhone/IPhoneSoftDebuggerEngine.cs:
+	* MonoDevelop.Debugger.Soft.IPhone/MonoDevelop.Debugger.Soft.IPhone.csproj:
+	Move the IPhone soft debugger addin to the IPhone sln.
+
+2009-11-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.sln: Tweak policy.
+
+2009-11-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.sln: Set default policies.
+
+2009-11-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile: make the "clean" target work without mdtool.
+
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure: Bump MD version.
+
+2009-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.sln:
+	* MonoDevelop.Debugger.Soft.IPhone: Stubbed. Not working yet.
+
+2009-10-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile:
+	* configure: Patch into the extras configure system.
+
+2009-09-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* .temp-addin-registry: Remove temp dir.
+

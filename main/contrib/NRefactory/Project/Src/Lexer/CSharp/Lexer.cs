@@ -1158,11 +1158,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			Ast.Expression expr = PPUnaryExpression();
 			while (ReaderPeek() == '=' || ReaderPeek() == '!') {
 				Token token = ReadOperator((char)ReaderRead());
-				if (token == null || token.kind != Tokens.Equals && token.kind != Tokens.NotEqual) {
+				if (token == null || token.kind != Tokens.Equal && token.kind != Tokens.NotEqual) {
 					break;
 				}
 				Ast.Expression expr2 = PPUnaryExpression();
-				expr = new Ast.BinaryOperatorExpression(expr, token.kind == Tokens.Equals ? Ast.BinaryOperatorType.Equality : Ast.BinaryOperatorType.InEquality, expr2);
+				expr = new Ast.BinaryOperatorExpression(expr, token.kind == Tokens.Equal ? Ast.BinaryOperatorType.Equality : Ast.BinaryOperatorType.InEquality, expr2);
 			}
 			return expr;
 		}

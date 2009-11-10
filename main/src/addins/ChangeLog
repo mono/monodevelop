@@ -1,3 +1,12 @@
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Wire the soft debug addin into the build.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft: Moved soft debug addin from
+	  extras.
+
 2009-08-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

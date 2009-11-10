@@ -6,7 +6,7 @@ buildinfo = $(top_builddir)/build/bin/buildinfo
 
 all:
 
-gen-vcrevision:
+vcrevision:
 	@if test -d ./.svn; then \
 		version=$$( \
 			LANG=C; export LANG; \
@@ -21,10 +21,12 @@ gen-vcrevision:
 		fi; \
 		echo "SVN revision: $$version" > "vcrevision"; \
 	else \
-		echo "0" > "vcrevision"; \
+		if test ! -f ./vcrevision; then \
+			echo "SVN revision: unknown" > "vcrevision"; \
+		fi; \
 	fi
 
-$(buildinfo): gen-vcrevision
+$(buildinfo): vcrevision
 	@mkdir -p "$(top_builddir)/build/bin"
 	@cp "$(top_srcdir)/vcrevision" "$@"
 	@echo "Build date: $$(date -u +'%Y-%m-%d %H:%M:%S%z')" >> "$@"
@@ -158,4 +160,4 @@ distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required 
 distcleancheck_listfiles      = find . -type f -print		# automake-1.9 setting
 distcleancheck_listfiles     += $(filter_stale_buildfiles)	# amend by required filtering
 
-.PHONY: gen-vcrevision
+.PHONY: vcrevision

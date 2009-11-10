@@ -1,3 +1,21 @@
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Fix deps for vcrevision file.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure.in: Wire the soft debug addin into the build.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Main.sln:
+	* monodevelop-core-addins.pc.in: Moved soft debug addin from
+	  extras.
+
+2009-11-07  Michael Hutchinson   <mhutchinson@novell.com>
+
+	* monodevelop-core-addins.pc.in: Add Moonlight addin.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Bump MD version.
