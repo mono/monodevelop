@@ -1,5 +1,9 @@
 2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* ILAsmCompilerManager.cs: Minor fix in error parsing.
+
+2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* ILAsmConsoleProject.xpt.xml: Add mscorlib reference to the
 	  template.
 
