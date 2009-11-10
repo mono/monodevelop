@@ -107,6 +107,7 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (MonoRuntimeInfo ri in customRuntimes) {
 				if (ri.Prefix == runtime.MonoRuntimeInfo.Prefix) {
 					customRuntimes.Remove (ri);
+					break;
 				}
 			}
 			SaveRuntimes ();

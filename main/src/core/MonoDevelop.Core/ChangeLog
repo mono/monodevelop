@@ -1,5 +1,10 @@
 2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs: Fix
+	  crash when removing a runtime.
+
+2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Assemblies/MsNetFrameworkBackend.cs:
 	  Include the 2.0 clr tools path for the 3.5 framework.
 
