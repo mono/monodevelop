@@ -703,8 +703,12 @@ namespace MonoDevelop.Debugger.Soft
 				try {
 					if (object_argument is ObjectMirror)
 						result = ((ObjectMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects);
-					else
+					else if (object_argument is TypeMirror)
 						result = ((TypeMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects);
+					else if (object_argument is StructMirror)
+						result = ((StructMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects);
+					else
+						throw new ArgumentException (object_argument.GetType ().ToString ());
 				} catch (InvocationException ex) {
 					exception = ex;
 				} catch (Exception ex) {
