@@ -68,9 +68,10 @@ namespace MonoDevelop.Core.Assemblies
 			sdkPath = Path.Combine (sdkPath, "Windows");
 			if (framework.Id == "4.0")
 				yield return Path.Combine (sdkPath, "v7.0A\\bin\\NETFX 4.0 Tools");
-			else if (framework.Id == "3.5")
+			else if (framework.Id == "3.5") {
 				yield return Path.Combine (sdkPath, "v7.0A\\bin");
-			else
+				yield return targetRuntime.RootDirectory.Combine (GetClrVersion (ClrVersion.Net_2_0));
+			} else
 				yield return Path.Combine (sdkPath, "v6.0A\\bin");
 
 			foreach (string s in base.GetToolsPaths ())
