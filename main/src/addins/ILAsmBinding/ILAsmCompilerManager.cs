@@ -221,7 +221,7 @@ namespace ILAsmBinding
 			return exitCode;
 		}
 
-		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\s\((?<line>\d*)(,\s(?<column>\d*[\+]*))?\)\s(:|)\s+)*(?<level>\w+)\s*:\s*(?<message>.*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\s?\((?<line>\d*)(,\s(?<column>\d*[\+]*))?\)\s(:|)\s+)*(?<level>\w+)\s*(:|(--))\s*(?<message>.*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		static BuildError CreateErrorFromString (string error_string)
 		{
 			// When IncludeDebugInformation is true, prevents the debug symbols stats from breaking this.

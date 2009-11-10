@@ -1,3 +1,8 @@
+2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ILAsmCompilerManager.cs: Make the error parsing regex work
+	  on ms.net.
+
 2009-11-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ILAsmCompilerManager.cs: Show an error message when ilasm is
