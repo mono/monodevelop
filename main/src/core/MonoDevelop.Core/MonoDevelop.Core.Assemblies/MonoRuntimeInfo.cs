@@ -153,7 +153,7 @@ namespace MonoDevelop.Core.Assemblies
 				if (j != -1)
 					rt.monoVersion = ver.Substring (i, j - i).Replace ('-','.');
 			}
-			if (rt.monoVersion == null) {
+			if (rt.monoVersion == "Unknown") {
 				i = ver.IndexOf (' ');
 				rt.monoVersion = ver.Substring (i+1);
 			}

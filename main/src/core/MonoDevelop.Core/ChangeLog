@@ -1,5 +1,10 @@
 2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Fix runtime
+	  detection.
+
+2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Execution/ProcessWrapper.cs: Fix possible
 	  NRE.
 
