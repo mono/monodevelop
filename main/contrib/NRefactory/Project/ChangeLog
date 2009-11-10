@@ -1,3 +1,9 @@
+2009-11-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Lexer/CSharp/Lexer.cs: Fixed 'Bug 552276 - MonoDevelop
+	  sometimes fails to show class member list when pressing "."
+	  key after class var name.'.
+
 2009-10-26  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Visitors/AbstractASTVisitor.cs: Fixed 'Bug 549858 -
