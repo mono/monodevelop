@@ -84,11 +84,11 @@ namespace MonoDevelop.Core.Assemblies
 						yield return new MonoTargetRuntime (info);
 					}
 				}
-				foreach (MonoRuntimeInfo info in customRuntimes) {
-					MonoTargetRuntime rt = new MonoTargetRuntime (info);
-					rt.UserDefined = true;
-					yield return rt;
-				}
+			}
+			foreach (MonoRuntimeInfo info in customRuntimes) {
+				MonoTargetRuntime rt = new MonoTargetRuntime (info);
+				rt.UserDefined = true;
+				yield return rt;
 			}
 		}
 		
