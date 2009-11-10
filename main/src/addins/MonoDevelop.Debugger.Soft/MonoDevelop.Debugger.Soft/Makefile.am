@@ -1,6 +1,9 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.Soft.dll
 
+DBG_ASM = $(ADDIN_BUILD)/Mono.Debugger.Soft.dll
+DBG_ASM_SRC = $(top_builddir)/build/bin/Mono.Debugging.dll
+
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
@@ -36,20 +39,24 @@ RES = Manifest.addin.xml
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
-$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
+$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS) $(DBG_ASM)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_deps) \
 		$(build_resources:%=/resource:%) $(build_sources)
+
+$(DBG_ASM): $(DBG_ASM_SRC)
+	mkdir -p $(ADDIN_BUILD)
+	cp $^ $@ 
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
 check: all
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Debugger.Soft
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(DBG_ASM)
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-EXTRA_DIST = $(FILES) $(RES)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DBG_ASM)
+EXTRA_DIST = $(FILES) $(RES) $(DBG_ASM_SRC)
 
 include $(top_srcdir)/Makefile.include
 

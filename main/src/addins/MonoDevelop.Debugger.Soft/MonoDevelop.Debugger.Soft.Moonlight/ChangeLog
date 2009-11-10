@@ -1,5 +1,10 @@
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Add makefiles to
+	  project files.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Don't local-copy
 	  project refs.
 

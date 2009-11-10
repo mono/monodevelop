@@ -1,5 +1,12 @@
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Debugger.Soft.csproj: Add makefiles to project
+	  files.
+
+	* Makefile.am: Install the Mono.Debugger.Soft assembly.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Debugger.Soft.csproj: Don't local-copy project
 	  refs.
 

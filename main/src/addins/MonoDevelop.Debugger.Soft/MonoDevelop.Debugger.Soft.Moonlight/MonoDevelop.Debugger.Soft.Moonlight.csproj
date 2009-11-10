@@ -123,4 +123,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+  </ItemGroup>
 </Project>
