@@ -1,3 +1,8 @@
+2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* RemoteSoftDebuggerSession.cs: Make GetListenMessage virtual
+	  instead of abstract.
+
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger.Soft.csproj: Add makefiles to project
