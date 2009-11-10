@@ -1,5 +1,10 @@
 2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Handle
+	  "/trunk/mono" in version string.
+
+2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Fix runtime
 	  detection.
 

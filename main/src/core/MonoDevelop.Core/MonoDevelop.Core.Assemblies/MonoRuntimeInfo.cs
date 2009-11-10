@@ -152,7 +152,10 @@ namespace MonoDevelop.Core.Assemblies
 				int j = ver.IndexOf ('/', i);
 				if (j != -1)
 					rt.monoVersion = ver.Substring (i, j - i).Replace ('-','.');
+			} else if (ver.StartsWith ("/trunk/mono ")) {
+				rt.monoVersion = "Trunk";
 			}
+			
 			if (rt.monoVersion == "Unknown") {
 				i = ver.IndexOf (' ');
 				rt.monoVersion = ver.Substring (i+1);
