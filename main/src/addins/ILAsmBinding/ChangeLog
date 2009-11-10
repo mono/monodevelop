@@ -1,5 +1,10 @@
 2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* ILAsmConsoleProject.xpt.xml: Add mscorlib reference to the
+	  template.
+
+2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* ILAsmCompilerManager.cs: Make the error parsing regex work
 	  on ms.net.
 
