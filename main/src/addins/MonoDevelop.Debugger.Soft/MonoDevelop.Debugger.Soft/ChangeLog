@@ -1,5 +1,10 @@
 2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerEngine.cs: Don't try to parse version number.
+	  Instead check for presence of Mono.Debugger.Soft.dll.
+
+2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* RemoteSoftDebuggerSession.cs: Make GetListenMessage virtual
 	  instead of abstract.
 
