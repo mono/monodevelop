@@ -274,7 +274,7 @@ namespace MonoDevelop.Projects
 			
 			if (item is SolutionEntityItem) {
 				((SolutionEntityItem)item).Saved += NotifyItemSaved;
-				((SolutionEntityItem)item).ReloadRequired += NotifyItemReloadRequired;
+//				((SolutionEntityItem)item).ReloadRequired += NotifyItemReloadRequired;
 			}
 			item.Modified += NotifyItemModified;
 		}
@@ -362,7 +362,7 @@ namespace MonoDevelop.Projects
 			
 			if (entry is SolutionEntityItem) {
 				((SolutionEntityItem)entry).Saved -= NotifyItemSaved;
-				((SolutionEntityItem)entry).ReloadRequired -= NotifyItemReloadRequired;
+//				((SolutionEntityItem)entry).ReloadRequired -= NotifyItemReloadRequired;
 			}
 			entry.Modified -= NotifyItemModified;
 		}
@@ -692,11 +692,11 @@ namespace MonoDevelop.Projects
 			OnItemSaved (e);
 		}
 		
-		internal void NotifyItemReloadRequired (object sender, SolutionItemEventArgs e)
+/*		internal void NotifyItemReloadRequired (object sender, SolutionItemEventArgs e)
 		{
 			OnItemReloadRequired (e);
 		}
-		
+				 */
 		internal void NotifyItemAddedToFolder (object sender, SolutionItemChangeEventArgs e, bool newToSolution)
 		{
 			if (ParentFolder != null)
@@ -824,13 +824,14 @@ namespace MonoDevelop.Projects
 				ItemSaved (this, e);
 		}
 		
-		protected virtual void OnItemReloadRequired (SolutionItemEventArgs e)
+/*		protected virtual void OnItemReloadRequired (SolutionItemEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnItemReloadRequired (e);
 			if (ItemReloadRequired != null)
 				ItemReloadRequired (this, e);
 		}
+*/
 		
 		public event SolutionItemChangeEventHandler ItemAdded;
 		public event SolutionItemChangeEventHandler ItemRemoved;
@@ -845,7 +846,7 @@ namespace MonoDevelop.Projects
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		public event SolutionItemModifiedEventHandler ItemModified;
 		public event SolutionItemEventHandler ItemSaved;
-		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
+//		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
 	}
 	
 	class DummySolutionFolderHandler: ISolutionItemHandler

@@ -482,9 +482,9 @@ namespace MonoDevelop.Projects
 		
 		public event SolutionItemEventHandler Saved;
 		
-		public event EventHandler<SolutionItemEventArgs> ReloadRequired {
+/*		public event EventHandler<SolutionItemEventArgs> ReloadRequired {
 			add { fileStatusTracker.ReloadRequired += value; }
 			remove { fileStatusTracker.ReloadRequired -= value; }
 		}
-	}
+*/	}
 }

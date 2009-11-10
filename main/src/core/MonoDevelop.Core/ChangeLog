@@ -1,3 +1,23 @@
+2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Improve
+	  detection of the current Mono version.
+
+2009-11-10  Jonathan Chambers  <joncham@gmail.com>
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs:
+	  Support custom mono installations on all platforms.
+
+2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs: Fix
+	  crash when removing a runtime.
+
+2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MsNetFrameworkBackend.cs:
+	  Include the 2.0 clr tools path for the 3.5 framework.
+
 2009-11-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* frameworks/framework_NET_3_5.xml: Added missing assemblies.

@@ -84,11 +84,11 @@ namespace MonoDevelop.Core.Assemblies
 						yield return new MonoTargetRuntime (info);
 					}
 				}
-				foreach (MonoRuntimeInfo info in customRuntimes) {
-					MonoTargetRuntime rt = new MonoTargetRuntime (info);
-					rt.UserDefined = true;
-					yield return rt;
-				}
+			}
+			foreach (MonoRuntimeInfo info in customRuntimes) {
+				MonoTargetRuntime rt = new MonoTargetRuntime (info);
+				rt.UserDefined = true;
+				yield return rt;
 			}
 		}
 		
@@ -107,6 +107,7 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (MonoRuntimeInfo ri in customRuntimes) {
 				if (ri.Prefix == runtime.MonoRuntimeInfo.Prefix) {
 					customRuntimes.Remove (ri);
+					break;
 				}
 			}
 			SaveRuntimes ();

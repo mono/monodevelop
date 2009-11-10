@@ -104,8 +104,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				if (rinfo == newDefaultInfo)
 					IdeApp.Preferences.DefaultTargetRuntime = tr;
 			}
-			foreach (TargetRuntime tr in removedRuntimes)
-				Runtime.SystemAssemblyService.UnregisterRuntime (tr);
+			foreach (MonoTargetRuntime tr in removedRuntimes)
+				MonoTargetRuntime.UnregisterRuntime (tr);
 			
 		}
 		

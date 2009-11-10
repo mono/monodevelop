@@ -145,9 +145,18 @@ namespace MonoDevelop.Core.Assemblies
 			
 			MonoRuntimeInfo rt = new MonoRuntimeInfo ();
 			
-			rt.monoVersion = (string) t.InvokeMember ("GetDisplayName", BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic, null, null, null);
-			int i = rt.monoVersion.IndexOf (' ');
-			rt.monoVersion = rt.monoVersion.Substring (i+1);
+			string ver = (string) t.InvokeMember ("GetDisplayName", BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic, null, null, null);
+			int i = ver.IndexOf ("/branches/mono-");
+			if (i != -1) {
+				i += 15;
+				int j = ver.IndexOf ('/', i);
+				if (j != -1)
+					rt.monoVersion = ver.Substring (i, j - i).Replace ('-','.');
+			}
+			if (rt.monoVersion == null) {
+				i = ver.IndexOf (' ');
+				rt.monoVersion = ver.Substring (i+1);
+			}
 
 			//Pull up assemblies from the installed mono system.
 			rt.prefix = PathUp (typeof (int).Assembly.Location, 4);

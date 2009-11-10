@@ -30,6 +30,8 @@
 {
 }
 
+.assembly extern mscorlib { }
+
 .namespace DefaultNamespace
 {
 	.class private auto ansi beforefieldinit MainClass
