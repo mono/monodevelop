@@ -1,3 +1,9 @@
+2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MoonlightSoftDebuggerEngine.cs:
+	* MoonlightSoftDebuggerSession.cs: First stab at implementing
+	  the Moonlight debug session.
+
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Add makefiles to

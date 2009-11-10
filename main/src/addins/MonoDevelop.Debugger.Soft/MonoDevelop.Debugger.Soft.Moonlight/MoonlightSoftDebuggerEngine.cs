@@ -42,15 +42,17 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
+			if (PropertyService.IsMac || PropertyService.IsMac)
+				return false;
+			
 			var cmd = command as MoonlightExecutionCommand;
-			return false; //cmd != null;
+			return cmd != null && cmd.Url.StartsWith ("file://");
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
 			var cmd = (MoonlightExecutionCommand) command;
-			
-			throw new NotImplementedException ();
+			return new MoonlightDebuggerStartInfo (cmd.Url);
 		}
 
 		public DebuggerFeatures SupportedFeatures {
@@ -77,6 +79,17 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 			get {
 				return "Mono Soft Debugger";
 			}
+		}
+	}
+	
+	class MoonlightDebuggerStartInfo : RemoteDebuggerStartInfo
+	{
+		public string Url { get; private set; }
+		
+		public MoonlightDebuggerStartInfo (string url)
+			: base (IPAddress.Loopback, 10000, 10001)
+		{
+			this.Url = url;
 		}
 	}
 }

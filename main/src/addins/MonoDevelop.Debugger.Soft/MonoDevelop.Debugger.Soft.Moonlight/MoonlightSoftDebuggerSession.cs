@@ -40,7 +40,74 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 {
 
 
-	public class MoonlightSoftDebuggerSession : SoftDebuggerSession
+	public class MoonlightSoftDebuggerSession : RemoteSoftDebuggerSession
 	{
+		string appName;
+		Process browser;
+		
+		protected override string AppName {
+			get { return appName; }
+		}
+		
+		protected override void OnRun (DebuggerStartInfo startInfo)
+		{
+			var dsi = (MoonlightDebuggerStartInfo) startInfo;
+			
+			appName = GetNameFromXapUrl (dsi.Url);
+			
+			StartBrowserProcess (dsi);
+			StartListening (dsi);
+		}
+
+		void StartBrowserProcess (MoonlightDebuggerStartInfo dsi)
+		{
+			if (browser != null)
+				throw new InvalidOperationException ("Browser already started");
+			
+			var psi = new ProcessStartInfo ("firefox", string.Format (" -no-remote \"{0}\"", dsi.Url)) {
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+			};
+			psi.EnvironmentVariables.Add ("MOON_SOFT_DEBUG",
+				string.Format ("transport=dt_socket,address={0}:{1}", dsi.Address, dsi.DebugPort));
+			
+			browser = Process.Start (psi);
+			ConnectOutput (browser.StandardOutput, false);
+			ConnectOutput (browser.StandardError, true);
+			
+			browser.Exited += delegate {
+				EndSession ();
+			};
+		}
+
+		static string GetNameFromXapUrl (string url)
+		{
+			int start = url.LastIndexOf ('/');
+			int end = url.LastIndexOf ('.');
+			if (end > start)
+				return url.Substring (start, end);
+			return "";
+		}
+		
+		protected override void EndSession ()
+		{
+			EndBrowserProcess ();
+			base.EndSession ();
+		}
+		
+		protected override void OnExit ()
+		{
+			EndBrowserProcess ();
+			base.OnExit ();
+		}
+		
+		void EndBrowserProcess ()
+		{
+			if (browser == null)
+				return;
+			
+			browser.Kill ();
+			browser = null;
+		}
 	}
 }
