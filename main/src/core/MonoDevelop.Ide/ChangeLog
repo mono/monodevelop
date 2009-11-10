@@ -1,5 +1,10 @@
 2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:
+	  Properly remove runtimes.
+
+2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: (Revert revision
 	  145499)
 
