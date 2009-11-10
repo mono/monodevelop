@@ -1,3 +1,8 @@
+2009-11-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Fixed horziontal scrolling
+	  bug.
+
 2009-11-06  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs: Fixed 'Bug 553089 - Some text

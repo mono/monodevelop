@@ -1192,7 +1192,6 @@ namespace Mono.TextEditor
 			if (longestLine != null && this.textEditorData.HAdjustment != null) {
 				int maxX = longestLineWidth + 2 * this.textViewMargin.CharWidth;
 				int width = Allocation.Width - this.TextViewMargin.XOffset;
-				
 				this.textEditorData.HAdjustment.SetBounds (0, maxX, this.textViewMargin.CharWidth, width, width);
 				if (maxX < width)
 					this.textEditorData.HAdjustment.Value = 0;
@@ -1280,7 +1279,7 @@ namespace Mono.TextEditor
 				// take the line real render width from the text view margin rendering (a line can consist of more than 
 				// one line and be longer (foldings!) ex. : someLine1[...]someLine2[...]someLine3)
 				int lineWidth = textViewMargin.lastLineRenderWidth + (int)HAdjustment.Value;
-				if (longestLine == null || line == longestLine || lineWidth > longestLineWidth) {
+				if (longestLine == null || lineWidth > longestLineWidth) {
 					longestLine = line;
 					longestLineWidth = lineWidth;
 					setLongestLine = true;
