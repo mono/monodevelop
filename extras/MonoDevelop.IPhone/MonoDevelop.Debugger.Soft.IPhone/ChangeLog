@@ -1,5 +1,11 @@
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Debugger.Soft.IPhone.csproj: Fix iphone project
+	  ref. Hack around MD pkgconfig parser issue by ref'ing the
+	  Mono.Debugger.Soft dll directly.
+
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneDebuggerSession.cs: Fix ambiguity.
 
 	* MonoDevelop.Debugger.Soft.IPhone.csproj: Move the IPhone
