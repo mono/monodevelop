@@ -1,3 +1,8 @@
+2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Improve
+	  detection of the current Mono version.
+
 2009-11-10  Jonathan Chambers  <joncham@gmail.com>
 
 	* MonoDevelop.Core.Assemblies/MonoTargetRuntimeFactory.cs:
