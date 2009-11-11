@@ -225,6 +225,7 @@ FILES =  \
 	MonoDevelop.Projects/DotNetProject.cs \
 	MonoDevelop.Projects/DotNetProjectBinding.cs \
 	MonoDevelop.Projects/DotNetProjectConfiguration.cs \
+	MonoDevelop.Projects/DotNetProjectParameters.cs \
 	MonoDevelop.Projects/ExecutionContext.cs \
 	MonoDevelop.Projects/FileCopyMode.cs \
 	MonoDevelop.Projects/FileCopySet.cs \

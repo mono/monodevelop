@@ -321,6 +321,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				Runtime.Initialize (false);
 				ParserDatabase pdb = new ParserDatabase ();
 				TargetRuntime runtime = Runtime.SystemAssemblyService.GetTargetRuntime (runtimeId);
+				if (runtime == null)
+					LoggingService.LogError ("Runtime '{0}' not found", runtimeId);
 				TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (fxId);
 
 				// Generate the new db in a temp file. The main process will move the file if required.

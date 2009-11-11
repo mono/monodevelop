@@ -1,3 +1,16 @@
+2009-11-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects/DotNetProjectParameters.cs: Add
+	  DotNetProjectParameters.
+
+	* MonoDevelop.Projects/DotNetProject.cs: Implemented
+	  StripImplicitNamespace.
+
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Improve error checking.
+
 2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/WorkspaceItem.cs:
