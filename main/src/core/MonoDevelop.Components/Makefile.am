@@ -130,6 +130,7 @@ FILES =  \
 	MonoDevelop.Components/FolderListSelector.cs \
 	MonoDevelop.Components/GladeWidgetExtract.cs \
 	MonoDevelop.Components/IconView.cs \
+	MonoDevelop.Components/InfoBar.cs \
 	MonoDevelop.Components/InvisibleFrame.cs \
 	MonoDevelop.Components/ListView.cs \
 	MonoDevelop.Components/MenuButton.cs \

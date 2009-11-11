@@ -223,6 +223,7 @@
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\BooleanEditorCell.cs" />
     <Compile Include="MonoDevelop.Components\FolderListSelector.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Components.FolderListSelector.cs" />
+    <Compile Include="MonoDevelop.Components\InfoBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
