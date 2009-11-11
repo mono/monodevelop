@@ -1,3 +1,9 @@
+2009-11-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/VBProjectParameters.cs: Use the new
+	  DotNetProjectParameters base class, and inform that in VB,
+	  the default namespace is implicit.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
