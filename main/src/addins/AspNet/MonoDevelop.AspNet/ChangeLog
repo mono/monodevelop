@@ -1,3 +1,8 @@
+2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs:
+	  Simplify creation of new ASP.NET MVC configurations.
+
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.csproj: Wire the soft debug addin into
