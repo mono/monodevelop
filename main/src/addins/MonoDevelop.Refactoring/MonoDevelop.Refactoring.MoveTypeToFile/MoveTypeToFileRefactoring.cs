@@ -49,7 +49,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 		{
 			IType type = options.SelectedItem as IType;
 			string fileName = GetCorrectFileName (type);
-			if (type == null || string.IsNullOrEmpty (fileName) || File.Exists (fileName))
+			if (type == null || string.IsNullOrEmpty (fileName) || File.Exists (fileName) || type.DeclaringType != null)
 				return false;
 			return Path.GetFileNameWithoutExtension (type.CompilationUnit.FileName) != type.Name;
 		}

@@ -103,13 +103,20 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public MemberCompletionData (INode member, OutputFlags flags) 
 		{
-			this.Member = member;
+			SetMember (member);
 			this.flags = flags;
-			this.completionString = ambience.GetString (Member, flags ^ OutputFlags.IncludeGenerics);
 			DisplayFlags = DisplayFlags.DescriptionHasMarkup;
 			IMember m = Member as IMember;
 			if (m != null && m.IsObsolete)
 				DisplayFlags |= DisplayFlags.Obsolete;
+		}
+		
+		void SetMember (INode member)
+		{
+			this.Member = member;
+			this.completionString = ambience.GetString (member, flags ^ OutputFlags.IncludeGenerics);
+			descriptionCreated = false;
+			displayText = null;
 		}
 		
 		void CheckDescription ()
@@ -198,6 +205,16 @@ namespace MonoDevelop.CSharp.Completion
 			if (overloads == null)
 				overloads = new Dictionary<string, ICompletionData> ();
 			if (overload.Member is IMember && Member is IMember) {
+				// filter virtual & overriden members that came from base classes
+				// note that the overload tree is traversed top down.
+				IMember member = Member as IMember;
+				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType.DecoratedFullName != ((IMember)overload.Member).DeclaringType.DecoratedFullName) {
+					string str1 = ambience.GetString (member, flags);
+					string str2 = ambience.GetString (overload.Member, flags);
+					if (str1 == str2)
+						return;
+				}
+				
 				string MemberId = (overload.Member as IMember).HelpUrl;
 				if (Member is IMethod && overload.Member is IMethod) {
 					string signature1 = ambience.GetString (Member, OutputFlags.IncludeParameters);

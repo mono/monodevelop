@@ -67,7 +67,7 @@ MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* 
 	if test -n "$$svn_info"; then \
 		version=$$(cd ..; \
 			LANG=C; export LANG; \
-			eval $$svn_info | sed -n -e '/Revision/ s/.*: //p'; \
+			eval $$svn_info | sed -n -e '/Last Changed Rev/ s/.*: //p'; \
 		); \
 		echo "a3140c14-ef90-4019-ae6c-9d93804d6611 $$version" > "$(MACOS)/updateinfo"; \
 	fi;

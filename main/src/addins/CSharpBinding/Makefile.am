@@ -138,8 +138,7 @@ FILES =  \
 	MonoDevelop.CSharp.Resolver/ResolveVisitor.cs \
 	MonoDevelop.CSharp/CSharpBindingCompilerManager.cs \
 	MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs \
-	MonoDevelop.CSharp/CSharpLanguageBinding.cs \
-	MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs
+	MonoDevelop.CSharp/CSharpLanguageBinding.cs
 
 RES =  \
 	CSharpBinding.addin.xml \

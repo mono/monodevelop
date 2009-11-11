@@ -69,10 +69,8 @@ namespace MonoDevelop.AspNet.Mvc
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
-			AspMvcProjectConfiguration conf = new AspMvcProjectConfiguration ();
-			
-			conf.Name = name;
-			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);			
+			var conf = new AspMvcProjectConfiguration (name);
+			conf.CopyFrom (base.CreateConfiguration (name));			
 			return conf;
 		}
 		

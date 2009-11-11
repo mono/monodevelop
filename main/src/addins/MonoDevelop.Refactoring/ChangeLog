@@ -1,3 +1,22 @@
+2009-11-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs:
+	* MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs:
+	  Fixed 'Bug 554260 - Introduce Format Item breaks work with
+	  escaped quotes'.
+
+2009-11-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs:
+	  Fixed 'Bug 554415 - Exception in Move File To Type
+	  refactoring'.
+
+2009-11-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs: Fixed
+	  'Bug 553557 - Refactoring preview dialog has double-spaced
+	  lines'.
+
 2009-11-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs:

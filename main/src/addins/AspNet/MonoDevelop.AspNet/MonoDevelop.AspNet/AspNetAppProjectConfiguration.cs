@@ -41,6 +41,14 @@ namespace MonoDevelop.AspNet
 {
 	public class AspNetAppProjectConfiguration : DotNetProjectConfiguration 
 	{
+		public AspNetAppProjectConfiguration (string name) : base (name)
+		{
+		}
+		
+		public AspNetAppProjectConfiguration () : base ()
+		{
+		}
+		
 		[ItemProperty ("AspNet/DisableCodeBehindGeneration", DefaultValue = false)]
 		bool disableCodeBehindGeneration = false;
 		

@@ -100,12 +100,12 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 				start = end = data.Caret.Offset;
 			}
 			while (start > 0) {
-				if (data.Document.GetCharAt (start) == quote)
+				if (data.Document.GetCharAt (start) == quote && (start == 0 || data.Document.GetCharAt (start - 1) != '\\'))
 					break;
 				start--;
 			}
 			while (end < data.Document.Length) {
-				if (data.Document.GetCharAt (end) == quote)
+				if (data.Document.GetCharAt (end) == quote && (end == 0 || data.Document.GetCharAt (end - 1) != '\\'))
 					break;
 				end++;
 			}
