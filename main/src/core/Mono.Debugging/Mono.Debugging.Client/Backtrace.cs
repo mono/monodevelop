@@ -46,7 +46,11 @@ namespace Mono.Debugging.Client
 					frames.Add (sf);
 				}
 			}
-			return frames[n];
+			
+			if (frames.Count > 0)
+				return frames[System.Math.Min (System.Math.Max (0, n), frames.Count - 1)];
+			else
+				return null;
 		}
 	}
 }
