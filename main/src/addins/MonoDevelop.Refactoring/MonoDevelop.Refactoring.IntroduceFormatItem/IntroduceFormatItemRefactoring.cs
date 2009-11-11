@@ -32,6 +32,8 @@ using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
+using System.Text;
+using System.IO;
 
 
 namespace MonoDevelop.Refactoring.IntroduceFormat
@@ -111,9 +113,7 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 
 			// insert new format call
 			if (formatCall == null) {
-				string formattedString = data.Document.GetTextBetween (start + 1, data.SelectionRange.Offset) + 
-					"{0}" +
-						data.Document.GetTextBetween (data.SelectionRange.EndOffset, end);
+				string formattedString = UnescapeString (data.Document.GetTextBetween (start + 1, data.SelectionRange.Offset) + "{0}" + data.Document.GetTextBetween (data.SelectionRange.EndOffset, end));
 
 				args.Add (new PrimitiveExpression (formattedString));
 				args.Add (new PrimitiveExpression (data.Document.GetTextAt (data.SelectionRange)));
@@ -134,5 +134,51 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 			changes.Add (change);
 			return changes;
 		}
+		
+		static char ReadEscapeSequence (string str, ref int pos)
+		{
+			char ch = str[pos];
+			switch (ch) {
+			case '\'':
+				return '\'';
+			case '\"':
+				return '\"';
+			case '\\':
+				return '\"';
+			case '0':
+				return '\0';
+			case 'a':
+				return '\a';
+			case 'b':
+				return '\b';
+			case 'f':
+				return '\f';
+			case 'n':
+				return '\n';
+			case 'r':
+				return '\r';
+			case 't':
+				return '\t';
+			case 'v':
+				return '\v';
+			}
+			return ch;
+		}
+		
+		static string UnescapeString (string str)
+		{
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < str.Length; i++) {
+				char ch = str[i];
+				if (ch == '\\' && i + 1 < str.Length) {
+					i++;
+					sb.Append (ReadEscapeSequence (str, ref i));
+				} else {
+					sb.Append (ch);
+				}
+			}
+			return sb.ToString ();
+		}
+
 	}
 }
