@@ -1,5 +1,9 @@
 2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerSession.cs: Fix bad state check.
+
+2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerEngine.cs:
 	* SoftDebuggerSession.cs:
 	* Mono.Debugger.Soft.dll:

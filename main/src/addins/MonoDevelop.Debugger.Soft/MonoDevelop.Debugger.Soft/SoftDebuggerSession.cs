@@ -107,7 +107,7 @@ namespace MonoDevelop.Debugger.Soft
 		/// </summary>
 		internal void OnConnecting (IAsyncResult connectionHandle)
 		{
-			if (connectionHandle != null)
+			if (this.connectionHandle != null)
 				throw new InvalidOperationException ("Already connecting");
 			this.connectionHandle = connectionHandle;
 		}
