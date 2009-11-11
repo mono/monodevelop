@@ -101,14 +101,9 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			this.Runtime = runtime;
 		}
+		
+		public FilePath MonoPrefix { get { return Runtime.Prefix; } }
 
-		//FIXME: this never actually gets used yet
-		public MonoTargetRuntime Runtime { get; set; }
-
-		public string MonoPrefix {
-			get {
-				return Runtime.Prefix;
-			}
-		}
+		public MonoTargetRuntime Runtime { get; private set; }
 	}
 }

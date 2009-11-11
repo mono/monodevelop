@@ -32,6 +32,9 @@ using Mono.Debugging.Client;
 using Mono.Debugger;
 using Mono.Debugging.Evaluation;
 using MDB = Mono.Debugger;
+using System.Net.Sockets;
+using MonoDevelop.Core;
+using System.IO;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -52,30 +55,75 @@ namespace MonoDevelop.Debugger.Soft
 		Thread outputReader;
 		Thread errorReader;
 		
+		IAsyncResult connectionHandle;
+		
 		public NRefactoryEvaluator Evaluator = new NRefactoryEvaluator ();
 		public SoftDebuggerAdaptor Adaptor = new SoftDebuggerAdaptor ();
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			// FIXME: Doesn't handle arguments with " " in them
-			string[] args = startInfo.Arguments.Split (' ');
-			string[] vmargs = new string[args.Length + 2];
-			vmargs[0] = startInfo.Command;
-			if (args.Length > 0)
-				Array.Copy (args, 0, vmargs, 1, args.Length);
+			if (exited)
+				throw new InvalidOperationException ("Already exited");
 			
-			LaunchOptions options = new LaunchOptions ();
-			options.RedirectStandardOutput = true;
-			options.RedirectStandardError = true;
+			var dsi = (SoftDebuggerStartInfo) startInfo;
+			var runtime = Path.Combine (Path.Combine (dsi.Runtime.Prefix, "bin"), "mono");
 			
-			var vm = VirtualMachineManager.Launch (vmargs, options);
+			var psi = new System.Diagnostics.ProcessStartInfo (runtime) {
+				Arguments = string.Format ("\"{0}\" {1}", dsi.Command, dsi.Arguments),
+				WorkingDirectory = dsi.WorkingDirectory,
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				UseShellExecute = false,
+			};
 			
-			OnConnected (vm);
+			foreach (var env in dsi.Runtime.EnvironmentVariables)
+				psi.EnvironmentVariables[env.Key] = env.Value;
+			
+			foreach (var env in startInfo.EnvironmentVariables)
+				psi.EnvironmentVariables[env.Key] = env.Value;
+			
+			OnConnecting (VirtualMachineManager.BeginLaunch (psi, HandleCallbackErrors (delegate (IAsyncResult ar) {
+				OnConnected (VirtualMachineManager.EndLaunch (ar));
+			}), null));
+		}
+		
+		internal AsyncCallback HandleCallbackErrors (AsyncCallback callback)
+		{
+			return delegate (IAsyncResult ar) {
+				connectionHandle = null;
+				try {
+					callback (ar);
+				} catch (Exception ex) {
+					MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Soft debugger error: " + ex.Message);
+					LoggingService.LogError ("Unhandled error launching soft debugger", ex);
+					EndSession ();
+				}
+			};
+		}
+		
+		/// <summary>
+		/// Subclasses should pass any handles they get from the VirtualMachineManager to this
+		/// so that they will be closed if the connection attempt is aborted before OnConnected is called.
+		/// </summary>
+		internal void OnConnecting (IAsyncResult connectionHandle)
+		{
+			if (connectionHandle != null)
+				throw new InvalidOperationException ("Already connecting");
+			this.connectionHandle = connectionHandle;
+		}
+		
+		void EndLaunch ()
+		{
+			if (connectionHandle != null) {
+				((Socket)connectionHandle.AsyncState).Close ();
+				connectionHandle = null;
+			}
 		}
 		
 		protected virtual void EndSession ()
 		{
 			if (!exited) {
+				EndLaunch ();
 				exited = true;
 				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 			}
@@ -89,7 +137,7 @@ namespace MonoDevelop.Debugger.Soft
 		/// If subclasses do an async connect in OnRun, they should pass the resulting VM to this method.
 		/// If the vm is null, the session will be closed.
 		/// </summary>
-		protected void OnConnected (VirtualMachine vm)
+		internal void OnConnected (VirtualMachine vm)
 		{
 			if (this.vm != null)
 				throw new InvalidOperationException ("The VM has already connected");
@@ -98,6 +146,8 @@ namespace MonoDevelop.Debugger.Soft
 				EndSession ();
 				return;
 			}
+			
+			connectionHandle = null;
 			
 			this.vm = vm;
 			
@@ -174,6 +224,7 @@ namespace MonoDevelop.Debugger.Soft
 		public override void Dispose ()
 		{
 			if (!exited) {
+				EndLaunch ();
 				vm.Exit (0);
 				exited = true;
 			}
@@ -197,6 +248,7 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnExit ()
 		{
+			EndLaunch ();
 			if (vm != null)
 				vm.Exit (0);
 			exited = true;

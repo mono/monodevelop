@@ -56,12 +56,9 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 				Arguments = cmd.XspParameters.GetXspParameters ().Trim (),
 			};
 			
-			string xspPath = Path.Combine (startInfo.MonoPrefix, "lib" + Path.DirectorySeparatorChar + "mono" + Path.DirectorySeparatorChar);
-			if (cmd.ClrVersion == ClrVersion.Net_1_1)
-				xspPath += Path.Combine ("1.0","xsp.exe");
-			else
-				xspPath += Path.Combine ("2.0","xsp2.exe");
-			startInfo.Command = xspPath;
+			startInfo.Command = (cmd.ClrVersion == ClrVersion.Net_1_1)
+				? startInfo.MonoPrefix.Combine ("lib", "mono", "1.0", "xsp.exe")
+				: startInfo.MonoPrefix.Combine ("lib", "mono", "2.0", "xsp2.exe");
 			
 			return startInfo;
 		}

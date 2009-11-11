@@ -43,55 +43,29 @@ namespace MonoDevelop.Debugger.Soft
 		ProcessInfo[] procs;
 		Process simProcess;
 		Gtk.Dialog dialog;
-		Socket debugSock, outputSock;
-		Thread listenThread;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			throw new NotImplementedException ();
 		}
 		
+		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
 		protected void StartListening (RemoteDebuggerStartInfo dsi)
 		{
-			RunListenThread (dsi);
+			var dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
+			var conEP = new IPEndPoint (dsi.Address, dsi.OutputPort);
+			
+			OnConnecting (VirtualMachineManager.BeginListen (dbgEP, conEP, HandleCallbackErrors (ListenCallback)));
 			ShowListenDialog (dsi);
 		}
 		
-		/// <summary>Starts a thread listening for the debugger to connect over TCP/IP</summary>
-		void RunListenThread (RemoteDebuggerStartInfo dsi)
+		void ListenCallback (IAsyncResult ar)
 		{
-			debugSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			outputSock = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			
-			VirtualMachine vm = null;
-			listenThread = new Thread (delegate () {
-				try {
-					debugSock.Bind (new IPEndPoint (dsi.Address, dsi.DebugPort));
-					outputSock.Bind (new IPEndPoint (dsi.Address, dsi.OutputPort));
-					outputSock.Listen (10);
-					debugSock.Listen (10);
-					
-					vm = VirtualMachineManager.Listen (outputSock, debugSock);
-					OnConnected (vm);
-
-					Gtk.Application.Invoke (delegate {
-						if (dialog != null)
-							dialog.Respond (Gtk.ResponseType.Ok);
-					});
-				} catch (ThreadAbortException) {
-					Thread.ResetAbort ();
-				} catch (SocketException sox) {
-					if (sox.ErrorCode != (int)SocketError.Shutdown) {
-						MonoDevelop.Core.Gui.MessageService.ShowException (sox, "Socket error: " + sox.Message);
-						LoggingService.LogError ("Error binding soft debugger socket", sox);
-					}
-					EndSession ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("Unexpected error in soft debugger listening thread", ex);
-					EndSession ();
-				}
+			OnConnected (VirtualMachineManager.EndListen (ar));
+			Gtk.Application.Invoke (delegate {
+				if (dialog != null)
+					dialog.Respond (Gtk.ResponseType.Ok);
 			});
-			listenThread.Start ();
 		}
 		
 		protected virtual string GetListenMessage (RemoteDebuggerStartInfo dsi)
@@ -138,7 +112,6 @@ namespace MonoDevelop.Debugger.Soft
 						dialog.Respond (Gtk.ResponseType.Cancel);
 				});
 			}
-			CloseSockets ();
 			base.EndSession ();
 		}
 		
@@ -150,33 +123,6 @@ namespace MonoDevelop.Debugger.Soft
 		}
 		
 		protected abstract string AppName { get; }
-		
-		protected override void OnExit ()
-		{
-			base.OnExit ();
-			CloseSockets ();
-		}
-		
-		void CloseSockets ()
-		{
-			if (debugSock != null) {
-				try {
-					debugSock.Close ();
-				} catch {}
-			}
-			if (outputSock != null) {
-				try {
-					outputSock.Close ();
-				} catch {}
-			}
-			debugSock = outputSock = null;
-			
-			//HACK: we still have to do this because the socket.Close doesn't interrupt socket.Accept on Mono
-			if (listenThread != null) {
-				listenThread.Abort ();
-				listenThread = null;
-			}
-		}
 	}
 	
 	public class RemoteDebuggerStartInfo : DebuggerStartInfo

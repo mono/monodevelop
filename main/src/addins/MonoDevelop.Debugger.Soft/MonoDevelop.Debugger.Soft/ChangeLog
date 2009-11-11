@@ -1,5 +1,13 @@
 2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerEngine.cs:
+	* SoftDebuggerSession.cs:
+	* Mono.Debugger.Soft.dll:
+	* RemoteSoftDebuggerSession.cs: Use new async launch/listen
+	  APIs. Add proper support for parallel runtimes.
+
+2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am: Fixed bad copy.
 
 2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
