@@ -1,3 +1,7 @@
+2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Fixed bad copy.
+
 2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerEngine.cs: Don't try to parse version number.

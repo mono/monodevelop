@@ -2,7 +2,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.Soft.dll
 
 DBG_ASM = $(ADDIN_BUILD)/Mono.Debugger.Soft.dll
-DBG_ASM_SRC = $(top_builddir)/build/bin/Mono.Debugging.dll
+DBG_ASM_SRC = $(top_srcdir)/src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft/Mono.Debugger.Soft.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
