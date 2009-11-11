@@ -107,9 +107,8 @@ namespace MonoDevelop.Moonlight
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
-			var conf = new MoonlightProjectConfiguration ();
-			conf.CopyFrom (base.CreateConfiguration (name));
-			//TODO add environment variable conf.CompilationParameters			
+			var conf = new MoonlightProjectConfiguration (name);
+			conf.CopyFrom (base.CreateConfiguration (name));		
 			return conf;
 		}
 		
