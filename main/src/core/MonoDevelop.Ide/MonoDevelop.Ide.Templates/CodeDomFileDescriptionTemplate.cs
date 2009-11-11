@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.CodeDom;
@@ -36,6 +37,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.CodeGeneration;
 
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -55,7 +57,7 @@ namespace MonoDevelop.Ide.Templates
 				AddStandardHeader = true;
 		}
 		
-		public override string CreateContent (string language)
+		public override string CreateContent (Project project, Dictionary<string,string> tags, string language)
 		{
 			if (language == null || language == "")
 				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
@@ -71,6 +73,9 @@ namespace MonoDevelop.Ide.Templates
 
 			XmlCodeDomReader xcd = new XmlCodeDomReader ();
 			CodeCompileUnit cu = xcd.ReadCompileUnit (domContent);
+			
+			foreach (CodeNamespace cns in cu.Namespaces)
+				cns.Name = StripImplicitNamespace (project, tags, cns.Name);
 			
 			CodeGeneratorOptions options = new CodeGeneratorOptions();
 			options.IndentString = TextEditorProperties.IndentString;
@@ -89,6 +94,17 @@ namespace MonoDevelop.Ide.Templates
 			if (i == -1) return txt;
 			
 			return txt.Substring (i+1);		
+		}
+		
+		internal static string StripImplicitNamespace (Project project, Dictionary<string,string> tags, string ns)
+		{
+			// If the project has an implicit namespace, remove it from the namespace for the file
+			DotNetProject netProject = project as DotNetProject;
+			if (netProject != null) {
+				ns = StringParserService.Parse (ns, tags);
+				return netProject.StripImplicitNamespace (ns);
+			} else
+				return ns;
 		}
 	}
 }

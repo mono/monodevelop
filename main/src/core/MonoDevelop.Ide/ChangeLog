@@ -1,3 +1,15 @@
+2009-11-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Added new overload for creating content, which provides the
+	  project and tags as arguments. Allow namespaces with empty
+	  name.
+
+	* MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs:
+	  After generating the compilation unit, strip the implicit
+	  namspace from al CodeNamespaces. Required for VB.
+
 2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:

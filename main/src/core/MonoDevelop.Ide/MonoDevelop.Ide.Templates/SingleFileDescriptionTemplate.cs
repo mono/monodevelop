@@ -235,8 +235,8 @@ namespace MonoDevelop.Ide.Templates
 			Dictionary<string,string> tags = new Dictionary<string,string> ();
 			ModifyTags (policyParent, project, language, null, fileName, ref tags);
 			
-			string content = CreateContent (language);
-			content = StringParserService.Parse (content, HashtableToStringArray (tags));
+			string content = CreateContent (project, tags, language);
+			content = StringParserService.Parse (content, tags);
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
 			IFormatter formatter = !String.IsNullOrEmpty (mime) ? TextFileService.GetFormatter (mime) : null;
 			if (formatter != null)
@@ -261,6 +261,11 @@ namespace MonoDevelop.Ide.Templates
 		// Creates the text content of the file
 		// The Language parameter is optional
 
+		public virtual string CreateContent (Project project, Dictionary<string,string> tags, string language)
+		{
+			return CreateContent (language);
+		}
+		
 		public virtual string CreateContent (string language)
 		{
 			return string.Empty;
@@ -309,8 +314,7 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 			
-			if (ns.Length > 0)
-				tags ["Namespace"] = ns;
+			tags ["Namespace"] = ns;
 			if (project != null)
 				tags ["ProjectName"] = project.Name;
 			if ((language != null) && (language.Length > 0))

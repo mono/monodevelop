@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		//Adapted from CodeDomFileDescriptionTemplate.cs
 		//TODO: Remove need to have a namespace and type (i.e. translate fragments)
-		public override string CreateContent (string language)
+		public override string CreateContent (Project project, Dictionary<string,string> tags, string language)
 		{
 			//get target language's ICodeGenerator
 			if (language == null || language == "")
@@ -105,6 +105,9 @@ namespace MonoDevelop.Ide.Templates
 					throw;
 				}
 			}
+			
+			foreach (CodeNamespace cns in ccu.Namespaces)
+				cns.Name = CodeDomFileDescriptionTemplate.StripImplicitNamespace (project, tags, cns.Name);
 			
 			tempSubstitutedContent = null;
 			
