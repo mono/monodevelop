@@ -1,3 +1,7 @@
+2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneDebuggerSession.cs: Fix launch message.
+
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger.Soft.IPhone.csproj: Fix iphone project

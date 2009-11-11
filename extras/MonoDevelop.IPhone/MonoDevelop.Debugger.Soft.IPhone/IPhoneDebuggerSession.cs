@@ -85,8 +85,9 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		
 		protected override string GetListenMessage (RemoteDebuggerStartInfo dsi)
 		{
+			var cmd = ((IPhoneDebuggerStartInfo)dsi).ExecutionCommand;
 			string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
-			if (((IPhoneDebuggerStartInfo)dsi).ExecutionCommand.Simulator)
+			if (!cmd.Simulator)
 				message += "\n" + GettextCatalog.GetString ("Please start the application on the device.");
 			return message;
 		}
