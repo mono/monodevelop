@@ -1,3 +1,8 @@
+2009-11-11  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl/CreatePatchCommand.cs: Allow
+	  patches for multiselected items in the solution pad.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
