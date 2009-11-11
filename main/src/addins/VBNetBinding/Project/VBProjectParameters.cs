@@ -30,8 +30,14 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.VBNetBinding
 {
-	public class VBProjectParameters: ProjectParameters
+	public class VBProjectParameters: DotNetProjectParameters
 	{
+		public override bool DefaultNamespaceIsImplicit {
+			get {
+				return true;
+			}
+		}
+
 		[ItemProperty ("OptionInfer", DefaultValue="Off")]
 		string optionInfer = "Off";
 		

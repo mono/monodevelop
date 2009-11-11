@@ -97,7 +97,7 @@ namespace MonoDevelop.AspNet
 			int namespaceSplit = className.LastIndexOf ('.');
 			string namespaceName = null;
 			if (namespaceSplit > -1) {
-				namespac.Name = className.Substring (0, namespaceSplit);
+				namespac.Name = aspProject.StripImplicitNamespace (className.Substring (0, namespaceSplit));
 				typeDecl.Name = className.Substring (namespaceSplit + 1);
 			} else {
 				typeDecl.Name = className;

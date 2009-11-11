@@ -1,3 +1,9 @@
+2009-11-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AspNet/CodeBehind.cs: Strip the implicit
+	  namespace from the generated compilation unit. Required for
+	  VB.
+
 2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs:

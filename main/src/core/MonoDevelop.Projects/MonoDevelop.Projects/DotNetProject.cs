@@ -227,6 +227,22 @@ namespace MonoDevelop.Projects
 				NotifyModified ("DefaultNamespace");
 			}
 		}
+		
+		/// <summary>
+		/// Given a namespace, removes from it the implicit namespace of the project,
+		/// if there is one. This depends on the target language. For example, in VB.NET
+		/// the default namespace is implicit.
+		/// </summary>
+		public string StripImplicitNamespace (string ns)
+		{
+			if ((LanguageParameters is DotNetProjectParameters) && ((DotNetProjectParameters)LanguageParameters).DefaultNamespaceIsImplicit) {
+				if (DefaultNamespace.Length > 0 && ns.StartsWith (DefaultNamespace + "."))
+					return ns.Substring (DefaultNamespace.Length + 1);
+				else if (DefaultNamespace == ns)
+					return string.Empty;
+			}
+			return ns;
+		}
 
 		IResourceHandler resourceHandler;
 

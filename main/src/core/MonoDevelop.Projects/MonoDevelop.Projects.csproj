@@ -47,9 +47,9 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Microsoft.Build.Utilities.v3.5" />
-    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="Microsoft.Build.Utilities" />
+    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Engine" />
   </ItemGroup>
   <ItemGroup>
@@ -333,6 +333,7 @@
     <Compile Include="MonoDevelop.Projects.Dom\INode.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetAssemblyProject.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MergeToProjectAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\DotNetProjectParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
