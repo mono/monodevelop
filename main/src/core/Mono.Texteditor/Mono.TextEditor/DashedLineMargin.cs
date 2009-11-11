@@ -83,9 +83,9 @@ namespace Mono.TextEditor
 		{
 			int top = y;
 			int bottom = top + editor.LineHeight;
-			bool isUneven = (top + (int)editor.VAdjustment.Value) % 2 != 0;
-			win.DrawLine (isUneven? bgGC : bgGC2, x, top, x, bottom);
-			win.DrawLine (isUneven? foldDashedLineGC : foldDashedLineGC2, x, top, x, bottom);
+			bool isOdd = (top + (int)editor.VAdjustment.Value) % 2 != 0;
+			win.DrawLine (isOdd? bgGC : bgGC2, x, top, x, bottom);
+			win.DrawLine (isOdd? foldDashedLineGC : foldDashedLineGC2, x, top, x, bottom);
 		}
 	}
 }

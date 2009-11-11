@@ -1,3 +1,10 @@
+2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.PopupWindow/TooltipWindow.cs: Track bugfixes
+	  and changes from MonoDevelop.Components.
+
+	* Mono.TextEditor/DashedLineMargin.cs: Tweak some naming.
+
 2009-11-10  Rodrigo B. de Oliveira <rbo@acm.org>
 
 	* SyntaxModes/BooSyntaxMode.xml: updated to the latest boo syntax and fixed triple quoted string highlighting.
