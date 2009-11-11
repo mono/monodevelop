@@ -1,3 +1,8 @@
+2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components/TooltipWindow.cs: Paint tooltips
+	  using style.
+
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.DockToolbars/DockToolbar.cs:

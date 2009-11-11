@@ -77,13 +77,13 @@ namespace MonoDevelop.Components
 			}
 		}
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			base.OnExposeEvent (args);
-			
 			int winWidth, winHeight;
 			this.GetSize (out winWidth, out winHeight);
-			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth-1, winHeight-1);
+			Gtk.Style.PaintFlatBox (Style, this.GdkWindow, StateType.Normal, ShadowType.Out, evnt.Area, this, "tooltip", 0, 0, winWidth, winHeight);
+			foreach (var child in this.Children)
+				this.PropagateExpose (child, evnt);
 			return false;
 		}
 		
