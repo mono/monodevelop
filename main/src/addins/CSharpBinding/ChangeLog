@@ -1,5 +1,12 @@
 2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp/CustomCSharpCodeGenerator.cs: Remove the
+	  forked code generator.
+
+2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs: Disable
 	  Mike's custom CodeDOM generator as it's totally broken for
 	  delegates, and breaks web refs. Had to stay late to push out
