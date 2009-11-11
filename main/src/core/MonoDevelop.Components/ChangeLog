@@ -1,5 +1,10 @@
 2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Components/TooltipWindow.cs: Use GTK 2.10/2.12
+	  API directly now that we depend on 2.12.
+
+2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Components/TooltipWindow.cs: Paint tooltips
 	  using style.
 
