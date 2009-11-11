@@ -25,23 +25,34 @@
  
 <SyntaxMode name = "Boo" mimeTypes="text/x-boo">
 
-	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">#</EolSpan>
-	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">//</EolSpan>
+	<Property name="LineComment">#</Property>
+	<Property name="LineComment">//</Property>
+	<Property name="BlockCommentStart">/*</Property>
+	<Property name="BlockCommentEnd">*/</Property>
+	<Property name="StringQuote">"</Property>
+	<Property name="StringQuote">'</Property>
 	
-	<Span color = "comment" rule="Comment" tagColor="comment.tag">
+	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">#</EolSpan>
+	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+	
+	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
+	<Span color = "string.other" rule="String" stopateol = "false" escape='\'>
+		<Begin>"""</Begin>
+		<End>"""</End>
+	</Span>
 
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+	<Span color = "string.double" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
-	
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
-		<Begin>'</Begin>
-		<End>'</End>
+
+	<Span color = "string.single" rule="String" stopateol = "true" escape="\">
+		<Begin>&apos;</Begin>
+		<End>&apos;</End>
 	</Span>
 
 	<Span color = "string" rule="String" stopateol = "false" escape='"'>
@@ -71,8 +82,8 @@
 		<Word>else</Word>
 		<Word>elif</Word>
 		<Word>if</Word>
-		<Word>given</Word>
-		<Word>when</Word>
+		<Word>match</Word>
+		<Word>case</Word>
 		<Word>unless</Word>		<Word>otherwise</Word>
 	</Keywords>
 	
@@ -120,7 +131,6 @@
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>null</Word>
-		<Word>ast</Word>
 	</Keywords>
 	
 	<Keywords color = "keyword.modifier">
@@ -165,12 +175,6 @@
 		<Word>duck</Word>
 		<Word>regex</Word>
 
-		<Word>enum</Word>
-		<Word>class</Word>
-		<Word>struct</Word>
-		<Word>interface</Word>
-		<Word>mixin</Word>
-		<Word>callable</Word>
 		<Word>do</Word>
 		<Word>of</Word>
 	</Keywords>
@@ -194,17 +198,19 @@
 		<Word>class</Word>
 		<Word>interface</Word>
 		<Word>delegate</Word>
+		<Word>callable</Word>
+		<Word>enum</Word>
+		<Word>struct</Word>
+		<Word>macro</Word>
 	</Keywords>
 	
 	<Keywords color = "keyword.parameter">
-		<Word>params</Word>
 		<Word>ref</Word>
 		<Word>out</Word>
 
 		<Word>constructor</Word>
 		<Word>destructor</Word>
 		<Word>def</Word>
-		<Word>include</Word>
 		<Word>event</Word>
 	</Keywords>
 	

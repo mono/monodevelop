@@ -59,6 +59,9 @@ namespace MonoDevelop.Core.Assemblies
 			get { return prefix; }
 		}
 		
+		/// <summary>
+		/// This string is strictly for displaying to the user or logging. It should never be used for version checks.
+		/// </summary>
 		public string MonoVersion {
 			get {
 				Initialize ();
@@ -152,8 +155,11 @@ namespace MonoDevelop.Core.Assemblies
 				int j = ver.IndexOf ('/', i);
 				if (j != -1)
 					rt.monoVersion = ver.Substring (i, j - i).Replace ('-','.');
+			} else if (ver.StartsWith ("/trunk/mono ")) {
+				rt.monoVersion = "Trunk";
 			}
-			if (rt.monoVersion == null) {
+			
+			if (rt.monoVersion == "Unknown") {
 				i = ver.IndexOf (' ');
 				rt.monoVersion = ver.Substring (i+1);
 			}

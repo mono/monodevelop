@@ -94,6 +94,9 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public abstract string RuntimeId { get; }
 		
+		/// <summary>
+		/// This string is strictly for displaying to the user or logging. It should never be used for version checks.
+		/// </summary>
 		public abstract string Version { get; }
 		
 		public abstract bool IsRunning { get; }

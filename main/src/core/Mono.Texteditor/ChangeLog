@@ -1,3 +1,7 @@
+2009-11-10  Rodrigo B. de Oliveira <rbo@acm.org>
+
+	* SyntaxModes/BooSyntaxMode.xml: updated to the latest boo syntax and fixed triple quoted string highlighting.
+
 2009-11-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Fixed horziontal scrolling

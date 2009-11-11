@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using Mono.Debugging.Client;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core;
+using System.IO;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -48,13 +50,8 @@ namespace MonoDevelop.Debugger.Soft
 			var mrun = runtime as MonoTargetRuntime;
 			if (mrun == null)
 				return false;
-
-			//assume that 2.7.x has sdb support
-			var v = mrun.Version.Split ('.');
-			int major, minor;
-			return v.Length > 1
-				&& int.TryParse (v[0], out major) && int.TryParse (v[1], out minor)
-				&& major >= 2 && minor >= 6;
+			
+			return mrun.AssemblyContext.GetAssemblyLocation ("Mono.Debugger.Soft", null) != null;
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)

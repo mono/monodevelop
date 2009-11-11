@@ -67,7 +67,8 @@ namespace MonoDevelop.Core.Execution
 			} finally {
 				// WORKAROUND for "Bug 410743 - wapi leak in System.Diagnostic.Process"
 				// Process leaks when an exit event is registered
-				WaitHandle.WaitAll (new WaitHandle[] {endEventErr});
+				if (endEventErr != null)
+					WaitHandle.WaitAll (new WaitHandle[] {endEventErr} );
 
 				OnExited (this, EventArgs.Empty);
 

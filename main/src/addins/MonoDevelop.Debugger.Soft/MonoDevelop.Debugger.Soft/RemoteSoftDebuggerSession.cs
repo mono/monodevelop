@@ -94,7 +94,10 @@ namespace MonoDevelop.Debugger.Soft
 			listenThread.Start ();
 		}
 		
-		protected abstract string GetListenMessage (RemoteDebuggerStartInfo dsi);
+		protected virtual string GetListenMessage (RemoteDebuggerStartInfo dsi)
+		{
+			return GettextCatalog.GetString ("Waiting for debugger to connect...");
+		}
 		
 		void ShowListenDialog (RemoteDebuggerStartInfo dsi)
 		{

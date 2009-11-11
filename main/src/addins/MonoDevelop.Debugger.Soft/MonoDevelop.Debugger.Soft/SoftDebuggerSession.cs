@@ -364,9 +364,9 @@ namespace MonoDevelop.Debugger.Soft
 			while (true) {
 				try {
 					Event e = vm.GetNextEvent ();
-					HandleEvent (e);
 					if (e is VMDeathEvent || e is VMDisconnectEvent)
 						break;
+					HandleEvent (e);
 				} catch (VMDisconnectedException ex) {
 					OnDebuggerOutput (true, ex.ToString ());
 					break;
