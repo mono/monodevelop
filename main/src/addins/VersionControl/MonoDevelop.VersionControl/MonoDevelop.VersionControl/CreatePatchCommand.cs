@@ -54,9 +54,13 @@ namespace MonoDevelop.VersionControl
 		/// </returns>
 		public static bool CreatePatch (VersionControlItemList items, bool test)
 		{
-			if (items.Count > 1)
+			if (items.Count < 1)
 				return false;
-			FilePath basePath = items[0].IsDirectory ? items[0].Path : items[0].Path.ParentDirectory;
+				
+			FilePath basePath = FindMostSpecificParent (items, FilePath.Null);
+			if (FilePath.Empty == basePath)
+				return false;
+			
 			ChangeSet cset = new ChangeSet (items[0].Repository, basePath);
 			foreach (VersionControlItem item in items) {
 				cset.AddFile (item.Path);
@@ -110,6 +114,27 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			return true;
+		}
+		
+		// Finds the most specific ancestor path of a set of version control items.
+		// suggested is a suggested parent to try, or FilePath.Null.
+		// Returns FilePath.Empty if no parent is found.
+		private static FilePath FindMostSpecificParent (VersionControlItemList items, FilePath suggested)
+		{
+			if (null == items || 0 == items.Count){ return FilePath.Empty; }
+			
+			if (FilePath.Null == suggested) {
+				suggested = items[0].IsDirectory? items[0].Path.FullPath: items[0].Path.ParentDirectory.FullPath;
+			}
+			
+			foreach (FilePath path in items.Paths) {
+				if (!path.IsChildPathOf (suggested)) {
+					FilePath parent = suggested.ParentDirectory.FullPath;
+					return (Path.GetPathRoot (parent) == parent)? parent: FindMostSpecificParent (items, parent);
+				}
+			}
+			
+			return suggested.FullPath;
 		}
 	}
 }

@@ -114,7 +114,11 @@ namespace MonoDevelop.CSharp.Completion
 		void SetMember (INode member)
 		{
 			this.Member = member;
-			this.completionString = ambience.GetString (member, flags ^ OutputFlags.IncludeGenerics);
+			if (member is IParameter) {
+				this.completionString = ((IParameter)member).Name;
+			} else {
+				this.completionString = ambience.GetString (member, flags ^ OutputFlags.IncludeGenerics);
+			}
 			descriptionCreated = false;
 			displayText = null;
 		}
@@ -211,8 +215,11 @@ namespace MonoDevelop.CSharp.Completion
 				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType.DecoratedFullName != ((IMember)overload.Member).DeclaringType.DecoratedFullName) {
 					string str1 = ambience.GetString (member, flags);
 					string str2 = ambience.GetString (overload.Member, flags);
-					if (str1 == str2)
+					if (str1 == str2) {
+						if (string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)Member)) && !string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)overload.Member)))
+							SetMember (overload.Member);
 						return;
+					}
 				}
 				
 				string MemberId = (overload.Member as IMember).HelpUrl;

@@ -1,3 +1,9 @@
+2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Debugging.Client/Backtrace.cs: Fix list
+	  ArgumentOutOfRangeException when soft debugger is stopped in
+	  unmanaged code. Not completely sure this is the right fix.
+
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.csproj: Flush.
