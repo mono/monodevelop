@@ -1,3 +1,12 @@
+2009-11-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GdbEvent.cs: Reason can be an array. Handle this case.
+
+	* MonoDevelop.Debugger.csproj: Flush.
+
+	* GdbSession.cs: If there is an error while initializing,
+	  report that the process has exited.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure:
