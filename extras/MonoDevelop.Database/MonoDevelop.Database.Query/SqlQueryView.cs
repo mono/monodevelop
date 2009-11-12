@@ -127,12 +127,24 @@ namespace MonoDevelop.Database.Query
 			vbox.PackStart (pane, true, true, 0);
 			this.Document.TextReplaced += SqlChanged;
 			vbox.ShowAll ();
-			this.Document.DocumentUpdated += delegate (object sender, EventArgs args) {
-				// Set the MimeType when the file is saved.
-				this.Document.MimeType = "text/x-sql";
+			Document.DocumentUpdated += delegate (object sender, EventArgs args) {
+				// Default mime type or a provider defined.
+				if (selectedConnection == null)
+					Document.MimeType = "text/x-sql";
+				else 
+					Document.MimeType = GetMimeType ();
+				
 			};
 			notebook.Hide ();
-		} 
+		}
+
+		string GetMimeType ()
+		{
+			if (!selectedConnection.ConnectionPool.IsInitialized)
+				selectedConnection.ConnectionPool.Initialize ();
+			return selectedConnection.SchemaProvider.GetMimeType ();
+		}
+ 
 
 		#region ISqlQueryEditorView implementation
 		[CommandHandler (MonoDevelop.Debugger.DebugCommands.Debug)]
@@ -331,6 +343,7 @@ namespace MonoDevelop.Database.Query
 		private void ConnectionChanged (object sender, EventArgs args)
 		{
 			selectedConnection = comboConnections.DatabaseConnection;
+			Document.MimeType = GetMimeType ();
 			buttonExecute.Sensitive = QueryText.Length > 0;
 		}
 		

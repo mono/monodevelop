@@ -1,0 +1,311 @@
+<!-- SqliteSyntaxMode.xml - Sqlite Syntaxis mode file
+
+ Author:
+   Luciano N. Callero <lnc19@hotmail.com>
+
+ Copyright (c) 2009 Luciano N. Callero
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+ 
+<SyntaxMode name = "Sqlite" mimeTypes="text/x-sqlite" ignorecase="true">
+
+	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">-</EolSpan>
+	
+	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+		<Begin>/*</Begin>
+		<End>*/</End>
+	</Span>
+	
+	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+		<Begin>"</Begin>
+		<End>"</End>
+	</Span>
+	
+	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+		<Begin>'</Begin>
+		<End>'</End>
+	</Span>
+	
+	<Keywords color = "keyword.misc">
+		<Word>COUNT</Word>
+		<Word>AVG</Word>
+		<Word>GROUP_CONCAT</Word>
+		<Word>MAX</Word>
+		<Word>MIN</Word>
+		<Word>SUM</Word>
+		<Word>TOTAL</Word>
+		<Word>abs</Word>
+		<Word>changes</Word>
+		<Word>coalesce</Word>
+		<Word>ifnull</Word>
+		<Word>hex</Word>
+		<Word>last_insert_rowid</Word>
+		<Word>length</Word>
+		<Word>like</Word>
+		<Word>load_extension</Word>
+		<Word>lower</Word>
+		<Word>ltrim</Word>
+		<Word>nulliff</Word>
+		<Word>quote</Word>
+		<Word>random</Word>
+		<Word>randomblob</Word>
+		<Word>replace</Word>
+		<Word>round</Word>
+		<Word>rtrim</Word>
+		<Word>soundex</Word>
+		<Word>sqlite_source_id</Word>
+		<Word>sqlite_version</Word>
+		<Word>substr</Word>
+		<Word>total_changes</Word>
+		<Word>trim</Word>
+		<Word>typeof</Word>
+		<Word>upper</Word>
+		<Word>zeroblob</Word>
+		<Word>date</Word>
+		<Word>time</Word>
+		<Word>datetime</Word>
+		<Word>julianday</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.operator">
+		<Word>||</Word>
+		<Word>AS</Word>
+		<Word>*</Word>
+		<Word>/</Word>
+		<Word>%</Word>
+		<Word>+</Word>
+		<Word>-</Word>
+		<Word>&lt;&lt;</Word>
+		<Word>&gt;&gt;</Word>
+		<Word>&amp;</Word>
+		<Word>|</Word>
+		<Word>&lt;</Word>
+		<Word>&lt;=</Word>
+		<Word>&gt;</Word>
+		<Word>&gt;=</Word>
+		<Word>=</Word>
+		<Word>==</Word>
+		<Word>!=</Word>
+		<Word>&gt;&lt;</Word>
+		<Word>IS</Word>
+		<Word>IN</Word>
+		<Word>LIKE</Word>
+		<Word>GLOB</Word>
+		<Word>MATCH</Word>
+		<Word>REGEXP</Word>
+		<Word>AND</Word>
+		<Word>OR</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.declaration">
+		<Word>TABLE</Word>
+		<Word>RENAME</Word>
+		<Word>TO</Word>
+		<Word>ALTER</Word>
+		<Word>COLUMN</Word>
+		<Word>ADD</Word>
+		<Word>ANALYZE</Word>
+		<Word>ATTACH</Word>
+		<Word>DATABASE</Word>
+		<Word>CREATE</Word>
+		<Word>KEY</Word>
+		<Word>INDEX</Word>
+		<Word>IF</Word>
+		<Word>EXISTS</Word>
+		<Word>ON</Word>
+		<Word>TEMPORARY</Word>
+		<Word>TABLE</Word>
+		<Word>TEMP</Word>
+		<Word>CONSTRAINT</Word>
+		<Word>PRIMARY</Word>
+		<Word>AUTOINCREMENT</Word>
+		<Word>UNIQUE</Word>
+		<Word>CHECK</Word>
+		<Word>COLLATE</Word>
+		<Word>CONSTRAINT</Word>
+		<Word>FOREIGN KEY</Word>
+		<Word>DELETE</Word>
+		<Word>UPDATE</Word>
+		<Word>NULL</Word>
+		<Word>DEFAULT</Word>
+		<Word>CASCADE</Word>
+		<Word>RESTRICT</Word>
+		<Word>DEFERRABLE</Word>
+		<Word>INITIALLY</Word>
+		<Word>DEFERRED</Word>
+		<Word>INMEDIATE</Word>
+		<Word>TRIGGER</Word>
+		<Word>BEFORE</Word>
+		<Word>INSTEAD</Word>
+		<Word>AFTER</Word>
+		<Word>FOR</Word>
+		<Word>EACH</Word>
+		<Word>ROW</Word>
+		<Word>VIEW</Word>
+		<Word>VIRTUA</Word>
+		<Word>TABLESPACE</Word>
+		<Word>DROP</Word>
+		<Word>REINDEX</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.parameter">
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.selection">
+		<Word>ANALYZE</Word>
+		<Word>BEGIN</Word>
+		<Word>COMMIT</Word>
+		<Word>ROLLBACK</Word>
+		<Word>TRANSACTION</Word>
+		<Word>SAVEPOINT</Word>
+		<Word>DELETE</Word>
+		<Word>FROM</Word>
+		<Word>INDEXED</Word>
+		<Word>BY</Word>
+		<Word>QUERY</Word>
+		<Word>EXPLAIN</Word>
+		<Word>PLAN</Word>
+		<Word>INSERT</Word>
+		<Word>ABORT</Word>
+		<Word>REPLACE</Word>
+		<Word>FAIL</Word>
+		<Word>IGNORE</Word>
+		<Word>INSERT</Word>
+		<Word>INTO</Word>
+		<Word>REPLACE</Word>
+		<Word>VALUES</Word>
+		<Word>SELECT</Word>
+		<Word>ORDER</Word>
+		<Word>BY</Word>
+		<Word>LIMIT</Word>
+		<Word>OFFSET</Word>
+		<Word>SELECT</Word>
+		<Word>DISTINCT</Word>
+		<Word>ALL</Word>
+		<Word>FROM</Word>
+		<Word>WHERE</Word>
+		<Word>GROUP</Word>
+		<Word>HAVING</Word>
+		<Word>NATURAL</Word>
+		<Word>LEFT</Word>
+		<Word>JOIN</Word>
+		<Word>OUTER</Word>
+		<Word>CROSS</Word>
+		<Word>INNER</Word>
+		<Word>USING</Word>
+		<Word>COLLATE</Word>
+		<Word>UNION</Word>
+		<Word>INTERSECT</Word>
+		<Word>EXCEPT</Word>
+		<Word>UPDATE</Word>
+		<Word>SET</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.iteration">
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.jump">
+	</Keywords>
+	
+	<Keywords color = "keyword.context">
+	</Keywords>
+	
+	<Keywords color = "keyword.exceptions">
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "constant.language">
+		<Word>TRUE</Word>
+		<Word>FALSE</Word>
+		<Word>Yes</Word>
+		<Word>No</Word>
+		<Word>On</Word>
+		<Word>Off</Word>
+		<Word>1</Word>
+		<Word>0</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.modifier">
+		
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.type">
+		<Word>NULL</Word>
+		<Word>INTEGER</Word>
+		<Word>REAL</Word>
+		<Word>TEXT</Word>
+		<Word>BLOB</Word>
+	</Keywords>
+
+	<Rule name = "text.preprocessor">
+		<Keywords color="text.preprocessor.keyword">
+			<word>PRAGMA</word>
+			<word>auto_vacuum</word>
+			<word>cache_size</word>
+			<word>case_sensitive_like</word>
+			<word>count_changes</word>
+			<word>default_cache_size</word>
+			<word>empty_result_callbacks</word>
+			<word>encoding</word>
+			<word>foreign_keys</word>
+			<word>full_column_names</word>
+			<word>fullfsync</word>
+			<word>incremental_vacuum</word>
+			<word>journal_mode</word>
+			<word>journal_size_limit</word>
+			<word>legacy_file_format</word>
+			<word>locking_mode</word>
+			<word>page_size</word>
+			<word>max_page_count</word>
+			<word>read_uncommitted</word>
+			<word>recursive_triggers</word>
+			<word>reverse_unordered_selects</word>
+			<word>short_column_names</word>
+			<word>synchronous</word>
+			<word>temp_store</word>
+			<word>temp_store_directory</word>
+			<word>collation_list</word>
+			<word>database_list</word>
+			<word>foreign_key_list</word>
+			<word>freelist_count</word>
+			<word>index_info</word>
+			<word>index_list</word>
+			<word>page_count</word>
+			<word>table_info</word>
+			<word>schema_version</word>
+			<word>user_version</word>
+			<word>integrity_check</word>
+			<word>quick_check</word>
+			<word>parser_trace</word>
+			<word>vdbe_trace</word>
+			<word>vdbe_listing</word>
+		</Keywords>
+	</Rule>
+	
+	<Rule name = "Comment">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
+			<Word>TODO</Word>
+			<Word>FIXME</Word>
+			<Word>HACK</Word>
+			<Word>UNDONE</Word>
+		</Keywords>	
+	</Rule>
+	
+	<Rule name = "String">
+	</Rule>
+</SyntaxMode>

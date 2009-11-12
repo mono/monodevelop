@@ -198,7 +198,7 @@
 			_label = "Empty Table"
 			icon = "gtk-clear"/>
 		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Query"
-			_label = "Query"
+			_label = "Query Database"
 			icon = "md-db-execute"/>
 		<!--
 		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.RenameDatabase"
@@ -276,6 +276,73 @@
 		<Command id = "MonoDevelop.Database.ConnectionManager.ToolbarCommands.ToggleSystemObjects"
 			_label = "Toggle System Objects"
 			icon = "gtk-no"/>
+			
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DropUser"
+			_label = "Drop User"
+			icon = "gtk-remove"/>
+
+		<!-- Query Table Commands-->
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.ShowTableDefinitionInCurrentWindow"
+			_label = "Show Table Definition in _Current Window"
+			icon = "gtk-edit" />
+			
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.ShowTableDefinitionInNewWindow"
+			_label = "Show Table Definition in _New Window"
+			icon = "gtk-edit"/>
+
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.ShowTableDefinitionInClipboard"
+			_label = "Show Table Definition in _Clipboard"
+			icon = "gtk-edit"/>
+
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QuerySelectInCurrentWindow"
+			_label = "SELECT Query in _Current Window"
+			icon = "md-db-execute" />
+			
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QuerySelectInNewWindow"
+			_label = "SELECT Query in _New Window"
+			icon = "md-db-execute"/>
+
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QuerySelectInClipboard"
+			_label = "SELECT Query in _Clipboard"
+			icon = "md-db-execute"/>
+		
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryInsertInCurrentWindow"
+			_label = "INSERT INTO in _Current Window"
+			icon = "md-db-execute" />
+			
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryInsertInNewWindow"
+			_label = "INSERT INTO in _New Window"
+			icon = "md-db-execute"/>
+
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryInsertInClipboard"
+			_label = "INSERT INTO in _Clipboard"
+			icon = "md-db-execute"/>
+
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryUpdateInCurrentWindow"
+			_label = "UPDATE in _Current Window"
+			icon = "md-db-execute" />
+			
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryUpdateInNewWindow"
+			_label = "UPDATE in _New Window"
+			icon = "md-db-execute"/>
+
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryUpdateInClipboard"
+			_label = "UPDATE in _Clipboard"
+			icon = "md-db-execute"/>
+												
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryDeleteInCurrentWindow"
+			_label = "DELETE in _Current Window"
+			icon = "md-db-execute" />
+			
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryDeleteInNewWindow"
+			_label = "DELETE in _New Window"
+			icon = "md-db-execute"/>
+
+		<Command id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryDeleteInClipboard"
+			_label = "DELETE in _Clipboard"
+			icon = "md-db-execute"/>
+												
+												
 		</Category>
 	</Extension>
 
@@ -292,6 +359,8 @@
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.ConnectConnection"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.DisconnectConnection"/>
 		<SeparatorItem id = "DisconnectSeparator"/>
+		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.Query"/>
+		<SeparatorItem id = "QuerySeparator"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename"/>
 		<!--<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.RenameDatabase"/>-->
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.EditConnection"/>
@@ -327,6 +396,38 @@
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.SelectAll"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.SelectColumns"/>
 		<SeparatorItem id = "SelectSeparator" />
+		<ItemSet id = "MonoDevelop.Database.ConnectionManager.QueryTable" _label = "Query Table">
+			<ItemSet id="MonoDevelop.Database.ConnectionManager.QueryTableSelect" _label = "_SELECT">
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QuerySelectInCurrentWindow" />
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QuerySelectInNewWindow" />
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QuerySelectInClipboard" />
+			</ItemSet>
+			
+			<ItemSet id="MonoDevelop.Database.ConnectionManager.QueryTableSelect" _label = "_INSERT">
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryInsertInCurrentWindow" />
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryInsertInNewWindow" />
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryInsertInClipboard" />
+			</ItemSet>
+			
+			<ItemSet id="MonoDevelop.Database.ConnectionManager.QueryTableSelect" _label = "_UPDATE">
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryUpdateInCurrentWindow" />
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryUpdateInNewWindow" />
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryUpdateInClipboard" />
+			</ItemSet>
+
+			<ItemSet id="MonoDevelop.Database.ConnectionManager.QueryTableSelect" _label = "_DELETE">
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryDeleteInCurrentWindow" />
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryDeleteInNewWindow" />
+				<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.QueryDeleteInClipboard" />
+			</ItemSet>
+						
+		</ItemSet>
+		<ItemSet id = "MonoDevelop.Database.ConnectionManager.ShowTableDefinition" _label = "Show Table Definition">
+			<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.ShowTableDefinitionInCurrentWindow" /> 
+			<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.ShowTableDefinitionInNewWindow" /> 
+			<CommandItem id="MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.ShowTableDefinitionInClipboard" /> 
+		</ItemSet>		
+		<SeparatorItem id = "QuerySeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.AlterTable"/>
 		<CommandItem id = "MonoDevelop.Database.ConnectionManager.ConnectionManagerCommands.EmptyTable"/>

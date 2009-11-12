@@ -338,5 +338,172 @@ namespace MonoDevelop.Database.ConnectionManager
 			BaseNode node = (BaseNode)CurrentNode.DataItem;
 			info.Enabled = node.ConnectionContext.SchemaProvider.IsSchemaActionSupported (SQL.SchemaType.Table, SchemaActions.Alter);
 		}
+		
+		[CommandHandler (ConnectionManagerCommands.QuerySelectInCurrentWindow)]
+		protected void OnSelectQueryOnCurrentWindow ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
+				IdeApp.Workbench.ActiveDocument.TextEditor.InsertText (IdeApp.Workbench.ActiveDocument.TextEditor.CursorPosition, 
+				                                                       schemaProvider.GetSelectQuery (node.Table));
+			else
+				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
+		}
+		
+		[CommandHandler (ConnectionManagerCommands.QuerySelectInNewWindow)]
+		protected void OnSelectQueryOnNewWindow ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			SqlQueryView view = new SqlQueryView ();
+			view.SelectedConnectionContext = node.ConnectionContext;
+			view.TextEditor.Insert (0, schemaProvider.GetSelectQuery (node.Table));
+			IdeApp.Workbench.OpenDocument (view, true);
+		}		
+		
+		[CommandHandler (ConnectionManagerCommands.QuerySelectInClipboard)]
+		protected void OnSelectQueryOnClipboard ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			Gtk.Clipboard clp = Clipboard.Get (Gdk.Selection.Clipboard);
+			clp.Text = schemaProvider.GetSelectQuery (node.Table);
+			MessageService.ShowMessage (AddinCatalog.GetString ("SELECT statement has been copied to Clipboard."));
+		}		
+
+		[CommandHandler (ConnectionManagerCommands.QueryUpdateInCurrentWindow)]
+		protected void OnUpdateQueryOnCurrentWindow ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
+				IdeApp.Workbench.ActiveDocument.TextEditor.InsertText (IdeApp.Workbench.ActiveDocument.TextEditor.CursorPosition, 
+				                                                       schemaProvider.GetUpdateQuery (node.Table));
+			else
+				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
+		}
+		
+		[CommandHandler (ConnectionManagerCommands.QueryUpdateInNewWindow)]
+		protected void OnUpdateQueryOnNewWindow ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			SqlQueryView view = new SqlQueryView ();
+			view.SelectedConnectionContext = node.ConnectionContext;
+			view.TextEditor.Insert (0, schemaProvider.GetUpdateQuery (node.Table));
+			IdeApp.Workbench.OpenDocument (view, true);
+		}		
+		
+		[CommandHandler (ConnectionManagerCommands.QueryUpdateInClipboard)]
+		protected void OnUpdateQueryOnClipboard ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			Gtk.Clipboard clp = Clipboard.Get (Gdk.Selection.Clipboard);
+			clp.Text = schemaProvider.GetUpdateQuery (node.Table);
+			MessageService.ShowMessage (AddinCatalog.GetString ("UPDATE Statement has been copied to Clipboard."));
+		}		
+		
+		[CommandHandler (ConnectionManagerCommands.QueryInsertInCurrentWindow)]
+		protected void OnInsertQueryOnCurrentWindow ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
+				IdeApp.Workbench.ActiveDocument.TextEditor.InsertText (IdeApp.Workbench.ActiveDocument.TextEditor.CursorPosition, 
+				                                                       schemaProvider.GetInsertQuery (node.Table));
+			else
+				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
+		}
+		
+		[CommandHandler (ConnectionManagerCommands.QueryInsertInNewWindow)]
+		protected void OnInsertQueryOnNewWindow ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			SqlQueryView view = new SqlQueryView ();
+			view.SelectedConnectionContext = node.ConnectionContext;
+			view.TextEditor.Insert (0, schemaProvider.GetInsertQuery (node.Table));
+			IdeApp.Workbench.OpenDocument (view, true);
+		}		
+		
+		[CommandHandler (ConnectionManagerCommands.QueryInsertInClipboard)]
+		protected void OnInsertQueryOnClipboard ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			Gtk.Clipboard clp = Clipboard.Get (Gdk.Selection.Clipboard);
+			clp.Text = schemaProvider.GetInsertQuery (node.Table);
+			MessageService.ShowMessage (AddinCatalog.GetString ("INSERT INTO Statement has been copied to Clipboard."));
+		}		
+		
+		[CommandHandler (ConnectionManagerCommands.QueryDeleteInCurrentWindow)]
+		protected void OnDeleteQueryOnCurrentWindow ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
+				IdeApp.Workbench.ActiveDocument.TextEditor.InsertText (IdeApp.Workbench.ActiveDocument.TextEditor.CursorPosition, 
+				                                                       schemaProvider.GetDeleteQuery (node.Table));
+			else
+				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
+		}
+		
+		[CommandHandler (ConnectionManagerCommands.QueryDeleteInNewWindow)]
+		protected void OnDeleteQueryOnNewWindow ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			SqlQueryView view = new SqlQueryView ();
+			view.SelectedConnectionContext = node.ConnectionContext;
+			view.TextEditor.Insert (0, schemaProvider.GetDeleteQuery (node.Table));
+			IdeApp.Workbench.OpenDocument (view, true);
+		}		
+		
+		[CommandHandler (ConnectionManagerCommands.QueryDeleteInClipboard)]
+		protected void OnDeleteQueryOnClipboard ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			Gtk.Clipboard clp = Clipboard.Get (Gdk.Selection.Clipboard);
+			clp.Text = schemaProvider.GetDeleteQuery (node.Table);
+			MessageService.ShowMessage (AddinCatalog.GetString ("DELETE Statement has been copied to Clipboard."));
+		}		
+		
+		[CommandHandler (ConnectionManagerCommands.ShowTableDefinitionInCurrentWindow)]
+		protected void OnShowDefinitionOnCurrentWindow ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
+				IdeApp.Workbench.ActiveDocument.TextEditor.InsertText (IdeApp.Workbench.ActiveDocument.TextEditor.CursorPosition, 
+				                                                       schemaProvider.GetTableCreateStatement (node.Table));
+			else
+				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
+		}
+		
+		[CommandHandler (ConnectionManagerCommands.ShowTableDefinitionInNewWindow)]
+		protected void OnShowDefinitionOnNewWindow ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			SqlQueryView view = new SqlQueryView ();
+			view.SelectedConnectionContext = node.ConnectionContext;
+			view.TextEditor.Insert (0, schemaProvider.GetTableCreateStatement (node.Table));
+			IdeApp.Workbench.OpenDocument (view, true);
+		}
+		
+		[CommandHandler (ConnectionManagerCommands.ShowTableDefinitionInClipboard)]
+		protected void OnShowDefinitionOnClipboard ()
+		{
+			TableNode node = CurrentNode.DataItem as TableNode;
+			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
+			Gtk.Clipboard clp = Clipboard.Get (Gdk.Selection.Clipboard);
+			clp.Text = schemaProvider.GetTableCreateStatement (node.Table);
+			MessageService.ShowMessage (AddinCatalog.GetString ("CREATE Statement has been copied to Clipboard."));
+		}
+		
+		
 	}
 }

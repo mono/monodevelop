@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //	Christian Hergert  <chris@mosaix.net>
 //	Daniel Morgan <danielmorgan@verizon.net>
@@ -974,5 +974,11 @@ using MonoDevelop.Core;
 			}
 			conn.Release ();
 		}
+		
+		public override string GetMimeType ()
+		{
+			return "text/x-sqlserver";
+		}
+
 	}
 }

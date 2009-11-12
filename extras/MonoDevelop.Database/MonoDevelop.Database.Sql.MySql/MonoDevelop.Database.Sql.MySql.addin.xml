@@ -21,9 +21,15 @@
 		<Addin id="Database.Sql" version="2.2"/>
 		<Addin id="Database.Components" version="2.2"/>
 		<Addin id="Database.Designer" version="2.2"/>
+		<Addin id="SourceEditor2" version="2.2"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Database/Sql">
 		<DatabaseFactory id = "MySql" class = "MonoDevelop.Database.Sql.MySql.MySqlDbFactory" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
+		<Templates resource="MySqlSyntaxMode.xml" />
+	</Extension>
+	
 </Addin>

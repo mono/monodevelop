@@ -8,7 +8,7 @@
     <ProjectGuid>{1EAB54C2-4F9D-421F-A362-CCE28496820C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Database.Sql.MySql</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.Database.Sql.MySql</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -140,6 +140,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\objects.xml">
       <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MySqlSyntaxMode.xml">
+      <LogicalName>MySqlSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

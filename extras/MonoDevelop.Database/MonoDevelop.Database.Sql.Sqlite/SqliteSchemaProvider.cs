@@ -557,5 +557,11 @@ namespace MonoDevelop.Database.Sql.Sqlite
 		{
 			return String.Concat ("DROP VIEW IF EXISTS ", view.Name, "; ", Environment.NewLine, view.Definition); 
 		}
+		
+		public override string GetMimeType ()
+		{
+			return "text/x-sqlite";
+		}
+
 	}
 }

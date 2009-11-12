@@ -61,17 +61,9 @@
 		<Word>&lt;=</Word>
 		<Word>=&gt;</Word>
 		<Word>As</Word>
-		<Word>CAST</Word>
-		<Word>CONVERT</Word>
-		<Word>BETWEEN</Word>
-		<Word>&amp;</Word>
-		<Word>|</Word>
-		<Word>!</Word>
-		<Word>/</Word>
-		<Word>IS NOT NULL</Word>
-		<Word>IS NOT</Word>
-		<Word>IS NULL</Word>
 		<Word>LIKE</Word>
+		<Word>*</Word>
+		<Word>@</Word>
 		
 	</Keywords>
 	
@@ -79,61 +71,28 @@
 		<Word>SELECT</Word>
 		<Word>FROM</Word>
 		<Word>WHERE</Word>
-		<Word>INNER</Word>
-		<Word>LEFT</Word>
-		<Word>RIGHT</Word>
-		<Word>JOIN</Word>
-		<Word>CASE</Word>
-		<Word>WHEN</Word>
-		<Word>IF</Word>
-		<Word>THEN</Word>
-		<Word>ELSE</Word>
-		<Word>IFNULL</Word>
-		<Word>NULLIF</Word>
+		<Word>INNER JOIN</Word>
+		<Word>LEFT JOIN</Word>
+		<Word>RIGHT JOIN</Word>
+		<Word>LEFT OUTER JOIN</Word>
+		<Word>RIGHT OUTER JOIN</Word>
+		<Word>FULL JOIN</Word>
+		<Word>FULL OUTER JOIN</Word>
 		<Word>UNION</Word>
-		<Word>TOP</Word>
-		<Word>LIMIT</Word>
-		<Word>FETCH</Word>
-		<Word>USE</Word>
-		<Word>DROP</Word>
-		<Word>DATABASE</Word>
-		<Word>ALTER</Word>
-		<Word>INDEX</Word>
-		<Word>RENAME</Word>
+		<Word>ORDER BY</Word>
+		<Word>GROUP BY</Word>
+		<Word>HAVING</Word>
 		<Word>DELETE</Word>
-		<Word>HANDLER</Word>
-		<Word>LOAD DATA INFILE</Word>
-		<Word>REPLACE</Word>
-		<Word>TRUNCATE</Word>
 		<Word>UPDATE</Word>
 		<Word>INSERT INTO</Word>
 		<Word>VALUES</Word>
-		<Word>PREPARE</Word>
-		<Word>EXEC</Word>
-		<Word>EXECUTE</Word>
-		<Word>DEALLOCATE</Word>
 		<Word>TRANSACTION</Word>
 		<Word>COMMIT</Word>
 		<Word>ROLLBACK</Word>
-		<Word>COMM</Word>
-		<Word>ROLL</Word>
-		<Word>USING</Word>
-		<Word>SET</Word>
-		<Word>@</Word>
-		<Word>SHOW</Word>
-		<Word>START</Word>
-		<Word>GROUP BY</Word>
-		<Word>ORDER BY</Word>
-		<Word>HAVING</Word>
-		<Word>DEFINER</Word>
 		<Word>EXISTS</Word>
 	</Keywords>
 	
 	<Keywords ignorecase="true" color = "keyword.iteration">
-		<Word>DO</Word>
-		<Word>FOR</Word>
-		<Word>FOREACH</Word>
-		<Word>WHILE</Word>
 	</Keywords>
 	
 	<Keywords ignorecase="true" color = "keyword.jump">
@@ -230,11 +189,14 @@
 	</Keywords>
 	
 	<Keywords ignorecase="true" color = "keyword.declaration">
-		<Word>CREATE</Word>
-		<Word>ALTER</Word>
-		<Word>FUNCTION</Word>
-		<Word>PROCEDURE</Word>
-		<Word>TABLE</Word>
+		<Word>CREATE DATABASE</Word>
+		<Word>CREATE TABLE</Word>
+		<Word>CREATE FUNCTION</Word>
+		<Word>CREATE PROCEDURE</Word>
+		<Word>ALTER DATABASE</Word>
+		<Word>ALTER TABLE</Word>
+		<Word>ALTER FUNCTION</Word>
+		<Word>ALTER PROCEDURE</Word>
 		<Word>VIEW</Word>
 		<Word>TRIGGER</Word>
 		<Word>BEGIN</Word>

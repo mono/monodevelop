@@ -21,9 +21,15 @@
 		<Addin id="Database.Sql" version="2.2"/>
 		<Addin id="Database.Components" version="2.2"/>
 		<Addin id="Database.Designer" version="2.2"/>
+		<Addin id="SourceEditor2" version="2.2"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Database/Sql">
 		<DatabaseFactory id = "Npgsql" class = "MonoDevelop.Database.Sql.Npgsql.NpgsqlDbFactory" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
+		<Templates resource="NpgsqlSyntaxMode.xml" />
+	</Extension>
+	
 </Addin>

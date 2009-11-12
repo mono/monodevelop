@@ -149,6 +149,9 @@
     <EmbeddedResource Include="Encoding.xml">
       <LogicalName>Encoding.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="NpgsqlSyntaxMode.xml">
+      <LogicalName>NpgsqlSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

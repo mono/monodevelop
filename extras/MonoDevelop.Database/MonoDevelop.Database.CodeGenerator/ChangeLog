@@ -1,3 +1,9 @@
+2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Database.CodeGenerator.csproj: Target runtime
+	  from 2.0 to 3.5.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

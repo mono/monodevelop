@@ -2,6 +2,7 @@ ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Sql.MySql.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
+	$(MONODEVELOP_CORE_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Components.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \
@@ -38,7 +39,8 @@ MYSQL_FILES = \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
-	MonoDevelop.Database.Sql.MySql.addin.xml
+	MonoDevelop.Database.Sql.MySql.addin.xml \
+	MySqlSyntaxMode.xml
 
 SRC_MYSQL_FILES = $(addprefix $(top_srcdir)/contrib/MySql/, $(MYSQL_FILES))
 BUILD_MYSQL_FILES = $(addprefix $(ADDIN_BUILD)/, $(notdir $(MYSQL_FILES)))

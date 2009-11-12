@@ -1,3 +1,14 @@
+2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* Makefile.am:
+	* MySqlSyntaxMode.xml:
+	* MySqlSchemaProvider.cs:
+	* MonoDevelop.Database.Sql.MySql.addin.xml: Implement Syntax
+	  mode by provider.
+
+	* MonoDevelop.Database.Sql.MySql.csproj: Target runtime from
+	  2.0 to 3.5.
+
 2009-11-04  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* gtk-gui/gui.stetic:

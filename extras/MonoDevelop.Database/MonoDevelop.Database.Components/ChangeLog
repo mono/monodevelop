@@ -1,3 +1,10 @@
+2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* SqlSyntaxMode.xml: Implement Syntax mode by provider.
+
+	* MonoDevelop.Database.Components.csproj: Target runtime from
+	  2.0 to 3.5.
+
 2009-11-03  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* Widgets/ConnectionSettingsWidget.cs: Initialize the Pool,

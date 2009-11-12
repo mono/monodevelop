@@ -1017,5 +1017,11 @@ namespace MonoDevelop.Database.Sql.MySql
 				scale = 0;
 			}
 		}
+		
+		public override string GetMimeType ()
+		{
+			return "text/x-mysql";
+		}
+
 	}
 }

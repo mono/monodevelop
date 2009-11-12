@@ -1,3 +1,10 @@
+2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* SqlQueryView.cs: Implement Syntax mode by provider.
+
+	* MonoDevelop.Database.Query.csproj: Target runtime from 2.0
+	  to 3.5.
+
 2009-11-04  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* SqlQueryView.cs: Remove handlers

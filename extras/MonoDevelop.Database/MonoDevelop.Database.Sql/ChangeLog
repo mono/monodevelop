@@ -1,3 +1,12 @@
+2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* MonoDevelop.Database.Sql.csproj: Target runtime from 2.0 to
+	  3.5.
+
+	* Providers/ISchemaProvider.cs:
+	* Providers/AbstractSchemaProvider.cs: Implement Query:
+	  Select, Update, Insert, Delete.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

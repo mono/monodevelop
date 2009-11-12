@@ -2,6 +2,7 @@ ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Sql.SqlServer.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
+	$(MONODEVELOP_CORE_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Components.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \
@@ -12,6 +13,7 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
+	Dialogs/SqlServerCreateDatabaseDialog.cs \
 	Dialogs/SqlServerTableEditorDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerColumnEditorWidget.cs \
@@ -29,7 +31,8 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
-	MonoDevelop.Database.Sql.SqlServer.addin.xml
+	MonoDevelop.Database.Sql.SqlServer.addin.xml \
+	SqlServerSyntaxMode.xml
 
 if ENABLE_SQLSERVER
 all: $(ASSEMBLY)

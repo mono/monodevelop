@@ -1645,5 +1645,11 @@ using Npgsql;
 				}
 			}
 		}
+		
+		public override string GetMimeType ()
+		{
+			return "text/x-npgsql";
+		}
+
 	}
 }

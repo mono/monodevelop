@@ -1,3 +1,14 @@
+2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* Makefile.am:
+	* SqlServerSyntaxMode.xml:
+	* SqlServerSchemaProvider.cs:
+	* MonoDevelop.Database.Sql.SqlServer.addin.xml: Implement
+	  Syntax mode by provider.
+
+	* MonoDevelop.Database.Sql.SqlServer.csproj: Target runtime
+	  from 2.0 to 3.5.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

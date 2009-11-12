@@ -1,3 +1,8 @@
+2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* MonoDevelop.Database.Designer.csproj: Target runtime from
+	  2.0 to 3.5.
+
 2009-11-03  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* Dialogs/TableEditorDialog.cs: Implement save preview as

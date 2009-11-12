@@ -2,6 +2,7 @@ ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Sql.Npgsql.dll
 REFS =  \
 	$(GTK_SHARP_LIBS) \
+	$(MONODEVELOP_CORE_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Components.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \
@@ -39,7 +40,8 @@ RES =  \
 	Encoding.xml \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
-	MonoDevelop.Database.Sql.Npgsql.addin.xml
+	MonoDevelop.Database.Sql.Npgsql.addin.xml \
+	NpgsqlSyntaxMode.xml
 
 if ENABLE_POSTGRES
 all: $(ASSEMBLY)

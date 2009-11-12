@@ -805,5 +805,89 @@ namespace MonoDevelop.Database.Sql
 				return result;
 			}
 		}
+		
+		public virtual string GetMimeType ()
+		{
+			return "text/x-sql";
+		}
+		
+		public virtual string GetSelectQuery (TableSchema table)
+		{
+			StringBuilder sb = new StringBuilder ("SELECT ");
+			bool coma = false;
+			foreach (ColumnSchema col in table.Columns) {
+				if (coma)
+					sb.AppendFormat(",");
+				coma = true;
+				sb.AppendLine ();
+				sb.AppendFormat ("{0}{1}", Convert.ToString (Convert.ToChar (9)), col.Name);
+			}
+			sb.AppendLine ();
+			sb.AppendFormat ("FROM {0}", table.Name);
+			return sb.ToString ();
+		}
+
+		public virtual string GetUpdateQuery (TableSchema table)
+		{
+			StringBuilder sb = new StringBuilder ("UPDATE ");
+			sb.AppendFormat ("{0} {1}{1}{2}SET", table.Name, Convert.ToString (Convert.ToChar (9)), Environment.NewLine);
+			bool coma = false;
+			foreach (ColumnSchema col in table.Columns) {
+				if (coma)
+					sb.AppendFormat(",");
+				coma = true;
+				sb.AppendLine ();
+				if (col.DataType.FullName.IndexOf ("varchar", StringComparison.OrdinalIgnoreCase) > -1 ||
+				    col.DataType.FullName.IndexOf ("char", StringComparison.OrdinalIgnoreCase) > -1 ||
+				    col.DataType.FullName.IndexOf ("nvarchar", StringComparison.OrdinalIgnoreCase) > -1 ||
+				    col.DataType.FullName.IndexOf ("varbinary", StringComparison.OrdinalIgnoreCase) > -1 ||
+				    col.DataType.FullName.IndexOf ("nchar", StringComparison.OrdinalIgnoreCase) > -1)				
+					sb.AppendFormat ("{2}{0} = <{1}({3})> ", col.Name, col.DataType.FullName, Convert.ToString (Convert.ToChar (9)), col.DataType.LengthRange.Max);
+				else
+					sb.AppendFormat ("{2}{0} = <{1}> ", col.Name, col.DataType.FullName, Convert.ToString (Convert.ToChar (9)));
+			}
+			sb.AppendLine ();
+			sb.Append ("WHERE ");
+			return sb.ToString ();
+		}
+
+		public virtual string GetInsertQuery (TableSchema table)
+		{
+			StringBuilder sb = new StringBuilder ("INSERT INTO ");
+			sb.AppendFormat ("{0} (", table.Name);
+			bool coma = false;
+			foreach (ColumnSchema col in table.Columns) {
+				if (coma)
+					sb.AppendFormat(",");
+				coma = true;
+				sb.Append (col.Name);
+			}
+
+			coma = false;
+			sb.Append (")");
+			sb.AppendLine ();
+			sb.AppendFormat ("{0}VALUES (", Convert.ToString (Convert.ToChar (9)));
+			foreach (ColumnSchema col in table.Columns) {				
+				if (coma)
+					sb.AppendFormat(",");
+				coma = true;
+				if (col.DataType.FullName.IndexOf ("varchar", StringComparison.OrdinalIgnoreCase) > -1 ||
+				    col.DataType.FullName.IndexOf ("char", StringComparison.OrdinalIgnoreCase) > -1 ||
+				    col.DataType.FullName.IndexOf ("nvarchar", StringComparison.OrdinalIgnoreCase) > -1 ||
+				    col.DataType.FullName.IndexOf ("varbinary", StringComparison.OrdinalIgnoreCase) > -1 ||
+				    col.DataType.FullName.IndexOf ("nchar", StringComparison.OrdinalIgnoreCase) > -1)
+					sb.AppendFormat ("<{0}({1})>", col.DataType.FullName, col.DataType.LengthRange.Max);
+				else
+					sb.AppendFormat ("<{0}>", col.DataType.FullName);
+			}
+			sb.Append (")");
+			return sb.ToString ();
+		}
+		
+		public virtual string GetDeleteQuery (TableSchema table)
+		{
+			return string.Concat ("DELETE FROM ", table.Name, Environment.NewLine, "WHERE"	);
+
+		}
 	}
 }

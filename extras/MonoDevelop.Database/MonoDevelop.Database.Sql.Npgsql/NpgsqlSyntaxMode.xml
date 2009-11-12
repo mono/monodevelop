@@ -1,0 +1,612 @@
+<!-- NpgsqlSyntaxMode.xml - Npgsql Syntaxis mode file.
+
+ Author:
+   Luciano N. Callero <lnc19@hotmail.com>
+
+ Copyright (c) 2009 Luciano N. Callero
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+ 
+<SyntaxMode name = "Npgsql" mimeTypes="text/x-npgsql" ignorecase="true">
+
+	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">-</EolSpan>
+	
+	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+		<Begin>/*</Begin>
+		<End>*/</End>
+	</Span>
+	
+	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+		<Begin>"</Begin>
+		<End>"</End>
+	</Span>
+	
+	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+		<Begin>'</Begin>
+		<End>'</End>
+	</Span>
+	
+	<Keywords color = "keyword.misc">
+		<Word>abs</Word>
+		<Word>cbrt</Word>
+		<Word>ceil</Word>
+		<Word>ceiling</Word>
+		<Word>degrees</Word>
+		<Word>exp</Word>
+		<Word>floor</Word>
+		<Word>ln</Word>
+		<Word>log</Word>
+		<Word>mod</Word>
+		<Word>pi</Word>
+		<Word>power</Word>
+		<Word>radians</Word>
+		<Word>random</Word>
+		<Word>round</Word>
+		<Word>setseed</Word>
+		<Word>sign</Word>
+		<Word>sqrt</Word>
+		<Word>trunc</Word>
+		<Word>width_bucket</Word>
+		<Word>acos</Word>
+		<Word>asin</Word>
+		<Word>atan</Word>
+		<Word>atan2</Word>
+		<Word>cos</Word>
+		<Word>cot</Word>
+		<Word>sin</Word>
+		<Word>tan</Word>
+		<Word>character_length</Word>
+		<Word>string</Word>
+		<Word>bit_length</Word>
+		<Word>char_length</Word>
+		<Word>convert</Word>
+		<Word>lower</Word>
+		<Word>octet_length</Word>
+		<Word>overlay</Word>
+		<Word>position</Word>
+		<Word>substring</Word>
+		<Word>trim</Word>
+		<Word>upper</Word>
+		<Word>ascii</Word>
+		<Word>btrim</Word>
+		<Word>chr</Word>
+		<Word>convert</Word>
+		<Word>decode</Word>
+		<Word>encode</Word>
+		<Word>initcap</Word>
+		<Word>length</Word>
+		<Word>lpad</Word>
+		<Word>ltrim</Word>
+		<Word>md5</Word>
+		<Word>pg_client_encoding</Word>
+		<Word>quote_ident</Word>
+		<Word>regexp_replace</Word>
+		<Word>repeat</Word>
+		<Word>replace</Word>
+		<Word>rpad</Word>
+		<Word>rtrim</Word>
+		<Word>split_part</Word>
+		<Word>strpos</Word>
+		<Word>substr</Word>
+		<Word>to_ascii</Word>
+		<Word>to_hex</Word>
+		<Word>translate</Word>
+		<Word>Notes:</Word>
+		<Word>ascii_to_mic</Word>
+		<Word>ascii_to_utf8</Word>
+		<Word>big5_to_euc_tw</Word>
+		<Word>big5_to_mic</Word>
+		<Word>big5_to_utf8</Word>
+		<Word>euc_cn_to_mic</Word>
+		<Word>euc_cn_to_utf8</Word>
+		<Word>euc_jp_to_mic</Word>
+		<Word>euc_jp_to_sjis</Word>
+		<Word>euc_jp_to_utf8</Word>
+		<Word>euc_kr_to_mic</Word>
+		<Word>euc_kr_to_utf8</Word>
+		<Word>euc_tw_to_big5</Word>
+		<Word>euc_tw_to_mic</Word>
+		<Word>euc_tw_to_utf8</Word>
+		<Word>gb18030_to_utf8</Word>
+		<Word>gbk_to_utf8</Word>
+		<Word>iso_8859_10_to_utf8</Word>
+		<Word>iso_8859_13_to_utf8</Word>
+		<Word>iso_8859_14_to_utf8</Word>
+		<Word>iso_8859_15_to_utf8</Word>
+		<Word>iso_8859_16_to_utf8</Word>
+		<Word>iso_8859_1_to_mic</Word>
+		<Word>iso_8859_1_to_utf8</Word>
+		<Word>iso_8859_2_to_mic</Word>
+		<Word>iso_8859_2_to_utf8</Word>
+		<Word>iso_8859_2_to_windows_1250</Word>
+		<Word>iso_8859_3_to_mic</Word>
+		<Word>iso_8859_3_to_utf8</Word>
+		<Word>iso_8859_4_to_mic</Word>
+		<Word>iso_8859_4_to_utf8</Word>
+		<Word>iso_8859_5_to_koi8_r</Word>
+		<Word>iso_8859_5_to_mic</Word>
+		<Word>iso_8859_5_to_utf8</Word>
+		<Word>iso_8859_5_to_windows_1251</Word>
+		<Word>iso_8859_5_to_windows_866</Word>
+		<Word>iso_8859_6_to_utf8</Word>
+		<Word>iso_8859_7_to_utf8</Word>
+		<Word>iso_8859_8_to_utf8</Word>
+		<Word>iso_8859_9_to_utf8</Word>
+		<Word>johab_to_utf8</Word>
+		<Word>koi8_r_to_iso_8859_5</Word>
+		<Word>koi8_r_to_mic</Word>
+		<Word>koi8_r_to_utf8</Word>
+		<Word>koi8_r_to_windows_1251</Word>
+		<Word>koi8_r_to_windows_866</Word>
+		<Word>mic_to_ascii</Word>
+		<Word>mic_to_big5</Word>
+		<Word>mic_to_euc_cn</Word>
+		<Word>mic_to_euc_jp</Word>
+		<Word>mic_to_euc_kr</Word>
+		<Word>mic_to_euc_tw</Word>
+		<Word>mic_to_iso_8859_1</Word>
+		<Word>mic_to_iso_8859_2</Word>
+		<Word>mic_to_iso_8859_3</Word>
+		<Word>mic_to_iso_8859_4</Word>
+		<Word>mic_to_iso_8859_5</Word>
+		<Word>mic_to_koi8_r</Word>
+		<Word>mic_to_sjis</Word>
+		<Word>mic_to_windows_1250</Word>
+		<Word>mic_to_windows_1251</Word>
+		<Word>mic_to_windows_866</Word>
+		<Word>sjis_to_euc_jp</Word>
+		<Word>sjis_to_mic</Word>
+		<Word>sjis_to_utf8</Word>
+		<Word>tcvn_to_utf8</Word>
+		<Word>uhc_to_utf8</Word>
+		<Word>utf8_to_ascii</Word>
+		<Word>utf8_to_big5</Word>
+		<Word>utf8_to_euc_cn</Word>
+		<Word>utf8_to_euc_jp</Word>
+		<Word>utf8_to_euc_kr</Word>
+		<Word>utf8_to_euc_tw</Word>
+		<Word>utf8_to_gb18030</Word>
+		<Word>utf8_to_gbk</Word>
+		<Word>utf8_to_iso_8859_1</Word>
+		<Word>utf8_to_iso_8859_10</Word>
+		<Word>utf8_to_iso_8859_13</Word>
+		<Word>utf8_to_iso_8859_14</Word>
+		<Word>utf8_to_iso_8859_15</Word>
+		<Word>utf8_to_iso_8859_16</Word>
+		<Word>utf8_to_iso_8859_2</Word>
+		<Word>utf8_to_iso_8859_3</Word>
+		<Word>utf8_to_iso_8859_4</Word>
+		<Word>utf8_to_iso_8859_5</Word>
+		<Word>utf8_to_iso_8859_6</Word>
+		<Word>utf8_to_iso_8859_7</Word>
+		<Word>utf8_to_iso_8859_8</Word>
+		<Word>utf8_to_iso_8859_9</Word>
+		<Word>utf8_to_johab</Word>
+		<Word>utf8_to_koi8_r</Word>
+		<Word>utf8_to_sjis</Word>
+		<Word>utf8_to_tcvn</Word>
+		<Word>utf8_to_uhc</Word>
+		<Word>utf8_to_windows_1250</Word>
+		<Word>utf8_to_windows_1251</Word>
+		<Word>utf8_to_windows_1252</Word>
+		<Word>utf8_to_windows_1256</Word>
+		<Word>utf8_to_windows_866</Word>
+		<Word>utf8_to_windows_874</Word>
+		<Word>windows_1250_to_iso_8859_2</Word>
+		<Word>windows_1250_to_mic</Word>
+		<Word>windows_1250_to_utf8</Word>
+		<Word>windows_1251_to_iso_8859_5</Word>
+		<Word>windows_1251_to_koi8_r</Word>
+		<Word>windows_1251_to_mic</Word>
+		<Word>windows_1251_to_utf8</Word>
+		<Word>windows_1251_to_windows_866</Word>
+		<Word>windows_1252_to_utf8</Word>
+		<Word>windows_1256_to_utf8</Word>
+		<Word>windows_866_to_iso_8859_5</Word>
+		<Word>windows_866_to_koi8_r</Word>
+		<Word>windows_866_to_mic</Word>
+		<Word>windows_866_to_utf8</Word>
+		<Word>windows_866_to_windows_1251</Word>
+		<Word>windows_874_to_utf8</Word>
+		<Word>get_byte</Word>
+		<Word>set_byte</Word>
+		<Word>get_bit</Word>
+		<Word>set_bit</Word>
+		<Word>to_char</Word>
+		<Word>to_date</Word>
+		<Word>to_timestamp</Word>
+		<Word>to_number</Word>
+		<Word>age</Word>
+		<Word>current_date</Word>
+		<Word>current_time</Word>
+		<Word>current_timestamp</Word>
+		<Word>date_part</Word>
+		<Word>date_trunc</Word>
+		<Word>extract</Word>
+		<Word>isfinite</Word>
+		<Word>justify_hours</Word>
+		<Word>justify_days</Word>
+		<Word>localtime</Word>
+		<Word>localtimestamp</Word>
+		<Word>now</Word>
+		<Word>timeofday</Word>
+		<Word>area</Word>
+		<Word>center</Word>
+		<Word>diameter</Word>
+		<Word>height</Word>
+		<Word>isclosed</Word>
+		<Word>isopen</Word>
+		<Word>npoints</Word>
+		<Word>pclose</Word>
+		<Word>popen</Word>
+		<Word>radius</Word>
+		<Word>width</Word>
+		<Word>box</Word>
+		<Word>circle</Word>
+		<Word>lseg</Word>
+		<Word>path</Word>
+		<Word>point</Word>
+		<Word>polygon</Word>
+		<Word>broadcast</Word>
+		<Word>host</Word>
+		<Word>masklen</Word>
+		<Word>set_masklen</Word>
+		<Word>netmask</Word>
+		<Word>hostmask</Word>
+		<Word>network</Word>
+		<Word>text</Word>
+		<Word>abbrev</Word>
+		<Word>family</Word>
+		<Word>trunc</Word>
+		<Word>nextval</Word>
+		<Word>currval</Word>
+		<Word>lastval</Word>
+		<Word>setval</Word>
+		<Word>nullif</Word>
+		<Word>array_cat </Word>
+		<Word>array_append</Word>
+		<Word>array_prepend</Word>
+		<Word>array_dims</Word>
+		<Word>array_lower</Word>
+		<Word>array_upper</Word>
+		<Word>array_to_string</Word>
+		<Word>string_to_array</Word>
+		<Word>avg</Word>
+		<Word>bit_and</Word>
+		<Word>bit_or</Word>
+		<Word>bool_and</Word>
+		<Word>bool_or</Word>
+		<Word>count</Word>
+		<Word>count</Word>
+		<Word>every</Word>
+		<Word>max</Word>
+		<Word>min</Word>
+		<Word>stddev</Word>
+		<Word>sum</Word>
+		<Word>variance</Word>
+		<Word>current_database</Word>
+		<Word>current_schema</Word>
+		<Word>current_schemas</Word>
+		<Word>current_user</Word>
+		<Word>inet_client_addr</Word>
+		<Word>inet_client_port</Word>
+		<Word>inet_server_addr</Word>
+		<Word>inet_server_port</Word>
+		<Word>session_user</Word>
+		<Word>pg_postmaster_start_time</Word>
+		<Word>user</Word>
+		<Word>version</Word>
+		<Word>has_table_privilege</Word>
+		<Word>has_database_privilege</Word>
+		<Word>has_function_privilege</Word>
+		<Word>has_language_privilege</Word>
+		<Word>pg_has_role</Word>
+		<Word>has_schema_privilege</Word>
+		<Word>has_tablespace_privilege</Word>
+		<Word>pg_table_is_visible</Word>
+		<Word>pg_type_is_visible</Word>
+		<Word>pg_function_is_visible</Word>
+		<Word>pg_operator_is_visible</Word>
+		<Word>pg_opclass_is_visible</Word>
+		<Word>pg_conversion_is_visible</Word>
+		<Word>format_type</Word>
+		<Word>pg_get_constraintdef</Word>
+		<Word>pg_get_expr</Word>
+		<Word>pg_get_indexdef</Word>
+		<Word>pg_get_ruledef</Word>
+		<Word>pg_get_serial_sequence</Word>
+		<Word>pg_tablespace_databases</Word>
+		<Word>pg_get_triggerdef</Word>
+		<Word>pg_get_userbyid</Word>
+		<Word>pg_get_viewdef</Word>
+		<Word></Word>
+		<Word></Word>
+		<Word></Word>
+		<Word></Word>
+		<Word>obj_description</Word>
+		<Word>col_description</Word>
+		<Word>current_setting</Word>
+		<Word>set_config</Word>
+		<Word>pg_cancel_backend</Word>
+		<Word>pg_reload_conf</Word>
+		<Word>pg_rotate_logfile</Word>
+		<Word>pg_start_backup</Word>
+		<Word>pg_stop_backup</Word>
+		<Word>pg_column_size</Word>
+		<Word>pg_tablespace_size</Word>
+		<Word>pg_database_size</Word>
+		<Word>pg_relation_size</Word>
+		<Word>pg_total_relation_size</Word>
+		<Word>pg_size_pretty</Word>
+		<Word>pg_ls_dir</Word>
+		<Word>pg_read_file</Word>
+		<Word>pg_stat_file</Word>
+	
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.operator">
+		<Word>AND</Word>
+		<Word>OR</Word>
+		<Word>NOT</Word>
+		<Word>&lt;</Word>
+		<Word>&gt;</Word>
+		<Word>&lt;=</Word>
+		<Word>&gt;=</Word>
+		<Word>=</Word>
+		<Word>&lt;&gt;</Word>
+		<Word>!=</Word>
+		<Word>BETWEEN</Word>
+		<Word>IS</Word>
+		<Word>NOT</Word>
+		<Word>NULL</Word>
+		<Word>UNKNOW</Word>
+		<Word>+</Word>
+		<Word>-</Word>
+		<Word>*</Word>
+		<Word>/</Word>
+		<Word>%</Word>
+		<Word>^</Word>
+		<Word>|/</Word>
+		<Word>||/</Word>
+		<Word>!</Word>
+		<Word>!!</Word>
+		<Word>@</Word>
+		<Word>&amp;</Word>
+		<Word>|</Word>
+		<Word>#</Word>
+		<Word>~</Word>
+		<Word>&lt;&lt;</Word>
+		<Word>&gt;&gt;</Word>
+		<Word>LIKE</Word>
+		<Word>SIMILAR</Word>
+		<Word>TO</Word>
+		<Word>~</Word>
+		<Word>~*</Word>
+		<Word>!~</Word>
+		<Word>!~*</Word>
+		<Word>@-@</Word>
+		<Word>@@</Word>
+		<Word>##</Word>
+		<Word>&gt;-&lt;</Word>
+		<Word>&amp;&amp;</Word>
+		<Word>&lt;&lt;</Word>
+		<Word>&gt;&gt;</Word>
+		<Word>&amp;&lt;</Word>
+		<Word>&amp;&gt;</Word>
+		<Word>?#</Word>
+		<Word>?-</Word>
+		<Word>?|</Word>
+		<Word>?-|</Word>
+		<Word>?||</Word>
+		<Word>~=</Word>
+		<Word>CASE</Word>
+		<Word>WHEN</Word>
+		<Word>THEN</Word>
+		<Word>ANY</Word>
+		<Word>SOME</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.declaration">
+		<Word>CREATE</Word>
+		<Word>DATABASE</Word>
+		<Word>WITH</Word>
+		<Word>OWNER</Word>
+		<Word>TEMPLATE</Word>
+		<Word>TABLESPACE</Word>
+		<Word>ENCODING</Word>
+		<Word>LC_COLLATE</Word>
+		<Word>LC_CTYPE</Word>
+		<Word>DROP</Word>
+		<Word>DATABASE</Word>
+		<Word>IF</Word>
+		<Word>EXISTS</Word>
+		<Word>REPLACE</Word>
+		<Word>FUNCTION</Word>
+		<Word>CALLED</Word>
+		<Word>LANGUAGE</Word>
+		<Word>WINDOW</Word>
+		<Word>INMUTABLE</Word>
+		<Word>STABLE</Word>
+		<Word>VOLATILE</Word>
+		<Word>INPUT</Word>
+		<Word>STRICT</Word>
+		<Word>EXTERNAL</Word>
+		<Word>WITH</Word>
+		<Word>FUNCTION</Word>
+		<Word>CREATE</Word>
+		<Word>GLOBAL</Word>
+		<Word>TEMPORARY</Word>
+		<Word>TEMP</Word>
+		<Word>INHERITS</Word>
+		<Word>COMMIT</Word>
+		<Word>ROWS</Word>
+		<Word>PRESERVE</Word>
+		<Word>DELETE</Word>
+		<Word>CONSTRAINT</Word>
+		<Word>UNIQUE</Word>
+		<Word>PRIMARY</Word>
+		<Word>KEY</Word>
+		<Word>CHECK</Word>
+		<Word>FOREIGN</Word>
+		<Word>REFERENCES</Word>
+		<Word>DEFERRABLE</Word>
+		<Word>INITIALLY</Word>
+		<Word>IMMEDIATE</Word>
+		<Word>USING</Word>
+		<Word>INDEX</Word>
+		<Word>TABLESPACE</Word>
+		<Word>RENAME TO</Word>
+		<Word>ALTET</Word>
+		<Word>COLUMN</Word>
+		<Word>ADD</Word>
+		<Word>DISABLE</Word>
+		<Word>TRIGGER</Word>
+		<Word>ENABLE</Word>
+		<Word>DEFAULT</Word>
+		<Word>SET</Word>
+		<Word>STORAGE</Word>
+		<Word>STATISTICS</Word>
+		<Word>UNIQUE</Word>
+		<Word>INDEX</Word>
+		<Word>ROLE</Word>
+		<Word></Word>
+		<Word>ROLE</Word>
+		<Word>PROCEDURAL</Word>
+		<Word>LANGUAGE</Word>
+		<Word>TRUSTED</Word>
+		<Word>VIEW</Word>
+		<Word>REPLACE</Word>
+		<Word>TEMPORARY</Word>
+		<Word>TEMP</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.parameter">
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.selection">
+		<Word>SELECT</Word>
+		<Word>FROM</Word>
+		<Word>WHERE</Word>
+		<Word>INNER</Word>
+		<Word>LEFT</Word>
+		<Word>RIGHT</Word>
+		<Word>CROSS</Word>
+		<Word>JOIN</Word>
+		<Word>UNION</Word>
+		<Word>ALL</Word>
+		<Word>LIMIT</Word>
+		<Word>USE</Word>
+		<Word>MAX</Word>
+		<Word>COUNT</Word>
+		<Word>MIN</Word>
+		<Word>SUM</Word>
+		<Word>ASC</Word>
+		<Word>DESC</Word>
+		<Word>DELETE</Word>
+		<Word>UPDATE</Word>
+		<Word>EXISTS</Word>
+		<Word>INSERT</Word>
+		<Word>INTO</Word>
+		<Word>Group</Word>
+		<Word>By</Word>
+		<Word>Order</Word>
+		<Word>Having</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.iteration">
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.jump">
+		<Word>BREAK</Word>
+		<Word>RETURN</Word>
+		<Word>RETURNS</Word>
+	</Keywords>
+	
+	<Keywords color = "keyword.context">
+	</Keywords>
+	
+	<Keywords color = "keyword.exceptions">
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "constant.language">
+		<Word>TRUE</Word>
+		<Word>FALSE</Word>
+		<Word>NULL</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.modifier">
+		<Word>DEFAULT</Word>
+	</Keywords>
+	
+	<Keywords ignorecase="true" color = "keyword.type">
+		<Word>bigint</Word>
+		<Word>bigserial</Word>
+		<Word>bit</Word>
+		<Word>boolean</Word>
+		<Word>box</Word>
+		<Word>bytea</Word>
+		<Word>character</Word>
+		<Word>varying</Word>
+		<Word>cidr</Word>
+		<Word>circle</Word>
+		<Word>date</Word>
+		<Word>double</Word>
+		<Word>precision</Word>
+		<Word>inet</Word>
+		<Word>integer</Word>
+		<Word>interval</Word>
+		<Word>line</Word>
+		<Word>lseg</Word>
+		<Word>macaddr</Word>
+		<Word>money</Word>
+		<Word>numeric</Word>
+		<Word>path</Word>
+		<Word>point</Word>
+		<Word>polygon</Word>
+		<Word>real</Word>
+		<Word>smallint</Word>
+		<Word>serial</Word>
+		<Word>text</Word>
+		<Word>time</Word>
+		<Word>timestamp</Word>
+		<Word>tsquery</Word>
+		<Word>tsvector</Word>
+		<Word>txid_snapshot</Word>
+		<Word>uuid</Word>
+		<Word>xml</Word>
+	
+	</Keywords>
+
+	<Rule name = "text.preprocessor">
+		<Keywords color="text.preprocessor.keyword">
+		</Keywords>
+	</Rule>
+	
+	<Rule name = "Comment">
+		<Keywords color="comment.keyword.todo" ignorecase="True">
+			<Word>TODO</Word>
+			<Word>FIXME</Word>
+			<Word>HACK</Word>
+			<Word>UNDONE</Word>
+		</Keywords>	
+	</Rule>
+	
+	<Rule name = "String">
+	</Rule>
+</SyntaxMode>

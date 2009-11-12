@@ -87,5 +87,10 @@ namespace MonoDevelop.Database.Sql
 		UniqueConstraintSchema CreateUniqueConstraintSchema (string name);
 		UserSchema CreateUserSchema (string name);
 		ViewSchema CreateViewSchema (string name);
+		string GetMimeType ();
+		string GetSelectQuery (TableSchema table);
+		string GetInsertQuery (TableSchema table);
+		string GetUpdateQuery (TableSchema table);
+		string GetDeleteQuery (TableSchema table);
 	}
 }
