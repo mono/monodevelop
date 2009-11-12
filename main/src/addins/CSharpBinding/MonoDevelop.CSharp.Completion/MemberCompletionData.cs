@@ -114,7 +114,11 @@ namespace MonoDevelop.CSharp.Completion
 		void SetMember (INode member)
 		{
 			this.Member = member;
-			this.completionString = ambience.GetString (member, flags ^ OutputFlags.IncludeGenerics);
+			if (member is IParameter) {
+				this.completionString = ((IParameter)member).Name;
+			} else {
+				this.completionString = ambience.GetString (member, flags ^ OutputFlags.IncludeGenerics);
+			}
 			descriptionCreated = false;
 			displayText = null;
 		}
