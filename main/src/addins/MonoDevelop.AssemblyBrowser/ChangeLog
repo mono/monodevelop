@@ -1,3 +1,8 @@
+2009-11-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/Decompiler.cs: Fixed 'Bug 554836
+	  - error in assembly browser while showing C# code'.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
