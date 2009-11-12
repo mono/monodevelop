@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion;
 using SharpSvn;
@@ -15,8 +16,20 @@ namespace SubversionAddinWindows
 	public class SvnSharpClient: SubversionVersionControl
 	{
 		SvnClient client;
+		bool errorShown;
+		bool installError;
 
 		public SvnSharpClient ( )
+		{
+			try {
+				Init ();
+			}
+			catch (Exception ex) {
+				LoggingService.LogError ("SVN client could not be initialized", ex);
+				installError = true;
+			}
+		}
+		void Init ( )
 		{
 			client = new SvnClient ();
 			client.Authentication.SslClientCertificateHandlers += new EventHandler<SharpSvn.Security.SvnSslClientCertificateEventArgs> (AuthenticationSslClientCertificateHandlers);
@@ -85,7 +98,15 @@ namespace SubversionAddinWindows
 
 		public override bool IsInstalled {
 			get {
-				return true;
+				if (!errorShown && installError) {
+					errorShown = true;
+					AlertButton db = new AlertButton ("Go to Download Page");
+					AlertButton res = MessageService.AskQuestion ("The Subversion add-in could not be initialized", "This add-in requires the 'Microsoft Visual C++ 2005 Service Pack 1 Redistributable'. You may need to install it.", db, AlertButton.Ok);
+					if (res == db) {
+						DesktopService.ShowUrl ("http://www.microsoft.com/downloads/details.aspx?familyid=766a6af7-ec73-40ff-b072-9112bab119c2");
+					}
+				}
+				return !installError;
 			}
 		}
 
