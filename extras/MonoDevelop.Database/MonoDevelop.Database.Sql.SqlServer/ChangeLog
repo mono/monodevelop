@@ -1,3 +1,11 @@
+2009-11-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Database.Sql.SqlServer.csproj: Remove unused
+	  file.
+
+	* gtk-gui/gui.stetic: Flush.
+
 2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* Makefile.am:

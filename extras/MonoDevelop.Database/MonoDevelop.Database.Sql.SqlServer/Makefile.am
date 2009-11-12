@@ -13,7 +13,6 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
-	Dialogs/SqlServerCreateDatabaseDialog.cs \
 	Dialogs/SqlServerTableEditorDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerColumnEditorWidget.cs \
