@@ -215,8 +215,11 @@ namespace MonoDevelop.CSharp.Completion
 				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType.DecoratedFullName != ((IMember)overload.Member).DeclaringType.DecoratedFullName) {
 					string str1 = ambience.GetString (member, flags);
 					string str2 = ambience.GetString (overload.Member, flags);
-					if (str1 == str2)
+					if (str1 == str2) {
+						if (string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)Member)) && !string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)overload.Member)))
+							SetMember (overload.Member);
 						return;
+					}
 				}
 				
 				string MemberId = (overload.Member as IMember).HelpUrl;
