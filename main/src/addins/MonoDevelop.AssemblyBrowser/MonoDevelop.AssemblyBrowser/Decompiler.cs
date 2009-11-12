@@ -401,7 +401,7 @@ namespace MonoDevelop.AssemblyBrowser
 						OperationType precedence = GetOperatorPrecedence (instruction.OpCode.Code);
 						arg2 = GetArgument(stack.Pop(), precedence);
 						arg1 = GetArgument(stack.Pop(), precedence);
-						stack.Push(new Operand(arg1 + ' ' + GetOperatorChar(instruction.OpCode.Code) + ' ' + arg2, precedence));
+						stack.Push(new Operand(arg1 + ' ' + GLib.Markup.EscapeText (GetOperatorChar(instruction.OpCode.Code)) + ' ' + arg2, precedence));
 						break;
 					case Code.Neg:
 						arg1 = GetArgument(stack.Pop(), OperationType.Unary);
@@ -646,7 +646,7 @@ namespace MonoDevelop.AssemblyBrowser
 						precedence = GetOperatorPrecedence (instruction.OpCode.Code);
 						arg2 = GetArgument(stack.Pop (), precedence);
 						arg1 = GetArgument(stack.Pop(), precedence);
-						stack.Push (new Operand (arg1 + ' ' + GetOperatorChar (instruction.OpCode.Code) + ' ' + arg2, precedence));
+						stack.Push (new Operand (arg1 + ' ' + GLib.Markup.EscapeText (GetOperatorChar (instruction.OpCode.Code)) + ' ' + arg2, precedence));
 						goto case Code.Br;
 					case Code.Leave:
 					case Code.Leave_S:

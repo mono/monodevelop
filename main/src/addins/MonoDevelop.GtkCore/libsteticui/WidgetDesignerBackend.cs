@@ -490,8 +490,11 @@ namespace Stetic
 		
 		protected override void OnSizeRequested (ref Requisition req)
 		{
-			if (!child.IsRealized)
+			// The Toplevel check is done to ensure that this widget is anchored,
+			// otherwise the Realize call will fail.
+			if (!child.IsRealized && Toplevel is Gtk.Window)
 				child.Realize ();
+			
 			req = child.SizeRequest ();
 			// Make some room for the border
 			req.Width += padding * 2 + selectionBorder * 2;
