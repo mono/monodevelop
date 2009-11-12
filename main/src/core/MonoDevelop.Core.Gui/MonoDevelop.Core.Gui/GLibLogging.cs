@@ -39,8 +39,6 @@ namespace MonoDevelop.Core.Gui
 		static readonly string[] domains = new string[] {"Gtk", "Gdk", "GLib", "GLib-GObject", "Pango", "GdkPixbuf" };
 		static uint[] handles;
 		
-		static Delegate exceptionManagerHook;
-		
 		public static bool Enabled
 		{
 			get { return handles != null; }
@@ -50,11 +48,11 @@ namespace MonoDevelop.Core.Gui
 				
 				if (value) {
 					handles = new uint[domains.Length];
-					HookExceptionManager ();
+					GLib.ExceptionManager.UnhandledException += OnUnhandledException;
 					for (int i = 0; i < domains.Length; i++)
 						handles[i] = GLib.Log.SetLogHandler (domains[i],  GLib.LogLevelFlags.All, LogFunc);
 				} else {
-					UnhookExceptionManager ();
+					GLib.ExceptionManager.UnhandledException -= OnUnhandledException;
 					for (int i = 0; i < domains.Length; i++)
 						GLib.Log.RemoveLogHandler (domains[i], handles[i]);
 					handles = null;
@@ -86,35 +84,7 @@ namespace MonoDevelop.Core.Gui
 			}	
 		}
 		
-		static void HookExceptionManager ()
-		{
-			if (exceptionManagerHook != null)
-				return;
-			
-			Type t = typeof(GLib.Object).Assembly.GetType ("GLib.ExceptionManager");
-			if (t == null)
-				return;
-			
-			System.Reflection.EventInfo ev = t.GetEvent ("UnhandledException");
-			Type delType = typeof(GLib.Object).Assembly.GetType ("GLib.UnhandledExceptionHandler");
-			System.Reflection.MethodInfo met = typeof (GLibLogging).GetMethod ("OnUnhandledException", 
-			    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-			exceptionManagerHook = Delegate.CreateDelegate (delType, met);
-			ev.AddEventHandler (null, exceptionManagerHook);
-		}
-		
-		static void UnhookExceptionManager ()
-		{
-			if (exceptionManagerHook == null)
-				return;
-			
-			Type t = typeof(GLib.Object).Assembly.GetType ("GLib.ExceptionManager");
-			System.Reflection.EventInfo ev = t.GetEvent ("UnhandledException");
-			ev.RemoveEventHandler (null, exceptionManagerHook);
-			exceptionManagerHook = null;
-		}
-		
-		internal static void OnUnhandledException (UnhandledExceptionEventArgs args)
+		static void OnUnhandledException (UnhandledExceptionEventArgs args)
 		{
 			LoggingService.LogError ("Unhandled exception in GLib event handler.", (Exception) args.ExceptionObject);
 		}
