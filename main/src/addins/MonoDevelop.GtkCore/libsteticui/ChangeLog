@@ -1,3 +1,10 @@
+2009-11-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WidgetDesignerBackend.cs: Don't try to realize the child if
+	  the widget is not anchored. Fixes bug #553475 -
+	  "Gtk-Critical: gtk_widget_realize: assertion" when running a
+	  gtk# app inside MD.
+
 2009-11-05  Mike Kestner  <mkestner@novell.com>
 
 	* Application.cs:
