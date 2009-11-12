@@ -41,7 +41,9 @@ namespace MonoDevelop.Debugger.Gdb
 				i = line.Length;
 			Name = line.Substring (1, i - 1);
 			ReadResults (line, i+1);
-			Reason = GetValue ("reason");
+			object[] reasons = GetAllValues ("reason");
+			if (reasons.Length > 0)
+				Reason = (string) reasons [0]; 
 		}
 	}
 }

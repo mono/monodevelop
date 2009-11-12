@@ -109,7 +109,13 @@ namespace MonoDevelop.Debugger.Gdb
 				
 				// Initialize the terminal
 				RunCommand ("-inferior-tty-set", Escape (tty));
-				RunCommand ("-file-exec-and-symbols", Escape (startInfo.Command));
+				
+				try {
+					RunCommand ("-file-exec-and-symbols", Escape (startInfo.Command));
+				} catch {
+					FireTargetEvent (TargetEventType.TargetExited, null);
+					throw;
+				}
 
 				RunCommand ("-environment-directory", Escape (startInfo.WorkingDirectory));
 				
