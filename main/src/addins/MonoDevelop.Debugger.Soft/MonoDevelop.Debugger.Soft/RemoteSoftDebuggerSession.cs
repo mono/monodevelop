@@ -52,8 +52,12 @@ namespace MonoDevelop.Debugger.Soft
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
 		protected void StartListening (RemoteDebuggerStartInfo dsi)
 		{
-			var dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
-			var conEP = new IPEndPoint (dsi.Address, dsi.OutputPort);
+			IPEndPoint conEP = null;
+			IPEndPoint dbgEP = null;
+
+			dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
+			if (dsi.RedirectOutput)
+				conEP = new IPEndPoint (dsi.Address, dsi.OutputPort);
 			
 			OnConnecting (VirtualMachineManager.BeginListen (dbgEP, conEP, HandleCallbackErrors (ListenCallback)));
 			ShowListenDialog (dsi);
@@ -130,12 +134,21 @@ namespace MonoDevelop.Debugger.Soft
 		public IPAddress Address { get; private set; }
 		public int DebugPort { get; private set; }
 		public int OutputPort { get; private set; }
+		public bool RedirectOutput { get; private set; }
 		
+		public RemoteDebuggerStartInfo (IPAddress address, int debugPort)
+		{
+			this.Address = address;
+			this.DebugPort = debugPort;
+			this.RedirectOutput = false;
+		}		
+
 		public RemoteDebuggerStartInfo (IPAddress address, int debugPort, int outputPort)
 		{
 			this.Address = address;
 			this.DebugPort = debugPort;
 			this.OutputPort = outputPort;
+			this.RedirectOutput = true;
 		}		
 	}
 }

@@ -1,3 +1,8 @@
+2009-11-12  Geoff Norton  <gnorton@novell.com>
+
+	* RemoteSoftDebuggerSession.cs: Not all Listen() events redirect
+	the console as well.
+
 2009-11-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerSession.cs: Catch exceptions when getting
