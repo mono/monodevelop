@@ -1,3 +1,11 @@
+2009-11-12  Geoff Norton  <gnorton@novell.com>
+
+	* MoonlightSoftDebuggerEngine.cs: Dont try to hook up a 
+	Console output.
+	* MoonlightSoftDebuggerSession.cs: UseShellExecute = false is
+	required to redirect the stdout and stderr.  Don't try to 
+	Kill an exited process.  Fix a typo in Substring
+
 2009-11-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MoonlightSoftDebuggerEngine.cs:

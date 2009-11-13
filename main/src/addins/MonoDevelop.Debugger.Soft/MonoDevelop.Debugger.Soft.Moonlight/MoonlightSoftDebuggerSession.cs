@@ -65,6 +65,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 				throw new InvalidOperationException ("Browser already started");
 			
 			var psi = new ProcessStartInfo ("firefox", string.Format (" -no-remote \"{0}\"", dsi.Url)) {
+				UseShellExecute = false,
 				RedirectStandardOutput = true,
 				RedirectStandardError = true,
 			};
@@ -85,7 +86,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 			int start = url.LastIndexOf ('/');
 			int end = url.LastIndexOf ('.');
 			if (end > start)
-				return url.Substring (start, end);
+				return url.Substring (start, end - start);
 			return "";
 		}
 		
@@ -103,8 +104,10 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		
 		void EndBrowserProcess ()
 		{
-			if (browser == null)
+			if (browser == null || browser.HasExited) {
+				browser = null;
 				return;
+			}
 			
 			browser.Kill ();
 			browser = null;
