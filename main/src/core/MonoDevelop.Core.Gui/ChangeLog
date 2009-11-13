@@ -1,3 +1,8 @@
+2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/MessageService.cs: Setting Modal is not
+	  required.
+
 2009-11-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Gui/GLibLogging.cs: Don't log unhandled
