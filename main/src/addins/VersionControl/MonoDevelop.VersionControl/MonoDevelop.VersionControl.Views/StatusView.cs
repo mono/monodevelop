@@ -297,8 +297,10 @@ namespace MonoDevelop.VersionControl.Views
 				case 2: val = ColCommit; break;
 				case 3: val = ColPath; break;
 			}
-			IComparable o1 = filestore.GetValue (a, val) as IComparable;
-			IComparable o2 = filestore.GetValue (b, val) as IComparable;
+			object o1 = filestore.GetValue (a, val);
+			object o2 = filestore.GetValue (b, val);
+			if (o1 is string[]) o1 = ((string[])o1)[0];
+			if (o2 is string[]) o2 = ((string[])o2)[0];
 			
 			if (o1 == null && o2 == null)
 				return 0;
@@ -307,7 +309,7 @@ namespace MonoDevelop.VersionControl.Views
 			else if (o2 == null)
 				return -1;
 			
-			return o1.CompareTo (o2);
+			return ((IComparable)o1).CompareTo (o2);
 		}
 		
 		public override void Dispose ()
