@@ -112,10 +112,13 @@ namespace MonoDevelop.Components.Docking
 			AutoHide (false);
 		}
 
+		static bool isWindows = (System.IO.Path.DirectorySeparatorChar == '\\');
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			Gtk.Style.PaintBox (Style, GdkWindow, StateType.Normal, ShadowType.Out, evnt.Area, this, "", Allocation.Left, Allocation.Top, Allocation.Width, Allocation.Height);
+			Gtk.Style.PaintBox (Style, GdkWindow, StateType.Normal, ShadowType.Out, evnt.Area, this, isWindows? "button" : "",
+			                    Allocation.Left, Allocation.Top, Allocation.Width, Allocation.Height);
+			
 			bool res = base.OnExposeEvent (evnt);
 			return res;
 		}

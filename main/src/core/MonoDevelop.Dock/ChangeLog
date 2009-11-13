@@ -1,3 +1,8 @@
+2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* DockBarItem.cs: Make autohidden pads' buttons look nicer on
+	  Windows. 
+
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
