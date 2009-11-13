@@ -1,3 +1,8 @@
+2009-11-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion.addin.xml: Don't
+	  include the linux svn client on windows.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

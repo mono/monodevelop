@@ -77,7 +77,7 @@ namespace MonoDevelop.DesignerSupport
 		void GuiThread ()
 		{
 			System.Diagnostics.Trace.WriteLine ("Designer GUI thread starting.");
-			HookExceptionManager ();
+			GLib.ExceptionManager.UnhandledException += OnUnhandledException;
 			
 			//want to restart application loop when it's killed by an exception,
 			//but let it die if Application.Quit() is called
@@ -97,7 +97,7 @@ namespace MonoDevelop.DesignerSupport
 				System.Threading.Thread.Sleep (500);
 			}
 			
-			UnhookExceptionManager ();
+			GLib.ExceptionManager.UnhandledException -= OnUnhandledException;
 			System.Diagnostics.Trace.WriteLine ("Designer GUI thread ending.");
 		}
 		
@@ -263,46 +263,10 @@ namespace MonoDevelop.DesignerSupport
 			System.Diagnostics.Trace.WriteLine ("Designer GUI thread cleaned up.");
 		}
 		
-		
-		#region from MonoDevelop.Core.Gui.GLibLogging
-		Delegate exceptionManagerHook;
-		
-		void HookExceptionManager ()
-		{
-			if (exceptionManagerHook != null)
-				return;
-			
-			Type t = typeof(GLib.Object).Assembly.GetType ("GLib.ExceptionManager");
-				if (t == null)
-				return;
-			
-			System.Reflection.EventInfo ev = t.GetEvent ("UnhandledException");
-			Type delType = typeof(GLib.Object).Assembly.GetType ("GLib.UnhandledExceptionHandler");
-			System.Reflection.MethodInfo met = typeof (RemoteDesignerProcess).GetMethod ("OnUnhandledException", 
-			    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-			exceptionManagerHook = Delegate.CreateDelegate (delType, this, met);
-			ev.AddEventHandler (null, exceptionManagerHook);
-		}
-			
-		void UnhookExceptionManager ()
-		{
-			if (exceptionManagerHook == null)
-				return;
-				
-			Type t = typeof(GLib.Object).Assembly.GetType ("GLib.ExceptionManager");
-			System.Reflection.EventInfo ev = t.GetEvent ("UnhandledException");
-			ev.RemoveEventHandler (null, exceptionManagerHook);
-			exceptionManagerHook = null;
-		}
-		
-		//THIS METHOD IS NOT UNUSED; IT IS REFLECTED
-		#pragma warning disable 0169
 		void OnUnhandledException (UnhandledExceptionEventArgs args)
 		{
 			HandleError ((Exception)args.ExceptionObject);
 		}
-		
-		#endregion
 	}
 }
 	

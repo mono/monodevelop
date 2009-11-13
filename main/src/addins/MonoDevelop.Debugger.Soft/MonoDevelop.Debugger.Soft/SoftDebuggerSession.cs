@@ -266,8 +266,14 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override ProcessInfo[] OnGetProcesses ()
 		{
-			if (procs == null)
-				procs = new ProcessInfo[] { new ProcessInfo (vm.Process.Id, vm.Process.ProcessName) };
+			if (procs == null) {
+				try {
+					procs = new ProcessInfo[] { new ProcessInfo (vm.Process.Id, vm.Process.ProcessName) };
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error getting debugger process info. Known Mono bug with symlinked runtimes.", ex);
+					procs = new ProcessInfo[] { new ProcessInfo (0, "mono") };
+				}
+			}
 			return procs;
 		}
 

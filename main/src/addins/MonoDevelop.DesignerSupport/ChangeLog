@@ -1,3 +1,9 @@
+2009-11-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs: Remove
+	  ancient reflection code now we depend on a reasonable GTK#
+	  version.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
