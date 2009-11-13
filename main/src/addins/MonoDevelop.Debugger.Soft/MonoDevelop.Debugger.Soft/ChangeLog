@@ -1,5 +1,11 @@
 2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerSession.cs: Add missing call to base dispose.
+
+	* RemoteSoftDebuggerSession.cs: Fix warning.
+
+2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerSession.cs: Avoid IDE crash when an exception is
 	  thrown in the event handler.
 

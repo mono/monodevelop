@@ -41,7 +41,6 @@ namespace MonoDevelop.Debugger.Soft
 	public abstract class RemoteSoftDebuggerSession : SoftDebuggerSession
 	{
 		ProcessInfo[] procs;
-		Process simProcess;
 		Gtk.Dialog dialog;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)

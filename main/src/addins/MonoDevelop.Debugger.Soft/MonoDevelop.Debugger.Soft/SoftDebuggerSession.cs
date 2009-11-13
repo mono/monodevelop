@@ -223,6 +223,7 @@ namespace MonoDevelop.Debugger.Soft
 
 		public override void Dispose ()
 		{
+			base.Dispose ();
 			if (!exited) {
 				EndLaunch ();
 				vm.Exit (0);
