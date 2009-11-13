@@ -467,6 +467,19 @@ namespace MonoDevelop.Moonlight
 			
 			src.Add (conf.CompiledOutputName);
 			targ.Add (Path.GetFileName (conf.CompiledOutputName));
+			
+			// FIXME: this is a hack for the Mono Soft Debugger. In future the mdb files should be *beside* the xap,
+			// when sdb supports that model. Note that there's no point doing this for pdb files, because the debuggers 
+			// that read pdb files don't expect them to be in the xap.
+			var doSdbCopy = conf.DebugMode && proj.TargetRuntime is MonoDevelop.Core.Assemblies.MonoTargetRuntime;
+			
+			if (doSdbCopy) {
+				var mdb = conf.CompiledOutputName + ".mdb";
+				if (File.Exists (mdb)) {
+					src.Add (mdb);
+					targ.Add (Path.GetFileName (mdb));
+				}
+			}
 
 			if (proj.GenerateSilverlightManifest) {
 				src.Add (Path.Combine (conf.OutputDirectory, "AppManifest.xaml"));
@@ -482,6 +495,8 @@ namespace MonoDevelop.Moonlight
 			
 			BuildResult res = new BuildResult ();
 
+			// The "copy to output" files don't seem to be included in xaps, so we can't use project.GetSupportFiles.
+			// Instead we need to iterate over the refs and handle them manually.
 			foreach (ProjectReference pr in proj.References) {
 				if (pr.LocalCopy) {
 					var pk = pr.Package;
@@ -497,6 +512,14 @@ namespace MonoDevelop.Moonlight
 						foreach (string s in pr.GetReferencedFileNames (slnConf)) {
 							src.Add (s);
 							targ.Add (Path.GetFileName (s));
+							
+							if (doSdbCopy && s.EndsWith (".dll")) {
+								var mdb = s + ".mdb";
+								if (File.Exists (mdb)) {
+									src.Add (mdb);
+									targ.Add (Path.GetFileName (mdb));
+								}
+							}
 						}
 					}
 				}

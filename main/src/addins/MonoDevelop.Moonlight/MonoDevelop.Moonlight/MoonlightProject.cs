@@ -173,9 +173,20 @@ namespace MonoDevelop.Moonlight
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
 			var conf = (MoonlightProjectConfiguration) GetActiveConfiguration (configuration);
+			
+			IConsole console = null;
+			
+			// The MoonlightExecutionHandler doesn't output anything to a console, so special-case it
+			// Other handlers, like the debug handler, do need a console, so we still need to create one in that case
+			if (!(context.ExecutionHandler is MoonlightExecutionHandler)) {
+				console = conf.ExternalConsole
+					? context.ExternalConsoleFactory.CreateConsole (!conf.PauseConsoleOutput)
+					: context.ConsoleFactory.CreateConsole (!conf.PauseConsoleOutput);
+			}
+			
 			var cmd = CreateExecutionCommand (conf);
 			using (var opMon = new AggregatedOperationMonitor (monitor)) {
-				var ex = context.ExecutionHandler.Execute (cmd, null);
+				var ex = context.ExecutionHandler.Execute (cmd, console);
 				opMon.AddOperation (ex);
 			}
 		}
