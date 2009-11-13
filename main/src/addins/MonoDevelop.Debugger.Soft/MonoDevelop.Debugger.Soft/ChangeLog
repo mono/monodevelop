@@ -8,12 +8,6 @@
 	* SoftDebuggerSession.cs: Catch exceptions when getting
 	  process name. Works around Mono bug with symlinked runtimes.
 
-2009-11-11  Geoff Norton  <gnorton@novell.com>
-
-	* SoftDebuggerSession.cs: Do not resume the event loop until
-	we have successfully finised processing the previous event
-	and resumed the virtual machine.
-
 2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerSession.cs: Fix bad state check.

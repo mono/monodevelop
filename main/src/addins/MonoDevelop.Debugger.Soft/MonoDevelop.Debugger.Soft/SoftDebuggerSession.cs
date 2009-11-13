@@ -41,7 +41,6 @@ namespace MonoDevelop.Debugger.Soft
 	public class SoftDebuggerSession : DebuggerSession
 	{
 		VirtualMachine vm;
-		AutoResetEvent resume_event = new AutoResetEvent (false);
 		Thread eventHandler;
 		Dictionary<string, List<TypeMirror>> source_to_type = new Dictionary<string, List<TypeMirror>> ();
 		Dictionary<string,TypeMirror> types = new Dictionary<string, TypeMirror> ();
@@ -200,7 +199,6 @@ namespace MonoDevelop.Debugger.Soft
 		protected void OnResumed ()
 		{
 			current_threads = null;
-			resume_event.Set ();
 		}
 		
 		public VirtualMachine VirtualMachine {
@@ -427,7 +425,6 @@ namespace MonoDevelop.Debugger.Soft
 					if (e is VMDeathEvent || e is VMDisconnectEvent)
 						break;
 					HandleEvent (e);
-					resume_event.WaitOne ();
 				} catch (VMDisconnectedException ex) {
 					OnDebuggerOutput (true, ex.ToString ());
 					break;
@@ -526,10 +523,9 @@ namespace MonoDevelop.Debugger.Soft
 				first_thread = e.Thread;
 			}
 			
-			if (resume) {
+			if (resume)
 				vm.Resume ();
-				resume_event.Set ();
-			} else {
+			else {
 				current_thread = e.Thread;
 				TargetEventArgs args = new TargetEventArgs (etype);
 				args.Process = OnGetProcesses () [0];
