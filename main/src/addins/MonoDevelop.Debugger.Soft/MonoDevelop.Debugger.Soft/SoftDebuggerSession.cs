@@ -428,6 +428,8 @@ namespace MonoDevelop.Debugger.Soft
 				} catch (VMDisconnectedException ex) {
 					OnDebuggerOutput (true, ex.ToString ());
 					break;
+				} catch (Exception ex) {
+					OnDebuggerOutput (true, ex.ToString ());
 				}
 			}
 			

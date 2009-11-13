@@ -1,3 +1,8 @@
+2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerSession.cs: Avoid IDE crash when an exception is
+	  thrown in the event handler.
+
 2009-11-12  Geoff Norton  <gnorton@novell.com>
 
 	* RemoteSoftDebuggerSession.cs: Not all Listen() events redirect
