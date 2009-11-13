@@ -48,11 +48,9 @@ namespace MonoDevelop.Core.Gui
 				
 				if (value) {
 					handles = new uint[domains.Length];
-					GLib.ExceptionManager.UnhandledException += OnUnhandledException;
 					for (int i = 0; i < domains.Length; i++)
 						handles[i] = GLib.Log.SetLogHandler (domains[i],  GLib.LogLevelFlags.All, LogFunc);
 				} else {
-					GLib.ExceptionManager.UnhandledException -= OnUnhandledException;
 					for (int i = 0; i < domains.Length; i++)
 						GLib.Log.RemoveLogHandler (domains[i], handles[i]);
 					handles = null;
@@ -82,11 +80,6 @@ namespace MonoDevelop.Core.Gui
 				LoggingService.LogError (msg);
 				break;
 			}	
-		}
-		
-		static void OnUnhandledException (UnhandledExceptionEventArgs args)
-		{
-			LoggingService.LogError ("Unhandled exception in GLib event handler.", (Exception) args.ExceptionObject);
 		}
 	}
 }
