@@ -60,6 +60,7 @@ namespace MonoDevelop.Debugger.Soft
 				ObjectMirror ob = (ObjectMirror) obj;
 				MethodMirror ts = ob.Type.GetMethod ("ToString");
 				StringMirror res = (StringMirror) ob.InvokeMethod (cx.Thread, ts, new Value[0]);
+				cx.Session.StackVersion++;
 				return res.Value;
 			}
 			return GetValueTypeName (ctx, obj);
@@ -86,6 +87,8 @@ namespace MonoDevelop.Debugger.Soft
 				if ((targetType is TypeMirror) && ((TypeMirror)targetType).IsAssignableFrom ((TypeMirror)otype))
 					return obj;
 			} else if (otype is Type) {
+				if (targetType is TypeMirror)
+					targetType = Type.GetType (((TypeMirror)targetType).FullName, false);
 				if ((targetType is Type) && ((Type)targetType).IsAssignableFrom ((Type)otype))
 					return obj;
 			}
@@ -467,14 +470,26 @@ namespace MonoDevelop.Debugger.Soft
 			TypeMirror[] ats = new TypeMirror[] { ctx.Session.GetType ("System.String") };
 			MethodMirror met = OverloadResolve (ctx, "GetType", tm, ats, false, true, true);
 			tm.InvokeMethod (ctx.Thread, met, new Value[] {(Value) CreateValue (ctx, typeName)});
+			ctx.Session.StackVersion++;
 		}
 		
 		T BuildAttribute<T> (CustomAttributeDataMirror attr)
 		{
 			List<object> args = new List<object> ();
 			foreach (CustomAttributeTypedArgumentMirror arg in attr.ConstructorArguments) {
-				Console.WriteLine ("pp arg:" + arg.Value + " tt:" + arg.ArgumentType);
-				args.Add (arg.Value);
+				object val = arg.Value;
+				if (val is TypeMirror) {
+					// The debugger attributes that take a type as parameter of the constructor have
+					// a corresponding constructor overload that takes a type name. We'll use that
+					// constructor because we can't load target types in the debugger process.
+					// So what we do here is convert the Type to a String.
+					TypeMirror tm = (TypeMirror) val;
+					val = tm.FullName + ", " + tm.Assembly.ManifestModule.Name;
+				} else if (val is EnumMirror) {
+					EnumMirror em = (EnumMirror) val;
+					val = em.Value;
+				}
+				args.Add (val);
 			}
 			Type type = typeof(T);
 			object at = Activator.CreateInstance (type, args.ToArray ());

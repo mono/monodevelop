@@ -51,6 +51,7 @@ namespace MonoDevelop.Debugger.Soft
 		ThreadInfo[] current_threads;
 		bool exited;
 		bool started;
+		internal int StackVersion;
 		
 		Thread outputReader;
 		Thread errorReader;

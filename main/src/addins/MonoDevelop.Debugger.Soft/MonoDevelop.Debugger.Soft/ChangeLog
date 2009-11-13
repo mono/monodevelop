@@ -1,5 +1,17 @@
 2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerSession.cs:
+	* SoftEvaluationContext.cs: After an evaluation in the target,
+	  the current frame may be invalidated, so it has to be
+	  queried again.
+
+	* SoftDebuggerAdaptor.cs: Misc value conversion fixes.
+
+	* VariableValueReference.cs: Implement local variable
+	  assignment.
+
+2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerSession.cs: Add missing call to base dispose.
 
 	* RemoteSoftDebuggerSession.cs: Fix warning.
