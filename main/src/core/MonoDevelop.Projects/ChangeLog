@@ -1,3 +1,8 @@
+2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Improve error reporting when a database can't be created.
+
 2009-11-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

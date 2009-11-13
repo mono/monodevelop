@@ -286,10 +286,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return new FileStream (dataFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
 			}
 			catch (IOException) {
+				// If the file could not be opened nor created, and the file doesn't exist,
+				// then it must be some write permission issue. Rethrow the exception.
+				if (!File.Exists (dataFile))
+					throw;
 			}
 			
-			// The file is locked, so it can be opened. The solution is to make
-			// a copy of the file and opend the copy. The copy will later be discarded,
+			// The file is locked, so it can't be opened. The solution is to make
+			// a copy of the file and open the copy. The copy will later be discarded,
 			// and this is not a problem because if the main file is locked it means
 			// that it is being updated by another MD instance.
 
