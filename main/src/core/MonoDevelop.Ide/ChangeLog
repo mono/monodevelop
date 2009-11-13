@@ -1,3 +1,10 @@
+2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Catch, log and display
+	  AppDomain.UnhandledException. Remove relection code that's
+	  unneeded now that we depend on recent GTK+. Set process name
+	  and pass args to GTK.
+
 2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Don't include
