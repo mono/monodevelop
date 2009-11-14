@@ -453,7 +453,49 @@ namespace MonoDevelop.Debugger.Soft
 			}
 			
 			if (e is TypeLoadEvent) {
-				TypeLoadEvent te = (TypeLoadEvent)e;
+				ResolveBreakpoints ((TypeLoadEvent)e);
+			}
+			
+			if (e is BreakpointEvent) {
+				etype = TargetEventType.TargetHitBreakpoint;
+				resume = false;
+			}
+			
+			if (e is ExceptionEvent) {
+				etype = TargetEventType.ExceptionThrown;
+				resume = false;
+			}
+			
+			if (e is StepEvent) {
+				StepEventRequest req = (StepEventRequest)e.Request;
+				req.Enabled = false;
+				etype = TargetEventType.TargetStopped;
+				resume = false;
+			}
+			
+			if (e is ThreadStartEvent) {
+				ThreadStartEvent ts = (ThreadStartEvent)e;
+				OnDebuggerOutput (false, string.Format ("Thread started: {0}\n", ts.Thread.Name));
+			}
+			
+			if (e is VMStartEvent) {
+				first_thread = e.Thread;
+			}
+			
+			if (resume)
+				vm.Resume ();
+			else {
+				current_thread = e.Thread;
+				TargetEventArgs args = new TargetEventArgs (etype);
+				args.Process = OnGetProcesses () [0];
+				args.Thread = GetThread (current_thread);
+				args.Backtrace = GetThreadBacktrace (current_thread);
+				OnTargetEvent (args);
+			}
+		}
+		
+		void ResolveBreakpoints (TypeLoadEvent te)
+		{
 				string typeName = te.Type.FullName;
 				types [typeName] = te.Type;
 				
@@ -499,44 +541,6 @@ namespace MonoDevelop.Debugger.Soft
 				}
 				foreach (var be in resolved)
 					pending_bes.Remove (be);
-			}
-			
-			if (e is BreakpointEvent) {
-				etype = TargetEventType.TargetHitBreakpoint;
-				resume = false;
-			}
-			
-			if (e is ExceptionEvent) {
-				etype = TargetEventType.ExceptionThrown;
-				resume = false;
-			}
-			
-			if (e is StepEvent) {
-				StepEventRequest req = (StepEventRequest)e.Request;
-				req.Enabled = false;
-				etype = TargetEventType.TargetStopped;
-				resume = false;
-			}
-			
-			if (e is ThreadStartEvent) {
-				ThreadStartEvent ts = (ThreadStartEvent)e;
-				OnDebuggerOutput (false, string.Format ("Thread started: {0}\n", ts.Thread.Name));
-			}
-			
-			if (e is VMStartEvent) {
-				first_thread = e.Thread;
-			}
-			
-			if (resume)
-				vm.Resume ();
-			else {
-				current_thread = e.Thread;
-				TargetEventArgs args = new TargetEventArgs (etype);
-				args.Process = OnGetProcesses () [0];
-				args.Thread = GetThread (current_thread);
-				args.Backtrace = GetThreadBacktrace (current_thread);
-				OnTargetEvent (args);
-			}
 		}
 		
 		Location GetLocFromType (TypeMirror type, string file, int line)
