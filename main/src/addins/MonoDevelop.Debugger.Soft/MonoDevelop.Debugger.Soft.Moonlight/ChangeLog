@@ -1,3 +1,9 @@
+2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MoonlightSoftDebuggerEngine.cs:
+	* MoonlightSoftDebuggerSession.cs: Track AppName API, and fix
+	  the moonlight app name.
+
 2009-11-12  Geoff Norton  <gnorton@novell.com>
 
 	* MoonlightSoftDebuggerEngine.cs: Dont try to hook up a 

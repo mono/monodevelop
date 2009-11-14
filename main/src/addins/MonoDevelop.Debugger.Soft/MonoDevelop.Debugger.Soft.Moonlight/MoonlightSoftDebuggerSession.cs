@@ -42,19 +42,11 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 
 	public class MoonlightSoftDebuggerSession : RemoteSoftDebuggerSession
 	{
-		string appName;
 		Process browser;
-		
-		protected override string AppName {
-			get { return appName; }
-		}
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MoonlightDebuggerStartInfo) startInfo;
-			
-			appName = GetNameFromXapUrl (dsi.Url);
-			
 			StartBrowserProcess (dsi);
 			StartListening (dsi);
 		}
@@ -79,15 +71,6 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 			browser.Exited += delegate {
 				EndSession ();
 			};
-		}
-
-		static string GetNameFromXapUrl (string url)
-		{
-			int start = url.LastIndexOf ('/');
-			int end = url.LastIndexOf ('.');
-			if (end > start)
-				return url.Substring (start, end - start);
-			return "";
 		}
 		
 		protected override void EndSession ()

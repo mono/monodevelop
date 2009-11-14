@@ -43,13 +43,10 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 	public class IPhoneDebuggerSession : RemoteSoftDebuggerSession
 	{
 		System.Diagnostics.Process simProcess;
-		string appName;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (IPhoneDebuggerStartInfo) startInfo;
-			appName = dsi.ExecutionCommand.AppPath.FileNameWithoutExtension;
-			
 			var cmd = dsi.ExecutionCommand;
 			if (cmd.Simulator) {
 				StartSimulatorProcess (cmd);
@@ -69,10 +66,6 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 					};
 				}
 			}
-		}
-		
-		protected override string AppName {
-			get { return appName; }
 		}
 		
 		void TouchUploadMarker (FilePath markerFile)
@@ -151,7 +144,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		public IPhoneExecutionCommand ExecutionCommand { get; private set; }
 		
 		public IPhoneDebuggerStartInfo (IPAddress address, int debugPort, int outputPort, IPhoneExecutionCommand cmd)
-			: base (address, debugPort, outputPort)
+			: base (cmd.AppPath.FileNameWithoutExtension, address, debugPort, outputPort)
 		{
 			ExecutionCommand = cmd;
 		}

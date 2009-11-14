@@ -1,5 +1,10 @@
 2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* RemoteSoftDebuggerSession.cs: Unify the AppName handling for
+	  remote sessions.
+
+2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerSession.cs: Refactor to tidy up the main event
 	  handler.
 

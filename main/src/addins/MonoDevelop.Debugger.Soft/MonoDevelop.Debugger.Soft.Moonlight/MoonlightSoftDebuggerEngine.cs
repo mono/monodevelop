@@ -52,7 +52,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
 			var cmd = (MoonlightExecutionCommand) command;
-			return new MoonlightDebuggerStartInfo (cmd.Url);
+			return new MoonlightDebuggerStartInfo (cmd.AppName, cmd.Url);
 		}
 
 		public DebuggerFeatures SupportedFeatures {
@@ -86,8 +86,8 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 	{
 		public string Url { get; private set; }
 		
-		public MoonlightDebuggerStartInfo (string url)
-			: base (IPAddress.Loopback, 10000)
+		public MoonlightDebuggerStartInfo (string appName, string url)
+			: base (appName, IPAddress.Loopback, 10000)
 		{
 			this.Url = url;
 		}
