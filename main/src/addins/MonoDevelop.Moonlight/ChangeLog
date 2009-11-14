@@ -1,5 +1,11 @@
 2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightProject.cs:
+	* MonoDevelop.Moonlight/MoonlightExecutionCommand.cs: Fix
+	  build.
+
+2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Hack to
 	  copy mdb files into the xap so that sdb works.
 

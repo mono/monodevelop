@@ -135,7 +135,7 @@ namespace MonoDevelop.Moonlight
 		{
 			string url = GetUrl (configuration);
 			if (url != null)
-				return new MoonlightExecutionCommand (url);
+				return new MoonlightExecutionCommand (this.Name, url);
 			return null;
 		}
 		
