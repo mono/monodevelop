@@ -521,9 +521,11 @@ namespace MonoDevelop.CSharp.Resolver
 					if (member.Count > 0) {
 						if (member[0] is IMethod) {
 							bool isStatic = result.StaticResolve;
+							List<IMember> nonMethodMembers = new List<IMember> ();
 							for (int i = 0; i < member.Count; i++) {
 								IMethod method = member[i] as IMethod;
-								
+								if (method == null)
+									nonMethodMembers.Add (member[i]);
 								if (method != null && !method.IsFinalizer && (method.IsExtension || method.WasExtended) && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
 									continue;
 								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || (method != null && method.IsFinalizer)) {
@@ -543,10 +545,16 @@ namespace MonoDevelop.CSharp.Resolver
 								((MethodResolveResult)result).AddGenericArgument (typeReference.ConvertToReturnType ());
 							}
 							((MethodResolveResult)result).ResolveExtensionMethods ();
-							
+							if (nonMethodMembers.Count > 0) {
+								IType searchType = resolver.Dom.GetType (nonMethodMembers[0].ReturnType);
+								MemberResolveResult baseResult = (MemberResolveResult) CreateResult (nonMethodMembers[0].DeclaringType.CompilationUnit, searchType != null ? new DomReturnType (searchType) : DomReturnType.Void);
+								baseResult.ResolvedMember = nonMethodMembers[0];
+								return new CombinedMethodResolveResult (baseResult, (MethodResolveResult)result);
+							}
 							//System.Console.WriteLine(result + "/" + result.ResolvedType);
 							return result;
 						}
+						
 						if (member[0] is IType) {
 							result = CreateResult (member[0].FullName);
 							result.StaticResolve = true;
@@ -579,6 +587,8 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 			
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
+			if (targetResult is CombinedMethodResolveResult)
+				targetResult = ((CombinedMethodResolveResult)targetResult).MethodResolveResult;
 			targetResult.StaticResolve = false; // invocation result is never static
 			if (this.resolver.CallingType != null) {
 				if (targetResult is ThisResolveResult) {
