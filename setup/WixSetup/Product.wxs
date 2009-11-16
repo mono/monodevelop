@@ -436,6 +436,14 @@
                 <File Name="MonoDevelop.Debugger.Win32.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.Win32.dll" />
               </Component>
             </Directory>
+            <Directory Id="MonoDevelop.Debugger.Soft" Name="MonoDevelop.Debugger.Soft">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_Debugger_Soft" Guid="d3d8931d-d099-4172-b103-8f9f67875170">
+                <File Name="Mono.Debugger.Soft.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll" />
+                <File Name="MonoDevelop.Debugger.Soft.AspNet.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.AspNet.dll" />
+                <File Name="MonoDevelop.Debugger.Soft.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.dll" />
+                <File Name="MonoDevelop.Debugger.Soft.Moonlight.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.Moonlight.dll" />
+              </Component>
+            </Directory>
             <Directory Id="MonoDevelop.Deployment" Name="MonoDevelop.Deployment">
               <Component Id="MonoDevelop_AddIns_MonoDevelop_Deployment" Guid="3d8cf1ee-115a-4eb7-ab6c-096cedb49dde">
                 <File Name="MonoDevelop.Deployment.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Deployment\MonoDevelop.Deployment.dll" />
@@ -591,6 +599,7 @@
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Autotools" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_CodeMetrics" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Debugger" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Debugger_Soft" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Deployment" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_DesignerSupport" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Gettext" />
