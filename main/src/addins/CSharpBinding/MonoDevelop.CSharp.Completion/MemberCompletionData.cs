@@ -117,7 +117,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (member is IParameter) {
 				this.completionString = ((IParameter)member).Name;
 			} else {
-				this.completionString = ambience.GetString (member, flags ^ OutputFlags.IncludeGenerics);
+				this.completionString = ambience.GetString (member, flags & ~OutputFlags.IncludeGenerics);
 			}
 			descriptionCreated = false;
 			displayText = null;
