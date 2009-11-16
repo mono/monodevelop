@@ -33,7 +33,9 @@ namespace MonoDevelop.Debugger.Soft
 	public class SoftEvaluationContext: EvaluationContext
 	{
 		SoftDebuggerSession session;
-		public StackFrame Frame { get; set; }
+		int stackVersion;
+		StackFrame frame;
+		
 		public ThreadMirror Thread { get; set; }
 		
 		public SoftEvaluationContext (SoftDebuggerSession session, StackFrame frame, int tiemout)
@@ -44,6 +46,18 @@ namespace MonoDevelop.Debugger.Soft
 			Adapter = session.Adaptor;
 			this.session = session;
 			Timeout = tiemout;
+			this.stackVersion = session.StackVersion;
+		}
+		
+		public StackFrame Frame {
+			get {
+				if (stackVersion != session.StackVersion)
+					UpdateFrame ();
+				return frame;
+			}
+			set {
+				frame = value;
+			}
 		}
 		
 		public SoftDebuggerSession Session {
@@ -70,9 +84,21 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public Value RuntimeInvoke (MethodMirror method, object target, Value[] values)
 		{
+			session.StackVersion++;
 			MethodCall mc = new MethodCall (this, method, target, values);
 			Adapter.AsyncExecute (mc, Timeout);
 			return mc.ReturnValue;
+		}
+		
+		void UpdateFrame ()
+		{
+			stackVersion = session.StackVersion;
+			foreach (StackFrame f in Thread.GetFrames ()) {
+				if (f.FileName == Frame.FileName && f.LineNumber == Frame.LineNumber && f.ILOffset == Frame.ILOffset) {
+					Frame = f;
+					break;
+				}
+			}
 		}
 	}
 }

@@ -67,7 +67,8 @@ namespace MonoDevelop.Debugger.Soft
 				return ctx.Frame.GetValue (variable);
 			}
 			set {
-				throw new System.NotImplementedException ();
+				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
+				ctx.Frame.SetValue (variable, (Value) value);
 			}
 		}
 	}

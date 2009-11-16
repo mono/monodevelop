@@ -376,7 +376,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			foreach (Project p in projects) {
 				foreach (ProjectFile file in p.Files) {
-					list.Add (file);
+					if (file.Subtype != Subtype.Directory)
+						list.Add (file);
 				}
 			}
 			return list;

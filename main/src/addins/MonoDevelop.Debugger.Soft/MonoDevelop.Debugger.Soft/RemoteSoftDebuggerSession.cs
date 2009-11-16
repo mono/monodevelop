@@ -41,8 +41,8 @@ namespace MonoDevelop.Debugger.Soft
 	public abstract class RemoteSoftDebuggerSession : SoftDebuggerSession
 	{
 		ProcessInfo[] procs;
-		Process simProcess;
 		Gtk.Dialog dialog;
+		string appName;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
@@ -52,12 +52,10 @@ namespace MonoDevelop.Debugger.Soft
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
 		protected void StartListening (RemoteDebuggerStartInfo dsi)
 		{
-			IPEndPoint conEP = null;
-			IPEndPoint dbgEP = null;
-
-			dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
-			if (dsi.RedirectOutput)
-				conEP = new IPEndPoint (dsi.Address, dsi.OutputPort);
+			appName = dsi.AppName;
+			
+			IPEndPoint dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
+			IPEndPoint conEP = dsi.RedirectOutput? new IPEndPoint (dsi.Address, dsi.OutputPort) : null;
 			
 			OnConnecting (VirtualMachineManager.BeginListen (dbgEP, conEP, HandleCallbackErrors (ListenCallback)));
 			ShowListenDialog (dsi);
@@ -122,11 +120,9 @@ namespace MonoDevelop.Debugger.Soft
 		protected override ProcessInfo[] OnGetProcesses ()
 		{
 			if (procs == null)
-				procs = new ProcessInfo[] { new ProcessInfo (0, AppName) };
+				procs = new ProcessInfo[] { new ProcessInfo (0, appName) };
 			return procs;
 		}
-		
-		protected abstract string AppName { get; }
 	}
 	
 	public class RemoteDebuggerStartInfo : DebuggerStartInfo
@@ -135,16 +131,17 @@ namespace MonoDevelop.Debugger.Soft
 		public int DebugPort { get; private set; }
 		public int OutputPort { get; private set; }
 		public bool RedirectOutput { get; private set; }
+		public string AppName { get; set; }
 		
-		public RemoteDebuggerStartInfo (IPAddress address, int debugPort)
-		{
-			this.Address = address;
-			this.DebugPort = debugPort;
-			this.RedirectOutput = false;
-		}		
+		public RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort)
+			: this (appName, address, debugPort, false, 0) {}
+		
+		public RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort, int outputPort)
+			: this (appName, address, debugPort, true, outputPort) {}
 
-		public RemoteDebuggerStartInfo (IPAddress address, int debugPort, int outputPort)
+		RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort,  bool redirectOutput, int outputPort)
 		{
+			this.AppName = appName;
 			this.Address = address;
 			this.DebugPort = debugPort;
 			this.OutputPort = outputPort;

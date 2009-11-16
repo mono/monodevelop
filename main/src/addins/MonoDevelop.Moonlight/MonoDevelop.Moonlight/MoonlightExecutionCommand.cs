@@ -32,12 +32,14 @@ namespace MonoDevelop.Moonlight
 
 	public class MoonlightExecutionCommand : ExecutionCommand
 	{
-		public MoonlightExecutionCommand (string url)
+		public MoonlightExecutionCommand (string appName, string url)
 		{
+			this.AppName = appName;
 			this.Url = url;
 		}
 		
-		public string Url { get; set; }
+		public string Url { get; private set; }
+		public string AppName { get; private set; }
 		
 		public override string CommandString {
 			get { return "[silverlight]"; }

@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			//OSXFIXME
-			Gtk.Application.Init ();
+			Gtk.Application.Init ("monodevelop", ref args);
 			InternalLog.Initialize ();
 			MonoDevelopOptions options = new MonoDevelopOptions ();
 			options.ProcessArgs (args);
@@ -379,23 +379,18 @@ namespace MonoDevelop.Ide.Gui
 		
 		void SetupExceptionManager ()
 		{
-			Type t = typeof(GLib.Object).Assembly.GetType ("GLib.ExceptionManager");
-			if (t == null)
-				return;
-			
-			EventInfo ev = t.GetEvent ("UnhandledException");
-			Type delType = typeof(GLib.Object).Assembly.GetType ("GLib.UnhandledExceptionHandler");
-			MethodInfo met = GetType().GetMethod ("OnUnhandledException", BindingFlags.Instance | BindingFlags.NonPublic);
-			Delegate del = Delegate.CreateDelegate (delType, this, met);
-			ev.AddEventHandler (this, del);
+			GLib.ExceptionManager.UnhandledException += delegate (GLib.UnhandledExceptionArgs args) {
+				OnUnhandledException ((Exception)args.ExceptionObject);
+			};
+			AppDomain.CurrentDomain.UnhandledException += delegate (object sender, UnhandledExceptionEventArgs args) {
+				OnUnhandledException ((Exception)args.ExceptionObject);
+			};
 		}
 		
-		internal void OnUnhandledException (UnhandledExceptionEventArgs args)
+		void OnUnhandledException (Exception ex)
 		{
-			MessageService.ShowException ((Exception) args.ExceptionObject, "Unhandled Exception");
-			//Type ueeType = typeof(GLib.Object).Assembly.GetType ("GLib.UnhandledExceptionArgs");
-			//PropertyInfo ueeProp = ueeType.GetProperty ("ExitApplication");
-			//ueeProp.SetValue (args, (object) false, null);
+			LoggingService.LogError ("Unhandled Exception", ex);
+			MessageService.ShowException (ex, "Unhandled Exception");
 		}
 	}
 	

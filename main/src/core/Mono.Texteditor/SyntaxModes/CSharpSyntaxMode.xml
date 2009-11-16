@@ -108,6 +108,7 @@
 		<Word>into</Word>
 		<Word>orderby</Word>
 		<Word>select</Word>
+		<Word>let</Word>
 	</Keywords>
 	
 	<Keywords color = "keyword.exceptions">

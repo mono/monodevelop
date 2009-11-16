@@ -243,7 +243,6 @@ namespace MonoDevelop.Core.Gui
 		{
 			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
 			try {
-				dialog.Modal             = true;
 				dialog.TransientFor      = rootWindow;
 				dialog.DestroyWithParent = true;
 				return dialog.Run ();
