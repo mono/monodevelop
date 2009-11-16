@@ -1,5 +1,11 @@
 2009-11-16  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fixed 'Bug
+	  555523 - C# code completion gets confused by extension
+	  methods with same names as properties'.
+
+2009-11-16  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs: Fixed
 	  'Bug 555504 - Completion of generic types commits <T>'.
 

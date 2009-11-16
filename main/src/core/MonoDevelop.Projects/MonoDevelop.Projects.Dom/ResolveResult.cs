@@ -470,6 +470,46 @@ namespace MonoDevelop.Projects.Dom
 		}
 	}
 	
+	public class CombinedMethodResolveResult : MemberResolveResult
+	{
+		public MemberResolveResult BaseResolveResult {
+			get;
+			set;
+		}
+		
+		public MethodResolveResult MethodResolveResult {
+			get;
+			set;
+		}
+		
+		public CombinedMethodResolveResult (MemberResolveResult baseResolveResult, MethodResolveResult methodResolveResult)
+		{
+			BaseResolveResult = baseResolveResult;
+			MethodResolveResult = methodResolveResult;
+			CallingType = baseResolveResult.CallingType;
+			CallingMember = baseResolveResult.CallingMember;
+			StaticResolve = baseResolveResult.StaticResolve;
+			ResolvedMember = baseResolveResult.ResolvedMember;
+			ResolvedExpression = baseResolveResult.ResolvedExpression;
+		}
+		
+		public override IReturnType ResolvedType {
+			get {
+				return BaseResolveResult.ResolvedType;
+			}
+		}
+		public override IReturnType UnresolvedType {
+			get {
+				return BaseResolveResult.UnresolvedType;
+			}
+		}
+		
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
+		{
+			return BaseResolveResult.CreateResolveResult (dom, callingMember);
+		}
+	}
+	
 	public class ThisResolveResult : ResolveResult
 	{
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)

@@ -2048,7 +2048,102 @@ namespace Test
 ");
 			Assert.IsNotNull (provider, "provider not found.");
 		}
+		/*
+			
+		/// <summary>
+		/// Bug 555523 - C# code completion gets confused by extension methods with same names as properties
+		/// </summary>
+		[Test()]
+		public void TestBug555523A ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+class A
+{
+	public int AA { get; set; }
+}
+
+class B
+{
+	public int BB { get; set; }
+}
+
+static class ExtMethod
+{
+	public static A Extension (this MyClass myClass)
+	{
+		return null;
+	}
+}
+
+class MyClass
+{
+	public B Extension {
+		get;
+		set;
+	}
+}
+
+class MainClass
+{
+	public static void Main (string[] args)
+	{
+		MyClass myClass;
+		$myClass.Extension ().$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("AA"), "property 'AA' not found.");
+		}
 		
+		/// <summary>
+		/// Bug 555523 - C# code completion gets confused by extension methods with same names as properties
+		/// </summary>
+		[Test()]
+		public void TestBug555523B ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+class A
+{
+	public int AA { get; set; }
+}
+
+class B
+{
+	public int BB { get; set; }
+}
+
+static class ExtMethod
+{
+	public static A Extension (this MyClass myClass)
+	{
+		return null;
+	}
+}
+
+class MyClass
+{
+	public B Extension {
+		get;
+		set;
+	}
+}
+
+class MainClass
+{
+	public static void Main (string[] args)
+	{
+		MyClass myClass;
+		$myClass.Extension.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("BB"), "property 'BB' not found.");
+		}
+		*/
 		
 	}
 }
