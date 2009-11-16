@@ -1,3 +1,9 @@
+2009-11-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Fixed 'Bug 555523
+	  - C# code completion gets confused by extension methods with
+	  same names as properties'.
+
 2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
