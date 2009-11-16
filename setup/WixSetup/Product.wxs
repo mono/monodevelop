@@ -546,11 +546,6 @@
                 <File Name="DiffWidget.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\DiffWidget.dll" />
                 <File Name="MonoDevelop.VersionControl.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.dll" />
                 <File Name="MonoDevelop.VersionControl.Subversion.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.dll" />
-                <File Name="SharpSvn.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpSvn.dll" />
-                <File Name="SharpSvn-DB44-20-Win32.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpSvn-DB44-20-Win32.dll" />
-                <File Name="SharpSvn-SASL21-23-Win32.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpSvn-SASL21-23-Win32.dll" />
-                <File Name="SubversionAddinWindows.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\SubversionAddinWindows.dll" />
-                <File Name="SharpPlink-Win32.svnExe" Source="$(var.BuildRoot)\AddIns\VersionControl\SharpPlink-Win32.svnExe" />
               </Component>
             </Directory>
             <Directory Id="WelcomePage" Name="WelcomePage">
