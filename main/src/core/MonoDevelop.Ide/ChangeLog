@@ -1,3 +1,8 @@
+2009-11-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Fixed 'Bug 555997
+	  - "Go to Type" list is empty'.
+
 2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Catch, log and display
