@@ -63,6 +63,13 @@ namespace MonoDevelop.Debugger.Soft
 		public NRefactoryEvaluator Evaluator = new NRefactoryEvaluator ();
 		public SoftDebuggerAdaptor Adaptor = new SoftDebuggerAdaptor ();
 		
+		public SoftDebuggerSession ()
+		{
+			Adaptor.BusyStateChanged += delegate(object sender, BusyStateEventArgs e) {
+				SetBusyState (e);
+			};
+		}
+		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			if (exited)
@@ -230,7 +237,19 @@ namespace MonoDevelop.Debugger.Soft
 			base.Dispose ();
 			if (!exited) {
 				EndLaunch ();
-				vm.Exit (0);
+				ThreadPool.QueueUserWorkItem (delegate {
+					Adaptor.Dispose ();
+					try {
+						vm.Exit (0);
+					} catch (Exception ex) {
+						Console.WriteLine (ex);
+					}
+					try {
+						vm.Dispose ();
+					} catch (Exception ex) {
+						Console.WriteLine (ex);
+					}
+				});
 				exited = true;
 			}
 		}
@@ -242,6 +261,7 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnContinue ()
 		{
+			Adaptor.CancelAsyncOperations ();
 			OnResumed ();
 			vm.Resume ();
 			DequeueEventsForFirstThread ();
@@ -262,6 +282,7 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnFinish ()
 		{
+			Adaptor.CancelAsyncOperations ();
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Out;
 			req.Size = StepSize.Line;
@@ -326,6 +347,8 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override object OnInsertBreakEvent (BreakEvent be, bool activate)
 		{
+			if (exited)
+				return null;
 			BreakInfo bi = new BreakInfo ();
 			bi.Enabled = activate;
 			
@@ -359,6 +382,8 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnEnableBreakEvent (object handle, bool enable)
 		{
+			if (exited)
+				return;
 			BreakInfo bi = (BreakInfo) handle;
 			bi.Enabled = enable;
 			if (bi.Req != null) {
@@ -418,6 +443,7 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnNextLine ()
 		{
+			Adaptor.CancelAsyncOperations ();
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Over;
 			req.Size = StepSize.Line;
@@ -660,6 +686,7 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnStepLine ()
 		{
+			Adaptor.CancelAsyncOperations ();
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Into;
 			req.Size = StepSize.Line;

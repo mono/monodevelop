@@ -1,3 +1,17 @@
+2009-11-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftEvaluationContext.cs:
+	* SoftDebuggerBacktrace.cs: Use the new options object.
+
+	* SoftDebuggerSession.cs: Propagate busy state changes.
+	  Dispose the vm in a background thread, to avoid unnecessary
+	  waits. Cancel evaluation operations before continuing
+	  execution.
+
+	* SoftDebuggerAdaptor.cs: Improve support for
+	  AllowTargetInvoke flag. Don't try to abort target invokes.
+	  That's not yet supported.
+
 2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.Debugger.Soft.dll: Updated.

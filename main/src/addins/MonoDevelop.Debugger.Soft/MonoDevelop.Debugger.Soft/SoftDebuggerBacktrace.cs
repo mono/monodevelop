@@ -39,8 +39,6 @@ namespace MonoDevelop.Debugger.Soft
 		MDB.StackFrame[] frames;
 		SoftDebuggerSession session;
 		
-		const int DefaultEvaluationTimeout = 1000;
-		
 		public SoftDebuggerBacktrace (SoftDebuggerSession session, MDB.StackFrame[] frames)
 		{
 			this.session = session;
@@ -64,10 +62,8 @@ namespace MonoDevelop.Debugger.Soft
 		
 		protected EvaluationContext GetEvaluationContext (int frameIndex, int timeout)
 		{
-			if (timeout == -1)
-				timeout = DefaultEvaluationTimeout;
 			MDB.StackFrame frame = frames [frameIndex];
-			return new SoftEvaluationContext (session, frame, timeout);
+			return new SoftEvaluationContext (session, frame, session.Options.WithTimeout (timeout));
 		}
 	
 		public ObjectValue[] GetLocalVariables (int frameIndex, int timeout)

@@ -56,11 +56,10 @@ namespace MonoDevelop.Debugger.Soft
 				return ((PrimitiveValue)obj).Value.ToString ();
 			else if (obj == null)
 				return string.Empty;
-			else if ((obj is ObjectMirror) && cx.AllowTargetInvoke) {
+			else if ((obj is ObjectMirror) && cx.Options.AllowTargetInvoke) {
 				ObjectMirror ob = (ObjectMirror) obj;
 				MethodMirror ts = ob.Type.GetMethod ("ToString");
-				StringMirror res = (StringMirror) ob.InvokeMethod (cx.Thread, ts, new Value[0]);
-				cx.Session.StackVersion++;
+				StringMirror res = (StringMirror) cx.RuntimeInvoke (ts, obj, new Value[0]);
 				return res.Value;
 			}
 			return GetValueTypeName (ctx, obj);
@@ -265,19 +264,21 @@ namespace MonoDevelop.Debugger.Soft
 						continue;
 					yield return new FieldValueReference (ctx, field, co, type);
 				}
-				foreach (PropertyInfoMirror prop in type.GetProperties (bindingFlags)) {
-					MethodMirror met = prop.GetGetMethod ();
-					if (met == null || met.GetParameters ().Length != 0)
-						continue;
-					if (met.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
-						continue;
-					if (!met.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
-						continue;
-					if (met.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
-						continue;
-					if (!met.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
-						continue;
-					yield return new PropertyValueReference (ctx, prop, co, type, null);
+				if (ctx.Options.AllowTargetInvoke) {
+					foreach (PropertyInfoMirror prop in type.GetProperties (bindingFlags)) {
+						MethodMirror met = prop.GetGetMethod ();
+						if (met == null || met.GetParameters ().Length != 0)
+							continue;
+						if (met.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
+							continue;
+						if (!met.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
+							continue;
+						if (met.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
+							continue;
+						if (!met.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
+							continue;
+						yield return new PropertyValueReference (ctx, prop, co, type, null);
+					}
 				}
 				type = type.BaseType;
 			}
@@ -442,12 +443,14 @@ namespace MonoDevelop.Debugger.Soft
 					td.MemberData [fi.Name] = att.State;
 				}
 			}
-			foreach (PropertyInfoMirror pi in t.GetProperties ()) {
-				DebuggerBrowsableAttribute att = GetAttribute <DebuggerBrowsableAttribute> (pi.GetCustomAttributes (true));
-				if (att != null) {
-					if (td.MemberData == null)
-						td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
-					td.MemberData [pi.Name] = att.State;
+			if (gctx.Options.AllowTargetInvoke) {
+				foreach (PropertyInfoMirror pi in t.GetProperties ()) {
+					DebuggerBrowsableAttribute att = GetAttribute <DebuggerBrowsableAttribute> (pi.GetCustomAttributes (true));
+					if (att != null) {
+						if (td.MemberData == null)
+							td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
+						td.MemberData [pi.Name] = att.State;
+					}
 				}
 			}
 			return td;
@@ -464,7 +467,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		void ForceLoadType (SoftEvaluationContext ctx, TypeMirror helperType, string typeName)
 		{
-			if (!ctx.AllowTargetInvoke)
+			if (!ctx.Options.AllowTargetInvoke)
 				return;
 			TypeMirror tm = helperType.GetTypeObject ().Type;
 			TypeMirror[] ats = new TypeMirror[] { ctx.Session.GetType ("System.String") };
@@ -674,7 +677,7 @@ namespace MonoDevelop.Debugger.Soft
 			}
 			else if (obj is StructMirror) {
 				StructMirror co = (StructMirror) obj;
-				if (ctx.AllowTargetInvoke) {
+				if (ctx.Options.AllowTargetInvoke) {
 					if (co.Type.FullName == "System.Decimal")
 						return new LiteralExp (CallToString (ctx, co));
 				}
@@ -711,6 +714,12 @@ namespace MonoDevelop.Debugger.Soft
 			this.object_argument = object_argument;
 			this.param_objects = param_objects;
 		}
+		
+		public override string Description {
+			get {
+				return function.DeclaringType.FullName + "." + function.Name;
+			}
+		}
 
 		public override void Invoke ( )
 		{
@@ -735,6 +744,12 @@ namespace MonoDevelop.Debugger.Soft
 		}
 
 		public override void Abort ( )
+		{
+			// Not yet supported by the soft debugger
+			throw new NotSupportedException ();
+		}
+		
+		public override void Shutdown ()
 		{
 			thread.Abort ();
 		}
