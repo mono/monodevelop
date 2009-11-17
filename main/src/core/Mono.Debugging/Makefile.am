@@ -30,6 +30,7 @@ FILES =  \
 	Mono.Debugging.Client/DebuggerException.cs \
 	Mono.Debugging.Client/DebuggerFeatures.cs \
 	Mono.Debugging.Client/DebuggerSession.cs \
+	Mono.Debugging.Client/DebuggerSessionOptions.cs \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \
 	Mono.Debugging.Client/ObjectPath.cs \
 	Mono.Debugging.Client/ObjectValue.cs \

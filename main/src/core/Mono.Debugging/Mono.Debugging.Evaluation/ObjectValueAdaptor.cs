@@ -9,18 +9,30 @@ using System.Diagnostics;
 
 namespace Mono.Debugging.Evaluation
 {
-	public abstract class ObjectValueAdaptor
+	public abstract class ObjectValueAdaptor: IDisposable
 	{
 		static Dictionary<string, TypeDisplayData> typeDisplayData = new Dictionary<string, TypeDisplayData> ();
 
-		public int DefaultAsyncSwitchTimeout = 60;
-		public int DefaultEvaluationTimeout = 1000;
-		public int DefaultChildEvaluationTimeout = 5000;
+		// Time to wait while evaluating before switching to async mode
+		public int DefaultEvaluationWaitTime = 100;
 
+		public event EventHandler<BusyStateEventArgs> BusyStateChanged;
+		
 		AsyncEvaluationTracker asyncEvaluationTracker = new AsyncEvaluationTracker ();
 		AsyncOperationManager asyncOperationManager = new AsyncOperationManager ();
 
-//		public abstract object GetRealObject (EvaluationContext ctx, object obj);
+		public ObjectValueAdaptor ()
+		{
+			asyncOperationManager.BusyStateChanged += delegate(object sender, BusyStateEventArgs e) {
+				OnBusyStateChanged (e);
+			};
+			asyncEvaluationTracker.WaitTime = DefaultEvaluationWaitTime;
+		}
+		
+		public void Dispose ()
+		{
+			asyncOperationManager.Dispose ();
+		}
 
 		public ObjectValue CreateObjectValue (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
 		{
@@ -31,6 +43,12 @@ namespace Mono.Debugging.Evaluation
 				Console.WriteLine (ex);
 				return ObjectValue.CreateError (path.LastName, ex.Message, flags);
 			}
+		}
+		
+		public virtual void OnBusyStateChanged (BusyStateEventArgs e)
+		{
+			if (BusyStateChanged != null)
+				BusyStateChanged (this, e);
 		}
 
 		public abstract ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr);
@@ -113,6 +131,11 @@ namespace Mono.Debugging.Evaluation
 
 			List<ObjectValue> values = new List<ObjectValue> ();
 			BindingFlags access = BindingFlags.Public | BindingFlags.Instance;
+			
+			// If target invokes are disabled, show private members by default, since we
+			// can only show fields, and fields are in most of cases private.
+			if (!ctx.Options.AllowTargetInvoke)
+				access |= BindingFlags.NonPublic;
 
 			// Load all members to a list before creating the object values,
 			// to avoid problems with objects being invalidated due to evaluations in the target,
@@ -156,9 +179,12 @@ namespace Mono.Debugging.Evaluation
 					values.AddRange (agroup.GetChildren ());
 				}
 				else {
-					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public))
-						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public));
-					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic))
+					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)) {
+						access = BindingFlags.Static | BindingFlags.Public;
+						if (!ctx.Options.AllowTargetInvoke) access |= BindingFlags.NonPublic;
+						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, access));
+					}
+					if (ctx.Options.AllowTargetInvoke && HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic))
 						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic));
 				}
 			}
@@ -413,6 +439,13 @@ namespace Mono.Debugging.Evaluation
 
 			try {
 				td = OnGetTypeDisplayData (ctx, type);
+				if (!ctx.Options.AllowTargetInvoke) {
+					td.IsProxyType = false;
+					td.NameDisplayString = null;
+					td.ProxyType = null;
+					td.TypeDisplayString = null;
+					td.ValueDisplayString = null;
+				}
 			}
 			catch (Exception ex) {
 				Console.WriteLine (ex);

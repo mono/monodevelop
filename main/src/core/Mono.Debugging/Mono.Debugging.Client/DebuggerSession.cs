@@ -55,6 +55,7 @@ namespace Mono.Debugging.Client
 		ThreadInfo activeThread;
 		BreakEventHitHandler customBreakpointHitHandler;
 		ExceptionHandler exceptionHandler;
+		DebuggerSessionOptions options;
 		
 		ProcessInfo[] currentProcesses;
 		
@@ -69,8 +70,11 @@ namespace Mono.Debugging.Client
 		public event EventHandler<TargetEventArgs> TargetExceptionThrown;
 		public event EventHandler<TargetEventArgs> TargetUnhandledException;
 		
+		public event EventHandler<BusyStateEventArgs> BusyStateChanged;
+		
 		public DebuggerSession ()
 		{
+			UseOperationThread = true;
 			frontend = new InternalDebuggerSession (this);
 		}
 		
@@ -141,32 +145,63 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		public void Run (DebuggerStartInfo startInfo)
+		void Dispatch (Action action)
 		{
-			lock (slock) {
-				OnRunning ();
-				try {
-					OnRun (startInfo);
-				} catch (Exception ex) {
-					ForceStop ();
-					if (!HandleException (ex))
-						throw;
+			if (UseOperationThread) {
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					lock (slock) {
+						action ();
+					}
+				});
+			} else {
+				lock (slock) {
+					action ();
 				}
 			}
 		}
 		
-		public void AttachToProcess (ProcessInfo proc)
+		public void Run (DebuggerStartInfo startInfo, DebuggerSessionOptions options)
 		{
+			if (startInfo == null)
+				throw new ArgumentNullException ("startInfo");
+			if (options == null)
+				throw new ArgumentNullException ("options");
+			
 			lock (slock) {
+				this.options = options;
 				OnRunning ();
-				try {
-					OnAttachToProcess (proc.Id);
-					attached = true;
-				} catch (Exception ex) {
-					ForceStop ();
-					if (!HandleException (ex))
-						throw;
-				}
+				Dispatch (delegate {
+					try {
+						OnRun (startInfo);
+					} catch (Exception ex) {
+						ForceStop ();
+						if (!HandleException (ex))
+							throw;
+					}
+				});
+			}
+		}
+		
+		public void AttachToProcess (ProcessInfo proc, DebuggerSessionOptions options)
+		{
+			if (proc == null)
+				throw new ArgumentNullException ("proc");
+			if (options == null)
+				throw new ArgumentNullException ("options");
+			
+			lock (slock) {
+				this.options = options;
+				OnRunning ();
+				Dispatch (delegate {
+					try {
+						OnAttachToProcess (proc.Id);
+						attached = true;
+					} catch (Exception ex) {
+						ForceStop ();
+						if (!HandleException (ex))
+							throw;
+					}
+				});
 			}
 		}
 		
@@ -213,13 +248,15 @@ namespace Mono.Debugging.Client
 		{
 			lock (slock) {
 				OnRunning ();
-				try {
-					OnNextLine ();
-				} catch (Exception ex) {
-					ForceStop ();
-					if (!HandleException (ex))
-						throw;
-				}
+				Dispatch (delegate {
+					try {
+						OnNextLine ();
+					} catch (Exception ex) {
+						ForceStop ();
+						if (!HandleException (ex))
+							throw;
+					}
+				});
 			}
 		}
 
@@ -227,13 +264,15 @@ namespace Mono.Debugging.Client
 		{
 			lock (slock) {
 				OnRunning ();
-				try {
-					OnStepLine ();
-				} catch (Exception ex) {
-					ForceStop ();
-					if (!HandleException (ex))
-						throw;
-				}
+				Dispatch (delegate {
+					try {
+						OnStepLine ();
+					} catch (Exception ex) {
+						ForceStop ();
+						if (!HandleException (ex))
+							throw;
+					}
+				});
 			}
 		}
 		
@@ -241,13 +280,15 @@ namespace Mono.Debugging.Client
 		{
 			lock (slock) {
 				OnRunning ();
-				try {
-					OnNextInstruction ();
-				} catch (Exception ex) {
-					ForceStop ();
-					if (!HandleException (ex))
-						throw;
-				}
+				Dispatch (delegate {
+					try {
+						OnNextInstruction ();
+					} catch (Exception ex) {
+						ForceStop ();
+						if (!HandleException (ex))
+							throw;
+					}
+				});
 			}
 		}
 
@@ -255,13 +296,15 @@ namespace Mono.Debugging.Client
 		{
 			lock (slock) {
 				OnRunning ();
-				try {
-					OnStepInstruction ();
-				} catch (Exception ex) {
-					ForceStop ();
-					if (!HandleException (ex))
-						throw;
-				}
+				Dispatch (delegate {
+					try {
+						OnStepInstruction ();
+					} catch (Exception ex) {
+						ForceStop ();
+						if (!HandleException (ex))
+							throw;
+					}
+				});
 			}
 		}
 
@@ -269,13 +312,15 @@ namespace Mono.Debugging.Client
 		{
 			lock (slock) {
 				OnRunning ();
-				try {
-					OnFinish ();
-				} catch (Exception ex) {
-					ForceStop ();
-					if (!HandleException (ex))
-						throw;
-				}
+				Dispatch (delegate {
+					try {
+						OnFinish ();
+					} catch (Exception ex) {
+						ForceStop ();
+						if (!HandleException (ex))
+							throw;
+					}
+				});
 			}
 		}
 		
@@ -425,43 +470,49 @@ namespace Mono.Debugging.Client
 		{
 			return breakpoints.TryGetValue (be, out handle);
 		}
+		
+		public DebuggerSessionOptions Options {
+			get { return options; }
+		}
 
 		public void Continue ()
 		{
 			lock (slock) {
 				OnRunning ();
-				try {
-					OnContinue ();
-				} catch (Exception ex) {
-					ForceStop ();
-					if (!HandleException (ex))
-						throw;
-				}
+				Dispatch (delegate {
+					try {
+						OnContinue ();
+					} catch (Exception ex) {
+						ForceStop ();
+						if (!HandleException (ex))
+							throw;
+					}
+				});
 			}
 		}
 
 		public void Stop ()
 		{
-			lock (slock) {
+			Dispatch (delegate {
 				try {
 					OnStop ();
 				} catch (Exception ex) {
 					if (!HandleException (ex))
 						throw;
 				}
-			}
+			});
 		}
 
 		public void Exit ()
 		{
-			lock (slock) {
+			Dispatch (delegate {
 				try {
 					OnExit ();
 				} catch (Exception ex) {
 					if (!HandleException (ex))
 						throw;
 				}
-			}
+			});
 		}
 
 		public bool IsRunning {
@@ -633,7 +684,13 @@ namespace Mono.Debugging.Client
 					logWriter (isStderr, text);
 			}
 		}
-
+		
+		internal protected void SetBusyState (BusyStateEventArgs args)
+		{
+			if (BusyStateChanged != null)
+				BusyStateChanged (this, args);
+		}
+		
 		internal protected void NotifySourceFileLoaded (string fullFilePath)
 		{
 			lock (breakpoints) {
@@ -709,6 +766,12 @@ namespace Mono.Debugging.Client
 				ev.NotifyUpdate ();
 			}
 		}
+		
+		/// <summary>
+		/// When set, operations such as OnRun, OnAttachToProcess, OnStepLine, etc, are run in
+		/// a background thread, so it will not block the caller of the corresponding public methods.
+		/// </summary>
+		protected bool UseOperationThread { get; set; }
 		
 		protected abstract void OnRun (DebuggerStartInfo startInfo);
 
@@ -816,5 +879,11 @@ namespace Mono.Debugging.Client
 	}
 
 	public delegate void OutputWriterDelegate (bool isStderr, string text);
-	
+
+	public class BusyStateEventArgs: EventArgs
+	{
+		public bool IsBusy { get; internal set; }
+		
+		public string Description { get; internal set; }
+	}
 }

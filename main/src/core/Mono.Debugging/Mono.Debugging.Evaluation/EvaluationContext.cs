@@ -26,14 +26,21 @@
 //
 
 using System;
+using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
 	public class EvaluationContext
 	{
+		DebuggerSessionOptions options;
+
 		public ExpressionEvaluator Evaluator { get; set; }
 		public ObjectValueAdaptor Adapter { get; set; }
-
+		
+		public DebuggerSessionOptions Options {
+			get { return options; }
+		}
+		
 		public virtual void WriteDebuggerError (Exception ex)
 		{
 		}
@@ -46,19 +53,15 @@ namespace Mono.Debugging.Evaluation
 		{
 		}
 		
-		public int Timeout { get; set; }
-		
-		public bool AllowTargetInvoke { get; set; }
-		
 		public void AssertTargetInvokeAllowed ()
 		{
-			if (!AllowTargetInvoke)
+			if (!Options.AllowTargetInvoke)
 				throw new EvaluatorException ("Target code execution disabled");
 		}
 		
-		public EvaluationContext ()
+		public EvaluationContext (DebuggerSessionOptions options)
 		{
-			AllowTargetInvoke = true;
+			this.options = options;
 		}
 
 		public EvaluationContext Clone ( )
@@ -70,7 +73,7 @@ namespace Mono.Debugging.Evaluation
 
 		public virtual void CopyFrom (EvaluationContext ctx)
 		{
-			Timeout = ctx.Timeout;
+			options = ctx.options.Clone ();
 			Evaluator = ctx.Evaluator;
 			Adapter = ctx.Adapter;
 		}

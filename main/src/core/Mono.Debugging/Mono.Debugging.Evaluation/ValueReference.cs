@@ -164,9 +164,8 @@ namespace Mono.Debugging.Evaluation
 
 		EvaluationContext GetChildrenContext ( )
 		{
-			int to = ctx.Adapter.DefaultChildEvaluationTimeout;
 			EvaluationContext newCtx = Context.Clone ();
-			newCtx.Timeout = to;
+			newCtx.Options.EvaluationTimeout = newCtx.Options.MemberEvaluationTimeout;
 			return newCtx;
 		}
 

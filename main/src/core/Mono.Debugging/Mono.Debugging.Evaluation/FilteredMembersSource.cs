@@ -28,7 +28,7 @@ namespace Mono.Debugging.Evaluation
 			FilteredMembersSource src = new FilteredMembersSource (ctx, type, obj, bindingFlags);
 			src.Connect ();
 			string label;
-			if ((bindingFlags & BindingFlags.NonPublic) != 0)
+			if ((bindingFlags & BindingFlags.Static) == 0)
 				label = "Non-public members";
 			else
 				label = "Static members";
