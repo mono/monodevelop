@@ -1,3 +1,31 @@
+2009-11-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs: Added
+	  options panel for the debugger options.
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Debugger.csproj:
+	* gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.BusyEvaluatorDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:
+	  Updated.
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Use the options
+	  entered by the user for timeout and target evaluation. Show
+	  the busy dialog when the debugger is busy.
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Use the default
+	  timeout when evaluating expressions.
+
+	* MonoDevelop.Debugger/BusyEvaluatorDialog.cs: New dialog
+	  shown when the debugger is busy executing target methods.
+
 2009-11-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Fix bug #549886 -

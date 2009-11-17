@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Debugger {
     
+    
     public partial class ExpressionEvaluatorDialog {
         
         private Gtk.VBox vbox2;
@@ -114,7 +115,6 @@ namespace MonoDevelop.Debugger {
             }
             this.DefaultWidth = 545;
             this.DefaultHeight = 396;
-            this.buttonEval.HasDefault = true;
             this.Show();
             this.buttonEval.Clicked += new System.EventHandler(this.OnButtonEvalClicked);
         }

@@ -66,6 +66,9 @@ namespace MonoDevelop.Debugger
 		static Backtrace currentBacktrace;
 		static int currentFrame;
 
+		static BusyEvaluatorDialog busyDialog;
+
+			
 		static public event EventHandler PausedEvent;
 		static public event EventHandler ResumedEvent;
 		static public event EventHandler StoppedEvent;
@@ -82,6 +85,7 @@ namespace MonoDevelop.Debugger
 			TextFileService.LineCountChanged += OnLineCountChanged;
 			IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 			IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
+			busyDialog = new BusyEvaluatorDialog ();
 		}
 
 		public static IExecutionHandler GetExecutionHandler ()
@@ -95,6 +99,16 @@ namespace MonoDevelop.Debugger
 		
 		public static BreakpointStore Breakpoints {
 			get { return breakpoints; }
+		}
+		
+		public static bool AllowTargetInvoke {
+			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", true); }
+			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", value); }
+		}
+		
+		public static int EvaluationTimeout {
+			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", 2500); }
+			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", value); }
 		}
 		
 		public static bool ShowBreakpointProperties (Breakpoint bp, bool editNew)
@@ -193,8 +207,10 @@ namespace MonoDevelop.Debugger
 				NotifyLocationChanged ();
 			});
 			
-			if (oldSession != null)
+			if (oldSession != null) {
+				oldSession.BusyStateChanged -= OnBusyStateChanged;
 				oldSession.Dispose ();
+			}
 		}
 
 		public static bool IsDebugging {
@@ -242,8 +258,17 @@ namespace MonoDevelop.Debugger
 			session.TargetExited += delegate {
 				monitor.Dispose ();
 			};
-			session.AttachToProcess (proc);
+			session.AttachToProcess (proc, GetUserOptions ());
 			return monitor.AsyncOperation;
+		}
+		
+		static DebuggerSessionOptions GetUserOptions ()
+		{
+			DebuggerSessionOptions ops = new DebuggerSessionOptions ();
+			ops.AllowTargetInvoke = AllowTargetInvoke;
+			ops.EvaluationTimeout = EvaluationTimeout;
+			ops.MemberEvaluationTimeout = EvaluationTimeout * 2;
+			return ops;
 		}
 		
 		public static void ShowDisassembly ()
@@ -269,7 +294,7 @@ namespace MonoDevelop.Debugger
 			SetupSession ();
 
 			try {
-				session.Run (startInfo);
+				session.Run (startInfo, GetUserOptions ());
 			} catch {
 				Cleanup ();
 				throw;
@@ -302,9 +327,17 @@ namespace MonoDevelop.Debugger
 				});
 				return true;
 			};
+			session.BusyStateChanged += OnBusyStateChanged;
 
 			console.CancelRequested += new EventHandler (OnCancelRequested);
 			NotifyLocationChanged ();
+		}
+		
+		static void OnBusyStateChanged (object s, BusyStateEventArgs args)
+		{
+			DispatchService.GuiDispatch (delegate {
+				busyDialog.UpdateBusyState (args);
+			});
 		}
 		
 		static DateTime lastStart;

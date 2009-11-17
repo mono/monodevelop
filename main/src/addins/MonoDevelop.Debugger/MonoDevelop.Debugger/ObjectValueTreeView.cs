@@ -736,7 +736,7 @@ namespace MonoDevelop.Debugger
 
 			ObjectValue[] qvalues;
 			if (frame != null)
-				qvalues = frame.GetExpressionValues (list.ToArray (), true, 1000);
+				qvalues = frame.GetExpressionValues (list.ToArray (), true);
 			else {
 				qvalues = new ObjectValue [list.Count];
 				for (int n=0; n<qvalues.Length; n++)
