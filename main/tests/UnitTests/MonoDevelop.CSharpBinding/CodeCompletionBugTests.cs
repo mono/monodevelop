@@ -2048,7 +2048,6 @@ namespace Test
 ");
 			Assert.IsNotNull (provider, "provider not found.");
 		}
-		/*
 			
 		/// <summary>
 		/// Bug 555523 - C# code completion gets confused by extension methods with same names as properties
@@ -2143,7 +2142,6 @@ class MainClass
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("BB"), "property 'BB' not found.");
 		}
-		*/
 		
 	}
 }
