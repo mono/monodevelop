@@ -1,3 +1,10 @@
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Debugger.Soft.dll: Updated.
+
+	* SoftDebuggerSession.cs: Queue stop events when more than one
+	  come in at once, and dequeue them when resuming.
+
 2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* RemoteSoftDebuggerSession.cs: Unify the AppName handling for

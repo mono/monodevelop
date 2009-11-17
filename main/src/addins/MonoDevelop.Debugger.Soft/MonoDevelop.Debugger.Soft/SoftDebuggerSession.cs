@@ -58,6 +58,8 @@ namespace MonoDevelop.Debugger.Soft
 		
 		IAsyncResult connectionHandle;
 		
+		LinkedList<Event> queuedEvents = new LinkedList<Event> ();
+		
 		public NRefactoryEvaluator Evaluator = new NRefactoryEvaluator ();
 		public SoftDebuggerAdaptor Adaptor = new SoftDebuggerAdaptor ();
 		
@@ -200,6 +202,7 @@ namespace MonoDevelop.Debugger.Soft
 		protected void OnResumed ()
 		{
 			current_threads = null;
+			current_thread = null;
 		}
 		
 		public VirtualMachine VirtualMachine {
@@ -241,6 +244,7 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			OnResumed ();
 			vm.Resume ();
+			DequeueEventsForFirstThread ();
 		}
 
 		protected override void OnDetach ()
@@ -264,6 +268,7 @@ namespace MonoDevelop.Debugger.Soft
 			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
+			DequeueEventsForFirstThread ();
 		}
 
 		protected override ProcessInfo[] OnGetProcesses ()
@@ -345,6 +350,8 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnRemoveBreakEvent (object handle)
 		{
+			if (exited)
+				return;
 			BreakInfo bi = (BreakInfo) handle;
 			if (bi.Req != null)
 				bi.Req.Enabled = false;
@@ -417,6 +424,7 @@ namespace MonoDevelop.Debugger.Soft
 			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
+			DequeueEventsForFirstThread ();
 		}
 
 		void EventHandler ()
@@ -441,7 +449,22 @@ namespace MonoDevelop.Debugger.Soft
 
 		void HandleEvent (Event e)
 		{
+			bool isBreakEvent = e is BreakpointEvent || e is ExceptionEvent || e is StepEvent;
+			if (isBreakEvent && current_thread != null && e.Thread.Id != current_thread.Id) {
+				Console.WriteLine ("qq event: " + e);
+				QueueEvent (e);
+			} else {
+				HandleEvent (e, false);
+			}
+		}
+		
+		void HandleEvent  (Event e, bool dequeuing)
+		{
+			if (dequeuing && exited)
+				return;
+
 			bool resume = true;
+			
 			TargetEventType etype = TargetEventType.TargetStopped;
 			
 			if (!(e is TypeLoadEvent))
@@ -492,6 +515,54 @@ namespace MonoDevelop.Debugger.Soft
 				args.Backtrace = GetThreadBacktrace (current_thread);
 				OnTargetEvent (args);
 			}
+		}
+		
+		void QueueEvent (Event ev)
+		{
+			lock (queuedEvents) {
+				queuedEvents.AddLast (ev);
+			}
+		}
+		
+		void DequeueEventsForFirstThread ()
+		{
+			List<Event> dequeuing;
+			lock (queuedEvents) {
+				if (queuedEvents.Count < 1)
+					return;
+				
+				dequeuing = new List<Event> ();
+				var node = queuedEvents.First;
+				
+				//making this the current thread means that all events from other threads will get queued
+				current_thread = node.Value.Thread;
+				while (node != null) {
+					if (node.Value.Thread.Id == current_thread.Id) {
+						dequeuing.Add (node.Value);
+						queuedEvents.Remove (node);
+					}
+					node = node.Next;
+				}
+			}
+			
+			foreach (var e in dequeuing)
+				Console.WriteLine ("dq event: " + e);
+			
+			//firing this off in a thread prevents possible infinite recursion
+			ThreadPool.QueueUserWorkItem (delegate {
+				if (!exited) {
+					foreach (var ev in dequeuing) {
+						try {
+							 HandleEvent (ev, true);
+						} catch (VMDisconnectedException ex) {
+							OnDebuggerOutput (true, ex.ToString ());
+							break;
+						} catch (Exception ex) {
+							OnDebuggerOutput (true, ex.ToString ());
+						}
+					}
+				}
+			});
 		}
 		
 		void ResolveBreakpoints (TypeLoadEvent te)
@@ -595,6 +666,7 @@ namespace MonoDevelop.Debugger.Soft
 			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
+			DequeueEventsForFirstThread ();
 		}
 
 		protected override void OnStop ()
