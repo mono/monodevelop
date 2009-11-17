@@ -75,10 +75,9 @@ namespace DebuggerServer
 		protected EvaluationContext GetEvaluationContext (int frameIndex, int timeout)
 		{
 			CheckDisposed ();
-			if (timeout == -1)
-				timeout = DebuggerServer.DefaultEvaluationTimeout;
+			DL.DebuggerSessionOptions options = Server.Instance.SessionOptions.WithTimeout (timeout);
 			MD.StackFrame frame = frames [frameIndex];
-			return new MdbEvaluationContext (frame.Thread, frame, timeout);
+			return new MdbEvaluationContext (frame.Thread, frame, options);
 		}
 	
 		public AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)

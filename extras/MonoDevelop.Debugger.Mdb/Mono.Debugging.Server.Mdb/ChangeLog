@@ -1,3 +1,11 @@
+2009-11-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DebuggerServer.cs:
+	* BacktraceWrapper.cs:
+	* EvaluationContext.cs:
+	* MdbObjectValueAdaptor.cs: Use the new options object. Track
+	  api changes.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* DebuggerServer.cs: Fix Pocess/Process spelling.

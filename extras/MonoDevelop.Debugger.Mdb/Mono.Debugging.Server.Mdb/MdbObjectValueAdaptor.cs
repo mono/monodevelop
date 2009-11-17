@@ -43,7 +43,7 @@ namespace DebuggerServer
 	{
 		public override string CallToString (EvaluationContext gctx, object obj)
 		{
-			if (!gctx.AllowTargetInvoke)
+			if (!gctx.Options.AllowTargetInvoke)
 				return GetValueTypeName (gctx, obj);
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
 			TargetObject retval = CallMethod (ctx, "ToString", (TargetStructObject) obj);
@@ -103,7 +103,7 @@ namespace DebuggerServer
 					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
 						return null;
-					if (ctx.AllowTargetInvoke) {
+					if (ctx.Options.AllowTargetInvoke) {
 						if (co.TypeName == "System.Decimal")
 							return new LiteralExp (CallToString (ctx, co));
 						if (tdata.ValueDisplayString != null)
@@ -423,7 +423,7 @@ namespace DebuggerServer
 					TargetFieldInfo field = (TargetFieldInfo)mem.Member;
 					yield return new FieldReference (ctx, co, mem.DeclaringType, field);
 				}
-				if (mem.Member is TargetPropertyInfo && gctx.AllowTargetInvoke) {
+				if (mem.Member is TargetPropertyInfo && gctx.Options.AllowTargetInvoke) {
 					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Member;
 					if (prop.CanRead && (prop.Getter.ParameterTypes == null || prop.Getter.ParameterTypes.Length == 0))
 						yield return new PropertyReference (ctx, prop, co);
@@ -1071,6 +1071,15 @@ namespace DebuggerServer
 			this.object_argument = object_argument;
 			this.param_objects = param_objects;
 		}
+		
+		public override string Description {
+			get {
+				if (function.DeclaringType != null)
+					return function.DeclaringType.Name + "." + function.Name;
+				else
+					return function.Name;
+			}
+		}
 
 		public override void Invoke ( )
 		{
@@ -1084,11 +1093,19 @@ namespace DebuggerServer
 			Server.Instance.MdbAdaptor.AbortThread (ctx.Thread, res);
 			WaitToStop (ctx.Thread);
 		}
+		
+		public override void Shutdown ()
+		{
+			res.Abort ();
+			if (!res.CompletedEvent.WaitOne (200))
+				return;
+			Server.Instance.MdbAdaptor.AbortThread (ctx.Thread, res);
+		}
 
 		public override bool WaitForCompleted (int timeout)
 		{
-			if (ctx.Timeout != -1) {
-				if (!res.CompletedEvent.WaitOne (ctx.Timeout, false))
+			if (timeout != -1) {
+				if (!res.CompletedEvent.WaitOne (timeout, false))
 					return false;
 			}
 			else {

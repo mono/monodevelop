@@ -49,13 +49,12 @@ namespace DebuggerServer
 			}
 		}
 
-		public MdbEvaluationContext (Thread thread, StackFrame frame, int timeout)
+		public MdbEvaluationContext (Thread thread, StackFrame frame, Mono.Debugging.Client.DebuggerSessionOptions options): base (options)
 		{
 			Evaluator = Server.Instance.Evaluator;
 			Adapter = Server.Instance.MdbObjectValueAdaptor;
 			this.thread = thread;
 			this.frame = frame;
-			Timeout = timeout;
 		}
 		
 		public TargetObject GetRealObject (object ob)
