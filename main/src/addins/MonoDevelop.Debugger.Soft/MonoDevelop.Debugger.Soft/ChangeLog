@@ -1,5 +1,10 @@
 2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerAdaptor.cs: Make invokes single-threaded and
+	  ignoring breakpoints.
+
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerSession.cs:
 	* RemoteSoftDebuggerSession.cs: Empty the process info cache
 	  when we resume, so that the process and thread lists get

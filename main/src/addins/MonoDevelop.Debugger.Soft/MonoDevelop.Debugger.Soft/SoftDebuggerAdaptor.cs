@@ -706,6 +706,7 @@ namespace MonoDevelop.Debugger.Soft
 		Value result;
 		ST.Thread thread;
 		InvocationException exception;
+		InvokeOptions options = InvokeOptions.DisableBreakpoints & InvokeOptions.SingleThreaded;
 		
 		public MethodCall (SoftEvaluationContext ctx, MethodMirror function, object object_argument, Value[] param_objects)
 		{
@@ -721,16 +722,16 @@ namespace MonoDevelop.Debugger.Soft
 			}
 		}
 
-		public override void Invoke ( )
+		public override void Invoke ()
 		{
 			thread = new ST.Thread (delegate () {
 				try {
 					if (object_argument is ObjectMirror)
-						result = ((ObjectMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects);
+						result = ((ObjectMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects, options);
 					else if (object_argument is TypeMirror)
-						result = ((TypeMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects);
+						result = ((TypeMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects, options);
 					else if (object_argument is StructMirror)
-						result = ((StructMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects);
+						result = ((StructMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects, options);
 					else
 						throw new ArgumentException (object_argument.GetType ().ToString ());
 				} catch (InvocationException ex) {
@@ -743,7 +744,7 @@ namespace MonoDevelop.Debugger.Soft
 			thread.Start ();
 		}
 
-		public override void Abort ( )
+		public override void Abort ()
 		{
 			// Not yet supported by the soft debugger
 			throw new NotSupportedException ();
