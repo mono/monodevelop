@@ -1,3 +1,9 @@
+2009-11-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Fixed
+	  'Bug 555672 - Crash when trying to autocomplete'.
+
 2009-11-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fixed 'Bug

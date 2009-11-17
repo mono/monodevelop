@@ -507,104 +507,130 @@ namespace MonoDevelop.CSharp.Resolver
 			resolveResult.ResolvedType = type;
 			return resolveResult;
 		}
+		
+		class LambdaResolver
+		{
+			HashSet<Expression> expressions = new HashSet<Expression> ();
+			Dictionary<string, ResolveResult> returnTypeDictionary = new Dictionary<string, ResolveResult> ();
+			NRefactoryResolver resolver;
+			
+			public LambdaResolver (NRefactoryResolver resolver)
+			{
+				this.resolver = resolver;
+			}
+			
+			internal ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
+			{
+				if (expressions.Contains (lambdaExpression)) {
+					Console.WriteLine ("LOOP!!!");
+					return null;
+				}
+				expressions.Add (lambdaExpression);
+				
+				if (lambdaExpression.Parent is LambdaExpression)
+					return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
+				if (lambdaExpression.Parent is ParenthesizedExpression)
+					return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
+				if (lambdaExpression.Parent is AssignmentExpression)
+					return visitor.Resolve (((AssignmentExpression)lambdaExpression.Parent).Left);
+				if (lambdaExpression.Parent is CastExpression)
+					return visitor.Resolve (((CastExpression)lambdaExpression.Parent));
+				if (lambdaExpression.Parent is VariableDeclaration) {
+					VariableDeclaration varDec = (VariableDeclaration)lambdaExpression.Parent;
+					return resolver.GetFunctionParameterType (resolver.ResolveIdentifier (visitor, varDec.Name));
+				}
+				if (lambdaExpression.Parent is InvocationExpression) {
+					InvocationExpression invocation = (InvocationExpression)lambdaExpression.Parent;
+					MethodResolveResult result = visitor.Resolve (invocation.TargetObject) as MethodResolveResult;
+					if (result == null) {
+						MonoDevelop.Core.LoggingService.LogWarning ("No compatible method found :" + invocation.TargetObject);
+						return null;
+					}
+					result.ResolveExtensionMethods ();
+					
+					// todo! - not 100% correct, but it's a best-fit until the dom contains token information
+					// This code assumes that the lambda expression is the first parameter of the method.
+					for (int i = 0; i < invocation.Arguments.Count; i++) {
+						if (invocation.Arguments[i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
+							IParameter parameter = result.MostLikelyMethod.Parameters[i];
+							IReturnType returnType = parameter.ReturnType;
+							
+							while (returnType.GenericArguments.Count > 0) {
+								returnType = returnType.GenericArguments[0];
+							}
+							string invariantString = returnType.ToInvariantString ();
+							if (returnTypeDictionary.ContainsKey (invariantString))
+								return returnTypeDictionary[invariantString];
+							ResolveResult createdResult = visitor.CreateResult (returnType);
+							returnTypeDictionary[invariantString] = createdResult;
+							return createdResult;
+						}
+					}
+					
+					LambdaExpression lambda = (LambdaExpression)lambdaExpression;
+	//				Console.WriteLine ("lambda:" + lambda);
+					if (!lambda.ExpressionBody.IsNull) {
+						DomLocation old = resolver.resolvePosition;
+						try {
+							resolver.resolvePosition = new DomLocation (resolver.CallingMember.Location.Line + resolver.lookupVariableLine + 
+							                                   lambda.ExpressionBody.StartLocation.Line - 2,
+							                                   lambda.ExpressionBody.StartLocation.Column - 1);
+	//						Console.WriteLine ("pos:" + resolvePosition);
+	//						result.AddArgument (visitor.GetTypeSafe (lambda.ExpressionBody));
+	//						result.ResolveExtensionMethods ();
+							ResolveResult res =  visitor.Resolve (lambda.ExpressionBody);
+	//						Console.WriteLine (lambda.ExpressionBody);
+	//						Console.WriteLine ("RES:" + res.ResolvedType.FullName);
+							if (!string.IsNullOrEmpty (res.ResolvedType.FullName))
+								return res;
+						} finally {
+							resolver.resolvePosition = old;
+						}
+					} 
+					
+					foreach (Expression arg in invocation.Arguments) {
+						var argType = arg is LambdaExpression ?  DomReturnType.Void : visitor.GetTypeSafe (arg);
+						result.AddArgument (argType);
+					}
+					
+					result.ResolveExtensionMethods ();
+					//Console.WriteLine ("maybe method:" + result.MostLikelyMethod);
+					for (int i = 0; i < invocation.Arguments.Count; i++) {
+						if (invocation.Arguments [i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
+							IParameter parameterType = result.MostLikelyMethod.Parameters [i];
+							//Console.WriteLine (i + " par: " + parameterType);
+							if (parameterType.ReturnType.Name == "Func" && parameterType.ReturnType.GenericArguments.Count > 0) {
+								return visitor.CreateResult (parameterType.ReturnType.GenericArguments[0]);
+							}
+						}
+					}
+					return result;
+				}
+				
+				if (lambdaExpression.Parent is ObjectCreateExpression) {
+					ObjectCreateExpression objectCreateExpression = (ObjectCreateExpression)lambdaExpression.Parent;
+					int index = objectCreateExpression.Parameters.IndexOf (lambdaExpression);
+					if (index < 0)
+						return null;
+					MemberResolveResult resolvedCreateExpression = visitor.Resolve (objectCreateExpression) as MemberResolveResult;
+					
+					if (resolvedCreateExpression != null) {
+						IMethod method = resolvedCreateExpression.ResolvedMember as IMethod;
+						if (method!= null && index < method.Parameters.Count) {
+							return new ParameterResolveResult (method.Parameters[index]);
+						} else {
+							return null;
+						}
+					}
+				}
+				
+				return null;
+			}
+		}
 
 		public ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
 		{
-			//			Console.WriteLine ("oOoOoOoOoO");
-			//			Console.WriteLine ("lambda expr:" + lambdaExpression);
-			//			Console.WriteLine ("Parent:" + lambdaExpression.Parent);
-			if (lambdaExpression.Parent is LambdaExpression)
-				return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
-			if (lambdaExpression.Parent is ParenthesizedExpression)
-				return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
-			if (lambdaExpression.Parent is AssignmentExpression)
-				return visitor.Resolve (((AssignmentExpression)lambdaExpression.Parent).Left);
-			if (lambdaExpression.Parent is CastExpression)
-				return visitor.Resolve (((CastExpression)lambdaExpression.Parent));
-			if (lambdaExpression.Parent is VariableDeclaration) {
-				VariableDeclaration varDec = (VariableDeclaration)lambdaExpression.Parent;
-				return GetFunctionParameterType (ResolveIdentifier (visitor, varDec.Name));
-			}
-			if (lambdaExpression.Parent is InvocationExpression) {
-				InvocationExpression invocation = (InvocationExpression)lambdaExpression.Parent;
-				MethodResolveResult result = visitor.Resolve (invocation.TargetObject) as MethodResolveResult;
-				if (result == null) {
-					MonoDevelop.Core.LoggingService.LogWarning ("No compatible method found :" + invocation.TargetObject);
-					return null;
-				}
-				result.ResolveExtensionMethods ();
-				// todo! - not 100% correct, but it's a best-fit until the dom contains token information
-				// This code assumes that the lambda expression is the first parameter of the method.
-				for (int i = 0; i < invocation.Arguments.Count; i++) {
-					if (invocation.Arguments[i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
-						IParameter parameter = result.MostLikelyMethod.Parameters[i];
-						IReturnType returnType = parameter.ReturnType;
-						
-						while (returnType.GenericArguments.Count > 0) {
-							returnType = returnType.GenericArguments[0];
-						}
-						return visitor.CreateResult (returnType);
-					}
-				}
-				
-				LambdaExpression lambda = (LambdaExpression)lambdaExpression;
-//				Console.WriteLine ("lambda:" + lambda);
-				if (!lambda.ExpressionBody.IsNull) {
-					DomLocation old = resolvePosition;
-					try {
-						resolvePosition = new DomLocation (CallingMember.Location.Line + lookupVariableLine + 
-						                                   lambda.ExpressionBody.StartLocation.Line - 2,
-						                                   lambda.ExpressionBody.StartLocation.Column - 1);
-//						Console.WriteLine ("pos:" + resolvePosition);
-//						result.AddArgument (visitor.GetTypeSafe (lambda.ExpressionBody));
-//						result.ResolveExtensionMethods ();
-						ResolveResult res =  visitor.Resolve (lambda.ExpressionBody);
-//						Console.WriteLine (lambda.ExpressionBody);
-//						Console.WriteLine ("RES:" + res.ResolvedType.FullName);
-						if (!string.IsNullOrEmpty (res.ResolvedType.FullName))
-							return res;
-					} finally {
-						resolvePosition = old;
-					}
-				} 
-				
-				foreach (Expression arg in invocation.Arguments) {
-					var argType = arg is LambdaExpression ?  DomReturnType.Void : visitor.GetTypeSafe (arg);
-					result.AddArgument (argType);
-				}
-				
-				result.ResolveExtensionMethods ();
-				//Console.WriteLine ("maybe method:" + result.MostLikelyMethod);
-				for (int i = 0; i < invocation.Arguments.Count; i++) {
-					if (invocation.Arguments [i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
-						IParameter parameterType = result.MostLikelyMethod.Parameters [i];
-						//Console.WriteLine (i + " par: " + parameterType);
-						if (parameterType.ReturnType.Name == "Func" && parameterType.ReturnType.GenericArguments.Count > 0) {
-							return visitor.CreateResult (parameterType.ReturnType.GenericArguments[0]);
-						}
-					}
-				}
-				return result;
-			}
-			
-			if (lambdaExpression.Parent is ObjectCreateExpression) {
-				ObjectCreateExpression objectCreateExpression = (ObjectCreateExpression)lambdaExpression.Parent;
-				int index = objectCreateExpression.Parameters.IndexOf (lambdaExpression);
-				if (index < 0)
-					return null;
-				MemberResolveResult resolvedCreateExpression = visitor.Resolve (objectCreateExpression) as MemberResolveResult;
-				
-				if (resolvedCreateExpression != null) {
-					IMethod method = resolvedCreateExpression.ResolvedMember as IMethod;
-					if (method!= null && index < method.Parameters.Count) {
-						return new ParameterResolveResult (method.Parameters[index]);
-					} else {
-						return null;
-					}
-				}
-			}
-			
-			return null;
+			return new LambdaResolver (this).ResolveLambda (visitor, lambdaExpression);
 		}
 		
 		Dictionary<string, ResolveResult> resultTable = new Dictionary<string, ResolveResult> ();
