@@ -1265,7 +1265,8 @@ namespace MonoDevelop.CSharp.Completion
 			if (type == null)
 				return result;
 			HashSet<string> usedNamespaces = new HashSet<string> (GetUsedNamespaces ());
-			
+			if (type.FullName == DomReturnType.Object.FullName) 
+				AddPrimitiveTypes (col);
 			foreach (IType curType in dom.GetSubclasses (type)) {
 				if (context != null && context.FilterEntry (curType))
 					continue;
