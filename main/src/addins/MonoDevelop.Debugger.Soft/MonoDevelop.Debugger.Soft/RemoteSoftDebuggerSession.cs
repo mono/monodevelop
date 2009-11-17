@@ -117,6 +117,12 @@ namespace MonoDevelop.Debugger.Soft
 			base.EndSession ();
 		}
 		
+		protected override void OnResumed ()
+		{
+			procs = null;
+			base.OnResumed ();
+		}
+		
 		protected override ProcessInfo[] OnGetProcesses ()
 		{
 			if (procs == null)

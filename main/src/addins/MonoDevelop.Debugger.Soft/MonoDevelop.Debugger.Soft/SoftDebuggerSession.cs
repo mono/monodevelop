@@ -206,10 +206,11 @@ namespace MonoDevelop.Debugger.Soft
 			}
 		}
 
-		protected void OnResumed ()
+		protected virtual void OnResumed ()
 		{
 			current_threads = null;
 			current_thread = null;
+			procs = null;
 		}
 		
 		public VirtualMachine VirtualMachine {
@@ -302,7 +303,7 @@ namespace MonoDevelop.Debugger.Soft
 					procs = new ProcessInfo[] { new ProcessInfo (0, "mono") };
 				}
 			}
-			return procs;
+			return new ProcessInfo[] { new ProcessInfo (procs[0].Id, procs[0].Name) };
 		}
 
 		protected override Backtrace OnGetThreadBacktrace (long processId, long threadId)
