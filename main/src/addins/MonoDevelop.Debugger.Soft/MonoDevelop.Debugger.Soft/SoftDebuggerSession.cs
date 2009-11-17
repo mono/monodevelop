@@ -594,51 +594,51 @@ namespace MonoDevelop.Debugger.Soft
 		
 		void ResolveBreakpoints (TypeLoadEvent te)
 		{
-				string typeName = te.Type.FullName;
-				types [typeName] = te.Type;
+			string typeName = te.Type.FullName;
+			types [typeName] = te.Type;
+			
+			/* Handle pending breakpoints */
+			
+			var resolved = new List<BreakEvent> ();
+			
+			foreach (string s in te.Type.GetSourceFiles ()) {
+				List<TypeMirror> typesList;
 				
-				/* Handle pending breakpoints */
+				if (source_to_type.TryGetValue (s, out typesList)) {
+					typesList.Add (te.Type);
+				} else {
+					typesList = new List<TypeMirror> ();
+					typesList.Add (te.Type);
+					source_to_type[s] = typesList;
+				}
 				
-				var resolved = new List<BreakEvent> ();
 				
-				foreach (string s in te.Type.GetSourceFiles ()) {
-					List<TypeMirror> typesList;
-					
-					if (source_to_type.TryGetValue (s, out typesList)) {
-						typesList.Add (te.Type);
-					} else {
-						typesList = new List<TypeMirror> ();
-						typesList.Add (te.Type);
-						source_to_type[s] = typesList;
-					}
-					
-					
-					foreach (var bp in pending_bes.OfType<Breakpoint> ()) {
-						if (System.IO.Path.GetFileName (bp.FileName) == s) {
-							Location l = GetLocFromType (te.Type, s, bp.Line);
-							if (l != null) {
-								OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2}:{3}.\n", s, bp.Line, l.Method.FullName, l.ILOffset));
-								ResolvePendingBreakpoint (bp, l);
-								resolved.Add (bp);
-							}
+				foreach (var bp in pending_bes.OfType<Breakpoint> ()) {
+					if (System.IO.Path.GetFileName (bp.FileName) == s) {
+						Location l = GetLocFromType (te.Type, s, bp.Line);
+						if (l != null) {
+							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2}:{3}.\n", s, bp.Line, l.Method.FullName, l.ILOffset));
+							ResolvePendingBreakpoint (bp, l);
+							resolved.Add (bp);
 						}
 					}
-					
-					foreach (var be in resolved)
-						pending_bes.Remove (be);
-					resolved.Clear ();
 				}
 				
-				//handle pending catchpoints
-				
-				foreach (var cp in pending_bes.OfType<Catchpoint> ()) {
-					if (cp.ExceptionName == typeName) {
-						ResolvePendingCatchpoint (cp, te.Type);
-						resolved.Add (cp);
-					}
-				}
 				foreach (var be in resolved)
 					pending_bes.Remove (be);
+				resolved.Clear ();
+			}
+			
+			//handle pending catchpoints
+			
+			foreach (var cp in pending_bes.OfType<Catchpoint> ()) {
+				if (cp.ExceptionName == typeName) {
+					ResolvePendingCatchpoint (cp, te.Type);
+					resolved.Add (cp);
+				}
+			}
+			foreach (var be in resolved)
+				pending_bes.Remove (be);
 		}
 		
 		Location GetLocFromType (TypeMirror type, string file, int line)
