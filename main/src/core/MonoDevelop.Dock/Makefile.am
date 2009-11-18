@@ -2,6 +2,7 @@ RUNTIME = mono
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Dock.dll
 
 RES =  \
+	gtk-gui/gui.stetic \
 	layout.glade \
 	stock-auto-hide.png \
 	stock-close-12.png \
@@ -17,7 +18,7 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	$(MONO_CAIRO_LIBS) \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
@@ -40,6 +41,7 @@ FILES =  \
 	DockLayout.cs \
 	DockObject.cs \
 	DockPosition.cs \
+	gtk-gui/generated.cs \
 	PlaceholderWindow.cs \
 	TabStrip.cs
 
