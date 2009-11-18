@@ -1,0 +1,47 @@
+2009-11-18  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui:
+	* Mono.MHex:
+	* Makefile.am:
+	* Mono.MHex.Data:
+	* AssemblyInfo.cs:
+	* gtk-gui/gui.stetic:
+	* Mono.MHex.Rendering:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.HexEditor:
+	* Mono.MHex/HexEditor.cs:
+	* Mono.MHex.Data/Caret.cs:
+	* Mono.MHex/MiscActions.cs:
+	* Mono.MHex.Data/Buffer.cs:
+	* Mono.MHex.Data/Segment.cs:
+	* Mono.MHex.Data/ISegment.cs:
+	* Mono.MHex/DeleteActions.cs:
+	* Mono.MHex/ScrollActions.cs:
+	* Mono.MHex.Data/EditMode.cs:
+	* Mono.MHex.Data/Selection.cs:
+	* Mono.MHex/SimpleEditMode.cs:
+	* Mono.MHex/BookmarkActions.cs:
+	* Mono.MHex.Data/PieceTable.cs:
+	* MonoDevelop.HexEditor.csproj:
+	* Mono.MHex.Rendering/Margin.cs:
+	* Mono.MHex/CaretMoveActions.cs:
+	* Mono.MHex/SelectionActions.cs:
+	* Mono.MHex/HexEditorOptions.cs:
+	* Mono.MHex.Data/RedBlackTree.cs:
+	* Mono.MHex/IHexEditorOptions.cs:
+	* Mono.MHex.Data/HexEditorData.cs:
+	* MonoDevelop.HexEditor.addin.xml:
+	* Mono.MHex.Data/UpdateRequest.cs:
+	* Mono.MHex.Rendering/IconMargin.cs:
+	* Mono.MHex.Data/ReplaceEventArgs.cs:
+	* Mono.MHex.Rendering/GutterMargin.cs:
+	* Mono.MHex.Rendering/HexEditorStyle.cs:
+	* Mono.MHex.Rendering/HexEditorMargin.cs:
+	* MonoDevelop.HexEditor/HexEditorView.cs:
+	* Mono.MHex.Rendering/DashedLineMargin.cs:
+	* MonoDevelop.HexEditor/DisplayBinding.cs:
+	* Mono.MHex.Rendering/TextEditorMargin.cs:
+	* Mono.MHex.Rendering/EmptySpaceMargin.cs:
+	* MonoDevelop.HexEditor/MonoDevelopHexEditorStyle.cs: Added
+	  hex editor display binding.
+

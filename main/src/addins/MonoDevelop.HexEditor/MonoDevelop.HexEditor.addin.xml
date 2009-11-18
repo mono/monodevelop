@@ -1,0 +1,29 @@
+<Addin id          = "HexEditor"
+       namespace   = "MonoDevelop"
+       name        = "MonoDevelop Hex Editor"
+       author      = "Mike Krüger"
+       copyright   = ""
+       url         = ""
+       description = "Provides a hex editor for MonoDevelop"
+       category    = "MonoDevelop Core"
+       version     = "2.2">
+	
+	<Runtime>
+		<Import assembly="MonoDevelop.HexEditor.dll"/>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="2.2"/>
+		<Addin id="Components" version="2.2"/>
+		<Addin id="Ide" version="2.2"/>
+	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding 
+			id = "HexEditor"
+			insertafter ="AssemblyBrowser"
+			class = "MonoDevelop.HexEditor.DisplayBinding" />
+	</Extension>
+	
+	
+</Addin>

@@ -1,3 +1,7 @@
+2009-11-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.HexEditor: Added hex editor display binding.
+
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Wire the soft debug addin into the build.
