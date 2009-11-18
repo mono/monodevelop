@@ -348,20 +348,15 @@ namespace MonoDevelop.Debugger
 			});
 		}
 		
-		static DateTime lastStart;
-		
 		static void OnStarted (object s, EventArgs a)
 		{
-			lastStart = DateTime.Now;
 			currentBacktrace = null;
 			DispatchService.GuiDispatch (delegate {
-				DateTime t = DateTime.Now;
 				if (ResumedEvent != null)
 					ResumedEvent (null, a);
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
-				Console.WriteLine ("MDB start events: " + (DateTime.Now - t).TotalMilliseconds);
 			});
 		}
 		
@@ -404,13 +399,10 @@ namespace MonoDevelop.Debugger
 		static void NotifyPaused ()
 		{
 			DispatchService.GuiDispatch (delegate {
-				Console.WriteLine ("MDB running time: " + (DateTime.Now - lastStart).TotalMilliseconds);
-				DateTime t = DateTime.Now;
 				if (PausedEvent != null)
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
 				IdeApp.Workbench.RootWindow.Present ();
-				Console.WriteLine ("MDB stop events: " + (DateTime.Now - t).TotalMilliseconds);
 			});
 		}
 		
