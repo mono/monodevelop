@@ -60,7 +60,7 @@ namespace MonoDevelop.SourceEditor
 		
 	}
 	
-	internal class DefaultSourceEditorOptions : TextEditorOptions, ISourceEditorOptions
+	public class DefaultSourceEditorOptions : TextEditorOptions, ISourceEditorOptions
 	{
 		static DefaultSourceEditorOptions instance;
 		//static TextStylePolicy defaultPolicy;
