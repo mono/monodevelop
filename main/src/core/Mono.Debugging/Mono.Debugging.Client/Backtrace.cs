@@ -9,6 +9,8 @@ namespace Mono.Debugging.Client
 	{
 		IBacktrace serverBacktrace;
 		int count;
+		
+		[NonSerialized]
 		DebuggerSession session;
 
 		List<StackFrame> frames;

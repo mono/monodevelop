@@ -1,5 +1,14 @@
 2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Client/Backtrace.cs:
+	* Mono.Debugging.Client/StackFrame.cs: Fix some serialization
+	  issues.
+
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Improve
+	  error message.
+
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Client/Backtrace.cs: Add support for
 	  refreshing object values.
 

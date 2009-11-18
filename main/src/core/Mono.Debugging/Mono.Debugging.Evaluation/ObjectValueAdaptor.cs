@@ -510,8 +510,8 @@ namespace Mono.Debugging.Evaluation
 				else
 					return ObjectValue.CreateUnknown (exp);
 			}
-			catch (NotSupportedExpressionException ex) {
-				return ObjectValue.CreateNotSupported (ctx.ExpressionValueSource, new ObjectPath (exp), ex.Message, "", ObjectValueFlags.None);
+			catch (NotSupportedExpressionException) {
+				return ObjectValue.CreateImplicitNotSupported (ctx.ExpressionValueSource, new ObjectPath (exp), "", ObjectValueFlags.None);
 			}
 			catch (EvaluatorException ex) {
 				return ObjectValue.CreateError (ctx.ExpressionValueSource, new ObjectPath (exp), "", ex.Message, ObjectValueFlags.None);

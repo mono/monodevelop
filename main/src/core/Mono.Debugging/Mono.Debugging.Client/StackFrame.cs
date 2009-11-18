@@ -12,6 +12,8 @@ namespace Mono.Debugging.Client
 		IBacktrace sourceBacktrace;
 		string language;
 		int index;
+		
+		[NonSerialized]
 		DebuggerSession session;
 
 		public StackFrame (long address, SourceLocation location, string language)
