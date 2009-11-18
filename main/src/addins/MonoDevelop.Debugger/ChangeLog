@@ -1,3 +1,14 @@
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger/ImmediatePad.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs:
+	* MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs:
+	  Add support for refreshing values. Added option for enabling
+	  ToString evaluation. Track api changes.
+
 2009-11-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.addin.xml:

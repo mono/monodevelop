@@ -106,6 +106,11 @@ namespace MonoDevelop.Debugger
 			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", value); }
 		}
 		
+		public static bool AllowToStringCalls {
+			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", true); }
+			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", value); }
+		}
+		
 		public static int EvaluationTimeout {
 			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", 2500); }
 			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", value); }
@@ -264,10 +269,13 @@ namespace MonoDevelop.Debugger
 		
 		static DebuggerSessionOptions GetUserOptions ()
 		{
+			EvaluationOptions eops = EvaluationOptions.DefaultOptions;
+			eops.AllowTargetInvoke = AllowTargetInvoke;
+			eops.AllowToStringCalls = AllowToStringCalls;
+			eops.EvaluationTimeout = EvaluationTimeout;
+			eops.MemberEvaluationTimeout = EvaluationTimeout * 2;
 			DebuggerSessionOptions ops = new DebuggerSessionOptions ();
-			ops.AllowTargetInvoke = AllowTargetInvoke;
-			ops.EvaluationTimeout = EvaluationTimeout;
-			ops.MemberEvaluationTimeout = EvaluationTimeout * 2;
+			ops.EvaluationOptions = eops;
 			return ops;
 		}
 		

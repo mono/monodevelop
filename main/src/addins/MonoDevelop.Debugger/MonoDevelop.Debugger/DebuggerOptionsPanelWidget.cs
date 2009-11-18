@@ -51,20 +51,22 @@ namespace MonoDevelop.Debugger
 		{
 			this.Build ();
 			checkAllowEval.Active = DebuggingService.AllowTargetInvoke;
+			checkToString.Active = DebuggingService.AllowToStringCalls;
+			checkToString.Sensitive = checkAllowEval.Active;
 			spinTimeout.Value = DebuggingService.EvaluationTimeout;
-			tableEval.Sensitive = checkAllowEval.Active;
 		}
 		
 		public void Store ()
 		{
 			DebuggingService.AllowTargetInvoke = checkAllowEval.Active;
+			DebuggingService.AllowToStringCalls = checkToString.Active;
 			int t = (int) spinTimeout.Value;
 			DebuggingService.EvaluationTimeout = t;
 		}
 		
 		protected virtual void OnCheckAllowEvalToggled (object sender, System.EventArgs e)
 		{
-			tableEval.Sensitive = checkAllowEval.Active;
+			checkToString.Sensitive = checkAllowEval.Active;
 		}
 	}
 }

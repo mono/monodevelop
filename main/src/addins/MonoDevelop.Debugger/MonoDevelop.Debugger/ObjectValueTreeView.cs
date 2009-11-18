@@ -58,6 +58,7 @@ namespace MonoDevelop.Debugger
 		CellRendererText crtExp;
 		CellRendererText crtValue;
 		CellRendererText crtType;
+		CellRendererPixbuf crpButton;
 		Gtk.Entry editEntry;
 		Mono.Debugging.Client.CompletionData currentCompletionData;
 		
@@ -78,13 +79,15 @@ namespace MonoDevelop.Debugger
 		const int IconCol = 7;
 		const int NameColorCol = 8;
 		const int ValueColorCol = 9;
+		const int ValueButtonIconCol = 10;
+		const int ValueButtonVisibleCol = 11;
 		
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;
 
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(bool));
 			Model = store;
 			RulesHint = true;
 			
@@ -112,6 +115,11 @@ namespace MonoDevelop.Debugger
 			valueCol.AddAttribute (crtValue, "text", ValueCol);
 			valueCol.AddAttribute (crtValue, "editable", ValueEditableCol);
 			valueCol.AddAttribute (crtValue, "foreground", ValueColorCol);
+			crpButton = new CellRendererPixbuf ();
+			crpButton.StockSize = (uint) Gtk.IconSize.Menu;
+			valueCol.PackStart (crpButton, false);
+			valueCol.AddAttribute (crpButton, "stock_id", ValueButtonIconCol);
+			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleCol);
 			valueCol.Resizable = true;
 			AppendColumn (valueCol);
 			
@@ -263,7 +271,7 @@ namespace MonoDevelop.Debugger
 		
 		public void Refresh ()
 		{
-			foreach (ObjectValue val in nodes.Keys)
+			foreach (ObjectValue val in new List<ObjectValue> (nodes.Keys))
 				UnregisterValue (val);
 			nodes.Clear ();
 			
@@ -285,6 +293,36 @@ namespace MonoDevelop.Debugger
 			
 			state.Load ();
 		}
+		
+		void RefreshRow (TreeIter it)
+		{
+			ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
+			UnregisterValue (val);
+			
+			RemoveChildren (it);
+			TreeIter parent;
+			if (!store.IterParent (out parent, it))
+				parent = TreeIter.Zero;
+			
+			EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions;
+			ops.AllowMethodEvaluation = true;
+			ops.AllowTargetInvoke = true;
+			val.Refresh (ops);
+			SetValues (parent, it, val.Name, val);
+			RegisterValue (val, it);
+		}
+		
+		void RemoveChildren (TreeIter it)
+		{
+			TreeIter cit;
+			while (store.IterChildren (out cit, it)) {
+				ObjectValue val = (ObjectValue) store.GetValue (cit, ObjectCol);
+				if (val != null)
+					UnregisterValue (val);
+				RemoveChildren (cit);
+				store.Remove (ref cit);
+			}
+		}
 
 		void RegisterValue (ObjectValue val, TreeIter it)
 		{
@@ -296,8 +334,8 @@ namespace MonoDevelop.Debugger
 
 		void UnregisterValue (ObjectValue val)
 		{
-			if (val.IsEvaluating)
-				val.ValueChanged -= OnValueUpdated;
+			val.ValueChanged -= OnValueUpdated;
+			nodes.Remove (val);
 		}
 
 		void OnValueUpdated (object o, EventArgs a)
@@ -306,17 +344,15 @@ namespace MonoDevelop.Debugger
 				if (disposed)
 					return;
 				ObjectValue val = (ObjectValue) o;
-				val.ValueChanged -= OnValueUpdated;
 				TreeIter it;
 				if (FindValue (val, out it)) {
-					TreeIter cit;
-					while (store.IterChildren (out cit, it))
-						store.Remove (ref cit);
+					RemoveChildren (it);
 					TreeIter parent;
 					if (!store.IterParent (out parent, it))
 						parent = TreeIter.Zero;
 					SetValues (parent, it, val.Name, val);
 				}
+				UnregisterValue (val);
 			});
 		}
 
@@ -370,6 +406,7 @@ namespace MonoDevelop.Debugger
 			bool canEdit;
 			string nameColor = null;
 			string valueColor = null;
+			string valueButton = null;
 			
 			if (name == null)
 				name = val.Name;
@@ -390,12 +427,19 @@ namespace MonoDevelop.Debugger
 				nameColor = disabledColor;
 				canEdit = false;
 			}
-			else if (val.IsError || val.IsNotSupported) {
+			else if (val.IsError) {
 				strval = val.Value;
 				int i = strval.IndexOf ('\n');
 				if (i != -1)
 					strval = strval.Substring (0, i);
 				valueColor = errorColor;
+				canEdit = false;
+			}
+			else if (val.IsNotSupported) {
+				strval = val.Value;
+				valueColor = disabledColor;
+				if (val.CanRefresh)
+					valueButton = Gtk.Stock.Refresh;
 				canEdit = false;
 			}
 			else if (val.IsEvaluating) {
@@ -422,6 +466,8 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, IconCol, icon);
 			store.SetValue (it, NameColorCol, nameColor);
 			store.SetValue (it, ValueColorCol, valueColor);
+			store.SetValue (it, ValueButtonIconCol, valueButton);
+			store.SetValue (it, ValueButtonVisibleCol, valueButton != null);
 			
 			if (val.HasChildren) {
 				// Add dummy node
@@ -630,6 +676,41 @@ namespace MonoDevelop.Debugger
 				}
 			});
 		}
+		
+		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+		{
+			bool res = base.OnButtonPressEvent (evnt);
+			TreePath path;
+			TreeViewColumn col;
+			CellRenderer cr;
+			
+			if (GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
+				if (cr == crpButton) {
+					TreeIter it;
+					store.GetIter (out it, path);
+					RefreshRow (it);
+				}
+			}
+			return res;
+		}
+		
+		bool GetCellAtPos (int x, int y, out TreePath path, out TreeViewColumn col, out CellRenderer cellRenderer)
+		{
+			int cx, cy;
+			if (GetPathAtPos (x, y, out path, out col, out cx, out cy)) {
+				foreach (CellRenderer cr in col.CellRenderers) {
+					int xo, w;
+					col.CellGetPosition (cr, out xo, out w);
+					if (cx >= xo && cx < xo + w) {
+						cellRenderer = cr;
+						return true;
+					}
+				}
+			}
+			cellRenderer = null;
+			return false;
+		}
+
 		
 		bool IsCompletionChar (char c)
 		{

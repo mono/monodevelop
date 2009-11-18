@@ -19,11 +19,11 @@ namespace MonoDevelop.Debugger {
         
         private Gtk.CheckButton checkAllowEval;
         
+        private Gtk.CheckButton checkToString;
+        
         private Gtk.Table tableEval;
         
         private Gtk.Label label60;
-        
-        private Gtk.Label label62;
         
         private Gtk.SpinButton spinTimeout;
         
@@ -48,7 +48,7 @@ namespace MonoDevelop.Debugger {
             this.checkAllowEval = new Gtk.CheckButton();
             this.checkAllowEval.CanFocus = true;
             this.checkAllowEval.Name = "checkAllowEval";
-            this.checkAllowEval.Label = Mono.Unix.Catalog.GetString("Allow invocations of methods and properties in the debugged process");
+            this.checkAllowEval.Label = Mono.Unix.Catalog.GetString("Allow implicit property evaluation and method invocation");
             this.checkAllowEval.Active = true;
             this.checkAllowEval.DrawIndicator = true;
             this.checkAllowEval.UseUnderline = true;
@@ -58,7 +58,19 @@ namespace MonoDevelop.Debugger {
             w1.Expand = false;
             w1.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
-            this.tableEval = new Gtk.Table(((uint)(1)), ((uint)(4)), false);
+            this.checkToString = new Gtk.CheckButton();
+            this.checkToString.CanFocus = true;
+            this.checkToString.Name = "checkToString";
+            this.checkToString.Label = Mono.Unix.Catalog.GetString("Use ToString() to get the string value of objects");
+            this.checkToString.DrawIndicator = true;
+            this.checkToString.UseUnderline = true;
+            this.vbox3.Add(this.checkToString);
+            Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox3[this.checkToString]));
+            w2.Position = 1;
+            w2.Expand = false;
+            w2.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.tableEval = new Gtk.Table(((uint)(1)), ((uint)(3)), false);
             this.tableEval.Name = "tableEval";
             this.tableEval.RowSpacing = ((uint)(6));
             this.tableEval.ColumnSpacing = ((uint)(6));
@@ -68,17 +80,7 @@ namespace MonoDevelop.Debugger {
             this.label60.Xalign = 0F;
             this.label60.LabelProp = Mono.Unix.Catalog.GetString("Evaluation Timeout:");
             this.tableEval.Add(this.label60);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.tableEval[this.label60]));
-            w2.LeftAttach = ((uint)(1));
-            w2.RightAttach = ((uint)(2));
-            w2.XOptions = ((Gtk.AttachOptions)(4));
-            w2.YOptions = ((Gtk.AttachOptions)(4));
-            // Container child tableEval.Gtk.Table+TableChild
-            this.label62 = new Gtk.Label();
-            this.label62.WidthRequest = 12;
-            this.label62.Name = "label62";
-            this.tableEval.Add(this.label62);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.tableEval[this.label62]));
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.tableEval[this.label60]));
             w3.XOptions = ((Gtk.AttachOptions)(4));
             w3.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableEval.Gtk.Table+TableChild
@@ -90,13 +92,15 @@ namespace MonoDevelop.Debugger {
             this.spinTimeout.Numeric = true;
             this.tableEval.Add(this.spinTimeout);
             Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.tableEval[this.spinTimeout]));
-            w4.LeftAttach = ((uint)(2));
-            w4.RightAttach = ((uint)(3));
+            w4.LeftAttach = ((uint)(1));
+            w4.RightAttach = ((uint)(2));
             w4.XOptions = ((Gtk.AttachOptions)(4));
             w4.YOptions = ((Gtk.AttachOptions)(4));
             this.vbox3.Add(this.tableEval);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox3[this.tableEval]));
-            w5.Position = 1;
+            w5.Position = 2;
+            w5.Expand = false;
+            w5.Fill = false;
             this.notebook1.Add(this.vbox3);
             // Notebook tab
             this.label4 = new Gtk.Label();
