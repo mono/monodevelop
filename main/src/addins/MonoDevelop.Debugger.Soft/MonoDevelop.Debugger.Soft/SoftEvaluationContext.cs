@@ -39,7 +39,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public ThreadMirror Thread { get; set; }
 		
-		public SoftEvaluationContext (SoftDebuggerSession session, StackFrame frame, DC.DebuggerSessionOptions options): base (options)
+		public SoftEvaluationContext (SoftDebuggerSession session, StackFrame frame, DC.EvaluationOptions options): base (options)
 		{
 			Frame = frame;
 			Thread = frame.Thread;

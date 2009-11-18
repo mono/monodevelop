@@ -60,33 +60,33 @@ namespace MonoDevelop.Debugger.Soft
 			return new DC.StackFrame (frame.ILOffset, "", frame.Method.Name, frame.FileName, frame.LineNumber, "Managed");
 		}
 		
-		protected EvaluationContext GetEvaluationContext (int frameIndex, int timeout)
+		protected EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
 		{
 			MDB.StackFrame frame = frames [frameIndex];
-			return new SoftEvaluationContext (session, frame, session.Options.WithTimeout (timeout));
+			return new SoftEvaluationContext (session, frame, options);
 		}
 	
-		public ObjectValue[] GetLocalVariables (int frameIndex, int timeout)
+		public ObjectValue[] GetLocalVariables (int frameIndex, EvaluationOptions options)
 		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, options);
 			List<ObjectValue> list = new List<ObjectValue> ();
 			foreach (ValueReference var in ctx.Adapter.GetLocalVariables (ctx))
 				list.Add (var.CreateObjectValue (true));
 			return list.ToArray ();
 		}
 		
-		public ObjectValue[] GetParameters (int frameIndex, int timeout)
+		public ObjectValue[] GetParameters (int frameIndex, EvaluationOptions options)
 		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, options);
 			List<ObjectValue> vars = new List<ObjectValue> ();
 			foreach (ValueReference var in ctx.Adapter.GetParameters (ctx))
 				vars.Add (var.CreateObjectValue (true));
 			return vars.ToArray ();
 		}
 		
-		public ObjectValue GetThisReference (int frameIndex, int timeout)
+		public ObjectValue GetThisReference (int frameIndex, EvaluationOptions options)
 		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, options);
 			ValueReference var = ctx.Adapter.GetThisReference (ctx);
 			if (var != null)
 				return var.CreateObjectValue ();
@@ -94,29 +94,29 @@ namespace MonoDevelop.Debugger.Soft
 				return null;
 		}
 		
-		public ObjectValue[] GetAllLocals (int frameIndex, int timeout)
+		public ObjectValue[] GetAllLocals (int frameIndex, EvaluationOptions options)
 		{
 			List<ObjectValue> locals = new List<ObjectValue> ();
 
-			ObjectValue thisObj = GetThisReference (frameIndex, timeout);
+			ObjectValue thisObj = GetThisReference (frameIndex, options);
 			if (thisObj != null)
 				locals.Add (thisObj);
 
-			locals.AddRange (GetLocalVariables (frameIndex, timeout));
-			locals.AddRange (GetParameters (frameIndex, timeout));
+			locals.AddRange (GetLocalVariables (frameIndex, options));
+			locals.AddRange (GetParameters (frameIndex, options));
 
 			return locals.ToArray ();
 		}
 		
-		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeout)
+		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, EvaluationOptions options)
 		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			return ctx.Adapter.GetExpressionValuesAsync (ctx, expressions, evaluateMethods, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, options);
+			return ctx.Adapter.GetExpressionValuesAsync (ctx, expressions);
 		}
 		
 		public CompletionData GetExpressionCompletionData (int frameIndex, string exp)
 		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, 400);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, EvaluationOptions.DefaultOptions);
 			return ctx.Adapter.GetExpressionCompletionData (ctx, exp);
 		}
 		

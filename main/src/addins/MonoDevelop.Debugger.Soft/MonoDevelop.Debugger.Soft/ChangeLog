@@ -1,3 +1,12 @@
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs:
+	* SoftEvaluationContext.cs:
+	* SoftDebuggerBacktrace.cs:
+	* PropertyValueReference.cs: Track api changes. Call
+	  ToString() to convert objects to values, when that option is
+	  enabled.
+
 2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerEngine.cs:

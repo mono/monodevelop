@@ -58,8 +58,8 @@ namespace MonoDevelop.Debugger.Soft
 				return string.Empty;
 			else if ((obj is ObjectMirror) && cx.Options.AllowTargetInvoke) {
 				ObjectMirror ob = (ObjectMirror) obj;
-				MethodMirror ts = ob.Type.GetMethod ("ToString");
-				StringMirror res = (StringMirror) cx.RuntimeInvoke (ts, obj, new Value[0]);
+				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
+				StringMirror res = (StringMirror) cx.RuntimeInvoke (method, obj, new Value[0]);
 				return res.Value;
 			}
 			return GetValueTypeName (ctx, obj);
@@ -264,21 +264,19 @@ namespace MonoDevelop.Debugger.Soft
 						continue;
 					yield return new FieldValueReference (ctx, field, co, type);
 				}
-				if (ctx.Options.AllowTargetInvoke) {
-					foreach (PropertyInfoMirror prop in type.GetProperties (bindingFlags)) {
-						MethodMirror met = prop.GetGetMethod ();
-						if (met == null || met.GetParameters ().Length != 0)
-							continue;
-						if (met.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
-							continue;
-						if (!met.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
-							continue;
-						if (met.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
-							continue;
-						if (!met.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
-							continue;
-						yield return new PropertyValueReference (ctx, prop, co, type, null);
-					}
+				foreach (PropertyInfoMirror prop in type.GetProperties (bindingFlags)) {
+					MethodMirror met = prop.GetGetMethod ();
+					if (met == null || met.GetParameters ().Length != 0)
+						continue;
+					if (met.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
+						continue;
+					if (!met.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
+						continue;
+					if (met.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
+						continue;
+					if (!met.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
+						continue;
+					yield return new PropertyValueReference (ctx, prop, co, type, null);
 				}
 				type = type.BaseType;
 			}
@@ -443,14 +441,12 @@ namespace MonoDevelop.Debugger.Soft
 					td.MemberData [fi.Name] = att.State;
 				}
 			}
-			if (gctx.Options.AllowTargetInvoke) {
-				foreach (PropertyInfoMirror pi in t.GetProperties ()) {
-					DebuggerBrowsableAttribute att = GetAttribute <DebuggerBrowsableAttribute> (pi.GetCustomAttributes (true));
-					if (att != null) {
-						if (td.MemberData == null)
-							td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
-						td.MemberData [pi.Name] = att.State;
-					}
+			foreach (PropertyInfoMirror pi in t.GetProperties ()) {
+				DebuggerBrowsableAttribute att = GetAttribute <DebuggerBrowsableAttribute> (pi.GetCustomAttributes (true));
+				if (att != null) {
+					if (td.MemberData == null)
+						td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
+					td.MemberData [pi.Name] = att.State;
 				}
 			}
 			return td;
@@ -671,6 +667,8 @@ namespace MonoDevelop.Debugger.Soft
 				if (!string.IsNullOrEmpty (tdata.ValueDisplayString))
 					return new LiteralExp (EvaluateDisplayString (ctx, co, tdata.ValueDisplayString));
 				// Return the type name
+				if (ctx.Options.AllowToStringCalls)
+					return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
 				if (tdata.TypeDisplayString != null)
 					return new LiteralExp ("{" + tdata.TypeDisplayString + "}");
 				return new LiteralExp ("{" + co.Type.FullName + "}");

@@ -83,5 +83,10 @@ namespace MonoDevelop.Debugger.Soft
 				ctx.RuntimeInvoke (property.GetSetMethod (), obj ?? declaringType, args);
 			}
 		}
+		
+		protected override bool CanEvaluate ()
+		{
+			return Context.Options.AllowTargetInvoke;
+		}
 	}
 }
