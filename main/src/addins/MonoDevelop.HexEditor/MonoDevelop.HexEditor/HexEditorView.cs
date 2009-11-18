@@ -53,6 +53,9 @@ namespace MonoDevelop.HexEditor
 			MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.Changed += delegate {
 				SetOptions ();
 			};
+			hexEditor.HexEditorData.Replaced += delegate {
+				this.IsDirty = true;
+			};
 		}
 		
 		void SetOptions ()

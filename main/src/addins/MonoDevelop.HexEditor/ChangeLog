@@ -1,5 +1,10 @@
 2009-11-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.HexEditor/HexEditorView.cs: Set dirty flag after
+	  change.
+
+2009-11-18  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui:
 	* Mono.MHex:
 	* Makefile.am:
