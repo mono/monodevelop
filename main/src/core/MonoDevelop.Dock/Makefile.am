@@ -2,7 +2,6 @@ RUNTIME = mono
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Dock.dll
 
 RES =  \
-	gtk-gui/gui.stetic \
 	layout.glade \
 	stock-auto-hide.png \
 	stock-close-12.png \
@@ -41,7 +40,6 @@ FILES =  \
 	DockLayout.cs \
 	DockObject.cs \
 	DockPosition.cs \
-	gtk-gui/generated.cs \
 	PlaceholderWindow.cs \
 	TabStrip.cs
 
