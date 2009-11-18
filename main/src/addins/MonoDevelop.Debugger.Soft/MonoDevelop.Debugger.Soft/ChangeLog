@@ -1,5 +1,9 @@
 2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerSession.cs: Fix the active thread object.
+
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerAdaptor.cs: Make invokes single-threaded and
 	  ignoring breakpoints.
 

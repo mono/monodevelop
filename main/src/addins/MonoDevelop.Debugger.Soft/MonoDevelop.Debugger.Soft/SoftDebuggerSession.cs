@@ -336,11 +336,9 @@ namespace MonoDevelop.Debugger.Soft
 			return null;
 		}
 		
-		ThreadInfo GetThread (ThreadMirror thread)
+		ThreadInfo GetThread (ProcessInfo process, ThreadMirror thread)
 		{
-			if (current_threads == null)
-				return null;
-			foreach (ThreadInfo t in current_threads)
+			foreach (var t in OnGetThreads (process.Id))
 				if (t.Id == thread.Id)
 					return t;
 			return null;
@@ -538,7 +536,7 @@ namespace MonoDevelop.Debugger.Soft
 				current_thread = e.Thread;
 				TargetEventArgs args = new TargetEventArgs (etype);
 				args.Process = OnGetProcesses () [0];
-				args.Thread = GetThread (current_thread);
+				args.Thread = GetThread (args.Process, current_thread);
 				args.Backtrace = GetThreadBacktrace (current_thread);
 				OnTargetEvent (args);
 			}
@@ -703,9 +701,10 @@ namespace MonoDevelop.Debugger.Soft
 			
 			//emit a stop event at the current position of the most recent thread
 			EnsureCurrentThreadIsValid ();
+			var process = OnGetProcesses () [0];
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetStopped) {
-				Process = OnGetProcesses () [0],
-				Thread = GetThread (current_thread),
+				Process = process,
+				Thread = GetThread (process, current_thread),
 				Backtrace = GetThreadBacktrace (current_thread)});
 		}
 		
