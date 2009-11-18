@@ -72,10 +72,9 @@ namespace DebuggerServer
 			return list.ToArray ();
 		}
 
-		protected EvaluationContext GetEvaluationContext (int frameIndex, int timeout)
+		protected EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
 		{
 			CheckDisposed ();
-			DL.DebuggerSessionOptions options = Server.Instance.SessionOptions.WithTimeout (timeout);
 			MD.StackFrame frame = frames [frameIndex];
 			return new MdbEvaluationContext (frame.Thread, frame, options);
 		}
@@ -102,50 +101,50 @@ namespace DebuggerServer
 				throw new InvalidOperationException ("Invalid stack frame");
 		}
 		
-		public ObjectValue[] GetAllLocals (int frameIndex, int timeout)
+		public ObjectValue[] GetAllLocals (int frameIndex, EvaluationOptions options)
 		{
 			List<ObjectValue> locals = new List<ObjectValue> ();
 
-			locals.AddRange (GetLocalVariables (frameIndex, timeout));
-			locals.AddRange (GetParameters (frameIndex, timeout));
+			locals.AddRange (GetLocalVariables (frameIndex, options));
+			locals.AddRange (GetParameters (frameIndex, options));
 			locals.Sort (delegate (ObjectValue v1, ObjectValue v2) {
 				return v1.Name.CompareTo (v2.Name);
 			});
 
-			ObjectValue thisObj = GetThisReference (frameIndex, timeout);
+			ObjectValue thisObj = GetThisReference (frameIndex, options);
 			if (thisObj != null)
 				locals.Insert (0, thisObj);
 			
 			return locals.ToArray ();
 		}
 
-		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeout)
+		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, EvaluationOptions options)
 		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			return ctx.Adapter.GetExpressionValuesAsync (ctx, expressions, evaluateMethods, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, options);
+			return ctx.Adapter.GetExpressionValuesAsync (ctx, expressions);
 		}
 
-		public ObjectValue[] GetLocalVariables (int frameIndex, int timeout)
+		public ObjectValue[] GetLocalVariables (int frameIndex, EvaluationOptions options)
 		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, options);
 			List<ObjectValue> list = new List<ObjectValue> ();
 			foreach (ValueReference var in ctx.Adapter.GetLocalVariables (ctx))
 				list.Add (var.CreateObjectValue (true));
 			return list.ToArray ();
 		}
 
-		public ObjectValue[] GetParameters (int frameIndex, int timeout)
+		public ObjectValue[] GetParameters (int frameIndex, EvaluationOptions options)
 		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, options);
 			List<ObjectValue> vars = new List<ObjectValue> ();
 			foreach (ValueReference var in ctx.Adapter.GetParameters (ctx))
 				vars.Add (var.CreateObjectValue (true));
 			return vars.ToArray ();
 		}
 
-		public ObjectValue GetThisReference (int frameIndex, int timeout)
+		public ObjectValue GetThisReference (int frameIndex, EvaluationOptions options)
 		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, options);
 			ValueReference var = ctx.Adapter.GetThisReference (ctx);
 			if (var != null)
 				return var.CreateObjectValue ();
@@ -155,7 +154,7 @@ namespace DebuggerServer
 		
 		public virtual CompletionData GetExpressionCompletionData (int frameIndex, string exp)
 		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, 400);
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, EvaluationOptions.DefaultOptions);
 			return ctx.Adapter.GetExpressionCompletionData (ctx, exp);
 		}
 	}

@@ -49,7 +49,7 @@ namespace DebuggerServer
 			}
 		}
 
-		public MdbEvaluationContext (Thread thread, StackFrame frame, Mono.Debugging.Client.DebuggerSessionOptions options): base (options)
+		public MdbEvaluationContext (Thread thread, StackFrame frame, Mono.Debugging.Client.EvaluationOptions options): base (options)
 		{
 			Evaluator = Server.Instance.Evaluator;
 			Adapter = Server.Instance.MdbObjectValueAdaptor;

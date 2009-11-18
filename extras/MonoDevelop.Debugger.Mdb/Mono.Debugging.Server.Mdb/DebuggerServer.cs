@@ -316,7 +316,7 @@ namespace DebuggerServer
 						                    
 			if (bp != null && !running && !initializing && activeThread.CurrentFrame != null && !string.IsNullOrEmpty (bp.ConditionExpression) && bp.BreakIfConditionChanges) {
 				// Initial expression evaluation
-				MdbEvaluationContext ctx = new MdbEvaluationContext (activeThread, activeThread.CurrentFrame, SessionOptions);
+				MdbEvaluationContext ctx = new MdbEvaluationContext (activeThread, activeThread.CurrentFrame, SessionOptions.EvaluationOptions);
 				ML.TargetObject ob = EvaluateExp (ctx, bp.ConditionExpression);
 				if (ob != null)
 					lastConditionValue [ev.Index] = evaluator.TargetObjectToExpression (ctx, ob);
@@ -370,7 +370,7 @@ namespace DebuggerServer
 				return false;
 			}
 
-			MdbEvaluationContext ctx = new MdbEvaluationContext (frame.Thread, frame, SessionOptions);
+			MdbEvaluationContext ctx = new MdbEvaluationContext (frame.Thread, frame, SessionOptions.EvaluationOptions);
 			DL.Breakpoint bp = be as DL.Breakpoint;
 			if (bp != null && !string.IsNullOrEmpty (bp.ConditionExpression)) {
 				ML.TargetObject val = EvaluateExp (ctx, bp.ConditionExpression);
@@ -418,9 +418,11 @@ namespace DebuggerServer
 		{
 			ValueReference var;
 			try {
-				EvaluationOptions ops = new EvaluationOptions ();
-				ops.CanEvaluateMethods = true;
-				var = (ValueReference) Server.Instance.Evaluator.Evaluate (ctx, exp, ops);
+				EvaluationContext cctx = ctx.Clone ();
+				EvaluationOptions ops = cctx.Options;
+				ops.AllowMethodEvaluation = true;
+				cctx.Options = ops;
+				var = (ValueReference) Server.Instance.Evaluator.Evaluate (cctx, exp);
 				return (ML.TargetObject) var.Value;
 			} catch {
 				return null;
@@ -792,7 +794,7 @@ namespace DebuggerServer
 				}
 
 				if ((args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception) && (args.Data is TargetAddress)) {
-					MdbEvaluationContext ctx = new MdbEvaluationContext (args.Frame.Thread, args.Frame, SessionOptions);
+					MdbEvaluationContext ctx = new MdbEvaluationContext (args.Frame.Thread, args.Frame, SessionOptions.EvaluationOptions);
 					targetArgs.Exception = LiteralValueReference.CreateTargetObjectLiteral (ctx, "Exception", args.Frame.ExceptionObject).CreateObjectValue ();
 				}
 

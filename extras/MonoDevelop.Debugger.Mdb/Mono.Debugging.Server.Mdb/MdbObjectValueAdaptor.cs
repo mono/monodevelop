@@ -579,7 +579,7 @@ namespace DebuggerServer
 						return ObjectValue.CreateObject (source, path, obj.TypeName, ctx.Evaluator.ToExpression (null), flags, new ObjectValue [0]);
 					}
 				default:
-					return ObjectValue.CreateError (path.LastName, "Unknown value type: " + obj.Kind, flags);
+					return ObjectValue.CreateFatalError (path.LastName, "Unknown value type: " + obj.Kind, flags);
 			}
 		}
 
