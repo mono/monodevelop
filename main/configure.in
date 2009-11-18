@@ -392,6 +392,7 @@ src/addins/MonoDevelop.Debugger.Soft/Makefile
 src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft/Makefile
 src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.AspNet/Makefile
 src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.Moonlight/Makefile
+src/addins/MonoDevelop.HexEditor/Makefile
 tests/Makefile
 tests/UnitTests/Makefile
 Makefile

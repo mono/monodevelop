@@ -30,4 +30,5 @@ SUBDIRS = \
 	MonoDevelop.Moonlight \
 	MonoDevelop.CodeMetrics \
 	MonoDevelop.Debugger.Soft \
-	WindowsPlatform
+	WindowsPlatform \
+	MonoDevelop.HexEditor

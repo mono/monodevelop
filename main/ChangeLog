@@ -1,3 +1,8 @@
+2009-11-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Main.sln:
+	* configure.in: Added hex editor display binding.
+
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Fix deps for vcrevision file.

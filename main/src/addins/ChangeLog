@@ -1,5 +1,9 @@
 2009-11-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am: Added hex editor display binding.
+
+2009-11-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.HexEditor: Added hex editor display binding.
 
 2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
