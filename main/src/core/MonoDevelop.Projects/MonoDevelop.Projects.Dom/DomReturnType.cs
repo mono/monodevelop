@@ -458,15 +458,15 @@ namespace MonoDevelop.Projects.Dom
 			if (this.IsNullable)
 				result.Append ('?');
 
-			result.Append (new string ('*', this.PointerNestingLevel));
+			result.Append ('*', this.PointerNestingLevel);
 
 			for (int i = 0; i < ArrayDimensions; i++) {
 				result.Append ('[');
-				result.Append (new string (',', this.GetDimension (i)));
+				result.Append (',', this.GetDimension (i));
 				result.Append (']');
 			}
 			
-			result.Append (new string ('*', this.ArrayPointerNestingLevel));
+			result.Append ('*', this.ArrayPointerNestingLevel);
 
 			if (this.IsByRef)
 				result.Append ('&');

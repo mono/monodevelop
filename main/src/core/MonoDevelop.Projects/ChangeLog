@@ -1,3 +1,9 @@
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs: Remove
+	  unnecessary string constructions. StringBuilder can add
+	  multiple chars directly.
+
 2009-11-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Fixed 'Bug 555523
