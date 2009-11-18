@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Ast;
 using System.Reflection;
+using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
@@ -42,7 +43,7 @@ namespace Mono.Debugging.Evaluation
 	{
 		Dictionary<string,ValueReference> userVariables = new Dictionary<string, ValueReference> ();
 		
-		public override ValueReference Evaluate (EvaluationContext ctx, string exp, EvaluationOptions options)
+		public override ValueReference Evaluate (EvaluationContext ctx, string exp, object expectedType)
 		{
 			if (exp.StartsWith ("?"))
 				exp = exp.Substring (1).Trim ();
@@ -72,7 +73,7 @@ namespace Mono.Debugging.Evaluation
 			Expression expObj = parser.ParseExpression ();
 			if (expObj == null)
 				throw new EvaluatorException ("Could not parse expression '" + exp + "'");
-			EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, options, userVariables);
+			EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, expectedType, userVariables);
 			return (ValueReference) expObj.AcceptVisitor (ev, null);
 		}
 	}
@@ -80,16 +81,18 @@ namespace Mono.Debugging.Evaluation
 	class EvaluatorVisitor: AbstractAstVisitor
 	{
 		EvaluationContext ctx;
-		string name;
 		EvaluationOptions options;
+		string name;
+		object expectedType;
 		Dictionary<string,ValueReference> userVariables;
 
-		public EvaluatorVisitor (EvaluationContext ctx, string name, EvaluationOptions options, Dictionary<string,ValueReference> userVariables)
+		public EvaluatorVisitor (EvaluationContext ctx, string name, object expectedType, Dictionary<string,ValueReference> userVariables)
 		{
 			this.ctx = ctx;
 			this.name = name;
-			this.options = options;
+			this.expectedType = expectedType;
 			this.userVariables = userVariables;
+			this.options = ctx.Options;
 		}
 		
 		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
@@ -159,8 +162,8 @@ namespace Mono.Debugging.Evaluation
 		{
 			if (primitiveExpression.Value != null)
 				return LiteralValueReference.CreateObjectLiteral (ctx, name, primitiveExpression.Value);
-			else if (options.ExpectedType != null)
-				return new NullValueReference (ctx, options.ExpectedType);
+			else if (expectedType != null)
+				return new NullValueReference (ctx, expectedType);
 			else
 				return new NullValueReference (ctx, ctx.Adapter.GetType (ctx, "System.Object"));
 		}
@@ -177,7 +180,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitInvocationExpression (ICSharpCode.NRefactory.Ast.InvocationExpression invocationExpression, object data)
 		{
-			if (!options.CanEvaluateMethods)
+			if (!options.AllowMethodEvaluation)
 				throw CreateNotSupportedError ();
 
 			ValueReference target = null;
@@ -480,7 +483,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitAssignmentExpression (ICSharpCode.NRefactory.Ast.AssignmentExpression assignmentExpression, object data)
 		{
-			if (!options.CanEvaluateMethods)
+			if (!options.AllowMethodEvaluation)
 				throw CreateNotSupportedError ();
 			
 			ValueReference left = (ValueReference) assignmentExpression.Left.AcceptVisitor (this, data);

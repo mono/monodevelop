@@ -12,6 +12,7 @@ namespace Mono.Debugging.Client
 		IBacktrace sourceBacktrace;
 		string language;
 		int index;
+		DebuggerSession session;
 
 		public StackFrame (long address, SourceLocation location, string language)
 		{
@@ -27,6 +28,15 @@ namespace Mono.Debugging.Client
 			this.language = language;
 		}
 
+		internal void Attach (DebuggerSession session)
+		{
+			this.session = session;
+		}
+		
+		public DebuggerSession DebuggerSession {
+			get { return session; }
+		}
+		
 		public SourceLocation SourceLocation
 		{
 			get { return location; }
@@ -55,72 +65,76 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetLocalVariables ()
 		{
-			return GetLocalVariables (-1);
+			return GetLocalVariables (session.EvaluationOptions);
 		}
 		
-		public ObjectValue[] GetLocalVariables (int timeout)
+		public ObjectValue[] GetLocalVariables (EvaluationOptions options)
 		{
-			ObjectValue[] values = sourceBacktrace.GetLocalVariables (index, timeout);
+			ObjectValue[] values = sourceBacktrace.GetLocalVariables (index, options);
 			ObjectValue.ConnectCallbacks (values);
 			return values;
 		}
 		
 		public ObjectValue[] GetParameters ()
 		{
-			return GetParameters (-1);
+			return GetParameters (session.EvaluationOptions);
 		}
 		
-		public ObjectValue[] GetParameters (int timeout)
+		public ObjectValue[] GetParameters (EvaluationOptions options)
 		{
-			ObjectValue[] values = sourceBacktrace.GetParameters (index, timeout);
+			ObjectValue[] values = sourceBacktrace.GetParameters (index, options);
 			ObjectValue.ConnectCallbacks (values);
 			return values;
 		}
 		
 		public ObjectValue[] GetAllLocals ()
 		{
-			return GetAllLocals (-1);
+			return GetAllLocals (session.EvaluationOptions);
 		}
 		
-		public ObjectValue[] GetAllLocals (int timeout)
+		public ObjectValue[] GetAllLocals (EvaluationOptions options)
 		{
-			ObjectValue[] values = sourceBacktrace.GetAllLocals (index, timeout);
+			ObjectValue[] values = sourceBacktrace.GetAllLocals (index, options);
 			ObjectValue.ConnectCallbacks (values);
 			return values;
 		}
 		
 		public ObjectValue GetThisReference ()
 		{
-			return GetThisReference (-1);
+			return GetThisReference (session.EvaluationOptions);
 		}
 		
-		public ObjectValue GetThisReference (int timeout)
+		public ObjectValue GetThisReference (EvaluationOptions options)
 		{
-			ObjectValue value = sourceBacktrace.GetThisReference (index, timeout);
+			ObjectValue value = sourceBacktrace.GetThisReference (index, options);
 			ObjectValue.ConnectCallbacks (value);
 			return value;
 		}
 		
 		public ObjectValue[] GetExpressionValues (string[] expressions, bool evaluateMethods)
 		{
-			return GetExpressionValues (expressions, evaluateMethods, -1);
+			EvaluationOptions options = session.EvaluationOptions;
+			options.AllowMethodEvaluation = evaluateMethods;
+			return GetExpressionValues (expressions, options);
 		}
 		
-		public ObjectValue[] GetExpressionValues (string[] expressions, bool evaluateMethods, int timeout)
+		public ObjectValue[] GetExpressionValues (string[] expressions, EvaluationOptions options)
 		{
-			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, expressions, evaluateMethods, timeout);
+			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, expressions, options);
 			ObjectValue.ConnectCallbacks (values);
 			return values;
 		}
 		
 		public ObjectValue GetExpressionValue (string expression, bool evaluateMethods)
 		{
-			return GetExpressionValue (expression, evaluateMethods, -1);
+			EvaluationOptions options = session.EvaluationOptions;
+			options.AllowMethodEvaluation = evaluateMethods;
+			return GetExpressionValue (expression, options);
 		}
 		
-		public ObjectValue GetExpressionValue (string expression, bool evaluateMethods, int timeout)
+		public ObjectValue GetExpressionValue (string expression, EvaluationOptions options)
 		{
-			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, new string[] { expression }, evaluateMethods, timeout);
+			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, new string[] { expression }, options);
 			ObjectValue.ConnectCallbacks (values);
 			return values [0];
 		}

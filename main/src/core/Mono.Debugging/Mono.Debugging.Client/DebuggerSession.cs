@@ -475,6 +475,10 @@ namespace Mono.Debugging.Client
 			get { return options; }
 		}
 
+		public EvaluationOptions EvaluationOptions {
+			get { return options.EvaluationOptions; }
+		}
+
 		public void Continue ()
 		{
 			lock (slock) {
@@ -594,6 +598,8 @@ namespace Mono.Debugging.Client
 				args.Thread.Attach (this);
 				activeThread = args.Thread;
 			}
+			if (args.Backtrace != null)
+				args.Backtrace.Attach (this);
 			
 			switch (args.Type) {
 				case TargetEventType.ExceptionThrown:

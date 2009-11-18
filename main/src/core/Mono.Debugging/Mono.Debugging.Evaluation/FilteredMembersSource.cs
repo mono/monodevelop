@@ -32,7 +32,7 @@ namespace Mono.Debugging.Evaluation
 				label = "Non-public members";
 			else
 				label = "Static members";
-			return ObjectValue.CreateObject (src, new ObjectPath (label), "", "", ObjectValueFlags.ReadOnly, null);
+			return ObjectValue.CreateObject (src, new ObjectPath (label), "", "", ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
 		}
 
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
@@ -47,6 +47,11 @@ namespace Mono.Debugging.Evaluation
 				list.Add (CreateNode (ctx, type, obj, newFlags));
 			}
 			return list.ToArray ();
+		}
+		
+		public ObjectValue GetValue (ObjectPath path, EvaluationOptions options)
+		{
+			throw new NotSupportedException ();
 		}
 
 		public string SetValue (ObjectPath path, string value)

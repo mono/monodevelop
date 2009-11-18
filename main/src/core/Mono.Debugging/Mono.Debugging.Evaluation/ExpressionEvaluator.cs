@@ -33,7 +33,12 @@ namespace Mono.Debugging.Evaluation
 {
 	public class ExpressionEvaluator
 	{
-		public virtual ValueReference Evaluate (EvaluationContext ctx, string exp, EvaluationOptions options)
+		public ValueReference Evaluate (EvaluationContext ctx, string exp)
+		{
+			return Evaluate (ctx, exp, null);
+		}
+		
+		public virtual ValueReference Evaluate (EvaluationContext ctx, string exp, object expectedType)
 		{
 			foreach (ValueReference var in ctx.Adapter.GetLocalVariables (ctx))
 				if (var.Name == exp)
@@ -122,18 +127,6 @@ namespace Mono.Debugging.Evaluation
 			return Exp;
 		}
 
-	}
-	
-	public class EvaluationOptions
-	{
-		bool canEvaluateMethods;
-
-		public object ExpectedType { get; set; }
-		
-		public bool CanEvaluateMethods {
-			get { return canEvaluateMethods; }
-			set { canEvaluateMethods = value; }
-		}
 	}
 	
 	[Serializable]

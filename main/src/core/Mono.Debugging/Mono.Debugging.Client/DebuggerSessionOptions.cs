@@ -31,31 +31,6 @@ namespace Mono.Debugging.Client
 	[Serializable]
 	public class DebuggerSessionOptions
 	{
-		public DebuggerSessionOptions ()
-		{
-			EvaluationTimeout = 1000;
-			MemberEvaluationTimeout = 5000;
-			AllowTargetInvoke = true;
-		}
-		
-		public int EvaluationTimeout { get; set; }
-		public int MemberEvaluationTimeout { get; set; }
-		public bool AllowTargetInvoke { get; set; }
-		
-		public DebuggerSessionOptions Clone ()
-		{
-			return (DebuggerSessionOptions) MemberwiseClone ();
-		}
-		
-		public DebuggerSessionOptions WithTimeout (int newTimeout)
-		{
-			if (newTimeout == -1 || newTimeout == EvaluationTimeout)
-				return this;
-			else {
-				DebuggerSessionOptions ops = Clone ();
-				ops.EvaluationTimeout = newTimeout;
-				return ops;
-			}
-		}
+		public EvaluationOptions EvaluationOptions { get; set; }
 	}
 }

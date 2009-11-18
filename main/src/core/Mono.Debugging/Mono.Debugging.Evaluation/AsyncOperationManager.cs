@@ -48,7 +48,6 @@ namespace Mono.Debugging.Evaluation
 
 			if (timeout != -1) {
 				if (!methodCall.WaitForCompleted (timeout)) {
-					Console.WriteLine ("pp FFFF:");
 					bool wasAborted = methodCall.Aborted;
 					methodCall.InternalAbort ();
 					lock (operationsToCancel) {

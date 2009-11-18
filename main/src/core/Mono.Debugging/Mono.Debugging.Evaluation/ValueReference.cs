@@ -36,10 +36,12 @@ namespace Mono.Debugging.Evaluation
 	public abstract class ValueReference: RemoteFrameObject, IObjectValueSource
 	{
 		EvaluationContext ctx;
+		EvaluationOptions originalOptions;
 
 		public ValueReference (EvaluationContext ctx)
 		{
 			this.ctx = ctx;
+			originalOptions = ctx.Options;
 		}
 		
 		public virtual object ObjectValue {
@@ -68,6 +70,8 @@ namespace Mono.Debugging.Evaluation
 
 		public ObjectValue CreateObjectValue (bool withTimeout)
 		{
+			if (!CanEvaluate ())
+				return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (Context, Type), Flags);
 			if (withTimeout) {
 				return ctx.Adapter.CreateObjectValueAsync (Name, Flags, delegate {
 					return CreateObjectValue ();
@@ -78,17 +82,25 @@ namespace Mono.Debugging.Evaluation
 		
 		public ObjectValue CreateObjectValue ()
 		{
+			if (!CanEvaluate ())
+				return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (Context, Type), Flags);
+			
 			Connect ();
 			try {
 				return OnCreateObjectValue ();
 			} catch (NotSupportedExpressionException ex) {
-				return DC.ObjectValue.CreateNotSupported (Name, ex.Message, Flags);
+				return DC.ObjectValue.CreateNotSupported (this, new ObjectPath (Name), ex.Message, ctx.Adapter.GetTypeName (Context, Type), Flags);
 			} catch (EvaluatorException ex) {
-				return DC.ObjectValue.CreateError (Name, ex.Message, Flags);
+				return DC.ObjectValue.CreateError (this, new ObjectPath (Name), "", ex.Message, Flags);
 			} catch (Exception ex) {
 				ctx.WriteDebuggerError (ex);
 				return DC.ObjectValue.CreateUnknown (Name);
 			}
+		}
+		
+		protected virtual bool CanEvaluate ()
+		{
+			return true;
 		}
 		
 		protected virtual ObjectValue OnCreateObjectValue ()
@@ -101,17 +113,26 @@ namespace Mono.Debugging.Evaluation
 			if (val != null)
 				return ctx.Adapter.CreateObjectValue (ctx, this, new ObjectPath (name), val, Flags);
 			else
-				return Mono.Debugging.Client.ObjectValue.CreateNullObject (name, ctx.Adapter.GetTypeName (Context, Type), Flags);
+				return Mono.Debugging.Client.ObjectValue.CreateNullObject (this, name, ctx.Adapter.GetTypeName (Context, Type), Flags);
 		}
 
+		ObjectValue IObjectValueSource.GetValue (ObjectPath path, EvaluationOptions options)
+		{
+			ctx = ctx.Clone ();
+			ctx.Options = options;
+			return CreateObjectValue (true);
+		}
+		
 		string IObjectValueSource.SetValue (ObjectPath path, string value)
 		{
 			try {
 				ctx.WaitRuntimeInvokes ();
-				EvaluationOptions ops = new EvaluationOptions ();
-				ops.ExpectedType = Type;
-				ops.CanEvaluateMethods = true;
-				ValueReference vref = ctx.Evaluator.Evaluate (ctx, value, ops);
+				EvaluationContext cctx = ctx.Clone ();
+				EvaluationOptions ops = cctx.Options;
+				ops.AllowMethodEvaluation = true;
+				ops.AllowTargetInvoke = true;
+				cctx.Options = ops;
+				ValueReference vref = ctx.Evaluator.Evaluate (ctx, value, Type);
 				object newValue = vref.Value;
 				newValue = ctx.Adapter.Cast (ctx, newValue, Type);
 				Value = newValue;
@@ -146,7 +167,7 @@ namespace Mono.Debugging.Evaluation
 				return ctx.Adapter.GetObjectValueChildren (GetChildrenContext (), Value, index, count);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
-				return new ObjectValue [] { Mono.Debugging.Client.ObjectValue.CreateError ("", ex.Message, ObjectValueFlags.ReadOnly) };
+				return new ObjectValue [] { Mono.Debugging.Client.ObjectValue.CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly) };
 			}
 		}
 
@@ -165,7 +186,9 @@ namespace Mono.Debugging.Evaluation
 		EvaluationContext GetChildrenContext ( )
 		{
 			EvaluationContext newCtx = Context.Clone ();
-			newCtx.Options.EvaluationTimeout = newCtx.Options.MemberEvaluationTimeout;
+			EvaluationOptions ops = originalOptions;
+			ops.EvaluationTimeout = originalOptions.MemberEvaluationTimeout;
+			newCtx.Options = ops;
 			return newCtx;
 		}
 

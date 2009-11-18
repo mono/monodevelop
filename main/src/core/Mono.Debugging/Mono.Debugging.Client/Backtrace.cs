@@ -9,6 +9,7 @@ namespace Mono.Debugging.Client
 	{
 		IBacktrace serverBacktrace;
 		int count;
+		DebuggerSession session;
 
 		List<StackFrame> frames;
 		
@@ -25,6 +26,11 @@ namespace Mono.Debugging.Client
 		
 		internal void Attach (DebuggerSession session)
 		{
+			this.session = session;
+			if (frames != null) {
+				foreach (StackFrame f in frames)
+					f.Attach (session);
+			}
 		}
 
 		public int FrameCount
@@ -44,6 +50,7 @@ namespace Mono.Debugging.Client
 					sf.SourceBacktrace = serverBacktrace;
 					sf.Index = frames.Count;
 					frames.Add (sf);
+					sf.Attach (session);
 				}
 			}
 			

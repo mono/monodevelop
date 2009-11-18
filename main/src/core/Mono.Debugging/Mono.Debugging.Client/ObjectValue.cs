@@ -73,9 +73,9 @@ namespace Mono.Debugging.Client
 			return ob;
 		}
 		
-		public static ObjectValue CreateNullObject (string name, string typeName, ObjectValueFlags flags)
+		public static ObjectValue CreateNullObject (IObjectValueSource source, string name, string typeName, ObjectValueFlags flags)
 		{
-			ObjectValue ob = Create (null, new ObjectPath (name), typeName);
+			ObjectValue ob = Create (source, new ObjectPath (name), typeName);
 			ob.flags = flags | ObjectValueFlags.Object;
 			ob.value = "(null)";
 			return ob;
@@ -117,22 +117,25 @@ namespace Mono.Debugging.Client
 		public static ObjectValue CreateError (IObjectValueSource source, ObjectPath path, string typeName, string value, ObjectValueFlags flags)
 		{
 			ObjectValue ob = Create (source, path, typeName);
-			ob.path = path;
 			ob.flags = flags | ObjectValueFlags.Error;
 			ob.value = value;
 			return ob;
 		}
 		
-		public static ObjectValue CreateNotSupported (string name, string message, ObjectValueFlags flags)
+		public static ObjectValue CreateImplicitNotSupported (IObjectValueSource source, ObjectPath path, string typeName, ObjectValueFlags flags)
 		{
-			ObjectValue ob = new ObjectValue ();
+			return CreateNotSupported (source, path, typeName, "Expression can't be evaluated because implicit evaluation is disabled", flags);
+		}
+		
+		public static ObjectValue CreateNotSupported (IObjectValueSource source, ObjectPath path, string typeName, string message, ObjectValueFlags flags)
+		{
+			ObjectValue ob = Create (source, path, typeName);
 			ob.flags = flags | ObjectValueFlags.NotSupported;
 			ob.value = message;
-			ob.name = name;
 			return ob;
 		}
 		
-		public static ObjectValue CreateError (string name, string message, ObjectValueFlags flags)
+		public static ObjectValue CreateFatalError (string name, string message, ObjectValueFlags flags)
 		{
 			ObjectValue ob = new ObjectValue ();
 			ob.flags = flags | ObjectValueFlags.Error;
@@ -214,7 +217,7 @@ namespace Mono.Debugging.Client
 					children.AddRange (cs);
 				} catch (Exception ex) {
 					children = null;
-					return CreateError ("", ex.Message, ObjectValueFlags.ReadOnly);
+					return CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly);
 				}
 			}
 			foreach (ObjectValue ob in children)
@@ -240,7 +243,7 @@ namespace Mono.Debugging.Client
 						children.AddRange (cs);
 					} catch (Exception ex) {
 						Console.WriteLine (ex);
-						children.Add (CreateError ("", ex.Message, ObjectValueFlags.ReadOnly));
+						children.Add (CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly));
 					}
 				}
 				return children.ToArray ();
@@ -265,7 +268,7 @@ namespace Mono.Debugging.Client
 					ConnectCallbacks (items);
 					children.AddRange (items);
 				} catch (Exception ex) {
-					return CreateError ("", ex.Message, ObjectValueFlags.ArrayElement | ObjectValueFlags.ReadOnly);
+					return CreateFatalError ("", ex.Message, ObjectValueFlags.ArrayElement | ObjectValueFlags.ReadOnly);
 				}
 			}
 			return children [index];
@@ -313,6 +316,10 @@ namespace Mono.Debugging.Client
 			get { return HasFlag (ObjectValueFlags.Evaluating); }
 		}
 		
+		public bool CanRefresh {
+			get { return source != null && !HasFlag (ObjectValueFlags.NoRefresh); }
+		}
+		
 		public bool HasFlag (ObjectValueFlags flag)
 		{
 			return (flags & flag) != 0;
@@ -323,8 +330,8 @@ namespace Mono.Debugging.Client
 				lock (this) {
 					if (IsEvaluating)
 						valueChanged += value;
-					else if (valueChanged != null)
-						valueChanged (this, EventArgs.Empty);
+					else
+						value (this, EventArgs.Empty);
 				}
 			}
 			remove {
@@ -333,12 +340,20 @@ namespace Mono.Debugging.Client
 				}
 			}
 		}
+		
+		public void Refresh (EvaluationOptions options)
+		{
+			if (!CanRefresh)
+				return;
+			ObjectValue val = source.GetValue (path, options);
+			UpdateFrom (val, false);
+		}
 
 		internal IObjectValueUpdater Updater {
 			get { return updater; }
 		}
 
-		internal void UpdateFrom (ObjectValue val)
+		internal void UpdateFrom (ObjectValue val, bool notify)
 		{
 			lock (this) {
 				arrayCount = val.arrayCount;
@@ -350,7 +365,9 @@ namespace Mono.Debugging.Client
 				source = val.source;
 				children = val.children;
 				path = val.path;
-				if (valueChanged != null)
+				updater = val.updater;
+				ConnectCallbacks (this);
+				if (notify && valueChanged != null)
 					valueChanged (this, EventArgs.Empty);
 			}
 		}
@@ -406,7 +423,7 @@ namespace Mono.Debugging.Client
 		{
 			ObjectValue val = valRef.Target as ObjectValue;
 			if (val != null)
-				val.UpdateFrom (newValue);
+				val.UpdateFrom (newValue, true);
 		}
 		
 		public UpdateCallbackProxy (ObjectValue val)

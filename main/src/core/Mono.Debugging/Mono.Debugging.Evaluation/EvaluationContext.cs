@@ -27,18 +27,20 @@
 
 using System;
 using Mono.Debugging.Client;
+using Mono.Debugging.Backend;
 
 namespace Mono.Debugging.Evaluation
 {
 	public class EvaluationContext
 	{
-		DebuggerSessionOptions options;
+		EvaluationOptions options;
 
 		public ExpressionEvaluator Evaluator { get; set; }
 		public ObjectValueAdaptor Adapter { get; set; }
 		
-		public DebuggerSessionOptions Options {
+		public EvaluationOptions Options {
 			get { return options; }
+			set { options = value; }
 		}
 		
 		public virtual void WriteDebuggerError (Exception ex)
@@ -56,10 +58,10 @@ namespace Mono.Debugging.Evaluation
 		public void AssertTargetInvokeAllowed ()
 		{
 			if (!Options.AllowTargetInvoke)
-				throw new EvaluatorException ("Target code execution disabled");
+				throw new NotSupportedExpressionException ();
 		}
 		
-		public EvaluationContext (DebuggerSessionOptions options)
+		public EvaluationContext (EvaluationOptions options)
 		{
 			this.options = options;
 		}
@@ -71,11 +73,55 @@ namespace Mono.Debugging.Evaluation
 			return clone;
 		}
 
+		public EvaluationContext Clone (EvaluationOptions withOptions)
+		{
+			EvaluationContext clone = Clone ();
+			clone.options = withOptions;
+			return clone;
+		}
+
 		public virtual void CopyFrom (EvaluationContext ctx)
 		{
-			options = ctx.options.Clone ();
+			options = ctx.options;
 			Evaluator = ctx.Evaluator;
 			Adapter = ctx.Adapter;
+		}
+		
+		ExpressionValueSource expressionValueSource;
+		internal ExpressionValueSource ExpressionValueSource {
+			get {
+				if (expressionValueSource == null)
+					expressionValueSource = new ExpressionValueSource (this);
+				return expressionValueSource;
+			}
+		}
+	}
+	
+	class ExpressionValueSource: RemoteFrameObject, IObjectValueSource
+	{
+		EvaluationContext ctx;
+		
+		public ExpressionValueSource (EvaluationContext ctx)
+		{
+			this.ctx = ctx;
+			Connect ();
+		}
+		
+		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
+		{
+			throw new System.NotImplementedException();
+		}
+		
+		public string SetValue (ObjectPath path, string value)
+		{
+			throw new System.NotImplementedException();
+		}
+		
+		public ObjectValue GetValue (ObjectPath path, EvaluationOptions options)
+		{
+			EvaluationContext c = ctx.Clone (options);
+			ObjectValue[] vals = c.Adapter.GetExpressionValuesAsync (c, new string[] { path.LastName });
+			return vals[0];
 		}
 	}
 }

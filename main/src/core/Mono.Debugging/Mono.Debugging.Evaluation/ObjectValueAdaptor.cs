@@ -41,7 +41,7 @@ namespace Mono.Debugging.Evaluation
 			}
 			catch (Exception ex) {
 				Console.WriteLine (ex);
-				return ObjectValue.CreateError (path.LastName, ex.Message, flags);
+				return ObjectValue.CreateFatalError (path.LastName, ex.Message, flags);
 			}
 		}
 		
@@ -132,11 +132,6 @@ namespace Mono.Debugging.Evaluation
 			List<ObjectValue> values = new List<ObjectValue> ();
 			BindingFlags access = BindingFlags.Public | BindingFlags.Instance;
 			
-			// If target invokes are disabled, show private members by default, since we
-			// can only show fields, and fields are in most of cases private.
-			if (!ctx.Options.AllowTargetInvoke)
-				access |= BindingFlags.NonPublic;
-
 			// Load all members to a list before creating the object values,
 			// to avoid problems with objects being invalidated due to evaluations in the target,
 			List<ValueReference> list = new List<ValueReference> ();
@@ -181,24 +176,23 @@ namespace Mono.Debugging.Evaluation
 				else {
 					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)) {
 						access = BindingFlags.Static | BindingFlags.Public;
-						if (!ctx.Options.AllowTargetInvoke) access |= BindingFlags.NonPublic;
 						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, access));
 					}
-					if (ctx.Options.AllowTargetInvoke && HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic))
+					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic))
 						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic));
 				}
 			}
 			return values.ToArray ();
 		}
 
-		public ObjectValue[] GetExpressionValuesAsync (EvaluationContext ctx, string[] expressions, bool evaluateMethods, int timeout)
+		public ObjectValue[] GetExpressionValuesAsync (EvaluationContext ctx, string[] expressions)
 		{
 			ObjectValue[] values = new ObjectValue[expressions.Length];
 			for (int n = 0; n < values.Length; n++) {
 				string exp = expressions[n];
 				// This is a workaround to a bug in mono 2.0. That mono version fails to compile
 				// an anonymous method here
-				ExpData edata = new ExpData (ctx, exp, evaluateMethods, this);
+				ExpData edata = new ExpData (ctx, exp, this);
 				values[n] = asyncEvaluationTracker.Run (exp, ObjectValueFlags.Literal, edata.Run);
 			}
 			return values;
@@ -208,20 +202,18 @@ namespace Mono.Debugging.Evaluation
 		{
 			public EvaluationContext ctx;
 			public string exp;
-			public bool evaluateMethods;
 			public ObjectValueAdaptor adaptor;
 			
-			public ExpData (EvaluationContext ctx, string exp, bool evaluateMethods, ObjectValueAdaptor adaptor)
+			public ExpData (EvaluationContext ctx, string exp, ObjectValueAdaptor adaptor)
 			{
 				this.ctx = ctx;
 				this.exp = exp;
-				this.evaluateMethods = evaluateMethods;
 				this.adaptor = adaptor;
 			}
 			
 			public ObjectValue Run ()
 			{
-				return adaptor.GetExpressionValue (ctx, exp, evaluateMethods);
+				return adaptor.GetExpressionValue (ctx, exp);
 			}
 		}
 
@@ -508,12 +500,10 @@ namespace Mono.Debugging.Evaluation
 			asyncEvaluationTracker.WaitForStopped ();
 		}
 
-		ObjectValue GetExpressionValue (EvaluationContext ctx, string exp, bool evaluateMethods)
+		ObjectValue GetExpressionValue (EvaluationContext ctx, string exp)
 		{
 			try {
-				EvaluationOptions ops = new EvaluationOptions ();
-				ops.CanEvaluateMethods = evaluateMethods;
-				ValueReference var = ctx.Evaluator.Evaluate (ctx, exp, ops);
+				ValueReference var = ctx.Evaluator.Evaluate (ctx, exp);
 				if (var != null) {
 					return var.CreateObjectValue ();
 				}
@@ -521,10 +511,10 @@ namespace Mono.Debugging.Evaluation
 					return ObjectValue.CreateUnknown (exp);
 			}
 			catch (NotSupportedExpressionException ex) {
-				return ObjectValue.CreateNotSupported (exp, ex.Message, ObjectValueFlags.None);
+				return ObjectValue.CreateNotSupported (ctx.ExpressionValueSource, new ObjectPath (exp), ex.Message, "", ObjectValueFlags.None);
 			}
 			catch (EvaluatorException ex) {
-				return ObjectValue.CreateError (exp, ex.Message, ObjectValueFlags.None);
+				return ObjectValue.CreateError (ctx.ExpressionValueSource, new ObjectPath (exp), "", ex.Message, ObjectValueFlags.None);
 			}
 			catch (Exception ex) {
 				ctx.WriteDebuggerError (ex);

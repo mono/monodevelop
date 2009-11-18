@@ -54,6 +54,7 @@ namespace Mono.Debugging.Client
 		
 		Global = 1 << 17,	// For fields, it means static
 		ReadOnly = 1 << 18,
+		NoRefresh = 1 << 19, // When set, this value can't be refreshed
 		
 		// For field and property
 		Public = 1 << 24,
