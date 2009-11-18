@@ -1,3 +1,9 @@
+2009-11-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs: Checked
+	  dimensions - fixing bug "Bug 556395 - Exception in
+	  DomReturnType.ToInvariantString".
+
 2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomReturnType.cs: Remove

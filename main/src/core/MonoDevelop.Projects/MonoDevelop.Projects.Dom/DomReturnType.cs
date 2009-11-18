@@ -462,7 +462,9 @@ namespace MonoDevelop.Projects.Dom
 
 			for (int i = 0; i < ArrayDimensions; i++) {
 				result.Append ('[');
-				result.Append (',', this.GetDimension (i));
+				int dimension = this.GetDimension (i);
+				if (dimension > 0)
+					result.Append (',', dimension);
 				result.Append (']');
 			}
 			
