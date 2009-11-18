@@ -78,8 +78,10 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			base.CopyFrom (ctx);
 			SoftEvaluationContext other = (SoftEvaluationContext) ctx;
-			Frame = other.Frame;
+			frame = other.frame;
+			stackVersion = other.stackVersion;
 			Thread = other.Thread;
+			session = other.session;
 		}
 		
 		public Value RuntimeInvoke (MethodMirror method, object target, Value[] values)

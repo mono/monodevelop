@@ -1,3 +1,7 @@
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftEvaluationContext.cs: Minor fix.
+
 2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerAdaptor.cs:
