@@ -1,3 +1,8 @@
+2009-11-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicyService.cs: Improve
+	  error message.
+
 2009-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomReturnType.cs: Checked

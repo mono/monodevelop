@@ -223,9 +223,13 @@ namespace MonoDevelop.Projects.Policies
 			DataValue inheritScope = item.ItemData.Extract ("inheritsScope") as DataValue;
 			
 			object baseItem = set.Get (t, inheritScope != null ? inheritScope.Value : null);
-			if (baseItem == null)
-				throw new InvalidOperationException ("Policy set '" + set.Id + "' does not contain a policy for '"
-				                                     + data.Name + "'");
+			if (baseItem == null) {
+				string msg = "Policy set '" + set.Id + "' does not contain a policy for '" + data.Name + "'";
+				if (inheritScope != null)
+					msg += ", scope '" + inheritScope.Value + "'";
+				msg += ". This policy is likely provided by an addin that is not currently installed.";
+				throw new InvalidOperationException (msg);
+			}
 			
 			DataValue scopeVal = item.ItemData.Extract ("scope") as DataValue;
 			DataNode baseline = RawSerialize (t, baseItem);
