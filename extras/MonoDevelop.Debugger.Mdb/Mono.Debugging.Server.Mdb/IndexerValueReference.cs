@@ -84,7 +84,11 @@ namespace DebuggerServer
 				Server.Instance.RuntimeInvoke (ctx, indexer.Setter, target, new TargetObject [] {cindex, cvalue});
 			}
 		}
-
+		
+		protected override bool CanEvaluate ()
+		{
+			return Context.Options.AllowTargetInvoke;
+		}
 		
 		public override object Type {
 			get {

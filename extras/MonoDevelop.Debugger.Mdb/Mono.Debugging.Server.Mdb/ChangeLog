@@ -1,5 +1,13 @@
 2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MdbObjectValueAdaptor.cs: Always show properties, even if we
+	  can't evaluate them.
+
+	* IndexerValueReference.cs: Don't allow evaluating properties
+	  if target invoke is disabled.
+
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* DebuggerServer.cs:
 	* BacktraceWrapper.cs:
 	* EvaluationContext.cs:
