@@ -1,5 +1,13 @@
 2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerEngine.cs:
+	* SoftDebuggerSession.cs:
+	* RemoteSoftDebuggerSession.cs: Use the user modules as
+	  assembly filters for stepping, if the startinfo has them (it
+	  doesn't yet).
+
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerSession.cs: Fix the active thread object.
 
 2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>

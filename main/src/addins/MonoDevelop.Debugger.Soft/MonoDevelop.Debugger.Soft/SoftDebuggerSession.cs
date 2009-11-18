@@ -60,8 +60,11 @@ namespace MonoDevelop.Debugger.Soft
 		
 		LinkedList<Event> queuedEvents = new LinkedList<Event> ();
 		
-		public NRefactoryEvaluator Evaluator = new NRefactoryEvaluator ();
-		public SoftDebuggerAdaptor Adaptor = new SoftDebuggerAdaptor ();
+		List<string> userAssemblyNames;
+		List<AssemblyMirror> assemblyFilters;
+		
+		public readonly NRefactoryEvaluator Evaluator = new NRefactoryEvaluator ();
+		public readonly SoftDebuggerAdaptor Adaptor = new SoftDebuggerAdaptor ();
 		
 		public SoftDebuggerSession ()
 		{
@@ -77,6 +80,7 @@ namespace MonoDevelop.Debugger.Soft
 			
 			var dsi = (SoftDebuggerStartInfo) startInfo;
 			var runtime = Path.Combine (Path.Combine (dsi.Runtime.Prefix, "bin"), "mono");
+			RegisterUserAssemblies (dsi.UserAssemblyNames);
 			
 			var psi = new System.Diagnostics.ProcessStartInfo (runtime) {
 				Arguments = string.Format ("\"{0}\" {1}", dsi.Command, dsi.Arguments),
@@ -174,6 +178,14 @@ namespace MonoDevelop.Debugger.Soft
 			
 			eventHandler = new Thread (EventHandler);
 			eventHandler.Start ();
+		}
+		
+		internal void RegisterUserAssemblies (List<string> userAssemblyNames)
+		{
+			if (userAssemblyNames != null) {
+				assemblyFilters = new List<AssemblyMirror> ();
+				this.userAssemblyNames = userAssemblyNames;
+			}
 		}
 		
 		protected void ConnectOutput (System.IO.StreamReader reader, bool error)
@@ -287,6 +299,7 @@ namespace MonoDevelop.Debugger.Soft
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Out;
 			req.Size = StepSize.Line;
+			req.AssemblyFilter = assemblyFilters;
 			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
@@ -404,8 +417,8 @@ namespace MonoDevelop.Debugger.Soft
 		void InsertCatchpoint (Catchpoint cp, BreakInfo bi, TypeMirror excType)
 		{
 			var request = bi.Req = vm.CreateExceptionRequest (excType);
-			bi.Req.Enabled = bi.Enabled;
 			request.Count = cp.HitCount;
+			bi.Req.Enabled = bi.Enabled;
 		}
 		
 		Location FindLocation (string file, int line)
@@ -446,6 +459,7 @@ namespace MonoDevelop.Debugger.Soft
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Over;
 			req.Size = StepSize.Line;
+			req.AssemblyFilter = assemblyFilters;
 			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
@@ -497,6 +511,7 @@ namespace MonoDevelop.Debugger.Soft
 			
 			if (e is AssemblyLoadEvent) {
 				AssemblyLoadEvent ae = (AssemblyLoadEvent)e;
+				UpdateAssemblyFilters (ae.Assembly);
 				OnDebuggerOutput (false, string.Format ("Loaded assembly: {0}\n", ae.Assembly.Location));
 			}
 			
@@ -669,6 +684,13 @@ namespace MonoDevelop.Debugger.Soft
 			InsertCatchpoint (cp, bi, type);
 		}
 		
+		void UpdateAssemblyFilters (AssemblyMirror asm)
+		{
+			if (userAssemblyNames != null && userAssemblyNames.Contains (asm.ManifestModule.FullyQualifiedName)) {
+				assemblyFilters.Add (asm);
+			}
+		}
+		
 		internal void WriteDebuggerOutput (bool isError, string msg)
 		{
 			OnDebuggerOutput (isError, msg);
@@ -689,6 +711,7 @@ namespace MonoDevelop.Debugger.Soft
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Into;
 			req.Size = StepSize.Line;
+			req.AssemblyFilter = assemblyFilters;
 			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
