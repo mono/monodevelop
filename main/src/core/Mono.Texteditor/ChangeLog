@@ -1,3 +1,7 @@
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Use system mono.cairo.
+
 2009-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/FoldMarkerMargin.cs: Fixed a bug where the
