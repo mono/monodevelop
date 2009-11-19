@@ -631,6 +631,7 @@ namespace MonoDevelop.Debugger.Soft
 		Value result;
 		IAsyncResult handle;
 		Exception exception;
+		ST.ManualResetEvent shutdownEvent = new ST.ManualResetEvent (false);
 		const InvokeOptions options = InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded;
 		
 		public MethodCall (SoftEvaluationContext ctx, MethodMirror function, object obj, Value[] args)
@@ -677,7 +678,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public override void Shutdown ()
 		{
-			//ignore, just let the async call carry on, nothing we can do
+			shutdownEvent.Set ();
 		}
 		
 		void EndInvoke ()
@@ -701,11 +702,13 @@ namespace MonoDevelop.Debugger.Soft
 
 		public override bool WaitForCompleted (int timeout)
 		{
-			if (handle.AsyncWaitHandle.WaitOne (timeout)) {
+			int res = ST.WaitHandle.WaitAny (new ST.WaitHandle[] { handle.AsyncWaitHandle, shutdownEvent }, timeout); 
+			if (res == 0) {
 				EndInvoke ();
 				return true;
 			}
-			return false;
+			// Return true if shut down.
+			return res == 1;
 		}
 
 		public Value ReturnValue {

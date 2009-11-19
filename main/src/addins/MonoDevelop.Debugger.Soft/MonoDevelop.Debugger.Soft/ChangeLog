@@ -1,5 +1,10 @@
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerAdaptor.cs: Properly implement
+	  MethodCall.Shutdown.
+
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerAdaptor.cs:
 	* SoftDebuggerSession.cs:
 	* SoftEvaluationContext.cs:
