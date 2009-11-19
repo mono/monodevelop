@@ -1,5 +1,10 @@
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerAdaptor.cs: In GetMember, look for members in
+	  parent types.
+
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerSession.cs: Fix disposing code.
 
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
