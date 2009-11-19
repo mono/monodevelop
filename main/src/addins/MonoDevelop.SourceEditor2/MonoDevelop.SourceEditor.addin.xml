@@ -91,6 +91,11 @@
 				_description = "Animates the text editor caret to help find it"
 				shortcut = "Ctrl|Shift||"
 				macShortcut = "Meta|Shift||" />
+		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus"
+				_label = "Toggle code focus"
+				_description = "Activates code focus on caret move"
+				shortcut = "Ctrl|Shift|k"
+				macShortcut = "Meta|Shift|k" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">

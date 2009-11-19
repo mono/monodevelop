@@ -1,3 +1,10 @@
+2009-11-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor.addin.xml:
+	* MonoDevelop.SourceEditor/SourceEditorCommands.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	  Implemented 'Code focus toggle and follow-cursor'.
+
 2009-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Source

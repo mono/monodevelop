@@ -34,6 +34,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		MarkerOperations,
 		DynamicAbbrev,
-		PulseCaret
+		PulseCaret,
+		ToggleCodeFocus
 	}
 }
