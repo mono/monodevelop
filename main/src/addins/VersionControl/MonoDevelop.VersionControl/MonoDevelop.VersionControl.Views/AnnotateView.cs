@@ -134,9 +134,11 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		Repository repo;
 		List<string> annotations;
+		Revision[] history;
 		Pango.Layout layout;
 		Gdk.GC lineNumberBgGC, lineNumberGC, lineNumberHighlightGC, locallyModifiedGC;
 		Mono.TextEditor.TextEditor editor;
+		AnnotationTooltipProvider tooltipProvider;
 		
 		private static readonly string locallyModified = "*****";
 		
@@ -165,9 +167,12 @@ namespace MonoDevelop.VersionControl.Views
 			annotations = new List<string> ();
 			UpdateAnnotations (null, null);
 			
+			tooltipProvider = new AnnotationTooltipProvider (this);
+			
 			editor.Document.TextReplacing += EditorDocumentTextReplacing;
 			editor.Document.LineChanged += EditorDocumentLineChanged;
 			editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
+			editor.TooltipProviders.Add (tooltipProvider);
 
 			doc.Saved += UpdateAnnotations;
 			
@@ -194,6 +199,14 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			ThreadPool.QueueUserWorkItem (delegate {
 				annotations = new List<string> (repo.GetAnnotations (editor.Document.FileName));
+				if (null == history) {
+					try {
+						history = repo.GetHistory (editor.Document.FileName, null);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error retrieving history", ex);
+					}
+				}
+				
 				bool redrawAll = (0 == width);
 				DispatchService.GuiDispatch (delegate {
 					UpdateWidth ();
@@ -297,6 +310,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			editor.Document.TextReplacing -= EditorDocumentTextReplacing;
 			editor.Document.LineChanged -= EditorDocumentLineChanged;
+			editor.TooltipProviders.Remove (tooltipProvider);
 			layout.Dispose ();
 			lineNumberBgGC.Dispose ();
 			lineNumberGC.Dispose ();
@@ -344,5 +358,70 @@ namespace MonoDevelop.VersionControl.Views
 				annotations.Add (text);
 			}
 		}
+		
+		/// <summary>
+		/// Gets the commit message matching a given annotation index.
+		/// </summary>
+		internal string GetCommitMessage (int index)
+		{
+			string annotation = (index < annotations.Count)? annotations[index]: null;
+			
+			if (null != history && !string.IsNullOrEmpty (annotation))
+			{
+				string[] tokens = annotation.Split (new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
+				if (1 < tokens.Length) {
+					foreach (Revision rev in history) {
+						if (rev.ToString ().Equals (tokens[0], StringComparison.Ordinal)) {
+							return rev.Message;
+						}
+					}
+				}
+			}
+			
+			return null;
+		}
+	}
+	
+	/// <summary>
+	/// Tooltip provider for annotation margins
+	/// </summary>
+	class AnnotationTooltipProvider: ITooltipProvider
+	{
+		AnnotationMargin margin;
+		
+		public AnnotationTooltipProvider (AnnotationMargin margin)
+		{
+			this.margin = margin;
+		}
+		
+		#region ITooltipProvider implementation
+		
+		public object GetItem (Mono.TextEditor.TextEditor editor, int offset)
+		{
+			DocumentLocation location = editor.Document.OffsetToLocation (offset);
+			return (0 >= location.Column)? margin.GetCommitMessage (location.Line): null;
+		}
+		
+		
+		public Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, Gdk.ModifierType modifierState, object item)
+		{
+			return new LanguageItemWindow (null, modifierState, null, null, item as string, null);
+		}
+		
+		
+		public void GetRequiredPosition (Mono.TextEditor.TextEditor editor, Window tipWindow, out int requiredWidth, out double xalign)
+		{
+			LanguageItemWindow win = (LanguageItemWindow) tipWindow;
+			requiredWidth = win.SetMaxWidth (win.Screen.Width);
+			xalign = 0.5;
+		}
+		
+		
+		public bool IsInteractive (Mono.TextEditor.TextEditor editor, Window tipWindow)
+		{
+			return false;
+		}
+		
+		#endregion
 	}
 }

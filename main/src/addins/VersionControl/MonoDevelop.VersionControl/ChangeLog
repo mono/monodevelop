@@ -1,3 +1,8 @@
+2009-11-19  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Show
+	  commit message on mouseover. Implements #545521.
+
 2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Views/StatusView.cs: Fix sort by
