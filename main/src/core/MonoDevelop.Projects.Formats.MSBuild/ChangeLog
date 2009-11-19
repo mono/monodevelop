@@ -1,3 +1,8 @@
+2009-11-19  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildResult.cs: Fix
+	  build on windows.
+
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild.csproj: Flush.

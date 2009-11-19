@@ -41,11 +41,40 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Message = message;
 		}
 		
-		public bool IsWarning { get; set; }
-		public string File { get; set; }
-		public int Line { get; set; }
-		public int Column { get; set; }
-		public string Code { get; set; }
-		public string Message { get; set; }
+		public bool IsWarning { 
+			get{ return isWarning; }
+			set{ isWarning = value; }
+		}
+		bool isWarning;
+		
+		public string File {
+			get{ return file; }
+			set{ file = value; }
+		}
+		string file;
+		
+		public int Line {
+			get{ return line; }
+			set{ line = value; }
+		}
+		int line;
+		
+		public int Column {
+			get{ return column; }
+			set{ column = value; }
+		}
+		int column;
+		
+		public string Code {
+			get{ return code; }
+			set{ code = value; }
+		}
+		string code;
+		
+		public string Message {
+			get{ return message; }
+			set{ message = value; }
+		}
+		string message;
 	}
 }
