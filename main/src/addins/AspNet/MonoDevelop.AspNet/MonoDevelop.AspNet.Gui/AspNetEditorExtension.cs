@@ -525,7 +525,9 @@ namespace MonoDevelop.AspNet.Gui
 							
 						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
 							(projectDatabase, codeBehindClass, suggestedIdentifier);
-						domMethod.Attributes |= System.CodeDom.MemberAttributes.Family;
+						domMethod.Attributes = (domMethod.Attributes & ~System.CodeDom.MemberAttributes.AccessMask)
+							| System.CodeDom.MemberAttributes.Family;
+						
 						list.Add (
 						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
 						        MonoDevelop.DesignerSupport.CodeBehind.GetNonDesignerClass (codeBehindClass))
