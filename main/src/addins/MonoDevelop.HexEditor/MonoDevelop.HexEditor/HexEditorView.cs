@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.HexEditor
 {
-	public class HexEditorView : AbstractViewContent, IUndoHandler, IBookmarkBuffer
+	public class HexEditorView : AbstractViewContent, IUndoHandler, IBookmarkBuffer, IZoomable
 	{
 		Mono.MHex.HexEditor hexEditor = new Mono.MHex.HexEditor ();
 		Gtk.ScrolledWindow window = new Gtk.ScrolledWindow ();
@@ -168,6 +168,44 @@ namespace MonoDevelop.HexEditor
 			}
 		}
 		
+		#endregion
+		
+		#region IZoomable
+		bool IZoomable.EnableZoomIn {
+			get {
+				return hexEditor.Options.CanZoomIn;
+			}
+		}
+		
+		bool IZoomable.EnableZoomOut {
+			get {
+				return hexEditor.Options.CanZoomOut;
+			}
+		}
+		
+		bool IZoomable.EnableZoomReset {
+			get {
+				return hexEditor.Options.CanResetZoom;
+			}
+		}
+		
+		void IZoomable.ZoomIn ()
+		{
+			hexEditor.Options.ZoomIn ();
+			hexEditor.Repaint ();
+		}
+		
+		void IZoomable.ZoomOut ()
+		{
+			hexEditor.Options.ZoomOut ();
+			hexEditor.Repaint ();
+		}
+		
+		void IZoomable.ZoomReset ()
+		{
+			hexEditor.Options.ZoomReset ();
+			hexEditor.Repaint ();
+		}
 		#endregion
 	}
 }

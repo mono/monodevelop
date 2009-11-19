@@ -1,3 +1,8 @@
+2009-11-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.HexEditor/HexEditorView.cs: Implemented
+	  IZoomable.
+
 2009-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.HexEditor/HexEditorView.cs: Set dirty flag after
