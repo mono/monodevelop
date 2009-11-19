@@ -704,7 +704,7 @@ namespace MonoDevelop.Debugger.Soft
 		Value result;
 		ST.Thread thread;
 		InvocationException exception;
-		InvokeOptions options = InvokeOptions.DisableBreakpoints & InvokeOptions.SingleThreaded;
+		InvokeOptions options = InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded;
 		
 		public MethodCall (SoftEvaluationContext ctx, MethodMirror function, object object_argument, Value[] param_objects)
 		{
