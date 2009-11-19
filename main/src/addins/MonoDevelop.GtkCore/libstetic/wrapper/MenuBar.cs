@@ -151,12 +151,13 @@ namespace Stetic.Wrapper
 		{
 			base.OnNameChanged (args);
 			if (actionTree != null)
-				actionTree.Name = Wrapped.Name;
+				actionTree.Name = Name;
 		}
 		
 		internal protected override CodeExpression GenerateObjectCreation (GeneratorContext ctx)
 		{
 			BuildTree ();
+			actionTree.Name = Name;
 			CodeExpression exp = GenerateUiManagerElement (ctx, actionTree);
 			if (exp != null)
 				return new CodeCastExpression (typeof(Gtk.MenuBar),	exp);
@@ -189,7 +190,7 @@ namespace Stetic.Wrapper
 		void CreateTree ()
 		{
 			actionTree = new ActionTree ();
-			actionTree.Name = Wrapped.Name;
+			actionTree.Name = Name;
 			actionTree.Type = Gtk.UIManagerItemType.Menubar;
 			actionTree.Changed += OnTreeChanged;
 		}
