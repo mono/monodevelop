@@ -48,17 +48,24 @@ namespace MonoDevelop.Debugger.Win32
 	{
 		public override bool IsPrimitive (EvaluationContext ctx, object val)
 		{
-			return GetRealObject (val) is CorGenericValue;
+			object v = GetRealObject (ctx, val);
+			return (v is CorGenericValue) || (v is CorStringValue);
+		}
+
+		public override bool IsEnum (EvaluationContext ctx, object val)
+		{
+			CorType type = (CorType) GetValueType (ctx, val);
+			return IsEnum (ctx, type);
 		}
 
 		public override bool IsArray (EvaluationContext ctx, object val)
 		{
-			return GetRealObject (val) is CorArrayValue;
+			return GetRealObject (ctx, val) is CorArrayValue;
 		}
 
 		public override bool IsClassInstance (EvaluationContext ctx, object val)
 		{
-			return GetRealObject (val) is CorObjectValue;
+			return GetRealObject (ctx, val) is CorObjectValue;
 		}
 
 		public override bool IsNull (EvaluationContext ctx, object gval)
@@ -99,7 +106,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override object GetValueType (EvaluationContext ctx, object val)
 		{
-			return GetRealObject (val).ExactType;
+			return GetRealObject (ctx, val).ExactType;
 		}
 
 		public override object[] GetTypeArgs (EvaluationContext ctx, object type)
@@ -140,6 +147,8 @@ namespace MonoDevelop.Debugger.Win32
 
 		T[] CastArray<T> (object[] array)
 		{
+			if (array == null)
+				return null;
 			T[] ret = new T[array.Length];
 			Array.Copy (array, ret, array.Length);
 			return ret;
@@ -315,22 +324,23 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr)
 		{
-			if (GetRealObject (arr) is CorArrayValue)
+			if (GetRealObject (ctx, arr) is CorArrayValue)
 				return new ArrayAdaptor (ctx, (CorValRef) arr);
 			else
 				return null;
 		}
 
-		public static CorValue GetRealObject (object objr)
+		public static CorValue GetRealObject (EvaluationContext cctx, object objr)
 		{
 			if (objr == null || ((CorValRef)objr).Val == null)
 				return null;
 
-			return GetRealObject (((CorValRef)objr).Val);
+			return GetRealObject (cctx, ((CorValRef)objr).Val);
 		}
 
-		public static CorValue GetRealObject (CorValue obj)
+		public static CorValue GetRealObject (EvaluationContext ctx, CorValue obj)
 		{
+			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			if (obj == null)
 				return null;
 
@@ -355,13 +365,16 @@ namespace MonoDevelop.Debugger.Win32
 				if (refVal != null) {
 					if (refVal.IsNull)
 						return refVal;
-					else
-						return GetRealObject (refVal.Dereference ());
+					else {
+						cctx.Session.WaitUntilStopped ();
+						return GetRealObject (cctx, refVal.Dereference ());
+					}
 				}
 
+				cctx.Session.WaitUntilStopped ();
 				CorBoxValue boxVal = obj.CastToBoxValue ();
 				if (boxVal != null)
-					return GetRealObject (boxVal.GetObject ());
+					return GetRealObject (cctx, boxVal.GetObject ());
 
 				if (obj.ExactType.Type == CorElementType.ELEMENT_TYPE_STRING)
 					return obj.CastToStringValue ();
@@ -380,34 +393,6 @@ namespace MonoDevelop.Debugger.Win32
 				throw;
 			}
 			return obj;
-		}
-
-		protected override ObjectValue CreateObjectValueImpl (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
-		{
-			CorValue robj = GetRealObject (obj);
-
-			if (robj == null)
-				return ObjectValue.CreateObject (null, path, "", null, flags | ObjectValueFlags.ReadOnly, null);
-
-			if ((robj is CorReferenceValue) && ((CorReferenceValue) robj).IsNull)
-				return ObjectValue.CreateObject (null, path, GetTypeName (ctx, robj.ExactType), "(null)", flags, null);
-
-			if ((robj is CorObjectValue) && robj.ExactType.Base != null && GetTypeName (ctx, robj.ExactType.Base) == "System.Enum")
-				return ObjectValue.CreatePrimitive (source, path, GetTypeName (ctx, robj.ExactType), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);
-
-			if ((robj is CorArrayValue) || (robj is CorObjectValue))
-				return ObjectValue.CreateObject (source, path, GetTypeName (ctx, robj.ExactType), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
-
-			CorGenericValue genVal = robj as CorGenericValue;
-			if (genVal != null) {
-				return ObjectValue.CreatePrimitive (source, path, GetTypeName (ctx, robj.ExactType), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);
-			}
-
-			CorStringValue sVal = robj as CorStringValue;
-			if (sVal != null)
-				return ObjectValue.CreatePrimitive (source, path, "System.String", ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);
-
-			return ObjectValue.CreateError (path.LastName, "Unknown value type: " + GetValueTypeName (ctx, obj), flags);
 		}
 
 		public override object GetEnclosingType (EvaluationContext gctx)
@@ -429,7 +414,7 @@ namespace MonoDevelop.Debugger.Win32
 			CorValRef val = (CorValRef) gval;
 
 			if (val != null)
-				t = GetRealObject (val).ExactType;
+				t = GetRealObject (ctx, val).ExactType;
 
 			if (t.Class == null)
 				yield break;
@@ -487,7 +472,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override object TargetObjectToObject (EvaluationContext ctx, object objr)
 		{
-			CorValue obj = GetRealObject (objr);
+			CorValue obj = GetRealObject (ctx, objr);
 
 			if ((obj is CorReferenceValue) && ((CorReferenceValue) obj).IsNull)
 				return new LiteralExp ("(null)");
@@ -547,24 +532,8 @@ namespace MonoDevelop.Debugger.Win32
 					return null;
 				if (co.Class.GetTypeInfo (cctx.Session).Name == "System.Decimal")
 					return new LiteralExp (CallToString (ctx, objr));
-				if (tdata.ValueDisplayString != null) {
-					try {
-						string ev = EvaluateDisplayString (ctx, objr, tdata.ValueDisplayString);
-						return new LiteralExp (ev);
-					} catch (Exception ex) {
-						cctx.WriteDebuggerError (ex);
-					}
-				}
 
-				// Try using a collection adaptor
-				ICollectionAdaptor col = CreateArrayAdaptor (ctx, objr);
-				if (col != null)
-					return new LiteralExp (ArrayElementGroup.GetArrayDescription (col.GetDimensions ()));
-
-				// Return the type name
-				if (tdata.TypeDisplayString != null)
-					return new LiteralExp ("{" + tdata.TypeDisplayString + "}");
-				return new LiteralExp ("{" + GetTypeName (ctx, co.ExactType) + "}");
+				return base.TargetObjectToObject (ctx, objr);
 			}
 
 			CorGenericValue genVal = obj as CorGenericValue;
@@ -572,7 +541,7 @@ namespace MonoDevelop.Debugger.Win32
 				return genVal.GetValue ();
 			}
 
-			return new LiteralExp ("?");
+			return base.TargetObjectToObject (ctx, objr);
 		}
 
 		public override ValueReference GetThisReference (EvaluationContext gctx)
@@ -690,7 +659,6 @@ namespace MonoDevelop.Debugger.Win32
 				if (patt != null) {
 					if (td == null) td = new TypeDisplayData ();
 					td.ProxyType = patt.ProxyTypeName;
-					td.IsProxyType = true;
 					continue;
 				}
 				DebuggerDisplayAttribute datt = att as DebuggerDisplayAttribute;

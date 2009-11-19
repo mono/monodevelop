@@ -79,7 +79,8 @@ namespace MonoDevelop.Debugger.Win32
 				// of a debugger event. Just in case, we run it in a separate thread.
 				CorDebugger dd = dbg;
 				ThreadPool.QueueUserWorkItem (delegate {
-					dd.Terminate ();
+					if (!terminated)
+						dd.Terminate ();
 				});
 			}
 			base.Dispose ();
@@ -129,10 +130,22 @@ namespace MonoDevelop.Debugger.Win32
 			process.OnStepComplete += new StepCompleteEventHandler (OnStepComplete);
 			process.OnBreak += new CorThreadEventHandler (OnBreak);
 			process.OnNameChange += new CorThreadEventHandler (OnNameChange);
+			process.OnEvalComplete += new EvalEventHandler (OnEvalComplete);
+			process.OnEvalException += new EvalEventHandler (OnEvalException);
 
 			process.Continue (false);
 
 			OnStarted ();
+		}
+
+		void OnEvalException (object sender, CorEvalEventArgs e)
+		{
+			evaluationTimestamp++;
+		}
+
+		void OnEvalComplete (object sender, CorEvalEventArgs e)
+		{
+			evaluationTimestamp++;
 		}
 
 		void OnNameChange (object sender, CorThreadEventArgs e)
@@ -141,6 +154,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		void OnStopped ( )
 		{
+			evaluationTimestamp++;
 			lock (threads) {
 				threads.Clear ();
 			}
@@ -332,6 +346,7 @@ namespace MonoDevelop.Debugger.Win32
 		protected override void OnContinue ( )
 		{
 			ClearEvalStatus ();
+			process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
 			process.Continue (false);
 		}
 
@@ -364,6 +379,7 @@ namespace MonoDevelop.Debugger.Win32
 			if (stepper != null) {
 				stepper.StepOut ();
 				ClearEvalStatus ();
+				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
 				process.Continue (false);
 			}
 		}
@@ -512,6 +528,7 @@ namespace MonoDevelop.Debugger.Win32
 				stepper.StepRange (into, ranges.ToArray ());
 
 				ClearEvalStatus ();
+				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
 				process.Continue (false);
 			}
 		}
@@ -587,10 +604,6 @@ namespace MonoDevelop.Debugger.Win32
 			if (!ctx.Thread.ActiveChain.IsManaged)
 				throw new EvaluatorException ("Cannot evaluate expression because the thread is stopped in native code.");
 
-			lock (debugLock) {
-				evaluating = true;
-			}
-
 			CorValue[] args;
 			if (thisObj == null)
 				args = arguments;
@@ -605,11 +618,13 @@ namespace MonoDevelop.Debugger.Win32
 			CorEval eval = ctx.Eval;
 
 			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+				OnEndEvaluating ();
 				mc.DoneEvent.Set ();
 				eargs.Continue = false;
 			};
 
 			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+				OnEndEvaluating ();
 				exception = eargs.Eval.Result;
 				mc.DoneEvent.Set ();
 				eargs.Continue = false;
@@ -625,23 +640,26 @@ namespace MonoDevelop.Debugger.Win32
 					eval.CallParameterizedFunction (function, typeArgs, args);
 				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
 				ClearEvalStatus ();
+				OnStartEvaluating ();
 				process.Continue (false);
 			};
 			mc.OnAbort = delegate {
 				eval.Abort ();
 			};
+			mc.OnGetDescription = delegate {
+				System.Reflection.MethodInfo met = function.GetMethodInfo (ctx.Session);
+				if (met != null)
+					return met.Name;
+				else
+					return "<Unknown>";
+			};
 
 			try {
-				ObjectAdapter.AsyncExecute (mc, ctx.Timeout);
+				ObjectAdapter.AsyncExecute (mc, ctx.Options.EvaluationTimeout);
 			}
 			finally {
-				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, ctx.Thread);
 				process.OnEvalComplete -= completeHandler;
 				process.OnEvalException -= exceptionHandler;
-
-				lock (debugLock) {
-					evaluating = false;
-				}
 			}
 
 			if (exception != null) {
@@ -659,22 +677,35 @@ namespace MonoDevelop.Debugger.Win32
 			return eval.Result;
 		}
 
-		public CorValue NewString (CorEvaluationContext ctx, string value)
+		void OnStartEvaluating ( )
 		{
 			lock (debugLock) {
 				evaluating = true;
 			}
+		}
 
+		void OnEndEvaluating ( )
+		{
+			lock (debugLock) {
+				evaluating = false;
+				Monitor.PulseAll (debugLock);
+			}
+		}
+
+		public CorValue NewString (CorEvaluationContext ctx, string value)
+		{
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
 			CorValue result = null;
 
 			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+				OnEndEvaluating ();
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
 			};
 
 			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+				OnEndEvaluating ();
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
@@ -684,29 +715,33 @@ namespace MonoDevelop.Debugger.Win32
 				process.OnEvalComplete += completeHandler;
 				process.OnEvalException += exceptionHandler;
 
+				OnStartEvaluating ();
 				ctx.Eval.NewString (value);
+
 				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
 				ClearEvalStatus ();
 				process.Continue (false);
 
-				if (doneEvent.WaitOne (ctx.Timeout, false))
+				if (doneEvent.WaitOne (ctx.Options.EvaluationTimeout, false))
 					return result;
 				else
 					return null;
 			} finally {
-				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, ctx.Thread);
 				process.OnEvalComplete -= completeHandler;
 				process.OnEvalException -= exceptionHandler;
+			}
+		}
 
-				lock (debugLock) {
-					evaluating = false;
-				}
+		public void WaitUntilStopped ( )
+		{
+			lock (debugLock) {
+				while (evaluating)
+					Monitor.Wait (debugLock);
 			}
 		}
 
 		void ClearEvalStatus ( )
 		{
-			evaluationTimestamp++;
 			foreach (CorProcess p in dbg.Processes) {
 				if (p.Id == processId) {
 					process = p;
@@ -755,10 +790,16 @@ namespace MonoDevelop.Debugger.Win32
 
 		public CorThread GetThread (int id)
 		{
-			foreach (CorThread t in process.Threads)
-				if (t.Id == id)
-					return t;
-			throw new InvalidOperationException ("Invalid thread id " + id);
+			try {
+				WaitUntilStopped ();
+				foreach (CorThread t in process.Threads)
+					if (t.Id == id)
+						return t;
+				throw new InvalidOperationException ("Invalid thread id " + id);
+			}
+			catch {
+				throw;
+			}
 		}
 
 		string GetThreadName (CorThread thread)
@@ -840,6 +881,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public static void SetValue (this CorValRef thisVal, EvaluationContext ctx, CorValRef val)
 		{
+			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			CorObjectAdaptor actx = (CorObjectAdaptor) ctx.Adapter;
 			if (actx.IsEnum (ctx, thisVal.Val.ExactType) && !actx.IsEnum (ctx, val.Val.ExactType)) {
 				ValueReference vr = actx.GetMember (ctx, thisVal, "value__");
@@ -857,7 +899,7 @@ namespace MonoDevelop.Debugger.Win32
 					return;
 				}
 			}
-			CorGenericValue gv = CorObjectAdaptor.GetRealObject (thisVal.Val) as CorGenericValue;
+			CorGenericValue gv = CorObjectAdaptor.GetRealObject (cctx, thisVal.Val) as CorGenericValue;
 			if (gv != null)
 				gv.SetValue (ctx.Adapter.TargetObjectToObject (ctx, val));
 		}
