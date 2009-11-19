@@ -35,17 +35,17 @@ namespace MonoDevelop.Debugger.Win32
 	class ArrayAdaptor: ICollectionAdaptor
 	{
 		CorValRef obj;
-		EvaluationContext ctx;
+		CorEvaluationContext ctx;
 
 		public ArrayAdaptor (EvaluationContext ctx, CorValRef obj)
 		{
 			this.obj = obj;
-			this.ctx = ctx;
+			this.ctx = (CorEvaluationContext) ctx;
 		}
 		
 		public int[] GetDimensions ()
 		{
-			CorArrayValue array = CorObjectAdaptor.GetRealObject (obj) as CorArrayValue;
+			CorArrayValue array = CorObjectAdaptor.GetRealObject (ctx, obj) as CorArrayValue;
 			if (array != null)
 				return array.GetDimensions ();
 			else
@@ -55,7 +55,7 @@ namespace MonoDevelop.Debugger.Win32
 		public object GetElement (int[] indices)
 		{
 			return new CorValRef (delegate {
-				CorArrayValue array = CorObjectAdaptor.GetRealObject (obj) as CorArrayValue;
+				CorArrayValue array = CorObjectAdaptor.GetRealObject (ctx, obj) as CorArrayValue;
 				if (array != null)
 					return array.GetElement (indices);
 				else
@@ -77,7 +77,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices)
 		{
-			CorArrayValue array = CorObjectAdaptor.GetRealObject (obj) as CorArrayValue;
+			CorArrayValue array = CorObjectAdaptor.GetRealObject (ctx, obj) as CorArrayValue;
 			if (array != null) {
 				CorValRef elem = (CorValRef) GetElement (indices);
 				return ctx.Adapter.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);

@@ -73,7 +73,7 @@ namespace MonoDevelop.Debugger.Win32
 			get {
 				CorEvaluationContext ctx = (CorEvaluationContext) Context;
 				if (thisobj != null && !field.IsStatic) {
-					CorObjectValue cval = (CorObjectValue) CorObjectAdaptor.GetRealObject (thisobj);
+					CorObjectValue cval = (CorObjectValue) CorObjectAdaptor.GetRealObject (ctx, thisobj);
 					CorValue val = cval.GetFieldValue (type.Class, field.MetadataToken);
 					return new CorValRef (val, loader);
 				}
@@ -89,7 +89,7 @@ namespace MonoDevelop.Debugger.Win32
 			set {
 				((CorValRef)Value).SetValue (Context, (CorValRef) value);
 				if (thisobj != null) {
-					CorObjectValue cob = CorObjectAdaptor.GetRealObject (thisobj) as CorObjectValue;
+					CorObjectValue cob = CorObjectAdaptor.GetRealObject (Context, thisobj) as CorObjectValue;
 					if (cob != null && cob.IsValueClass)
 						thisobj.IsValid = false; // Required to make sure that thisobj returns an up-to-date value object
 

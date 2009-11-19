@@ -13,7 +13,7 @@ using Mono.Debugging.Evaluation;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	class CorBacktrace: IBacktrace
+	class CorBacktrace: BaseBacktrace
 	{
 		CorThread thread;
 		int threadId;
@@ -21,7 +21,7 @@ namespace MonoDevelop.Debugger.Win32
 		List<CorFrame> frames;
 		int evalTimestamp;
 
-		public CorBacktrace (CorThread thread, CorDebuggerSession session)
+		public CorBacktrace (CorThread thread, CorDebuggerSession session): base (session.ObjectAdapter)
 		{
 			this.session = session;
 			this.thread = thread;
@@ -49,74 +49,26 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		CorEvaluationContext GetEvaluationContext (int frameIndex, int timeout)
+		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
 		{
-			if (timeout == -1)
-				timeout = session.ObjectAdapter.DefaultEvaluationTimeout;
-			CorFrame frame = FrameList[frameIndex];
-			CorEvaluationContext ctx = new CorEvaluationContext (session, this, frame, frameIndex);
+			CorEvaluationContext ctx = new CorEvaluationContext (session, this, frameIndex, options);
 			ctx.Thread = thread;
-			ctx.Timeout = timeout;
 			return ctx;
 		}
 	
 		#region IBacktrace Members
 
-		public AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)
+		public override AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)
 		{
 			return new AssemblyLine[0];
 		}
 
-		public int FrameCount
+		public override int FrameCount
 		{
 			get { return FrameList.Count; }
 		}
 
-		public ObjectValue[] GetAllLocals (int frameIndex, int timeout)
-		{
-			List<ObjectValue> locals = new List<ObjectValue> ();
-
-			ObjectValue thisObj = GetThisReference (frameIndex, timeout);
-			if (thisObj != null)
-				locals.Add (thisObj);
-
-			locals.AddRange (GetLocalVariables (frameIndex, timeout));
-			locals.AddRange (GetParameters (frameIndex, timeout));
-
-			return locals.ToArray ();
-		}
-
-		public CompletionData GetExpressionCompletionData (int frameIndex, string exp)
-		{
-			CorEvaluationContext ctx = GetEvaluationContext (frameIndex, 400);
-			return ctx.Adapter.GetExpressionCompletionData (ctx, exp);
-		}
-
-		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeout)
-		{
-			CorEvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			return ctx.Adapter.GetExpressionValuesAsync (ctx, expressions, evaluateMethods, timeout);
-		}
-
-		public ObjectValue[] GetLocalVariables (int frameIndex, int timeout)
-		{
-			CorEvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			List<ObjectValue> list = new List<ObjectValue> ();
-			foreach (VariableReference var in ctx.Adapter.GetLocalVariables (ctx))
-				list.Add (var.CreateObjectValue (true));
-			return list.ToArray ();
-		}
-
-		public ObjectValue[] GetParameters (int frameIndex, int timeout)
-		{
-			CorEvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			List<ObjectValue> vars = new List<ObjectValue> ();
-			foreach (VariableReference var in ctx.Adapter.GetParameters (ctx))
-				vars.Add (var.CreateObjectValue (true));
-			return vars.ToArray ();
-		}
-
-		public StackFrame[] GetStackFrames (int firstIndex, int lastIndex)
+		public override StackFrame[] GetStackFrames (int firstIndex, int lastIndex)
 		{
 			if (lastIndex >= FrameList.Count)
 				lastIndex = FrameList.Count - 1;
@@ -180,16 +132,6 @@ namespace MonoDevelop.Debugger.Win32
 			if (method == null)
 				method = "<Unknown>";
 			return new StackFrame ((long) address, module, method, file, line, lang);
-		}
-
-		public ObjectValue GetThisReference (int frameIndex, int timeout)
-		{
-			CorEvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			ValueReference var = ctx.Adapter.GetThisReference (ctx);
-			if (var != null)
-				return var.CreateObjectValue ();
-			else
-				return null;
 		}
 
 		#endregion

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Mono.Debugging.Evaluation;
+using DC=Mono.Debugging.Client;
 using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32
@@ -19,12 +20,11 @@ namespace MonoDevelop.Debugger.Win32
 
 		public CorDebuggerSession Session { get; set; }
 
-		internal CorEvaluationContext (CorDebuggerSession session, CorBacktrace backtrace, CorFrame frame, int index)
+		internal CorEvaluationContext (CorDebuggerSession session, CorBacktrace backtrace, int index, DC.EvaluationOptions ops): base (ops)
 		{
 			Session = session;
 			Evaluator = session.Evaluator;
 			Adapter = session.ObjectAdapter;
-			this.frame = frame;
 			frameIndex = index;
 			this.backtrace = backtrace;
 			evalTimestamp = CorDebuggerSession.EvaluationTimestamp;
@@ -56,14 +56,7 @@ namespace MonoDevelop.Debugger.Win32
 			get {
 				CheckTimestamp ();
 				if (frame == null) {
-					frame = null;
-					int n = 0;
-					foreach (CorFrame f in backtrace.FrameList) {
-						if (n++ == frameIndex) {
-							frame = f;
-							break;
-						}
-					}
+					frame = backtrace.FrameList [frameIndex];
 				}
 				return frame;
 			}
