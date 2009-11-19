@@ -1,3 +1,21 @@
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/ObjectValue.cs:
+	* Mono.Debugging.Client/ObjectValueFlags.cs:
+	* Mono.Debugging.Evaluation/BaseBacktrace.cs:
+	* Mono.Debugging.Client/EvaluationOptions.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/TimedEvaluator.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs:
+	  Improved async evaluation. If an evaluation is in process,
+	  don't even try to create an evaluation context, just queue
+	  the request. Added more evaluation options. Added default
+	  implementations for some methods (in ObjectValueAdaptor) and
+	  classes (BaseBacktrace), factorized from the soft debugger.
+
 2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/Backtrace.cs:

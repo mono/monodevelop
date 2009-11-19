@@ -70,14 +70,25 @@ namespace Mono.Debugging.Evaluation
 
 		public ObjectValue CreateObjectValue (bool withTimeout)
 		{
-			if (!CanEvaluate ())
-				return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (Context, Type), Flags);
-			if (withTimeout) {
-				return ctx.Adapter.CreateObjectValueAsync (Name, Flags, delegate {
+			return CreateObjectValue (withTimeout, Context.Options);
+		}
+		
+		public ObjectValue CreateObjectValue (bool withTimeout, EvaluationOptions options)
+		{
+			EvaluationContext oldCtx = ctx;
+			ctx = ctx.Clone (options);
+			try {
+				if (!CanEvaluate ())
+					return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (Context, Type), Flags);
+				if (withTimeout) {
+					return ctx.Adapter.CreateObjectValueAsync (Name, Flags, delegate {
+						return CreateObjectValue ();
+					});
+				} else
 					return CreateObjectValue ();
-				});
-			} else
-				return CreateObjectValue ();
+			} finally {
+				ctx = oldCtx;
+			}
 		}
 		
 		public ObjectValue CreateObjectValue ()

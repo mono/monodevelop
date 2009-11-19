@@ -46,6 +46,10 @@ namespace Mono.Debugging.Evaluation
 			get { return runner.RunTimeout; }
 			set { runner.RunTimeout = value; }
 		}
+		
+		public bool IsEvaluating {
+			get { return runner.IsEvaluating; }
+		}
 
 		public ObjectValue Run (string name, ObjectValueFlags flags, ObjectEvaluatorDelegate evaluator)
 		{

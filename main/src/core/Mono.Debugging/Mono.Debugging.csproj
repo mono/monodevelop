@@ -98,6 +98,7 @@
     <Compile Include="Mono.Debugging.Client\DebuggerException.cs" />
     <Compile Include="Mono.Debugging.Client\DebuggerSessionOptions.cs" />
     <Compile Include="Mono.Debugging.Client\EvaluationOptions.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\BaseBacktrace.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

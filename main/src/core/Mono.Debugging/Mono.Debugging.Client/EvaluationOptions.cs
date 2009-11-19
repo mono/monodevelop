@@ -59,5 +59,13 @@ namespace Mono.Debugging.Client
 			get { return allowToStringCalls && AllowTargetInvoke; }
 			set { allowToStringCalls = value; }
 		}
+		
+		public bool AllowDisplayStringEvaluation {
+			get { return AllowTargetInvoke; }
+		}
+		
+		public bool AllowDebuggerProxy {
+			get { return AllowTargetInvoke; }
+		}
 	}
 }

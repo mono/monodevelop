@@ -95,7 +95,7 @@ namespace Mono.Debugging.Client
 			ob.arrayCount = arrayCount;
 			ob.flags = flags | ObjectValueFlags.Array;
 			ob.value = "[" + arrayCount + "]";
-			if (children != null) {
+			if (children != null && children.Length > 0) {
 				ob.children = new List<ObjectValue> ();
 				ob.children.AddRange (children);
 			}
@@ -124,7 +124,7 @@ namespace Mono.Debugging.Client
 		
 		public static ObjectValue CreateImplicitNotSupported (IObjectValueSource source, ObjectPath path, string typeName, ObjectValueFlags flags)
 		{
-			return CreateNotSupported (source, path, typeName, "Expression can't be evaluated because implicit evaluation is disabled", flags);
+			return CreateNotSupported (source, path, typeName, "Implicit evaluation is disabled", flags);
 		}
 		
 		public static ObjectValue CreateNotSupported (IObjectValueSource source, ObjectPath path, string typeName, string message, ObjectValueFlags flags)
@@ -314,6 +314,10 @@ namespace Mono.Debugging.Client
 		
 		public bool IsEvaluating {
 			get { return HasFlag (ObjectValueFlags.Evaluating); }
+		}
+		
+		public bool IsEvaluatingGroup {
+			get { return HasFlag (ObjectValueFlags.EvaluatingGroup); }
 		}
 		
 		public bool CanRefresh {
