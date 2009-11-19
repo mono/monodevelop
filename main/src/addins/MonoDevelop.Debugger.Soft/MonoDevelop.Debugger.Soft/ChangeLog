@@ -1,5 +1,10 @@
 2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerAdaptor.cs: Use the async eval API instead of
+	  creating a thread.
+
+2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerAdaptor.cs: Fix invocation options.
 
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>

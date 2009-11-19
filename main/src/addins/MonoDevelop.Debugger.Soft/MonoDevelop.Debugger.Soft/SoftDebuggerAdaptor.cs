@@ -702,7 +702,7 @@ namespace MonoDevelop.Debugger.Soft
 		object object_argument;
 		Value[] param_objects;
 		Value result;
-		ST.Thread thread;
+		IAsyncResult handle;
 		InvocationException exception;
 		InvokeOptions options = InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded;
 		
@@ -722,24 +722,23 @@ namespace MonoDevelop.Debugger.Soft
 
 		public override void Invoke ()
 		{
-			thread = new ST.Thread (delegate () {
-				try {
-					if (object_argument is ObjectMirror)
-						result = ((ObjectMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects, options);
-					else if (object_argument is TypeMirror)
-						result = ((TypeMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects, options);
-					else if (object_argument is StructMirror)
-						result = ((StructMirror)object_argument).InvokeMethod (ctx.Thread, function, param_objects, options);
-					else
-						throw new ArgumentException (object_argument.GetType ().ToString ());
-				} catch (InvocationException ex) {
-					exception = ex;
-				} catch (Exception ex) {
-					MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
-				}
-			});
-			thread.IsBackground = true;
-			thread.Start ();
+			try {
+				if (object_argument is ObjectMirror)
+					handle = ((ObjectMirror)object_argument).BeginInvokeMethod (
+						ctx.Thread.VirtualMachine, ctx.Thread, function, param_objects, options, Callback, null);
+				else if (object_argument is TypeMirror)
+					handle = ((TypeMirror)object_argument).BeginInvokeMethod (
+						ctx.Thread.VirtualMachine, ctx.Thread, function, param_objects, options, Callback, null);
+				else if (object_argument is StructMirror)
+					handle = ((StructMirror)object_argument).BeginInvokeMethod (
+						ctx.Thread.VirtualMachine, ctx.Thread, function, param_objects, options, Callback, null);
+				else
+					throw new ArgumentException (object_argument.GetType ().ToString ());
+			} catch (InvocationException ex) {
+				exception = ex;
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
+			}
 		}
 
 		public override void Abort ()
@@ -750,12 +749,28 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public override void Shutdown ()
 		{
-			thread.Abort ();
+			//ignore, just let the debugger carry on, since we can't abort
+		}
+		
+		void Callback (IAsyncResult handle)
+		{
+			try {
+				if (object_argument is ObjectMirror)
+					result = ((ObjectMirror)object_argument).EndInvokeMethod (handle);
+				else if (object_argument is TypeMirror)
+					result = ((TypeMirror)object_argument).EndInvokeMethod (handle);
+				else
+					result = ((StructMirror)object_argument).EndInvokeMethod (handle);
+			} catch (InvocationException ex) {
+				exception = ex;
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
+			}
 		}
 
 		public override bool WaitForCompleted (int timeout)
 		{
-			return thread.Join (timeout);
+			return handle != null && (handle.IsCompleted || handle.AsyncWaitHandle.WaitOne (timeout));
 		}
 
 		public Value ReturnValue {
