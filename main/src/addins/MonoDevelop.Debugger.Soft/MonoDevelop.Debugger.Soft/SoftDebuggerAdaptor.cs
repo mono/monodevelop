@@ -198,14 +198,16 @@ namespace MonoDevelop.Debugger.Soft
 		public override ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
 		{
 			TypeMirror type = (TypeMirror) t;
-			FieldInfoMirror field = type.GetField (name);
-			if (field != null)
-				return new FieldValueReference (ctx, field, co, type);
-			PropertyInfoMirror prop = type.GetProperty (name);
-			if (prop != null)
-				return new PropertyValueReference (ctx, prop, co, type, null);
-			else
-				return null;
+			while (type != null) {
+				FieldInfoMirror field = type.GetField (name);
+				if (field != null)
+					return new FieldValueReference (ctx, field, co, type);
+				PropertyInfoMirror prop = type.GetProperty (name);
+				if (prop != null)
+					return new PropertyValueReference (ctx, prop, co, type, null);
+				type = type.BaseType;
+			}
+			return null;
 		}
 
 		public override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags)

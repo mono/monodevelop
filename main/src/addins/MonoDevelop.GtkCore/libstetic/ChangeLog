@@ -1,3 +1,10 @@
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* wrapper/MenuBar.cs:
+	* wrapper/ActionToolbarWrapper.cs: Propagate the menu name to
+	  the action tree. Fixes bug #540512.
+
 2009-11-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ObjectReader.cs:

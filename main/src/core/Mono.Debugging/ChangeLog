@@ -1,5 +1,10 @@
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Fix calls
+	  to GetTypeDisplayData.
+
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Evaluation/TimedEvaluator.cs:
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
 	* Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs:
