@@ -699,19 +699,19 @@ namespace MonoDevelop.Debugger.Soft
 	{
 		SoftEvaluationContext ctx;
 		MethodMirror function;
-		object object_argument;
-		Value[] param_objects;
+		object obj;
+		Value[] args;
 		Value result;
 		IAsyncResult handle;
 		InvocationException exception;
-		InvokeOptions options = InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded;
+		const InvokeOptions options = InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded;
 		
-		public MethodCall (SoftEvaluationContext ctx, MethodMirror function, object object_argument, Value[] param_objects)
+		public MethodCall (SoftEvaluationContext ctx, MethodMirror function, object obj, Value[] args)
 		{
 			this.ctx = ctx;
 			this.function = function;
-			this.object_argument = object_argument;
-			this.param_objects = param_objects;
+			this.obj = obj;
+			this.args = args;
 		}
 		
 		public override string Description {
@@ -723,17 +723,15 @@ namespace MonoDevelop.Debugger.Soft
 		public override void Invoke ()
 		{
 			try {
-				if (object_argument is ObjectMirror)
-					handle = ((ObjectMirror)object_argument).BeginInvokeMethod (
-						ctx.Thread.VirtualMachine, ctx.Thread, function, param_objects, options, Callback, null);
-				else if (object_argument is TypeMirror)
-					handle = ((TypeMirror)object_argument).BeginInvokeMethod (
-						ctx.Thread.VirtualMachine, ctx.Thread, function, param_objects, options, Callback, null);
-				else if (object_argument is StructMirror)
-					handle = ((StructMirror)object_argument).BeginInvokeMethod (
-						ctx.Thread.VirtualMachine, ctx.Thread, function, param_objects, options, Callback, null);
+				var vm = ctx.Thread.VirtualMachine;
+				if (obj is ObjectMirror)
+					handle = ((ObjectMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, Callback, null);
+				else if (obj is TypeMirror)
+					handle = ((TypeMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, Callback, null);
+				else if (obj is StructMirror)
+					handle = ((StructMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, Callback, null);
 				else
-					throw new ArgumentException (object_argument.GetType ().ToString ());
+					throw new ArgumentException (obj.GetType ().ToString ());
 			} catch (InvocationException ex) {
 				exception = ex;
 			} catch (Exception ex) {
@@ -749,18 +747,18 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public override void Shutdown ()
 		{
-			//ignore, just let the debugger carry on, since we can't abort
+			//ignore, just let the async call carry on, nothing we can do
 		}
 		
 		void Callback (IAsyncResult handle)
 		{
 			try {
-				if (object_argument is ObjectMirror)
-					result = ((ObjectMirror)object_argument).EndInvokeMethod (handle);
-				else if (object_argument is TypeMirror)
-					result = ((TypeMirror)object_argument).EndInvokeMethod (handle);
+				if (obj is ObjectMirror)
+					result = ((ObjectMirror)obj).EndInvokeMethod (handle);
+				else if (obj is TypeMirror)
+					result = ((TypeMirror)obj).EndInvokeMethod (handle);
 				else
-					result = ((StructMirror)object_argument).EndInvokeMethod (handle);
+					result = ((StructMirror)obj).EndInvokeMethod (handle);
 			} catch (InvocationException ex) {
 				exception = ex;
 			} catch (Exception ex) {

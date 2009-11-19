@@ -1,5 +1,9 @@
 2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerAdaptor.cs: Make MethodCall class more readable.
+
+2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerAdaptor.cs: Use the async eval API instead of
 	  creating a thread.
 
