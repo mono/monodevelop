@@ -1,3 +1,8 @@
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.HexEditor.csproj: Don't local copy. Don't
+	  require specific versions.
+
 2009-11-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.HexEditor/HexEditorView.cs: Implemented
