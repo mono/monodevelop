@@ -122,7 +122,7 @@ namespace Mono.Debugging.Evaluation
 				return ObjectValue.CreateObject (source, path, typeName, ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
 			}
 			else {
-				TypeDisplayData tdata = GetTypeDisplayData (ctx, typeName);
+				TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, obj));
 				
 				string tvalue;
 				if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
@@ -431,8 +431,7 @@ namespace Mono.Debugging.Evaluation
 				return new LiteralExp (tn.ToString ());
 			}
 			else if (IsClassInstance (ctx, obj)) {
-				string typeName = GetValueTypeName (ctx, obj);
-				TypeDisplayData tdata = GetTypeDisplayData (ctx, typeName);
+				TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, obj));
 				if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 					return new LiteralExp (EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString));
 				// Return the type name
@@ -440,7 +439,7 @@ namespace Mono.Debugging.Evaluation
 					return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
 				if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 					return new LiteralExp ("{" + EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString) + "}");
-				return new LiteralExp ("{" + typeName + "}");
+				return new LiteralExp ("{" + GetValueTypeName (ctx, obj) + "}");
 			}
 			return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
 		}
