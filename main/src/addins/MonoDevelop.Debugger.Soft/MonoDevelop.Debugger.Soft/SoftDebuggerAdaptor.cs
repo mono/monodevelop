@@ -725,11 +725,11 @@ namespace MonoDevelop.Debugger.Soft
 			try {
 				var vm = ctx.Thread.VirtualMachine;
 				if (obj is ObjectMirror)
-					handle = ((ObjectMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, Callback, null);
+					handle = ((ObjectMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, null, null);
 				else if (obj is TypeMirror)
-					handle = ((TypeMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, Callback, null);
+					handle = ((TypeMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, null, null);
 				else if (obj is StructMirror)
-					handle = ((StructMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, Callback, null);
+					handle = ((StructMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, null, null);
 				else
 					throw new ArgumentException (obj.GetType ().ToString ());
 			} catch (InvocationException ex) {
@@ -750,7 +750,7 @@ namespace MonoDevelop.Debugger.Soft
 			//ignore, just let the async call carry on, nothing we can do
 		}
 		
-		void Callback (IAsyncResult handle)
+		void EndInvoke ()
 		{
 			try {
 				if (obj is ObjectMirror)
@@ -768,7 +768,11 @@ namespace MonoDevelop.Debugger.Soft
 
 		public override bool WaitForCompleted (int timeout)
 		{
-			return handle != null && (handle.IsCompleted || handle.AsyncWaitHandle.WaitOne (timeout));
+			if (handle.AsyncWaitHandle.WaitOne (timeout)) {
+				EndInvoke ();
+				return true;
+			}
+			return false;
 		}
 
 		public Value ReturnValue {

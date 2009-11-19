@@ -1,5 +1,11 @@
 2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerAdaptor.cs: Fix race in async eval. We didn't
+	  actually need a callback, since we're just wrapping one
+	  async API in another.
+
+2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerAdaptor.cs: Make MethodCall class more readable.
 
 2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
