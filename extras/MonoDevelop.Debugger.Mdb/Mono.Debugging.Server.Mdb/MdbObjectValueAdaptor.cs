@@ -106,7 +106,7 @@ namespace DebuggerServer
 					if (ctx.Options.AllowTargetInvoke) {
 						if (co.TypeName == "System.Decimal")
 							return new LiteralExp (CallToString (ctx, co));
-						if (tdata.ValueDisplayString != null)
+						if (tdata.ValueDisplayString != null && ctx.Options.AllowDisplayStringEvaluation)
 							return new LiteralExp (EvaluateDisplayString (ctx, co, tdata.ValueDisplayString));
 					}
 					
@@ -194,7 +194,6 @@ namespace DebuggerServer
 				TypeDisplayData data = new TypeDisplayData ();
 				if (tt.ClassType.DebuggerTypeProxyAttribute != null) {
 					data.ProxyType = tt.ClassType.DebuggerTypeProxyAttribute.ProxyTypeName;
-					data.IsProxyType = true;
 				}
 				if (tt.ClassType.DebuggerDisplayAttribute != null) {
 					data.NameDisplayString = tt.ClassType.DebuggerDisplayAttribute.Name;
@@ -217,6 +216,12 @@ namespace DebuggerServer
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
 			return ctx.GetRealObject (val) is TargetFundamentalObject;
+		}
+
+		public override bool IsEnum (EvaluationContext gctx, object val)
+		{
+			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
+			return ctx.GetRealObject (val) is TargetEnumObject;
 		}
 
 		public override bool IsNull (EvaluationContext gctx, object val)
@@ -528,19 +533,19 @@ namespace DebuggerServer
 						return ObjectValue.CreateUnknown (path.LastName);
 					else {
 						string tvalue;
-						if (!string.IsNullOrEmpty (tdata.ValueDisplayString))
+						if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 							tvalue = EvaluateDisplayString (ctx, co, tdata.ValueDisplayString);
 						else
 							tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
 						
 						string tname;
-						if (!string.IsNullOrEmpty (tdata.TypeDisplayString))
+						if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 							tname = EvaluateDisplayString (ctx, co, tdata.TypeDisplayString);
 						else
 							tname = obj.TypeName;
 						
 						ObjectValue val = ObjectValue.CreateObject (source, path, tname, tvalue, flags, null);
-						if (!string.IsNullOrEmpty (tdata.NameDisplayString))
+						if (!string.IsNullOrEmpty (tdata.NameDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 							val.Name = EvaluateDisplayString (ctx, co, tdata.NameDisplayString);
 						return val;
 					}

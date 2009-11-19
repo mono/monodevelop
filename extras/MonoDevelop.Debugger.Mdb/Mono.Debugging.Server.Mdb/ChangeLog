@@ -1,3 +1,11 @@
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BacktraceWrapper.cs: Subclass BaseBacktrace and reuse some
+	  code from it.
+
+	* MdbObjectValueAdaptor.cs: Track api changes. Improved check
+	  for evaluation options.
+
 2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MdbObjectValueAdaptor.cs: Always show properties, even if we
