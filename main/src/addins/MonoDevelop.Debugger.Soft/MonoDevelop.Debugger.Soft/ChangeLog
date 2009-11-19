@@ -1,5 +1,9 @@
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerSession.cs: Fix disposing code.
+
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerAdaptor.cs: Properly implement
 	  MethodCall.Shutdown.
 

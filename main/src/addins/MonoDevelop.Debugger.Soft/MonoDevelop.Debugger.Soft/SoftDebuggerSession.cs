@@ -251,7 +251,6 @@ namespace MonoDevelop.Debugger.Soft
 			if (!exited) {
 				EndLaunch ();
 				ThreadPool.QueueUserWorkItem (delegate {
-					Adaptor.Dispose ();
 					try {
 						vm.Exit (0);
 					} catch (Exception ex) {
@@ -265,6 +264,7 @@ namespace MonoDevelop.Debugger.Soft
 				});
 				exited = true;
 			}
+			Adaptor.Dispose ();
 		}
 
 		protected override void OnAttachToProcess (long processId)
