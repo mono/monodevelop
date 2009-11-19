@@ -73,11 +73,11 @@ namespace MonoDevelop.Core
 				if (PropertyService.IsWindows)
 					prefix = "win-";
 	
-				string mainRep = "http://go-mono.com/md/" + prefix + AddinManager.CurrentAddin.Version + "/main.mrep";
+				string mainRep = "http://monodevelop.com/files/addins/" + prefix + AddinManager.CurrentAddin.Version + "/main.mrep";
 				
 				AddinRepository[] repos = setupService.Repositories.GetRepositories ();
 				foreach (AddinRepository rep in repos) {
-					if (rep.Url.StartsWith ("http://go-mono.com/md/") && rep.Url != mainRep)
+					if (rep.Url.StartsWith ("http://go-mono.com/md/") || (rep.Url.StartsWith ("http://monodevelop.com/files/addins/") && rep.Url != mainRep))
 						setupService.Repositories.RemoveRepository (rep.Url);
 				}
 				setupService.Repositories.RegisterRepository (null, mainRep, false);

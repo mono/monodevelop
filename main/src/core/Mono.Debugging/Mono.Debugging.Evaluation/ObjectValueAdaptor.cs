@@ -9,18 +9,31 @@ using System.Diagnostics;
 
 namespace Mono.Debugging.Evaluation
 {
-	public abstract class ObjectValueAdaptor
+	public abstract class ObjectValueAdaptor: IDisposable
 	{
 		static Dictionary<string, TypeDisplayData> typeDisplayData = new Dictionary<string, TypeDisplayData> ();
 
-		public int DefaultAsyncSwitchTimeout = 60;
-		public int DefaultEvaluationTimeout = 1000;
-		public int DefaultChildEvaluationTimeout = 5000;
+		// Time to wait while evaluating before switching to async mode
+		public int DefaultEvaluationWaitTime = 100;
 
+		public event EventHandler<BusyStateEventArgs> BusyStateChanged;
+		
 		AsyncEvaluationTracker asyncEvaluationTracker = new AsyncEvaluationTracker ();
 		AsyncOperationManager asyncOperationManager = new AsyncOperationManager ();
 
-//		public abstract object GetRealObject (EvaluationContext ctx, object obj);
+		public ObjectValueAdaptor ()
+		{
+			asyncOperationManager.BusyStateChanged += delegate(object sender, BusyStateEventArgs e) {
+				OnBusyStateChanged (e);
+			};
+			asyncEvaluationTracker.WaitTime = DefaultEvaluationWaitTime;
+		}
+		
+		public void Dispose ()
+		{
+			asyncEvaluationTracker.Dispose ();
+			asyncOperationManager.Dispose ();
+		}
 
 		public ObjectValue CreateObjectValue (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
 		{
@@ -29,8 +42,14 @@ namespace Mono.Debugging.Evaluation
 			}
 			catch (Exception ex) {
 				Console.WriteLine (ex);
-				return ObjectValue.CreateError (path.LastName, ex.Message, flags);
+				return ObjectValue.CreateFatalError (path.LastName, ex.Message, flags);
 			}
+		}
+		
+		public virtual void OnBusyStateChanged (BusyStateEventArgs e)
+		{
+			if (BusyStateChanged != null)
+				BusyStateChanged (this, e);
 		}
 
 		public abstract ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr);
@@ -38,6 +57,7 @@ namespace Mono.Debugging.Evaluation
 		public abstract bool IsNull (EvaluationContext ctx, object val);
 		public abstract bool IsPrimitive (EvaluationContext ctx, object val);
 		public abstract bool IsArray (EvaluationContext ctx, object val);
+		public abstract bool IsEnum (EvaluationContext ctx, object val);
 		public abstract bool IsClass (object type);
 		public abstract object TryCast (EvaluationContext ctx, object val, object type);
 
@@ -88,7 +108,40 @@ namespace Mono.Debugging.Evaluation
 			childTypes = childNamespaces = new string[0];
 		}
 
-		protected abstract ObjectValue CreateObjectValueImpl (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags);
+		protected virtual ObjectValue CreateObjectValueImpl (EvaluationContext ctx, Mono.Debugging.Backend.IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
+		{
+			string typeName = obj != null ? GetValueTypeName (ctx, obj) : "";
+			
+			if (obj == null || IsNull (ctx, obj)) {
+				return ObjectValue.CreateObject (source, path, typeName, "(null)", flags, null);
+			}
+			else if (IsPrimitive (ctx, obj) || IsEnum (ctx,obj)) {
+				return ObjectValue.CreatePrimitive (source, path, typeName, ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);
+			}
+			else if (IsArray (ctx, obj)) {
+				return ObjectValue.CreateObject (source, path, typeName, ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
+			}
+			else {
+				TypeDisplayData tdata = GetTypeDisplayData (ctx, typeName);
+				
+				string tvalue;
+				if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
+					tvalue = EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString);
+				else
+					tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
+				
+				string tname;
+				if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
+					tname = EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString);
+				else
+					tname = typeName;
+				
+				ObjectValue oval = ObjectValue.CreateObject (source, path, tname, tvalue, flags, null);
+				if (!string.IsNullOrEmpty (tdata.NameDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
+					oval.Name = EvaluateDisplayString (ctx, obj, tdata.NameDisplayString);
+				return oval;
+			}
+		}
 
 		public ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, object obj, int firstItemIndex, int count)
 		{
@@ -109,11 +162,11 @@ namespace Mono.Debugging.Evaluation
 			object proxy = dereferenceProxy ? GetProxyObject (ctx, obj) : obj;
 
 			TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, proxy));
-			bool showRawView = tdata.IsProxyType && dereferenceProxy;
+			bool showRawView = tdata.IsProxyType && dereferenceProxy && ctx.Options.AllowDebuggerProxy;
 
 			List<ObjectValue> values = new List<ObjectValue> ();
 			BindingFlags access = BindingFlags.Public | BindingFlags.Instance;
-
+			
 			// Load all members to a list before creating the object values,
 			// to avoid problems with objects being invalidated due to evaluations in the target,
 			List<ValueReference> list = new List<ValueReference> ();
@@ -156,8 +209,10 @@ namespace Mono.Debugging.Evaluation
 					values.AddRange (agroup.GetChildren ());
 				}
 				else {
-					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public))
-						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public));
+					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)) {
+						access = BindingFlags.Static | BindingFlags.Public;
+						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, access));
+					}
 					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic))
 						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic));
 				}
@@ -165,14 +220,14 @@ namespace Mono.Debugging.Evaluation
 			return values.ToArray ();
 		}
 
-		public ObjectValue[] GetExpressionValuesAsync (EvaluationContext ctx, string[] expressions, bool evaluateMethods, int timeout)
+		public ObjectValue[] GetExpressionValuesAsync (EvaluationContext ctx, string[] expressions)
 		{
 			ObjectValue[] values = new ObjectValue[expressions.Length];
 			for (int n = 0; n < values.Length; n++) {
 				string exp = expressions[n];
 				// This is a workaround to a bug in mono 2.0. That mono version fails to compile
 				// an anonymous method here
-				ExpData edata = new ExpData (ctx, exp, evaluateMethods, this);
+				ExpData edata = new ExpData (ctx, exp, this);
 				values[n] = asyncEvaluationTracker.Run (exp, ObjectValueFlags.Literal, edata.Run);
 			}
 			return values;
@@ -182,20 +237,18 @@ namespace Mono.Debugging.Evaluation
 		{
 			public EvaluationContext ctx;
 			public string exp;
-			public bool evaluateMethods;
 			public ObjectValueAdaptor adaptor;
 			
-			public ExpData (EvaluationContext ctx, string exp, bool evaluateMethods, ObjectValueAdaptor adaptor)
+			public ExpData (EvaluationContext ctx, string exp, ObjectValueAdaptor adaptor)
 			{
 				this.ctx = ctx;
 				this.exp = exp;
-				this.evaluateMethods = evaluateMethods;
 				this.adaptor = adaptor;
 			}
 			
 			public ObjectValue Run ()
 			{
-				return adaptor.GetExpressionValue (ctx, exp, evaluateMethods);
+				return adaptor.GetExpressionValue (ctx, exp);
 			}
 		}
 
@@ -360,7 +413,37 @@ namespace Mono.Debugging.Evaluation
 			yield break;
 		}
 		
-		public abstract object TargetObjectToObject (EvaluationContext ctx, object obj);
+		public virtual object TargetObjectToObject (EvaluationContext ctx, object obj)
+		{
+			if (IsNull (ctx, obj)) {
+				return null;
+			} else if (IsArray (ctx, obj)) {
+				ICollectionAdaptor adaptor = CreateArrayAdaptor (ctx, obj);
+				StringBuilder tn = new StringBuilder (GetTypeName (ctx, adaptor.ElementType));
+				int[] dims = adaptor.GetDimensions ();
+				tn.Append ("[");
+				for (int n=0; n<dims.Length; n++) {
+					if (n>0)
+						tn.Append (',');
+					tn.Append (dims[n]);
+				}
+				tn.Append ("]");
+				return new LiteralExp (tn.ToString ());
+			}
+			else if (IsClassInstance (ctx, obj)) {
+				string typeName = GetValueTypeName (ctx, obj);
+				TypeDisplayData tdata = GetTypeDisplayData (ctx, typeName);
+				if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
+					return new LiteralExp (EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString));
+				// Return the type name
+				if (ctx.Options.AllowToStringCalls)
+					return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
+				if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
+					return new LiteralExp ("{" + EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString) + "}");
+				return new LiteralExp ("{" + typeName + "}");
+			}
+			return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
+		}
 
 		public virtual object Cast (EvaluationContext ctx, object obj, object targetType)
 		{
@@ -375,7 +458,7 @@ namespace Mono.Debugging.Evaluation
 		public object GetProxyObject (EvaluationContext ctx, object obj)
 		{
 			TypeDisplayData data = GetTypeDisplayData (ctx, GetValueType (ctx, obj));
-			if (string.IsNullOrEmpty (data.ProxyType))
+			if (string.IsNullOrEmpty (data.ProxyType) || !ctx.Options.AllowDebuggerProxy)
 				return obj;
 
 			object[] typeArgs = null;
@@ -467,6 +550,10 @@ namespace Mono.Debugging.Evaluation
 		{
 			return asyncEvaluationTracker.Run (name, flags, evaluator);
 		}
+		
+		public bool IsEvaluating {
+			get { return asyncEvaluationTracker.IsEvaluating; }
+		}
 
 		public void CancelAsyncOperations ( )
 		{
@@ -475,23 +562,21 @@ namespace Mono.Debugging.Evaluation
 			asyncEvaluationTracker.WaitForStopped ();
 		}
 
-		ObjectValue GetExpressionValue (EvaluationContext ctx, string exp, bool evaluateMethods)
+		public ObjectValue GetExpressionValue (EvaluationContext ctx, string exp)
 		{
 			try {
-				EvaluationOptions ops = new EvaluationOptions ();
-				ops.CanEvaluateMethods = evaluateMethods;
-				ValueReference var = ctx.Evaluator.Evaluate (ctx, exp, ops);
+				ValueReference var = ctx.Evaluator.Evaluate (ctx, exp);
 				if (var != null) {
 					return var.CreateObjectValue ();
 				}
 				else
 					return ObjectValue.CreateUnknown (exp);
 			}
-			catch (NotSupportedExpressionException ex) {
-				return ObjectValue.CreateNotSupported (exp, ex.Message, ObjectValueFlags.None);
+			catch (NotSupportedExpressionException) {
+				return ObjectValue.CreateImplicitNotSupported (ctx.ExpressionValueSource, new ObjectPath (exp), "", ObjectValueFlags.None);
 			}
 			catch (EvaluatorException ex) {
-				return ObjectValue.CreateError (exp, ex.Message, ObjectValueFlags.None);
+				return ObjectValue.CreateError (ctx.ExpressionValueSource, new ObjectPath (exp), "", ex.Message, ObjectValueFlags.None);
 			}
 			catch (Exception ex) {
 				ctx.WriteDebuggerError (ex);
@@ -528,7 +613,10 @@ namespace Mono.Debugging.Evaluation
 		public string ValueDisplayString;
 		public string TypeDisplayString;
 		public string NameDisplayString;
-		public bool IsProxyType;
+		
+		public bool IsProxyType {
+			get { return ProxyType != null; }
+		}
 
 		public static readonly TypeDisplayData Default = new TypeDisplayData ();
 

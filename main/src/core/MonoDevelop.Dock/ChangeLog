@@ -1,3 +1,12 @@
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Dock.csproj: Fix build.
+
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Use system Mono.Cairo.
+
 2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* DockBarItem.cs: Make autohidden pads' buttons look nicer on

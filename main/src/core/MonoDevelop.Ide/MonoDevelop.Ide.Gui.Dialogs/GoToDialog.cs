@@ -403,7 +403,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
 
 			foreach (Project p in projects) {
-				foreach (IType c in ProjectDomService.GetProjectDom (p).Types)
+				ProjectDom dom = ProjectDomService.GetProjectDom (p);
+				if (dom == null)
+					continue;
+				foreach (IType c in dom.Types)
 					AddType (c, list);
 			}
 			return list;

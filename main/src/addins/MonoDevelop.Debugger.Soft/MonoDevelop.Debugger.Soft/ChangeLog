@@ -1,3 +1,97 @@
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerSession.cs: Fix disposing code.
+
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Properly implement
+	  MethodCall.Shutdown.
+
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs:
+	* SoftDebuggerSession.cs:
+	* SoftEvaluationContext.cs:
+	* SoftDebuggerBacktrace.cs: Track api changes. Moved some code
+	  to Mono.Debugging.
+
+2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Fix race in async eval. We didn't
+	  actually need a callback, since we're just wrapping one
+	  async API in another.
+
+2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Make MethodCall class more readable.
+
+2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Use the async eval API instead of
+	  creating a thread.
+
+2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Fix invocation options.
+
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftEvaluationContext.cs: Minor fix.
+
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs:
+	* SoftEvaluationContext.cs:
+	* SoftDebuggerBacktrace.cs:
+	* PropertyValueReference.cs: Track api changes. Call
+	  ToString() to convert objects to values, when that option is
+	  enabled.
+
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerEngine.cs:
+	* SoftDebuggerSession.cs:
+	* RemoteSoftDebuggerSession.cs: Use the user modules as
+	  assembly filters for stepping, if the startinfo has them (it
+	  doesn't yet).
+
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Fix the active thread object.
+
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Make invokes single-threaded and
+	  ignoring breakpoints.
+
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs:
+	* RemoteSoftDebuggerSession.cs: Empty the process info cache
+	  when we resume, so that the process and thread lists get
+	  updated.
+
+2009-11-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftEvaluationContext.cs:
+	* SoftDebuggerBacktrace.cs: Use the new options object.
+
+	* SoftDebuggerSession.cs: Propagate busy state changes.
+	  Dispose the vm in a background thread, to avoid unnecessary
+	  waits. Cancel evaluation operations before continuing
+	  execution.
+
+	* SoftDebuggerAdaptor.cs: Improve support for
+	  AllowTargetInvoke flag. Don't try to abort target invokes.
+	  That's not yet supported.
+
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Debugger.Soft.dll: Updated.
+
+	* SoftDebuggerSession.cs: Queue stop events when more than one
+	  come in at once, and dequeue them when resuming.
+
 2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* RemoteSoftDebuggerSession.cs: Unify the AppName handling for

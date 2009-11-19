@@ -42,6 +42,7 @@ namespace Mono.Debugging.Evaluation
 		int runningThreads;
 		bool mainThreadBusy;
 		bool useTimeout;
+		bool disposed;
 		
 		public TimedEvaluator (): this (true)
 		{
@@ -55,6 +56,26 @@ namespace Mono.Debugging.Evaluation
 
 		public int RunTimeout { get; set; }
 
+		public bool IsEvaluating {
+			get {
+				lock (runningLock) {
+					return pendingTasks.Count > 0 || mainThreadBusy;
+				}
+			}
+		}
+		
+		void OnStartEval ()
+		{
+//			Console.WriteLine ("Eval Started");
+		}
+		
+		void OnEndEval ()
+		{
+//			lock (runningLock) {
+//				Console.WriteLine ("Eval Finished ({0} pending)", pendingTasks.Count);
+//			}
+		}
+		
 		public bool Run (EvaluatorDelegate evaluator, EvaluatorDelegate delayedDoneCallback)
 		{
 			if (!useTimeout) {
@@ -84,6 +105,7 @@ namespace Mono.Debugging.Evaluation
 				mainThreadBusy = true;
 			}
 			
+			OnStartEval ();
 			currentTask = task;
 			newTaskEvent.Set ();
 			task.RunningEvent.WaitOne ();
@@ -106,10 +128,18 @@ namespace Mono.Debugging.Evaluation
 		{
 			Task threadTask = null;
 			
-			while (true) {
+			while (!disposed) {
 
 				if (threadTask == null) {
 					newTaskEvent.WaitOne ();
+					
+					lock (runningLock) {
+						if (disposed) {
+							runningThreads--;
+							return;
+						}
+					}
+					
 					threadTask = currentTask;
 					currentTask = null;
 				}
@@ -120,14 +150,23 @@ namespace Mono.Debugging.Evaluation
 
 				Task curTask = threadTask;
 				threadTask = null;
+				
+				OnEndEval ();
 
-				lock (curTask) {
-					if (curTask.TimedOut)
-						SafeRun (curTask.FinishedCallback);
-					else
-						continue; // Done. Keep waiting for more tasks.
+				lock (runningLock) {
+					if (disposed) {
+						runningThreads--;
+						return;
+					}
 				}
 				
+				lock (curTask) {
+					if (!curTask.TimedOut)
+						continue; // Done. Keep waiting for more tasks.
+					
+					SafeRun (curTask.FinishedCallback);
+				}
+
 				// The task timed out, so more threads may already have
 				// been created while this one was busy.
 				
@@ -135,6 +174,7 @@ namespace Mono.Debugging.Evaluation
 					Monitor.PulseAll (runningLock);
 					if (pendingTasks.Count > 0) {
 						// There is pending work to do.
+						OnStartEval ();
 						threadTask = pendingTasks.Dequeue ();
 					}
 					else if (mainThreadBusy) {
@@ -151,11 +191,19 @@ namespace Mono.Debugging.Evaluation
 				}
 			}
 		}
+		
+		public void Dispose ()
+		{
+			disposed = true;
+			CancelAll ();
+			newTaskEvent.Set ();
+		}
 
 		public void CancelAll ()
 		{
 			lock (runningLock) {
 				pendingTasks.Clear ();
+				Monitor.PulseAll (runningLock);
 			}
 		}
 

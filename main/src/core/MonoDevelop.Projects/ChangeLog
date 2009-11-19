@@ -1,3 +1,20 @@
+2009-11-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicyService.cs: Improve
+	  error message.
+
+2009-11-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs: Checked
+	  dimensions - fixing bug "Bug 556395 - Exception in
+	  DomReturnType.ToInvariantString".
+
+2009-11-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomReturnType.cs: Remove
+	  unnecessary string constructions. StringBuilder can add
+	  multiple chars directly.
+
 2009-11-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Fixed 'Bug 555523

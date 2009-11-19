@@ -66,6 +66,9 @@ namespace MonoDevelop.Debugger
 		static Backtrace currentBacktrace;
 		static int currentFrame;
 
+		static BusyEvaluatorDialog busyDialog;
+
+			
 		static public event EventHandler PausedEvent;
 		static public event EventHandler ResumedEvent;
 		static public event EventHandler StoppedEvent;
@@ -82,6 +85,7 @@ namespace MonoDevelop.Debugger
 			TextFileService.LineCountChanged += OnLineCountChanged;
 			IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 			IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
+			busyDialog = new BusyEvaluatorDialog ();
 		}
 
 		public static IExecutionHandler GetExecutionHandler ()
@@ -95,6 +99,21 @@ namespace MonoDevelop.Debugger
 		
 		public static BreakpointStore Breakpoints {
 			get { return breakpoints; }
+		}
+		
+		public static bool AllowTargetInvoke {
+			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", true); }
+			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", value); }
+		}
+		
+		public static bool AllowToStringCalls {
+			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", true); }
+			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", value); }
+		}
+		
+		public static int EvaluationTimeout {
+			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", 2500); }
+			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", value); }
 		}
 		
 		public static bool ShowBreakpointProperties (Breakpoint bp, bool editNew)
@@ -193,8 +212,10 @@ namespace MonoDevelop.Debugger
 				NotifyLocationChanged ();
 			});
 			
-			if (oldSession != null)
+			if (oldSession != null) {
+				oldSession.BusyStateChanged -= OnBusyStateChanged;
 				oldSession.Dispose ();
+			}
 		}
 
 		public static bool IsDebugging {
@@ -242,8 +263,20 @@ namespace MonoDevelop.Debugger
 			session.TargetExited += delegate {
 				monitor.Dispose ();
 			};
-			session.AttachToProcess (proc);
+			session.AttachToProcess (proc, GetUserOptions ());
 			return monitor.AsyncOperation;
+		}
+		
+		static DebuggerSessionOptions GetUserOptions ()
+		{
+			EvaluationOptions eops = EvaluationOptions.DefaultOptions;
+			eops.AllowTargetInvoke = AllowTargetInvoke;
+			eops.AllowToStringCalls = AllowToStringCalls;
+			eops.EvaluationTimeout = EvaluationTimeout;
+			eops.MemberEvaluationTimeout = EvaluationTimeout * 2;
+			DebuggerSessionOptions ops = new DebuggerSessionOptions ();
+			ops.EvaluationOptions = eops;
+			return ops;
 		}
 		
 		public static void ShowDisassembly ()
@@ -269,7 +302,7 @@ namespace MonoDevelop.Debugger
 			SetupSession ();
 
 			try {
-				session.Run (startInfo);
+				session.Run (startInfo, GetUserOptions ());
 			} catch {
 				Cleanup ();
 				throw;
@@ -302,25 +335,28 @@ namespace MonoDevelop.Debugger
 				});
 				return true;
 			};
+			session.BusyStateChanged += OnBusyStateChanged;
 
 			console.CancelRequested += new EventHandler (OnCancelRequested);
 			NotifyLocationChanged ();
 		}
 		
-		static DateTime lastStart;
+		static void OnBusyStateChanged (object s, BusyStateEventArgs args)
+		{
+			DispatchService.GuiDispatch (delegate {
+				busyDialog.UpdateBusyState (args);
+			});
+		}
 		
 		static void OnStarted (object s, EventArgs a)
 		{
-			lastStart = DateTime.Now;
 			currentBacktrace = null;
 			DispatchService.GuiDispatch (delegate {
-				DateTime t = DateTime.Now;
 				if (ResumedEvent != null)
 					ResumedEvent (null, a);
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
 				NotifyLocationChanged ();
-				Console.WriteLine ("MDB start events: " + (DateTime.Now - t).TotalMilliseconds);
 			});
 		}
 		
@@ -363,13 +399,10 @@ namespace MonoDevelop.Debugger
 		static void NotifyPaused ()
 		{
 			DispatchService.GuiDispatch (delegate {
-				Console.WriteLine ("MDB running time: " + (DateTime.Now - lastStart).TotalMilliseconds);
-				DateTime t = DateTime.Now;
 				if (PausedEvent != null)
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
 				IdeApp.Workbench.RootWindow.Present ();
-				Console.WriteLine ("MDB stop events: " + (DateTime.Now - t).TotalMilliseconds);
 			});
 		}
 		

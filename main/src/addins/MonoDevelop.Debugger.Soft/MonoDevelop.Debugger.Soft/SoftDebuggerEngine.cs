@@ -105,5 +105,7 @@ namespace MonoDevelop.Debugger.Soft
 		public FilePath MonoPrefix { get { return Runtime.Prefix; } }
 
 		public MonoTargetRuntime Runtime { get; private set; }
+		
+		public List<string> UserAssemblyNames { get; set; }
 	}
 }

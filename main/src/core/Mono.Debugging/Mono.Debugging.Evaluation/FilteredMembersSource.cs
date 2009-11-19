@@ -28,11 +28,11 @@ namespace Mono.Debugging.Evaluation
 			FilteredMembersSource src = new FilteredMembersSource (ctx, type, obj, bindingFlags);
 			src.Connect ();
 			string label;
-			if ((bindingFlags & BindingFlags.NonPublic) != 0)
+			if ((bindingFlags & BindingFlags.Static) == 0)
 				label = "Non-public members";
 			else
 				label = "Static members";
-			return ObjectValue.CreateObject (src, new ObjectPath (label), "", "", ObjectValueFlags.ReadOnly, null);
+			return ObjectValue.CreateObject (src, new ObjectPath (label), "", "", ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
 		}
 
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
@@ -47,6 +47,11 @@ namespace Mono.Debugging.Evaluation
 				list.Add (CreateNode (ctx, type, obj, newFlags));
 			}
 			return list.ToArray ();
+		}
+		
+		public ObjectValue GetValue (ObjectPath path, EvaluationOptions options)
+		{
+			throw new NotSupportedException ();
 		}
 
 		public string SetValue (ObjectPath path, string value)

@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Debugger {
     
+    
     public partial class ExceptionsDialog {
         
         private Gtk.HBox hbox1;

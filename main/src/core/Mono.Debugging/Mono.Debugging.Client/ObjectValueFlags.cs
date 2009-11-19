@@ -54,6 +54,10 @@ namespace Mono.Debugging.Client
 		
 		Global = 1 << 17,	// For fields, it means static
 		ReadOnly = 1 << 18,
+		NoRefresh = 1 << 19, // When set, this value can't be refreshed
+		EvaluatingGroup = 1 << 20, // When set, this value represents a set of values being evaluated
+		                           // When evaluation ends, the value is updated, and the children are the
+		                           // values represented by this group
 		
 		// For field and property
 		Public = 1 << 24,

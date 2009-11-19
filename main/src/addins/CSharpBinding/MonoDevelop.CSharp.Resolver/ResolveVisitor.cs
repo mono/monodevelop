@@ -573,10 +573,21 @@ namespace MonoDevelop.CSharp.Resolver
 			return null;
 		}
 		
+		Dictionary<InvocationExpression, ResolveResult> invocationDictionary = new Dictionary<InvocationExpression, ResolveResult> ();
+		public void ResetVisitor ()
+		{
+			invocationDictionary.Clear ();
+			lambdaDictionary.Clear ();
+		}
+		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			if (invocationExpression == null) 
 				return null;
+			
+			if (invocationDictionary.ContainsKey (invocationExpression))
+				return invocationDictionary[invocationExpression];
+			
 			// add support for undocumented __makeref and __reftype keywords
 			if (invocationExpression.TargetObject is IdentifierExpression) {
 				IdentifierExpression idExpr = invocationExpression.TargetObject as IdentifierExpression;
@@ -585,7 +596,6 @@ namespace MonoDevelop.CSharp.Resolver
 				if (idExpr.Identifier == "__reftype") 
 					return CreateResult ("System.Type");
 			}
-			
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
 			if (targetResult is CombinedMethodResolveResult)
 				targetResult = ((CombinedMethodResolveResult)targetResult).MethodResolveResult;
@@ -620,8 +630,6 @@ namespace MonoDevelop.CSharp.Resolver
 				}*/
 				foreach (Expression arg in invocationExpression.Arguments) {
 					var type = GetTypeSafe (arg);
-					//Console.WriteLine ("  arg:" + arg);
-					//Console.WriteLine ("type :" + type);
 					methodResult.AddArgument (type);
 				}
 				//Console.WriteLine ("--------------------");
@@ -635,6 +643,7 @@ namespace MonoDevelop.CSharp.Resolver
 				}*/
 //				return CreateResult (methodResult.Methods [0].ReturnType);
 			}
+			invocationDictionary[invocationExpression] = targetResult;
 			return targetResult;
 		}
 		
@@ -646,9 +655,16 @@ namespace MonoDevelop.CSharp.Resolver
 			return CreateResult (type.FullName);
 		}
 		
+		Dictionary<LambdaExpression, ResolveResult> lambdaDictionary = new Dictionary<LambdaExpression, ResolveResult> ();
+		
 		public override object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
-			return resolver.ResolveLambda (this, lambdaExpression);
+			ResolveResult result;
+			if (!lambdaDictionary.TryGetValue (lambdaExpression, out result)) {
+				lambdaDictionary[lambdaExpression] = result;
+				result = resolver.ResolveLambda (this, lambdaExpression);
+			}
+			return result;
 		}
 		
 		public IReturnType ResolveType (Expression expr)

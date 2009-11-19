@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Debugger {
     
+    
     public partial class AttachToProcessDialog {
         
         private Gtk.VBox vbox2;

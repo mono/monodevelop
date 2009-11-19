@@ -34,13 +34,22 @@ namespace Mono.Debugging.Evaluation
 {
 	public delegate ObjectValue ObjectEvaluatorDelegate ();
 
-	public class AsyncEvaluationTracker: RemoteFrameObject, IObjectValueUpdater
+	public class AsyncEvaluationTracker: RemoteFrameObject, IObjectValueUpdater, IDisposable
 	{
 		Dictionary<string, UpdateCallback> asyncCallbacks = new Dictionary<string, UpdateCallback> ();
 		Dictionary<string, ObjectValue> asyncResults = new Dictionary<string, ObjectValue> ();
 		int asyncCounter = 0;
 		int cancelTimestamp = 0;
 		TimedEvaluator runner = new TimedEvaluator ();
+		
+		public int WaitTime {
+			get { return runner.RunTimeout; }
+			set { runner.RunTimeout = value; }
+		}
+		
+		public bool IsEvaluating {
+			get { return runner.IsEvaluating; }
+		}
 
 		public ObjectValue Run (string name, ObjectValueFlags flags, ObjectEvaluatorDelegate evaluator)
 		{
@@ -66,6 +75,12 @@ namespace Mono.Debugging.Evaluation
 			else
 				return ObjectValue.CreateEvaluating (this, new ObjectPath (id, name), flags);
 		}
+		
+		public void Dispose ()
+		{
+			runner.Dispose ();
+		}
+
 
 		public void Stop ()
 		{

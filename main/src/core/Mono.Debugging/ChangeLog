@@ -1,3 +1,81 @@
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/TimedEvaluator.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs:
+	  Properly dispose resources.
+
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/ObjectValue.cs:
+	* Mono.Debugging.Client/ObjectValueFlags.cs:
+	* Mono.Debugging.Evaluation/BaseBacktrace.cs:
+	* Mono.Debugging.Client/EvaluationOptions.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/TimedEvaluator.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs:
+	  Improved async evaluation. If an evaluation is in process,
+	  don't even try to create an evaluation context, just queue
+	  the request. Added more evaluation options. Added default
+	  implementations for some methods (in ObjectValueAdaptor) and
+	  classes (BaseBacktrace), factorized from the soft debugger.
+
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/Backtrace.cs:
+	* Mono.Debugging.Client/StackFrame.cs: Fix some serialization
+	  issues.
+
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Improve
+	  error message.
+
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/Backtrace.cs: Add support for
+	  refreshing object values.
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/StackFrame.cs:
+	* Mono.Debugging.Backend/IBacktrace.cs:
+	* Mono.Debugging.Client/ObjectValue.cs:
+	* Mono.Debugging.Client/DebuggerSession.cs:
+	* Mono.Debugging.Client/ObjectValueFlags.cs:
+	* Mono.Debugging.Evaluation/RawViewSource.cs:
+	* Mono.Debugging.Client/EvaluationOptions.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Backend/IObjectValueSource.cs:
+	* Mono.Debugging.Evaluation/ArrayElementGroup.cs:
+	* Mono.Debugging.Evaluation/EvaluationContext.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Client/DebuggerSessionOptions.cs:
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs:
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs:
+	* Mono.Debugging.Evaluation/AsyncOperationManager.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs: Add
+	  support for refreshing object values. 
+
+2009-11-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/DebuggerSession.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/EvaluationContext.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Client/DebuggerSessionOptions.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs:
+	* Mono.Debugging.Evaluation/AsyncOperationManager.cs:
+	* Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs: Add an
+	  Options argument to the methods that launch the debugger. By
+	  default, run debugger operations in a background thread, to
+	  avoid locking the main thread. Improve expression evaluation
+	  timeout handling. If an evaluation can't be aborted, notify
+	  the user and wait until done or stopped.
+
 2009-11-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.Debugging.Client/Backtrace.cs: Fix list

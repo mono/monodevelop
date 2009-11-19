@@ -75,7 +75,11 @@ namespace MonoDevelop.Debugger
 			} else if (DebuggingService.IsRunning) {
 				view.WriteOutput ("The expression can't be evaluated while the application is running.");
 			} else {
-				ObjectValue val = DebuggingService.CurrentFrame.GetExpressionValue (e.Text, true, 20000);
+				EvaluationOptions ops = EvaluationOptions.DefaultOptions;
+				ops.AllowMethodEvaluation = true;
+				ops.AllowTargetInvoke = true;
+				ops.EvaluationTimeout = 20000;
+				ObjectValue val = DebuggingService.CurrentFrame.GetExpressionValue (e.Text, ops);
 				if (val.IsEvaluating) {
 					WaitForCompleted (val);
 					return;

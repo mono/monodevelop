@@ -34,6 +34,7 @@ using System.IO;
 using MonoDevelop.Core;
 using System.Net.Sockets;
 using System.Net;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -53,6 +54,7 @@ namespace MonoDevelop.Debugger.Soft
 		protected void StartListening (RemoteDebuggerStartInfo dsi)
 		{
 			appName = dsi.AppName;
+			RegisterUserAssemblies (dsi.UserAssemblyNames);
 			
 			IPEndPoint dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
 			IPEndPoint conEP = dsi.RedirectOutput? new IPEndPoint (dsi.Address, dsi.OutputPort) : null;
@@ -117,6 +119,12 @@ namespace MonoDevelop.Debugger.Soft
 			base.EndSession ();
 		}
 		
+		protected override void OnResumed ()
+		{
+			procs = null;
+			base.OnResumed ();
+		}
+		
 		protected override ProcessInfo[] OnGetProcesses ()
 		{
 			if (procs == null)
@@ -132,6 +140,7 @@ namespace MonoDevelop.Debugger.Soft
 		public int OutputPort { get; private set; }
 		public bool RedirectOutput { get; private set; }
 		public string AppName { get; set; }
+		public List<string> UserAssemblyNames { get; set; }
 		
 		public RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort)
 			: this (appName, address, debugPort, false, 0) {}

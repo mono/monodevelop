@@ -46,12 +46,17 @@ namespace Mono.Debugging.Evaluation
 		{
 			RawViewSource src = new RawViewSource (ctx, obj);
 			src.Connect ();
-			return ObjectValue.CreateObject (src, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.ReadOnly, null);
+			return ObjectValue.CreateObject (src, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
 		}
 		
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
 			return ctx.Adapter.GetObjectValueChildren (ctx, obj, index, count, false);
+		}
+		
+		public ObjectValue GetValue (ObjectPath path, EvaluationOptions options)
+		{
+			throw new NotSupportedException ();
 		}
 		
 		public string SetValue (ObjectPath path, string value)

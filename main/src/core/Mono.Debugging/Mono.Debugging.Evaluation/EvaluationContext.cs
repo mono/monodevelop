@@ -26,14 +26,23 @@
 //
 
 using System;
+using Mono.Debugging.Client;
+using Mono.Debugging.Backend;
 
 namespace Mono.Debugging.Evaluation
 {
 	public class EvaluationContext
 	{
+		EvaluationOptions options;
+
 		public ExpressionEvaluator Evaluator { get; set; }
 		public ObjectValueAdaptor Adapter { get; set; }
-
+		
+		public EvaluationOptions Options {
+			get { return options; }
+			set { options = value; }
+		}
+		
 		public virtual void WriteDebuggerError (Exception ex)
 		{
 		}
@@ -46,19 +55,15 @@ namespace Mono.Debugging.Evaluation
 		{
 		}
 		
-		public int Timeout { get; set; }
-		
-		public bool AllowTargetInvoke { get; set; }
-		
 		public void AssertTargetInvokeAllowed ()
 		{
-			if (!AllowTargetInvoke)
-				throw new EvaluatorException ("Target code execution disabled");
+			if (!Options.AllowTargetInvoke)
+				throw new NotSupportedExpressionException ();
 		}
 		
-		public EvaluationContext ()
+		public EvaluationContext (EvaluationOptions options)
 		{
-			AllowTargetInvoke = true;
+			this.options = options;
 		}
 
 		public EvaluationContext Clone ( )
@@ -68,11 +73,55 @@ namespace Mono.Debugging.Evaluation
 			return clone;
 		}
 
+		public EvaluationContext Clone (EvaluationOptions withOptions)
+		{
+			EvaluationContext clone = Clone ();
+			clone.options = withOptions;
+			return clone;
+		}
+
 		public virtual void CopyFrom (EvaluationContext ctx)
 		{
-			Timeout = ctx.Timeout;
+			options = ctx.options;
 			Evaluator = ctx.Evaluator;
 			Adapter = ctx.Adapter;
+		}
+		
+		ExpressionValueSource expressionValueSource;
+		internal ExpressionValueSource ExpressionValueSource {
+			get {
+				if (expressionValueSource == null)
+					expressionValueSource = new ExpressionValueSource (this);
+				return expressionValueSource;
+			}
+		}
+	}
+	
+	class ExpressionValueSource: RemoteFrameObject, IObjectValueSource
+	{
+		EvaluationContext ctx;
+		
+		public ExpressionValueSource (EvaluationContext ctx)
+		{
+			this.ctx = ctx;
+			Connect ();
+		}
+		
+		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
+		{
+			throw new System.NotImplementedException();
+		}
+		
+		public string SetValue (ObjectPath path, string value)
+		{
+			throw new System.NotImplementedException();
+		}
+		
+		public ObjectValue GetValue (ObjectPath path, EvaluationOptions options)
+		{
+			EvaluationContext c = ctx.Clone (options);
+			ObjectValue[] vals = c.Adapter.GetExpressionValuesAsync (c, new string[] { path.LastName });
+			return vals[0];
 		}
 	}
 }

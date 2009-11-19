@@ -27,6 +27,7 @@
 using System;
 using Mono.Debugging.Evaluation;
 using Mono.Debugger;
+using DC = Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -38,14 +39,13 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public ThreadMirror Thread { get; set; }
 		
-		public SoftEvaluationContext (SoftDebuggerSession session, StackFrame frame, int tiemout)
+		public SoftEvaluationContext (SoftDebuggerSession session, StackFrame frame, DC.EvaluationOptions options): base (options)
 		{
 			Frame = frame;
 			Thread = frame.Thread;
 			Evaluator = session.Evaluator;
 			Adapter = session.Adaptor;
 			this.session = session;
-			Timeout = tiemout;
 			this.stackVersion = session.StackVersion;
 		}
 		
@@ -78,15 +78,16 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			base.CopyFrom (ctx);
 			SoftEvaluationContext other = (SoftEvaluationContext) ctx;
-			Frame = other.Frame;
+			frame = other.frame;
+			stackVersion = other.stackVersion;
 			Thread = other.Thread;
+			session = other.session;
 		}
 		
 		public Value RuntimeInvoke (MethodMirror method, object target, Value[] values)
 		{
-			session.StackVersion++;
 			MethodCall mc = new MethodCall (this, method, target, values);
-			Adapter.AsyncExecute (mc, Timeout);
+			Adapter.AsyncExecute (mc, Options.EvaluationTimeout);
 			return mc.ReturnValue;
 		}
 		

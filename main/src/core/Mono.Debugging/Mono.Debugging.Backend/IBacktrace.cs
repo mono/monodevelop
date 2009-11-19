@@ -7,11 +7,11 @@ namespace Mono.Debugging.Backend
 	{
 		int FrameCount { get; }
 		StackFrame[] GetStackFrames (int firstIndex, int lastIndex);
-		ObjectValue[] GetLocalVariables (int frameIndex, int timeout);
-		ObjectValue[] GetParameters (int frameIndex, int timeout);
-		ObjectValue GetThisReference (int frameIndex, int timeout);
-		ObjectValue[] GetAllLocals (int frameIndex, int timeout);
-		ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeout);
+		ObjectValue[] GetLocalVariables (int frameIndex, EvaluationOptions options);
+		ObjectValue[] GetParameters (int frameIndex, EvaluationOptions options);
+		ObjectValue GetThisReference (int frameIndex, EvaluationOptions options);
+		ObjectValue[] GetAllLocals (int frameIndex, EvaluationOptions options);
+		ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, EvaluationOptions options);
 		CompletionData GetExpressionCompletionData (int frameIndex, string exp);
 		AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count);
 	}

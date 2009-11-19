@@ -212,7 +212,7 @@ namespace MonoDevelop.CSharp.Completion
 				// filter virtual & overriden members that came from base classes
 				// note that the overload tree is traversed top down.
 				IMember member = Member as IMember;
-				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType.DecoratedFullName != ((IMember)overload.Member).DeclaringType.DecoratedFullName) {
+				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType != null && ((IMember)overload.Member).DeclaringType != null && member.DeclaringType.DecoratedFullName != ((IMember)overload.Member).DeclaringType.DecoratedFullName) {
 					string str1 = ambience.GetString (member, flags);
 					string str2 = ambience.GetString (overload.Member, flags);
 					if (str1 == str2) {

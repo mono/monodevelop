@@ -30,7 +30,9 @@ FILES =  \
 	Mono.Debugging.Client/DebuggerException.cs \
 	Mono.Debugging.Client/DebuggerFeatures.cs \
 	Mono.Debugging.Client/DebuggerSession.cs \
+	Mono.Debugging.Client/DebuggerSessionOptions.cs \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \
+	Mono.Debugging.Client/EvaluationOptions.cs \
 	Mono.Debugging.Client/ObjectPath.cs \
 	Mono.Debugging.Client/ObjectValue.cs \
 	Mono.Debugging.Client/ObjectValueFlags.cs \
@@ -46,6 +48,7 @@ FILES =  \
 	Mono.Debugging.Evaluation/ArrayValueReference.cs \
 	Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs \
 	Mono.Debugging.Evaluation/AsyncOperationManager.cs \
+	Mono.Debugging.Evaluation/BaseBacktrace.cs \
 	Mono.Debugging.Evaluation/EvaluationContext.cs \
 	Mono.Debugging.Evaluation/ExpressionEvaluator.cs \
 	Mono.Debugging.Evaluation/FilteredMembersSource.cs \

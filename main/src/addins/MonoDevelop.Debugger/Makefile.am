@@ -16,7 +16,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	$(MONO_CAIRO_LIBS) \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -27,14 +27,18 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs \
+	gtk-gui/MonoDevelop.Debugger.BusyEvaluatorDialog.cs \
+	gtk-gui/MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs \
 	MonoDevelop.Debugger/AttachToProcessDialog.cs \
 	MonoDevelop.Debugger/BreakpointPad.cs \
 	MonoDevelop.Debugger/BreakpointPropertiesDialog.cs \
+	MonoDevelop.Debugger/BusyEvaluatorDialog.cs \
 	MonoDevelop.Debugger/DebugCommands.cs \
 	MonoDevelop.Debugger/DebugExecutionHandlerFactory.cs \
 	MonoDevelop.Debugger/DebugExecutionModeSet.cs \
+	MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs \
 	MonoDevelop.Debugger/DebuggingService.cs \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisassemblyView.cs \
