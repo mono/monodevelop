@@ -47,6 +47,21 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		bool isInCodeFocusMode;
+		public bool IsInCodeFocusMode {
+			get { 
+				return isInCodeFocusMode; 
+			}
+			set {
+				isInCodeFocusMode = value; 
+				if (!isInCodeFocusMode) {
+					RemoveBackgroundRenderer ();
+				} else {
+					HandleEditorCaretPositionChanged (null, null);
+				}
+			}
+		}
+		
 		public FoldMarkerMargin (TextEditor editor)
 		{
 			this.editor = editor;
@@ -54,8 +69,45 @@ namespace Mono.TextEditor
 			delayTimer = new Timer (150);
 			delayTimer.AutoReset = false;
 			delayTimer.Elapsed += DelayTimerElapsed;
+			editor.Caret.PositionChanged += HandleEditorCaretPositionChanged;
 		}
 
+		void HandleEditorCaretPositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			if (!IsInCodeFocusMode) 
+				return;
+			LineSegment lineSegment = editor.Document.GetLine (editor.Caret.Line);
+			if (lineSegment == null) {
+				RemoveBackgroundRenderer ();
+				return;
+			}
+			
+			IEnumerable<FoldSegment> newFoldings = editor.Document.GetFoldingContaining (lineSegment);
+			if (newFoldings == null) {
+				RemoveBackgroundRenderer ();
+				return;
+			}
+			
+			bool areEqual = foldings != null;
+			
+			if (areEqual && foldings.Count () != newFoldings.Count ())
+				areEqual = false;
+			if (areEqual) {
+				List<FoldSegment> list1 = new List<FoldSegment> (foldings);
+				List<FoldSegment> list2 = new List<FoldSegment> (newFoldings);
+				for (int i = 0; i < list1.Count; i++) {
+					if (list1[i] != list2[i]) {
+						areEqual = false;
+						break;
+					}
+				}
+			}
+			
+			if (!areEqual) {
+				foldings = newFoldings;
+				DelayTimerElapsed (this, null);
+			}
+		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{

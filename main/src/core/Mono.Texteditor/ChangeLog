@@ -1,3 +1,8 @@
+2009-11-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/FoldMarkerMargin.cs: Implemented 'Code focus
+	  toggle and follow-cursor'.
+
 2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Use system mono.cairo.
