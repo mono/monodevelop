@@ -104,47 +104,6 @@ namespace MonoDevelop.Debugger.Soft
 			return null;
 		}
 
-		protected override ObjectValue CreateObjectValueImpl (EvaluationContext ctx, Mono.Debugging.Backend.IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
-		{
-			string typeName = obj != null ? GetValueTypeName (ctx, obj) : "";
-			
-			if ((obj is PrimitiveValue) || (obj is StringMirror) || (obj is EnumMirror)) {
-				return ObjectValue.CreatePrimitive (source, path, typeName, ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);
-			}
-			else if (obj is ArrayMirror) {
-				return ObjectValue.CreateObject (source, path, typeName, ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
-			}
-			else if (obj is ObjectMirror) {
-				ObjectMirror co = (ObjectMirror) obj;
-				TypeDisplayData tdata = GetTypeDisplayData (ctx, co.Type);
-				
-				string tvalue;
-				if (!string.IsNullOrEmpty (tdata.ValueDisplayString))
-					tvalue = EvaluateDisplayString (ctx, co, tdata.ValueDisplayString);
-				else
-					tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
-				
-				string tname;
-				if (!string.IsNullOrEmpty (tdata.TypeDisplayString))
-					tname = EvaluateDisplayString (ctx, co, tdata.TypeDisplayString);
-				else
-					tname = typeName;
-				
-				ObjectValue oval = ObjectValue.CreateObject (source, path, tname, tvalue, flags, null);
-				if (!string.IsNullOrEmpty (tdata.NameDisplayString))
-					oval.Name = EvaluateDisplayString (ctx, co, tdata.NameDisplayString);
-				return oval;
-			}
-			else if (obj is StructMirror) {
-				string tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
-				return ObjectValue.CreateObject (source, path, typeName, tvalue, flags, null);
-			}
-			else if (obj == null)
-				return ObjectValue.CreateObject (source, path, typeName, "(null)", flags, null);
-			
-			return ObjectValue.CreateUnknown (path.LastName);
-		}
-
 		public override object CreateTypeObject (EvaluationContext ctx, object type)
 		{
 			TypeMirror t = (TypeMirror) type;
@@ -409,7 +368,12 @@ namespace MonoDevelop.Debugger.Soft
 
 		public override bool IsPrimitive (EvaluationContext ctx, object val)
 		{
-			return val is PrimitiveValue;
+			return val is PrimitiveValue || val is StringMirror;
+		}
+
+		public override bool IsEnum (EvaluationContext ctx, object val)
+		{
+			return val is EnumMirror;
 		}
 
 		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext gctx, object type)
@@ -427,7 +391,6 @@ namespace MonoDevelop.Debugger.Soft
 				}
 				else if (attName == "System.Diagnostics.DebuggerTypeProxyAttribute") {
 					DebuggerTypeProxyAttribute at = BuildAttribute<DebuggerTypeProxyAttribute> (attr);
-					td.IsProxyType = true;
 					td.ProxyType = at.ProxyTypeName;
 					if (!string.IsNullOrEmpty (td.ProxyType))
 						ForceLoadType (ctx, t, td.ProxyType);
@@ -645,42 +608,8 @@ namespace MonoDevelop.Debugger.Soft
 
 		public override object TargetObjectToObject (EvaluationContext gctx, object obj)
 		{
-			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
-			
-			if (obj is ArrayMirror) {
-				ArrayMirror arr = (ArrayMirror) obj;
-				StringBuilder tn = new StringBuilder (arr.Type.GetElementType ().FullName);
-				tn.Append ("[");
-				for (int n=0; n<arr.Rank; n++) {
-					if (n>0)
-						tn.Append (',');
-					tn.Append (arr.GetLength (n));
-				}
-				tn.Append ("]");
-				return new LiteralExp (tn.ToString ());
-			}
-			else if (obj is StringMirror)
+			if (obj is StringMirror)
 				return ((StringMirror)obj).Value;
-			else if (obj is ObjectMirror) {
-				ObjectMirror co = (ObjectMirror) obj;
-				TypeDisplayData tdata = GetTypeDisplayData (ctx, co.Type);
-				if (!string.IsNullOrEmpty (tdata.ValueDisplayString))
-					return new LiteralExp (EvaluateDisplayString (ctx, co, tdata.ValueDisplayString));
-				// Return the type name
-				if (ctx.Options.AllowToStringCalls)
-					return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
-				if (tdata.TypeDisplayString != null)
-					return new LiteralExp ("{" + tdata.TypeDisplayString + "}");
-				return new LiteralExp ("{" + co.Type.FullName + "}");
-			}
-			else if (obj is StructMirror) {
-				StructMirror co = (StructMirror) obj;
-				if (ctx.Options.AllowTargetInvoke) {
-					if (co.Type.FullName == "System.Decimal")
-						return new LiteralExp (CallToString (ctx, co));
-				}
-				return new LiteralExp ("{" + co.Type.FullName + "}");
-			}
 			else if (obj is EnumMirror) {
 				EnumMirror eob = (EnumMirror) obj;
 				return new LiteralExp (eob.StringValue);
@@ -688,10 +617,8 @@ namespace MonoDevelop.Debugger.Soft
 			else if (obj is PrimitiveValue) {
 				return ((PrimitiveValue)obj).Value;
 			}
-			else if (obj == null)
-				return new LiteralExp ("(null)");
-			
-			return new LiteralExp ("?");
+			else
+				return base.TargetObjectToObject (gctx, obj);
 		}
 	}
 
@@ -703,7 +630,7 @@ namespace MonoDevelop.Debugger.Soft
 		Value[] args;
 		Value result;
 		IAsyncResult handle;
-		InvocationException exception;
+		Exception exception;
 		const InvokeOptions options = InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded;
 		
 		public MethodCall (SoftEvaluationContext ctx, MethodMirror function, object obj, Value[] args)
@@ -733,9 +660,12 @@ namespace MonoDevelop.Debugger.Soft
 				else
 					throw new ArgumentException (obj.GetType ().ToString ());
 			} catch (InvocationException ex) {
+				ctx.Session.StackVersion++;
 				exception = ex;
 			} catch (Exception ex) {
+				ctx.Session.StackVersion++;
 				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
+				exception = ex;
 			}
 		}
 
@@ -763,6 +693,9 @@ namespace MonoDevelop.Debugger.Soft
 				exception = ex;
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
+				exception = ex;
+			} finally {
+				ctx.Session.StackVersion++;
 			}
 		}
 

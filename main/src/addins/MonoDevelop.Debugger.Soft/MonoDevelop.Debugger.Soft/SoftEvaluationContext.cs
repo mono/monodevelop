@@ -86,7 +86,6 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public Value RuntimeInvoke (MethodMirror method, object target, Value[] values)
 		{
-			session.StackVersion++;
 			MethodCall mc = new MethodCall (this, method, target, values);
 			Adapter.AsyncExecute (mc, Options.EvaluationTimeout);
 			return mc.ReturnValue;

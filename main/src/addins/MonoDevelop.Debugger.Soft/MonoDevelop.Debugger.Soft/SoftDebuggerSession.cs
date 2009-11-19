@@ -326,8 +326,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		Backtrace GetThreadBacktrace (ThreadMirror thread)
 		{
-			MDB.StackFrame[] frames = thread.GetFrames ();
-			return new Backtrace (new SoftDebuggerBacktrace (this, frames));
+			return new Backtrace (new SoftDebuggerBacktrace (this, thread));
 		}
 
 		protected override ThreadInfo[] OnGetThreads (long processId)

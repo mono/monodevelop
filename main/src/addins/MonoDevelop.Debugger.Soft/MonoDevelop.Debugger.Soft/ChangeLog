@@ -1,3 +1,11 @@
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs:
+	* SoftDebuggerSession.cs:
+	* SoftEvaluationContext.cs:
+	* SoftDebuggerBacktrace.cs: Track api changes. Moved some code
+	  to Mono.Debugging.
+
 2009-11-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerAdaptor.cs: Fix race in async eval. We didn't
