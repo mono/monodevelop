@@ -307,7 +307,14 @@ namespace MonoDevelop.Debugger
 			EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions;
 			ops.AllowMethodEvaluation = true;
 			ops.AllowTargetInvoke = true;
+			
+			string oldName = val.Name;
 			val.Refresh (ops);
+			
+			// Don't update the name for the values entered by the user
+			if (store.IterDepth (it) == 0)
+				val.Name = oldName;
+			
 			SetValues (parent, it, val.Name, val);
 			RegisterValue (val, it);
 		}
@@ -346,11 +353,31 @@ namespace MonoDevelop.Debugger
 				ObjectValue val = (ObjectValue) o;
 				TreeIter it;
 				if (FindValue (val, out it)) {
+					// Keep the expression name entered by the user
+					if (store.IterDepth (it) == 0)
+						val.Name = (string) store.GetValue (it, NameCol);
 					RemoveChildren (it);
 					TreeIter parent;
 					if (!store.IterParent (out parent, it))
 						parent = TreeIter.Zero;
-					SetValues (parent, it, val.Name, val);
+					
+					// If it was an evaluating group, replace the node with the new nodes
+					if (val.IsEvaluatingGroup) {
+						if (val.ArrayCount == 0) {
+							store.Remove (ref it);
+						} else {
+							SetValues (parent, it, null, val.GetArrayItem (0));
+							RegisterValue (val, it);
+							for (int n=1; n<val.ArrayCount; n++) {
+								TreeIter cit = store.InsertNodeAfter (it);
+								ObjectValue cval = val.GetArrayItem (n);
+								SetValues (parent, cit, null, cval);
+								RegisterValue (cval, cit);
+							}
+						}
+					} else {
+						SetValues (parent, it, val.Name, val);
+					}
 				}
 				UnregisterValue (val);
 			});
@@ -445,6 +472,10 @@ namespace MonoDevelop.Debugger
 			else if (val.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating...");
 				valueColor = disabledColor;
+				if (val.IsEvaluatingGroup) {
+					nameColor = disabledColor;
+					name = val.Name;
+				}
 				canEdit = false;
 			}
 			else {
