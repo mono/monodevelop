@@ -34,7 +34,7 @@ namespace Mono.Debugging.Evaluation
 {
 	public delegate ObjectValue ObjectEvaluatorDelegate ();
 
-	public class AsyncEvaluationTracker: RemoteFrameObject, IObjectValueUpdater
+	public class AsyncEvaluationTracker: RemoteFrameObject, IObjectValueUpdater, IDisposable
 	{
 		Dictionary<string, UpdateCallback> asyncCallbacks = new Dictionary<string, UpdateCallback> ();
 		Dictionary<string, ObjectValue> asyncResults = new Dictionary<string, ObjectValue> ();
@@ -75,6 +75,12 @@ namespace Mono.Debugging.Evaluation
 			else
 				return ObjectValue.CreateEvaluating (this, new ObjectPath (id, name), flags);
 		}
+		
+		public void Dispose ()
+		{
+			runner.Dispose ();
+		}
+
 
 		public void Stop ()
 		{

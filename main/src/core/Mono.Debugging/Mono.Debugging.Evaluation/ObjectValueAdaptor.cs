@@ -31,6 +31,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public void Dispose ()
 		{
+			asyncEvaluationTracker.Dispose ();
 			asyncOperationManager.Dispose ();
 		}
 

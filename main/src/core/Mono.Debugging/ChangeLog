@@ -1,5 +1,12 @@
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Evaluation/TimedEvaluator.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs:
+	  Properly dispose resources.
+
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* Mono.Debugging.csproj:
 	* Mono.Debugging.Client/ObjectValue.cs:
