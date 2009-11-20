@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Debugger
@@ -47,6 +48,8 @@ namespace MonoDevelop.Debugger
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class DebuggerOptionsPanelWidget : Gtk.Bin
 	{
+		Gtk.ListStore engineStore;
+		
 		public DebuggerOptionsPanelWidget ()
 		{
 			this.Build ();
@@ -54,6 +57,22 @@ namespace MonoDevelop.Debugger
 			checkToString.Active = DebuggingService.AllowToStringCalls;
 			checkToString.Sensitive = checkAllowEval.Active;
 			spinTimeout.Value = DebuggingService.EvaluationTimeout;
+			
+			// Debugger priorities
+			engineStore = new Gtk.ListStore (typeof(string), typeof(string));
+			engineList.Model = engineStore;
+			engineList.AppendColumn ("", new Gtk.CellRendererText (), "text", 1);
+			
+			foreach (IDebuggerEngine engine in DebuggingService.GetDebuggerEngines ()) {
+				engineStore.AppendValues (engine.Id, engine.Name);
+			}
+			UpdatePriorityButtons ();
+			engineList.Selection.Changed += HandleEngineListSelectionChanged;
+		}
+
+		void HandleEngineListSelectionChanged (object sender, EventArgs e)
+		{
+			UpdatePriorityButtons ();
 		}
 		
 		public void Store ()
@@ -62,11 +81,61 @@ namespace MonoDevelop.Debugger
 			DebuggingService.AllowToStringCalls = checkToString.Active;
 			int t = (int) spinTimeout.Value;
 			DebuggingService.EvaluationTimeout = t;
+			
+			Gtk.TreeIter it;
+			List<string> prios = new List<string> ();
+			if (engineStore.GetIterFirst (out it)) {
+				do {
+					string id = (string) engineStore.GetValue (it, 0);
+					prios.Add (id);
+				} while (engineStore.IterNext (ref it));
+			}
+			DebuggingService.EnginePriority = prios.ToArray ();
 		}
 		
 		protected virtual void OnCheckAllowEvalToggled (object sender, System.EventArgs e)
 		{
 			checkToString.Sensitive = checkAllowEval.Active;
+		}
+		
+		void UpdatePriorityButtons ()
+		{
+			Gtk.TreePath[] paths = engineList.Selection.GetSelectedRows ();
+			if (paths.Length > 0) {
+				Gtk.TreePath p = paths [0];
+				Gtk.TreeIter it;
+				engineStore.GetIter (out it, p);
+				buttonDown.Sensitive = engineStore.IterNext (ref it);
+				buttonUp.Sensitive = p.Prev ();
+			} else {
+				buttonDown.Sensitive = buttonUp.Sensitive = false;
+			}
+		}
+		
+		protected virtual void OnButtonUpClicked (object sender, System.EventArgs e)
+		{
+			Gtk.TreePath[] paths = engineList.Selection.GetSelectedRows ();
+			if (paths.Length > 0) {
+				Gtk.TreePath p = paths [0];
+				Gtk.TreeIter it1, it2;
+				engineStore.GetIter (out it2, p);
+				if (p.Prev () && engineStore.GetIter (out it1, p)) {
+					engineStore.Swap (it1, it2);
+					UpdatePriorityButtons ();
+				}
+			}
+		}
+		
+		protected virtual void OnButtonDownClicked (object sender, System.EventArgs e)
+		{
+			Gtk.TreeIter i1;
+			if (engineList.Selection.GetSelected (out i1)) {
+				Gtk.TreeIter i2 = i1;
+				if (engineStore.IterNext (ref i2)) {
+					engineStore.Swap (i1, i2);
+					UpdatePriorityButtons ();
+				}
+			}
 		}
 	}
 }

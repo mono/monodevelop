@@ -1,3 +1,7 @@
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MoonlightSoftDebuggerEngine.cs: Implement ID member.
+
 2009-11-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MoonlightSoftDebuggerEngine.cs: Fix OS check.

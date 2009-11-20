@@ -1,3 +1,8 @@
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* VersionControl.addin.xml: Move the annotate command to a
+	  more convenient location in the context menu.
+
 2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Views/StatusView.cs: Fix sort by

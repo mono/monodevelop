@@ -151,7 +151,6 @@
 				<Condition id="ItemType" value="IFileItem">
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
-					<CommandItem id = "MonoDevelop.VersionControl.Commands.Annotate"/>
 				</Condition>
 				<SeparatorItem id = "CommandSeparator" />
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
@@ -162,6 +161,9 @@
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.CreatePatch"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
+				<Condition id="ItemType" value="IFileItem">
+					<CommandItem id = "MonoDevelop.VersionControl.Commands.Annotate"/>
+				</Condition>
 			</ItemSet>
 			<SeparatorItem />
 		</Condition>

@@ -1,3 +1,7 @@
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Use the correct Mono.Cairo reference.
+
 2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/MessageService.cs: Setting Modal is not

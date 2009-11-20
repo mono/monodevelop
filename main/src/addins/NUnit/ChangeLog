@@ -1,3 +1,7 @@
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Use correct cairo lib.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

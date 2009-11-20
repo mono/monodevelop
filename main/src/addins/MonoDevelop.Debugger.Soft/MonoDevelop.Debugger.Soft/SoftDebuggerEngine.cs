@@ -36,6 +36,12 @@ namespace MonoDevelop.Debugger.Soft
 {
 	public class SoftDebuggerEngine: IDebuggerEngine
 	{
+		public string Id {
+			get {
+				return "Mono.Debugger.Soft";
+			}
+		}
+
 		public bool CanDebugCommand (ExecutionCommand cmd)
 		{
 			var netCmd = cmd as DotNetExecutionCommand;

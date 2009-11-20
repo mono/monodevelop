@@ -1,3 +1,7 @@
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerEngine.cs: Implement ID member.
+
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerAdaptor.cs: In GetMember, look for members in

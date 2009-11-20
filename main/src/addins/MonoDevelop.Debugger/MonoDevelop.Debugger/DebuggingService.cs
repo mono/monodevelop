@@ -55,6 +55,7 @@ namespace MonoDevelop.Debugger
 	public static class DebuggingService
 	{
 		const string FactoriesPath = "/MonoDevelop/Debugging/DebuggerFactories";
+		static IDebuggerEngine[] engines;
 		
 		static BreakpointStore breakpoints = new BreakpointStore ();
 		
@@ -86,6 +87,11 @@ namespace MonoDevelop.Debugger
 			IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 			IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 			busyDialog = new BusyEvaluatorDialog ();
+			
+			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
+				// Regresh the engine list
+				engines = null;
+			});
 		}
 
 		public static IExecutionHandler GetExecutionHandler ()
@@ -114,6 +120,32 @@ namespace MonoDevelop.Debugger
 		public static int EvaluationTimeout {
 			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", 2500); }
 			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", value); }
+		}
+		
+		public static string[] EnginePriority {
+			get {
+				string s = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EnginePriority", "");
+				if (s.Length == 0) {
+					// Set the initial priorities
+					List<string> prios = new List<string> ();
+					int i = 0;
+					foreach (IDebuggerEngine de in AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true)) {
+						if (de.Id.StartsWith ("Mono.Debugger.Soft")) // Give priority to soft debugger by default
+							prios.Insert (i++, de.Id);
+						else
+							prios.Add (de.Id);
+					}
+					string[] parray = prios.ToArray ();
+					EnginePriority = parray;
+					return parray;
+				}
+				return s.Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
+			}
+			set {
+				string s = string.Join (",", value);
+				PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EnginePriority", s);
+				engines = null;
+			}
 		}
 		
 		public static bool ShowBreakpointProperties (Breakpoint bp, bool editNew)
@@ -571,13 +603,25 @@ namespace MonoDevelop.Debugger
 		
 		public static IDebuggerEngine[] GetDebuggerEngines ()
 		{
-			return (IDebuggerEngine[]) AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true);
+			if (engines == null) {
+				IDebuggerEngine[] engs = (IDebuggerEngine[]) AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true);
+				string[] priorities = EnginePriority;
+				Array.Sort (engs, delegate (IDebuggerEngine d1, IDebuggerEngine d2) {
+					int i1 = Array.IndexOf (priorities, d1.Id);
+					int i2 = Array.IndexOf (priorities, d2.Id);
+					if (i1 == -1 && i2 == -1)
+						return d1.Name.CompareTo (d2.Name);
+					else
+						return i1.CompareTo (i2);
+				});
+				engines = engs;
+			}
+			return engines;
 		}		
 		
 		static IDebuggerEngine GetFactoryForCommand (ExecutionCommand cmd)
 		{
-			foreach (TypeExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath)) {
-				IDebuggerEngine factory = (IDebuggerEngine) node.GetInstance ();
+			foreach (IDebuggerEngine factory in GetDebuggerEngines ()) {
 				if (factory.CanDebugCommand (cmd))
 					return factory;
 			}

@@ -39,7 +39,12 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 {
 	public class MoonlightSoftDebuggerEngine: IDebuggerEngine
 	{
-		
+		public string Id {
+			get {
+				return "Mono.Debugger.Soft.Moonlight";
+			}
+		}
+
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			if (PropertyService.IsMac || PropertyService.IsWindows)
@@ -77,7 +82,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		
 		public string Name {
 			get {
-				return "Mono Soft Debugger";
+				return "Mono Soft Debugger for Moonlight";
 			}
 		}
 	}
