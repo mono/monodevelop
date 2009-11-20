@@ -43,6 +43,10 @@ namespace MonoDevelop.Debugger.Mdb
 			get { return "Mono Debugger"; }
 		}
 		
+		public string Id {
+			get { return "Mono.Debugger.Mdb"; }
+		}
+		
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			DotNetExecutionCommand cmd = command as DotNetExecutionCommand;

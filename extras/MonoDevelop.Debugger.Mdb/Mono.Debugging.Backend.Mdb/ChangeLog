@@ -1,3 +1,7 @@
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDebuggerSessionFactory.cs: Implement Id property.
+
 2009-11-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* IDebuggerServer.cs:

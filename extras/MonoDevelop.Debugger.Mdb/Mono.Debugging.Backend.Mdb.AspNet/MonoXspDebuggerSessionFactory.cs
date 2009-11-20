@@ -41,7 +41,11 @@ namespace MonoDevelop.Debugger.Mdb
 	public class MonoXspDebuggerSessionFactory: IDebuggerEngine
 	{
 		public string Name {
-			get { return "Mono Debugger"; }
+			get { return "Mono Debugger for ASP.NET"; }
+		}
+		
+		public string Id {
+			get { return "Mono.Debugger.Mdb.AspNet"; }
 		}
 		
 		public bool CanDebugCommand (ExecutionCommand command)
