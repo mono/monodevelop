@@ -1,3 +1,8 @@
+2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Execution/DotNetExecutionCommand.cs: Missed
+	  file in last commit.
+
 2009-11-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/Runtime.cs: Moved add-in repo to

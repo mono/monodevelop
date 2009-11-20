@@ -61,5 +61,7 @@ namespace MonoDevelop.Core.Execution
 		public bool DebugMode { get; set; }
 		
 		public string RuntimeArguments { get; set; }
+		
+		public IList<string> UserAssemblyPaths { get; set; }
 	}
 }
