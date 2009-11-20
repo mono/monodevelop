@@ -6,6 +6,7 @@ DBG_ASM_SRC = $(top_srcdir)/src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Deb
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
+	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \

@@ -316,9 +316,10 @@ namespace CBinding
 			return (target == CBinding.CompileTarget.Bin) && context.ExecutionHandler.CanExecute (cmd);
 		}
 
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context,
+		                                   string solutionConfiguration, string itemConfiguration)
 		{
-			CProjectConfiguration conf = (CProjectConfiguration) GetActiveConfiguration (configuration);
+			var conf = (CProjectConfiguration) GetConfiguration (solutionConfiguration);
 			bool pause = conf.PauseConsoleOutput;
 			IConsole console;
 			

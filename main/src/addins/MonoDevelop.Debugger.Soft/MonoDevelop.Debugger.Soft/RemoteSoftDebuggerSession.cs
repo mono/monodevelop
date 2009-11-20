@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using System.Net.Sockets;
 using System.Net;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -140,7 +141,7 @@ namespace MonoDevelop.Debugger.Soft
 		public int OutputPort { get; private set; }
 		public bool RedirectOutput { get; private set; }
 		public string AppName { get; set; }
-		public List<string> UserAssemblyNames { get; set; }
+		public List<AssemblyName> UserAssemblyNames { get; set; }
 		
 		public RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort)
 			: this (appName, address, debugPort, false, 0) {}
@@ -155,6 +156,11 @@ namespace MonoDevelop.Debugger.Soft
 			this.DebugPort = debugPort;
 			this.OutputPort = outputPort;
 			this.RedirectOutput = true;
-		}		
+		}
+		
+		public void SetUserAssemblies (IList<string> files)
+		{
+			UserAssemblyNames = SoftDebuggerStartInfo.GetAssemblyNames (files);
+		}
 	}
 }

@@ -1,3 +1,7 @@
+2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Project/CProject.cs: Track API. Get correct configuration.
+
 2009-11-06  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Parser/CDocumentParser.cs:

@@ -131,11 +131,14 @@ namespace MonoDevelop.Moonlight
 			get { return true; }
 		}
 		
-		ExecutionCommand CreateExecutionCommand (MoonlightProjectConfiguration configuration)
+		ExecutionCommand CreateExecutionCommand (string solutionConfig, MoonlightProjectConfiguration configuration)
 		{
 			string url = GetUrl (configuration);
-			if (url != null)
-				return new MoonlightExecutionCommand (this.Name, url);
+			if (url != null) {
+				return new MoonlightExecutionCommand (this.Name, url) {
+					UserAssemblyPaths = GetUserAssemblyPaths (solutionConfig)
+				};
+			}
 			return null;
 		}
 		
@@ -164,15 +167,16 @@ namespace MonoDevelop.Moonlight
 		
 		protected override bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
 		{
-			var conf = GetActiveConfiguration (solutionConfiguration);
-			return context.ExecutionHandler.CanExecute (CreateExecutionCommand ((MoonlightProjectConfiguration) conf));
+			var conf = (MoonlightProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
+			return context.ExecutionHandler.CanExecute (CreateExecutionCommand (solutionConfiguration, conf));
 		}
 		
 		// do this directly instead of relying on the commands handler
 		// to stop MD from opening an output pad
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context,
+		                                   string solutionConfiguration, string itemConfiguration)
 		{
-			var conf = (MoonlightProjectConfiguration) GetActiveConfiguration (configuration);
+			var conf = (MoonlightProjectConfiguration) GetConfiguration (itemConfiguration);
 			
 			IConsole console = null;
 			
@@ -184,7 +188,7 @@ namespace MonoDevelop.Moonlight
 					: context.ConsoleFactory.CreateConsole (!conf.PauseConsoleOutput);
 			}
 			
-			var cmd = CreateExecutionCommand (conf);
+			var cmd = CreateExecutionCommand (solutionConfiguration, conf);
 			using (var opMon = new AggregatedOperationMonitor (monitor)) {
 				var ex = context.ExecutionHandler.Execute (cmd, console);
 				opMon.AddOperation (ex);

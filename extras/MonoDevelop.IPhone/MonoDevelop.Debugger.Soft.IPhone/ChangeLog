@@ -1,5 +1,9 @@
 2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneSoftDebuggerEngine.cs: Set UserAssemblyPaths.
+
+2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneSoftDebuggerEngine.cs: Track API.
 
 2009-11-13  Michael Hutchinson  <mhutchinson@novell.com>

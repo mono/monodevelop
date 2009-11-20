@@ -31,6 +31,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core;
 using System.IO;
+using System.Reflection;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -62,12 +63,13 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
 		{
-			DotNetExecutionCommand cmd = (DotNetExecutionCommand) c;
+			var cmd = (DotNetExecutionCommand) c;
 			var dsi = new SoftDebuggerStartInfo ((MonoTargetRuntime)cmd.TargetRuntime) {
 				Command = cmd.Command,
 				Arguments = cmd.Arguments,
 				WorkingDirectory = cmd.WorkingDirectory,
 			};
+			dsi.SetUserAssemblies (cmd.UserAssemblyPaths);
 			
 			foreach (KeyValuePair<string,string> var in cmd.EnvironmentVariables)
 				dsi.EnvironmentVariables [var.Key] = var.Value;
@@ -112,6 +114,32 @@ namespace MonoDevelop.Debugger.Soft
 
 		public MonoTargetRuntime Runtime { get; private set; }
 		
-		public List<string> UserAssemblyNames { get; set; }
+		public List<AssemblyName> UserAssemblyNames { get; private set; }
+		
+		public void SetUserAssemblies (IList<string> files)
+		{
+			UserAssemblyNames = GetAssemblyNames (files);
+		}
+		
+		internal static List<AssemblyName> GetAssemblyNames (IList<string> files)
+		{
+			if (files == null || files.Count == 0)
+				return null;
+			
+			var names = new List<AssemblyName> ();
+			foreach (var file in files) {
+				try {
+					var asm = Mono.Cecil.AssemblyFactory.GetAssemblyManifest (file);
+					if (string.IsNullOrEmpty (asm.Name.Name))
+						throw new InvalidOperationException ("Assembly has no assembly name");
+					names.Add (new AssemblyName (asm.Name.FullName));
+				} catch (Exception ex) {
+					LoggingService.LogError ("Soft debug addin error getting assembly name for user assembly '" + file
+					                         + "'. Debugger will now debug all code, not just user code.", ex);
+					return null;
+				}
+			}
+			return names;
+		}
 	}
 }

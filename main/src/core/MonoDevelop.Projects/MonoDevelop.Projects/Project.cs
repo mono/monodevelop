@@ -415,10 +415,11 @@ namespace MonoDevelop.Projects
 				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", solutionConfiguration, Name), null);
 				return;
 			}
-			DoExecute (monitor, context, config.Id);
+			DoExecute (monitor, context, solutionConfiguration, config.Id);
 		}
 
-		protected virtual void DoExecute (IProgressMonitor monitor, ExecutionContext context, string itemConfiguration)
+		protected virtual void DoExecute (IProgressMonitor monitor, ExecutionContext context,
+		                                  string solutionConfiguration, string itemConfiguration)
 		{
 		}
 

@@ -1,3 +1,10 @@
+2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs: Track API. Set UserAssemblyPaths.
+
+	* IPhoneExecutionCommand.cs: New property for
+	  UserAssemblyPaths.
+
 2009-11-05  Carlo Kok  <ck@remobjects.com>
 
 	* CodeBehindGenerator.cs: fixed support for Partial Methods in 

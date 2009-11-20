@@ -124,12 +124,13 @@ namespace PyBinding
 		
 		protected override void DoExecute (IProgressMonitor monitor,
 		                                   ExecutionContext context,
-		                                   string           configuration)
+		                                   string           solutionConfiguration,
+		                                   string           itemConfiguration)
 		{
 			PythonConfiguration config;
 			IConsole console;
 			
-			config = (PythonConfiguration) GetConfiguration (configuration);
+			config = (PythonConfiguration) GetConfiguration (itemConfiguration);
 			
 			// Make sure we have a module to execute
 			if (config.Runtime == null || String.IsNullOrEmpty (config.Module)) {

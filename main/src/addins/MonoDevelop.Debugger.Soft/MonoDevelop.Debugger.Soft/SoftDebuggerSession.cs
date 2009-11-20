@@ -35,6 +35,7 @@ using MDB = Mono.Debugger;
 using System.Net.Sockets;
 using MonoDevelop.Core;
 using System.IO;
+using System.Reflection;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -62,6 +63,8 @@ namespace MonoDevelop.Debugger.Soft
 		
 		List<string> userAssemblyNames;
 		List<AssemblyMirror> assemblyFilters;
+		
+		bool loggedSymlinkedRuntimesBug = false;
 		
 		public readonly NRefactoryEvaluator Evaluator = new NRefactoryEvaluator ();
 		public readonly SoftDebuggerAdaptor Adaptor = new SoftDebuggerAdaptor ();
@@ -180,11 +183,11 @@ namespace MonoDevelop.Debugger.Soft
 			eventHandler.Start ();
 		}
 		
-		internal void RegisterUserAssemblies (List<string> userAssemblyNames)
+		internal void RegisterUserAssemblies (List<AssemblyName> userAssemblyNames)
 		{
-			if (userAssemblyNames != null) {
+			if (Options.ProjectAssembliesOnly && userAssemblyNames != null) {
 				assemblyFilters = new List<AssemblyMirror> ();
-				this.userAssemblyNames = userAssemblyNames;
+				this.userAssemblyNames = userAssemblyNames.Select (x => x.ToString ()).ToList ();
 			}
 		}
 		
@@ -299,7 +302,8 @@ namespace MonoDevelop.Debugger.Soft
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Out;
 			req.Size = StepSize.Line;
-			req.AssemblyFilter = assemblyFilters;
+			if (assemblyFilters != null && assemblyFilters.Count > 0)
+				req.AssemblyFilter = assemblyFilters;
 			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
@@ -312,7 +316,10 @@ namespace MonoDevelop.Debugger.Soft
 				try {
 					procs = new ProcessInfo[] { new ProcessInfo (vm.Process.Id, vm.Process.ProcessName) };
 				} catch (Exception ex) {
-					LoggingService.LogError ("Error getting debugger process info. Known Mono bug with symlinked runtimes.", ex);
+					if (!loggedSymlinkedRuntimesBug) {
+						loggedSymlinkedRuntimesBug = true;
+						LoggingService.LogError ("Error getting debugger process info. Known Mono bug with symlinked runtimes.", ex);
+					}
 					procs = new ProcessInfo[] { new ProcessInfo (0, "mono") };
 				}
 			}
@@ -458,7 +465,8 @@ namespace MonoDevelop.Debugger.Soft
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Over;
 			req.Size = StepSize.Line;
-			req.AssemblyFilter = assemblyFilters;
+			if (assemblyFilters != null && assemblyFilters.Count > 0)
+				req.AssemblyFilter = assemblyFilters;
 			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();
@@ -489,7 +497,6 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			bool isBreakEvent = e is BreakpointEvent || e is ExceptionEvent || e is StepEvent;
 			if (isBreakEvent && current_thread != null && e.Thread.Id != current_thread.Id) {
-				Console.WriteLine ("qq event: " + e);
 				QueueEvent (e);
 			} else {
 				HandleEvent (e, false);
@@ -504,9 +511,11 @@ namespace MonoDevelop.Debugger.Soft
 			bool resume = true;
 			
 			TargetEventType etype = TargetEventType.TargetStopped;
-			
+
+#if DEBUG_EVENT_QUEUEING
 			if (!(e is TypeLoadEvent))
 				Console.WriteLine ("pp event: " + e);
+#endif
 			
 			if (e is AssemblyLoadEvent) {
 				AssemblyLoadEvent ae = (AssemblyLoadEvent)e;
@@ -558,6 +567,9 @@ namespace MonoDevelop.Debugger.Soft
 		
 		void QueueEvent (Event ev)
 		{
+#if DEBUG_EVENT_QUEUEING
+			Console.WriteLine ("qq event: " + e);
+#endif
 			lock (queuedEvents) {
 				queuedEvents.AddLast (ev);
 			}
@@ -583,10 +595,12 @@ namespace MonoDevelop.Debugger.Soft
 					node = node.Next;
 				}
 			}
-			
+
+#if DEBUG_EVENT_QUEUEING
 			foreach (var e in dequeuing)
 				Console.WriteLine ("dq event: " + e);
-			
+#endif
+
 			//firing this off in a thread prevents possible infinite recursion
 			ThreadPool.QueueUserWorkItem (delegate {
 				if (!exited) {
@@ -683,11 +697,24 @@ namespace MonoDevelop.Debugger.Soft
 			InsertCatchpoint (cp, bi, type);
 		}
 		
-		void UpdateAssemblyFilters (AssemblyMirror asm)
+		bool UpdateAssemblyFilters (AssemblyMirror asm)
 		{
-			if (userAssemblyNames != null && userAssemblyNames.Contains (asm.ManifestModule.FullyQualifiedName)) {
-				assemblyFilters.Add (asm);
+			var name = asm.GetName ().FullName;
+			if (userAssemblyNames != null) {
+				//HACK: not sure how else to handle xsp-compiled pages
+				if (name.StartsWith ("App_")) {
+					assemblyFilters.Add (asm);
+					return true;
+				}
+			
+				foreach (var n in userAssemblyNames) {
+					if (n == name) {
+						assemblyFilters.Add (asm);
+						return true;
+					}
+				}
 			}
+			return false;
 		}
 		
 		internal void WriteDebuggerOutput (bool isError, string msg)
@@ -710,7 +737,8 @@ namespace MonoDevelop.Debugger.Soft
 			var req = vm.CreateStepRequest (current_thread);
 			req.Depth = StepDepth.Into;
 			req.Size = StepSize.Line;
-			req.AssemblyFilter = assemblyFilters;
+			if (assemblyFilters != null && assemblyFilters.Count > 0)
+				req.AssemblyFilter = assemblyFilters;
 			req.Enabled = true;
 			OnResumed ();
 			vm.Resume ();

@@ -53,6 +53,7 @@ namespace MonoDevelop.Debugger
 		public DebuggerOptionsPanelWidget ()
 		{
 			this.Build ();
+			projectCodeOnly.Active = DebuggingService.ProjectAssembliesOnly;
 			checkAllowEval.Active = DebuggingService.AllowTargetInvoke;
 			checkToString.Active = DebuggingService.AllowToStringCalls;
 			checkToString.Sensitive = checkAllowEval.Active;
@@ -77,6 +78,7 @@ namespace MonoDevelop.Debugger
 		
 		public void Store ()
 		{
+			DebuggingService.ProjectAssembliesOnly = projectCodeOnly.Active;
 			DebuggingService.AllowTargetInvoke = checkAllowEval.Active;
 			DebuggingService.AllowToStringCalls = checkToString.Active;
 			int t = (int) spinTimeout.Value;

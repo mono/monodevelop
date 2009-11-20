@@ -109,6 +109,10 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

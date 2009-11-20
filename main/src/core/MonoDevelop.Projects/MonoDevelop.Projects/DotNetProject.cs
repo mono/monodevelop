@@ -642,14 +642,26 @@ namespace MonoDevelop.Projects
 
 			return false;
 		}
+		
+		public IList<string> GetUserAssemblyPaths (string solutionConfiguration)
+		{
+			var list = new List<string> ();
+			foreach (ProjectReference pref in References) {
+				if (pref.ReferenceType == ReferenceType.Project)
+					list.AddRange (pref.GetReferencedFileNames (solutionConfiguration));
+			}
+			list.Add (this.GetOutputFileName (solutionConfiguration));
+			return list;			
+		}
 
-		protected virtual ExecutionCommand CreateExecutionCommand (DotNetProjectConfiguration configuration)
+		protected virtual ExecutionCommand CreateExecutionCommand (string solutionConfiguration, DotNetProjectConfiguration configuration)
 		{
 			DotNetExecutionCommand cmd = new DotNetExecutionCommand (configuration.CompiledOutputName);
 			cmd.Arguments = configuration.CommandLineParameters;
 			cmd.WorkingDirectory = Path.GetDirectoryName (configuration.CompiledOutputName);
 			cmd.EnvironmentVariables = new Dictionary<string, string> (configuration.EnvironmentVariables);
 			cmd.TargetRuntime = TargetRuntime;
+			cmd.UserAssemblyPaths = GetUserAssemblyPaths (solutionConfiguration);
 			return cmd;
 		}
 
@@ -658,7 +670,7 @@ namespace MonoDevelop.Projects
 			DotNetProjectConfiguration config = (DotNetProjectConfiguration)GetActiveConfiguration (configuration);
 			if (config == null)
 				return false;
-			ExecutionCommand cmd = CreateExecutionCommand (config);
+			ExecutionCommand cmd = CreateExecutionCommand (configuration, config);
 
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) && context.ExecutionHandler.CanExecute (cmd);
 		}
@@ -927,7 +939,8 @@ namespace MonoDevelop.Projects
 			CheckReferenceChange (e.FileName);
 		}
 
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string itemConfiguration)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context,
+		                                   string solutionConfiguration, string itemConfiguration)
 		{
 			DotNetProjectConfiguration dotNetProjectConfig = GetConfiguration (itemConfiguration) as DotNetProjectConfiguration;
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", dotNetProjectConfig.CompiledOutputName));
@@ -940,7 +953,7 @@ namespace MonoDevelop.Projects
 
 			try {
 				try {
-					ExecutionCommand executionCommand = CreateExecutionCommand (dotNetProjectConfig);
+					ExecutionCommand executionCommand = CreateExecutionCommand (solutionConfiguration, dotNetProjectConfig);
 
 					if (!context.ExecutionHandler.CanExecute (executionCommand)) {
 						monitor.ReportError (GettextCatalog.GetString ("Can not execute \"{0}\". The selected execution mode is not supported for .NET projects.", dotNetProjectConfig.CompiledOutputName), null);

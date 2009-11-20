@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
+using System.Collections.Generic;
 
 namespace MonoDevelop.AspNet
 {
@@ -48,6 +49,8 @@ namespace MonoDevelop.AspNet
 		public TargetRuntime TargetRuntime { get; set; }
 		
 		public TargetFramework TargetFramework { get; set; }
+		
+		public IList<string> UserAssemblyPaths { get; set; }
 		
 		public override string CommandString {
 			get {

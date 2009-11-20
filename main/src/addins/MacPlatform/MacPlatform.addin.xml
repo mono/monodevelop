@@ -1,7 +1,7 @@
 <Addin id          = "MacPlatform"
        namespace   = "MonoDevelop"
        name        = "MonoDevelop Mac Platform Support"
-       author      = "Geoff Norton"
+       author      = "Geoff Norton, Michael Hutchinson"
        copyright   = "MIT X11"
        url         = "http://blog.sublimeintervention.com/"
        description = "Mac Platform Support for MonoDevelop"
