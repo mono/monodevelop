@@ -1,3 +1,8 @@
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* VersionControl.addin.xml: Move the annotate command to a
+	  more convenient location in the context menu.
+
 2009-11-19  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Show
