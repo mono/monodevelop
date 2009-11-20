@@ -1,3 +1,11 @@
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GdbSessionFactory.cs: Implement Id property.
+
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GdbBacktrace.cs: Track api changes.
+
 2009-11-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* GdbEvent.cs: Reason can be an array. Handle this case.

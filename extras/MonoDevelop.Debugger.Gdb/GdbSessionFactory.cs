@@ -47,6 +47,10 @@ namespace MonoDevelop.Debugger.Gdb
 			get { return "GNU Debugger (GDB)"; }
 		}
 		
+		public string Id {
+			get { return "Mono.Debugger.Gdb"; }
+		}
+		
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			NativeExecutionCommand cmd = command as NativeExecutionCommand;
