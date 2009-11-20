@@ -621,7 +621,7 @@ namespace MonoDevelop.Projects
 		{
 			if (item is SolutionEntityItem) {
 				SolutionEntityItem entry = (SolutionEntityItem) item;
-				SolutionItemConfiguration config = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
+				SolutionItemConfiguration config = entry.GetActiveConfiguration (configuration) as SolutionItemConfiguration;
 				if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
 					config.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Clean, configuration);
 					return;
@@ -642,7 +642,7 @@ namespace MonoDevelop.Projects
 			BuildResult res;
 			if (item is SolutionEntityItem) {
 				SolutionEntityItem entry = (SolutionEntityItem) item;
-				SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
+				SolutionItemConfiguration conf = entry.GetActiveConfiguration (configuration) as SolutionItemConfiguration;
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
 					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Build, configuration);
 					res = new BuildResult ();
@@ -667,7 +667,7 @@ namespace MonoDevelop.Projects
 		{
 			if (item is SolutionEntityItem) {
 				SolutionEntityItem entry = (SolutionEntityItem) item;
-				SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
+				SolutionItemConfiguration conf = entry.GetActiveConfiguration (configuration) as SolutionItemConfiguration;
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute)) {
 					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Execute, context, configuration);
 					return;

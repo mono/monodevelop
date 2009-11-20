@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects
 	{
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
-			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
+			SolutionItemConfiguration conf = entry.GetActiveConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
 				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeBuild, configuration);
 				if (monitor.IsCancelRequested)
@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects
 
 		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
 		{
-			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
+			SolutionItemConfiguration conf = entry.GetActiveConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
 				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeClean, configuration);
 				if (monitor.IsCancelRequested)
@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects
 
 		protected override void Execute (IProgressMonitor monitor, SolutionEntityItem entry, ExecutionContext context, string configuration)
 		{
-			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
+			SolutionItemConfiguration conf = entry.GetActiveConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
 				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory);
 				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeExecute, localContext, configuration);
