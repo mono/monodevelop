@@ -1,3 +1,8 @@
+2009-11-20  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Support delete key in command
+	  mode.
+
 2009-11-19  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/FoldMarkerMargin.cs: Implemented 'Code focus

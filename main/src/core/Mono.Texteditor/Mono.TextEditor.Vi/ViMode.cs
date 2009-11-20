@@ -173,6 +173,8 @@ namespace Mono.TextEditor.Vi
 				goto case State.Normal;
 			case State.Normal:
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0)) {
+					if (key == Gdk.Key.Delete)
+						unicodeKey = 'x';
 					switch ((char)unicodeKey) {
 					case '?':
 					case '/':
@@ -453,6 +455,8 @@ namespace Mono.TextEditor.Vi
 				return;
 
 			case State.VisualLine:
+				if (key == Gdk.Key.Delete)
+					unicodeKey = 'x';
 				switch ((char)unicodeKey) {
 				case 'p':
 					PasteAfter (true);
@@ -477,6 +481,8 @@ namespace Mono.TextEditor.Vi
 				return;
 
 			case State.Visual:
+				if (key == Gdk.Key.Delete)
+					unicodeKey = 'x';
 				switch ((char)unicodeKey) {
 				case 'p':
 					PasteAfter (false);
