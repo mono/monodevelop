@@ -1,3 +1,13 @@
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger/IDebuggerEngine.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs:
+	  Added options panel for setting debugger engine selection
+	  priority.
+
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Add support for
