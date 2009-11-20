@@ -1,3 +1,7 @@
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Use correct Mono.Cairo reference.
+
 2009-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs: Separated
