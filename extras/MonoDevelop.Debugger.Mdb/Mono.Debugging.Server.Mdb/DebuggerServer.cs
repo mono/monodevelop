@@ -43,11 +43,8 @@ namespace DebuggerServer
 		
 		MdbObjectValueAdaptor mdbObjectValueAdaptor;
 		
-		public const int DefaultAsyncSwitchTimeout = 60;
-		public const int DefaultEvaluationTimeout = 1000;
-		public const int DefaultChildEvaluationTimeout = 5000;
-		
 		const int BreakEventUpdateNotifyDelay = 500;
+		public DebuggerSessionOptions SessionOptions;
 		
 		public DebuggerServer (IDebuggerController dc)
 		{
@@ -114,7 +111,7 @@ namespace DebuggerServer
 			Environment.Exit (1);
 		}
 
-		public void Run (MonoDebuggerStartInfo startInfo)
+		public void Run (MonoDebuggerStartInfo startInfo, DebuggerSessionOptions sessionOptions)
 		{
 			try {
 				if (startInfo == null)
@@ -122,6 +119,7 @@ namespace DebuggerServer
 			
 				Console.WriteLine ("MDB version: " + mdbAdaptor.MdbVersion);
 				
+				this.SessionOptions = sessionOptions;
 				mdbAdaptor.StartInfo = startInfo;
 
 				Report.Initialize ();
@@ -174,10 +172,11 @@ namespace DebuggerServer
 			}
 		}
 		
-		public void AttachToProcess (long pid)
+		public void AttachToProcess (long pid, DebuggerSessionOptions sessionOptions)
 		{
 			Report.Initialize ();
 
+			this.SessionOptions = sessionOptions;
 			DebuggerConfiguration config = new DebuggerConfiguration ();
 			mdbAdaptor.Configuration = config;
 			mdbAdaptor.InitializeConfiguration ();
@@ -317,7 +316,7 @@ namespace DebuggerServer
 						                    
 			if (bp != null && !running && !initializing && activeThread.CurrentFrame != null && !string.IsNullOrEmpty (bp.ConditionExpression) && bp.BreakIfConditionChanges) {
 				// Initial expression evaluation
-				MdbEvaluationContext ctx = new MdbEvaluationContext (activeThread, activeThread.CurrentFrame, -1);
+				MdbEvaluationContext ctx = new MdbEvaluationContext (activeThread, activeThread.CurrentFrame, SessionOptions.EvaluationOptions);
 				ML.TargetObject ob = EvaluateExp (ctx, bp.ConditionExpression);
 				if (ob != null)
 					lastConditionValue [ev.Index] = evaluator.TargetObjectToExpression (ctx, ob);
@@ -371,7 +370,7 @@ namespace DebuggerServer
 				return false;
 			}
 
-			MdbEvaluationContext ctx = new MdbEvaluationContext (frame.Thread, frame, -1);
+			MdbEvaluationContext ctx = new MdbEvaluationContext (frame.Thread, frame, SessionOptions.EvaluationOptions);
 			DL.Breakpoint bp = be as DL.Breakpoint;
 			if (bp != null && !string.IsNullOrEmpty (bp.ConditionExpression)) {
 				ML.TargetObject val = EvaluateExp (ctx, bp.ConditionExpression);
@@ -419,9 +418,11 @@ namespace DebuggerServer
 		{
 			ValueReference var;
 			try {
-				EvaluationOptions ops = new EvaluationOptions ();
-				ops.CanEvaluateMethods = true;
-				var = (ValueReference) Server.Instance.Evaluator.Evaluate (ctx, exp, ops);
+				EvaluationContext cctx = ctx.Clone ();
+				EvaluationOptions ops = cctx.Options;
+				ops.AllowMethodEvaluation = true;
+				cctx.Options = ops;
+				var = (ValueReference) Server.Instance.Evaluator.Evaluate (cctx, exp);
 				return (ML.TargetObject) var.Value;
 			} catch {
 				return null;
@@ -594,7 +595,7 @@ namespace DebuggerServer
 							  params ML.TargetObject[] param_objects)
 		{
 			MethodCall mc = new MethodCall (ctx, function, object_argument, param_objects);
-			ctx.Adapter.AsyncExecute (mc, ctx.Timeout);
+			ctx.Adapter.AsyncExecute (mc, ctx.Options.EvaluationTimeout);
 			return mc.ReturnValue;
 		}
 
@@ -793,7 +794,7 @@ namespace DebuggerServer
 				}
 
 				if ((args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception) && (args.Data is TargetAddress)) {
-					MdbEvaluationContext ctx = new MdbEvaluationContext (args.Frame.Thread, args.Frame, -1);
+					MdbEvaluationContext ctx = new MdbEvaluationContext (args.Frame.Thread, args.Frame, SessionOptions.EvaluationOptions);
 					targetArgs.Exception = LiteralValueReference.CreateTargetObjectLiteral (ctx, "Exception", args.Frame.ExceptionObject).CreateObjectValue ();
 				}
 

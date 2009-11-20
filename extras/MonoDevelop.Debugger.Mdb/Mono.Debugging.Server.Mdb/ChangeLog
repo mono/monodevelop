@@ -1,3 +1,34 @@
+2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BacktraceWrapper.cs: Subclass BaseBacktrace and reuse some
+	  code from it.
+
+	* MdbObjectValueAdaptor.cs: Track api changes. Improved check
+	  for evaluation options.
+
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MdbObjectValueAdaptor.cs: Always show properties, even if we
+	  can't evaluate them.
+
+	* IndexerValueReference.cs: Don't allow evaluating properties
+	  if target invoke is disabled.
+
+2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DebuggerServer.cs:
+	* BacktraceWrapper.cs:
+	* EvaluationContext.cs:
+	* MdbObjectValueAdaptor.cs: Track api changes.
+
+2009-11-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DebuggerServer.cs:
+	* BacktraceWrapper.cs:
+	* EvaluationContext.cs:
+	* MdbObjectValueAdaptor.cs: Use the new options object. Track
+	  api changes.
+
 2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* DebuggerServer.cs: Fix Pocess/Process spelling.

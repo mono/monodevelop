@@ -43,7 +43,7 @@ namespace DebuggerServer
 	{
 		public override string CallToString (EvaluationContext gctx, object obj)
 		{
-			if (!gctx.AllowTargetInvoke)
+			if (!gctx.Options.AllowTargetInvoke)
 				return GetValueTypeName (gctx, obj);
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
 			TargetObject retval = CallMethod (ctx, "ToString", (TargetStructObject) obj);
@@ -103,10 +103,10 @@ namespace DebuggerServer
 					TargetStructObject co = obj as TargetStructObject;
 					if (co == null)
 						return null;
-					if (ctx.AllowTargetInvoke) {
+					if (ctx.Options.AllowTargetInvoke) {
 						if (co.TypeName == "System.Decimal")
 							return new LiteralExp (CallToString (ctx, co));
-						if (tdata.ValueDisplayString != null)
+						if (tdata.ValueDisplayString != null && ctx.Options.AllowDisplayStringEvaluation)
 							return new LiteralExp (EvaluateDisplayString (ctx, co, tdata.ValueDisplayString));
 					}
 					
@@ -194,7 +194,6 @@ namespace DebuggerServer
 				TypeDisplayData data = new TypeDisplayData ();
 				if (tt.ClassType.DebuggerTypeProxyAttribute != null) {
 					data.ProxyType = tt.ClassType.DebuggerTypeProxyAttribute.ProxyTypeName;
-					data.IsProxyType = true;
 				}
 				if (tt.ClassType.DebuggerDisplayAttribute != null) {
 					data.NameDisplayString = tt.ClassType.DebuggerDisplayAttribute.Name;
@@ -217,6 +216,12 @@ namespace DebuggerServer
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
 			return ctx.GetRealObject (val) is TargetFundamentalObject;
+		}
+
+		public override bool IsEnum (EvaluationContext gctx, object val)
+		{
+			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
+			return ctx.GetRealObject (val) is TargetEnumObject;
 		}
 
 		public override bool IsNull (EvaluationContext gctx, object val)
@@ -423,7 +428,7 @@ namespace DebuggerServer
 					TargetFieldInfo field = (TargetFieldInfo)mem.Member;
 					yield return new FieldReference (ctx, co, mem.DeclaringType, field);
 				}
-				if (mem.Member is TargetPropertyInfo && gctx.AllowTargetInvoke) {
+				if (mem.Member is TargetPropertyInfo) {
 					TargetPropertyInfo prop = (TargetPropertyInfo) mem.Member;
 					if (prop.CanRead && (prop.Getter.ParameterTypes == null || prop.Getter.ParameterTypes.Length == 0))
 						yield return new PropertyReference (ctx, prop, co);
@@ -528,19 +533,19 @@ namespace DebuggerServer
 						return ObjectValue.CreateUnknown (path.LastName);
 					else {
 						string tvalue;
-						if (!string.IsNullOrEmpty (tdata.ValueDisplayString))
+						if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 							tvalue = EvaluateDisplayString (ctx, co, tdata.ValueDisplayString);
 						else
 							tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
 						
 						string tname;
-						if (!string.IsNullOrEmpty (tdata.TypeDisplayString))
+						if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 							tname = EvaluateDisplayString (ctx, co, tdata.TypeDisplayString);
 						else
 							tname = obj.TypeName;
 						
 						ObjectValue val = ObjectValue.CreateObject (source, path, tname, tvalue, flags, null);
-						if (!string.IsNullOrEmpty (tdata.NameDisplayString))
+						if (!string.IsNullOrEmpty (tdata.NameDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 							val.Name = EvaluateDisplayString (ctx, co, tdata.NameDisplayString);
 						return val;
 					}
@@ -579,7 +584,7 @@ namespace DebuggerServer
 						return ObjectValue.CreateObject (source, path, obj.TypeName, ctx.Evaluator.ToExpression (null), flags, new ObjectValue [0]);
 					}
 				default:
-					return ObjectValue.CreateError (path.LastName, "Unknown value type: " + obj.Kind, flags);
+					return ObjectValue.CreateFatalError (path.LastName, "Unknown value type: " + obj.Kind, flags);
 			}
 		}
 
@@ -1071,6 +1076,15 @@ namespace DebuggerServer
 			this.object_argument = object_argument;
 			this.param_objects = param_objects;
 		}
+		
+		public override string Description {
+			get {
+				if (function.DeclaringType != null)
+					return function.DeclaringType.Name + "." + function.Name;
+				else
+					return function.Name;
+			}
+		}
 
 		public override void Invoke ( )
 		{
@@ -1084,11 +1098,19 @@ namespace DebuggerServer
 			Server.Instance.MdbAdaptor.AbortThread (ctx.Thread, res);
 			WaitToStop (ctx.Thread);
 		}
+		
+		public override void Shutdown ()
+		{
+			res.Abort ();
+			if (!res.CompletedEvent.WaitOne (200))
+				return;
+			Server.Instance.MdbAdaptor.AbortThread (ctx.Thread, res);
+		}
 
 		public override bool WaitForCompleted (int timeout)
 		{
-			if (ctx.Timeout != -1) {
-				if (!res.CompletedEvent.WaitOne (ctx.Timeout, false))
+			if (timeout != -1) {
+				if (!res.CompletedEvent.WaitOne (timeout, false))
 					return false;
 			}
 			else {

@@ -12,13 +12,13 @@ using Mono.Debugger.Languages;
 
 namespace DebuggerServer
 {
-	class BacktraceWrapper: RemoteFrameObject, IBacktrace, IDisposable
+	class BacktraceWrapper: BaseBacktrace, IBacktrace, IDisposable
 	{
 		MD.StackFrame[] frames;
 		DissassemblyBuffer[] disBuffers;
 		bool disposed;
 	       
-		public BacktraceWrapper (MD.StackFrame[] frames)
+		public BacktraceWrapper (MD.StackFrame[] frames): base (Server.Instance.MdbObjectValueAdaptor)
 		{
 			this.frames = frames;
 			Connect ();
@@ -29,11 +29,11 @@ namespace DebuggerServer
 			disposed = true;
 		}
 	       
-		public int FrameCount {
+		public override int FrameCount {
 			get { return frames.Length; }
 		}
 	       
-		public DL.StackFrame[] GetStackFrames (int firstIndex, int lastIndex)
+		public override DL.StackFrame[] GetStackFrames (int firstIndex, int lastIndex)
 		{
 			CheckDisposed ();
 			
@@ -72,16 +72,14 @@ namespace DebuggerServer
 			return list.ToArray ();
 		}
 
-		protected EvaluationContext GetEvaluationContext (int frameIndex, int timeout)
+		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
 		{
 			CheckDisposed ();
-			if (timeout == -1)
-				timeout = DebuggerServer.DefaultEvaluationTimeout;
 			MD.StackFrame frame = frames [frameIndex];
-			return new MdbEvaluationContext (frame.Thread, frame, timeout);
+			return new MdbEvaluationContext (frame.Thread, frame, options);
 		}
 	
-		public AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)
+		public override AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)
 		{
 			CheckDisposed ();
 			if (disBuffers == null)
@@ -101,63 +99,6 @@ namespace DebuggerServer
 		{
 			if (disposed)
 				throw new InvalidOperationException ("Invalid stack frame");
-		}
-		
-		public ObjectValue[] GetAllLocals (int frameIndex, int timeout)
-		{
-			List<ObjectValue> locals = new List<ObjectValue> ();
-
-			locals.AddRange (GetLocalVariables (frameIndex, timeout));
-			locals.AddRange (GetParameters (frameIndex, timeout));
-			locals.Sort (delegate (ObjectValue v1, ObjectValue v2) {
-				return v1.Name.CompareTo (v2.Name);
-			});
-
-			ObjectValue thisObj = GetThisReference (frameIndex, timeout);
-			if (thisObj != null)
-				locals.Insert (0, thisObj);
-			
-			return locals.ToArray ();
-		}
-
-		public ObjectValue[] GetExpressionValues (int frameIndex, string[] expressions, bool evaluateMethods, int timeout)
-		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			return ctx.Adapter.GetExpressionValuesAsync (ctx, expressions, evaluateMethods, timeout);
-		}
-
-		public ObjectValue[] GetLocalVariables (int frameIndex, int timeout)
-		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			List<ObjectValue> list = new List<ObjectValue> ();
-			foreach (ValueReference var in ctx.Adapter.GetLocalVariables (ctx))
-				list.Add (var.CreateObjectValue (true));
-			return list.ToArray ();
-		}
-
-		public ObjectValue[] GetParameters (int frameIndex, int timeout)
-		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			List<ObjectValue> vars = new List<ObjectValue> ();
-			foreach (ValueReference var in ctx.Adapter.GetParameters (ctx))
-				vars.Add (var.CreateObjectValue (true));
-			return vars.ToArray ();
-		}
-
-		public ObjectValue GetThisReference (int frameIndex, int timeout)
-		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, timeout);
-			ValueReference var = ctx.Adapter.GetThisReference (ctx);
-			if (var != null)
-				return var.CreateObjectValue ();
-			else
-				return null;
-		}
-		
-		public virtual CompletionData GetExpressionCompletionData (int frameIndex, string exp)
-		{
-			EvaluationContext ctx = GetEvaluationContext (frameIndex, 400);
-			return ctx.Adapter.GetExpressionCompletionData (ctx, exp);
 		}
 	}
 	

@@ -58,7 +58,7 @@ namespace Mono.Debugging.Backend.Mdb
 			MonoDebuggerStartInfo info = (MonoDebuggerStartInfo) startInfo;
 			controller.StartDebugger (info);
 			InitMdbVersion (info.MonoPrefix);
-			controller.DebuggerServer.Run (info);
+			controller.DebuggerServer.Run (info, Options);
 		}
 		
 		void InitMdbVersion (string prefix)
@@ -75,7 +75,7 @@ namespace Mono.Debugging.Backend.Mdb
 			started = true;
 			controller.StartDebugger (null);
 			InitMdbVersion ("?");
-			controller.DebuggerServer.AttachToProcess (processId);
+			controller.DebuggerServer.AttachToProcess (processId, Options);
 		}
 		
 		protected override void OnDetach ()

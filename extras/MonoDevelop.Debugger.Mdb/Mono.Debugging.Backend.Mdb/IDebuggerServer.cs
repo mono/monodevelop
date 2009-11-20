@@ -34,11 +34,11 @@ namespace Mono.Debugging.Backend.Mdb
 	{
 		string InitializeMdb (string mdbVersion, int mdPid);
 		
-		void Run (MonoDebuggerStartInfo startInfo);
+		void Run (MonoDebuggerStartInfo startInfo, DebuggerSessionOptions options);
 
 		void Stop ();
 		
-		void AttachToProcess (long id);
+		void AttachToProcess (long id, DebuggerSessionOptions options);
 		
 		void Detach ();
 		
