@@ -1,5 +1,9 @@
 2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.csproj: Fix references.
+
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Fix build.
 
 2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
