@@ -78,7 +78,13 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		
 		public string Name {
 			get {
-				return "Mono Soft Debugger";
+				return "Mono Soft Debugger for iPhone";
+			}
+		}
+		
+		public string Id {
+			get {
+				return "Mono.Debugger.Soft.IPhone";
 			}
 		}
 	}
