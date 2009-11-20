@@ -40,7 +40,12 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 {
 	public class AspNetSoftDebuggerEngine: IDebuggerEngine
 	{
-		
+		public string Id {
+			get {
+				return "Mono.Debugger.Soft.AspNet";
+			}
+		}
+
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			var cmd = command as AspNetExecutionCommand;
@@ -85,7 +90,7 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 		
 		public string Name {
 			get {
-				return "Mono Soft Debugger";
+				return "Mono Soft Debugger for ASP.NET";
 			}
 		}
 	}
