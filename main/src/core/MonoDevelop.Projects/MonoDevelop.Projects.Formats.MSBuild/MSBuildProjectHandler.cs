@@ -419,6 +419,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 								pref.ExtendedProperties ["_OriginalMSBuildReferenceIsAbsolute"] = true;
 						} else {
 							pref = new ProjectReference (ReferenceType.Gac, buildItem.Include);
+							pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] = hintPath;
 						}
 						pref.LocalCopy = !buildItem.GetMetadataIsFalse ("Private");
 					} else {
@@ -891,6 +892,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (pkg.TargetFramework);
 					buildItem.SetMetadata ("RequiredTargetFramework", fx.Id);
 				}
+				string hintPath = (string) pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"];
+				if (hintPath != null)
+					buildItem.SetMetadata ("HintPath", hintPath);
 			}
 			else if (pref.ReferenceType == ReferenceType.Project) {
 				Project refProj = Item.ParentSolution.FindProjectByName (pref.Reference);

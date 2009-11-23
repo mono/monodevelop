@@ -1,3 +1,8 @@
+2009-11-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CSharp/CSharpBindingCompilerManager.cs: Emit the
+	  target platform option. Fixes bug #557146.
+
 2009-11-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs: Fixed
