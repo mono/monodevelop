@@ -1,3 +1,7 @@
+2009-11-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Convert.cs: Improve conversion of corlib types.
+
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BacktraceWrapper.cs: Subclass BaseBacktrace and reuse some
