@@ -12,6 +12,10 @@
 		<Addin id="MonoDevelop.Debugger" version="2.2"/>
 	</Dependencies>
 	
+	<Runtime>
+		<Import assembly="Mono.Debugger.Soft.dll" />
+	</Runtime>
+	
 	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
 		<DebuggerFactory type="MonoDevelop.Debugger.Soft.SoftDebuggerEngine" />
 	</Extension>
