@@ -1,3 +1,8 @@
+2009-11-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Improve
+	  logging.
+
 2009-11-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Tasks/TaskStore.cs: Fixed memory hole in

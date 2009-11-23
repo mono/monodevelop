@@ -291,8 +291,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public void WriteConsoleLogText (string text)
 		{
-			if (lastTextWrite != null)
-				text = "\n" + text;
+			lock (updates.SyncRoot) {
+				if (lastTextWrite != null && lastTextWrite.Tag == consoleLogTag) {
+					lastTextWrite.Write (text);
+					return;
+				}
+			}
 			QueuedTextWrite w = new QueuedTextWrite (text, consoleLogTag);
 			addQueuedUpdate (w);
 		}
