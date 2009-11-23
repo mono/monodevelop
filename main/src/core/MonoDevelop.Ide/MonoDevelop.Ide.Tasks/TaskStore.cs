@@ -293,7 +293,7 @@ namespace MonoDevelop.Ide.Tasks
 							Task[] newTa = new Task [ta.Length - 1];
 							Array.Copy (ta, 0, newTa, 0, i);
 							Array.Copy (ta, i+1, newTa, i, ta.Length - i - 1);
-							taskIndex [t.FileName] = ta;
+							taskIndex [t.FileName] = newTa;
 						}
 					}
 				}

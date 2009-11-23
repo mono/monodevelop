@@ -1,3 +1,18 @@
+2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Add API for getting
+	  the list of project assemblies.
+
+	* MonoDevelop.Projects/Project.cs: Pass solution configuration
+	  to DoExecute.
+
+2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/CustomCommandExtension.cs: Get correct
+	  configuration when execution custom commands. Fixes bug
+	  #556589.
+
 2009-11-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicyService.cs: Improve

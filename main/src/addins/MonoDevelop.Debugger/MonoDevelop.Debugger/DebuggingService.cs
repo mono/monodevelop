@@ -122,6 +122,11 @@ namespace MonoDevelop.Debugger
 			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", value); }
 		}
 		
+		public static bool ProjectAssembliesOnly {
+			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", true); }
+			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", value); }
+		}
+		
 		public static string[] EnginePriority {
 			get {
 				string s = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EnginePriority", "");
@@ -306,9 +311,10 @@ namespace MonoDevelop.Debugger
 			eops.AllowToStringCalls = AllowToStringCalls;
 			eops.EvaluationTimeout = EvaluationTimeout;
 			eops.MemberEvaluationTimeout = EvaluationTimeout * 2;
-			DebuggerSessionOptions ops = new DebuggerSessionOptions ();
-			ops.EvaluationOptions = eops;
-			return ops;
+			return new DebuggerSessionOptions () {
+				ProjectAssembliesOnly = DebuggingService.ProjectAssembliesOnly,
+				EvaluationOptions = eops,
+			};
 		}
 		
 		public static void ShowDisassembly ()

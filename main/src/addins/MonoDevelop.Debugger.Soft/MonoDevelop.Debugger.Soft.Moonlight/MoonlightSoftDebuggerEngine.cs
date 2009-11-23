@@ -57,7 +57,9 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
 			var cmd = (MoonlightExecutionCommand) command;
-			return new MoonlightDebuggerStartInfo (cmd.AppName, cmd.Url);
+			var msi = new MoonlightDebuggerStartInfo (cmd.AppName, cmd.Url);
+			msi.SetUserAssemblies (cmd.UserAssemblyPaths);
+			return msi;
 		}
 
 		public DebuggerFeatures SupportedFeatures {

@@ -54,7 +54,7 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
-			AspNetExecutionCommand cmd = (AspNetExecutionCommand) command;
+			var cmd = (AspNetExecutionCommand) command;
 			
 			var startInfo = new SoftDebuggerStartInfo ((MonoTargetRuntime)cmd.TargetRuntime) {
 				WorkingDirectory = cmd.BaseDirectory,
@@ -64,6 +64,8 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			startInfo.Command = (cmd.ClrVersion == ClrVersion.Net_1_1)
 				? startInfo.MonoPrefix.Combine ("lib", "mono", "1.0", "xsp.exe")
 				: startInfo.MonoPrefix.Combine ("lib", "mono", "2.0", "xsp2.exe");
+			
+			startInfo.SetUserAssemblies (cmd.UserAssemblyPaths);
 			
 			return startInfo;
 		}

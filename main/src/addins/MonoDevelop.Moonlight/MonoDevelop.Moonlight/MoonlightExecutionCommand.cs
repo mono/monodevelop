@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core.Execution;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Moonlight
 {
@@ -40,6 +41,7 @@ namespace MonoDevelop.Moonlight
 		
 		public string Url { get; private set; }
 		public string AppName { get; private set; }
+		public IList<string> UserAssemblyPaths { get; set; }
 		
 		public override string CommandString {
 			get { return "[silverlight]"; }

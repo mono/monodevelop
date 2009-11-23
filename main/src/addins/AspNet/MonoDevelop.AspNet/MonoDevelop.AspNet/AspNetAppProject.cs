@@ -216,31 +216,33 @@ namespace MonoDevelop.AspNet
 				return new BuildResult ();
 		}
 		
-		ExecutionCommand CreateExecutionCommand (AspNetAppProjectConfiguration configuration)
+		ExecutionCommand CreateExecutionCommand (string solutionConfiguration, AspNetAppProjectConfiguration configuration)
 		{
-			AspNetExecutionCommand cmd = new AspNetExecutionCommand ();
-			cmd.ClrVersion = configuration.ClrVersion;
-			cmd.DebugMode = configuration.DebugMode;
-			cmd.XspParameters = XspParameters;
-			cmd.BaseDirectory = BaseDirectory;
-			cmd.TargetRuntime = TargetRuntime;
-			cmd.TargetFramework = TargetFramework;
-			return cmd;
+			return new AspNetExecutionCommand () {
+				ClrVersion = configuration.ClrVersion,
+				DebugMode = configuration.DebugMode,
+				XspParameters = XspParameters,
+				BaseDirectory = BaseDirectory,
+				TargetRuntime = TargetRuntime,
+				TargetFramework = TargetFramework,
+				UserAssemblyPaths = this.GetUserAssemblyPaths (solutionConfiguration),
+			};
 		}
 		
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string config)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string solutionConfiguration)
 		{
-			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetActiveConfiguration (config);
-			ExecutionCommand cmd = CreateExecutionCommand (configuration);
+			var configuration = (AspNetAppProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
+			var cmd = CreateExecutionCommand (solutionConfiguration, configuration);
 			return context.ExecutionHandler.CanExecute (cmd);
 		}
 		
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, string config)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context,
+		                                   string solutionConfiguration, string itemConfiguration)
 		{
 			//check XSP is available
 			
-			AspNetAppProjectConfiguration configuration = (AspNetAppProjectConfiguration) GetActiveConfiguration (config);
-			ExecutionCommand cmd = CreateExecutionCommand (configuration);
+			var configuration = (AspNetAppProjectConfiguration) GetConfiguration (itemConfiguration);
+			var cmd = CreateExecutionCommand (solutionConfiguration, configuration);
 			
 			IConsole console = null;
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
