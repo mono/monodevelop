@@ -210,6 +210,12 @@ namespace DebuggerServer
 			if (source == target)
 				return true;
 
+			if (source.Module.Name.StartsWith ("mscorlib,") && target.Module.Name.StartsWith ("mscorlib,")) {
+				Type t1 = Type.GetType (source.Name);
+				Type t2 = Type.GetType (target.Name);
+				return t2.IsAssignableFrom (t1);
+			}
+			
 			if (!source.HasParent)
 				return false;
 
@@ -224,14 +230,18 @@ namespace DebuggerServer
 			if (obj.Type == type)
 				return obj;
 
-			if (!obj.Type.HasParent)
-				return null;
-
-			TargetObject pobj = obj.GetParentObject (ctx.Thread);
-			if (pobj != null)
-				return ImplicitConversion (ctx, pobj, type);
-			else
-				return null;
+			if (obj.Type.HasParent) {
+				TargetObject pobj = obj.GetParentObject (ctx.Thread);
+				if (pobj != null) {
+					pobj = ImplicitConversion (ctx, pobj, type);
+					if (pobj != null)
+						return pobj;
+				}
+			}
+			
+			if (ImplicitReferenceConversionExists (ctx, obj.Type, type))
+				return obj;
+			return null;
 		}
 
 		public static bool ImplicitConversionExists (MdbEvaluationContext ctx,
