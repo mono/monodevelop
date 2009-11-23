@@ -168,6 +168,9 @@ namespace MonoDevelop.CSharp
 			if (compilerParameters.NoStdLib) 
 				sb.AppendLine ("-nostdlib");
 			
+			if (!string.IsNullOrEmpty (compilerParameters.PlatformTarget) && compilerParameters.PlatformTarget.ToLower () != "anycpu") 
+				sb.AppendLine ("/platform:" + compilerParameters.PlatformTarget);
+
 			if (compilerParameters.TreatWarningsAsErrors) {
 				sb.AppendLine ("-warnaserror");
 				if (!string.IsNullOrEmpty (compilerParameters.WarningsNotAsErrors))
@@ -233,7 +236,7 @@ namespace MonoDevelop.CSharp
 			
 			if (!string.IsNullOrEmpty (compilerParameters.NoWarnings)) 
 				AppendQuoted (sb, "/nowarn:", compilerParameters.NoWarnings);
-
+			
 			if (runtime.RuntimeId == "MS.NET")
 				sb.AppendLine ("/fullpaths");
 
