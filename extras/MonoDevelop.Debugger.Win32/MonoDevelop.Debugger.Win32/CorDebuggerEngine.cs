@@ -76,6 +76,11 @@ namespace MonoDevelop.Debugger.Win32
 			get { return "Microsoft .NET Debugger"; }
 		}
 
+		public string Id
+		{
+			get { return "MonoDevelop.Debugger.Win32"; }
+		}
+
 		public DebuggerFeatures SupportedFeatures
 		{
 			get {
