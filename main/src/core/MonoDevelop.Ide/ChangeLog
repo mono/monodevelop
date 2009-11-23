@@ -1,3 +1,8 @@
+2009-11-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Tasks/TaskStore.cs: Fixed memory hole in
+	  task service.
+
 2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.csproj: Fix references.
