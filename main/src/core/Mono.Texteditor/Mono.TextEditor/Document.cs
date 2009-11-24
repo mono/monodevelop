@@ -717,7 +717,7 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region Folding
-		class FoldSegmentTreeNode : IComparable<FoldSegmentTreeNode>
+		internal class FoldSegmentTreeNode : IComparable<FoldSegmentTreeNode>
 		{
 			public FoldSegment FoldSegment {
 				get;
@@ -890,6 +890,10 @@ namespace Mono.TextEditor
 		}
 		
 		FoldSegmentTreeNode foldSegmentTree = new FoldSegmentTreeNode ();
+		
+		internal FoldSegmentTreeNode FoldSegmentTree {
+			get { return this.foldSegmentTree; }
+		}
 		
 		public bool HasFoldSegments {
 			get {
@@ -1102,13 +1106,22 @@ namespace Mono.TextEditor
 			}
 		}
 		#endregion
+		List<LineSegment> linesWithExtendingTextMarkers = new List<LineSegment> ();
+		public IEnumerable<LineSegment> LinesWithExtendingTextMarkers {
+			get { return this.linesWithExtendingTextMarkers; }
+		}
 		
 		public void AddMarker (int lineNumber, TextMarker marker)
 		{
 			AddMarker (this.GetLine (lineNumber), marker);
 		}
+		
 		public void AddMarker (LineSegment line, TextMarker marker)
 		{
+			if (marker is IExtendingTextMarker) {
+				if (!linesWithExtendingTextMarkers.Contains (line))
+					linesWithExtendingTextMarkers.Add (line);
+			}
 			line.AddMarker (marker);
 			this.CommitLineUpdate (line);
 		}
@@ -1119,6 +1132,11 @@ namespace Mono.TextEditor
 		}
 		public void RemoveMarker (LineSegment line, TextMarker marker)
 		{
+			if (marker is IExtendingTextMarker) {
+				if (!linesWithExtendingTextMarkers.Contains (line)) {
+					linesWithExtendingTextMarkers.Remove (line);
+				}
+			}
 			line.RemoveMarker (marker);
 			this.CommitLineUpdate (line);
 		}

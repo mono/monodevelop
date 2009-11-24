@@ -79,10 +79,10 @@ namespace Mono.TextEditor
 			bgGC = bgGC.Kill ();
 		}
 		
-		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
+		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
 		{
 			int top = y;
-			int bottom = top + editor.LineHeight;
+			int bottom = top + lineHeight;
 			bool isOdd = (top + (int)editor.VAdjustment.Value) % 2 != 0;
 			win.DrawLine (isOdd? bgGC : bgGC2, x, top, x, bottom);
 			win.DrawLine (isOdd? foldDashedLineGC : foldDashedLineGC2, x, top, x, bottom);

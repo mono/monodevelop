@@ -28,6 +28,12 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
+	
+	public interface IExtendingTextMarker 
+	{
+		int GetLineHeight (TextEditor editor);
+	}
+	
 	public class TextMarker
 	{
 		LineSegment lineSegment;

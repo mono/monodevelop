@@ -436,9 +436,29 @@ namespace Mono.TextEditor.Highlighting
 			
 			SetStyle (PrimaryTemplateColorString, new ChunkStyle (new Gdk.Color (0xB4, 0xE4, 0xB4), new Gdk.Color (0xB4, 0xE4, 0xB4)));
 			SetStyle (PrimaryTemplateHighlightedColorString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (0xB4, 0xE4, 0xB4)));
-			
+			 
 			SetStyle (SecondaryTemplateColorString, new ChunkStyle (new Gdk.Color (0xFF, 0xFF, 0xFF), new Gdk.Color (0xFF, 0xFF, 0xFF)));
 			SetStyle (SecondaryTemplateHighlightedColorString, new ChunkStyle (new Gdk.Color (0x7F, 0x7F, 0x7F), new Gdk.Color (0xFF, 0xFF, 0xFF)));
+			
+			SetStyle ("warning.light.color1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (250, 250, 210)));
+			SetStyle ("warning.light.color2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (230, 230, 190)));
+			
+			SetStyle ("warning.dark.color1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (235, 235, 180)));
+			SetStyle ("warning.dark.color2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (215, 215, 160)));
+			
+			SetStyle ("warning.line.top", new Mono.TextEditor.ChunkStyle (new Gdk.Color (199, 199, 141)));
+			SetStyle ("warning.line.bottom", new Mono.TextEditor.ChunkStyle (new Gdk.Color (199, 199, 141)));
+			SetStyle ("warning.text", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0)));
+
+			SetStyle ("error.light.color1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (240, 200, 200)));
+			SetStyle ("error.light.color2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (230, 180, 180)));
+			
+			SetStyle ("error.dark.color1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (235, 180, 180)));
+			SetStyle ("error.dark.color2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (215, 160, 160)));
+			
+			SetStyle ("error.line.top", new Mono.TextEditor.ChunkStyle (new Gdk.Color (193, 143, 143)));
+			SetStyle ("error.line.bottom", new Mono.TextEditor.ChunkStyle (new Gdk.Color (193, 143, 143)));
+			SetStyle ("error.text", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0)));
 		}
 		
 		protected void PopulateDefaults ()

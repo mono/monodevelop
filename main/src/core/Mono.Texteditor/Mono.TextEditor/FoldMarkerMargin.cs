@@ -283,12 +283,12 @@ namespace Mono.TextEditor
 		List<FoldSegment> containingFoldings = new List<FoldSegment> ();
 		List<FoldSegment> endFoldings        = new List<FoldSegment> ();
 		
-		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y)
+		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
 		{
 			foldSegmentSize = Width * 4 / 6;
 			foldSegmentSize -= (foldSegmentSize) % 2;
 			
-			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
+			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, lineHeight);
 			Document.LineState state = editor.Document.GetLineState (line);
 			
 			bool isFoldStart = false;
@@ -333,11 +333,11 @@ namespace Mono.TextEditor
 			}
 			
 			if (state == Document.LineState.Changed) {
-				win.DrawRectangle (lineStateChangedGC, true, x , y, 4, editor.LineHeight);
-				win.DrawRectangle (bgGC, true, x + 3 , y, Width  - 3, editor.LineHeight);
+				win.DrawRectangle (lineStateChangedGC, true, x , y, 4, lineHeight);
+				win.DrawRectangle (bgGC, true, x + 3 , y, Width  - 3, lineHeight);
 			} else if (state == Document.LineState.Dirty) {
-				win.DrawRectangle (lineStateDirtyGC, true, x , y, 4, editor.LineHeight);
-				win.DrawRectangle (bgGC, true, x + 3 , y, Width - 3, editor.LineHeight);
+				win.DrawRectangle (lineStateDirtyGC, true, x , y, 4, lineHeight);
+				win.DrawRectangle (bgGC, true, x + 3 , y, Width - 3, lineHeight);
 			} else {
 				win.DrawRectangle (bgGC, true, drawArea);
 			}

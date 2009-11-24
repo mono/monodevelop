@@ -604,10 +604,11 @@ namespace Mono.TextEditor
 		{
 			if (isDisposed)
 				return;
+			
 			this.RepaintArea (margin.XOffset, 
-			                  Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value, 
+			                  LineToVisualY (logicalLine) - (int)this.textEditorData.VAdjustment.Value, 
 			                  GetMarginWidth (margin), 
-			                  LineHeight);
+			                  GetLineHeight (logicalLine));
 		}
 
 		int GetMarginWidth (Margin margin)
@@ -622,8 +623,7 @@ namespace Mono.TextEditor
 		{
 			if (isDisposed)
 				return;
-//				Console.WriteLine ("Redraw line:" + logicalLine);
-			this.RepaintArea (0, Document.LogicalToVisualLine (logicalLine) * LineHeight - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width,  LineHeight);
+			this.RepaintArea (0, LineToVisualY (logicalLine) - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width, GetLineHeight (logicalLine));
 		}
 		
 		internal void RedrawPosition (int logicalLine, int logicalColumn)
@@ -640,10 +640,10 @@ namespace Mono.TextEditor
 				return;
 			if (start < 0)
 				start = 0;
-			int visualStart = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
+			int visualStart = (int)-this.textEditorData.VAdjustment.Value + LineToVisualY (start);
 			if (end < 0)
 				end = Document.LineCount - 1;
-			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
+			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + LineToVisualY (end) + GetLineHeight (end);
 			this.RepaintArea (margin.XOffset, visualStart, GetMarginWidth (margin), visualEnd - visualStart );
 		}
 			
@@ -666,7 +666,7 @@ namespace Mono.TextEditor
 //			Console.WriteLine ("Redraw from line: logicalLine={0}", logicalLine);
 			if (isDisposed)
 				return;
-			this.RepaintArea (0, (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (logicalLine) * LineHeight, this.Allocation.Width, this.Allocation.Height);
+			this.RepaintArea (0, (int)-this.textEditorData.VAdjustment.Value + LineToVisualY (logicalLine) , this.Allocation.Width, this.Allocation.Height);
 		}
 		
 		public void RunAction (Action<TextEditorData> action)
@@ -1056,8 +1056,9 @@ namespace Mono.TextEditor
 		public Gdk.Point DocumentToVisualLocation (DocumentLocation loc)
 		{
 			Gdk.Point result = new Point ();
-			result.X = textViewMargin.ColumnToVisualX (Document.GetLine (loc.Line), loc.Column);
-			result.Y = this.Document.LogicalToVisualLine (loc.Line) * this.LineHeight;
+			LineSegment lineSegment = Document.GetLine (loc.Line);
+			result.X = textViewMargin.ColumnToVisualX (lineSegment, loc.Column);
+			result.Y = LineToVisualY (loc.Line);
 			return result;
 		}
 		
@@ -1084,7 +1085,7 @@ namespace Mono.TextEditor
 			}
 			
 			//	int yMargin = 1 * this.LineHeight;
-			int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
+			int caretPosition = LineToVisualY (Caret.Line);
 			this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize / 2;
 			
 			if (this.textEditorData.HAdjustment.Upper < Allocation.Width)  {
@@ -1207,7 +1208,7 @@ namespace Mono.TextEditor
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
 			if (this.textEditorData.VAdjustment != null) {
-				int maxY = (Document.LogicalToVisualLine (Document.LineCount - 1) + 5) * this.LineHeight;
+				int maxY = LineToVisualY (Document.LineCount - 1) + 5 * this.LineHeight;
 				this.textEditorData.VAdjustment.SetBounds (0, 
 				                                           maxY, 
 				                                           LineHeight,
@@ -1231,11 +1232,12 @@ namespace Mono.TextEditor
 		{
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
-			int firstLine = (int)(this.textEditorData.VAdjustment.Value / LineHeight);
-			int startLine = (area.Top + reminder) / this.LineHeight;
-			int endLine   = (area.Bottom + reminder) / this.LineHeight - 1;
-			if ((area.Bottom + reminder) % this.LineHeight != 0)
-				endLine++;
+//			int firstLine = CalculateLineNumber ((int)this.textEditorData.VAdjustment.Value);
+			int startLine = CalculateLineNumber (area.Top + reminder + (int)this.textEditorData.VAdjustment.Value);
+		//	int endLine   = CalculateLineNumber (area.Bottom + reminder + (int)this.textEditorData.VAdjustment.Value) - 1;
+			
+	//		if ((area.Bottom + reminder) % this.LineHeight != 0)
+	//			endLine++;
 			// Initialize the rendering of the margins. Determine wether each margin has to be
 			// rendered or not and calculate the X offset.
 			List<Margin> marginsToRender = new List<Margin> (this.margins.Count);
@@ -1253,13 +1255,20 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			int startY = startLine * this.LineHeight - reminder;
-			int curY = startY;
+			int startY = LineToVisualY (startLine);
+			int curY = startY - (int)this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
-//			Console.WriteLine ("Render margins: startLine={0}, endLine={1}, area={2}", startLine, endLine, area);
-			for (int visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
-				int logicalLineNumber = Document.VisualToLogicalLine (visualLineNumber + firstLine);
+	//		Console.WriteLine ("Render margins: startLine={0}, endLine={1}, area={2}, startY={3}", startLine, endLine, area, startY);
+			for (int visualLineNumber = startLine; ; visualLineNumber++) {
+				int logicalLineNumber = visualLineNumber;
+				int lineHeight        = GetLineHeight (logicalLineNumber);
 				LineSegment line = Document.GetLine (logicalLineNumber);
+				int lastFold = -1;
+				foreach (FoldSegment fs in Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
+					lastFold = System.Math.Max (fs.EndOffset, lastFold);
+				}
+				if (lastFold > 0) 
+					visualLineNumber = Document.OffsetToLineNumber (lastFold);
 				foreach (Margin margin in marginsToRender) {
 					HashSet<int> linesAlreadyRendered = renderedLines[margin];
 					if (linesAlreadyRendered.Contains (logicalLineNumber))
@@ -1271,7 +1280,7 @@ namespace Mono.TextEditor
 						break;*/
 					//Console.WriteLine ("Render margin :" + margin);
 					try {
-						margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
+						margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY, lineHeight);
 					} catch (Exception e) {
 						System.Console.WriteLine (e);
 					}
@@ -1284,8 +1293,7 @@ namespace Mono.TextEditor
 					longestLineWidth = lineWidth;
 					setLongestLine = true;
 				}
-				
-				curY += LineHeight;
+				curY += lineHeight;
 				if (curY > area.Bottom)
 					break;
 			}
@@ -1659,7 +1667,7 @@ namespace Mono.TextEditor
 				lineLayout.Layout.IndexToLineX (result.Offset - line.Offset + result.Length - 1, true, out l, out x2);
 				x1 /= (int)Pango.Scale.PangoScale;
 				x2 /= (int)Pango.Scale.PangoScale;
-				int y = editor.Document.LogicalToVisualLine (lineNr) * editor.LineHeight - (int)editor.VAdjustment.Value;
+				int y = editor.LineToVisualY (lineNr) - (int)editor.VAdjustment.Value;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
 					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Selection.BackgroundColor);
 					color.A = 0.8;
@@ -2100,6 +2108,51 @@ namespace Mono.TextEditor
 		public void RequestResetCaretBlink ()
 		{
 			requestResetCaretBlink = true;
+		}
+
+		public int CalculateLineNumber (int yPos)
+		{
+			int logicalLine = Document.VisualToLogicalLine (yPos / LineHeight);
+			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
+				int lineNumber = Document.OffsetToLineNumber (extendedTextMarkerLine.Offset);
+				if (lineNumber >= logicalLine || Document.GetFoldingContaining (extendedTextMarkerLine).Any (fs => fs.IsFolded))
+					continue;
+				yPos -= GetLineHeight (extendedTextMarkerLine) - LineHeight;
+				logicalLine = Document.VisualToLogicalLine (yPos / LineHeight);
+			}
+			
+			return logicalLine;
+		}
+		
+		public int LineToVisualY (int logicalLine)
+		{
+			int delta = 0;
+			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
+				int lineNumber = Document.OffsetToLineNumber (extendedTextMarkerLine.Offset);
+				if (lineNumber >= logicalLine || Document.GetFoldingContaining (extendedTextMarkerLine).Any (fs => fs.IsFolded))
+					continue;
+				delta += GetLineHeight (extendedTextMarkerLine) - LineHeight;
+			}
+			
+			return Document.LogicalToVisualLine (logicalLine) * LineHeight + delta;
+		}
+		
+		public int GetLineHeight (LineSegment line)
+		{
+			if (line == null || line.MarkerCount == 0)
+				return LineHeight;
+			foreach (var marker in line.Markers) {
+				IExtendingTextMarker extendingTextMarker = marker as IExtendingTextMarker;
+				if (extendingTextMarker == null)
+					continue;
+				return extendingTextMarker.GetLineHeight (this);
+			}
+			return LineHeight;
+		}
+		
+		public int GetLineHeight (int logicalLineNumber)
+		{
+			return GetLineHeight (Document.GetLine (logicalLineNumber));
 		}
 	}
 	

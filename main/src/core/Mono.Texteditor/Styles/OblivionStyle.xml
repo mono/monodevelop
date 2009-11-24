@@ -91,7 +91,23 @@
 		
 		<Style name="location" color="chameleon1"/>
 	</Style>
-
+	
+	<Style name="warning.light.color1" color="#444400"/>
+	<Style name="warning.light.color2" color="#333300"/>
+	<Style name="warning.dark.color1" color="#333300"/>
+	<Style name="warning.dark.color2" color="#222200"/>
+	<Style name="warning.line.top" color="#222200"/>
+	<Style name="warning.line.bottom" color="#222200"/>
+	<Style name="warning.text" color="aluminium3"/>
+	
+	<Style name="error.light.color1" color="#440000"/>
+	<Style name="error.light.color2" color="#330000"/>
+	<Style name="error.dark.color1" color="#330000"/>
+	<Style name="error.dark.color2" color="#220000"/>
+	<Style name="error.line.top" color="#220000"/>
+	<Style name="error.line.bottom" color="#220000"/>
+	<Style name="error.text" color="aluminium3"/>
+	
 	<!-- TODO: override defaults
 	<Style name="marker.underline" color="red"/>
 	<Style name="marker.underline.error" color="red"/>

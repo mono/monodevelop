@@ -109,7 +109,23 @@
 			<Style name="secondary_highlighted_template" color="aluminium3" bgColor="aluminium1"/>
 		</Style>
 	</Style>
-
+	
+	<Style name="warning.light.color1" color="#EEEE88"/>
+	<Style name="warning.light.color2" color="#CCCC77"/>
+	<Style name="warning.dark.color1" color="#CCCC44"/>
+	<Style name="warning.dark.color2" color="#BBBB33"/>
+	<Style name="warning.line.top" color="#DDDD66"/>
+	<Style name="warning.line.bottom" color="#BBBB44"/>
+	<Style name="warning.text" color="black"/>
+	
+	<Style name="error.light.color1" color="#EE9999"/>
+	<Style name="error.light.color2" color="#CC8888"/>
+	<Style name="error.dark.color1" color="#CC8888"/>
+	<Style name="error.dark.color2" color="#BB6666"/>
+	<Style name="error.line.top" color="#DD6666"/>
+	<Style name="error.line.bottom" color="#BB4444"/>
+	<Style name="error.text" color="black"/>
+	
 	<Style name="linenumber" color="aluminium4" bgColor="white">
 		<Style name="highlight" color="aluminium5"/>
 	</Style>

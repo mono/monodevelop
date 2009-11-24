@@ -1,3 +1,19 @@
+2009-11-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Styles/OblivionStyle.xml:
+	* Mono.TextEditor/Margin.cs:
+	* Styles/TangoLightStyle.xml:
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/IconMargin.cs:
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/GutterMargin.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs:
+	* Mono.TextEditor/DashedLineMargin.cs:
+	* Mono.TextEditor.Highlighting/Style.cs: Worked on error
+	  bubbles.
+
 2009-11-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Highlighting/Style.cs: Added new styles.

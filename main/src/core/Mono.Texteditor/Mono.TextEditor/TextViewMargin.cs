@@ -1088,6 +1088,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public LayoutWrapper GetLayout (LineSegment line)
+		{
+			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+			return CreateLinePartLayout (mode, line, line.Offset, line.EditableLength, -1, -1);
+		}
+		
 		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y, int maxX)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
@@ -1101,13 +1107,14 @@ namespace Mono.TextEditor
 
 			// ---- new renderer
 			LayoutWrapper layout = CreateLinePartLayout (mode, line, offset, length, selectionStart, selectionEnd);
-
+			
 			Pango.Rectangle ink_rect, logical_rect;
 			layout.Layout.GetExtents (out ink_rect, out logical_rect);
 			int width = (int)((logical_rect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale);
-
+			
 			bool drawBg = true;
 			bool drawText = true;
+			
 			foreach (TextMarker marker in line.Markers) {
 				IBackgroundMarker bgMarker = marker as IBackgroundMarker;
 				if (bgMarker == null)
@@ -1488,7 +1495,7 @@ namespace Mono.TextEditor
 			if (line == null)
 				return Gdk.Point.Zero;
 			int x = ColumnToVisualX (line, loc.Column) + this.XOffset;
-			int y = Document.LogicalToVisualLine (loc.Line) * this.LineHeight;
+			int y = textEditor.LineToVisualY (loc.Line);
 			return new Gdk.Point (x - (int)this.textEditor.HAdjustment.Value, y - (int)this.textEditor.VAdjustment.Value);
 		}
 
@@ -1657,7 +1664,7 @@ namespace Mono.TextEditor
 
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			//			int xStart = XOffset;
-			int y = (int)(Document.LogicalToVisualLine (lineNr) * LineHeight - textEditor.VAdjustment.Value);
+			int y = (int)(textEditor.LineToVisualY (lineNr) - textEditor.VAdjustment.Value);
 			//			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
 			int width, height;
 			int xPos = (int)(XOffset - textEditor.HAdjustment.Value);
@@ -1705,7 +1712,7 @@ namespace Mono.TextEditor
 			SetClip (new Gdk.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height));
 		}
 
-		protected internal override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y)
+		protected internal override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y, int _lineHeight)
 		{
 			//			int visibleLine = y / this.LineHeight;
 			//			this.caretX = -1;
@@ -1714,7 +1721,7 @@ namespace Mono.TextEditor
 			int xStart = System.Math.Max (area.X, XOffset);
 			xStart = System.Math.Max (0, xStart);
 			
-			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
+			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
 			int width, height;
 			int xPos = (int)(x - textEditor.HAdjustment.Value);
 			
@@ -1907,7 +1914,8 @@ namespace Mono.TextEditor
 			public VisualLocationTranslator (TextViewMargin margin, int xp, int yp)
 			{
 				this.margin = margin;
-				lineNumber = System.Math.Min (margin.Document.VisualToLogicalLine ((int)(yp + margin.textEditor.VAdjustment.Value) / margin.LineHeight), margin.Document.LineCount - 1);
+				
+				lineNumber = System.Math.Min (margin.textEditor.CalculateLineNumber (yp + (int)margin.textEditor.VAdjustment.Value), margin.Document.LineCount - 1);
 				line = lineNumber < margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
 			}
 			
