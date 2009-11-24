@@ -322,10 +322,10 @@ namespace MonoDevelop.VersionControl.Views
 		/// <summary>
 		/// Render an annotation on each line
 		/// </summary>
-		protected override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y)
+		protected override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
 		{
 			string ann = (line < annotations.Count)? annotations[line]: string.Empty;
-			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, editor.LineHeight);
+			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, lineHeight);
 			drawable.DrawRectangle (locallyModified.Equals (ann, StringComparison.Ordinal)? locallyModifiedGC: lineNumberBgGC, true, drawArea);
 			
 			if (!locallyModified.Equals (ann, StringComparison.Ordinal) &&
