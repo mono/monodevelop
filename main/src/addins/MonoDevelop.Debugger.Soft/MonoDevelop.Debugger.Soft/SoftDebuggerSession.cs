@@ -881,6 +881,12 @@ namespace MonoDevelop.Debugger.Soft
 			else
 				return null;
 		}
+		
+		public bool IsExternalCode (Mono.Debugger.StackFrame frame)
+		{
+			return frame.Method == null || string.IsNullOrEmpty (frame.FileName)
+				|| (assemblyFilters != null && !assemblyFilters.Contains (frame.Method.DeclaringType.Assembly));
+		}
 	}
 	
 	class BreakInfo

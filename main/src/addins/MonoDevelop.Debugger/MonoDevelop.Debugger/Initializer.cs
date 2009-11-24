@@ -70,11 +70,12 @@ namespace MonoDevelop.Debugger
 					disassemblyCurrent = true;
 			}
 			
-			if (DebuggingService.CurrentFrame == null)
+			var frame = DebuggingService.GetCurrentVisibleFrame ();
+			if (frame == null)
 				return;
 			
-			FilePath file = DebuggingService.CurrentFrame.SourceLocation.Filename;
-			int line = DebuggingService.CurrentFrame.SourceLocation.Line;
+			FilePath file = frame.SourceLocation.Filename;
+			int line = frame.SourceLocation.Line;
 			
 			if (!file.IsNullOrEmpty && System.IO.File.Exists (file) && line != -1) {
 				Document doc = IdeApp.Workbench.OpenDocument (file, line, 1, !disassemblyCurrent, null, false);

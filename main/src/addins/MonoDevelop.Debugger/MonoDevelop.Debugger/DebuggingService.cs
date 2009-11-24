@@ -550,7 +550,7 @@ namespace MonoDevelop.Debugger
 				//FIXME: detect user code
 				for (int idx = currentFrame; idx < currentBacktrace.FrameCount; idx++) {
 					var frame = currentBacktrace.GetFrame (currentFrame);
-					if (frame.SourceLocation.Filename != FilePath.Null)
+					if (!frame.IsExternalCode)
 						return frame;
 				}
 			}
@@ -600,13 +600,10 @@ namespace MonoDevelop.Debugger
 		public static void ShowCurrentExecutionLine ()
 		{
 			if (currentBacktrace != null) {
-				for (int n=0; n<currentBacktrace.FrameCount; n++) {
-					StackFrame sf = currentBacktrace.GetFrame (n);
-					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
-						Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.Filename, sf.SourceLocation.Line, 1, true, false);
-						OnDisableConditionalCompilation (new DocumentEventArgs (document));
-						return;
-					}
+				var sf = GetCurrentVisibleFrame ();
+				if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
+					Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.Filename, sf.SourceLocation.Line, 1, true, false);
+					OnDisableConditionalCompilation (new DocumentEventArgs (document));
 				}
 			}
 		}

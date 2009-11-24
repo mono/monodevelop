@@ -1,3 +1,9 @@
+2009-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs:
+	* SoftDebuggerBacktrace.cs: Mark frames that are external
+	  code.
+
 2009-11-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerBacktrace.cs: Include the type name in the
