@@ -213,9 +213,9 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
 			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
 			DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
-			
-			TaskService.Errors.TasksAdded   += UpdateTasks;
-			TaskService.Errors.TasksRemoved += UpdateTasks;
+// To enable error bubbles, include these two lines:
+//			TaskService.Errors.TasksAdded   += UpdateTasks;
+//			TaskService.Errors.TasksRemoved += UpdateTasks;
 			
 		}
 		List<LineSegment> lineSegmentWithTasks = new List<LineSegment> ();

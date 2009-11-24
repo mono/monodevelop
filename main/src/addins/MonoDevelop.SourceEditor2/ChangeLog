@@ -1,5 +1,10 @@
 2009-11-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Disabled error
+	  bubbles by request from lluis.
+
+2009-11-24  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
 	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Used the
