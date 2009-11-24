@@ -653,13 +653,12 @@ namespace MonoDevelop.Debugger.Soft
 		public override void Invoke ()
 		{
 			try {
-				var vm = ctx.Thread.VirtualMachine;
 				if (obj is ObjectMirror)
-					handle = ((ObjectMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, null, null);
+					handle = ((ObjectMirror)obj).BeginInvokeMethod (ctx.Thread, function, args, options, null, null);
 				else if (obj is TypeMirror)
-					handle = ((TypeMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, null, null);
+					handle = ((TypeMirror)obj).BeginInvokeMethod (ctx.Thread, function, args, options, null, null);
 				else if (obj is StructMirror)
-					handle = ((StructMirror)obj).BeginInvokeMethod (vm, ctx.Thread, function, args, options, null, null);
+					handle = ((StructMirror)obj).BeginInvokeMethod (ctx.Thread, function, args, options, null, null);
 				else
 					throw new ArgumentException (obj.GetType ().ToString ());
 			} catch (InvocationException ex) {
