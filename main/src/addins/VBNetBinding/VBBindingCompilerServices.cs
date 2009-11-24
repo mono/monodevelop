@@ -153,7 +153,7 @@ namespace MonoDevelop.VBNetBinding {
 			}
 
 			if (!string.IsNullOrEmpty (compilerparameters.DocumentationFile)) {
-				sb.AppendFormat ("-doc:{0}", compilerparameters.DocumentationFile);
+				sb.AppendFormat ("\"-doc:{0}\"", compilerparameters.DocumentationFile);
 				sb.AppendLine ();
 			}
 
