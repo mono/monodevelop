@@ -173,7 +173,12 @@ namespace MonoDevelop.Debugger
 		
 		void OnRowActivated (object o, Gtk.RowActivatedArgs args)
 		{
-			DebuggingService.CurrentFrameIndex = args.Path.Indices [0];
+			TreeIter iter;
+			if (store.GetIter (out iter, args.Path)) {
+				bool isExternal = (Pango.Style)store.GetValue (iter, 6) == Pango.Style.Italic;
+				if (!isExternal)
+					DebuggingService.CurrentFrameIndex = args.Path.Indices [0];
+			}
 		}
 
 		public Gtk.Widget Control {
