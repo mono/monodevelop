@@ -300,9 +300,10 @@ namespace MonoDevelop.ValaBinding
 		
 		protected override void DoExecute (IProgressMonitor monitor,
 										   ExecutionContext context,
-		                                   string configuration)
+		                                   string solutionConfiguration,
+		                                   string itemConfiguration)
 		{
-			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(configuration);
+			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(itemConfiguration);
 			bool pause = conf.PauseConsoleOutput;
 			IConsole console;
 			
