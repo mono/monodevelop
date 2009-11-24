@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -52,6 +53,7 @@ using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.CodeTemplates;
 using Services = MonoDevelop.Projects.Services;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -211,7 +213,33 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
 			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
 			DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
+			
+			TaskService.Errors.TasksAdded   += UpdateTasks;
+			TaskService.Errors.TasksRemoved += UpdateTasks;
+			
 		}
+		List<LineSegment> lineSegmentWithTasks = new List<LineSegment> ();
+		void UpdateTasks (object sender, TaskEventArgs e)
+		{
+			Task[] tasks = TaskService.Errors.GetFileTasks (ContentName);
+			if (tasks == null)
+				return;
+			Console.WriteLine ("tasks:" + tasks.Length);
+			lineSegmentWithTasks.ForEach (ls => widget.Document.RemoveMarker (ls, typeof (ErrorTextMarker)));
+			lineSegmentWithTasks.Clear ();
+			foreach (Task task in tasks) {
+				if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
+					LineSegment lineSegment = widget.Document.GetLine (task.Line - 1);
+					if (lineSegmentWithTasks.Contains (lineSegment))
+						continue;
+					lineSegmentWithTasks.Add (lineSegment);
+					
+					widget.Document.AddMarker (lineSegment, new ErrorTextMarker (lineSegment, task.Severity == TaskSeverity.Error, task.Description));
+				}
+			}
+			widget.TextEditor.Repaint ();
+		}
+		
 		AutoSave autoSave = new AutoSave ();
 		
 		internal AutoSave AutoSave {
@@ -315,6 +343,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
 			this.IsDirty = false;
+			UpdateTasks (null, null);
 		}
 
 		bool warnOverwrite = false;
@@ -396,6 +425,10 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.Breakpoints.BreakpointAdded -= breakpointAdded;
 			DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemoved;
 			DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
+			
+			TaskService.Errors.TasksAdded   -= UpdateTasks;
+			TaskService.Errors.TasksRemoved -= UpdateTasks;
+			TaskService.Errors.TasksChanged -= UpdateTasks;
 			
 			// This is not necessary but helps when tracking down memory leaks
 			
@@ -614,10 +647,11 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.Caret.Line = args.LineNumber;
 				TextEditor.Caret.Column = 1;
 				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
-			}
-			else if (args.Button == 1) {
-				if (!string.IsNullOrEmpty (this.Document.FileName))
-					DebuggingService.Breakpoints.Toggle (this.Document.FileName, args.LineNumber + 1);
+			} else if (args.Button == 1) {
+				if (!string.IsNullOrEmpty (this.Document.FileName)) {
+					if (!args.LineSegment.Markers.Any (m => m is ErrorTextMarker))
+						DebuggingService.Breakpoints.Toggle (this.Document.FileName, args.LineNumber + 1);
+				}
 			}
 		}
 		

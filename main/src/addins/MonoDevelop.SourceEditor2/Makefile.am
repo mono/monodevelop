@@ -27,6 +27,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/DropDownBoxListWindow.cs \
 	MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs \
 	MonoDevelop.SourceEditor/EditActions.cs \
+	MonoDevelop.SourceEditor/ErrorTextMarker.cs \
 	MonoDevelop.SourceEditor/ExtensibleTextEditor.cs \
 	MonoDevelop.SourceEditor/GotoLineNumberWidget.cs \
 	MonoDevelop.SourceEditor/IdeViMode.cs \
