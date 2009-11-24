@@ -41,14 +41,17 @@ namespace Mono.TextEditor
 	{
 		static int GetNextOffset (Document document, int lineNumber)
 		{
-			LineSegment startLine = document.GetLine (lineNumber);
+			int startLineNumber = lineNumber + 1;
+			if (startLineNumber > document.Length) 
+				startLineNumber = 0;
+			
+			LineSegment startLine = document.GetLine (startLineNumber);
 			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = startLine.Iter;
-			while (iter.MoveNext ()) {
+			do {
 				LineSegment line = iter.Current;
-				if (line.IsBookmarked) {
+				if (line.IsBookmarked)
 					return line.Offset;
-				}
-			}
+			} while (iter.MoveNext ());
 			return -1;
 		}
 		
@@ -56,7 +59,7 @@ namespace Mono.TextEditor
 		{
 			int offset = GetNextOffset (data.Document, data.Caret.Line);
 			if (offset < 0)
-				offset = GetNextOffset (data.Document, 0);
+				offset = GetNextOffset (data.Document, -1);
 			if (offset >= 0)
 				data.Caret.Offset = offset;
 		}

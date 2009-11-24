@@ -1,5 +1,12 @@
 2009-11-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/BookmarkActions.cs: Applied patch from Tyson
+	  S. Maxwell <tyson.maxwell@gmail.com> fixing Bug 557637 -
+	  Bookmarked line 1 is not selected when going to the next
+	  bookmark.
+
+2009-11-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Styles/OblivionStyle.xml:
 	* Mono.TextEditor/Margin.cs:
 	* Styles/TangoLightStyle.xml:
