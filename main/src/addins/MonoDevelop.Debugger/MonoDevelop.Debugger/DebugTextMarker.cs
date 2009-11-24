@@ -195,6 +195,35 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
+	public class DebugStackLineTextMarker: DebugTextMarker
+	{
+		public override Color BackgroundColor {
+			get { return editor.ColorStyle.DebugStackLineBg; }
+			set {  }
+		}
+		
+		public override Color Color {
+			get { return editor.ColorStyle.DebugStackLineFg;  }
+			set {  }
+		}
+		
+		public DebugStackLineTextMarker (Mono.TextEditor.TextEditor editor) : base (editor)
+		{
+			IncludedStyles |= StyleFlag.BackgroundColor | StyleFlag.Color;
+		}
+		
+		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
+		{
+			Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.DebugStackLineMarkerColor1);
+			Cairo.Color color2 = Style.ToCairoColor (editor.ColorStyle.DebugStackLineMarkerColor2);
+			Cairo.Color border = Style.ToCairoColor (editor.ColorStyle.DebugStackLineMarkerBorder);
+		
+			DrawArrow (cr, x, y, size);
+			FillGradient (cr, color1, color2, x, y, size);
+			DrawBorder (cr, border, x, y, size);
+		}
+	}
+	
 	public class InvalidBreakpointTextMarker: DebugTextMarker
 	{
 		public override Color BackgroundColor {

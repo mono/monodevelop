@@ -166,6 +166,19 @@ namespace MonoDevelop.Debugger
 			}
 			return false;
 		}
+		
+		public static void ShowAddTracepointDialog (string file, int line)
+		{
+			AddTracePointDialog dlg = new AddTracePointDialog ();
+			if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Text.Length > 0) {
+				Breakpoint bp = new Breakpoint (file, line);
+				bp.HitAction = HitAction.PrintExpression;
+				bp.TraceExpression = dlg.Text;
+				bp.ConditionExpression = dlg.Condition;
+				Breakpoints.Add (bp);
+			}
+			dlg.Destroy ();
+		}
 
 		public static bool IsFeatureSupported (IBuildTarget target, DebuggerFeatures feature)
 		{
@@ -519,26 +532,6 @@ namespace MonoDevelop.Debugger
 			get { return currentBacktrace; }
 		}
 
-		public static FilePath CurrentFilename {
-			get {
-				StackFrame sf = CurrentFrame;
-				if (sf != null)
-					return sf.SourceLocation.Filename;
-				else
-					return null;
-			}
-		}
-
-		public static int CurrentLineNumber {
-			get {
-				StackFrame sf = CurrentFrame;
-				if (sf != null)
-					return sf.SourceLocation.Line;
-				else
-					return -1;
-			}
-		}
-
 		public static StackFrame CurrentFrame {
 			get {
 				if (currentBacktrace != null && currentFrame != -1)
@@ -546,6 +539,22 @@ namespace MonoDevelop.Debugger
 				else
 					return null;
 			}
+		}
+		
+		/// <summary>
+		/// The deepest stack frame with source above the CurrentFrame
+		/// </summary>
+		public static StackFrame GetCurrentVisibleFrame ()
+		{
+			if (currentBacktrace != null && currentFrame != -1) {
+				//FIXME: detect user code
+				for (int idx = currentFrame; idx < currentBacktrace.FrameCount; idx++) {
+					var frame = currentBacktrace.GetFrame (currentFrame);
+					if (frame.SourceLocation.Filename != FilePath.Null)
+						return frame;
+				}
+			}
+			return null;
 		}
 		
 		public static int CurrentFrameIndex {

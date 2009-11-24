@@ -72,17 +72,19 @@ namespace MonoDevelop.SourceEditor
 		internal object MemoryProbe = Counters.SourceViewsInMemory.CreateMemoryProbe ();
 		
 		TextMarker currentDebugLineMarker;
+		TextMarker debugStackLineMarker;
 		TextMarker breakpointMarker;
 		TextMarker breakpointDisabledMarker;
 		TextMarker breakpointInvalidMarker;
 		
 		int lastDebugLine = -1;
-		EventHandler executionLocationChanged;
+		EventHandler currentFrameChanged;
 		EventHandler<BreakpointEventArgs> breakpointAdded;
 		EventHandler<BreakpointEventArgs> breakpointRemoved;
 		EventHandler<BreakpointEventArgs> breakpointStatusChanged;
 		
 		List<LineSegment> breakpointSegments = new List<LineSegment> ();
+		LineSegment debugStackSegment;
 		LineSegment currentLineSegment;
 		
 		bool writeAllowed;
@@ -136,7 +138,7 @@ namespace MonoDevelop.SourceEditor
 		public SourceEditorView ()
 		{
 			Counters.LoadedEditors++;
-			executionLocationChanged = (EventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
+			currentFrameChanged = (EventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler (OnCurrentFrameChanged));
 			breakpointAdded = (EventHandler<BreakpointEventArgs>)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointAdded));
 			breakpointRemoved = (EventHandler<BreakpointEventArgs>)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointRemoved));
 			breakpointStatusChanged = (EventHandler<BreakpointEventArgs>)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointStatusChanged));
@@ -171,6 +173,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
 			widget.ShowAll ();
 			
+			debugStackLineMarker = new DebugStackLineTextMarker (widget.TextEditor);
 			currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor);
 			breakpointMarker = new BreakpointTextMarker (widget.TextEditor);
 			breakpointDisabledMarker = new DisabledBreakpointTextMarker (widget.TextEditor);
@@ -202,7 +205,9 @@ namespace MonoDevelop.SourceEditor
 			};
 			ClipbardRingUpdated += UpdateClipboardRing;
 			
-			DebuggingService.ExecutionLocationChanged += executionLocationChanged;
+			DebuggingService.CurrentFrameChanged += currentFrameChanged;
+			DebuggingService.StoppedEvent += currentFrameChanged;
+			DebuggingService.ResumedEvent += currentFrameChanged;
 			DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
 			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
 			DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
@@ -385,19 +390,22 @@ namespace MonoDevelop.SourceEditor
 				widget = null;
 			}
 			
-			DebuggingService.ExecutionLocationChanged -= executionLocationChanged;
+			DebuggingService.CurrentFrameChanged -= currentFrameChanged;
+			DebuggingService.StoppedEvent -= currentFrameChanged;
+			DebuggingService.ResumedEvent -= currentFrameChanged;
 			DebuggingService.Breakpoints.BreakpointAdded -= breakpointAdded;
 			DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemoved;
 			DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
 			
 			// This is not necessary but helps when tracking down memory leaks
 			
+			debugStackLineMarker = null;
 			currentDebugLineMarker = null;
 			breakpointMarker = null;
 			breakpointDisabledMarker = null;
 			breakpointInvalidMarker = null;
 			
-			executionLocationChanged = null;
+			currentFrameChanged = null;
 			breakpointAdded = null;
 			breakpointRemoved = null;
 			breakpointStatusChanged = null;
@@ -479,33 +487,53 @@ namespace MonoDevelop.SourceEditor
 				TextFileService.FireLineCountChanged (this, location.Line + 1, lines, location.Column + 1);
 		}
 
-		void OnExecutionLocationChanged (object s, EventArgs args)
+		void OnCurrentFrameChanged (object s, EventArgs args)
 		{
 			UpdateExecutionLocation ();
 		}
 		
 		void UpdateExecutionLocation ()
 		{
-			if (DebuggingService.IsDebugging && 
-			    !DebuggingService.IsRunning &&
-				DebuggingService.CurrentFilename != FilePath.Null &&
-			    DebuggingService.CurrentFilename.FullPath == Path.GetFullPath (ContentName)
-		    ) {
-				if (lastDebugLine == DebuggingService.CurrentLineNumber)
+			if (DebuggingService.IsDebugging && !DebuggingService.IsRunning) {
+				var frame = DebuggingService.GetCurrentVisibleFrame ();
+				if (frame != null && frame.SourceLocation.Filename != FilePath.Null
+				    && Path.GetFullPath (frame.SourceLocation.Filename) == Path.GetFullPath (ContentName))
+				{
+					if (lastDebugLine == frame.SourceLocation.Line)
+						return;
+					RemoveDebugMarkers ();
+					lastDebugLine = frame.SourceLocation.Line;
+					var segment = widget.TextEditor.Document.GetLine (lastDebugLine-1);
+					if (segment != null) {
+						if (DebuggingService.CurrentFrameIndex == 0) {
+							currentLineSegment = segment;
+							widget.TextEditor.Document.AddMarker (segment, currentDebugLineMarker);
+						} else {
+							debugStackSegment = segment;
+							widget.TextEditor.Document.AddMarker (segment, debugStackLineMarker);
+						}
+						widget.TextEditor.QueueDraw ();
+					}
 					return;
-				if (currentLineSegment != null)
-					widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
-				lastDebugLine = DebuggingService.CurrentLineNumber;
-				currentLineSegment = widget.TextEditor.Document.GetLine (lastDebugLine-1);
-				if (currentLineSegment != null) {
-					widget.TextEditor.Document.AddMarker (currentLineSegment, currentDebugLineMarker);
-					widget.TextEditor.QueueDraw ();
 				}
-			} else if (currentLineSegment != null) {
-				widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
+			}
+			
+			if (currentLineSegment != null) {
+				RemoveDebugMarkers ();
 				lastDebugLine = -1;
-				currentLineSegment = null;
 				widget.TextEditor.QueueDraw ();
+			}
+		}
+		
+		void RemoveDebugMarkers ()
+		{
+			if (currentLineSegment != null) {
+				widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
+				currentLineSegment = null;
+			}
+			if (debugStackSegment != null) {
+				widget.TextEditor.Document.RemoveMarker (debugStackSegment, debugStackLineMarker);
+				debugStackSegment = null;
 			}
 		}
 		

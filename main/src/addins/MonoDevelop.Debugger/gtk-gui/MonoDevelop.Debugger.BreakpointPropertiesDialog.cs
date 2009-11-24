@@ -310,7 +310,7 @@ namespace MonoDevelop.Debugger {
             w20.Expand = false;
             w20.Fill = false;
             // Container child hbox7.Gtk.Box+BoxChild
-            this.spinHitCount = new Gtk.SpinButton(0, 100, 1);
+            this.spinHitCount = new Gtk.SpinButton(0, 100000000, 1);
             this.spinHitCount.CanFocus = true;
             this.spinHitCount.Name = "spinHitCount";
             this.spinHitCount.Adjustment.PageIncrement = 10;

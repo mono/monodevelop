@@ -36,6 +36,7 @@ using System.Net.Sockets;
 using MonoDevelop.Core;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -45,6 +46,7 @@ namespace MonoDevelop.Debugger.Soft
 		Thread eventHandler;
 		Dictionary<string, List<TypeMirror>> source_to_type = new Dictionary<string, List<TypeMirror>> ();
 		Dictionary<string,TypeMirror> types = new Dictionary<string, TypeMirror> ();
+		Dictionary<EventRequest,BreakInfo> breakpoints = new Dictionary<EventRequest,BreakInfo> ();
 		List<BreakEvent> pending_bes = new List<BreakEvent> ();
 		ThreadMirror first_thread;
 		ThreadMirror current_thread;
@@ -370,6 +372,7 @@ namespace MonoDevelop.Debugger.Soft
 				return null;
 			BreakInfo bi = new BreakInfo ();
 			bi.Enabled = activate;
+			bi.BreakEvent = be;
 			
 			if (be is Breakpoint) {
 				Breakpoint bp = (Breakpoint) be;
@@ -419,6 +422,7 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			bi.Req = vm.SetBreakpoint (bi.Location.Method, bi.Location.ILOffset);
 			bi.Req.Enabled = bi.Enabled;
+			breakpoints [bi.Req] = bi;
 		}
 		
 		void InsertCatchpoint (Catchpoint cp, BreakInfo bi, TypeMirror excType)
@@ -530,8 +534,11 @@ namespace MonoDevelop.Debugger.Soft
 			}
 			
 			if (e is BreakpointEvent) {
-				etype = TargetEventType.TargetHitBreakpoint;
-				resume = false;
+				BreakpointEvent be = (BreakpointEvent)e;
+				if (!HandleBreakpoint (e.Thread, be.Request)) {
+					etype = TargetEventType.TargetHitBreakpoint;
+					resume = false;
+				}
 			}
 			
 			if (e is ExceptionEvent) {
@@ -620,6 +627,92 @@ namespace MonoDevelop.Debugger.Soft
 					}
 				}
 			});
+		}
+		
+		bool HandleBreakpoint (ThreadMirror thread, EventRequest er)
+		{
+			BreakInfo binfo;
+			if (!breakpoints.TryGetValue (er, out binfo))
+				return false;
+			
+			Breakpoint bp = binfo.BreakEvent as Breakpoint;
+			if (bp == null)
+				return false;
+			
+			if (bp.HitCount > 1) {
+				// Just update the count and continue
+				UpdateHitCount (binfo, bp.HitCount - 1);
+				return true;
+			}
+			
+			if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
+				string res = EvaluateExpression (thread, bp.ConditionExpression);
+				if (bp.BreakIfConditionChanges) {
+					if (res == binfo.LastConditionValue)
+						return true;
+					binfo.LastConditionValue = res;
+				} else {
+					if (res != null && res.ToLower () == "false")
+						return true;
+				}
+			}
+			switch (bp.HitAction) {
+				case HitAction.CustomAction:
+					// If custom action returns true, execution must continue
+					return OnCustomBreakpointAction (bp.CustomActionId, binfo);
+				case HitAction.PrintExpression: {
+					string exp = EvaluateTrace (thread, bp.TraceExpression);
+					OnDebuggerOutput (false, exp + "\n");
+					UpdateLastTraceValue (binfo, exp);
+					return true;
+				}
+				case HitAction.Break:
+					return false;
+			}
+			return false;
+		}
+		
+		string EvaluateTrace (ThreadMirror thread, string exp)
+		{
+			StringBuilder sb = new StringBuilder ();
+			int last = 0;
+			int i = exp.IndexOf ('{');
+			while (i != -1) {
+				if (i < exp.Length - 1 && exp [i+1] == '{') {
+					sb.Append (exp.Substring (last, i - last + 1));
+					last = i + 2;
+					i = exp.IndexOf ('{', i + 2);
+					continue;
+				}
+				int j = exp.IndexOf ('}', i + 1);
+				if (j == -1)
+					break;
+				string se = exp.Substring (i + 1, j - i - 1);
+				se = EvaluateExpression (thread, se);
+				sb.Append (exp.Substring (last, i - last));
+				sb.Append (se);
+				last = j + 1;
+				i = exp.IndexOf ('{', last);
+			}
+			sb.Append (exp.Substring (last, exp.Length - last));
+			return sb.ToString ();
+		}
+		
+		string EvaluateExpression (ThreadMirror thread, string exp)
+		{
+			try {
+				MDB.StackFrame[] frames = thread.GetFrames ();
+				if (frames.Length == 0)
+					return string.Empty;
+				EvaluationOptions ops = Options.EvaluationOptions;
+				ops.AllowTargetInvoke = true;
+				SoftEvaluationContext ctx = new SoftEvaluationContext (this, frames[0], ops);
+				ValueReference val = Evaluator.Evaluate (ctx, exp);
+				return val.CreateObjectValue (false).Value;
+			} catch (Exception ex) {
+				OnDebuggerOutput (true, ex.ToString ());
+				return string.Empty;
+			}
 		}
 		
 		void ResolveBreakpoints (TypeLoadEvent te)
@@ -792,8 +885,10 @@ namespace MonoDevelop.Debugger.Soft
 	
 	class BreakInfo
 	{
-		public bool Enabled { get; set; }
-		public Location Location { get; set; }
-		public EventRequest Req { get; set; }
+		public bool Enabled;
+		public Location Location;
+		public EventRequest Req;
+		public BreakEvent BreakEvent;
+		public string LastConditionValue;
 	}
 }

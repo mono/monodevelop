@@ -170,7 +170,7 @@ namespace MonoDevelop.CSharp
 			
 			if (!string.IsNullOrEmpty (compilerParameters.PlatformTarget) && compilerParameters.PlatformTarget.ToLower () != "anycpu") {
 				//HACK: to ignore the platform flag for Mono <= 2.4, because gmcs didn't support it
-				if (runtime.Id == "Mono" && runtime.AssemblyContext.GetAssemblyLocation ("Mono.Debugger.Soft", null) == null) {
+				if (runtime.RuntimeId == "Mono" && runtime.AssemblyContext.GetAssemblyLocation ("Mono.Debugger.Soft", null) == null) {
 					LoggingService.LogWarning ("Mono runtime '" + runtime.DisplayName + 
 					                           "' appears to be too old to support the 'platform' C# compiler flag.");
 				} else {

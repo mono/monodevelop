@@ -1,5 +1,16 @@
 2009-11-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerEngine.cs:
+	* SoftDebuggerSession.cs: Add support for tracepoints and
+	  conditional breakpoints.
+
+2009-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Track API.
+	* Mono.Debugger.Soft.dll: Updated.
+
+2009-11-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerSession.cs: The stepping request should always
 	  be disabled when stopping for whatever reason.
 

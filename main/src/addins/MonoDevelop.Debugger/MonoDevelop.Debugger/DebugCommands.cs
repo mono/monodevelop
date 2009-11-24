@@ -63,7 +63,8 @@ namespace MonoDevelop.Debugger
 		ShowBreakpointProperties,
 		ExpressionEvaluator,
 		SelectExceptions,
-		ShowCurrentExecutionLine
+		ShowCurrentExecutionLine,
+		AddTracepoint
 	}
 
 	internal class DebugHandler: CommandHandler
@@ -328,6 +329,25 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
+					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+					!DebuggingService.Breakpoints.IsReadOnly;
+		}
+	}
+	
+	internal class AddTracepointHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			DebuggingService.ShowAddTracepointDialog (
+			    IdeApp.Workbench.ActiveDocument.FileName,
+			    IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine);
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Tracepoints);
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 					IdeApp.Workbench.ActiveDocument.TextEditor != null &&
 					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&

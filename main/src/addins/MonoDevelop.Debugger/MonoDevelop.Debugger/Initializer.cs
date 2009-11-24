@@ -73,8 +73,8 @@ namespace MonoDevelop.Debugger
 			if (DebuggingService.CurrentFrame == null)
 				return;
 			
-			FilePath file = DebuggingService.CurrentFilename;
-			int line = DebuggingService.CurrentLineNumber;
+			FilePath file = DebuggingService.CurrentFrame.SourceLocation.Filename;
+			int line = DebuggingService.CurrentFrame.SourceLocation.Line;
 			
 			if (!file.IsNullOrEmpty && System.IO.File.Exists (file) && line != -1) {
 				Document doc = IdeApp.Workbench.OpenDocument (file, line, 1, !disassemblyCurrent, null, false);
