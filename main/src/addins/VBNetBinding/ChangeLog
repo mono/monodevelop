@@ -1,3 +1,8 @@
+2009-11-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* VBBindingCompilerServices.cs: When setting the doc file, use quotes
+	in case the filename has spaces.
+
 2009-11-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Project/VBProjectParameters.cs: Use the new

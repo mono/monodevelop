@@ -1,3 +1,10 @@
+2009-11-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  When saving items, try to reuse the items that already exist
+	  in the msbuild file. Fixes bug #557566.
+
 2009-11-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:

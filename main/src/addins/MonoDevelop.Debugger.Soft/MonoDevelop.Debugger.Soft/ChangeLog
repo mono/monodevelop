@@ -1,3 +1,8 @@
+2009-11-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerSession.cs: The stepping request should always
+	  be disabled when stopping for whatever reason.
+
 2009-11-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Manifest.addin.xml: Declare dep on Mono.Debugger.Soft.dll.

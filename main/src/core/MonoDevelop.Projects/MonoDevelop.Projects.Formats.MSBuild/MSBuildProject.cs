@@ -543,6 +543,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			return String.Compare (GetMetadata (name), "False", StringComparison.OrdinalIgnoreCase) == 0;
 		}
+		
+		public void MergeFrom (MSBuildItem other)
+		{
+			foreach (XmlNode node in Element.ChildNodes) {
+				if (node is XmlElement)
+					SetMetadata (node.LocalName, node.InnerXml);
+			}
+		}
 	}
 	
 	class MSBuildItemGroup: MSBuildObject

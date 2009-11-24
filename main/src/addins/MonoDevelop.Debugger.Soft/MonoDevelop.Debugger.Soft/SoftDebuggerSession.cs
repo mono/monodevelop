@@ -53,6 +53,7 @@ namespace MonoDevelop.Debugger.Soft
 		bool exited;
 		bool started;
 		internal int StackVersion;
+		StepEventRequest currentStepRequest;
 		
 		Thread outputReader;
 		Thread errorReader;
@@ -468,6 +469,7 @@ namespace MonoDevelop.Debugger.Soft
 			if (assemblyFilters != null && assemblyFilters.Count > 0)
 				req.AssemblyFilter = assemblyFilters;
 			req.Enabled = true;
+			currentStepRequest = req;
 			OnResumed ();
 			vm.Resume ();
 			DequeueEventsForFirstThread ();
@@ -538,8 +540,6 @@ namespace MonoDevelop.Debugger.Soft
 			}
 			
 			if (e is StepEvent) {
-				StepEventRequest req = (StepEventRequest)e.Request;
-				req.Enabled = false;
 				etype = TargetEventType.TargetStopped;
 				resume = false;
 			}
@@ -556,6 +556,10 @@ namespace MonoDevelop.Debugger.Soft
 			if (resume)
 				vm.Resume ();
 			else {
+				if (currentStepRequest != null) {
+					currentStepRequest.Enabled = false;
+					currentStepRequest = null;
+				}
 				current_thread = e.Thread;
 				TargetEventArgs args = new TargetEventArgs (etype);
 				args.Process = OnGetProcesses () [0];
@@ -740,6 +744,7 @@ namespace MonoDevelop.Debugger.Soft
 			if (assemblyFilters != null && assemblyFilters.Count > 0)
 				req.AssemblyFilter = assemblyFilters;
 			req.Enabled = true;
+			currentStepRequest = req;
 			OnResumed ();
 			vm.Resume ();
 			DequeueEventsForFirstThread ();
