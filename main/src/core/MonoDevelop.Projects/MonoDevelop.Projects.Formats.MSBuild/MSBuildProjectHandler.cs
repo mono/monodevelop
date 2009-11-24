@@ -704,15 +704,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			// Remove old items
-			ArrayList list = new ArrayList ();
-			foreach (object ob in msproject.GetAllItems ())
-				list.Add (ob);
+			Dictionary<string,MSBuildItem> oldItems = new Dictionary<string, MSBuildItem> ();
+			foreach (MSBuildItem item in msproject.GetAllItems ())
+				oldItems [item.Name + "<" + item.Include] = item;
 			
 			// Add the new items
 			foreach (object ob in ((SolutionEntityItem)Item).Items)
-				SaveItem (monitor, ser, msproject, ob);
+				SaveItem (monitor, ser, msproject, ob, oldItems);
 			
-			foreach (MSBuildItem buildItem in list)
+			foreach (MSBuildItem buildItem in oldItems.Values)
 				msproject.RemoveItem (buildItem);
 		
 			if (dotNetProject != null) {
@@ -780,23 +780,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		
-		void SaveItem (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, object ob)
+		void SaveItem (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, object ob, Dictionary<string,MSBuildItem> oldItems)
 		{
 			if (ob is ProjectReference) {
-				SaveReference (monitor, ser, msproject, (ProjectReference) ob);
+				SaveReference (monitor, ser, msproject, (ProjectReference) ob, oldItems);
 			}
 			else if (ob is ProjectFile) {
-				SaveProjectFile (ser, msproject, (ProjectFile) ob);
+				SaveProjectFile (ser, msproject, (ProjectFile) ob, oldItems);
 			}
 			else {
 				DataType dt = ser.DataContext.GetConfigurationDataType (ob.GetType ());
 				string itemName = dt.Name;
 				MSBuildItem buildItem = msproject.AddNewItem (itemName, "");
-				WriteBuildItemMetadata (ser, buildItem, ob);
+				WriteBuildItemMetadata (ser, buildItem, ob, oldItems);
 			}
 		}
 		
-		void SaveProjectFile (MSBuildSerializer ser, MSBuildProject msproject, ProjectFile file)
+		void SaveProjectFile (MSBuildSerializer ser, MSBuildProject msproject, ProjectFile file, Dictionary<string,MSBuildItem> oldItems)
 		{
 			string itemName = (file.Subtype == Subtype.Directory)? "Folder" : file.BuildAction;
 
@@ -808,8 +808,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if ((file.Subtype == Subtype.Directory) && path[path.Length-1] != '\\')
 				path = path + "\\";
 			
-			MSBuildItem buildItem = msproject.AddNewItem (itemName, path);
-			WriteBuildItemMetadata (ser, buildItem, file);
+			MSBuildItem buildItem = AddOrGetBuildItem (msproject, oldItems, itemName, path);
+			WriteBuildItemMetadata (ser, buildItem, file, oldItems);
 			
 			if (!string.IsNullOrEmpty (file.DependsOn))
 				buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
@@ -842,7 +842,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		void SaveReference (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, ProjectReference pref)
+		void SaveReference (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, ProjectReference pref, Dictionary<string,MSBuildItem> oldItems)
 		{
 			MSBuildItem buildItem;
 			if (pref.ReferenceType == ReferenceType.Assembly) {
@@ -869,12 +869,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 				if (asm == null)
 					asm = Path.GetFileNameWithoutExtension (pref.Reference);
-				buildItem = msproject.AddNewItem ("Reference", asm);
+				
+				buildItem = AddOrGetBuildItem (msproject, oldItems, "Reference", asm);
 				if (!pref.SpecificVersion)
 					buildItem.SetMetadata ("SpecificVersion", "False");
+				else
+					buildItem.UnsetMetadata ("SpecificVersion");
 				buildItem.SetMetadata ("HintPath", hintPath);
 				if (!pref.LocalCopy)
 					buildItem.SetMetadata ("Private", "False");
+				else
+					buildItem.UnsetMetadata ("Private");
 			}
 			else if (pref.ReferenceType == ReferenceType.Gac) {
 				string include = pref.StoredReference;
@@ -884,28 +889,37 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (i != -1)
 						include = include.Substring (0, i).Trim ();
 				}
-				buildItem = msproject.AddNewItem ("Reference", include);
+				buildItem = AddOrGetBuildItem (msproject, oldItems, "Reference", include);
 				if (!pref.SpecificVersion)
 					buildItem.SetMetadata ("SpecificVersion", "False");
+				else
+					buildItem.UnsetMetadata ("SpecificVersion");
 				IList supportedFrameworks = TargetFormat.FrameworkVersions;
 				if (pkg != null && pkg.IsFrameworkPackage && supportedFrameworks.Contains (pkg.TargetFramework) && pkg.TargetFramework != "2.0" && supportedFrameworks.Count > 1) {
 					TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (pkg.TargetFramework);
 					buildItem.SetMetadata ("RequiredTargetFramework", fx.Id);
-				}
+				} else
+					buildItem.UnsetMetadata ("RequiredTargetFramework");
 				string hintPath = (string) pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"];
 				if (hintPath != null)
 					buildItem.SetMetadata ("HintPath", hintPath);
+				else
+					buildItem.UnsetMetadata ("HintPath");
 			}
 			else if (pref.ReferenceType == ReferenceType.Project) {
 				Project refProj = Item.ParentSolution.FindProjectByName (pref.Reference);
 				if (refProj != null) {
-					buildItem = msproject.AddNewItem ("ProjectReference", MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, refProj.FileName));
+					buildItem = AddOrGetBuildItem (msproject, oldItems, "ProjectReference", MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, refProj.FileName));
 					MSBuildProjectHandler handler = refProj.ItemHandler as MSBuildProjectHandler;
 					if (handler != null)
 						buildItem.SetMetadata ("Project", handler.Item.ItemId);
+					else
+						buildItem.UnsetMetadata ("Project");
 					buildItem.SetMetadata ("Name", refProj.Name);
 					if (!pref.LocalCopy)
 						buildItem.SetMetadata ("Private", "False");
+					else
+						buildItem.UnsetMetadata ("Private");
 				} else {
 					monitor.ReportWarning (GettextCatalog.GetString ("Reference to unknown project '{0}' ignored.", pref.Reference));
 					return;
@@ -914,9 +928,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else {
 				// Custom
 				DataType dt = ser.DataContext.GetConfigurationDataType (pref.GetType ());
-				buildItem = msproject.AddNewItem (dt.Name, pref.Reference);
+				buildItem = AddOrGetBuildItem (msproject, oldItems, dt.Name, pref.Reference);
 			}
-			WriteBuildItemMetadata (ser, buildItem, pref);
+			WriteBuildItemMetadata (ser, buildItem, pref, oldItems);
 			buildItem.Condition = pref.Condition;
 		}
 		
@@ -968,11 +982,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ser.Deserialize (dataItem, ditem);
 		}
 		
-		void WriteBuildItemMetadata (DataSerializer ser, MSBuildItem buildItem, object dataItem)
+		void WriteBuildItemMetadata (DataSerializer ser, MSBuildItem buildItem, object dataItem, Dictionary<string,MSBuildItem> oldItems)
 		{
+			var notWrittenProps = new HashSet<string> ();
+			foreach (ItemProperty prop in ser.GetProperties (dataItem))
+				notWrittenProps.Add (prop.Name);
+			
 			DataItem ditem = (DataItem) ser.Serialize (dataItem, dataItem.GetType ());
 			if (ditem.HasItemData) {
 				foreach (DataNode node in ditem.ItemData) {
+					notWrittenProps.Remove (node.Name);
 					if (node.Name == "Include" && node is DataValue)
 						buildItem.Include = ((DataValue) node).Value;
 					else {
@@ -981,6 +1000,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 				}
 			}
+			foreach (string prop in notWrittenProps)
+				buildItem.UnsetMetadata (prop);
+		}
+		
+		MSBuildItem AddOrGetBuildItem (MSBuildProject msproject, Dictionary<string,MSBuildItem> oldItems, string name, string include)
+		{
+			MSBuildItem buildItem;
+			string key = name + "<" + include;
+			if (oldItems.TryGetValue (key, out buildItem)) {
+				oldItems.Remove (key);
+				return buildItem;
+			} else
+				return msproject.AddNewItem (name, include);
 		}
 		
 		DataItem ReadPropertyGroupMetadata (DataSerializer ser, MSBuildPropertyGroup propGroup, object dataItem)
