@@ -404,7 +404,7 @@ namespace MonoDevelop.SourceEditor
 			
 			void CalcVisibleRows ()
 			{
-				int winHeight = 200;
+				int winHeight = Gdk.Screen.Default.Height / 2;
 				int lvWidth, lvHeight;
 				int rowWidth;
 				

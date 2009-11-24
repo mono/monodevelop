@@ -1,5 +1,11 @@
 2009-11-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Increased
+	  the number of maximum items in the quick class browser
+	  dropdown.
+
+2009-11-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.SourceEditor.csproj:
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
