@@ -1,3 +1,8 @@
+2009-11-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implement
+	  markers for current stack frame.
+
 2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Use correct cairo lib.

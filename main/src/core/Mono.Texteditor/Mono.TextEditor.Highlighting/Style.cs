@@ -244,6 +244,40 @@ namespace Mono.TextEditor.Highlighting
 				return GetColorFromDefinition (CurrentDebugLineMarkerBorderString);
 			}
 		}
+		
+		public const string DebugStackLineString = "marker.debug.stackline";
+		public Color DebugStackLineFg {
+			get {
+				return GetChunkStyle (DebugStackLineString).Color;
+			}
+		}
+		
+		public Color DebugStackLineBg {
+			get {
+				return GetChunkStyle (DebugStackLineString).BackgroundColor;
+			}
+		}
+
+		public const string DebugStackLineMarkerColor2String = "marker.debug.stackline.color2";
+		public Color DebugStackLineMarkerColor2 {
+			get {
+				return GetColorFromDefinition (DebugStackLineMarkerColor2String);
+			}
+		}
+
+		public const string DebugStackLineMarkerColor1String = "marker.debug.stackline.color1";
+		public Color DebugStackLineMarkerColor1 {
+			get {
+				return GetColorFromDefinition (DebugStackLineMarkerColor1String);
+			}
+		}
+
+		public const string DebugStackLineMarkerBorderString = "marker.debug.stackline.border";
+		public Color DebugStackLineMarkerBorder {
+			get {
+				return GetColorFromDefinition (DebugStackLineMarkerBorderString);
+			}
+		}
 
 		public const string InvalidBreakpointBgString = "marker.breakpoint.invalid.background";
 		public Color InvalidBreakpointBg {
@@ -369,10 +403,15 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (DisabledBreakpointBgString, new ChunkStyle (new Gdk.Color (237, 220, 220)));
 			
 			SetStyle (CurrentDebugLineString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (255, 255, 0)));
-			
 			SetStyle (CurrentDebugLineMarkerColor1String, new ChunkStyle (new Gdk.Color (255, 255, 0)));
 			SetStyle (CurrentDebugLineMarkerColor2String, new ChunkStyle (new Gdk.Color (255, 255, 204)));
 			SetStyle (CurrentDebugLineMarkerBorderString, new ChunkStyle (new Gdk.Color (102, 102, 0)));
+			
+			SetStyle (DebugStackLineString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (128, 255, 128)));
+			SetStyle (DebugStackLineMarkerColor1String, new ChunkStyle (new Gdk.Color (128, 255, 128)));
+			SetStyle (DebugStackLineMarkerColor2String, new ChunkStyle (new Gdk.Color (204, 255, 204)));
+			SetStyle (DebugStackLineMarkerBorderString, new ChunkStyle (new Gdk.Color (51, 102, 51))); 
+			
 			SetStyle (InvalidBreakpointBgString, new ChunkStyle (new Gdk.Color (237, 220, 220)));
 			SetStyle (InvalidBreakpointMarkerColor1String, new ChunkStyle (new Gdk.Color (237, 220, 220)));
 			SetStyle (InvalidBreakpointMarkerBorderString, new ChunkStyle (new Gdk.Color (125, 0, 0)));

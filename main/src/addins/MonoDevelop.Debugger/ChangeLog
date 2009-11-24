@@ -1,3 +1,12 @@
+2009-11-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Add a call for
+	  accessing the next "visible" stack frame.
+
+	* MonoDevelop.Debugger/Initializer.cs: Track API.
+
+	* MonoDevelop.Debugger/DebugTextMarker.cs: New marker.
+
 2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:

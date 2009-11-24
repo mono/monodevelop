@@ -519,26 +519,6 @@ namespace MonoDevelop.Debugger
 			get { return currentBacktrace; }
 		}
 
-		public static FilePath CurrentFilename {
-			get {
-				StackFrame sf = CurrentFrame;
-				if (sf != null)
-					return sf.SourceLocation.Filename;
-				else
-					return null;
-			}
-		}
-
-		public static int CurrentLineNumber {
-			get {
-				StackFrame sf = CurrentFrame;
-				if (sf != null)
-					return sf.SourceLocation.Line;
-				else
-					return -1;
-			}
-		}
-
 		public static StackFrame CurrentFrame {
 			get {
 				if (currentBacktrace != null && currentFrame != -1)
@@ -546,6 +526,22 @@ namespace MonoDevelop.Debugger
 				else
 					return null;
 			}
+		}
+		
+		/// <summary>
+		/// The deepest stack frame with source above the CurrentFrame
+		/// </summary>
+		public static StackFrame GetCurrentVisibleFrame ()
+		{
+			if (currentBacktrace != null && currentFrame != -1) {
+				//FIXME: detect user code
+				for (int idx = currentFrame; idx < currentBacktrace.FrameCount; idx++) {
+					var frame = currentBacktrace.GetFrame (currentFrame);
+					if (frame.SourceLocation.Filename != FilePath.Null)
+						return frame;
+				}
+			}
+			return null;
 		}
 		
 		public static int CurrentFrameIndex {
