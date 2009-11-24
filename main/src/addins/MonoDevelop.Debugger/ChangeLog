@@ -1,3 +1,16 @@
+2009-11-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/DebugCommands.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/AddTracePointDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.AddTracePointDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:
+	  Implemented Add Tracepoint command.
+
 2009-11-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Add a call for

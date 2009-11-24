@@ -25,12 +25,14 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Debugger.AddTracePointDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.BusyEvaluatorDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs \
+	MonoDevelop.Debugger/AddTracePointDialog.cs \
 	MonoDevelop.Debugger/AttachToProcessDialog.cs \
 	MonoDevelop.Debugger/BreakpointPad.cs \
 	MonoDevelop.Debugger/BreakpointPropertiesDialog.cs \

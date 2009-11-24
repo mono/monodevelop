@@ -166,6 +166,19 @@ namespace MonoDevelop.Debugger
 			}
 			return false;
 		}
+		
+		public static void ShowAddTracepointDialog (string file, int line)
+		{
+			AddTracePointDialog dlg = new AddTracePointDialog ();
+			if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Text.Length > 0) {
+				Breakpoint bp = new Breakpoint (file, line);
+				bp.HitAction = HitAction.PrintExpression;
+				bp.TraceExpression = dlg.Text;
+				bp.ConditionExpression = dlg.Condition;
+				Breakpoints.Add (bp);
+			}
+			dlg.Destroy ();
+		}
 
 		public static bool IsFeatureSupported (IBuildTarget target, DebuggerFeatures feature)
 		{
