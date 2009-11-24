@@ -1,5 +1,10 @@
 2009-11-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerBacktrace.cs: Include the type name in the
+	  method name. Fixes bug #556941.
+
+2009-11-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerEngine.cs:
 	* SoftDebuggerSession.cs: Add support for tracepoints and
 	  conditional breakpoints.
