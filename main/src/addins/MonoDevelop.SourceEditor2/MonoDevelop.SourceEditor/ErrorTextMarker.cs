@@ -139,9 +139,6 @@ namespace MonoDevelop.SourceEditor
 				g.Stroke ();
 			}
 			
-			
-			int radius = 40;
-			
 			if (!fitsInSameLine) 
 				y += editor.LineHeight;
 			double y2       = fitsInSameLine ? y + 0.5 : y - 0.5;

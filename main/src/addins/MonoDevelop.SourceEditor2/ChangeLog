@@ -1,5 +1,12 @@
 2009-11-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Used the
+	  correct screen for the screen height. 
+
+2009-11-24  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Increased
 	  the number of maximum items in the quick class browser
 	  dropdown.

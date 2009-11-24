@@ -231,7 +231,7 @@ namespace MonoDevelop.SourceEditor
 		
 		#region Error underlining
 		Dictionary<int, ErrorMarker> errors = new Dictionary<int, ErrorMarker> ();
-		uint resetTimerId;
+		//uint resetTimerId;
 		
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
