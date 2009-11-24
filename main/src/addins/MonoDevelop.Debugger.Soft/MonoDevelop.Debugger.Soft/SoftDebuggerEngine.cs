@@ -98,6 +98,8 @@ namespace MonoDevelop.Debugger.Soft
 					   DebuggerFeatures.Pause | 
 					   DebuggerFeatures.Stepping | 
 					   DebuggerFeatures.DebugFile |
+					   DebuggerFeatures.ConditionalBreakpoints |
+					   DebuggerFeatures.Tracepoints |
 					   DebuggerFeatures.Catchpoints;
 			}
 		}
