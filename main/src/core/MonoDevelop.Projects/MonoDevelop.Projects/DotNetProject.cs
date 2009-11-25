@@ -646,12 +646,20 @@ namespace MonoDevelop.Projects
 		public IList<string> GetUserAssemblyPaths (string solutionConfiguration)
 		{
 			var list = new List<string> ();
-			foreach (ProjectReference pref in References) {
-				if (pref.ReferenceType == ReferenceType.Project)
-					list.AddRange (pref.GetReferencedFileNames (solutionConfiguration));
-			}
-			list.Add (this.GetOutputFileName (solutionConfiguration));
+			CollectUserAssemblyPaths (list, new HashSet<string> (), solutionConfiguration);
 			return list;			
+		}
+
+		void CollectUserAssemblyPaths (List<string> paths, HashSet<string> examinedProjects, string solutionConfiguration)
+		{
+			paths.Add (this.GetOutputFileName (solutionConfiguration));
+			foreach (var pref in References) {
+				if (pref.ReferenceType == ReferenceType.Project && examinedProjects.Add (pref.Reference)) {
+					var p = ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
+					if (p != null)
+						p.CollectUserAssemblyPaths (paths, examinedProjects, solutionConfiguration);
+				}
+			}
 		}
 
 		protected virtual ExecutionCommand CreateExecutionCommand (string solutionConfiguration, DotNetProjectConfiguration configuration)
