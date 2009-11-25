@@ -1,3 +1,9 @@
+2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: When disabling or removing 
+	  breakpoints or catchpoints, flush any queued occurrences of 
+	  them on other threads.
+
 2009-11-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerSession.cs: Fix potential null ref.

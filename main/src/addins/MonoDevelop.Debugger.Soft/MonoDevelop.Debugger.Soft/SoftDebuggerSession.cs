@@ -398,8 +398,10 @@ namespace MonoDevelop.Debugger.Soft
 			if (exited)
 				return;
 			BreakInfo bi = (BreakInfo) handle;
-			if (bi.Req != null)
+			if (bi.Req != null) {
 				bi.Req.Enabled = false;
+				RemoveQueuedEvents (bi.Req);
+			}
 			pending_bes.Remove (bi.BreakEvent);
 		}
 
@@ -411,6 +413,8 @@ namespace MonoDevelop.Debugger.Soft
 			bi.Enabled = enable;
 			if (bi.Req != null) {
 				bi.Req.Enabled = enable;
+				if (!enable)
+					RemoveQueuedEvents (bi.Req);
 			}
 		}
 
@@ -587,6 +591,26 @@ namespace MonoDevelop.Debugger.Soft
 			}
 		}
 		
+		void RemoveQueuedEvents (EventRequest request)
+		{
+			int resume = 0;
+			lock (queuedEvents) {
+				var node = queuedEvents.First;
+				while (node != null) {
+					if (node.Value.Request == request) {
+						var d = node;
+						node = node.Next;
+						queuedEvents.Remove (d);
+						resume++;
+					} else {
+						node = node.Next;
+					}
+				}
+			}
+			for (int i = 0; i < resume; i++)
+				vm.Resume ();
+		}
+		
 		void DequeueEventsForFirstThread ()
 		{
 			List<Event> dequeuing;
@@ -601,10 +625,13 @@ namespace MonoDevelop.Debugger.Soft
 				current_thread = node.Value.Thread;
 				while (node != null) {
 					if (node.Value.Thread.Id == current_thread.Id) {
-						dequeuing.Add (node.Value);
-						queuedEvents.Remove (node);
+						var d = node;
+						node = node.Next;
+						dequeuing.Add (d.Value);
+						queuedEvents.Remove (d);
+					} else {
+						node = node.Next;
 					}
-					node = node.Next;
 				}
 			}
 
