@@ -329,13 +329,13 @@ namespace MonoDevelop.Debugger.Win32
 
 		void OnCreateThread (object sender, CorThreadEventArgs e)
 		{
-			OnDebuggerOutput (false, string.Format ("Started Thread {0}", e.Thread.Id));
+			OnDebuggerOutput (false, string.Format ("Started Thread {0}\n", e.Thread.Id));
 			e.Continue = true;
 		}
 
 		void OnAssemblyLoad (object sender, CorAssemblyEventArgs e)
 		{
-			OnDebuggerOutput (false, string.Format ("Loaded Module '{0}'", e.Assembly.Name));
+			OnDebuggerOutput (false, string.Format ("Loaded Module '{0}'\n", e.Assembly.Name));
 			e.Continue = true;
 		}
 
