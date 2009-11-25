@@ -1,3 +1,8 @@
+2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/Initializer.cs: Take external code 
+	  into account when picking frame to show when stopping.
+
 2009-11-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebugTextMarker.cs: New marker for

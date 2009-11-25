@@ -70,7 +70,7 @@ namespace MonoDevelop.Debugger
 					disassemblyCurrent = true;
 			}
 			
-			var frame = DebuggingService.GetCurrentVisibleFrame ();
+			var frame = DebuggingService.CurrentFrame;
 			if (frame == null)
 				return;
 			
@@ -105,14 +105,14 @@ namespace MonoDevelop.Debugger
 			disassemblyView.Update ();
 		}
 		
-		void SetSourceCodeFrame ()
+		static void SetSourceCodeFrame ()
 		{
 			Backtrace bt = DebuggingService.CurrentCallStack;
 			
 			if (bt != null) {
 				for (int n=0; n<bt.FrameCount; n++) {
 					StackFrame sf = bt.GetFrame (n);
-					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
+					if (!sf.IsExternalCode && !string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
 						if (n != DebuggingService.CurrentFrameIndex)
 							DebuggingService.CurrentFrameIndex = n;
 						break;
