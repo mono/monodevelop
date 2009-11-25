@@ -175,9 +175,7 @@ namespace MonoDevelop.Debugger
 		{
 			TreeIter iter;
 			if (store.GetIter (out iter, args.Path)) {
-				bool isExternal = (Pango.Style)store.GetValue (iter, 6) == Pango.Style.Italic;
-				if (!isExternal)
-					DebuggingService.CurrentFrameIndex = args.Path.Indices [0];
+				DebuggingService.CurrentFrameIndex = args.Path.Indices [0];
 			}
 		}
 
