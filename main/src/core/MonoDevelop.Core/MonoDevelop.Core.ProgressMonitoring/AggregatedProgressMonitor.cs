@@ -59,6 +59,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			public IProgressMonitor Monitor;
 		}
 		
+		public IProgressMonitor MasterMonitor {
+			get { return this.masterMonitor; }
+		}
+		
+		
 		public AggregatedProgressMonitor (): this (new NullProgressMonitor ())
 		{
 		}
