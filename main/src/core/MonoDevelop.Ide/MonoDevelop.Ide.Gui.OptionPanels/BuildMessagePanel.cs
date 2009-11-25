@@ -54,39 +54,40 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public BuildMessagePanelWidget ()
 		{
 			this.Build ();
-			comboboxJumpToFirst.AppendText (GettextCatalog.GetString ("Never"));
+			//comboboxJumpToFirst.AppendText (GettextCatalog.GetString ("Never"));
 			comboboxJumpToFirst.AppendText (GettextCatalog.GetString ("Error"));
 			comboboxJumpToFirst.AppendText (GettextCatalog.GetString ("Error or Warning"));
 			comboboxJumpToFirst.Active = (int)IdeApp.Preferences.JumpToFirstErrorOrWarning;
 			
-			comboboxBuildResultsDuring.AppendText (GettextCatalog.GetString ("Never"));
+			//comboboxBuildResultsDuring.AppendText (GettextCatalog.GetString ("Never"));
 			comboboxBuildResultsDuring.AppendText (GettextCatalog.GetString ("Always"));
 			comboboxBuildResultsDuring.AppendText (GettextCatalog.GetString ("On Errors"));
 			comboboxBuildResultsDuring.AppendText (GettextCatalog.GetString ("On Errors or Warnings"));
 			comboboxBuildResultsDuring.Active = (int)IdeApp.Preferences.ShowOutputPadDuringBuild;
 			
-			comboboxBuildResultsAfter.AppendText (GettextCatalog.GetString ("Never"));
+			//comboboxBuildResultsAfter.AppendText (GettextCatalog.GetString ("Never"));
 			comboboxBuildResultsAfter.AppendText (GettextCatalog.GetString ("Always"));
 			comboboxBuildResultsAfter.AppendText (GettextCatalog.GetString ("On Errors"));
 			comboboxBuildResultsAfter.AppendText (GettextCatalog.GetString ("On Errors or Warnings"));
 			comboboxBuildResultsAfter.Active = (int)IdeApp.Preferences.ShowOutputPadAfterBuild;
 			
-			comboboxErrorPadDuring.AppendText (GettextCatalog.GetString ("Never"));
+			//comboboxErrorPadDuring.AppendText (GettextCatalog.GetString ("Never"));
 			comboboxErrorPadDuring.AppendText (GettextCatalog.GetString ("Always"));
 			comboboxErrorPadDuring.AppendText (GettextCatalog.GetString ("On Errors"));
 			comboboxErrorPadDuring.AppendText (GettextCatalog.GetString ("On Errors or Warnings"));
 			comboboxErrorPadDuring.Active = (int)IdeApp.Preferences.ShowErrorPadDuringBuild;
 			
-			comboboxErrorPadAfter.AppendText (GettextCatalog.GetString ("Never"));
+			//comboboxErrorPadAfter.AppendText (GettextCatalog.GetString ("Never"));
 			comboboxErrorPadAfter.AppendText (GettextCatalog.GetString ("Always"));
 			comboboxErrorPadAfter.AppendText (GettextCatalog.GetString ("On Errors"));
 			comboboxErrorPadAfter.AppendText (GettextCatalog.GetString ("On Errors or Warnings"));
 			comboboxErrorPadAfter.Active = (int)IdeApp.Preferences.ShowErrorPadAfterBuild;
 			
-			comboboxMessageBubbles.AppendText (GettextCatalog.GetString ("Never"));
+			//comboboxMessageBubbles.AppendText (GettextCatalog.GetString ("Never"));
 			comboboxMessageBubbles.AppendText (GettextCatalog.GetString ("For Errors"));
 			comboboxMessageBubbles.AppendText (GettextCatalog.GetString ("For Errors and Warnings"));
 			comboboxMessageBubbles.Active = (int)IdeApp.Preferences.ShowMessageBubbles;
+			this.QueueResize ();
 		}
 		
 		public void Store ()

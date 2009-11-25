@@ -1,5 +1,12 @@
 2009-11-25  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:
+	  Worked on build message panel.
+
+2009-11-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* gtk-gui/generated.cs:
