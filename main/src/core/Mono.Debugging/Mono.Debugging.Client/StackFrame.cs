@@ -26,7 +26,7 @@ namespace Mono.Debugging.Client
 		}
 		
 		public StackFrame (long address, SourceLocation location, string language)
-			: this (address, location, language, !string.IsNullOrEmpty (location.Filename))
+			: this (address, location, language, string.IsNullOrEmpty (location.Filename))
 		{
 		}
 
