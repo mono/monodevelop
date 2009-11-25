@@ -1,3 +1,8 @@
+2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: When debugging 
+	  stops, clear the stack marker as well as the execution marker.
+
 2009-11-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Use the new

@@ -557,7 +557,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			
-			if (currentLineSegment != null) {
+			if (currentLineSegment != null || debugStackSegment != null) {
 				RemoveDebugMarkers ();
 				lastDebugLine = -1;
 				widget.TextEditor.QueueDraw ();
