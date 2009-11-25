@@ -1,3 +1,8 @@
+2009-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Use the new
+	  tracepoint markers.
+
 2009-11-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Disabled error
