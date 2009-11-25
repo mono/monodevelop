@@ -6,6 +6,9 @@
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
 export DYLD_FALLBACK_LIBRARY_PATH=$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib
 
+#we need lots of file handles
+ulimit -n 1024
+
 #prevent Macports from messing up mono and pkg-config
 export PATH="$MONO_FRAMEWORK_PATH/bin:$PATH"
 

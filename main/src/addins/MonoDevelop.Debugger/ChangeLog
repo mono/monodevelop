@@ -1,3 +1,33 @@
+2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/StackTracePad.cs: Don't prevent the
+	  user from jumping to frames if source exists, even if
+	  they're not user code.
+
+2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/Initializer.cs: Take external code 
+	  into account when picking frame to show when stopping.
+
+2009-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/DebugTextMarker.cs: New marker for
+	  tracepoints.
+
+2009-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/StackTracePad.cs: Don't jump to
+	  external frames.
+
+2009-11-24  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/StackTracePad.cs: Make frames that are
+	  external code italic.
+
+	* MonoDevelop.Debugger/Initializer.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs: Only display the
+	  current visible frame, not external code frames.
+
 2009-11-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

@@ -75,7 +75,12 @@ namespace MonoDevelop.Debugger.Soft
 		
 		DC.StackFrame CreateStackFrame (MDB.StackFrame frame)
 		{
-			return new DC.StackFrame (frame.ILOffset, "", frame.Method.Name, frame.FileName, frame.LineNumber, "Managed");
+			string method = frame.Method.Name;
+			if (frame.Method.DeclaringType != null)
+				method = frame.Method.DeclaringType.FullName + "." + method;
+			var location = new DC.SourceLocation (method, frame.FileName, frame.LineNumber);
+			var lang = frame.Method != null? "Managed" : "Native";
+			return new DC.StackFrame (frame.ILOffset, location, lang, session.IsExternalCode (frame));
 		}
 		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)

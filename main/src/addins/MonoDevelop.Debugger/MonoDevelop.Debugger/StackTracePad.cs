@@ -30,7 +30,7 @@ namespace MonoDevelop.Debugger
 		{
 			this.ShadowType = ShadowType.None;
 
-			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(string), typeof(string), typeof(string));
+			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(string), typeof(string), typeof(string), typeof (Pango.Style));
 
 			tree = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			tree.RulesHint = true;
@@ -47,6 +47,7 @@ namespace MonoDevelop.Debugger
 			FrameCol.PackStart (tree.TextRenderer, true);
 			FrameCol.AddAttribute (tree.TextRenderer, "text", 1);
 			FrameCol.AddAttribute (tree.TextRenderer, "foreground", 5);
+			FrameCol.AddAttribute (tree.TextRenderer, "style", 6);
 			FrameCol.Resizable = true;
 			FrameCol.Alignment = 0.0f;
 			tree.AppendColumn (FrameCol);
@@ -139,7 +140,8 @@ namespace MonoDevelop.Debugger
 				} else
 					file = string.Empty;
 				
-				store.AppendValues (icon, met.ToString (), file, fr.Language, fr.Address.ToString ("x"));
+				store.AppendValues (icon, met.ToString (), file, fr.Language, "0x" + fr.Address.ToString ("x"), null,
+				                    fr.IsExternalCode? Pango.Style.Italic : Pango.Style.Normal);
 			}
 		}
 		
@@ -171,7 +173,10 @@ namespace MonoDevelop.Debugger
 		
 		void OnRowActivated (object o, Gtk.RowActivatedArgs args)
 		{
-			DebuggingService.CurrentFrameIndex = args.Path.Indices [0];
+			TreeIter iter;
+			if (store.GetIter (out iter, args.Path)) {
+				DebuggingService.CurrentFrameIndex = args.Path.Indices [0];
+			}
 		}
 
 		public Gtk.Widget Control {

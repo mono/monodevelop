@@ -32,6 +32,8 @@ namespace MonoDevelop.Core.Execution
 {
 	public class DotNetExecutionCommand: ProcessExecutionCommand
 	{
+		TargetRuntime targetRuntime;
+		
 		public DotNetExecutionCommand()
 		{
 		}
@@ -56,7 +58,16 @@ namespace MonoDevelop.Core.Execution
 		{
 		}
 		
-		public TargetRuntime TargetRuntime { get; set; }
+		public TargetRuntime TargetRuntime {
+			get {
+				if (targetRuntime == null)
+					targetRuntime = Runtime.SystemAssemblyService.DefaultRuntime;
+				return targetRuntime;
+			}
+			set {
+				targetRuntime = value;
+			}
+		}
 		
 		public bool DebugMode { get; set; }
 		

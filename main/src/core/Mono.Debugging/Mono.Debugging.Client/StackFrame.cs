@@ -12,22 +12,27 @@ namespace Mono.Debugging.Client
 		IBacktrace sourceBacktrace;
 		string language;
 		int index;
+		bool isExternalCode;
 		
 		[NonSerialized]
 		DebuggerSession session;
 
-		public StackFrame (long address, SourceLocation location, string language)
+		public StackFrame (long address, SourceLocation location, string language, bool isExternalCode)
 		{
 			this.address = address;
 			this.location = location;
 			this.language = language;
+			this.isExternalCode = isExternalCode;
+		}
+		
+		public StackFrame (long address, SourceLocation location, string language)
+			: this (address, location, language, !string.IsNullOrEmpty (location.Filename))
+		{
 		}
 
-		public StackFrame(long address, string module, string method, string filename, int line, string language)
+		public StackFrame (long address, string module, string method, string filename, int line, string language)
+			: this (address, new SourceLocation (method, filename, line), language)
 		{
-			this.location = new SourceLocation(method, filename, line);
-			this.address = address;
-			this.language = language;
 		}
 
 		internal void Attach (DebuggerSession session)
@@ -63,6 +68,10 @@ namespace Mono.Debugging.Client
 			get {
 				return language;
 			}
+		}
+		
+		public bool IsExternalCode {
+			get { return isExternalCode; }
 		}
 		
 		public ObjectValue[] GetLocalVariables ()

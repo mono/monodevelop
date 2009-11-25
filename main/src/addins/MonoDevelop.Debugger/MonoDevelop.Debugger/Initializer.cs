@@ -70,11 +70,12 @@ namespace MonoDevelop.Debugger
 					disassemblyCurrent = true;
 			}
 			
-			if (DebuggingService.CurrentFrame == null)
+			var frame = DebuggingService.CurrentFrame;
+			if (frame == null)
 				return;
 			
-			FilePath file = DebuggingService.CurrentFrame.SourceLocation.Filename;
-			int line = DebuggingService.CurrentFrame.SourceLocation.Line;
+			FilePath file = frame.SourceLocation.Filename;
+			int line = frame.SourceLocation.Line;
 			
 			if (!file.IsNullOrEmpty && System.IO.File.Exists (file) && line != -1) {
 				Document doc = IdeApp.Workbench.OpenDocument (file, line, 1, !disassemblyCurrent, null, false);
@@ -104,14 +105,14 @@ namespace MonoDevelop.Debugger
 			disassemblyView.Update ();
 		}
 		
-		void SetSourceCodeFrame ()
+		static void SetSourceCodeFrame ()
 		{
 			Backtrace bt = DebuggingService.CurrentCallStack;
 			
 			if (bt != null) {
 				for (int n=0; n<bt.FrameCount; n++) {
 					StackFrame sf = bt.GetFrame (n);
-					if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
+					if (!sf.IsExternalCode && !string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
 						if (n != DebuggingService.CurrentFrameIndex)
 							DebuggingService.CurrentFrameIndex = n;
 						break;
