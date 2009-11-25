@@ -1,3 +1,9 @@
+2009-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Use FilePath
+	  when comparing files, since it is case insensitive in
+	  windows.
+
 2009-11-25  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/generated.cs:
