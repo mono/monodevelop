@@ -110,20 +110,20 @@
 		</Style>
 	</Style>
 	
-	<Style name="warning.light.color1" color="#EEEE88"/>
-	<Style name="warning.light.color2" color="#CCCC77"/>
-	<Style name="warning.dark.color1" color="#CCCC44"/>
-	<Style name="warning.dark.color2" color="#BBBB33"/>
-	<Style name="warning.line.top" color="#DDDD66"/>
-	<Style name="warning.line.bottom" color="#BBBB44"/>
+	<Style name="warning.light.color1" color="#FAFAEE"/>
+	<Style name="warning.light.color2" color="#F0F0E0"/>
+	<Style name="warning.dark.color1" color="#F0F0E0"/>
+	<Style name="warning.dark.color2" color="#E0E0D0"/>
+	<Style name="warning.line.top" color="#F9F9EC"/>
+	<Style name="warning.line.bottom" color="#EAEADA"/>
 	<Style name="warning.text" color="black"/>
 	
-	<Style name="error.light.color1" color="#EE9999"/>
-	<Style name="error.light.color2" color="#CC8888"/>
-	<Style name="error.dark.color1" color="#CC8888"/>
-	<Style name="error.dark.color2" color="#BB6666"/>
-	<Style name="error.line.top" color="#DD6666"/>
-	<Style name="error.line.bottom" color="#BB4444"/>
+	<Style name="error.light.color1" color="#FAEEEE"/>
+	<Style name="error.light.color2" color="#F0E0E0"/>
+	<Style name="error.dark.color1" color="#F0E0E0"/>
+	<Style name="error.dark.color2" color="#E0D0D0"/>
+	<Style name="error.line.top" color="#F9ECEC"/>
+	<Style name="error.line.bottom" color="#EADADA"/>
 	<Style name="error.text" color="black"/>
 	
 	<Style name="linenumber" color="aluminium4" bgColor="white">

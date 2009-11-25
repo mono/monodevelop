@@ -1,3 +1,9 @@
+2009-11-25  Mike Krüger  <mkrueger@novell.com>
+
+	* Styles/TangoLightStyle.xml:
+	* Mono.TextEditor/Document.cs: Made error bubbles lighter for
+	  tango colors.
+
 2009-11-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/BookmarkActions.cs: Applied patch from Tyson

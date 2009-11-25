@@ -181,6 +181,7 @@ namespace Mono.TextEditor
 			UpdateUndoStackOnReplace (args);
 			if (operation != null)
 				operation.Setup (this, args);
+			
 			if (this.syntaxMode != null)
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, value != null ? offset + value.Length : offset + count);
 			if (oldLineCount != LineCount)
