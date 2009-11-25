@@ -141,6 +141,7 @@ namespace MonoDevelop.SourceEditor
 		bool wasEdited = false;
 		public SourceEditorView ()
 		{
+			
 			Counters.LoadedEditors++;
 			currentFrameChanged = (EventHandler)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler (OnCurrentFrameChanged));
 			breakpointAdded = (EventHandler<BreakpointEventArgs>)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointAdded));
@@ -218,31 +219,59 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
 			DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
 			DebuggingService.Breakpoints.BreakpointModified += breakpointStatusChanged;
-// To enable error bubbles, include these two lines:
-//			TaskService.Errors.TasksAdded   += UpdateTasks;
-//			TaskService.Errors.TasksRemoved += UpdateTasks;
-			
+			TaskService.Errors.TasksAdded   += UpdateTasks;
+			TaskService.Errors.TasksRemoved += UpdateTasks;
+			IdeApp.Preferences.ShowMessageBubblesChanged += delegate {
+				UpdateTasks (null, null);
+			};
+			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = MonoDevelop.Ide.Gui.IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
+			errorListPad.TaskToggled += HandleErrorListPadTaskToggled;
+			widget.TextEditor.Options.Changed += delegate {
+				lineSegmentWithTasks.ForEach (ls => {
+					foreach (ErrorTextMarker marker in ls.Markers.Where (marker => marker is ErrorTextMarker)) 
+						marker.DisposeLayout ();
+				});
+			};
 		}
+
+		void HandleErrorListPadTaskToggled (object sender, TaskEventArgs e)
+		{
+			widget.TextEditor.Repaint ();
+		}
+		
 		List<LineSegment> lineSegmentWithTasks = new List<LineSegment> ();
 		void UpdateTasks (object sender, TaskEventArgs e)
 		{
 			Task[] tasks = TaskService.Errors.GetFileTasks (ContentName);
 			if (tasks == null)
 				return;
-			Console.WriteLine ("tasks:" + tasks.Length);
-			lineSegmentWithTasks.ForEach (ls => widget.Document.RemoveMarker (ls, typeof (ErrorTextMarker)));
-			lineSegmentWithTasks.Clear ();
+			DisposeErrorMarkers ();
+			if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.Never)
+				return;
+			
 			foreach (Task task in tasks) {
 				if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
+					if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
+						continue;
 					LineSegment lineSegment = widget.Document.GetLine (task.Line - 1);
 					if (lineSegmentWithTasks.Contains (lineSegment))
 						continue;
 					lineSegmentWithTasks.Add (lineSegment);
 					
-					widget.Document.AddMarker (lineSegment, new ErrorTextMarker (lineSegment, task.Severity == TaskSeverity.Error, task.Description));
+					widget.Document.AddMarker (lineSegment, new ErrorTextMarker (task, lineSegment, task.Severity == TaskSeverity.Error, task.Description));
 				}
 			}
 			widget.TextEditor.Repaint ();
+		}
+		
+		void DisposeErrorMarkers ()
+		{
+			lineSegmentWithTasks.ForEach (ls => {
+				foreach (ErrorTextMarker marker in ls.Markers.Where (marker => marker is ErrorTextMarker)) 
+					marker.Dispose ();
+				widget.Document.RemoveMarker (ls, typeof (ErrorTextMarker));
+			});
+			lineSegmentWithTasks.Clear ();
 		}
 		
 		AutoSave autoSave = new AutoSave ();
@@ -402,6 +431,10 @@ namespace MonoDevelop.SourceEditor
 			this.isDisposed= true;
 			Counters.LoadedEditors--;
 			
+			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = MonoDevelop.Ide.Gui.IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
+			errorListPad.TaskToggled -= HandleErrorListPadTaskToggled;
+			DisposeErrorMarkers ();
+			
 			if (autoSave != null) {
 				autoSave.RemoveAutoSaveFile ();
 				autoSave.Dispose ();
@@ -448,6 +481,7 @@ namespace MonoDevelop.SourceEditor
 			breakpointAdded = null;
 			breakpointRemoved = null;
 			breakpointStatusChanged = null;
+
 		}
 		
 		public ProjectDom GetParserContext ()
@@ -665,7 +699,7 @@ namespace MonoDevelop.SourceEditor
 				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
 			} else if (args.Button == 1) {
 				if (!string.IsNullOrEmpty (this.Document.FileName)) {
-					if (!args.LineSegment.Markers.Any (m => m is ErrorTextMarker))
+					if (DebuggingService.IsDebugging || !args.LineSegment.Markers.Any (m => m is ErrorTextMarker))
 						DebuggingService.Breakpoints.Toggle (this.Document.FileName, args.LineNumber + 1);
 				}
 			}

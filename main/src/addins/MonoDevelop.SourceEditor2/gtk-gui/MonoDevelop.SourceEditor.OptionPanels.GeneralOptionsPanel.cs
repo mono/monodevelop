@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.SourceEditor.OptionPanels {
     
+    
     internal partial class GeneralOptionsPanel {
         
         private Gtk.VBox vbox1;

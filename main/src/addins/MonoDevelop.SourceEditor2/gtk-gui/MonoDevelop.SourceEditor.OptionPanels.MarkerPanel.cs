@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.SourceEditor.OptionPanels {
     
+    
     public partial class MarkerPanel {
         
         private Gtk.VBox vbox1;
