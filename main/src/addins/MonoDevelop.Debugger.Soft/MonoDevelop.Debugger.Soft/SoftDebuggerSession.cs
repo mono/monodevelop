@@ -400,6 +400,7 @@ namespace MonoDevelop.Debugger.Soft
 			BreakInfo bi = (BreakInfo) handle;
 			if (bi.Req != null)
 				bi.Req.Enabled = false;
+			pending_bes.Remove (bi.BreakEvent);
 		}
 
 		protected override void OnEnableBreakEvent (object handle, bool enable)
@@ -784,8 +785,10 @@ namespace MonoDevelop.Debugger.Soft
 		void ResolvePendingBreakpoint (Breakpoint bp, Location l)
 		{
 			BreakInfo bi = GetBreakInfo (bp);
-			bi.Location = l;
-			InsertBreakpoint (bp, bi);
+			if (bi != null) {
+				bi.Location = l;
+				InsertBreakpoint (bp, bi);
+			}
 		}
 				
 		void ResolvePendingCatchpoint (Catchpoint cp, TypeMirror type)

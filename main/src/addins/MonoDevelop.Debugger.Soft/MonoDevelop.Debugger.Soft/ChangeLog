@@ -1,3 +1,7 @@
+2009-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerSession.cs: Fix potential null ref.
+
 2009-11-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerSession.cs:
