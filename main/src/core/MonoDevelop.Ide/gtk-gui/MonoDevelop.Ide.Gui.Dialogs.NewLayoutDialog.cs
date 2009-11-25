@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
+    
     internal partial class NewLayoutDialog {
         
         private Gtk.HBox hbox45;

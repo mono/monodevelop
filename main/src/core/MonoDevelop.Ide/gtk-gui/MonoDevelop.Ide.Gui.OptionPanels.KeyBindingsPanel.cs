@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
+    
     public partial class KeyBindingsPanel {
         
         private Gtk.VBox vbox;

@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
+    
     internal partial class AssemblyFoldersPanelWidget {
         
         private Gtk.VBox vbox1;

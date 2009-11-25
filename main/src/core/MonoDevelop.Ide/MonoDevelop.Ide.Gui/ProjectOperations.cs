@@ -1016,7 +1016,6 @@ namespace MonoDevelop.Ide.Gui
 		void BuildDone (IProgressMonitor monitor, BuildResult result, IBuildTarget entry)
 		{
 			Task[] tasks = null;
-		
 			try {
 				if (result != null) {
 					lastResult = result;
@@ -1046,20 +1045,50 @@ namespace MonoDevelop.Ide.Gui
 					OnEndBuild (monitor, lastResult.FailedBuildCount == 0);
 				} else
 					OnEndBuild (monitor, false);
-			}
-			finally {
-				monitor.Dispose ();
-			}
-			
-			// If there is at least an error or warning, show the error list pad.
-			if (tasks != null && tasks.Length > 0) {
+				
 				try {
-					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
-					if (IdeApp.Preferences.ShowErrorsPadAfterBuild) {
-						errorsPad.Visible = true;
-						errorsPad.BringToFront ();
+					Pad monitorPad = IdeApp.Workbench.Pads.FirstOrDefault (pad => pad.Content == ((OutputProgressMonitor)((AggregatedProgressMonitor)monitor).MasterMonitor).OutputPad);
+					switch (IdeApp.Preferences.ShowOutputPadAfterBuild) {
+					case BuildResultStates.Always:
+						monitorPad.Visible = true;
+						monitorPad.BringToFront ();
+						break;
+					case BuildResultStates.Never:
+						monitorPad.Visible = false;
+						break;
+					case BuildResultStates.OnErrors:
+						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error))
+							goto case BuildResultStates.Always;
+						goto case BuildResultStates.Never;
+					case BuildResultStates.OnErrorsOrWarnings:
+						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning))
+							goto case BuildResultStates.Always;
+						goto case BuildResultStates.Never;
 					}
 				} catch {}
+				
+				try {
+					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
+					switch (IdeApp.Preferences.ShowErrorPadAfterBuild) {
+					case BuildResultStates.Always:
+						errorsPad.Visible = true;
+						errorsPad.BringToFront ();
+						break;
+					case BuildResultStates.Never:
+						errorsPad.Visible = false;
+						break;
+					case BuildResultStates.OnErrors:
+						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error))
+							goto case BuildResultStates.Always;
+						goto case BuildResultStates.Never;
+					case BuildResultStates.OnErrorsOrWarnings:
+						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning))
+							goto case BuildResultStates.Always;
+						goto case BuildResultStates.Never;
+					}
+				} catch {}
+			} finally {
+				monitor.Dispose ();
 			}
 		}
 		

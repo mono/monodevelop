@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
+    
     internal partial class GlobalAuthorInformationPanelWidget {
         
         private Gtk.Table table1;

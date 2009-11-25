@@ -61,6 +61,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs \
@@ -216,6 +217,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/AssemblyFoldersPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs \
+	MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs \
 	MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs \

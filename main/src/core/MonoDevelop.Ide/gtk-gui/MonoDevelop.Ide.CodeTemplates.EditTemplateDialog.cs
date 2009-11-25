@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.CodeTemplates {
     
+    
     public partial class EditTemplateDialog {
         
         private Gtk.HPaned hpaned1;

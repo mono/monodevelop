@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.FindInFiles {
     
+    
     public partial class FindInFilesDialog {
         
         private Gtk.VBox vbox2;

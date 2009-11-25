@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide {
     
+    
     internal partial class SelectEncodingsDialog {
         
         private Gtk.Table table5;
@@ -254,6 +255,9 @@ namespace MonoDevelop.Ide {
             this.cancelbutton1.UseUnderline = true;
             this.cancelbutton1.Label = "gtk-cancel";
             this.AddActionWidget(this.cancelbutton1, -6);
+            Gtk.ButtonBox.ButtonBoxChild w36 = ((Gtk.ButtonBox.ButtonBoxChild)(w35[this.cancelbutton1]));
+            w36.Expand = false;
+            w36.Fill = false;
             // Container child dialog-action_area5.Gtk.ButtonBox+ButtonBoxChild
             this.okbutton1 = new Gtk.Button();
             this.okbutton1.Name = "okbutton1";
@@ -263,6 +267,8 @@ namespace MonoDevelop.Ide {
             this.AddActionWidget(this.okbutton1, -5);
             Gtk.ButtonBox.ButtonBoxChild w37 = ((Gtk.ButtonBox.ButtonBoxChild)(w35[this.okbutton1]));
             w37.Position = 1;
+            w37.Expand = false;
+            w37.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }

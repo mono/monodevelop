@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
+    
     internal partial class TipOfTheDayWindow {
         
         private Gtk.VBox vbox2;
@@ -141,6 +142,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w8.Add(w9);
             this.nextButton.Add(w8);
             this.hbuttonbox1.Add(this.nextButton);
+            Gtk.ButtonBox.ButtonBoxChild w16 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox1[this.nextButton]));
+            w16.Expand = false;
+            w16.Fill = false;
             // Container child hbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
             this.closeButton = new Gtk.Button();
             this.closeButton.CanDefault = true;
@@ -151,6 +155,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.hbuttonbox1.Add(this.closeButton);
             Gtk.ButtonBox.ButtonBoxChild w17 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox1[this.closeButton]));
             w17.Position = 1;
+            w17.Expand = false;
+            w17.Fill = false;
             this.hbox5.Add(this.hbuttonbox1);
             Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.hbox5[this.hbuttonbox1]));
             w18.Position = 1;

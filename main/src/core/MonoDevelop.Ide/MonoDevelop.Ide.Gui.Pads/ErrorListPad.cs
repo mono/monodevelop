@@ -74,19 +74,22 @@ namespace MonoDevelop.Ide.Gui.Pads
 		const string showWarningsPropertyName = "SharpDevelop.TaskList.ShowWarnings";
 		const string showMessagesPropertyName = "SharpDevelop.TaskList.ShowMessages";
 
-		enum Columns
+		static class DataColumns
 		{
-			Type,
-			Marked,
-			Line,
-			Description,
-			File,
-			Project,
-			Path,
-			Task,
-			Read,
-			Weight,
-			Count
+			internal const int Type = 0;
+			internal const int Read = 1;
+			internal const int Task = 2;
+		}
+		
+		static class VisibleColumns
+		{
+			internal const int Type        = 0;
+			internal const int Marked      = 1;
+			internal const int Line        = 2;
+			internal const int Description = 3;
+			internal const int File        = 4;
+			internal const int Project     = 5;
+			internal const int Path        = 6;
 		}
 
 		void IPadContent.Initialize (IPadWindow window)
@@ -157,15 +160,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.Insert (msgBtn, -1);
 			
 			store = new Gtk.ListStore (typeof (Gdk.Pixbuf), // image - type
-			                           typeof (bool),       // marked?
-			                           typeof (string),        // line
-			                           typeof (string),     // desc
-			                           typeof (string),     // file
-			                           typeof (string),     // project
-			                           typeof (string),     // path
-			                           typeof (Task),       // task
 			                           typeof (bool),       // read?
-			                           typeof (int));       // read? -- use Pango weight
+			                           typeof (Task));       // read? -- use Pango weight
 
 			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTaskTypes);
 			filter = new TreeModelFilter (store, null);
@@ -226,13 +222,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void StoreColumnsVisibility ()
 		{
 			string columns = String.Format ("{0};{1};{2};{3};{4};{5};{6}",
-			                                view.Columns[(int)Columns.Type].Visible,
-			                                view.Columns[(int)Columns.Marked].Visible,
-			                                view.Columns[(int)Columns.Line].Visible,
-			                                view.Columns[(int)Columns.Description].Visible,
-			                                view.Columns[(int)Columns.File].Visible,
-			                                view.Columns[(int)Columns.Project].Visible,
-			                                view.Columns[(int)Columns.Path].Visible);
+			                                view.Columns[VisibleColumns.Type].Visible,
+			                                view.Columns[VisibleColumns.Marked].Visible,
+			                                view.Columns[VisibleColumns.Line].Visible,
+			                                view.Columns[VisibleColumns.Description].Visible,
+			                                view.Columns[VisibleColumns.File].Visible,
+			                                view.Columns[VisibleColumns.Project].Visible,
+			                                view.Columns[VisibleColumns.Path].Visible);
 			PropertyService.Set ("Monodevelop.ErrorListColumns", columns);
 		}
 
@@ -263,43 +259,43 @@ namespace MonoDevelop.Ide.Gui.Pads
 				ToggleAction columnType = new ToggleAction ("columnType", GettextCatalog.GetString ("Type"),
 				                                            GettextCatalog.GetString ("Toggle visibility of Type column"), null);
 				columnType.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnType] = (int)Columns.Type;
+				columnsActions[columnType] = VisibleColumns.Type;
 				group.Add (columnType);
 
 				ToggleAction columnValidity = new ToggleAction ("columnValidity", GettextCatalog.GetString ("Validity"),
 				                                                GettextCatalog.GetString ("Toggle visibility of Validity column"), null);
 				columnValidity.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnValidity] = (int)Columns.Marked;
+				columnsActions[columnValidity] = VisibleColumns.Marked;
 				group.Add (columnValidity);
 
 				ToggleAction columnLine = new ToggleAction ("columnLine", GettextCatalog.GetString ("Line"),
 				                                            GettextCatalog.GetString ("Toggle visibility of Line column"), null);
 				columnLine.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnLine] = (int)Columns.Line;
+				columnsActions[columnLine] = VisibleColumns.Line;
 				group.Add (columnLine);
 
 				ToggleAction columnDescription = new ToggleAction ("columnDescription", GettextCatalog.GetString ("Description"),
 				                                                   GettextCatalog.GetString ("Toggle visibility of Description column"), null);
 				columnDescription.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnDescription] = (int)Columns.Description;
+				columnsActions[columnDescription] = VisibleColumns.Description;
 				group.Add (columnDescription);
 
 				ToggleAction columnFile = new ToggleAction ("columnFile", GettextCatalog.GetString ("File"),
 				                                            GettextCatalog.GetString ("Toggle visibility of File column"), null);
 				columnFile.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnFile] = (int)Columns.File;
+				columnsActions[columnFile] = VisibleColumns.File;
 				group.Add (columnFile);
 
 				ToggleAction columnProject = new ToggleAction ("columnProject", GettextCatalog.GetString ("Project"),
 				                                            GettextCatalog.GetString ("Toggle visibility of Project column"), null);
 				columnProject.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnProject] = (int)Columns.Project;
+				columnsActions[columnProject] = VisibleColumns.Project;
 				group.Add (columnProject);
 
 				ToggleAction columnPath = new ToggleAction ("columnPath", GettextCatalog.GetString ("Path"),
 				                                            GettextCatalog.GetString ("Toggle visibility of Path column"), null);
 				columnPath.Toggled += new EventHandler (OnColumnVisibilityChanged);
-				columnsActions[columnPath] = (int)Columns.Path;
+				columnsActions[columnPath] = VisibleColumns.Path;
 				group.Add (columnPath);
 
 				UIManager uiManager = new UIManager ();
@@ -327,13 +323,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 				menu.Shown += delegate (object o, EventArgs args)
 				{
-					columnType.Active = view.Columns[(int)Columns.Type].Visible;
-					columnValidity.Active = view.Columns[(int)Columns.Marked].Visible;
-					columnLine.Active = view.Columns[(int)Columns.Line].Visible;
-					columnDescription.Active = view.Columns[(int)Columns.Description].Visible;
-					columnFile.Active = view.Columns[(int)Columns.File].Visible;
-					columnProject.Active = view.Columns[(int)Columns.Project].Visible;
-					columnPath.Active = view.Columns[(int)Columns.Path].Visible;
+					columnType.Active = view.Columns[VisibleColumns.Type].Visible;
+					columnValidity.Active = view.Columns[VisibleColumns.Marked].Visible;
+					columnLine.Active = view.Columns[VisibleColumns.Line].Visible;
+					columnDescription.Active = view.Columns[VisibleColumns.Description].Visible;
+					columnFile.Active = view.Columns[VisibleColumns.File].Visible;
+					columnProject.Active = view.Columns[VisibleColumns.Project].Visible;
+					columnPath.Active = view.Columns[VisibleColumns.Path].Visible;
 					help.Sensitive = copy.Sensitive = jump.Sensitive =
 						view.Selection != null &&
 						view.Selection.CountSelectedRows () > 0 &&
@@ -366,7 +362,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				TreeModel model;
 				TreeIter iter;
 				if (view.Selection.GetSelected (out model, out iter)) 
-					return model.GetValue (iter, (int)Columns.Task) as Task;
+					return model.GetValue (iter, DataColumns.Task) as Task;
 				return null; // no one selected
 			}
 		}
@@ -428,8 +424,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			TreeModel model;
 			if (view.Selection.GetSelected (out model, out iter)) {
 				iter = filter.ConvertIterToChildIter (iter);
-				store.SetValue (iter, (int)Columns.Weight, (int) Pango.Weight.Normal);
-				Task task = store.GetValue (iter, (int)Columns.Task) as Task;
+				store.SetValue (iter, DataColumns.Read, true);
+				Task task = store.GetValue (iter, DataColumns.Task) as Task;
 				if (task != null) {
 					DisplayTask (task);
 					task.JumpToPosition ();
@@ -455,17 +451,108 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toggleRender.Toggled += new ToggledHandler (ItemToggled);
 			
 			TreeViewColumn col;
-			col = view.AppendColumn ("!", iconRender, "pixbuf", Columns.Type);
-			view.AppendColumn ("", toggleRender, "active", Columns.Marked);
-			view.AppendColumn (GettextCatalog.GetString ("Line"), view.TextRenderer, "text", Columns.Line, "weight", Columns.Weight);
-			col = view.AppendColumn (GettextCatalog.GetString ("Description"), view.TextRenderer, "text", Columns.Description, "weight", Columns.Weight, "strikethrough", Columns.Marked);
+			col = view.AppendColumn ("!", iconRender, "pixbuf", DataColumns.Type);
+			
+			col = view.AppendColumn ("", toggleRender);
+			col.SetCellDataFunc (toggleRender, new Gtk.TreeCellDataFunc (ToggleDataFunc));
+			
+			col = view.AppendColumn (GettextCatalog.GetString ("Line"), view.TextRenderer);
+			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (LineDataFunc));
+			
+			col = view.AppendColumn (GettextCatalog.GetString ("Description"), view.TextRenderer);
+			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (DescriptionDataFunc));
 			col.Resizable = true;
-			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer, "text", Columns.File, "weight", Columns.Weight);
+			
+			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer);
+			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (FileDataFunc));
 			col.Resizable = true;
-			col = view.AppendColumn (GettextCatalog.GetString ("Project"), view.TextRenderer, "text", Columns.Project, "weight", Columns.Weight);
+			
+			col = view.AppendColumn (GettextCatalog.GetString ("Project"), view.TextRenderer);
+			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (ProjectDataFunc));
 			col.Resizable = true;
-			col = view.AppendColumn (GettextCatalog.GetString ("Path"), view.TextRenderer, "text", Columns.Path, "weight", Columns.Weight);
+			
+			col = view.AppendColumn (GettextCatalog.GetString ("Path"), view.TextRenderer);
+			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (PathDataFunc));
 			col.Resizable = true;
+		}
+		
+		static void ToggleDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			Gtk.CellRendererToggle toggleRenderer = (Gtk.CellRendererToggle)cell;
+			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			if (task == null)
+				return;
+			toggleRenderer.Active = task.Completed;
+		}
+		
+		static void LineDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
+			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			if (task == null)
+				return;
+			SetText (textRenderer, model, iter, task, task.Line != 0 ? task.Line.ToString () : "");
+		}
+		
+		static void DescriptionDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
+			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			if (task == null)
+				return;
+			SetText (textRenderer, model, iter, task, task.Description);
+		}
+		
+		static void FileDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
+			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			if (task == null)
+				return;
+			
+			string tmpPath = GetPath (task);
+			string fileName;
+			try {
+				fileName = Path.GetFileName (tmpPath);
+			} catch (Exception) { 
+				fileName =  tmpPath;
+			}
+			
+			SetText (textRenderer, model, iter, task, fileName);
+		}
+		
+		static string GetPath (Task task)
+		{
+			if (task.WorkspaceObject != null)
+				return FileService.AbsoluteToRelativePath (task.WorkspaceObject.BaseDirectory, task.FileName);
+			
+			return task.FileName;
+		}
+		
+		static void ProjectDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
+			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			if (task == null)
+				return;
+			string project = task.WorkspaceObject is SolutionItem ? task.WorkspaceObject.Name : "";
+			SetText (textRenderer, model, iter, task, project);
+		}
+		
+		static void PathDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
+			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			if (task == null)
+				return;
+			SetText (textRenderer, model, iter, task, GetPath (task));
+		}
+		
+		static void SetText (CellRendererText textRenderer, TreeModel model, TreeIter iter, Task task, string text)
+		{
+			textRenderer.Text = text;
+			textRenderer.Weight = (int)((bool)model.GetValue (iter, DataColumns.Read) ? Pango.Weight.Normal : Pango.Weight.Bold);
+			textRenderer.Strikethrough = task.Completed;
 		}
 		
 		void OnCombineOpen(object sender, EventArgs e)
@@ -504,7 +591,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			bool canShow = false;
 
 			try {
-				Task task = store.GetValue (iter, (int)Columns.Task) as Task;
+				Task task = store.GetValue (iter, DataColumns.Task) as Task;
 				if (task == null)
 					return true;
 				if (task.Severity == TaskSeverity.Error && errorBtn.Active) canShow = true;
@@ -537,25 +624,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			initializeLocation = true;
 		}
 		
-				
 		void TaskChanged (object sender, TaskEventArgs e)
 		{
-			TreeIter iter;
-			if (store.GetIterFirst (out iter)) {
-				do {
-					Task curTask = store.GetValue (iter, (int)Columns.Task) as Task;
-					if (curTask == null) {
-						LoggingService.LogWarning ("Error list pad: Can't cast object: " + store.GetValue (iter, (int)Columns.Task) + " - it is not a Task.");
-						continue;
-					}
-					foreach (Task task in e.Tasks) {
-						if (task == curTask) {
-							store.SetValue (iter, (int)Columns.Line, task.Line != 0 ? task.Line.ToString () : "");
-						}
-					}
-					
-				} while (store.IterNext (ref iter));
-			}
+			this.view.QueueDraw ();
 		}
 	
 		void TaskAdded (object sender, TaskEventArgs e)
@@ -606,44 +677,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 					UpdateMessagesNum ();
 					break;
 			}
-		
+			
 			tasks [t] = t;
 			
-			string tmpPath = t.FileName;
-			if (t.WorkspaceObject != null)
-				tmpPath = FileService.AbsoluteToRelativePath (t.WorkspaceObject.BaseDirectory, t.FileName);
-			
-			string fileName = tmpPath;
-			string path     = tmpPath;
-			
-			try {
-				fileName = Path.GetFileName (tmpPath);
-			} catch (Exception) {}
-
-			if (tmpPath != null && tmpPath.Contains (Path.DirectorySeparatorChar.ToString ()))
-			{
-				try{
-					path = Path.GetDirectoryName (tmpPath);
-				}
-				catch (Exception) { }
-			}	
-			string project;
-			if (t.WorkspaceObject is SolutionItem)
-				project = t.WorkspaceObject.Name;
-			else
-				project = string.Empty;
-			
-			store.AppendValues (stock,
-			                    false,
-			                    t.Line != 0 ? t.Line.ToString () : "",
-			                    t.Description,
-			                    fileName,
-			                    project,
-			                    path,
-			                    t,
-			                    false,
-			                    (int) Pango.Weight.Bold
-			                    );
+			store.AppendValues (stock, false, t);
 		}
 
 		void UpdateErrorsNum () 
@@ -660,13 +697,22 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
 		}
-
+		
+		public event EventHandler<TaskEventArgs> TaskToggled;
+		protected virtual void OnTaskToggled (TaskEventArgs e)
+		{
+			EventHandler<TaskEventArgs> handler = this.TaskToggled;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		private void ItemToggled (object o, ToggledArgs args)
 		{
 			Gtk.TreeIter iter;
 			if (store.GetIterFromString(out iter, args.Path)) {
-				bool val = (bool) store.GetValue(iter, (int)Columns.Marked);
-				store.SetValue(iter, (int)Columns.Marked, !val);
+				Task task = (Task) store.GetValue(iter, DataColumns.Task);
+				task.Completed = !task.Completed;
+				OnTaskToggled (new TaskEventArgs (task));
 			}
 		}
 
@@ -693,7 +739,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return false;
 			} else {
 				view.Selection.SelectIter (iter);
-				Task t =  model.GetValue (iter, (int)Columns.Task) as Task;
+				Task t =  model.GetValue (iter, DataColumns.Task) as Task;
 				if (t == null) {
 					file = null;
 					line = 0;
@@ -709,7 +755,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				column = t.Column;
 				view.ScrollToCell (view.Model.GetPath (iter), view.Columns[0], false, 0, 0);
 				iter = filter.ConvertIterToChildIter (iter);
-				store.SetValue (iter, (int)Columns.Weight, (int) Pango.Weight.Normal);
+				store.SetValue (iter, DataColumns.Read, true);
 				DisplayTask (t);
 				return true;
 			}
@@ -747,7 +793,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return false;
 			} else {
 				view.Selection.SelectIter (prevIter);
-				Task t = view.Model.GetValue (prevIter, (int)Columns.Task) as Task;
+				Task t = view.Model.GetValue (prevIter, DataColumns.Task) as Task;
 				if (t == null) {
 					file = null;
 					line = 0;
@@ -763,7 +809,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				column = t.Column;
 				view.ScrollToCell (view.Model.GetPath (prevIter), view.Columns[0], false, 0, 0);
 				prevIter = filter.ConvertIterToChildIter (prevIter);
-				store.SetValue (prevIter, (int)Columns.Weight, (int) Pango.Weight.Normal);
+				store.SetValue (prevIter, DataColumns.Read, true);
 				DisplayTask (t);
 				return true;
 			}

@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
+    
     internal partial class AddinLoadErrorDialog {
         
         private Gtk.HBox hbox1;

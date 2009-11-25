@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
+    
     internal partial class AddInsPanelWidget {
         
         private Gtk.VBox vbox72;

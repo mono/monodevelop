@@ -53,6 +53,10 @@ namespace MonoDevelop.Ide.Gui
 		LogTextWriter logger = new LogTextWriter ();
 		LogTextWriter internalLogger = new LogTextWriter ();
 		
+		public DefaultMonitorPad OutputPad {
+			get { return this.outputPad; }
+		}
+		
 		public OutputProgressMonitor (DefaultMonitorPad pad, string title, string icon)
 		{
 			pad.AsyncOperation = this.AsyncOperation;

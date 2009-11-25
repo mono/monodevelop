@@ -56,8 +56,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			saveChangesRadioButton.Active = action == BeforeCompileAction.SaveAllFiles;
 			promptChangesRadioButton.Active = action == BeforeCompileAction.PromptForSave;
 			noSaveRadioButton.Active = action == BeforeCompileAction.Nothing;
-			showTaskListCheckBox.Active = IdeApp.Preferences.ShowErrorsPadAfterBuild;
-			showOutputCheckBox.Active = IdeApp.Preferences.ShowOutputPadWhenBuildStarts;
 			runWithWarningsCheckBox.Active = IdeApp.Preferences.RunWithWarnings;
 			buildBeforeRunCheckBox.Active = IdeApp.Preferences.BuildBeforeExecuting;
 			checkXBuild.Active = IdeApp.Preferences.BuildWithMSBuild;
@@ -65,8 +63,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store ()
 		{
-			IdeApp.Preferences.ShowErrorsPadAfterBuild = showTaskListCheckBox.Active;
-			IdeApp.Preferences.ShowOutputPadWhenBuildStarts = showOutputCheckBox.Active;
 			IdeApp.Preferences.RunWithWarnings = runWithWarningsCheckBox.Active;
 			IdeApp.Preferences.BuildBeforeExecuting = buildBeforeRunCheckBox.Active;
 			IdeApp.Preferences.BuildWithMSBuild = checkXBuild.Active;

@@ -339,6 +339,10 @@ namespace MonoDevelop.Ide.Tasks
 	{
 		IEnumerable<Task> tasks;
 		
+		public TaskEventArgs (Task task) : this (new Task[] { task })
+		{
+		}
+		
 		public TaskEventArgs (IEnumerable<Task> tasks)
 		{
 			this.tasks = tasks;

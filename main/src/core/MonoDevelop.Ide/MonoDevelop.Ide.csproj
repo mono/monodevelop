@@ -570,6 +570,8 @@
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AssemblyFoldersPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISupportsProjectReload.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildMessagePanel.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

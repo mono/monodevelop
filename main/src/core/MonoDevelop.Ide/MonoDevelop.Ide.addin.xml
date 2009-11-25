@@ -1284,6 +1284,7 @@
 			<Section id = "KeyBindings" _label = "Key Bindings" fill="true" icon="md-keyboard-shortcuts" class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" />
 			<Section id = "LoadSave" _label = "Load/Save" icon="gtk-harddisk" class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel" />
 			<Section id = "Build" _label = "Build" icon="md-build-current-selected-project" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel">
+				<Panel id = "BuildMessages" _label = "Errors and Warnings" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanel" />
 				<Panel id = "Directories" _label = "Assembly Folders" class = "MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanel" />
 			</Section>
 			<Section id = "AddIns" _label = "Add-ins" icon="md-addin" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />

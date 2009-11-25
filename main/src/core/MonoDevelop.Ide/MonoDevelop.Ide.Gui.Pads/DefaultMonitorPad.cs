@@ -170,6 +170,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			this.window = window;
 			window.Icon = icon;
 		}
+		public IPadWindow Window {
+			get { return this.window; }
+		}
 		
 		public IAsyncOperation AsyncOperation {
 			get {

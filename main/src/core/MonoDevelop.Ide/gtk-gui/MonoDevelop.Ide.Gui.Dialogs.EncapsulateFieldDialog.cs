@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
+    
     public partial class EncapsulateFieldDialog {
         
         private Gtk.VBox vbox;

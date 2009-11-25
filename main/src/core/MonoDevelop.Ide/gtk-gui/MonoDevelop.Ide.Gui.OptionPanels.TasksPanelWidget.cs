@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
+    
     internal partial class TasksPanelWidget {
         
         private Gtk.VBox vbox6;
@@ -167,6 +168,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.buttonChange.UseUnderline = true;
             this.buttonChange.Label = "gtk-edit";
             this.hbuttonbox2.Add(this.buttonChange);
+            Gtk.ButtonBox.ButtonBoxChild w9 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonChange]));
+            w9.Expand = false;
+            w9.Fill = false;
             // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
             this.buttonRemove = new Gtk.Button();
             this.buttonRemove.Name = "buttonRemove";
@@ -176,6 +180,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.hbuttonbox2.Add(this.buttonRemove);
             Gtk.ButtonBox.ButtonBoxChild w10 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonRemove]));
             w10.Position = 1;
+            w10.Expand = false;
+            w10.Fill = false;
             // Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
             this.buttonAdd = new Gtk.Button();
             this.buttonAdd.Name = "buttonAdd";
@@ -185,6 +191,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.hbuttonbox2.Add(this.buttonAdd);
             Gtk.ButtonBox.ButtonBoxChild w11 = ((Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonAdd]));
             w11.Position = 2;
+            w11.Expand = false;
+            w11.Fill = false;
             this.vbox14.Add(this.hbuttonbox2);
             Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox14[this.hbuttonbox2]));
             w12.Position = 1;

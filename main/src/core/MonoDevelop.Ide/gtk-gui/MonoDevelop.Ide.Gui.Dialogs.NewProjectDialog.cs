@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
+    
     public partial class NewProjectDialog {
         
         private Gtk.Notebook notebook;
@@ -395,6 +396,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.btn_close.UseUnderline = true;
             this.btn_close.Label = "gtk-cancel";
             this.AddActionWidget(this.btn_close, -6);
+            Gtk.ButtonBox.ButtonBoxChild w32 = ((Gtk.ButtonBox.ButtonBoxChild)(w31[this.btn_close]));
+            w32.Expand = false;
+            w32.Fill = false;
             // Container child dialog-action_area1.Gtk.ButtonBox+ButtonBoxChild
             this.btn_new = new Gtk.Button();
             this.btn_new.CanDefault = true;
@@ -405,6 +409,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             w31.Add(this.btn_new);
             Gtk.ButtonBox.ButtonBoxChild w33 = ((Gtk.ButtonBox.ButtonBoxChild)(w31[this.btn_new]));
             w33.Position = 1;
+            w33.Expand = false;
+            w33.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }

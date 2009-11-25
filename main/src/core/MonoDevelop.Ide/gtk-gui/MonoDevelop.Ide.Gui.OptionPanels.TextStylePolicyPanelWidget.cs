@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.OptionPanels {
     
+    
     internal partial class TextStylePolicyPanelWidget {
         
         private Gtk.VBox vbox1;

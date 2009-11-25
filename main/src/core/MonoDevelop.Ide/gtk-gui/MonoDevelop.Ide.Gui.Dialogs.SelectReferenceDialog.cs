@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
+    
     internal partial class SelectReferenceDialog {
         
         private Gtk.VBox vbox5;
@@ -171,6 +172,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.cancelbutton.UseUnderline = true;
             this.cancelbutton.Label = "gtk-cancel";
             this.AddActionWidget(this.cancelbutton, -6);
+            Gtk.ButtonBox.ButtonBoxChild w15 = ((Gtk.ButtonBox.ButtonBoxChild)(w14[this.cancelbutton]));
+            w15.Expand = false;
+            w15.Fill = false;
             // Container child dialog-action_area2.Gtk.ButtonBox+ButtonBoxChild
             this.okbutton = new Gtk.Button();
             this.okbutton.Name = "okbutton";
@@ -180,6 +184,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.AddActionWidget(this.okbutton, -5);
             Gtk.ButtonBox.ButtonBoxChild w16 = ((Gtk.ButtonBox.ButtonBoxChild)(w14[this.okbutton]));
             w16.Position = 1;
+            w16.Expand = false;
+            w16.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }

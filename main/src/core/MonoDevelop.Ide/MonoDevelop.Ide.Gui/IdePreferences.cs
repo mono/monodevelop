@@ -31,6 +31,25 @@ using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Ide.Gui
 {
+	public enum JumpToFirst {
+		Never,
+		Error,
+		ErrorOrWarning
+	}
+	
+	public enum BuildResultStates {
+		Never,
+		Always,
+		OnErrors,
+		OnErrorsOrWarnings
+	}
+	
+	public enum ShowMessageBubbles {
+		Never,
+		ForErrors,
+		ForErrorsAndWarnings
+	}
+	
 	public class IdePreferences
 	{
 		internal IdePreferences ()
@@ -86,27 +105,62 @@ namespace MonoDevelop.Ide.Gui
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.BuildBeforeExecuting", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.BuildBeforeExecuting", value); }
 		}
-
-		public bool ShowOutputPadWhenBuildStarts {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputWindowAtBuild", false); }
-			set { PropertyService.Set ("MonoDevelop.Ide.ShowOutputWindowAtBuild", value); }
+		
+		public BuildResultStates ShowOutputPadDuringBuild {
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputPadDuringBuild", BuildResultStates.Always); }
+			set { PropertyService.Set ("MonoDevelop.Ide.ShowOutputPadDuringBuild", value); }
 		}
 
-		public event EventHandler<PropertyChangedEventArgs> ShowOutputPadWhenBuildStartsChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowOutputWindowAtBuild", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowOutputWindowAtBuild", value); }
+		public event EventHandler<PropertyChangedEventArgs> ShowOutputPadShowOutputPadDuringBuildChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowOutputPadDuringBuild", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowOutputPadDuringBuild", value); }
+		}
+		
+		public BuildResultStates ShowOutputPadAfterBuild {
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputPadAfterBuild", BuildResultStates.Always); }
+			set { PropertyService.Set ("MonoDevelop.Ide.ShowOutputPadAfterBuild", value); }
 		}
 
-		public bool ShowErrorsPadAfterBuild {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowTaskListAfterBuild", true); }
-			set { PropertyService.Set ("MonoDevelop.Ide.ShowTaskListAfterBuild", value); }
+		public event EventHandler<PropertyChangedEventArgs> ShowOutputPadAfterBuildChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowOutputPadAfterBuild", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowOutputPadAfterBuild", value); }
+		}
+		
+		public BuildResultStates ShowErrorPadDuringBuild {
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowErrorPadDuringBuild", BuildResultStates.Never); }
+			set { PropertyService.Set ("MonoDevelop.Ide.ShowErrorPadDuringBuild", value); }
 		}
 
-		public event EventHandler<PropertyChangedEventArgs> ShowErrorsPadAfterBuildChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowTaskListAfterBuild", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowTaskListAfterBuild", value); }
+		public event EventHandler<PropertyChangedEventArgs> ShowErrorPadDuringBuildChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowErrorPadDuringBuild", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowErrorPadDuringBuild", value); }
+		}
+		
+		public BuildResultStates ShowErrorPadAfterBuild {
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowErrorPadAfterBuild", BuildResultStates.OnErrorsOrWarnings); }
+			set { PropertyService.Set ("MonoDevelop.Ide.ShowErrorPadAfterBuild", value); }
 		}
 
+		public event EventHandler<PropertyChangedEventArgs> ShowErrorPadAfterBuildChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowErrorPadAfterBuild", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowErrorPadAfterBuild", value); }
+		}
+		
+		public JumpToFirst JumpToFirstErrorOrWarning {
+			get { return PropertyService.Get ("MonoDevelop.Ide.JumpToFirstErrorOrWarning", JumpToFirst.Never); }
+			set { PropertyService.Set ("MonoDevelop.Ide.JumpToFirstErrorOrWarning", value); }
+		}
+		
+		public ShowMessageBubbles ShowMessageBubbles {
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowMessageBubbles", ShowMessageBubbles.Never); }
+			set { PropertyService.Set ("MonoDevelop.Ide.ShowMessageBubbles", value); }
+		}
+		
+		public event EventHandler<PropertyChangedEventArgs> ShowMessageBubblesChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowMessageBubbles", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowMessageBubbles", value); }
+		}
+		
 		public BeforeCompileAction BeforeBuildSaveAction {
 			get { return PropertyService.Get ("MonoDevelop.Ide.BeforeCompileAction", BeforeCompileAction.SaveAllFiles); }
 			set { PropertyService.Set ("MonoDevelop.Ide.BeforeCompileAction", value); }

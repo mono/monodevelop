@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
     
+    
     internal partial class NewFileDialog {
         
         private Gtk.VBox vbox2;

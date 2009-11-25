@@ -10,6 +10,7 @@
 
 namespace MonoDevelop.Ide.FindInFiles {
     
+    
     public partial class SearchResultWidget {
         
         private Gtk.UIManager UIManager;
