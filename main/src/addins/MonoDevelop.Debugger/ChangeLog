@@ -1,3 +1,8 @@
+2009-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/DebugTextMarker.cs: New marker for
+	  tracepoints.
+
 2009-11-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger/StackTracePad.cs: Don't jump to

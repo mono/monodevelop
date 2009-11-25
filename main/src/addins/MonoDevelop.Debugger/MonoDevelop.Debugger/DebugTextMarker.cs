@@ -71,6 +71,19 @@ namespace MonoDevelop.Debugger
 			cr.ClosePath ();
 		}
 		
+		protected void DrawDiamond (Cairo.Context cr, double x, double y, double size)
+		{
+			x += 0.5; y += 0.5;
+			size -= 2;
+			cr.NewPath ();
+			cr.MoveTo (x + size/2, y);
+			cr.LineTo (x + size, y + size/2);
+			cr.LineTo (x + size/2, y + size);
+			cr.LineTo (x, y + size/2);
+			cr.LineTo (x + size/2, y);
+			cr.ClosePath ();
+		}
+		
 		protected void DrawArrow (Cairo.Context cr, double x, double y, double size)
 		{
 			y += 2.5;
@@ -128,18 +141,23 @@ namespace MonoDevelop.Debugger
 			get { return editor.ColorStyle.BreakpointFg; }
 			set {  }
 		}
+		
+		public bool IsTracepoint { get; set; }
 
-
-		public BreakpointTextMarker (Mono.TextEditor.TextEditor editor) : base (editor)
+		public BreakpointTextMarker (Mono.TextEditor.TextEditor editor, bool isTracePoint) : base (editor)
 		{
 			IncludedStyles |= StyleFlag.BackgroundColor | StyleFlag.Color;
+			IsTracepoint = isTracePoint;
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
 		{
 			Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.BreakpointMarkerColor1);
 			Cairo.Color color2 = Style.ToCairoColor (editor.ColorStyle.BreakpointMarkerColor2);
-			DrawCircle (cr, x, y, size);
+			if (IsTracepoint)
+				DrawDiamond (cr, x, y, size);
+			else
+				DrawCircle (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);
 			DrawBorder (cr, color2, x, y, size);
 		}
@@ -152,15 +170,21 @@ namespace MonoDevelop.Debugger
 			set {  }
 		}
 	
-		public DisabledBreakpointTextMarker (Mono.TextEditor.TextEditor editor) : base (editor)
+		public DisabledBreakpointTextMarker (Mono.TextEditor.TextEditor editor, bool isTracePoint) : base (editor)
 		{
 			IncludedStyles |= StyleFlag.BackgroundColor;
+			IsTracepoint = isTracePoint;
 		}
+		
+		public bool IsTracepoint { get; set; }
 		
 		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
 		{
 			Cairo.Color border = Style.ToCairoColor (editor.ColorStyle.InvalidBreakpointMarkerBorder);
-			DrawCircle (cr, x, y, size);
+			if (IsTracepoint)
+				DrawDiamond (cr, x, y, size);
+			else
+				DrawCircle (cr, x, y, size);
 			//FillGradient (cr, new Cairo.Color (1,1,1), new Cairo.Color (1,0.8,0.8), x, y, size);
 			DrawBorder (cr, border, x, y, size);
 		}
