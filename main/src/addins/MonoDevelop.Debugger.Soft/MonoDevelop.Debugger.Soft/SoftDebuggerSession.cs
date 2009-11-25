@@ -48,8 +48,7 @@ namespace MonoDevelop.Debugger.Soft
 		Dictionary<string,TypeMirror> types = new Dictionary<string, TypeMirror> ();
 		Dictionary<EventRequest,BreakInfo> breakpoints = new Dictionary<EventRequest,BreakInfo> ();
 		List<BreakEvent> pending_bes = new List<BreakEvent> ();
-		ThreadMirror first_thread;
-		ThreadMirror current_thread;
+		ThreadMirror current_thread, recent_thread;
 		ProcessInfo[] procs;
 		ThreadInfo[] current_threads;
 		bool exited;
@@ -561,10 +560,6 @@ namespace MonoDevelop.Debugger.Soft
 				OnDebuggerOutput (false, string.Format ("Thread started: {0}\n", ts.Thread.Name));
 			}
 			
-			if (e is VMStartEvent) {
-				first_thread = e.Thread;
-			}
-			
 			if (resume)
 				vm.Resume ();
 			else {
@@ -572,7 +567,7 @@ namespace MonoDevelop.Debugger.Soft
 					currentStepRequest.Enabled = false;
 					currentStepRequest = null;
 				}
-				current_thread = e.Thread;
+				current_thread = recent_thread = e.Thread;
 				TargetEventArgs args = new TargetEventArgs (etype);
 				args.Process = OnGetProcesses () [0];
 				args.Thread = GetThread (args.Process, current_thread);
@@ -878,21 +873,27 @@ namespace MonoDevelop.Debugger.Soft
 			vm.Suspend ();
 			
 			//emit a stop event at the current position of the most recent thread
-			EnsureCurrentThreadIsValid ();
-			var process = OnGetProcesses () [0];
+			var process = OnGetProcesses () [0];				
+			EnsureRecentThreadIsValid ();
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetStopped) {
 				Process = process,
-				Thread = GetThread (process, current_thread),
-				Backtrace = GetThreadBacktrace (current_thread)});
+				Thread = GetThread (process, recent_thread),
+				Backtrace = GetThreadBacktrace (recent_thread)});
 		}
 		
-		void EnsureCurrentThreadIsValid ()
+		void EnsureRecentThreadIsValid ()
 		{
-			if (!ThreadIsAlive (current_thread)) {
-				current_thread = first_thread;
-				if (!ThreadIsAlive (current_thread))
-					current_thread = vm.GetThreads ()[0];
+			if (ThreadIsAlive (recent_thread))
+				return;
+
+			var threads = vm.GetThreads ();
+			foreach (var thread in threads) {
+				if (ThreadIsAlive (thread)) {
+					recent_thread = thread;
+					return;
+				}
 			}
+			recent_thread = threads[0];	
 		}
 		
 		static bool ThreadIsAlive (ThreadMirror thread)

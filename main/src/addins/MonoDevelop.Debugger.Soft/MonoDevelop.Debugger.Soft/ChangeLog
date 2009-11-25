@@ -1,5 +1,14 @@
 2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerSession.cs: Fix picking a default thread 
+	  to position to when pausing. The current_thread value 
+	  had been nulled on resume to fix BP queuing, so 
+	  introduce a new recent_thread field. Also, make
+	  a better attempt to find a non-ended thread if the 
+	  recent_thread has ended.
+
+2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerSession.cs: When disabling or removing 
 	  breakpoints or catchpoints, flush any queued occurrences of 
 	  them on other threads.
