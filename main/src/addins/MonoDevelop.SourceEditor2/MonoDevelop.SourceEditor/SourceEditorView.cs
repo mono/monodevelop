@@ -568,10 +568,9 @@ namespace MonoDevelop.SourceEditor
 		void UpdateExecutionLocation ()
 		{
 			if (DebuggingService.IsDebugging && !DebuggingService.IsRunning) {
-				var frame = DebuggingService.GetCurrentVisibleFrame ();
-				if (frame != null && frame.SourceLocation.Filename != FilePath.Null
-				    && ((FilePath)frame.SourceLocation.Filename).FullPath == ((FilePath)ContentName).FullPath)
-				{
+				var frame = CheckFrameIsInFile (DebuggingService.CurrentFrame)
+					?? CheckFrameIsInFile (DebuggingService.GetCurrentVisibleFrame ());
+				if (frame != null) {
 					if (lastDebugLine == frame.SourceLocation.Line)
 						return;
 					RemoveDebugMarkers ();
@@ -596,6 +595,14 @@ namespace MonoDevelop.SourceEditor
 				lastDebugLine = -1;
 				widget.TextEditor.QueueDraw ();
 			}
+		}
+		
+		StackFrame CheckFrameIsInFile (StackFrame frame)
+		{
+			if (frame != null && frame.SourceLocation.Filename != FilePath.Null
+				&& ((FilePath)frame.SourceLocation.Filename).FullPath == ((FilePath)ContentName).FullPath)
+				return frame;
+			return null;
 		}
 		
 		void RemoveDebugMarkers ()
