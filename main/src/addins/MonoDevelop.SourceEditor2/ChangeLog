@@ -1,3 +1,8 @@
+2009-11-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: only set the
+	  color styles, when an editor color style is available.
+
 2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Try to display

@@ -114,6 +114,20 @@ namespace MonoDevelop.SourceEditor
 		
 		void EnsureLayoutCreated (TextEditor editor)
 		{
+			if (editor.ColorStyle != null && gc == null) {
+				gc = new Gdk.GC (editor.GdkWindow);
+				gc.RgbFgColor = editor.ColorStyle.GetChunkStyle (IsError ? "error.text" : "warning.text").Color;
+				
+				lightBg = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.light.color1" : "warning.light.color1").Color);
+				darkBg  = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.light.color2" : "warning.light.color2").Color);
+			
+				lightBg2 = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.dark.color1" : "warning.dark.color1").Color);
+				darkBg2  = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.dark.color2" : "warning.dark.color2").Color);
+			
+				topLine = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.line.top" : "warning.line.top").Color);
+				bottomLine = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.line.bottom" : "warning.line.bottom").Color);
+			}
+			
 			if (layout != null)
 				return;
 			layout = new Pango.Layout (editor.PangoContext);
@@ -125,18 +139,6 @@ namespace MonoDevelop.SourceEditor
 			
 			layout.GetPixelSize (out layoutWidth, out layoutHeight);
 			
-			gc = new Gdk.GC (editor.GdkWindow);
-			gc.RgbFgColor = editor.ColorStyle.GetChunkStyle (IsError ? "error.text" : "warning.text").Color;
-			
-			lightBg = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.light.color1" : "warning.light.color1").Color);
-			darkBg  = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.light.color2" : "warning.light.color2").Color);
-		
-			lightBg2 = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.dark.color1" : "warning.dark.color1").Color);
-			darkBg2  = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.dark.color2" : "warning.dark.color2").Color);
-		
-			topLine = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.line.top" : "warning.line.top").Color);
-			bottomLine = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.line.bottom" : "warning.line.bottom").Color);
-		
 		}
 		
 		public bool DrawBackground (TextEditor editor, Gdk.Drawable win, Pango.Layout layout2, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
