@@ -1,5 +1,13 @@
 2009-11-26  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
+	  Worked on search & replace popup.
+
+2009-11-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Cleanly take
 	  out event handler.
 

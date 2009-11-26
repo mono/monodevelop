@@ -234,7 +234,6 @@ namespace MonoDevelop.SourceEditor {
             this.containerBox.Add(this.table);
             Gtk.Box.BoxChild w36 = ((Gtk.Box.BoxChild)(this.containerBox[this.table]));
             w36.Position = 0;
-            w36.Expand = false;
             // Container child containerBox.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";

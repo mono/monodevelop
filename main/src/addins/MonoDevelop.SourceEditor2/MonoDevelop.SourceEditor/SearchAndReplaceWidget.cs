@@ -58,6 +58,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public static bool IsCaseSensitive {
 			get { return PropertyService.Get ("IsCaseSensitive", true); }
+			set { PropertyService.Set ("IsCaseSensitive", value); }
 		}
 		
 		public static bool IsWholeWordOnly {
@@ -446,7 +447,7 @@ But I leave it in in the case I've missed something. Mike
 		
 		void SetIsCaseSensitive (bool value)
 		{
-			PropertyService.Set ("IsCaseSensitive", value);
+			IsCaseSensitive = value;
 			widget.SetSearchOptions ();
 		}
 		

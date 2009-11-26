@@ -1303,7 +1303,6 @@
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">False</property>
-            <property name="Expand">False</property>
           </packing>
         </child>
         <child>

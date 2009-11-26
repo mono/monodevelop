@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -829,9 +830,17 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SetSearchPattern (string searchPattern)
 		{
+			CheckSearchPatternCasing (searchPattern);
+			
 			this.textEditor.SearchPattern = searchPattern;
 			if (this.splittedTextEditor != null)
 				this.splittedTextEditor.SearchPattern = searchPattern;
+		}
+		
+		void CheckSearchPatternCasing (string searchPattern)
+		{
+			if (searchPattern.Any (ch => Char.IsUpper (ch)))
+				SearchAndReplaceWidget.IsCaseSensitive = true;
 		}
 		
 		internal bool RemoveSearchWidget ()
@@ -874,12 +883,16 @@ namespace MonoDevelop.SourceEditor
 			ShowSearchReplaceWidget (true);
 		}
 		
-		private void ShowSearchReplaceWidget (bool replace)
+		void ShowSearchReplaceWidget (bool replace)
 		{
+			this.textEditor.SearchPattern = SearchAndReplaceWidget.searchPattern =""; // reset pattern, to force an update
+			
 			if (TextEditor.IsSomethingSelected)
 				TextEditor.SearchPattern = TextEditor.SelectedText;
 			
 			if (searchAndReplaceWidget == null) {
+				SearchAndReplaceWidget.IsCaseSensitive = TextEditor.IsSomethingSelected ? true : false;
+				
 				KillWidgets ();
 				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
 				this.PackEnd (searchAndReplaceWidget);
@@ -901,9 +914,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			searchAndReplaceWidget.Focus ();
-			this.textEditor.SearchPattern = ""; // reset pattern, to force an update
 			SetSearchOptions ();
-			
 		}
 		
 		[CommandHandler (SearchCommands.GotoLineNumber)]
@@ -935,8 +946,6 @@ namespace MonoDevelop.SourceEditor
 			
 			string error;
 			string pattern = SearchAndReplaceWidget.searchPattern;
-			if (searchAndReplaceWidget != null)
-				pattern = searchAndReplaceWidget.SearchPattern;
 			if (searchAndReplaceWidget != null)
 				pattern = searchAndReplaceWidget.SearchPattern;
 			
@@ -1007,8 +1016,10 @@ namespace MonoDevelop.SourceEditor
 		
 		void SetSearchPatternToSelection ()
 		{
-			if (TextEditor.IsSomethingSelected)
+			if (TextEditor.IsSomethingSelected) {
 				TextEditor.SearchPattern = TextEditor.SelectedText;
+				CheckSearchPatternCasing (TextEditor.SelectedText);
+			}
 			if (searchAndReplaceWidget != null)
 				searchAndReplaceWidget.UpdateSearchPattern ();
 		}
