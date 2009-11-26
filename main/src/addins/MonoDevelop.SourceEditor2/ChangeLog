@@ -1,5 +1,10 @@
 2009-11-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Cleanly take
+	  out event handler.
+
+2009-11-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: only set the
 	  color styles, when an editor color style is available.
 

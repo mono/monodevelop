@@ -221,9 +221,7 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.Breakpoints.BreakpointModified += breakpointStatusChanged;
 			TaskService.Errors.TasksAdded   += UpdateTasks;
 			TaskService.Errors.TasksRemoved += UpdateTasks;
-			IdeApp.Preferences.ShowMessageBubblesChanged += delegate {
-				UpdateTasks (null, null);
-			};
+			IdeApp.Preferences.ShowMessageBubblesChanged += HandleIdeAppPreferencesShowMessageBubblesChanged;
 			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = MonoDevelop.Ide.Gui.IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			errorListPad.TaskToggled += HandleErrorListPadTaskToggled;
 			widget.TextEditor.Options.Changed += delegate {
@@ -234,9 +232,14 @@ namespace MonoDevelop.SourceEditor
 			};
 		}
 
+		void HandleIdeAppPreferencesShowMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
+		{
+			UpdateTasks (null, null);
+		}
+
 		void HandleErrorListPadTaskToggled (object sender, TaskEventArgs e)
 		{
-			widget.TextEditor.Repaint ();
+			this.TextEditor.Repaint ();
 		}
 		
 		List<LineSegment> lineSegmentWithTasks = new List<LineSegment> ();
@@ -261,7 +264,7 @@ namespace MonoDevelop.SourceEditor
 					widget.Document.AddMarker (lineSegment, new ErrorTextMarker (task, lineSegment, task.Severity == TaskSeverity.Error, task.Description));
 				}
 			}
-			widget.TextEditor.Repaint ();
+			this.TextEditor.Repaint ();
 		}
 		
 		void DisposeErrorMarkers ()
@@ -431,6 +434,7 @@ namespace MonoDevelop.SourceEditor
 			this.isDisposed= true;
 			Counters.LoadedEditors--;
 			
+			IdeApp.Preferences.ShowMessageBubblesChanged -= HandleIdeAppPreferencesShowMessageBubblesChanged;
 			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = MonoDevelop.Ide.Gui.IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			errorListPad.TaskToggled -= HandleErrorListPadTaskToggled;
 			DisposeErrorMarkers ();
