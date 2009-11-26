@@ -217,6 +217,7 @@ namespace Mono.TextEditor
 			                          Allocation.Width, Allocation.Height - from - to);
 			renderedLines.Clear ();
 			if (delta > 0) {
+				
 				delta += LineHeight;
 				RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta));
 			} else {
@@ -1233,7 +1234,7 @@ namespace Mono.TextEditor
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
 //			int firstLine = CalculateLineNumber ((int)this.textEditorData.VAdjustment.Value);
-			int startLine = CalculateLineNumber (area.Top + reminder + (int)this.textEditorData.VAdjustment.Value);
+			int startLine = CalculateLineNumber (area.Top - reminder + (int)this.textEditorData.VAdjustment.Value);
 		//	int endLine   = CalculateLineNumber (area.Bottom + reminder + (int)this.textEditorData.VAdjustment.Value) - 1;
 			
 	//		if ((area.Bottom + reminder) % this.LineHeight != 0)
@@ -1258,8 +1259,9 @@ namespace Mono.TextEditor
 			int startY = LineToVisualY (startLine);
 			int curY = startY - (int)this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
-	//		Console.WriteLine ("Render margins: startLine={0}, endLine={1}, area={2}, startY={3}", startLine, endLine, area, startY);
+			//Console.WriteLine ("Render margins: startLine={0}, curY={1}, endY={2}", startLine, curY, area.Bottom);
 			for (int visualLineNumber = startLine; ; visualLineNumber++) {
+				//Console.WriteLine ("Render:" + visualLineNumber + " at " + curY);
 				int logicalLineNumber = visualLineNumber;
 				int lineHeight        = GetLineHeight (logicalLineNumber);
 				LineSegment line = Document.GetLine (logicalLineNumber);
@@ -1793,7 +1795,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		Gdk.Rectangle RangeToRectangle (int offset, int length)
+	/*	Gdk.Rectangle RangeToRectangle (int offset, int length)
 		{
 			DocumentLocation startLocation = Document.OffsetToLocation (offset);
 			DocumentLocation endLocation = Document.OffsetToLocation (offset + length);
@@ -1802,8 +1804,8 @@ namespace Mono.TextEditor
 				return Gdk.Rectangle.Zero;
 			
 			return RangeToRectangle (startLocation, endLocation);
-		}
-				
+		}*/
+		
 		Gdk.Rectangle RangeToRectangle (DocumentLocation start, DocumentLocation end)
 		{
 			if (start.Column < 0 || start.Line < 0 || end.Column < 0 || end.Line < 0)
@@ -2134,7 +2136,9 @@ namespace Mono.TextEditor
 				delta += GetLineHeight (extendedTextMarkerLine) - LineHeight;
 			}
 			
-			return Document.LogicalToVisualLine (logicalLine) * LineHeight + delta;
+			int visualLine = Document.LogicalToVisualLine (logicalLine);
+			
+			return visualLine * LineHeight + delta;
 		}
 		
 		public int GetLineHeight (LineSegment line)

@@ -167,7 +167,7 @@ namespace Mono.TextEditor.PopupWindow
 //				WidthRequest = width;
 //		}
 		
-		//this is GTK+ >= 2.10 only, so reflect it
+	/*	//this is GTK+ >= 2.10 only, so reflect it
 		static Gdk.WindowTypeHint TooltipTypeHint {
 			get {
 				if (tooltipTypeHint > -1)
@@ -181,9 +181,9 @@ namespace Mono.TextEditor.PopupWindow
 				
 				return (Gdk.WindowTypeHint) tooltipTypeHint;
 			}
-		}
+		}*/
 		
-		static int tooltipTypeHint = -1;
+		//static int tooltipTypeHint = -1;
 		[System.ComponentModel.Category("MonoDevelop.Components")]
 		[System.ComponentModel.ToolboxItem(true)]
 		public class FixedWidthWrapLabel : Widget

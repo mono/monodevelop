@@ -853,9 +853,7 @@ namespace Mono.TextEditor
 			public int LogicalToVisualLine (Document doc, int logicalLine)
 			{
 				int result = logicalLine;
-				LineSegment line = doc.GetLine (result);
-				if (line == null)
-					return result;
+				LineSegment line = doc.GetLine (result) ?? doc.GetLine (doc.LineCount - 1);
 				foreach (FoldSegment segment in Traverse (x => !(x.IsFolded && x.StartLine.Offset < line.Offset))) {
 					if (segment.IsFolded && segment.StartLine.Offset < line.Offset) {
 						result -= doc.GetLineCount (segment);

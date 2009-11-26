@@ -285,7 +285,7 @@ namespace Mono.TextEditor
 				highlightBracketOffset = matchingBracket;
 				int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
 				int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
-				DocumentLocation matchingBracketLocation = Document.OffsetToLocation (matchingBracket);
+				//DocumentLocation matchingBracketLocation = Document.OffsetToLocation (matchingBracket);
 				Application.Invoke (delegate {
 					if (line1 >= 0)
 						textEditor.RedrawLine (line1);
