@@ -547,7 +547,6 @@ namespace MonoDevelop.Debugger
 		public static StackFrame GetCurrentVisibleFrame ()
 		{
 			if (currentBacktrace != null && currentFrame != -1) {
-				//FIXME: detect user code
 				for (int idx = currentFrame; idx < currentBacktrace.FrameCount; idx++) {
 					var frame = currentBacktrace.GetFrame (currentFrame);
 					if (!frame.IsExternalCode)

@@ -1,5 +1,10 @@
 2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Debugger/DebuggingService.cs: Remove FIXME that
+	  was fixed.
+
+2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Debugger/StackTracePad.cs: Don't prevent the
 	  user from jumping to frames if source exists, even if
 	  they're not user code.
