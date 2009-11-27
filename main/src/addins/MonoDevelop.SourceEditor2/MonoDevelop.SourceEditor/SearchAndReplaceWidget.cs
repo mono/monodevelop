@@ -58,7 +58,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public static bool IsCaseSensitive {
 			get { return PropertyService.Get ("IsCaseSensitive", true); }
-			set { PropertyService.Set ("IsCaseSensitive", value); }
+			set { 
+				if (IsCaseSensitive != value)
+					PropertyService.Set ("IsCaseSensitive", value); 
+			}
 		}
 		
 		public static bool IsWholeWordOnly {

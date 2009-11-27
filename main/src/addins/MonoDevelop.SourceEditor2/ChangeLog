@@ -1,3 +1,8 @@
+2009-11-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Fixed
+	  search & replace speed issue.
+
 2009-11-26  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:
