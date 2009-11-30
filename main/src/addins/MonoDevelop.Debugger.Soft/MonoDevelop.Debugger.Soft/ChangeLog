@@ -1,3 +1,8 @@
+2009-11-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Don't call ToString when it doesn't
+	  have been overriden.
+
 2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerSession.cs: Fix picking a default thread 
