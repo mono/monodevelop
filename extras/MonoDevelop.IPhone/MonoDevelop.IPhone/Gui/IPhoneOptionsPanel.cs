@@ -72,13 +72,11 @@ namespace MonoDevelop.IPhone.Gui
 			displayNameEntry.Text = proj.BundleDisplayName ?? "";
 			
 			mainNibPicker.Project = proj;
-			mainNibPicker.EntryIsEditable = false;
 			mainNibPicker.DefaultFilter = "*.xib";
 			mainNibPicker.DialogTitle = GettextCatalog.GetString ("Select main interface file...");
 			mainNibPicker.SelectedFile = proj.MainNibFile.ToString () ?? "";
 			
 			appIconPicker.Project = proj;
-			appIconPicker.EntryIsEditable = false;
 			appIconPicker.DefaultFilter = "*.png";
 			appIconPicker.DialogTitle = GettextCatalog.GetString ("Select application icon...");
 			appIconPicker.SelectedFile = proj.BundleIcon.ToString () ?? "";
