@@ -1,3 +1,8 @@
+2009-11-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Info.plist.in: Add file associations for sln and cs files.
+	* Makefile.am: copy all icon files.
+
 2009-11-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* mdtool:
