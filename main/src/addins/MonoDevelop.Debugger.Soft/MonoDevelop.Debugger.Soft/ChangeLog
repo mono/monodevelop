@@ -1,5 +1,10 @@
 2009-11-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* PropertyValueReference.cs: Allow getting and setting
+	  nonpublic properties.
+
+2009-11-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerAdaptor.cs: Don't NRE in
 	  MethodCall.WaitForCompleted if it was never invoked, or if
 	  there was an exception in Invoke.

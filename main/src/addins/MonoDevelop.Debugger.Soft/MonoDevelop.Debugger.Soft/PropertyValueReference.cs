@@ -72,7 +72,7 @@ namespace MonoDevelop.Debugger.Soft
 			get {
 				Context.AssertTargetInvokeAllowed ();
 				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
-				return ctx.RuntimeInvoke (property.GetGetMethod (), obj ?? declaringType, indexerArgs);
+				return ctx.RuntimeInvoke (property.GetGetMethod (true), obj ?? declaringType, indexerArgs);
 			}
 			set {
 				Context.AssertTargetInvokeAllowed ();
@@ -80,7 +80,7 @@ namespace MonoDevelop.Debugger.Soft
 				Value[] args = new Value [indexerArgs != null ? indexerArgs.Length + 1 : 1];
 				indexerArgs.CopyTo (args, 0);
 				args [args.Length - 1] = (Value) value;
-				ctx.RuntimeInvoke (property.GetSetMethod (), obj ?? declaringType, args);
+				ctx.RuntimeInvoke (property.GetSetMethod (true), obj ?? declaringType, args);
 			}
 		}
 		
