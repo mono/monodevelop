@@ -130,7 +130,7 @@ namespace Mono.TextTemplating.Tests
 namespace Microsoft.VisualStudio.TextTemplating {
     
     
-    public class GeneratedTextTransformation4f504ca0 : Microsoft.VisualStudio.TextTemplating.TextTransformation {
+    public partial class GeneratedTextTransformation4f504ca0 : Microsoft.VisualStudio.TextTemplating.TextTransformation {
         
         
         #line 9 """"
