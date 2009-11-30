@@ -1,3 +1,10 @@
+2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/ParsedTemplate.cs: Don't check if
+	  included file exists before trying to resolve it from the
+	  host, because host may use include paths. Patch from Aaron
+	  Bockover.
+
 2009-08-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating/TemplatingEngine.cs: Fix NRE when

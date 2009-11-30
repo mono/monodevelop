@@ -479,8 +479,13 @@ namespace Mono.Debugging.Evaluation
 			if (ttype == null)
 				throw new EvaluatorException ("Unknown type '{0}'", data.ProxyType);
 
-			object val = CreateValue (ctx, ttype, obj);
-			return val ?? obj;
+			try {
+				object val = CreateValue (ctx, ttype, obj);
+				return val ?? obj;
+			} catch (Exception ex) {
+				ctx.WriteDebuggerError (ex);
+				return obj;
+			}
 		}
 
 		public TypeDisplayData GetTypeDisplayData (EvaluationContext ctx, object type)

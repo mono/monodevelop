@@ -1,5 +1,19 @@
 2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Try to display
+	  the current non-external frame only if the current frame
+	  isn't in the current file. This means we also show a
+	  stack/execution marker in external code files, if they're
+	  somehow opened.
+
+2009-11-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Use FilePath
+	  when comparing files, since it is case insensitive in
+	  windows.
+
+2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: When debugging 
 	  stops, clear the stack marker as well as the execution marker.
 
