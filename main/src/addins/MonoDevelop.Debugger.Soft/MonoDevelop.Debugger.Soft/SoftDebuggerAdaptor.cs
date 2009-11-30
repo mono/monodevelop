@@ -705,6 +705,8 @@ namespace MonoDevelop.Debugger.Soft
 
 		public override bool WaitForCompleted (int timeout)
 		{
+			if (handle == null)
+				return true;
 			int res = ST.WaitHandle.WaitAny (new ST.WaitHandle[] { handle.AsyncWaitHandle, shutdownEvent }, timeout); 
 			if (res == 0) {
 				EndInvoke ();
