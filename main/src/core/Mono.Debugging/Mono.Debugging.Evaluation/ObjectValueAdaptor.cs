@@ -20,7 +20,29 @@ namespace Mono.Debugging.Evaluation
 		
 		AsyncEvaluationTracker asyncEvaluationTracker = new AsyncEvaluationTracker ();
 		AsyncOperationManager asyncOperationManager = new AsyncOperationManager ();
+		static Dictionary<string, string> netToCSharpTypes = new Dictionary<string, string> ();
 
+		static ObjectValueAdaptor ()
+		{
+			netToCSharpTypes["System.Void"]    = "void";
+			netToCSharpTypes["System.Object"]  = "object";
+			netToCSharpTypes["System.Boolean"] = "bool";
+			netToCSharpTypes["System.Byte"]    = "byte";
+			netToCSharpTypes["System.SByte"]   = "sbyte";
+			netToCSharpTypes["System.Char"]    = "char";
+			netToCSharpTypes["System.Enum"]    = "enum";
+			netToCSharpTypes["System.Int16"]   = "short";
+			netToCSharpTypes["System.Int32"]   = "int";
+			netToCSharpTypes["System.Int64"]   = "long";
+			netToCSharpTypes["System.UInt16"]  = "ushort";
+			netToCSharpTypes["System.UInt32"]  = "uint";
+			netToCSharpTypes["System.UInt64"]  = "ulong";
+			netToCSharpTypes["System.Single"]  = "float";
+			netToCSharpTypes["System.Double"]  = "double";
+			netToCSharpTypes["System.Decimal"] = "decimal";
+			netToCSharpTypes["System.String"]  = "string";
+		}
+		
 		public ObjectValueAdaptor ()
 		{
 			asyncOperationManager.BusyStateChanged += delegate(object sender, BusyStateEventArgs e) {
@@ -44,6 +66,111 @@ namespace Mono.Debugging.Evaluation
 				Console.WriteLine (ex);
 				return ObjectValue.CreateFatalError (path.LastName, ex.Message, flags);
 			}
+		}
+		
+		public virtual string GetDisplayTypeName (string typeName)
+		{
+			return GetDisplayTypeName (typeName.Replace ('+','.'), 0, typeName.Length);
+		}
+		
+		string GetDisplayTypeName (string typeName, int idx, int end)
+		{
+			int i = typeName.IndexOf ('[', idx, end - idx);
+			int ci = typeName.IndexOf (',', idx, end - idx);
+			
+			List<string> genericArgs = null;
+			string array = null;
+			int te = end;
+			if (i != -1) te = i;
+			if (ci != -1 && ci < te) te = ci;
+			
+			if (i != -1 && typeName.IndexOf ('`', idx, te - idx) != -1) {
+				// Is generic
+				genericArgs = GetGenericArguments (typeName, ref i);
+				if (i >= end || typeName [i] != '[')
+					i = -1;
+			}
+			if (i != -1) {
+				// Is array
+				int ea = typeName.IndexOf (']', i);
+				array = typeName.Substring (i, ea - i + 1);
+			}
+			
+			if (genericArgs == null)
+				return GetShortTypeName (typeName.Substring (idx, te - idx)) + array;
+
+			// Insert the generic arguments next to each type.
+			// for example: Foo`1+Bar`1[System.Int32,System.String]
+			// is converted to: Foo<int>.Bar<string>
+			StringBuilder sb = new StringBuilder ();
+			int gi = 0;
+			int j = typeName.IndexOf ('`', idx, te - idx);
+			while (j != -1) {
+				sb.Append (typeName.Substring (idx, j - idx)).Append ('<');
+				int ej = ++j;
+				while (ej < typeName.Length && char.IsDigit (typeName [ej]))
+					ej++;
+				int n;
+				if (int.TryParse (typeName.Substring (j, ej - j), out n)) {
+					while (n > 0 && gi < genericArgs.Count) {
+						sb.Append (genericArgs [gi++]);
+						if (--n > 0)
+							sb.Append (',');
+					}
+				}
+				sb.Append ('>');
+				idx = ej;
+				j = typeName.IndexOf ('`', idx, te - idx);
+			}
+			sb.Append (typeName.Substring (idx, te - idx)).Append (array);
+			return sb.ToString ();
+		}
+		
+		List<string> GetGenericArguments (string typeName, ref int i)
+		{
+			// Get a list of the generic arguments.
+			// When returning, i points to the next char after the closing ']'
+			List<string> genericArgs = new List<string> ();
+			i++;
+			while (i < typeName.Length && typeName [i] != ']') {
+				int pend = FindTypeEnd (typeName, i);
+				bool escaped = typeName [i] == '[';
+				genericArgs.Add (GetDisplayTypeName (typeName, escaped ? i + 1 : i, escaped ? pend - 1 : pend));
+				i = pend;
+				if (i < typeName.Length && typeName[i] == ',')
+					i++;
+			}
+			i++;
+			return genericArgs;
+		}
+		
+		int FindTypeEnd (string s, int i)
+		{
+			int bc = 0;
+			while (i < s.Length) {
+				char c = s[i];
+				if (c == '[')
+					bc++;
+				else if (c == ']') {
+					if (bc > 0)
+						bc--;
+					else
+						return i;
+				}
+				else if (c == ',' && bc == 0)
+					return i;
+				i++;
+			}
+			return i;
+		}
+		
+		public virtual string GetShortTypeName (string tname)
+		{
+			string res;
+			if (netToCSharpTypes.TryGetValue (tname, out res))
+				return res;
+			else
+				return tname;
 		}
 		
 		public virtual void OnBusyStateChanged (BusyStateEventArgs e)
@@ -113,13 +240,13 @@ namespace Mono.Debugging.Evaluation
 			string typeName = obj != null ? GetValueTypeName (ctx, obj) : "";
 			
 			if (obj == null || IsNull (ctx, obj)) {
-				return ObjectValue.CreateObject (source, path, typeName, "(null)", flags, null);
+				return ObjectValue.CreateObject (source, path, GetDisplayTypeName (typeName), "(null)", flags, null);
 			}
 			else if (IsPrimitive (ctx, obj) || IsEnum (ctx,obj)) {
-				return ObjectValue.CreatePrimitive (source, path, typeName, ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);
+				return ObjectValue.CreatePrimitive (source, path, GetDisplayTypeName (typeName), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags);
 			}
 			else if (IsArray (ctx, obj)) {
-				return ObjectValue.CreateObject (source, path, typeName, ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
+				return ObjectValue.CreateObject (source, path, GetDisplayTypeName (typeName), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
 			}
 			else {
 				TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, obj));
@@ -134,7 +261,7 @@ namespace Mono.Debugging.Evaluation
 				if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 					tname = EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString);
 				else
-					tname = typeName;
+					tname = GetDisplayTypeName (typeName);
 				
 				ObjectValue oval = ObjectValue.CreateObject (source, path, tname, tvalue, flags, null);
 				if (!string.IsNullOrEmpty (tdata.NameDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
@@ -192,7 +319,7 @@ namespace Mono.Debugging.Evaluation
 				}
 				catch (Exception ex) {
 					ctx.WriteDebuggerError (ex);
-					values.Add (ObjectValue.CreateError (null, new ObjectPath (val.Name), GetTypeName (ctx, val.Type), ex.Message, val.Flags));
+					values.Add (ObjectValue.CreateError (null, new ObjectPath (val.Name), GetDisplayTypeName (GetTypeName (ctx, val.Type)), ex.Message, val.Flags));
 				}
 			}
 
@@ -419,7 +546,7 @@ namespace Mono.Debugging.Evaluation
 				return null;
 			} else if (IsArray (ctx, obj)) {
 				ICollectionAdaptor adaptor = CreateArrayAdaptor (ctx, obj);
-				StringBuilder tn = new StringBuilder (GetTypeName (ctx, adaptor.ElementType));
+				StringBuilder tn = new StringBuilder (GetDisplayTypeName (GetTypeName (ctx, adaptor.ElementType)));
 				int[] dims = adaptor.GetDimensions ();
 				tn.Append ("[");
 				for (int n=0; n<dims.Length; n++) {
@@ -439,7 +566,7 @@ namespace Mono.Debugging.Evaluation
 					return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
 				if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 					return new LiteralExp ("{" + EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString) + "}");
-				return new LiteralExp ("{" + GetValueTypeName (ctx, obj) + "}");
+				return new LiteralExp ("{" + GetDisplayTypeName (GetValueTypeName (ctx, obj)) + "}");
 			}
 			return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
 		}
