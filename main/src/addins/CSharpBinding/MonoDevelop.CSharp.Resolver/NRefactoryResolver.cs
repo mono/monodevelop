@@ -858,7 +858,7 @@ namespace MonoDevelop.CSharp.Resolver
 				int endPos = editor.GetPositionFromLineColumn (endLine, editor.GetLineLength (endLine));
 				if (endPos < 0)
 					endPos = editor.TextLength;
-				text = editor.GetText (editor.GetPositionFromLineColumn (startLine, 1), endPos);
+				text = editor.GetText (editor.GetPositionFromLineColumn (startLine, 0), endPos);
 			} else {
 				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
 				doc.Text = File.ReadAllText (fileName) ?? "";
